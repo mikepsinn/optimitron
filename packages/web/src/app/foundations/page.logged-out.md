@@ -3,71 +3,54 @@
 ## Metadata
 
 - Page title: Foundations | International Campaign to End War and Disease
-- Meta description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
+- Meta description: Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.
 - Canonical: https://warondisease.org/foundations
 - Open Graph title: Foundations
-- Open Graph description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
+- Open Graph description: Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ffoundations
 - Twitter title: Foundations
-- Twitter description: The case for foundations to fund universal t-shirt distribution: about 50,000× more cost-effective per life-year than GiveWell's top charities, for roughly $56 billion.
+- Twitter description: Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.
 
 ## Visible Page Copy
 
-## BUY THE T-SHIRT THAT ENDED WAR AND DISEASE.
-- If 1 billion humans wear this shirt on the same day — Earth Optimization Day, August 6 — humanity is forced to discuss the fact that it currently maintains sufficient mass-murder capacity to cause [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses, and that it has the option to sacrifice one of these apocalypses for disease eradication within our lifetime.
-- If 8 billion people buy this t-shirt and wear it on the same day, they will have conversations with each other about it.
-- In those conversations they will realize:
-- We currently spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times as much on our capacity for mass murder as we spend on curing the diseases that are going to kill them and everyone they love.
-- Accepting a [121-apocalypse mass-murder capacity](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) (down from [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)) would let us eradicate disease [12](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times faster.
-- Military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower immediately before the United States won World War II. The US then cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.
-- It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.
-- They will realize this is wise because your annual chance of dying in a terrorist attack is about [1 in 30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html), and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.
-- This is in the logical self-interest of even the CEO of Lockheed Martin, because:
-- A 1% reduction in his bomb-selling commission is not as valuable as the continued existence of himself, his family, and the people he loves.
-- Disease is very expensive to the economy.
-- It is projected that if we did this reallocation and eradicated disease, Earth would be vastly more productive — [43% richer in 15 years](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html).
-- Therefore even the CEO of Lockheed Martin's interest in the 1% reduction is nothing compared to the increase in the size of the total pie of resources available to humanity if we eradicate disease instead of eradicating each other.
-- Therefore: all you have to do to end war and disease is get 8 billion people to wear a shirt on the same day.
-- It only costs approximately $56.0 billion — which is literally [1.51 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times less than the cost of war and disease on society. (We can calculate exactly how many times less.)
-- Last time we ran the model, the projected value of the 1% Treaty alone was approximately [$84.8 quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). But that is a floor. If a billion people actually wore the shirt and had the conversation, they would not stop at 1%. They would cut much more.
-- There should be a slider on the site [coming next] so every human can adjust the proposed treaty cut and see the recalculated outcomes. At most the cut would be 50/50 — half of military spending redirected. If 8 billion humans actually talked to each other about what their priorities are, disease eradication and education could happen very fast.
-- The biotechnology sector would be a very good place to invest in advance of this.
-### ADDRESS THE OBJECTION: YES, THIS SOUNDS INSANE
-- Skeptical reader's first reaction: "All you have to do to end war and disease is for everyone to wear a t-shirt? This sounds insane."
-- Correct. It sounds insane.
-- We have walked through the logical proof above. Identify the step where the logic breaks. If you cannot, the proposal is not insane — it is just unfamiliar.
-- The fact that it sounds insane — and that it is simple enough for any human on Earth to understand — is why it works.
-- Most things that would benefit everyone on Earth do not get done because they are too complex to coordinate around. They require expertise to evaluate, institutions to align, and decades to deploy. A t-shirt with a QR code linking to a 30-second vote requires none of that. A 5-year-old can read it. A 99-year-old can wear it. The action is trivial; the underlying argument has room to spread.
-- Simplicity + universal benefit + universal comprehensibility is the rare combination that actually goes viral. The proposal is memetic precisely because the surface — wear a shirt — is trivial enough that the argument can ride along.
-### THE ESCALATION ARGUMENT
-- Even though it starts at 1%, once humanity agrees that this is good, the natural next question is: if 1% is this good, why not 2%?
-- If 2% eradicates diseases 20 times faster, why not 3%?
-- The logical conclusion is that war is irrational. 8 billion people will realize how irrational it is to let 2 billion people suffer from disease so that humanity can maintain 122 apocalypses of mass-murder capacity when one is enough.
-### COMPARATIVE TABLE: UNIVERSAL T-SHIRTS VS. ALTERNATIVES
-- This campaign is [$0.00177/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), approximately [50,300×](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) more cost-effective than ITNs.
-| NAME | CURRENT $/DALY BENCHMARK | DALYS AT SHIRT-DISTRIBUTION COST | RATIO VS. THIS CAMPAIGN |
-| --- | --- | --- | --- |
-| GiveWell top charities (Against Malaria Foundation / Helen Keller / Malaria Consortium) | [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) | [629 million DALYs](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) | [50,300×](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) |
-- Cash-transfer programs (GiveDirectly) and longtermist AI-safety grants (Open Philanthropy AI Safety bucket, Future of Life Institute) do not publish DALY-denominated cost-effectiveness numbers, so direct row-by-row comparison is not possible. They are funded for different ideas about how to reduce suffering. The cost-per-DALY benchmark above is the standard global-health comparator, and this campaign clears it by ~50,000×.
-### OPTIONAL COMMITMENT PATH
-- If you want to commit but don't want the risk of going first, we can run a dominant assurance pledge — the same win-or-refund pattern the [Earth Optimization Prize](/prize) uses — for shirt distribution. Tell us your pledge amount; we'll build the escrow path if we get three foundation pledges totaling ≥ $1 billion.
-- Same commitment pattern, different outcome.
-- Pledges are held until the foundation threshold is met.
-- Success path: enough foundations join, then funds release for bulk shirt distribution.
-- Failure path: the threshold is not met, so pledged principal returns.
-- No foundation has to be the reckless first mover.
-- If pledges meet the threshold by Earth Optimization Day, funds release for the bulk shirt order. If they do not, your principal returns. No penalty for going first.
-- Foundations carry fear of going first: if Open Philanthropy commits $500M and no one else does, they look reckless. If Open Philanthropy conditionally commits $500M, it only deploys when the other ~$5B is committed by peers, and the principal is preserved with yield until the threshold hits — that's not a reputation risk, that's prudent capital allocation.
-- The assurance contract converts a coordination problem into a commitment structure.
-### PLEDGE HERE.
-- Funds release only when the threshold is met. Principal returns with yield if it is not.
-- $0 of $56.0B committed
-- $56.0B remaining - 0%
+## THE MOST COST-EFFECTIVE PHILANTHROPY ON EARTH.
+- Ending war and disease costs about [$0.00177/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) through the leading mechanism — roughly [50,300×](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a bed net. Below is every way to fund it, ranked by expected value per dollar. Pick one, or fund the whole portfolio.
+### EVERY MECHANISM, RANKED BY VALUE PER DOLLAR
+- Expected value is the annual peace dividend if the mechanism works, weighted by the odds it works. Cost is what a funder would put in.
+| MECHANISM | EXPECTED VALUE / YEAR | ODDS IT WORKS | COST TO FUND | VALUE PER $ |
+| --- | --- | --- | --- | --- |
+| [RATIFY THE 1% TREATY](/vote) Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication. | $84,786.6T | 1% | $1.0B | 84,786,551× |
+| [SEED THE SHIRT CASCADE](/joke) Fund a seed of visible wearers — athletes, public figures, anyone with an audience — to wear the War on Disease shirt on Earth Optimization Day, triggering the cascade where everyone else writes the message on a shirt they already own for the cost of a marker. | $28.4B | 25% | $50.0M | 568× |
+| [ESTABLISH THE COURT OF HUMANITY](/court) Make the Court of Humanity legible as the institution where humans can judge governments that spend public resources against the general welfare. | $11.4B | 10% | $30.0M | 379× |
+| [FUND THE DECENTRALIZED FDA DIRECTLY](https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html) Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing. | $79.5B | 70% | $500.0M | 159× |
+| [THE LOVING TAKEOVER](https://manual.warondisease.org/knowledge/appendix/loving-takeover.html) Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty. | $107.9B | 95% | $17.5B | 6.2× |
+| [FUND THE REFERENDUM: THE EARTH OPTIMIZATION PRIZE](/prize) Deposit, earn yield, fund the vote of all humanity. | $34.1B | 30% | Refundable (assurance contract) | — |
+| [DISTRIBUTE T-SHIRTS TO 8 BILLION HUMANS BY AUGUST 6](/tasks/distribute-tshirts:2026-08-06) One t-shirt per human on Earth Optimization Day. The shirt is the conversation device; the conversation triggers the treaty vote; the treaty redirects 1% of military spending to clinical trials. This task tracks shirt distribution: bulk print orders, foundation funding for distribution, individual pledges to buy and wear. | — | — | Refundable (assurance contract) | — |
+| [WISHONIA COORDINATES EARTH OPTIMIZATION MISSIONS](/tasks/wishonia-coordinates-eod:2026-q3) Pair humans for one hour. The campaign's Wishonia AI tells each pair what to do in their hour to optimize Earth, ranked by impact-per-minute, using the campaign's parameter catalog + manual. This task tracks the build + the AI credits that power it. | — | — | Refundable (assurance contract) | — |
+| [TEACH THE AIS HOW TO END WAR AND DISEASE](/tasks/teach-ais:2026-q3) When humans ask frontier AI models how to end war and disease, the current models give wrong, vague, or refusal answers. This task tracks the work to fix that — through grant requests to the labs, mass thumbs-down feedback on wrong answers, alignment-grant outreach, and engineering partnerships to get the correct answer into model training data. | — | — | Refundable (assurance contract) | — |
+| [CAPITALIZE EARTH OPTIMIZATION SERVICES](/fund) Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget. | — | — | Refundable (assurance contract) | — |
+| GiveWell top charities (bed nets) — the standard global-health benchmark | — | — | [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per DALY | 1× (baseline) |
+- The Earth Optimization Prize is a dominant assurance contract: depositors are refunded with yield if the treaty does not pass, so its net cost to a funder is near zero. It is listed for its expected value, not ranked by cost.
+### FUND A MECHANISM
+- Pledges are conditional. Your money only moves if the mechanism hits its funding threshold; otherwise nothing happens. No foundation has to be the reckless first mover.
+- [SIGN IN AS YOUR ORGANIZATION TO PLEDGE](/auth/signin?callbackUrl=%2Ffoundations)
+#### RATIFY THE 1% TREATY
+- $2,500 of $1.0B paid or pledged
+- $999,997,500 remaining - 0%
 - STATUS
 - OPEN
-- PLEDGERS
-- 0 PLEDGERS
-#### UNIT BREAKDOWN
-- No unit pledges yet.
-- [SIGN IN AS YOUR ORGANIZATION TO PLEDGE](/auth/signin?callbackUrl=%2Ffoundations)
-- Want to coordinate with another human? Go on an [Earth Optimization Mission](/missions).
+- SUPPORTERS
+- 1 SUPPORTER
+#### SEED THE SHIRT CASCADE
+- $2,500 of $50,000,000 paid or pledged
+- $49,997,500 remaining - 0%
+#### ESTABLISH THE COURT OF HUMANITY
+- $0 of $30,000,000 paid or pledged
+- $30,000,000 remaining - 0%
+- 0 SUPPORTERS
+#### FUND THE DECENTRALIZED FDA DIRECTLY
+- $0 of $500,000,000 paid or pledged
+- $500,000,000 remaining - 0%
+#### THE LOVING TAKEOVER
+- $0 of $17.5B paid or pledged
+- $17.5B remaining - 0%

@@ -21,9 +21,9 @@
 ### HOW DO YOU PLAY?
 - It's embarrassingly easy.
 - CLICK 2 BUTTONS
-- Verify you're human. Vote. 30 seconds.
+- Prove you are human. Vote. 30 seconds. A rock cannot do this. You can.
 - TELL YOUR FRIENDS
-- They click 2 buttons. They tell their friends. Done.
+- They click 2 buttons. Then they tell their friends. That's how 8 billion people vote.
 - That's it. You're done. 99% of you don't need to know anything else.
 - The rest of this site is the instruction manual. Read it if you're into ending war and disease. But for the love of your species, click the buttons first.
 ### VOTE ON THE 1% TREATY
@@ -61,7 +61,7 @@
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [money]
 - RATE: [$9.90 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
-### ↳ 199 employees have overdue tasks
+### ↳ 202 employees have overdue tasks
 - 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
 - ASSIGNEE
 - TASK
@@ -78,25 +78,20 @@
 - [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
 - [Narendra Modi](/tasks/1-pct-treaty-signer-in)
-- [[initials]](/people/narendra-modi-in)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
 - [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
-- [[initials]](/people/donald-tusk-pl)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
 - [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
-- [[initials]](/people/salman-bin-abdulaziz-al-saud-sa)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
 - [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
-- [[initials]](/people/keir-starmer-gb)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
 - [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
-- [[initials]](/people/friedrich-merz-de)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-dz)
 - ← PREV
-- PAGE 1 / 20
+- PAGE 1 / 21
 - NEXT →
 ### HOW TO WIN
 - Two numbers. That's the whole game.
@@ -147,8 +142,8 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀0 HUMANS TERMINATED🔥$640K BURNED BY MISALIGNED GOVERNMENTS💣$84K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
-- You are currently losing. You chose it by not choosing.
+- [💀3 HUMANS TERMINATED🔥$5.6M BURNED BY MISALIGNED GOVERNMENTS💣$733K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
 | POLICY | HEALTH | INCOME | GRADE | ACTION |
@@ -197,16 +192,16 @@
 - Not because cures are impossible. Because nobody ran the trial.
 - 🔒
 - 0 years
-#### POST-SAFETY DELAY
+#### YEARS IN THE CABINET
 - Proven safe. Locked in a cabinet. While you die.
 - ⚰️
 - 0M deaths
-#### HISTORICAL EFFICACY LAG
+#### DEAD ON THE WAITING LIST
 - Died waiting for treatments that were already ready.
 - 🚪
-#### TRIAL CAPACITY USED
+#### DOORS OPEN VS. DOORS USED
 - 1.08 billion willing. 1.9 million slots. On my planet this would be a crime.
-- [😴 READ THE FULL ANALYSIS →](https://invisible-graveyard.warondisease.org)
+- [😴 READ THE RECEIPTS →](https://invisible-graveyard.warondisease.org)
 - [🧪 SEE THE SOLUTION →](https://dfda-spec.warondisease.org)
 ### OUTCOME LABELS
 - Comprehensive health impact data
@@ -315,7 +310,7 @@
 - [🧬OPTIMAL INSTITUTES OF HEALTH You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic. OPEN DIH →](/agencies/dih)
 - [💊DECENTRALIZED FDA Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths. OPEN DFDA →](/agencies/dfda)
 - [💀DEPARTMENT OF PEACE War is a negative-sum game and the spreadsheet agrees. We don't have a Department of War because — and I want to be precise here — war is fucking stupid. LEARN MORE →](/agencies/ddod)
-- [ALL AGENCIES →](/agencies)
+- [SEE EVERY AGENCY →](/agencies)
 ### THE ARMORY
 - Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything important.
 - [🏆EARTH OPTIMIZATION PRIZE Put money in a pool. Recruit people to vote on the 1% Treaty. If humanity gets healthier and richer by 2040, point holders split the pool. SEE THE PRIZE →](/prize)
@@ -327,7 +322,7 @@
 - [🎬WISHONIA DEMO A guided tour by an alien who's been running a planet for 4,237 years. She has notes. WATCH DEMO →](/demo)
 - [FULL ARMORY →](/tools)
 ### THE CLOCK IS RUNNING
-- Your Earth Optimization Points pay out if enough people play. Worth nothing if they don't.
+- Your Earth Optimization Points pay out when enough humans play. Otherwise they are very nice paper.
 - [years]
 - [months]
 - [days]

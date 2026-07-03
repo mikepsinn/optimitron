@@ -89,6 +89,42 @@ Do not let lower items crowd out higher ones.
   `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
   all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
   branch after PR #88; manual-search + verbatim copy gate before shipping.
+- **Task tree: cause-node split + seed ALL 35 missing solution tasks
+  (Mike-approved 2026-07-02/03):** full plan + tree diagrams in
+  `.claude/plans/task-tree-cause-split.md`; complete manual-vs-tasks audit
+  (50 solutions × 52 tasks, matched/missing/cruft) in
+  `.claude/plans/task-tree-cause-split-audit.json`. Decisions: seed all 35
+  missing tasks ("users can make those institutions" — includes OPG/RAPPA
+  proof-layer builder tasks); biggest gap = NO referral task ("get two more
+  humans to vote"), priority-2's only exponential mechanism; bed-nets task
+  KEPT, parent under Eradicate Disease (also fixes its null-parent rule
+  violation); write a manual page for Earth Optimization Missions (the two
+  mission tasks have no manual source). Single tree parent stays
+  (attribution math); cross-cause links via existing `TaskEdge`
+  (`INCREASES_PROBABILITY_OF`/`ACCELERATES`), surfaced in UI. `/missions`
+  route is TAKEN — cause pages name TBD (`/causes`?). Own branch after
+  PR #97 merges; diagram-before-code satisfied by the plan file.
+- **Task funding end-state: assurance-contract escrow (Mike-approved
+  direction, 2026-07-03):** apply the campaign's own conditional-commitment
+  mechanism to task funding. Flow: pledge = Stripe SetupIntent (card saved,
+  $0 charged) → target fully funded = off-session charge (money becomes
+  real; worker has assurance) → claim verified = payout (rail from PR #97,
+  reused unchanged) → target expires/cancelled or task dies = automatic
+  refund of anything charged. Keep instant "pay now" checkout as a secondary
+  option. Wire the never-used `TaskFundingPledge.calledAt`/`fulfilledAt` as
+  the decline-recovery email flow (saved card fails at charge time → email a
+  pay-now link; expect ~2–5% declines, over-pledge buffer covers it). Why:
+  conditional money is near-free to commit (Kickstarter/assurance-contract
+  psychology) → maximizes committed funds; makes the progress bar
+  enforceable rather than decorative; makes "Nothing proven, nothing paid"
+  true for donors, not just workers. Zero users today = no migration; build
+  the end-state once instead of the intermediate thing twice. Known gaps it
+  closes: pledges currently promise-only (THRESHOLD_MET is a no-op event)
+  and paid money strands with no auto-refund. NEXT BRANCH after PR #97
+  merges (Mike 2026-07-03: "finish up assurance contract escrow now");
+  cause-split follows it. Keep task funding treasury-separated from
+  Prize/IAB economics — plain assurance (refund), NOT dominant assurance
+  (refund+bonus is the Prize's mechanic).
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 
@@ -178,6 +214,33 @@ specific funder/partner.
   it mid-deployment would require a coordinated schema migration + all server
   helpers + managed-data resync. Own PR: schema-only diff, default-backfill
   to the campaign jurisdiction, then update creators in a follow-up.
+
+- Task-payout ledger hardening (deferred from PR #97, CodeRabbit-flagged;
+  remaining items are heavy/schema-coupled — batch into one follow-up). The
+  critical per-`taskId` double-allocation race is FIXED in-PR: `withTaskFundingLock`
+  (Postgres `pg_advisory_xact_lock`) serializes each read+transition in
+  `executeTaskPayout` / `queueTaskPayoutForVerifiedClaim` /
+  `reconcileQueuedPayoutReadiness`, and `getAvailableTaskFundingCents` now
+  reserves only committed states (READY/PROCESSING/TRANSFERRED) so competing
+  claims resolve first-come instead of blocking. Remaining:
+  - Reconcile `VERIFIED` claims on paid/bounty tasks that have no `TaskPayout`
+    row (queue-failure after claim marked VERIFIED currently only logs).
+    Add a cron scan re-invoking `queueTaskPayoutForVerifiedClaim`.
+  - Idempotency key on the `/v2/core/accounts` create in
+    `getOrCreateStripeConnectedAccount` + catch the `userId` unique race and
+    reload the existing row (currently the `userId` unique index makes the
+    loser error rather than create a usable phantom, so low blast radius).
+  - AbortController timeout in `stripeV2Request` so onboarding/status/payout
+    routes can't hang on a slow Stripe connection.
+  - Schema-boundary DB invariants for the funding ledger (require the
+    coordinated schema-only migration above — new migration + schema.prisma
+    edit needs Mike's approval; the applied migration file must not be
+    hand-edited): CHECK(`amountCents` > 0) on `TaskFundingPayment`/`TaskPayout`;
+    composite relation `(targetId, taskId)` on `TaskFundingPayment`;
+    align `TaskPayout.(taskClaimId, taskId, payeeUserId)`; switch
+    payment/payout FKs off `Cascade` (use `Restrict` for anchors, `SetNull`
+    for optional identity snapshots) so hard-deleting a Task/CommerceOrder/User
+    doesn't erase durable ledger history.
 
 ## Active Handoff - 2026-05-13
 
@@ -613,8 +676,10 @@ Durable summary lives here; no loose `.claude/plans/campaign-impact-attribution-
 
 - Multi-agent/service-account architecture plans; AP2 / ACP / x402 payments.
 - Optimitron root rewrite and `/features` archive.
-- Donate-to-fund-task marketplace, Stripe Connect disbursement, WISH airdrop,
-  VOTE-for-task-completion, monthly distributions, DAO-governed funding.
+- WISH airdrop, VOTE-for-task-completion, monthly distributions,
+  DAO-governed funding. (Donate-to-fund-task marketplace + Stripe Connect
+  payout disbursement landed in `feature/task-donations-connect-payouts` /
+  PR #97.)
 - DIH migration, generic referendum/commission/EV-calculator work outside the
   campaign path, and broad email file renames.
 - **Adopt `@openai/codex-sdk` for Codex dispatches.** Current dispatches

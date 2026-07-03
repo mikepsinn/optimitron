@@ -1187,13 +1187,13 @@ export const storeLink: NavItem = {
 
 export const fundLink: NavItem = {
   href: ROUTES.fund,
-  label: "Fund Optimization",
+  label: "Fund Tasks",
   emoji: "🪙",
   description:
-    "Put money where it moves votes, organizations, leaders, or measurable treaty demand. If the ask cannot point to proof, keep your money.",
-  tagline: "Insert coin, optimize Earth",
+    "A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.",
+  tagline: "Fund the bottleneck",
 
-  cta: "Fund Now",
+  cta: "Fund a Task",
 };
 
 export interface NavSection {

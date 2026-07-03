@@ -16,9 +16,9 @@
 - [BACK](/)
 - FEEDBACK
 ## HELP COORDINATE HUMANITY BETTER.
-- We are building a decentralized to-do list for humanity: coordinate the work required to end war and disease in the least irritating way possible.
+- A decentralized to-do list for humanity. It coordinates the work to end war and disease, in the least irritating way possible. Tell us where it falls short.
 - Company website
 - WHAT SHOULD CHANGE?
 - PAGE URL
 - EMAIL
-- SEND FEEDBACK
+- SEND.

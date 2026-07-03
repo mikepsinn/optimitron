@@ -13,13 +13,10 @@
 
 ## Visible Page Copy
 
-### THE PEOPLE WHO ENDED WAR AND DISEASE
-- Allowing billions of people to suffer and die from disease so humanity can preserve its [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)-apocalypse mass-murder capacity is a conscious act of barbaric mass cruelty. Like slavery, it will be allowed to continue until enough people are brave enough to publicly state that it is morally wrong and incredibly stupid. These are those people.
-- SIGNATORY
-- HOURS OF SUFFERING PREVENTED
-- [#1 Mike Sinn](/people/mike) 4.68 MILLION
-- [#2 Nikhil Yadala](/people/empirical-trailblazer) 1.40 MILLION
-- [#3 Wishonia](/people/wishonia) 468,000
+- No public signatories yet.
+- A treaty without signatories is paperwork. Fix that.
+- [SIGN TREATY](/vote)
+- [JOIN AS ORGANIZATION](/join)
 - HUMANITY MANAGER · ASSIGNMENT 1
 - 🥳Congratulations! You've been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) humans to agree to trade one of Earth's [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses worth of mass murder capacity for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trials, compressing the disease eradication timeline from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 - Hire 2 subordinates by sending this message to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans you love. They send it to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) more and after 32 of these doublings, the majority of humanity has agreed to transcend war and disease!
@@ -29,4 +26,3 @@
 - [EMAIL](mailto:?subject=Vote%20on%20the%201%25%20Treaty&body=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20vote%20on%20this%20stupid%20treaty%20at%20http%3A%2F%2F127.0.0.1%3A3001%2Fvote%20as%20it%20will%20reduce%20the%20likelihood%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
 - [POST](https://twitter.com/intent/tweet?text=I%20love%20you%20and%20don't%20want%20you%20to%20suffer%20and%20die%20of%20horrible%20diseases%20so%20please%20take%2030%20seconds%20to%20vote%20on%20this%20stupid%20treaty%20at%20http%3A%2F%2F127.0.0.1%3A3001%2Fvote%20as%20it%20will%20reduce%20the%20likelihood%20you%20will%20suffer%20and%20die%20of%20horrible%20diseases.)
 - [FACEBOOK](https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2F127.0.0.1%3A3001%2Fvote)
-- [END WAR AND DISEASE FROM YOUR MISSION PROFILE.](/missions)

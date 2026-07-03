@@ -41,12 +41,12 @@
 #### USE THE LOBBY TO INSTALL THEM
 - The lobbying budget that used to block the fix now pays to pass it - starting with [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year redirected into testing cures.
 ### EMPLOYEE MANUAL
-- The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. You run the planet now.
+- The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. Eight billion presidents, no boss. You run the planet now.
 - [READ THE EMPLOYEE MANUAL](https://manual.warondisease.org)
 ### WHY IT PAYS
 - The whole takeover costs about [$873 billion](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) - roughly [$109](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) per person, if every human chipped in. Nobody collects $90 from anybody. You put money in, you own part of it, and the returns come from those companies getting more valuable as the economy grows. You are not paying to fix the planet. You own part of the fix.
 ### YOUR CALCULATOR
-- Use your own assumptions. If the numbers stop working, good. That means the page did a useful thing.
+- Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing.
 #### YOUR ASSUMPTIONS
 - HOW MUCH YOU INVEST$25,000
 - YOUR ODDS IT WORKS (%) 10.0%
@@ -56,7 +56,7 @@
 - DEFENSE STOCK RETURN IF IT FAILS 10.0%
 - ECONOMY-EXPOSED NET WORTH$250,000
 - TREATY/CURRENT GDP MULTIPLIER 1.4x
-- 95% CI: 1.2X - 1.7X. BASE CASE: [1.43](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html).
+- 95% CI: 1.2X - 1.6X. BASE CASE: [1.43](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html).
 - ILLUSTRATIVE. YOUR ASSUMPTIONS, NOT A PROMISE OR OFFER. NOT INVESTMENT ADVICE.
 #### WHAT THE SHARE BECOMES
 #### VALUE IF CAMPAIGN SUCCEEDS
@@ -85,7 +85,7 @@
 - $129,732
 - market-asleep expected value at your assumptions, using the same fail path above.
 ### TERMS
-- Investment discussions happen off-page, for accredited investors, with the securities materials where they belong.
+- The pitch is public. The paperwork is not. For accredited investors, the securities materials live off-page, where the law wants them.
 #### $25,000
 - Friends and family minimum.
 #### $100,000
@@ -95,5 +95,5 @@
 #### 0%
 - Founder equity.
 ### TALK TO US
-- Request the data room or book a call. The thesis is public. The instrument is not a checkout button.
+- Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first.
 - ACCREDITED-ONLY SECURITIES DISCUSSION. NOT AN OFFER. NOT INVESTMENT ADVICE.

@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { TaskClaimPolicy, TaskClaimStatus, TaskStatus } from "@optimitron/db";
+import {
+  TaskClaimPolicy,
+  TaskClaimStatus,
+  TaskCompensationCadence,
+  TaskCompensationKind,
+  TaskStatus,
+} from "@optimitron/db";
 import { getServerSession } from "next-auth";
-import { notFound } from "next/navigation";
+import { TaskFundingCheckoutForm } from "@/components/task-funding/TaskFundingCheckoutForm";
+import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
+import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatusPanel";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
@@ -31,8 +39,10 @@ import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
+import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 async function getPublicTaskPageData(id: string) {
@@ -144,6 +154,49 @@ function getAssigneeHref(task: {
   return task.assigneePerson ? getPersonHref(task.assigneePerson) : null;
 }
 
+function isFixedStripePaidTask(task: {
+  compensationCadence?: TaskCompensationCadence | null;
+  compensationKind: TaskCompensationKind;
+  compensationMaxAmountMinorUnits?: bigint | null;
+  compensationPaymentRails: string[];
+}) {
+  if (
+    task.compensationKind !== TaskCompensationKind.PAID &&
+    task.compensationKind !== TaskCompensationKind.BOUNTY
+  ) {
+    return false;
+  }
+  if (
+    task.compensationCadence != null &&
+    task.compensationCadence !== TaskCompensationCadence.FIXED
+  ) {
+    return false;
+  }
+  if (!task.compensationMaxAmountMinorUnits || task.compensationMaxAmountMinorUnits <= 0n) {
+    return false;
+  }
+  if (task.compensationPaymentRails.length === 0) {
+    return true;
+  }
+  return task.compensationPaymentRails.some((rail) => {
+    const normalized = rail.trim().toLowerCase();
+    return normalized === "stripe" || normalized === "stripe_connect";
+  });
+}
+
+function getDefaultFundingAmountCents(input: {
+  compensationMaxAmountMinorUnits?: bigint | null;
+  remainingUsdCents?: bigint | null;
+}) {
+  const candidates = [
+    input.remainingUsdCents,
+    input.compensationMaxAmountMinorUnits,
+    2500n,
+  ].filter((value): value is bigint => Boolean(value && value > 0n));
+  const cents = candidates[0] ?? 2500n;
+  return Math.max(100, Math.min(Number(cents), 25_000));
+}
+
 function ActionLink({
   children,
   href,
@@ -178,6 +231,68 @@ function ActionLink({
   );
 }
 
+function TaskAccessGate({
+  signedIn,
+  signInHref,
+  viewerEmail,
+}: {
+  signedIn: boolean;
+  signInHref: string;
+  /** Empty string when the session has no email; the aside is omitted. */
+  viewerEmail: string;
+}) {
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto flex min-h-screen max-w-2xl items-center px-4 py-12 sm:px-6">
+        <section className="w-full space-y-4 border-2 border-foreground p-6 sm:p-8">
+          {signedIn ? (
+            <>
+              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+                You don&apos;t have access to this task
+              </h1>
+              <p className="text-base font-bold leading-relaxed">
+                It&apos;s private, or it doesn&apos;t exist. If someone sent you
+                this link, ask them to make the task public or assign it to you
+                {viewerEmail ? (
+                  <>
+                    {" "}
+                    — you&apos;re signed in as{" "}
+                    <span className="font-black">{viewerEmail}</span>
+                  </>
+                ) : null}
+                .
+              </p>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+                href={ROUTES.tasks}
+              >
+                Browse public tasks
+              </Link>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+                Sign in to see this task
+              </h1>
+              <p className="text-base font-bold leading-relaxed">
+                This task is private, or it doesn&apos;t exist. If it&apos;s
+                yours or assigned to you, sign in and you&apos;ll land right
+                back here.
+              </p>
+              <Link
+                className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+                href={signInHref}
+              >
+                Sign In
+              </Link>
+            </>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -187,8 +302,11 @@ export async function generateMetadata({
   const data = await getTaskDetailData(id, null);
 
   if (!data) {
+    // Private and nonexistent tasks share one generic, noindexed shell so the
+    // URL never reveals whether a private task exists.
     return {
       title: "Task Detail | Optimitron",
+      robots: { index: false, follow: false },
     };
   }
 
@@ -266,7 +384,18 @@ export default async function TaskDetailPage({
       ];
 
   if (!data) {
-    notFound();
+    // Not a bare 404: a viewer without access needs a way forward, and private
+    // tasks must stay indistinguishable from nonexistent ones. Both states
+    // render this same gate for any id, so nothing leaks. Signed-out viewers
+    // sign in and land back here; signed-in viewers learn how to ask for
+    // access. Accessibility rules live in getTaskVisibilityWhere.
+    return (
+      <TaskAccessGate
+        signedIn={Boolean(userId)}
+        signInHref={getSignInPath(`${ROUTES.tasks}/${id}`)}
+        viewerEmail={session?.user?.email ?? ""}
+      />
+    );
   }
 
   const { task, viewer, viewerClaim } = data;
@@ -303,6 +432,24 @@ export default async function TaskDetailPage({
   const assigneeLabel = getAssigneeLabel(task);
   const dueLabel = formatDueDate(task.dueAt);
   const effortLabel = formatEffortHours(task.estimatedEffortHours);
+  const fundingStatus = task.isPublic
+    ? await getTaskFundingStatus(task.id).catch(() => null)
+    : null;
+  const showTaskFunding =
+    task.isPublic && task.status === TaskStatus.ACTIVE;
+  const isPaidTask = isFixedStripePaidTask(task);
+  const stripeConnectStatus =
+    isPaidTask && userId
+      ? await getStripeConnectStatus(userId).catch(() => null)
+      : null;
+  const requiresPayoutSetup =
+    isPaidTask &&
+    !task.viewerHasClaim &&
+    (!userId || !stripeConnectStatus?.transferReady);
+  const defaultFundingAmountCents = getDefaultFundingAmountCents({
+    compensationMaxAmountMinorUnits: task.compensationMaxAmountMinorUnits,
+    remainingUsdCents: fundingStatus?.remainingUsdCents ?? null,
+  });
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -382,6 +529,7 @@ export default async function TaskDetailPage({
             (canClaim || task.viewerHasClaim) ? (
               <TaskClaimButton
                 canClaim={canClaim}
+                requiresPayoutSetup={requiresPayoutSetup}
                 signedIn={Boolean(userId)}
                 signInHref={signInHref}
                 taskId={task.id}
@@ -455,6 +603,42 @@ export default async function TaskDetailPage({
                 </span>
               </span>
             ) : null}
+          </section>
+        ) : null}
+
+        {showTaskFunding ? (
+          <section id="funding" className="border-b border-foreground py-6">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-black">Fund this task</h2>
+                  <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
+                    Your money stays pinned to this exact work and pays the
+                    worker the second a claim is verified. Nothing proven,
+                    nothing paid.
+                  </p>
+                </div>
+                {fundingStatus ? (
+                  <TaskFundingProgress status={fundingStatus} taskId={task.id} />
+                ) : (
+                  <div className="border border-foreground p-4 text-sm font-bold">
+                    No funding target yet. The first payment creates one.
+                  </div>
+                )}
+              </div>
+              <div className="space-y-4">
+                {isPaidTask ? (
+                  <StripeConnectStatusPanel
+                    signedIn={Boolean(userId)}
+                    signInHref={signInHref}
+                  />
+                ) : null}
+                <TaskFundingCheckoutForm
+                  defaultAmountCents={defaultFundingAmountCents}
+                  taskId={task.id}
+                />
+              </div>
+            </div>
           </section>
         ) : null}
 

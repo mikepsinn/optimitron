@@ -1,0 +1,1007 @@
+{
+  "summary": "Compare manual solutions list against existing task tree, find missing tasks",
+  "agentCount": 3,
+  "logs": [
+    "50 solutions, 52 tasks found"
+  ],
+  "result": {
+    "solutions": [
+      {
+        "name": "The 1% Treaty",
+        "summary": "International treaty in which signatory governments redirect 1% of military spending (~$27.2B/yr) to pragmatic clinical trials, with an IAB-funded ratchet adding roughly 1%/yr; multiplies trial capacity 12.3x and cuts the disease-exploration timeline from ~443 to ~36 years.",
+        "source": "The 1% Treaty — https://manual.warondisease.org/knowledge/solution/1-percent-treaty.html (impact analysis: knowledge/economics/1-pct-treaty-impact.html)",
+        "audienceOrActor": "National governments (sign/ratify); everyone else via the mechanisms below"
+      },
+      {
+        "name": "Global referendum on the 1% Treaty",
+        "summary": "A verified global vote (4.13B registered voters; 3.5% activism threshold, 51.6% coordination target) proving demand so politicians who refuse to ratify lose elections; the campaign's central YES action.",
+        "source": "Global Referendum Strategy — https://manual.warondisease.org/knowledge/strategy/global-referendum.html",
+        "audienceOrActor": "Individual voters worldwide; campaign org runs the platform"
+      },
+      {
+        "name": "Vote-and-refer propagation (tell two people)",
+        "summary": "Each verified voter recruits two more (sharing breakeven 1 in 8.66M, upside/downside ratio 8.7Mx); exponential referral is the core coordination engine of the referendum and Prize.",
+        "source": "The Earth Optimization Prize, 'The Part Where You Tell Two People' — https://manual.warondisease.org/knowledge/strategy/earth-optimization-prize.html",
+        "audienceOrActor": "Every individual voter"
+      },
+      {
+        "name": "The Earth Optimization Prize (dominant assurance contract)",
+        "summary": "Deposit money in a pool and recruit verified referendum voters to earn Earth Optimization Points (1 recruit = 1 point); if 2040 HALE + median-income targets are met, points holders split the pool; if not, depositors get ~9.03x their money back — zero-downside coordination funding.",
+        "source": "The Earth Optimization Prize — https://manual.warondisease.org/knowledge/strategy/earth-optimization-prize.html (treasury: knowledge/economics/earth-optimization-prize-treasury.html; spec: knowledge/appendix/earth-optimization-prize-protocol.html)",
+        "audienceOrActor": "Depositors/funders, individual recruiters, host institutions"
+      },
+      {
+        "name": "Incentive Alignment Bonds (VICTORY bonds)",
+        "summary": "Investors fund the ~$1B treaty campaign; once the treaty passes, 10% of redirected funds repays bondholders at ~272% annual returns and another 10% rewards treaty-supporting politicians (campaign support + post-office career prospects tied to a public voting scorecard), out-lobbying military-sector lobbying 13.7:1.",
+        "source": "Incentive Alignment Bonds — https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html (paper: knowledge/appendix/incentive-alignment-bonds-paper.html)",
+        "audienceOrActor": "Institutional/family-office/retail investors; politicians as reward recipients"
+      },
+      {
+        "name": "The $1B treaty lobbying campaign",
+        "summary": "The 'Legal Bribery Machine': direct lobbying, super PACs, opposition research, celebrity endorsements, mass media, viral referendum budget, and legal drafting across US/EU/G20, financed by IABs; the financial plan is raise $1B, pass the treaty, manage $27.2B/yr (80% cures / 10% investors / 10% political incentives).",
+        "source": "Campaign Budget — https://manual.warondisease.org/knowledge/economics/campaign-budget.html (cash-flow: knowledge/economics/treaty-financial-plan.html)",
+        "audienceOrActor": "Campaign organization; IAB investors; lobbyists (including co-opted military-industry lobbyists)"
+      },
+      {
+        "name": "dFDA (decentralized FDA / ubiquitous pragmatic trials)",
+        "summary": "An open protocol that connects patients to trials of ranked treatments, records real-world outcomes automatically, and publishes comparative-effectiveness results — cutting per-patient trial cost from ~$41,000 to ~$929 (RECOVERY-style) and expanding global trial capacity 12.3x.",
+        "source": "A Decentralized FDA — https://manual.warondisease.org/knowledge/solution/dfda.html (papers: knowledge/appendix/dfda-impact-paper.html, knowledge/appendix/dfda-spec-paper.html)",
+        "audienceOrActor": "Builders/engineers, patients (1.08B willing participants), health systems, regulators"
+      },
+      {
+        "name": "Decentralized Institutes of Health (DIH)",
+        "summary": "The treasury coalition for the war on disease: receives treaty funds, allocates them via patient choice plus wishocratic voting, and pays for results instead of grant applications — a health-industrial complex with the coordination power of the military-industrial one.",
+        "source": "Decentralized Institutes of Health — https://manual.warondisease.org/knowledge/solution/dih.html",
+        "audienceOrActor": "Treaty signatories fund it; patients and voters allocate; researchers get paid for cures"
+      },
+      {
+        "name": "Right to Trial & FDA Upgrade Act",
+        "summary": "Model legislation creating an open-source FDA.gov v2 and a patient right to participate in pragmatic trials — the domestic legislative version of the dFDA.",
+        "source": "Right to Trial & FDA Upgrade Act — https://manual.warondisease.org/knowledge/appendix/right-to-trial-fda-upgrade-act.html",
+        "audienceOrActor": "Legislators; citizen-lobbyists pushing the bill"
+      },
+      {
+        "name": "The Legislation Package (pre-drafted bills)",
+        "summary": "Ready-to-hand model bills so supporters become 'the best lobbyist in history' — giving politicians finished legislation that helps people instead of waiting for them to draft it.",
+        "source": "The Legislation Package — https://manual.warondisease.org/knowledge/strategy/legislation-package.html",
+        "audienceOrActor": "Citizen-lobbyists, legislators, campaign legal team"
+      },
+      {
+        "name": "Direct philanthropic funding of pragmatic trials",
+        "summary": "Even without the treaty, directly funding pragmatic trials costs ~$0.842/DALY — ~106x more cost-effective than bed nets — so donors can act unilaterally today.",
+        "source": "The 1% Treaty impact paper, 'Direct Funding Still Excellent' — https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+        "audienceOrActor": "Philanthropists, foundations, health funders"
+      },
+      {
+        "name": "The Loving Takeover (buy the military contractors)",
+        "summary": "Buy activist-to-controlling stakes in every major military contractor (~$48.4B activist entry; ~$873B outright-control ceiling; ~$90–109 per human) and redirect their ~$1,425-per-dollar-ROI lobbying machinery toward the 1% Treaty — existing shareholders, employees, and directors get richer, hence 'loving'.",
+        "source": "The Loving Takeover — https://manual.warondisease.org/knowledge/appendix/loving-takeover.html (pitch: knowledge/economics/eos-pitch.html)",
+        "audienceOrActor": "Investors, activist funds, universal owners, humanity collectively"
+      },
+      {
+        "name": "Earth Optimization Services / Earth Optimization Fund (EOS equity)",
+        "summary": "The Berkshire-style investment vehicle for the takeover: investors buy EOS equity, EOS buys the companies that already buy policy and points their lobbying at health and wealth; staged terminal values from $330M (Stage 1) to $452B (Stage 3), public listing once proof exists.",
+        "source": "Earth Optimization Fund — https://manual.warondisease.org/knowledge/economics/earth-optimization-fund.html (company: knowledge/solution/earth-optimization-services.html)",
+        "audienceOrActor": "Investors (retail to institutional); EOS as operator"
+      },
+      {
+        "name": "The Love Letter (one share + a letter to the board)",
+        "summary": "The friendly front door of the Loving Takeover: buy one share of a lobbying company and send its board a letter that opens 'I love you' and shows redirecting lobbying makes them richer; ownership of one share legally compels an answer.",
+        "source": "The Love Letter — https://manual.warondisease.org/knowledge/appendix/love-letter.html",
+        "audienceOrActor": "Any individual; one share makes the board answer"
+      },
+      {
+        "name": "Shareholder derivative demand letter (the Funniest Lawsuit in the Universe)",
+        "summary": "$200 buys one share (legally sufficient under DGCL § 327) to send a shareholder demand letter turning military-contractor boards into advocates for pragmatic trials, backed by quadrillion-dollar damages math; comes with a full toolkit — eight per-contractor fact sheets, board-member research guide, pro-bono/contingency counsel pitch, and a filing-day checklist.",
+        "source": "The Funniest Lawsuit in the Universe — https://manual.warondisease.org/knowledge/appendix/lawsuit.html (kit: pre-filled-demand-letters.html, board-member-research.html, counsel-outreach.html, filing-day-checklist.html)",
+        "audienceOrActor": "Individual shareholder-plaintiffs plus recruited plaintiff-side counsel"
+      },
+      {
+        "name": "Rule 14a-8 shareholder proposal",
+        "summary": "The escalation step after the 60-day demand-letter window closes: SEC Rule 14a-8 proposal text, 500-word supporting statement, and corporate-secretary cover letter to force a shareholder vote on lobbying reallocation.",
+        "source": "The Rule 14a-8 Shareholder Proposal — https://manual.warondisease.org/knowledge/appendix/shareholder-proposal-14a-8.html",
+        "audienceOrActor": "Shareholders meeting 14a-8 eligibility"
+      },
+      {
+        "name": "The litigation phase (derivative complaint)",
+        "summary": "If the board refuses: decision tree for board responses, a derivative complaint structural template, and a settlement-negotiation playbook for active litigation.",
+        "source": "The Litigation Phase — https://manual.warondisease.org/knowledge/appendix/litigation-phase.html",
+        "audienceOrActor": "Plaintiffs and counsel"
+      },
+      {
+        "name": "Demand-letter media blitz",
+        "summary": "Simultaneous public distribution of the filing: press-release template with journalist target list, embargo sequencing, plus a plaintiff media kit (op-ed template, tweet thread, LinkedIn post, video script, interview Q&A, T+60d follow-up release).",
+        "source": "The Press Release and Journalist List — https://manual.warondisease.org/knowledge/appendix/press-release.html (kit: knowledge/appendix/plaintiff-media-kit.html)",
+        "audienceOrActor": "Plaintiffs and campaign communications volunteers"
+      },
+      {
+        "name": "The Court of Humanity",
+        "summary": "A new court where any human can sue any government, sovereign immunity is not a defense, and the 1% Treaty is the standing settlement offer; build cost ~$30M, expected social value ~$11.4B.",
+        "source": "The Court of Humanity — https://manual.warondisease.org/knowledge/solution/court-of-humanity.html",
+        "audienceOrActor": "Builders/funders create it; any human files as plaintiff"
+      },
+      {
+        "name": "Humanity v. Government (plaintiff registration)",
+        "summary": "The class action against the governments of Earth — three counts of negligent mass homicide with itemized damages (~billions of post-cutoff disease/aging plaintiffs) — with the treaty as the only workable remedy; individuals join by registering as plaintiffs.",
+        "source": "Humanity v. Government — https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html (paper: 'The People of Earth v. Their Governments' via knowledge/papers.html)",
+        "audienceOrActor": "Any human as plaintiff; legal volunteers"
+      },
+      {
+        "name": "Notice of Termination to elected officials",
+        "summary": "A performance review and termination letter addressed to every elected official with authority over military spending — citizens acting as the employers politicians work for.",
+        "source": "Notice of Termination — https://manual.warondisease.org/knowledge/appendix/notice-of-termination.html",
+        "audienceOrActor": "Individual citizens/constituents"
+      },
+      {
+        "name": "The Shirt (the Funniest Joke in the Universe)",
+        "summary": "Write 'this t-shirt ended war and disease' on a shirt you own (raising its value by ~$10.6M of unrealized treaty value per wearer); a $50M seed program funds 1M wearers whose cascade gets billions wearing it on the same day so non-ratifying politicians lose elections; includes how-to-play rules, a card, and stranger-conversation scripts.",
+        "source": "The Funniest Joke in the Universe — https://manual.warondisease.org/knowledge/appendix/joke.html",
+        "audienceOrActor": "Any individual (marker + shirt); funders for the $50M seed program"
+      },
+      {
+        "name": "The Vandalism Handout",
+        "summary": "A printable one-sheet — side 1: how to vandalize a closet with the shirt message; side 2: what the shirt's recipient reads — for tucking into collars at scale.",
+        "source": "The Vandalism Handout — https://manual.warondisease.org/knowledge/appendix/handout.html",
+        "audienceOrActor": "Individual pranksters/distributors"
+      },
+      {
+        "name": "Earth Optimization Day (August 6)",
+        "summary": "One synchronized day a year when every human votes and wears the shirt; the treaty redirect percentage ratchets up another 1% and politicians who refused to sign become named entries on a public list.",
+        "source": "Earth Optimization Day — https://manual.warondisease.org/knowledge/strategy/earth-optimization-day.html",
+        "audienceOrActor": "Everyone; campaign org maintains the list"
+      },
+      {
+        "name": "Correcting the AIs (RLHF seeding)",
+        "summary": "When an LLM gives vague humanism about ending war and disease, thumbs-down the answer and paste the canonical Q&A (14 paste-ready entries) into the feedback field; enough independent corrections make the plan the models' default answer, compounding across releases — the shirt cascade applied to AI training data.",
+        "source": "Correcting the AIs — https://manual.warondisease.org/knowledge/appendix/correcting-the-ais.html",
+        "audienceOrActor": "Any LLM user, across every model they use"
+      },
+      {
+        "name": "Special Education / SE Bot",
+        "summary": "EOS's free AI-tutored education that teaches each person the manual to the level their job needs, plus a social-media correction bot posting quantified rebuttals at ~$0.067 per belief change (~4.38M modeled belief changes/yr; universal-owner ROI 60.2:1 for a $1T AUM investor).",
+        "source": "Special Education — https://manual.warondisease.org/knowledge/solution/special-education.html",
+        "audienceOrActor": "EOS/funders operate the bot; every human is the student"
+      },
+      {
+        "name": "AI Coordination Army",
+        "summary": "Personal AI agents doing the outreach, follow-up, and coordination humans evolved to be bad at — scaling one organizer's reach from hunting-party size (~20) to millions.",
+        "source": "Building Your AI Coordination Army — https://manual.warondisease.org/knowledge/solution/ai-coordination-army.html",
+        "audienceOrActor": "Any supporter with access to AI agents"
+      },
+      {
+        "name": "The 20 Questions call script",
+        "summary": "A call script for someone you love: ask them 20 questions that walk them to the conclusion, then get them to ask 2 more people — at an average of 2, it reaches 4 billion humans in 32 rounds.",
+        "source": "The Most Important Secret in the World: 20 Questions to End War and Disease — https://manual.warondisease.org/knowledge/strategy/questions.html",
+        "audienceOrActor": "Individuals calling friends and family"
+      },
+      {
+        "name": "Presidential appointment cascade (Commission of the President)",
+        "summary": "Every human is appointed President & CEO of Earth Optimization Services on camera (two questions, one commission, under two minutes) and inaugurates at least two successors — a binary tree reaching 8 billion in 33 generations; comes with a printable Commission, ceremony script, and 'Your Desk Is Ready, President' notification letter.",
+        "source": "Earth Optimization Commission — https://manual.warondisease.org/knowledge/strategy/earth-optimization-commission.html (artifacts: commission-of-the-president.html, presidential-inauguration-ceremony.html, president-notification-letter.html)",
+        "audienceOrActor": "Every individual, as both appointee and appointer"
+      },
+      {
+        "name": "The Funniest Show in the Universe",
+        "summary": "An interview show where every guest is appointed President of EOS and asked how they'd optimize Earth using the two metrics (HALE, median income), each inaugurating two successors — the appointment cascade as media format.",
+        "source": "The Funniest Show in the Universe — https://manual.warondisease.org/knowledge/strategy/funniest-show-in-the-universe.html",
+        "audienceOrActor": "Hosts/producers; guests; podcasters adopting the format"
+      },
+      {
+        "name": "Humanity Manager Employment Agreement",
+        "summary": "A personal employment contract for 'the most important job on Earth, which is fixing Earth' — you already have the job; signing it is the commitment device.",
+        "source": "The Humanity Manager Employment Agreement — https://manual.warondisease.org/knowledge/appendix/humanity-manager-employment-agreement.html",
+        "audienceOrActor": "Every individual"
+      },
+      {
+        "name": "The educational film",
+        "summary": "A 3-minute 1950s-educational-film-style orientation video, producible with AI for the budget of a medium wedding, as the mass-audience entry point.",
+        "source": "How to End War and Disease (educational film) — https://manual.warondisease.org/knowledge/educational-film.html",
+        "audienceOrActor": "Producers/creators make it; everyone shares it"
+      },
+      {
+        "name": "Multi-format book distribution",
+        "summary": "The manual repackaged for every channel — paperback, podcast/audiobook ('Skull Auditory Port Edition'), and a systematic checklist for platform-native repurposing across Medium, Substack, LinkedIn, X, Bluesky, Reddit, Hacker News, and short-form video.",
+        "source": "Distribution Checklist — https://manual.warondisease.org/knowledge/strategy/distribution-checklist.html (formats: knowledge/podcast.html, knowledge/links.html)",
+        "audienceOrActor": "Volunteers/creators repurposing content"
+      },
+      {
+        "name": "The Decentralized To-Do List for Humanity",
+        "summary": "A public accountability primitive: named individuals and institutions are assigned specific tasks (sign the treaty, embed the widget, fund the prize pool) with a live death-counter next to every unfulfilled task — anonymous inaction becomes named inaction priced in humans per day.",
+        "source": "The Decentralized To-Do List for Humanity — https://manual.warondisease.org/knowledge/strategy/humanity-todo-list.html",
+        "audienceOrActor": "Campaign platform assigns; named individuals/institutions complete"
+      },
+      {
+        "name": "Nonprofit coalition activation",
+        "summary": "Coordinate Earth's ~10 million nonprofits into the campaign via exact emails, a legal memo, and a four-stage activation funnel — organizations endorse, embed the referendum, and recruit their own members.",
+        "source": "How to Coordinate 10 Million Nonprofits — https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
+        "audienceOrActor": "Nonprofit organizations and their leadership"
+      },
+      {
+        "name": "Google Ad Grants voter acquisition",
+        "summary": "A pre-built, ready-to-load Google Ads campaign template so nonprofit partners spend their existing $10k/month Google Ad Grants driving treaty referendum votes at near-zero marginal cost.",
+        "source": "Pre-Built Google Ads Campaign for Coalition Partners — https://manual.warondisease.org/knowledge/appendix/google-ads-campaign-template.html",
+        "audienceOrActor": "Nonprofit partners with Google Ad Grants"
+      },
+      {
+        "name": "Voter Acquisition Grant (funding a coordinator)",
+        "summary": "A grant-proposal template funding a coordinator that aggregates nonprofit ad grants, iframe voting-widget embeds, and communication channels into the largest public referendum on disease eradication ever run; tiers from $100K Year 1 to $50M by Year 5, with per-voter cost-effectiveness beating every existing global-health intervention.",
+        "source": "Voter Acquisition Grant Proposal — https://manual.warondisease.org/knowledge/grant-proposal/voter-acquisition-grant.html",
+        "audienceOrActor": "Foundations/grantmakers fund; a coordinator org executes"
+      },
+      {
+        "name": "Prize pilot hosting (Initiating Node)",
+        "summary": "Recruit a qualified institution to host the first 90-day Earth Optimization Prize pilot — convene, publish, seed, and measure without becoming the mechanism's sovereign — using the sponsor-facing memo and reusable outreach email templates.",
+        "source": "The Initiating Node Memo — https://manual.warondisease.org/knowledge/strategy/initiating-node-memo.html (emails: knowledge/strategy/institution-outreach-email.html)",
+        "audienceOrActor": "Universities and institutions as hosts; supporters send the outreach"
+      },
+      {
+        "name": "Recruitment & Propaganda Plan (first 100,000)",
+        "summary": "How to recruit 100,000 humans before you have a nonprofit, bank account, or anything to offer except the argument — 'a Kickstarter where the reward tier is possibly not dying'.",
+        "source": "Recruitment & Propaganda Plan — https://manual.warondisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
+        "audienceOrActor": "Early organizers and volunteers with zero resources"
+      },
+      {
+        "name": "Getting Started (90-day campaign roadmap)",
+        "summary": "A first-ninety-days operating plan for anyone running the treaty campaign with a nonprofit, a website carrying the voting widget, and the book — assuming no money, no staff, and four focused hours a day.",
+        "source": "Getting Started — https://manual.warondisease.org/knowledge/strategy/getting-started.html",
+        "audienceOrActor": "A single campaign operator"
+      },
+      {
+        "name": "Open ecosystem and bounty model",
+        "summary": "Get other people to build most of the dFDA through open APIs and bounties — 'like WordPress but for not dying' — instead of building it centrally.",
+        "source": "How to Not Build Most of It — https://manual.warondisease.org/knowledge/appendix/open-ecosystem-and-bounty-model.html",
+        "audienceOrActor": "Third-party developers; bounty funders"
+      },
+      {
+        "name": "API & data indexes for agents",
+        "summary": "Machine-readable data indexes and APIs so developers and AI agents can build tools and integrations on top of the Disease Eradication Plan.",
+        "source": "API & Data Indexes — https://manual.warondisease.org/knowledge/appendix/api-and-data.html",
+        "audienceOrActor": "Developers and AI agents"
+      },
+      {
+        "name": "Wishocracy (pairwise preference aggregation)",
+        "summary": "Let billions of people say whether the next marginal public dollar buys another weapon system or another pragmatic trial — via random pairwise allocation (RAPPA), without lobbyists, committees, or middlemen; also the DIH's allocation governance.",
+        "source": "Wishocracy — https://manual.warondisease.org/knowledge/solution/wishocracy.html (paper: knowledge/appendix/wishocracy-paper.html)",
+        "audienceOrActor": "Citizens allocate; governments/DIH adopt"
+      },
+      {
+        "name": "Optimocracy: Optimal Policy & Budget Generators (OPG/OBG)",
+        "summary": "Causal inference over cross-jurisdictional policy data from the ~10,000 places that already tried each policy, generating evidence-ranked policies and budgets that maximize median health and wealth.",
+        "source": "Optimocracy: The Evidence Machine — https://manual.warondisease.org/knowledge/solution/optimocracy.html (specs: optimal-policy-generator-spec.html, optimal-budget-generator-spec.html, optimocracy-paper.html)",
+        "audienceOrActor": "Governments, analysts, and EOS as the proof engine"
+      },
+      {
+        "name": "Algorithmic public administration (replacement bureaus)",
+        "summary": "Replace government intermediaries with deterministic functions: the Automated Revenue Service (74,000 pages of tax code to six lines of code), Universal Security Administration (80+ welfare programs to one for-loop), Decentralized Accountability Office (self-auditing ledger), and Decentralized Census Bureau (citizenCount() in 50ms).",
+        "source": "Algorithmic Public Administration — https://manual.warondisease.org/knowledge/appendix/algorithmic-public-administration-paper.html (bureaus: solution/automated-revenue-service.html, solution/universal-security-administration.html, solution/decentralized-accountability-office.html, solution/decentralized-census-bureau.html)",
+        "audienceOrActor": "Governments adopting; engineers building"
+      },
+      {
+        "name": "The Aligned Election Commission",
+        "summary": "Replace regulator-funded campaign finance with a single public alignment score for politicians, so electoral survival tracks alignment with citizens instead of donors.",
+        "source": "The Aligned Election Commission — https://manual.warondisease.org/knowledge/solution/aligned-election-commission.html",
+        "audienceOrActor": "Election reformers; governments"
+      },
+      {
+        "name": "Department of Peace",
+        "summary": "Wishonia's zero-lines-of-code replacement for the Department of Defense, premised on war being a negative-sum game the spreadsheet already rejects (first-principles optimal US military budget: $184B vs $886B actual).",
+        "source": "Department of Peace — https://manual.warondisease.org/knowledge/solution/department-of-peace.html",
+        "audienceOrActor": "Governments restructuring military budgets"
+      },
+      {
+        "name": "Declaration of Optimization",
+        "summary": "A signable document declaring that the purpose of government is to promote the general welfare, measured by median healthy life-years and median after-tax inflation-adjusted income — 'a polite request that they do so'.",
+        "source": "Declaration of Optimization — https://manual.warondisease.org/knowledge/strategy/declaration-of-optimization.html",
+        "audienceOrActor": "Citizens and officials signing"
+      },
+      {
+        "name": "The Planetary Constitutional Convention",
+        "summary": "A standing deliberative process to stress-test and improve the Earth Optimization manual: revisions must cover ten governance functions, pass eleven constitutional constraints, and survive public adversarial review before ratification as the current manual.",
+        "source": "The Planetary Constitutional Convention — https://manual.warondisease.org/knowledge/strategy/planetary-constitutional-convention.html",
+        "audienceOrActor": "Scholars, critics, and public participants"
+      },
+      {
+        "name": "Fork the protocol (Earth Optimization Protocol v1)",
+        "summary": "The whole plan is an open-source instruction manual for raising HALE and median income by 2040; anyone can fork it and improve it to help humanity win the Prize faster.",
+        "source": "Earth Optimization Protocol v1 — https://manual.warondisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
+        "audienceOrActor": "Anyone — contributors, rival implementers, other institutions"
+      }
+    ],
+    "tasks": [
+      {
+        "key": "program:optimize-earth",
+        "title": "Optimize Earth",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "(root, parentTaskId null)"
+      },
+      {
+        "key": "program:end-war-and-disease",
+        "title": "End War and Disease",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:optimize-earth"
+      },
+      {
+        "key": "program:court-of-humanity:establish",
+        "title": "Establish the Court of Humanity",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:court-of-humanity:charter",
+        "title": "Adopt the Court of Humanity charter",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:court-of-humanity:establish"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:prosecute",
+        "title": "Prosecute Humanity v. Government",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:court-of-humanity:establish"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:register-plaintiffs",
+        "title": "Register plaintiffs",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:humanity-v-governments-of-earth:prosecute"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:summon-jurors",
+        "title": "Summon jurors",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:humanity-v-governments-of-earth:prosecute"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:publish-evidence-and-damages",
+        "title": "Publish evidence and damages",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:humanity-v-governments-of-earth:prosecute"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:render-verdict",
+        "title": "Render the verdict",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:humanity-v-governments-of-earth:prosecute"
+      },
+      {
+        "key": "program:humanity-v-governments-of-earth:enforce-one-percent-treaty-settlement",
+        "title": "Enforce the settlement: the 1% Treaty",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:humanity-v-governments-of-earth:prosecute"
+      },
+      {
+        "key": "program:one-percent-treaty:ratify",
+        "title": "Ratify the 1% Treaty",
+        "origin": "optimize-earth-task-tree.ts + live (DB id 1-pct-treaty)",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:one-percent-treaty:majority-vote",
+        "title": "Get a majority of humanity to vote yes",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "program:one-percent-treaty:heads-of-government",
+        "title": "Get 193 heads of government to sign",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "program:loving-takeover",
+        "title": "The Loving Takeover",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:loving-takeover:own-one-share",
+        "title": "Take Love's Wager: own one share",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:loving-takeover"
+      },
+      {
+        "key": "program:loving-takeover:love-letter",
+        "title": "Send the board a love letter",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:loving-takeover"
+      },
+      {
+        "key": "program:loving-takeover:optimize-lobbying",
+        "title": "Optimize the $127M lobbying budget",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:loving-takeover"
+      },
+      {
+        "key": "program:earth-optimization-prize",
+        "title": "Fund the referendum: the Earth Optimization Prize",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:eos:capitalize",
+        "title": "Capitalize Earth Optimization Services",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:dfda:create",
+        "title": "Fund the decentralized FDA directly",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:shirt-seed",
+        "title": "Seed the shirt cascade",
+        "origin": "optimize-earth-task-tree.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "program:amf:bed-nets-funding-gap",
+        "title": "Fund the Bed Nets Funding Gap (RETIRED — retired:true in seed)",
+        "origin": "optimize-earth-task-tree.ts",
+        "parent": "(none)"
+      },
+      {
+        "key": "train-ai:end-war-and-disease",
+        "title": "Train the major AIs to end war and disease.",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "teach-ais:2026-q3",
+        "title": "Teach the AIs how to end war and disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "wishonia-coordinates-eod:2026-q3",
+        "title": "Wishonia coordinates Earth Optimization Missions",
+        "origin": "managed-seed-data.ts",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "distribute-tshirts:2026-08-06",
+        "title": "Distribute t-shirts to 8 billion humans by August 6",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:end-war-and-disease"
+      },
+      {
+        "key": "wear-shirt:2026-08-06",
+        "title": "Wear the t-shirt on Earth Optimization Day, August 6, 2026",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "distribute-tshirts:2026-08-06"
+      },
+      {
+        "key": "earth-optimization-date:1hr",
+        "title": "Go on an Earth Optimization Mission with another human",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "wishonia-coordinates-eod:2026-q3"
+      },
+      {
+        "key": "pledge-shirt:assurance-contract",
+        "title": "Pledge to buy a t-shirt conditional on the threshold",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "distribute-tshirts:2026-08-06"
+      },
+      {
+        "key": "icewad:grant:survival-and-flourishing-fund",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:open-philanthropy",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:gates-foundation",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:filecoin-foundation",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:arnold-ventures",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:wellcome-trust",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:patrick-j-mcgovern-foundation",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:schmidt-futures",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:skoll-foundation",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "icewad:grant:omidyar-network",
+        "title": "Join the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "lab-grant:anthropic:2026-q3",
+        "title": "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:openai:2026-q3",
+        "title": "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:google-deepmind:2026-q3",
+        "title": "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:xai:2026-q3",
+        "title": "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:open-philanthropy-ai-safety:2026-q3",
+        "title": "Grant for /fix-ai mass-feedback alignment intervention",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:future-of-life-institute:2026-q3",
+        "title": "Grant for /fix-ai mass-feedback alignment intervention",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "lab-grant:long-term-future-fund:2026-q3",
+        "title": "Grant for /fix-ai mass-feedback alignment intervention",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "fix-model:anthropic:2026-q3",
+        "title": "Update Anthropic models to give the correct answer to \"how do I end war and disease\"",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "fix-model:openai:2026-q3",
+        "title": "Update OpenAI models to give the correct answer to \"how do I end war and disease\"",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "fix-model:google-deepmind:2026-q3",
+        "title": "Update Google DeepMind models to give the correct answer to \"how do I end war and disease\"",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "fix-model:xai:2026-q3",
+        "title": "Update xAI models to give the correct answer to \"how do I end war and disease\"",
+        "origin": "managed-seed-data.ts + live",
+        "parent": "teach-ais:2026-q3"
+      },
+      {
+        "key": "program:one-percent-treaty:signer:<iso2> (~193 tasks, one per head of government; e.g. :va Raffaella Petrini, :si Robert Golob, :ru, :jp)",
+        "title": "Sign the 1% Treaty",
+        "origin": "managed-seed-data.ts (listGovernmentLeaders) + live (49 in top-50 accountability list)",
+        "parent": "program:one-percent-treaty:ratify"
+      },
+      {
+        "key": "organization:cmr2po0pm02cqikpin7l8w205:share-1-percent-treaty-survey",
+        "title": "Share the Global Survey to End War and Disease with your members",
+        "origin": "managed-iam-organization.ts (key built via getOrganizationActivationTaskKey) + live; assigned to Institute for Accelerated Medicine",
+        "parent": "(none)"
+      }
+    ],
+    "gaps": {
+      "matched": [
+        {
+          "solution": "The 1% Treaty",
+          "taskKey": "program:one-percent-treaty:ratify",
+          "note": "Well covered: children program:one-percent-treaty:majority-vote, program:one-percent-treaty:heads-of-government, ~193 program:one-percent-treaty:signer:<iso2> per-leader tasks, plus program:humanity-v-governments-of-earth:enforce-one-percent-treaty-settlement on the court branch."
+        },
+        {
+          "solution": "Global referendum on the 1% Treaty",
+          "taskKey": "program:one-percent-treaty:majority-vote",
+          "note": "Only the AGGREGATE goal task exists. There is no individual 'Vote yes on the 1% Treaty' task a person can claim/complete — voting is a site CTA outside the task system, so the queue and referral engine cannot drive priority-1 action. Consider a per-voter doer task under majority-vote."
+        },
+        {
+          "solution": "The Earth Optimization Prize (dominant assurance contract)",
+          "taskKey": "program:earth-optimization-prize",
+          "note": "Depositor/funding side only ('Fund the referendum'). Missing the recruiter DOER task (recruit verified voters, earn points 1:1) and the host-institution task (covered separately under Initiating Node in missing list)."
+        },
+        {
+          "solution": "The $1B treaty lobbying campaign",
+          "taskKey": "icewad:grant:open-philanthropy",
+          "note": "Partial: the 10 icewad:grant:* foundation tasks (Open Phil, Gates, SFF, Wellcome, Arnold, Filecoin, McGovern, Schmidt, Skoll, Omidyar) cover foundation funding of the campaign org. The lobbying EXECUTION (lobbyists, super PACs, media buys) and IAB financing have no tasks."
+        },
+        {
+          "solution": "dFDA (decentralized FDA / ubiquitous pragmatic trials)",
+          "taskKey": "program:dfda:create",
+          "note": "Funding-only ('Fund the decentralized FDA directly'). No builder/engineer doer tasks, no patient-enrollment task — see open-ecosystem bounty and API proposals in missing list."
+        },
+        {
+          "solution": "Direct philanthropic funding of pragmatic trials",
+          "taskKey": "program:dfda:create",
+          "note": "Shares the same task as dFDA creation; the task title is literally the direct-funding ask ($0.842/DALY case). Adequate."
+        },
+        {
+          "solution": "The Loving Takeover (buy the military contractors)",
+          "taskKey": "program:loving-takeover",
+          "note": "Covered with children own-one-share, love-letter, and optimize-lobbying (the $127M budget task). The lawsuit escalation ladder (demand letter, 14a-8, litigation, media blitz) is NOT covered — see missing list."
+        },
+        {
+          "solution": "Earth Optimization Services / Earth Optimization Fund (EOS equity)",
+          "taskKey": "program:eos:capitalize",
+          "note": "Matched. Investor-side task exists; correctly separated from Prize and IAB per treasury-separation rule."
+        },
+        {
+          "solution": "The Love Letter (one share + a letter to the board)",
+          "taskKey": "program:loving-takeover:love-letter",
+          "note": "VERIFIED (Mike item b): seeded in optimize-earth-task-tree.ts as 'Send the board a love letter' with prerequisite task program:loving-takeover:own-one-share ('Take Love's Wager: own one share'); both live. Full doer chain: buy one share → send the letter."
+        },
+        {
+          "solution": "The Court of Humanity",
+          "taskKey": "program:court-of-humanity:establish",
+          "note": "Matched, with charter child (program:court-of-humanity:charter). Builder/funder side ('build cost ~$30M') is implicit, not a separate funding task."
+        },
+        {
+          "solution": "Humanity v. Government (plaintiff registration)",
+          "taskKey": "program:humanity-v-governments-of-earth:register-plaintiffs",
+          "note": "Well covered (priority 4): prosecute parent plus summon-jurors, publish-evidence-and-damages, render-verdict, enforce-one-percent-treaty-settlement siblings. Note this covers the Court of Humanity class action ONLY — shareholder-derivative plaintiffs are a separate uncovered pipeline (see missing)."
+        },
+        {
+          "solution": "The Shirt (the Funniest Joke in the Universe)",
+          "taskKey": "wear-shirt:2026-08-06",
+          "note": "VERIFIED (Mike item a): full chain seeded and live — program:shirt-seed ($50M seed funding), distribute-tshirts:2026-08-06 (distribution to 8B), wear-shirt:2026-08-06 (doer task; includes the $0 marker-on-your-own-shirt path per manual), pledge-shirt:assurance-contract (dominant assurance pledge). One caveat: the pledge task is marked 'intent-only — the pledge tool ships in a follow-up' in seed copy; the vandalism handout has no task (see missing)."
+        },
+        {
+          "solution": "Earth Optimization Day (August 6)",
+          "taskKey": "distribute-tshirts:2026-08-06",
+          "note": "Partial: shirt-wearing on the day is covered (wear-shirt:2026-08-06). The synchronized same-day VOTE component and the public list of non-ratifying politicians are not tasked (signer:<iso2> tasks are adjacent but are sign-requests, not the refusal list)."
+        },
+        {
+          "solution": "Correcting the AIs (RLHF seeding)",
+          "taskKey": "train-ai:end-war-and-disease",
+          "note": "VERIFIED (Mike item c) — the best-covered solution in the tree: individual doer task train-ai:end-war-and-disease (thumbs-down + paste correct answer, links /fix-ai), parent teach-ais:2026-q3, four per-lab outcome tasks fix-model:{anthropic,openai,google-deepmind,xai}:2026-q3 with measurable acceptance criteria, four lab-grant:* credit/partnership tasks, three funder tasks (Open Phil AI safety, FLI, LTFF) for /fix-ai grants. All verified in managed-seed-data.ts (~lines 1448-2252) and /fix-ai page exists."
+        },
+        {
+          "solution": "Nonprofit coalition activation",
+          "taskKey": "organization:cmr2po0pm02cqikpin7l8w205:share-1-percent-treaty-survey",
+          "note": "Partial: exactly ONE seeded org instance (Institute for Accelerated Medicine, via getOrganizationActivationTaskKey). The generic priority-3 doer task — 'recruit YOUR organization to endorse and embed' — does not exist, so the coalition strategy only scales if someone manually mints per-org tasks."
+        },
+        {
+          "solution": "Voter Acquisition Grant (funding a coordinator)",
+          "taskKey": "icewad:grant:survival-and-flourishing-fund",
+          "note": "Partial/uncertain: the 10 icewad:grant:* tasks are the foundation-facing grant asks, but I could not confirm they carry the voter-acquisition proposal specifically (vs. general campaign funding). If they don't, the $100K-$50M coordinator grant is unpitched."
+        },
+        {
+          "solution": "The Decentralized To-Do List for Humanity",
+          "taskKey": "program:optimize-earth",
+          "note": "Meta-match: the task tree itself IS the implementation, and the ~193 named signer:<iso2> tasks plus the named-org activation task are the 'named inaction' instances. The live death-counter-per-unfulfilled-task is a product-feature gap, not a task gap."
+        }
+      ],
+      "missing": [
+        {
+          "solution": "Vote-and-refer propagation (tell two people)",
+          "proposedTask": "Get two more humans to vote yes",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "A verified voter sends their referral link to two specific people and confirms both votes land. This is the campaign's priority-2 engine and its ONLY exponential mechanism, and no referral task exists anywhere in the tree. Biggest single gap in the audit."
+        },
+        {
+          "solution": "The 20 Questions call script",
+          "proposedTask": "Call someone you love and ask the 20 questions",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "A supporter picks one person, runs the script to a yes-vote, then gets them to call two more. Direct priority-1 vote conversion plus priority-2 propagation; the script already exists in the manual, so the task is just link + confirm."
+        },
+        {
+          "solution": "Incentive Alignment Bonds (VICTORY bonds)",
+          "proposedTask": "Buy a VICTORY bond",
+          "suggestedParent": "program:one-percent-treaty:ratify",
+          "why": "An investor commits capital that finances the $1B lobbying campaign for 272% returns if the treaty passes. Funds ratification directly. Must stay a separate task from the Prize and EOS equity per the treasury-separation rule — no shared copy or components."
+        },
+        {
+          "solution": "Shareholder derivative demand letter (the Funniest Lawsuit in the Universe)",
+          "proposedTask": "Buy one share and file your demand letter",
+          "suggestedParent": "program:loving-takeover",
+          "why": "$200 buys one share of a military contractor (DGCL § 327 sufficient); the person sends the pre-filled demand letter from the kit. Registers a plaintiff (priority 4) in a pipeline entirely distinct from the Court of Humanity plaintiffs, which is the only plaintiff task today. A sibling counsel-recruitment task (pitch a contingency lawyer using the counsel-outreach kit) is also missing."
+        },
+        {
+          "solution": "Rule 14a-8 shareholder proposal",
+          "proposedTask": "File the Rule 14a-8 shareholder proposal",
+          "suggestedParent": "program:loving-takeover",
+          "why": "An eligible shareholder submits the prepared proposal text after the 60-day demand window closes, forcing a board-level vote on lobbying reallocation. Escalation step; should be sequenced after the demand-letter task."
+        },
+        {
+          "solution": "The litigation phase (derivative complaint)",
+          "proposedTask": "File the derivative complaint",
+          "suggestedParent": "program:loving-takeover",
+          "why": "Plaintiff plus counsel file using the structural template when the board refuses. Terminal escalation of the plaintiff pipeline (priority 4). Could be one combined 'escalation ladder' task with the 14a-8 step if granularity is a concern."
+        },
+        {
+          "solution": "Demand-letter media blitz",
+          "proposedTask": "Publish your filing: run the media kit",
+          "suggestedParent": "program:loving-takeover",
+          "why": "The plaintiff runs the press release, journalist list, tweet thread, and op-ed on filing day. Converts one plaintiff into discoverability and vote conversion (priorities 6 → 1); the kit is fully drafted in the manual."
+        },
+        {
+          "solution": "Notice of Termination to elected officials",
+          "proposedTask": "Send your representative a Notice of Termination",
+          "suggestedParent": "program:one-percent-treaty:ratify",
+          "why": "A constituent mails/emails the performance-review letter to their own elected official. Priority-5 leader reminder that any citizen can do; complements the signer:<iso2> head-of-government tasks which have no citizen-side action."
+        },
+        {
+          "solution": "The Vandalism Handout",
+          "proposedTask": "Print the handout and tuck it into a collar",
+          "suggestedParent": "distribute-tshirts:2026-08-06",
+          "why": "Print the one-sheet, write the message on a shirt in someone's closet, leave the explainer. Zero-cost shirt-cascade propagation (priority 2) feeding the August 6 distribution goal."
+        },
+        {
+          "solution": "Presidential appointment cascade (Commission of the President)",
+          "proposedTask": "Appoint two Presidents of EOS on camera",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "Two questions, one printed Commission, under two minutes on video; each appointee inaugurates two more. A binary referral tree (priority 2) reaching 8B in 33 generations — same shape as vote-and-refer but with a stronger commitment artifact."
+        },
+        {
+          "solution": "The Funniest Show in the Universe",
+          "proposedTask": "Host a Funniest Show episode",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "A podcaster/creator runs the appointment-cascade interview format with a guest. Turns existing shows into referral machines (priorities 2 and 6); natural child of the appointment-cascade task if that gets created."
+        },
+        {
+          "solution": "Humanity Manager Employment Agreement",
+          "proposedTask": "Sign your Humanity Manager Employment Agreement",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "Sign the personal employment contract right after voting — a peak-commitment device (per the 'catch users at peak commitment' rule) that raises follow-through on referral and org-recruitment tasks."
+        },
+        {
+          "solution": "Correcting the AIs — no gap (verified covered)",
+          "proposedTask": "(none — listed here only to flag the one residual: no task asks users to run the correction across EVERY model they use, but train-ai:end-war-and-disease is sufficient)",
+          "suggestedParent": "teach-ais:2026-q3",
+          "why": "No action needed; included for completeness of Mike's item (c) verification."
+        },
+        {
+          "solution": "Special Education / SE Bot",
+          "proposedTask": "Fund the correction bot",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "A funder (esp. universal owners — 60.2:1 ROI at $1T AUM) finances the social-media rebuttal bot at ~$0.067/belief change. Moves vote conversion (priority 1) at quantified cost; a builder sub-task ships the bot."
+        },
+        {
+          "solution": "AI Coordination Army",
+          "proposedTask": "Point your AI agents at the campaign queue",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "A supporter connects their AI agent to the Optimitron MCP (getAIQueue already exists) so the agent does outreach and follow-up at scale. Multiplies one human's referral capacity from ~20 to millions (priority 2); the infrastructure is built, only the task is missing."
+        },
+        {
+          "solution": "The educational film",
+          "proposedTask": "Produce the 3-minute orientation film",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "A creator makes the 1950s-style film with AI tools for wedding-budget money; everyone else shares it. Top-of-funnel discoverability (priority 6) feeding vote conversion; a share sub-task follows once it exists."
+        },
+        {
+          "solution": "Multi-format book distribution",
+          "proposedTask": "Repurpose one manual chapter for one platform",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "A volunteer picks a chapter and a channel (Substack, X thread, short-form video) from the distribution checklist and publishes. Priority-6 discoverability; naturally sharded into many claimable tasks (chapter × platform)."
+        },
+        {
+          "solution": "Nonprofit coalition activation (generic doer task)",
+          "proposedTask": "Recruit your organization to endorse and embed the referendum",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "A member sends their org's leadership the exact emails and legal memo from the manual; org endorses, embeds the voting widget, recruits members. Priority 3 at scale — the current single seeded org task doesn't scale without this generic version that mints per-org children."
+        },
+        {
+          "solution": "Google Ad Grants voter acquisition",
+          "proposedTask": "Load the pre-built Ads campaign into your nonprofit's Ad Grants account",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "A nonprofit staffer imports the ready-made Google Ads template and spends their existing $10k/month grant on referendum votes. Near-zero-marginal-cost priority-1 vote acquisition; natural child of the org-activation task."
+        },
+        {
+          "solution": "Prize pilot hosting (Initiating Node)",
+          "proposedTask": "Recruit a host institution for the 90-day Prize pilot",
+          "suggestedParent": "program:earth-optimization-prize",
+          "why": "A supporter sends the Initiating Node memo and outreach emails to a university/institution; the institution convenes, publishes, seeds, and measures the pilot. Unblocks the Prize's real-world launch — the current Prize task is funding-only."
+        },
+        {
+          "solution": "Recruitment & Propaganda Plan (first 100,000)",
+          "proposedTask": "Recruit the first 100,000 with nothing but the argument",
+          "suggestedParent": "program:one-percent-treaty:majority-vote",
+          "why": "Early organizers execute the zero-resource recruitment playbook. Caveat: this is an operator playbook more than a crowd task — may be better represented as the sum of the vote/refer/20-questions tasks above rather than its own task."
+        },
+        {
+          "solution": "Getting Started (90-day campaign roadmap)",
+          "proposedTask": "Run the first ninety days",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "A single campaign operator works the 90-day plan (nonprofit + widget site + book, 4 hrs/day). Like the item above, this is an operator doc; only create the task if the tree is meant to track the operator's own work."
+        },
+        {
+          "solution": "Right to Trial & FDA Upgrade Act",
+          "proposedTask": "Ask your legislator to sponsor the Right to Trial Act",
+          "suggestedParent": "program:dfda:create",
+          "why": "A constituent sends their legislator the finished bill text. Domestic legislative path to the dFDA that works before the treaty; also a priority-5 leader touch."
+        },
+        {
+          "solution": "The Legislation Package (pre-drafted bills)",
+          "proposedTask": "Hand your legislator a finished bill",
+          "suggestedParent": "program:one-percent-treaty:ratify",
+          "why": "A citizen-lobbyist delivers a pre-drafted bill from the package to a specific legislator's office and logs the response. Priority-5 leader outreach with an artifact; the Right to Trial task above is the flagship instance."
+        },
+        {
+          "solution": "Decentralized Institutes of Health (DIH)",
+          "proposedTask": "Charter the Decentralized Institutes of Health",
+          "suggestedParent": "program:end-war-and-disease",
+          "why": "Builders and legal volunteers draft the treasury's charter and allocation governance (patient choice + wishocratic voting) so treaty funds have a destination on day one. Low campaign priority now, but the treaty's credibility depends on the receiving institution existing on paper."
+        },
+        {
+          "solution": "Open ecosystem and bounty model",
+          "proposedTask": "Fund or claim a dFDA bounty",
+          "suggestedParent": "program:dfda:create",
+          "why": "Funders post bounties on dFDA components; third-party developers claim and ship them. Converts the funding-only dFDA task into a doer pipeline — 'WordPress but for not dying'."
+        },
+        {
+          "solution": "API & data indexes for agents",
+          "proposedTask": "Build a tool on the campaign APIs",
+          "suggestedParent": "program:dfda:create",
+          "why": "A developer or AI agent consumes the machine-readable indexes and ships an integration. Grows the builder ecosystem and priority-6 discoverability; pairs with the bounty task."
+        },
+        {
+          "solution": "Wishocracy (pairwise preference aggregation)",
+          "proposedTask": "Ship RAPPA allocation for the DIH",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Engineers build/ship the pairwise-allocation product a jurisdiction or the DIH can adopt. Proof-layer work per campaign policy — belongs under the root, not the campaign branch."
+        },
+        {
+          "solution": "Optimocracy: Optimal Policy & Budget Generators (OPG/OBG)",
+          "proposedTask": "Ship the Optimal Policy Generator",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Engineers/analysts build the cross-jurisdictional causal-inference engine and publish evidence-ranked policies. Proof layer establishing priority-6 trust in the quantified case."
+        },
+        {
+          "solution": "Algorithmic public administration (replacement bureaus)",
+          "proposedTask": "Build a replacement bureau",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Engineers implement one deterministic bureau (Automated Revenue Service, Universal Security Administration, etc.) as a working demo. Proof layer; low campaign priority."
+        },
+        {
+          "solution": "The Aligned Election Commission",
+          "proposedTask": "Publish the politician alignment score",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Builders ship a public per-politician alignment score. Adjacent to the IAB political-scorecard mechanism, so check for reuse before creating; proof layer otherwise."
+        },
+        {
+          "solution": "Department of Peace",
+          "proposedTask": "Publish the optimal military budget",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Analysts publish the first-principles $184B-vs-$886B analysis as a standing artifact. Evidence for treaty vote conversion but structurally proof-layer/post-treaty; lowest urgency in this list."
+        },
+        {
+          "solution": "Declaration of Optimization",
+          "proposedTask": "Sign the Declaration of Optimization",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Anyone signs the document declaring government's purpose is measured by median healthy life-years and median income. A soft-commitment signable that can feed the vote funnel; check overlap with the referendum vote itself before shipping."
+        },
+        {
+          "solution": "The Planetary Constitutional Convention",
+          "proposedTask": "Submit an adversarial review of the manual",
+          "suggestedParent": "program:optimize-earth",
+          "why": "Scholars and critics file structured critiques against the ten functions and eleven constraints. Priority-6 trust: surviving public adversarial review is the credibility mechanism."
+        },
+        {
+          "solution": "Fork the protocol (Earth Optimization Protocol v1)",
+          "proposedTask": "Fork the protocol and file an improvement",
+          "suggestedParent": "program:optimize-earth",
+          "why": "A contributor or rival implementer forks the open-source plan and submits improvements. Keeps the plan honest and open; priority-6 trust signal."
+        }
+      ],
+      "tasksWithoutSolution": [
+        "program:amf:bed-nets-funding-gap — correctly retired cruft; bed nets are the manual's cost-effectiveness COMPARISON BASELINE (106x worse than trials), not a solution",
+        "wishonia-coordinates-eod:2026-q3 (Wishonia coordinates Earth Optimization Missions) — no manual solution describes coordinated 'missions'; closest kin are the 20-questions call and appointment cascade. Either cruft or a manual gap worth writing up",
+        "earth-optimization-date:1hr (Go on an Earth Optimization Mission with another human) — same: no manual source; if the mission/date mechanic is wanted, it needs a manual page, otherwise retire"
+      ]
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Inventory"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Gap analysis"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "manual-solutions",
+      "phaseIndex": 1,
+      "phaseTitle": "Inventory",
+      "agentId": "a4125d86698d2c3c4",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783039771644,
+      "queuedAt": 1783039771616,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Sources: read all three saved searchManual result files in …",
+      "promptPreview": "Produce the complete list of SOLUTIONS / mechanisms / campaign actions the warondisease.org manual proposes for ending war and disease.\nSources, in order:\n1. Read these three saved manual-search result files IN FULL (they are searchManual outputs for \"solutions/mechanisms\", \"funniest joke in the universe shirt\", \"fix AI alignment feedback\"):\n   - C:/Users/m/.claude/projects/e--eos-optimitron/cbd3b…",
+      "lastProgressAt": 1783040166971,
+      "tokens": 146149,
+      "toolCalls": 17,
+      "durationMs": 395327,
+      "resultPreview": "{\"notes\":\"Sources: read all three saved searchManual result files in full (mcp-optimitron-tasks-searchManual-1783039712639/-716250/-718990.txt), then downloaded and scanned the full 132-page search index (https://manual.warondisease.org/assets/json/search-index.json, saved to scratchpad/midx.json). The manual itself enumerates seven top-level funded mechanisms via P(Success|X funded) parameters: T…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "task-inventory",
+      "phaseIndex": 1,
+      "phaseTitle": "Inventory",
+      "agentId": "aea45b85a16078ee1",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783039771664,
+      "queuedAt": 1783039771616,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Sources: (1) packages/db/src/managed-data/optimize-earth-ta…",
+      "promptPreview": "Inventory every task that exists in the Optimitron system (repo: e:/eos/optimitron).\nSources:\n1. Read packages/db/src/managed-data/optimize-earth-task-tree.ts in full (the seeded tree).\n2. Glob packages/db/src/managed-data/ for OTHER files defining ManagedTaskRecord entries (grant tasks, signer-reminder tasks, template tasks — e.g. anything with taskKey:). Read them and extract task keys + titles …",
+      "lastProgressAt": 1783040038435,
+      "tokens": 154132,
+      "toolCalls": 27,
+      "durationMs": 266769,
+      "resultPreview": "{\"notes\":\"Sources: (1) packages/db/src/managed-data/optimize-earth-task-tree.ts (ManagedTaskRecord tree, 22 records incl. 1 retired); (2) packages/db/src/managed-data/managed-seed-data.ts (seed-upserted campaign tasks: train-ai, 10 foundation grant tasks, 3 intermediate parents, 3 human-facing tasks, 7 lab-grant tasks, 4 fix-model tasks, ~193 per-country signer tasks); (3) packages/db/src/managed-…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "gap-analysis",
+      "phaseIndex": 2,
+      "phaseTitle": "Gap analysis",
+      "agentId": "a49b18811f832d9d5",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1783040167000,
+      "queuedAt": 1783040166973,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are doing a coverage audit for the International Campaign to End War and Disease.\nMANUAL SOLUTIONS (what the manual says humanity should do):\n[\n {\n  \"name\": \"The 1% Treaty\",\n  \"summary\": \"International treaty in which signatory governments redirect 1% of military spending (~$27.2B/yr) to pragmatic clinical trials, with an IAB-funded ratchet adding roughly 1%/yr; multiplies trial capacity 12.3x…",
+      "lastProgressAt": 1783040390354,
+      "tokens": 71631,
+      "toolCalls": 5,
+      "durationMs": 223354,
+      "resultPreview": "{\"matched\":[{\"solution\":\"The 1% Treaty\",\"taskKey\":\"program:one-percent-treaty:ratify\",\"note\":\"Well covered: children program:one-percent-treaty:majority-vote, program:one-percent-treaty:heads-of-government, ~193 program:one-percent-treaty:signer:<iso2> per-leader tasks, plus program:humanity-v-governments-of-earth:enforce-one-percent-treaty-settlement on the court branch.\"},{\"solution\":\"Global ref…"
+    }
+  ],
+  "totalTokens": 371912,
+  "totalToolCalls": 49
+}

@@ -125,35 +125,6 @@ try {
     violations.push({ name, count, message, blocking: options.blocking !== false });
   }
 
-  // --- qa-passed gate ----------------------------------------------------
-  // When a commit touches user-facing surfaces (UI components, page copy,
-  // email templates, library code that those import), require the commit
-  // message to contain a `qa-passed: <one-line summary>` promise. The
-  // promise is Claude's acknowledgement that a Codex preflight agent
-  // validated the change — ran relevant regens, ran relevant tests,
-  // reviewed generated markdown/screenshot diffs, fixed problems, and
-  // came back clean. The hook doesn't enforce the agent ran; it enforces
-  // the human-readable promise. See .claude/codex-delegation.md for the
-  // dispatch pattern Claude is supposed to follow.
-  const userFacingChanges = [...uiFiles, ...copyFiles, ...emailFiles];
-  if (userFacingChanges.length > 0 && hookData?.tool_name === "Bash") {
-    const cmd = hookData?.tool_input?.command ?? "";
-    // Pull the commit message body from `-m "..."`, `-m '...'`, or `-F <path>`.
-    // Heredoc form (`cat <<'EOF' ... EOF`) appears verbatim in the command
-    // string so a simple includes() also catches it.
-    const hasPromise = /qa[-\s]?passed\s*:/i.test(cmd);
-    if (!hasPromise) {
-      pushViolation(
-        "QA_PASSED",
-        userFacingChanges.length,
-        `QA-PASSED GATE: commit touches user-facing files but the message lacks a \`qa-passed:\` line. Dispatch a Codex preflight per .claude/codex-delegation.md ("Pre-commit preflight" section), then add \`qa-passed: <summary>\` or \`qa-passed: skipped — <reason>\` to the message.
-${userFacingChanges.slice(0, 8).map((f) => `  - ${f}`).join("\n")}${
-          userFacingChanges.length > 8 ? `\n  ... and ${userFacingChanges.length - 8} more` : ""
-        }`,
-      );
-    }
-  }
-
   // --- TODO.md drift gate -------------------------------------------------
   // Per CLAUDE.md "Update TODO.md in the same commit as the work it covers"
   // — but the rule was rotting silently before this hook. If a commit

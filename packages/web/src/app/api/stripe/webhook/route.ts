@@ -7,6 +7,7 @@ import {
   CommerceFulfillmentProvider,
   CommerceFulfillmentStatus,
   CommerceOrderStatus,
+  TaskFundingPaymentStatus,
   type Prisma,
 } from "@optimitron/db";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
@@ -14,6 +15,13 @@ import { serverEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import { fulfillShirtCheckoutSession } from "@/lib/shirt-fulfillment.server";
+import {
+  recordTaskFundingChargeDisputed,
+  recordTaskFundingChargeRefunded,
+  recordTaskFundingCheckoutFailed,
+  recordTaskFundingCheckoutPaid,
+  TASK_FUNDING_ORDER_TYPE,
+} from "@/lib/task-funding/payments.server";
 
 const log = createLogger("stripe-webhook");
 
@@ -62,6 +70,10 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
+          await recordTaskFundingCheckoutPaid(session);
+          break;
+        }
         if (session.metadata?.order_type === "shirt") {
           await fulfillShirtCheckoutSession(session);
           break;
@@ -73,6 +85,43 @@ export async function POST(req: Request) {
         if (session.mode === "payment" || session.mode === "subscription") {
           await recordDonationActivity(session);
         }
+        break;
+      }
+      case "checkout.session.async_payment_succeeded": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
+          await recordTaskFundingCheckoutPaid(session);
+        }
+        break;
+      }
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
+          await recordTaskFundingCheckoutFailed(
+            session,
+            TaskFundingPaymentStatus.FAILED,
+          );
+        }
+        break;
+      }
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
+          await recordTaskFundingCheckoutFailed(
+            session,
+            TaskFundingPaymentStatus.CANCELED,
+          );
+        }
+        break;
+      }
+      case "charge.refunded": {
+        await recordTaskFundingChargeRefunded(event.data.object as Stripe.Charge);
+        break;
+      }
+      case "charge.dispute.created": {
+        await recordTaskFundingChargeDisputed(
+          event.data.object as Stripe.Dispute,
+        );
         break;
       }
       case "invoice.payment_succeeded": {

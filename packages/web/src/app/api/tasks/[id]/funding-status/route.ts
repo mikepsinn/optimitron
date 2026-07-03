@@ -12,6 +12,8 @@ function serializeFundingStatus(status: TaskFundingStatus) {
   return {
     targetUsdCents: status.targetUsdCents.toString(),
     committedUsdCents: status.committedUsdCents.toString(),
+    paidUsdCents: status.paidUsdCents.toString(),
+    pledgedUsdCents: status.pledgedUsdCents.toString(),
     remainingUsdCents: status.remainingUsdCents.toString(),
     percentToTarget: status.percentToTarget,
     status: status.status,

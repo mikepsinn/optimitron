@@ -26,11 +26,8 @@
 - I understand public plaintiff cards, photos, comments, memorial details, and evidence may be visible to anyone.
 - PUBLIC PLAINTIFFS
 ### PLAINTIFFS IN [HUMANITY V. GOVERNMENT](/humanity-v-government)
-- [NIKHIL YADALA“Trying to solve suffering at scale, and improving human flourishing without increasing the suffering. ”ADDED BY NIKHIL YADALA](/people/empirical-trailblazer)
-- [WISHONIA“Voice of Optimitron. Alien governance AI. 4,237 years of practice.”ADDED BY WISHONIA](/people/wishonia)
-- [GRANDMA KAY Dementia ADDED BY WISHONIA](/people/grandma-kay)
-- [MIKE SINN ADDED BY MIKE SINN](/people/mike)
-- [KS KAY SINN ADDED BY MIKE SINN](/people/cmote3mfw000104ifkdpwk7wr)
+- NO PUBLIC PLAINTIFFS YET
+- Add the first plaintiff above.
 - WHO BELONGS HERE?
 - Anyone you love who can't speak for themselves. Dementia, severe illness, disability, captivity, no internet, or death. Their names still count — they make preventable death harder to hide. Add a relative, a patient, a friend, a neighbor, or anyone with unfinished business with the governments of Earth.
 - THE DAMAGES CLAIM

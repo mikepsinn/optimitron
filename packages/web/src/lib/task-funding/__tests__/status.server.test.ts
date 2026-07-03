@@ -1,8 +1,10 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import {
+  CommerceOrderStatus,
   OrgStatus,
   OrgType,
   Prisma,
+  TaskFundingPaymentStatus,
   TaskFundingPledgeStatus,
   TaskFundingPledgerKind,
   TaskFundingTargetStatus,
@@ -17,8 +19,14 @@ async function cleanup() {
   await prisma.taskFundingEvent.deleteMany({
     where: { targetId: { startsWith: TEST_PREFIX } },
   });
+  await prisma.taskFundingPayment.deleteMany({
+    where: { id: { startsWith: TEST_PREFIX } },
+  });
   await prisma.taskFundingPledge.deleteMany({
     where: { targetId: { startsWith: TEST_PREFIX } },
+  });
+  await prisma.commerceOrder.deleteMany({
+    where: { id: { startsWith: TEST_PREFIX } },
   });
   await prisma.taskFundingTarget.deleteMany({
     where: { id: { startsWith: TEST_PREFIX } },
@@ -127,6 +135,48 @@ async function createPledge(input: {
   });
 }
 
+async function createFundingPayment(input: {
+  amountCents: number;
+  publicDisplay?: boolean;
+  publicNameSnapshot?: string | null;
+  status?: TaskFundingPaymentStatus;
+  suffix: string;
+  targetId: string;
+  taskId: string;
+}) {
+  const status = input.status ?? TaskFundingPaymentStatus.PAID;
+  const order = await prisma.commerceOrder.create({
+    data: {
+      id: `${TEST_PREFIX}order_${input.suffix}`,
+      currency: "usd",
+      donationCents: input.amountCents,
+      purposeKey: "task-funding",
+      status:
+        status === TaskFundingPaymentStatus.PAID
+          ? CommerceOrderStatus.PAID
+          : CommerceOrderStatus.FAILED,
+      subtotalCents: input.amountCents,
+      totalCents: input.amountCents,
+    },
+  });
+
+  return prisma.taskFundingPayment.create({
+    data: {
+      id: `${TEST_PREFIX}payment_${input.suffix}`,
+      amountCents: input.amountCents,
+      commerceOrderId: order.id,
+      currency: "usd",
+      publicDisplay: input.publicDisplay ?? false,
+      publicNameSnapshot: input.publicNameSnapshot ?? null,
+      status,
+      stripeCheckoutSessionId: `${TEST_PREFIX}cs_${input.suffix}`,
+      stripeTransferGroup: `${TEST_PREFIX}transfer_group_${input.suffix}`,
+      targetId: input.targetId,
+      taskId: input.taskId,
+    },
+  });
+}
+
 beforeEach(cleanup);
 afterAll(cleanup);
 
@@ -226,6 +276,50 @@ describe("getTaskFundingStatus", () => {
     expect(status.committedUsdCents).toBe(3000n);
     expect(status.pledgerCount).toBe(1);
     expect(status.individualCount).toBe(1);
+  });
+
+  it("includes paid task funding payments and excludes failed or refunded payments", async () => {
+    const { target, task } = await createTarget("paid_payments", 10_000n);
+
+    await createFundingPayment({
+      amountCents: 4000,
+      publicDisplay: true,
+      publicNameSnapshot: "Paid Alice",
+      suffix: "paid",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    await createFundingPayment({
+      amountCents: 3000,
+      status: TaskFundingPaymentStatus.FAILED,
+      suffix: "failed",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    await createFundingPayment({
+      amountCents: 2000,
+      status: TaskFundingPaymentStatus.REFUNDED,
+      suffix: "refunded",
+      targetId: target.id,
+      taskId: task.id,
+    });
+
+    const status = await getTaskFundingStatus(task.id, {
+      includeSupporters: true,
+    });
+
+    expect(status.committedUsdCents).toBe(4000n);
+    expect(status.paidUsdCents).toBe(4000n);
+    expect(status.pledgedUsdCents).toBe(0n);
+    expect(status.remainingUsdCents).toBe(6000n);
+    expect(status.pledgerCount).toBe(1);
+    expect(status.publicSupporters).toEqual([
+      expect.objectContaining({
+        committedAmountCents: 4000n,
+        pledgerKind: TaskFundingPledgerKind.PERSON,
+        publicNameSnapshot: "Paid Alice",
+      }),
+    ]);
   });
 
   it("includes only public supporters when requested", async () => {

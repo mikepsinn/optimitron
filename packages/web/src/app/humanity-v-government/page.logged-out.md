@@ -23,7 +23,7 @@
 - Had governments not spent [$170 trillion](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) murdering those people and destroying everything they spent their entire lives building, the average human alive today would earn [$333,636](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) a year instead of [$14,375](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html). Dead scientists do not discover things and exploded cities are very expensive to fix. [Read the evidence](https://manual.warondisease.org/knowledge/appendix/humanity-v-government.html).
 ### IF GOVERNMENTS WERE A CORPORATION
 - If a corporation were paid [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare and misused the funds to this degree, it would be prosecuted, fined, monitored, and its officers imprisoned.
-- The corporate analogy is conservative: ordinary corporations do not have the legal power to compel payment from every human under their jurisdiction.
+- And this comparison is generous. No corporation can force every human under its jurisdiction to pay it. Governments can, and do. On my planet we called that a monopoly. Here you call it a country.
 ### THE CASE CAPTION
 - [plaintiff-count]
 ### WHY THIS IS A CASE
@@ -77,5 +77,5 @@
 - NOT SURE
 - PLAINTIFFS
 ### NAME THE HUMANS THE CASE SHOULD COUNT.
-- The case already has [plaintiff-count] named plaintiffs. If someone in your family died of war, regulatory delay, or preventable disease, add them. A civilization should at least be able to count these murdered humans.
+- The case already has [plaintiff-count] named plaintiffs. If someone in your family died of war, regulatory delay, or preventable disease, add them. A civilization should at least be able to count its dead. On my planet, we counted every one.
 - [ADD A PLAINTIFF](/plaintiffs)

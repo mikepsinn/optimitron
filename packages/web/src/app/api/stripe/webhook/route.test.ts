@@ -10,6 +10,10 @@ const mocks = vi.hoisted(() => ({
   fulfillShirtCheckoutSession: vi.fn(),
   headersGet: vi.fn(),
   isStripeConfigured: vi.fn(),
+  recordTaskFundingChargeDisputed: vi.fn(),
+  recordTaskFundingChargeRefunded: vi.fn(),
+  recordTaskFundingCheckoutFailed: vi.fn(),
+  recordTaskFundingCheckoutPaid: vi.fn(),
   serverEnv: {
     STRIPE_WEBHOOK_SECRET: "whsec_test" as string | undefined,
   },
@@ -56,6 +60,14 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/lib/shirt-fulfillment.server", () => ({
   fulfillShirtCheckoutSession: mocks.fulfillShirtCheckoutSession,
+}));
+
+vi.mock("@/lib/task-funding/payments.server", () => ({
+  recordTaskFundingChargeDisputed: mocks.recordTaskFundingChargeDisputed,
+  recordTaskFundingChargeRefunded: mocks.recordTaskFundingChargeRefunded,
+  recordTaskFundingCheckoutFailed: mocks.recordTaskFundingCheckoutFailed,
+  recordTaskFundingCheckoutPaid: mocks.recordTaskFundingCheckoutPaid,
+  TASK_FUNDING_ORDER_TYPE: "task_funding",
 }));
 
 import { POST } from "./route";
@@ -160,5 +172,35 @@ describe("POST /api/stripe/webhook", () => {
     });
     // Store-offer purchases must not double-record as DONATED activities.
     expect(mocks.activityCreate).not.toHaveBeenCalled();
+  });
+
+  it("records task funding checkout completion without generic donation activity", async () => {
+    const session = {
+      amount_total: 2500,
+      currency: "usd",
+      customer: "cus_task",
+      id: "cs_test_task_funding",
+      metadata: {
+        order_type: "task_funding",
+        task_funding_payment_id: "tfp_123",
+        task_id: "task_123",
+      },
+      mode: "payment",
+      payment_intent: "pi_task",
+    };
+    mocks.constructEvent.mockReturnValue({
+      data: {
+        object: session,
+      },
+      type: "checkout.session.completed",
+    });
+    mocks.recordTaskFundingCheckoutPaid.mockResolvedValue({ id: "tfp_123" });
+
+    const res = await POST(makeWebhookRequest());
+
+    expect(res.status).toBe(200);
+    expect(mocks.recordTaskFundingCheckoutPaid).toHaveBeenCalledWith(session);
+    expect(mocks.activityCreate).not.toHaveBeenCalled();
+    expect(mocks.commerceOrderFindFirst).not.toHaveBeenCalled();
   });
 });

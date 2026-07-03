@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: The Joke | International Campaign to End War and Disease
-- Meta description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
+- Meta description: Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on 8 billion people it would result in a chain reaction that would result in the reallocation of at least 1% of our 122 apocalypse murder capacity to disease eradication which would produce 565 billion extra healthy life-years. At 17 laughs per day, that's 3.51 quadrillion extra laughs
 - Canonical: https://warondisease.org/joke
 - Open Graph title: The Joke
-- Open Graph description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
+- Open Graph description: Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on 8 billion people it would result in a chain reaction that would result in the reallocation of at least 1% of our 122 apocalypse murder capacity to disease eradication which would produce 565 billion extra healthy life-years. At 17 laughs per day, that's 3.51 quadrillion extra laughs
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Fjoke
 - Twitter title: The Joke
-- Twitter description: Disease kills 150,000 people a day — 50 September 11ths. The joke that ends it: put the 1% Treaty on a t-shirt, hand someone the facts, recruit two more.
+- Twitter description: Write on every shirt in a loved one's closet. Tuck in the math. If this joke played on 8 billion people it would result in a chain reaction that would result in the reallocation of at least 1% of our 122 apocalypse murder capacity to disease eradication which would produce 565 billion extra healthy life-years. At 17 laughs per day, that's 3.51 quadrillion extra laughs
 
 ## Visible Page Copy
 
@@ -66,7 +66,7 @@
 ##### WE CANNOT AFFORD IT.
 - Disease already burns [$5.00 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) in lost work and drags off [13.0%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of global GDP. The current arrangement is what nobody can afford.
 ##### WHO WOULD BLOCK THIS?
-- Nobody rational. Defense contractors keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html), lose one unusable apocalypse, and get an economy about [4x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) larger where their children are alive to spend the money.
+- Nobody rational. Military contractors keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html), lose one unusable apocalypse, and get an economy about [4x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) larger where their children are alive to spend the money.
 ##### THEN WHY HAS NOBODY DONE IT?
 - Because the facts are scattered. Put them in eight billion brains at once and the insanity becomes visible: change the spreadsheet, keep the deterrent, fund the trials, stop dying.
 - That knocks about [407 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) off the treatment line. The avoided centuries of untreated disease prevent [10.7 billion deaths](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and [1.93 quadrillion hours](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) of suffering. At one laugh per healthy day recovered, that is [206 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) extra laughs. The full laugh-rate model counts [3.5 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/joke.html).
@@ -78,9 +78,9 @@
 - Immediately before the United States won World War II, US military spending was [96.7%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower than current levels. After winning, the US cut military spending [87.6%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) over two years and then built the middle class. Your grandparents handled that. This shirt asks for [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html).
 - THE MILITARY-INDUSTRIAL COMPLEX WILL NEVER ALLOW IT.
 - The CEO of Lockheed Martin is not exempt from biology. They can keep roughly [121](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) spare apocalypses, watch their family die of curable diseases, and retire into the current trajectory. Or they can keep [99%](https://manual.WarOnDisease.org/knowledge/solution.html) of the military budget, give up the unusable apocalypse, invest in the biotech sector absorbing redirected trial money, and retire in an economy [4.1x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) larger where their children are alive to spend the money. Blocking the treaty to protect the last [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) is not self-interest. It is arithmetic failure with a lobbyist.
-- POLITICIANS WILL NEVER AGREE.
-- Politicians follow pressure they can see. Right now the defense lobby spends [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) buying the spreadsheet. The treaty campaign budget is [$650 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). If eight billion humans understand that the spreadsheet is killing them, changing the numbers becomes the boring part.
-- Defense contractors spend [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) because lobbying works. Fine. After the treaty passes, politicians who voted yes receive [Incentive Alignment Bond](https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html) benefits: campaign support while running, cushy careers when done. Politicians who vote no receive nothing. This is Pavlovian conditioning, but for senators.
+- WHY WOULD LEADERS AGREE?
+- Leaders follow the numbers their presidents can see. Right now the military lobby spends [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) buying the spreadsheet. The treaty campaign budget is [$650 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). When eight billion presidents understand the spreadsheet is killing them, changing the numbers becomes the boring part.
+- Military contractors spend [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html) because lobbying works. Fine. After the treaty passes, leaders who voted yes receive [Incentive Alignment Bond](https://manual.warondisease.org/knowledge/solution/incentive-alignment-bonds.html) benefits: campaign support while running, cushy careers when done. Leaders who vote no receive nothing. This is Pavlovian conditioning, but for senators.
 - WHAT IF COUNTRIES CHEAT OR REFUSE?
 - Of course some will try. The system does not use trust. It uses published disbursements, trial-linked payouts, the [Decentralized Accountability Office](https://manual.warondisease.org/knowledge/solution/decentralized-accountability-office.html), and the [Automated Revenue Service](https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html). The first country to sign makes refusal more visible and more expensive for the next one.
 - WHY PUT IT ON SHIRTS?
