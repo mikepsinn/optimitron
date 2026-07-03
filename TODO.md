@@ -89,6 +89,25 @@ Do not let lower items crowd out higher ones.
   `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
   all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
   branch after PR #88; manual-search + verbatim copy gate before shipping.
+- **Task tree: cause-specific mission nodes + TaskEdge links (Mike-approved
+  direction, 2026-07-02):** split browsable cause nodes out of the single
+  "End War and Disease" parent so audiences can see only *their* cause
+  (longevity people want disease-only lists; they don't care about war
+  deaths). Sketch: `Optimize Earth` → `End War`, `Eradicate Disease`
+  (future: `Reduce Animal Suffering`, etc.). Each task keeps ONE tree parent
+  (attribution math is `child.delta / parent.delta` — a DAG would
+  double-count); cross-cause relevance is expressed with the EXISTING
+  `TaskEdge` model (`INCREASES_PROBABILITY_OF` / `ACCELERATES`, currently
+  MCP-only) and surfaced in the UI ("also advances → Eradicate Disease").
+  E.g. 1% Treaty parents under End War (its mechanism is the military
+  budget), edge → Eradicate Disease (its payoff); dFDA parents under
+  Eradicate Disease. Cause pages = filtered task views; `/missions` is
+  TAKEN (pairing feature) — name TBD (`/causes`?). Also fixes:
+  `bed-nets-funding-gap` currently has `parentTaskId: null` in
+  `optimize-earth-task-tree.ts`, violating the no-null-parent rule — give it
+  a parent (under Eradicate Disease) in the same change. Keep existing
+  taskKeys stable (site configs reference END_WAR_AND_DISEASE_TASK_KEY).
+  Own branch after PR #97 merges; diagram-before-code applies.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 
