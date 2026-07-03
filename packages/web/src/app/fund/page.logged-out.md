@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Fund Tasks | International Campaign to End War and Disease
-- Meta description: Put money behind ranked tasks that move votes, organizations, leaders, or measurable treaty demand. If the task cannot point to proof, keep your money.
+- Meta description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
 - Canonical: https://warondisease.org/fund
 - Open Graph title: Fund Tasks
-- Open Graph description: Put money behind ranked tasks that move votes, organizations, leaders, or measurable treaty demand. If the task cannot point to proof, keep your money.
+- Open Graph description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
 - Open Graph image: https://warondisease.org/api/og/route?path=%2Ffund
 - Twitter title: Fund Tasks
-- Twitter description: Put money behind ranked tasks that move votes, organizations, leaders, or measurable treaty demand. If the task cannot point to proof, keep your money.
+- Twitter description: A price list for ending war and disease, ranked by what each dollar buys. If a task cannot show proof, keep your money.
 
 ## Visible Page Copy
 

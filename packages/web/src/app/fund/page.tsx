@@ -290,8 +290,9 @@ export default async function FundPage() {
           <div className="border border-foreground p-6">
             <h2 className="text-xl font-black">No priced bottlenecks yet</h2>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
-              Tasks need a funding target or fixed worker payout before they rank
-              here. Any public task can still accept money on its task page.
+              Tasks rank here once they carry a funding target or a fixed
+              worker payout. Until then, any public task will still take your
+              money on its own page.
             </p>
           </div>
         )}

@@ -150,7 +150,7 @@ describe("TaskFundingProgress", () => {
     expect(html).toContain("$0 of $50 paid or pledged");
     expect(html).toContain("$50 remaining");
     expect(html).toContain("0%");
-    expect(html).toContain("OPEN");
+    expect(html).toContain("Open");
     expect(html).toContain("0 supporters");
   });
 
@@ -219,7 +219,8 @@ describe("TaskFundingProgress", () => {
 
     const html = await renderProgress({ taskId: task.id });
 
-    expect(html).toContain("THRESHOLD_MET");
+    // Raw enum values must never reach the UI.
+    expect(html).not.toContain("THRESHOLD_MET");
     expect(html).toContain("Threshold met");
   });
 });

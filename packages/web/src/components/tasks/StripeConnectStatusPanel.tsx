@@ -110,7 +110,7 @@ export function StripeConnectStatusPanel({
         id="payouts"
       >
         <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-          Want to do this paid task?
+          Get paid to end war and disease
         </p>
         <p className="text-sm font-bold">
           Sign in, set up payouts, then claim it. Verified work gets paid
@@ -134,7 +134,7 @@ export function StripeConnectStatusPanel({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
-            Want to do this paid task?
+            Get paid to end war and disease
           </p>
           <p className="text-base font-black">{getStatusLabel(status)}</p>
           <p className="mt-1 text-sm font-bold text-muted-foreground">

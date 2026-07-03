@@ -613,8 +613,9 @@ export default async function TaskDetailPage({
                 <div>
                   <h2 className="text-xl font-black">Fund this task</h2>
                   <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
-                    Your payment funds this exact work. After a claim is verified,
-                    the approved payout goes to the worker automatically.
+                    Your money stays pinned to this exact work and pays the
+                    worker the second a claim is verified. Nothing proven,
+                    nothing paid.
                   </p>
                 </div>
                 {fundingStatus ? (

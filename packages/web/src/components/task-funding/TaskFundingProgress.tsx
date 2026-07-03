@@ -50,6 +50,18 @@ function formatQuantity(value: { toString(): string }) {
 function pluralizeSupporters(count: number) {
   return count === 1 ? "1 supporter" : `${count} supporters`;
 }
+// User-facing labels for TaskFundingTargetStatus. Without this the Status box
+// renders the raw enum ("THRESHOLD_MET"), underscore and all.
+const FUNDING_STATUS_LABEL: Record<string, string> = {
+  OPEN: "Open",
+  THRESHOLD_MET: "Threshold met",
+  EXPIRED: "Expired",
+  CANCELLED: "Cancelled",
+};
+
+function formatFundingStatus(status: string) {
+  return FUNDING_STATUS_LABEL[status] ?? status.replaceAll("_", " ").toLowerCase();
+}
 
 export async function TaskFundingProgress({
   taskId,
@@ -83,7 +95,7 @@ export async function TaskFundingProgress({
       <div className="grid gap-3 text-sm font-black uppercase sm:grid-cols-2">
         <div className="border-2 border-foreground p-3">
           <span className="block text-muted-foreground">Status</span>
-          <span>{fundingStatus.status}</span>
+          <span>{formatFundingStatus(fundingStatus.status)}</span>
         </div>
         <div className="border-2 border-foreground p-3">
           <span className="block text-muted-foreground">Supporters</span>

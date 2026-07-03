@@ -159,7 +159,7 @@ export function TaskFundingCheckoutForm({
         disabled={submitting}
         type="submit"
       >
-        {submitting ? "Opening Checkout..." : "Fund this task"}
+        {submitting ? "Opening Stripe..." : "Fund this task"}
       </button>
     </form>
   );

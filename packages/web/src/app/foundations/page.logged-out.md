@@ -35,22 +35,22 @@
 - Pledges are conditional. Your money only moves if the mechanism hits its funding threshold; otherwise nothing happens. No foundation has to be the reckless first mover.
 - [SIGN IN AS YOUR ORGANIZATION TO PLEDGE](/auth/signin?callbackUrl=%2Ffoundations)
 #### RATIFY THE 1% TREATY
-- $2,500 of $1.0B funded or pledged
+- $2,500 of $1.0B paid or pledged
 - $999,997,500 remaining - 0%
 - STATUS
 - OPEN
 - SUPPORTERS
 - 1 SUPPORTER
 #### SEED THE SHIRT CASCADE
-- $2,500 of $50,000,000 funded or pledged
+- $2,500 of $50,000,000 paid or pledged
 - $49,997,500 remaining - 0%
 #### ESTABLISH THE COURT OF HUMANITY
-- $0 of $30,000,000 funded or pledged
+- $0 of $30,000,000 paid or pledged
 - $30,000,000 remaining - 0%
 - 0 SUPPORTERS
 #### FUND THE DECENTRALIZED FDA DIRECTLY
-- $0 of $500,000,000 funded or pledged
+- $0 of $500,000,000 paid or pledged
 - $500,000,000 remaining - 0%
 #### THE LOVING TAKEOVER
-- $0 of $17.5B funded or pledged
+- $0 of $17.5B paid or pledged
 - $17.5B remaining - 0%

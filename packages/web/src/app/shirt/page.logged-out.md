@@ -43,7 +43,7 @@
 - *Estimates use 50-seers/day + 0.1% conversion as conservative assumptions. Real numbers may be 10× higher or lower depending on visibility patterns and audience.*
 ### NOT READY TO BUY? PLEDGE INSTEAD.
 - If 8 billion others pledge by August 6, the bulk order ships. If not, nothing happens. Your pledge is a promise, not a charge.
-- $0 of $56.0B funded or pledged
+- $0 of $56.0B paid or pledged
 - $56.0B remaining - 0%
 - STATUS
 - OPEN
