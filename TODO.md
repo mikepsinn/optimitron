@@ -125,6 +125,22 @@ Do not let lower items crowd out higher ones.
   cause-split follows it. Keep task funding treasury-separated from
   Prize/IAB economics — plain assurance (refund), NOT dominant assurance
   (refund+bonus is the Prize's mechanic).
+- **MCP getTask double-escapes nested child descriptions (found 2026-07-03,
+  fix immediately after escrow branch):** child rows inside a parent
+  `getTask` response carry literal `\n` (verified: all 11 children of
+  `teach-ais:2026-q3` corrupt in-payload while the SAME rows fetched
+  directly are clean; DB verified clean locally and on prod samples). The
+  double-stringify lives in the mcp-server.ts getTask child/enrichment
+  path — find and fix. This is a CONTAMINATION VECTOR: agents reading
+  parents via MCP get `\n`-littered text and paste it into new task bodies
+  (prod tasks are being created via MCP daily). Also: (a) add a write-side
+  guard in createTask/updateTask — description containing literal `\n`
+  with zero real newlines is definitionally double-escaped → normalize;
+  (b) one-time sweep of prod Task/TaskComment rows for literal-`\n` bodies
+  to repair anything already contaminated. Do NOT "fix" by unescaping at
+  render — that corrupts legitimate content and leaves other consumers
+  broken. Mike reported seeing rendered `\n` on the site — confirm his
+  exact URL against the sweep results.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 
