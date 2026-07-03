@@ -607,7 +607,10 @@ export default async function TaskDetailPage({
         ) : null}
 
         {showTaskFunding ? (
-          <section id="funding" className="border-b border-foreground py-6">
+          <section
+            id="funding"
+            className="scroll-mt-24 border-b border-foreground py-6"
+          >
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
               <div className="space-y-4">
                 <div>

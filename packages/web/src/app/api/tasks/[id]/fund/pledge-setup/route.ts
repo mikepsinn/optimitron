@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
+import { createLogger } from "@/lib/logger";
 import { getTaskPath } from "@/lib/routes";
 import { createPledgeCardSetupSession } from "@/lib/task-funding/escrow.server";
 import {
@@ -10,6 +11,8 @@ import {
 import { getBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
+
+const log = createLogger("task-funding-pledge-setup");
 
 const PledgeSetupBodySchema = z.object({
   amountCents: z
@@ -69,6 +72,19 @@ export async function POST(
     if (isUnauthorized(error)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const status = getErrorStatus(error);
+    if (status >= 500) {
+      // Raw internals ("Stripe is not configured.") read as a broken or fake
+      // checkout to users. Log the real error; show a calm, safe one.
+      log.error("Pledge setup failed", { error });
+      return NextResponse.json(
+        {
+          error:
+            "Payments are temporarily down. Nothing was charged — try again in a few minutes.",
+        },
+        { status },
+      );
+    }
     return NextResponse.json(
       {
         error:
@@ -76,7 +92,7 @@ export async function POST(
             ? error.message
             : "Failed to start the pledge.",
       },
-      { status: getErrorStatus(error) },
+      { status },
     );
   }
 }

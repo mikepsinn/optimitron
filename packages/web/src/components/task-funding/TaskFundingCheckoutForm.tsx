@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface TaskFundingCheckoutFormProps {
   defaultAmountCents?: number;
@@ -37,6 +37,17 @@ export function TaskFundingCheckoutForm({
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<SubmitAction | null>(null);
   const amountCents = useMemo(() => parseDollarInput(amount), [amount]);
+
+  // #funding links (referrals, /fund cards, Stripe return URLs) land before
+  // the async sections above this form finish streaming, so the browser's
+  // native anchor jump ends up several screens too high. Re-scroll once after
+  // hydration, when layout is real.
+  useEffect(() => {
+    if (window.location.hash !== "#funding") return;
+    document
+      .getElementById("funding")
+      ?.scrollIntoView({ behavior: "instant", block: "start" });
+  }, []);
 
   async function submit(action: SubmitAction) {
     setError(null);
@@ -177,39 +188,47 @@ export function TaskFundingCheckoutForm({
 
       {error ? <p className="text-sm font-bold text-destructive">{error}</p> : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        {signedIn ? (
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1">
+          {signedIn ? (
+            <button
+              className="inline-flex min-h-10 w-full items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-60"
+              disabled={submitting !== null}
+              type="submit"
+            >
+              {submitting === "pledge"
+                ? "Opening Stripe..."
+                : "Pledge — charged only if funded"}
+            </button>
+          ) : (
+            <Link
+              className="inline-flex min-h-10 w-full items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+              href={signInHref}
+            >
+              Sign in to pledge
+            </Link>
+          )}
+          <p className="text-xs font-bold text-muted-foreground">
+            Saves your card, charges nothing today. Stripe charges it only when
+            this task is fully funded; if the task dies instead, charged money
+            comes back.
+          </p>
+        </div>
+        <div className="space-y-1">
           <button
-            className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-60"
+            className="inline-flex min-h-10 w-full items-center justify-center border border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background disabled:opacity-60"
             disabled={submitting !== null}
-            type="submit"
+            onClick={() => void submit("checkout")}
+            type="button"
           >
-            {submitting === "pledge"
-              ? "Opening Stripe..."
-              : "Pledge — charged only if funded"}
+            {submitting === "checkout" ? "Opening Stripe..." : "Pay now"}
           </button>
-        ) : (
-          <Link
-            className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
-            href={signInHref}
-          >
-            Sign in to pledge
-          </Link>
-        )}
-        <button
-          className="inline-flex min-h-10 items-center justify-center border border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background disabled:opacity-60"
-          disabled={submitting !== null}
-          onClick={() => void submit("checkout")}
-          type="button"
-        >
-          {submitting === "checkout" ? "Opening Stripe..." : "Pay now"}
-        </button>
+          <p className="text-xs font-bold text-muted-foreground">
+            Charged today, held for this task, and paid to the worker only
+            after the work is verified.
+          </p>
+        </div>
       </div>
-
-      <p className="text-xs font-bold text-muted-foreground">
-        Your card is charged only when this task is fully funded. If it dies,
-        charged money comes back.
-      </p>
     </form>
   );
 }
