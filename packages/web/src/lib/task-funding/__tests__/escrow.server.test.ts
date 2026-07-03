@@ -9,26 +9,41 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
+  cancelPledgeAsPledger,
   maybeChargeCallablePledges,
   refundDeadTargetFunding,
 } from "../escrow.server";
 
 const mocks = vi.hoisted(() => ({
+  chargesRetrieve: vi.fn(),
   paymentIntentsCreate: vi.fn(),
+  paymentMethodsDetach: vi.fn(),
   refundsCreate: vi.fn(),
+  sendConfirmationEmail: vi.fn(),
   sendDeclineEmail: vi.fn(),
+  sendReceiptEmail: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe", () => ({
   getStripeClient: () => ({
+    charges: { retrieve: mocks.chargesRetrieve },
     paymentIntents: { create: mocks.paymentIntentsCreate },
+    paymentMethods: { detach: mocks.paymentMethodsDetach },
     refunds: { create: mocks.refundsCreate },
   }),
   isStripeConfigured: () => true,
 }));
 
+vi.mock("@/lib/email/task-funding-pledge-confirmation-email", () => ({
+  sendPledgeConfirmationEmail: mocks.sendConfirmationEmail,
+}));
+
 vi.mock("@/lib/email/task-funding-pledge-decline-email", () => ({
   sendPledgeDeclineRecoveryEmail: mocks.sendDeclineEmail,
+}));
+
+vi.mock("@/lib/email/task-funding-pledge-receipt-email", () => ({
+  sendPledgeChargeReceiptEmail: mocks.sendReceiptEmail,
 }));
 
 const TEST_PREFIX = "tf_escrow_";
@@ -200,10 +215,20 @@ async function createPaidCheckoutPayment(input: {
 }
 
 beforeEach(async () => {
+  mocks.chargesRetrieve.mockReset();
+  mocks.chargesRetrieve.mockResolvedValue({
+    calculated_statement_descriptor: "TF ESCROW TEST",
+  });
   mocks.paymentIntentsCreate.mockReset();
+  mocks.paymentMethodsDetach.mockReset();
+  mocks.paymentMethodsDetach.mockResolvedValue({ id: "pm_detached" });
   mocks.refundsCreate.mockReset();
+  mocks.sendConfirmationEmail.mockReset();
+  mocks.sendConfirmationEmail.mockResolvedValue({ status: "sent" });
   mocks.sendDeclineEmail.mockReset();
   mocks.sendDeclineEmail.mockResolvedValue({ status: "sent" });
+  mocks.sendReceiptEmail.mockReset();
+  mocks.sendReceiptEmail.mockResolvedValue({ status: "sent" });
   await cleanup();
 });
 afterAll(cleanup);
@@ -309,6 +334,19 @@ describe("maybeChargeCallablePledges", () => {
       stripePaymentIntentId: "pi_tf_escrow_full",
     });
     expect(payment.commerceOrder.status).toBe(CommerceOrderStatus.PAID);
+
+    // Boundary: Stripe charge -> receipt email input (amount, card owner,
+    // and the calculated statement descriptor looked up from the charge).
+    expect(mocks.chargesRetrieve).toHaveBeenCalledWith("pi_tf_escrow_full_ch");
+    expect(mocks.sendReceiptEmail).toHaveBeenCalledTimes(1);
+    expect(mocks.sendReceiptEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amountCents: 6000,
+        pledge: expect.objectContaining({ id: pledge.id }),
+        statementDescriptor: "TF ESCROW TEST",
+        toEmail: pledger.email,
+      }),
+    );
   });
 
   it("creates exactly one PLEDGE_CALL payment per pledge under concurrent runs", async () => {
@@ -425,6 +463,14 @@ describe("maybeChargeCallablePledges", () => {
         pledge: expect.objectContaining({ id: pledgeA.id }),
       }),
     );
+
+    // The receipt goes to the charged pledger only — never the declined one.
+    expect(mocks.sendReceiptEmail).toHaveBeenCalledTimes(1);
+    expect(mocks.sendReceiptEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pledge: expect.objectContaining({ id: pledgeB.id }),
+      }),
+    );
   });
 });
 
@@ -474,5 +520,121 @@ describe("refundDeadTargetFunding", () => {
         select: { status: true },
       }),
     ).resolves.toEqual({ status: TaskFundingPaymentStatus.PAID });
+  });
+});
+
+describe("cancelPledgeAsPledger", () => {
+  it("cancels an uncharged pledge, detaches the card, and reopens the target", async () => {
+    const { target } = await createFundedTask(
+      "cancel",
+      5000n,
+      TaskFundingTargetStatus.THRESHOLD_MET,
+    );
+    const pledger = await createPledger("cancel");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "cancel",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+
+    const result = await cancelPledgeAsPledger(pledge.id);
+
+    expect(result).toEqual({ outcome: "cancelled", taskId: target.taskId });
+    const cancelled = await prisma.taskFundingPledge.findUniqueOrThrow({
+      where: { id: pledge.id },
+      select: {
+        cancellationReason: true,
+        cancelledAt: true,
+        cancelledByUserId: true,
+        status: true,
+        stripePaymentMethodId: true,
+      },
+    });
+    expect(cancelled).toMatchObject({
+      cancellationReason: "Cancelled by pledger",
+      cancelledByUserId: pledger.id,
+      status: TaskFundingPledgeStatus.CANCELLED,
+      stripePaymentMethodId: null,
+    });
+    expect(cancelled.cancelledAt).not.toBeNull();
+
+    expect(mocks.paymentMethodsDetach).toHaveBeenCalledTimes(1);
+    expect(mocks.paymentMethodsDetach).toHaveBeenCalledWith(
+      `${TEST_PREFIX}pm_cancel`,
+    );
+
+    // The cancelled money no longer counts, so the target must reopen for
+    // new pledges instead of staying stuck at THRESHOLD_MET.
+    await expect(
+      prisma.taskFundingTarget.findUniqueOrThrow({
+        where: { id: target.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskFundingTargetStatus.OPEN });
+  });
+
+  it("refuses once charging has started (calledAt set) and cancels nothing", async () => {
+    const { target } = await createFundedTask("cancel_late", 5000n);
+    const pledger = await createPledger("cancel_late");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "cancel_late",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+    await prisma.taskFundingPledge.update({
+      where: { id: pledge.id },
+      data: { calledAt: new Date() },
+    });
+
+    const result = await cancelPledgeAsPledger(pledge.id);
+
+    expect(result).toEqual({ outcome: "unavailable", taskId: target.taskId });
+    expect(mocks.paymentMethodsDetach).not.toHaveBeenCalled();
+    await expect(
+      prisma.taskFundingPledge.findUniqueOrThrow({
+        where: { id: pledge.id },
+        select: { status: true, stripePaymentMethodId: true },
+      }),
+    ).resolves.toEqual({
+      status: TaskFundingPledgeStatus.ACTIVE,
+      stripePaymentMethodId: `${TEST_PREFIX}pm_cancel_late`,
+    });
+  });
+
+  it("still reports cancelled when the payment method is already detached", async () => {
+    const { target } = await createFundedTask("cancel_detached", 5000n);
+    const pledger = await createPledger("cancel_detached");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "cancel_detached",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+    mocks.paymentMethodsDetach.mockRejectedValue(
+      Object.assign(new Error("Payment method is not attached."), {
+        code: "payment_method_not_attached",
+      }),
+    );
+
+    const result = await cancelPledgeAsPledger(pledge.id);
+
+    expect(result).toEqual({ outcome: "cancelled", taskId: target.taskId });
+    await expect(
+      prisma.taskFundingPledge.findUniqueOrThrow({
+        where: { id: pledge.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskFundingPledgeStatus.CANCELLED });
+  });
+
+  it("reports not_found for an unknown pledge id", async () => {
+    await expect(
+      cancelPledgeAsPledger(`${TEST_PREFIX}pledge_missing`),
+    ).resolves.toEqual({ outcome: "not_found" });
   });
 });

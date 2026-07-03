@@ -13,6 +13,26 @@ export interface TaskFundingCheckoutFormProps {
 
 type SubmitAction = "pledge" | "checkout";
 
+/**
+ * Outcome notices for the query params that land on #funding: the Stripe
+ * setup-session return URL (`pledged=1`) and the email cancel link's
+ * redirects (`pledge_cancelled=1`, `pledge_cancel_unavailable=1`). Read once
+ * after hydration; each renders as one plain line above the form.
+ */
+function getPledgeOutcomeNotice(search: string): string | null {
+  const params = new URLSearchParams(search);
+  if (params.get("pledge_cancelled") === "1") {
+    return "Pledge cancelled. Your card will not be charged.";
+  }
+  if (params.get("pledge_cancel_unavailable") === "1") {
+    return "Too late to cancel — charging already started.";
+  }
+  if (params.get("pledged") === "1") {
+    return "Card saved. You will get an email when this task fully funds, and only then are you charged.";
+  }
+  return null;
+}
+
 function formatDollars(cents: number) {
   return Math.max(1, Math.round(cents / 100)).toString();
 }
@@ -35,8 +55,13 @@ export function TaskFundingCheckoutForm({
   const [publicDisplay, setPublicDisplay] = useState(false);
   const [publicName, setPublicName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<SubmitAction | null>(null);
   const amountCents = useMemo(() => parseDollarInput(amount), [amount]);
+
+  useEffect(() => {
+    setNotice(getPledgeOutcomeNotice(window.location.search));
+  }, []);
 
   // #funding links (referrals, /fund cards, Stripe return URLs) land before
   // the async sections above this form finish streaming, so the browser's
@@ -113,6 +138,12 @@ export function TaskFundingCheckoutForm({
       className="space-y-4 border border-foreground bg-background p-4 text-foreground"
       onSubmit={handleSubmit}
     >
+      {notice ? (
+        <p className="border border-foreground px-3 py-2 text-sm font-bold">
+          {notice}
+        </p>
+      ) : null}
+
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <label className="space-y-1 text-sm font-bold">
           <span className="block text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">

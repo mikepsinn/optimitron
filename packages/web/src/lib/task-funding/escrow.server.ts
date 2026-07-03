@@ -9,7 +9,9 @@ import {
   TaskFundingTargetStatus,
   TaskStatus,
 } from "@optimitron/db";
+import { sendPledgeConfirmationEmail } from "@/lib/email/task-funding-pledge-confirmation-email";
 import { sendPledgeDeclineRecoveryEmail } from "@/lib/email/task-funding-pledge-decline-email";
+import { sendPledgeChargeReceiptEmail } from "@/lib/email/task-funding-pledge-receipt-email";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
@@ -377,6 +379,7 @@ async function recordPledgeChargeSucceeded(
     });
     await refreshTaskFundingTargetStatus(plan.targetId, tx);
   });
+  await notifyPledgeChargeReceipt(plan);
 }
 
 async function recordPledgeChargeDeclined(
@@ -473,6 +476,100 @@ async function notifyPledgeDeclined(refs: PledgeChargeRefs, declinedAt: Date) {
     });
   } catch (error) {
     log.error("Failed to send pledge decline recovery email", {
+      error,
+      pledgeId: refs.pledgeId,
+      targetId: refs.targetId,
+    });
+  }
+}
+
+/**
+ * The descriptor the pledger's bank statement will actually show. No
+ * `statement_descriptor` is configured anywhere in this codebase, so Stripe
+ * applies the account default; `calculated_statement_descriptor` on the
+ * charge is that final computed string. Best-effort — on lookup failure the
+ * receipt copy states the account-default fact instead of quoting it.
+ */
+async function getChargeStatementDescriptor(
+  chargeId: string | null | undefined,
+): Promise<string | null> {
+  if (!chargeId || !isStripeConfigured()) return null;
+  try {
+    const charge = await getStripeClient().charges.retrieve(chargeId);
+    return charge.calculated_statement_descriptor ?? null;
+  } catch (error) {
+    log.warn("Could not resolve the statement descriptor for a receipt", {
+      chargeId,
+      error,
+    });
+    return null;
+  }
+}
+
+/**
+ * Best-effort charge-receipt email. Lives at the single success transition
+ * every pledge-charge path funnels through (sync confirm in
+ * maybeChargeCallablePledges, webhook settlement in
+ * settlePledgeCallPaymentIntent), so no call site can forget it. Deduped on
+ * `pledge-receipt:{pledgeId}` in the shared EmailLog — a pledge fulfills at
+ * most once, so at most one receipt ever, even when the sync path and a
+ * replayed webhook both settle the same intent. Never throws — a mail
+ * failure must not fail the charge bookkeeping that already committed.
+ */
+async function notifyPledgeChargeReceipt(refs: PledgeChargeRefs) {
+  try {
+    const payment = await prisma.taskFundingPayment.findFirst({
+      where: { deletedAt: null, id: refs.paymentId },
+      select: {
+        amountCents: true,
+        donorEmail: true,
+        pledge: {
+          select: {
+            cardBrand: true,
+            cardLast4: true,
+            id: true,
+            pledgedByUser: { select: { email: true } },
+            pledgedByUserId: true,
+          },
+        },
+        stripeChargeId: true,
+        task: { select: { id: true, title: true } },
+      },
+    });
+    const pledge = payment?.pledge;
+    // A missing email is a real state (org/soft pledges), not a swallowed
+    // error — the guard below logs and skips the send.
+    const toEmail = payment?.donorEmail ?? pledge?.pledgedByUser?.email;
+    if (!payment || !pledge || !toEmail) {
+      log.warn("Charged pledge has no recipient for the receipt email", {
+        pledgeId: refs.pledgeId,
+        targetId: refs.targetId,
+      });
+      return;
+    }
+
+    const statementDescriptor = await getChargeStatementDescriptor(
+      payment.stripeChargeId,
+    );
+    const result = await sendPledgeChargeReceiptEmail({
+      amountCents: payment.amountCents,
+      pledge: {
+        cardBrand: pledge.cardBrand,
+        cardLast4: pledge.cardLast4,
+        id: pledge.id,
+        pledgedByUserId: pledge.pledgedByUserId,
+      },
+      statementDescriptor,
+      task: { id: payment.task.id, title: payment.task.title },
+      toEmail,
+    });
+    log.info("Pledge charge receipt email", {
+      pledgeId: refs.pledgeId,
+      status: result.status,
+      targetId: refs.targetId,
+    });
+  } catch (error) {
+    log.error("Failed to send pledge charge receipt email", {
       error,
       pledgeId: refs.pledgeId,
       targetId: refs.targetId,
@@ -832,6 +929,166 @@ export async function maybeChargeCallablePledges(
   return { charged, declined, fullyFunded: true };
 }
 
+export type CancelPledgeAsPledgerResult =
+  | { outcome: "cancelled" | "unavailable"; taskId: string }
+  | { outcome: "not_found" };
+
+/**
+ * Cancel a pledge on the pledger's own say-so (the signed cancel link in the
+ * confirmation email). Only an ACTIVE pledge whose charge has not started
+ * (`calledAt` null) is cancellable; the status check and the flip run inside
+ * withTaskFundingLock so a cancel can never race maybeChargeCallablePledges'
+ * planning phase — whichever takes the lock first wins, and the loser sees
+ * the other's committed state. The saved payment method is detached from the
+ * Stripe customer afterwards (outside the lock; already-detached is fine) so
+ * nothing keeps a card the pledger asked us to forget.
+ */
+export async function cancelPledgeAsPledger(
+  pledgeId: string,
+): Promise<CancelPledgeAsPledgerResult> {
+  const pledge = await prisma.taskFundingPledge.findFirst({
+    where: { deletedAt: null, id: pledgeId },
+    select: { id: true, target: { select: { id: true, taskId: true } } },
+  });
+  if (!pledge) return { outcome: "not_found" };
+  const { taskId } = pledge.target;
+
+  const locked = await withTaskFundingLock(taskId, async (tx) => {
+    const current = await tx.taskFundingPledge.findFirst({
+      where: { deletedAt: null, id: pledgeId },
+      select: {
+        calledAt: true,
+        pledgedByUserId: true,
+        status: true,
+        stripePaymentMethodId: true,
+      },
+    });
+    if (
+      !current ||
+      current.status !== TaskFundingPledgeStatus.ACTIVE ||
+      current.calledAt !== null
+    ) {
+      return { cancelled: false as const, paymentMethodId: null };
+    }
+
+    await tx.taskFundingPledge.update({
+      where: { id: pledgeId },
+      data: {
+        cancellationReason: "Cancelled by pledger",
+        cancelledAt: new Date(),
+        cancelledByUserId: current.pledgedByUserId,
+        // Clear the card refs so a later re-pledge on this row can never
+        // point at the payment method we are about to detach.
+        cardBrand: null,
+        cardLast4: null,
+        status: TaskFundingPledgeStatus.CANCELLED,
+        stripePaymentMethodId: null,
+      },
+    });
+    // Cancelling committed money can drop the total below the target; flip
+    // THRESHOLD_MET back to OPEN so later pledges re-trigger the charge.
+    await refreshTaskFundingTargetStatus(pledge.target.id, tx);
+    return {
+      cancelled: true as const,
+      paymentMethodId: current.stripePaymentMethodId,
+    };
+  });
+
+  if (!locked.cancelled) return { outcome: "unavailable", taskId };
+
+  if (locked.paymentMethodId && isStripeConfigured()) {
+    try {
+      await getStripeClient().paymentMethods.detach(locked.paymentMethodId);
+    } catch (error) {
+      // Already-detached (or otherwise gone) payment methods are fine — the
+      // pledge row no longer references it and nothing will charge it.
+      log.warn("Could not detach payment method for cancelled pledge", {
+        error,
+        pledgeId,
+      });
+    }
+  }
+
+  log.info("Pledge cancelled by pledger", { pledgeId, taskId });
+  return { outcome: "cancelled", taskId };
+}
+
+/**
+ * Best-effort pledge-confirmation email. Lives at the single choke point
+ * every successful card save funnels through (the setup-session webhook), and
+ * runs BEFORE maybeChargeCallablePledges so the pledger hears "card saved,
+ * nothing charged" even when their card immediately completes the threshold
+ * and the pledge leaves ACTIVE moments later. Deduped on
+ * `pledge-confirm:{pledgeId}` in the shared EmailLog, so replayed webhook
+ * deliveries send at most one confirmation per pledge. Never throws — a mail
+ * failure must not fail the card bookkeeping that already committed.
+ */
+async function notifyPledgeConfirmed(pledgeId: string) {
+  try {
+    const pledge = await prisma.taskFundingPledge.findFirst({
+      where: { deletedAt: null, id: pledgeId },
+      select: {
+        cardBrand: true,
+        cardLast4: true,
+        committedAmountCents: true,
+        id: true,
+        pledgedByUser: { select: { email: true } },
+        pledgedByUserId: true,
+        status: true,
+        target: {
+          select: {
+            expiresAt: true,
+            task: { select: { id: true, title: true } },
+          },
+        },
+      },
+    });
+    // A missing email is a real state (org/soft pledges), not a swallowed
+    // error — the guard below logs and skips the send.
+    const toEmail = pledge?.pledgedByUser?.email;
+    if (!pledge || !toEmail) {
+      log.warn("Confirmed pledge has no recipient for the confirmation email", {
+        pledgeId,
+      });
+      return;
+    }
+    if (pledge.status !== TaskFundingPledgeStatus.ACTIVE) {
+      // Cancelled/voided between the Checkout redirect and this webhook —
+      // "your card is saved" would be false, so say nothing.
+      log.info("Pledge left ACTIVE before confirmation email; skipping", {
+        pledgeId,
+        status: pledge.status,
+      });
+      return;
+    }
+
+    const amountCents = toChargeableAmountCents(pledge.committedAmountCents);
+    if (amountCents == null) {
+      log.warn("Pledge amount is not representable for confirmation email", {
+        committedAmountCents: pledge.committedAmountCents.toString(),
+        pledgeId,
+      });
+      return;
+    }
+
+    const result = await sendPledgeConfirmationEmail({
+      amountCents,
+      pledge: {
+        cardBrand: pledge.cardBrand,
+        cardLast4: pledge.cardLast4,
+        id: pledge.id,
+        pledgedByUserId: pledge.pledgedByUserId,
+      },
+      target: { expiresAt: pledge.target.expiresAt },
+      task: { id: pledge.target.task.id, title: pledge.target.task.title },
+      toEmail,
+    });
+    log.info("Pledge confirmation email", { pledgeId, status: result.status });
+  } catch (error) {
+    log.error("Failed to send pledge confirmation email", { error, pledgeId });
+  }
+}
+
 export interface PledgeSetupCompletionResult {
   chargeResult: MaybeChargeCallablePledgesResult;
   pledgeId: string;
@@ -907,6 +1164,8 @@ export async function handlePledgeSetupSessionCompleted(
     pledgeId: pledge.id,
     targetId: pledge.targetId,
   });
+
+  await notifyPledgeConfirmed(pledge.id);
 
   const chargeResult = await maybeChargeCallablePledges(pledge.targetId);
   return { chargeResult, pledgeId: pledge.id, targetId: pledge.targetId };
