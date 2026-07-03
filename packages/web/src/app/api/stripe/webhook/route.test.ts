@@ -8,8 +8,10 @@ const mocks = vi.hoisted(() => ({
   commerceOrderUpdate: vi.fn(),
   constructEvent: vi.fn(),
   fulfillShirtCheckoutSession: vi.fn(),
+  handlePledgeSetupSessionCompleted: vi.fn(),
   headersGet: vi.fn(),
   isStripeConfigured: vi.fn(),
+  maybeChargeCallablePledges: vi.fn(),
   recordTaskFundingChargeDisputed: vi.fn(),
   recordTaskFundingChargeRefunded: vi.fn(),
   recordTaskFundingCheckoutFailed: vi.fn(),
@@ -17,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   serverEnv: {
     STRIPE_WEBHOOK_SECRET: "whsec_test" as string | undefined,
   },
+  settlePledgeCallPaymentIntent: vi.fn(),
   userFindUnique: vi.fn(),
 }));
 
@@ -68,6 +71,13 @@ vi.mock("@/lib/task-funding/payments.server", () => ({
   recordTaskFundingCheckoutFailed: mocks.recordTaskFundingCheckoutFailed,
   recordTaskFundingCheckoutPaid: mocks.recordTaskFundingCheckoutPaid,
   TASK_FUNDING_ORDER_TYPE: "task_funding",
+}));
+
+vi.mock("@/lib/task-funding/escrow.server", () => ({
+  handlePledgeSetupSessionCompleted: mocks.handlePledgeSetupSessionCompleted,
+  maybeChargeCallablePledges: mocks.maybeChargeCallablePledges,
+  settlePledgeCallPaymentIntent: mocks.settlePledgeCallPaymentIntent,
+  TASK_FUNDING_PLEDGE_SETUP_KIND: "task-funding-pledge-setup",
 }));
 
 import { POST } from "./route";
@@ -194,13 +204,107 @@ describe("POST /api/stripe/webhook", () => {
       },
       type: "checkout.session.completed",
     });
-    mocks.recordTaskFundingCheckoutPaid.mockResolvedValue({ id: "tfp_123" });
+    mocks.recordTaskFundingCheckoutPaid.mockResolvedValue({
+      id: "tfp_123",
+      targetId: "target_123",
+    });
+    mocks.maybeChargeCallablePledges.mockResolvedValue({
+      charged: [],
+      declined: [],
+      fullyFunded: false,
+    });
 
     const res = await POST(makeWebhookRequest());
 
     expect(res.status).toBe(200);
     expect(mocks.recordTaskFundingCheckoutPaid).toHaveBeenCalledWith(session);
+    // Paid checkout money counts toward the charging threshold, so the paid
+    // path must attempt to call card-backed pledges on the same target.
+    expect(mocks.maybeChargeCallablePledges).toHaveBeenCalledWith("target_123");
     expect(mocks.activityCreate).not.toHaveBeenCalled();
     expect(mocks.commerceOrderFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("routes setup-mode pledge sessions to the pledge setup handler", async () => {
+    const session = {
+      id: "cs_test_pledge_setup",
+      metadata: {
+        kind: "task-funding-pledge-setup",
+        pledgeId: "pledge_123",
+        target_id: "target_123",
+        task_id: "task_123",
+      },
+      mode: "setup",
+      setup_intent: "seti_123",
+    };
+    mocks.constructEvent.mockReturnValue({
+      data: { object: session },
+      type: "checkout.session.completed",
+    });
+    mocks.handlePledgeSetupSessionCompleted.mockResolvedValue({
+      chargeResult: { charged: [], declined: [], fullyFunded: false },
+      pledgeId: "pledge_123",
+      targetId: "target_123",
+    });
+
+    const res = await POST(makeWebhookRequest());
+
+    expect(res.status).toBe(200);
+    expect(mocks.handlePledgeSetupSessionCompleted).toHaveBeenCalledWith(
+      session,
+    );
+    expect(mocks.recordTaskFundingCheckoutPaid).not.toHaveBeenCalled();
+    expect(mocks.activityCreate).not.toHaveBeenCalled();
+  });
+
+  it("settles pledge-call payment intents flagged by metadata", async () => {
+    const paymentIntent = {
+      id: "pi_pledge_call",
+      metadata: {
+        order_type: "task_funding",
+        pledgeId: "pledge_123",
+        task_funding_payment_id: "tfp_123",
+      },
+      status: "succeeded",
+    };
+    mocks.constructEvent.mockReturnValue({
+      data: { object: paymentIntent },
+      type: "payment_intent.succeeded",
+    });
+    mocks.settlePledgeCallPaymentIntent.mockResolvedValue({
+      outcome: "succeeded",
+      paymentId: "tfp_123",
+      pledgeId: "pledge_123",
+      targetId: "target_123",
+    });
+
+    const res = await POST(makeWebhookRequest());
+
+    expect(res.status).toBe(200);
+    expect(mocks.settlePledgeCallPaymentIntent).toHaveBeenCalledWith(
+      paymentIntent,
+    );
+  });
+
+  it("ignores payment intents without pledge-call metadata", async () => {
+    mocks.constructEvent.mockReturnValue({
+      data: {
+        object: {
+          id: "pi_checkout",
+          metadata: {
+            order_type: "task_funding",
+            task_funding_payment_id: "tfp_456",
+          },
+          status: "succeeded",
+        },
+      },
+      type: "payment_intent.succeeded",
+    });
+
+    const res = await POST(makeWebhookRequest());
+
+    expect(res.status).toBe(200);
+    // Pay-now checkout intents settle via checkout.session events, never here.
+    expect(mocks.settlePledgeCallPaymentIntent).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 
 export interface TaskFundingCheckoutFormProps {
   defaultAmountCents?: number;
+  signedIn: boolean;
+  signInHref: string;
   taskId: string;
 }
+
+type SubmitAction = "pledge" | "checkout";
 
 function formatDollars(cents: number) {
   return Math.max(1, Math.round(cents / 100)).toString();
@@ -20,6 +25,8 @@ function parseDollarInput(value: string) {
 
 export function TaskFundingCheckoutForm({
   defaultAmountCents = 2500,
+  signedIn,
+  signInHref,
   taskId,
 }: TaskFundingCheckoutFormProps) {
   const [amount, setAmount] = useState(formatDollars(defaultAmountCents));
@@ -28,11 +35,10 @@ export function TaskFundingCheckoutForm({
   const [publicDisplay, setPublicDisplay] = useState(false);
   const [publicName, setPublicName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<SubmitAction | null>(null);
   const amountCents = useMemo(() => parseDollarInput(amount), [amount]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submit(action: SubmitAction) {
     setError(null);
 
     if (amountCents == null || amountCents < 100) {
@@ -40,18 +46,30 @@ export function TaskFundingCheckoutForm({
       return;
     }
 
-    setSubmitting(true);
+    setSubmitting(action);
     try {
-      const response = await fetch(`/api/tasks/${encodeURIComponent(taskId)}/fund/checkout`, {
-        body: JSON.stringify({
-          amountCents,
-          donorEmail: donorEmail.trim() || null,
-          donorName: donorName.trim() || null,
-          publicDisplay,
-          publicName: publicName.trim() || donorName.trim() || null,
-          sourceReferrer: document.referrer || null,
-          sourceUrl: window.location.href,
-        }),
+      const path =
+        action === "pledge"
+          ? `/api/tasks/${encodeURIComponent(taskId)}/fund/pledge-setup`
+          : `/api/tasks/${encodeURIComponent(taskId)}/fund/checkout`;
+      const body =
+        action === "pledge"
+          ? {
+              amountCents,
+              publicDisplay,
+              publicName: publicName.trim() || donorName.trim() || null,
+            }
+          : {
+              amountCents,
+              donorEmail: donorEmail.trim() || null,
+              donorName: donorName.trim() || null,
+              publicDisplay,
+              publicName: publicName.trim() || donorName.trim() || null,
+              sourceReferrer: document.referrer || null,
+              sourceUrl: window.location.href,
+            };
+      const response = await fetch(path, {
+        body: JSON.stringify(body),
         headers: { "content-type": "application/json" },
         method: "POST",
       });
@@ -70,8 +88,13 @@ export function TaskFundingCheckoutForm({
           ? checkoutError.message
           : "Checkout failed.",
       );
-      setSubmitting(false);
+      setSubmitting(null);
     }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await submit("pledge");
   }
 
   return (
@@ -154,13 +177,39 @@ export function TaskFundingCheckoutForm({
 
       {error ? <p className="text-sm font-bold text-destructive">{error}</p> : null}
 
-      <button
-        className="inline-flex min-h-10 w-full items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-60 sm:w-auto"
-        disabled={submitting}
-        type="submit"
-      >
-        {submitting ? "Opening Stripe..." : "Fund this task"}
-      </button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        {signedIn ? (
+          <button
+            className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground disabled:opacity-60"
+            disabled={submitting !== null}
+            type="submit"
+          >
+            {submitting === "pledge"
+              ? "Opening Stripe..."
+              : "Pledge — charged only if funded"}
+          </button>
+        ) : (
+          <Link
+            className="inline-flex min-h-10 items-center justify-center border border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
+            href={signInHref}
+          >
+            Sign in to pledge
+          </Link>
+        )}
+        <button
+          className="inline-flex min-h-10 items-center justify-center border border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background disabled:opacity-60"
+          disabled={submitting !== null}
+          onClick={() => void submit("checkout")}
+          type="button"
+        >
+          {submitting === "checkout" ? "Opening Stripe..." : "Pay now"}
+        </button>
+      </div>
+
+      <p className="text-xs font-bold text-muted-foreground">
+        Your card is charged only when this task is fully funded. If it dies,
+        charged money comes back.
+      </p>
     </form>
   );
 }

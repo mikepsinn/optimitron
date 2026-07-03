@@ -89,7 +89,7 @@ function decimalDollarsToCents(value: Prisma.Decimal | number | null | undefined
   return Math.round(numeric * 100);
 }
 
-function normalizeTaskFundingAmountCents(value: number) {
+export function normalizeTaskFundingAmountCents(value: number) {
   if (!Number.isFinite(value)) {
     throw new Error("Funding amount is required.");
   }
@@ -108,7 +108,7 @@ export function getTaskFundingTransferGroup(taskId: string) {
   return `task_funding_${safeTaskId}`;
 }
 
-function chooseTargetAmountCents(input: {
+export function chooseTargetAmountCents(input: {
   compensationMaxAmountMinorUnits: bigint | null;
   estimatedCashCostUsdBase: Prisma.Decimal | number | null | undefined;
 }) {
@@ -136,7 +136,7 @@ function getLatestChargeId(paymentIntent: Stripe.PaymentIntent | null) {
   return latestCharge?.id ?? undefined;
 }
 
-async function refreshTaskFundingTargetStatus(
+export async function refreshTaskFundingTargetStatus(
   targetId: string,
   db: Pick<
     Prisma.TransactionClient,

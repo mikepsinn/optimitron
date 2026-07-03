@@ -635,6 +635,8 @@ export default async function TaskDetailPage({
                 ) : null}
                 <TaskFundingCheckoutForm
                   defaultAmountCents={defaultFundingAmountCents}
+                  signedIn={Boolean(userId)}
+                  signInHref={signInHref}
                   taskId={task.id}
                 />
               </div>
