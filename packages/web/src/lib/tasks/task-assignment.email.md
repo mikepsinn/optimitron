@@ -25,12 +25,12 @@ NEW TASK FOR SAMPLE ASSIGNEE
 
 ## Sign the 1% Treaty for {country}
 
-The 1% Treaty needs your country's signature. Sign the document, share the link with two people you love, and verify that your local treaty signer has been contacted.
+The 1% Treaty needs your country's signature. Sign the document, hire two people you love with your referral link, and verify that your local treaty signer has been contacted.
 
 Read [the manual](https://manual.warondisease.org/) before you start.
 
 - Sign the treaty.
-- Share the link with two people you love.
+- Hire two people you love with your referral link.
 - Verify your local treaty signer has been contacted.
 
 ```text

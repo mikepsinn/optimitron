@@ -91,7 +91,7 @@ export function getFixedTaskPayoutAmountCents(
  * transaction-level advisory lock forces each read+transition pair to run one at
  * a time; the lock auto-releases at COMMIT/ROLLBACK.
  */
-async function withTaskFundingLock<T>(
+export async function withTaskFundingLock<T>(
   taskId: string,
   fn: (tx: Prisma.TransactionClient) => Promise<T>,
 ): Promise<T> {

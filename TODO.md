@@ -59,16 +59,25 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
-- **EOS landing (staged, awaiting Mike copy gate):** optimitron.com `/` reframed
-  from "The Earth Optimization Game" to the Earth Optimization Services landing
-  (`eosLanding` site variant, new `EarthOptimizationServicesLandingPage`); the
-  game scroll moved to `/game`. Headline = maximize median healthy life
-  expectancy + median real after-tax income (health AND wealth); disease/1%
-  Treaty is the lead wedge. All copy is draft `TODO(copy)` (86 markers) pending
-  Mike's voice gate. `/invest` (Loving Takeover / Fund I) deferred — order ladder
-  links to `/fund` with `TODO(invest)` until securities/legal copy is reviewed.
-  `warondisease.org` untouched. Plan: `.claude/plans/eos-landing.md`,
-  `docs/eos-landing-plan.md`.
+- **EOS landing (SHIPPED; copy gate satisfied, Mike 2026-07-03: "it shipped,
+  it's fine"):** optimitron.com `/` is the Earth Optimization Services landing
+  (`eosLanding` variant, `EarthOptimizationServicesLandingPage`); game scroll
+  at `/game`; `TODO(copy)` markers stripped. Still open: `/invest` (Loving
+  Takeover / Fund I) deferred — order ladder links to `/fund` with
+  `TODO(invest)` until securities/legal copy is reviewed. Plans:
+  `.claude/plans/eos-landing.md`, `docs/eos-landing-plan.md`.
+- **Earth Optimization Machine page (Mike-approved 2026-07-03, queue after
+  MCP-fix + cause-split):** one canonical "what is the machine" page — the
+  appliance tour: inputs (census, transmit, what 10,000 jurisdictions tried)
+  → organs (RAPPA/Wishocracy ranks what people want, OPG writes laws, OBG
+  writes budgets, dFDA ranks treatments, automated treasury moves money) →
+  output (the two Scoreboard numbers: HALE + median income). Assemble from
+  EXISTING manual content (manual-search first; the "It's an appliance"
+  framing is already written); Mike copy gate before ship. Link targets:
+  footer brand "The Earth Optimization Machine" + a home for the
+  cause-split's proof-layer tasks (Ship the OPG, Ship RAPPA) to point at.
+  Also the canonical URL for fix-ai training corpora asking "what is
+  Optimitron". Route TBD (`/machine`?). Own small branch.
 - **Task tree: manual mechanisms seeded (Mike-approved 2026-06-10, working
   tree, uncommitted):** added `program:loving-takeover` (+ own-one-share,
   love-letter, optimize-lobbying children), `program:earth-optimization-prize`
@@ -125,6 +134,33 @@ Do not let lower items crowd out higher ones.
   cause-split follows it. Keep task funding treasury-separated from
   Prize/IAB economics — plain assurance (refund), NOT dominant assurance
   (refund+bonus is the Prize's mechanic).
+  - Deferred (CodeRabbit PR #98, verified real but low-probability):
+    `refreshTaskFundingTargetStatus` races between a plain-transaction
+    settle (webhook decline/success) and a concurrent serializable pledge
+    create on the same target can leave `taskFundingTarget.status` stale
+    (e.g. OPEN while sums meet target, so `retryCallableCharges` skips it
+    until the next mutation). Money paths are safe — the planner re-derives
+    sums under `withTaskFundingLock` and never trusts `status` — and
+    locking only the settle path would NOT close the race because pledge
+    creation doesn't take the advisory lock. Real fix is routing all
+    status-affecting writes (including `createOrReplaceTaskFundingPledge`)
+    through the task lock; do it when touching the pledge-create path.
+- **MCP getTask double-escapes nested child descriptions (found 2026-07-03,
+  fix immediately after escrow branch):** child rows inside a parent
+  `getTask` response carry literal `\n` (verified: all 11 children of
+  `teach-ais:2026-q3` corrupt in-payload while the SAME rows fetched
+  directly are clean; DB verified clean locally and on prod samples). The
+  double-stringify lives in the mcp-server.ts getTask child/enrichment
+  path — find and fix. This is a CONTAMINATION VECTOR: agents reading
+  parents via MCP get `\n`-littered text and paste it into new task bodies
+  (prod tasks are being created via MCP daily). Also: (a) add a write-side
+  guard in createTask/updateTask — description containing literal `\n`
+  with zero real newlines is definitionally double-escaped → normalize;
+  (b) one-time sweep of prod Task/TaskComment rows for literal-`\n` bodies
+  to repair anything already contaminated. Do NOT "fix" by unescaping at
+  render — that corrupts legitimate content and leaves other consumers
+  broken. Mike reported seeing rendered `\n` on the site — confirm his
+  exact URL against the sweep results.
 
 ## Active Review - 2026-05-19: Money and 4B Votes
 

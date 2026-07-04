@@ -101,11 +101,15 @@ async function createTarget(input: {
 
 async function createPledge(input: {
   committedAmountCents: bigint;
+  createdAt?: Date;
   pledgerKind: TaskFundingPledgerKind;
   pledgeActorKey: string;
   pledgedByUserId: string;
   pledgerPersonId?: string;
   pledgerOrganizationId?: string;
+  publicDisplay?: boolean;
+  publicNameSnapshot?: string;
+  stripeSetupIntentId?: string;
   targetId: string;
   unitKey?: string;
   unitQuantity?: string;
@@ -119,11 +123,15 @@ async function createPledge(input: {
       pledgedByUserId: input.pledgedByUserId,
       pledgerPersonId: input.pledgerPersonId,
       pledgerOrganizationId: input.pledgerOrganizationId,
+      publicDisplay: input.publicDisplay ?? false,
+      publicNameSnapshot: input.publicNameSnapshot ?? null,
+      stripeSetupIntentId: input.stripeSetupIntentId ?? null,
       unitKey: input.unitKey ?? "usd",
       unitQuantity: new Prisma.Decimal(input.unitQuantity ?? "1"),
       committedAmountCents: input.committedAmountCents,
       conversionVersion: TASK_FUNDING_CONVERSION_VERSION,
       status: TaskFundingPledgeStatus.ACTIVE,
+      ...(input.createdAt ? { createdAt: input.createdAt } : {}),
     },
   });
 }
@@ -152,6 +160,49 @@ describe("TaskFundingProgress", () => {
     expect(html).toContain("0%");
     expect(html).toContain("Open");
     expect(html).toContain("0 supporters");
+    // Zero public supporters -> no backer wall at all, not an empty state.
+    expect(html).not.toContain("data-task-funding-backer-wall");
+  });
+
+  it("renders the backer wall for opted-in card-backed pledges", async () => {
+    const { target, task } = await createTarget({
+      suffix: "wall",
+      targetAmountCents: 10_000n,
+    });
+    const alice = await createUserWithPerson("wall_alice", "Wall Alice");
+    const bob = await createUserWithPerson("wall_bob", "Wall Bob");
+    const twoDaysAgo = new Date(Date.now() - (2 * 24 + 1) * 60 * 60 * 1000);
+
+    await createPledge({
+      targetId: target.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      pledgeActorKey: `person:${alice.person.id}`,
+      pledgedByUserId: alice.user.id,
+      pledgerPersonId: alice.person.id,
+      committedAmountCents: 2000n,
+      createdAt: twoDaysAgo,
+      publicDisplay: true,
+      publicNameSnapshot: "Wall Alice",
+      stripeSetupIntentId: `${TEST_PREFIX}seti_wall_alice`,
+    });
+    // Private pledge stays off the wall.
+    await createPledge({
+      targetId: target.id,
+      pledgerKind: TaskFundingPledgerKind.PERSON,
+      pledgeActorKey: `person:${bob.person.id}`,
+      pledgedByUserId: bob.user.id,
+      pledgerPersonId: bob.person.id,
+      committedAmountCents: 3000n,
+      publicDisplay: false,
+      publicNameSnapshot: "Wall Bob",
+      stripeSetupIntentId: `${TEST_PREFIX}seti_wall_bob`,
+    });
+
+    const html = await renderProgress({ taskId: task.id });
+
+    expect(html).toContain("data-task-funding-backer-wall");
+    expect(html).toContain("Wall Alice — pledged — 2 days ago");
+    expect(html).not.toContain("Wall Bob");
   });
 
   it("renders the individual and organization breakdown", async () => {

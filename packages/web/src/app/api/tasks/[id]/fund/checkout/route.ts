@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth-utils";
+import { createLogger } from "@/lib/logger";
 import {
   createTaskFundingCheckoutSession,
   MAX_TASK_FUNDING_AMOUNT_CENTS,
@@ -8,6 +9,8 @@ import {
 } from "@/lib/task-funding/payments.server";
 
 export const runtime = "nodejs";
+
+const log = createLogger("task-funding-checkout");
 
 const CheckoutBodySchema = z.object({
   amountCents: z
@@ -63,6 +66,18 @@ export async function POST(
     });
   } catch (error) {
     const status = getErrorStatus(error);
+    if (status >= 500) {
+      // Raw internals ("Stripe is not configured.") read as a broken or fake
+      // checkout to users. Log the real error; show a calm, safe one.
+      log.error("Task funding checkout failed", { error });
+      return NextResponse.json(
+        {
+          error:
+            "Payments are temporarily down. Nothing was charged — try again in a few minutes.",
+        },
+        { status },
+      );
+    }
     return NextResponse.json(
       {
         error:

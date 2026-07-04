@@ -16,6 +16,12 @@ import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
 import { fulfillShirtCheckoutSession } from "@/lib/shirt-fulfillment.server";
 import {
+  handlePledgeSetupSessionCompleted,
+  maybeChargeCallablePledges,
+  settlePledgeCallPaymentIntent,
+  TASK_FUNDING_PLEDGE_SETUP_KIND,
+} from "@/lib/task-funding/escrow.server";
+import {
   recordTaskFundingChargeDisputed,
   recordTaskFundingChargeRefunded,
   recordTaskFundingCheckoutFailed,
@@ -70,8 +76,15 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (
+          session.mode === "setup" &&
+          session.metadata?.kind === TASK_FUNDING_PLEDGE_SETUP_KIND
+        ) {
+          await handlePledgeSetupSessionCompleted(session);
+          break;
+        }
         if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
-          await recordTaskFundingCheckoutPaid(session);
+          await settleTaskFundingCheckoutPaid(session);
           break;
         }
         if (session.metadata?.order_type === "shirt") {
@@ -90,7 +103,21 @@ export async function POST(req: Request) {
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.metadata?.order_type === TASK_FUNDING_ORDER_TYPE) {
-          await recordTaskFundingCheckoutPaid(session);
+          await settleTaskFundingCheckoutPaid(session);
+        }
+        break;
+      }
+      case "payment_intent.succeeded":
+      case "payment_intent.payment_failed": {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        // Only off-session pledge-call charges carry pledgeId metadata;
+        // pay-now checkout intents settle through their checkout.session
+        // events instead.
+        if (
+          paymentIntent.metadata?.order_type === TASK_FUNDING_ORDER_TYPE &&
+          paymentIntent.metadata?.pledgeId
+        ) {
+          await settlePledgeCallPaymentIntent(paymentIntent);
         }
         break;
       }
@@ -145,6 +172,15 @@ export async function POST(req: Request) {
 function getStripeObjectId(value: string | { id?: string | null } | null | undefined) {
   if (typeof value === "string") return value;
   return value?.id ?? undefined;
+}
+
+/**
+ * Paid checkout money counts toward the fully-funded-for-charging threshold,
+ * so a successful pay-now payment may make card-backed pledges callable.
+ */
+async function settleTaskFundingCheckoutPaid(session: Stripe.Checkout.Session) {
+  const payment = await recordTaskFundingCheckoutPaid(session);
+  await maybeChargeCallablePledges(payment.targetId);
 }
 
 async function recordStoreOfferPayment(session: Stripe.Checkout.Session) {

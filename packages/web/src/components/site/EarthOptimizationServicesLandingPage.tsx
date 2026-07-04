@@ -13,8 +13,8 @@ import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
 import { fullManualPaperLink } from "@/lib/routes";
 
-const requestDataRoomSubject = "EOS data room request"; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA.
-const bookCallSubject = "EOS investor call"; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA.
+const requestDataRoomSubject = "EOS data room request";
+const bookCallSubject = "EOS investor call";
 const requestDataRoomHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
   requestDataRoomSubject,
 )}`;
@@ -23,98 +23,98 @@ const bookCallHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
 )}`;
 const calculatorHref = "#eos-calculator";
 
-const mastheadLabel = "Earth Optimization Services"; // TODO(copy): Mike copy gate. Source: Pivot 3 masthead.
-const mastheadStatus = "Now accepting applications."; // TODO(copy): Mike copy gate. Source: Pivot 2 terms/CTA.
-const investorActionsLabel = "Investor actions"; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA.
-const calculatorLabel = "See what your stake becomes"; // TODO(copy): Mike copy gate. Source: Pivot 2 calculator CTA.
-const requestDataRoomLabel = "Request the data room"; // TODO(copy): Mike copy gate. Source: Pivot 3 goal.
-const bookCallLabel = "Book a call"; // TODO(copy): Mike copy gate. Source: Pivot 3 goal.
+const mastheadLabel = "Earth Optimization Services";
+const mastheadStatus = "Now accepting applications.";
+const investorActionsLabel = "Investor actions";
+const calculatorLabel = "See what your stake becomes";
+const requestDataRoomLabel = "Request the data room";
+const bookCallLabel = "Book a call";
 
 const heroHeading =
-  "Governments are supposed to make people healthier and richer. We're buying the power to make them."; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-const whatThisIsHeading = "What this is"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
-const thermostatHeading = "Your government has no thermostat."; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+  "Governments are supposed to make people healthier and richer. We're buying the power to make them.";
+const whatThisIsHeading = "What this is";
+const thermostatHeading = "Your government has no thermostat.";
 const thermostatDeck =
-  "Your oven measures the temperature, compares it to what you asked for, and adjusts. So does your fridge, your cruise control, your toilet. Your government runs the most complex system on Earth with less feedback than a toaster."; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy and earth-optimization-services.qmd:177-224.
-const howItWorksHeading = "How it works"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
-const employeeManualHeading = "Employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
+  "Your oven measures the temperature, compares it to what you asked for, and adjusts. So does your fridge, your cruise control, your toilet. Your government runs the most complex system on Earth with less feedback than a toaster.";
+const howItWorksHeading = "How it works";
+const employeeManualHeading = "Employee manual";
 const employeeManualDeck =
-  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. Eight billion presidents, no boss. You run the planet now."; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
-const employeeManualLabel = "Read the employee manual"; // TODO(copy): Mike copy gate. Source: humanity-manager-employment-agreement.qmd.
-const whyItPaysHeading = "Why it pays"; // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-const calculatorHeading = "Your calculator"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
+  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. Eight billion presidents, no boss. You run the planet now.";
+const employeeManualLabel = "Read the employee manual";
+const whyItPaysHeading = "Why it pays";
+const calculatorHeading = "Your calculator";
 const calculatorDeck =
-  "Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing."; // TODO(copy): Mike copy gate. Source: Pivot 2 calculator framing.
-const termsHeading = "Terms"; // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
+  "Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing.";
+const termsHeading = "Terms";
 const termsDeck =
-  "The pitch is public. The paperwork is not. For accredited investors, the securities materials live off-page, where the law wants them."; // TODO(copy): Mike copy gate. Source: Pivot 3 legal gate.
-const finalHeading = "Talk to us"; // TODO(copy): Mike copy gate. Source: Pivot 3 page flow.
+  "The pitch is public. The paperwork is not. For accredited investors, the securities materials live off-page, where the law wants them.";
+const finalHeading = "Talk to us";
 const finalDeck =
-  "Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first."; // TODO(copy): Mike copy gate. Source: Pivot 3 CTA/legal gate.
+  "Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first.";
 const legalGateText =
-  "Accredited-only securities discussion. Not an offer. Not investment advice."; // TODO(copy): Mike copy gate. Source: Pivot 3 terms and calculator disclaimer.
+  "Accredited-only securities discussion. Not an offer. Not investment advice.";
 
 const thermostatPanels = [
   {
-    caption: "This is why your food is edible.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    feedback: "Thermometer feedback", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    flow: ["Set 350F", "Heat", "Oven", "Food"], // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    kicker: "it checks, then adjusts", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    title: "Your oven", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+    caption: "This is why your food is edible.",
+    feedback: "Thermometer feedback",
+    flow: ["Set 350F", "Heat", "Oven", "Food"],
+    kicker: "it checks, then adjusts",
+    title: "Your oven",
   },
   {
     caption:
-      "It never checks whether the policy worked. This is why your citizens are dead.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    feedback: "no sensor, no adjust", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    flow: ['"War on Drugs"', "$1 trillion", "policy", "???"], // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy and earth-optimization-services.qmd:200-219.
-    kicker: "it doesn't check anything", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    stats: ["Overdose deaths 6,000 -> 107,000", "Budget change: none", "53 years"], // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy and earth-optimization-services.qmd:211-219.
-    title: "Your government", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+      "It never checks whether the policy worked. This is why your citizens are dead.",
+    feedback: "no sensor, no adjust",
+    flow: ['"War on Drugs"', "$1 trillion", "policy", "???"],
+    kicker: "it doesn't check anything",
+    stats: ["Overdose deaths 6,000 -> 107,000", "Budget change: none", "53 years"],
+    title: "Your government",
   },
   {
     caption:
-      "Measure two numbers — how long people live, how much they earn — keep the policies that raise them, drop the ones that don't, repeat.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    feedback: "health and income feedback", // TODO(copy): Mike copy gate. Source: Pivot 3 thermostat summary.
-    flow: ["Measure", "Compare", "Adjust", "Repeat"], // TODO(copy): Mike copy gate. Source: Pivot 3 thermostat summary.
-    kicker: "installs the thermostat", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    title: "Earth Optimization Services", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+      "Measure two numbers — how long people live, how much they earn — keep the policies that raise them, drop the ones that don't, repeat.",
+    feedback: "health and income feedback",
+    flow: ["Measure", "Compare", "Adjust", "Repeat"],
+    kicker: "installs the thermostat",
+    title: "Earth Optimization Services",
   },
 ] as const;
 
 const howItWorksSteps = [
   {
     body:
-      "Buy a controlling share of the big weapons companies. The people you buy out get richer doing it - the share price goes up, not down.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    title: "Buy the power", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+      "Buy a controlling share of the big weapons companies. The people you buy out get richer doing it - the share price goes up, not down.",
+    title: "Buy the power",
   },
   {
     body:
-      "Instead of one boardroom deciding what that power does, every person gets a say - simple this-or-that choices that add up to what the public actually wants.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    title: "Hand it to everyone", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+      "Instead of one boardroom deciding what that power does, every person gets a say - simple this-or-that choices that add up to what the public actually wants.",
+    title: "Hand it to everyone",
   },
   {
     body:
-      "Feed in two centuries of data from nearly every country: which laws actually made people live longer and earn more. Rank them.", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
-    title: "Find the policies that work", // TODO(copy): Mike copy gate. Source: Pivot 3 exact copy.
+      "Feed in two centuries of data from nearly every country: which laws actually made people live longer and earn more. Rank them.",
+    title: "Find the policies that work",
   },
 ] as const;
 
 const terms = [
   {
-    body: "Friends and family minimum.", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
-    label: "$25,000", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
+    body: "Friends and family minimum.",
+    label: "$25,000",
   },
   {
-    body: "Institutional minimum.", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
-    label: "$100,000", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
+    body: "Institutional minimum.",
+    label: "$100,000",
   },
   {
-    body: "Earth Optimization Services shares and Incentive Alignment Bonds.", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
-    label: "2 products", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
+    body: "Earth Optimization Services shares and Incentive Alignment Bonds.",
+    label: "2 products",
   },
   {
-    body: "Founder equity.", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
-    label: "0%", // TODO(copy): Mike copy gate. Source: Pivot 3 terms.
+    body: "Founder equity.",
+    label: "0%",
   },
 ] as const;
 
@@ -280,7 +280,6 @@ export function EarthOptimizationServicesLandingPage() {
       </SectionContainer>
 
       <PageSection title={whatThisIsHeading}>
-        {/* TODO(copy): Mike copy gate. Source: Pivot 3 exact copy with parameterized ratio. */}
         <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
           A government has one job: make the median person healthier and richer.
           Most are bad at it, because the people who profit from the current
@@ -326,11 +325,9 @@ export function EarthOptimizationServicesLandingPage() {
           ))}
           <article className="border-b-2 border-foreground py-6 md:border-r-2 md:px-6 md:even:border-r-0">
             <p className="text-sm font-black uppercase text-muted-foreground">4</p>
-            {/* TODO(copy): Mike copy gate. Source: Pivot 3 exact copy. */}
             <h3 className="mt-2 text-2xl font-black uppercase">
               Use the lobby to install them
             </h3>
-            {/* TODO(copy): Mike copy gate. Source: Pivot 3 exact copy with parameterized funding. */}
             <p className="mt-4 text-base font-bold leading-7">
               The lobbying budget that used to block the fix now pays to pass it
               - starting with{" "}
@@ -348,7 +345,6 @@ export function EarthOptimizationServicesLandingPage() {
       </PageSection>
 
       <PageSection title={whyItPaysHeading}>
-        {/* TODO(copy): Mike copy gate. Source: Pivot 3 exact copy with parameterized takeover cost. */}
         <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
           The whole takeover costs about{" "}
           <ParameterValue

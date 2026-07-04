@@ -41,9 +41,11 @@
 - OPEN
 - SUPPORTERS
 - 1 SUPPORTER
+- Ada Example — paid — 1 day ago
 #### SEED THE SHIRT CASCADE
 - $2,500 of $50,000,000 paid or pledged
 - $49,997,500 remaining - 0%
+- Grace Example — paid — 1 day ago
 #### ESTABLISH THE COURT OF HUMANITY
 - $0 of $30,000,000 paid or pledged
 - $30,000,000 remaining - 0%
