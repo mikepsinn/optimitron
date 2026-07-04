@@ -76,7 +76,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     district: "Massachusetts",
     chamber: "senate",
     summary:
-      "Progressive redistributive posture that strongly favors education, treatment, and anti-capture cuts to fossil and defense spending.",
+      "Progressive redistributive posture that strongly favors education, treatment, and anti-capture cuts to fossil and military spending.",
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
@@ -116,7 +116,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     district: "Connecticut",
     chamber: "senate",
     summary:
-      "Reallocation-focused center-left profile that still funds defense, but tilts harder toward treatment and education than the caucus median.",
+      "Reallocation-focused center-left profile that still funds the military, but tilts harder toward treatment and education than the caucus median.",
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
@@ -156,7 +156,7 @@ export const ALIGNMENT_BENCHMARKS: AlignmentBenchmarkProfile[] = [
     district: "Maine",
     chamber: "senate",
     summary:
-      "Moderate Republican benchmark that keeps defense and enforcement meaningful but leaves room for treatment and education.",
+      "Moderate Republican benchmark that keeps military and enforcement spending meaningful but leaves room for treatment and education.",
     sourceType: "curated_real",
     sourceLabel: "Current federal benchmark profile",
     sourceNote:
