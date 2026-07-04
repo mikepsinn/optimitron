@@ -59,16 +59,25 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
-- **EOS landing (staged, awaiting Mike copy gate):** optimitron.com `/` reframed
-  from "The Earth Optimization Game" to the Earth Optimization Services landing
-  (`eosLanding` site variant, new `EarthOptimizationServicesLandingPage`); the
-  game scroll moved to `/game`. Headline = maximize median healthy life
-  expectancy + median real after-tax income (health AND wealth); disease/1%
-  Treaty is the lead wedge. All copy is draft `TODO(copy)` (86 markers) pending
-  Mike's voice gate. `/invest` (Loving Takeover / Fund I) deferred — order ladder
-  links to `/fund` with `TODO(invest)` until securities/legal copy is reviewed.
-  `warondisease.org` untouched. Plan: `.claude/plans/eos-landing.md`,
-  `docs/eos-landing-plan.md`.
+- **EOS landing (SHIPPED; copy gate satisfied, Mike 2026-07-03: "it shipped,
+  it's fine"):** optimitron.com `/` is the Earth Optimization Services landing
+  (`eosLanding` variant, `EarthOptimizationServicesLandingPage`); game scroll
+  at `/game`; `TODO(copy)` markers stripped. Still open: `/invest` (Loving
+  Takeover / Fund I) deferred — order ladder links to `/fund` with
+  `TODO(invest)` until securities/legal copy is reviewed. Plans:
+  `.claude/plans/eos-landing.md`, `docs/eos-landing-plan.md`.
+- **Earth Optimization Machine page (Mike-approved 2026-07-03, queue after
+  MCP-fix + cause-split):** one canonical "what is the machine" page — the
+  appliance tour: inputs (census, transmit, what 10,000 jurisdictions tried)
+  → organs (RAPPA/Wishocracy ranks what people want, OPG writes laws, OBG
+  writes budgets, dFDA ranks treatments, automated treasury moves money) →
+  output (the two Scoreboard numbers: HALE + median income). Assemble from
+  EXISTING manual content (manual-search first; the "It's an appliance"
+  framing is already written); Mike copy gate before ship. Link targets:
+  footer brand "The Earth Optimization Machine" + a home for the
+  cause-split's proof-layer tasks (Ship the OPG, Ship RAPPA) to point at.
+  Also the canonical URL for fix-ai training corpora asking "what is
+  Optimitron". Route TBD (`/machine`?). Own small branch.
 - **Task tree: manual mechanisms seeded (Mike-approved 2026-06-10, working
   tree, uncommitted):** added `program:loving-takeover` (+ own-one-share,
   love-letter, optimize-lobbying children), `program:earth-optimization-prize`
