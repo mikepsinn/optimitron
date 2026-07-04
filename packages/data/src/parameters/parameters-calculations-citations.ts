@@ -3843,22 +3843,6 @@ export const AI_DIPLOMATIC_CORPS_ANNUAL_COST: Parameter = {
   manualPageTitle: "Department of Peace",
 };
 
-export const ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX: Parameter = {
-  value: 10000000.0,
-  parameterName: "ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aligned_election_commission_annual_opex",
-  unit: "USD",
-  displayName: "Aligned Election Commission Annual Operating Cost",
-  description: "Bottom-up annual operating cost of the Aligned Election Commission: the arithmetic is simple enough that engineers are the whole budget. Uncertainty propagates from the component distributions via Monte Carlo.",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "ENGINEERS × COST_PER_ENGINEER",
-  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Aligned \\times Cost_{ann} \\\\\n= 20 \\times \\$500K \\\\\n= \\$10M\n\\end{gathered}",
-  confidenceInterval: [3740425.850699416, 22999358.211654056],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html",
-  manualPageTitle: "The Aligned Election Commission",
-};
-
 export const APOCALYPSE_MARKUP: Parameter = {
   value: 2719248427416.0605,
   parameterName: "APOCALYPSE_MARKUP",
@@ -3891,23 +3875,23 @@ export const APOCALYPSE_MARKUP_MULTIPLIER: Parameter = {
 };
 
 export const AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX: Parameter = {
-  value: 200000000.0,
+  value: 150000000.0,
   parameterName: "AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_annual_opex",
   unit: "USD",
   displayName: "Automated Revenue Service Annual Operating Cost",
-  description: "Bottom-up annual operating cost of the Automated Revenue Service: engineers plus per-transaction infrastructure plus security. Uncertainty propagates from the component distributions via Monte Carlo.",
+  description: "Annual operating cost of the Automated Revenue Service: design transaction volume times the all-in comparator-anchored cost per settlement. Uncertainty propagates from the component distributions via Monte Carlo.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "ENGINEERS × COST_PER_ENGINEER + TRANSACTIONS × COST_PER_TRANSACTION + SECURITY",
-  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER} \\\\\n+ \\text{TRANSACTIONS} \\times \\text{COST\\_PER\\_TRANSACTION} \\\\\n+ \\text{SECURITY}\n\\end{gathered}",
-  confidenceInterval: [106578571.31340095, 340477778.8185683],
+  formula: "TRANSACTIONS × ALL_IN_COST_PER_TRANSACTION",
+  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Automated_{annual} \\times Cost_{all} \\\\\n= 500B \\times \\$0.0003 \\\\\n= \\$150M\n\\end{gathered}",
+  confidenceInterval: [50000000.0, 364641188.53458035],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
   manualPageTitle: "The Automated Revenue Service",
 };
 
 export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
-  value: 1666.0298507462687,
+  value: 1666.1791044776119,
   parameterName: "AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_savings_per_american_annual",
   unit: "USD",
@@ -3916,8 +3900,8 @@ export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = 
   sourceType: "calculated",
   confidence: "high",
   formula: "(TAX_COMPLIANCE_BURDEN + IRS_BUDGET − ARS_BUDGET) / US_POPULATION",
-  latex: "\\begin{gathered}\nSavings_{ann} = (\\text{TAX\\_COMPLIANCE\\_BURDEN} + \\text{IRS\\_BUDGET} − \\text{ARS\\_BUDGET}) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER} + \\text{TRANSACTIONS} \\times \\text{COST\\_PER\\_TRANSACTION} + \\text{SECURITY}\n\\end{gathered}",
-  confidenceInterval: [1418.2020471537328, 1917.2744588047267],
+  latex: "\\begin{gathered}\nSavings_{ann} = (\\text{TAX\\_COMPLIANCE\\_BURDEN} + \\text{IRS\\_BUDGET} − \\text{ARS\\_BUDGET}) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\end{gathered}",
+  confidenceInterval: [1418.398731450049, 1917.2332431165862],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
   manualPageTitle: "The Automated Revenue Service",
 };
@@ -9511,17 +9495,17 @@ export const UNEXPLORED_RATIO: Parameter = {
 };
 
 export const UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX: Parameter = {
-  value: 99705000.0,
+  value: 100500000.0,
   parameterName: "UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_annual_opex",
   unit: "USD",
   displayName: "Universal Security Administration Annual Operating Cost",
-  description: "Bottom-up annual operating cost of the Universal Security Administration: identity layer plus 365 daily deposits per citizen plus engineers. Uncertainty propagates from the component distributions via Monte Carlo.",
+  description: "Annual operating cost of the Universal Security Administration: population times the all-in comparator-anchored cost per citizen. Uncertainty propagates from the component distributions via Monte Carlo.",
   sourceType: "calculated",
   confidence: "high",
-  formula: "POPULATION × IDENTITY_COST + POPULATION × 365 × DEPOSIT_COST + ENGINEERS × COST_PER_ENGINEER",
-  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= \\text{POPULATION} \\times \\text{IDENTITY\\_COST} \\\\\n+ \\text{POPULATION} \\times 365 \\times \\text{DEPOSIT\\_COST} \\\\\n+ \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER}\n\\end{gathered}",
-  confidenceInterval: [43271726.39325468, 198663200.1746349],
+  formula: "POPULATION × ALL_IN_COST_PER_CITIZEN",
+  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Pop_{US} \\times Cost_{ann} \\\\\n= 335M \\times \\$0.3 \\\\\n= \\$100M\n\\end{gathered}",
+  confidenceInterval: [33502610.72389832, 250250471.63982713],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
   manualPageTitle: "The Universal Security Administration",
 };
@@ -10829,16 +10813,30 @@ export const AI_NEGOTIATOR_COST_PER_AGENT_HOUR: Parameter = {
   manualPageTitle: "Department of Peace",
 };
 
-export const ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT: Parameter = {
-  value: 20.0,
-  parameterName: "ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aligned_election_commission_engineer_headcount",
-  unit: "engineers",
-  displayName: "Aligned Election Commission Engineer Headcount",
-  description: "Engineering headcount assumed for alignment-score computation, public data pipelines, and campaign-fund routing.",
+export const ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX: Parameter = {
+  value: 7500000.0,
+  parameterName: "ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-algorithmic_monetary_authority_annual_opex",
+  unit: "USD",
+  displayName: "Algorithmic Monetary Authority Annual Operating Cost",
+  description: "All-in annual operating cost of the Algorithmic Monetary Authority: basket monitoring, rule execution, continuous public verification, and the humans who hold the pager. Sized as a small monitoring operation; the rule itself is one formula and requires no committee.",
   sourceType: "definition",
   confidence: "high",
-  confidenceInterval: [10.0, 60.0],
+  confidenceInterval: [3000000.0, 20000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/algorithmic-monetary-authority.html",
+  manualPageTitle: "The Algorithmic Monetary Authority",
+};
+
+export const ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX: Parameter = {
+  value: 7000000.0,
+  parameterName: "ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aligned_election_commission_annual_opex",
+  unit: "USD",
+  displayName: "Aligned Election Commission Annual Operating Cost",
+  description: "All-in annual operating cost of the Aligned Election Commission: alignment-score computation, public data pipelines, and fund routing. Sized as a small data-engineering operation; the most similar existing system is the NRA's politician scorecard, which runs on a budget that rounds to zero.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [2000000.0, 20000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html",
   manualPageTitle: "The Aligned Election Commission",
 };
@@ -10884,6 +10882,20 @@ export const APPROVED_DRUG_DISEASE_PAIRINGS: Parameter = {
   manualPageTitle: "The Untapped Therapeutic Frontier",
 };
 
+export const AUTOMATED_REVENUE_SERVICE_ALL_IN_COST_PER_TRANSACTION: Parameter = {
+  value: 0.0003,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_ALL_IN_COST_PER_TRANSACTION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_all_in_cost_per_transaction",
+  unit: "USD",
+  displayName: "All-In Cost per Settlement Transaction",
+  description: "All-in cost per settlement (three hundredths of a cent): compute, storage, security audits, and the mostly-AI workforce, amortized per transaction. Anchored to the most similar systems that exist: card networks clear transactions for internal costs in this range, and public blockchain rails settle transfers for fractions of a cent.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.0001, 0.001],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
 export const AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME: Parameter = {
   value: 500000000000.0,
   parameterName: "AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME",
@@ -10893,48 +10905,6 @@ export const AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME: Parameter = {
   description: "Design capacity: annual final-consumption settlements processed by the protocol, set well above current US card-network transaction volume.",
   sourceType: "definition",
   confidence: "high",
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
-  manualPageTitle: "The Automated Revenue Service",
-};
-
-export const AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT: Parameter = {
-  value: 200.0,
-  parameterName: "AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_engineer_headcount",
-  unit: "engineers",
-  displayName: "Automated Revenue Service Engineer Headcount",
-  description: "Engineering, security, and operations headcount assumed for running the settlement-tax protocol at national scale.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [100.0, 400.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
-  manualPageTitle: "The Automated Revenue Service",
-};
-
-export const AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION: Parameter = {
-  value: 0.0001,
-  parameterName: "AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_infra_cost_per_transaction",
-  unit: "USD",
-  displayName: "Infrastructure Cost per Settlement Transaction",
-  description: "Assumed compute, storage, and bandwidth cost per settlement (a hundredth of a cent), generous against modern payment-rail marginal costs.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [3e-05, 0.0005],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
-  manualPageTitle: "The Automated Revenue Service",
-};
-
-export const AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST: Parameter = {
-  value: 50000000.0,
-  parameterName: "AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_security_annual_cost",
-  unit: "USD",
-  displayName: "Automated Revenue Service Annual Security Budget",
-  description: "Annual budget for security audits, red teams, and bug bounties on the settlement-tax protocol.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [20000000.0, 150000000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
   manualPageTitle: "The Automated Revenue Service",
 };
@@ -11551,6 +11521,20 @@ export const DCT_PLATFORM_FUNDING_MEDIUM: Parameter = {
   manualPageTitle: "A Decentralized FDA",
 };
 
+export const DECENTRALIZED_CENSUS_BUREAU_ANNUAL_OPEX: Parameter = {
+  value: 15000000.0,
+  parameterName: "DECENTRALIZED_CENSUS_BUREAU_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-decentralized_census_bureau_annual_opex",
+  unit: "USD",
+  displayName: "Decentralized Census Bureau Annual Operating Cost",
+  description: "All-in annual operating cost of the sensor array: continuously computing, cross-checking, and integrity-auditing the statistics the machine steers by (median after-tax income aggregates, healthy-life-expectancy estimation from dFDA outcome data, data-poisoning detection). Sized as a mid-sized analytics operation; roughly 1% of what the decennial census costs per year amortized. The citizen count itself is a free byproduct of the identity layer.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [5000000.0, 40000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/decentralized-census-bureau.html",
+  manualPageTitle: "The Decentralized Census Bureau",
+};
+
 export const DEFENSE_SECTOR_RETENTION_PCT: Parameter = {
   value: 0.99,
   parameterName: "DEFENSE_SECTOR_RETENTION_PCT",
@@ -12094,20 +12078,6 @@ export const GLOBAL_TO_US_POLITICAL_COST_RATIO: Parameter = {
   confidenceInterval: [3.0, 8.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-of-change-analysis.html",
   manualPageTitle: "How Much Does It Cost to Buy All the Governments?",
-};
-
-export const GOV_REPLACEMENT_ENGINEER_ANNUAL_COST: Parameter = {
-  value: 500000.0,
-  parameterName: "GOV_REPLACEMENT_ENGINEER_ANNUAL_COST",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_replacement_engineer_annual_cost",
-  unit: "USD",
-  displayName: "Fully Loaded Annual Cost per Engineer",
-  description: "Fully loaded annual cost per engineer (salary, benefits, equipment, overhead) assumed for all government replacement modules. Set at the top of market rates.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [300000.0, 900000.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
-  manualPageTitle: "The Automated Revenue Service",
 };
 
 export const HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15: Parameter = {
@@ -12804,6 +12774,20 @@ export const TESTED_RELATIONSHIPS_ESTIMATE: Parameter = {
   manualPageTitle: "The Untapped Therapeutic Frontier",
 };
 
+export const TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX: Parameter = {
+  value: 20000000.0,
+  parameterName: "TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-transparent_securities_commission_annual_opex",
+  unit: "USD",
+  displayName: "Transparent Securities Commission Annual Operating Cost",
+  description: "All-in annual operating cost of the Transparent Securities Commission: standardized disclosure schema plus continuous fraud-pattern detection across every issuer on the ledger. Anchored to the most similar existing systems: the real-time fraud-detection operations card networks already run at market scale.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [8000000.0, 50000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/transparent-securities-commission.html",
+  manualPageTitle: "The Transparent Securities Commission",
+};
+
 export const TREATY_CAMPAIGN_BUDGET_LOBBYING: Parameter = {
   value: 650000000.0,
   parameterName: "TREATY_CAMPAIGN_BUDGET_LOBBYING",
@@ -12930,44 +12914,16 @@ export const TRIAL_RELEVANT_DISEASES_COUNT: Parameter = {
   manualPageTitle: "The Untapped Therapeutic Frontier",
 };
 
-export const UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION: Parameter = {
-  value: 0.0002,
-  parameterName: "UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_deposit_cost_per_transaction",
+export const UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL: Parameter = {
+  value: 0.3,
+  parameterName: "UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_all_in_cost_per_citizen_annual",
   unit: "USD",
-  displayName: "Cost per UBI Deposit",
-  description: "Assumed cost per daily UBI deposit (two hundredths of a cent per transfer).",
+  displayName: "Universal Security Administration All-In Annual Cost per Citizen",
+  description: "All-in annual cost per citizen served: sybil-resistant identity, 365 daily deposits, and the mostly-AI workforce. Anchored to the most similar system that exists: India's national biometric identity system serves 1.4 billion people at costs in this range per person per year, and payment rails move deposits for fractions of a cent.",
   sourceType: "definition",
   confidence: "high",
-  confidenceInterval: [5e-05, 0.001],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
-  manualPageTitle: "The Universal Security Administration",
-};
-
-export const UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT: Parameter = {
-  value: 50.0,
-  parameterName: "UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_engineer_headcount",
-  unit: "engineers",
-  displayName: "Universal Security Administration Engineer Headcount",
-  description: "Engineering and operations headcount assumed for running the UBI distribution contract and identity integration.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [25.0, 150.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
-  manualPageTitle: "The Universal Security Administration",
-};
-
-export const UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN: Parameter = {
-  value: 0.15,
-  parameterName: "UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_identity_cost_per_citizen",
-  unit: "USD",
-  displayName: "Identity Layer Annual Cost per Citizen",
-  description: "Assumed annual cost per citizen for sybil-resistant identity verification and maintenance, generous against national-scale digital-identity systems.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [0.05, 0.6],
+  confidenceInterval: [0.1, 1.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
   manualPageTitle: "The Universal Security Administration",
 };
@@ -13625,7 +13581,6 @@ export const parameters = {
   WORKFORCE_WITH_PRODUCTIVITY_LOSS,
   ADDITIONAL_DRUGS_FROM_COST_ELIMINATION,
   AI_DIPLOMATIC_CORPS_ANNUAL_COST,
-  ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
   APOCALYPSE_MARKUP,
   APOCALYPSE_MARKUP_MULTIPLIER,
   AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX,
@@ -14062,14 +14017,13 @@ export const parameters = {
   ADAPTABLE_TRIAL_PATIENTS,
   AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT,
   AI_NEGOTIATOR_COST_PER_AGENT_HOUR,
-  ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT,
+  ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX,
+  ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
   ALLOCATION_DECISION_SPREAD,
   ANNUAL_WORKING_HOURS,
   APPROVED_DRUG_DISEASE_PAIRINGS,
+  AUTOMATED_REVENUE_SERVICE_ALL_IN_COST_PER_TRANSACTION,
   AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME,
-  AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT,
-  AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION,
-  AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST,
   AVG_LIFE_EXTENSION_PER_BENEFICIARY,
   CAMPAIGN_CELEBRITY_ENDORSEMENT,
   CAMPAIGN_COMMUNITY_ORGANIZING,
@@ -14114,6 +14068,7 @@ export const parameters = {
   CUMULATIVE_MILITARY_SPENDING_FED_ERA,
   DAYS_PER_YEAR,
   DCT_PLATFORM_FUNDING_MEDIUM,
+  DECENTRALIZED_CENSUS_BUREAU_ANNUAL_OPEX,
   DEFENSE_SECTOR_RETENTION_PCT,
   DEFENSE_TAKEOVER_ACQUISITION_PREMIUM,
   DEFENSE_TAKEOVER_CONTROL_FRACTION,
@@ -14153,7 +14108,6 @@ export const parameters = {
   GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN,
   GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL,
   GLOBAL_TO_US_POLITICAL_COST_RATIO,
-  GOV_REPLACEMENT_ENGINEER_ANNUAL_COST,
   HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15,
   HOURS_PER_DAY,
   HOURS_PER_YEAR,
@@ -14206,6 +14160,7 @@ export const parameters = {
   SHIRT_SEED_WEARERS_THRESHOLD,
   SHIRT_WEARING_FRICTION_COST_USD,
   TESTED_RELATIONSHIPS_ESTIMATE,
+  TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX,
   TREATY_CAMPAIGN_BUDGET_LOBBYING,
   TREATY_CAMPAIGN_BUDGET_RESERVE,
   TREATY_CAMPAIGN_DURATION_YEARS,
@@ -14215,9 +14170,7 @@ export const parameters = {
   TREATY_REDIRECTED_SPENDING_INFINITE_ROI,
   TREATY_REDUCTION_PCT,
   TRIAL_RELEVANT_DISEASES_COUNT,
-  UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION,
-  UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT,
-  UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN,
+  UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL,
   US_CONGRESS_MEMBER_COUNT,
   US_DEFENSE_FP_COAST_GUARD,
   US_DEFENSE_FP_CYBER,
@@ -16769,10 +16722,10 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 862,
+  total: 859,
   external: 237,
-  calculated: 436,
-  definitions: 189,
+  calculated: 435,
+  definitions: 187,
   citations: 182,
 } as const;
 

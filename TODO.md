@@ -59,13 +59,42 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
-- **EOS landing (SHIPPED; copy gate satisfied, Mike 2026-07-03: "it shipped,
-  it's fine"):** optimitron.com `/` is the Earth Optimization Services landing
-  (`eosLanding` variant, `EarthOptimizationServicesLandingPage`); game scroll
-  at `/game`; `TODO(copy)` markers stripped. Still open: `/invest` (Loving
-  Takeover / Fund I) deferred — order ladder links to `/fund` with
-  `TODO(invest)` until securities/legal copy is reviewed. Plans:
-  `.claude/plans/eos-landing.md`, `docs/eos-landing-plan.md`.
+- **EOS landing v2: Government of Tomorrow showroom (Mike-approved direction +
+  copy gate 2026-07-03, branch `feature/eos-government-of-tomorrow`):**
+  investor pitch replaced by product catalog — masthead "your application was
+  accepted at birth" (closes the 2026-06-09 masthead item), IN STOCK hero,
+  departments grid (Optimitron, dFDA, DIH, Court of Humanity, Department of
+  Peace, Automated Revenue Service, Universal Security Administration,
+  Aligned Election Commission — all priced by generated params), service
+  counter (curated managed tasks + escrow funding via `EosServiceCounter` /
+  shared `FundingTaskCard`), investor content (calculator/terms/data-room
+  CTAs/legal gate) moved to `/fund`, one shareholder footer strip on `/`.
+  "Decentralized Federal Reserve" card deliberately dropped — ARS + USA cover
+  it without $WISH adjacency. Still open: `/invest` (Loving Takeover / Fund I)
+  deferred until securities/legal copy is reviewed. Known flake:
+  `pledges.server.test.ts` threshold-event race fails under full-suite
+  parallelism (P2034 serialization), passes isolated — pre-existing from
+  PR #98. Follow-ups needing the manual-repo parameter pipeline
+  (`manual/dih_models/parameters.py` — the TS file is generated, do not
+  hand-add): (1) `AUTOMATED_REVENUE_SERVICE_TX_TAX_RATE` (0.5%) so the ARS
+  card's rate is a ParameterValue; (2) `US_TAX_CODE_PAGES` (74,000) behind
+  the "17.5 Harry Potters" line; (3) params for the drug-war thermostat
+  panel stats ($1T, 6,000→107,000 overdose deaths, 53 years) which are
+  manual-verbatim but uncited on the panel. Cold-stranger follow-ups
+  (2026-07-03 run, screenshots `packages/web/output/cold-stranger/`):
+  (a) ParameterValue citation-dialog LaTeX clips off-screen on mobile
+  (pre-existing, site-wide); (b) AUDIT: treaty task renders "Task value
+  $84,787T" — implausible (>5,000x annual peace dividend), check
+  selectedImpactFrame EV computation/units; (c) /fund calculator shows
+  fail-pays-more ($64k vs $35k) with the military-contractor-stock
+  explanation two screens below the numbers — move into same viewport;
+  (d) cross-domain vote CTA (optimitron.com → warondisease.org) reads as
+  brand whiplash to strangers — partially mitigated by naming the treaty
+  in the hero; consider an interstitial or shared brand cue. (e) DoP
+  manual page (`department-of-peace.qmd`) upgrade queued: buy-order robot
+  framing + Megatons-to-Megawatts params (20k warheads → ~10% US
+  electricity 1993–2013) so the card's lightbulbs line gets citations.
+  Plans: `.claude/plans/eos-landing.md`, chat copy doc 2026-07-03.
 - **Earth Optimization Machine page (Mike-approved 2026-07-03, queue after
   MCP-fix + cause-split):** one canonical "what is the machine" page — the
   appliance tour: inputs (census, transmit, what 10,000 jurisdictions tried)
@@ -90,14 +119,11 @@ Do not let lower items crowd out higher ones.
   `TODO(param)` marker in the seed; (3) IABs deliberately deferred (Phase 2,
   gated on prize success); (4) a site route for the Loving Takeover so the
   endpoint stops pointing at the manual. Needs its own branch/PR after #88.
-- **EOS landing: "every president" masthead copy (Mike-approved framing,
-  2026-06-09):** work "every human on Earth is a president of EOS" into the
-  masthead/offer (sketch: "Correction: your application was accepted at birth.
-  You are one of 8,000,000,000 presidents."). Canonical framing now in
-  CLAUDE.md `## What This Is`. Lobbying figure on this page must use
-  `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B, all corporate) for the
-  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M). Own
-  branch after PR #88; manual-search + verbatim copy gate before shipping.
+- **EOS landing: "every president" masthead copy — DONE 2026-07-03** in the
+  Government of Tomorrow redesign (exact approved sketch shipped as the
+  masthead status line). The lobbying-figure rule stands for any future
+  lobbying claim on this page: `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B) for the
+  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M).
 - **Task tree: cause-node split + seed ALL 35 missing solution tasks
   (Mike-approved 2026-07-02/03):** full plan + tree diagrams in
   `.claude/plans/task-tree-cause-split.md`; complete manual-vs-tasks audit

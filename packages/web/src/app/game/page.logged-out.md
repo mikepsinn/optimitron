@@ -142,7 +142,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀2 HUMANS TERMINATED🔥$4.6M BURNED BY MISALIGNED GOVERNMENTS💣$607K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀2 HUMANS TERMINATED🔥$4.5M BURNED BY MISALIGNED GOVERNMENTS💣$586K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.

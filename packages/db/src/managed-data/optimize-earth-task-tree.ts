@@ -33,6 +33,8 @@ import {
   COURT_OF_HUMANITY_CHARTER_TASK_KEY,
   COURT_OF_HUMANITY_TASK_ID,
   COURT_OF_HUMANITY_TASK_KEY,
+  DFDA_CREATE_TASK_ID,
+  DFDA_CREATE_TASK_KEY,
   END_WAR_AND_DISEASE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_KEY,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID,
@@ -52,6 +54,8 @@ import {
   REGISTER_PLAINTIFFS_TASK_KEY,
   RENDER_VERDICT_TASK_ID,
   RENDER_VERDICT_TASK_KEY,
+  SHIRT_SEED_TASK_ID,
+  SHIRT_SEED_TASK_KEY,
   SUMMON_JURORS_TASK_ID,
   SUMMON_JURORS_TASK_KEY,
   TREATY_PARENT_TASK_ID,
@@ -498,8 +502,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     category: TaskCategory.RESEARCH,
-    id: "dfda",
-    taskKey: "program:dfda:create",
+    id: DFDA_CREATE_TASK_ID,
+    taskKey: DFDA_CREATE_TASK_KEY,
     parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
     title: "Fund the decentralized FDA directly",
     description: [
@@ -522,8 +526,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     category: TaskCategory.OUTREACH,
-    id: "shirt-seed",
-    taskKey: "program:shirt-seed",
+    id: SHIRT_SEED_TASK_ID,
+    taskKey: SHIRT_SEED_TASK_KEY,
     parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
     title: "Seed the shirt cascade",
     description: [

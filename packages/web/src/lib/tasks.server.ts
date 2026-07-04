@@ -335,6 +335,7 @@ const taskListSelect = {
     },
   },
   id: true,
+  impactStatement: true,
   interestTags: true,
   isPublic: true,
   kind: true,
