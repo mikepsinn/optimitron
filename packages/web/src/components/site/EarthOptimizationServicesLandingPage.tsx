@@ -1,58 +1,77 @@
 import {
-  DEFENSE_TAKEOVER_COST_PER_HUMAN,
-  DEFENSE_TAKEOVER_COST_TOTAL,
+  AI_DIPLOMATIC_CORPS_ANNUAL_COST,
+  AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT,
+  AI_NEGOTIATOR_COST_PER_AGENT_HOUR,
+  ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
+  AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX,
+  AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL,
+  COURT_BUILD_COST,
+  DFDA_DIRECT_FUNDING_COST_PER_DALY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  DFDA_UPFRONT_BUILD,
+  DIH_NPV_ANNUAL_OPEX_INITIATIVES,
+  DIH_NPV_UPFRONT_COST_INITIATIVES,
+  GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
+  IRS_ANNUAL_OPERATING_BUDGET,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
+  TRADITIONAL_PHASE3_COST_PER_PATIENT,
   TREATY_ANNUAL_FUNDING,
+  UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL,
+  UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX,
 } from "@optimitron/data/parameters";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button } from "@/components/retroui/Button";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { EosInvestmentCalculator } from "@/components/site/EosInvestmentCalculator";
+import { EosServiceCounter } from "@/components/site/EosServiceCounter";
 import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
-import { fullManualPaperLink } from "@/lib/routes";
+import { fullManualPaperLink, ROUTES } from "@/lib/routes";
 
-const requestDataRoomSubject = "EOS data room request";
-const bookCallSubject = "EOS investor call";
-const requestDataRoomHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
-  requestDataRoomSubject,
-)}`;
-const bookCallHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
-  bookCallSubject,
-)}`;
-const calculatorHref = "#eos-calculator";
+/** The treaty vote lives on the campaign domain, not optimitron.com. */
+const WAR_ON_DISEASE_URL = "https://warondisease.org";
+
+const MANUAL_URLS = {
+  alignedElectionCommission:
+    "https://manual.warondisease.org/knowledge/solution/aligned-election-commission.html",
+  automatedRevenueService:
+    "https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html",
+  departmentOfPeace:
+    "https://manual.warondisease.org/knowledge/solution/department-of-peace.html",
+  dfdaImpactPaper:
+    "https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html",
+  dih: "https://manual.warondisease.org/knowledge/solution/dih.html",
+  optimocracyPaper:
+    "https://manual.warondisease.org/knowledge/appendix/optimocracy-paper.html",
+  universalSecurityAdministration:
+    "https://manual.warondisease.org/knowledge/solution/universal-security-administration.html",
+} as const;
 
 const mastheadLabel = "Earth Optimization Services";
-const mastheadStatus = "Now accepting applications.";
-const investorActionsLabel = "Investor actions";
-const calculatorLabel = "See what your stake becomes";
-const requestDataRoomLabel = "Request the data room";
-const bookCallLabel = "Book a call";
+const mastheadStatus =
+  "Correction: your application was accepted at birth. You are one of 8,000,000,000 presidents.";
+const voteLabel = "Vote on the first purchase";
+const tourLabel = "Tour the departments";
 
-const heroHeading =
-  "Governments are supposed to make people healthier and richer. We're buying the power to make them.";
+const heroHeading = "The Government of Tomorrow is in stock.";
 const whatThisIsHeading = "What this is";
 const thermostatHeading = "Your government has no thermostat.";
 const thermostatDeck =
   "Your oven measures the temperature, compares it to what you asked for, and adjusts. So does your fridge, your cruise control, your toilet. Your government runs the most complex system on Earth with less feedback than a toaster.";
-const howItWorksHeading = "How it works";
+const departmentsHeading = "The departments";
+const departmentsDeck =
+  "Every agency you already pay for, rebuilt so it can tell whether it's working. Prices are for planetary installation.";
+const serviceCounterHeading = "The service counter";
+const serviceCounterDeck =
+  "Civilization repairs, priced and guaranteed. Your money sits in escrow until the work happens — if it doesn't, it comes back. Every line item reports its expected return before you pay.";
 const employeeManualHeading = "Employee manual";
 const employeeManualDeck =
-  "The manual at warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. Your title is President of Earth Optimization Services, and so is everyone's. Eight billion presidents, no boss. You run the planet now.";
+  "The manual at manual.warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. You run the planet now.";
 const employeeManualLabel = "Read the employee manual";
-const whyItPaysHeading = "Why it pays";
-const calculatorHeading = "Your calculator";
-const calculatorDeck =
-  "Use your own assumptions. If the numbers stop working, good - you just saved yourself the money. Either way you leave knowing.";
-const termsHeading = "Terms";
-const termsDeck =
-  "The pitch is public. The paperwork is not. For accredited investors, the securities materials live off-page, where the law wants them.";
-const finalHeading = "Talk to us";
-const finalDeck =
-  "Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first.";
-const legalGateText =
-  "Accredited-only securities discussion. Not an offer. Not investment advice.";
+const shareholderStripText =
+  "EOS also sells shares. That conversation is legally required to be boring, so it happens over here.";
+const shareholderStripLabel = "Shareholder paperwork";
 
 const thermostatPanels = [
   {
@@ -81,42 +100,257 @@ const thermostatPanels = [
   },
 ] as const;
 
-const howItWorksSteps = [
-  {
-    body:
-      "Buy a controlling share of the big weapons companies. The people you buy out get richer doing it - the share price goes up, not down.",
-    title: "Buy the power",
-  },
-  {
-    body:
-      "Instead of one boardroom deciding what that power does, every person gets a say - simple this-or-that choices that add up to what the public actually wants.",
-    title: "Hand it to everyone",
-  },
-  {
-    body:
-      "Feed in two centuries of data from nearly every country: which laws actually made people live longer and earn more. Rank them.",
-    title: "Find the policies that work",
-  },
-] as const;
+interface Department {
+  action: { href: string; label: string };
+  body: ReactNode;
+  priceLines: { label: string; value: ReactNode }[];
+  replaces: string;
+  title: string;
+}
 
-const terms = [
+const departments: Department[] = [
   {
-    body: "Friends and family minimum.",
-    label: "$25,000",
+    action: {
+      href: MANUAL_URLS.optimocracyPaper,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        The machine that writes laws and budgets from evidence. Two centuries
+        of data from nearly every country go in. Three features come standard:
+        the Optimal Policy Generator finds the laws that raise health and
+        income, the Optimal Budget Generator does the same for spending, and
+        Wishocracy is the ballot where eight billion presidents split the
+        budget with simple this-or-that choices. It already runs as software.
+        The math is public.
+      </>
+    ),
+    priceLines: [{ label: "Price", value: "Included with every government" }],
+    replaces: "Legislative guesswork",
+    title: "The Optimitron",
   },
   {
-    body: "Institutional minimum.",
-    label: "$100,000",
+    action: {
+      href: MANUAL_URLS.dfdaImpactPaper,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        Turns ordinary healthcare into evidence. Pragmatic trials at{" "}
+        <ParameterValue param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} /> instead
+        of <ParameterValue param={TRADITIONAL_PHASE3_COST_PER_PATIENT} />, run
+        in real clinics on outcomes that matter. It prevents a year of death
+        and suffering for{" "}
+        <ParameterValue
+          param={DFDA_DIRECT_FUNDING_COST_PER_DALY}
+          valueOverride="84 cents"
+        />
+        , which is the best price anyone has quoted on anything.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Build",
+        value: <ParameterValue param={DFDA_UPFRONT_BUILD} />,
+      },
+    ],
+    replaces: "The FDA",
+    title: "The decentralized FDA",
   },
   {
-    body: "Earth Optimization Services shares and Incentive Alignment Bonds.",
-    label: "2 products",
+    action: { href: MANUAL_URLS.dih, label: "Read the blueprint" },
+    body: (
+      <>
+        Receives the treaty&apos;s{" "}
+        <ParameterValue param={TREATY_ANNUAL_FUNDING} /> and pays for results
+        instead of grant paperwork. Nobody gets paid for writing essays about
+        why they should be allowed to try curing things. They get paid for
+        curing things.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Setup",
+        value: <ParameterValue param={DIH_NPV_UPFRONT_COST_INITIATIVES} />,
+      },
+      {
+        // Unit is USD/year, so ParameterValue already renders the "/year".
+        label: "Running",
+        value: <ParameterValue param={DIH_NPV_ANNUAL_OPEX_INITIATIVES} />,
+      },
+    ],
+    replaces: "The NIH",
+    title: "Decentralized Institutes of Health",
   },
   {
-    body: "Founder equity.",
-    label: "0%",
+    action: { href: ROUTES.court, label: "Enter the court" },
+    body: (
+      <>
+        Where eight billion humans judge governments that spend public money
+        against the public. Registers plaintiffs, summons jurors, publishes the
+        evidence, renders the verdict, and enforces the settlement — the 1%
+        Treaty.
+      </>
+    ),
+    priceLines: [
+      { label: "Build", value: <ParameterValue param={COURT_BUILD_COST} /> },
+    ],
+    replaces: "Courts that can't subpoena a government",
+    title: "Court of Humanity",
   },
-] as const;
+  {
+    action: {
+      href: MANUAL_URLS.departmentOfPeace,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        You are picturing a very strong robot that collects the missiles and
+        throws them into the sun. We have something stronger: a buy order. The
+        department buys the weapons companies — the sellers get richer, and
+        nobody shoots at a brokerage account — converts the stockpiles into
+        reactor fuel (your species already did this once; it powered your
+        lightbulbs for twenty years), and retires the war budget at 1% a year,
+        verified. Talking is the cheap part:{" "}
+        <ParameterValue
+          display="integer"
+          param={AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT}
+        />{" "}
+        AI negotiators per government at{" "}
+        <ParameterValue figures={2} param={AI_NEGOTIATOR_COST_PER_AGENT_HOUR} />{" "}
+        an agent-hour. Disputes take six minutes. Nobody dies.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Price",
+        value: (
+          <>
+            <ParameterValue param={AI_DIPLOMATIC_CORPS_ANNUAL_COST} />
+            {"/yr"}
+          </>
+        ),
+      },
+      {
+        label: "Current model",
+        value: (
+          <>
+            <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} />
+            {"/yr"}
+          </>
+        ),
+      },
+    ],
+    replaces: "The war department",
+    title: "Department of Peace",
+  },
+  {
+    action: {
+      href: MANUAL_URLS.automatedRevenueService,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        Your tax code is 17.5 Harry Potters long, except Harry Potter has a
+        coherent plot and your tax code has loopholes. The replacement is six
+        lines of code: every transfer sends 0.5% to the treasury. No filing.
+        No forms. No audits. You cannot lobby a smart contract.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Price",
+        value: (
+          <>
+            <ParameterValue param={AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX} />
+            {"/yr"}
+          </>
+        ),
+      },
+      {
+        label: "The IRS",
+        value: (
+          <>
+            <ParameterValue param={IRS_ANNUAL_OPERATING_BUDGET} />
+            {"/yr"}
+          </>
+        ),
+      },
+      {
+        label: "Saves",
+        value: (
+          <>
+            <ParameterValue
+              param={AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL}
+            />
+            {"/American/yr"}
+          </>
+        ),
+      },
+    ],
+    replaces: "The IRS",
+    title: "Automated Revenue Service",
+  },
+  {
+    action: {
+      href: MANUAL_URLS.universalSecurityAdministration,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        The welfare bureaucracy becomes a for-loop: if you are human, you
+        qualify. No applications, no caseworkers, no 45-day wait while the
+        hungry stay hungry. Running the whole thing costs{" "}
+        <ParameterValue
+          figures={2}
+          param={UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL}
+        />{" "}
+        per citizen a year.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Price",
+        value: (
+          <>
+            <ParameterValue param={UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX} />
+            {"/yr"}
+          </>
+        ),
+      },
+    ],
+    replaces: "80+ welfare programs",
+    title: "Universal Security Administration",
+  },
+  {
+    action: {
+      href: MANUAL_URLS.alignedElectionCommission,
+      label: "Read the spec",
+    },
+    body: (
+      <>
+        One number per politician: how closely their votes match what citizens
+        actually want. Score high, get funded. Represent donors instead, get
+        nothing. The current system is a vending machine where lobbyists insert
+        money and legislation comes out. The replacement is a scoreboard where
+        citizens insert preferences and representation comes out.
+      </>
+    ),
+    priceLines: [
+      {
+        label: "Price",
+        value: (
+          <>
+            <ParameterValue param={ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX} />
+            {"/yr"}
+          </>
+        ),
+      },
+    ],
+    replaces: "The FEC and campaign finance",
+    title: "Aligned Election Commission",
+  },
+];
 
 function ActionButton({
   children,
@@ -234,6 +468,37 @@ function ThermostatPanel({
   );
 }
 
+function DepartmentCard({ department }: { department: Department }) {
+  return (
+    <article className="flex flex-col border-2 border-foreground p-4 sm:p-6">
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+        Replaces: {department.replaces}
+      </p>
+      <h3 className="mt-2 text-2xl font-black uppercase leading-none">
+        {department.title}
+      </h3>
+      <p className="mt-4 flex-1 text-base font-bold leading-7">
+        {department.body}
+      </p>
+      <dl className="mt-5 grid gap-2 border-t-2 border-foreground pt-4 sm:grid-cols-2">
+        {department.priceLines.map((line) => (
+          <div key={line.label}>
+            <dt className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+              {line.label}
+            </dt>
+            <dd className="text-lg font-black">{line.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-5">
+        <ActionButton href={department.action.href}>
+          {department.action.label}
+        </ActionButton>
+      </div>
+    </article>
+  );
+}
+
 export function EarthOptimizationServicesLandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -249,18 +514,15 @@ export function EarthOptimizationServicesLandingPage() {
               <p className="text-sm font-black uppercase tracking-normal">
                 {mastheadLabel}
               </p>
-              <p className="mt-2 text-sm font-bold uppercase text-muted-foreground">
+              <p className="mt-2 max-w-md text-sm font-bold uppercase text-muted-foreground">
                 {mastheadStatus}
               </p>
             </div>
-            <nav
-              aria-label={investorActionsLabel}
-              className="flex flex-wrap gap-3"
-            >
-              <ActionButton href={requestDataRoomHref} primary>
-                {requestDataRoomLabel}
+            <nav aria-label="Primary actions" className="flex flex-wrap gap-3">
+              <ActionButton href={WAR_ON_DISEASE_URL} primary>
+                {voteLabel}
               </ActionButton>
-              <ActionButton href={bookCallHref}>{bookCallLabel}</ActionButton>
+              <ActionButton href="#departments">{tourLabel}</ActionButton>
             </nav>
           </header>
 
@@ -268,12 +530,22 @@ export function EarthOptimizationServicesLandingPage() {
             <h1 className="max-w-5xl text-4xl font-black uppercase leading-none sm:text-6xl lg:text-7xl">
               {heroHeading}
             </h1>
+            <p className="mt-6 max-w-4xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
+              It measures whether people live longer and earn more, keeps the
+              policies that work, and drops the ones that don&apos;t. Your
+              current model spends{" "}
+              <ParameterValue
+                display="integer"
+                param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+              />
+              x more testing weapons than cures. Trade-ins accepted. The first
+              purchase is the 1% Treaty.
+            </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <ActionButton href={requestDataRoomHref} primary>
-                {requestDataRoomLabel}
+              <ActionButton href={WAR_ON_DISEASE_URL} primary>
+                {voteLabel}
               </ActionButton>
-              <ActionButton href={bookCallHref}>{bookCallLabel}</ActionButton>
-              <ActionButton href={calculatorHref}>{calculatorLabel}</ActionButton>
+              <ActionButton href="#departments">{tourLabel}</ActionButton>
             </div>
           </section>
         </Container>
@@ -281,21 +553,15 @@ export function EarthOptimizationServicesLandingPage() {
 
       <PageSection title={whatThisIsHeading}>
         <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
-          A government has one job: make the median person healthier and richer.
-          Most are bad at it, because the people who profit from the current
-          setup pay to keep it that way — governments spend{" "}
+          A government has one job: make the median person healthier and
+          richer. The current models misplace about{" "}
           <ParameterValue
-            display="integer"
-            param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
-          />
-          x more testing weapons than testing cures. So we do the boring thing.
-          We buy a controlling share of the companies whose lobbying blocks the
-          fix, hand that power to ordinary people instead of a boardroom, and
-          point it at the policies that nearly every country&apos;s data says
-          actually raise health and income. The lobby that spent decades
-          stopping cures starts paying for them. It&apos;s almost like pointing the
-          money at the goal works better. Weird. (This already runs as software.
-          The math is public.)
+            param={POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL}
+          />{" "}
+          a year — the gap between the policies you get and the optimal ones a
+          working government would pick. Below is the replacement catalog,
+          plus a service counter of repairs you can order today. All of it is
+          open source. This page is just the tour.
         </p>
       </PageSection>
 
@@ -307,82 +573,26 @@ export function EarthOptimizationServicesLandingPage() {
         </div>
       </PageSection>
 
-      <PageSection title={howItWorksHeading}>
-        <div className="grid border-t-2 border-foreground md:grid-cols-2">
-          {howItWorksSteps.map((step, index) => (
-            <article
-              className="border-b-2 border-foreground py-6 md:border-r-2 md:px-6 md:even:border-r-0 md:first:pl-0"
-              key={step.title}
-            >
-              <p className="text-sm font-black uppercase text-muted-foreground">
-                {index + 1}
-              </p>
-              <h3 className="mt-2 text-2xl font-black uppercase">
-                {step.title}
-              </h3>
-              <p className="mt-4 text-base font-bold leading-7">{step.body}</p>
-            </article>
+      <PageSection
+        deck={departmentsDeck}
+        id="departments"
+        title={departmentsHeading}
+      >
+        <div className="grid gap-5 md:grid-cols-2">
+          {departments.map((department) => (
+            <DepartmentCard department={department} key={department.title} />
           ))}
-          <article className="border-b-2 border-foreground py-6 md:border-r-2 md:px-6 md:even:border-r-0">
-            <p className="text-sm font-black uppercase text-muted-foreground">4</p>
-            <h3 className="mt-2 text-2xl font-black uppercase">
-              Use the lobby to install them
-            </h3>
-            <p className="mt-4 text-base font-bold leading-7">
-              The lobbying budget that used to block the fix now pays to pass it
-              - starting with{" "}
-              <ParameterValue display="withUnit" param={TREATY_ANNUAL_FUNDING} />{" "}
-              a year redirected into testing cures.
-            </p>
-          </article>
         </div>
+      </PageSection>
+
+      <PageSection deck={serviceCounterDeck} title={serviceCounterHeading}>
+        <EosServiceCounter />
       </PageSection>
 
       <PageSection deck={employeeManualDeck} title={employeeManualHeading}>
         <ActionButton href={fullManualPaperLink.href}>
           {employeeManualLabel}
         </ActionButton>
-      </PageSection>
-
-      <PageSection title={whyItPaysHeading}>
-        <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
-          The whole takeover costs about{" "}
-          <ParameterValue
-            display="withUnit"
-            param={DEFENSE_TAKEOVER_COST_TOTAL}
-          />{" "}
-          - roughly{" "}
-          <ParameterValue
-            display="withUnit"
-            param={DEFENSE_TAKEOVER_COST_PER_HUMAN}
-          />{" "}
-          per person, if every human chipped in. Nobody collects $90 from
-          anybody. You put money in, you own part of it, and the returns come
-          from those companies getting more valuable as the economy grows. You
-          are not paying to fix the planet. You own part of the fix.
-        </p>
-      </PageSection>
-
-      <PageSection
-        deck={calculatorDeck}
-        id="eos-calculator"
-        title={calculatorHeading}
-      >
-        <EosInvestmentCalculator />
-      </PageSection>
-
-      <PageSection deck={termsDeck} title={termsHeading}>
-        <div className="grid border-t-2 border-foreground sm:grid-cols-2 lg:grid-cols-4">
-          {terms.map((term) => (
-            <article
-              className="border-b-2 border-foreground py-5 sm:border-r-2 sm:px-5 sm:even:border-r-0 lg:even:border-r-2 lg:last:border-r-0 lg:first:pl-0"
-              key={term.label}
-            >
-              <h3 className="text-3xl font-black uppercase">{term.label}</h3>
-              <p className="mt-3 text-base font-bold leading-7">{term.body}</p>
-            </article>
-          ))}
-        </div>
       </PageSection>
 
       <SectionContainer
@@ -392,23 +602,14 @@ export function EarthOptimizationServicesLandingPage() {
         padding="lg"
       >
         <Container size="lg">
-          <div className="max-w-4xl">
-            <h2 className="text-3xl font-black uppercase leading-none sm:text-5xl">
-              {finalHeading}
-            </h2>
-            <p className="mt-4 text-lg font-bold leading-8 sm:text-xl">
-              {finalDeck}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-3xl text-base font-bold leading-7">
+              {shareholderStripText}
             </p>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <ActionButton href={requestDataRoomHref} primary>
-              {requestDataRoomLabel}
+            <ActionButton href={ROUTES.fund}>
+              {shareholderStripLabel}
             </ActionButton>
-            <ActionButton href={bookCallHref}>{bookCallLabel}</ActionButton>
           </div>
-          <p className="mt-6 border-2 border-foreground p-3 text-xs font-black uppercase">
-            {legalGateText}
-          </p>
         </Container>
       </SectionContainer>
     </div>

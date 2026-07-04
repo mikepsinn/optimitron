@@ -98,6 +98,16 @@ export const EARTH_OPTIMIZATION_PRIZE_TASK_ID = "earth-optimization-prize";
 export const EARTH_OPTIMIZATION_PRIZE_TASK_KEY =
   "program:earth-optimization-prize";
 
+// dFDA direct funding program
+
+export const DFDA_CREATE_TASK_ID = "dfda";
+export const DFDA_CREATE_TASK_KEY = "program:dfda:create";
+
+// Shirt cascade seed program
+
+export const SHIRT_SEED_TASK_ID = "shirt-seed";
+export const SHIRT_SEED_TASK_KEY = "program:shirt-seed";
+
 // Earth Optimization Services capitalization
 
 export const EOS_CAPITALIZE_TASK_ID = "eos-capitalize";

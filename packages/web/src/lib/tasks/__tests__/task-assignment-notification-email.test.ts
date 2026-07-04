@@ -45,10 +45,10 @@ describe("buildTaskAssignmentNotificationEmail", () => {
       "Reply to this email to add a comment to the task.",
     );
     // Minimalism guard: drop the secondary "Mark complete" CTA and the
-    // "we are building a decentralized to-do list" feedback chrome.
+    // "decentralized to-do list" feedback chrome.
     expect(email.text).not.toContain("Mark complete");
     expect(email.text).not.toContain(
-      "We are building a decentralized to-do list for humanity",
+      "decentralized to-do list for humanity",
     );
     expect(email.html).toContain("Institute for Accelerated Medicine");
     expect(email.html).toContain(ORGANIZATION_ACTIVATION_TASK_TITLE);
