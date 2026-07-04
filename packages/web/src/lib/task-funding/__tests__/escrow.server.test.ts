@@ -12,6 +12,7 @@ import {
   cancelPledgeAsPledger,
   maybeChargeCallablePledges,
   refundDeadTargetFunding,
+  resetStalePledgeCallState,
 } from "../escrow.server";
 
 const mocks = vi.hoisted(() => ({
@@ -297,18 +298,6 @@ describe("maybeChargeCallablePledges", () => {
       taskId: task.id,
     });
 
-    expect(mocks.paymentIntentsCreate).toHaveBeenCalledTimes(1);
-    expect(mocks.paymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        amount: 6000,
-        confirm: true,
-        customer: pledger.stripeCustomerId,
-        off_session: true,
-        payment_method: `${TEST_PREFIX}pm_full`,
-      }),
-      { idempotencyKey: `pledge-call:${pledge.id}:v1` },
-    );
-
     const chargedPledge = await prisma.taskFundingPledge.findUniqueOrThrow({
       where: { id: pledge.id },
       select: { calledAt: true, fulfilledAt: true, status: true },
@@ -322,11 +311,27 @@ describe("maybeChargeCallablePledges", () => {
       select: {
         amountCents: true,
         commerceOrder: { select: { status: true } },
+        id: true,
         source: true,
         status: true,
         stripePaymentIntentId: true,
       },
     });
+
+    expect(mocks.paymentIntentsCreate).toHaveBeenCalledTimes(1);
+    expect(mocks.paymentIntentsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 6000,
+        confirm: true,
+        customer: pledger.stripeCustomerId,
+        off_session: true,
+        payment_method: `${TEST_PREFIX}pm_full`,
+      }),
+      // Payment-scoped, not pledge-scoped: a re-pledge after a decline gets a
+      // fresh key instead of replaying the declined attempt within Stripe's
+      // idempotency window.
+      { idempotencyKey: `pledge-call:${payment.id}:v1` },
+    );
     expect(payment).toMatchObject({
       amountCents: 6000,
       source: TaskFundingPaymentSource.PLEDGE_CALL,
@@ -372,19 +377,19 @@ describe("maybeChargeCallablePledges", () => {
 
     const payments = await prisma.taskFundingPayment.findMany({
       where: { pledgeId: pledge.id },
-      select: { source: true, status: true },
+      select: { id: true, source: true, status: true },
     });
     expect(payments).toHaveLength(1);
-    expect(payments[0]).toEqual({
+    expect(payments[0]).toMatchObject({
       source: TaskFundingPaymentSource.PLEDGE_CALL,
       status: TaskFundingPaymentStatus.PAID,
     });
 
-    // Every Stripe confirm for this pledge reused the deterministic key.
+    // Every Stripe confirm re-confirmed the single payment's deterministic key.
     expect(mocks.paymentIntentsCreate.mock.calls.length).toBeGreaterThan(0);
     for (const call of mocks.paymentIntentsCreate.mock.calls) {
       expect(call[1]).toEqual({
-        idempotencyKey: `pledge-call:${pledge.id}:v1`,
+        idempotencyKey: `pledge-call:${payments[0]?.id}:v1`,
       });
     }
 
@@ -471,6 +476,185 @@ describe("maybeChargeCallablePledges", () => {
         pledge: expect.objectContaining({ id: pledgeB.id }),
       }),
     );
+  });
+});
+
+describe("resetStalePledgeCallState", () => {
+  /** A pledge-call payment row in the given state, linked to the pledge. */
+  async function createPledgeCallPayment(input: {
+    orderStatus: CommerceOrderStatus;
+    pledgeId: string;
+    status: TaskFundingPaymentStatus;
+    suffix: string;
+    targetId: string;
+    taskId: string;
+  }) {
+    const order = await prisma.commerceOrder.create({
+      data: {
+        id: `${TEST_PREFIX}order_${input.suffix}`,
+        currency: "usd",
+        donationCents: 5000,
+        purposeKey: "task-funding",
+        status: input.orderStatus,
+        subtotalCents: 5000,
+        totalCents: 5000,
+      },
+    });
+    return prisma.taskFundingPayment.create({
+      data: {
+        id: `${TEST_PREFIX}payment_${input.suffix}`,
+        amountCents: 5000,
+        commerceOrderId: order.id,
+        currency: "usd",
+        pledgeId: input.pledgeId,
+        source: TaskFundingPaymentSource.PLEDGE_CALL,
+        status: input.status,
+        stripeTransferGroup: `task_funding_${input.taskId}`,
+        targetId: input.targetId,
+        taskId: input.taskId,
+      },
+    });
+  }
+
+  it("detaches the FAILED payment and clears call state so a re-pledge is chargeable again", async () => {
+    const { target, task } = await createFundedTask("repledge", 5000n);
+    const pledger = await createPledger("repledge");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "repledge",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+    // Terminal decline state as recordPledgeChargeDeclined leaves it...
+    const declinedAt = new Date();
+    const failedPayment = await createPledgeCallPayment({
+      orderStatus: CommerceOrderStatus.FAILED,
+      pledgeId: pledge.id,
+      status: TaskFundingPaymentStatus.FAILED,
+      suffix: "repledge",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    await prisma.taskFundingPledge.update({
+      where: { id: pledge.id },
+      data: {
+        calledAt: declinedAt,
+        cardBrand: "visa",
+        cardLast4: "0341",
+        declinedAt,
+        status: TaskFundingPledgeStatus.DECLINED,
+      },
+    });
+    // ...then reactivated by a re-pledge (createOrReplaceTaskFundingPledge).
+    await prisma.taskFundingPledge.update({
+      where: { id: pledge.id },
+      data: { status: TaskFundingPledgeStatus.ACTIVE },
+    });
+
+    // Without the reset, the planner counts the pledge toward "fully funded"
+    // but never charges it (non-PENDING payment).
+    const skipped = await maybeChargeCallablePledges(target.id);
+    expect(skipped.fullyFunded).toBe(true);
+    expect(skipped.charged).toEqual([]);
+    expect(skipped.declined).toEqual([]);
+
+    await resetStalePledgeCallState(pledge.id);
+
+    await expect(
+      prisma.taskFundingPledge.findUniqueOrThrow({
+        where: { id: pledge.id },
+        select: {
+          calledAt: true,
+          cardBrand: true,
+          cardLast4: true,
+          declinedAt: true,
+          status: true,
+          stripePaymentMethodId: true,
+          stripeSetupIntentId: true,
+        },
+      }),
+    ).resolves.toEqual({
+      calledAt: null,
+      cardBrand: null,
+      cardLast4: null,
+      declinedAt: null,
+      status: TaskFundingPledgeStatus.ACTIVE,
+      stripePaymentMethodId: null,
+      stripeSetupIntentId: null,
+    });
+    await expect(
+      prisma.taskFundingPayment.findUniqueOrThrow({
+        where: { id: failedPayment.id },
+        select: { pledgeId: true },
+      }),
+    ).resolves.toEqual({ pledgeId: null });
+
+    // New card saved by the setup webhook -> the planner charges a fresh
+    // payment under a fresh (payment-scoped) idempotency key.
+    await prisma.taskFundingPledge.update({
+      where: { id: pledge.id },
+      data: {
+        stripePaymentMethodId: `${TEST_PREFIX}pm_repledge2`,
+        stripeSetupIntentId: `${TEST_PREFIX}si_repledge2`,
+      },
+    });
+    mocks.paymentIntentsCreate.mockResolvedValue(
+      succeededPaymentIntent("pi_tf_escrow_repledge"),
+    );
+
+    const result = await maybeChargeCallablePledges(target.id);
+
+    expect(result.charged).toHaveLength(1);
+    const newPayment = await prisma.taskFundingPayment.findUniqueOrThrow({
+      where: { pledgeId: pledge.id },
+      select: { id: true, status: true },
+    });
+    expect(newPayment.id).not.toBe(failedPayment.id);
+    expect(newPayment.status).toBe(TaskFundingPaymentStatus.PAID);
+    expect(mocks.paymentIntentsCreate).toHaveBeenCalledWith(
+      expect.anything(),
+      { idempotencyKey: `pledge-call:${newPayment.id}:v1` },
+    );
+  });
+
+  it("leaves an in-flight PENDING pledge-call payment and the saved card alone", async () => {
+    const { target, task } = await createFundedTask("inflight", 5000n);
+    const pledger = await createPledger("inflight");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "inflight",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+    const calledAt = new Date();
+    await createPledgeCallPayment({
+      orderStatus: CommerceOrderStatus.PENDING_PAYMENT,
+      pledgeId: pledge.id,
+      status: TaskFundingPaymentStatus.PENDING,
+      suffix: "inflight",
+      targetId: target.id,
+      taskId: task.id,
+    });
+    await prisma.taskFundingPledge.update({
+      where: { id: pledge.id },
+      data: { calledAt },
+    });
+
+    await resetStalePledgeCallState(pledge.id);
+
+    const untouched = await prisma.taskFundingPledge.findUniqueOrThrow({
+      where: { id: pledge.id },
+      select: {
+        calledAt: true,
+        payment: { select: { id: true } },
+        stripePaymentMethodId: true,
+      },
+    });
+    expect(untouched.calledAt).not.toBeNull();
+    expect(untouched.payment?.id).toBe(`${TEST_PREFIX}payment_inflight`);
+    expect(untouched.stripePaymentMethodId).toBe(`${TEST_PREFIX}pm_inflight`);
   });
 });
 

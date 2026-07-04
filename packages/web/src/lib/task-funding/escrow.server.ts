@@ -258,6 +258,8 @@ export async function createPledgeCardSetupSession(
     termsVersion: input.termsVersion,
   });
 
+  await resetStalePledgeCallState(pledge.id);
+
   const setupMetadata = {
     kind: TASK_FUNDING_PLEDGE_SETUP_KIND,
     pledgeId: pledge.id,
@@ -308,6 +310,58 @@ export async function createPledgeCardSetupSession(
   });
 
   return { pledgeId: pledge.id, url: session.url };
+}
+
+/**
+ * A re-pledge reactivates the same (target, actor, unit) pledge row, but the
+ * row can still carry a finished pledge-call: calledAt/declinedAt timestamps,
+ * the card that declined, and a FAILED payment row. Left in place,
+ * maybeChargeCallablePledges counts the pledge toward "fully funded" and then
+ * skips it forever (non-PENDING payment). Detach the dead payment (the row
+ * survives for audit; its commerce-order metadata keeps the pledge id) and
+ * clear the call/card state so the fresh SetupIntent starts a clean attempt.
+ * PENDING (charge in flight — must keep its link for crash recovery) and
+ * PAID (already fulfilled) payments are left alone.
+ */
+export async function resetStalePledgeCallState(
+  pledgeId: string,
+): Promise<void> {
+  const pledge = await prisma.taskFundingPledge.findFirst({
+    where: { deletedAt: null, id: pledgeId },
+    select: {
+      calledAt: true,
+      declinedAt: true,
+      payment: { select: { id: true, status: true } },
+    },
+  });
+  if (!pledge) return;
+  const hasStaleState = pledge.payment
+    ? pledge.payment.status === TaskFundingPaymentStatus.FAILED
+    : pledge.calledAt !== null || pledge.declinedAt !== null;
+  if (!hasStaleState) return;
+
+  await prisma.$transaction([
+    ...(pledge.payment
+      ? [
+          prisma.taskFundingPayment.update({
+            where: { id: pledge.payment.id },
+            data: { pledgeId: null },
+          }),
+        ]
+      : []),
+    prisma.taskFundingPledge.update({
+      where: { id: pledgeId },
+      data: {
+        calledAt: null,
+        cardBrand: null,
+        cardLast4: null,
+        declinedAt: null,
+        stripePaymentMethodId: null,
+        stripeSetupIntentId: null,
+      },
+    }),
+  ]);
+  log.info("Reset stale pledge-call state for re-pledge", { pledgeId });
 }
 
 export interface PledgeChargeRecord {
@@ -600,9 +654,11 @@ async function notifyPledgeChargeReceipt(refs: PledgeChargeRefs) {
  *
  * Order/payment rows and calledAt are written inside the per-task advisory
  * lock; the off-session PaymentIntent confirmations run outside the lock with
- * deterministic idempotency keys (`pledge-call:{pledgeId}:v1`), so a crash
- * between the two phases is recovered by retryCallableCharges re-confirming
- * the same intent.
+ * deterministic idempotency keys (`pledge-call:{paymentId}:v1` — payment-
+ * scoped, not pledge-scoped, so a re-pledge after a decline gets a fresh key
+ * instead of replaying the declined attempt within Stripe's idempotency
+ * window), so a crash between the two phases is recovered by
+ * retryCallableCharges re-confirming the same intent.
  */
 export async function maybeChargeCallablePledges(
   targetId: string,
@@ -873,7 +929,7 @@ export async function maybeChargeCallablePledges(
           payment_method: plan.stripePaymentMethodId,
           transfer_group: transferGroup,
         },
-        { idempotencyKey: `pledge-call:${plan.pledgeId}:v1` },
+        { idempotencyKey: `pledge-call:${plan.paymentId}:v1` },
       );
 
       if (paymentIntent.status === "succeeded") {
@@ -1143,9 +1199,15 @@ export async function handlePledgeSetupSessionCompleted(
     select: { id: true, targetId: true },
   });
   if (!pledge) {
-    throw new Error(
-      `Missing task funding pledge ${pledgeId} for setup session ${session.id}.`,
-    );
+    // The pledge can be gone by the time Checkout completes (row cleaned up,
+    // task hard-deleted mid-session). Throwing would 500 the webhook and
+    // Stripe would retry the same dead event for days — log and ack instead,
+    // like every other unusable-session case in this handler.
+    log.error("Missing task funding pledge for setup session", {
+      pledgeId,
+      stripeCheckoutSessionId: session.id,
+    });
+    return null;
   }
 
   const stripe = getStripeClient();

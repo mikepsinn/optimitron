@@ -134,6 +134,17 @@ Do not let lower items crowd out higher ones.
   cause-split follows it. Keep task funding treasury-separated from
   Prize/IAB economics — plain assurance (refund), NOT dominant assurance
   (refund+bonus is the Prize's mechanic).
+  - Deferred (CodeRabbit PR #98, verified real but low-probability):
+    `refreshTaskFundingTargetStatus` races between a plain-transaction
+    settle (webhook decline/success) and a concurrent serializable pledge
+    create on the same target can leave `taskFundingTarget.status` stale
+    (e.g. OPEN while sums meet target, so `retryCallableCharges` skips it
+    until the next mutation). Money paths are safe — the planner re-derives
+    sums under `withTaskFundingLock` and never trusts `status` — and
+    locking only the settle path would NOT close the race because pledge
+    creation doesn't take the advisory lock. Real fix is routing all
+    status-affecting writes (including `createOrReplaceTaskFundingPledge`)
+    through the task lock; do it when touching the pledge-create path.
 - **MCP getTask double-escapes nested child descriptions (found 2026-07-03,
   fix immediately after escrow branch):** child rows inside a parent
   `getTask` response carry literal `\n` (verified: all 11 children of
