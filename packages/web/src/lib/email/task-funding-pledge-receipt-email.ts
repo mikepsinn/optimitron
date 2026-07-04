@@ -38,8 +38,10 @@ export const TASK_FUNDING_PLEDGE_RECEIPT_TEMPLATE_ID =
   "task-funding-pledge-receipt";
 
 /**
- * Subjects get scanned, not read. 60 characters of task title keeps the
- * whole line ("Receipt: $X charged for ...") visible in most clients.
+ * Subjects get scanned, not read. This bounds only the variable part — the
+ * task title — so the full subject ("Receipt: $X charged for <title>") can
+ * still run to ~90 characters; clients truncate the tail of the title, and
+ * the amount and "Receipt:" lead always survive because they come first.
  */
 export const PLEDGE_RECEIPT_SUBJECT_TITLE_MAX_LENGTH = 60;
 

@@ -173,7 +173,13 @@ function PledgeStatusBlock({ pledge }: { pledge: EscrowPledgeRow }) {
             pledge.fulfilledAt
           ? `Fulfilled ${formatDate(pledge.fulfilledAt)}`
           : pledge.status === TaskFundingPledgeStatus.ACTIVE
-            ? "Saved card, uncharged"
+            ? // The charge planner writes calledAt without leaving ACTIVE
+              // (the pledge only transitions on the Stripe outcome), so an
+              // ACTIVE pledge with calledAt is called-but-unsettled, not
+              // uncharged.
+              pledge.calledAt
+              ? `Called ${formatDate(pledge.calledAt)} — settling`
+              : "Saved card, uncharged"
             : null;
   return (
     <>
