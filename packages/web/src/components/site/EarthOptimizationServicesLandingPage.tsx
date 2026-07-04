@@ -101,7 +101,7 @@ const thermostatPanels = [
 ] as const;
 
 interface Department {
-  action: { external?: boolean; href: string; label: string };
+  action: { href: string; label: string };
   body: ReactNode;
   priceLines: { label: string; value: ReactNode }[];
   replaces: string;
@@ -111,7 +111,6 @@ interface Department {
 const departments: Department[] = [
   {
     action: {
-      external: true,
       href: MANUAL_URLS.optimocracyPaper,
       label: "Read the spec",
     },
@@ -132,7 +131,6 @@ const departments: Department[] = [
   },
   {
     action: {
-      external: true,
       href: MANUAL_URLS.dfdaImpactPaper,
       label: "Read the spec",
     },
@@ -160,7 +158,7 @@ const departments: Department[] = [
     title: "The decentralized FDA",
   },
   {
-    action: { external: true, href: MANUAL_URLS.dih, label: "Read the blueprint" },
+    action: { href: MANUAL_URLS.dih, label: "Read the blueprint" },
     body: (
       <>
         Receives the treaty&apos;s{" "}
@@ -202,7 +200,6 @@ const departments: Department[] = [
   },
   {
     action: {
-      external: true,
       href: MANUAL_URLS.departmentOfPeace,
       label: "Read the spec",
     },
@@ -249,7 +246,6 @@ const departments: Department[] = [
   },
   {
     action: {
-      external: true,
       href: MANUAL_URLS.automatedRevenueService,
       label: "Read the spec",
     },
@@ -297,7 +293,6 @@ const departments: Department[] = [
   },
   {
     action: {
-      external: true,
       href: MANUAL_URLS.universalSecurityAdministration,
       label: "Read the spec",
     },
@@ -329,7 +324,6 @@ const departments: Department[] = [
   },
   {
     action: {
-      external: true,
       href: MANUAL_URLS.alignedElectionCommission,
       label: "Read the spec",
     },

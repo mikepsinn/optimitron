@@ -160,6 +160,7 @@ export default async function FundPage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {rankedTasks.length > 0 ? (
           <div className="grid gap-4">
+            <h2 className="sr-only">The price list</h2>
             {rankedTasks.map((rankedTask, index) => (
               <FundingTaskCard
                 denominatorCents={rankedTask.denominatorCents}

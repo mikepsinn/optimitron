@@ -123,7 +123,7 @@ Do not let lower items crowd out higher ones.
   Government of Tomorrow redesign (exact approved sketch shipped as the
   masthead status line). The lobbying-figure rule stands for any future
   lobbying claim on this page: `US_TOTAL_LOBBYING_ANNUAL` (~$4.4B) for the
-  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$127M).
+  all-corporations claim — NOT `DEFENSE_LOBBYING_ANNUAL` (~$198M).
 - **Task tree: cause-node split + seed ALL 35 missing solution tasks
   (Mike-approved 2026-07-02/03):** full plan + tree diagrams in
   `.claude/plans/task-tree-cause-split.md`; complete manual-vs-tasks audit

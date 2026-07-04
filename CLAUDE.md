@@ -8,7 +8,7 @@ Optimitron is an **Earth Optimization Machine** for coordinating 8 billion human
 
 The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it.
 
-**Earth Optimization Services (EOS)** is the company form of the machine. Every human on Earth is a president of EOS. It buys controlling shares of the corporations that control governments and redirects their ~$4.4B/yr lobbying (`US_TOTAL_LOBBYING_ANNUAL`; defense-only subset is `DEFENSE_LOBBYING_ANNUAL`, ~$127M — don't conflate) toward maximizing median healthy life expectancy and median real after-tax income.
+**Earth Optimization Services (EOS)** is the company form of the machine. Every human on Earth is a president of EOS. It buys controlling shares of the corporations that control governments and redirects their ~$4.4B/yr lobbying (`US_TOTAL_LOBBYING_ANNUAL`; defense-only subset is `DEFENSE_LOBBYING_ANNUAL`, ~$198M — don't conflate) toward maximizing median healthy life expectancy and median real after-tax income.
 
 Default priority order during campaign mode:
 
