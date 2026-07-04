@@ -1906,6 +1906,21 @@ export const ICD_10_TOTAL_CODES: Parameter = {
   manualPageTitle: "The Untapped Therapeutic Frontier",
 };
 
+export const IRS_ANNUAL_OPERATING_BUDGET: Parameter = {
+  value: 12320000000.0,
+  parameterName: "IRS_ANNUAL_OPERATING_BUDGET",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-irs_annual_operating_budget",
+  unit: "USD",
+  displayName: "IRS Annual Operating Budget",
+  description: "IRS enacted annual appropriation, FY2024 (CRS IF12647, Table 1).",
+  sourceType: "external",
+  sourceRef: "crs-irs-appropriations-fy2025",
+  sourceUrl: "https://www.congress.gov/crs_external_products/IF/PDF/IF12647/IF12647.2.pdf",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
 export const LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS: Parameter = {
   value: 2.6,
   parameterName: "LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS",
@@ -3812,6 +3827,38 @@ export const ADDITIONAL_DRUGS_FROM_COST_ELIMINATION: Parameter = {
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
+export const AI_DIPLOMATIC_CORPS_ANNUAL_COST: Parameter = {
+  value: 8541000.0,
+  parameterName: "AI_DIPLOMATIC_CORPS_ANNUAL_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_diplomatic_corps_annual_cost",
+  unit: "USD",
+  displayName: "AI Diplomatic Corps Annual Cost",
+  description: "Bottom-up annual cost of the AI diplomatic corps: negotiator agents for every government, running every hour of the year, at blended frontier inference prices. Uncertainty propagates from the component distributions via Monte Carlo.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "GOVERNMENTS × AGENTS_PER_GOVERNMENT × 8760 hours × COST_PER_AGENT_HOUR",
+  latex: "\\begin{gathered}\nCost_{ann} \\\\\n= N_{leader} \\times Ai \\times Cost_{per} \\times 8760 \\\\\n= 195 \\times 10 \\times \\$0.5 \\times 8760 \\\\\n= \\$8.54M\n\\end{gathered}",
+  confidenceInterval: [829434.8570727136, 29444832.407966193],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
+  manualPageTitle: "Department of Peace",
+};
+
+export const ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX: Parameter = {
+  value: 10000000.0,
+  parameterName: "ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aligned_election_commission_annual_opex",
+  unit: "USD",
+  displayName: "Aligned Election Commission Annual Operating Cost",
+  description: "Bottom-up annual operating cost of the Aligned Election Commission: the arithmetic is simple enough that engineers are the whole budget. Uncertainty propagates from the component distributions via Monte Carlo.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "ENGINEERS × COST_PER_ENGINEER",
+  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Aligned \\times Cost_{ann} \\\\\n= 20 \\times \\$500K \\\\\n= \\$10M\n\\end{gathered}",
+  confidenceInterval: [3740425.850699416, 22999358.211654056],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html",
+  manualPageTitle: "The Aligned Election Commission",
+};
+
 export const APOCALYPSE_MARKUP: Parameter = {
   value: 2719248427416.0605,
   parameterName: "APOCALYPSE_MARKUP",
@@ -3841,6 +3888,38 @@ export const APOCALYPSE_MARKUP_MULTIPLIER: Parameter = {
   confidenceInterval: [1258.6489497229195, 5859.786529997165],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
   manualPageTitle: "The Apocalypse Markup",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX: Parameter = {
+  value: 200000000.0,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_annual_opex",
+  unit: "USD",
+  displayName: "Automated Revenue Service Annual Operating Cost",
+  description: "Bottom-up annual operating cost of the Automated Revenue Service: engineers plus per-transaction infrastructure plus security. Uncertainty propagates from the component distributions via Monte Carlo.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "ENGINEERS × COST_PER_ENGINEER + TRANSACTIONS × COST_PER_TRANSACTION + SECURITY",
+  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER} \\\\\n+ \\text{TRANSACTIONS} \\times \\text{COST\\_PER\\_TRANSACTION} \\\\\n+ \\text{SECURITY}\n\\end{gathered}",
+  confidenceInterval: [106578571.31340095, 340477778.8185683],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
+  value: 1666.0298507462687,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_savings_per_american_annual",
+  unit: "USD",
+  displayName: "Automated Revenue Service Annual Savings per American",
+  description: "Annual savings per American from replacing the IRS and the tax-compliance burden with the Automated Revenue Service, net of the padded replacement budget.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(TAX_COMPLIANCE_BURDEN + IRS_BUDGET − ARS_BUDGET) / US_POPULATION",
+  latex: "\\begin{gathered}\nSavings_{ann} = (\\text{TAX\\_COMPLIANCE\\_BURDEN} + \\text{IRS\\_BUDGET} − \\text{ARS\\_BUDGET}) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER} + \\text{TRANSACTIONS} \\times \\text{COST\\_PER\\_TRANSACTION} + \\text{SECURITY}\n\\end{gathered}",
+  confidenceInterval: [1418.2020471537328, 1917.2744588047267],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
 };
 
 export const BEST_PRACTICE_LIFE_EXPECTANCY_GAIN: Parameter = {
@@ -6503,6 +6582,22 @@ export const GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL: Parameter = {
   confidenceInterval: [11924462024252.91, 18328394950626.133],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
   manualPageTitle: "The Cost of Disease",
+};
+
+export const GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY: Parameter = {
+  value: 138941.7118512781,
+  parameterName: "GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_eventually_avoidable_disease_deaths_daily",
+  unit: "deaths/day",
+  displayName: "Eventually Avoidable Deaths per Day",
+  description: "Daily global deaths that are eventually avoidable with sufficient biomedical research. Each day the disease-eradication date slips adds roughly this many deaths to the total schedule cost.",
+  sourceType: "calculated",
+  confidence: "medium",
+  formula: "GLOBAL_DISEASE_DEATHS_DAILY × EVENTUALLY_AVOIDABLE_DEATH_PCT",
+  latex: "\\begin{gathered}\nDeaths_{avoid,daily} \\\\\n= Deaths_{disease,daily} \\times Pct_{avoid,death} \\\\\n= 150{,}000 \\times 92.6\\% \\\\\n= 139{,}000\n\\end{gathered}",
+  confidenceInterval: [95672.50666696663, 157290.95119782313],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/where-am-i-wrong.html",
+  manualPageTitle: "Where Am I Wrong?",
 };
 
 export const GLOBAL_GOVERNMENT_EXPENSE_ANNUAL: Parameter = {
@@ -9415,6 +9510,22 @@ export const UNEXPLORED_RATIO: Parameter = {
   manualPageTitle: "NIH Fails to Institute Health",
 };
 
+export const UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX: Parameter = {
+  value: 99705000.0,
+  parameterName: "UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_annual_opex",
+  unit: "USD",
+  displayName: "Universal Security Administration Annual Operating Cost",
+  description: "Bottom-up annual operating cost of the Universal Security Administration: identity layer plus 365 daily deposits per citizen plus engineers. Uncertainty propagates from the component distributions via Monte Carlo.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "POPULATION × IDENTITY_COST + POPULATION × 365 × DEPOSIT_COST + ENGINEERS × COST_PER_ENGINEER",
+  latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= \\text{POPULATION} \\times \\text{IDENTITY\\_COST} \\\\\n+ \\text{POPULATION} \\times 365 \\times \\text{DEPOSIT\\_COST} \\\\\n+ \\text{ENGINEERS} \\times \\text{COST\\_PER\\_ENGINEER}\n\\end{gathered}",
+  confidenceInterval: [43271726.39325468, 198663200.1746349],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
+  manualPageTitle: "The Universal Security Administration",
+};
+
 export const US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT: Parameter = {
   value: 0.9672686230248307,
   parameterName: "US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT",
@@ -10690,6 +10801,48 @@ export const ADAPTABLE_TRIAL_PATIENTS: Parameter = {
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
+export const AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT: Parameter = {
+  value: 10.0,
+  parameterName: "AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_negotiator_agents_per_government",
+  unit: "agents",
+  displayName: "AI Negotiator Agents per Government",
+  description: "Concurrent AI negotiator agents assigned to each government: leaders, ministries, and back-channel tracks running in parallel.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [3.0, 30.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
+  manualPageTitle: "Department of Peace",
+};
+
+export const AI_NEGOTIATOR_COST_PER_AGENT_HOUR: Parameter = {
+  value: 0.5,
+  parameterName: "AI_NEGOTIATOR_COST_PER_AGENT_HOUR",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_negotiator_cost_per_agent_hour",
+  unit: "USD",
+  displayName: "AI Negotiator Blended Cost per Agent-Hour",
+  description: "Blended inference cost per agent-hour for a frontier-model negotiator: agents reason at full burn only in bursts, and monitoring hours cost pennies. Rounded up from current API prices.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.1, 3.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
+  manualPageTitle: "Department of Peace",
+};
+
+export const ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT: Parameter = {
+  value: 20.0,
+  parameterName: "ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aligned_election_commission_engineer_headcount",
+  unit: "engineers",
+  displayName: "Aligned Election Commission Engineer Headcount",
+  description: "Engineering headcount assumed for alignment-score computation, public data pipelines, and campaign-fund routing.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [10.0, 60.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html",
+  manualPageTitle: "The Aligned Election Commission",
+};
+
 export const ALLOCATION_DECISION_SPREAD: Parameter = {
   value: 0.08,
   parameterName: "ALLOCATION_DECISION_SPREAD",
@@ -10729,6 +10882,61 @@ export const APPROVED_DRUG_DISEASE_PAIRINGS: Parameter = {
   confidenceInterval: [1500.0, 2000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
   manualPageTitle: "The Untapped Therapeutic Frontier",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME: Parameter = {
+  value: 500000000000.0,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_annual_transaction_volume",
+  unit: "transactions",
+  displayName: "Automated Revenue Service Annual Transaction Volume",
+  description: "Design capacity: annual final-consumption settlements processed by the protocol, set well above current US card-network transaction volume.",
+  sourceType: "definition",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT: Parameter = {
+  value: 200.0,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_engineer_headcount",
+  unit: "engineers",
+  displayName: "Automated Revenue Service Engineer Headcount",
+  description: "Engineering, security, and operations headcount assumed for running the settlement-tax protocol at national scale.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [100.0, 400.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION: Parameter = {
+  value: 0.0001,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_infra_cost_per_transaction",
+  unit: "USD",
+  displayName: "Infrastructure Cost per Settlement Transaction",
+  description: "Assumed compute, storage, and bandwidth cost per settlement (a hundredth of a cent), generous against modern payment-rail marginal costs.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [3e-05, 0.0005],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
+export const AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST: Parameter = {
+  value: 50000000.0,
+  parameterName: "AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_security_annual_cost",
+  unit: "USD",
+  displayName: "Automated Revenue Service Annual Security Budget",
+  description: "Annual budget for security audits, red teams, and bug bounties on the settlement-tax protocol.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [20000000.0, 150000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
 };
 
 export const AVG_LIFE_EXTENSION_PER_BENEFICIARY: Parameter = {
@@ -11888,6 +12096,20 @@ export const GLOBAL_TO_US_POLITICAL_COST_RATIO: Parameter = {
   manualPageTitle: "How Much Does It Cost to Buy All the Governments?",
 };
 
+export const GOV_REPLACEMENT_ENGINEER_ANNUAL_COST: Parameter = {
+  value: 500000.0,
+  parameterName: "GOV_REPLACEMENT_ENGINEER_ANNUAL_COST",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_replacement_engineer_annual_cost",
+  unit: "USD",
+  displayName: "Fully Loaded Annual Cost per Engineer",
+  description: "Fully loaded annual cost per engineer (salary, benefits, equipment, overhead) assumed for all government replacement modules. Set at the top of market rates.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [300000.0, 900000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
+  manualPageTitle: "The Automated Revenue Service",
+};
+
 export const HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15: Parameter = {
   value: 0.3,
   parameterName: "HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15",
@@ -12708,6 +12930,48 @@ export const TRIAL_RELEVANT_DISEASES_COUNT: Parameter = {
   manualPageTitle: "The Untapped Therapeutic Frontier",
 };
 
+export const UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION: Parameter = {
+  value: 0.0002,
+  parameterName: "UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_deposit_cost_per_transaction",
+  unit: "USD",
+  displayName: "Cost per UBI Deposit",
+  description: "Assumed cost per daily UBI deposit (two hundredths of a cent per transfer).",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [5e-05, 0.001],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
+  manualPageTitle: "The Universal Security Administration",
+};
+
+export const UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT: Parameter = {
+  value: 50.0,
+  parameterName: "UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_engineer_headcount",
+  unit: "engineers",
+  displayName: "Universal Security Administration Engineer Headcount",
+  description: "Engineering and operations headcount assumed for running the UBI distribution contract and identity integration.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [25.0, 150.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
+  manualPageTitle: "The Universal Security Administration",
+};
+
+export const UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN: Parameter = {
+  value: 0.15,
+  parameterName: "UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-universal_security_admin_identity_cost_per_citizen",
+  unit: "USD",
+  displayName: "Identity Layer Annual Cost per Citizen",
+  description: "Assumed annual cost per citizen for sybil-resistant identity verification and maintenance, generous against national-scale digital-identity systems.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [0.05, 0.6],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
+  manualPageTitle: "The Universal Security Administration",
+};
+
 export const US_CONGRESS_MEMBER_COUNT: Parameter = {
   value: 535.0,
   parameterName: "US_CONGRESS_MEMBER_COUNT",
@@ -13239,6 +13503,7 @@ export const parameters = {
   HUMAN_GENOME_PROJECT_TOTAL_ECONOMIC_IMPACT,
   HUMAN_INTERACTOME_TARGETED_PCT,
   ICD_10_TOTAL_CODES,
+  IRS_ANNUAL_OPERATING_BUDGET,
   LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS,
   LIFE_EXTENSION_YEARS,
   LOBBYIST_SALARY_MAX,
@@ -13359,8 +13624,12 @@ export const parameters = {
   WHO_QALY_THRESHOLD_COST_EFFECTIVE,
   WORKFORCE_WITH_PRODUCTIVITY_LOSS,
   ADDITIONAL_DRUGS_FROM_COST_ELIMINATION,
+  AI_DIPLOMATIC_CORPS_ANNUAL_COST,
+  ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
   APOCALYPSE_MARKUP,
   APOCALYPSE_MARKUP_MULTIPLIER,
+  AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX,
+  AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL,
   BEST_PRACTICE_LIFE_EXPECTANCY_GAIN,
   BULLETS_PER_PERSON_ANNUAL,
   CELL_THERAPY_DISEASE_COMBINATIONS,
@@ -13528,6 +13797,7 @@ export const parameters = {
   GLOBAL_DISEASE_DEATHS_PER_MINUTE,
   GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL,
   GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL,
+  GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY,
   GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
   GLOBAL_HALE_GAP,
   GLOBAL_INDUSTRY_CLINICAL_TRIALS_SPENDING_ANNUAL,
@@ -13709,6 +13979,7 @@ export const parameters = {
   TYPE_II_ERROR_COST_RATIO,
   TYPE_I_ERROR_BENEFIT_DALYS,
   UNEXPLORED_RATIO,
+  UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX,
   US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT,
   US_CONGRESS_FULL_ADVOCACY_COST,
   US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT,
@@ -13789,9 +14060,16 @@ export const parameters = {
   WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20,
   WISHONIA_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20,
   ADAPTABLE_TRIAL_PATIENTS,
+  AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT,
+  AI_NEGOTIATOR_COST_PER_AGENT_HOUR,
+  ALIGNED_ELECTION_COMMISSION_ENGINEER_HEADCOUNT,
   ALLOCATION_DECISION_SPREAD,
   ANNUAL_WORKING_HOURS,
   APPROVED_DRUG_DISEASE_PAIRINGS,
+  AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME,
+  AUTOMATED_REVENUE_SERVICE_ENGINEER_HEADCOUNT,
+  AUTOMATED_REVENUE_SERVICE_INFRA_COST_PER_TRANSACTION,
+  AUTOMATED_REVENUE_SERVICE_SECURITY_ANNUAL_COST,
   AVG_LIFE_EXTENSION_PER_BENEFICIARY,
   CAMPAIGN_CELEBRITY_ENDORSEMENT,
   CAMPAIGN_COMMUNITY_ORGANIZING,
@@ -13875,6 +14153,7 @@ export const parameters = {
   GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN,
   GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL,
   GLOBAL_TO_US_POLITICAL_COST_RATIO,
+  GOV_REPLACEMENT_ENGINEER_ANNUAL_COST,
   HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15,
   HOURS_PER_DAY,
   HOURS_PER_YEAR,
@@ -13936,6 +14215,9 @@ export const parameters = {
   TREATY_REDIRECTED_SPENDING_INFINITE_ROI,
   TREATY_REDUCTION_PCT,
   TRIAL_RELEVANT_DISEASES_COUNT,
+  UNIVERSAL_SECURITY_ADMIN_DEPOSIT_COST_PER_TRANSACTION,
+  UNIVERSAL_SECURITY_ADMIN_ENGINEER_HEADCOUNT,
+  UNIVERSAL_SECURITY_ADMIN_IDENTITY_COST_PER_CITIZEN,
   US_CONGRESS_MEMBER_COUNT,
   US_DEFENSE_FP_COAST_GUARD,
   US_DEFENSE_FP_CYBER,
@@ -14343,6 +14625,20 @@ export const citations: Record<string, Citation> = {
         publisher: "Congressional Research Service",
         URL: "https://www.congress.gov/crs_external_products/R/PDF/R44824/R44824.7.pdf",
         note: "Table 1 reports NIH CRISPR-related funding totaling \\$3,083,419,930 for FY2011-FY2018.",
+  },
+  "crs-irs-appropriations-fy2025": {
+        id: "crs-irs-appropriations-fy2025",
+        type: "report",
+        title: "Internal Revenue Service Appropriations, FY2025 (IF12647)",
+        author: [
+          {
+            literal: "Congressional Research Service"
+          },
+        ],
+        issued: { 'date-parts': [[2024]] },
+        publisher: "Congressional Research Service",
+        URL: "https://www.congress.gov/crs_external_products/IF/PDF/IF12647/IF12647.2.pdf",
+        note: "Table 1: FY2024 enacted IRS appropriations total \\$12.32 billion. Verified quote: \"In FY2024, appropriations accounted for 58% (\\$12.3 billion) of the \\$21.0 billion IRS budget.\"",
   },
   "cs-global-wealth-report-2023": {
         id: "cs-global-wealth-report-2023",
@@ -16473,11 +16769,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 844,
-  external: 236,
-  calculated: 430,
-  definitions: 178,
-  citations: 181,
+  total: 862,
+  external: 237,
+  calculated: 436,
+  definitions: 189,
+  citations: 182,
 } as const;
 
 // ============================================================================
