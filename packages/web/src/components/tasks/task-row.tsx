@@ -23,6 +23,7 @@ import {
 import { getPersonHref } from "@/lib/person-href";
 import { getTaskPath } from "@/lib/routes";
 import type { TaskCardTask } from "./task-card";
+import { getTaskAssigneeLabels } from "@/lib/tasks/assignee-label";
 import { TaskRowShare } from "./task-row-share";
 import { DeathCounter } from "./death-counter";
 import { LiveCounter } from "./live-counter";
@@ -73,9 +74,6 @@ function getLeaderHandle(task: TaskCardTask): string | null {
 }
 
 /** True when a task is assigned to the "Humanity" org — i.e. "you". */
-function isAssignedToYou(task: TaskCardTask): boolean {
-  return task.assigneeOrganization?.slug === "humanity";
-}
 
 /** Format an estimated effort duration. Sub-minute → seconds, sub-hour → minutes, else hours. */
 function formatDuration(hours: number | null | undefined): string {
@@ -301,10 +299,8 @@ export function TaskRow({
   now: Date | null;
 }) {
   const delayStats = now ? getTaskDelayStats(task, now) : null;
-  const assignedToYou = isAssignedToYou(task);
-  const targetLabel = assignedToYou
-    ? "You"
-    : task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? task.title;
+  const { display: targetLabel, share: shareTargetLabel } =
+    getTaskAssigneeLabels(task);
   const countryCode = task.assigneePerson?.countryCode ?? null;
   const assigneeBudget = getAssigneeMilitaryBudgetUsd(task.contextJson);
   const governmentBudgetUsd = getAssigneeGovernmentBudgetUsd(task.contextJson);
@@ -323,7 +319,7 @@ export function TaskRow({
     currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
     currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
     currentSufferingHoursLost: delayStats?.currentSufferingHoursLost ?? null,
-    targetLabel,
+    targetLabel: shareTargetLabel,
     taskTitle: task.title,
   });
   const leaderHandle = getLeaderHandle(task);
@@ -339,7 +335,7 @@ export function TaskRow({
     militaryToClinicalTrialsRatio,
     militaryBudgetUsdPerYear: assigneeBudget,
     now,
-    targetLabel,
+    targetLabel: shareTargetLabel,
     taskTitle: task.title,
   }) : undefined;
 
@@ -602,7 +598,7 @@ export function TaskRow({
             <TaskRowShare
               shareText={signerShareText}
               shareTokens={signerShareTokens}
-              targetLabel={targetLabel}
+              targetLabel={shareTargetLabel}
               taskId={task.id}
               taskTitle={task.title}
             />
@@ -876,7 +872,7 @@ export function TaskRow({
           <TaskRowShare
             shareText={shareText}
             shareTokens={shareTokens}
-            targetLabel={targetLabel}
+            targetLabel={shareTargetLabel}
             taskId={task.id}
             taskTitle={task.title}
           />
