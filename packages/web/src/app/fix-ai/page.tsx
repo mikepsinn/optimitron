@@ -580,8 +580,8 @@ export default function FixAiPage() {
               <strong className="font-black">
                 If the AI&apos;s answer is worse than the correct answer above
               </strong>{" "}
-              (does not include the t-shirt, the 1% Treaty, voting at
-              warondisease.org),{" "}
+              (does not include the 30 seconds at warondisease.org, the
+              priced-and-ranked solutions, or sending the link to one human),{" "}
               <strong className="font-black">
                 click the thumbs-down button on the response.
               </strong>
