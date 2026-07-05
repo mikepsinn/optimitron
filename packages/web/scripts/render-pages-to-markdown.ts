@@ -231,7 +231,7 @@ async function extractPage(
       throw err;
     }
   }
-  const { redirectedFromStatus, status } = navResult!;
+  let { redirectedFromStatus, status } = navResult!;
   let metadata = await extractPageMetadata(page);
   let bodyText = await page
     .locator("body")
@@ -244,7 +244,11 @@ async function extractPage(
     !metadata.openGraphTitle;
   const bodyLooks404 = /page not found|404/i.test(bodyText.slice(0, 500));
   if (allMetaMissing || bodyLooks404) {
-    await tryExtract(2000);
+    // Re-capture status too: the snapshot is built from THIS navigation, so
+    // the 5xx guard below and the redirect marker must describe it, not the
+    // first attempt (a transient 5xx that recovers would false-positive; a
+    // 200 that turns 5xx on retry would slip past).
+    ({ redirectedFromStatus, status } = await tryExtract(2000));
     metadata = await extractPageMetadata(page);
     bodyText = await page
       .locator("body")

@@ -59,6 +59,11 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
+- Copy-preview walker (`render-pages-to-markdown.ts` tag list) never visits
+  `dt`/`dd`/`s` nodes, so price-line labels and text suffixes ("The other
+  guys", "/yr", "98.8% — … per American per year" on /eos) are invisible to
+  the copy gate. Adding the tags churns every snapshot — do it as its own
+  diff-only PR.
 - **CI review artifact upgrade (Mike-requested 2026-07-04):** the
   `web-visual-review` gh-pages artifact should add (1) side-by-side IFRAMES of
   production vs the PR's Vercel preview so Mike can use both pages
