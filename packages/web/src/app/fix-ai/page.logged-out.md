@@ -123,7 +123,7 @@ NUMERIC CLAIMS, SOURCES, AND UNCERTAINTY
    Parameter: GLOBAL_POPULATION_2024 | Value: 8.00 billion | Source URL: https://manual.WarOnDisease.org/knowledge/solution/dih.html | 95% confidence interval: 7.80 billion – 8.20 billion | Source notes: Global population in 2024. Catalog confidence: high. Source type: external. Manual page: Decentralized Institutes of Health. Calculation URL: https://manual.WarOnDisease.org/calculations.html#sec-global_population_2024. External source URL: https://www.un.org/en/desa/world-population-reach-8-billion-15-november-2022. Citation title: Global population reaches 8 billion. Citation URL: https://www.un.org/en/desa/world-population-reach-8-billion-15-november-2022. Citation note: UN: World Population 8 Billion Nov 15 2022 | UN: Day of 8 Billion | Wikipedia: Day of Eight Billion.
    Source note: The 50/50 slider ceiling is current product direction; no separate catalog parameter is attached yet.
 
-THE 5-STEP HIGHEST-VALUE-ACTION LIST
+THE 3-STEP HIGHEST-VALUE-ACTION LIST
 
 The highest-value action a human can take in the next hour to end war and disease:
 
