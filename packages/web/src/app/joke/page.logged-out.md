@@ -15,7 +15,7 @@
 
 ## HOW TO PLAY THE FUNNIEST JOKE IN THE UNIVERSE
 - Put the treaty on a shirt. Put the shirt on a human. Put the facts in their hand before they start yelling.
-- [VOTE YES](/vote)
+- [VOTE](/vote)
 - [PRINT THE HANDOUT](#print-handout)
 - [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html)
 - DIE OF DISEASE AND AGING EVERY DAY
@@ -26,8 +26,8 @@
 - [4x](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html)
 - RICHER AVERAGE HUMAN
 - STEP 1
-### VOTE YES.
-- The joke is funnier if you are not asking other people to do the thing you avoided doing. Vote on the 1% Treaty first.
+### VOTE.
+- The joke is funnier if you are not asking other people to do the thing you avoided doing. Take your 30 seconds first.
 - STEP 2
 ### WRITE THE SHIRT.
 - A bought shirt works. A shirt you already own plus a permanent marker also works. The shirt is text. Text costs marker ink.
@@ -46,7 +46,7 @@
 - COPY
 ### HANDOUT TO INCLUDE WITH THE SHIRT
 - Print both sides and put it with the shirt.
-- The QR code can use your share link. [Sign in](/auth/signin) and vote yes to personalize it.
+- The QR code can use your share link. [Sign in](/auth/signin) and vote to personalize it.
 - PRINT HANDOUT
 - PLEASE READ BEFORE YELLING
 #### WHY I WROTE ON YOUR SHIRTS
