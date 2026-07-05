@@ -300,7 +300,7 @@ function PrintableJokeHandout({
               <Link className="underline underline-offset-4" href={ROUTES.signIn}>
                 Sign in
               </Link>{" "}
-              and vote yes to personalize it.
+              and vote to personalize it.
             </p>
           ) : null}
         </div>
@@ -674,7 +674,7 @@ export default async function JokePage() {
               className="inline-flex border border-foreground bg-foreground px-5 py-3 text-base font-black uppercase text-background hover:bg-background hover:text-foreground"
               href={ROUTES.vote}
             >
-              Vote yes
+              Vote
             </Link>
             <a
               className="inline-flex border border-foreground bg-background px-5 py-3 text-base font-black uppercase text-foreground hover:bg-foreground hover:text-background"
@@ -721,10 +721,10 @@ export default async function JokePage() {
           className="grid gap-4 md:grid-cols-2"
           data-joke-screen-only="true"
         >
-          <Step eyebrow="Step 1" title="Vote yes.">
+          <Step eyebrow="Step 1" title="Vote.">
             <p className={paragraphClass}>
               The joke is funnier if you are not asking other people to do the
-              thing you avoided doing. Vote on the 1% Treaty first.
+              thing you avoided doing. Take your 30 seconds first.
             </p>
           </Step>
 

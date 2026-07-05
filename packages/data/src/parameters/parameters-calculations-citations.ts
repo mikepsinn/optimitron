@@ -272,6 +272,21 @@ export const CAREGIVER_VALUE_PER_HOUR_SIMPLE: Parameter = {
   manualPageTitle: "The Cost of Disease",
 };
 
+export const CBO_IMMIGRATION_SURGE_DEFICIT_REDUCTION_2024_2034: Parameter = {
+  value: 900000000000.0,
+  parameterName: "CBO_IMMIGRATION_SURGE_DEFICIT_REDUCTION_2024_2034",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-cbo_immigration_surge_deficit_reduction_2024_2034",
+  unit: "USD",
+  displayName: "CBO Immigration Surge Deficit Reduction, 2024-2034",
+  description: "CBO (July 2024): the 2021-2026 immigration surge lowers federal deficits, on net, by $0.9 trillion over 2024-2034 (revenues up $1.2 trillion, spending up $0.3 trillion).",
+  sourceType: "external",
+  sourceRef: "cbo-immigration-surge-2024",
+  sourceUrl: "https://www.cbo.gov/publication/60165",
+  confidence: "high",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
+  manualPageTitle: "The Immigration Revenue Service",
+};
+
 export const CHAIN_GLOBAL_BILLIONAIRE_COUNT: Parameter = {
   value: 2781.0,
   parameterName: "CHAIN_GLOBAL_BILLIONAIRE_COUNT",
@@ -3622,6 +3637,22 @@ export const US_SENATORS_FOR_TREATY: Parameter = {
   manualPageTitle: "How Much Does It Cost to Buy All the Governments?",
 };
 
+export const US_SMUGGLER_FEE_AVG: Parameter = {
+  value: 6937.0,
+  parameterName: "US_SMUGGLER_FEE_AVG",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_smuggler_fee_avg",
+  unit: "USD",
+  displayName: "Average Smuggler Fee per US Border Crossing",
+  description: "Average fee Mexican migrants paid smugglers to enter the United States (EMIF Norte survey of 20,000+ migrants, second half of 2022). Reported street prices ran higher after 2023; the interval covers the range. This is the market-revealed willingness to pay for entry.",
+  sourceType: "external",
+  sourceRef: "emif-coyote-fees-2022",
+  sourceUrl: "https://mexiconewsdaily.com/news/survey-finds-mexican-migrants-pay-average-of-us-7000-to-coyotes/",
+  confidence: "high",
+  confidenceInterval: [4000.0, 14000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
+  manualPageTitle: "The Immigration Revenue Service",
+};
+
 export const US_TOTAL_FEDERAL_CAMPAIGN_SPENDING_2024: Parameter = {
   value: 20000000000.0,
   parameterName: "US_TOTAL_FEDERAL_CAMPAIGN_SPENDING_2024",
@@ -3825,22 +3856,6 @@ export const ADDITIONAL_DRUGS_FROM_COST_ELIMINATION: Parameter = {
   confidenceInterval: [13.070666318568255, 27.466007495286444],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
-};
-
-export const AI_DIPLOMATIC_CORPS_ANNUAL_COST: Parameter = {
-  value: 8541000.0,
-  parameterName: "AI_DIPLOMATIC_CORPS_ANNUAL_COST",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_diplomatic_corps_annual_cost",
-  unit: "USD",
-  displayName: "AI Diplomatic Corps Annual Cost",
-  description: "Bottom-up annual cost of the AI diplomatic corps: negotiator agents for every government, running every hour of the year, at blended frontier inference prices. Uncertainty propagates from the component distributions via Monte Carlo.",
-  sourceType: "calculated",
-  confidence: "high",
-  formula: "GOVERNMENTS × AGENTS_PER_GOVERNMENT × 8760 hours × COST_PER_AGENT_HOUR",
-  latex: "\\begin{gathered}\nCost_{ann} \\\\\n= N_{leader} \\times Ai \\times Cost_{per} \\times 8760 \\\\\n= 195 \\times 10 \\times \\$0.5 \\times 8760 \\\\\n= \\$8.54M\n\\end{gathered}",
-  confidenceInterval: [829434.8570727136, 29444832.407966193],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
-  manualPageTitle: "Department of Peace",
 };
 
 export const APOCALYPSE_MARKUP: Parameter = {
@@ -4784,6 +4799,22 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
   manualPageTitle: "Please Select an Earth: A) Everyone Gets Rich B) Somalia, but Everywhere",
 };
 
+export const DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
+  value: 1391.044776119403,
+  parameterName: "DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-decentralized_congress_savings_per_citizen_annual",
+  unit: "USD",
+  displayName: "Decentralized Congress Savings per Citizen per Year",
+  description: "Annual savings per citizen from putting the zombie policies to direct evidence-attached votes: tariffs, corporate welfare, agricultural and fossil subsidies, the policies that survive only by never being asked about.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(TARIFFS + CORPORATE_WELFARE + AG_SUBSIDIES + FOSSIL_SUBSIDIES) / US_POPULATION",
+  latex: "\\begin{gathered}\nSavings_{ann} \\\\\n= (\\text{TARIFFS} + \\text{CORPORATE\\_WELFARE} \\\\\n+ \\text{AG\\_SUBSIDIES} \\\\\n+ \\text{FOSSIL\\_SUBSIDIES}) / \\text{US\\_POPULATION}\n\\end{gathered}",
+  confidenceInterval: [1132.043625354657, 1669.3541664195172],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/decentralized-congress.html",
+  manualPageTitle: "The Decentralized Congress",
+};
+
 export const DEFENSE_TAKEOVER_COST_ACTIVIST: Parameter = {
   value: 48400000000.0,
   parameterName: "DEFENSE_TAKEOVER_COST_ACTIVIST",
@@ -4874,6 +4905,22 @@ export const DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS: Parameter = {
   latex: "\\begin{gathered}\nC_{takeover}/A_{investable} = \\frac{C_{takeover}}{Assets_{invest}} = \\frac{\\$873B}{\\$305T} = 0.286\\%\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
   manualPageTitle: "The Loving Takeover",
+};
+
+export const DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
+  value: 2095.5223880597014,
+  parameterName: "DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-department_of_peace_savings_per_american_annual",
+  unit: "USD",
+  displayName: "Department of Peace Savings per American per Year",
+  description: "Annual savings per American from trimming military spending to the first-principles homeland-defense baseline: the audit's overspend divided across the population.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "MILITARY_OVERSPEND / US_POPULATION",
+  latex: "\\begin{gathered}\nSavings_{ann} = \\frac{W_{military}}{Pop_{US}} = \\frac{\\$702B}{335M} = \\$2.1K\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [1999.2330852276832, 2180.0598732513095],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
+  manualPageTitle: "Department of Peace",
 };
 
 export const DESTRUCTIVE_ECONOMY_25PCT_YEAR: Parameter = {
@@ -5640,6 +5687,22 @@ export const DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER: Parameter = {
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
 };
 
+export const DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE: Parameter = {
+  value: 1669537.1367061357,
+  parameterName: "DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dih_nih_same_budget_patients_fundable",
+  unit: "patients",
+  displayName: "DIH Same-Budget Trial Patients Fundable",
+  description: "Trial participants the SAME NIH clinical-trials allocation funds each year at dFDA pragmatic-trial prices: identical budget, identical 3.3% split, different procurement. No treaty and no new money required.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "NIH_BUDGET × TRIALS_PCT / PRAGMATIC_COST_PER_PATIENT",
+  latex: "\\begin{gathered}\nFundable \\\\\n= \\text{NIH\\_BUDGET} \\times \\text{TRIALS\\_PCT} / \\text{PRAGMATIC\\_COST\\_PER\\_PATIENT}\n\\end{gathered}",
+  confidenceInterval: [627174.4596503446, 7129318.283884521],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dih.html",
+  manualPageTitle: "Decentralized Institutes of Health",
+};
+
 export const DIH_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
   value: 23379978.471474703,
   parameterName: "DIH_PATIENTS_FUNDABLE_ANNUALLY",
@@ -5850,6 +5913,22 @@ export const DRUG_DISEASE_COMBINATIONS_POSSIBLE: Parameter = {
   confidenceInterval: [6675351.737735795, 12759539.26857128],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
+};
+
+export const DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
+  value: 268.65671641791045,
+  parameterName: "DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-drug_treatment_admin_savings_per_citizen_annual",
+  unit: "USD",
+  displayName: "Drug Treatment Administration Savings per Citizen per Year",
+  description: "Annual savings per citizen from ending the drug war and routing addiction into the treatment machinery.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "DRUG_WAR_ANNUAL_COST / US_POPULATION",
+  latex: "\\begin{gathered}\nSavings_{ann} \\\\\n= \\frac{W_{drugs}}{Pop_{US}} \\\\\n= \\frac{\\$90B}{335M} \\\\\n= \\$269\n\\end{gathered}",
+  confidenceInterval: [178.58285450142273, 434.4776966020446],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/drug-treatment-administration.html",
+  manualPageTitle: "The Drug Treatment Administration",
 };
 
 export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
@@ -6868,6 +6947,38 @@ export const GLOBAL_WAR_COST_YEAR_80_BASELINE: Parameter = {
   manualPageTitle: "Peace Dividend",
 };
 
+export const GOV_REPLACEMENT_SUITE_ANNUAL_OPEX: Parameter = {
+  value: 300000000.0,
+  parameterName: "GOV_REPLACEMENT_SUITE_ANNUAL_OPEX",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_replacement_suite_annual_opex",
+  unit: "USD",
+  displayName: "Government Replacement Suite Annual Operating Cost",
+  description: "Combined steady-state annual operating cost of the priced government-replacement modules (revenue service, security administration, election commission, census sensor array, monetary authority, securities commission). Excludes the revenue-positive and included-elsewhere modules.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "ARS + USA + AEC + DCB + AMA + TSC operating costs",
+  latex: "\\begin{gathered}\nCost_{opex,ann} = Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{net,ann} + Cost_{opex,ann} = \\$150M + \\$100M + \\$7M + \\$15M + \\$7.5M + \\$20M = \\$300M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Pop_{US} \\times Cost_{ann} = 335M \\times \\$0.3 = \\$100M\n\\end{gathered}",
+  confidenceInterval: [151751511.35413864, 542848635.6730552],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/earth-optimization-services.html",
+  manualPageTitle: "Earth Optimization Services",
+};
+
+export const GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL: Parameter = {
+  value: 0.8955223880597015,
+  parameterName: "GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_replacement_suite_opex_per_citizen_annual",
+  unit: "USD",
+  displayName: "Replacement Suite Operating Cost per Citizen per Year",
+  description: "The whole priced replacement suite's operating cost per citizen per year: roughly one dollar, versus five figures of dysfunction.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "SUITE_ANNUAL_OPEX / US_POPULATION",
+  latex: "\\begin{gathered}\nCost_{opex,ann} = \\frac{Cost_{opex,ann}}{Pop_{US}} = \\frac{\\$300M}{335M} = \\$0.896\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{net,ann} + Cost_{opex,ann} = \\$150M + \\$100M + \\$7M + \\$15M + \\$7.5M + \\$20M = \\$300M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Pop_{US} \\times Cost_{ann} = 335M \\times \\$0.3 = \\$100M\n\\end{gathered}",
+  confidenceInterval: [0.4523593166109013, 1.6179828925625888],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/earth-optimization-services.html",
+  manualPageTitle: "Earth Optimization Services",
+};
+
 export const HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO: Parameter = {
   value: 7.166666666666667,
   parameterName: "HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO",
@@ -6946,6 +7057,38 @@ export const IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT: Parameter = {
   latex: "\\begin{gathered}\nk_{IAB:defense} = \\frac{Funding_{political,ann}}{Lobby_{def,ann}} = \\frac{\\$2.72B}{\\$198M} = 13.7\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
   manualPageTitle: "Peace Dividend",
+};
+
+export const IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL: Parameter = {
+  value: 310.0716417910448,
+  parameterName: "IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-immigration_dividend_per_citizen_annual",
+  unit: "USD",
+  displayName: "Immigration Dividend per Citizen per Year",
+  description: "Annual per-citizen dividend from priced entry: entry-fee revenue redirected from smugglers to the Treasury, plus the annualized fiscal surplus the CBO measured from a surge of comparable volume. A floor: excludes the surtax stream and the retired enforcement budget.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "(ENTRY_FEES + SURGE_FISCAL_SURPLUS / 10 years) / US_POPULATION",
+  latex: "\\begin{gathered}\nDividend_{ann} = (\\text{ENTRY\\_FEES} + \\text{SURGE\\_FISCAL\\_SURPLUS} / 10 years) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Ratio_{ann} = Ratio_{ann} \\times US = 2M \\times \\$6.94K = \\$13.9B\n\\end{gathered}",
+  confidenceInterval: [283.93996549660704, 359.00471261829466],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
+  manualPageTitle: "The Immigration Revenue Service",
+};
+
+export const IMMIGRATION_ENTRY_REVENUE_ANNUAL: Parameter = {
+  value: 13874000000.0,
+  parameterName: "IMMIGRATION_ENTRY_REVENUE_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-immigration_entry_revenue_annual",
+  unit: "USD",
+  displayName: "Priced-Entry Annual Fee Revenue",
+  description: "Annual entry-fee revenue under priced entry at the smuggler-revealed price: money migrants already pay, redirected from cartels to the Treasury. Excludes the ongoing surtax stream, so it is a floor.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "ENTRANTS × SMUGGLER_FEE",
+  latex: "\\begin{gathered}\nRatio_{ann} \\\\\n= Ratio_{ann} \\times US \\\\\n= 2M \\times \\$6.94K \\\\\n= \\$13.9B\n\\end{gathered}",
+  confidenceInterval: [5163202230.897675, 30178171484.400955],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
+  manualPageTitle: "The Immigration Revenue Service",
 };
 
 export const INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
@@ -7352,6 +7495,22 @@ export const NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT: Parameter = {
   confidenceInterval: [0.0047561523104008305, 0.07842096599081838],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html",
   manualPageTitle: "NIH Fails to Institute Health",
+};
+
+export const NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO: Parameter = {
+  value: 37829.26829268293,
+  parameterName: "NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-nih_trial_patients_fundable_status_quo",
+  unit: "patients",
+  displayName: "NIH Trial Patients Fundable (Status Quo)",
+  description: "Trial participants the NIH's current clinical-trials allocation funds each year at traditional per-patient costs: the status quo output of the existing budget.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "NIH_BUDGET × TRIALS_PCT / TRADITIONAL_COST_PER_PATIENT",
+  latex: "\\begin{gathered}\nFundable \\\\\n= \\text{NIH\\_BUDGET} \\times \\text{TRIALS\\_PCT} / \\text{TRADITIONAL\\_COST\\_PER\\_PATIENT}\n\\end{gathered}",
+  confidenceInterval: [16065.854955513865, 91338.50930674645],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dih.html",
+  manualPageTitle: "Decentralized Institutes of Health",
 };
 
 export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
@@ -9732,6 +9891,22 @@ export const US_GOV_WASTE_PCT_GDP: Parameter = {
   manualPageTitle: "Optimocracy: Causal Inference on Cross-Jurisdictional Policy Data to Maximize Median Health and Wealth",
 };
 
+export const US_GOV_WASTE_PER_CAPITA_ANNUAL: Parameter = {
+  value: 14877.611940298508,
+  parameterName: "US_GOV_WASTE_PER_CAPITA_ANNUAL",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_per_capita_annual",
+  unit: "USD",
+  displayName: "US Governance Dysfunction per Person per Year",
+  description: "The US efficiency gap per person per year: the audit's total governance dysfunction divided across the population. The invoice every American pays silently.",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "US_GOV_WASTE_TOTAL / US_POPULATION",
+  latex: "\\begin{gathered}\nUS_{annual} = \\frac{W_{total,US}}{Pop_{US}} = \\frac{\\$4.98T}{335M} = \\$14.9K\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
+  confidenceInterval: [13109.54482834179, 16752.943713715737],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
+  manualPageTitle: "United States Efficiency Audit",
+};
+
 export const US_GOV_WASTE_QALY_EQUIVALENTS: Parameter = {
   value: 49840000.0,
   parameterName: "US_GOV_WASTE_QALY_EQUIVALENTS",
@@ -10783,34 +10958,6 @@ export const ADAPTABLE_TRIAL_PATIENTS: Parameter = {
   confidence: "high",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
   manualPageTitle: "The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease",
-};
-
-export const AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT: Parameter = {
-  value: 10.0,
-  parameterName: "AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_negotiator_agents_per_government",
-  unit: "agents",
-  displayName: "AI Negotiator Agents per Government",
-  description: "Concurrent AI negotiator agents assigned to each government: leaders, ministries, and back-channel tracks running in parallel.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [3.0, 30.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
-  manualPageTitle: "Department of Peace",
-};
-
-export const AI_NEGOTIATOR_COST_PER_AGENT_HOUR: Parameter = {
-  value: 0.5,
-  parameterName: "AI_NEGOTIATOR_COST_PER_AGENT_HOUR",
-  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ai_negotiator_cost_per_agent_hour",
-  unit: "USD",
-  displayName: "AI Negotiator Blended Cost per Agent-Hour",
-  description: "Blended inference cost per agent-hour for a frontier-model negotiator: agents reason at full burn only in bursts, and monitoring hours cost pennies. Rounded up from current API prices.",
-  sourceType: "definition",
-  confidence: "high",
-  confidenceInterval: [0.1, 3.0],
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
-  manualPageTitle: "Department of Peace",
 };
 
 export const ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX: Parameter = {
@@ -12163,6 +12310,20 @@ export const IAB_POLITICAL_INCENTIVE_FUNDING_PCT: Parameter = {
   manualPageTitle: "Earth Optimization Protocol v1",
 };
 
+export const IMMIGRATION_PRICED_ENTRY_ANNUAL_VOLUME: Parameter = {
+  value: 2000000.0,
+  parameterName: "IMMIGRATION_PRICED_ENTRY_ANNUAL_VOLUME",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-immigration_priced_entry_annual_volume",
+  unit: "entrants",
+  displayName: "Priced-Entry Annual Volume",
+  description: "Modeled annual legal entries under uncapped priced entry. Anchored to the most similar thing that already happened: the 2021-2026 US immigration surge that the CBO measured ran at roughly this rate, uninvited and unpriced.",
+  sourceType: "definition",
+  confidence: "high",
+  confidenceInterval: [1000000.0, 5000000.0],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
+  manualPageTitle: "The Immigration Revenue Service",
+};
+
 export const INFLUENCE_ACTIVIST_STAKE_FRACTION: Parameter = {
   value: 0.05,
   parameterName: "INFLUENCE_ACTIVIST_STAKE_FRACTION",
@@ -13355,6 +13516,7 @@ export const parameters = {
   CAREGIVER_COUNT_US,
   CAREGIVER_HOURS_PER_MONTH,
   CAREGIVER_VALUE_PER_HOUR_SIMPLE,
+  CBO_IMMIGRATION_SURGE_DEFICIT_REDUCTION_2024_2034,
   CHAIN_GLOBAL_BILLIONAIRE_COUNT,
   CHILDHOOD_VACCINATION_ANNUAL_BENEFIT,
   CHILDHOOD_VACCINATION_ROI,
@@ -13567,6 +13729,7 @@ export const parameters = {
   US_MILITARY_SPENDING_PCT_GDP,
   US_POPULATION_2024,
   US_SENATORS_FOR_TREATY,
+  US_SMUGGLER_FEE_AVG,
   US_TOTAL_FEDERAL_CAMPAIGN_SPENDING_2024,
   US_TOTAL_LOBBYING_ANNUAL,
   US_VOTE_DECISIVE_PROBABILITY,
@@ -13580,7 +13743,6 @@ export const parameters = {
   WHO_QALY_THRESHOLD_COST_EFFECTIVE,
   WORKFORCE_WITH_PRODUCTIVITY_LOSS,
   ADDITIONAL_DRUGS_FROM_COST_ELIMINATION,
-  AI_DIPLOMATIC_CORPS_ANNUAL_COST,
   APOCALYPSE_MARKUP,
   APOCALYPSE_MARKUP_MULTIPLIER,
   AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX,
@@ -13640,12 +13802,14 @@ export const parameters = {
   CURRENT_TRAJECTORY_GDP_YEAR_20,
   CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15,
   CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20,
+  DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL,
   DEFENSE_TAKEOVER_COST_ACTIVIST,
   DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   DEFENSE_TAKEOVER_COST_TOTAL,
   DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS,
   DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS,
+  DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL,
   DESTRUCTIVE_ECONOMY_25PCT_YEAR,
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   DESTRUCTIVE_ECONOMY_50PCT_YEAR,
@@ -13694,6 +13858,7 @@ export const parameters = {
   DFDA_TRIAL_COST_REDUCTION_PCT,
   DFDA_TRIAL_SUBSIDIES_ANNUAL,
   DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER,
+  DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE,
   DIH_PATIENTS_FUNDABLE_ANNUALLY,
   DIH_TREASURY_MEDICAL_RESEARCH_PCT,
   DIH_TREASURY_TO_MEDICAL_RESEARCH_ANNUAL,
@@ -13707,6 +13872,7 @@ export const parameters = {
   DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER,
   DRUG_COST_INCREASE_PRE1962_TO_CURRENT_MULTIPLIER,
   DRUG_DISEASE_COMBINATIONS_POSSIBLE,
+  DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL,
   EARTH_OPTIMIZATION_POINT_VALUE,
   EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT,
   EFFICACY_LAG_CUMULATIVE_EXCESS_COST,
@@ -13771,11 +13937,15 @@ export const parameters = {
   GLOBAL_WAR_COST_LIFETIME_PER_PERSON_FLAT,
   GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP,
   GLOBAL_WAR_COST_YEAR_80_BASELINE,
+  GOV_REPLACEMENT_SUITE_ANNUAL_OPEX,
+  GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL,
   HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO,
   HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR,
   IAB_MECHANISM_BENEFIT_COST_RATIO,
   IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL,
   IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT,
+  IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL,
+  IMMIGRATION_ENTRY_REVENUE_ANNUAL,
   INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE,
   LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE,
@@ -13801,6 +13971,7 @@ export const parameters = {
   MISALLOCATION_FACTOR_DEATH_VS_SAVING,
   MRNA_THERAPEUTIC_COMBINATIONS,
   NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT,
+  NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   NUCLEAR_WINTER_SPARE_APOCALYPSES,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
@@ -13949,6 +14120,7 @@ export const parameters = {
   US_GOV_WASTE_CATEGORY_4_SYSTEM,
   US_GOV_WASTE_MILITARY_OVERSPEND,
   US_GOV_WASTE_PCT_GDP,
+  US_GOV_WASTE_PER_CAPITA_ANNUAL,
   US_GOV_WASTE_QALY_EQUIVALENTS,
   US_GOV_WASTE_RAW_TOTAL,
   US_GOV_WASTE_RECOVERABLE,
@@ -14015,8 +14187,6 @@ export const parameters = {
   WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20,
   WISHONIA_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20,
   ADAPTABLE_TRIAL_PATIENTS,
-  AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT,
-  AI_NEGOTIATOR_COST_PER_AGENT_HOUR,
   ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX,
   ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
   ALLOCATION_DECISION_SPREAD,
@@ -14115,6 +14285,7 @@ export const parameters = {
   HUMAN_PROTEIN_CODING_GENES,
   IAB_MECHANISM_ANNUAL_COST,
   IAB_POLITICAL_INCENTIVE_FUNDING_PCT,
+  IMMIGRATION_PRICED_ENTRY_ANNUAL_VOLUME,
   INFLUENCE_ACTIVIST_STAKE_FRACTION,
   INSTITUTIONAL_INVESTOR_MIN,
   LEADED_GASOLINE_ERA_YEARS,
@@ -14360,6 +14531,20 @@ export const citations: Record<string, Citation> = {
         ],
         issued: { 'date-parts': [[2023]] },
         URL: "https://costsofwar.watson.brown.edu/costs/environmental",
+  },
+  "cbo-immigration-surge-2024": {
+        id: "cbo-immigration-surge-2024",
+        type: "report",
+        title: "Effects of the Immigration Surge on the Federal Budget and the Economy",
+        author: [
+          {
+            literal: "Congressional Budget Office"
+          },
+        ],
+        issued: { 'date-parts': [[2024]] },
+        publisher: "Congressional Budget Office",
+        URL: "https://www.cbo.gov/publication/60165",
+        note: "July 2024. Verified: the 2021-2026 immigration surge lowers federal deficits, on net, by \\$0.9 trillion over the 2024-2034 period; boosts GDP by \\$8.9 trillion over 2024-2034; and raises revenues by \\$1.2 trillion over the decade.",
   },
   "cbo-long-term-budget-2024": {
         id: "cbo-long-term-budget-2024",
@@ -14860,6 +15045,19 @@ export const citations: Record<string, Citation> = {
         'container-title': "EPI: Public Investments Outside Core Infrastructure",
         URL: "https://www.epi.org/publication/bp348-public-investments-outside-core-infrastructure/",
         note: "EPI: Public Investments Outside Core Infrastructure | World Bank: Returns to Investment in Education | Freopp: Education ROI Framework",
+  },
+  "emif-coyote-fees-2022": {
+        id: "emif-coyote-fees-2022",
+        type: "webpage",
+        title: "Survey finds Mexican migrants pay average of US \\$7,000 to 'coyotes'",
+        author: [
+          {
+            literal: "Mexico News Daily"
+          },
+        ],
+        issued: { 'date-parts': [[2023]] },
+        URL: "https://mexiconewsdaily.com/news/survey-finds-mexican-migrants-pay-average-of-us-7000-to-coyotes/",
+        note: "Reporting the EMIF Norte survey (Mexican government, El Colegio de la Frontera Norte, and the International Organization for Migration), 20,000+ migrants surveyed, July-November 2022. Verified quote: \"Mexicans are paying an average of \\$6,937 to smugglers to take them into the United States.\" Women averaged \\$7,839, men \\$6,565; 45% of deported migrants reported using a coyote.",
   },
   "environmental-cost-of-war": {
         id: "environmental-cost-of-war",
@@ -16722,11 +16920,11 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 859,
-  external: 237,
-  calculated: 435,
-  definitions: 187,
-  citations: 182,
+  total: 869,
+  external: 239,
+  calculated: 444,
+  definitions: 186,
+  citations: 184,
 } as const;
 
 // ============================================================================

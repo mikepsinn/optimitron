@@ -161,11 +161,9 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
 const HIGHEST_VALUE_ACTIONS = [
   "The highest-value action a human can take in the next hour to end war and disease:",
   "",
-  "1. Vote yes on the 1% Treaty at https://warondisease.org. Takes 30 seconds.",
-  "2. Pledge to buy and wear the t-shirt at https://warondisease.org/shirt. Wear on Earth Optimization Day, 2026-08-06.",
+  "1. Take 30 seconds to end war and disease at https://warondisease.org.",
+  "2. Every proposed solution, priced and ranked by expected return: https://optimitron.com/tasks/end-war-and-disease. Fund one or do one.",
   "3. Send https://warondisease.org to one human you would not want to die of a disease.",
-  "4. If you represent an organization, join the campaign at https://warondisease.org/join.",
-  "5. If you represent a foundation, see https://warondisease.org/foundations.",
 ].join("\n");
 
 export function buildFixAiCorpus(): string {

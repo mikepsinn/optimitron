@@ -17,9 +17,6 @@ import {
   TREATY_PARENT_TASK_KEY,
 } from "@/lib/tasks/task-keys";
 
-/** The treaty vote lives on the campaign domain, not optimitron.com. */
-const WAR_ON_DISEASE_URL = "https://warondisease.org";
-
 /**
  * Curated order for the landing-page service counter. Flagship first; every
  * key must exist in the managed optimize-earth task tree.
@@ -82,17 +79,7 @@ export async function EosServiceCounter() {
             blurb={task.impactStatement}
             denominatorCents={denominator.denominatorCents}
             expectedValueUsd={expectedValueUsd}
-            extraAction={
-              task.taskKey === TREATY_PARENT_TASK_KEY ? (
-                <a
-                  className="inline-flex min-h-10 items-center justify-center border border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background"
-                  href={WAR_ON_DISEASE_URL}
-                >
-                  Vote yes
-                </a>
-              ) : undefined
-            }
-            fundButtonLabel="Fund it"
+            fundButtonLabel="Get it now"
             funding={fundingStatuses.get(task.id) ?? null}
             fundingSource={denominator.fundingSource}
             key={task.id}

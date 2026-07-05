@@ -59,6 +59,38 @@ Do not let lower items crowd out higher ones.
   registration, verdict voting, and treaty settlement.
 - Visual review includes email screenshots; preview DB drift and unexplained
   missing screenshots still waste review time.
+- **CI review artifact upgrade (Mike-requested 2026-07-04):** the
+  `web-visual-review` gh-pages artifact should add (1) side-by-side IFRAMES of
+  production vs the PR's Vercel preview so Mike can use both pages
+  interactively — the artifact is PUBLIC, so never bake the `_vercel_share`
+  bypass token into it; take it as a URL param Mike pastes (or iframe prod
+  only); (2) a rendered git diff of copy snapshots
+  (`git diff origin/main -- '**/*.logged-out.md' '**/*.email.md'`, diff2html
+  or similar) so copy changes are reviewable without reading JSX. Own small
+  branch; touches `.github/workflows` + the review-page generator.
+- **dFDA personal tracking loop (Mike-requested 2026-07-04; mapped, ~500
+  lines wiring, ZERO migrations):** regimen → recurring tasks → intake
+  logging → symptom prompts → n-of-1 effect estimates, MCP-first. Key finds:
+  the Chrome extension (`packages/extension`) already runs the whole loop
+  locally (treatments w/ dose+reminders, done/skip, 1–5 symptom ratings,
+  on-device optimizer analysis, uploads results to
+  `/api/health-analysis/submit`); the DB schema is complete but unused
+  (`TrackingReminder`/`TrackingReminderNotification` schema.prisma:2865+,
+  Survey system — zero app code); `upsertDailyMeasurement`
+  (`profile.server.ts:621`) is the working Measurement write path;
+  `runEfficacyLagMatcher` is court-case evidence, NOT n-of-1 — don't plan
+  around it. Build order: (1) MCP `recordMeasurement` (generalize
+  upsertDailyMeasurement, multi-dose); (2) MCP `upsertTrackingReminder` +
+  `listTrackingReminders`; (3) iteration source `due-tracking-reminders` in
+  `triggers/iteration-sources.ts` + one TaskTrigger row
+  (idempotency `tracking:{{reminder.id}}:{{reminder.dateKey}}`) so regimen
+  items land in `getMyQueue` — keep personal regimen tasks OUT of the
+  optimize-earth tree; (4) symptom prompts = more reminder rows (Mood,
+  Energy, Pain) — data, not code; (5) MCP `runNOf1Analysis`: Measurements →
+  `aggregateToDaily` → `runVariableRelationshipAnalysis` →
+  `NOf1VariableRelationship` upsert (copy mapping from
+  `health-analysis/submit`), returns ranked estimates. Own branch after
+  PR #99; full agent report 2026-07-04 in session transcript.
 - **EOS landing v2: Government of Tomorrow showroom (Mike-approved direction +
   copy gate 2026-07-03, branch `feature/eos-government-of-tomorrow`):**
   investor pitch replaced by product catalog — masthead "your application was

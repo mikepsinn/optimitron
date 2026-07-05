@@ -34,6 +34,8 @@ export interface WishoniaAgency {
   emoji: string;
   replaces: string[];
   replacesAgencyName: string;
+  /** Canonical manual page (spec/blueprint) for this agency, when one exists. */
+  manualUrl?: string;
   /** Full Wishonia-voice explanation (1-3 sentences). Used for page hero, nav, metadata. */
   description: string;
   /** One-liner for compact UIs (tools page, slide-armory, index cards). */
@@ -131,6 +133,8 @@ constructor(
     emoji: "🧾",
     replaces: ["irs"],
     replacesAgencyName: "Internal Revenue Service",
+    manualUrl:
+      "https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html",
     description:
       "Six lines of computer code. That's all it took.",
     tagline: "Six lines of computer code replace 74,000 pages of tax code",
@@ -200,6 +204,8 @@ function _update(address from, address to, uint256 value) internal override {
     emoji: "🍞",
     replaces: ["ssa"],
     replacesAgencyName: "Social Security Administration + Welfare Bureaucracy",
+    manualUrl:
+      "https://manual.warondisease.org/knowledge/solution/universal-security-administration.html",
     description:
       "You spend more administering help than you spend helping. That's not a safety net — that's a jobs programme for administrators.",
     tagline: "UBI replaces 83 welfare programs with one for-loop",
@@ -268,6 +274,8 @@ function distributeUBI() external {                             // Anyone can ca
     emoji: "🤝",
     replaces: ["fec"],
     replacesAgencyName: "Federal Election Commission + Campaign Finance System",
+    manualUrl:
+      "https://manual.warondisease.org/knowledge/solution/aligned-election-commission.html",
     description:
       "Your politicians are funded by the people they're supposed to regulate. You call this 'campaign finance.' I call it 'bribery with extra steps.'",
     tagline: "Politicians funded by alignment score, not donor checks",
@@ -611,11 +619,12 @@ function citizenCount() external view returns (uint256) {
   },
   dih: {
     id: "dih",
-    dName: "Optimal Institutes of Health",
+    dName: "Decentralized Institutes of Health",
     department: "Health & Science",
     emoji: "🧬",
     replaces: ["nih", "fda", "hhs", "dea", "va"],
     replacesAgencyName: "National Institutes of Health + FDA",
+    manualUrl: "https://manual.warondisease.org/knowledge/solution/dih.html",
     description:
       "You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic.",
     tagline: "97% clinical trials, 3% overhead — the exact mirror of your NIH",
@@ -689,6 +698,8 @@ function allocateSubsidy(patient) {
     emoji: "💀",
     replaces: ["dod", "tsa", "state"],
     replacesAgencyName: "Department of Defense (née Department of War)",
+    manualUrl:
+      "https://manual.warondisease.org/knowledge/solution/department-of-peace.html",
     description:
       "War is a negative-sum game and the spreadsheet agrees. We don't have a Department of War because — and I want to be precise here — war is fucking stupid.",
     tagline: "We don't have one",
@@ -838,6 +849,8 @@ function allocateSubsidy(patient) {
     emoji: "💊",
     replaces: ["fda"],
     replacesAgencyName: "Food and Drug Administration",
+    manualUrl:
+      "https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html",
     description:
       "Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths.",
     tagline: "Real-time Outcome Labels & Treatment Rankings",

@@ -231,7 +231,7 @@ async function extractPage(
       throw err;
     }
   }
-  const { redirectedFromStatus } = navResult!;
+  const { redirectedFromStatus, status } = navResult!;
   let metadata = await extractPageMetadata(page);
   let bodyText = await page
     .locator("body")
@@ -246,6 +246,27 @@ async function extractPage(
   if (allMetaMissing || bodyLooks404) {
     await tryExtract(2000);
     metadata = await extractPageMetadata(page);
+    bodyText = await page
+      .locator("body")
+      .innerText()
+      .catch(() => "");
+  }
+  // A 5xx or a page with zero metadata is a broken render (dev-server error
+  // overlay, import crash, mid-compile). Writing a snapshot from it would
+  // silently replace real copy with "[missing]" placeholders — refuse loudly
+  // instead so the run fails and the log says what to fix.
+  const stillAllMetaMissing =
+    !metadata.title &&
+    !metadata.description &&
+    !metadata.canonical &&
+    !metadata.openGraphTitle;
+  if ((status !== null && status >= 500) || stillAllMetaMissing) {
+    const excerpt = bodyText.replace(/\s+/g, " ").trim().slice(0, 300);
+    throw new Error(
+      `broken render (HTTP ${status ?? "?"}; metadata ${
+        stillAllMetaMissing ? "all missing" : "present"
+      }) — snapshot NOT written. Body starts: "${excerpt}". Fix the page or dev server, then rerun copy:preview.`,
+    );
   }
   const bodyMarkdown = await page.evaluate(() => {
     // tsx/esbuild injects __name(...) wrappers for named functions/arrows.

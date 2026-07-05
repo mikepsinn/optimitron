@@ -30,7 +30,7 @@
 - Your grandma bought war bonds that paid 4% and got dead Nazis. These project 272% returns and dead diseases. Grandma would be furious if she hadn't died of cancer.
 - ~$2.72 BILLION/YEAR TO INVESTORS
 #### SUPERPAC FOR ALIGNED POLITICIANS
-- The NRA gives politicians a letter grade and your senators are more afraid of a bad mark than a mass shooting. Same system, except “guns” is replaced with “not dying from diseases.” Vote yes, get funded. Vote no, watch your opponent get funded.
+- The NRA gives politicians a letter grade and your senators are more afraid of a bad mark than a mass shooting. Same system, except “guns” is replaced with “not dying from diseases.” Support the treaty, get funded. Block it, watch your opponent get funded.
 - ~$2.72 BILLION/YEAR TO ALIGNED POLITICIANS
 - The 80/10/10 split is fixed in the protocol. No committee gets to argue it into mush later. No lobbying required to lobby.
 ### RISK & REWARD

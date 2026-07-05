@@ -1,7 +1,4 @@
 import {
-  AI_DIPLOMATIC_CORPS_ANNUAL_COST,
-  AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT,
-  AI_NEGOTIATOR_COST_PER_AGENT_HOUR,
   ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX,
   AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX,
   AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL,
@@ -14,12 +11,14 @@ import {
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   IRS_ANNUAL_OPERATING_BUDGET,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  PEACE_DIVIDEND_LIFETIME_PER_PERSON,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
   TREATY_ANNUAL_FUNDING,
   UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL,
   UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX,
 } from "@optimitron/data/parameters";
+import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button } from "@/components/retroui/Button";
@@ -27,32 +26,20 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 import { EosServiceCounter } from "@/components/site/EosServiceCounter";
 import { Container } from "@/components/ui/container";
 import { SectionContainer } from "@/components/ui/section-container";
-import { fullManualPaperLink, ROUTES } from "@/lib/routes";
+import { fullManualPaperLink, optimocracyPaperLink, ROUTES } from "@/lib/routes";
 
-/** The treaty vote lives on the campaign domain, not optimitron.com. */
-const WAR_ON_DISEASE_URL = "https://warondisease.org";
-
-const MANUAL_URLS = {
-  alignedElectionCommission:
-    "https://manual.warondisease.org/knowledge/solution/aligned-election-commission.html",
-  automatedRevenueService:
-    "https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html",
-  departmentOfPeace:
-    "https://manual.warondisease.org/knowledge/solution/department-of-peace.html",
-  dfdaImpactPaper:
-    "https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html",
-  dih: "https://manual.warondisease.org/knowledge/solution/dih.html",
-  optimocracyPaper:
-    "https://manual.warondisease.org/knowledge/appendix/optimocracy-paper.html",
-  universalSecurityAdministration:
-    "https://manual.warondisease.org/knowledge/solution/universal-security-administration.html",
-} as const;
+// Retail compare-at math, computed from the same parameters the cards cite
+// (module-level so it runs once, matching the TreatyVoteFlow precedent).
+const ARS_SAVINGS_PCT =
+  100 -
+  (100 * AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX.value) /
+    IRS_ANNUAL_OPERATING_BUDGET.value;
 
 const mastheadLabel = "Earth Optimization Services";
 const mastheadStatus =
   "Correction: your application was accepted at birth. You are one of 8,000,000,000 presidents.";
-const voteLabel = "Vote on the first purchase";
 const tourLabel = "Tour the departments";
+const shopLabel = "Shop the service counter";
 
 const heroHeading = "The Government of Tomorrow is in stock.";
 const whatThisIsHeading = "What this is";
@@ -64,7 +51,7 @@ const departmentsDeck =
   "Every agency you already pay for, rebuilt so it can tell whether it's working. Prices are for planetary installation.";
 const serviceCounterHeading = "The service counter";
 const serviceCounterDeck =
-  "Civilization repairs, priced and guaranteed. Your money sits in escrow until the work happens — if it doesn't, it comes back. Every line item reports its expected return before you pay.";
+  "Order civilization repairs like anything else you shop for. Every item shows the price, what you get, and the return on your dollar. Money-back guarantee: if the work never happens, your money comes back.";
 const employeeManualHeading = "Employee manual";
 const employeeManualDeck =
   "The manual at manual.warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. You run the planet now.";
@@ -111,7 +98,7 @@ interface Department {
 const departments: Department[] = [
   {
     action: {
-      href: MANUAL_URLS.optimocracyPaper,
+      href: optimocracyPaperLink.href,
       label: "Read the spec",
     },
     body: (
@@ -131,7 +118,7 @@ const departments: Department[] = [
   },
   {
     action: {
-      href: MANUAL_URLS.dfdaImpactPaper,
+      href: AGENCIES.dfda.manualUrl,
       label: "Read the spec",
     },
     body: (
@@ -154,11 +141,11 @@ const departments: Department[] = [
         value: <ParameterValue param={DFDA_UPFRONT_BUILD} />,
       },
     ],
-    replaces: "The FDA",
-    title: "The decentralized FDA",
+    replaces: AGENCIES.dfda.replacesAgencyName,
+    title: AGENCIES.dfda.dName,
   },
   {
-    action: { href: MANUAL_URLS.dih, label: "Read the blueprint" },
+    action: { href: AGENCIES.dih.manualUrl, label: "Read the blueprint" },
     body: (
       <>
         Receives the treaty&apos;s{" "}
@@ -179,8 +166,9 @@ const departments: Department[] = [
         value: <ParameterValue param={DIH_NPV_ANNUAL_OPEX_INITIATIVES} />,
       },
     ],
+    // Registry says "NIH + FDA", which collides with the dFDA card next door.
     replaces: "The NIH",
-    title: "Decentralized Institutes of Health",
+    title: AGENCIES.dih.dName,
   },
   {
     action: { href: ROUTES.court, label: "Enter the court" },
@@ -200,7 +188,7 @@ const departments: Department[] = [
   },
   {
     action: {
-      href: MANUAL_URLS.departmentOfPeace,
+      href: AGENCIES.ddod.manualUrl,
       label: "Read the spec",
     },
     body: (
@@ -211,42 +199,30 @@ const departments: Department[] = [
         nobody shoots at a brokerage account — converts the stockpiles into
         reactor fuel (your species already did this once; it powered your
         lightbulbs for twenty years), and retires the war budget at 1% a year,
-        verified. Talking is the cheap part:{" "}
-        <ParameterValue
-          display="integer"
-          param={AI_NEGOTIATOR_AGENTS_PER_GOVERNMENT}
-        />{" "}
-        AI negotiators per government at{" "}
-        <ParameterValue figures={2} param={AI_NEGOTIATOR_COST_PER_AGENT_HOUR} />{" "}
-        an agent-hour. Disputes take six minutes. Nobody dies.
+        verified. Disputes take six minutes. Nobody dies.
       </>
     ),
     priceLines: [
       {
-        label: "Price",
+        label: "The other guys",
         value: (
-          <>
-            <ParameterValue param={AI_DIPLOMATIC_CORPS_ANNUAL_COST} />
+          <s>
+            <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} />
             {"/yr"}
-          </>
+          </s>
         ),
       },
       {
-        label: "Current model",
-        value: (
-          <>
-            <ParameterValue param={GLOBAL_MILITARY_SPENDING_ANNUAL_2024} />
-            {"/yr"}
-          </>
-        ),
+        label: "Your lifetime share of the savings",
+        value: <ParameterValue param={PEACE_DIVIDEND_LIFETIME_PER_PERSON} />,
       },
     ],
-    replaces: "The war department",
-    title: "Department of Peace",
+    replaces: AGENCIES.ddod.replacesAgencyName,
+    title: AGENCIES.ddod.dName,
   },
   {
     action: {
-      href: MANUAL_URLS.automatedRevenueService,
+      href: AGENCIES.dirs.manualUrl,
       label: "Read the spec",
     },
     body: (
@@ -259,7 +235,16 @@ const departments: Department[] = [
     ),
     priceLines: [
       {
-        label: "Price",
+        label: "The other guys",
+        value: (
+          <s>
+            <ParameterValue param={IRS_ANNUAL_OPERATING_BUDGET} />
+            {"/yr"}
+          </s>
+        ),
+      },
+      {
+        label: "The Government of Tomorrow",
         value: (
           <>
             <ParameterValue param={AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX} />
@@ -268,32 +253,24 @@ const departments: Department[] = [
         ),
       },
       {
-        label: "The IRS",
+        label: "You save",
         value: (
           <>
-            <ParameterValue param={IRS_ANNUAL_OPERATING_BUDGET} />
-            {"/yr"}
-          </>
-        ),
-      },
-      {
-        label: "Saves",
-        value: (
-          <>
+            {`${ARS_SAVINGS_PCT.toFixed(1)}% — `}
             <ParameterValue
               param={AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL}
-            />
-            {"/American/yr"}
+            />{" "}
+            per American per year
           </>
         ),
       },
     ],
-    replaces: "The IRS",
-    title: "Automated Revenue Service",
+    replaces: AGENCIES.dirs.replacesAgencyName,
+    title: AGENCIES.dirs.dName,
   },
   {
     action: {
-      href: MANUAL_URLS.universalSecurityAdministration,
+      href: AGENCIES.dssa.manualUrl,
       label: "Read the spec",
     },
     body: (
@@ -319,12 +296,12 @@ const departments: Department[] = [
         ),
       },
     ],
-    replaces: "80+ welfare programs",
-    title: "Universal Security Administration",
+    replaces: AGENCIES.dssa.replacesAgencyName,
+    title: AGENCIES.dssa.dName,
   },
   {
     action: {
-      href: MANUAL_URLS.alignedElectionCommission,
+      href: AGENCIES.dfec.manualUrl,
       label: "Read the spec",
     },
     body: (
@@ -347,8 +324,8 @@ const departments: Department[] = [
         ),
       },
     ],
-    replaces: "The FEC and campaign finance",
-    title: "Aligned Election Commission",
+    replaces: AGENCIES.dfec.replacesAgencyName,
+    title: AGENCIES.dfec.dName,
   },
 ];
 
@@ -519,10 +496,10 @@ export function EarthOptimizationServicesLandingPage() {
               </p>
             </div>
             <nav aria-label="Primary actions" className="flex flex-wrap gap-3">
-              <ActionButton href={WAR_ON_DISEASE_URL} primary>
-                {voteLabel}
+              <ActionButton href="#departments" primary>
+                {tourLabel}
               </ActionButton>
-              <ActionButton href="#departments">{tourLabel}</ActionButton>
+              <ActionButton href="#service-counter">{shopLabel}</ActionButton>
             </nav>
           </header>
 
@@ -538,14 +515,13 @@ export function EarthOptimizationServicesLandingPage() {
                 display="integer"
                 param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
               />
-              x more testing weapons than cures. Trade-ins accepted. The first
-              purchase is the 1% Treaty.
+              x more testing weapons than cures. Trade-ins accepted.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <ActionButton href={WAR_ON_DISEASE_URL} primary>
-                {voteLabel}
+              <ActionButton href="#departments" primary>
+                {tourLabel}
               </ActionButton>
-              <ActionButton href="#departments">{tourLabel}</ActionButton>
+              <ActionButton href="#service-counter">{shopLabel}</ActionButton>
             </div>
           </section>
         </Container>
@@ -553,8 +529,9 @@ export function EarthOptimizationServicesLandingPage() {
 
       <PageSection title={whatThisIsHeading}>
         <p className="max-w-5xl text-xl font-bold leading-9 sm:text-2xl sm:leading-10">
-          A government has one job: make the median person healthier and
-          richer. The current models misplace about{" "}
+          A government has one job: promote the general welfare — make the
+          median citizen healthier and richer. The current models misplace
+          about{" "}
           <ParameterValue
             param={POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL}
           />{" "}
@@ -585,7 +562,11 @@ export function EarthOptimizationServicesLandingPage() {
         </div>
       </PageSection>
 
-      <PageSection deck={serviceCounterDeck} title={serviceCounterHeading}>
+      <PageSection
+        deck={serviceCounterDeck}
+        id="service-counter"
+        title={serviceCounterHeading}
+      >
         <EosServiceCounter />
       </PageSection>
 

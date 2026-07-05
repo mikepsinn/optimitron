@@ -90,7 +90,7 @@ export function FundingTaskCard({
             </div>
             <div>
               <dt className="text-xs font-black uppercase tracking-[0.12em]">
-                {fundingSource === "target" ? "Funding goal" : "Worker payout"}
+                {fundingSource === "target" ? "Price" : "Worker payout"}
               </dt>
               <dd className="text-foreground">
                 {formatUsdCents(denominatorCents)}

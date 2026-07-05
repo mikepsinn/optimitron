@@ -134,8 +134,8 @@ export default function IABPage() {
                 The NRA gives politicians a letter grade and your senators
                 are more afraid of a bad mark than a mass shooting. Same
                 system, except &ldquo;guns&rdquo; is replaced with &ldquo;not
-                dying from diseases.&rdquo; Vote yes, get funded. Vote no,
-                watch your opponent get funded.
+                dying from diseases.&rdquo; Support the treaty, get funded.
+                Block it, watch your opponent get funded.
               </p>
               <div className="mt-3 border-2 border-border bg-background px-3 py-2 inline-block">
                 <span className="text-xs font-black uppercase text-muted-foreground">
