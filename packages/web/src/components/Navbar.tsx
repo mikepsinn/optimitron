@@ -158,7 +158,7 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
             {config.searchEnabled ? (
               <Link
                 href={searchLink.href}
-                className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex h-9 w-9 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors hover:bg-muted"
                 title={searchLink.label}
                 aria-label={searchLink.label}
               >
