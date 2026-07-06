@@ -27,7 +27,7 @@
 - That's it. You're done. 99% of you don't need to know anything else.
 - The rest of this site is the instruction manual. Read it if you're into ending war and disease. But for the love of your species, click the buttons first.
 ### VOTE ON THE 1% TREATY
-- Trade one apocalypse for disease eradication. Humanity has 122 stockpiled — you can spare one to cure the 6,650 diseases with no treatment.
+- Trade one apocalypse for disease eradication. Humanity has [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) stockpiled — you can spare one to cure the [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases with no treatment.
 - [VOTE NOW](/vote)
 ## PRESIDENT MANAGEMENT SYSTEM
 - You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
@@ -141,7 +141,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀5 HUMANS TERMINATED🔥$10.1M BURNED BY MISALIGNED GOVERNMENTS💣$1.3M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀4 HUMANS TERMINATED🔥$8.9M BURNED BY MISALIGNED GOVERNMENTS💣$1.2M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -329,6 +329,5 @@
 - [minutes]
 - [seconds]
 - Until the destructive economy reaches 50% of GDP — the point where stealing beats creating
-- [💀5 HUMANS TERMINATED🔥$9.8M BURNED BY MISALIGNED GOVERNMENTS💣$1.3M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - [SEE THE FULL MATH](/prize)
 - [EXPRESS YOUR PREFERENCES](/agencies/dcongress/wishocracy)

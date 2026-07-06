@@ -158,12 +158,27 @@ test('noise below the floor is dropped when a real hunk exists', () => {
     if (y >= 1760 && y < 1768) return WHITE; // noise: 1 slab = 0.4%
     return contentColor(y);
   });
-  const res = extractHunksAndAlignment({ before, after });
+  const res = extractHunksAndAlignment({ before, after, noiseFloorPct: 0.1 });
 
   assert.equal(res.hunks.length, 1);
   assert.equal(res.hunks[0].kind, 'changed');
   assert.equal(res.hunks[0].before.yStart, 640);
   assert.equal(res.hunks[0].before.yEnd, 1360); // noise did not stretch the hunk
+});
+
+test('default keeps multiple small real hunks visible', () => {
+  const before = makePng(2000, contentColor);
+  const after = makePng(2000, (y) => {
+    if (y >= 320 && y < 336) return WHITE; // 2 slabs = 0.8%
+    if (y >= 1600 && y < 1616) return WHITE; // 2 slabs = 0.8%
+    return contentColor(y);
+  });
+  const res = extractHunksAndAlignment({ before, after });
+
+  assert.equal(res.hunks.length, 2);
+  assert.equal(res.hunks[0].kind, 'changed');
+  assert.equal(res.hunks[1].kind, 'changed');
+  assert.ok(res.hunks.every((hunk) => hunk.pctOfPage < 10));
 });
 
 test('a below-floor hunk survives when it is the only hunk', () => {

@@ -15,7 +15,7 @@
  *
  * DATA CONTRACT — renderReviewHtml(input) where input is:
  * {
- *   meta: { prNumber, shortSha, commitSha, headBranch, generatedAt,
+ *   meta: { prNumber, shortSha, commitSha, headBranch, repo, generatedAt,
  *           generatedAtCentral, previewBaseUrl, productionBaseUrl,
  *           reviewUrl, baselineDescription },
  *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, erroredRoutes, totalRoutes },
@@ -53,8 +53,8 @@ export function escapeHtml(value) {
 function jsonIsland(input) {
   return JSON.stringify(input)
     .replaceAll("<", "\\u003c")
-    .replaceAll(" ", "\\u2028")
-    .replaceAll(" ", "\\u2029");
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
 }
 
 const CSS = `
@@ -235,6 +235,14 @@ const CSS = `
     background: var(--bg); color: var(--dim); padding: 1px 8px;
   }
   .copy-url:hover { color: var(--ink); }
+  .context-actions { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .context-btn {
+    flex: 0 0 auto; font-size: 11px;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: var(--bg); color: var(--dim); padding: 1px 8px;
+  }
+  .context-btn:hover { color: var(--ink); }
+  .context-btn:disabled { opacity: .45; cursor: not-allowed; }
 
   .toolbar { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
   .seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; background: var(--panel); }
@@ -437,7 +445,7 @@ const CSS = `
   /* ---------- touch targets ---------- */
   @media (pointer: coarse) {
     .seg button { min-height: 40px; padding: 8px 14px; }
-    .live-btn, .hbtn, .vbtn, .gap-btn, .hunk-link { min-height: 40px; }
+    .live-btn, .hbtn, .vbtn, .gap-btn, .hunk-link, .context-btn { min-height: 40px; }
     .route-row { min-height: 40px; }
     .rail-filter input, #noise { min-height: 40px; }
     .copy-url { min-height: 40px; min-width: 40px; }
@@ -527,6 +535,25 @@ const CLIENT_JS = `
   function joinRouteUrl(base, routePath) {
     if (!base || !routePath) return "";
     return String(base).replace(/\\/$/, "") + routePath;
+  }
+  function reviewPageUrl(routeName) {
+    var pageUrl = meta.reviewUrl || (typeof location !== "undefined" ? location.href.split("#")[0] : "");
+    if (!pageUrl) return null;
+    return pageUrl.split("#")[0] + "#route=" + encodeURIComponent(routeName || selectedName || "");
+  }
+  function reviewBaseUrl() {
+    var pageUrl = meta.reviewUrl || (typeof location !== "undefined" ? location.href.split("#")[0] : "");
+    if (!pageUrl) return "";
+    return pageUrl
+      .split("#")[0]
+      .replace(/\\/latest\\.html(?:[?#].*)?$/, "")
+      .replace(/\\/$/, "");
+  }
+  function assetUrl(relPath) {
+    if (!relPath) return null;
+    var base = reviewBaseUrl();
+    var clean = String(relPath).replace(/^\\/+/, "");
+    return base ? base + "/" + clean : clean;
   }
   function isMobile() { return window.matchMedia(MOBILE_MQ).matches; }
   function fmtPx(n) { return Math.round(n).toLocaleString("en-US"); }
@@ -904,6 +931,7 @@ const CLIENT_JS = `
     } else {
       metaRow.appendChild(el("span", { text: "n/a" }));
     }
+    metaRow.appendChild(buildContextActions(r));
     content.appendChild(metaRow);
 
     if (r.errored) {
@@ -986,9 +1014,148 @@ const CLIENT_JS = `
   }
 
   function copyText(text, done) {
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      var ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch (err) {
+        ok = false;
+      } finally {
+        document.body.removeChild(ta);
+      }
+      done(!!ok);
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-    } else done(false);
+      navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    } else fallback();
+  }
+
+  function buildContext(r) {
+    var pair = pairOf(r, pairName) || ((r.pairs || [])[0] || null);
+    var viewing = "markdown-diff";
+    if (pair) {
+      viewing = (cmpMode === "hunks" || cmpMode === "overlay") && pair.diffRelPath ? "diff" : "after";
+    }
+    var imageRelPath = null;
+    if (pair) {
+      if (viewing === "diff" && pair.diffRelPath) imageRelPath = pair.diffRelPath;
+      else if (viewing === "before") imageRelPath = pair.beforeRelPath;
+      else imageRelPath = pair.afterRelPath || pair.diffRelPath || pair.beforeRelPath;
+    }
+    var screenshots = (r.pairs || []).map(function (p) {
+      return {
+        project: p.projectName,
+        projectLabel: p.projectLabel || p.projectName,
+        diff: p.diffLabel || "unknown",
+        beforeUrl: assetUrl(p.beforeRelPath),
+        afterUrl: assetUrl(p.afterRelPath),
+        diffUrl: assetUrl(p.diffRelPath)
+      };
+    });
+    return {
+      pr: meta.prNumber,
+      branch: meta.headBranch,
+      repo: meta.repo,
+      commitSha: meta.commitSha,
+      shortSha: meta.shortSha,
+      route: r.routeName,
+      routeLabel: r.routeLabel,
+      routeUrl: r.routeUrl || joinRouteUrl(meta.previewBaseUrl, r.routePath),
+      authState: r.authState,
+      project: pair ? pair.projectName : null,
+      projectLabel: pair ? (pair.projectLabel || pair.projectName) : null,
+      viewing: viewing,
+      diffLabel: pair ? pair.diffLabel : r.statusLabel,
+      imageUrl: assetUrl(imageRelPath),
+      reviewUrl: reviewPageUrl(r.routeName),
+      screenshots: screenshots
+    };
+  }
+
+  function formatContext(ctx) {
+    var lines = [];
+    lines.push("### Visual-review context");
+    lines.push("");
+    if (ctx.viewing) lines.push("- Viewing: **" + String(ctx.viewing).toUpperCase() + "**" + (ctx.projectLabel ? " in " + ctx.projectLabel : ""));
+    if (ctx.pr) lines.push("- PR: #" + ctx.pr + (ctx.repo ? " (" + ctx.repo + ")" : ""));
+    if (ctx.branch) lines.push("- Branch: \`" + ctx.branch + "\`");
+    if (ctx.shortSha) lines.push("- Commit: \`" + ctx.shortSha + "\`" + (ctx.commitSha ? " (" + ctx.commitSha + ")" : ""));
+    lines.push("- Route: \`" + ctx.route + "\` (" + ctx.routeLabel + ")");
+    if (ctx.routeUrl) lines.push("- Live URL: " + ctx.routeUrl);
+    lines.push("- Auth state: " + ctx.authState);
+    if (ctx.diffLabel) lines.push("- Diff vs main: " + ctx.diffLabel);
+    if (ctx.imageUrl) {
+      lines.push("- Screenshot: " + ctx.imageUrl);
+      lines.push("    curl -sLO " + ctx.imageUrl);
+    }
+    if (ctx.reviewUrl) lines.push("- Visual review: " + ctx.reviewUrl);
+    lines.push("");
+    if (ctx.screenshots && ctx.screenshots.length > 0) {
+      lines.push("**Screenshots** - please download and inspect these before responding:");
+      lines.push("");
+      for (var i = 0; i < ctx.screenshots.length; i++) {
+        var s = ctx.screenshots[i];
+        lines.push("- **" + (s.projectLabel || s.project) + "** (" + s.diff + ")");
+        if (s.beforeUrl) lines.push("  - before (main): " + s.beforeUrl);
+        if (s.afterUrl) lines.push("  - after (this PR): " + s.afterUrl);
+        if (s.diffUrl) lines.push("  - diff: " + s.diffUrl);
+      }
+      lines.push("");
+    }
+    lines.push("**My complaint:**");
+    lines.push("> _(replace this line with what looks wrong)_");
+    return lines.join("\\n");
+  }
+
+  function openComplaint(ctx) {
+    if (!ctx.repo) return false;
+    var titleParts = ["Visual review"];
+    if (ctx.routeLabel) titleParts.push(ctx.routeLabel);
+    if (ctx.viewing) titleParts.push(ctx.viewing);
+    if (ctx.projectLabel) titleParts.push(ctx.projectLabel);
+    var body = formatContext(ctx);
+    if (ctx.pr) body = "Originating PR: #" + ctx.pr + "\\n\\n" + body;
+    var url =
+      "https://github.com/" + ctx.repo + "/issues/new" +
+      "?title=" + encodeURIComponent(titleParts.join(" \\u2014 ")) +
+      "&body=" + encodeURIComponent(body);
+    window.open(url, "_blank", "noopener,noreferrer");
+    return true;
+  }
+
+  function buildContextActions(r) {
+    var wrap = el("span", { class: "context-actions" });
+    var copy = el("button", { type: "button", class: "context-btn", text: "Copy context", title: "Copy visual-review context for this route and viewport" });
+    copy.addEventListener("click", function () {
+      var ctx = buildContext(r);
+      copyText(formatContext(ctx), function (ok) {
+        copy.textContent = ok ? "Copied" : "Copy failed";
+        setTimeout(function () { copy.textContent = "Copy context"; }, 1500);
+      });
+    });
+    wrap.appendChild(copy);
+
+    var complainAttrs = { type: "button", class: "context-btn", text: "Complain", title: "Open a GitHub issue with visual-review context" };
+    if (!meta.repo) complainAttrs.disabled = "disabled";
+    var complain = el("button", complainAttrs);
+    complain.addEventListener("click", function () {
+      var ok = openComplaint(buildContext(r));
+      if (!ok) {
+        complain.textContent = "No repo";
+        setTimeout(function () { complain.textContent = "Complain"; }, 1500);
+      }
+    });
+    wrap.appendChild(complain);
+    return wrap;
   }
 
   function lazyImg(src, cls, alt) {

@@ -128,7 +128,7 @@ function lcsMatches(a, b) {
  * @param {PngLike} options.after
  * @param {number} [options.slabHeight=8]   slab height in px
  * @param {number} [options.contextPx=160]  merge threshold + hunk padding in px
- * @param {number} [options.noiseFloorPct=0.10] hunks changing fewer slabs than
+ * @param {number} [options.noiseFloorPct=0.001] hunks changing fewer slabs than
  *   this fraction of the page are dropped (unless the only hunk)
  * @returns {{
  *   hunks: Array<{
@@ -147,7 +147,7 @@ export function extractHunksAndAlignment({
   after,
   slabHeight = 8,
   contextPx = 160,
-  noiseFloorPct = 0.1,
+  noiseFloorPct = 0.001,
 }) {
   assertPngLike('before', before);
   assertPngLike('after', after);

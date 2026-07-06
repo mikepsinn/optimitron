@@ -24,6 +24,7 @@ const input = {
     shortSha: "abc1234",
     commitSha: "abc1234def5678900000000000000000000000ff",
     headBranch: "feature/eos-showroom-registry",
+    repo: "mikepsinn/optimitron",
     generatedAt: "2026-07-05T12:00:00Z",
     generatedAtCentral: "Jul 5, 2026 7:00 AM Central",
     previewBaseUrl: "https://optimitron-git-feature-preview.vercel.app",
@@ -148,6 +149,9 @@ assert(html.includes('id="review-data"'), "JSON island present");
 assert(html.includes('id="noise"'), "noise select present");
 assert(html.includes('id="export-btn"'), "export button present");
 assert(html.includes("data-live-toggle"), "live-compare toggle keyword in client JS");
+assert(html.includes("Copy context"), "context copy action present");
+assert(html.includes("Complain"), "complaint issue action present");
+assert(html.includes("Originating PR: #"), "complaint payload preserves originating PR marker");
 assert(!html.includes('<script>alert("xss")</script>'), "route label XSS not raw in HTML");
 assert(!/<script>alert\(1\)<\/script>/.test(html), "copy-diff XSS not raw in HTML");
 assert(html.includes("\\u003c"), "JSON island escapes < sequences");

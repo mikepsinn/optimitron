@@ -297,6 +297,7 @@ function buildReviewPageInput(groups) {
       previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
       productionBaseUrl: "https://optimitron.com",
       reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
+      repo: repoSlug,
       baselineDescription: buildBaselineDescription(),
     },
     summary: {
@@ -455,7 +456,7 @@ async function comparePair(pair) {
     let alignmentAnchors = buildDefaultAlignmentAnchors(before, after);
     if (changed) {
       try {
-        const extracted = extractHunksAndAlignment({ before, after });
+        const extracted = extractHunksAndAlignment({ before, after, noiseFloorPct: 0 });
         hunks = extracted.hunks;
         alignmentAnchors = extracted.alignmentAnchors;
       } catch (error) {
