@@ -7,6 +7,7 @@ import {
   searchStaticSiteDocuments,
   type StaticSiteSearchDocument,
 } from "@/lib/site-search";
+import type { SiteConfig } from "@/lib/site";
 import { searchTasks, type TaskSearchResult } from "@/lib/tasks.server";
 
 const MANUAL_BASE_URL = "https://manual.warondisease.org";
@@ -65,6 +66,7 @@ export async function searchSiteContent(
   query: string,
   options?: {
     pageLimit?: number;
+    site?: SiteConfig;
     taskLimit?: number;
     userId?: string | null;
   },
@@ -86,6 +88,7 @@ export async function searchSiteContent(
     Promise.resolve(
       searchStaticSiteDocuments(trimmedQuery, {
         limit: options?.pageLimit ?? 12,
+        site: options?.site,
       }),
     ),
     searchTasks(trimmedQuery, {

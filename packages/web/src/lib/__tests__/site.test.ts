@@ -194,6 +194,14 @@ describe("site variant registry", () => {
     expect(getSiteConfig("dfda").ui.nav.quickAction).toBeUndefined();
   });
 
+  it("keeps search visible in the War on Disease header", () => {
+    const warSite = getSiteConfig("warOnDisease");
+
+    expect(warSite.ui.nav.searchEnabled).toBe(true);
+    expect(warSite.routePolicy.canonicalPrefixes).toContain(ROUTES.search);
+    expect(warSite.routePolicy.publicPrefixes).toContain(ROUTES.search);
+  });
+
   it("keeps Profile out of the War on Disease menu chrome and links president management", () => {
     const warItems = getSiteConfig("warOnDisease").ui.nav.sections.flatMap(
       (section) => section.items,

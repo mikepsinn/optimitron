@@ -1,4 +1,5 @@
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
+import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
 
 /**
  * Render a task description as markdown with the neobrutalist typography system.
@@ -8,7 +9,12 @@ import { RichMarkdown } from "@/components/markdown/rich-markdown";
  * across the app. This keeps existing call sites working without changes.
  */
 export function TaskDescription({ markdown }: { markdown: string }) {
-  return <RichMarkdown markdown={markdown} className="task-description" />;
+  return (
+    <RichMarkdown
+      markdown={normalizeTaskTextLineBreaks(markdown)}
+      className="task-description"
+    />
+  );
 }
 
 /**
@@ -17,11 +23,13 @@ export function TaskDescription({ markdown }: { markdown: string }) {
  * paragraph, truncated to maxLength chars.
  */
 export function getTaskDescriptionSummary(markdown: string, maxLength = 220): string {
+  const normalizedMarkdown = normalizeTaskTextLineBreaks(markdown);
   const firstParagraph =
-    markdown
+    normalizedMarkdown
       .split(/\n\s*\n/)
       .map((block) => block.trim())
-      .find((block) => block.length > 0 && !block.startsWith("#")) ?? markdown;
+      .find((block) => block.length > 0 && !block.startsWith("#")) ??
+    normalizedMarkdown;
 
   const plain = firstParagraph
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // [text](url) → text

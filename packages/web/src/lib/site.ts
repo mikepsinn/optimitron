@@ -477,7 +477,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     desktopBrandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     menuEnabled: true,
     menuTitle: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-    searchEnabled: false,
+    searchEnabled: true,
     sections: warOnDiseaseNavSections,
     signInCallbackUrl: ROUTES.dashboard,
   },
@@ -981,6 +981,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.vote,
       ROUTES.questions,
       ROUTES.feedback,
+      ROUTES.search,
     ],
     restrictToAllowlist: false,
     publicPrefixes: [
@@ -1015,6 +1016,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
       ROUTES.wishocracy,
       ROUTES.donate,
       ROUTES.feedback,
+      ROUTES.search,
     ],
     operationalPrefixes: [
       "/r",

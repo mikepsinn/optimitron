@@ -8,6 +8,7 @@ import { Textarea } from "@/components/retroui/Textarea";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { getHandleOrReferralCode } from "@/lib/referral.client";
 import { useRequestSiteOrigin } from "@/lib/request-site-origin";
+import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
 import { buildTaskUrl } from "@/lib/url";
 import { renderTemplate } from "@/lib/tasks/render-template";
 import type {
@@ -34,10 +35,13 @@ export function TaskRemindEmployee({
   const initialMessage = useMemo(() => {
     if (!reminder) return "";
     const absoluteTaskUrl = buildTaskUrl(taskId, requestOrigin, referralId);
-    return renderTemplate(reminder.messageTemplate, {
-      ...tokens,
-      taskUrl: absoluteTaskUrl,
-    });
+    return renderTemplate(
+      normalizeTaskTextLineBreaks(reminder.messageTemplate),
+      {
+        ...tokens,
+        taskUrl: absoluteTaskUrl,
+      },
+    );
   }, [reminder, tokens, taskId, requestOrigin, referralId]);
   const [message, setMessage] = useState(initialMessage);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");

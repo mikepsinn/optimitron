@@ -67,6 +67,7 @@ import {
   handleTaskTemplateToolCall,
   isTaskTemplateToolName,
 } from "./mcp-tools/task-templates";
+import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import type {
@@ -8360,15 +8361,19 @@ export function createMcpServer(
               );
             }
             // Accept either an explicit array, or a markdown 'Acceptance
-            // criteria' section in the description (extracted later by
-            // mergeAcceptanceCriteriaIntoContext). Missing both = error.
+            // criteria' section in the description. Missing both = error.
+            const description = a.description as string;
+            const descriptionForParsing =
+              normalizeTaskTextLineBreaks(description);
             const explicitCriteria = normalizeAcceptanceCriteria(
               a.acceptanceCriteria,
             );
             const extractedCriteria =
               explicitCriteria.length > 0
                 ? explicitCriteria
-                : extractAcceptanceCriteriaFromDescription(a.description);
+                : extractAcceptanceCriteriaFromDescription(
+                    descriptionForParsing,
+                  );
             if (extractedCriteria.length === 0) {
               return err(
                 "acceptanceCriteria is required: pass a non-empty string array of testable 'done' conditions, " +
@@ -8527,9 +8532,14 @@ export function createMcpServer(
                   : "Invalid task routing field.",
               );
             }
+            const contextArgs = {
+              ...a,
+              acceptanceCriteria: extractedCriteria,
+              description: descriptionForParsing,
+            };
             const data: Record<string, unknown> = {
               title: a.title as string,
-              description: (a.description as string) ?? "",
+              description,
               ...(parentTaskId ? { parentTaskId } : {}),
               taskKey: (a.taskKey as string) ?? null,
               category: a.category
@@ -8561,7 +8571,7 @@ export function createMcpServer(
               // buildPersonalTaskContext — the Task model has no sourceUrl column.
               impactStatement: (a.impactStatement as string) ?? null,
               isPublic,
-              contextJson: buildPersonalTaskContext(a, economics),
+              contextJson: buildPersonalTaskContext(contextArgs, economics),
               sortOrder: (a.sortOrder as number) ?? undefined,
               status: a.status
                 ? TaskStatus[a.status as keyof typeof TaskStatus]
