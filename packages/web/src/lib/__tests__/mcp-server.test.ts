@@ -3156,6 +3156,50 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("createTask parses escaped markdown line breaks without rewriting the stored description", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          contextJson: {
+            executor_type: "Self",
+            acceptanceCriteria: ["The inventory route returns markdown"],
+          },
+          selectedImpactFrame: {
+            expectedEconomicValueUsdBase: 50,
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: 1,
+            successProbabilityBase: 0.5,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+
+      const description = String.raw`## Problem\n\nAgents need page inventory.\n\n## Acceptance criteria\n\n- [ ] The inventory route returns markdown`;
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          title: "Add escaped inventory tools",
+          category: "ENGINEERING",
+          impactStatement:
+            "Lets agents discover site pages even when clients escape markdown.",
+          description,
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
+      expect(data.description).toBe(description);
+      expect(data.contextJson).toMatchObject({
+        acceptanceCriteria: ["The inventory route returns markdown"],
+      });
+    }, 15_000);
+
     it("createTask omits null FK fields and sourceUrl from prisma.task.create — Prisma's checked TaskCreateInput rejects scalar FKs and the Task model has no sourceUrl column", async () => {
       // Regression for two production bugs found via the structured catch block:
       //   1. `parentTaskId: null` → "Unknown argument `parentTaskId`. Did you mean `parentTask`?"
