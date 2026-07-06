@@ -67,7 +67,6 @@ import {
   handleTaskTemplateToolCall,
   isTaskTemplateToolName,
 } from "./mcp-tools/task-templates";
-import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import type {
@@ -1989,10 +1988,6 @@ function buildPersonalTaskContext(
 ) {
   const contextPatch: Record<string, unknown> = {};
   const providedContext = asObject(args.contextJson) ?? {};
-  const description =
-    typeof args.description === "string"
-      ? normalizeTaskTextLineBreaks(args.description)
-      : args.description;
   if (
     args.executor_type !== undefined ||
     args.executorType !== undefined ||
@@ -2026,7 +2021,7 @@ function buildPersonalTaskContext(
       ...providedContext,
       ...contextPatch,
     },
-    description,
+    args.description,
     args.acceptanceCriteria,
   );
 
@@ -8534,9 +8529,7 @@ export function createMcpServer(
             }
             const data: Record<string, unknown> = {
               title: a.title as string,
-              description: normalizeTaskTextLineBreaks(
-                (a.description as string) ?? "",
-              ),
+              description: (a.description as string) ?? "",
               ...(parentTaskId ? { parentTaskId } : {}),
               taskKey: (a.taskKey as string) ?? null,
               category: a.category
@@ -9781,11 +9774,7 @@ export function createMcpServer(
             if (a.status)
               updates.status = TaskStatus[a.status as keyof typeof TaskStatus];
             if (a.title) updates.title = a.title;
-            if (a.description) {
-              updates.description = normalizeTaskTextLineBreaks(
-                a.description as string,
-              );
-            }
+            if (a.description) updates.description = a.description;
             if (a.completionEvidence)
               updates.completionEvidence = a.completionEvidence;
             if (a.impactStatement) updates.impactStatement = a.impactStatement;

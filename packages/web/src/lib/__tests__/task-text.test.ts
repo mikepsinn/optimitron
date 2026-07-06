@@ -24,5 +24,23 @@ describe("normalizeTaskTextLineBreaks", () => {
     expect(normalizeTaskTextLineBreaks(String.raw`Open \\server\new-folder`)).toBe(
       String.raw`Open \\server\new-folder`,
     );
+    expect(normalizeTaskTextLineBreaks(String.raw`Open ` + "`C:\\new-folder`")).toBe(
+      String.raw`Open ` + "`C:\\new-folder`",
+    );
+    expect(normalizeTaskTextLineBreaks(String.raw`Open (C:\new-folder)`)).toBe(
+      String.raw`Open (C:\new-folder)`,
+    );
+  });
+
+  it("preserves literal escape examples", () => {
+    expect(normalizeTaskTextLineBreaks(String.raw`{"separator":"\n"}`)).toBe(
+      String.raw`{"separator":"\n"}`,
+    );
+    expect(normalizeTaskTextLineBreaks(String.raw`Use /\n/ for line breaks`)).toBe(
+      String.raw`Use /\n/ for line breaks`,
+    );
+    expect(normalizeTaskTextLineBreaks(String.raw`Type \n in that field`)).toBe(
+      String.raw`Type \n in that field`,
+    );
   });
 });

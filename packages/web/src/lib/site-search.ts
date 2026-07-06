@@ -1,4 +1,5 @@
 import { ROUTES, navSections, type NavItem } from "@/lib/routes";
+import type { SiteConfig } from "@/lib/site";
 
 const STOP_WORDS = new Set([
   "a",
@@ -108,6 +109,29 @@ export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
     ),
   ]);
 
+function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {
+  return {
+    href: ROUTES.home,
+    title: site.shortName,
+    description: site.rootMetadata.description,
+    section: "Primary",
+    keywords: site.rootMetadata.keywords,
+  };
+}
+
+function getStaticSiteSearchDocuments(site?: SiteConfig) {
+  if (!site || site.key === "optimitron") {
+    return staticSiteSearchDocuments;
+  }
+
+  return dedupeByHref([
+    buildHomeDocument(site),
+    ...site.ui.nav.sections.flatMap((section) =>
+      section.items.map((item) => buildDocumentFromNavItem(section.label, item)),
+    ),
+  ]);
+}
+
 export function getSearchTerms(query: string): SearchTerms {
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -203,6 +227,7 @@ export function searchStaticSiteDocuments(
   query: string,
   options?: {
     limit?: number;
+    site?: SiteConfig;
   },
 ) {
   const searchTerms = getSearchTerms(query);
@@ -212,7 +237,7 @@ export function searchStaticSiteDocuments(
     return [];
   }
 
-  return staticSiteSearchDocuments
+  return getStaticSiteSearchDocuments(options?.site)
     .map((document) => ({
       ...document,
       score: scoreSearchRecord(searchTerms, document),

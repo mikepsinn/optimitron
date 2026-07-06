@@ -12,7 +12,6 @@ import { authOptions } from "@/lib/auth";
 import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
-import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
 import { createTask, listTasks } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -278,21 +277,14 @@ export async function POST(request: Request) {
     // disclosure on /tasks/[id]. Honoring a client-supplied `isPublic: true`
     // here would let any caller graft a public subtask onto someone else's
     // tree.
-    const normalizedRest = {
-      ...rest,
-      description:
-        rest.description == null
-          ? rest.description
-          : normalizeTaskTextLineBreaks(rest.description),
-    };
     const task = await createTask(userId, {
-      ...normalizedRest,
+      ...rest,
       assigneePersonId,
       dueAt: dueAt == null ? null : new Date(dueAt),
       claimPolicy: parentTaskId
         ? TaskClaimPolicy.ASSIGNED_ONLY
-        : normalizedRest.claimPolicy,
-      isPublic: parentTaskId ? false : normalizedRest.isPublic,
+        : rest.claimPolicy,
+      isPublic: parentTaskId ? false : rest.isPublic,
       parentTaskId: parentTaskId ?? null,
     });
 

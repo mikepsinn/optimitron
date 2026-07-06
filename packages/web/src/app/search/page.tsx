@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { Search } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
@@ -7,7 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
 import { ROUTES, searchLink } from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
-import { getConfiguredSiteOrigin } from "@/lib/site";
+import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const metadata = getRouteMetadata(searchLink);
@@ -71,8 +72,11 @@ function formatEnumLabel(value: string | null | undefined) {
     .join(" ");
 }
 
-function getScopeCounts(results: Awaited<ReturnType<typeof searchSiteContent>>) {
-  const items = getResultItems(results);
+function getScopeCounts(
+  results: Awaited<ReturnType<typeof searchSiteContent>>,
+  pageSourceLabel: string,
+) {
+  const items = getResultItems(results, pageSourceLabel);
 
   return {
     all: items.length,
@@ -95,7 +99,10 @@ function buildScopeHref(query: string, scope: SearchScope) {
   return suffix ? `${ROUTES.search}?${suffix}` : ROUTES.search;
 }
 
-function getResultItems(results: Awaited<ReturnType<typeof searchSiteContent>>): SearchResultItem[] {
+function getResultItems(
+  results: Awaited<ReturnType<typeof searchSiteContent>>,
+  pageSourceLabel: string,
+): SearchResultItem[] {
   const pageItems: SearchResultItem[] = results.pages
     .filter((page) => !page.external)
     .map((page) => ({
@@ -105,7 +112,7 @@ function getResultItems(results: Awaited<ReturnType<typeof searchSiteContent>>):
     meta: page.section,
     scope: "pages",
     score: page.score,
-    source: "Optimitron",
+    source: pageSourceLabel,
     title: page.title,
   }));
 
@@ -253,6 +260,8 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string; scope?: string }>;
 }) {
   const params = await searchParams;
+  const hdrs = await headers();
+  const site = getSiteFromHeaders(hdrs);
   const query = typeof params.q === "string" ? params.q : "";
   const scope: SearchScope =
     params.scope === "pages" ||
@@ -264,13 +273,14 @@ export default async function SearchPage({
   const userId = session?.user.id ?? null;
   const results = await searchSiteContent(query, {
     pageLimit: 24,
+    site,
     taskLimit: 24,
     userId,
   });
-  const allResults = getResultItems(results);
+  const allResults = getResultItems(results, site.shortName);
   const visibleResults =
     scope === "all" ? allResults : allResults.filter((result) => result.scope === scope);
-  const counts = getScopeCounts(results);
+  const counts = getScopeCounts(results, site.shortName);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -374,7 +384,7 @@ export default async function SearchPage({
         ) : (
           <section className="max-w-3xl space-y-5">
             <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
-              Search Optimitron
+              Search {site.shortName}
             </h1>
             <p className="text-base font-bold leading-7 text-muted-foreground">
               Find pages, tasks, and manual entries.

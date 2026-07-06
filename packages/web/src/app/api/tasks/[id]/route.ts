@@ -15,7 +15,6 @@ import {
   getTaskDetailData,
   updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
-import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 
 export const runtime = "nodejs";
@@ -103,15 +102,8 @@ export async function PATCH(
     const { id } = await context.params;
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
-    const normalizedRest = {
-      ...rest,
-      description:
-        rest.description == null
-          ? rest.description
-          : normalizeTaskTextLineBreaks(rest.description),
-    };
     const task = await updateTaskCreatedByUser(id, userId, {
-      ...normalizedRest,
+      ...rest,
       dueAt: dueAt == null ? dueAt : new Date(dueAt),
     });
 
