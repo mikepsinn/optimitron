@@ -112,3 +112,6 @@ packages/web/public/media/
 packages/web/scripts/cold-stranger-*.cjs
 .codex-tmp/
 .claude/state/
+.gstack/
+packages/web/public/review-variants/
+packages/web/screenshots.bak/

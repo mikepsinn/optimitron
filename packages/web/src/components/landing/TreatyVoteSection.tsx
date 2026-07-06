@@ -17,15 +17,13 @@ export default function TreatyVoteSection() {
             Vote on the 1% Treaty
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-            One slider. One yes-or-no question. Then Humanity Management
-            Training helps you give two humans their treaty voting tasks.
+            Trade one apocalypse for disease eradication. Humanity has 122
+            stockpiled — you can spare one to cure the 6,650 diseases with no
+            treatment.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <GameCTA href={ROUTES.vote} size="lg" variant="primary">
               Vote Now
-            </GameCTA>
-            <GameCTA href={ROUTES.questions} size="lg" variant="outline">
-              See the Questions
             </GameCTA>
           </div>
         </div>
