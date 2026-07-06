@@ -27,9 +27,8 @@
 - That's it. You're done. 99% of you don't need to know anything else.
 - The rest of this site is the instruction manual. Read it if you're into ending war and disease. But for the love of your species, click the buttons first.
 ### VOTE ON THE 1% TREATY
-- One slider. One yes-or-no question. Then Humanity Management Training helps you give two humans their treaty voting tasks.
+- Trade one apocalypse for disease eradication. Humanity has [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) stockpiled — you can spare one to cure the [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases with no treatment.
 - [VOTE NOW](/vote)
-- [SEE THE QUESTIONS](/questions)
 ## PRESIDENT MANAGEMENT SYSTEM
 - You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
 #### SEND EARTH OPTIMIZATION TASK REMINDER
@@ -142,7 +141,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀2 HUMANS TERMINATED🔥$4.5M BURNED BY MISALIGNED GOVERNMENTS💣$586K SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀4 HUMANS TERMINATED🔥$8.9M BURNED BY MISALIGNED GOVERNMENTS💣$1.2M SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -307,7 +306,7 @@
 - [📋OPTIMAL POLICY GENERATOR 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. SEE POLICY GRADES →](/opg)
 - [💰OPTIMAL BUDGET GENERATOR 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone. SEE BUDGET ANALYSIS →](/obg)
 - [🔍DECENTRALIZED ACCOUNTABILITY OFFICE You pay 3,400 humans to audit a ledger that could audit itself. Then you wait eighteen months for the results. VIEW AUDIT →](/agencies/dgao)
-- [🧬OPTIMAL INSTITUTES OF HEALTH You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic. OPEN DIH →](/agencies/dih)
+- [🧬DECENTRALIZED INSTITUTES OF HEALTH You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic. OPEN DIH →](/agencies/dih)
 - [💊DECENTRALIZED FDA Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. Just sitting there. Being safe. While people die. This replaces the queue with maths. OPEN DFDA →](/agencies/dfda)
 - [💀DEPARTMENT OF PEACE War is a negative-sum game and the spreadsheet agrees. We don't have a Department of War because — and I want to be precise here — war is fucking stupid. LEARN MORE →](/agencies/ddod)
 - [SEE EVERY AGENCY →](/agencies)
