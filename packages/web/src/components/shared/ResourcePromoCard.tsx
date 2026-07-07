@@ -41,6 +41,7 @@ export function ResourcePromoCard({
       <Link
         href={MANUAL_URLS.readOnline}
         target="_blank"
+        rel="noopener noreferrer"
         className="bg-background text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-none transition-colors hover:bg-foreground hover:text-background flex items-center justify-center"
       >
         Read Free

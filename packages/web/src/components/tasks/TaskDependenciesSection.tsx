@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { TaskClaimStatus, TaskStatus } from "@optimitron/db";
+import { TaskClaimStatus, TaskEdgeType, TaskStatus } from "@optimitron/db";
 import { getTaskPath } from "@/lib/routes";
 
 const TASK_DATE_TIME_ZONE = "UTC";
@@ -29,7 +29,7 @@ export type RelatedTaskLink = {
 };
 
 export type TaskDependencyEdge = {
-  edgeType: string;
+  edgeType: TaskEdgeType;
   probabilityDeltaBase?: number | null;
   timeDeltaDaysBase?: number | null;
 };
@@ -80,6 +80,9 @@ function formatEffortHours(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) {
     return null;
   }
+  if (value === 0) {
+    return "0 minutes";
+  }
   if (value < 1) {
     const minutes = Math.max(1, Math.round(value * 60));
     return `${minutes.toLocaleString("en-US")} ${minutes === 1 ? "minute" : "minutes"}`;
@@ -129,10 +132,10 @@ function formatTaskStatus(status: TaskStatus) {
 }
 
 function getDependencyEdgeLabel(
-  edgeType: string,
+  edgeType: TaskEdgeType,
   direction: "incoming" | "outgoing",
 ) {
-  if (edgeType === "DEPENDS_ON") {
+  if (edgeType === TaskEdgeType.DEPENDS_ON) {
     return direction === "incoming" ? "depends on" : "needed by";
   }
   return direction === "incoming" ? "blocks this" : "unlocks";

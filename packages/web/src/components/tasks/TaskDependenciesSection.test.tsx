@@ -1,6 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { TaskClaimStatus, TaskStatus } from "@optimitron/db";
+import { TaskClaimStatus, TaskEdgeType, TaskStatus } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
   canSeeRelatedTask,
@@ -74,7 +74,7 @@ describe("TaskDependenciesSection", () => {
     const task: TaskDependenciesSectionTask = {
       incomingEdges: [
         {
-          edgeType: "BLOCKS",
+          edgeType: TaskEdgeType.BLOCKS,
           fromTask: relatedTask({
             dueAt: "2026-07-10T00:00:00.000Z",
             estimatedEffortHours: 1.5,
@@ -86,7 +86,7 @@ describe("TaskDependenciesSection", () => {
           timeDeltaDaysBase: 2,
         },
         {
-          edgeType: "BLOCKS",
+          edgeType: TaskEdgeType.BLOCKS,
           fromTask: relatedTask({
             id: "task_private_blocker",
             isPublic: false,
@@ -96,10 +96,11 @@ describe("TaskDependenciesSection", () => {
       ],
       outgoingEdges: [
         {
-          edgeType: "DEPENDS_ON",
+          edgeType: TaskEdgeType.DEPENDS_ON,
           probabilityDeltaBase: null,
           timeDeltaDaysBase: 1,
           toTask: relatedTask({
+            estimatedEffortHours: 0,
             id: "task_unlock",
             status: TaskStatus.DRAFT,
             title: "Notify the treaty campaign",
@@ -125,6 +126,7 @@ describe("TaskDependenciesSection", () => {
     expect(html).toContain("2 days faster");
     expect(html).toContain("Notify the treaty campaign");
     expect(html).toContain("needed by");
+    expect(html).toContain("~0 minutes");
     expect(html).toContain("1 day faster");
     expect(html).not.toContain("Private hidden blocker");
   });
@@ -135,7 +137,7 @@ describe("TaskDependenciesSection", () => {
         task={{
           incomingEdges: [
             {
-              edgeType: "BLOCKS",
+              edgeType: TaskEdgeType.BLOCKS,
               fromTask: relatedTask({
                 isPublic: false,
                 title: "Private hidden blocker",

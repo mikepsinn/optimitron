@@ -19,7 +19,7 @@ export const buttonVariants = cva(
         link: "bg-transparent text-foreground hover:underline",
         ghost: "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
         pixel:
-          "font-pixel text-xs uppercase bg-[var(--sierra-muted,#555)] text-[var(--sierra-fg,#aaa)] border-2 border-[var(--sierra-border,#555)] shadow-[inset_-2px_-2px_0_#333,inset_2px_2px_0_#888,4px_4px_0_#000] hover:bg-[var(--sierra-border,#555)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[inset_-2px_-2px_0_#333,inset_2px_2px_0_#888,2px_2px_0_#000]"
+          "font-pixel text-xs uppercase bg-[var(--sierra-muted,#555)] text-[var(--sierra-fg,#aaa)] border-2 border-[var(--sierra-border,#555)] shadow-none hover:bg-[var(--sierra-border,#555)]",
       },
       size: {
         default: "px-4 py-1.5 text-base",
