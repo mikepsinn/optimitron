@@ -9,9 +9,15 @@ import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage
 import { authOptions } from "@/lib/auth";
 import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
-import { getReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
+
+const NEXT_AUTH_SESSION_COOKIE_PATTERN =
+  /(?:^|;\s*)(?:__Secure-)?next-auth\.session-token(?:\.\d+)?=/;
+
+function hasNextAuthSessionCookie(cookie: string | null) {
+  return NEXT_AUTH_SESSION_COOKIE_PATTERN.test(cookie ?? "");
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const hdrs = await headers();
@@ -27,21 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return getRootSiteMetadata(site);
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}) {
+export default async function Home() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
   if (site.pageVariants.home === "onePercentTreatyLanding") {
-    const resolvedParams = (await searchParams) ?? {};
-    const rawPage = resolvedParams.signersPage;
-    const signersPageParam = Array.isArray(rawPage) ? rawPage[0] : rawPage;
-    const signersPage = signersPageParam
-      ? Math.max(1, parseInt(signersPageParam, 10) || 1)
-      : 1;
-    const session = await getServerSession(authOptions);
+    const session = hasNextAuthSessionCookie(hdrs.get("cookie"))
+      ? await getServerSession(authOptions)
+      : null;
     const userId = session?.user?.id ?? null;
 
     // Returning voters skip the slider entirely. The dashboard is the
@@ -61,11 +59,7 @@ export default async function Home({
       }
     }
 
-    const data = await getReferendumSiteHomeData(site, {
-      signersPage,
-      currentUserId: userId,
-    });
-    if (!data) {
+    if (!site.primaryReferendumSlug) {
       return (
         <section className="mx-auto max-w-2xl px-4 py-24 text-center">
           <h1 className="text-3xl font-black uppercase">{site.name}</h1>
@@ -76,7 +70,7 @@ export default async function Home({
       );
     }
 
-    return <OnePercentTreatyLandingPage data={data} />;
+    return <OnePercentTreatyLandingPage />;
   }
 
   if (site.pageVariants.home === "initiativeLanding") {
