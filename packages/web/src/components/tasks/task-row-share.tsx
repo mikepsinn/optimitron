@@ -520,7 +520,7 @@ export function TaskRowShare({
             </button>
           </Dialog.Trigger>
           <Dialog.Content
-            className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-none"
             title={`Send reminder — ${taskTitle}`}
           >
             <Dialog.Close className="absolute right-3 top-3 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-2 border-foreground bg-background text-xs font-black text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background">
