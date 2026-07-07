@@ -79,6 +79,10 @@ jobs:
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
+            function isHttpUrl(value) {
+              return /^https?:\/\//u.test(String(value || "").trim());
+            }
+
             function isProductionUrl(value) {
               try {
                 const hostname = new URL(String(value || "")).hostname.toLowerCase();
@@ -102,6 +106,54 @@ jobs:
                 /^production$/i.test(environment) ||
                 isProductionUrl(status.environment_url)
               );
+            }
+
+            async function resolvePreviewUrlFromVercelComment() {
+              const { data: pulls } =
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner,
+                  repo,
+                  commit_sha: deploymentSha,
+                });
+              const pull =
+                pulls.find((candidate) => candidate.state === "open") || pulls[0];
+              if (!pull?.number) return null;
+
+              const { data: comments } = await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: pull.number,
+                per_page: 100,
+              });
+              for (const comment of [...comments].reverse()) {
+                if (comment.user?.login !== "vercel[bot]") continue;
+                const previewMatch = String(comment.body || "").match(
+                  /\[Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
+                );
+                if (previewMatch?.[1]) return previewMatch[1];
+              }
+              return null;
+            }
+
+            async function resolveVercelStatusPreviewUrl() {
+              const { data } = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: deploymentSha,
+              });
+              const vercelStatus = data.statuses.find(
+                (status) => status.context === "Vercel",
+              );
+              if (!vercelStatus || vercelStatus.state !== "success") return null;
+
+              const targetUrl = String(vercelStatus.target_url || "").trim();
+              if (targetUrl) {
+                try {
+                  const hostname = new URL(targetUrl).hostname.toLowerCase();
+                  if (hostname.endsWith(".vercel.app")) return targetUrl;
+                } catch {}
+              }
+              return resolvePreviewUrlFromVercelComment();
             }
 
             async function resolveVercelDeployment() {
@@ -137,6 +189,14 @@ jobs:
             while (Date.now() < deadline) {
               const deployment = await resolveVercelDeployment();
               if (!deployment?.id) {
+                const previewUrl = await resolveVercelStatusPreviewUrl();
+                if (previewUrl) {
+                  core.info(`Recovered Vercel preview URL from status/comment: ${previewUrl}`);
+                  core.setOutput("environment", "Preview");
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", "success");
+                  return;
+                }
                 lastStatus = `no smokeable deployment found for ${deploymentSha}`;
                 core.info(`Deployment status: ${lastStatus}`);
                 await new Promise((resolve) => setTimeout(resolve, intervalMs));
@@ -152,11 +212,21 @@ jobs:
               lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;
               core.info(`Deployment status: ${lastStatus}`);
 
-              if (state === "success" && /^https?:\/\//u.test(environmentUrl)) {
-                core.setOutput("environment", environment);
-                core.setOutput("environment_url", environmentUrl);
-                core.setOutput("state", state);
-                return;
+              if (state === "success") {
+                if (isHttpUrl(environmentUrl)) {
+                  core.setOutput("environment", environment);
+                  core.setOutput("environment_url", environmentUrl);
+                  core.setOutput("state", state);
+                  return;
+                }
+                const previewUrl = await resolvePreviewUrlFromVercelComment();
+                if (previewUrl) {
+                  core.info(`Recovered Vercel preview URL from PR comment: ${previewUrl}`);
+                  core.setOutput("environment", environment || "Preview");
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", state);
+                  return;
+                }
               }
 
               if (terminalFailures.has(state)) {
@@ -637,6 +707,58 @@ jobs:
             const terminalFailures = new Set(["failure", "error", "inactive"]);
             let lastStatus = "not found";
 
+            function isHttpUrl(value) {
+              return /^https?:\/\//u.test(String(value || "").trim());
+            }
+
+            async function resolvePreviewUrlFromVercelComment() {
+              const { data: pulls } =
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner,
+                  repo,
+                  commit_sha: deploymentSha,
+                });
+              const pull =
+                pulls.find((candidate) => candidate.state === "open") || pulls[0];
+              if (!pull?.number) return null;
+
+              const { data: comments } = await github.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: pull.number,
+                per_page: 100,
+              });
+              for (const comment of [...comments].reverse()) {
+                if (comment.user?.login !== "vercel[bot]") continue;
+                const previewMatch = String(comment.body || "").match(
+                  /\[Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
+                );
+                if (previewMatch?.[1]) return previewMatch[1];
+              }
+              return null;
+            }
+
+            async function resolveVercelStatusPreviewUrl() {
+              const { data } = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: deploymentSha,
+              });
+              const vercelStatus = data.statuses.find(
+                (status) => status.context === "Vercel",
+              );
+              if (!vercelStatus || vercelStatus.state !== "success") return null;
+
+              const targetUrl = String(vercelStatus.target_url || "").trim();
+              if (targetUrl) {
+                try {
+                  const hostname = new URL(targetUrl).hostname.toLowerCase();
+                  if (hostname.endsWith(".vercel.app")) return targetUrl;
+                } catch {}
+              }
+              return resolvePreviewUrlFromVercelComment();
+            }
+
             async function resolveVercelDeployment() {
               if (eventDeploymentId && eventDeploymentCreator === "vercel[bot]") {
                 return eventDeployment;
@@ -666,6 +788,13 @@ jobs:
             while (Date.now() < deadline) {
               const deployment = await resolveVercelDeployment();
               if (!deployment?.id) {
+                const previewUrl = await resolveVercelStatusPreviewUrl();
+                if (previewUrl) {
+                  core.info(`Recovered Vercel preview URL from status/comment: ${previewUrl}`);
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", "success");
+                  return;
+                }
                 lastStatus = `no Vercel deployment found for ${deploymentSha}`;
                 core.info(`Deployment status: ${lastStatus}`);
                 await new Promise((resolve) => setTimeout(resolve, intervalMs));
@@ -678,10 +807,19 @@ jobs:
               lastStatus = `${state || "unknown"} ${environmentUrl || "(no URL yet)"}`;
               core.info(`Deployment status: ${lastStatus}`);
 
-              if (state === "success" && /^https?:\/\//u.test(environmentUrl)) {
-                core.setOutput("environment_url", environmentUrl);
-                core.setOutput("state", state);
-                return;
+              if (state === "success") {
+                if (isHttpUrl(environmentUrl)) {
+                  core.setOutput("environment_url", environmentUrl);
+                  core.setOutput("state", state);
+                  return;
+                }
+                const previewUrl = await resolvePreviewUrlFromVercelComment();
+                if (previewUrl) {
+                  core.info(`Recovered Vercel preview URL from PR comment: ${previewUrl}`);
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", state);
+                  return;
+                }
               }
 
               if (terminalFailures.has(state)) {

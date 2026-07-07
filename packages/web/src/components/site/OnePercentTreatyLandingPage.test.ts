@@ -11,7 +11,6 @@ import { VoteCounterSplit } from "@/components/referendum/VoteCounterSplit";
 import { TreatySection } from "@/components/site/TreatySection";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import { TasksRootIntro } from "@/components/tasks/TasksRootIntro";
-import type { ReferendumSiteHomeData } from "@/lib/referendum-site.server";
 import { ROUTES } from "@/lib/routes";
 import { TREATY_FLOW_VARIANTS } from "@/lib/treaty-flow-variants";
 
@@ -32,31 +31,6 @@ vi.mock("@/components/tasks/ProgramTaskSection", () => ({
 vi.mock("@/components/tasks/TasksRootIntro", () => ({
   TasksRootIntro: vi.fn(() => null),
 }));
-
-const landingData = {
-  content: {
-    home: {
-      heroTitle: "The 1% Treaty",
-    },
-  },
-  individualCount: 26,
-  lateEmployeeProgramTask: null,
-  lateEmployeeTasks: [],
-  memorialVoteCount: 0,
-  publicSigners: {
-    currentUserSigner: null,
-    page: 1,
-    pageSize: 48,
-    signers: [],
-    totalCount: 0,
-    totalPages: 1,
-  },
-  site: {
-    primaryReferendumSlug: "one-percent-treaty",
-  },
-  representedHumanCount: 27,
-  treatyMarkdown: "",
-} as unknown as ReferendumSiteHomeData;
 
 function findElementByType(
   node: ReactNode,
@@ -92,7 +66,7 @@ describe("OnePercentTreatyLandingPage", () => {
   });
 
   it("uses the fast vote-first flow and sends voters straight to the dashboard", () => {
-    const page = OnePercentTreatyLandingPage({ data: landingData });
+    const page = OnePercentTreatyLandingPage();
     const voteFlow = findElementByType(page, TreatyVoteFlow);
 
     expect(voteFlow?.props).toMatchObject({
@@ -106,7 +80,7 @@ describe("OnePercentTreatyLandingPage", () => {
   });
 
   it("keeps the landing page focused on voting", () => {
-    const page = OnePercentTreatyLandingPage({ data: landingData });
+    const page = OnePercentTreatyLandingPage();
 
     expect(findElementByType(page, VoteCounterSplit)).toBeNull();
     expect(findElementByType(page, TasksRootIntro)).toBeNull();
