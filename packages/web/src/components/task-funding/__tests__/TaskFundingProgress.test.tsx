@@ -201,7 +201,9 @@ describe("TaskFundingProgress", () => {
     const html = await renderProgress({ taskId: task.id });
 
     expect(html).toContain("data-task-funding-backer-wall");
-    expect(html).toContain("Wall Alice — pledged — 2 days ago");
+    expect(html).toContain("Wall Alice");
+    expect(html).toContain("pledged");
+    expect(html).toContain('data-volatile="backer age">2 days ago</span>');
     expect(html).not.toContain("Wall Bob");
   });
 

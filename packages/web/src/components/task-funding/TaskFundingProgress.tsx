@@ -116,7 +116,10 @@ export async function TaskFundingProgress({
         >
           {backers.map((backer, index) => (
             <li key={`${backer.name}-${backer.at.toISOString()}-${index}`}>
-              {backer.name} — {backer.kind} — {formatRelativeTime(now, backer.at)}
+              {backer.name} — {backer.kind} —{" "}
+              <span data-volatile="backer age">
+                {formatRelativeTime(now, backer.at)}
+              </span>
             </li>
           ))}
         </ul>
