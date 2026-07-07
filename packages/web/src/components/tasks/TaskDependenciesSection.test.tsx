@@ -17,6 +17,7 @@ function relatedTask(
     assigneePersonId: null,
     claims: [],
     createdByUserId: "creator_other",
+    deletedAt: null,
     dueAt: null,
     estimatedEffortHours: null,
     id: "task_related",
@@ -37,6 +38,18 @@ describe("canSeeRelatedTask", () => {
 
   it("shows public related tasks", () => {
     expect(canSeeRelatedTask(relatedTask({ isPublic: true }), null)).toBe(true);
+  });
+
+  it("hides deleted related tasks", () => {
+    expect(
+      canSeeRelatedTask(
+        relatedTask({
+          deletedAt: "2026-07-01T00:00:00.000Z",
+          isPublic: true,
+        }),
+        null,
+      ),
+    ).toBe(false);
   });
 
   it("hides private related tasks unless the viewer has access", () => {

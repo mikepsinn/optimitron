@@ -369,6 +369,7 @@ const taskListSelect = {
           currentImpactEstimateSet: {
             select: impactEstimateSetSelect,
           },
+          deletedAt: true,
           dueAt: true,
           estimatedEffortHours: true,
           id: true,
@@ -452,6 +453,7 @@ const taskListSelect = {
             },
           },
           createdByUserId: true,
+          deletedAt: true,
           dueAt: true,
           estimatedEffortHours: true,
           id: true,

@@ -14,11 +14,12 @@ const RELATED_TASK_ACCESS_CLAIM_STATUSES = new Set<TaskClaimStatus>([
 
 export type RelatedTaskLink = {
   assigneePersonId: string | null;
-  claims?: Array<{
+  claims: Array<{
     status: TaskClaimStatus;
     userId: string;
   }>;
   createdByUserId: string;
+  deletedAt: Date | string | null;
   dueAt?: Date | string | null;
   estimatedEffortHours?: number | null;
   id: string;
@@ -95,6 +96,9 @@ export function canSeeRelatedTask(
   task: RelatedTaskLink,
   viewer: TaskDependenciesViewer,
 ) {
+  if (task.deletedAt != null) {
+    return false;
+  }
   if (task.isPublic) {
     return true;
   }
@@ -108,11 +112,11 @@ export function canSeeRelatedTask(
     return true;
   }
   return (
-    task.claims?.some(
+    task.claims.some(
       (claim) =>
         claim.userId === viewer.id &&
         RELATED_TASK_ACCESS_CLAIM_STATUSES.has(claim.status),
-    ) ?? false
+    )
   );
 }
 

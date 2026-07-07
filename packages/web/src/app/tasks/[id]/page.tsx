@@ -91,6 +91,9 @@ function formatEffortHours(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) {
     return null;
   }
+  if (value === 0) {
+    return "0 minutes";
+  }
   if (value < 1) {
     const minutes = Math.max(1, Math.round(value * 60));
     return `${minutes.toLocaleString("en-US")} ${minutes === 1 ? "minute" : "minutes"}`;
