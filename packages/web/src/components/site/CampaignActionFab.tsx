@@ -62,7 +62,7 @@ export function CampaignActionFab() {
   }
 
   const actionButtonClass =
-    "group min-h-10 justify-start gap-2 rounded-full bg-background/95 py-1.5 pl-1.5 pr-3 text-xs font-black uppercase tracking-[0.08em] text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.14)] ring-1 ring-foreground/10 hover:bg-foreground hover:text-background focus-visible:ring-2 focus-visible:ring-foreground";
+    "group min-h-10 justify-start gap-2 rounded-full bg-background/95 py-1.5 pl-1.5 pr-3 text-xs font-black uppercase tracking-[0.08em] text-foreground shadow-none ring-1 ring-foreground/10 hover:bg-foreground hover:text-background focus-visible:ring-2 focus-visible:ring-foreground";
   const actionIconClass =
     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background group-hover:bg-background group-hover:text-foreground";
 
@@ -111,7 +111,7 @@ export function CampaignActionFab() {
               open ? "Close campaign actions" : "Open campaign actions"
             }
             onClick={() => setOpen((value) => !value)}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground p-0 text-background shadow-[0_10px_28px_rgba(0,0,0,0.22)] ring-1 ring-background/80 hover:bg-background hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground p-0 text-background shadow-none ring-1 ring-background/80 hover:bg-background hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground"
           >
             {open ? (
               <X className="h-6 w-6 stroke-[2.5px]" />

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { ClinicalTrialStudy } from '@/lib/schemas/clinical-trial.schema';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/retroui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ExternalLink,

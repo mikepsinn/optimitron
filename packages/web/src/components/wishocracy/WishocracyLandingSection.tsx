@@ -130,20 +130,20 @@ export function WishocracyLandingSection() {
               <NavItemLink
                 item={wishocracyLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-primary bg-foreground px-8 py-3 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-foreground px-8 py-3 text-sm font-black uppercase text-background shadow-none transition-colors hover:bg-background hover:text-foreground"
               >
                 Make Your Allocation
               </NavItemLink>
               <Link
                 href={getSignInPath(wishocracyLink.href)}
-                className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background"
               >
                 Sign In to Save and Share
               </Link>
               <NavItemLink
                 item={alignmentLink}
                 variant="custom"
-                className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-sm font-black uppercase text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background"
               >
                 See Alignment Reports
               </NavItemLink>

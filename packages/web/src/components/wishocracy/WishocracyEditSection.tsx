@@ -294,7 +294,7 @@ export function WishocracyEditSection({
                 <Button
                   onClick={handleSave}
                   disabled={!hasChanges || isSaving}
-                  className="flex-1 h-12 font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {isSaving ? "Saving..." : "Save Changes"}
@@ -308,7 +308,7 @@ export function WishocracyEditSection({
                   }}
                   disabled={!hasChanges || isSaving}
                   variant="outline"
-                  className="h-12 font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+                  className="h-12 font-black uppercase border-4 border-primary shadow-none disabled:opacity-50"
                 >
                   Cancel
                 </Button>

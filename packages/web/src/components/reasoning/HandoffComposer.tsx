@@ -64,7 +64,7 @@ export function HandoffComposer({
               onSend({ message, channel: ch });
               openChannel(ch, message);
             }}
-            className="h-10 text-xs font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+            className="h-10 text-xs font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-none"
           >
             {ch}
           </Button>

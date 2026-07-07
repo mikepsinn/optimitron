@@ -199,7 +199,7 @@ function PaginationControls({
           type="button"
           disabled={page === 0}
           onClick={() => onPage(Math.max(0, page - 1))}
-          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-transform hover:translate-y-[-1px] disabled:opacity-40 disabled:hover:translate-y-0"
+          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-40 disabled:hover:bg-background disabled:hover:text-foreground"
         >
           ← Prev
         </button>
@@ -210,7 +210,7 @@ function PaginationControls({
           type="button"
           disabled={page >= totalPages - 1}
           onClick={() => onPage(Math.min(totalPages - 1, page + 1))}
-          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-transform hover:translate-y-[-1px] disabled:opacity-40 disabled:hover:translate-y-0"
+          className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-40 disabled:hover:bg-background disabled:hover:text-foreground"
         >
           Next →
         </button>

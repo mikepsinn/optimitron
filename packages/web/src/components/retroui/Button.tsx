@@ -4,18 +4,18 @@ import React, { ButtonHTMLAttributes } from "react";
 import { Slot } from "@radix-ui/react-slot";
 
 export const buttonVariants = cva(
-  "font-head transition-all rounded-none outline-hidden cursor-pointer duration-200 font-medium flex items-center",
+  "font-head flex cursor-pointer items-center rounded-none font-medium outline-hidden transition-colors duration-200 shadow-none",
   {
     variants: {
       variant: {
         default:
-          "shadow-sm hover:shadow-none active:shadow-none bg-primary text-primary-foreground border-2 border-border transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover",
+          "bg-primary text-primary-foreground border-2 border-border hover:bg-primary-hover",
         secondary:
-          "shadow-sm hover:shadow-none active:shadow-none bg-secondary shadow-primary text-secondary-foreground border-2 border-border transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-secondary-hover",
+          "bg-secondary text-secondary-foreground border-2 border-border hover:bg-secondary-hover",
         destructive:
-          "shadow-sm hover:shadow-none active:shadow-none bg-destructive text-white border-2 border-border transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-destructive/90",
+          "bg-destructive text-white border-2 border-border hover:bg-destructive/90",
         outline:
-          "shadow-sm hover:shadow-none active:shadow-none bg-transparent text-foreground border-2 transition hover:translate-y-1 active:translate-y-2 active:translate-x-1",
+          "bg-transparent text-foreground border-2",
         link: "bg-transparent text-foreground hover:underline",
         ghost: "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
         pixel:
@@ -23,7 +23,7 @@ export const buttonVariants = cva(
       },
       size: {
         default: "px-4 py-1.5 text-base",
-        sm: "px-3 py-1 text-sm shadow-sm hover:shadow-none",
+        sm: "px-3 py-1 text-sm",
         md: "px-4 py-1.5 text-base",
         lg: "px-6 lg:px-8 py-2 lg:py-3 text-md lg:text-lg",
         icon: "p-2",

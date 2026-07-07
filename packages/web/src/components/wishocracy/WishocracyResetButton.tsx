@@ -24,7 +24,7 @@ export function WishocracyResetButton({
       <Button
         onClick={onReset}
         variant="outline"
-        className="w-full h-14 text-base font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+        className="w-full h-14 text-base font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-none"
       >
         🔄 START OVER
       </Button>

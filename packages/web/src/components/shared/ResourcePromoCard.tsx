@@ -24,7 +24,7 @@ export function ResourcePromoCard({
         href={withUtm(PODCAST_URLS.spotify, utmSource)}
         target="_blank"
         rel="noopener noreferrer"
-        className="bg-[#1DB954] text-white border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1"
+        className="bg-[#1DB954] text-white border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-none transition-colors hover:bg-background hover:text-foreground flex items-center justify-center gap-1"
       >
         Listen Free
         <ExternalLink className="w-3 h-3 stroke-[3px] hidden sm:block" />
@@ -33,7 +33,7 @@ export function ResourcePromoCard({
         href={withUtm(MANUAL_URLS.paperback, utmSource)}
         target="_blank"
         rel="noopener noreferrer"
-        className="bg-[#FF9900] text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1"
+        className="bg-[#FF9900] text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-none transition-colors hover:bg-background flex items-center justify-center gap-1"
       >
         Paperback
         <ExternalLink className="w-3 h-3 stroke-[3px] hidden sm:block" />
@@ -41,7 +41,7 @@ export function ResourcePromoCard({
       <Link
         href={MANUAL_URLS.readOnline}
         target="_blank"
-        className="bg-background text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center"
+        className="bg-background text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-none transition-colors hover:bg-foreground hover:text-background flex items-center justify-center"
       >
         Read Free
       </Link>

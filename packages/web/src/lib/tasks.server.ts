@@ -355,11 +355,24 @@ const taskListSelect = {
       timeDeltaDaysBase: true,
       toTask: {
         select: {
+          assigneePersonId: true,
+          claims: {
+            where: {
+              deletedAt: null,
+            },
+            select: {
+              status: true,
+              userId: true,
+            },
+          },
+          createdByUserId: true,
           currentImpactEstimateSet: {
             select: impactEstimateSetSelect,
           },
+          dueAt: true,
           estimatedEffortHours: true,
           id: true,
+          isPublic: true,
           status: true,
           taskKey: true,
           title: true,
@@ -424,10 +437,27 @@ const taskListSelect = {
     },
     select: {
       edgeType: true,
+      probabilityDeltaBase: true,
+      timeDeltaDaysBase: true,
       fromTask: {
         select: {
+          assigneePersonId: true,
+          claims: {
+            where: {
+              deletedAt: null,
+            },
+            select: {
+              status: true,
+              userId: true,
+            },
+          },
+          createdByUserId: true,
+          dueAt: true,
+          estimatedEffortHours: true,
           id: true,
+          isPublic: true,
           status: true,
+          taskKey: true,
           title: true,
         },
       },

@@ -59,7 +59,7 @@ export function InevitabilityNodeView({
 
         <Button
           onClick={onProceed}
-          className="w-full h-14 text-lg font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="w-full h-14 text-lg font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-none"
         >
           {content.proceedCtaLabel}
         </Button>

@@ -144,7 +144,7 @@ export const ClinicalStudyCitationDisplay: React.FC<ClinicalStudyCitationDisplay
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold border-2 border-primary bg-background hover:bg-background/80 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold border-2 border-primary bg-background shadow-none transition-colors hover:bg-foreground hover:text-background"
       >
         {label}
         <ExternalLink className="h-3 w-3" />

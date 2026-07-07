@@ -55,13 +55,13 @@ export function ObjectionNodeView({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={onReAnswer}
-            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-none"
           >
             {content.reAnswerCta}
           </Button>
           <Button
             onClick={onStillDisagree}
-            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-none"
           >
             {content.stillDisagreeCta}
           </Button>

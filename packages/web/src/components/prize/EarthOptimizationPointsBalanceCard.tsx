@@ -85,7 +85,7 @@ export function EarthOptimizationPointsBalanceCard() {
         </p>
         <Link
           href="/auth/signin?callbackUrl=/contribute"
-          className="mt-4 inline-flex items-center justify-center border-4 border-primary bg-foreground px-6 py-2 text-sm font-black uppercase text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className="mt-4 inline-flex items-center justify-center border-4 border-primary bg-foreground px-6 py-2 text-sm font-black uppercase text-background shadow-none transition-colors hover:bg-background hover:text-foreground"
         >
           Sign In
         </Link>

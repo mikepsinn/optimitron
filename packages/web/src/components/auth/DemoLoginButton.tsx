@@ -58,7 +58,7 @@ export function DemoLoginButton({
         type="button"
         disabled={loading}
         onClick={() => void handleClick()}
-        className="font-black uppercase bg-background hover:bg-background/90 text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+        className="border-4 border-primary bg-background font-black uppercase text-foreground shadow-none hover:bg-background/90"
       >
         {loading ? "Signing in..." : "Try Demo"}
       </Button>

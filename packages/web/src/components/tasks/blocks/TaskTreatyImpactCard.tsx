@@ -51,7 +51,7 @@ export function TaskTreatyImpactCard() {
           href="https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px]"
+          className="inline-block border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase shadow-none hover:bg-foreground hover:text-background"
         >
           Full derivation →
         </a>
