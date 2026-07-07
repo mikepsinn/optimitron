@@ -67,3 +67,21 @@ test("deploy smoke waits for a successful deployment URL instead of skipping ear
     /PREVIEW_URL: \$\{\{ steps\.deployment_status\.outputs\.environment_url \}\}/u,
   );
 });
+
+test("deploy smoke can recover the Vercel preview URL from the PR comment", () => {
+  assert.match(
+    workflow,
+    /getCombinedStatusForRef[\s\S]*status\.context === "Vercel"/u,
+    "smoke jobs should handle Vercel commit statuses when no Vercel deployment record is available",
+  );
+  assert.match(
+    workflow,
+    /listPullRequestsAssociatedWithCommit[\s\S]*issues\.listComments/u,
+    "smoke jobs should find the PR before reading Vercel bot comments",
+  );
+  assert.match(
+    workflow,
+    /comment\.user\?\.login !== "vercel\[bot\]"[\s\S]*\\\[Preview\\\]/u,
+    "smoke jobs should recover the preview alias from the Vercel bot Preview link",
+  );
+});
