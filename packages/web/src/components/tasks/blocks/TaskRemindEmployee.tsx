@@ -133,7 +133,7 @@ export function TaskRemindEmployee({
               {assigneeProfile.contactChannels.map((channel) => (
                 <Link
                   key={`${channel.kind}-${channel.href}`}
-                  className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px]"
+                  className="border-2 border-foreground bg-background px-3 py-1 text-xs font-black uppercase shadow-none hover:bg-foreground hover:text-background"
                   href={channel.href}
                   target="_blank"
                 >

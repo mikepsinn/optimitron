@@ -214,7 +214,7 @@ export default function PoliciesPage() {
 
                 <Link
                   href={getPolicyPath(policy.name)}
-                  className="inline-block mt-2 border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
+                  className="inline-block mt-2 border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-none transition-colors hover:bg-background hover:text-foreground"
                   onClick={(e) => e.stopPropagation()}
                 >
                   View Full Analysis →

@@ -25,7 +25,7 @@ export function ReferendumStatusBox() {
         </div>
         <div className="flex-shrink-0 w-full md:w-auto">
           <Link href={ROUTES.referendum}>
-            <Button className="w-full md:w-auto bg-foreground hover:bg-foreground/90 text-background border-4 border-primary font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all h-14 px-6 text-lg">
+            <Button className="w-full md:w-auto bg-foreground hover:bg-foreground/90 text-background border-4 border-primary font-black uppercase shadow-none h-14 px-6 text-lg">
               VOTE NOW
             </Button>
           </Link>

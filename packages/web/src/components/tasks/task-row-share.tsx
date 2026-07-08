@@ -489,8 +489,8 @@ export function TaskRowShare({
 
   const triggerClassName =
     size === "lg"
-      ? "inline-flex w-full items-center justify-center border-4 border-foreground bg-foreground px-6 py-4 text-lg font-black uppercase tracking-wide text-background shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:text-xl"
-      : "inline-flex items-center justify-center border-2 border-foreground bg-foreground px-3 py-1 text-xs font-black uppercase tracking-wide text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]";
+      ? "inline-flex w-full items-center justify-center border-4 border-foreground bg-foreground px-6 py-4 text-lg font-black uppercase tracking-wide text-background shadow-none transition-colors hover:bg-background hover:text-foreground sm:text-xl"
+      : "inline-flex items-center justify-center border-2 border-foreground bg-foreground px-3 py-1 text-xs font-black uppercase tracking-wide text-background shadow-none transition-colors hover:bg-background hover:text-foreground";
   const triggerLabel = size === "lg" ? "Send Reminder" : "Remind";
 
   const composerProps = {
@@ -520,10 +520,10 @@ export function TaskRowShare({
             </button>
           </Dialog.Trigger>
           <Dialog.Content
-            className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="max-h-[calc(100vh-4rem)] w-[36rem] max-w-[calc(100vw-2rem)] overflow-y-auto border-4 border-foreground bg-background p-0 shadow-none"
             title={`Send reminder — ${taskTitle}`}
           >
-            <Dialog.Close className="absolute right-3 top-3 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-2 border-foreground bg-background text-xs font-black text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            <Dialog.Close className="absolute right-3 top-3 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-2 border-foreground bg-background text-xs font-black text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background">
               ✕
             </Dialog.Close>
             <ReminderComposer {...composerProps} />

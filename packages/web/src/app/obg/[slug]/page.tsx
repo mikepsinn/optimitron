@@ -658,7 +658,7 @@ export default async function BudgetCategoryPage({
         <NavItemLink
           item={obgLink}
           variant="custom"
-          className="inline-block border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-shadow"
+          className="inline-block border-4 border-primary bg-foreground text-background px-4 py-2 font-bold text-sm shadow-none transition-colors hover:bg-background hover:text-foreground"
         >
           ← All Categories
         </NavItemLink>

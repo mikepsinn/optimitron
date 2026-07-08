@@ -83,7 +83,7 @@ export function NaturalExperimentsChart() {
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
                 onClick={() => setExpanded(isOpen ? null : i)}
-                className="w-full p-4 border-4 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-left cursor-pointer"
+                className="w-full p-4 border-4 border-primary bg-background shadow-none transition-colors hover:bg-muted text-left cursor-pointer"
               >
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">

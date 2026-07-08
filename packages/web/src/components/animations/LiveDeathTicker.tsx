@@ -26,6 +26,7 @@ interface CounterConfig {
   emoji: string;
   label: string;
   staticFallback: string;
+  volatileLabel: string;
 }
 
 const counters: CounterConfig[] = [
@@ -37,6 +38,7 @@ const counters: CounterConfig[] = [
     emoji: "💀",
     label: "Humans terminated",
     staticFallback: `~${DEATHS_PER_DAY.toLocaleString()} humans terminated/day`,
+    volatileLabel: "deaths",
   },
   {
     rate: DYSFUNCTION_TAX_PER_SECOND,
@@ -46,6 +48,7 @@ const counters: CounterConfig[] = [
     emoji: "🔥",
     label: "Burned by misaligned governments",
     staticFallback: `$${Math.round(DYSFUNCTION_TAX_PER_YEAR / 1e12)}T/yr governance waste`,
+    volatileLabel: "governance waste",
   },
   {
     rate: DESTRUCTIVE_PER_SECOND,
@@ -55,6 +58,7 @@ const counters: CounterConfig[] = [
     emoji: "💣",
     label: "Spent on destruction instead of cures",
     staticFallback: `$${DESTRUCTIVE_BASE_T.toFixed(1)}T/yr military + cybercrime`,
+    volatileLabel: "destruction spend",
   },
 ];
 
@@ -126,6 +130,7 @@ export function LiveDeathTicker({
             <span className="text-3xl mr-2">{c.emoji}</span>
             <span
               className={`text-lg font-bold ${surface === "dark" ? c.darkSurfaceColor : c.lightSurfaceColor}`}
+              data-volatile={c.volatileLabel}
             >
               {c.staticFallback}
             </span>
@@ -143,6 +148,7 @@ export function LiveDeathTicker({
             <span className="text-4xl sm:text-5xl">{c.emoji}</span>
             <span
               className={`text-3xl sm:text-4xl font-black ${surface === "dark" ? c.darkSurfaceColor : c.lightSurfaceColor}`}
+              data-volatile={c.volatileLabel}
               style={{ fontVariantNumeric: "tabular-nums" }}
               ref={refs[i]}
             >

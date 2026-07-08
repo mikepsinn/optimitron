@@ -50,7 +50,7 @@ export function ToggleButtonGroup({
           type="button"
           onClick={() => onChange(option.value)}
           className={cn(
-            "flex-1 font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+            "flex-1 font-black uppercase border-4 border-primary shadow-none",
             sizeClasses[size],
             value === option.value
               ? activeColorClasses[activeColor]

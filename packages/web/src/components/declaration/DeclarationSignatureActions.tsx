@@ -96,13 +96,13 @@ export function DeclarationSignatureActions({
         <div className="flex items-center justify-center gap-4">
           <Button
             onClick={handleDisagree}
-            className="border-4 border-primary bg-brutal-red px-6 py-3 text-lg font-black uppercase text-brutal-red-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-4 border-primary bg-brutal-red px-6 py-3 text-lg font-black uppercase text-brutal-red-foreground shadow-none"
           >
             Disagree
           </Button>
           <Button
             onClick={handleAgree}
-            className="border-4 border-primary bg-brutal-green px-6 py-3 text-lg font-black uppercase text-brutal-green-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-4 border-primary bg-brutal-green px-6 py-3 text-lg font-black uppercase text-brutal-green-foreground shadow-none"
           >
             Agree
           </Button>
@@ -129,7 +129,7 @@ export function DeclarationSignatureActions({
             <Button
               onClick={() => void handleSubmitSignature()}
               disabled={!signatureName.trim() || signing}
-              className="border-4 border-primary px-8 py-3 text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+              className="border-4 border-primary px-8 py-3 text-lg font-black uppercase shadow-none disabled:opacity-50"
               variant="secondary"
             >
               {signing ? "Signing..." : "Sign"}

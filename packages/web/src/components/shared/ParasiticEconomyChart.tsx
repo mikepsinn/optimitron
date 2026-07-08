@@ -93,7 +93,10 @@ export function ParasiticEconomyChart() {
         <h3 className="font-pixel text-xl sm:text-2xl md:text-4xl text-brutal-red uppercase">
           Countdown to Collapse
         </h3>
-        <div className="font-pixel text-2xl sm:text-3xl md:text-5xl text-background mt-2 tabular-nums tracking-wider">
+        <div
+          className="font-pixel text-2xl sm:text-3xl md:text-5xl text-background mt-2 tabular-nums tracking-wider"
+          data-volatile="collapse countdown"
+        >
           {countdownStr}
         </div>
       </div>

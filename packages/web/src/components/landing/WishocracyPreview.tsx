@@ -85,6 +85,20 @@ const LANDING_PAIRS: [WishocraticItemId, WishocraticItemId][] = [
   ["EARLY_CHILDHOOD_EDUCATION", "NUCLEAR_WEAPONS_MODERNIZATION"],
 ];
 
+function isStableReviewMode(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const flags = window as Window & {
+    __OPTIMITRON_COPY_PREVIEW__?: boolean;
+    __OPTIMITRON_VISUAL_REVIEW__?: boolean;
+  };
+  return Boolean(
+    flags.__OPTIMITRON_COPY_PREVIEW__ || flags.__OPTIMITRON_VISUAL_REVIEW__,
+  );
+}
+
 export function WishocracyPreview() {
   const [liveData, setLiveData] = useState<PreferenceData | null>(null);
   const [pairIndex, setPairIndex] = useState(0);
@@ -92,11 +106,13 @@ export function WishocracyPreview() {
 
   // Pick a random pair on mount
   useEffect(() => {
+    if (isStableReviewMode()) return;
     setPairIndex(Math.floor(Math.random() * LANDING_PAIRS.length));
   }, []);
 
   // Try to fetch live data, fall back to estimated
   useEffect(() => {
+    if (isStableReviewMode()) return;
     fetch("/api/wishocracy/preferences")
       .then((res) => (res.ok ? res.json() : null))
       .then((d) => {
