@@ -731,6 +731,11 @@ function buildDownstreamUnlockedImpactFrame(
         scaleImpactFrameSummary(frame, probabilityDelta, {
           customFrameLabel: `Probability-weighted downstream value unlocked by ${task.title}`,
           frameSlug: `${frame.frameSlug}-probability-delta-${task.id}`,
+          // A marginal-unlocked-value frame has no single success probability;
+          // leave it null rather than carrying the downstream task's.
+          successProbabilityBase: null,
+          successProbabilityHigh: null,
+          successProbabilityLow: null,
           metrics: [],
         }),
       );
@@ -740,6 +745,9 @@ function buildDownstreamUnlockedImpactFrame(
       weightedFrames.push({
         ...frame,
         customFrameLabel: `Time-accelerated downstream value unlocked by ${task.title}`,
+        successProbabilityBase: null,
+        successProbabilityHigh: null,
+        successProbabilityLow: null,
         delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
         delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
         delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,

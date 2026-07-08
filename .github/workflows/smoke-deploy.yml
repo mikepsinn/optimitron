@@ -76,7 +76,7 @@ jobs:
             const timeoutMs = 20 * 60 * 1000;
             const intervalMs = 10 * 1000;
             const deadline = Date.now() + timeoutMs;
-            const terminalFailures = new Set(["failure", "error", "inactive"]);
+            const terminalFailures = new Set(["failure", "error"]);
             let lastStatus = "not found";
 
             function isHttpUrl(value) {
@@ -225,6 +225,17 @@ jobs:
                   core.setOutput("environment", environment || "Preview");
                   core.setOutput("environment_url", previewUrl);
                   core.setOutput("state", state);
+                  return;
+                }
+              }
+
+              if (state === "inactive") {
+                const previewUrl = await resolveVercelStatusPreviewUrl();
+                if (previewUrl) {
+                  core.info(`Recovered active Vercel preview URL after inactive deployment event: ${previewUrl}`);
+                  core.setOutput("environment", environment || "Preview");
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", "success");
                   return;
                 }
               }
@@ -704,7 +715,7 @@ jobs:
             const timeoutMs = 20 * 60 * 1000;
             const intervalMs = 10 * 1000;
             const deadline = Date.now() + timeoutMs;
-            const terminalFailures = new Set(["failure", "error", "inactive"]);
+            const terminalFailures = new Set(["failure", "error"]);
             let lastStatus = "not found";
 
             function isHttpUrl(value) {
@@ -818,6 +829,16 @@ jobs:
                   core.info(`Recovered Vercel preview URL from PR comment: ${previewUrl}`);
                   core.setOutput("environment_url", previewUrl);
                   core.setOutput("state", state);
+                  return;
+                }
+              }
+
+              if (state === "inactive") {
+                const previewUrl = await resolveVercelStatusPreviewUrl();
+                if (previewUrl) {
+                  core.info(`Recovered active Vercel preview URL after inactive deployment event: ${previewUrl}`);
+                  core.setOutput("environment_url", previewUrl);
+                  core.setOutput("state", "success");
                   return;
                 }
               }

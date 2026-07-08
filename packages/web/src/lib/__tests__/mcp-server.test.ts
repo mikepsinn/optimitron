@@ -1377,6 +1377,44 @@ describe("MCP server tool dispatch", () => {
       });
     }, 15_000);
 
+    it("uses the query-level parentTaskId filter without post-filtering the returned page", async () => {
+      // tasks.server owns this filter; the MCP layer should not re-filter a
+      // limited page and silently drop rows that the query returned.
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          id: "child",
+          parentTaskId: "parent-2",
+          title: "Child returned by query",
+        }),
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listTasks",
+        arguments: { parentTaskId: "parent-1", status: "ACTIVE", limit: 5 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.listTasks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 5,
+          parentTaskId: "parent-1",
+          status: TaskStatus.ACTIVE,
+          userId: null,
+          visibility: "public",
+        }),
+      );
+      const body = parseToolBody(result) as unknown as Array<
+        Record<string, unknown>
+      >;
+      expect(body).toHaveLength(1);
+      expect(body[0]).toMatchObject({
+        id: "child",
+        parentTaskId: "parent-2",
+        title: "Child returned by query",
+      });
+    });
+
     it("does not invent private visibility when listTasks omits isPublic", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({

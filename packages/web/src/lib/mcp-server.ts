@@ -7259,26 +7259,22 @@ export function createMcpServer(
             const needsExtendedFiltering = Object.values(extendedFilters).some(
               (value) => Array.isArray(value) ? value.length > 0 : value != null,
             );
+            const parentTaskIdFilter =
+              typeof a.parentTaskId === "string" && a.parentTaskId
+                ? a.parentTaskId
+                : null;
             const list = await tasks.listTasks({
               status,
               category,
               assigneePersonId,
               assigneeOrganizationId,
-              parentTaskId:
-                typeof a.parentTaskId === "string" && a.parentTaskId
-                  ? a.parentTaskId
-                  : null,
+              parentTaskId: parentTaskIdFilter,
               limit: needsExtendedFiltering ? 5000 : limit,
               userId: visibility === "accessible" ? userId : null,
               visibility,
             });
+            // parentTaskId is filtered in the Prisma query above; no in-memory pass.
             let filtered = Array.isArray(list) ? list : [];
-            if (a.parentTaskId) {
-              filtered = filtered.filter(
-                (t: { parentTaskId?: string | null }) =>
-                  t.parentTaskId === a.parentTaskId,
-              );
-            }
             filtered = filtered.filter((task: Record<string, unknown>) => {
               if (
                 extendedFilters.ownerOrganizationId &&
