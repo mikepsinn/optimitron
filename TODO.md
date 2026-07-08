@@ -122,7 +122,10 @@ Do not let lower items crowd out higher ones.
   (a) ParameterValue citation-dialog LaTeX clips off-screen on mobile
   (pre-existing, site-wide); (b) AUDIT: treaty task renders "Task value
   $84,787T" — implausible (>5,000x annual peace dividend), check
-  selectedImpactFrame EV computation/units; (c) /fund calculator shows
+  selectedImpactFrame EV computation/units — ROOT CAUSE FOUND + FIXED on
+  `feature/mcp-ev-instrument-fixes` (seed frames stored gross conditional
+  value; sibling inheritance divided pSuccess); numbers correct after the
+  seed reruns per environment; (c) /fund calculator shows
   fail-pays-more ($64k vs $35k) with the military-contractor-stock
   explanation two screens below the numbers — move into same viewport;
   (d) cross-domain vote CTA (optimitron.com → warondisease.org) reads as
@@ -208,6 +211,33 @@ Do not let lower items crowd out higher ones.
     creation doesn't take the advisory lock. Real fix is routing all
     status-affecting writes (including `createOrReplaceTaskFundingPledge`)
     through the task lock; do it when touching the pledge-create path.
+- **MCP/EV instrument fixes (branch `feature/mcp-ev-instrument-fixes`,
+  2026-07-07):** four bugs corrupting EV ranking and MCP reads, found by the
+  roadmap audit: (1) seed impact frames stored GROSS conditional value in
+  `expectedEconomicValueUsdBase` while rank-tasks treats the column as
+  probability-weighted (root cause of the "$84,787T" item above) —
+  `syncTaskImpactEstimate` now weights via `seed-impact.ts`, keeps the
+  conditional in assumptionsJson, calculationVersion `seed-v2`; values fix
+  only after the seed reruns per environment; (2) frame inheritance
+  divided/summed `successProbability*` across siblings (0.01/202 = 4.95e-5
+  on personal treaty tasks) — probabilities now pass through unscaled;
+  (3) MCP `ok()` crashed on BigInt compensation columns ("Do not know how
+  to serialize a BigInt") for 7 top tree nodes — BigInt-safe stringify in
+  `json-safe.ts`; (4) `listTasks(parentTaskId)` post-filtered a 20-row page
+  in memory → `[]` for managed parents — filter moved into the Prisma where.
+  Deferred from the same audit: frame-slug mismatch (`selectImpactFrame`
+  defaults TWENTY_YEAR, managed frames are `one-year`/`five-year-direct`,
+  so selection falls back to `availableFrames[0]` — horizons compared by
+  accident); zero TaskEdge rows seeded anywhere (no program sequencing);
+  no forward scheduler (a dated roadmap generator is a new module);
+  `deadlinePolicy` absent from MCP task payloads.
+- **dFDA tracking MCP tools found UNCOMMITTED in the working tree 2026-07-07**
+  (943 lines in mcp-server.ts: recordMeasurement, upsertTrackingReminder,
+  listTrackingReminders, listDueTrackingReminders, respondToTrackingReminder;
+  provenance unclear, written ~15:30 local). Stashed as
+  `preserve-dfda-tracking-mcp-tools-found-uncommitted-2026-07-07` to keep the
+  instrument-fixes branch clean. Restore onto its own branch per the dFDA
+  build-order item above.
 - **MCP getTask double-escapes nested child descriptions (found 2026-07-03,
   fix immediately after escrow branch):** child rows inside a parent
   `getTask` response carry literal `\n` (verified: all 11 children of
