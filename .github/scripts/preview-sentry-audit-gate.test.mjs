@@ -85,3 +85,16 @@ test("deploy smoke can recover the Vercel preview URL from the PR comment", () =
     "smoke jobs should recover the preview alias from the Vercel bot Preview link",
   );
 });
+
+test("deploy smoke treats inactive Vercel deployment events as recoverable", () => {
+  assert.doesNotMatch(
+    workflow,
+    /terminalFailures = new Set\(\["failure", "error", "inactive"\]\)/u,
+    "inactive deployment events can be superseded by an active Vercel commit status",
+  );
+  assert.match(
+    workflow,
+    /state === "inactive"[\s\S]*resolveVercelStatusPreviewUrl/u,
+    "smoke jobs should recover the active Vercel preview URL before failing inactive deployment events",
+  );
+});

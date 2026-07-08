@@ -1,3 +1,4 @@
+import { stringifyJsonSafe } from "../json-safe";
 import { McpScope } from "../mcp-scopes";
 
 type ToolResponse = {
@@ -6,7 +7,7 @@ type ToolResponse = {
 };
 
 function ok(data: unknown): ToolResponse {
-  return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  return { content: [{ type: "text", text: stringifyJsonSafe(data, 2) }] };
 }
 
 function err(message: string): ToolResponse {

@@ -215,7 +215,10 @@ type NumericFrameKey =
   | "successProbabilityHigh"
   | "successProbabilityLow";
 
-const NUMERIC_FRAME_KEYS: NumericFrameKey[] = [
+// successProbability* is deliberately absent: probabilities are not additive
+// across sibling shares or merged frames. Scaling them produced per-child
+// values like 0.01/202; probability keys pass through unchanged instead.
+const ADDITIVE_FRAME_KEYS: NumericFrameKey[] = [
   "delayDalysLostPerDayBase",
   "delayDalysLostPerDayHigh",
   "delayDalysLostPerDayLow",
@@ -240,9 +243,6 @@ const NUMERIC_FRAME_KEYS: NumericFrameKey[] = [
   "medianIncomeGrowthEffectPpPerYearBase",
   "medianIncomeGrowthEffectPpPerYearHigh",
   "medianIncomeGrowthEffectPpPerYearLow",
-  "successProbabilityBase",
-  "successProbabilityHigh",
-  "successProbabilityLow",
 ];
 
 function scaleValue(value: number | null | undefined, factor: number) {
@@ -265,7 +265,7 @@ export function scaleImpactFrameSummary(
 ): TaskImpactFrameSummary {
   const scaled = { ...frame };
 
-  for (const key of NUMERIC_FRAME_KEYS) {
+  for (const key of ADDITIVE_FRAME_KEYS) {
     scaled[key] = scaleValue(frame[key], factor) as TaskImpactFrameSummary[typeof key];
   }
 
@@ -316,7 +316,7 @@ export function sumImpactFrameSummaries(
   const seed = frames[0]!;
   const merged = { ...seed };
 
-  for (const key of NUMERIC_FRAME_KEYS) {
+  for (const key of ADDITIVE_FRAME_KEYS) {
     merged[key] = sumValues(frames.map((frame) => frame[key])) as TaskImpactFrameSummary[typeof key];
   }
 

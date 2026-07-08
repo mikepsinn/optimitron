@@ -203,6 +203,27 @@ describe("impact helpers", () => {
     expect(scaled.frameSlug).toBe("twenty-year-child-share");
   });
 
+  it("keeps success probability unscaled when inheriting a parent share", () => {
+    const scaled = scaleImpactFrameSummary(baseEstimateSet.frames[1], 1 / 202, {
+      metrics: [],
+    });
+
+    expect(scaled.successProbabilityBase).toBe(0.4);
+    expect(scaled.successProbabilityHigh).toBe(0.5);
+    expect(scaled.successProbabilityLow).toBe(0.3);
+    expect(scaled.expectedEconomicValueUsdBase).toBeCloseTo(5_000_000 / 202);
+  });
+
+  it("does not sum success probabilities across merged frames", () => {
+    const merged = sumImpactFrameSummaries([
+      baseEstimateSet.frames[0],
+      baseEstimateSet.frames[1],
+    ]);
+
+    expect(merged?.successProbabilityBase).toBe(0.2);
+    expect(merged?.expectedEconomicValueUsdBase).toBe(5_200_000);
+  });
+
   it("sums impact frames for downstream unlocked value", () => {
     const merged = sumImpactFrameSummaries(
       [
