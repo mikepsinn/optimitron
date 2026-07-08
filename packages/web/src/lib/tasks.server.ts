@@ -763,6 +763,11 @@ function buildDownstreamUnlockedImpactFrame(
         scaleImpactFrameSummary(frame, probabilityDelta, {
           customFrameLabel: `Probability-weighted downstream value unlocked by ${task.title}`,
           frameSlug: `${frame.frameSlug}-probability-delta-${task.id}`,
+          // A marginal-unlocked-value frame has no single success probability;
+          // leave it null rather than carrying the downstream task's.
+          successProbabilityBase: null,
+          successProbabilityHigh: null,
+          successProbabilityLow: null,
           metrics: [],
         }),
       );
@@ -772,6 +777,9 @@ function buildDownstreamUnlockedImpactFrame(
       weightedFrames.push({
         ...frame,
         customFrameLabel: `Time-accelerated downstream value unlocked by ${task.title}`,
+        successProbabilityBase: null,
+        successProbabilityHigh: null,
+        successProbabilityLow: null,
         delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
         delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
         delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,
@@ -1372,6 +1380,7 @@ export async function listTasks(options?: {
   category?: TaskCategory | null;
   frameKey?: TaskImpactFrameKey | string | null;
   limit?: number | null;
+  parentTaskId?: string | null;
   personId?: string | null;
   status?: TaskStatus | null;
   userId?: string | null;
@@ -1385,9 +1394,13 @@ export async function listTasks(options?: {
     userId: options?.userId,
     visibility: options?.visibility,
   });
-  const where: Prisma.TaskWhereInput = options?.category
-    ? { ...visibilityWhere, category: options.category }
-    : visibilityWhere;
+  // parentTaskId must filter in the query itself — post-filtering a limited
+  // page silently returns [] for parents whose children fall outside it.
+  const where: Prisma.TaskWhereInput = {
+    ...visibilityWhere,
+    ...(options?.category ? { category: options.category } : {}),
+    ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
+  };
   const tasks = await prisma.task.findMany({
     where,
     orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],

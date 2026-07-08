@@ -88,6 +88,10 @@ import {
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
 import { syncManagedReasoningData } from "./managed-reasoning-data.js";
+import {
+  weightSeedImpactFrame,
+  type SeedTaskImpactInput,
+} from "./seed-impact.js";
 import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.js";
 import { VARIABLE_CATEGORY_SEED_DATA } from "./seed-data/variable-categories.js";
 import { upsertWishoniaUser } from "../system-users.js";
@@ -1356,8 +1360,8 @@ export async function syncManagedTreatyAccountabilityData() {
   const perVerifiedVoterImpact = {
     estimatedCashCostUsdBase:
       GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT.value,
-    expectedEconomicValueUsdBase: totalEconValue / targetVoterCount,
-    expectedDalysAvertedBase: totalDalys / targetVoterCount,
+    conditionalEconomicValueUsdBase: totalEconValue / targetVoterCount,
+    conditionalDalysAvertedBase: totalDalys / targetVoterCount,
     delayEconomicValueUsdLostPerDayBase:
       delayEconPerDay / targetVoterCount,
     delayDalysLostPerDayBase: delayDalysPerDay / targetVoterCount,
@@ -1392,8 +1396,8 @@ export async function syncManagedTreatyAccountabilityData() {
     taskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     impact: {
       estimatedCashCostUsdBase: 0,
-      expectedEconomicValueUsdBase: totalEconValue,
-      expectedDalysAvertedBase: totalDalys,
+      conditionalEconomicValueUsdBase: totalEconValue,
+      conditionalDalysAvertedBase: totalDalys,
       delayEconomicValueUsdLostPerDayBase: delayEconPerDay,
       delayDalysLostPerDayBase: delayDalysPerDay,
       successProbabilityBase: 0.05,
@@ -1410,8 +1414,8 @@ export async function syncManagedTreatyAccountabilityData() {
     taskId: TREATY_PARENT_TASK_ID,
     impact: {
       estimatedCashCostUsdBase: TREATY_NET_COST_USD,
-      expectedEconomicValueUsdBase: totalEconValue,
-      expectedDalysAvertedBase: totalDalys,
+      conditionalEconomicValueUsdBase: totalEconValue,
+      conditionalDalysAvertedBase: totalDalys,
       delayEconomicValueUsdLostPerDayBase: delayEconPerDay,
       delayDalysLostPerDayBase: delayDalysPerDay,
       successProbabilityBase: 0.01,
@@ -1602,8 +1606,8 @@ export async function syncManagedTreatyAccountabilityData() {
       },
       impact: {
         estimatedCashCostUsdBase: 1,
-        expectedEconomicValueUsdBase: IC2EWD_GRANT_ECON_VALUE_PER_USD,
-        expectedDalysAvertedBase: IC2EWD_GRANT_DALYS_PER_USD,
+        conditionalEconomicValueUsdBase: IC2EWD_GRANT_ECON_VALUE_PER_USD,
+        conditionalDalysAvertedBase: IC2EWD_GRANT_DALYS_PER_USD,
         delayEconomicValueUsdLostPerDayBase: IC2EWD_GRANT_ECON_VALUE_PER_USD / 365,
         delayDalysLostPerDayBase: IC2EWD_GRANT_DALYS_PER_USD / 365,
         successProbabilityBase: 0.25,
@@ -2192,8 +2196,8 @@ export async function syncManagedTreatyAccountabilityData() {
       },
       impact: {
         estimatedCashCostUsdBase: 1,
-        expectedEconomicValueUsdBase: IC2EWD_GRANT_ECON_VALUE_PER_USD,
-        expectedDalysAvertedBase: IC2EWD_GRANT_DALYS_PER_USD,
+        conditionalEconomicValueUsdBase: IC2EWD_GRANT_ECON_VALUE_PER_USD,
+        conditionalDalysAvertedBase: IC2EWD_GRANT_DALYS_PER_USD,
         delayEconomicValueUsdLostPerDayBase: IC2EWD_GRANT_ECON_VALUE_PER_USD / 365,
         delayDalysLostPerDayBase: IC2EWD_GRANT_DALYS_PER_USD / 365,
         successProbabilityBase: 0.25,
@@ -2420,8 +2424,8 @@ export async function syncManagedTreatyAccountabilityData() {
         // Cost stays at the −∞ sentinel for every signer — splitting infinity
         // is still infinity.
         estimatedCashCostUsdBase: TREATY_NET_COST_USD,
-        expectedEconomicValueUsdBase: totalEconValue * share,
-        expectedDalysAvertedBase: totalDalys * share,
+        conditionalEconomicValueUsdBase: totalEconValue * share,
+        conditionalDalysAvertedBase: totalDalys * share,
         delayEconomicValueUsdLostPerDayBase: delayEconPerDay * share,
         delayDalysLostPerDayBase: delayDalysPerDay * share,
         successProbabilityBase: 0.01,
@@ -2494,29 +2498,6 @@ async function seedWishoniaUser() {
 // `seedGrandmaKayExample` was removed 2026-05-11 — Grandma Kay is now
 // managed-data and is upserted by `pnpm db:sync:managed-data --apply`.
 // See `packages/db/src/managed-data/managed-grandma-kay.ts`.
-
-type SeedTaskImpactMetric = {
-  metricKey: string;
-  unit: string;
-  baseValue: number;
-  lowValue?: number | null;
-  highValue?: number | null;
-  displayGroup?: string | null;
-  metadataJson?: Prisma.InputJsonValue;
-};
-
-type SeedTaskImpactInput = {
-  estimatedCashCostUsdBase: number;
-  expectedEconomicValueUsdBase: number;
-  expectedDalysAvertedBase: number;
-  delayEconomicValueUsdLostPerDayBase: number;
-  delayDalysLostPerDayBase: number;
-  successProbabilityBase: number;
-  benefitDurationYears: number;
-  medianHealthyLifeYearsEffectBase?: number;
-  medianIncomeGrowthEffectPpPerYearBase?: number;
-  metrics?: SeedTaskImpactMetric[];
-};
 
 /**
  * Helper: upsert a task + impact estimate set + LIFETIME frame.
@@ -2595,6 +2576,8 @@ async function syncTaskImpactEstimate(input: {
   parameterSetHashSuffix?: string;
   calculationsUrl?: string;
 }) {
+  const weighted = weightSeedImpactFrame(input.impact);
+
   // Delete old impact estimate sets for this task (cascade deletes frames/metrics)
   await prisma.taskImpactEstimateSet.deleteMany({
     where: { taskId: input.taskId },
@@ -2608,11 +2591,18 @@ async function syncTaskImpactEstimate(input: {
       estimateKind: "FORECAST",
       publicationStatus: "PUBLISHED",
       sourceSystem: "PARAMETER_CATALOG",
-      calculationVersion: "seed-v1",
+      calculationVersion: "seed-v2",
       methodologyKey: input.methodologyKey,
       parameterSetHash: `seed${input.parameterSetHashSuffix ? `-${input.parameterSetHashSuffix}` : ""}`,
       counterfactualKey: "status-quo",
-      assumptionsJson: input.calculationsUrl ? { calculationsUrl: input.calculationsUrl } : undefined,
+      assumptionsJson: {
+        ...(input.calculationsUrl
+          ? { calculationsUrl: input.calculationsUrl }
+          : {}),
+        conditionalDalysAvertedBase: input.impact.conditionalDalysAvertedBase,
+        conditionalEconomicValueUsdBase:
+          input.impact.conditionalEconomicValueUsdBase,
+      },
     },
   });
 
@@ -2632,8 +2622,8 @@ async function syncTaskImpactEstimate(input: {
       benefitDurationYears: input.impact.benefitDurationYears,
       annualDiscountRate: 0,
       successProbabilityBase: input.impact.successProbabilityBase,
-      expectedEconomicValueUsdBase: input.impact.expectedEconomicValueUsdBase,
-      expectedDalysAvertedBase: input.impact.expectedDalysAvertedBase,
+      expectedEconomicValueUsdBase: weighted.expectedEconomicValueUsdBase,
+      expectedDalysAvertedBase: weighted.expectedDalysAvertedBase,
       delayEconomicValueUsdLostPerDayBase: input.impact.delayEconomicValueUsdLostPerDayBase,
       delayDalysLostPerDayBase: input.impact.delayDalysLostPerDayBase,
       estimatedCashCostUsdBase: input.impact.estimatedCashCostUsdBase,
