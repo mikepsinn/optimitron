@@ -35,7 +35,7 @@ jobs:
         contains(github.event.deployment_status.environment_url, 'optimitron.com') ||
         contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org'))
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 90
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
       deployment: false
@@ -652,7 +652,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 105
     environment:
       name: Preview
       deployment: false
