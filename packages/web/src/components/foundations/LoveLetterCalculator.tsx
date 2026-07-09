@@ -103,17 +103,6 @@ export function LoveLetterCalculator({
     const letterCount = organizations * targetCount;
     const shareCount = letterCount;
     const shareBudgetUsd = shareCount * shareCostUsd;
-    const thresholdProgress = clampNumber(
-      organizations / ORGANIZATION_THRESHOLD,
-      0,
-      1,
-    );
-    const pivotalChance = 1 / Math.max(pivotalDenominator, 1);
-    const expectedDalys = totalDalys * thresholdProgress * pivotalChance;
-    const expectedLivesSaved =
-      totalLivesSaved * thresholdProgress * pivotalChance;
-    const expectedCostPerDaly =
-      expectedDalys > 0 ? shareBudgetUsd / expectedDalys : 0;
     const totalTargetWeight = targets.reduce(
       (sum, target) => sum + target.lobbyingWeight,
       0,
@@ -124,6 +113,18 @@ export function LoveLetterCalculator({
     );
     const targetCoverage =
       totalTargetWeight > 0 ? selectedTargetWeight / totalTargetWeight : 0;
+    const thresholdProgress = clampNumber(
+      organizations / ORGANIZATION_THRESHOLD,
+      0,
+      1,
+    );
+    const pivotalChance = 1 / Math.max(pivotalDenominator, 1);
+    const expectedDalys =
+      totalDalys * thresholdProgress * targetCoverage * pivotalChance;
+    const expectedLivesSaved =
+      totalLivesSaved * thresholdProgress * targetCoverage * pivotalChance;
+    const expectedCostPerDaly =
+      expectedDalys > 0 ? shareBudgetUsd / expectedDalys : 0;
 
     return {
       expectedCostPerDaly,
@@ -307,14 +308,14 @@ export function LoveLetterCalculator({
         <CalculatorStat
           label="Expected DALYs avoided"
           value={compactNumber.format(totals.expectedDalys)}
-          note={`Assumes 1 in ${wholeNumber.format(
+          note={`After target coverage, 1 in ${wholeNumber.format(
             pivotalDenominator,
           )} chance this is pivotal`}
         />
         <CalculatorStat
           label="Expected lives saved"
           value={compactNumber.format(totals.expectedLivesSaved)}
-          note="Derived from the treaty impact model below"
+          note="Discounted by selected contractor coverage"
         />
         <CalculatorStat
           label="Expected cost per DALY"

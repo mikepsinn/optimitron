@@ -60,13 +60,13 @@
 - 10%
 - 100 organizations equipped
 - EXPECTED DALYS AVOIDED
-- 11.3M
-- Assumes 1 in 5,000 chance this is pivotal
+- 5.55M
+- After target coverage, 1 in 5,000 chance this is pivotal
 - EXPECTED LIVES SAVED
-- 214.91K
-- Derived from the treaty impact model below
+- 105.5K
+- Discounted by selected contractor coverage
 - EXPECTED COST PER DALY
-- $0.0106
+- $0.0216
 - 49.1% of this target list selected
 - One share gives an organization standing to write the board. It does not control the company. The point is to make the board analyze the shareholder case on the record, then repeat that pressure from enough independent organizations that ignoring it becomes more annoying than reading the math.
 - DALYS AT STAKE
@@ -95,9 +95,9 @@
 - [$0.177/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) per DALY, still [503x](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html) better than bed nets.
 - IF THE TREATY NEVER PASSES
 - [$0.842/DALY](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) per DALY for direct philanthropic funding of pragmatic trials alone.
-- The pessimist's version: take this grant in isolation and assign the campaign whatever probability you like of being pivotal to a single year of treaty funding.
-- One treaty year puts [$21.7 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger even one treaty year beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
-- The break-even against bed nets at [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering for one year. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
+- The calculator above prices the full treaty success case: the disease timeline shift in the cited model, discounted by organizations reached, contractor coverage, and whatever pivotal probability you assign.
+- If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts [$21.7 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
+- The break-even against bed nets at [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
 ### DONATE OR INVEST, BUT DO NOT BLUR THEM
 #### DONATE TO THE CAMPAIGN
 - The receiving charity is Accelerated Medicine Foundation Inc, EIN 41-2555651, operating the International Campaign to End War and Disease. Donations buy outreach, shares, board letters, lawyer review, and follow-up.

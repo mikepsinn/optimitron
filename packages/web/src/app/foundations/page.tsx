@@ -316,12 +316,14 @@ export default function FoundationsPage() {
           </div>
           <div className="space-y-4 border-2 border-foreground p-5 text-base font-bold leading-7">
             <p>
-              The pessimist&apos;s version: take this grant in isolation and
-              assign the campaign whatever probability you like of being pivotal
-              to a single year of treaty funding.
+              The calculator above prices the full treaty success case: the
+              disease timeline shift in the cited model, discounted by
+              organizations reached, contractor coverage, and whatever pivotal
+              probability you assign.
             </p>
             <p>
-              One treaty year puts{" "}
+              If you only want to credit a single treaty year, use this as a
+              separate sanity check. One treaty year puts{" "}
               <ParameterValue
                 className="font-black"
                 param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL}
@@ -335,9 +337,9 @@ export default function FoundationsPage() {
               />
               /patient, roughly 23 million patient-slots. The useful foundation
               question is not &quot;what is the perfect grant size?&quot; It is
-              whether the chance of helping trigger even one treaty year beats
-              the bed-net baseline. The calculator above lets you change the
-              spend and the pivotal probability directly.
+              whether the chance of helping trigger the treaty beats the bed-net
+              baseline. The calculator above lets you change the spend and the
+              pivotal probability directly.
             </p>
             <p>
               The break-even against bed nets at{" "}
@@ -346,10 +348,10 @@ export default function FoundationsPage() {
                 param={BED_NETS_COST_PER_DALY}
                 display="withUnit"
               />{" "}
-              sits near a one-in-five-thousand chance of mattering for one year.
-              We are not claiming the campaign probably succeeds. The claim is
-              narrower: that its probability of being pivotal exceeds one in
-              five thousand.
+              sits near a one-in-five-thousand chance of mattering. We are not
+              claiming the campaign probably succeeds. The claim is narrower:
+              that its probability of being pivotal exceeds one in five
+              thousand.
             </p>
           </div>
         </section>
