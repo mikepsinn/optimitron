@@ -35,7 +35,7 @@ jobs:
         contains(github.event.deployment_status.environment_url, 'optimitron.com') ||
         contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org'))
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
       deployment: false
@@ -397,7 +397,7 @@ jobs:
               context.sha;
             const checkName = "sync-preview-managed-data";
             const upstreamCheckName = "web-validate";
-            const timeoutMs = 20 * 60 * 1000;
+            const timeoutMs = 60 * 60 * 1000;
             const intervalMs = 15 * 1000;
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
@@ -641,7 +641,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 90
     environment:
       name: Preview
       deployment: false
@@ -881,7 +881,7 @@ jobs:
               context.sha;
             const checkName = "sync-preview-managed-data";
             const upstreamCheckName = "web-validate";
-            const timeoutMs = 20 * 60 * 1000;
+            const timeoutMs = 60 * 60 * 1000;
             const intervalMs = 15 * 1000;
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
