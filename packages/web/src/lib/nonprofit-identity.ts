@@ -30,6 +30,8 @@ export interface NonprofitIdentity {
     postalCode: string;
     country: string;
   };
+  /** Public campaign inbox for general contact and grant conversations. */
+  publicContactEmail: string;
   donationsEmail: string;
   /** Brokerage info for stock gifts. Empty firmName → stock card hides. */
   brokerage: {
@@ -81,6 +83,7 @@ export const NONPROFIT: NonprofitIdentity = {
     postalCode: "82601",
     country: "USA",
   },
+  publicContactEmail: "hello@warondisease.org",
   donationsEmail: "donations@warondisease.org",
   brokerage: {
     // TODO: open a brokerage account that accepts stock gifts and fill in.

@@ -35,7 +35,7 @@ jobs:
         contains(github.event.deployment_status.environment_url, 'optimitron.com') ||
         contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org'))
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     environment:
       name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
       deployment: false
@@ -363,6 +363,17 @@ jobs:
               core.setOutput("should_smoke", "true");
               return;
             }
+            const { data: currentPull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pull.number,
+            });
+            if (currentPull.state === "open" && currentPull.head?.sha && currentPull.head.sha !== sha) {
+              core.info(`Skipping stale deployment ${sha}; PR #${pull.number} head is ${currentPull.head.sha}.`);
+              core.setOutput("should_smoke", "false");
+              core.setOutput("matched_files", "");
+              return;
+            }
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner,
@@ -396,24 +407,28 @@ jobs:
               context.payload.deployment_status?.deployment?.sha ||
               context.sha;
             const checkName = "sync-preview-managed-data";
-            const timeoutMs = 10 * 60 * 1000;
+            const upstreamCheckName = "web-validate";
+            const timeoutMs = 60 * 60 * 1000;
             const intervalMs = 15 * 1000;
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
 
-            while (Date.now() < deadline) {
+            async function latestCheck(name) {
               const { data } = await github.rest.checks.listForRef({
                 owner,
                 repo,
                 ref: sha,
-                check_name: checkName,
+                check_name: name,
                 per_page: 10,
               });
-              const check = [...data.check_runs].sort((left, right) =>
+              return [...data.check_runs].sort((left, right) =>
                 Date.parse(right.started_at || right.created_at || "") -
                 Date.parse(left.started_at || left.created_at || ""),
               )[0];
+            }
 
+            while (Date.now() < deadline) {
+              const check = await latestCheck(checkName);
               if (check) {
                 lastStatus = `${check.status}/${check.conclusion || "pending"}`;
                 core.info(`${checkName}: ${lastStatus}`);
@@ -426,7 +441,19 @@ jobs:
                   return;
                 }
               } else {
-                core.info(`${checkName}: not found for ${sha}`);
+                const upstreamCheck = await latestCheck(upstreamCheckName);
+                if (upstreamCheck) {
+                  const upstreamStatus = `${upstreamCheck.status}/${upstreamCheck.conclusion || "pending"}`;
+                  lastStatus = `${checkName}: not found; ${upstreamCheckName}: ${upstreamStatus}`;
+                  core.info(lastStatus);
+                  if (upstreamCheck.status === "completed" && !["success", "skipped", "neutral"].includes(upstreamCheck.conclusion)) {
+                    core.setFailed(`${upstreamCheckName} concluded ${upstreamCheck.conclusion}: ${upstreamCheck.html_url}`);
+                    return;
+                  }
+                } else {
+                  lastStatus = `${checkName}: not found; ${upstreamCheckName}: not found`;
+                  core.info(`${lastStatus} for ${sha}`);
+                }
               }
 
               await new Promise((resolve) => setTimeout(resolve, intervalMs));
@@ -625,7 +652,7 @@ jobs:
       github.event.deployment_status.environment != 'Production' &&
       github.event.deployment_status.environment != 'production'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 105
     environment:
       name: Preview
       deployment: false
@@ -664,6 +691,17 @@ jobs:
             if (!pull) {
               core.info(`No pull request found for deployment commit ${sha}; running preview smoke.`);
               core.setOutput("should_smoke", "true");
+              return;
+            }
+            const { data: currentPull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pull.number,
+            });
+            if (currentPull.state === "open" && currentPull.head?.sha && currentPull.head.sha !== sha) {
+              core.info(`Skipping stale deployment ${sha}; PR #${pull.number} head is ${currentPull.head.sha}.`);
+              core.setOutput("should_smoke", "false");
+              core.setOutput("matched_files", "");
               return;
             }
 
@@ -864,24 +902,28 @@ jobs:
               context.payload.deployment_status?.deployment?.sha ||
               context.sha;
             const checkName = "sync-preview-managed-data";
-            const timeoutMs = 10 * 60 * 1000;
+            const upstreamCheckName = "web-validate";
+            const timeoutMs = 60 * 60 * 1000;
             const intervalMs = 15 * 1000;
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
 
-            while (Date.now() < deadline) {
+            async function latestCheck(name) {
               const { data } = await github.rest.checks.listForRef({
                 owner,
                 repo,
                 ref: sha,
-                check_name: checkName,
+                check_name: name,
                 per_page: 10,
               });
-              const check = [...data.check_runs].sort((left, right) =>
+              return [...data.check_runs].sort((left, right) =>
                 Date.parse(right.started_at || right.created_at || "") -
                 Date.parse(left.started_at || left.created_at || ""),
               )[0];
+            }
 
+            while (Date.now() < deadline) {
+              const check = await latestCheck(checkName);
               if (check) {
                 lastStatus = `${check.status}/${check.conclusion || "pending"}`;
                 core.info(`${checkName}: ${lastStatus}`);
@@ -894,7 +936,19 @@ jobs:
                   return;
                 }
               } else {
-                core.info(`${checkName}: not found for ${sha}`);
+                const upstreamCheck = await latestCheck(upstreamCheckName);
+                if (upstreamCheck) {
+                  const upstreamStatus = `${upstreamCheck.status}/${upstreamCheck.conclusion || "pending"}`;
+                  lastStatus = `${checkName}: not found; ${upstreamCheckName}: ${upstreamStatus}`;
+                  core.info(lastStatus);
+                  if (upstreamCheck.status === "completed" && !["success", "skipped", "neutral"].includes(upstreamCheck.conclusion)) {
+                    core.setFailed(`${upstreamCheckName} concluded ${upstreamCheck.conclusion}: ${upstreamCheck.html_url}`);
+                    return;
+                  }
+                } else {
+                  lastStatus = `${checkName}: not found; ${upstreamCheckName}: not found`;
+                  core.info(`${lastStatus} for ${sha}`);
+                }
               }
 
               await new Promise((resolve) => setTimeout(resolve, intervalMs));

@@ -2,324 +2,408 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   BED_NETS_COST_PER_DALY,
+  DEFENSE_LOBBYING_ANNUAL,
+  DFDA_DIRECT_FUNDING_COST_PER_DALY,
+  DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
+  DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL,
+  TREATY_ANNUAL_FUNDING,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  TREATY_EXPECTED_COST_PER_DALY,
+  TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_VS_BED_NETS_MULTIPLIER,
 } from "@optimitron/data/parameters";
+import { CopyGrantEmailButton } from "@/components/foundations/CopyGrantEmailButton";
+import { LoveLetterCalculator } from "@/components/foundations/LoveLetterCalculator";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { TaskFundingPledgeForm } from "@/components/task-funding/TaskFundingPledgeForm";
-import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
-import { getCurrentUser } from "@/lib/auth-utils";
+import { FOUNDATION_CONTRACTOR_TARGETS } from "@/lib/foundations/contractor-targets";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getManageableOrganizationsForUser } from "@/lib/organization.server";
-import { foundationsLink, getSignInPath, ROUTES } from "@/lib/routes";
-import { listTasks } from "@/lib/tasks.server";
-import { END_WAR_AND_DISEASE_TASK_ID } from "@/lib/tasks/task-keys";
-import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
-import type { TaskFundingStatus } from "@/lib/task-funding/status.server";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
+import { foundationsLink, ROUTES } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(foundationsLink);
 
-const usdCompact = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
+const grantEmailSubject = "Foundation grant for the 1% Treaty campaign";
+const grantEmailHref =
+  `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(grantEmailSubject)}`;
 
-const multiple = (value: number) =>
-  `${new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: value < 10 ? 1 : 0,
-  }).format(value)}×`;
+const treatyMathHref =
+  "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html";
 
-const percent = (value: number) =>
-  `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(
-    value * 100,
-  )}%`;
-
-type MechanismRow = {
-  id: string;
-  title: string;
-  blurb: string;
-  href: string;
-  funding: TaskFundingStatus | null;
-  expectedValueUsd: number | null;
-  successProbability: number | null;
-  costUsd: number | null;
-  valuePerDollar: number | null;
-};
-
-function firstLine(description: string | null | undefined): string {
-  if (!description) return "";
-  const line = description.split("\n").find((l) => l.trim().length > 0) ?? "";
-  return line.trim();
-}
-
-function getTaskHref(task: Awaited<ReturnType<typeof listTasks>>[number]) {
-  const endpoint =
-    task.communicationEndpoints.find((entry) => entry.isPrimary) ??
-    task.communicationEndpoints[0] ??
-    null;
-
-  return (
-    endpoint?.url ??
-    (endpoint?.email ? `mailto:${endpoint.email}` : `/tasks/${task.id}`)
-  );
-}
-
-async function loadMechanismRows(): Promise<MechanismRow[]> {
-  const tasks = await listTasks({ visibility: "public" });
-  const mechanisms = tasks.filter(
-    (task) => task.parentTaskId === END_WAR_AND_DISEASE_TASK_ID,
-  );
-
-  const rows = await Promise.all(
-    mechanisms.map(async (task): Promise<MechanismRow> => {
-      let funding: TaskFundingStatus | null = null;
-      try {
-        funding = await getTaskFundingStatus(task.id);
-      } catch {
-        // No funding target — mechanism is shown but not yet open for pledges.
-        funding = null;
-      }
-      const frame = task.impact.selectedFrame;
-      const expectedValueUsd = frame?.expectedEconomicValueUsdBase ?? null;
-      const successProbability = frame?.successProbabilityBase ?? null;
-      const costUsd = funding ? Number(funding.targetUsdCents) / 100 : null;
-      const valuePerDollar =
-        expectedValueUsd != null && costUsd != null && costUsd > 0
-          ? expectedValueUsd / costUsd
-          : null;
-      return {
-        id: task.id,
-        title: task.title,
-        blurb: firstLine(task.description),
-        href: getTaskHref(task),
-        funding,
-        expectedValueUsd,
-        successProbability,
-        costUsd,
-        valuePerDollar,
-      };
-    }),
-  );
-
-  // Highest expected value per donated dollar first. Mechanisms without a
-  // funding target (the Earth Optimization Prize is a refundable assurance
-  // contract, so it has no net cost) sort to the bottom of the ranked list.
-  return rows.sort(
-    (a, b) =>
-      (b.valuePerDollar ?? -Infinity) - (a.valuePerDollar ?? -Infinity),
-  );
-}
+const moneyRows = [
+  [
+    "Find an organization",
+    "A nonprofit, patient group, peace group, church, student group, union, club, or other organization that wants less war and more medicine.",
+  ],
+  [
+    "Buy and donate one share",
+    "The organization becomes a shareholder. That is the boring little key that opens the boardroom door.",
+  ],
+  [
+    "Send the board a love letter",
+    "The letter asks the board to analyze whether shareholders are better off if the company shifts 1% of assets into biotech and lobbies for the 1% Treaty.",
+  ],
+  [
+    "Follow up until it is real",
+    "Lawyers check the template, organizers keep calling, and every output stays countable: organizations, shares, letters, replies, and public math checks.",
+  ],
+] as const;
 
 function SectionHeading({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-2xl font-black uppercase leading-tight sm:text-3xl">
+    <h2 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">
       {children}
     </h2>
   );
 }
 
-function Cell({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <td
-      className={`border-r-2 border-foreground px-3 py-4 align-top ${className}`}
-    >
+    <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
       {children}
-    </td>
+    </p>
   );
 }
 
-export default async function FoundationsPage() {
-  const [rows, user] = await Promise.all([loadMechanismRows(), getCurrentUser()]);
-  const manageableOrganizations = user
-    ? await getManageableOrganizationsForUser(user.id)
-    : [];
-  const [pledgeOrganization = null] = manageableOrganizations;
-  const fundable = rows.filter(
-    (row): row is MechanismRow & { funding: TaskFundingStatus } =>
-      row.funding != null,
-  );
+function ButtonLink({
+  children,
+  href,
+  variant = "primary",
+}: {
+  children: ReactNode;
+  href: string;
+  variant?: "primary" | "secondary";
+}) {
+  const className =
+    variant === "primary"
+      ? "border border-foreground bg-foreground px-4 py-3 text-sm font-bold uppercase text-background hover:bg-background hover:text-foreground"
+      : "border border-foreground bg-background px-4 py-3 text-sm font-bold uppercase text-foreground hover:bg-foreground hover:text-background";
+
+  if (href.startsWith("mailto:") || href.startsWith("http")) {
+    return (
+      <a className={className} href={href}>
+        {children}
+      </a>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-12 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <section className="border-2 border-foreground bg-background p-5 sm:p-8">
-          <h1 className="text-3xl font-black uppercase leading-none sm:text-6xl">
-            The most cost-effective philanthropy on Earth.
+    <Link className={className} href={href}>
+      {children}
+    </Link>
+  );
+}
+
+function Stat({
+  label,
+  children,
+  note,
+}: {
+  label: string;
+  children: ReactNode;
+  note?: string;
+}) {
+  return (
+    <div className="border border-foreground p-4">
+      <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 text-xl font-bold leading-tight">{children}</p>
+      {note ? <p className="mt-2 text-xs font-bold leading-5">{note}</p> : null}
+    </div>
+  );
+}
+
+export default function FoundationsPage() {
+  return (
+    <main className="min-h-screen bg-background px-4 py-10 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl space-y-12">
+        <section className="space-y-6 border-b border-foreground pb-10">
+          <Eyebrow>Foundation grants for the 1% Treaty</Eyebrow>
+          <h1 className="max-w-4xl text-4xl font-bold uppercase leading-none sm:text-6xl">
+            Give an organization one share and a letter.
           </h1>
-          <p className="mt-6 text-lg font-bold leading-8 sm:text-xl sm:leading-9">
-            Ending war and disease costs about{" "}
-            <ParameterValue
-              className="font-black"
-              param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
-              display="withUnit"
-            />{" "}
-            through the leading mechanism — roughly{" "}
-            <ParameterValue
-              className="font-black"
-              param={TREATY_VS_BED_NETS_MULTIPLIER}
-              valueOverride={`${new Intl.NumberFormat("en-US", {
-                maximumFractionDigits: 0,
-              }).format(
-                Math.round(TREATY_VS_BED_NETS_MULTIPLIER.value / 100) * 100,
-              )}×`}
-            />{" "}
-            a bed net. Below is every way to fund it, ranked by expected value
-            per dollar. Pick one, or fund the whole portfolio.
-          </p>
-        </section>
-
-        <section className="mt-8 border-2 border-foreground bg-background p-5 sm:p-8">
-          <SectionHeading>Every mechanism, ranked by value per dollar</SectionHeading>
-          <p className="mt-3 text-base font-bold leading-7 sm:text-lg">
-            Expected value is the annual peace dividend if the mechanism works,
-            weighted by the odds it works. Cost is what a funder would put in.
-          </p>
-
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[760px] border-collapse text-left text-sm font-bold leading-6">
-              <thead>
-                <tr className="border-b-2 border-foreground">
-                  <th className="border-r-2 border-foreground px-3 py-3 align-bottom text-xs font-black uppercase">
-                    Mechanism
-                  </th>
-                  <th className="border-r-2 border-foreground px-3 py-3 align-bottom text-xs font-black uppercase">
-                    Expected value / year
-                  </th>
-                  <th className="border-r-2 border-foreground px-3 py-3 align-bottom text-xs font-black uppercase">
-                    Odds it works
-                  </th>
-                  <th className="border-r-2 border-foreground px-3 py-3 align-bottom text-xs font-black uppercase">
-                    Cost to fund
-                  </th>
-                  <th className="px-3 py-3 align-bottom text-xs font-black uppercase">
-                    Value per $
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.id} className="border-b-2 border-foreground">
-                    <Cell>
-                      <Link
-                        href={row.href}
-                        className="font-black uppercase underline decoration-dotted underline-offset-4"
-                      >
-                        {row.title}
-                      </Link>
-                      {row.blurb ? (
-                        <span className="mt-1 block text-xs font-bold text-muted-foreground">
-                          {row.blurb}
-                        </span>
-                      ) : null}
-                    </Cell>
-                    <Cell className="font-black">
-                      {row.expectedValueUsd != null
-                        ? usdCompact(row.expectedValueUsd)
-                        : "—"}
-                    </Cell>
-                    <Cell>
-                      {row.successProbability != null
-                        ? percent(row.successProbability)
-                        : "—"}
-                    </Cell>
-                    <Cell>
-                      {row.costUsd != null
-                        ? usdCompact(row.costUsd)
-                        : "Refundable (assurance contract)"}
-                    </Cell>
-                    <td className="px-3 py-4 align-top font-black">
-                      {row.valuePerDollar != null
-                        ? multiple(row.valuePerDollar)
-                        : "—"}
-                    </td>
-                  </tr>
-                ))}
-                <tr className="border-b-2 border-foreground bg-muted">
-                  <Cell>
-                    GiveWell top charities (bed nets) — the standard
-                    global-health benchmark
-                  </Cell>
-                  <Cell>—</Cell>
-                  <Cell>—</Cell>
-                  <Cell>
-                    <ParameterValue
-                      className="font-black"
-                      param={BED_NETS_COST_PER_DALY}
-                      display="withUnit"
-                    />{" "}
-                    per DALY
-                  </Cell>
-                  <td className="px-3 py-4 align-top font-black">1× (baseline)</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="max-w-4xl space-y-5 text-lg font-bold leading-8 sm:text-xl sm:leading-9">
+            <p>
+              For about $300-$400, we can buy one share of a military contractor
+              and donate it to a nonprofit, patient group, peace group, church,
+              student group, or other organization that wants less war and more
+              medicine.
+            </p>
+            <p>
+              That makes them a shareholder. Then we help them send a polite
+              love letter to the board.
+            </p>
+            <p>
+              The letter does not ask the company to become kind. It asks the
+              board to do the thing boards are supposed to do: look after
+              shareholders.
+            </p>
           </div>
-
-          <p className="mt-4 text-sm font-bold leading-6 text-muted-foreground">
-            The Earth Optimization Prize is a dominant assurance contract:
-            depositors are refunded with yield if the treaty does not pass, so
-            its net cost to a funder is near zero. It is listed for its expected
-            value, not ranked by cost.
-          </p>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href={ROUTES.donate}>Fund one share</ButtonLink>
+            <ButtonLink href={grantEmailHref} variant="secondary">
+              Open email draft
+            </ButtonLink>
+          </div>
         </section>
 
-        <section className="mt-8 border-2 border-foreground bg-background p-5 sm:p-8">
-          <SectionHeading>Fund a mechanism</SectionHeading>
-          <p className="mt-3 text-base font-bold leading-7 sm:text-lg">
-            Pledges are conditional. Your money only moves if the mechanism hits
-            its funding threshold; otherwise nothing happens. No foundation has
-            to be the reckless first mover.
-          </p>
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat label="Receiving charity">{NONPROFIT.legalName}</Stat>
+          <Stat label="Tax ID">EIN {NONPROFIT.ein}</Stat>
+          <Stat label="Legal status">Wyoming 501(c)(3)</Stat>
+          <Stat label="First milestone">1,000 organizations</Stat>
+        </section>
 
-          {!pledgeOrganization ? (
-            <div className="mt-6 border-2 border-foreground bg-background p-5">
-              <Link
-                className="inline-flex border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
-                href={getSignInPath(ROUTES.foundations)}
-              >
-                Sign in as your organization to pledge
-              </Link>
-            </div>
-          ) : null}
+        <section className="space-y-5 border-t border-foreground pt-8">
+          <SectionHeading>The mechanism</SectionHeading>
+          <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg sm:leading-8">
+            <p>
+              The argument is simple: sell 1% of the company&apos;s assets and
+              invest it in biotechnology. If biotech has better margins than
+              making more weapons, that is good for shareholders.
+            </p>
+            <p>
+              Then use the company&apos;s lobbying power to ask the same
+              question at national scale: would shareholders be better off if 1%
+              of military spending moved into pragmatic clinical trials?
+            </p>
+            <p>
+              If the answer is yes, lobby for the 1% Treaty instead of lobbying
+              for infinitely more weapons forever. That would lower clinical
+              trial costs for the biotech companies the contractor just bought.
+              It would also make shareholders significantly less dead.
+            </p>
+          </div>
+        </section>
 
-          <div className="mt-6 space-y-8">
-            {fundable.map((row) => (
-              <div key={row.id} className="border-2 border-foreground p-4 sm:p-5">
-                <h3 className="text-lg font-black uppercase">{row.title}</h3>
-                <div className="mt-3">
-                  <TaskFundingProgress status={row.funding} taskId={row.id} />
-                </div>
-                {pledgeOrganization ? (
-                  <div className="mt-4">
-                    <TaskFundingPledgeForm
-                      initialPublicDisplay
-                      labels={{
-                        amountLabel: "Pledge amount (USD)",
-                        publicDisplayLabel:
-                          "Show our organization name publicly when the threshold is met.",
-                        submitButtonLabel: "Pledge conditionally",
-                      }}
-                      organizationId={pledgeOrganization.id}
-                      pledgerKind="ORGANIZATION"
-                      taskId={row.id}
-                      unitConfig={{
-                        suggestedAmountCents: 100_000_000n,
-                        unitKind: "USD",
-                      }}
-                    />
-                  </div>
-                ) : null}
+        <section className="space-y-6 border-t border-foreground pt-8">
+          <div className="max-w-4xl space-y-3">
+            <SectionHeading>Run the math</SectionHeading>
+            <p className="text-base font-bold leading-7 sm:text-lg">
+              Pick how many organizations to equip and which contractors to
+              write. The model uses the cited treaty impact parameters and
+              assumes the campaign starts to matter when at least 1,000
+              organizations are doing this.
+            </p>
+          </div>
+          <LoveLetterCalculator
+            targets={FOUNDATION_CONTRACTOR_TARGETS}
+            totalDalys={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS.value}
+            totalLivesSaved={
+              DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED.value
+            }
+          />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Stat label="DALYs at stake">
+              <ParameterValue
+                className="font-bold"
+                param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS}
+                display="auto"
+              />
+            </Stat>
+            <Stat label="Lives at stake">
+              <ParameterValue
+                className="font-bold"
+                param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
+                display="auto"
+              />
+            </Stat>
+            <Stat label="Treaty funding">
+              <ParameterValue
+                className="font-bold"
+                param={TREATY_ANNUAL_FUNDING}
+                display="auto"
+              />
+            </Stat>
+            <Stat label="Military lobbying">
+              <ParameterValue
+                className="font-bold"
+                param={DEFENSE_LOBBYING_ANNUAL}
+                display="auto"
+              />
+            </Stat>
+          </div>
+        </section>
+
+        <section className="space-y-6 border-t border-foreground pt-8">
+          <div className="max-w-4xl space-y-3">
+            <SectionHeading>What money does</SectionHeading>
+            <p className="text-base font-bold leading-7 sm:text-lg">
+              We will take whatever a foundation wants to give us. The unit of
+              work is not mysterious. More money buys more of this loop.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {moneyRows.map(([label, body]) => (
+              <div className="border border-foreground p-4" key={label}>
+                <h3 className="text-lg font-bold uppercase leading-tight">
+                  {label}
+                </h3>
+                <p className="mt-3 text-sm font-bold leading-6">{body}</p>
               </div>
             ))}
+          </div>
+          <p className="max-w-4xl text-base font-bold leading-7 text-muted-foreground">
+            A small grant can buy a few shares and letters. A larger grant lets
+            someone spend the next two years doing the boring part: finding
+            organizations, buying shares, getting lawyers to check the letters,
+            sending them, following up, and making sure this does not become
+            another clever PDF nobody used.
+          </p>
+        </section>
+
+        <section className="space-y-6 border-t border-foreground pt-8">
+          <SectionHeading>
+            Cost-effectiveness, with the skeptic&apos;s discounts already
+            applied
+          </SectionHeading>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Stat label="Conditional on success">
+              <ParameterValue
+                className="font-bold"
+                param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
+                display="withUnit"
+              />
+              <span className="block text-sm font-bold leading-6">
+                per DALY, roughly{" "}
+                <ParameterValue
+                  className="font-bold"
+                  param={TREATY_VS_BED_NETS_MULTIPLIER}
+                  valueOverride={`${new Intl.NumberFormat("en-US", {
+                    maximumFractionDigits: 0,
+                  }).format(
+                    Math.round(TREATY_VS_BED_NETS_MULTIPLIER.value / 100) * 100,
+                  )}x`}
+                />{" "}
+                better than bed nets.
+              </span>
+            </Stat>
+            <Stat label="Risk-adjusted">
+              <ParameterValue
+                className="font-bold"
+                param={TREATY_EXPECTED_COST_PER_DALY}
+                display="withUnit"
+              />
+              <span className="block text-sm font-bold leading-6">
+                per DALY, still{" "}
+                <ParameterValue
+                  className="font-bold"
+                  param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
+                  valueOverride={`${new Intl.NumberFormat("en-US", {
+                    maximumFractionDigits: 0,
+                  }).format(TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER.value)}x`}
+                />{" "}
+                better than bed nets.
+              </span>
+            </Stat>
+            <Stat label="If the treaty never passes">
+              <ParameterValue
+                className="font-bold"
+                param={DFDA_DIRECT_FUNDING_COST_PER_DALY}
+                display="withUnit"
+              />
+              <span className="block text-sm font-bold leading-6">
+                per DALY for direct philanthropic funding of pragmatic trials
+                alone.
+              </span>
+            </Stat>
+          </div>
+          <div className="space-y-4 border border-foreground p-5 text-base font-bold leading-7">
+            <p>
+              The calculator above prices the full treaty success case: the
+              disease timeline shift in the cited model, discounted by
+              organizations reached, contractor coverage, and whatever pivotal
+              probability you assign.
+            </p>
+            <p>
+              If you only want to credit a single treaty year, use this as a
+              separate sanity check. One treaty year puts{" "}
+              <ParameterValue
+                className="font-bold"
+                param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL}
+                display="auto"
+              />{" "}
+              into trials at{" "}
+              <ParameterValue
+                className="font-bold"
+                param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
+                display="auto"
+              />
+              /patient, roughly 23 million patient-slots. The useful foundation
+              question is not &quot;what is the perfect grant size?&quot; It is
+              whether the chance of helping trigger the treaty beats the bed-net
+              baseline. The calculator above lets you change the spend and the
+              pivotal probability directly.
+            </p>
+            <p>
+              The break-even against bed nets at{" "}
+              <ParameterValue
+                className="font-bold"
+                param={BED_NETS_COST_PER_DALY}
+                display="withUnit"
+              />{" "}
+              sits near a one-in-five-thousand chance of mattering. We are not
+              claiming the campaign probably succeeds. The claim is narrower:
+              that its probability of being pivotal exceeds one in five
+              thousand.
+            </p>
+          </div>
+        </section>
+
+        <section className="space-y-6 border-t border-foreground pt-8">
+          <SectionHeading>Donate to the campaign</SectionHeading>
+          <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
+            <p>
+              The receiving charity is {NONPROFIT.legalName}, EIN{" "}
+              {NONPROFIT.ein}, operating the International Campaign to End War
+              and Disease. Donations buy outreach, shares, board letters, lawyer
+              review, and follow-up.
+            </p>
+            <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
+          </div>
+        </section>
+
+        <section className="space-y-6 border-t border-foreground pt-8">
+          <SectionHeading>Please check the math</SectionHeading>
+          <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
+            <p>
+              Our model says this is the best use of our time for reducing
+              suffering on Earth that we have found. We know how that sounds.
+              The numbers are public because we would rather be corrected before
+              anyone funds us.
+            </p>
+            <p>
+              Please check the math. If there is a better use of our time, or a
+              cheaper way to avert a DALY, email us. We will do the better thing
+              instead.
+            </p>
+            <p>
+              If the math is right but someone else should run this, use it. We
+              do not need credit. We need the thing to happen.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href={treatyMathHref} variant="secondary">
+              Check the treaty math
+            </ButtonLink>
+            <ButtonLink href={grantEmailHref}>
+              Open email draft
+            </ButtonLink>
+          </div>
+        </section>
+
+        <section className="space-y-4 border-t border-foreground pt-8">
+          <SectionHeading>Email us about a grant</SectionHeading>
+          <div className="flex max-w-4xl flex-wrap items-center gap-3 text-base font-bold leading-7 sm:text-lg">
+            <a
+              className="break-all underline decoration-foreground underline-offset-4"
+              href={grantEmailHref}
+            >
+              {NONPROFIT.publicContactEmail}
+            </a>
+            <CopyGrantEmailButton email={NONPROFIT.publicContactEmail} />
           </div>
         </section>
       </div>

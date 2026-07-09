@@ -830,12 +830,11 @@ export const foundationsLink: NavItem = {
   label: "Foundations",
   emoji: "🏛️",
   description:
-    "Six mechanisms to end war and disease, ranked by expected value per dollar against the GiveWell bed-net baseline. Find the highest-ROI allocation for your foundation's capital.",
-  tagline:
-    "Every mechanism to end war and disease, ranked against the GiveWell baseline.",
+    "Buy shares for organizations, send board letters to military contractors, and check the expected DALYs and lives saved if the 1% Treaty campaign works.",
+  tagline: "Fund shares and board letters for the 1% Treaty.",
   copyPreview: true,
   screenshot: true,
-  cta: "Compare the mechanisms",
+  cta: "Run the math",
 };
 
 export const fixAiLink: NavItem = {
