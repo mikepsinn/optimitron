@@ -24,7 +24,7 @@ export function TreatyWarningBox() {
         <div className="flex-shrink-0 w-full md:w-auto">
           <Link
             href={ROUTES.vote}
-            className="inline-flex w-full items-center justify-center border-4 border-primary bg-foreground px-6 py-3 text-lg font-black uppercase text-background shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:w-auto"
+            className="inline-flex w-full items-center justify-center border-4 border-primary bg-foreground px-6 py-3 text-lg font-black uppercase text-background shadow-none transition-colors hover:bg-background hover:text-foreground md:w-auto"
           >
             FIX IT
           </Link>

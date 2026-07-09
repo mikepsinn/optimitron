@@ -53,7 +53,7 @@ export function AmountSelector({
           type="button"
           onClick={() => onChange(amount)}
           className={cn(
-            "h-12 font-black border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+            "h-12 font-black border-4 border-primary shadow-none",
             value === amount
               ? activeColorClasses[activeColor]
               : "bg-background text-foreground"

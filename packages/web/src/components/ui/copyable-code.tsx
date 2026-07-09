@@ -30,7 +30,7 @@ export function CopyableCode({ code, className }: CopyableCodeProps) {
           type="button"
           onClick={() => void handleCopy()}
           aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
-          className="inline-flex items-center gap-1 border-2 border-primary bg-background px-2 py-1 text-xs font-black uppercase text-foreground hover:bg-background hover:text-foreground active:translate-y-0.5"
+          className="inline-flex items-center gap-1 border-2 border-primary bg-background px-2 py-1 text-xs font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
         >
           {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
           {copied ? "Copied" : "Copy"}

@@ -29,7 +29,7 @@ export default async function AlignmentPage() {
         </p>
         <Link
           href={getSignInPath(ROUTES.alignment)}
-          className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-lg font-black uppercase text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+          className="inline-flex items-center justify-center border-4 border-primary bg-background px-8 py-3 text-lg font-black uppercase text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background"
         >
           Sign In to Check Alignment
         </Link>

@@ -82,7 +82,7 @@ export function ReplicationNodeView({
             <Button
               key={bucket}
               onClick={() => setSelectedBucket(bucket)}
-              className={`h-12 text-xs font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${selectedBucket === bucket ? "bg-foreground text-background" : "bg-background text-foreground hover:bg-background/90"}`}
+              className={`h-12 text-xs font-black uppercase border-4 border-primary shadow-none ${selectedBucket === bucket ? "bg-foreground text-background" : "bg-background text-foreground hover:bg-background/90"}`}
             >
               {bucket.replace("-", " / ")}
             </Button>
@@ -114,13 +114,13 @@ export function ReplicationNodeView({
         <div className="mt-6 flex flex-col sm:flex-row gap-2">
           <Button
             onClick={onSigned}
-            className="flex-1 h-12 text-sm font-black uppercase bg-brutal-green hover:bg-brutal-green/90 text-brutal-green-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-12 text-sm font-black uppercase bg-brutal-green hover:bg-brutal-green/90 text-brutal-green-foreground border-4 border-primary shadow-none"
           >
             Sign the treaty
           </Button>
           <Button
             onClick={onWalkAway}
-            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="flex-1 h-12 text-sm font-black uppercase bg-background hover:bg-muted text-foreground border-4 border-primary shadow-none"
           >
             Walk away
           </Button>

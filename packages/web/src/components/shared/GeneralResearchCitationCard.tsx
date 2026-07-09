@@ -35,7 +35,7 @@ export function GeneralResearchCitationCard({
               href={firstSource.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-primary text-primary-foreground px-6 py-3 text-sm font-black uppercase border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all whitespace-nowrap"
+              className="bg-primary text-primary-foreground px-6 py-3 text-sm font-black uppercase border-4 border-primary shadow-none transition-colors hover:bg-background hover:text-foreground whitespace-nowrap"
             >
               VIEW SOURCE
             </a>

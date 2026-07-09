@@ -19,6 +19,7 @@ import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatus
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
+import { TaskDependenciesSection } from "@/components/tasks/TaskDependenciesSection";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { getUserDisplayLabel } from "@/lib/user-display";
@@ -89,6 +90,9 @@ function formatDueDate(value: Date | string | null | undefined) {
 function formatEffortHours(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) {
     return null;
+  }
+  if (value === 0) {
+    return "0 minutes";
   }
   if (value < 1) {
     const minutes = Math.max(1, Math.round(value * 60));
@@ -667,6 +671,8 @@ export default async function TaskDetailPage({
             <TaskDescription markdown={task.description} />
           </article>
         </section>
+
+        <TaskDependenciesSection task={task} viewer={viewer} />
 
         {viewer?.isAdmin &&
         task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY &&

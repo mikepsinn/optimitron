@@ -85,7 +85,7 @@ export function OrganizationsCard({ organizations }: OrganizationsCardProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-4 border-primary font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-all uppercase"
+                    className="border-4 border-primary font-black uppercase shadow-none"
                   >
                     VIEW
                   </Button>

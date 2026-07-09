@@ -25,7 +25,7 @@
 - REMIND
 - [Optimize Earth](/tasks/optimize-earth)
 - [initials]
-- OPTIMIZE EARTH
+- ANYONE
 - [count]
 - [money]
 ### YOUR TASKS

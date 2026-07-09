@@ -14,9 +14,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description:
             "group-[.toast]:text-muted-foreground ml-2 text-sm font-sans",
           actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground py-1 px-2 bg-background border-border shadow hover:shadow-xs hover:translate-[2px] duration-200 transition-all focus:shadow-none border-2 ml-auto h-fit min-w-fit",
+            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground py-1 px-2 bg-background border-border shadow-none duration-200 transition-colors focus:shadow-none border-2 ml-auto h-fit min-w-fit",
           cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-foreground py-1 px-2 text-sm bg-background border-border shadow hover:shadow-xs hover:translate-[2px] duration-200 transition-all focus:shadow-none border-2 ml-auto h-fit min-w-fit",
+            "group-[.toast]:bg-muted group-[.toast]:text-foreground py-1 px-2 text-sm bg-background border-border shadow-none duration-200 transition-colors focus:shadow-none border-2 ml-auto h-fit min-w-fit",
           title: "ml-2 font-sans",
           closeButton:
             "absolute bg-background -top-1 -left-1 rounded-full p-0.5",

@@ -84,7 +84,7 @@ export default async function LegislationDetailPage({
             href={entry.editUrl}
             target="_blank"
             rel="noreferrer"
-            className="border-4 border-primary bg-background px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-4 border-primary bg-background px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background"
           >
             Edit on GitHub
           </a>
@@ -92,7 +92,7 @@ export default async function LegislationDetailPage({
             href={entry.historyUrl}
             target="_blank"
             rel="noreferrer"
-            className="border-4 border-primary bg-background px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="border-4 border-primary bg-background px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-none transition-colors hover:bg-foreground hover:text-background"
           >
             View history
           </a>

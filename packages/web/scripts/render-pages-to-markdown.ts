@@ -210,7 +210,7 @@ async function extractPage(
     const redirectedFromStatus = redirectedFromResponse
       ? redirectedFromResponse.status()
       : null;
-    await waitForGlobalLoaderToClear(page);
+    await waitForGlobalLoaderToClear(page, route);
     await page.waitForTimeout(settleMs);
     return { status, redirectedFromStatus };
   };
@@ -356,7 +356,7 @@ async function extractPage(
         if (!fragment) return;
         if (
           buf.length > 0 &&
-          (/\w$/.test(buf) || /[.!?:;,)]$/.test(buf)) &&
+          (/\w$/.test(buf) || /[\].!?:;,)]$/.test(buf)) &&
           /^[\w[]/.test(fragment)
         ) {
           buf += " ";
@@ -488,17 +488,38 @@ async function extractPage(
 
 async function waitForGlobalLoaderToClear(
   page: import("@playwright/test").Page,
+  route: string,
 ): Promise<void> {
-  await page
-    .waitForFunction(
+  const hasLoadingText = (bodyText: string) => {
+    const normalizedBody = bodyText.toLowerCase();
+    return GLOBAL_LOADING_TEXT.some((text) =>
+      normalizedBody.includes(text.toLowerCase()),
+    );
+  };
+
+  try {
+    await page.waitForFunction(
       (loadingText) => {
-        const bodyText = document.body.innerText ?? "";
-        return loadingText.every((text) => !bodyText.includes(text));
+        const bodyText = (document.body.innerText ?? "").toLowerCase();
+        return loadingText.every(
+          (text: string) => !bodyText.includes(text.toLowerCase()),
+        );
       },
       GLOBAL_LOADING_TEXT,
       { timeout: 30_000 },
-    )
-    .catch(() => undefined);
+    );
+  } catch {
+    const bodyText = await page
+      .locator("body")
+      .innerText()
+      .catch(() => "");
+    if (hasLoadingText(bodyText)) {
+      const excerpt = bodyText.replace(/\s+/g, " ").trim().slice(0, 300);
+      throw new Error(
+        `global loader still visible after 30s on ${route}; snapshot NOT written. Body starts: "${excerpt}". Fix the slow render or add a route-specific readiness signal before regenerating markdown.`,
+      );
+    }
+  }
 }
 
 function cookieDomainFromBase(): string {
@@ -536,6 +557,12 @@ async function capturePass(
     ]);
   }
   const page = await ctx.newPage();
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "__OPTIMITRON_COPY_PREVIEW__", {
+      value: true,
+      configurable: true,
+    });
+  });
   try {
     for (const route of routes) {
       const dir = routeToDirPath(route);
