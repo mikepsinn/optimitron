@@ -363,6 +363,17 @@ jobs:
               core.setOutput("should_smoke", "true");
               return;
             }
+            const { data: currentPull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pull.number,
+            });
+            if (currentPull.state === "open" && currentPull.head?.sha && currentPull.head.sha !== sha) {
+              core.info(`Skipping stale deployment ${sha}; PR #${pull.number} head is ${currentPull.head.sha}.`);
+              core.setOutput("should_smoke", "false");
+              core.setOutput("matched_files", "");
+              return;
+            }
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner,
@@ -680,6 +691,17 @@ jobs:
             if (!pull) {
               core.info(`No pull request found for deployment commit ${sha}; running preview smoke.`);
               core.setOutput("should_smoke", "true");
+              return;
+            }
+            const { data: currentPull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pull.number,
+            });
+            if (currentPull.state === "open" && currentPull.head?.sha && currentPull.head.sha !== sha) {
+              core.info(`Skipping stale deployment ${sha}; PR #${pull.number} head is ${currentPull.head.sha}.`);
+              core.setOutput("should_smoke", "false");
+              core.setOutput("matched_files", "");
               return;
             }
 
