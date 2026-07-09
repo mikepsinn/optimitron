@@ -19,8 +19,7 @@
 - That makes them a shareholder. Then we help them send a polite love letter to the board.
 - The letter does not ask the company to become kind. It asks the board to do the thing boards are supposed to do: look after shareholders.
 - [FUND ONE SHARE](/donate)
-- [ASK FOR DILIGENCE](mailto:m@warondisease.org?subject=Foundation%20diligence%20for%20the%201%25%20Treaty%20campaign)
-- [INVESTMENT PATH](/fund)
+- [OPEN EMAIL DRAFT](mailto:hello@warondisease.org?subject=Foundation%20grant%20for%20the%201%25%20Treaty%20campaign)
 - RECEIVING CHARITY
 - Accelerated Medicine Foundation Inc
 - TAX ID
@@ -98,18 +97,14 @@
 - The calculator above prices the full treaty success case: the disease timeline shift in the cited model, discounted by organizations reached, contractor coverage, and whatever pivotal probability you assign.
 - If you only want to credit a single treaty year, use this as a separate sanity check. One treaty year puts [$21.7 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) into trials at [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)/patient, roughly 23 million patient-slots. The useful foundation question is not "what is the perfect grant size?" It is whether the chance of helping trigger the treaty beats the bed-net baseline. The calculator above lets you change the spend and the pivotal probability directly.
 - The break-even against bed nets at [$89.0/DALY](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) sits near a one-in-five-thousand chance of mattering. We are not claiming the campaign probably succeeds. The claim is narrower: that its probability of being pivotal exceeds one in five thousand.
-### DONATE OR INVEST, BUT DO NOT BLUR THEM
-#### DONATE TO THE CAMPAIGN
+### DONATE TO THE CAMPAIGN
 - The receiving charity is Accelerated Medicine Foundation Inc, EIN 41-2555651, operating the International Campaign to End War and Disease. Donations buy outreach, shares, board letters, lawyer review, and follow-up.
 - [DONATE](/donate)
-#### INVEST IN EOS EQUITY
-- Separate from the grant. Earth Optimization Services Inc. buys activist positions in military contractors and uses shareholder power to redirect their lobbying toward the 1% Treaty.
-- The upside is projected, never guaranteed. Accredited investors only.
-- [REVIEW INVESTMENT PATH](/fund)
 ### PLEASE CHECK THE MATH
-- Our model says this is the most cost-effective way to avert disability-adjusted life years per dollar that we have been able to find. We know how that sounds. It sounds like the kind of thing someone says right before asking you for money, which is exactly what is happening, but the numbers are public and clickable and we would rather be corrected than funded on an error.
-- If you know a better thing we should be doing with our time to reduce suffering on Earth, please tell us. If you know of an intervention that averts a DALY at a lower expected cost, send us the analysis, and we will redirect our own effort to that instead.
-- If you conclude the plan is sound but we are the wrong people to run it, we would be incredibly grateful if you'd have them do it. Everything is public and open-source: the manual, the parameterized models, the board-letter template, and the organizer playbook.
-- [OPEN THE SOURCE PACKET](https://manual.warondisease.org/knowledge/papers.html)
-- [SEND A BETTER OPTION](mailto:m@warondisease.org?subject=Higher%20expected%20value%20alternative%20to%20the%201%25%20Treaty%20campaign)
-- [ASK US TO BRIEF YOUR FOUNDATION](mailto:m@warondisease.org?subject=Foundation%20diligence%20for%20the%201%25%20Treaty%20campaign)
+- Our model says this is the best use of our time for reducing suffering on Earth that we have found. We know how that sounds. The numbers are public because we would rather be corrected before anyone funds us.
+- Please check the math. If there is a better use of our time, or a cheaper way to avert a DALY, email us. We will do the better thing instead.
+- If the math is right but someone else should run this, use it. We do not need credit. We need the thing to happen.
+- [CHECK THE TREATY MATH](https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html)
+### EMAIL US ABOUT A GRANT
+- [hello@warondisease.org](mailto:hello@warondisease.org?subject=Foundation%20grant%20for%20the%201%25%20Treaty%20campaign)
+- COPY EMAIL

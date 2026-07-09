@@ -14,6 +14,7 @@ import {
   TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER,
   TREATY_VS_BED_NETS_MULTIPLIER,
 } from "@optimitron/data/parameters";
+import { CopyGrantEmailButton } from "@/components/foundations/CopyGrantEmailButton";
 import { LoveLetterCalculator } from "@/components/foundations/LoveLetterCalculator";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { FOUNDATION_CONTRACTOR_TARGETS } from "@/lib/foundations/contractor-targets";
@@ -23,14 +24,12 @@ import { foundationsLink, ROUTES } from "@/lib/routes";
 
 export const metadata = getRouteMetadata(foundationsLink);
 
-const diligenceHref =
-  "mailto:m@warondisease.org?subject=Foundation%20diligence%20for%20the%201%25%20Treaty%20campaign";
+const grantEmailSubject = "Foundation grant for the 1% Treaty campaign";
+const grantEmailHref =
+  `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(grantEmailSubject)}`;
 
-const auditHref =
-  "mailto:m@warondisease.org?subject=Higher%20expected%20value%20alternative%20to%20the%201%25%20Treaty%20campaign";
-
-const sourcePacketHref =
-  "https://manual.warondisease.org/knowledge/papers.html";
+const treatyMathHref =
+  "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html";
 
 const moneyRows = [
   [
@@ -144,11 +143,8 @@ export default function FoundationsPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <ButtonLink href={ROUTES.donate}>Fund one share</ButtonLink>
-            <ButtonLink href={diligenceHref} variant="secondary">
-              Ask for diligence
-            </ButtonLink>
-            <ButtonLink href={ROUTES.fund} variant="secondary">
-              Investment path
+            <ButtonLink href={grantEmailHref} variant="secondary">
+              Open email draft
             </ButtonLink>
           </div>
         </section>
@@ -357,43 +353,15 @@ export default function FoundationsPage() {
         </section>
 
         <section className="space-y-6 border-t border-foreground pt-8">
-          <SectionHeading>
-            Donate or invest, but do not blur them
-          </SectionHeading>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="border border-foreground p-5">
-              <h3 className="text-xl font-bold uppercase leading-tight">
-                Donate to the campaign
-              </h3>
-              <p className="mt-3 text-sm font-bold leading-6">
-                The receiving charity is {NONPROFIT.legalName}, EIN{" "}
-                {NONPROFIT.ein}, operating the International Campaign to End War
-                and Disease. Donations buy outreach, shares, board letters,
-                lawyer review, and follow-up.
-              </p>
-              <div className="mt-4">
-                <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
-              </div>
-            </div>
-            <div className="border border-foreground p-5">
-              <h3 className="text-xl font-bold uppercase leading-tight">
-                Invest in EOS equity
-              </h3>
-              <p className="mt-3 text-sm font-bold leading-6">
-                Separate from the grant. Earth Optimization Services Inc. buys
-                activist positions in military contractors and uses shareholder
-                power to redirect their lobbying toward the 1% Treaty.
-              </p>
-              <p className="mt-3 text-sm font-bold leading-6">
-                The upside is projected, never guaranteed. Accredited investors
-                only.
-              </p>
-              <div className="mt-4">
-                <ButtonLink href={ROUTES.fund} variant="secondary">
-                  Review investment path
-                </ButtonLink>
-              </div>
-            </div>
+          <SectionHeading>Donate to the campaign</SectionHeading>
+          <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
+            <p>
+              The receiving charity is {NONPROFIT.legalName}, EIN{" "}
+              {NONPROFIT.ein}, operating the International Campaign to End War
+              and Disease. Donations buy outreach, shares, board letters, lawyer
+              review, and follow-up.
+            </p>
+            <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
           </div>
         </section>
 
@@ -401,37 +369,41 @@ export default function FoundationsPage() {
           <SectionHeading>Please check the math</SectionHeading>
           <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
             <p>
-              Our model says this is the most cost-effective way to avert
-              disability-adjusted life years per dollar that we have been able
-              to find. We know how that sounds. It sounds like the kind of thing
-              someone says right before asking you for money, which is exactly
-              what is happening, but the numbers are public and clickable and we
-              would rather be corrected than funded on an error.
+              Our model says this is the best use of our time for reducing
+              suffering on Earth that we have found. We know how that sounds.
+              The numbers are public because we would rather be corrected before
+              anyone funds us.
             </p>
             <p>
-              If you know a better thing we should be doing with our time to
-              reduce suffering on Earth, please tell us. If you know of an
-              intervention that averts a DALY at a lower expected cost, send us
-              the analysis, and we will redirect our own effort to that instead.
+              Please check the math. If there is a better use of our time, or a
+              cheaper way to avert a DALY, email us. We will do the better thing
+              instead.
             </p>
             <p>
-              If you conclude the plan is sound but we are the wrong people to
-              run it, we would be incredibly grateful if you&apos;d have them do
-              it. Everything is public and open-source: the manual, the
-              parameterized models, the board-letter template, and the organizer
-              playbook.
+              If the math is right but someone else should run this, use it. We
+              do not need credit. We need the thing to happen.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href={sourcePacketHref} variant="secondary">
-              Open the source packet
+            <ButtonLink href={treatyMathHref} variant="secondary">
+              Check the treaty math
             </ButtonLink>
-            <ButtonLink href={auditHref} variant="secondary">
-              Send a better option
+            <ButtonLink href={grantEmailHref}>
+              Open email draft
             </ButtonLink>
-            <ButtonLink href={diligenceHref}>
-              Ask us to brief your foundation
-            </ButtonLink>
+          </div>
+        </section>
+
+        <section className="space-y-4 border-t border-foreground pt-8">
+          <SectionHeading>Email us about a grant</SectionHeading>
+          <div className="flex max-w-4xl flex-wrap items-center gap-3 text-base font-bold leading-7 sm:text-lg">
+            <a
+              className="break-all underline decoration-foreground underline-offset-4"
+              href={grantEmailHref}
+            >
+              {NONPROFIT.publicContactEmail}
+            </a>
+            <CopyGrantEmailButton email={NONPROFIT.publicContactEmail} />
           </div>
         </section>
       </div>
