@@ -53,7 +53,7 @@ const moneyRows = [
 
 function SectionHeading({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-2xl font-black uppercase leading-tight sm:text-3xl">
+    <h2 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">
       {children}
     </h2>
   );
@@ -61,7 +61,7 @@ function SectionHeading({ children }: { children: ReactNode }) {
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-xs font-black uppercase leading-5 text-muted-foreground">
+    <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
       {children}
     </p>
   );
@@ -78,8 +78,8 @@ function ButtonLink({
 }) {
   const className =
     variant === "primary"
-      ? "border-2 border-foreground bg-foreground px-4 py-3 text-sm font-black uppercase text-background hover:bg-background hover:text-foreground"
-      : "border-2 border-foreground bg-background px-4 py-3 text-sm font-black uppercase text-foreground hover:bg-foreground hover:text-background";
+      ? "border border-foreground bg-foreground px-4 py-3 text-sm font-bold uppercase text-background hover:bg-background hover:text-foreground"
+      : "border border-foreground bg-background px-4 py-3 text-sm font-bold uppercase text-foreground hover:bg-foreground hover:text-background";
 
   if (href.startsWith("mailto:") || href.startsWith("http")) {
     return (
@@ -106,11 +106,11 @@ function Stat({
   note?: string;
 }) {
   return (
-    <div className="border-2 border-foreground p-4">
-      <p className="text-xs font-black uppercase leading-5 text-muted-foreground">
+    <div className="border border-foreground p-4">
+      <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
         {label}
       </p>
-      <p className="mt-2 text-xl font-black leading-tight">{children}</p>
+      <p className="mt-2 text-xl font-bold leading-tight">{children}</p>
       {note ? <p className="mt-2 text-xs font-bold leading-5">{note}</p> : null}
     </div>
   );
@@ -120,9 +120,9 @@ export default function FoundationsPage() {
   return (
     <main className="min-h-screen bg-background px-4 py-10 text-foreground [font-family:var(--v0-font-libre-baskerville)] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-12">
-        <section className="space-y-6 border-b-2 border-foreground pb-10">
+        <section className="space-y-6 border-b border-foreground pb-10">
           <Eyebrow>Foundation grants for the 1% Treaty</Eyebrow>
-          <h1 className="max-w-4xl text-4xl font-black uppercase leading-none sm:text-6xl">
+          <h1 className="max-w-4xl text-4xl font-bold uppercase leading-none sm:text-6xl">
             Give an organization one share and a letter.
           </h1>
           <div className="max-w-4xl space-y-5 text-lg font-bold leading-8 sm:text-xl sm:leading-9">
@@ -160,7 +160,7 @@ export default function FoundationsPage() {
           <Stat label="First milestone">1,000 organizations</Stat>
         </section>
 
-        <section className="space-y-5 border-t-2 border-foreground pt-8">
+        <section className="space-y-5 border-t border-foreground pt-8">
           <SectionHeading>The mechanism</SectionHeading>
           <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg sm:leading-8">
             <p>
@@ -182,7 +182,7 @@ export default function FoundationsPage() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t-2 border-foreground pt-8">
+        <section className="space-y-6 border-t border-foreground pt-8">
           <div className="max-w-4xl space-y-3">
             <SectionHeading>Run the math</SectionHeading>
             <p className="text-base font-bold leading-7 sm:text-lg">
@@ -202,28 +202,28 @@ export default function FoundationsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Stat label="DALYs at stake">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS}
                 display="auto"
               />
             </Stat>
             <Stat label="Lives at stake">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED}
                 display="auto"
               />
             </Stat>
             <Stat label="Treaty funding">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={TREATY_ANNUAL_FUNDING}
                 display="auto"
               />
             </Stat>
             <Stat label="Military lobbying">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DEFENSE_LOBBYING_ANNUAL}
                 display="auto"
               />
@@ -231,7 +231,7 @@ export default function FoundationsPage() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t-2 border-foreground pt-8">
+        <section className="space-y-6 border-t border-foreground pt-8">
           <div className="max-w-4xl space-y-3">
             <SectionHeading>What money does</SectionHeading>
             <p className="text-base font-bold leading-7 sm:text-lg">
@@ -241,8 +241,8 @@ export default function FoundationsPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {moneyRows.map(([label, body]) => (
-              <div className="border-2 border-foreground p-4" key={label}>
-                <h3 className="text-lg font-black uppercase leading-tight">
+              <div className="border border-foreground p-4" key={label}>
+                <h3 className="text-lg font-bold uppercase leading-tight">
                   {label}
                 </h3>
                 <p className="mt-3 text-sm font-bold leading-6">{body}</p>
@@ -258,7 +258,7 @@ export default function FoundationsPage() {
           </p>
         </section>
 
-        <section className="space-y-6 border-t-2 border-foreground pt-8">
+        <section className="space-y-6 border-t border-foreground pt-8">
           <SectionHeading>
             Cost-effectiveness, with the skeptic&apos;s discounts already
             applied
@@ -266,14 +266,14 @@ export default function FoundationsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <Stat label="Conditional on success">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG}
                 display="withUnit"
               />
               <span className="block text-sm font-bold leading-6">
                 per DALY, roughly{" "}
                 <ParameterValue
-                  className="font-black"
+                  className="font-bold"
                   param={TREATY_VS_BED_NETS_MULTIPLIER}
                   valueOverride={`${new Intl.NumberFormat("en-US", {
                     maximumFractionDigits: 0,
@@ -286,14 +286,14 @@ export default function FoundationsPage() {
             </Stat>
             <Stat label="Risk-adjusted">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={TREATY_EXPECTED_COST_PER_DALY}
                 display="withUnit"
               />
               <span className="block text-sm font-bold leading-6">
                 per DALY, still{" "}
                 <ParameterValue
-                  className="font-black"
+                  className="font-bold"
                   param={TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER}
                   valueOverride={`${new Intl.NumberFormat("en-US", {
                     maximumFractionDigits: 0,
@@ -304,7 +304,7 @@ export default function FoundationsPage() {
             </Stat>
             <Stat label="If the treaty never passes">
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DFDA_DIRECT_FUNDING_COST_PER_DALY}
                 display="withUnit"
               />
@@ -314,7 +314,7 @@ export default function FoundationsPage() {
               </span>
             </Stat>
           </div>
-          <div className="space-y-4 border-2 border-foreground p-5 text-base font-bold leading-7">
+          <div className="space-y-4 border border-foreground p-5 text-base font-bold leading-7">
             <p>
               The calculator above prices the full treaty success case: the
               disease timeline shift in the cited model, discounted by
@@ -325,13 +325,13 @@ export default function FoundationsPage() {
               If you only want to credit a single treaty year, use this as a
               separate sanity check. One treaty year puts{" "}
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL}
                 display="auto"
               />{" "}
               into trials at{" "}
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT}
                 display="auto"
               />
@@ -344,7 +344,7 @@ export default function FoundationsPage() {
             <p>
               The break-even against bed nets at{" "}
               <ParameterValue
-                className="font-black"
+                className="font-bold"
                 param={BED_NETS_COST_PER_DALY}
                 display="withUnit"
               />{" "}
@@ -356,13 +356,13 @@ export default function FoundationsPage() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t-2 border-foreground pt-8">
+        <section className="space-y-6 border-t border-foreground pt-8">
           <SectionHeading>
             Donate or invest, but do not blur them
           </SectionHeading>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="border-2 border-foreground p-5">
-              <h3 className="text-xl font-black uppercase leading-tight">
+            <div className="border border-foreground p-5">
+              <h3 className="text-xl font-bold uppercase leading-tight">
                 Donate to the campaign
               </h3>
               <p className="mt-3 text-sm font-bold leading-6">
@@ -375,8 +375,8 @@ export default function FoundationsPage() {
                 <ButtonLink href={ROUTES.donate}>Donate</ButtonLink>
               </div>
             </div>
-            <div className="border-2 border-foreground p-5">
-              <h3 className="text-xl font-black uppercase leading-tight">
+            <div className="border border-foreground p-5">
+              <h3 className="text-xl font-bold uppercase leading-tight">
                 Invest in EOS equity
               </h3>
               <p className="mt-3 text-sm font-bold leading-6">
@@ -397,7 +397,7 @@ export default function FoundationsPage() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t-2 border-foreground pt-8">
+        <section className="space-y-6 border-t border-foreground pt-8">
           <SectionHeading>Please check the math</SectionHeading>
           <div className="max-w-4xl space-y-4 text-base font-bold leading-7 sm:text-lg">
             <p>

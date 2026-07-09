@@ -14,6 +14,15 @@ const currency = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    style: "currency",
+  }).format(value);
+}
+
 const compactNumber = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   notation: "compact",
@@ -67,11 +76,11 @@ function CalculatorStat({
   note?: string;
 }) {
   return (
-    <div className="border-2 border-foreground p-4">
-      <p className="text-xs font-black uppercase leading-5 text-muted-foreground">
+    <div className="border border-foreground p-4">
+      <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-black leading-tight">{value}</p>
+      <p className="mt-2 text-2xl font-bold leading-tight">{value}</p>
       {note ? <p className="mt-2 text-xs font-bold leading-5">{note}</p> : null}
     </div>
   );
@@ -162,12 +171,12 @@ export function LoveLetterCalculator({
   }
 
   return (
-    <div className="space-y-6 border-2 border-foreground p-4 sm:p-5">
+    <div className="space-y-6 border border-foreground p-4 sm:p-5">
       <div className="space-y-2">
-        <p className="text-xs font-black uppercase leading-5 text-muted-foreground">
+        <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
           Love-letter calculator
         </p>
-        <h3 className="text-2xl font-black uppercase leading-tight sm:text-3xl">
+        <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">
           How many shares and letters?
         </h3>
         <p className="max-w-3xl text-sm font-bold leading-6 text-muted-foreground sm:text-base sm:leading-7">
@@ -180,11 +189,11 @@ export function LoveLetterCalculator({
 
       <div className="grid gap-4 md:grid-cols-3">
         <label className="space-y-2">
-          <span className="block text-xs font-black uppercase leading-5 text-muted-foreground">
+          <span className="block text-xs font-bold uppercase leading-5 text-muted-foreground">
             Organizations
           </span>
           <input
-            className="w-full border-2 border-foreground bg-background px-3 py-2 text-base font-black text-foreground"
+            className="w-full border border-foreground bg-background px-3 py-2 text-base font-bold text-foreground"
             inputMode="numeric"
             min={1}
             type="number"
@@ -204,11 +213,11 @@ export function LoveLetterCalculator({
           />
         </label>
         <label className="space-y-2">
-          <span className="block text-xs font-black uppercase leading-5 text-muted-foreground">
+          <span className="block text-xs font-bold uppercase leading-5 text-muted-foreground">
             Share cost assumption
           </span>
           <input
-            className="w-full border-2 border-foreground bg-background px-3 py-2 text-base font-black text-foreground"
+            className="w-full border border-foreground bg-background px-3 py-2 text-base font-bold text-foreground"
             inputMode="decimal"
             min={1}
             type="number"
@@ -228,13 +237,13 @@ export function LoveLetterCalculator({
           />
         </label>
         <label className="space-y-2">
-          <span className="block text-xs font-black uppercase leading-5 text-muted-foreground">
+          <span className="block text-xs font-bold uppercase leading-5 text-muted-foreground">
             Pivotal chance
           </span>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-black">1 in</span>
+            <span className="text-sm font-bold">1 in</span>
             <input
-              className="min-w-0 flex-1 border-2 border-foreground bg-background px-3 py-2 text-base font-black text-foreground"
+              className="min-w-0 flex-1 border border-foreground bg-background px-3 py-2 text-base font-bold text-foreground"
               inputMode="numeric"
               min={1}
               type="number"
@@ -257,7 +266,7 @@ export function LoveLetterCalculator({
       </div>
 
       <div className="space-y-3">
-        <p className="text-xs font-black uppercase leading-5 text-muted-foreground">
+        <p className="text-xs font-bold uppercase leading-5 text-muted-foreground">
           Contractor targets
         </p>
         <div className="grid gap-2 md:grid-cols-2">
@@ -266,11 +275,11 @@ export function LoveLetterCalculator({
 
             return (
               <label
-                className="flex cursor-pointer items-center justify-between gap-3 border-2 border-foreground p-3 text-sm font-bold"
+                className="flex cursor-pointer items-center justify-between gap-3 border border-foreground p-3 text-sm font-bold"
                 key={target.id}
               >
                 <span className="min-w-0">
-                  <span className="block truncate font-black">
+                  <span className="block truncate font-bold">
                     {target.name}
                   </span>
                   <span className="block text-xs text-muted-foreground">
@@ -297,8 +306,8 @@ export function LoveLetterCalculator({
         />
         <CalculatorStat
           label="Share budget"
-          value={currency.format(totals.shareBudgetUsd)}
-          note={`${currency.format(shareCostUsd)} per share assumption`}
+          value={formatCurrency(totals.shareBudgetUsd)}
+          note={`${formatCurrency(shareCostUsd)} per share assumption`}
         />
         <CalculatorStat
           label="1,000-org threshold"
