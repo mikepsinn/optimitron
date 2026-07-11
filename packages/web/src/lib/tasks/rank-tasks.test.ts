@@ -139,6 +139,7 @@ describe("rankTasksForUser", () => {
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
     difficulty: TaskDifficulty.BEGINNER,
     estimatedEffortHours: 2,
+    id: "strong-fit",
     interestTags: ["tobacco-policy"],
     maxClaims: null,
     selectedImpactFrame: {
@@ -189,6 +190,7 @@ describe("rankTasksForUser", () => {
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
     difficulty: TaskDifficulty.ADVANCED,
     estimatedEffortHours: 8,
+    id: "weak-fit",
     interestTags: ["defi"],
     maxClaims: null,
     selectedImpactFrame: {
@@ -416,6 +418,28 @@ describe("rankTasksForUser", () => {
 
     expect(ranked).toHaveLength(1);
     expect(ranked[0]?.task).toBe(leafTask);
+  });
+
+  it("does not fall back to a parent when atomic execution is required", () => {
+    const parentTask = {
+      ...strongFitTask,
+      activeChildTaskCount: 1,
+    };
+
+    expect(
+      rankTasksForUser([parentTask], user, 10, {
+        preferLeafExecution: true,
+      }),
+    ).toEqual([]);
+  });
+
+  it("uses the required task ID as the deterministic final tie-breaker", () => {
+    const second = { ...strongFitTask, id: "task-b" };
+    const first = { ...strongFitTask, id: "task-a" };
+
+    expect(
+      rankTasksForUser([second, first], user, 10).map(({ task }) => task.id),
+    ).toEqual(["task-a", "task-b"]);
   });
 });
 

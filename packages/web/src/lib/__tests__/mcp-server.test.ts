@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => ({
   taskFindFirst: vi.fn(),
   taskFindMany: vi.fn(),
   taskEdgeCreateMany: vi.fn(),
+  taskEdgeCreate: vi.fn(),
   taskEdgeFindMany: vi.fn(),
   taskEdgeUpdateMany: vi.fn(),
   taskImpactEstimateSetCreate: vi.fn(),
@@ -91,6 +92,7 @@ const mocks = vi.hoisted(() => ({
   removeOrganizationMember: vi.fn(),
   updateOrganizationMemberRole: vi.fn(),
   listOrganizationMembers: vi.fn(),
+  canManageOrganization: vi.fn(),
   softDeleteOrganization: vi.fn(),
   taskFindUnique: vi.fn(),
   upsertSignerReminderTask: vi.fn(),
@@ -105,6 +107,8 @@ const mocks = vi.hoisted(() => ({
   getPageContent: vi.fn(),
   listAdminTaskEmailCommunications: vi.fn(),
   listAdminEmailLogs: vi.fn(),
+  sourceArtifactUpsert: vi.fn(),
+  taskSourceArtifactUpsert: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -250,6 +254,7 @@ vi.mock("../organization.server", () => ({
   removeOrganizationMember: mocks.removeOrganizationMember,
   updateOrganizationMemberRole: mocks.updateOrganizationMemberRole,
   listOrganizationMembers: mocks.listOrganizationMembers,
+  canManageOrganization: mocks.canManageOrganization,
   softDeleteOrganization: mocks.softDeleteOrganization,
   isOrganizationMemberRole: (value: string) => VALID_MEMBER_ROLES.has(value),
   ForbiddenError,
@@ -271,6 +276,7 @@ vi.mock("../prisma", () => ({
       update: mocks.taskUpdate,
     },
     taskEdge: {
+      create: mocks.taskEdgeCreate,
       createMany: mocks.taskEdgeCreateMany,
       findMany: mocks.taskEdgeFindMany,
       updateMany: mocks.taskEdgeUpdateMany,
@@ -312,6 +318,12 @@ vi.mock("../prisma", () => ({
       findMany: mocks.userFindMany,
       update: mocks.userUpdate,
     },
+    sourceArtifact: {
+      upsert: mocks.sourceArtifactUpsert,
+    },
+    taskSourceArtifact: {
+      upsert: mocks.taskSourceArtifactUpsert,
+    },
   },
 }));
 
@@ -351,20 +363,52 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
     difficulty: "TRIVIAL",
     taskKey: "created:1",
     dueAt: null,
-    parentTaskId: null,
+    parentTaskId: "optimize-earth",
     impactStatement: null,
     primaryEndpoint: null,
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
     skillTags: [],
     interestTags: [],
     estimatedEffortHours: 1,
+    kind: TaskKind.TASK,
+    activeChildTaskCount: 0,
     blockerStatuses: [],
+    incomingEdges: [],
+    marginalImpactFrame: {
+      estimatedCashCostUsdBase: 0,
+      estimatedEffortHoursBase: 1,
+      expectedEconomicValueUsdBase: 200,
+      successProbabilityBase: 1,
+    },
     childTasks: [],
     assigneePerson: null,
     assigneeOrganization: null,
     assigneePersonId: null,
     assigneeOrganizationId: null,
     createdByUserId: "user-1",
+    ...overrides,
+  };
+}
+
+function makeOptimizeEarthRoot() {
+  return {
+    id: "optimize-earth",
+    kind: TaskKind.PROJECT,
+    parentTaskId: null,
+  };
+}
+
+function makePlanningBranch(overrides: Record<string, unknown> = {}) {
+  return {
+    assigneeOrganizationId: null,
+    assigneePersonId: "person-1",
+    createdByUserId: "user-1",
+    id: "personal-project",
+    isPublic: false,
+    kind: TaskKind.PROJECT,
+    ownerOrganizationId: null,
+    parentTaskId: "optimize-earth",
+    taskKey: "planner:person:person-1",
     ...overrides,
   };
 }
@@ -463,6 +507,15 @@ beforeEach(() => {
       }),
   );
   mocks.listTasks.mockResolvedValue([]);
+  mocks.taskFindMany.mockImplementation(
+    async (args?: { where?: { id?: { in?: string[] } } }) =>
+      args?.where?.id?.in?.includes("optimize-earth")
+        ? [makeOptimizeEarthRoot()]
+        : [],
+  );
+  mocks.canManageOrganization.mockResolvedValue(false);
+  mocks.sourceArtifactUpsert.mockResolvedValue({ id: "source-artifact-1" });
+  mocks.taskSourceArtifactUpsert.mockResolvedValue({ id: "task-source-1" });
   mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
   mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
   mocks.taskApplicationFindFirst.mockResolvedValue(null);
@@ -669,7 +722,9 @@ describe("MCP server tool dispatch", () => {
       (tool) => tool.name,
     );
 
-    expect(nonAdminNames).not.toContain("proposeTaskBundle");
+    expect(nonAdminNames).toContain("proposeTaskBundle");
+    expect(nonAdminNames).toContain("promoteTask");
+    expect(nonAdminNames).toContain("getExecutionPlan");
     expect(nonAdminNames).not.toContain("setTaskImpact");
     expect(nonAdminNames).not.toContain("addDependency");
     expect(nonAdminNames).not.toContain("acquireLease");
@@ -2216,6 +2271,113 @@ describe("MCP server tool dispatch", () => {
     });
   });
 
+  describe("getExecutionPlan", () => {
+    it("simulates Mercury completion before bank-dependent work and excludes projects", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          id: "eos-project",
+          kind: TaskKind.PROJECT,
+          activeChildTaskCount: 2,
+        }),
+        makeCreatedTask({ id: "mercury", estimatedEffortHours: 1 }),
+        makeCreatedTask({
+          id: "bank-dependent",
+          estimatedEffortHours: 1,
+          blockerStatuses: [TaskStatus.ACTIVE],
+          incomingEdges: [
+            {
+              fromTask: { id: "mercury", status: TaskStatus.ACTIVE },
+            },
+          ],
+        }),
+      ]);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "bank-dependent" ? 1_000 : 100,
+        }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getExecutionPlan",
+        arguments: {
+          availableMinutes: 120,
+          fixedCommitments: [
+            {
+              endAt: "2026-07-10T16:00:00.000Z",
+              startAt: "2026-07-10T15:00:00.000Z",
+              title: "Meeting",
+            },
+          ],
+          planningWindowEnd: "2026-07-10T18:00:00.000Z",
+          planningWindowStart: "2026-07-10T14:00:00.000Z",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body.plannerVersion).toBe("frontier-replanning-v1");
+      expect(
+        (body.checklist as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["mercury", "bank-dependent"]);
+      expect((body.nextAction as { id: string }).id).toBe("mercury");
+      expect(body.fixedCommitmentMinutes).toBe(60);
+    });
+
+    it("scores availability and expiring deadlines at the requested planning window", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          availableAt: "2030-01-01T10:00:00.000Z",
+          id: "available-at-window-start",
+          title: "Available at window start",
+        }),
+        makeCreatedTask({
+          deadlinePolicy: "EXPIRES",
+          dueAt: "2030-01-01T09:00:00.000Z",
+          id: "expired-before-window",
+          title: "Expired before window",
+        }),
+      ]);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "expired-before-window" ? 1_000 : 100,
+        }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getExecutionPlan",
+        arguments: {
+          availableMinutes: 60,
+          planningWindowEnd: "2030-01-01T11:00:00.000Z",
+          planningWindowStart: "2030-01-01T10:00:00.000Z",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(
+        (body.checklist as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["available-at-window-start"]);
+    });
+
+    it("rejects organization planning without owner or admin authorization", async () => {
+      mocks.canManageOrganization.mockResolvedValue(false);
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getExecutionPlan",
+        arguments: {
+          target: { id: "org-eos", kind: "organization" },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "owner or admin membership",
+      );
+    });
+  });
+
   describe("personal queues", () => {
     it("splits self-executed tasks from AI-agent-executed tasks", async () => {
       mocks.listTasks.mockResolvedValue([
@@ -2256,7 +2418,7 @@ describe("MCP server tool dispatch", () => {
       const aiQueue = parseToolBody(aiQueueResult).queue as Array<
         Record<string, unknown>
       >;
-      expect(myQueue.map((task) => task.id)).toEqual(["self", "default-self"]);
+      expect(myQueue.map((task) => task.id)).toEqual(["default-self", "self"]);
       expect(aiQueue.map((task) => task.id)).toEqual(["agent"]);
       expect(myQueue[0]).toMatchObject({ priority: 100, executorType: "Self" });
       expect(myQueue[0]?.sprintPriority).toBeUndefined();
@@ -2347,7 +2509,7 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(result);
       expect(body.summary).toMatchObject({
         activeCreatedTasks: 2,
-        unblockedTasks: 2,
+        unblockedTasks: 1,
       });
       const issues = body.issues as Array<{ taskId: string; code: string }>;
       expect(
@@ -2399,6 +2561,12 @@ describe("MCP server tool dispatch", () => {
           dueAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           deadlinePolicy: "REQUIRED",
           estimatedEffortHours: null,
+          marginalImpactFrame: {
+            estimatedCashCostUsdBase: 0,
+            estimatedEffortHoursBase: null,
+            expectedEconomicValueUsdBase: 200,
+            successProbabilityBase: 1,
+          },
         }),
       ]);
       mocks.taskEdgeFindMany.mockResolvedValue([]);
@@ -2423,6 +2591,506 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task writes", () => {
+    it("records each personal execution as a durable execution attempt", async () => {
+      mocks.taskFindUnique.mockResolvedValue({
+        actualCashCostUsd: null,
+        actualEffortSeconds: null,
+        assigneeOrganizationId: null,
+        assigneePersonId: "person-1",
+        contextJson: {},
+        createdByUserId: "user-2",
+        id: "medication-task",
+        isPublic: true,
+        ownerOrganizationId: null,
+        title: "Take medication",
+      });
+      mocks.taskExecutionAttemptCreate.mockResolvedValue({
+        id: "execution-attempt-1",
+      });
+      mocks.taskUpdate.mockResolvedValue({
+        actualCashCostUsd: 2,
+        actualEffortSeconds: 30,
+        id: "medication-task",
+        title: "Take medication",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordTaskActuals",
+        arguments: {
+          actualCashCostUsd: 2,
+          actualEffortSeconds: 30,
+          completedAt: "2026-07-10T14:12:00.000Z",
+          note: "Completed as planned.",
+          taskId: "medication-task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskExecutionAttemptCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          completedAt: new Date("2026-07-10T14:12:00.000Z"),
+          executorKey: "user:user-1",
+          executorPersonId: "person-1",
+          status: "COMPLETED",
+          taskId: "medication-task",
+        }),
+      });
+      expect(parseToolBody(result).executionAttemptId).toBe(
+        "execution-attempt-1",
+      );
+    });
+
+    it("does not copy previous task actuals into a new execution attempt", async () => {
+      mocks.taskFindUnique.mockResolvedValue({
+        actualCashCostUsd: 7,
+        actualEffortSeconds: 120,
+        assigneeOrganizationId: null,
+        assigneePersonId: "person-1",
+        contextJson: {},
+        createdByUserId: "user-1",
+        id: "recurring-task",
+        isPublic: false,
+        ownerOrganizationId: null,
+        title: "Daily check-in",
+      });
+      mocks.taskExecutionAttemptCreate.mockResolvedValue({
+        id: "execution-attempt-2",
+      });
+      mocks.taskUpdate.mockResolvedValue({
+        actualCashCostUsd: 7,
+        actualEffortSeconds: 120,
+        id: "recurring-task",
+        title: "Daily check-in",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordTaskActuals",
+        arguments: {
+          note: "Recorded without timing this occurrence.",
+          taskId: "recurring-task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskExecutionAttemptCreate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          actualCostCurrency: null,
+          actualCostMinorUnits: null,
+          actualDurationSeconds: null,
+          startedAt: null,
+        }),
+      });
+      expect(mocks.taskUpdate).toHaveBeenCalledWith({
+        where: { id: "recurring-task" },
+        data: expect.objectContaining({
+          actualCashCostUsd: 7,
+          actualEffortSeconds: 120,
+        }),
+      });
+    });
+
+    it("creates private caller-owned proposal drafts under an idempotent personal project", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey
+            ? null
+            : { id: "optimize-earth", kind: TaskKind.PROJECT },
+      );
+      mocks.taskCreate
+        .mockResolvedValueOnce({
+          id: "personal-project",
+          taskKey: "planner:person:person-1",
+        })
+        .mockResolvedValueOnce({
+          id: "draft-mercury",
+          title: "Open Mercury account for EOS",
+        });
+      mocks.taskFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              acceptanceCriteria: ["The account can receive funds."],
+              description:
+                "Open the Mercury account required for Earth Optimization Services banking.",
+              estimatedEffortHours: 1,
+              executorType: "Self",
+              impact: {
+                assumptions: ["Account unblocks banking work."],
+                estimatedCashCostUsdBase: 0,
+                expectedEconomicValueUsdBase: 5_000,
+                successProbabilityBase: 0.9,
+              },
+              source: {
+                sourceKey: "notion-mercury",
+                sourceSystem: "notion",
+                sourceUrl: "https://notion.so/mercury",
+              },
+              title: "Open Mercury account for EOS",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result).createdDrafts).toEqual([
+        expect.objectContaining({ taskId: "draft-mercury" }),
+      ]);
+      expect(mocks.taskCreate).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            isPublic: false,
+            kind: TaskKind.PROJECT,
+            parentTaskId: "optimize-earth",
+          }),
+        }),
+      );
+      expect(mocks.taskCreate).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            assigneePersonId: "person-1",
+            createdByUserId: "user-1",
+            isPublic: false,
+            kind: TaskKind.TASK,
+            status: TaskStatus.DRAFT,
+          }),
+        }),
+      );
+      expect(mocks.taskImpactFrameEstimateCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            expectedEconomicValueUsdBase: 5_000,
+            successProbabilityBase: 0.9,
+          }),
+        }),
+      );
+      expect(mocks.taskUpdate).toHaveBeenCalledWith({
+        where: { id: "draft-mercury" },
+        data: { parentTaskId: "personal-project" },
+      });
+      expect(mocks.sourceArtifactUpsert).toHaveBeenCalledTimes(1);
+    });
+
+    it("rejects an occupied planning branch key unless it is the expected private rooted project", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey
+            ? makePlanningBranch({ isPublic: true })
+            : makeOptimizeEarthRoot(),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description:
+                "This draft must not attach below an invalid branch.",
+              estimatedEffortHours: 1,
+              title: "Private planning task",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "not the expected private, rooted PROJECT",
+      );
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("reserves person and organization planning branch task keys", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description: "A draft cannot occupy another target's branch key.",
+              estimatedEffortHours: 1,
+              taskKey: "planner:person:person-2",
+              title: "Reserved key collision",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "reserved execution-planning branch namespace",
+      );
+      expect(mocks.taskFindFirst).not.toHaveBeenCalled();
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("reuses a source-identical proposal instead of creating another draft", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey ? makePlanningBranch() : makeOptimizeEarthRoot(),
+      );
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          assigneeOrganizationId: null,
+          assigneePersonId: "person-1",
+          createdByUserId: "user-1",
+          id: "existing-draft",
+          isPublic: false,
+          ownerOrganizationId: null,
+          roleTitle: null,
+          sourceArtifacts: [
+            {
+              sourceArtifact: {
+                contentHash: "hash-1",
+                sourceKey: "planner:notion:notion-mercury",
+              },
+            },
+          ],
+          status: TaskStatus.DRAFT,
+          taskKey: "source:mercury",
+          title: "Open Mercury account for EOS",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description:
+                "Open the Mercury account required for Earth Optimization Services banking.",
+              estimatedEffortHours: 1,
+              source: {
+                sourceHash: "hash-1",
+                sourceKey: "notion-mercury",
+                sourceSystem: "notion",
+              },
+              taskKey: "source:mercury",
+              title: "Open Mercury account for EOS",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        createdDrafts: [],
+        existingDrafts: [expect.objectContaining({ taskId: "existing-draft" })],
+      });
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("reports a changed source hash without overwriting the existing draft", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey ? makePlanningBranch() : makeOptimizeEarthRoot(),
+      );
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          assigneeOrganizationId: null,
+          assigneePersonId: "person-1",
+          createdByUserId: "user-1",
+          id: "existing-draft",
+          isPublic: false,
+          ownerOrganizationId: null,
+          roleTitle: null,
+          sourceArtifacts: [
+            {
+              sourceArtifact: {
+                contentHash: "old-hash",
+                sourceKey: "planner:notion:notion-mercury",
+              },
+            },
+          ],
+          status: TaskStatus.DRAFT,
+          taskKey: "source:mercury",
+          title: "Open Mercury account for EOS",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description: "The upstream source changed.",
+              estimatedEffortHours: 1,
+              source: {
+                sourceHash: "new-hash",
+                sourceKey: "notion-mercury",
+                sourceSystem: "notion",
+              },
+              taskKey: "source:mercury",
+              title: "Open Mercury account for EOS",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        changedDrafts: [
+          {
+            newSourceHash: "new-hash",
+            previousSourceHash: "old-hash",
+            taskId: "existing-draft",
+          },
+        ],
+        createdDrafts: [],
+        existingDrafts: [],
+      });
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+      expect(mocks.sourceArtifactUpsert).not.toHaveBeenCalled();
+    });
+
+    it("rejects a personal draft parent outside the caller's planning branch", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey ? makePlanningBranch() : makeOptimizeEarthRoot(),
+      );
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          assigneeOrganizationId: null,
+          assigneePersonId: "person-2",
+          createdByUserId: "user-2",
+          id: "foreign-private-project",
+          isPublic: false,
+          ownerOrganizationId: null,
+          roleTitle: null,
+          status: TaskStatus.ACTIVE,
+          taskKey: "planner:person:person-2",
+          title: "Someone else's project",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description: "This must not cross personal ownership branches.",
+              estimatedEffortHours: 1,
+              parentTaskRef: "foreign-private-project",
+              title: "Attach to a foreign project",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "Invalid or unauthorized parentTaskRef",
+      );
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("rejects promotion when the draft dependency graph has a cycle", async () => {
+      const drafts = [
+        {
+          assigneeOrganizationId: null,
+          assigneePersonId: "person-1",
+          communicationEndpoints: [],
+          contextJson: {},
+          createdByUserId: "user-1",
+          description: "First cyclic draft",
+          estimatedEffortHours: 1,
+          id: "draft-a",
+          isPublic: false,
+          kind: TaskKind.TASK,
+          ownerOrganizationId: null,
+          parentTaskId: "optimize-earth",
+          roleTitle: null,
+          status: TaskStatus.DRAFT,
+          taskKey: "draft:a",
+          title: "Draft A",
+        },
+        {
+          assigneeOrganizationId: null,
+          assigneePersonId: "person-1",
+          communicationEndpoints: [],
+          contextJson: {},
+          createdByUserId: "user-1",
+          description: "Second cyclic draft",
+          estimatedEffortHours: 1,
+          id: "draft-b",
+          isPublic: false,
+          kind: TaskKind.TASK,
+          ownerOrganizationId: null,
+          parentTaskId: "optimize-earth",
+          roleTitle: null,
+          status: TaskStatus.DRAFT,
+          taskKey: "draft:b",
+          title: "Draft B",
+        },
+      ];
+      mocks.taskFindMany.mockImplementation(
+        (args: { where?: { id?: { in?: string[] }; status?: string } }) => {
+          if (args.where?.status === TaskStatus.DRAFT) return drafts;
+          if (args.where?.id?.in?.includes("optimize-earth")) {
+            return [
+              {
+                id: "optimize-earth",
+                kind: TaskKind.PROJECT,
+                parentTaskId: null,
+              },
+            ];
+          }
+          return [];
+        },
+      );
+      mocks.taskEdgeFindMany.mockResolvedValue([
+        {
+          edgeType: "BLOCKS",
+          fromTaskId: "draft-a",
+          probabilityDeltaBase: null,
+          timeDeltaDaysBase: null,
+          toTaskId: "draft-b",
+        },
+        {
+          edgeType: "BLOCKS",
+          fromTaskId: "draft-b",
+          probabilityDeltaBase: null,
+          timeDeltaDaysBase: null,
+          toTaskId: "draft-a",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "promoteTask",
+        arguments: { proposalRefs: ["draft:a", "draft:b"] },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        promoted: [],
+        rejected: [
+          expect.objectContaining({ reason: expect.stringContaining("cycle") }),
+          expect.objectContaining({ reason: expect.stringContaining("cycle") }),
+        ],
+      });
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            fromTaskId: { in: ["draft-a", "draft-b"] },
+          }),
+        }),
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
     it("createTask schema exposes an explicit visibility override", async () => {
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.listTools();
@@ -2514,10 +3182,7 @@ describe("MCP server tool dispatch", () => {
             executionMode: TaskExecutionMode.HUMAN_ONLY,
             kind: TaskKind.ROLE_OPENING,
             locationText: "Edwardsville or St. Louis preferred",
-            preferredSkillTags: [
-              "campaign-management",
-              "nonprofit-outreach",
-            ],
+            preferredSkillTags: ["campaign-management", "nonprofit-outreach"],
             remotePolicy: TaskRemotePolicy.HYBRID,
             requiredCredentialTags: ["nonprofit-campaigns"],
             requiredLanguageTags: ["en"],
@@ -3661,6 +4326,44 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("updateTask rejects a dependency replacement that creates a cycle", async () => {
+      mocks.getTaskDetailData.mockResolvedValueOnce({
+        task: makeCreatedTask({
+          id: "task-a",
+          createdByUserId: "user-1",
+          contextJson: { executor_type: "Self" },
+        }),
+      });
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "task-b", isPublic: false, createdByUserId: "user-1" },
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValue([
+        {
+          edgeType: "BLOCKS",
+          fromTaskId: "task-a",
+          toTaskId: "task-b",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: { taskId: "task-a", depends_on: ["task-b"] },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "Dependency update rejected",
+      );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ fromTaskId: { in: ["task-a"] } }),
+        }),
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+      expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
+    });
+
     it("addDependency stores downstream lift metadata on the edge", async () => {
       mocks.taskFindMany.mockResolvedValue([
         { id: "blocked-task", isPublic: false, createdByUserId: "user-1" },
@@ -3721,6 +4424,60 @@ describe("MCP server tool dispatch", () => {
           skipDuplicates: true,
         }),
       );
+    });
+
+    it("addDependency rejects an edge that closes a dependency cycle", async () => {
+      mocks.taskFindMany.mockResolvedValue([
+        { id: "task-a", isPublic: false, createdByUserId: "user-1" },
+        { id: "task-b", isPublic: false, createdByUserId: "user-1" },
+      ]);
+      mocks.taskEdgeFindMany.mockImplementation(
+        (args: { where?: { fromTaskId?: { in?: string[] } } }) => {
+          const sourceTaskIds = args.where?.fromTaskId?.in ?? [];
+          if (sourceTaskIds.includes("task-a")) {
+            return [
+              {
+                edgeType: "BLOCKS",
+                fromTaskId: "task-a",
+                toTaskId: "middle-task",
+              },
+            ];
+          }
+          if (sourceTaskIds.includes("middle-task")) {
+            return [
+              {
+                edgeType: "BLOCKS",
+                fromTaskId: "middle-task",
+                toTaskId: "task-b",
+              },
+            ];
+          }
+          return [];
+        },
+      );
+
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "addDependency",
+        arguments: {
+          blockedTaskId: "task-a",
+          blockerTaskId: "task-b",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "Dependency update rejected",
+      );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            fromTaskId: { in: ["middle-task"] },
+          }),
+        }),
+      );
+      expect(mocks.taskEdgeUpdateMany).not.toHaveBeenCalled();
+      expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
     });
   });
 
@@ -4323,13 +5080,15 @@ describe("MCP server tool dispatch", () => {
     function makeAutoSpawnedTasks(userId: string) {
       const parentKey = `program:one-percent-treaty:user:${userId}`;
       return [
-        // Parent (huge realEv → always sorts first)
+        // Parent project (never executable)
         makeCreatedTask({
           id: `parent-${userId}`,
           title: "Get 4 billion people to vote on the 1% Treaty",
           taskKey: parentKey,
           createdByUserId: userId,
-          parentTaskId: "1-pct-treaty",
+          parentTaskId: "optimize-earth",
+          activeChildTaskCount: 4,
+          kind: TaskKind.PROJECT,
         }),
         // Share referral URL (highest among subtasks)
         makeCreatedTask({
@@ -4366,7 +5125,7 @@ describe("MCP server tool dispatch", () => {
       ];
     }
 
-    it("a fresh user sees all five auto-spawned onboarding tasks in priority order (parent first, training meta last)", async () => {
+    it("a fresh user sees only the three atomic onboarding actions", async () => {
       const userId = "fresh-user-1";
       const tasks = makeAutoSpawnedTasks(userId);
       mocks.listTasks.mockResolvedValue(tasks);
@@ -4404,15 +5163,11 @@ describe("MCP server tool dispatch", () => {
         title: string;
       }>;
 
-      expect(queue).toHaveLength(5);
-      // Parent always at top because of its priority
-      expect(queue[0]?.taskKey).toBe(
-        `program:one-percent-treaty:user:${userId}`,
-      );
-      // Training meta-task always at the bottom (auto-completes via the others)
-      expect(queue[queue.length - 1]?.taskKey).toBe(
-        `program:one-percent-treaty:user:${userId}:completeTraining`,
-      );
+      expect(queue).toHaveLength(3);
+      expect(queue.some((task) => task.id === `parent-${userId}`)).toBe(false);
+      expect(
+        queue.some((task) => task.taskKey.endsWith(":completeTraining")),
+      ).toBe(false);
       // Share referral URL is the highest-priority concrete first action
       const shareIndex = queue.findIndex((t) =>
         t.taskKey.endsWith(":shareReferralUrl"),
@@ -4423,7 +5178,7 @@ describe("MCP server tool dispatch", () => {
       expect(shareIndex).toBeLessThan(assign1Index);
     });
 
-    it("after share-referral and both assignments verify, queue collapses to just the parent", async () => {
+    it("after the three real actions verify, no parent or completion gate enters the queue", async () => {
       const userId = "fresh-user-2";
       const tasks = makeAutoSpawnedTasks(userId);
       // Simulate the three subtasks completing — listTasks at status=ACTIVE
@@ -4453,13 +5208,7 @@ describe("MCP server tool dispatch", () => {
 
       const body = parseToolBody(result);
       const queue = body.queue as Array<{ id: string; taskKey: string }>;
-      // Parent + training meta survive (training will auto-VERIFY via
-      // refreshHumanityManagementTrainingCompletion in the real system).
-      expect(queue).toHaveLength(2);
-      expect(queue.map((t) => t.taskKey)).toEqual([
-        `program:one-percent-treaty:user:${userId}`,
-        `program:one-percent-treaty:user:${userId}:completeTraining`,
-      ]);
+      expect(queue).toEqual([]);
     });
 
     it("dynamic invitation tasks rank below the auto-spawned subtasks but above completed ones", async () => {
@@ -4505,15 +5254,14 @@ describe("MCP server tool dispatch", () => {
       const inviteIndex = queue.findIndex((t) =>
         t.taskKey.startsWith("program:one-percent-treaty:referral-invitation:"),
       );
-      const trainingIndex = queue.findIndex((t) =>
-        t.taskKey.endsWith(":completeTraining"),
-      );
       const assignIndex = queue.findIndex((t) =>
         t.taskKey.endsWith(":assignFirstHuman"),
       );
-      // Invite ranks below assignFirstHuman (lower priority value) but above training meta
+      // Invite ranks below the higher-priority atomic assignment.
       expect(inviteIndex).toBeGreaterThan(assignIndex);
-      expect(inviteIndex).toBeLessThan(trainingIndex);
+      expect(
+        queue.some((task) => task.taskKey.endsWith(":completeTraining")),
+      ).toBe(false);
     });
 
     it("a signer-reminder subtask appears in the citizen's queue alongside the onboarding tasks", async () => {
@@ -4524,7 +5272,7 @@ describe("MCP server tool dispatch", () => {
         title: "Remind Raffaella Petrini to sign the 1% Treaty",
         taskKey: `program:one-percent-treaty:reminder:va:${userId}`,
         createdByUserId: userId,
-        parentTaskId: "1-pct-treaty-signer-va",
+        parentTaskId: "optimize-earth",
       });
       mocks.listTasks.mockResolvedValue([...baseline, reminderTask]);
       mocks.isTaskBlocked.mockReturnValue(false);
@@ -4559,10 +5307,7 @@ describe("MCP server tool dispatch", () => {
         t.taskKey.startsWith("program:one-percent-treaty:reminder:"),
       );
       expect(reminderIndex).toBeGreaterThanOrEqual(0);
-      // High priority → ranks above the training meta-task and the assignment subtasks
-      expect(reminderIndex).toBeLessThan(
-        queue.findIndex((t) => t.taskKey.endsWith(":completeTraining")),
-      );
+      expect(reminderIndex).toBe(0);
     });
   });
 
