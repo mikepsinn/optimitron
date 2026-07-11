@@ -24,7 +24,7 @@
     "typecheck": "pnpm run build:workspace-deps && pnpm run typecheck:fast",
     "typecheck:fast": "pnpm run typecheck:app && pnpm run typecheck:tests",
     "typecheck:app": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit --project tsconfig.next.json",
-    "typecheck:tests": "tsc --noEmit --project tsconfig.tests.json",
+    "typecheck:tests": "cross-env NODE_OPTIONS=--max-old-space-size=6144 tsc --noEmit --project tsconfig.tests.json",
     "typecheck:full": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
     "test": "pnpm exec vitest run",
     "generate": "tsx scripts/generate-web-data.ts",

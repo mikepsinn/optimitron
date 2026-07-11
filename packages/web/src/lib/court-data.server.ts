@@ -13,7 +13,17 @@ import { z } from "zod";
 import { prisma } from "./prisma";
 import { slugify } from "./slugify";
 
-type DbClient = Prisma.TransactionClient | typeof prisma;
+type DbClient = Pick<
+  Prisma.TransactionClient,
+  | "courtCase"
+  | "courtCaseClaim"
+  | "courtCaseEvidence"
+  | "courtCaseHarm"
+  | "courtCaseParty"
+  | "courtCaseRemedy"
+  | "referendum"
+  | "subject"
+>;
 
 const MAX_TITLE_LENGTH = 300;
 const MAX_TEXT_LENGTH = 10_000;
