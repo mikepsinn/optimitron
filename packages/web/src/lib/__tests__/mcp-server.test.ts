@@ -3081,6 +3081,13 @@ describe("MCP server tool dispatch", () => {
           expect.objectContaining({ reason: expect.stringContaining("cycle") }),
         ],
       });
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            fromTaskId: { in: ["draft-a", "draft-b"] },
+          }),
+        }),
+      );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
@@ -4348,6 +4355,11 @@ describe("MCP server tool dispatch", () => {
       expect(parseToolBody(result).error).toContain(
         "Dependency update rejected",
       );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ fromTaskId: { in: ["task-a"] } }),
+        }),
+      );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
       expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
     });
@@ -4419,13 +4431,30 @@ describe("MCP server tool dispatch", () => {
         { id: "task-a", isPublic: false, createdByUserId: "user-1" },
         { id: "task-b", isPublic: false, createdByUserId: "user-1" },
       ]);
-      mocks.taskEdgeFindMany.mockResolvedValue([
-        {
-          edgeType: "BLOCKS",
-          fromTaskId: "task-a",
-          toTaskId: "task-b",
+      mocks.taskEdgeFindMany.mockImplementation(
+        (args: { where?: { fromTaskId?: { in?: string[] } } }) => {
+          const sourceTaskIds = args.where?.fromTaskId?.in ?? [];
+          if (sourceTaskIds.includes("task-a")) {
+            return [
+              {
+                edgeType: "BLOCKS",
+                fromTaskId: "task-a",
+                toTaskId: "middle-task",
+              },
+            ];
+          }
+          if (sourceTaskIds.includes("middle-task")) {
+            return [
+              {
+                edgeType: "BLOCKS",
+                fromTaskId: "middle-task",
+                toTaskId: "task-b",
+              },
+            ];
+          }
+          return [];
         },
-      ]);
+      );
 
       const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.callTool({
@@ -4439,6 +4468,13 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).error).toContain(
         "Dependency update rejected",
+      );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            fromTaskId: { in: ["middle-task"] },
+          }),
+        }),
       );
       expect(mocks.taskEdgeUpdateMany).not.toHaveBeenCalled();
       expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();

@@ -2305,6 +2305,53 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
   };
 }
 
+async function loadReachableDependencyEdges(
+  prisma: Awaited<ReturnType<typeof getPrisma>>,
+  seedTaskIds: string[],
+) {
+  const visitedSourceIds = new Set<string>();
+  const edgeByKey = new Map<string, ExecutionGraphEdge>();
+  let frontier = Array.from(new Set(seedTaskIds.filter(Boolean)));
+
+  while (frontier.length > 0) {
+    const sourceTaskIds = frontier.filter(
+      (taskId) => !visitedSourceIds.has(taskId),
+    );
+    if (sourceTaskIds.length === 0) break;
+    for (const taskId of sourceTaskIds) visitedSourceIds.add(taskId);
+
+    const edges = await prisma.taskEdge.findMany({
+      where: {
+        deletedAt: null,
+        edgeType: {
+          in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
+        },
+        fromTaskId: { in: sourceTaskIds },
+      },
+      select: {
+        edgeType: true,
+        fromTaskId: true,
+        probabilityDeltaBase: true,
+        timeDeltaDaysBase: true,
+        toTaskId: true,
+      },
+    });
+    const nextTaskIds = new Set<string>();
+    for (const edge of edges) {
+      edgeByKey.set(
+        `${edge.edgeType}:${edge.fromTaskId}:${edge.toTaskId}`,
+        edge,
+      );
+      if (!visitedSourceIds.has(edge.toTaskId)) {
+        nextTaskIds.add(edge.toTaskId);
+      }
+    }
+    frontier = Array.from(nextTaskIds);
+  }
+
+  return Array.from(edgeByKey.values());
+}
+
 function isTaskTimeAvailable(task: PersonalQueueTaskRecord, now: Date) {
   const availableAt = parseTaskDate(task.availableAt);
   return !availableAt || availableAt.getTime() <= now.getTime();
@@ -10970,21 +11017,10 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               draftTasks as unknown as PersonalQueueTaskRecord[],
             );
-            const dependencyEdges = await prisma.taskEdge.findMany({
-              where: {
-                deletedAt: null,
-                edgeType: {
-                  in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
-                },
-              },
-              select: {
-                edgeType: true,
-                fromTaskId: true,
-                probabilityDeltaBase: true,
-                timeDeltaDaysBase: true,
-                toTaskId: true,
-              },
-            });
+            const dependencyEdges = await loadReachableDependencyEdges(
+              prisma,
+              draftTasks.map((task) => task.id),
+            );
             const cycleFindings = auditExecutionGraph({
               edges: dependencyEdges,
               tasks: graph.graphTasks,
@@ -11260,19 +11296,10 @@ export function createMcpServer(
               }
             }
             if (dependencyPatchProvided) {
-              const dependencyEdges = await prisma.taskEdge.findMany({
-                where: {
-                  deletedAt: null,
-                  edgeType: {
-                    in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
-                  },
-                },
-                select: {
-                  edgeType: true,
-                  fromTaskId: true,
-                  toTaskId: true,
-                },
-              });
+              const dependencyEdges = await loadReachableDependencyEdges(
+                prisma,
+                [existingTask.id],
+              );
               const proposedEdges = [
                 ...dependencyEdges.filter(
                   (edge) => edge.toTaskId !== existingTask.id,
@@ -12081,19 +12108,9 @@ export function createMcpServer(
               ...(calculationVersion ? { calculationVersion } : {}),
               ...(notes ? { notes } : {}),
             };
-            const dependencyEdges = await prisma.taskEdge.findMany({
-              where: {
-                deletedAt: null,
-                edgeType: {
-                  in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
-                },
-              },
-              select: {
-                edgeType: true,
-                fromTaskId: true,
-                toTaskId: true,
-              },
-            });
+            const dependencyEdges = await loadReachableDependencyEdges(prisma, [
+              blockedTaskId,
+            ]);
             const cycle = auditExecutionGraph({
               edges: [
                 ...dependencyEdges,
