@@ -21,7 +21,7 @@ RAPPA (Randomized Aggregated Pairwise Preference Allocation) — preference aggr
 
 ## Tests
 
-162 unit tests.
+Unit-tested — run `pnpm --filter @optimitron/wishocracy test` for the live count.
 
 ```bash
 pnpm test --filter @optimitron/wishocracy
