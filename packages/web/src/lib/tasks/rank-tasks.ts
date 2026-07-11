@@ -1,6 +1,7 @@
 import {
   TaskClaimPolicy,
   TaskDifficulty,
+  TaskKind,
   TaskStatus,
 } from "@optimitron/db";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/lib/tasks/impact";
 
 export interface RankableTask {
+  id?: string;
   activeClaimCount?: number;
   activeChildTaskCount?: number;
   blockerStatuses?: TaskStatus[];
@@ -20,6 +22,8 @@ export interface RankableTask {
   estimatedHoursPerWeekMin?: number | null;
   interestTags: string[];
   maxClaims?: number | null;
+  kind?: TaskKind | null;
+  marginalImpactFrame?: TaskImpactFrameSummary | null;
   compensationPaymentRails?: string[] | null;
   preferredAccessTags?: string[] | null;
   preferredCredentialTags?: string[] | null;
@@ -438,6 +442,19 @@ export function hasActiveChildTasks(task: Pick<RankableTask, "activeChildTaskCou
   return (task.activeChildTaskCount ?? 0) > 0;
 }
 
+export function isAtomicExecutionTask(
+  task: Pick<RankableTask, "activeChildTaskCount" | "kind">,
+) {
+  return (
+    (task.kind == null || task.kind === TaskKind.TASK) &&
+    !hasActiveChildTasks(task)
+  );
+}
+
+function getExecutionImpactFrame(task: RankableTask) {
+  return task.marginalImpactFrame ?? task.selectedImpactFrame ?? null;
+}
+
 export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
   const skillScore =
     requiredPreferredFit(task.skillTags, task.preferredSkillTags, user.skillTags) ??
@@ -493,14 +510,17 @@ export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
     0.02,
   );
   const fitScore = scoreWeightedComponents(fitComponents);
-  const impactScore = scoreTaskForAccountability(task);
+  const impactScore = scoreImpactFrame(getExecutionImpactFrame(task));
   const capabilityMultiplier = 0.65 + 0.35 * fitScore;
 
   return impactScore * capabilityMultiplier;
 }
 
 export function scoreTaskForAccountability(task: RankableTask) {
-  const frame = task.selectedImpactFrame;
+  return scoreImpactFrame(task.selectedImpactFrame ?? null);
+}
+
+function scoreImpactFrame(frame: TaskImpactFrameSummary | null) {
   if (!frame) {
     return 0;
   }
@@ -526,12 +546,9 @@ export function rankTasksForUser<T extends RankableTask>(
   );
   const executionPool =
     options?.preferLeafExecution === true
-      ? actionableTasks.filter((task) => !hasActiveChildTasks(task))
+      ? actionableTasks.filter(isAtomicExecutionTask)
       : actionableTasks;
-  const selectionPool =
-    options?.preferLeafExecution === true && executionPool.length > 0
-      ? executionPool
-      : actionableTasks;
+  const selectionPool = executionPool;
 
   return selectionPool
     .map((task) => ({
@@ -550,10 +567,14 @@ export function rankTasksForUser<T extends RankableTask>(
       }
 
       const rightValuePerHour =
-        deriveImpactRatios(right.task.selectedImpactFrame).expectedValuePerHourUsd ?? 0;
+        deriveImpactRatios(getExecutionImpactFrame(right.task)).expectedValuePerHourUsd ?? 0;
       const leftValuePerHour =
-        deriveImpactRatios(left.task.selectedImpactFrame).expectedValuePerHourUsd ?? 0;
-      return rightValuePerHour - leftValuePerHour;
+        deriveImpactRatios(getExecutionImpactFrame(left.task)).expectedValuePerHourUsd ?? 0;
+      if (rightValuePerHour !== leftValuePerHour) {
+        return rightValuePerHour - leftValuePerHour;
+      }
+
+      return (left.task.id ?? "").localeCompare(right.task.id ?? "");
     })
     .slice(0, limit);
 }
