@@ -108,7 +108,6 @@ export interface FakeSpawnSpec {
   impactStatementTemplate: string | null;
   roleTitleTemplate: string | null;
   category: string;
-  difficulty: string;
   estimatedEffortHours: number | null;
   dueDays: number | null;
   availableInDays: number | null;
@@ -590,7 +589,6 @@ export function createFakeTriggerDb() {
                 skillTagTemplates: [],
                 interestTagTemplates: [],
                 category: "OTHER",
-                difficulty: "TRIVIAL",
                 claimPolicy: "ASSIGNED_ONLY",
                 isPublic: false,
                 creatorResolver: "actor",
@@ -657,7 +655,6 @@ export function createFakeTriggerDb() {
               skillTagTemplates: [],
               interestTagTemplates: [],
               category: "OTHER",
-              difficulty: "TRIVIAL",
               claimPolicy: "ASSIGNED_ONLY",
               isPublic: false,
               creatorResolver: "actor",

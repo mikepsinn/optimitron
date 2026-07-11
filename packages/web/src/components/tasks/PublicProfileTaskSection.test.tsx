@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
 import { describe, expect, it, vi } from "vitest";
@@ -28,7 +27,6 @@ function task(overrides: Partial<TaskCardTask>): TaskCardTask {
     completedAt: null,
     currentImpactEstimateSet: null,
     description: "Task description",
-    difficulty: TaskDifficulty.BEGINNER,
     dueAt: null,
     estimatedEffortHours: null,
     id: "task_1",

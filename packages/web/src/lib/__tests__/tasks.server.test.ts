@@ -2,7 +2,6 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
-  TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -129,7 +128,6 @@ function mockTask(overrides: Record<string, unknown> = {}) {
     createdByUserId: "user_creator",
     currentImpactEstimateSet: null,
     description: "Do the task.",
-    difficulty: TaskDifficulty.BEGINNER,
     dueAt: null,
     estimatedEffortHours: null,
     id: "task_1",
@@ -623,7 +621,6 @@ describe("tasks server", () => {
         id: "user_demo",
         interestTags: [],
         isAdmin: false,
-        maxTaskDifficulty: null,
         personId: "person_demo",
         skillTags: [],
       });

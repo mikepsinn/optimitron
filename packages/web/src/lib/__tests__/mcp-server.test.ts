@@ -15,6 +15,7 @@ import {
   TaskCompensationCadence,
   TaskCompensationKind,
   TaskEngagementKind,
+  TaskExecutionAttemptStatus,
   TaskExecutionMode,
   TaskKind,
   TaskRemotePolicy,
@@ -74,6 +75,7 @@ const mocks = vi.hoisted(() => ({
   agentExecutorUpsert: vi.fn(),
   agentExecutorUpdate: vi.fn(),
   taskExecutionAttemptCreate: vi.fn(),
+  taskExecutionAttemptFindMany: vi.fn(),
   canReviewTaskApplications: vi.fn(),
   assertCanReviewTaskApplications: vi.fn(),
   getTaskApplications: vi.fn(),
@@ -305,6 +307,7 @@ vi.mock("../prisma", () => ({
     },
     taskExecutionAttempt: {
       create: mocks.taskExecutionAttemptCreate,
+      findMany: mocks.taskExecutionAttemptFindMany,
     },
     referendum: {
       create: mocks.referendumCreate,
@@ -360,7 +363,6 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
     description: "A task this user owns",
     status: TaskStatus.ACTIVE,
     category: "OUTREACH",
-    difficulty: "TRIVIAL",
     taskKey: "created:1",
     dueAt: null,
     parentTaskId: "optimize-earth",
@@ -427,7 +429,6 @@ function makeMatchingUser(overrides: Record<string, unknown> = {}) {
     languageTags: [],
     latitude: null,
     longitude: null,
-    maxTaskDifficulty: null,
     person: {
       displayName: "Test User",
       handle: "testuser",
@@ -507,6 +508,16 @@ beforeEach(() => {
       }),
   );
   mocks.listTasks.mockResolvedValue([]);
+  mocks.taskFindFirst.mockImplementation(
+    async (args?: { where?: { id?: string } }) =>
+      args?.where?.id === "personal-project"
+        ? {
+            ...makePlanningBranch(),
+            createdByUserId: "user-1",
+            isPublic: false,
+          }
+        : null,
+  );
   mocks.taskFindMany.mockImplementation(
     async (args?: { where?: { id?: { in?: string[] } } }) =>
       args?.where?.id?.in?.includes("optimize-earth")
@@ -564,6 +575,7 @@ beforeEach(() => {
     status: AgentExecutorStatus.PAUSED,
   });
   mocks.taskExecutionAttemptCreate.mockResolvedValue({ id: "attempt-1" });
+  mocks.taskExecutionAttemptFindMany.mockResolvedValue([]);
   mocks.referendumCreate.mockResolvedValue({
     id: "ref-new",
     title: "Trial Abundance Referendum",
@@ -2272,7 +2284,7 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getExecutionPlan", () => {
-    it("simulates Mercury completion before bank-dependent work and excludes projects", async () => {
+    it("simulates dependencies and excludes parents and application listings", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
           id: "eos-project",
@@ -2280,6 +2292,11 @@ describe("MCP server tool dispatch", () => {
           activeChildTaskCount: 2,
         }),
         makeCreatedTask({ id: "mercury", estimatedEffortHours: 1 }),
+        makeCreatedTask({
+          id: "role-listing",
+          kind: TaskKind.ROLE_OPENING,
+          estimatedEffortHours: 0.1,
+        }),
         makeCreatedTask({
           id: "bank-dependent",
           estimatedEffortHours: 1,
@@ -2427,6 +2444,106 @@ describe("MCP server tool dispatch", () => {
       expect(myQueue[0]).toMatchObject({ priority: 100, executorType: "Self" });
       expect(myQueue[0]?.sprintPriority).toBeUndefined();
       expect(myQueue[0]?.taskPriority).toBeUndefined();
+    });
+
+    it("reports unknown capability evidence instead of executing the task", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({ id: "bookkeeping", skillTags: ["bookkeeping"] }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+
+      expect(body.queue).toEqual([]);
+      expect(body.itemsNeedingCapabilityConfirmation).toEqual([
+        expect.objectContaining({ id: "bookkeeping" }),
+      ]);
+      expect(body.capabilityExcludedWork).toEqual([]);
+    });
+
+    it("reports a recorded capability mismatch separately from unknown data", async () => {
+      mocks.userFindUnique.mockResolvedValue(
+        makeMatchingUser({ skillTags: ["writing"] }),
+      );
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({ id: "bookkeeping", skillTags: ["bookkeeping"] }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+
+      expect(body.queue).toEqual([]);
+      expect(body.itemsNeedingCapabilityConfirmation).toEqual([]);
+      expect(body.capabilityExcludedWork).toEqual([
+        expect.objectContaining({ id: "bookkeeping" }),
+      ]);
+    });
+
+    it("uses target actuals before candidate, task, and impact effort estimates", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({ id: "actual", estimatedEffortHours: 4 }),
+        makeCreatedTask({ id: "candidate", estimatedEffortHours: 3 }),
+      ]);
+      mocks.taskExecutionAttemptFindMany.mockResolvedValue([
+        {
+          actualDurationSeconds: 7200,
+          agentExecutorId: null,
+          completedAt: new Date("2026-07-10T12:00:00.000Z"),
+          executorOrganizationId: null,
+          executorPersonId: null,
+          executorUserId: "user-1",
+          status: TaskExecutionAttemptStatus.COMPLETED,
+          taskId: "actual",
+          updatedAt: new Date("2026-07-10T12:00:00.000Z"),
+        },
+      ]);
+      mocks.taskCandidateMatchFindMany.mockResolvedValue([
+        {
+          agentExecutorId: null,
+          candidateOrganizationId: null,
+          candidatePersonId: null,
+          candidateUserId: "user-1",
+          estimatedDurationSeconds: 3600,
+          status: TaskCandidateMatchStatus.SUGGESTED,
+          taskId: "actual",
+          updatedAt: new Date("2026-07-09T12:00:00.000Z"),
+        },
+        {
+          agentExecutorId: null,
+          candidateOrganizationId: null,
+          candidatePersonId: null,
+          candidateUserId: "user-1",
+          estimatedDurationSeconds: 1800,
+          status: TaskCandidateMatchStatus.CONTACTED,
+          taskId: "candidate",
+          updatedAt: new Date("2026-07-09T12:00:00.000Z"),
+        },
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+      const queue = body.queue as Array<Record<string, unknown>>;
+
+      expect(queue.find((task) => task.id === "actual")).toMatchObject({
+        effortEstimateSource: "target-actual-history",
+        hours: 2,
+      });
+      expect(queue.find((task) => task.id === "candidate")).toMatchObject({
+        effortEstimateSource: "candidate-estimate",
+        hours: 0.5,
+      });
     });
 
     it("hides blocked tasks until all blockers are verified", async () => {
@@ -2735,6 +2852,7 @@ describe("MCP server tool dispatch", () => {
                 sourceSystem: "notion",
                 sourceUrl: "https://notion.so/mercury",
               },
+              parentTaskRef: "$target-root",
               title: "Open Mercury account for EOS",
             },
           ],
@@ -2809,6 +2927,7 @@ describe("MCP server tool dispatch", () => {
                 expectedEconomicValueUsdBase: 1_000,
                 successProbabilityBase: 0.8,
               },
+              parentTaskRef: "$target-root",
               title: "Review the personal plan",
             },
           ],
@@ -2850,6 +2969,7 @@ describe("MCP server tool dispatch", () => {
               description:
                 "This draft must not attach below an invalid branch.",
               estimatedEffortHours: 1,
+              parentTaskRef: "$target-root",
               title: "Private planning task",
             },
           ],
@@ -2872,6 +2992,7 @@ describe("MCP server tool dispatch", () => {
             {
               description: "A draft cannot occupy another target's branch key.",
               estimatedEffortHours: 1,
+              parentTaskRef: "$target-root",
               taskKey: "planner:person:person-2",
               title: "Reserved key collision",
             },
@@ -2929,6 +3050,7 @@ describe("MCP server tool dispatch", () => {
                 sourceKey: "notion-mercury",
                 sourceSystem: "notion",
               },
+              parentTaskRef: "$target-root",
               taskKey: "source:mercury",
               title: "Open Mercury account for EOS",
             },
@@ -2985,6 +3107,7 @@ describe("MCP server tool dispatch", () => {
                 sourceKey: "notion-mercury",
                 sourceSystem: "notion",
               },
+              parentTaskRef: "$target-root",
               taskKey: "source:mercury",
               title: "Open Mercury account for EOS",
             },
@@ -3184,6 +3307,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Campaign manager",
           description: "Coordinate nonprofit endorsements.",
           category: "OUTREACH",
@@ -3256,6 +3380,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "no description",
             category: "ENGINEERING",
             acceptanceCriteria: ["x"],
@@ -3277,6 +3402,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "no category",
             description: "x",
             acceptanceCriteria: ["x"],
@@ -3296,6 +3422,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "no impact",
             description: "x",
             category: "ENGINEERING",
@@ -3317,6 +3444,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "no acceptance",
             description: "Plain prose with no checklist bullets at all.",
             category: "ENGINEERING",
@@ -3338,6 +3466,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "no economics",
             description: "x",
             category: "ENGINEERING",
@@ -3351,6 +3480,53 @@ describe("MCP server tool dispatch", () => {
         expect(errMsg).toContain("hours");
         expect(errMsg).toContain("value");
         expect(errMsg).toContain("p_success");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects a task without an explicit parent", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            title: "unclassified task",
+            description: "This task has no selected objective.",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["A parent is selected"],
+            impactStatement: "Prevents false task-tree structure.",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain(
+          "parentTaskId is required",
+        );
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects Optimize Earth as a direct task parent", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: {
+            parentTaskId: "optimize-earth",
+            title: "junk drawer task",
+            description: "This task should have a more specific objective.",
+            category: "ENGINEERING",
+            acceptanceCriteria: ["A specific parent is selected"],
+            impactStatement: "Keeps the task tree meaningful.",
+            hours: 1,
+            value: 100,
+            p_success: 0.5,
+          },
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).error).toContain(
+          "Optimize Earth is reserved",
+        );
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -3379,6 +3555,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "minimal-but-valid",
             description: "x",
             category: "ENGINEERING",
@@ -3387,7 +3564,7 @@ describe("MCP server tool dispatch", () => {
             hours: 1,
             value: 100,
             p_success: 0.5,
-            // Skipped: cash_cost, executor_type, difficulty, timeToImpactStartDays, taskKey
+            // Skipped: cash_cost, executor_type, timeToImpactStartDays, taskKey
           },
         });
         const body = parseToolBody(result);
@@ -3395,7 +3572,6 @@ describe("MCP server tool dispatch", () => {
           expect.arrayContaining([
             "cash_cost",
             "executor_type",
-            "difficulty",
             "timeToImpactStartDays",
             expect.stringContaining("taskKey"),
           ]),
@@ -3427,6 +3603,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "markdown-only criteria",
             description:
               "## Acceptance criteria\n- [ ] bullet one\n- [ ] bullet two\n",
@@ -3468,6 +3645,7 @@ describe("MCP server tool dispatch", () => {
         await client.callTool({
           name: "createTask",
           arguments: {
+            parentTaskId: "personal-project",
             title: "explicit p_success",
             description: "x",
             category: "ENGINEERING",
@@ -3496,6 +3674,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Public Earth task",
           description:
             "A public task that should be rejected for non-admin users.",
@@ -3546,6 +3725,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Fund the campaign",
           description:
             "Fund the campaign and tell the world the money did useful work.",
@@ -3602,6 +3782,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Internal org task",
           description:
             "An internal task assigned to an organization but not publicly visible.",
@@ -3658,6 +3839,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Outreach to Test Foundation",
           description:
             "Wishonia-style outreach. Should not be visible on the public Earth feed.",
@@ -3694,6 +3876,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Public Earth task",
           description:
             "A public task that should be rejected for non-admin users.",
@@ -3750,6 +3933,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Build product demo",
           description: "Record a 5-minute walkthrough of the new dashboard.",
           category: "ENGINEERING",
@@ -3835,6 +4019,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Create prerequisite chain",
           description:
             "An admin task that depends on another user's private blocker.",
@@ -3883,6 +4068,7 @@ describe("MCP server tool dispatch", () => {
       await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Add site inventory tools",
           category: "ENGINEERING",
           impactStatement:
@@ -3937,6 +4123,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          parentTaskId: "personal-project",
           title: "Add escaped inventory tools",
           category: "ENGINEERING",
           impactStatement:
@@ -3983,9 +4170,10 @@ describe("MCP server tool dispatch", () => {
       await client.callTool({
         name: "createTask",
         arguments: {
-          title: "Without parent or assignee or sourceUrl column",
+          parentTaskId: "personal-project",
+          title: "Without assignee or sourceUrl column",
           description:
-            "Create a task with no parent, no assignee, and a sourceUrl that should be folded into contextJson.",
+            "Create a task with no assignee and a sourceUrl that should be folded into contextJson.",
           category: "ENGINEERING",
           acceptanceCriteria: [
             "sourceUrl is folded into contextJson.sourceUrls",
@@ -4003,7 +4191,7 @@ describe("MCP server tool dispatch", () => {
       const data = (
         mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
       ).data;
-      expect(data.parentTaskId).toBe("optimize-earth");
+      expect(data.parentTaskId).toBe("personal-project");
       expect(data).not.toHaveProperty("assigneePersonId");
       expect(data).not.toHaveProperty("assigneeOrganizationId");
       expect(data).not.toHaveProperty("sourceUrl");
@@ -4014,6 +4202,16 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("createTask passes parentTaskId / assigneePersonId when supplied (the spread is conditional, not always-omit)", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        assigneeOrganizationId: null,
+        assigneePersonId: "person-1",
+        createdByUserId: "user-1",
+        id: "parent-1",
+        isPublic: false,
+        kind: TaskKind.TASK,
+        ownerOrganizationId: null,
+        parentTaskId: "optimize-earth",
+      });
       mocks.taskFindMany.mockResolvedValue([
         { id: "parent-1", isPublic: false, createdByUserId: "user-1" },
       ]);

@@ -8,7 +8,6 @@ import {
 const agent = {
   availableHoursPerWeek: 10,
   interestTags: ['growth', 'governance', 'systems'],
-  maxTaskDifficulty: 'ADVANCED',
   skillTags: ['typescript', 'growth', 'research', 'policy'],
 } as const;
 

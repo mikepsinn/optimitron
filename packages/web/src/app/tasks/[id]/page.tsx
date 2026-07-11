@@ -409,7 +409,6 @@ export default async function TaskDetailPage({
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
     claimPolicy: task.claimPolicy,
-    difficulty: task.difficulty,
     estimatedEffortHours: task.estimatedEffortHours,
     interestTags: task.interestTags,
     maxClaims: task.maxClaims,

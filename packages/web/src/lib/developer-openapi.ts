@@ -978,7 +978,6 @@ export function getDeveloperOpenApiDocument(origin: string) {
             isPublic: { type: "boolean" },
             status: { type: "string" },
             category: { type: "string" },
-            difficulty: { type: "string" },
             dueAt: { type: "string", format: "date-time" },
             estimatedEffortHours: { type: "number" },
             assigneePersonId: { type: "string" },

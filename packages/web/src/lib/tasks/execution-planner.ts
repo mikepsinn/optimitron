@@ -21,6 +21,8 @@ export interface ExecutionPlanningTask {
   activeChildTaskCount: number;
   availableAt: Date | string | null;
   blockers: PlanningBlocker[];
+  capabilityReasons: string[];
+  capabilityStatus: "eligible" | "unknown" | "ineligible";
   completionMilestone?: boolean;
   deadlinePolicy: "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
   deadlineStatus:
@@ -31,7 +33,14 @@ export interface ExecutionPlanningTask {
     | "missed"
     | "expired";
   dueAt: Date | string | null;
+  executionEligible: boolean;
   executorType: string;
+  effortEstimateSource:
+    | "target-actual-history"
+    | "candidate-estimate"
+    | "task-estimate"
+    | "impact-frame"
+    | "missing";
   hasMarginalEstimate: boolean;
   hours: number | null;
   id: string;
@@ -67,9 +76,19 @@ export interface ExecutionPlan {
     id: string;
     title: string;
   }>;
+  capabilityExcludedWork: Array<{
+    id: string;
+    reasons: string[];
+    title: string;
+  }>;
   checklist: PlannedAction[];
   fixedCommitmentMinutes: number;
   itemsNeedingEstimates: Array<{
+    id: string;
+    reasons: string[];
+    title: string;
+  }>;
+  itemsNeedingCapabilityConfirmation: Array<{
     id: string;
     reasons: string[];
     title: string;
@@ -148,7 +167,15 @@ function taskMinutes(task: ExecutionPlanningTask) {
 }
 
 function isAtomicTask(task: ExecutionPlanningTask) {
-  return task.activeChildTaskCount === 0 && task.completionMilestone !== true;
+  return (
+    task.executionEligible &&
+    task.activeChildTaskCount === 0 &&
+    task.completionMilestone !== true
+  );
+}
+
+function hasConfirmedCapability(task: ExecutionPlanningTask) {
+  return task.capabilityStatus === "eligible";
 }
 
 function isTimeAvailable(task: ExecutionPlanningTask, now: Date) {
@@ -237,6 +264,7 @@ function planHumanChecklist(input: {
       .filter((task) => task.executorType !== AI_EXECUTOR)
       .filter((task) => !completedIds.has(task.id))
       .filter((task) => isAtomicTask(task) && task.rooted)
+      .filter(hasConfirmedCapability)
       .filter((task) => isTimeAvailable(task, input.now))
       .filter((task) => task.deadlineStatus !== "expired")
       .filter(hasUsableEstimate)
@@ -296,6 +324,7 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
   const proposedAiAssistedWork = input.tasks
     .filter((task) => task.executorType === AI_EXECUTOR)
     .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter(hasConfirmedCapability)
     .filter((task) => isTimeAvailable(task, now))
     .filter((task) => task.deadlineStatus !== "expired")
     .filter(hasUsableEstimate)
@@ -310,6 +339,8 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
     }));
 
   const blockedWork = input.tasks
+    .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter(hasConfirmedCapability)
     .map((task) => ({
       blockerTaskIds: unresolvedBlockers(task, completedIds),
       id: task.id,
@@ -320,6 +351,7 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
 
   const itemsNeedingEstimates = input.tasks
     .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter(hasConfirmedCapability)
     .filter((task) => !hasUsableEstimate(task))
     .map((task) => {
       const reasons = [...task.validationNotes];
@@ -339,6 +371,26 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
     })
     .sort((left, right) => left.id.localeCompare(right.id));
 
+  const itemsNeedingCapabilityConfirmation = input.tasks
+    .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter((task) => task.capabilityStatus === "unknown")
+    .map((task) => ({
+      id: task.id,
+      reasons: task.capabilityReasons,
+      title: task.title,
+    }))
+    .sort((left, right) => left.id.localeCompare(right.id));
+
+  const capabilityExcludedWork = input.tasks
+    .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter((task) => task.capabilityStatus === "ineligible")
+    .map((task) => ({
+      id: task.id,
+      reasons: task.capabilityReasons,
+      title: task.title,
+    }))
+    .sort((left, right) => left.id.localeCompare(right.id));
+
   return {
     assumptions: [
       "This is repeated feasible-frontier selection, not a globally optimal finite schedule.",
@@ -346,12 +398,15 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
       "Completing a checklist item is simulated only to test which dependency becomes feasible next.",
       "Calendar commitments reduce capacity but are not imported as tasks.",
       "AI-routed work is proposed for approval and is never started by this planner.",
+      "Tasks with unknown or mismatched required capabilities are reported separately and cannot enter an execution queue.",
     ],
     availableMinutes,
     blockedWork,
+    capabilityExcludedWork,
     checklist,
     fixedCommitmentMinutes,
     itemsNeedingEstimates,
+    itemsNeedingCapabilityConfirmation,
     nextAction: checklist[0] ?? null,
     plannerVersion: EXECUTION_PLANNER_VERSION,
     proposedAiAssistedWork,

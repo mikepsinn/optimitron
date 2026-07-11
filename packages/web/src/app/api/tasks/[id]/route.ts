@@ -1,7 +1,6 @@
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
@@ -37,7 +36,6 @@ const UpdateTaskBodySchema = z
     category: z.nativeEnum(TaskCategory).nullish(),
     claimPolicy: z.nativeEnum(TaskClaimPolicy).nullish(),
     description: z.string().nullish(),
-    difficulty: z.nativeEnum(TaskDifficulty).nullish(),
     dueAt: z.string().datetime().nullish(),
     estimatedEffortHours: z.number().nonnegative().nullish(),
     interestTags: z.array(z.string()).nullish(),

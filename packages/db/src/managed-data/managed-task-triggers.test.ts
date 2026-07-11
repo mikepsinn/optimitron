@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   type PrismaClient,
 } from "../generated/prisma/client.js";
 import {
@@ -25,7 +24,6 @@ const baseTrigger: ManagedTaskTriggerInput = {
       titleTemplate: "Original title",
       descriptionTemplate: "Original body",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       claimPolicy: "ASSIGNED_ONLY",
       creatorResolver: "actor",
       assigneePersonResolver: "actor",
@@ -186,7 +184,6 @@ describe("syncManagedTaskTriggers", () => {
       kind: "root",
       titleTemplate: "Original title",
       category: TaskCategory.OTHER,
-      difficulty: TaskDifficulty.TRIVIAL,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
     });
 

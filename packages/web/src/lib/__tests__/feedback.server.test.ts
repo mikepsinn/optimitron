@@ -1,4 +1,4 @@
-import { TaskCategory, TaskDifficulty } from "@optimitron/db";
+import { TaskCategory } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -59,7 +59,6 @@ describe("createFeedbackTask", () => {
       expect.objectContaining({
         assigneePersonId: "person-admin-1",
         category: TaskCategory.OTHER,
-        difficulty: TaskDifficulty.BEGINNER,
         isPublic: false,
         title: "Review site feedback: The organization email is confusing.",
       }),

@@ -184,7 +184,6 @@ Claude:
         "titleTemplate": "Write your 1% Treaty elevator pitch",
         "descriptionTemplate": "One paragraph. Why does the treaty matter? Who is harmed by inaction? Plain words.",
         "category": "OTHER",
-        "difficulty": "TRIVIAL",
         "estimatedEffortHours": 0.25,
         "ownerResolver": "actor",
         "assigneePersonResolver": "actor",

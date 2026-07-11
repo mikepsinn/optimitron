@@ -1441,7 +1441,6 @@ export async function syncManagedTreatyAccountabilityData() {
     title: "Train the major AIs to end war and disease.",
     description: TRAIN_AI_DESCRIPTION,
     category: "OUTREACH",
-    difficulty: "TRIVIAL",
     status: "ACTIVE",
     isPublic: true,
     sortOrder: -100,
@@ -1580,7 +1579,6 @@ export async function syncManagedTreatyAccountabilityData() {
           "[Read the treaty ->](https://manual.warondisease.org/knowledge/solution/1-percent-treaty.html)",
         ].join("\n"),
         category: "GOVERNANCE",
-        difficulty: "TRIVIAL",
         status: "ACTIVE",
         isPublic: true,
         dueAt: TREATY_DUE_AT,
@@ -2171,7 +2169,6 @@ export async function syncManagedTreatyAccountabilityData() {
           ? buildFrontierLabGrantDescription(target.name)
           : buildAlignmentFunderGrantDescription(target.name),
         category: "OUTREACH",
-        difficulty: "BEGINNER",
         status: "ACTIVE",
         isPublic: true,
         dueAt: LAB_GRANT_DUE_AT,
@@ -2335,6 +2332,7 @@ export async function syncManagedTreatyAccountabilityData() {
       });
     }
 
+    const signerImpactStatement = `Redirect 1% of ${record.countryName}'s military spending (${formatUsdCompact(annualRedirectUsd)}/yr) from weapons to pragmatic clinical trials.`;
     const signerContextJson: Prisma.InputJsonValue = {
       assigneeProfile: {
         role: record.roleTitle,
@@ -2348,12 +2346,6 @@ export async function syncManagedTreatyAccountabilityData() {
           source: `${record.countryName} — job description, every citizen, every day`,
         },
         contactChannels,
-      },
-      difficulty: {
-        whatItMeans: `Redirect 1% of ${record.countryName}'s military spending (${formatUsdCompact(annualRedirectUsd)}/yr) from weapons to pragmatic clinical trials.`,
-        label: "Sign a piece of paper",
-        timeRequiredSeconds: 30,
-        skillsRequired: "Holding a pen",
       },
       reminder: {
         intro: `30 seconds. Remind them.`,
@@ -2402,8 +2394,8 @@ export async function syncManagedTreatyAccountabilityData() {
         roleTitle: record.roleTitle,
         title: "Sign the 1% Treaty",
         description: `**${leaderName}** — ${record.roleTitle} of ${record.countryName}. One job: redirect 1% of ${record.countryName}'s military spending into pragmatic clinical trials. Overdue.`,
+        impactStatement: signerImpactStatement,
         category: "GOVERNANCE",
-        difficulty: "EXPERT",
         status: "ACTIVE",
         isPublic: true,
         dueAt: TREATY_DUE_AT,

@@ -1,7 +1,7 @@
 import {
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskImpactFrameKey,
+  TaskKind,
   TaskStatus,
 } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
@@ -126,7 +126,6 @@ describe("rankTasksForUser", () => {
     credentialTags: ["campaign-management"],
     interestTags: ["tobacco-policy", "public-health"],
     languageTags: ["en", "es"],
-    maxTaskDifficulty: TaskDifficulty.INTERMEDIATE,
     preferredPaymentRails: ["stripe"],
     regionCode: "IL",
     skillTags: ["writing", "spanish"],
@@ -137,7 +136,6 @@ describe("rankTasksForUser", () => {
   const strongFitTask = {
     activeClaimCount: 0,
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
-    difficulty: TaskDifficulty.BEGINNER,
     estimatedEffortHours: 2,
     id: "strong-fit",
     interestTags: ["tobacco-policy"],
@@ -188,7 +186,6 @@ describe("rankTasksForUser", () => {
   const weakFitTask = {
     activeClaimCount: 0,
     claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
-    difficulty: TaskDifficulty.ADVANCED,
     estimatedEffortHours: 8,
     id: "weak-fit",
     interestTags: ["defi"],
@@ -206,21 +203,21 @@ describe("rankTasksForUser", () => {
     status: TaskStatus.ACTIVE,
   };
 
-  it("scores stronger overlaps above weak fits", () => {
+  it("excludes tasks when recorded skills miss a hard requirement", () => {
     expect(scoreTaskForUser(strongFitTask, user)).toBeGreaterThan(0.3);
     expect(scoreTaskForUser(weakFitTask, user)).toBeLessThan(0.2);
 
     const ranked = rankTasksForUser([weakFitTask, strongFitTask], user, 2);
 
     expect(ranked[0]?.task).toBe(strongFitTask);
-    expect(ranked[1]?.task).toBe(weakFitTask);
+    expect(ranked).toHaveLength(1);
   });
 
   it("prioritizes much higher-value executable work over a merely better fit", () => {
     const modestFitHugeImpactTask = {
       ...weakFitTask,
-      difficulty: TaskDifficulty.INTERMEDIATE,
       estimatedEffortHours: 4,
+      skillTags: ["writing"],
       selectedImpactFrame: {
         ...weakFitTask.selectedImpactFrame,
         delayDalysLostPerDayBase: 50_000,
@@ -272,7 +269,7 @@ describe("rankTasksForUser", () => {
     );
   });
 
-  it("keeps impact dominant over a merely cleaner candidate fit", () => {
+  it("does not let impact override a required capability mismatch", () => {
     const perfectLowImpactOpening = {
       ...strongFitTask,
       compensationPaymentRails: ["stripe"],
@@ -322,7 +319,9 @@ describe("rankTasksForUser", () => {
       2,
     );
 
-    expect(ranked[0]?.task).toBe(poorFitHugeImpactTask);
+    expect(ranked.map(({ task }) => task.id)).toEqual([
+      perfectLowImpactOpening.id,
+    ]);
   });
 
   it("enforces claim-capacity constraints before ranking", () => {
@@ -363,6 +362,7 @@ describe("rankTasksForUser", () => {
     const unblockedTask = {
       ...weakFitTask,
       blockerStatuses: [TaskStatus.VERIFIED],
+      skillTags: ["writing"],
     };
 
     const ranked = rankTasksForUser([blockedTask, unblockedTask], user, 10);
@@ -400,8 +400,8 @@ describe("rankTasksForUser", () => {
     const leafTask = {
       ...weakFitTask,
       activeChildTaskCount: 0,
-      difficulty: TaskDifficulty.INTERMEDIATE,
       estimatedEffortHours: 3,
+      skillTags: ["writing"],
       selectedImpactFrame: {
         ...weakFitTask.selectedImpactFrame,
         delayDalysLostPerDayBase: 40_000,
@@ -431,6 +431,31 @@ describe("rankTasksForUser", () => {
         preferLeafExecution: true,
       }),
     ).toEqual([]);
+  });
+
+  it("allows childless projects but excludes application and bounty listings", () => {
+    const leafProject = {
+      ...strongFitTask,
+      activeChildTaskCount: 0,
+      id: "leaf-project",
+      kind: TaskKind.PROJECT,
+    };
+    const listings = [
+      TaskKind.BOUNTY,
+      TaskKind.ROLE_OPENING,
+      TaskKind.VOLUNTEER_ROLE,
+    ].map((kind) => ({
+      ...strongFitTask,
+      activeChildTaskCount: 0,
+      id: `listing-${kind}`,
+      kind,
+    }));
+
+    expect(
+      rankTasksForUser([...listings, leafProject], user, 10, {
+        preferLeafExecution: true,
+      }).map(({ task }) => task.id),
+    ).toEqual(["leaf-project"]);
   });
 
   it("uses the required task ID as the deterministic final tie-breaker", () => {

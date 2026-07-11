@@ -68,7 +68,6 @@ describe("profile route", () => {
         lastIncomeReportedAt: "2026-03-11T18:00:00.000Z",
         latitude: null,
         longitude: null,
-        maxTaskDifficulty: null,
         postalCode: null,
         personId: null,
         regionCode: "US-TX",

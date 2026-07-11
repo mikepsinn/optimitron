@@ -1,3 +1,8 @@
+import {
+  assessTaskCapability,
+  type TaskCapabilityAssessment,
+} from './task-capability.js';
+
 export type OptimalActionKind =
   | 'EXECUTE_DIRECT'
   | 'EXECUTE_VIA_AGENT'
@@ -19,16 +24,19 @@ export type OptimalActorKind =
   | 'AUTOMATION';
 
 export interface OptimalActorCapabilities {
+  accessTags?: string[] | null;
   availableHoursPerWeek?: number | null;
   budgetUsd?: number | null;
+  credentialTags?: string[] | null;
   hourlyRateUsd?: number | null;
   interestTags: string[];
   kind?: OptimalActorKind;
-  maxTaskDifficulty?: string | null;
+  languageTags?: string[] | null;
   organizationId?: string | null;
   organizationTags?: string[] | null;
   runwayDays?: number | null;
   skillTags: string[];
+  toolTags?: string[] | null;
 }
 
 export type OptimalIncentiveKind = 'WISH_POINT' | 'WISH_TOKEN';
@@ -74,9 +82,9 @@ export interface OptimalActionTask {
   category?: string | null;
   claimPolicy?: string | null;
   contextJson?: unknown;
-  difficulty?: string | null;
   dueAt?: Date | string | null;
   estimatedEffortHours?: number | null;
+  executionMode?: string | null;
   id: string;
   impact?: {
     delayEconomicValueUsdLostPerDay?: number | null;
@@ -87,6 +95,11 @@ export interface OptimalActionTask {
   isPublic?: boolean | null;
   maxClaims?: number | null;
   outgoingEdges?: OptimalActionTaskEdge[] | null;
+  preferredSkillTags?: string[] | null;
+  requiredAccessTags?: string[] | null;
+  requiredCredentialTags?: string[] | null;
+  requiredLanguageTags?: string[] | null;
+  requiredToolTags?: string[] | null;
   selectedImpactFrame?: OptimalImpactFrame | null;
   skillTags?: string[] | null;
   status?: string | null;
@@ -200,7 +213,6 @@ const DEFAULT_POLICY: Required<Omit<OptimalObjectivePolicy, 'platformRunwayDays'
 
 const RESOLVED_TASK_STATUSES = new Set(['VERIFIED', 'COMPLETED', 'DONE']);
 const ACTIVE_TASK_STATUSES = new Set(['ACTIVE', 'IN_PROGRESS']);
-const DIFFICULTY_ORDER = ['TRIVIAL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
 
 function mergePolicy(policy?: OptimalObjectivePolicy) {
   return {
@@ -256,24 +268,6 @@ function jaccardScore(left: string[] | null | undefined, right: string[] | null 
   return union.size === 0 ? 0 : overlap / union.size;
 }
 
-function difficultyFitScore(taskDifficulty: string | null | undefined, maxDifficulty: string | null | undefined) {
-  if (!taskDifficulty || !maxDifficulty) {
-    return 0.75;
-  }
-
-  const taskIndex = DIFFICULTY_ORDER.indexOf(taskDifficulty.toUpperCase());
-  const actorIndex = DIFFICULTY_ORDER.indexOf(maxDifficulty.toUpperCase());
-  if (taskIndex === -1 || actorIndex === -1) {
-    return 0.75;
-  }
-
-  if (taskIndex <= actorIndex) {
-    return 1 - Math.max(0, actorIndex - taskIndex) * 0.08;
-  }
-
-  return Math.max(0.1, 0.55 - (taskIndex - actorIndex) * 0.18);
-}
-
 function hoursFitScore(taskHours: number | null | undefined, availableHours: number | null | undefined) {
   const effort = finiteNumber(taskHours);
   const capacity = finiteNumber(availableHours);
@@ -289,7 +283,32 @@ function hoursFitScore(taskHours: number | null | undefined, availableHours: num
   return clamp(1 - (effort - capacity) / Math.max(1, capacity), 0.1, 1);
 }
 
+function executorKind(actor: OptimalActorCapabilities) {
+  return actor.kind === 'AGENT' || actor.kind === 'AUTOMATION' ? 'agent' : 'human';
+}
+
+export function assessOptimalActorCapability(
+  task: OptimalActionTask,
+  actor: OptimalActorCapabilities,
+): TaskCapabilityAssessment {
+  return assessTaskCapability({
+    executor: {
+      accessTags: actor.accessTags,
+      credentialTags: actor.credentialTags,
+      executorKind: executorKind(actor),
+      languageTags: actor.languageTags,
+      skillTags: [...actor.skillTags, ...(actor.organizationTags ?? [])],
+      toolTags: actor.toolTags,
+    },
+    task,
+  });
+}
+
 export function scoreActorCapability(task: OptimalActionTask, actor: OptimalActorCapabilities) {
+  if (assessOptimalActorCapability(task, actor).status !== 'eligible') {
+    return 0;
+  }
+
   const isAssignedOrganization =
     actor.kind === 'ORGANIZATION' &&
     typeof actor.organizationId === 'string' &&
@@ -301,18 +320,23 @@ export function scoreActorCapability(task: OptimalActionTask, actor: OptimalActo
     task.assigneeOrganization?.type ?? '',
     task.assigneeOrganization?.name ?? '',
   ].filter(Boolean);
-  const skillScore = Math.max(
-    jaccardScore(task.skillTags, actor.skillTags),
-    jaccardScore(task.skillTags, actorSkillTags),
-  );
-  const interestScore = Math.max(
-    jaccardScore(task.interestTags, actor.interestTags),
-    jaccardScore([...(task.interestTags ?? []), ...taskOrgTags], actorInterestTags),
-  );
-  const difficultyScore = difficultyFitScore(task.difficulty, actor.maxTaskDifficulty);
+  const skillScore = task.preferredSkillTags?.length
+    ? Math.max(
+        jaccardScore(task.preferredSkillTags, actor.skillTags),
+        jaccardScore(task.preferredSkillTags, actorSkillTags),
+      )
+    : 1;
+  const relevantInterests = [...(task.interestTags ?? []), ...taskOrgTags];
+  const interestScore =
+    relevantInterests.length === 0
+      ? 1
+      : Math.max(
+          jaccardScore(task.interestTags, actor.interestTags),
+          jaccardScore(relevantInterests, actorInterestTags),
+        );
   const effortScore = hoursFitScore(task.estimatedEffortHours, actor.availableHoursPerWeek);
 
-  const baseScore = 0.45 * skillScore + 0.25 * interestScore + 0.2 * difficultyScore + 0.1 * effortScore;
+  const baseScore = 0.6 * skillScore + 0.3 * interestScore + 0.1 * effortScore;
 
   return isAssignedOrganization ? Math.max(0.9, baseScore) : baseScore;
 }

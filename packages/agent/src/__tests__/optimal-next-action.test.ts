@@ -14,7 +14,6 @@ const actor = {
   availableHoursPerWeek: 10,
   interestTags: ['systems', 'funding', 'research'],
   kind: 'USER' as const,
-  maxTaskDifficulty: 'ADVANCED',
   skillTags: ['typescript', 'research', 'writing'],
 };
 
@@ -22,7 +21,6 @@ function task(overrides: Partial<OptimalActionTask> = {}): OptimalActionTask {
   return {
     activeChildTaskCount: 0,
     blockerStatuses: [],
-    difficulty: 'INTERMEDIATE',
     estimatedEffortHours: 2,
     id: 'task_default',
     interestTags: ['systems'],
@@ -166,7 +164,6 @@ describe('treaty onboarding ranking scenarios', () => {
     availableHoursPerWeek: 3,
     interestTags: ['treaty', 'health', 'sharing', 'website'],
     kind: 'USER' as const,
-    maxTaskDifficulty: 'INTERMEDIATE',
     skillTags: ['outreach', 'social', 'website', 'writing', 'design'],
   };
 
@@ -446,7 +443,6 @@ describe('rankActionOptions', () => {
         },
       },
       id: 'specialized',
-      difficulty: 'EXPERT',
       selectedImpactFrame: {
         estimatedEffortHoursBase: 12,
         expectedEconomicValueUsdBase: 250_000,
@@ -460,7 +456,6 @@ describe('rankActionOptions', () => {
     const decision = selectOptimalNextAction({
       actor: {
         ...actor,
-        maxTaskDifficulty: 'BEGINNER',
         skillTags: ['typescript'],
       },
       policy: { externalBudgetUsd: 1_000 },
@@ -475,7 +470,6 @@ describe('rankActionOptions', () => {
       availableHoursPerWeek: 40,
       interestTags: ['clinical-trials'],
       kind: 'ORGANIZATION' as const,
-      maxTaskDifficulty: 'EXPERT',
       organizationId: 'org_1',
       organizationTags: ['clinical-trials', 'funding'],
       skillTags: ['operations'],

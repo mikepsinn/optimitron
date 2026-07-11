@@ -4,7 +4,6 @@ import {
   SourceSystem,
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskImpactEstimateKind,
   TaskImpactPublicationStatus,
   TaskStatus,
@@ -44,7 +43,6 @@ export interface PolicyModelRunImportAssigneeHint {
 export interface PolicyModelRunToTaskBundleOptions {
   category?: TaskCategory;
   claimPolicy?: TaskClaimPolicy;
-  difficulty?: TaskDifficulty;
   dueAt?: Date | null;
   impactStatement?: string | null;
   interestTags?: string[];
@@ -270,18 +268,6 @@ function deriveTaskDescription(run: PolicyModelRun) {
   );
 }
 
-function deriveTaskDifficulty(actor: PolicyExecutionActor | null, override: TaskDifficulty | undefined) {
-  if (override) {
-    return override;
-  }
-
-  if (actor?.role === "decision_maker") {
-    return TaskDifficulty.EXPERT;
-  }
-
-  return TaskDifficulty.ADVANCED;
-}
-
 function deriveTaskCategory(override: TaskCategory | undefined) {
   return override ?? TaskCategory.GOVERNANCE;
 }
@@ -376,7 +362,6 @@ export function buildImportedTaskBundleFromPolicyModelRun(
         contactTemplate: assigneeActor?.contactTemplate ?? null,
         contactUrl: assigneeActor?.contactUrl ?? null,
         description: deriveTaskDescription(run),
-        difficulty: deriveTaskDifficulty(assigneeActor, options?.difficulty),
         dueAt: options?.dueAt ?? null,
         estimatedEffortHours: defaultFrame.canonical.estimatedEffortHours.base ?? null,
         impactStatement: options?.impactStatement ?? run.summary,

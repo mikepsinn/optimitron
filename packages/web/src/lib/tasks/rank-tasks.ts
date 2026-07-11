@@ -1,13 +1,15 @@
+import { TaskClaimPolicy, TaskStatus } from "@optimitron/db";
+import type { TaskKind } from "@optimitron/db";
 import {
-  TaskClaimPolicy,
-  TaskDifficulty,
-  TaskStatus,
-} from "@optimitron/db";
+  assessTaskCapability,
+  type TaskCapabilityAssessment,
+} from "@optimitron/agent/task-capability";
 import {
   deriveImpactRatios,
   getNormalizedImpactComponents,
   type TaskImpactFrameSummary,
 } from "@/lib/tasks/impact";
+import { isExecutableWorkItem } from "@/lib/tasks/execution-eligibility";
 
 export interface RankableTask {
   id: string;
@@ -15,11 +17,12 @@ export interface RankableTask {
   activeChildTaskCount?: number;
   blockerStatuses?: TaskStatus[];
   claimPolicy: TaskClaimPolicy;
-  difficulty: TaskDifficulty;
   estimatedEffortHours: number | null;
   estimatedHoursPerWeekMax?: number | null;
   estimatedHoursPerWeekMin?: number | null;
   interestTags: string[];
+  executionMode?: string | null;
+  kind?: TaskKind | string | null;
   maxClaims?: number | null;
   marginalImpactFrame?: TaskImpactFrameSummary | null;
   compensationPaymentRails?: string[] | null;
@@ -49,7 +52,6 @@ export interface RankableUser {
   credentialTags?: string[] | null;
   interestTags: string[];
   languageTags?: string[] | null;
-  maxTaskDifficulty: TaskDifficulty | null;
   preferredPaymentRails?: string[] | null;
   regionCode?: string | null;
   skillTags: string[];
@@ -58,7 +60,7 @@ export interface RankableUser {
 }
 
 export interface RankTasksOptions {
-  /** When true, return only atomic TASK rows; parent/project fallback is forbidden. */
+  /** When true, return only atomic executable work; parent/listing fallback is forbidden. */
   preferLeafExecution?: boolean;
 }
 
@@ -165,14 +167,6 @@ export function computeTaskPriority(
   };
 }
 
-const DIFFICULTY_ORDER: TaskDifficulty[] = [
-  TaskDifficulty.TRIVIAL,
-  TaskDifficulty.BEGINNER,
-  TaskDifficulty.INTERMEDIATE,
-  TaskDifficulty.ADVANCED,
-  TaskDifficulty.EXPERT,
-];
-
 function normalizeTags(tags: readonly string[] | null | undefined) {
   return Array.from(
     new Set(
@@ -257,25 +251,6 @@ function addWeightedScore(
   }
 
   scores.push({ score: Math.max(0, Math.min(1, score)), weight });
-}
-
-export function difficultyFitScore(
-  taskDifficulty: TaskDifficulty,
-  maxTaskDifficulty: TaskDifficulty | null,
-) {
-  if (!maxTaskDifficulty) {
-    return 0.5;
-  }
-
-  const taskIndex = DIFFICULTY_ORDER.indexOf(taskDifficulty);
-  const userIndex = DIFFICULTY_ORDER.indexOf(maxTaskDifficulty);
-
-  if (taskIndex <= userIndex) {
-    return 1 - Math.max(0, userIndex - taskIndex) * 0.1;
-  }
-
-  const overshoot = taskIndex - userIndex;
-  return Math.max(0, 0.4 - overshoot * 0.2);
 }
 
 export function hoursFitScore(
@@ -442,9 +417,9 @@ export function hasActiveChildTasks(task: Pick<RankableTask, "activeChildTaskCou
 }
 
 export function isAtomicExecutionTask(
-  task: Pick<RankableTask, "activeChildTaskCount">,
+  task: Pick<RankableTask, "activeChildTaskCount" | "kind">,
 ) {
-  return !hasActiveChildTasks(task);
+  return isExecutableWorkItem(task) && !hasActiveChildTasks(task);
 }
 
 function getExecutionImpactFrame(task: RankableTask) {
@@ -452,14 +427,19 @@ function getExecutionImpactFrame(task: RankableTask) {
 }
 
 export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
+  if (assessTaskForUserCapability(task, user).status !== "eligible") {
+    return 0;
+  }
+
   const skillScore =
-    requiredPreferredFit(task.skillTags, task.preferredSkillTags, user.skillTags) ??
-    jaccardScore(task.skillTags, user.skillTags);
-  const interestScore = jaccardScore(task.interestTags, user.interestTags);
-  const difficultyScore = difficultyFitScore(task.difficulty, user.maxTaskDifficulty);
+    requiredPreferredFit(task.skillTags, task.preferredSkillTags, user.skillTags) ?? 1;
+  const interestScore =
+    task.interestTags.length === 0
+      ? 1
+      : jaccardScore(task.interestTags, user.interestTags);
   const effortScore = hoursFitScore(task.estimatedEffortHours, user.availableHoursPerWeek);
   const baseFitScore =
-    0.5 * skillScore + 0.3 * interestScore + 0.15 * difficultyScore + 0.05 * effortScore;
+    0.6 * skillScore + 0.3 * interestScore + 0.1 * effortScore;
   const fitComponents: Array<{ score: number; weight: number }> = [];
   addWeightedScore(fitComponents, baseFitScore, 0.45);
   addWeightedScore(
@@ -512,6 +492,23 @@ export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
   return impactScore * capabilityMultiplier;
 }
 
+export function assessTaskForUserCapability(
+  task: RankableTask,
+  user: RankableUser,
+): TaskCapabilityAssessment {
+  return assessTaskCapability({
+    executor: {
+      accessTags: user.accessTags,
+      credentialTags: user.credentialTags,
+      executorKind: "human",
+      languageTags: user.languageTags,
+      skillTags: user.skillTags,
+      toolTags: user.toolTags,
+    },
+    task,
+  });
+}
+
 export function scoreTaskForAccountability(task: RankableTask) {
   return scoreImpactFrame(task.selectedImpactFrame ?? null);
 }
@@ -538,7 +535,10 @@ export function rankTasksForUser<T extends RankableTask>(
   options?: RankTasksOptions,
 ) {
   const actionableTasks = tasks.filter(
-    (task) => canTaskAcceptMoreClaims(task) && !isTaskBlocked(task),
+    (task) =>
+      canTaskAcceptMoreClaims(task) &&
+      !isTaskBlocked(task) &&
+      assessTaskForUserCapability(task, user).status === "eligible",
   );
   const executionPool =
     options?.preferLeafExecution === true

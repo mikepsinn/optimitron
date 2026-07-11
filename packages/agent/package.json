@@ -5,6 +5,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./task-capability": {
+      "types": "./dist/task-capability.d.ts",
+      "default": "./dist/task-capability.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "triage:ci-run": "pnpm run build && node dist/ci-triage-cli.js",

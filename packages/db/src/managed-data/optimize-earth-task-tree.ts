@@ -12,7 +12,6 @@ import {
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
 } from "../generated/prisma/client.js";
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
@@ -70,7 +69,6 @@ export const OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY =
 const defaultTaskFields = {
   category: TaskCategory.ORGANIZING,
   claimPolicy: TaskClaimPolicy.OPEN_MANY,
-  difficulty: TaskDifficulty.INTERMEDIATE,
   isPublic: true,
   skillTags: ["coordination"],
   interestTags: ["war-on-disease", "one-percent-treaty"],
@@ -383,7 +381,6 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     category: TaskCategory.OTHER,
-    difficulty: TaskDifficulty.TRIVIAL,
     id: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
     taskKey: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY,
     parentTaskId: LOVING_TAKEOVER_TASK_ID,
@@ -406,7 +403,6 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     category: TaskCategory.LEGAL,
-    difficulty: TaskDifficulty.BEGINNER,
     id: LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
     taskKey: LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
     parentTaskId: LOVING_TAKEOVER_TASK_ID,

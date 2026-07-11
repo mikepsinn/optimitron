@@ -22,7 +22,6 @@ import {
   INTERNET_ACCESS_OPTIONS,
   MARITAL_STATUS_OPTIONS,
   SMOKING_STATUS_OPTIONS,
-  TASK_DIFFICULTY_OPTIONS,
   type ProfilePageData,
   type ProfileSnapshotData,
 } from "@/lib/profile";
@@ -75,7 +74,6 @@ function toFormState(profile: ProfileSnapshotData) {
     skillTags: profile.skillTags.join(", "),
     interestTags: profile.interestTags.join(", "),
     availableHoursPerWeek: profile.availableHoursPerWeek?.toString() ?? "",
-    maxTaskDifficulty: profile.maxTaskDifficulty ?? "",
     // Notes
     censusNotes: profile.censusNotes ?? "",
   };
@@ -361,13 +359,6 @@ export function ProfileSnapshotForm({ onSaved, profile }: ProfileSnapshotFormPro
                 onChange={set("availableHoursPerWeek")}
               />
             </FormField>
-            <SelectField
-              id="profile-max-difficulty"
-              label="Max Task Difficulty"
-              options={TASK_DIFFICULTY_OPTIONS}
-              value={formState.maxTaskDifficulty}
-              onChange={setSelect("maxTaskDifficulty")}
-            />
           </div>
 
           <div className="flex flex-wrap gap-3">

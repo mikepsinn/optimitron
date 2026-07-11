@@ -31,7 +31,6 @@ import {
   TaskClaimPolicy,
   TaskCompensationCadence,
   TaskCompensationKind,
-  TaskDifficulty,
   TaskEdgeType,
   TaskEngagementKind,
   TaskImpactFrameKey,
@@ -43,6 +42,11 @@ import {
   VotePosition,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
+import {
+  assessTaskCapability,
+  type TaskCapabilityAssessment,
+  type TaskExecutorCapabilities,
+} from "@optimitron/agent/task-capability";
 
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
@@ -74,6 +78,7 @@ import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
+import { isExecutableWorkItem } from "./tasks/execution-eligibility";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -586,11 +591,6 @@ function authRequired(toolName: string, reason: string) {
   };
 }
 
-function toTaskDifficulty(value: unknown) {
-  if (typeof value !== "string") return null;
-  return TaskDifficulty[value as keyof typeof TaskDifficulty] ?? null;
-}
-
 function enumValue<T extends Record<string, string>>(
   values: T,
   value: unknown,
@@ -602,10 +602,13 @@ function enumValue<T extends Record<string, string>>(
 
 function buildAgentCapabilities(args: Record<string, unknown>) {
   return {
+    accessTags: (args.accessTags as string[]) ?? [],
     availableHoursPerWeek: (args.availableHoursPerWeek as number) ?? null,
+    credentialTags: (args.credentialTags as string[]) ?? [],
     interestTags: (args.interestTags as string[]) ?? [],
-    maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
+    languageTags: (args.languageTags as string[]) ?? [],
     skillTags: (args.skillTags as string[]) ?? [],
+    toolTags: (args.toolTags as string[]) ?? [],
   };
 }
 
@@ -879,7 +882,6 @@ const USER_MATCHING_SELECT = {
   languageTags: true,
   latitude: true,
   longitude: true,
-  maxTaskDifficulty: true,
   personId: true,
   postalCode: true,
   preferredPaymentRails: true,
@@ -939,14 +941,6 @@ function buildUserMatchingProfileData(input: Record<string, unknown>) {
     data.availableHoursPerWeek = availableHoursPerWeek;
   }
 
-  const maxTaskDifficulty = parseNullableEnumInput(
-    TaskDifficulty,
-    input,
-    "maxTaskDifficulty",
-  );
-  if (maxTaskDifficulty !== undefined)
-    data.maxTaskDifficulty = maxTaskDifficulty;
-
   if ("availableFrom" in input) {
     const raw = input.availableFrom;
     data.availableFrom = raw == null || raw === "" ? null : parseTaskDate(raw);
@@ -974,7 +968,6 @@ function summarizeMatchingUser(user: UserMatchingRecord) {
     id: user.id,
     interestTags: user.interestTags,
     languageTags: user.languageTags,
-    maxTaskDifficulty: user.maxTaskDifficulty,
     person: user.person,
     personId: user.personId,
     postalCode: user.postalCode,
@@ -997,7 +990,6 @@ function toRankableUser(user: UserMatchingRecord) {
     credentialTags: user.credentialTags,
     interestTags: user.interestTags,
     languageTags: user.languageTags,
-    maxTaskDifficulty: user.maxTaskDifficulty,
     preferredPaymentRails: user.preferredPaymentRails,
     regionCode: user.regionCode,
     skillTags: user.skillTags,
@@ -1204,7 +1196,6 @@ type SummarizableTask = {
   description?: string | null;
   status?: string | null;
   category?: string | null;
-  difficulty?: string | null;
   taskKey?: string | null;
   dueAt?: Date | string | null;
   isPublic?: boolean | null;
@@ -1337,13 +1328,6 @@ function inferProposalCategory(candidate: Record<string, unknown>) {
   }
 
   return TaskCategory.OTHER;
-}
-
-function inferProposalDifficulty(candidate: Record<string, unknown>) {
-  const effort = (candidate.estimatedEffortHours as number) ?? 0;
-  if (effort >= 6) return TaskDifficulty.ADVANCED;
-  if (effort >= 2) return TaskDifficulty.INTERMEDIATE;
-  return TaskDifficulty.BEGINNER;
 }
 
 function getProposalGovernanceImpact(candidate: Record<string, unknown>) {
@@ -1691,7 +1675,6 @@ async function ensureExecutionPlanningBranch(input: {
           targetKind === "organization"
             ? "Tasks owned or assigned to this organization."
             : "Tasks for this person.",
-        difficulty: TaskDifficulty.INTERMEDIATE,
         isPublic: false,
         parentTaskId: root.id,
         status: TaskStatus.ACTIVE,
@@ -1861,7 +1844,6 @@ function summarizeTask(task: SummarizableTask) {
     description: task.description,
     status: task.status,
     category: task.category,
-    difficulty: task.difficulty,
     taskKey: task.taskKey,
     dueAt: task.dueAt,
     isPublic:
@@ -1938,12 +1920,16 @@ type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   blockersCount: number;
   blockersResolved: number;
   blockersResolvedPercent: number;
+  capabilityReasons: string[];
+  capabilityStatus: TaskCapabilityAssessment["status"];
   evMath: string;
   availableAt: string | null;
   cashCost: number;
   deadlinePolicy: DeadlinePolicy;
   deadlineRationale: string | null;
   deadlineStatus: DeadlineStatus;
+  executionEligible: boolean;
+  effortEstimateSource: EffortEstimateSource;
   hours: number | null;
   latestStartAt: string | null;
   createdByUserId?: string | null;
@@ -1976,6 +1962,29 @@ type PersonalQueueTaskRecord = Record<string, unknown> &
     isPublic?: boolean | null;
     blockerStatuses?: TaskStatus[] | null;
     activeChildTaskCount?: number | null;
+    candidateMatches?: Array<{
+      agentExecutorId?: string | null;
+      candidateOrganizationId?: string | null;
+      candidatePersonId?: string | null;
+      candidateUserId?: string | null;
+      estimatedDurationSeconds?: number | null;
+      status?: string | null;
+      updatedAt?: Date | string | null;
+    }> | null;
+    claims?: Array<{
+      actualEffortSeconds?: number | null;
+      userId?: string | null;
+    }> | null;
+    executionAttempts?: Array<{
+      actualDurationSeconds?: number | null;
+      agentExecutorId?: string | null;
+      completedAt?: Date | string | null;
+      executorOrganizationId?: string | null;
+      executorPersonId?: string | null;
+      executorUserId?: string | null;
+      status?: string | null;
+      updatedAt?: Date | string | null;
+    }> | null;
     incomingEdges?: Array<{
       fromTask?: {
         id?: string | null;
@@ -1983,6 +1992,255 @@ type PersonalQueueTaskRecord = Record<string, unknown> &
       } | null;
     }> | null;
   };
+
+type EffortEstimateSource =
+  | "target-actual-history"
+  | "candidate-estimate"
+  | "task-estimate"
+  | "impact-frame"
+  | "missing";
+
+interface PlanningExecutorProfile extends TaskExecutorCapabilities {
+  agentExecutorId?: string | null;
+  organizationId?: string | null;
+  personId?: string | null;
+  userId?: string | null;
+}
+
+function matchesPlanningExecutor(
+  record: {
+    agentExecutorId?: string | null;
+    candidateOrganizationId?: string | null;
+    candidatePersonId?: string | null;
+    candidateUserId?: string | null;
+    executorOrganizationId?: string | null;
+    executorPersonId?: string | null;
+    executorUserId?: string | null;
+  },
+  profile: PlanningExecutorProfile,
+) {
+  return Boolean(
+    (profile.agentExecutorId &&
+      profile.agentExecutorId === record.agentExecutorId) ||
+      (profile.organizationId &&
+        profile.organizationId ===
+          (record.executorOrganizationId ?? record.candidateOrganizationId)) ||
+      (profile.personId &&
+        profile.personId ===
+          (record.executorPersonId ?? record.candidatePersonId)) ||
+      (profile.userId &&
+        profile.userId === (record.executorUserId ?? record.candidateUserId)),
+  );
+}
+
+function assessQueueTaskCapability(
+  task: PersonalQueueTaskRecord,
+  profiles: PlanningExecutorProfile[],
+): TaskCapabilityAssessment {
+  const executorKind =
+    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
+  const matchingProfiles = profiles.filter(
+    (profile) => profile.executorKind === executorKind,
+  );
+  const assessments = (matchingProfiles.length > 0
+    ? matchingProfiles
+    : [{ executorKind } as PlanningExecutorProfile]
+  ).map((executor) => assessTaskCapability({ executor, task }));
+  const eligible = assessments.find(
+    (assessment) => assessment.status === "eligible",
+  );
+  if (eligible) return eligible;
+
+  const status = assessments.some(
+    (assessment) => assessment.status === "unknown",
+  )
+    ? "unknown"
+    : "ineligible";
+  return {
+    missingProfileFields: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.missingProfileFields)),
+    ),
+    missingRequiredTags: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.missingRequiredTags)),
+    ),
+    reasons: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.reasons)),
+    ),
+    status,
+  };
+}
+
+function resolveQueueEffortEstimate(
+  task: PersonalQueueTaskRecord,
+  selectedImpactFrame: Record<string, unknown> | null,
+  profiles: PlanningExecutorProfile[],
+) {
+  const actualSeconds = (task.executionAttempts ?? []).find(
+    (attempt) =>
+      attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
+      typeof attempt.actualDurationSeconds === "number" &&
+      attempt.actualDurationSeconds > 0 &&
+      profiles.some((profile) => matchesPlanningExecutor(attempt, profile)),
+  )?.actualDurationSeconds;
+  const claimedActualSeconds = (task.claims ?? []).find(
+    (claim) =>
+      typeof claim.actualEffortSeconds === "number" &&
+      claim.actualEffortSeconds > 0 &&
+      profiles.some(
+        (profile) => profile.userId && profile.userId === claim.userId,
+      ),
+  )?.actualEffortSeconds;
+  const targetActualSeconds = actualSeconds ?? claimedActualSeconds;
+  if (targetActualSeconds != null) {
+    return {
+      hours: targetActualSeconds / 3600,
+      source: "target-actual-history" as const,
+    };
+  }
+
+  const candidateSeconds = (task.candidateMatches ?? []).find(
+    (candidate) =>
+      candidate.status !== TaskCandidateMatchStatus.DECLINED &&
+      candidate.status !== TaskCandidateMatchStatus.REJECTED &&
+      typeof candidate.estimatedDurationSeconds === "number" &&
+      candidate.estimatedDurationSeconds > 0 &&
+      profiles.some((profile) => matchesPlanningExecutor(candidate, profile)),
+  )?.estimatedDurationSeconds;
+  if (candidateSeconds != null) {
+    return {
+      hours: candidateSeconds / 3600,
+      source: "candidate-estimate" as const,
+    };
+  }
+
+  if (
+    typeof task.estimatedEffortHours === "number" &&
+    Number.isFinite(task.estimatedEffortHours) &&
+    task.estimatedEffortHours > 0
+  ) {
+    return {
+      hours: task.estimatedEffortHours,
+      source: "task-estimate" as const,
+    };
+  }
+
+  const impactHours = firstFiniteNumber([
+    selectedImpactFrame?.estimatedEffortHoursBase,
+  ]);
+  if (impactHours != null && impactHours > 0) {
+    return { hours: impactHours, source: "impact-frame" as const };
+  }
+
+  return { hours: null, source: "missing" as const };
+}
+
+async function attachPlanningEffortEvidence(
+  tasks: PersonalQueueTaskRecord[],
+  profiles: PlanningExecutorProfile[],
+) {
+  const taskIds = tasks.map((task) => task.id);
+  if (taskIds.length === 0) return tasks;
+
+  const executionTargets = profiles.flatMap(
+    (profile): Prisma.TaskExecutionAttemptWhereInput[] => [
+      ...(profile.agentExecutorId
+        ? [{ agentExecutorId: profile.agentExecutorId }]
+        : []),
+      ...(profile.organizationId
+        ? [{ executorOrganizationId: profile.organizationId }]
+        : []),
+      ...(profile.personId ? [{ executorPersonId: profile.personId }] : []),
+      ...(profile.userId ? [{ executorUserId: profile.userId }] : []),
+    ],
+  );
+  const candidateTargets = profiles.flatMap(
+    (profile): Prisma.TaskCandidateMatchWhereInput[] => [
+      ...(profile.agentExecutorId
+        ? [{ agentExecutorId: profile.agentExecutorId }]
+        : []),
+      ...(profile.organizationId
+        ? [{ candidateOrganizationId: profile.organizationId }]
+        : []),
+      ...(profile.personId ? [{ candidatePersonId: profile.personId }] : []),
+      ...(profile.userId ? [{ candidateUserId: profile.userId }] : []),
+    ],
+  );
+  if (executionTargets.length === 0 && candidateTargets.length === 0) {
+    return tasks;
+  }
+
+  const prisma = await getPrisma();
+  const [executionAttempts, candidateMatches] = await Promise.all([
+    executionTargets.length > 0
+      ? prisma.taskExecutionAttempt.findMany({
+          where: {
+            actualDurationSeconds: { gt: 0 },
+            deletedAt: null,
+            OR: executionTargets,
+            status: TaskExecutionAttemptStatus.COMPLETED,
+            taskId: { in: taskIds },
+          },
+          orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
+          select: {
+            actualDurationSeconds: true,
+            agentExecutorId: true,
+            completedAt: true,
+            executorOrganizationId: true,
+            executorPersonId: true,
+            executorUserId: true,
+            status: true,
+            taskId: true,
+            updatedAt: true,
+          },
+        })
+      : Promise.resolve([]),
+    candidateTargets.length > 0
+      ? prisma.taskCandidateMatch.findMany({
+          where: {
+            deletedAt: null,
+            estimatedDurationSeconds: { gt: 0 },
+            OR: candidateTargets,
+            status: {
+              in: [
+                TaskCandidateMatchStatus.SUGGESTED,
+                TaskCandidateMatchStatus.CONTACTED,
+              ],
+            },
+            taskId: { in: taskIds },
+          },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            agentExecutorId: true,
+            candidateOrganizationId: true,
+            candidatePersonId: true,
+            candidateUserId: true,
+            estimatedDurationSeconds: true,
+            status: true,
+            taskId: true,
+            updatedAt: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
+  const attemptsByTask = new Map<string, typeof executionAttempts>();
+  for (const attempt of executionAttempts) {
+    const entries = attemptsByTask.get(attempt.taskId) ?? [];
+    entries.push(attempt);
+    attemptsByTask.set(attempt.taskId, entries);
+  }
+  const matchesByTask = new Map<string, typeof candidateMatches>();
+  for (const match of candidateMatches) {
+    const entries = matchesByTask.get(match.taskId) ?? [];
+    entries.push(match);
+    matchesByTask.set(match.taskId, entries);
+  }
+
+  return tasks.map((task) => ({
+    ...task,
+    candidateMatches: matchesByTask.get(task.id) ?? [],
+    executionAttempts: attemptsByTask.get(task.id) ?? [],
+  }));
+}
 
 function parsePositiveNumber(value: unknown, fallback: number) {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
@@ -2228,6 +2486,7 @@ function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
 
 function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
   return (
+    isExecutableWorkItem(task) &&
     (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
     !isCompletionMilestone(task)
   );
@@ -2293,6 +2552,97 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
     graphTasks,
     rootedTaskIds: getRootedTaskIds(graphTasks),
   };
+}
+
+async function validateExplicitTaskParent(input: {
+  isAdminWriter: boolean;
+  parentTaskId: string;
+  prisma: Awaited<ReturnType<typeof getPrisma>>;
+  sessionPersonId: string | null;
+  taskId?: string;
+  userId: string;
+}) {
+  if (input.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID) {
+    throw new Error(
+      "Optimize Earth is reserved for managed top-level branches. Choose the closest existing objective or task instead.",
+    );
+  }
+
+  const parent = await input.prisma.task.findFirst({
+    where: { deletedAt: null, id: input.parentTaskId },
+    select: {
+      assigneeOrganizationId: true,
+      assigneePersonId: true,
+      createdByUserId: true,
+      id: true,
+      isPublic: true,
+      kind: true,
+      ownerOrganizationId: true,
+      parentTaskId: true,
+    },
+  });
+  if (!parent) {
+    throw new Error(
+      `Parent task ${JSON.stringify(input.parentTaskId)} was not found. Search the existing task tree and choose a valid parent.`,
+    );
+  }
+  if (!isExecutableWorkItem(parent)) {
+    throw new Error(
+      "A job, volunteer, or bounty listing cannot be a parent task.",
+    );
+  }
+
+  let canUseParent =
+    input.isAdminWriter ||
+    parent.isPublic ||
+    parent.createdByUserId === input.userId ||
+    (input.sessionPersonId != null &&
+      parent.assigneePersonId === input.sessionPersonId);
+  if (!canUseParent) {
+    const organizationIds = Array.from(
+      new Set(
+        [parent.ownerOrganizationId, parent.assigneeOrganizationId].filter(
+          (id): id is string => Boolean(id),
+        ),
+      ),
+    );
+    if (organizationIds.length > 0) {
+      const { canManageOrganization } = await import("./organization.server");
+      for (const organizationId of organizationIds) {
+        if (await canManageOrganization(input.userId, organizationId)) {
+          canUseParent = true;
+          break;
+        }
+      }
+    }
+  }
+  if (!canUseParent) {
+    throw new Error("The selected parent task is not accessible to this user.");
+  }
+  if (input.taskId === parent.id) {
+    throw new Error("A task cannot be its own parent.");
+  }
+
+  if (parent.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID) {
+    return parent;
+  }
+
+  const graph = await loadExecutionGraphContext([
+    parent as unknown as PersonalQueueTaskRecord,
+  ]);
+  if (
+    input.taskId &&
+    graph.graphTasks.some((task) => task.id === input.taskId)
+  ) {
+    throw new Error("Reparenting would create a task hierarchy cycle.");
+  }
+  if (!graph.rootedTaskIds.has(parent.id)) {
+    throw new Error(
+      "The selected parent is not rooted under Optimize Earth. Choose a rooted parent task.",
+    );
+  }
+
+  return parent;
 }
 
 async function loadReachableDependencyEdges(
@@ -2588,6 +2938,7 @@ function buildPersonalQueueRows(
   },
   buybackRate?: number,
   options?: {
+    executorProfiles?: PlanningExecutorProfile[];
     requireExecutable?: boolean;
     requireUnblocked?: boolean;
     limit?: number;
@@ -2629,9 +2980,19 @@ function buildPersonalQueueRows(
     .map((task) => {
       const sourceTask = task as PersonalQueueTaskRecord;
       const marginalImpactFrame = getMarginalImpactFrame(sourceTask);
+      const capability = assessQueueTaskCapability(
+        sourceTask,
+        options?.executorProfiles ?? [],
+      );
+      const effort = resolveQueueEffortEstimate(
+        sourceTask,
+        marginalImpactFrame,
+        options?.executorProfiles ?? [],
+      );
       const score = ranking.computeTaskPriority(
         {
           ...sourceTask,
+          estimatedEffortHours: effort.hours,
           selectedImpactFrame: marginalImpactFrame,
         } as TaskPriorityInput,
         {
@@ -2641,11 +3002,7 @@ function buildPersonalQueueRows(
       const summary = summarizeTask(sourceTask);
       const context = getTaskContext(sourceTask);
       const selectedImpactFrame = marginalImpactFrame;
-      const hours = firstFiniteNumber([
-        sourceTask.estimatedEffortHours,
-        selectedImpactFrame?.estimatedEffortHoursBase,
-        context.hours,
-      ]);
+      const hours = effort.hours;
       const value = firstFiniteNumber([context.value, context.grossValue]);
       const pSuccess = firstFiniteNumber([
         context.p_success,
@@ -2676,6 +3033,8 @@ function buildPersonalQueueRows(
           score.blockersCount > 0
             ? (score.unblockedBlockers / score.blockersCount) * 100
             : 100,
+        capabilityReasons: capability.reasons,
+        capabilityStatus: capability.status,
         availableAt: deadline.availableAt,
         buybackRate: score.buybackRate,
         cashCost,
@@ -2684,6 +3043,8 @@ function buildPersonalQueueRows(
         deadlineStatus: deadline.deadlineStatus,
         dueAt: deadline.dueAt,
         evMath: score.evMath,
+        executionEligible: isExecutableWorkItem(sourceTask),
+        effortEstimateSource: effort.source,
         hours,
         latestStartAt: deadline.latestStartAt,
         executorType: getTaskExecutorType(sourceTask),
@@ -2709,6 +3070,7 @@ function buildPersonalQueueRows(
       (row) =>
         !options?.requireExecutable ||
         (isAtomicExecutionRecord(row) &&
+          row.capabilityStatus === "eligible" &&
           row.rooted &&
           row.hasMarginalEstimate &&
           row.valid &&
@@ -2732,13 +3094,17 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
     activeChildTaskCount: row.activeChildTaskCount,
     availableAt: row.availableAt ?? null,
     blockers: row.blockers,
+    capabilityReasons: row.capabilityReasons,
+    capabilityStatus: row.capabilityStatus,
     completionMilestone: isCompletionMilestone(
       row as unknown as PersonalQueueTaskRecord,
     ),
     deadlinePolicy: row.deadlinePolicy,
     deadlineStatus: row.deadlineStatus,
     dueAt: row.dueAt ?? null,
+    executionEligible: row.executionEligible,
     executorType: row.executorType,
+    effortEstimateSource: row.effortEstimateSource,
     hasMarginalEstimate: row.hasMarginalEstimate,
     hours: row.hours,
     id: row.id,
@@ -2752,10 +3118,101 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
   };
 }
 
+function summarizeCapabilityWork(rows: PersonalQueueRow[]) {
+  const summarize = (row: PersonalQueueRow) => ({
+    id: row.id,
+    reasons: row.capabilityReasons,
+    title: row.title,
+  });
+  const atomicRows = rows.filter(
+    (row) => row.executionEligible && row.activeChildTaskCount === 0 && row.rooted,
+  );
+  return {
+    capabilityExcludedWork: atomicRows
+      .filter((row) => row.capabilityStatus === "ineligible")
+      .map(summarize),
+    itemsNeedingCapabilityConfirmation: atomicRows
+      .filter((row) => row.capabilityStatus === "unknown")
+      .map(summarize),
+  };
+}
+
 type AuthorizedPlanningTarget =
   | { kind: "self"; personId: string | null; userId: string }
   | { kind: "person"; personId: string }
   | { kind: "organization"; organizationId: string };
+
+async function loadHumanPlanningProfiles(
+  target: AuthorizedPlanningTarget,
+): Promise<PlanningExecutorProfile[]> {
+  if (target.kind === "organization") {
+    return [
+      {
+        executorKind: "human",
+        organizationId: target.organizationId,
+      },
+    ];
+  }
+
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    where:
+      target.kind === "self"
+        ? { id: target.userId }
+        : { personId: target.personId },
+    select: {
+      accessTags: true,
+      credentialTags: true,
+      id: true,
+      languageTags: true,
+      personId: true,
+      skillTags: true,
+      toolTags: true,
+    },
+  });
+  if (!user) {
+    return [
+      {
+        executorKind: "human",
+        personId: target.personId,
+      },
+    ];
+  }
+
+  return [
+    {
+      accessTags: user.accessTags,
+      credentialTags: user.credentialTags,
+      executorKind: "human",
+      languageTags: user.languageTags,
+      personId: user.personId,
+      skillTags: user.skillTags,
+      toolTags: user.toolTags,
+      userId: user.id,
+    },
+  ];
+}
+
+async function loadAgentPlanningProfiles(): Promise<PlanningExecutorProfile[]> {
+  const prisma = await getPrisma();
+  const agents = await prisma.agentExecutor.findMany({
+    where: { deletedAt: null, status: AgentExecutorStatus.ACTIVE },
+    orderBy: { agentKey: "asc" },
+    select: {
+      accessTags: true,
+      capabilityTags: true,
+      id: true,
+      toolTags: true,
+    },
+  });
+  return agents.map((agent) => ({
+    accessTags: agent.accessTags,
+    agentExecutorId: agent.id,
+    executorKind: "agent" as const,
+    skillTags: agent.capabilityTags,
+    toolTags: agent.toolTags,
+  }));
+}
 
 async function resolveAuthorizedPlanningTarget(input: {
   args: Record<string, unknown>;
@@ -3047,29 +3504,6 @@ const TASK_CONTEXT_JSON_SCHEMA = {
             },
             required: ["kind", "label", "href"],
           },
-        },
-      },
-    },
-    difficulty: {
-      type: "object" as const,
-      description:
-        "Task-level difficulty callout — drives the TaskDifficultyStrip block (TASK / WHAT IT MEANS / DIFFICULTY / TIME / SKILLS).",
-      properties: {
-        whatItMeans: {
-          type: "string",
-          description: "One-line plain-language restatement of the task",
-        },
-        label: {
-          type: "string",
-          description: "Difficulty label, e.g. 'Sign a piece of paper'",
-        },
-        timeRequiredSeconds: {
-          type: "number",
-          description: "Estimated time to complete in seconds",
-        },
-        skillsRequired: {
-          type: "string",
-          description: "Skills needed, e.g. 'Holding a pen'",
         },
       },
     },
@@ -4069,10 +4503,6 @@ const USER_MATCHING_PROFILE_PROPERTIES = {
   unavailableTaskTags: { type: "array", items: { type: "string" } },
   availableHoursPerWeek: { type: ["number", "null"] },
   availableFrom: { type: ["string", "null"], description: "ISO 8601 date." },
-  maxTaskDifficulty: {
-    type: ["string", "null"],
-    enum: [...Object.values(TaskDifficulty), null],
-  },
   countryCode: { type: ["string", "null"] },
   regionCode: { type: ["string", "null"] },
   city: { type: ["string", "null"] },
@@ -4100,11 +4530,10 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description: "Agent's interest tags for personalized ranking",
         },
-        maxDifficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Max difficulty the agent can handle",
-        },
+        credentialTags: { type: "array", items: { type: "string" } },
+        languageTags: { type: "array", items: { type: "string" } },
+        toolTags: { type: "array", items: { type: "string" } },
+        accessTags: { type: "array", items: { type: "string" } },
         availableHoursPerWeek: {
           type: "number",
           description: "Hours per week the agent can commit",
@@ -4121,8 +4550,7 @@ const TASK_TOOL_DEFINITIONS = [
       properties: {
         score: {
           type: "number",
-          description:
-            "Earth-level ranking score used by the legacy ranking path.",
+          description: "Expected net value per hour-equivalent priority.",
         },
         task: {
           type: "object",
@@ -4312,6 +4740,24 @@ const TASK_TOOL_DEFINITIONS = [
                 type: "string",
                 description: "Self or AI Agent.",
               },
+              capabilityStatus: {
+                type: "string",
+                enum: ["eligible", "unknown", "ineligible"],
+              },
+              capabilityReasons: {
+                type: "array",
+                items: { type: "string" },
+              },
+              effortEstimateSource: {
+                type: "string",
+                enum: [
+                  "target-actual-history",
+                  "candidate-estimate",
+                  "task-estimate",
+                  "impact-frame",
+                  "missing",
+                ],
+              },
               realEv: {
                 type: "number",
                 description:
@@ -4331,6 +4777,14 @@ const TASK_TOOL_DEFINITIONS = [
               },
             },
           },
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
       },
     },
@@ -4457,6 +4911,24 @@ const TASK_TOOL_DEFINITIONS = [
                 type: "string",
                 description: "Self or AI Agent.",
               },
+              capabilityStatus: {
+                type: "string",
+                enum: ["eligible", "unknown", "ineligible"],
+              },
+              capabilityReasons: {
+                type: "array",
+                items: { type: "string" },
+              },
+              effortEstimateSource: {
+                type: "string",
+                enum: [
+                  "target-actual-history",
+                  "candidate-estimate",
+                  "task-estimate",
+                  "impact-frame",
+                  "missing",
+                ],
+              },
               realEv: {
                 type: "number",
                 description:
@@ -4464,6 +4936,14 @@ const TASK_TOOL_DEFINITIONS = [
               },
             },
           },
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
       },
     },
@@ -4547,6 +5027,14 @@ const TASK_TOOL_DEFINITIONS = [
           type: "array",
           items: { type: "object" },
         },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
+        },
         assumptions: { type: "array", items: { type: "string" } },
       },
     },
@@ -4585,6 +5073,14 @@ const TASK_TOOL_DEFINITIONS = [
         priority: {
           type: "number",
           description: "Computed priority score for the suggested task.",
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
         deadlineOverride: {
           type: "boolean",
@@ -4630,11 +5126,10 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description: "Agent's interest tags for capability matching",
         },
-        maxDifficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Max difficulty the agent can handle",
-        },
+        credentialTags: { type: "array", items: { type: "string" } },
+        languageTags: { type: "array", items: { type: "string" } },
+        toolTags: { type: "array", items: { type: "string" } },
+        accessTags: { type: "array", items: { type: "string" } },
         availableHoursPerWeek: {
           type: "number",
           description: "Hours per week the agent can commit",
@@ -5474,10 +5969,10 @@ const TASK_TOOL_DEFINITIONS = [
     name: "createTask",
     description:
       "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
-      "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
+      "Required: title, description, parentTaskId, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
-      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, difficulty, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
+      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5488,7 +5983,8 @@ const TASK_TOOL_DEFINITIONS = [
         },
         parentTaskId: {
           type: "string",
-          description: "Parent task ID for subtask hierarchy",
+          description:
+            "Required existing parent task ID. Search the accessible task tree first and choose the closest objective or task; do not use Optimize Earth directly.",
         },
         taskKey: {
           type: "string",
@@ -5510,12 +6006,6 @@ const TASK_TOOL_DEFINITIONS = [
             "OTHER",
           ],
           description: "Task category",
-        },
-        difficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description:
-            "Optional metadata for public task presentation and capability filtering; not part of personal priority.",
         },
         skillTags: {
           type: "array",
@@ -5695,7 +6185,13 @@ const TASK_TOOL_DEFINITIONS = [
             "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score.",
         },
       },
-      required: ["title", "description", "category", "impactStatement"],
+      required: [
+        "title",
+        "description",
+        "parentTaskId",
+        "category",
+        "impactStatement",
+      ],
     },
   },
 
@@ -5983,7 +6479,8 @@ const TASK_TOOL_DEFINITIONS = [
               },
               parentTaskRef: {
                 type: "string",
-                description: "ID or taskKey of parent task",
+                description:
+                  "Required ID/taskKey of the best existing or same-bundle parent. Search first. Use $target-root only when no more specific parent exists.",
               },
               estimatedEffortHours: { type: "number" },
               isPublic: { type: "boolean" },
@@ -6062,7 +6559,7 @@ const TASK_TOOL_DEFINITIONS = [
                 },
               },
             },
-            required: ["title"],
+            required: ["title", "parentTaskRef"],
           },
           description: "Tasks to propose",
         },
@@ -6089,7 +6586,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update a task's estimates, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
+      "Update a task's estimates, parent, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To reparent, search the task tree and pass an existing parentTaskId; Optimize Earth itself is reserved. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6100,6 +6597,11 @@ const TASK_TOOL_DEFINITIONS = [
         },
         title: { type: "string" },
         description: { type: "string" },
+        parentTaskId: {
+          type: "string",
+          description:
+            "Existing rooted parent task ID. Search first; cannot be Optimize Earth or create a hierarchy cycle.",
+        },
         completionEvidence: {
           type: "string",
           description: "Evidence that the task is done",
@@ -6122,11 +6624,6 @@ const TASK_TOOL_DEFINITIONS = [
           ],
           description:
             "Re-categorize the task. Affects category-filtered listTasks queries; not part of personal priority score.",
-        },
-        difficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Optional metadata; not part of personal priority.",
         },
         ...TASK_ROUTING_INPUT_PROPERTIES,
         taskKey: { type: "string", description: "Stable dedup key" },
@@ -7606,27 +8103,41 @@ export function createMcpServer(
           // ── getNextTask ────────────────────────────────────────
           case "getNextTask": {
             const { tasks, ranking, lease } = await getTaskFunctions();
-            const allTasks = await tasks.listTasks({
+            const allTasks = (await tasks.listTasks({
               limit: 5000,
               visibility: "public",
               status: TaskStatus.ACTIVE,
-            });
-            const user = {
+            })) as PersonalQueueTaskRecord[];
+            const executorProfiles: PlanningExecutorProfile[] = [{
+              accessTags: (a.accessTags as string[]) ?? [],
+              credentialTags: (a.credentialTags as string[]) ?? [],
+              executorKind: "agent",
+              languageTags: (a.languageTags as string[]) ?? [],
               skillTags: (a.skillTags as string[]) ?? [],
-              interestTags: (a.interestTags as string[]) ?? [],
-              maxTaskDifficulty: (a.maxDifficulty as TaskDifficulty) ?? null,
-              availableHoursPerWeek:
-                (a.availableHoursPerWeek as number) ?? null,
-            };
-            const ranked = ranking.rankTasksForUser(allTasks, user, 100, {
-              preferLeafExecution: true,
-            });
+              toolTags: (a.toolTags as string[]) ?? [],
+            }];
+            const graph = await loadExecutionGraphContext(allTasks);
+            const planningTasks = await attachPlanningEffortEvidence(
+              allTasks,
+              executorProfiles,
+            );
+            const ranked = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE),
+              {
+                executorProfiles,
+                limit: 100,
+                requireExecutable: true,
+                requireUnblocked: true,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
 
             const agentId = (a.agentId as string) ?? null;
             const available = [];
             for (const entry of ranked) {
-              const taskId = (entry.task as Record<string, unknown>)
-                .id as string;
+              const taskId = entry.id;
               const leaseStatus = await lease.isTaskLeased(taskId);
               if (!leaseStatus.leased || leaseStatus.agentId === agentId) {
                 available.push(entry);
@@ -7638,7 +8149,7 @@ export function createMcpServer(
               return ok({ message: "No actionable tasks found", task: null });
             }
             const best = available[0]!;
-            return ok({ score: best.score, task: summarizeTask(best.task) });
+            return ok({ score: best.priority, task: best });
           }
 
           // ── getMyQueue ─────────────────────────────────────────
@@ -7666,14 +8177,34 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadHumanPlanningProfiles({
+              kind: "self",
+              personId,
+              userId,
+            });
             const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               selfTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: selfTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: maxResults,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7681,7 +8212,11 @@ export function createMcpServer(
               },
             );
 
-            return ok({ buybackRate, queue });
+            return ok({
+              buybackRate,
+              queue,
+              ...summarizeCapabilityWork(allRows),
+            });
           }
 
           // ── getAIQueue ────────────────────────────────────────
@@ -7709,14 +8244,30 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadAgentPlanningProfiles();
             const assignedTasks = (personalTasks as unknown[]).filter((task) =>
               isAIExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               assignedTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: assignedTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: maxResults,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7724,7 +8275,11 @@ export function createMcpServer(
               },
             );
 
-            return ok({ buybackRate, queue });
+            return ok({
+              buybackRate,
+              queue,
+              ...summarizeCapabilityWork(allRows),
+            });
           }
 
           // ── getExecutionPlan ───────────────────────────────────
@@ -7773,11 +8328,20 @@ export function createMcpServer(
               parseTaskDate(a.planningWindowEnd) ??
               new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
             const graph = await loadExecutionGraphContext(targetTasks);
-            const rows = buildPersonalQueueRows(
+            const executorProfiles = [
+              ...(await loadHumanPlanningProfiles(target)),
+              ...(await loadAgentPlanningProfiles()),
+            ];
+            const planningTasks = await attachPlanningEffortEvidence(
               targetTasks,
+              executorProfiles,
+            );
+            const rows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: targetTasks.length,
                 now: planningWindowStart,
                 rootedTaskIds: graph.rootedTaskIds,
@@ -7838,23 +8402,37 @@ export function createMcpServer(
               visibility: "personal",
             })) as PersonalQueueTaskRecord[];
             const graph = await loadExecutionGraphContext(personalTasks);
+            const executorProfiles = [
+              ...(await loadHumanPlanningProfiles({
+                kind: "self",
+                personId,
+                userId,
+              })),
+              ...(await loadAgentPlanningProfiles()),
+            ];
+            const planningTasks = await attachPlanningEffortEvidence(
+              personalTasks,
+              executorProfiles,
+            );
             const activeCreatedTasks = personalTasks.filter(
               (task) => task.createdByUserId === userId,
             ).length;
             const rankedRows = buildPersonalQueueRows(
-              personalTasks,
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: personalTasks.length,
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
             const executableRows = buildPersonalQueueRows(
-              personalTasks,
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: personalTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7933,9 +8511,31 @@ export function createMcpServer(
             for (const task of personalTasks) {
               const row = rowById.get(task.id);
               if (!row) continue;
-              const needsExecutionEstimate =
-                (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) ===
-                  0 && !isCompletionMilestone(task);
+              const needsExecutionEstimate = isAtomicExecutionRecord(task);
+
+              if (
+                needsExecutionEstimate &&
+                row.capabilityStatus === "unknown"
+              ) {
+                issues.push({
+                  code: "CAPABILITY_UNKNOWN",
+                  message: `Task ${task.id} has required capabilities that are not recorded for its target executor.`,
+                  severity: "medium",
+                  taskId: task.id,
+                });
+              }
+
+              if (
+                needsExecutionEstimate &&
+                row.capabilityStatus === "ineligible"
+              ) {
+                issues.push({
+                  code: "CAPABILITY_MISMATCH",
+                  message: `Task ${task.id} requires capabilities its target executor does not have.`,
+                  severity: "medium",
+                  taskId: task.id,
+                });
+              }
 
               if (
                 needsExecutionEstimate &&
@@ -8055,14 +8655,34 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadHumanPlanningProfiles({
+              kind: "self",
+              personId,
+              userId,
+            });
             const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               selfTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: selfTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: selfTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -8089,6 +8709,7 @@ export function createMcpServer(
               selectionReason: selection.selectionReason,
               task: topAction,
               priority: topAction?.priority ?? 0,
+              ...summarizeCapabilityWork(allRows),
               queueAudit: {
                 activeCreatedTasks: personalTasks.filter(
                   (task) =>
@@ -9450,6 +10071,21 @@ export function createMcpServer(
             }
 
             const isAdminTaskWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
+            const parentTaskId = requiredString(a.parentTaskId, "parentTaskId");
+            if (typeof parentTaskId !== "string") return parentTaskId;
+            try {
+              await validateExplicitTaskParent({
+                isAdminWriter: isAdminTaskWriter,
+                parentTaskId,
+                prisma,
+                sessionPersonId: await loadSessionPersonId(userId),
+                userId,
+              });
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Invalid parent task.",
+              );
+            }
 
             if (dependencyTaskIds.length > 0) {
               const dependencyTasks = await prisma.task.findMany({
@@ -9505,9 +10141,6 @@ export function createMcpServer(
               }
             }
 
-            const parentTaskId =
-              (a.parentTaskId as string | undefined) ||
-              OPTIMIZE_EARTH_ROOT_TASK_ID;
             const assigneePersonId =
               (a.assigneePersonId as string | undefined) || undefined;
             const assigneeOrganizationId =
@@ -9560,9 +10193,6 @@ export function createMcpServer(
               category: a.category
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
                 : TaskCategory.OTHER,
-              difficulty: a.difficulty
-                ? TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty]
-                : TaskDifficulty.INTERMEDIATE,
               skillTags: (a.skillTags as string[]) ?? [],
               interestTags: (a.interestTags as string[]) ?? [],
               ...routingData,
@@ -9686,9 +10316,6 @@ export function createMcpServer(
             }
             if (a.executor_type === undefined && a.executorType === undefined) {
               missingFields.push("executor_type");
-            }
-            if (!a.difficulty) {
-              missingFields.push("difficulty");
             }
             if (parseFiniteNumber(a.timeToImpactStartDays) == null) {
               missingFields.push("timeToImpactStartDays");
@@ -10451,12 +11078,23 @@ export function createMcpServer(
                 });
                 planningBranches.set(branchKey, branch);
               }
+              const requestedParentTaskRef = optionalString(
+                candidate.parentTaskRef,
+              );
+              if (!requestedParentTaskRef) {
+                return err(
+                  `Candidate ${JSON.stringify(candidate.title ?? candidate.id ?? "untitled")} requires parentTaskRef. Search existing tasks and choose the best parent; use "$target-root" only when no more specific parent exists.`,
+                );
+              }
               candidates.push({
                 ...candidate,
                 assigneeOrganizationId,
                 assigneePersonId,
                 isPublic: isAdmin && candidate.isPublic === true,
-                parentTaskRef: (candidate.parentTaskRef as string) || branch.id,
+                parentTaskRef:
+                  requestedParentTaskRef === "$target-root"
+                    ? branch.id
+                    : requestedParentTaskRef,
               });
             }
 
@@ -10540,6 +11178,24 @@ export function createMcpServer(
             for (const task of existingTasks) {
               existingTaskByRef.set(task.id, task);
               if (task.taskKey) existingTaskByRef.set(task.taskKey, task);
+            }
+
+            for (const candidate of candidates) {
+              const targetKey = targetKeyForCandidate(candidate);
+              const branch = planningBranches.get(targetKey)!;
+              const parentRef = String(candidate.parentTaskRef ?? "");
+              const parentCandidate = candidateByRef.get(parentRef);
+              const parentTask = existingTaskByRef.get(parentRef);
+              const isBranch =
+                parentRef === branch.id || parentRef === branch.taskKey;
+              if (parentCandidate === candidate) {
+                return err("A proposed task cannot be its own parent.");
+              }
+              if (!isBranch && !parentCandidate && !parentTask) {
+                return err(
+                  `Invalid parentTaskRef ${JSON.stringify(parentRef)}. Search existing tasks or reference another candidate in this bundle.`,
+                );
+              }
             }
 
             if (!isAdmin) {
@@ -10756,7 +11412,6 @@ export function createMcpServer(
                   createdByUserId: userId,
                   taskKey: (candidate.taskKey as string) ?? null,
                   category: inferProposalCategory(candidate),
-                  difficulty: inferProposalDifficulty(candidate),
                   assigneePersonId:
                     (candidate.assigneePersonId as string) ?? null,
                   assigneeOrganizationId:
@@ -11235,6 +11890,30 @@ export function createMcpServer(
             if (existingTask.isPublic && !isAdminWriter) {
               return err("Updating public tasks requires an admin user.");
             }
+            if (a.parentTaskId !== undefined) {
+              const parentTaskId = requiredString(
+                a.parentTaskId,
+                "parentTaskId",
+              );
+              if (typeof parentTaskId !== "string") return parentTaskId;
+              try {
+                await validateExplicitTaskParent({
+                  isAdminWriter,
+                  parentTaskId,
+                  prisma,
+                  sessionPersonId: await loadSessionPersonId(userId),
+                  taskId: existingTask.id,
+                  userId,
+                });
+              } catch (error) {
+                return err(
+                  error instanceof Error
+                    ? error.message
+                    : "Invalid parent task.",
+                );
+              }
+              updates.parentTaskId = parentTaskId;
+            }
             const dependencyPatchProvided =
               Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
             const blockerTaskIds = dependencyPatchProvided
@@ -11333,9 +12012,6 @@ export function createMcpServer(
               updates.category =
                 TaskCategory[a.category as keyof typeof TaskCategory];
             }
-            if (a.difficulty)
-              updates.difficulty =
-                TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty];
             if (a.taskKey) updates.taskKey = a.taskKey;
             if (a.roleTitle !== undefined)
               updates.roleTitle = (a.roleTitle as string) || null;
