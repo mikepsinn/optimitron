@@ -43,6 +43,7 @@ import {
   rankTasksForUser,
   scoreTaskForAccountability,
 } from "@/lib/tasks/rank-tasks";
+import { getExplicitEdgeMarginalFrames } from "@/lib/tasks/marginal-impact";
 import { grantWishes } from "@/lib/wishes.server";
 
 const log = createLogger("tasks-server");
@@ -731,7 +732,7 @@ function buildParentInheritedImpactFrame(
   });
 }
 
-function buildDownstreamUnlockedImpactFrame(
+function buildAnnotatedDownstreamMarginalImpactFrame(
   task: TaskListItem | TaskDetailItem,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
@@ -747,87 +748,13 @@ function buildDownstreamUnlockedImpactFrame(
       return [];
     }
 
-    const weightedFrames: NonNullable<TaskImpactSelection["selectedFrame"]>[] =
-      [];
-    const probabilityDelta =
-      edge.probabilityDeltaBase != null && edge.probabilityDeltaBase > 0
-        ? edge.probabilityDeltaBase
-        : null;
-    const timeDeltaDays =
-      edge.timeDeltaDaysBase != null && edge.timeDeltaDaysBase > 0
-        ? edge.timeDeltaDaysBase
-        : null;
-
-    if (probabilityDelta != null) {
-      weightedFrames.push(
-        scaleImpactFrameSummary(frame, probabilityDelta, {
-          customFrameLabel: `Probability-weighted downstream value unlocked by ${task.title}`,
-          frameSlug: `${frame.frameSlug}-probability-delta-${task.id}`,
-          // A marginal-unlocked-value frame has no single success probability;
-          // leave it null rather than carrying the downstream task's.
-          successProbabilityBase: null,
-          successProbabilityHigh: null,
-          successProbabilityLow: null,
-          metrics: [],
-        }),
-      );
-    }
-
-    if (timeDeltaDays != null) {
-      weightedFrames.push({
-        ...frame,
-        customFrameLabel: `Time-accelerated downstream value unlocked by ${task.title}`,
-        successProbabilityBase: null,
-        successProbabilityHigh: null,
-        successProbabilityLow: null,
-        delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
-        delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
-        delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,
-        delayEconomicValueUsdLostPerDayBase:
-          frame.delayEconomicValueUsdLostPerDayBase,
-        delayEconomicValueUsdLostPerDayHigh:
-          frame.delayEconomicValueUsdLostPerDayHigh,
-        delayEconomicValueUsdLostPerDayLow:
-          frame.delayEconomicValueUsdLostPerDayLow,
-        estimatedCashCostUsdBase: null,
-        estimatedCashCostUsdHigh: null,
-        estimatedCashCostUsdLow: null,
-        estimatedEffortHoursBase:
-          task.estimatedEffortHours ?? frame.estimatedEffortHoursBase ?? null,
-        estimatedEffortHoursHigh:
-          task.estimatedEffortHours ?? frame.estimatedEffortHoursHigh ?? null,
-        estimatedEffortHoursLow:
-          task.estimatedEffortHours ?? frame.estimatedEffortHoursLow ?? null,
-        expectedDalysAvertedBase:
-          (frame.delayDalysLostPerDayBase ?? 0) * timeDeltaDays,
-        expectedDalysAvertedHigh:
-          frame.delayDalysLostPerDayHigh == null
-            ? null
-            : frame.delayDalysLostPerDayHigh * timeDeltaDays,
-        expectedDalysAvertedLow:
-          frame.delayDalysLostPerDayLow == null
-            ? null
-            : frame.delayDalysLostPerDayLow * timeDeltaDays,
-        expectedEconomicValueUsdBase:
-          (frame.delayEconomicValueUsdLostPerDayBase ?? 0) * timeDeltaDays,
-        expectedEconomicValueUsdHigh:
-          frame.delayEconomicValueUsdLostPerDayHigh == null
-            ? null
-            : frame.delayEconomicValueUsdLostPerDayHigh * timeDeltaDays,
-        expectedEconomicValueUsdLow:
-          frame.delayEconomicValueUsdLostPerDayLow == null
-            ? null
-            : frame.delayEconomicValueUsdLostPerDayLow * timeDeltaDays,
-        frameSlug: `${frame.frameSlug}-time-delta-${task.id}`,
-        metrics: [],
-      });
-    }
-
-    if (weightedFrames.length === 0) {
-      weightedFrames.push(frame);
-    }
-
-    return weightedFrames;
+    return getExplicitEdgeMarginalFrames({
+      downstreamFrame: frame,
+      edge,
+      estimatedEffortHours: task.estimatedEffortHours,
+      sourceTaskId: task.id,
+      sourceTaskTitle: task.title,
+    });
   });
 
   if (downstreamFrames.length === 0) {
@@ -867,6 +794,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
   activeChildTaskCount: number;
   blockerStatuses: TaskStatus[];
   directImpactFrame: TaskImpactSelection["selectedFrame"];
+  marginalImpactFrame: TaskImpactSelection["selectedFrame"];
   impact: {
     availableFrames: TaskImpactSelection["availableFrames"];
     confidenceSummary: unknown;
@@ -891,15 +819,57 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     directImpactSelection.selectedFrame == null
       ? buildParentInheritedImpactFrame(task, options)
       : null;
-  const downstreamUnlockedFrame = buildDownstreamUnlockedImpactFrame(
+  const downstreamMarginalFrame = buildAnnotatedDownstreamMarginalImpactFrame(
     task,
     options,
+  );
+  const marginalImpactFrame = sumImpactFrameSummaries(
+    [directImpactSelection.selectedFrame, downstreamMarginalFrame].filter(
+      (frame): frame is NonNullable<typeof frame> => frame != null,
+    ),
+    directImpactSelection.selectedFrame
+      ? {
+          customFrameLabel:
+            directImpactSelection.selectedFrame.customFrameLabel,
+          estimatedCashCostUsdBase:
+            task.actualCashCostUsd ??
+            directImpactSelection.selectedFrame.estimatedCashCostUsdBase,
+          estimatedEffortHoursBase:
+            task.estimatedEffortHours ??
+            directImpactSelection.selectedFrame.estimatedEffortHoursBase,
+          frameKey: directImpactSelection.selectedFrame.frameKey,
+          frameSlug: directImpactSelection.selectedFrame.frameSlug,
+          metrics: directImpactSelection.selectedFrame.metrics,
+        }
+      : {
+          customFrameLabel: downstreamMarginalFrame?.customFrameLabel ?? null,
+          estimatedCashCostUsdBase: task.actualCashCostUsd ?? null,
+          estimatedCashCostUsdHigh: null,
+          estimatedCashCostUsdLow: null,
+          estimatedEffortHoursBase:
+            task.estimatedEffortHours ??
+            downstreamMarginalFrame?.estimatedEffortHoursBase ??
+            null,
+          estimatedEffortHoursHigh:
+            task.estimatedEffortHours ??
+            downstreamMarginalFrame?.estimatedEffortHoursHigh ??
+            null,
+          estimatedEffortHoursLow:
+            task.estimatedEffortHours ??
+            downstreamMarginalFrame?.estimatedEffortHoursLow ??
+            null,
+          frameKey:
+            downstreamMarginalFrame?.frameKey ?? DEFAULT_TASK_IMPACT_FRAME,
+          frameSlug:
+            downstreamMarginalFrame?.frameSlug ?? "explicit-marginal-impact",
+          metrics: [],
+        },
   );
   const selectedImpactFrame = sumImpactFrameSummaries(
     [
       directImpactSelection.selectedFrame,
       inheritedParentFrame,
-      downstreamUnlockedFrame,
+      downstreamMarginalFrame,
     ].filter((frame): frame is NonNullable<typeof frame> => frame != null),
     directImpactSelection.selectedFrame
       ? {
@@ -918,7 +888,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
       : {
           customFrameLabel:
             inheritedParentFrame?.customFrameLabel ??
-            downstreamUnlockedFrame?.customFrameLabel ??
+            downstreamMarginalFrame?.customFrameLabel ??
             null,
           estimatedCashCostUsdBase: task.actualCashCostUsd ?? null,
           estimatedCashCostUsdHigh: null,
@@ -926,25 +896,25 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
           estimatedEffortHoursBase:
             task.estimatedEffortHours ??
             inheritedParentFrame?.estimatedEffortHoursBase ??
-            downstreamUnlockedFrame?.estimatedEffortHoursBase ??
+            downstreamMarginalFrame?.estimatedEffortHoursBase ??
             null,
           estimatedEffortHoursHigh:
             task.estimatedEffortHours ??
             inheritedParentFrame?.estimatedEffortHoursHigh ??
-            downstreamUnlockedFrame?.estimatedEffortHoursHigh ??
+            downstreamMarginalFrame?.estimatedEffortHoursHigh ??
             null,
           estimatedEffortHoursLow:
             task.estimatedEffortHours ??
             inheritedParentFrame?.estimatedEffortHoursLow ??
-            downstreamUnlockedFrame?.estimatedEffortHoursLow ??
+            downstreamMarginalFrame?.estimatedEffortHoursLow ??
             null,
           frameKey:
             inheritedParentFrame?.frameKey ??
-            downstreamUnlockedFrame?.frameKey ??
+            downstreamMarginalFrame?.frameKey ??
             DEFAULT_TASK_IMPACT_FRAME,
           frameSlug:
             inheritedParentFrame?.frameSlug ??
-            downstreamUnlockedFrame?.frameSlug ??
+            downstreamMarginalFrame?.frameSlug ??
             "effective-impact",
           metrics: [],
         },
@@ -988,6 +958,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     ...(decoratedChildTasks ? { childTasks: decoratedChildTasks } : {}),
     contextJson: normalizeTaskContextJson(task.contextJson),
     directImpactFrame: directImpactSelection.selectedFrame,
+    marginalImpactFrame,
     primaryEndpoint,
     impact: {
       availableFrames: directImpactSelection.availableFrames,
@@ -1015,6 +986,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     activeChildTaskCount: number;
     blockerStatuses: TaskStatus[];
     directImpactFrame: TaskImpactSelection["selectedFrame"];
+    marginalImpactFrame: TaskImpactSelection["selectedFrame"];
     impact: {
       availableFrames: TaskImpactSelection["availableFrames"];
       confidenceSummary: unknown;
@@ -1069,9 +1041,10 @@ function getTaskVisibilityWhere(input?: {
   assigneePersonId?: string | null;
   personId?: string | null;
   status?: TaskStatus | null;
+  targetOrganizationId?: string | null;
   taskId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible" | "personal";
+  visibility?: "public" | "created" | "accessible" | "personal" | "target";
 }): Prisma.TaskWhereInput {
   const baseWhere: Prisma.TaskWhereInput = {
     assigneeOrganizationId: input?.assigneeOrganizationId ?? undefined,
@@ -1079,9 +1052,20 @@ function getTaskVisibilityWhere(input?: {
     deletedAt: null,
     id: input?.taskId ?? undefined,
     status: input?.status ?? undefined,
+    ...(input?.targetOrganizationId
+      ? {
+          OR: [
+            { assigneeOrganizationId: input.targetOrganizationId },
+            { ownerOrganizationId: input.targetOrganizationId },
+          ],
+        }
+      : {}),
   };
 
   const visibility = input?.visibility ?? "public";
+  if (visibility === "target") {
+    return baseWhere;
+  }
   if (visibility === "created") {
     if (!input?.userId) {
       return {
@@ -1383,14 +1367,16 @@ export async function listTasks(options?: {
   parentTaskId?: string | null;
   personId?: string | null;
   status?: TaskStatus | null;
+  targetOrganizationId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible" | "personal";
+  visibility?: "public" | "created" | "accessible" | "personal" | "target";
 }) {
   const visibilityWhere = getTaskVisibilityWhere({
     assigneeOrganizationId: options?.assigneeOrganizationId,
     assigneePersonId: options?.assigneePersonId,
     personId: options?.personId,
     status: options?.status,
+    targetOrganizationId: options?.targetOrganizationId,
     userId: options?.userId,
     visibility: options?.visibility,
   });
