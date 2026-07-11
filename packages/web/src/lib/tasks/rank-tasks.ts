@@ -11,7 +11,7 @@ import {
 } from "@/lib/tasks/impact";
 
 export interface RankableTask {
-  id?: string;
+  id: string;
   activeClaimCount?: number;
   activeChildTaskCount?: number;
   blockerStatuses?: TaskStatus[];
@@ -60,6 +60,7 @@ export interface RankableUser {
 }
 
 export interface RankTasksOptions {
+  /** When true, return only atomic TASK rows; parent/project fallback is forbidden. */
   preferLeafExecution?: boolean;
 }
 
@@ -391,7 +392,7 @@ export function isTaskClaimable(task: Pick<RankableTask, "claimPolicy" | "status
   );
 }
 
-export function canTaskAcceptMoreClaims(task: RankableTask) {
+export function canTaskAcceptMoreClaims(task: Omit<RankableTask, "id">) {
   if (!isTaskClaimable(task)) {
     return false;
   }
@@ -574,7 +575,7 @@ export function rankTasksForUser<T extends RankableTask>(
         return rightValuePerHour - leftValuePerHour;
       }
 
-      return (left.task.id ?? "").localeCompare(right.task.id ?? "");
+      return left.task.id.localeCompare(right.task.id);
     })
     .slice(0, limit);
 }

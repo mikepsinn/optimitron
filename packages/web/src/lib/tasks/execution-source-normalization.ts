@@ -34,12 +34,18 @@ function normalizeWhitespace(value: string) {
 }
 
 function sourceClockTime(value: Date | string) {
-  if (typeof value === "string") {
-    const match = value.match(/T(\d{2}:\d{2})/);
-    if (match?.[1]) return match[1];
-  }
   const date = value instanceof Date ? value : new Date(value);
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`;
+}
+
+function calendarEventDurationHours(event: CalendarPlanningEvent) {
+  const durationMilliseconds =
+    new Date(event.endAt).getTime() - new Date(event.startAt).getTime();
+  const boundedDurationMilliseconds =
+    Number.isFinite(durationMilliseconds) && durationMilliseconds > 0
+      ? Math.max(60_000, durationMilliseconds)
+      : 60_000;
+  return boundedDurationMilliseconds / 3_600_000;
 }
 
 export function normalizePlanningTitle(value: string) {
@@ -266,11 +272,7 @@ export function normalizeCalendarForPlanning(events: CalendarPlanningEvent[]) {
         ],
         description:
           "Create one recurring Optimitron task template for this routine; do not import each calendar occurrence.",
-        estimatedEffortHours:
-          Math.max(
-            1,
-            new Date(first.endAt).getTime() - new Date(first.startAt).getTime(),
-          ) / 3_600_000,
+        estimatedEffortHours: calendarEventDurationHours(first),
         kind: "TASK",
         source: {
           sourceHash: sourceHash(sourceSeries),
@@ -302,11 +304,7 @@ export function normalizeCalendarForPlanning(events: CalendarPlanningEvent[]) {
         acceptanceCriteria: ["Complete the scheduled action once."],
         description:
           "Migrate this one-off action from Calendar into Optimitron so Calendar remains a scheduling constraint rather than a second task database.",
-        estimatedEffortHours:
-          Math.max(
-            1,
-            new Date(event.endAt).getTime() - new Date(event.startAt).getTime(),
-          ) / 3_600_000,
+        estimatedEffortHours: calendarEventDurationHours(event),
         kind: "TASK",
         source: {
           sourceHash: sourceHash({

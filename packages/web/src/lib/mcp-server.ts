@@ -4759,7 +4759,7 @@ const TASK_TOOL_DEFINITIONS = [
         preferLeafExecution: {
           type: "boolean",
           description:
-            "Prefer executable leaf tasks over parent projects when possible.",
+            "When true, return only executable childless TASK rows; never fall back to parents or projects.",
         },
       },
     },
@@ -7737,6 +7737,11 @@ export function createMcpServer(
                     targetOrganizationId: target.organizationId,
                     visibility: "target",
                   }))) as PersonalQueueTaskRecord[];
+            const planningWindowStart =
+              parseTaskDate(a.planningWindowStart) ?? new Date();
+            const planningWindowEnd =
+              parseTaskDate(a.planningWindowEnd) ??
+              new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
             const graph = await loadExecutionGraphContext(targetTasks);
             const rows = buildPersonalQueueRows(
               targetTasks,
@@ -7744,14 +7749,10 @@ export function createMcpServer(
               buybackRate,
               {
                 limit: targetTasks.length,
+                now: planningWindowStart,
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
-            const planningWindowStart =
-              parseTaskDate(a.planningWindowStart) ?? new Date();
-            const planningWindowEnd =
-              parseTaskDate(a.planningWindowEnd) ??
-              new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
             const fixedCommitments = Array.isArray(a.fixedCommitments)
               ? (a.fixedCommitments as Array<Record<string, unknown>>).map(
                   (commitment) => ({
@@ -7771,6 +7772,7 @@ export function createMcpServer(
                   : null,
               commitments: fixedCommitments as PlanningCommitment[],
               limit: maxResults,
+              now: planningWindowStart,
               planningWindowEnd,
               planningWindowStart,
               tasks: rows.map(toExecutionPlanningTask),

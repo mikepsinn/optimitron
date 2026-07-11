@@ -133,10 +133,34 @@ describe("normalizeCalendarForPlanning", () => {
         startAt: "2026-07-11T14:00:00.000Z",
       },
     ]);
+    const dateInput = normalizeCalendarForPlanning([
+      {
+        ...occurrence,
+        endAt: new Date(occurrence.endAt),
+        startAt: new Date(occurrence.startAt),
+      },
+    ]);
 
     expect(first.routineProposals[0]?.source.sourceHash).toBe(
       second.routineProposals[0]?.source.sourceHash,
     );
+    expect(first.routineProposals[0]?.source.sourceHash).toBe(
+      dateInput.routineProposals[0]?.source.sourceHash,
+    );
+  });
+
+  it("uses a one-minute floor for malformed zero-duration task events", () => {
+    const result = normalizeCalendarForPlanning([
+      {
+        endAt: "2026-07-10T17:30:00.000Z",
+        id: "zero-duration-task",
+        kind: "task",
+        startAt: "2026-07-10T17:30:00.000Z",
+        title: "Open Mercury bank account for EOS",
+      },
+    ]);
+
+    expect(result.taskProposals[0]?.estimatedEffortHours).toBeCloseTo(1 / 60);
   });
 });
 

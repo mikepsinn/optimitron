@@ -2324,6 +2324,43 @@ describe("MCP server tool dispatch", () => {
       expect(body.fixedCommitmentMinutes).toBe(60);
     });
 
+    it("scores availability and expiring deadlines at the requested planning window", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          availableAt: "2030-01-01T10:00:00.000Z",
+          id: "available-at-window-start",
+          title: "Available at window start",
+        }),
+        makeCreatedTask({
+          deadlinePolicy: "EXPIRES",
+          dueAt: "2030-01-01T09:00:00.000Z",
+          id: "expired-before-window",
+          title: "Expired before window",
+        }),
+      ]);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "expired-before-window" ? 1_000 : 100,
+        }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getExecutionPlan",
+        arguments: {
+          availableMinutes: 60,
+          planningWindowEnd: "2030-01-01T11:00:00.000Z",
+          planningWindowStart: "2030-01-01T10:00:00.000Z",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(
+        (body.checklist as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["available-at-window-start"]);
+    });
+
     it("rejects organization planning without owner or admin authorization", async () => {
       mocks.canManageOrganization.mockResolvedValue(false);
       const client = await setup("user-1", ALL_SCOPES);
