@@ -1,7 +1,6 @@
 import {
   TaskClaimPolicy,
   TaskDifficulty,
-  TaskKind,
   TaskStatus,
 } from "@optimitron/db";
 import {
@@ -22,7 +21,6 @@ export interface RankableTask {
   estimatedHoursPerWeekMin?: number | null;
   interestTags: string[];
   maxClaims?: number | null;
-  kind?: TaskKind | null;
   marginalImpactFrame?: TaskImpactFrameSummary | null;
   compensationPaymentRails?: string[] | null;
   preferredAccessTags?: string[] | null;
@@ -444,12 +442,9 @@ export function hasActiveChildTasks(task: Pick<RankableTask, "activeChildTaskCou
 }
 
 export function isAtomicExecutionTask(
-  task: Pick<RankableTask, "activeChildTaskCount" | "kind">,
+  task: Pick<RankableTask, "activeChildTaskCount">,
 ) {
-  return (
-    (task.kind == null || task.kind === TaskKind.TASK) &&
-    !hasActiveChildTasks(task)
-  );
+  return !hasActiveChildTasks(task);
 }
 
 function getExecutionImpactFrame(task: RankableTask) {

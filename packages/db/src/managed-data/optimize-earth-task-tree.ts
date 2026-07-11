@@ -13,7 +13,6 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskDifficulty,
-  TaskKind,
 } from "../generated/prisma/client.js";
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
@@ -81,7 +80,6 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     id: OPTIMIZE_EARTH_ROOT_TASK_ID,
-    kind: TaskKind.PROJECT,
     taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
     parentTaskId: null,
     title: "Optimize Earth",

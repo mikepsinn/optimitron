@@ -22,6 +22,7 @@ import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
 import {
   assertUserCanClaimPaidTask,
   queueTaskPayoutForVerifiedClaim,
@@ -1689,7 +1690,7 @@ export async function createTask(
         resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
-      parentTaskId: input.parentTaskId ?? null,
+      parentTaskId: input.parentTaskId ?? OPTIMIZE_EARTH_ROOT_TASK_ID,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],

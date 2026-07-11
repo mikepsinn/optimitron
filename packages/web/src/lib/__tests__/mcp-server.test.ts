@@ -393,7 +393,7 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
 function makeOptimizeEarthRoot() {
   return {
     id: "optimize-earth",
-    kind: TaskKind.PROJECT,
+    kind: TaskKind.TASK,
     parentTaskId: null,
   };
 }
@@ -2298,6 +2298,7 @@ describe("MCP server tool dispatch", () => {
       );
 
       const client = await setup("user-1", ALL_SCOPES);
+      await client.listTools();
       const result = await client.callTool({
         name: "getExecutionPlan",
         arguments: {
@@ -2317,6 +2318,9 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
       expect(body.plannerVersion).toBe("frontier-replanning-v1");
+      expect(result.structuredContent).toMatchObject({
+        plannerVersion: "frontier-replanning-v1",
+      });
       expect(
         (body.checklist as Array<{ id: string }>).map((task) => task.id),
       ).toEqual(["mercury", "bank-dependent"]);
@@ -2691,7 +2695,7 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("creates private caller-owned proposal drafts under an idempotent personal project", async () => {
+    it("creates private caller-owned proposal drafts under an idempotent personal branch", async () => {
       mocks.taskFindFirst.mockImplementation(
         (args: { where?: { taskKey?: string } }) =>
           args.where?.taskKey
@@ -2746,7 +2750,6 @@ describe("MCP server tool dispatch", () => {
         expect.objectContaining({
           data: expect.objectContaining({
             isPublic: false,
-            kind: TaskKind.PROJECT,
             parentTaskId: "optimize-earth",
           }),
         }),
@@ -2758,7 +2761,6 @@ describe("MCP server tool dispatch", () => {
             assigneePersonId: "person-1",
             createdByUserId: "user-1",
             isPublic: false,
-            kind: TaskKind.TASK,
             status: TaskStatus.DRAFT,
           }),
         }),
@@ -2778,7 +2780,60 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.sourceArtifactUpsert).toHaveBeenCalledTimes(1);
     });
 
-    it("rejects an occupied planning branch key unless it is the expected private rooted project", async () => {
+    it("defaults an admin's personal proposal to the admin's Person record", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        (args: { where?: { taskKey?: string } }) =>
+          args.where?.taskKey ? null : makeOptimizeEarthRoot(),
+      );
+      mocks.taskCreate
+        .mockResolvedValueOnce({
+          id: "personal-tasks",
+          taskKey: "planner:person:person-1",
+        })
+        .mockResolvedValueOnce({
+          id: "draft-task",
+          title: "Review the personal plan",
+        });
+      mocks.taskFindMany.mockResolvedValue([]);
+
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description:
+                "Review the proposed personal execution plan and record any corrections.",
+              estimatedEffortHours: 0.5,
+              impact: {
+                expectedEconomicValueUsdBase: 1_000,
+                successProbabilityBase: 0.8,
+              },
+              title: "Review the personal plan",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskCreate).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            assigneePersonId: "person-1",
+            taskKey: "planner:person:person-1",
+          }),
+        }),
+      );
+      expect(mocks.taskCreate).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          data: expect.objectContaining({ assigneePersonId: "person-1" }),
+        }),
+      );
+    });
+
+    it("rejects an occupied planning branch key unless it is private and rooted", async () => {
       mocks.taskFindFirst.mockImplementation(
         (args: { where?: { taskKey?: string } }) =>
           args.where?.taskKey
@@ -2803,7 +2858,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).message).toContain(
-        "not the expected private, rooted PROJECT",
+        "not private, rooted, and assigned to the expected target",
       );
       expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
@@ -3903,10 +3958,7 @@ describe("MCP server tool dispatch", () => {
       });
     }, 15_000);
 
-    it("createTask omits null FK fields and sourceUrl from prisma.task.create — Prisma's checked TaskCreateInput rejects scalar FKs and the Task model has no sourceUrl column", async () => {
-      // Regression for two production bugs found via the structured catch block:
-      //   1. `parentTaskId: null` → "Unknown argument `parentTaskId`. Did you mean `parentTask`?"
-      //   2. `sourceUrl: <anything>` → "Unknown argument `sourceUrl`" (no such column)
+    it("createTask defaults to the Optimize Earth root and omits null assignee/sourceUrl fields", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "created-task",
@@ -3951,7 +4003,7 @@ describe("MCP server tool dispatch", () => {
       const data = (
         mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
       ).data;
-      expect(data).not.toHaveProperty("parentTaskId");
+      expect(data.parentTaskId).toBe("optimize-earth");
       expect(data).not.toHaveProperty("assigneePersonId");
       expect(data).not.toHaveProperty("assigneeOrganizationId");
       expect(data).not.toHaveProperty("sourceUrl");

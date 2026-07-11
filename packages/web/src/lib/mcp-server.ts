@@ -298,8 +298,13 @@ async function loadSessionPersonId(userId: string): Promise<string | null> {
 // ---------------------------------------------------------------------------
 
 function ok(data: unknown) {
+  const text = stringifyJsonSafe(data, 2);
+  const json = JSON.parse(text) as unknown;
   return {
-    content: [{ type: "text" as const, text: stringifyJsonSafe(data, 2) }],
+    content: [{ type: "text" as const, text }],
+    ...(json != null && typeof json === "object" && !Array.isArray(json)
+      ? { structuredContent: json as Record<string, unknown> }
+      : {}),
   };
 }
 
@@ -1275,7 +1280,6 @@ function buildStoredProposalContext(input: {
         (input.candidate.acceptanceCriteria as string[]) ?? [],
       impact: (input.candidate.impact as Record<string, unknown>) ?? null,
       isPublic: (input.candidate.isPublic as boolean) ?? false,
-      kind: (input.candidate.kind as string) ?? TaskKind.TASK,
       parentTaskRef: (input.candidate.parentTaskRef as string) ?? null,
       proposalRef:
         input.decision?.proposalRef ??
@@ -1396,7 +1400,6 @@ function taskProposalCandidateFromRecord(task: {
   estimatedEffortHours?: number | null;
   id: string;
   isPublic: boolean;
-  kind?: TaskKind | string | null;
   roleTitle?: string | null;
   status: string;
   taskKey?: string | null;
@@ -1429,7 +1432,7 @@ function taskProposalCandidateFromRecord(task: {
     estimatedEffortHours:
       (proposal?.estimatedEffortHours as number) ??
       task.estimatedEffortHours ??
-      (task.kind === TaskKind.PROJECT ? 0.1 : null),
+      null,
     id: task.id,
     impact: getProposalGovernanceImpact({
       estimatedEffortHours:
@@ -1546,6 +1549,8 @@ async function attachProposalImpactEstimate(input: {
 function normalizeProposalCandidate(
   candidate: Record<string, unknown>,
 ): Record<string, unknown> {
+  const candidateFields = { ...candidate };
+  delete candidateFields.kind;
   const source = asObject(candidate.source);
   const sourceSystem =
     typeof source?.sourceSystem === "string"
@@ -1600,12 +1605,10 @@ function normalizeProposalCandidate(
       : candidate.taskKey;
 
   return {
-    ...candidate,
+    ...candidateFields,
     blockerRefs,
     dependencies,
     isPublic: candidate.isPublic === true,
-    kind:
-      candidate.kind === TaskKind.PROJECT ? TaskKind.PROJECT : TaskKind.TASK,
     source: normalizedSource,
     sourceUrls,
     taskKey: generatedTaskKey,
@@ -1626,11 +1629,11 @@ async function ensureExecutionPlanningBranch(input: {
       deletedAt: null,
       id: OPTIMIZE_EARTH_ROOT_TASK_ID,
     },
-    select: { id: true, kind: true },
+    select: { id: true },
   });
-  if (!root || root.kind !== TaskKind.PROJECT) {
+  if (!root) {
     throw new Error(
-      "Optimize Earth PROJECT root is missing. Run managed task sync before proposing planning tasks.",
+      "Optimize Earth root is missing. Run managed task sync before proposing planning tasks.",
     );
   }
 
@@ -1640,7 +1643,6 @@ async function ensureExecutionPlanningBranch(input: {
     createdByUserId: true,
     id: true,
     isPublic: true,
-    kind: true,
     ownerOrganizationId: true,
     parentTaskId: true,
     taskKey: true,
@@ -1651,7 +1653,6 @@ async function ensureExecutionPlanningBranch(input: {
     createdByUserId: string;
     id: string;
     isPublic: boolean;
-    kind: TaskKind;
     ownerOrganizationId: string | null;
     parentTaskId: string | null;
     taskKey: string | null;
@@ -1665,14 +1666,9 @@ async function ensureExecutionPlanningBranch(input: {
           branch.assigneeOrganizationId == null &&
           branch.ownerOrganizationId == null &&
           branch.createdByUserId === input.userId;
-    if (
-      branch.kind !== TaskKind.PROJECT ||
-      branch.parentTaskId !== root.id ||
-      branch.isPublic ||
-      !matchesTarget
-    ) {
+    if (branch.parentTaskId !== root.id || branch.isPublic || !matchesTarget) {
       throw new Error(
-        `Reserved execution planning branch ${taskKey} is not the expected private, rooted PROJECT for this target.`,
+        `Reserved execution planning branch ${taskKey} is not private, rooted, and assigned to the expected target.`,
       );
     }
     return { id: branch.id, taskKey: branch.taskKey };
@@ -1693,18 +1689,17 @@ async function ensureExecutionPlanningBranch(input: {
         createdByUserId: input.userId,
         description:
           targetKind === "organization"
-            ? "Projects owned or assigned to this organization."
-            : "Projects and tasks for this person.",
+            ? "Tasks owned or assigned to this organization."
+            : "Tasks for this person.",
         difficulty: TaskDifficulty.INTERMEDIATE,
         isPublic: false,
-        kind: TaskKind.PROJECT,
         parentTaskId: root.id,
         status: TaskStatus.ACTIVE,
         taskKey,
         title:
           targetKind === "organization"
-            ? "Organization projects"
-            : "Personal projects",
+            ? "Organization tasks"
+            : "Personal tasks",
       },
       select: { id: true, taskKey: true },
     });
@@ -2233,7 +2228,6 @@ function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
 
 function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
   return (
-    (task.kind ?? TaskKind.TASK) === TaskKind.TASK &&
     (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
     !isCompletionMilestone(task)
   );
@@ -2248,7 +2242,6 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         task.activeChildTaskCount ?? task.childTasks?.length ?? 0,
       hasMarginalEstimate: hasMarginalEstimate(task),
       id: task.id,
-      kind: (task.kind as TaskKind | null | undefined) ?? TaskKind.TASK,
       parentTaskId: task.parentTaskId ?? null,
     });
   }
@@ -2268,13 +2261,11 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         where: { deletedAt: null, id: { in: pendingParentIds } },
         select: {
           id: true,
-          kind: true,
           parentTaskId: true,
         },
       })) as
         | Array<{
             id: string;
-            kind?: TaskKind | null;
             parentTaskId?: string | null;
           }>
         | undefined) ?? [];
@@ -2283,7 +2274,6 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         activeChildTaskCount: 0,
         hasMarginalEstimate: false,
         id: parent.id,
-        kind: parent.kind ?? TaskKind.TASK,
         parentTaskId: parent.parentTaskId ?? null,
       });
     }
@@ -2752,7 +2742,6 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
     hasMarginalEstimate: row.hasMarginalEstimate,
     hours: row.hours,
     id: row.id,
-    kind: row.kind ?? TaskKind.TASK,
     parentTaskId: row.parentTaskId ?? null,
     priority: row.priority,
     realEv: row.realEv,
@@ -4806,7 +4795,7 @@ const TASK_TOOL_DEFINITIONS = [
         preferLeafExecution: {
           type: "boolean",
           description:
-            "When true, return only executable childless TASK rows; never fall back to parents or projects.",
+            "When true, return only executable tasks without active subtasks; never fall back to parent tasks.",
         },
       },
     },
@@ -5950,12 +5939,6 @@ const TASK_TOOL_DEFINITIONS = [
             type: "object",
             properties: {
               title: { type: "string", description: "Short imperative title" },
-              kind: {
-                type: "string",
-                enum: ["TASK", "PROJECT"],
-                description:
-                  "TASK for an atomic action or PROJECT for a non-executable grouping row.",
-              },
               description: {
                 type: "string",
                 description: "Action and acceptance criteria",
@@ -7950,8 +7933,12 @@ export function createMcpServer(
             for (const task of personalTasks) {
               const row = rowById.get(task.id);
               if (!row) continue;
+              const needsExecutionEstimate =
+                (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) ===
+                  0 && !isCompletionMilestone(task);
 
               if (
+                needsExecutionEstimate &&
                 row.validationNotes.some((note) =>
                   note.toLowerCase().includes("missing"),
                 )
@@ -7964,7 +7951,7 @@ export function createMcpServer(
                 });
               }
 
-              if (!row.valid) {
+              if (needsExecutionEstimate && !row.valid) {
                 issues.push({
                   code: "INVALID_SCORE",
                   message: `Task ${task.id} has invalid priority inputs.`,
@@ -9518,12 +9505,9 @@ export function createMcpServer(
               }
             }
 
-            // Prisma's TaskCreateInput accepts FK relations (`parentTask: { connect }`)
-            // but rejects bare scalar FKs (`parentTaskId`) on null. The unchecked
-            // variant accepts scalars, but to stay compatible with both we just
-            // omit the FK fields entirely when no value was supplied.
             const parentTaskId =
-              (a.parentTaskId as string | undefined) || undefined;
+              (a.parentTaskId as string | undefined) ||
+              OPTIMIZE_EARTH_ROOT_TASK_ID;
             const assigneePersonId =
               (a.assigneePersonId as string | undefined) || undefined;
             const assigneeOrganizationId =
@@ -9571,7 +9555,7 @@ export function createMcpServer(
             const data: Record<string, unknown> = {
               title: a.title as string,
               description,
-              ...(parentTaskId ? { parentTaskId } : {}),
+              parentTaskId,
               taskKey: (a.taskKey as string) ?? null,
               category: a.category
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
@@ -10441,9 +10425,13 @@ export function createMcpServer(
                     "Forbidden: organization proposals require an owner or admin membership.",
                   );
                 }
-              } else if (!isAdmin) {
+              } else {
                 assigneePersonId ??= sessionPersonId;
-                if (assigneePersonId && assigneePersonId !== sessionPersonId) {
+                if (
+                  !isAdmin &&
+                  assigneePersonId &&
+                  assigneePersonId !== sessionPersonId
+                ) {
                   return err(
                     "Forbidden: personal proposals may only target your own Person record.",
                   );
@@ -10712,8 +10700,7 @@ export function createMcpServer(
                 blockerRefs: (c.blockerRefs as string[]) ?? [],
                 parentTaskRef: (c.parentTaskRef as string) ?? null,
                 estimatedEffortHours:
-                  (c.estimatedEffortHours as number) ??
-                  (c.kind === TaskKind.PROJECT ? 0.1 : null),
+                  (c.estimatedEffortHours as number) ?? null,
                 isPublic: (c.isPublic as boolean) ?? false,
                 impact: getProposalGovernanceImpact(c),
                 status: "DRAFT",
@@ -10770,7 +10757,6 @@ export function createMcpServer(
                   taskKey: (candidate.taskKey as string) ?? null,
                   category: inferProposalCategory(candidate),
                   difficulty: inferProposalDifficulty(candidate),
-                  kind: candidate.kind as TaskKind,
                   assigneePersonId:
                     (candidate.assigneePersonId as string) ?? null,
                   assigneeOrganizationId:
@@ -10962,7 +10948,6 @@ export function createMcpServer(
                 estimatedEffortHours: true,
                 id: true,
                 isPublic: true,
-                kind: true,
                 ownerOrganizationId: true,
                 parentTaskId: true,
                 roleTitle: true,
@@ -11095,7 +11080,6 @@ export function createMcpServer(
                 assigneeOrganizationId: true,
                 assigneePersonId: true,
                 id: true,
-                kind: true,
                 roleTitle: true,
                 status: true,
                 taskKey: true,
@@ -11319,7 +11303,6 @@ export function createMcpServer(
                     activeChildTaskCount: 0,
                     hasMarginalEstimate: false,
                     id: existingTask.id,
-                    kind: TaskKind.TASK,
                     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
                   },
                 ],
@@ -12125,7 +12108,6 @@ export function createMcpServer(
                   activeChildTaskCount: 0,
                   hasMarginalEstimate: false,
                   id: blockedTaskId,
-                  kind: TaskKind.TASK,
                   parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
                 },
               ],

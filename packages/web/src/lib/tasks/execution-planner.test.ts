@@ -1,4 +1,4 @@
-import { TaskKind, TaskStatus } from "@optimitron/db";
+import { TaskStatus } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
   buildExecutionPlan,
@@ -23,7 +23,6 @@ function task(
     hasMarginalEstimate: true,
     hours: 1,
     id,
-    kind: TaskKind.TASK,
     parentTaskId: "mike-project",
     priority: 100,
     realEv: 100,
@@ -47,10 +46,9 @@ function plan(tasks: ExecutionPlanningTask[], overrides = {}) {
 }
 
 describe("buildExecutionPlan", () => {
-  it("never places projects, parents, milestones, or unrooted rows in the checklist", () => {
+  it("never places parents, milestones, or unrooted rows in the checklist", () => {
     const result = plan([
-      task("project", { kind: TaskKind.PROJECT, priority: 10_000 }),
-      task("parent", { activeChildTaskCount: 1, priority: 9_000 }),
+      task("parent", { activeChildTaskCount: 1, priority: 10_000 }),
       task("milestone", { completionMilestone: true, priority: 8_000 }),
       task("unrooted", { rooted: false, priority: 7_000 }),
       task("atomic", { priority: 1 }),

@@ -1,4 +1,4 @@
-import { TaskKind, TaskStatus } from "@optimitron/db";
+import { TaskStatus } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
   auditExecutionGraph,
@@ -30,7 +30,6 @@ function task(
     hasMarginalEstimate: true,
     hours: 0.5,
     id,
-    kind: TaskKind.TASK,
     parentTaskId,
     priority: 500,
     realEv: 1_000,
@@ -123,7 +122,6 @@ describe("Mike + EOS execution-planner pilot", () => {
         activeChildTaskCount: 2,
         hasMarginalEstimate: false,
         hours: null,
-        kind: TaskKind.PROJECT,
         realEv: 0,
         title: "Optimize Earth",
       }),
@@ -131,7 +129,6 @@ describe("Mike + EOS execution-planner pilot", () => {
         activeChildTaskCount: 2,
         hasMarginalEstimate: false,
         hours: null,
-        kind: TaskKind.PROJECT,
         realEv: 0,
         title: "Mike projects",
       }),
@@ -139,7 +136,6 @@ describe("Mike + EOS execution-planner pilot", () => {
         activeChildTaskCount: 4,
         hasMarginalEstimate: false,
         hours: null,
-        kind: TaskKind.PROJECT,
         realEv: 0,
         title: "EOS projects",
       }),
@@ -222,7 +218,6 @@ describe("Mike + EOS execution-planner pilot", () => {
         activeChildTaskCount: item.activeChildTaskCount,
         hasMarginalEstimate: item.hasMarginalEstimate,
         id: item.id,
-        kind: item.kind,
         parentTaskId: item.parentTaskId,
         priority: item.priority,
         queueEligible: queueEligibleIds.has(item.id),

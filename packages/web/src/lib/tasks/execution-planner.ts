@@ -1,4 +1,4 @@
-import { TaskKind, TaskStatus } from "@optimitron/db";
+import { TaskStatus } from "@optimitron/db";
 
 export const EXECUTION_PLANNER_VERSION = "frontier-replanning-v1" as const;
 
@@ -35,7 +35,6 @@ export interface ExecutionPlanningTask {
   hasMarginalEstimate: boolean;
   hours: number | null;
   id: string;
-  kind: TaskKind | string | null;
   parentTaskId: string | null;
   priority: number;
   realEv: number;
@@ -149,11 +148,7 @@ function taskMinutes(task: ExecutionPlanningTask) {
 }
 
 function isAtomicTask(task: ExecutionPlanningTask) {
-  return (
-    task.kind === TaskKind.TASK &&
-    task.activeChildTaskCount === 0 &&
-    task.completionMilestone !== true
-  );
+  return task.activeChildTaskCount === 0 && task.completionMilestone !== true;
 }
 
 function isTimeAvailable(task: ExecutionPlanningTask, now: Date) {
@@ -347,7 +342,7 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
   return {
     assumptions: [
       "This is repeated feasible-frontier selection, not a globally optimal finite schedule.",
-      "Only rooted, childless TASK rows with non-zero marginal estimates can enter the checklist.",
+      "Only rooted tasks without incomplete subtasks and with non-zero marginal estimates can enter the checklist.",
       "Completing a checklist item is simulated only to test which dependency becomes feasible next.",
       "Calendar commitments reduce capacity but are not imported as tasks.",
       "AI-routed work is proposed for approval and is never started by this planner.",

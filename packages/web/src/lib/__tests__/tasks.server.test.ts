@@ -587,6 +587,7 @@ describe("tasks server", () => {
         data: expect.objectContaining({
           claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
           isPublic: true,
+          parentTaskId: "optimize-earth",
         }),
       }),
     );

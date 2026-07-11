@@ -1,4 +1,3 @@
-import { TaskKind } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
   auditExecutionGraph,
@@ -10,7 +9,6 @@ function graphTask(id: string, parentTaskId: string | null, overrides = {}) {
     activeChildTaskCount: 0,
     hasMarginalEstimate: true,
     id,
-    kind: TaskKind.TASK,
     parentTaskId,
     queueEligible: false,
     ...overrides,
@@ -18,21 +16,14 @@ function graphTask(id: string, parentTaskId: string | null, overrides = {}) {
 }
 
 describe("auditExecutionGraph", () => {
-  it("requires an actual PROJECT root row", () => {
+  it("requires an actual root row", () => {
     const missing = auditExecutionGraph({
       edges: [],
       tasks: [graphTask("child", OPTIMIZE_EARTH_ROOT_TASK_ID)],
     });
-    const wrongKind = auditExecutionGraph({
-      edges: [],
-      tasks: [graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null)],
-    });
 
     expect(missing.map((finding) => finding.code)).toEqual(
       expect.arrayContaining(["MISSING_ROOT", "UNROOTED_TASK"]),
-    );
-    expect(wrongKind.map((finding) => finding.code)).toContain(
-      "ROOT_NOT_PROJECT",
     );
   });
 
@@ -43,9 +34,7 @@ describe("auditExecutionGraph", () => {
         { edgeType: "BLOCKS", fromTaskId: "b", toTaskId: "a" },
       ],
       tasks: [
-        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null, {
-          kind: TaskKind.PROJECT,
-        }),
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
         graphTask("a", "b"),
         graphTask("b", "a"),
       ],
@@ -60,18 +49,12 @@ describe("auditExecutionGraph", () => {
     );
   });
 
-  it("flags projects, parents, and missing estimates when they pollute a queue", () => {
+  it("flags parents and missing estimates when they pollute a queue", () => {
     const findings = auditExecutionGraph({
       edges: [],
       tasks: [
-        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null, {
-          kind: TaskKind.PROJECT,
-        }),
-        graphTask("project", OPTIMIZE_EARTH_ROOT_TASK_ID, {
-          kind: TaskKind.PROJECT,
-          queueEligible: true,
-        }),
-        graphTask("parent", "project", {
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
+        graphTask("parent", OPTIMIZE_EARTH_ROOT_TASK_ID, {
           activeChildTaskCount: 1,
           queueEligible: true,
         }),
@@ -83,7 +66,6 @@ describe("auditExecutionGraph", () => {
       expect.arrayContaining([
         "EXECUTABLE_PARENT",
         "MISSING_MARGINAL_ESTIMATE",
-        "PROJECT_IN_QUEUE",
       ]),
     );
   });
@@ -105,9 +87,7 @@ describe("auditExecutionGraph", () => {
         },
       ],
       tasks: [
-        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null, {
-          kind: TaskKind.PROJECT,
-        }),
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
         graphTask("research", OPTIMIZE_EARTH_ROOT_TASK_ID),
         graphTask("lobby", OPTIMIZE_EARTH_ROOT_TASK_ID),
         graphTask("treaty", OPTIMIZE_EARTH_ROOT_TASK_ID),
@@ -137,9 +117,7 @@ describe("auditExecutionGraph", () => {
         },
       ],
       tasks: [
-        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null, {
-          kind: TaskKind.PROJECT,
-        }),
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
         graphTask("research", OPTIMIZE_EARTH_ROOT_TASK_ID),
         graphTask("lobby", OPTIMIZE_EARTH_ROOT_TASK_ID),
         graphTask("treaty", OPTIMIZE_EARTH_ROOT_TASK_ID),
