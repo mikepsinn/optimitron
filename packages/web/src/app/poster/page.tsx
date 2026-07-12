@@ -282,12 +282,14 @@ export default async function PosterPage({
             font-size: 0.68in !important;
           }
 
+          /* 296mm (not 297mm): Chrome pixel rounding on exact-A4 sheets
+             spills a blank trailing page. */
           .poster-sheet[data-paper-size="a4"] {
             page: poster-a4;
             width: 210mm !important;
-            height: 297mm !important;
-            min-height: 297mm !important;
-            max-height: 297mm !important;
+            height: 296mm !important;
+            min-height: 296mm !important;
+            max-height: 296mm !important;
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline {
