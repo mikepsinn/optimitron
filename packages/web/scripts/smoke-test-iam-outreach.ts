@@ -1,5 +1,5 @@
 import "./load-env";
-import { OrgStatus, OrgType, TaskCategory, TaskDifficulty } from "@optimitron/db";
+import { OrgStatus, OrgType, TaskCategory } from "@optimitron/db";
 import { DFDA_TRIAL_CAPACITY_MULTIPLIER } from "@optimitron/data/parameters";
 import { createOrganizationWithOwner } from "../src/lib/organization.server";
 import { prisma } from "../src/lib/prisma";
@@ -156,7 +156,6 @@ async function main() {
     title: "Join the International Campaign to End War and Disease",
     description,
     category: TaskCategory.OUTREACH,
-    difficulty: TaskDifficulty.BEGINNER,
     estimatedEffortHours: 1,
     interestTags: ["1% Treaty", "campaign join", "foundation outreach"],
     skillTags: ["nonprofit", "policy", "global health"],

@@ -19,5 +19,6 @@ export * from './earth-prioritization.js';
 export * from './task-governance.js';
 export * from './task-runtime.js';
 export * from './task-tree.js';
+export * from './task-capability.js';
 
 export const VERSION = '0.1.0';

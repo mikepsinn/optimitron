@@ -35,7 +35,6 @@ async function main() {
     agent: {
       availableHoursPerWeek: 10,
       interestTags: ["growth", "governance", "systems", "funding", "procurement"],
-      maxTaskDifficulty: "ADVANCED",
       skillTags: ["typescript", "growth", "research", "policy", "funding", "procurement"],
     },
     policy: getEarthExecutionPolicy(),

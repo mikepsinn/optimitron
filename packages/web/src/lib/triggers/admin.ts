@@ -2,7 +2,6 @@ import {
   Prisma,
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
@@ -29,7 +28,6 @@ export interface SpawnSpecInput {
   impactStatementTemplate?: string;
   roleTitleTemplate?: string;
   category?: keyof typeof TaskCategory;
-  difficulty?: keyof typeof TaskDifficulty;
   estimatedEffortHours?: number;
   dueDays?: number;
   availableInDays?: number;
@@ -367,11 +365,6 @@ function validateSpawnSpec(spec: SpawnSpecInput) {
       `spawnSpec(${spec.kind}) category invalid: ${spec.category}`,
     );
   }
-  if (spec.difficulty && !(spec.difficulty in TaskDifficulty)) {
-    throw new Error(
-      `spawnSpec(${spec.kind}) difficulty invalid: ${spec.difficulty}`,
-    );
-  }
   if (spec.claimPolicy && !(spec.claimPolicy in TaskClaimPolicy)) {
     throw new Error(
       `spawnSpec(${spec.kind}) claimPolicy invalid: ${spec.claimPolicy}`,
@@ -418,9 +411,6 @@ function toSpawnSpecCreate(
     impactStatementTemplate: spec.impactStatementTemplate ?? null,
     roleTitleTemplate: spec.roleTitleTemplate ?? null,
     category: spec.category ? TaskCategory[spec.category] : TaskCategory.OTHER,
-    difficulty: spec.difficulty
-      ? TaskDifficulty[spec.difficulty]
-      : TaskDifficulty.TRIVIAL,
     estimatedEffortHours: spec.estimatedEffortHours ?? null,
     dueDays: spec.dueDays ?? null,
     availableInDays: spec.availableInDays ?? null,

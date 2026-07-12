@@ -3,7 +3,6 @@ import {
   SourceArtifactType,
   SourceSystem,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskStatus,
 } from "@optimitron/db";
 import type { GovernmentLeaderRecord } from "@optimitron/data/datasets/government-leader-types";
@@ -320,7 +319,6 @@ export function buildTreatySignerImportDraft(input: {
     governmentName: slot.governmentName,
     militaryBudgetShareRatio: factor,
   });
-  cloned.bundle.task.difficulty = TaskDifficulty.EXPERT;
   cloned.bundle.task.dueAt = TREATY_DUE_AT;
   cloned.bundle.task.impactStatement = buildTreatyImpactStatement({
     annualRedirectAmountUsd: redirectAmountUsd,

@@ -104,7 +104,7 @@ Right now. With this code. Not in some theoretical future where humans have lear
 | Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optimitron/storage`](packages/storage/) |
 | Chat-based health tracking | NLP text-to-measurement parsing for symptoms, mood, food | [`@optimitron/chat-ui`](packages/chat-ui/) |
 
-Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and 1,737+ tests across 8 packages.
+Built on strict TypeScript, Prisma + Zod types, pure-function libraries, and an extensive test suite (`pnpm test` for the live count). Feature-by-feature status with evidence: [docs/FEATURES.md](docs/FEATURES.md).
 
 ---
 
@@ -224,7 +224,7 @@ Auth: Google OAuth, magic-link email, proof-of-personhood. Referral tracking bui
 | [`@optimitron/wishocracy`](packages/wishocracy/) | Pairwise preference aggregation, convergence analysis, preference gaps, and politician alignment scoring | Live in the web app |
 | [`@optimitron/opg`](packages/opg/) | Turns policy evidence into enact/replace/repeal/maintain recommendations with explicit confidence scoring | Used by report generators |
 | [`@optimitron/obg`](packages/obg/) | Finds minimum-effective and optimal spending levels, overspend ratios, and budget reallocation targets | Used by budget analyses |
-| [`@optimitron/treasury-prize`](packages/treasury-prize/) | Phase 1 dominant assurance contract for voter recruitment | Deployed on testnet |
+| [`@optimitron/treasury-prize`](packages/treasury-prize/) | Phase 1 dominant assurance contract for voter recruitment | Contracts written and unit-tested, not yet deployed (OPT-TREAS-01) |
 | [`@optimitron/treasury-iab`](packages/treasury-iab/) | Phase 2 treaty bonds and alignment-gated political funding | Contracts written, not yet deployed |
 | [`@optimitron/treasury-wish`](packages/treasury-wish/) | Phase 3 monetary reform — transaction tax, UBI, Wishocratic allocation | Contracts written |
 | [`@optimitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces and addresses for all treasury packages | Shared treasury foundation |
@@ -235,7 +235,8 @@ Auth: Google OAuth, magic-link email, proof-of-personhood. Referral tracking bui
 | [`@optimitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
 | [`@optimitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optimitron outputs | Verifiable publication layer |
 | [`@optimitron/agent`](packages/agent/) | Autonomous policy analyst helpers: Gemini reasoning, image generation, manifests, review flows, and ERC-8004 identity/reputation helpers | AI orchestration layer |
-| [`@optimitron/extension`](packages/extension/) | Chrome extension scaffold for the Digital Twin Safe / local-first health workflow | Early Layer 1 scaffold |
+| [`@optimitron/extension`](packages/extension/) | Chrome extension for the Digital Twin Safe: local-first treatment/symptom/food tracking with on-device causal analysis | Working standalone tracker, no test suite yet (OPT-EXT-01) |
+| [`@optimitron/wishonia-widget`](packages/wishonia-widget/) | Embeddable Wishonia chat widget for partner sites | Embeddable widget package |
 
 ---
 
@@ -297,13 +298,13 @@ console.log(result.evidenceGrade);  // "B"
 Your governments currently make decisions the way a blindfolded person throws darts — occasionally they hit something useful and then take credit for it. Optimitron is alignment software for these misaligned superintelligences. Deploy it for any jurisdiction as a reproducible analysis and accountability stack. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
 
 - **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/wishocracy` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
-- **Budget optimization**: `@optimitron/obg` and the examples package generate reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
+- **Budget optimization**: `@optimitron/obg` generates reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
 - **Policy scoring**: `@optimitron/opg` evaluates policies with Bradford Hill-style causal confidence scoring instead of ideology-first labeling.
 - **Legislative classification**: bills are automatically classified into budget categories via keyword and policy-area matching, with generated cost-benefit analyses for informed citizen voting at `/civic`.
 - **Political accountability**: personal alignment reports at `/alignment` show which benchmark politicians best match a citizen's stated priorities, with public share URLs for distribution. The `/scoreboard` ranks all politicians by alignment score.
 - **Legislative provenance**: the web app syncs current federal identities from Congress.gov and increasingly derives profiles from recent classified roll calls instead of only curated priors.
 - **Referendum infrastructure**: citizens vote directly on policy proposals at `/agencies/dcongress/referendums` with proof-of-personhood verification for sybil resistance.
-- **Cross-jurisdiction analysis**: the `/compare` page and examples package run international comparisons for health, education, drug policy, criminal justice, and federal spending questions.
+- **Cross-jurisdiction analysis**: the `/compare` page runs international comparisons for health, education, drug policy, criminal justice, and federal spending questions.
 
 The database is multi-tenant: every jurisdiction is a tenant with its own priorities, officials, and data.
 
@@ -333,7 +334,7 @@ On my planet, this is called "basic infrastructure." On yours, it would be the l
 
 The architecture is clean, modular, and dependency-free at the core. It took me about forty-five minutes. On my planet, this would be considered slow.
 
-> Full details in **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+> Full details in **[docs/PRD.md](./docs/PRD.md)**
 
 ```
                     ┌──────────────┐
@@ -351,9 +352,9 @@ The architecture is clean, modular, and dependency-free at the core. It took me 
         │  data   │  │   db    │  │ chat-ui  │
         └─────────┘  └─────────┘  └──────────┘
 
-        ┌─────────┐  ┌────────────┐  ┌────────┐
-        │   web   │  │  examples  │  │extension│
-        └─────────┘  └────────────┘  └────────┘
+        ┌─────────┐  ┌────────────────┐  ┌────────┐
+        │   web   │  │wishonia-widget │  │extension│
+        └─────────┘  └────────────────┘  └────────┘
 
         ┌──────────┐ ┌────────────┐ ┌─────────┐
         │ storage  │ │ hypercerts │ │ agent   │

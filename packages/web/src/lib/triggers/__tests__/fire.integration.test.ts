@@ -250,7 +250,6 @@ describe("triggers/fire integration", () => {
         impactStatementTemplate: null,
         roleTitleTemplate: null,
         category: "OTHER",
-        difficulty: "TRIVIAL",
         estimatedEffortHours: null,
         dueDays: null,
         availableInDays: null,

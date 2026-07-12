@@ -369,12 +369,25 @@ function collectGraphIssues(input: {
   issuesByRef: Map<string, TaskProposalIssue[]>;
 }) {
   const adjacency = new Map<string, string[]>();
-  const refs = new Set<string>();
+  const candidateRefByAlias = new Map<string, string>();
 
   for (const candidate of input.candidates) {
     const ref = proposalRef(candidate);
-    refs.add(ref);
-    adjacency.set(ref, uniqueStrings(candidate.blockerRefs));
+    for (const alias of [ref, candidate.id?.trim(), candidate.taskKey?.trim()]) {
+      if (alias && !candidateRefByAlias.has(alias)) {
+        candidateRefByAlias.set(alias, ref);
+      }
+    }
+  }
+
+  for (const candidate of input.candidates) {
+    const ref = proposalRef(candidate);
+    adjacency.set(
+      ref,
+      uniqueStrings(candidate.blockerRefs).map(
+        (blockerRef) => candidateRefByAlias.get(blockerRef) ?? blockerRef,
+      ),
+    );
   }
 
   for (const candidate of input.candidates) {
@@ -383,7 +396,8 @@ function collectGraphIssues(input: {
     const blockers = uniqueStrings(candidate.blockerRefs);
 
     for (const blockerRef of blockers) {
-      if (blockerRef === ref) {
+      const candidateBlockerRef = candidateRefByAlias.get(blockerRef);
+      if (candidateBlockerRef === ref) {
         issues.push({
           code: 'self-blocker',
           message: 'Task cannot block itself.',
@@ -392,7 +406,7 @@ function collectGraphIssues(input: {
         continue;
       }
 
-      if (!refs.has(blockerRef) && !input.existingRefs.has(blockerRef)) {
+      if (!candidateBlockerRef && !input.existingRefs.has(blockerRef)) {
         issues.push({
           code: 'unknown-blocker',
           message: `Blocker reference "${blockerRef}" does not exist in the bundle or known tasks.`,
@@ -438,7 +452,7 @@ function collectGraphIssues(input: {
     visited.add(ref);
   }
 
-  for (const ref of refs) {
+  for (const ref of adjacency.keys()) {
     dfs(ref, []);
   }
 }

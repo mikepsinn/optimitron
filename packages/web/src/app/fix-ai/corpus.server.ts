@@ -215,7 +215,11 @@ function readCanonicalArgumentMarkdown(): string {
 }
 
 function canonicalArgumentCandidatePaths(): string[] {
+  // The canonical-argument transcript was archived in the 2026-07 docs
+  // consolidation; check docs/archive/ first, legacy docs/ as fallback.
   return [
+    resolve(process.cwd(), "docs", "archive", CANONICAL_ARGUMENT_FILE),
+    resolve(process.cwd(), "..", "..", "docs", "archive", CANONICAL_ARGUMENT_FILE),
     resolve(process.cwd(), "docs", CANONICAL_ARGUMENT_FILE),
     resolve(process.cwd(), "..", "..", "docs", CANONICAL_ARGUMENT_FILE),
   ];

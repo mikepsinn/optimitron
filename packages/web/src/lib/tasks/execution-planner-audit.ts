@@ -1,12 +1,9 @@
-import { TaskKind } from "@optimitron/db";
-
 export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 
 export interface ExecutionGraphTask {
   activeChildTaskCount: number;
   hasMarginalEstimate: boolean;
   id: string;
-  kind: TaskKind | string | null;
   parentTaskId: string | null;
   priority?: number | null;
   queueEligible?: boolean;
@@ -80,7 +77,7 @@ export function getRootedTaskIds(
   rootTaskId = OPTIMIZE_EARTH_ROOT_TASK_ID,
 ) {
   const taskById = new Map(tasks.map((task) => [task.id, task]));
-  if (taskById.get(rootTaskId)?.kind !== TaskKind.PROJECT) {
+  if (!taskById.has(rootTaskId)) {
     return new Set<string>();
   }
   return new Set(
@@ -104,13 +101,6 @@ export function auditExecutionGraph(input: {
     findings.push({
       code: "MISSING_ROOT",
       message: `The Optimize Earth root task ${rootTaskId} is missing.`,
-      severity: "high",
-      taskId: rootTaskId,
-    });
-  } else if (rootTask.kind !== TaskKind.PROJECT) {
-    findings.push({
-      code: "ROOT_NOT_PROJECT",
-      message: `The Optimize Earth root task ${rootTaskId} must be a PROJECT.`,
       severity: "high",
       taskId: rootTaskId,
     });
@@ -169,19 +159,7 @@ export function auditExecutionGraph(input: {
         taskId: task.id,
       });
     }
-    if (task.queueEligible && task.kind !== TaskKind.TASK) {
-      findings.push({
-        code: "PROJECT_IN_QUEUE",
-        message: `Non-TASK row ${task.id} entered an execution queue.`,
-        severity: "high",
-        taskId: task.id,
-      });
-    }
-    if (
-      task.kind === TaskKind.TASK &&
-      task.activeChildTaskCount === 0 &&
-      !task.hasMarginalEstimate
-    ) {
+    if (task.activeChildTaskCount === 0 && !task.hasMarginalEstimate) {
       findings.push({
         code: "MISSING_MARGINAL_ESTIMATE",
         message: `Atomic task ${task.id} has no direct or explicitly edge-derived marginal estimate.`,

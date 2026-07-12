@@ -191,7 +191,6 @@ describeIfDatabase("syncManagedData", () => {
           select: { instructions: true, label: true, url: true },
         },
         description: true,
-        difficulty: true,
         isPublic: true,
         status: true,
         taskKey: true,
@@ -206,7 +205,6 @@ describeIfDatabase("syncManagedData", () => {
           expect.objectContaining({
             assigneeOrganization: { slug },
             category: "GOVERNANCE",
-            difficulty: "TRIVIAL",
             isPublic: true,
             status: "ACTIVE",
             taskKey: `${legacyGrantTaskKeyPrefix}${slug}`,

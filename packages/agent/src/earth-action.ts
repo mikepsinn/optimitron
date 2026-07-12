@@ -1,4 +1,5 @@
 import type { EarthOperatorTask } from './earth-operator.js';
+import { assessTaskCapability } from './task-capability.js';
 import {
   classifyEarthTaskFamily,
   reviewEarthQueueAndBuildSystemImprovements,
@@ -16,10 +17,13 @@ export type EarthActionKind =
 export type EarthProcurementPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface EarthActionAgentCapabilities {
+  accessTags?: string[] | null;
   availableHoursPerWeek?: number | null;
+  credentialTags?: string[] | null;
   interestTags: string[];
-  maxTaskDifficulty?: string | null;
+  languageTags?: string[] | null;
   skillTags: string[];
+  toolTags?: string[] | null;
 }
 
 export interface EarthExecutionPolicy {
@@ -187,26 +191,6 @@ function jaccardScore(left: string[] | undefined, right: string[] | undefined) {
   }
 
   return union.size === 0 ? 0 : overlap / union.size;
-}
-
-const DIFFICULTY_ORDER = ['TRIVIAL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'] as const;
-
-function difficultyFitScore(taskDifficulty: string | null | undefined, maxDifficulty: string | null | undefined) {
-  if (!maxDifficulty || !taskDifficulty) {
-    return 0.75;
-  }
-
-  const taskIndex = DIFFICULTY_ORDER.indexOf(taskDifficulty.toUpperCase() as (typeof DIFFICULTY_ORDER)[number]);
-  const agentIndex = DIFFICULTY_ORDER.indexOf(maxDifficulty.toUpperCase() as (typeof DIFFICULTY_ORDER)[number]);
-  if (taskIndex === -1 || agentIndex === -1) {
-    return 0.75;
-  }
-
-  if (taskIndex <= agentIndex) {
-    return 1 - Math.max(0, agentIndex - taskIndex) * 0.1;
-  }
-
-  return Math.max(0.15, 0.6 - (taskIndex - agentIndex) * 0.2);
 }
 
 function hoursFitScore(taskHours: number | null | undefined, availableHours: number | null | undefined) {
@@ -441,14 +425,36 @@ function impliedTaskTags(task: EarthActionTask, family: EarthTaskFamily) {
 }
 
 function capabilityFit(task: EarthActionTask, agent: EarthActionAgentCapabilities) {
+  const assessment = assessTaskCapability({
+    executor: {
+      accessTags: agent.accessTags,
+      credentialTags: agent.credentialTags,
+      executorKind: 'agent',
+      languageTags: agent.languageTags,
+      skillTags: agent.skillTags,
+      toolTags: agent.toolTags,
+    },
+    task,
+  });
+  if (assessment.status !== 'eligible') {
+    return 0;
+  }
+
   const family = classifyEarthTaskFamily(task);
   const implied = impliedTaskTags(task, family);
-  const skillFit = jaccardScore(mergeTags(task.skillTags, implied.skillTags), agent.skillTags);
-  const interestFit = jaccardScore(mergeTags(task.interestTags, implied.interestTags), agent.interestTags);
-  const difficultyFit = difficultyFitScore(task.difficulty ?? null, agent.maxTaskDifficulty ?? null);
+  const preferredSkills = mergeTags(task.preferredSkillTags, implied.skillTags);
+  const relevantInterests = mergeTags(task.interestTags, implied.interestTags);
+  const skillFit =
+    preferredSkills.length === 0
+      ? 1
+      : jaccardScore(preferredSkills, agent.skillTags);
+  const interestFit =
+    relevantInterests.length === 0
+      ? 1
+      : jaccardScore(relevantInterests, agent.interestTags);
   const effortFit = hoursFitScore(task.estimatedEffortHours ?? null, agent.availableHoursPerWeek ?? null);
 
-  return 0.45 * skillFit + 0.25 * interestFit + 0.2 * difficultyFit + 0.1 * effortFit;
+  return 0.6 * skillFit + 0.3 * interestFit + 0.1 * effortFit;
 }
 
 function isInternalOperatorTask(task: EarthActionTask, family: EarthTaskFamily) {
@@ -650,12 +656,6 @@ function buildEconomicsOptions(input: {
   policy: EarthExecutionPolicy;
   task: EarthActionTask;
 }) {
-  const capability = clampNonNegative(capabilityFit(input.task, {
-    availableHoursPerWeek: null,
-    interestTags: input.task.interestTags ?? [],
-    maxTaskDifficulty: null,
-    skillTags: input.task.skillTags ?? [],
-  }));
   const basePriorityUsd = priorityFromValue(input.task);
   const expectedEconomicValueUsd = baseExpectedEconomicValueUsd(input.task);
   const expectedValuePerHourUsd = baseExpectedValuePerHourUsd(input.task);
@@ -728,7 +728,6 @@ function buildEconomicsOptions(input: {
 
   return {
     autoExecutable: options.some((option) => option.eligible && option.autoExecutable),
-    capabilityFit: capability,
     delayEconomicValueUsdLostPerDay,
     estimatedNetValueUsd: Math.max(...options.map((option) => option.estimatedNetValueUsd), 0),
     expectedEconomicValueUsd,

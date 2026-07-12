@@ -1,3 +1,5 @@
+import { assessTaskCapability } from './task-capability.js';
+
 export type TreatyActionKind =
   | 'contact-office'
   | 'publish-explainer'
@@ -44,15 +46,19 @@ export interface TreatyOperatorTask {
   countryCode?: string | null;
   countryName?: string | null;
   description?: string | null;
-  difficulty?: string | null;
   dueAt?: Date | string | null;
   estimatedEffortHours?: number | null;
+  executionMode?: string | null;
   id: string;
   impact?: TreatyOperatorImpact | null;
   interestTags?: string[];
   maxClaims?: number | null;
   milestones?: TreatyOperatorMilestone[];
   roleTitle?: string | null;
+  requiredAccessTags?: string[];
+  requiredCredentialTags?: string[];
+  requiredLanguageTags?: string[];
+  requiredToolTags?: string[];
   skillTags?: string[];
   status: TreatyTaskStatus;
   taskKey?: string | null;
@@ -70,13 +76,16 @@ export interface TreatyOperatorExecutionRecord {
 }
 
 export interface TreatyOperatorCapabilities {
+  accessTags?: string[] | null;
   allowedCountryCodes?: string[];
   channels: TreatyExecutionChannel[];
+  credentialTags?: string[] | null;
+  languageTags?: string[] | null;
   maxDailyLiveActions?: number | null;
-  maxTaskDifficulty?: string | null;
   mode: TreatyExecutionMode;
   requiresHumanReview?: boolean;
   skillTags: string[];
+  toolTags?: string[] | null;
 }
 
 export interface TreatyOperatorPolicy {
@@ -91,14 +100,15 @@ export interface TreatyOperatorPolicy {
 export interface TreatyTaskBlocker {
   code:
     | 'blocked-by-task'
+    | 'capability-mismatch'
+    | 'capability-unknown'
     | 'country-not-allowed'
     | 'cooldown-active'
     | 'daily-limit-reached'
     | 'missing-contact-url'
     | 'missing-required-channel'
     | 'status-not-active'
-    | 'task-fully-claimed'
-    | 'task-too-difficult';
+    | 'task-fully-claimed';
   message: string;
 }
 
@@ -155,8 +165,6 @@ const DEFAULT_POLICY: TreatyOperatorPolicy = {
   taskPageBaseUrl: 'https://optimitron.com/tasks',
 };
 
-const DIFFICULTY_ORDER = ['TRIVIAL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
-
 function normalizeDate(value: Date | string | null | undefined) {
   if (!value) {
     return null;
@@ -181,10 +189,6 @@ function scoreLogUsd(value: number | null | undefined, divisor: number) {
   }
 
   return Math.min(1, Math.log10(value + 1) / divisor);
-}
-
-function difficultyIndex(value: string | null | undefined) {
-  return value === null || value === undefined ? -1 : DIFFICULTY_ORDER.indexOf(value.toUpperCase());
 }
 
 function deriveCountryCode(task: TreatyOperatorTask) {
@@ -425,13 +429,21 @@ export function getTreatyTaskBlockers(input: {
     });
   }
 
-  if (
-    difficultyIndex(input.capabilities.maxTaskDifficulty) >= 0 &&
-    difficultyIndex(input.task.difficulty) > difficultyIndex(input.capabilities.maxTaskDifficulty)
-  ) {
+  const capability = assessTaskCapability({
+    executor: {
+      accessTags: input.capabilities.accessTags,
+      credentialTags: input.capabilities.credentialTags,
+      executorKind: 'agent',
+      languageTags: input.capabilities.languageTags,
+      skillTags: input.capabilities.skillTags,
+      toolTags: input.capabilities.toolTags,
+    },
+    task: input.task,
+  });
+  if (capability.status !== 'eligible') {
     blockers.push({
-      code: 'task-too-difficult',
-      message: `Task difficulty ${input.task.difficulty ?? 'unknown'} exceeds the agent's configured ceiling.`,
+      code: capability.status === 'unknown' ? 'capability-unknown' : 'capability-mismatch',
+      message: capability.reasons.join(' '),
     });
   }
 

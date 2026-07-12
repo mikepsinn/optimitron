@@ -14,7 +14,6 @@ import {
   SourceSystem,
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskImpactEstimateKind,
   TaskImpactFrameKey,
   TaskImpactPublicationStatus,
@@ -107,7 +106,6 @@ export interface ImportedTaskDraft {
   claimPolicy: TaskClaimPolicy;
   contextJson: Record<string, unknown>;
   description: string;
-  difficulty: TaskDifficulty;
   dueAt: Date | null;
   contactLabel: string | null;
   contactTemplate: string | null;
@@ -340,7 +338,6 @@ export function buildOpgRecommendationTaskBundle(input: {
         policy?.description ??
         recommendation.rationale ??
         `${recommendation.recommendationType} ${policyName}.`,
-      difficulty: TaskDifficulty.ADVANCED,
       dueAt: null,
       contactLabel: null,
       contactTemplate: null,
@@ -500,7 +497,6 @@ export function buildObgCategoryTaskBundle(input: {
       assigneeOrganizationSourceRef: null,
       assigneeOrganizationType: null,
       description: `${category.recommendation} ${category.name} spending. Current gap: ${category.gap.toLocaleString()}.`,
-      difficulty: TaskDifficulty.ADVANCED,
       dueAt: null,
       contactLabel: null,
       contactTemplate: null,

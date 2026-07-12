@@ -7,9 +7,7 @@ import {
   type TaskRuntimeAgentProfile,
 } from '../task-runtime.js';
 
-interface TestTask extends RuntimeTask {
-  difficulty?: string | null;
-}
+interface TestTask extends RuntimeTask {}
 
 interface TestPlan extends RuntimePlan {
   checklist?: string[];
@@ -22,7 +20,6 @@ const agent: TaskRuntimeAgentProfile = {
 };
 
 const task: TestTask = {
-  difficulty: 'BEGINNER',
   id: 'task_1',
   title: 'Draft a concrete next action',
 };

@@ -20,7 +20,7 @@ const pis = calculatePIS(pairs, correlation);
 
 ## Tests
 
-176 unit tests covering all algorithms.
+Extensive unit tests covering all algorithms — run `pnpm --filter @optimitron/optimizer test` for the live count.
 
 ```bash
 pnpm test --filter @optimitron/optimizer

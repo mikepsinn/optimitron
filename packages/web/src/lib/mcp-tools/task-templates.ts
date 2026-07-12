@@ -47,7 +47,6 @@ const SPAWN_SPEC_SCHEMA = {
       impactStatementTemplate: { type: "string" },
       roleTitleTemplate: { type: "string" },
       category: { type: "string" },
-      difficulty: { type: "string" },
       estimatedEffortHours: { type: "number" },
       dueDays: { type: "number" },
       availableInDays: { type: "number" },

@@ -5,7 +5,6 @@ import {
   TaskCommunicationEndpointVerificationStatus,
   TaskCompensationKind,
   TaskDeadlinePolicy,
-  TaskDifficulty,
   TaskExecutionMode,
   TaskKind,
   TaskRemotePolicy,
@@ -16,7 +15,6 @@ import {
   type TaskCompensationCadence as TaskCompensationCadenceValue,
   type TaskCompensationKind as TaskCompensationKindValue,
   type TaskDeadlinePolicy as TaskDeadlinePolicyValue,
-  type TaskDifficulty as TaskDifficultyValue,
   type TaskExecutionMode as TaskExecutionModeValue,
   type TaskKind as TaskKindValue,
   type TaskRemotePolicy as TaskRemotePolicyValue,
@@ -49,7 +47,6 @@ export interface ManagedTaskRecord {
   ownerOrganizationId?: string | null;
   category?: TaskCategoryValue;
   kind?: TaskKindValue;
-  difficulty?: TaskDifficultyValue;
   estimatedEffortHours?: number | null;
   /** Gross conditional value (USD) if the task succeeds. Source from `@optimitron/data` parameters — never hand-typed. */
   expectedEconomicValueUsdBase?: number | null;
@@ -113,7 +110,6 @@ interface ManagedTaskRow {
   ownerOrganizationId: string | null;
   category: TaskCategoryValue;
   kind: TaskKindValue;
-  difficulty: TaskDifficultyValue;
   estimatedEffortHours: number | null;
   skillTags: string[];
   preferredSkillTags: string[];
@@ -428,7 +424,6 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     ownerOrganizationId: record.ownerOrganizationId ?? null,
     category: record.category ?? TaskCategory.GOVERNANCE,
     kind: record.kind ?? TaskKind.TASK,
-    difficulty: record.difficulty ?? TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
     skillTags: record.skillTags ?? [],
     preferredSkillTags: record.preferredSkillTags ?? [],
@@ -643,7 +638,6 @@ function managedTaskNeedsUpdate(
     existing.ownerOrganizationId !== scalars.ownerOrganizationId ||
     existing.category !== scalars.category ||
     existing.kind !== scalars.kind ||
-    existing.difficulty !== scalars.difficulty ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
     !sameJson(existing.preferredSkillTags, scalars.preferredSkillTags) ||
@@ -888,7 +882,6 @@ export async function syncManagedTasks(
       ownerOrganizationId: true,
       category: true,
       kind: true,
-      difficulty: true,
       estimatedEffortHours: true,
       skillTags: true,
       preferredSkillTags: true,

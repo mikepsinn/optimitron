@@ -28,4 +28,8 @@ describe("stringifyJsonSafe", () => {
 
     expect(stringifyJsonSafe(data)).toBe(JSON.stringify(data));
   });
+
+  it("serializes undefined as JSON null", () => {
+    expect(stringifyJsonSafe(undefined)).toBe("null");
+  });
 });

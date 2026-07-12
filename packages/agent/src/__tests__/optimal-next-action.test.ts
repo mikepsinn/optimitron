@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assessOptimalActorCapability,
   buildNotionExpectedValueImpactFrame,
   earthOptimizationPointsFromUsd,
   evaluateActionOption,
@@ -14,7 +15,6 @@ const actor = {
   availableHoursPerWeek: 10,
   interestTags: ['systems', 'funding', 'research'],
   kind: 'USER' as const,
-  maxTaskDifficulty: 'ADVANCED',
   skillTags: ['typescript', 'research', 'writing'],
 };
 
@@ -22,7 +22,6 @@ function task(overrides: Partial<OptimalActionTask> = {}): OptimalActionTask {
   return {
     activeChildTaskCount: 0,
     blockerStatuses: [],
-    difficulty: 'INTERMEDIATE',
     estimatedEffortHours: 2,
     id: 'task_default',
     interestTags: ['systems'],
@@ -166,7 +165,6 @@ describe('treaty onboarding ranking scenarios', () => {
     availableHoursPerWeek: 3,
     interestTags: ['treaty', 'health', 'sharing', 'website'],
     kind: 'USER' as const,
-    maxTaskDifficulty: 'INTERMEDIATE',
     skillTags: ['outreach', 'social', 'website', 'writing', 'design'],
   };
 
@@ -446,7 +444,6 @@ describe('rankActionOptions', () => {
         },
       },
       id: 'specialized',
-      difficulty: 'EXPERT',
       selectedImpactFrame: {
         estimatedEffortHoursBase: 12,
         expectedEconomicValueUsdBase: 250_000,
@@ -460,7 +457,6 @@ describe('rankActionOptions', () => {
     const decision = selectOptimalNextAction({
       actor: {
         ...actor,
-        maxTaskDifficulty: 'BEGINNER',
         skillTags: ['typescript'],
       },
       policy: { externalBudgetUsd: 1_000 },
@@ -475,7 +471,6 @@ describe('rankActionOptions', () => {
       availableHoursPerWeek: 40,
       interestTags: ['clinical-trials'],
       kind: 'ORGANIZATION' as const,
-      maxTaskDifficulty: 'EXPERT',
       organizationId: 'org_1',
       organizationTags: ['clinical-trials', 'funding'],
       skillTags: ['operations'],
@@ -512,6 +507,31 @@ describe('rankActionOptions', () => {
 
     expect(decision.action?.capabilityFit).toBeGreaterThan(0.75);
     expect(decision.action?.assumptions.join(' ')).toContain('Wish Points/tokens');
+  });
+
+  it('does not let a non-organization actor satisfy required skills via organization tags', () => {
+    const requiresLegal = task({
+      id: 'requires_legal',
+      skillTags: ['legal'],
+      title: 'Requires legal skill',
+    });
+    const affiliatedHuman = {
+      ...actor,
+      organizationTags: ['legal'],
+      skillTags: ['typescript'],
+    };
+    const legalOrg = {
+      interestTags: [],
+      kind: 'ORGANIZATION' as const,
+      organizationId: 'org_legal',
+      organizationTags: ['legal'],
+      skillTags: [],
+    };
+
+    expect(assessOptimalActorCapability(requiresLegal, affiliatedHuman).status).toBe(
+      'ineligible',
+    );
+    expect(assessOptimalActorCapability(requiresLegal, legalOrg).status).toBe('eligible');
   });
 
   it('scales queue repair value with missing estimate count', () => {

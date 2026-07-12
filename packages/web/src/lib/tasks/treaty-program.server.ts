@@ -1,7 +1,6 @@
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskStatus,
   type Prisma,
 } from "@optimitron/db";
@@ -37,7 +36,6 @@ export async function ensureTreatyParentTask(
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       description:
         "Coordinate signature and ratification of the 1% Treaty across national leaders, then keep reminding every outstanding signer that their 30-second task is overdue.",
-      difficulty: TaskDifficulty.EXPERT,
       dueAt: TREATY_DUE_AT,
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
       isPublic: true,
@@ -54,7 +52,6 @@ export async function ensureTreatyParentTask(
       createdByUserId,
       description:
         "Coordinate signature and ratification of the 1% Treaty across national leaders, then keep reminding every outstanding signer that their 30-second task is overdue.",
-      difficulty: TaskDifficulty.EXPERT,
       dueAt: TREATY_DUE_AT,
       interestTags: ["treaty", "disease-eradication", "peace-dividend"],
       isPublic: true,

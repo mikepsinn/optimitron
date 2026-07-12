@@ -9,5 +9,5 @@ export function jsonSafeReplacer(_key: string, value: unknown): unknown {
 }
 
 export function stringifyJsonSafe(data: unknown, space?: number): string {
-  return JSON.stringify(data, jsonSafeReplacer, space);
+  return JSON.stringify(data, jsonSafeReplacer, space) ?? "null";
 }

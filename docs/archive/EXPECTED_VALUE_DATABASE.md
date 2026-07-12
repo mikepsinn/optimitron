@@ -1,5 +1,9 @@
 # Expected Value Database
 
+> **Historical.** This documents the external Notion prototype that preceded
+> the live MCP task engine. The live EV system is specified in
+> [../MCP_SERVER.md](../MCP_SERVER.md).
+
 This document explains the expected-value task system used to rank work by dollar-denominated value, probability, time cost, downstream unblock value, required/expiring deadline feasibility, and revenue-path impact.
 
 The MCP personal task engine intentionally keeps `priority` pure: `(P(success) * Value - Cash Cost) / (Hours + Cash Cost / Buyback Rate)`. Deadlines are exposed as metadata and required/expiring deadline guardrails in `getNextAction`; they are not priority multipliers.

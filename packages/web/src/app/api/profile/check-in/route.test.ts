@@ -68,7 +68,6 @@ describe("profile daily check-in route", () => {
         lastIncomeReportedAt: null,
         latitude: null,
         longitude: null,
-        maxTaskDifficulty: null,
         postalCode: null,
         personId: null,
         regionCode: null,

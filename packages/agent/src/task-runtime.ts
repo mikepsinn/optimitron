@@ -38,11 +38,14 @@ export interface TaskOperatorRuntimeAdapters<TTask extends RuntimeTask> {
     taskId: string;
   }): Promise<TaskActionCooldownResult>;
   getNextTask(input: {
+    accessTags?: string[] | null;
     agentId: string;
     availableHoursPerWeek?: number | null;
+    credentialTags?: string[] | null;
     interestTags: string[];
-    maxTaskDifficulty?: string | null;
+    languageTags?: string[] | null;
     skillTags: string[];
+    toolTags?: string[] | null;
   }): Promise<TTask | null>;
   heartbeatLease?(input: {
     leaseId: string;
@@ -64,14 +67,17 @@ export interface TaskOperatorRuntimeAdapters<TTask extends RuntimeTask> {
 }
 
 export interface TaskRuntimeAgentProfile {
+  accessTags?: string[] | null;
   agentId: string;
   availableHoursPerWeek?: number | null;
+  credentialTags?: string[] | null;
   interestTags: string[];
+  languageTags?: string[] | null;
   leaseTtlSeconds?: number | null;
-  maxTaskDifficulty?: string | null;
   mode?: string | null;
   providerLabel?: string | null;
   skillTags: string[];
+  toolTags?: string[] | null;
 }
 
 export interface TaskPlannerInput<TTask extends RuntimeTask> {
@@ -120,11 +126,14 @@ export async function planNextTaskOperatorStep<TTask extends RuntimeTask, TPlan 
 }): Promise<TaskRuntimeResult<TTask, TPlan>> {
   const now = input.now ?? new Date();
   const nextTask = await input.adapters.getNextTask({
+    accessTags: input.agent.accessTags,
     agentId: input.agent.agentId,
     availableHoursPerWeek: input.agent.availableHoursPerWeek ?? null,
+    credentialTags: input.agent.credentialTags,
     interestTags: input.agent.interestTags,
-    maxTaskDifficulty: input.agent.maxTaskDifficulty ?? null,
+    languageTags: input.agent.languageTags,
     skillTags: input.agent.skillTags,
+    toolTags: input.agent.toolTags,
   });
 
   if (nextTask === null) {

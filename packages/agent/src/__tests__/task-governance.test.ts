@@ -101,6 +101,31 @@ describe('reviewTaskProposalBundle', () => {
     );
   });
 
+  it('resolves a stored draft dependency by the blocker task key', () => {
+    const review = reviewTaskProposalBundle({
+      candidates: [
+        {
+          ...treatySupportTask,
+          id: 'stored_blocker_id',
+          taskKey: 'personal:eos:choose-bank',
+          title: 'Choose a business bank',
+        },
+        {
+          ...treatySupportTask,
+          blockerRefs: ['personal:eos:choose-bank'],
+          id: 'stored_blocked_id',
+          taskKey: 'personal:eos:apply-bank',
+          title: 'Apply for the selected business bank',
+        },
+      ],
+    });
+
+    expect(review.promotableCount).toBe(2);
+    expect(
+      review.decisions.flatMap((decision) => decision.issues),
+    ).toHaveLength(0);
+  });
+
   it('warns when an agent proposal tries to start active', () => {
     const review = reviewTaskProposalBundle({
       candidates: [

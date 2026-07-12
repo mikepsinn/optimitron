@@ -1,5 +1,11 @@
 # Game UI Design Guidelines
 
+> **Scope:** applies only to `/demo`, the Sierra slide decks, and other
+> explicitly game/demo screens. Public treaty/campaign surfaces use the
+> black-and-white treaty/editorial style mandated in [../AGENTS.md](../AGENTS.md)
+> and [../CLAUDE.md](../CLAUDE.md) — when the two conflict on a public page,
+> treaty style wins.
+
 > **The game IS the app.** Optimitron looks like a Sierra Online adventure game because the core
 > metaphor is "Earth is a game and we're playing it wrong." Every page should feel like a screen
 > in that game — bold typography, animated data, CRT effects, and intentional surface contrast.

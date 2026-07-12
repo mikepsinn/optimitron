@@ -5,7 +5,6 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
-  TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
   VotePosition,
@@ -22,6 +21,7 @@ import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
 import {
   assertUserCanClaimPaidTask,
   queueTaskPayoutForVerifiedClaim,
@@ -321,7 +321,6 @@ const taskListSelect = {
   },
   contextJson: true,
   description: true,
-  difficulty: true,
   dueAt: true,
   engagementKind: true,
   estimatedHoursPerWeekMax: true,
@@ -483,7 +482,6 @@ const taskSearchSelect = {
   },
   category: true,
   description: true,
-  difficulty: true,
   id: true,
   interestTags: true,
   roleTitle: true,
@@ -541,7 +539,6 @@ type TaskViewer = Awaited<ReturnType<typeof getTaskViewer>>;
 export interface TaskSearchResult {
   assigneeLabel: string | null;
   category: TaskCategory;
-  difficulty: TaskDifficulty;
   href: string;
   id: string;
   score: number;
@@ -668,7 +665,6 @@ function mapTaskSearchResult(
   return {
     assigneeLabel: assigneeParts[0] ?? null,
     category: task.category,
-    difficulty: task.difficulty,
     href,
     id: task.id,
     score: scoreSearchRecord(searchTerms, {
@@ -677,7 +673,6 @@ function mapTaskSearchResult(
       href,
       keywords: [
         task.category,
-        task.difficulty,
         task.status,
         task.taskKey ?? "",
         ...task.interestTags,
@@ -1013,7 +1008,6 @@ async function getTaskViewer(userId: string) {
       id: true,
       isAdmin: true,
       interestTags: true,
-      maxTaskDifficulty: true,
       personId: true,
       skillTags: true,
     },
@@ -1620,7 +1614,6 @@ export async function createTask(
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
     description?: string | null;
-    difficulty?: TaskDifficulty | null;
     dueAt?: Date | null;
     estimatedEffortHours?: number | null;
     interestTags?: string[] | null;
@@ -1680,7 +1673,6 @@ export async function createTask(
           }
         : {}),
       description,
-      difficulty: input.difficulty ?? TaskDifficulty.INTERMEDIATE,
       dueAt: input.dueAt ?? null,
       estimatedEffortHours: input.estimatedEffortHours ?? null,
       interestTags: input.interestTags?.filter(Boolean) ?? [],
@@ -1689,7 +1681,7 @@ export async function createTask(
         resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
-      parentTaskId: input.parentTaskId ?? null,
+      parentTaskId: input.parentTaskId ?? OPTIMIZE_EARTH_ROOT_TASK_ID,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],
@@ -1723,7 +1715,6 @@ export async function updateTaskCreatedByUser(
     category?: TaskCategory | null;
     claimPolicy?: TaskClaimPolicy | null;
     description?: string | null;
-    difficulty?: TaskDifficulty | null;
     dueAt?: Date | null;
     estimatedEffortHours?: number | null;
     interestTags?: string[] | null;
@@ -1781,7 +1772,6 @@ export async function updateTaskCreatedByUser(
         claimPolicy: input.claimPolicy ?? undefined,
         description:
           input.description == null ? undefined : input.description.trim(),
-        difficulty: input.difficulty ?? undefined,
         dueAt: input.dueAt ?? undefined,
         estimatedEffortHours: input.estimatedEffortHours ?? undefined,
         interestTags: input.interestTags?.filter(Boolean) ?? undefined,
