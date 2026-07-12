@@ -1,0 +1,282 @@
+[
+  {
+    "categoryId": "health",
+    "categoryName": "Life Expectancy",
+    "deciles": [
+      {
+        "decile": 1,
+        "avgSpending": 1200,
+        "outcome": 74.2
+      },
+      {
+        "decile": 2,
+        "avgSpending": 2100,
+        "outcome": 78.1
+      },
+      {
+        "decile": 3,
+        "avgSpending": 2800,
+        "outcome": 80.3
+      },
+      {
+        "decile": 4,
+        "avgSpending": 3400,
+        "outcome": 81.5
+      },
+      {
+        "decile": 5,
+        "avgSpending": 3900,
+        "outcome": 82.2
+      },
+      {
+        "decile": 6,
+        "avgSpending": 4400,
+        "outcome": 82
+      },
+      {
+        "decile": 7,
+        "avgSpending": 5000,
+        "outcome": 81.8
+      },
+      {
+        "decile": 8,
+        "avgSpending": 5800,
+        "outcome": 81.5
+      },
+      {
+        "decile": 9,
+        "avgSpending": 7200,
+        "outcome": 81
+      },
+      {
+        "decile": 10,
+        "avgSpending": 10200,
+        "outcome": 78.6
+      }
+    ]
+  },
+  {
+    "categoryId": "military",
+    "categoryName": "Conflict Incidents per 100K",
+    "deciles": [
+      {
+        "decile": 1,
+        "avgSpending": 180,
+        "outcome": 1.8
+      },
+      {
+        "decile": 2,
+        "avgSpending": 350,
+        "outcome": 0.9
+      },
+      {
+        "decile": 3,
+        "avgSpending": 520,
+        "outcome": 0.4
+      },
+      {
+        "decile": 4,
+        "avgSpending": 680,
+        "outcome": 0.25
+      },
+      {
+        "decile": 5,
+        "avgSpending": 850,
+        "outcome": 0.18
+      },
+      {
+        "decile": 6,
+        "avgSpending": 1050,
+        "outcome": 0.15
+      },
+      {
+        "decile": 7,
+        "avgSpending": 1300,
+        "outcome": 0.12
+      },
+      {
+        "decile": 8,
+        "avgSpending": 1600,
+        "outcome": 0.1
+      },
+      {
+        "decile": 9,
+        "avgSpending": 2000,
+        "outcome": 0.09
+      },
+      {
+        "decile": 10,
+        "avgSpending": 2400,
+        "outcome": 0.08
+      }
+    ]
+  },
+  {
+    "categoryId": "education",
+    "categoryName": "PISA Math Score",
+    "deciles": [
+      {
+        "decile": 1,
+        "avgSpending": 800,
+        "outcome": 420
+      },
+      {
+        "decile": 2,
+        "avgSpending": 1200,
+        "outcome": 465
+      },
+      {
+        "decile": 3,
+        "avgSpending": 1600,
+        "outcome": 490
+      },
+      {
+        "decile": 4,
+        "avgSpending": 2000,
+        "outcome": 500
+      },
+      {
+        "decile": 5,
+        "avgSpending": 2400,
+        "outcome": 505
+      },
+      {
+        "decile": 6,
+        "avgSpending": 2800,
+        "outcome": 502
+      },
+      {
+        "decile": 7,
+        "avgSpending": 3200,
+        "outcome": 498
+      },
+      {
+        "decile": 8,
+        "avgSpending": 3600,
+        "outcome": 500
+      },
+      {
+        "decile": 9,
+        "avgSpending": 4000,
+        "outcome": 495
+      },
+      {
+        "decile": 10,
+        "avgSpending": 4800,
+        "outcome": 489
+      }
+    ]
+  },
+  {
+    "categoryId": "social_protection",
+    "categoryName": "Poverty Rate",
+    "deciles": [
+      {
+        "decile": 1,
+        "avgSpending": 1500,
+        "outcome": 18.5
+      },
+      {
+        "decile": 2,
+        "avgSpending": 2800,
+        "outcome": 14.2
+      },
+      {
+        "decile": 3,
+        "avgSpending": 3800,
+        "outcome": 11.5
+      },
+      {
+        "decile": 4,
+        "avgSpending": 4600,
+        "outcome": 9.8
+      },
+      {
+        "decile": 5,
+        "avgSpending": 5400,
+        "outcome": 8.5
+      },
+      {
+        "decile": 6,
+        "avgSpending": 6200,
+        "outcome": 7.2
+      },
+      {
+        "decile": 7,
+        "avgSpending": 7000,
+        "outcome": 6.5
+      },
+      {
+        "decile": 8,
+        "avgSpending": 7800,
+        "outcome": 6
+      },
+      {
+        "decile": 9,
+        "avgSpending": 8800,
+        "outcome": 5.8
+      },
+      {
+        "decile": 10,
+        "avgSpending": 10000,
+        "outcome": 5.5
+      }
+    ]
+  },
+  {
+    "categoryId": "rd",
+    "categoryName": "Patents per 100K",
+    "deciles": [
+      {
+        "decile": 1,
+        "avgSpending": 150,
+        "outcome": 5
+      },
+      {
+        "decile": 2,
+        "avgSpending": 300,
+        "outcome": 15
+      },
+      {
+        "decile": 3,
+        "avgSpending": 500,
+        "outcome": 35
+      },
+      {
+        "decile": 4,
+        "avgSpending": 700,
+        "outcome": 55
+      },
+      {
+        "decile": 5,
+        "avgSpending": 900,
+        "outcome": 70
+      },
+      {
+        "decile": 6,
+        "avgSpending": 1100,
+        "outcome": 82
+      },
+      {
+        "decile": 7,
+        "avgSpending": 1300,
+        "outcome": 90
+      },
+      {
+        "decile": 8,
+        "avgSpending": 1500,
+        "outcome": 95
+      },
+      {
+        "decile": 9,
+        "avgSpending": 1800,
+        "outcome": 98
+      },
+      {
+        "decile": 10,
+        "avgSpending": 2200,
+        "outcome": 100
+      }
+    ]
+  }
+]

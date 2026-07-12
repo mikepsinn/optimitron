@@ -33,9 +33,10 @@
 | --- | --- | --- | --- | --- |
 | Universal Pre-K (Ages 3-4) | +0.10 yrs | +0.15 pp/yr | A | REALLOCATE |
 | Pragmatic Clinical Trial Funding Reform | +0.30 yrs | +0.05 pp/yr | A | ENACT |
-| Military: Adopt Switzerland's Approach | +0.05 yrs | +0.41 pp/yr | B | REALLOCATE |
-| Veterans Affairs: Adopt South Korea's Approach | +0.05 yrs | +1.66 pp/yr | B | REALLOCATE |
-- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 22 policies deep.
+| Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp/yr | B | ENACT |
+| Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
+| Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
+- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
 - [Step inside the Policy Generator](/opg)
 #### EXHIBIT B · THE BUDGET, SOLVED LIKE AN EQUATION
 - 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone and costs nothing.

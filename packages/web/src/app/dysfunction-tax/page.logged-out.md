@@ -17,7 +17,7 @@
 - Your civilisation loses [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) per year to governance dysfunction. That is [$12,600/year](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per human per year in pure waste. Your overhead is almost equal to your entire economic output. My toaster runs more efficiently.
 - HEALTHCARE INEFFICIENCY
 - 17.3%
-- US spends 17.3% of GDP on healthcare. Singapore spends 4.1% and lives 6 years longer. You are paying quadruple for a worse product. On purpose, apparently.
+- US spends 17.3% of GDP on healthcare. Singapore spends 4.1% and lives 6 years longer. Quadruple the price, a worse product, six fewer years. Somewhere a system is very proud of this.
 - ADMINISTRATIVE BLOAT
 - $4.9T
 - Allocative inefficiency in the US alone. That is money spent deciding how to spend money. Your bureaucracy has a bureaucracy and it also needs a meeting.

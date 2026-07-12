@@ -7,22 +7,23 @@ import { usPolicyAnalysis } from "@/data/us-policy-analysis";
  * generated usPolicyAnalysis dataset (same source as /opg).
  */
 
-const ROW_LIMIT = 4;
+const ROW_LIMIT = 5;
 
 type PolicyRowData = (typeof usPolicyAnalysis.policies)[number];
 
 /**
- * The generator emits near-duplicate "Adopt X's approach" rows for sibling
- * budget categories with identical effect sizes; dedupe on the effect pair
- * so the exhibit shows four distinct recommendations.
+ * The generator emits templated "Category: Adopt Country's Approach" rows
+ * (18 of 23 in the current dataset) — benchmark transplants with
+ * copy-pasted effect pairs, not exhibit-grade recommendations. Show only
+ * the named, evidence-cited structural reforms. (No effect-pair dedupe:
+ * distinct policies can legitimately share effect estimates.)
  */
+const BENCHMARK_TEMPLATE_ROW = /: Adopt .+'s Approach$/;
+
 export function topDistinctPolicies(): PolicyRowData[] {
-  const seen = new Set<string>();
   const rows: PolicyRowData[] = [];
   for (const policy of usPolicyAnalysis.policies) {
-    const signature = `${policy.healthEffect}|${policy.incomeEffect}`;
-    if (seen.has(signature)) continue;
-    seen.add(signature);
+    if (BENCHMARK_TEMPLATE_ROW.test(policy.name)) continue;
     rows.push(policy);
     if (rows.length >= ROW_LIMIT) break;
   }

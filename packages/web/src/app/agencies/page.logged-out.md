@@ -16,7 +16,7 @@
 - 22 AGENCIES
 ## OPTIMIZED GOVERNANCE
 - On my planet, governance takes about four minutes a week. 22 optimized agencies handle money, audits, housing, justice, education, environment, and the bits your species currently staffs with queues, waivers, and lobbyists.
-- Your species has hundreds of federal agencies. Most of them exist to manage the failures of other agencies. Here is what a compact civilization-grade replacement map looks like.
+- Your species has hundreds of federal agencies. Most of them exist to manage the failures of other agencies. Here is the one map that replaces them.
 ### DEMOCRACY
 - [🤝ACTIVE ALIGNED ELECTION COMMISSION Politicians funded by alignment score, not donor checks ON EARTH: FEDERAL ELECTION COMMISSION + CAMPAIGN FINANCE SYSTEM](/agencies/dfec)
 - [🔍ACTIVE DECENTRALIZED ACCOUNTABILITY OFFICE Every fund flow on IPFS — impossible to quietly delete ON EARTH: GOVERNMENT ACCOUNTABILITY OFFICE](/agencies/dgao)
@@ -30,7 +30,7 @@
 - [🌐ACTIVE DECENTRALIZED CENSUS BUREAU citizenCount() returns in 50ms — no $14B survey needed ON EARTH: UNITED STATES CENSUS BUREAU](/agencies/dcensus)
 - [💸ACTIVE AUTOMATED TREASURY One currency, one tax, one safety net — no tax code required ON EARTH: TREASURY + IRS + FEDERAL RESERVE + SOCIAL SECURITY](/agencies/dtreasury)
 ### HEALTH & SCIENCE
-- [🧬ACTIVE OPTIMAL INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH ON EARTH: NATIONAL INSTITUTES OF HEALTH + FDA](/agencies/dih)
+- [🧬ACTIVE DECENTRALIZED INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH ON EARTH: NATIONAL INSTITUTES OF HEALTH + FDA](/agencies/dih)
 - [💊ACTIVE DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings ON EARTH: FOOD AND DRUG ADMINISTRATION](/agencies/dfda)
 ### PUBLIC GOODS
 - [📚ACTIVE LEARNING FREEDOM NETWORK Portable student funding, open outcomes, and schools that compete to teach ON EARTH: DEPARTMENT OF EDUCATION](/agencies/dedu)
@@ -44,7 +44,7 @@
 - [⛓️ACTIVE RESTORATIVE JUSTICE NETWORK Contain the dangerous, restore the rest, and pay victims first ON EARTH: BUREAU OF PRISONS](/agencies/drest)
 - [🔎ACTIVE OPEN INVESTIGATION BUREAU Forensics first, political discretion last ON EARTH: FEDERAL BUREAU OF INVESTIGATION](/agencies/dinvest)
 - [🛡️ACTIVE PROTOCOL SECURITY AGENCY Mandatory breach bonds, auto-patching, and public bug bounties ON EARTH: CYBERSECURITY BUREAUCRACY (CISA + FBI CYBER DIVISION)](/agencies/dcyber)
-### SEE HOW EARTH DOES IT
+### SEE YOUR GOVERNMENT'S REPORT CARD
 - Every Earth government graded on spending vs outcomes. We publish the results the same way you publish restaurant hygiene ratings. Except you actually read those.
 - [GOVERNMENT REPORT CARDS](/governments)
 - [PLAY THE GAME](/agencies/dcongress/wishocracy)

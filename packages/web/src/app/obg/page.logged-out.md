@@ -16,7 +16,7 @@
 ## THE US FEDERAL BUDGET, DIAGNOSED
 - Your government's $6.71T shopping list, reviewed by someone who's actually done the maths. 18 categories. Most of them wrong.
 ### RELATED ANALYSIS
-- [OPTIMIZATION DIVIDEND Translate the savings into household payouts.](/dividend)
+- [OPTIMIZATION DIVIDEND See the savings land in your household as cash.](/dividend)
 - [EFFICIENCY RANKINGS See the comparator countries behind each overspend claim.](/efficiency)
 - [GOVERNMENT SIZE Switch from federal line items to whole-government floor analysis.](/government-size)
 - [MODEL LEGISLATION Read the drafted bills built from this analysis.](/legislation)

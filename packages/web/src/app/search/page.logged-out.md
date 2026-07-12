@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 - SEARCH
-## Search Optimitron
+## Search IC2EWD
 - Find pages, tasks, and manual entries.
 - [treaty](/search?q=treaty)
 - [clinical trials](/search?q=clinical%20trials)

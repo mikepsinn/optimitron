@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 ## POLICY RANKINGS
-- I ranked 22 of your policies by whether they actually work. Spoiler: most of them don't.
+- I ranked 22 of your policies by whether they actually work. Most of them don't.
 - CATEGORY
 - SORT BY
 - 1 [Pragmatic Clinical Trial Funding Reform](/opg/pragmatic-clinical-trial-funding-reform) Grade A implement health research Redirect research funding to pragmatic real-world trials. UK NIHR produces actionable evidence at 1/10th the cost. Current: NIH: $48B/yr, <10% on pragmatic trials, 85% of findings fail to replicate → Target: Mandate 30%+ of research budget for pragmatic trials with open data requirements+$719/yr INCOME+36mo HALE HEALTH A EVIDENCE▼
@@ -41,6 +41,6 @@
 - 22 [Education: Adopt Japan's Approach](/opg/education-adopt-japan-s-approach) Grade B reallocate education Reduce education spending to the cheapest high-performer floor. Japan achieves PISA Math Score 536 at $1288/cap; United States gets 465 at $2996/cap. Current: United States spends $2996/cap, ranks 11/11. 2.3x overspend. → Target: Japan model ($1288/cap floor). $579B/yr savings → Optimization Dividend.+$6,023/yr INCOME+0mo HALE HEALTH B EVIDENCE▼
 - Analysis date: 2026-04-06T06:40:06.290Z · Source: Optimitron OPG (Optimal Policy Generator)
 - EARTH OPTIMIZATION PRIZE
-#### THESE RECOMMENDATIONS NEED POLITICAL WILL TO IMPLEMENT.
-- The bottleneck is pluralistic ignorance — everyone wants evidence-based policy, nobody knows everyone else does. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
+#### EVERY ONE OF THESE WORKS. NOW WE GET YOUR GOVERNMENT TO RUN THEM.
+- Everyone wants policy that works. Nobody believes their neighbor does. One verified vote count ends the standoff. Deposit into the prize pool, recruit verified voters, earn Earth Optimization Points.
 - [PLAY THE GAME](/prize)
