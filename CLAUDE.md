@@ -244,7 +244,7 @@ Contrast audit: `pnpm --filter @optimitron/web exec playwright test e2e/contrast
 - New `brutal-*` tokens on public treaty/campaign surfaces
 - Shadows on public treaty/campaign surfaces
 - Rounded cards and large radii; use square corners (`rounded-none`)
-- **Exceptions:** `emails/` may use inline hex (email clients strip CSS variables). `@media print` blocks may also use inline hex (browser print engines do not reliably resolve `var(--background)` etc).
+- **Exceptions:** `emails/` may use inline hex (email clients strip CSS variables). `@media print` blocks may also use inline hex (browser print engines do not reliably resolve `var(--background)` etc). `/eos` (later `/fund`) runs a sanctioned dark retro theme (Mike, 2026-07-11) — scoped entirely to `.eos-retro` in `packages/web/src/components/eos-retro/eos-retro.css`; its `--er-*` tokens must not appear on treaty/campaign surfaces.
 
 ## Design Primitives
 

@@ -22,6 +22,13 @@
   --er-red: #ff5468;
   --er-line: rgba(242, 232, 210, 0.16);
   --er-line-strong: rgba(242, 232, 210, 0.42);
+  /* Terminal/code fill: one step darker than --er-bg. */
+  --er-code-bg: #070d18;
+  /* Cream interlude (.er-day): dark-on-light text hierarchy. */
+  --er-day-text: #131a2c;
+  --er-day-deck: rgba(6, 9, 19, 0.72);
+  --er-day-time: rgba(6, 9, 19, 0.62);
+  --er-day-border: rgba(6, 9, 19, 0.18);
 
   --er-font-display: var(--font-eos-display), "Righteous", sans-serif;
   --er-font-mono: var(--v0-font-space-mono), monospace;
@@ -379,7 +386,7 @@ html:has(.eos-retro) {
 .er-terminal {
   position: relative;
   border: 1px solid var(--er-line-strong);
-  background: #070d18;
+  background: var(--er-code-bg);
   font-family: var(--er-font-terminal);
   font-size: 1.28rem;
   line-height: 1.45;
@@ -758,7 +765,7 @@ html:has(.eos-retro) {
 .er-code-chip {
   display: block;
   border: 1px solid var(--er-line);
-  background: #070d18;
+  background: var(--er-code-bg);
   padding: 0.55rem 0.7rem;
   font-family: var(--er-font-mono);
   font-size: 0.68rem;
@@ -920,7 +927,7 @@ html:has(.eos-retro) {
 }
 
 .er-day .er-day-deck {
-  color: rgba(6, 9, 19, 0.72);
+  color: var(--er-day-deck);
   font-size: 1.06rem;
   line-height: 1.75;
 }
@@ -930,7 +937,7 @@ html:has(.eos-retro) {
   grid-template-columns: 5.5rem minmax(0, 1fr);
   gap: 1.25rem;
   padding-block: 1.35rem;
-  border-top: 1px solid rgba(6, 9, 19, 0.18);
+  border-top: 1px solid var(--er-day-border);
 }
 
 .er-day-row:first-of-type {
@@ -942,7 +949,7 @@ html:has(.eos-retro) {
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: rgba(6, 9, 19, 0.62);
+  color: var(--er-day-time);
   white-space: nowrap;
   padding-top: 0.2rem;
 }
@@ -950,7 +957,7 @@ html:has(.eos-retro) {
 .er-day-text {
   font-size: 1.08rem;
   line-height: 1.75;
-  color: #131a2c;
+  color: var(--er-day-text);
 }
 
 .er-day-text strong {
