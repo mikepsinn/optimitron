@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { GLOBAL_DISEASE_DEATHS_PER_MINUTE } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-
-const DEATHS_PER_MS = GLOBAL_DISEASE_DEATHS_PER_MINUTE.value / 60_000;
-const TICK_MS = 250;
+import { useDeathTick } from "@/hooks/useDeathTick";
 
 /**
  * Corner chip: deaths from curable disease while the page has been open.
@@ -17,49 +15,18 @@ const TICK_MS = 250;
  * padding for it).
  */
 export function DeathCounter() {
-  const [openDeaths, setOpenDeaths] = useState(0);
-  const [awayDeaths, setAwayDeaths] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const lastTickRef = useRef<number | null>(null);
-  const hiddenAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setReducedMotion(true);
-      return;
     }
-
-    lastTickRef.current = performance.now();
-
-    const interval = setInterval(() => {
-      if (document.hidden || lastTickRef.current === null) return;
-      const now = performance.now();
-      const elapsed = now - lastTickRef.current;
-      lastTickRef.current = now;
-      setOpenDeaths((d) => d + elapsed * DEATHS_PER_MS);
-    }, TICK_MS);
-
-    const onVisibility = () => {
-      if (document.hidden) {
-        hiddenAtRef.current = performance.now();
-        lastTickRef.current = null;
-      } else {
-        const hiddenAt = hiddenAtRef.current;
-        if (hiddenAt !== null) {
-          const awayMs = performance.now() - hiddenAt;
-          setAwayDeaths((d) => d + awayMs * DEATHS_PER_MS);
-          hiddenAtRef.current = null;
-        }
-        lastTickRef.current = performance.now();
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
   }, []);
+
+  const { open, away } = useDeathTick({
+    enabled: !reducedMotion,
+    trackVisibility: true,
+  });
 
   if (reducedMotion) {
     return (
@@ -74,8 +41,8 @@ export function DeathCounter() {
     );
   }
 
-  const opened = Math.floor(openDeaths);
-  const away = Math.floor(awayDeaths);
+  const opened = Math.floor(open);
+  const awayCount = Math.floor(away);
 
   return (
     <aside aria-label="Deaths while this page was open" className="er-death-counter">
@@ -83,12 +50,12 @@ export function DeathCounter() {
         {opened.toLocaleString()}
       </span>{" "}
       died of curable diseases while this page was open
-      {away >= 1 ? (
+      {awayCount >= 1 ? (
         <>
           {" "}
           (+
           <span className="er-death-n" data-volatile="away-deaths">
-            {away.toLocaleString()}
+            {awayCount.toLocaleString()}
           </span>{" "}
           while you were away)
         </>
