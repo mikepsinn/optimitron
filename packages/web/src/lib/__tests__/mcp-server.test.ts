@@ -2,6 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
   AgentExecutorStatus,
+  NotificationStatus,
   OrgStatus,
   OrgType,
   ReferendumKind,
@@ -111,6 +112,22 @@ const mocks = vi.hoisted(() => ({
   listAdminEmailLogs: vi.fn(),
   sourceArtifactUpsert: vi.fn(),
   taskSourceArtifactUpsert: vi.fn(),
+  ensureSubjectForUser: vi.fn(),
+  userFindUniqueOrThrow: vi.fn(),
+  globalVariableFindFirst: vi.fn(),
+  globalVariableUpsert: vi.fn(),
+  variableCategoryFindFirst: vi.fn(),
+  unitFindFirst: vi.fn(),
+  nOf1VariableUpsert: vi.fn(),
+  measurementUpsert: vi.fn(),
+  trackingReminderUpsert: vi.fn(),
+  trackingReminderFindMany: vi.fn(),
+  trackingReminderFindFirst: vi.fn(),
+  trackingReminderUpdate: vi.fn(),
+  trackingReminderNotificationFindMany: vi.fn(),
+  trackingReminderNotificationFindFirst: vi.fn(),
+  trackingReminderNotificationCreate: vi.fn(),
+  trackingReminderNotificationUpdate: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -267,6 +284,12 @@ vi.mock("../image-upload-from-url.server", () => ({
   uploadImageFromUrl: mocks.uploadImageFromUrl,
 }));
 
+vi.mock("../subject.server", () => ({
+  ensureSubjectForUser: mocks.ensureSubjectForUser,
+  ensureSubjectForPerson: vi.fn(),
+  ensureExternalPersonSubject: vi.fn(),
+}));
+
 vi.mock("../prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
@@ -318,6 +341,7 @@ vi.mock("../prisma", () => ({
     },
     user: {
       findUnique: mocks.userFindUnique,
+      findUniqueOrThrow: mocks.userFindUniqueOrThrow,
       findMany: mocks.userFindMany,
       update: mocks.userUpdate,
     },
@@ -326,6 +350,34 @@ vi.mock("../prisma", () => ({
     },
     taskSourceArtifact: {
       upsert: mocks.taskSourceArtifactUpsert,
+    },
+    globalVariable: {
+      findFirst: mocks.globalVariableFindFirst,
+      upsert: mocks.globalVariableUpsert,
+    },
+    variableCategory: {
+      findFirst: mocks.variableCategoryFindFirst,
+    },
+    unit: {
+      findFirst: mocks.unitFindFirst,
+    },
+    nOf1Variable: {
+      upsert: mocks.nOf1VariableUpsert,
+    },
+    measurement: {
+      upsert: mocks.measurementUpsert,
+    },
+    trackingReminder: {
+      upsert: mocks.trackingReminderUpsert,
+      findMany: mocks.trackingReminderFindMany,
+      findFirst: mocks.trackingReminderFindFirst,
+      update: mocks.trackingReminderUpdate,
+    },
+    trackingReminderNotification: {
+      findMany: mocks.trackingReminderNotificationFindMany,
+      findFirst: mocks.trackingReminderNotificationFindFirst,
+      create: mocks.trackingReminderNotificationCreate,
+      update: mocks.trackingReminderNotificationUpdate,
     },
   },
 }));
@@ -504,6 +556,35 @@ beforeEach(() => {
         },
         taskApplicationEvent: {
           create: mocks.taskApplicationEventCreate,
+        },
+        user: {
+          findUniqueOrThrow: mocks.userFindUniqueOrThrow,
+        },
+        globalVariable: {
+          findFirst: mocks.globalVariableFindFirst,
+          upsert: mocks.globalVariableUpsert,
+        },
+        variableCategory: {
+          findFirst: mocks.variableCategoryFindFirst,
+        },
+        unit: {
+          findFirst: mocks.unitFindFirst,
+        },
+        nOf1Variable: {
+          upsert: mocks.nOf1VariableUpsert,
+        },
+        measurement: {
+          upsert: mocks.measurementUpsert,
+        },
+        trackingReminder: {
+          upsert: mocks.trackingReminderUpsert,
+          findFirst: mocks.trackingReminderFindFirst,
+          update: mocks.trackingReminderUpdate,
+        },
+        trackingReminderNotification: {
+          findFirst: mocks.trackingReminderNotificationFindFirst,
+          create: mocks.trackingReminderNotificationCreate,
+          update: mocks.trackingReminderNotificationUpdate,
         },
       }),
   );
@@ -5931,6 +6012,285 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
       expect(String(body.error)).toContain("TaskTrigger not found: nope");
+    });
+  });
+
+  describe("tracking reminders and measurements", () => {
+    const TRACKING_UNIT = {
+      abbreviatedName: "IU",
+      id: "unit-iu",
+      name: "International Unit",
+      ucumCode: "[iU]",
+    };
+
+    const TRACKING_VARIABLE = {
+      defaultUnit: TRACKING_UNIT,
+      defaultUnitId: "unit-iu",
+      id: "gv-vitd",
+      name: "Vitamin D",
+      variableCategory: { id: "cat-treatment", name: "Treatment" },
+      variableCategoryId: "cat-treatment",
+    };
+
+    const NOF1_VARIABLE = {
+      defaultUnitId: "unit-iu",
+      fillingType: "NONE",
+      id: "nof1-1",
+    };
+
+    beforeEach(() => {
+      mocks.userFindUniqueOrThrow.mockResolvedValue({
+        email: "user@example.com",
+        id: "user-1",
+        personId: "person-1",
+      });
+      mocks.ensureSubjectForUser.mockResolvedValue({ id: "subject-1" });
+      mocks.globalVariableFindFirst.mockResolvedValue(TRACKING_VARIABLE);
+      mocks.unitFindFirst.mockResolvedValue(TRACKING_UNIT);
+      mocks.nOf1VariableUpsert.mockResolvedValue(NOF1_VARIABLE);
+    });
+
+    it("recordMeasurement writes a measurement upsert keyed on (subjectId, globalVariableId, startTime)", async () => {
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        startTime: new Date("2026-07-01T08:00:00.000Z"),
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 5000,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: {
+          startTime: "2026-07-01T08:00:00.000Z",
+          unitAbbreviation: "IU",
+          value: 5000,
+          variableName: "Vitamin D",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+      const call = mocks.measurementUpsert.mock.calls[0]![0] as {
+        create: Record<string, unknown>;
+        where: {
+          subjectId_globalVariableId_startTime: Record<string, unknown>;
+        };
+      };
+      expect(call.where.subjectId_globalVariableId_startTime).toEqual({
+        globalVariableId: "gv-vitd",
+        startTime: new Date("2026-07-01T08:00:00.000Z"),
+        subjectId: "subject-1",
+      });
+      expect(call.create).toMatchObject({ unitId: "unit-iu", value: 5000 });
+
+      const body = parseToolBody(result) as {
+        result: { measurement: { subjectId: string; value: number } };
+      };
+      expect(body.result.measurement.subjectId).toBe("subject-1");
+      expect(body.result.measurement.value).toBe(5000);
+    });
+
+    it("recordMeasurement rejects a missing value with no write", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: { variableName: "Vitamin D" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain("value must be a finite number");
+      expect(mocks.transaction).not.toHaveBeenCalled();
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+    });
+
+    it("upsertTrackingReminder defaults reminderFrequency to 86400 when omitted", async () => {
+      mocks.trackingReminderUpsert.mockResolvedValue({
+        active: true,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          reminderStartTime: "08:00",
+          variableName: "Vitamin D",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderUpsert).toHaveBeenCalledTimes(1);
+      const call = mocks.trackingReminderUpsert.mock.calls[0]![0] as {
+        create: Record<string, unknown>;
+        where: {
+          userId_globalVariableId_reminderStartTime_reminderFrequency: Record<
+            string,
+            unknown
+          >;
+        };
+      };
+      expect(call.create).toMatchObject({ reminderFrequency: 86_400 });
+      expect(
+        call.where.userId_globalVariableId_reminderStartTime_reminderFrequency,
+      ).toEqual({
+        globalVariableId: "gv-vitd",
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+    });
+
+    it("upsertTrackingReminder rejects an invalid reminderStartTime with no write", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          reminderStartTime: "not-a-time",
+          variableName: "Vitamin D",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain("reminderStartTime must be HH:mm");
+      expect(mocks.trackingReminderUpsert).not.toHaveBeenCalled();
+    });
+
+    it("respondToTrackingReminder TRACKED records the notification and a Measurement via the same write path", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: TRACKING_VARIABLE,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+      mocks.trackingReminderNotificationCreate.mockResolvedValue({
+        id: "notification-1",
+        status: NotificationStatus.TRACKED,
+        trackedValue: 3,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 3,
+      });
+      mocks.trackingReminderUpdate.mockResolvedValue({
+        id: "reminder-1",
+        lastTracked: new Date("2026-07-01T08:00:00.000Z"),
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "TRACKED",
+          trackedAt: "2026-07-01T08:00:00.000Z",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(
+        mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
+      ).toMatchObject({
+        data: expect.objectContaining({ status: NotificationStatus.TRACKED }),
+      });
+      expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+      // result.measurement is the raw Measurement row, matching
+      // recordMeasurement's top-level response shape.
+      const body = parseToolBody(result) as {
+        result: { measurement: { value: number } | null };
+      };
+      expect(body.result.measurement).not.toBeNull();
+      expect(body.result.measurement?.value).toBe(3);
+    });
+
+    it("respondToTrackingReminder SKIPPED writes the notification but no Measurement", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: TRACKING_VARIABLE,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+      mocks.trackingReminderNotificationCreate.mockResolvedValue({
+        id: "notification-2",
+        status: NotificationStatus.SKIPPED,
+        trackedValue: null,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "SKIPPED",
+          trackedAt: "2026-07-01T08:00:00.000Z",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(
+        mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
+      ).toMatchObject({
+        data: expect.objectContaining({
+          status: NotificationStatus.SKIPPED,
+          trackedValue: null,
+        }),
+      });
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      expect(mocks.trackingReminderUpdate).not.toHaveBeenCalled();
+      const body = parseToolBody(result) as {
+        result: { measurement: unknown };
+      };
+      expect(body.result.measurement).toBeNull();
+    });
+
+    it("rejects a caller lacking TASKS_PERSONAL scope", async () => {
+      const client = await setup("user-1", []);
+
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: { value: 5000, variableName: "Vitamin D" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.error).toContain("Insufficient scope");
+      expect(body.error).toContain("recordMeasurement");
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
   });
 });

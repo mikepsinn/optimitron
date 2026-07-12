@@ -13,9 +13,12 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
+  CombinationOperation,
   ContentReportStatus,
   AgentExecutorStatus,
+  FillingType,
   McpToolCallStatus,
+  NotificationStatus,
   OrgStatus,
   OrgType,
   ReferendumKind,
@@ -79,6 +82,7 @@ import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { isExecutableWorkItem } from "./tasks/execution-eligibility";
+import { ensureSubjectForUser } from "./subject.server";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -101,6 +105,7 @@ import {
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_CONSENT_SCOPES, ALL_SCOPES, McpScope };
 
 const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
+const RECORD_MEASUREMENT_TOOL_NAME = "recordMeasurement" as const;
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
@@ -189,6 +194,11 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   getQueueAudit: [McpScope.TASKS_PERSONAL],
+  [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
+  upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
+  listTrackingReminders: [McpScope.TASKS_PERSONAL],
+  listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
+  respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
   searchRepo: [McpScope.GITHUB],
@@ -3349,6 +3359,746 @@ function summarizeReferendum(referendum: ReferendumToolRecord) {
   };
 }
 
+type AppPrismaClient = Awaited<ReturnType<typeof getPrisma>>;
+type TrackingDbClient = Prisma.TransactionClient | AppPrismaClient;
+
+const TRACKING_UNIT_SELECT = {
+  abbreviatedName: true,
+  id: true,
+  name: true,
+  ucumCode: true,
+} satisfies Prisma.UnitSelect;
+
+const TRACKING_VARIABLE_SELECT = {
+  defaultUnit: { select: TRACKING_UNIT_SELECT },
+  defaultUnitId: true,
+  id: true,
+  name: true,
+  variableCategory: { select: { id: true, name: true } },
+  variableCategoryId: true,
+} satisfies Prisma.GlobalVariableSelect;
+
+const TRACKING_REMINDER_INCLUDE = {
+  globalVariable: { select: TRACKING_VARIABLE_SELECT },
+  nOf1Variable: {
+    select: {
+      defaultUnitId: true,
+      fillingType: true,
+      id: true,
+    },
+  },
+} satisfies Prisma.TrackingReminderInclude;
+
+interface TrackingVariableArgs {
+  categoryName?: string | null;
+  combinationOperation?: CombinationOperation;
+  fillingType?: FillingType;
+  globalVariableId?: string | null;
+  unitAbbreviation?: string | null;
+  unitId?: string | null;
+  unitName?: string | null;
+  variableName?: string | null;
+}
+
+interface RecordTrackingMeasurementArgs extends TrackingVariableArgs {
+  duration?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  note?: string | null;
+  sourceName?: string | null;
+  startTime?: Date | null;
+  userId: string;
+  value: number;
+}
+
+function parseOptionalDateValue(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  if (value instanceof Date) {
+    if (!Number.isNaN(value.getTime())) return value;
+    throw new Error(`${fieldName} must be a valid date.`);
+  }
+  if (typeof value !== "string") {
+    throw new Error(`${fieldName} must be an ISO date string.`);
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`${fieldName} must be a valid date.`);
+  }
+  return date;
+}
+
+function parseRequiredFiniteNumber(value: unknown, fieldName: string) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`${fieldName} must be a finite number.`);
+  }
+  return value;
+}
+
+function parseOptionalNonnegativeInteger(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  if (
+    typeof value !== "number" ||
+    !Number.isInteger(value) ||
+    !Number.isFinite(value) ||
+    value < 0
+  ) {
+    throw new Error(`${fieldName} must be a non-negative integer.`);
+  }
+  return value;
+}
+
+function parsePositiveInteger(
+  value: unknown,
+  fieldName: string,
+  fallback: number,
+) {
+  if (value == null || value === "") return fallback;
+  if (
+    typeof value !== "number" ||
+    !Number.isInteger(value) ||
+    !Number.isFinite(value) ||
+    value <= 0
+  ) {
+    throw new Error(`${fieldName} must be a positive integer.`);
+  }
+  return value;
+}
+
+function parseTimeOfDay(value: unknown, fieldName: string) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  const normalized = value.trim();
+  if (!/^\d{1,2}:\d{2}$/.test(normalized)) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  const [rawHours, rawMinutes] = normalized.split(":");
+  const hours = Number(rawHours);
+  const minutes = Number(rawMinutes);
+  if (
+    !Number.isInteger(hours) ||
+    !Number.isInteger(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+function parseOptionalTimeOfDay(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  return parseTimeOfDay(value, fieldName);
+}
+
+function parseDateKey(value: unknown, fallback = dateKeyFromDate(new Date())) {
+  if (value == null || value === "") return fallback;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+    throw new Error("dateKey must use YYYY-MM-DD.");
+  }
+  return value.trim();
+}
+
+function dateKeyFromDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function dayRange(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return {
+    end: new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0)),
+    start: new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)),
+  };
+}
+
+function reminderNotifyAt(dateKey: string, reminderStartTime: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const [hours, minutes] = reminderStartTime.split(":").map(Number);
+  return new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
+}
+
+function cleanNumber(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function parseTrackingVariableArgs(
+  input: Record<string, unknown>,
+): TrackingVariableArgs {
+  return {
+    categoryName: optionalString(input.categoryName),
+    combinationOperation: parseEnumInput(
+      CombinationOperation,
+      input.combinationOperation,
+      "combinationOperation",
+    ),
+    fillingType: parseEnumInput(FillingType, input.fillingType, "fillingType"),
+    globalVariableId: optionalString(input.globalVariableId),
+    unitAbbreviation: optionalString(input.unitAbbreviation),
+    unitId: optionalString(input.unitId),
+    unitName: optionalString(input.unitName),
+    variableName: optionalString(input.variableName),
+  };
+}
+
+async function resolveTrackingUnit(
+  db: TrackingDbClient,
+  input: Pick<TrackingVariableArgs, "unitAbbreviation" | "unitId" | "unitName">,
+) {
+  if (input.unitId) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { deletedAt: null, id: input.unitId },
+    });
+  }
+  if (input.unitAbbreviation) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { abbreviatedName: input.unitAbbreviation, deletedAt: null },
+    });
+  }
+  if (input.unitName) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { deletedAt: null, name: input.unitName },
+    });
+  }
+  return null;
+}
+
+async function resolveTrackingVariable(
+  db: TrackingDbClient,
+  input: TrackingVariableArgs,
+  defaultCategoryName: string,
+) {
+  if (input.globalVariableId) {
+    const variable = await db.globalVariable.findFirst({
+      select: TRACKING_VARIABLE_SELECT,
+      where: { deletedAt: null, id: input.globalVariableId },
+    });
+    if (!variable) {
+      throw new Error(`GlobalVariable not found: ${input.globalVariableId}`);
+    }
+    const requestedUnit = await resolveTrackingUnit(db, input);
+    if (
+      (input.unitAbbreviation || input.unitId || input.unitName) &&
+      !requestedUnit
+    ) {
+      throw new Error("Requested unit was not found.");
+    }
+    return { unit: requestedUnit ?? variable.defaultUnit, variable };
+  }
+
+  if (!input.variableName) {
+    throw new Error("Provide globalVariableId or variableName.");
+  }
+
+  const existing = await db.globalVariable.findFirst({
+    select: TRACKING_VARIABLE_SELECT,
+    where: { deletedAt: null, name: input.variableName },
+  });
+  if (existing) {
+    const requestedUnit = await resolveTrackingUnit(db, input);
+    if (
+      (input.unitAbbreviation || input.unitId || input.unitName) &&
+      !requestedUnit
+    ) {
+      throw new Error("Requested unit was not found.");
+    }
+    return { unit: requestedUnit ?? existing.defaultUnit, variable: existing };
+  }
+
+  const categoryName = input.categoryName ?? defaultCategoryName;
+  const category = await db.variableCategory.findFirst({
+    select: {
+      combinationOperation: true,
+      defaultUnit: { select: TRACKING_UNIT_SELECT },
+      defaultUnitId: true,
+      durationOfAction: true,
+      id: true,
+      name: true,
+      onsetDelay: true,
+      outcome: true,
+      predictorOnly: true,
+    },
+    where: { deletedAt: null, name: categoryName },
+  });
+  if (!category?.defaultUnitId) {
+    throw new Error(
+      `Variable category is not seeded or has no default unit: ${categoryName}`,
+    );
+  }
+
+  const requestedUnit = await resolveTrackingUnit(db, input);
+  if (
+    (input.unitAbbreviation || input.unitId || input.unitName) &&
+    !requestedUnit
+  ) {
+    throw new Error("Requested unit was not found.");
+  }
+  const unit = requestedUnit ?? category.defaultUnit;
+  if (!unit) {
+    throw new Error(`No unit available for variable category: ${categoryName}`);
+  }
+
+  const variable = await db.globalVariable.upsert({
+    create: {
+      combinationOperation:
+        input.combinationOperation ?? category.combinationOperation,
+      defaultUnitId: unit.id,
+      durationOfAction: category.durationOfAction,
+      fillingType: input.fillingType ?? FillingType.NONE,
+      name: input.variableName,
+      onsetDelay: category.onsetDelay,
+      outcome: category.outcome,
+      predictorOnly: category.predictorOnly,
+      variableCategoryId: category.id,
+    },
+    select: TRACKING_VARIABLE_SELECT,
+    update: {
+      deletedAt: null,
+    },
+    where: { name: input.variableName },
+  });
+
+  return { unit, variable };
+}
+
+async function trackingUserSubject(
+  tx: Prisma.TransactionClient,
+  userId: string,
+) {
+  const user = await tx.user.findUniqueOrThrow({
+    select: { email: true, id: true, personId: true },
+    where: { id: userId },
+  });
+  return ensureSubjectForUser(tx, user);
+}
+
+async function ensureTrackingNOf1Variable(
+  db: TrackingDbClient,
+  input: {
+    defaultUnitId: string;
+    fillingType?: FillingType;
+    globalVariableId: string;
+    subjectId: string;
+  },
+) {
+  return db.nOf1Variable.upsert({
+    create: {
+      defaultUnitId: input.defaultUnitId,
+      fillingType: input.fillingType ?? FillingType.NONE,
+      globalVariableId: input.globalVariableId,
+      subjectId: input.subjectId,
+    },
+    update: {
+      defaultUnitId: input.defaultUnitId,
+      ...(input.fillingType ? { fillingType: input.fillingType } : {}),
+    },
+    where: {
+      subjectId_globalVariableId: {
+        globalVariableId: input.globalVariableId,
+        subjectId: input.subjectId,
+      },
+    },
+  });
+}
+
+async function recordTrackingMeasurementWithTx(
+  tx: Prisma.TransactionClient,
+  input: RecordTrackingMeasurementArgs,
+) {
+  const subject = await trackingUserSubject(tx, input.userId);
+  const { unit, variable } = await resolveTrackingVariable(
+    tx,
+    input,
+    input.categoryName ?? "Symptom",
+  );
+  const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
+    defaultUnitId: unit.id,
+    fillingType: input.fillingType,
+    globalVariableId: variable.id,
+    subjectId: subject.id,
+  });
+  const startTime = input.startTime ?? new Date();
+  const measurement = await tx.measurement.upsert({
+    create: {
+      duration: input.duration,
+      globalVariableId: variable.id,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      nOf1VariableId: nOf1Variable.id,
+      note: input.note,
+      originalUnitId: unit.id,
+      originalValue: input.value,
+      recordedByUserId: input.userId,
+      sourceName: input.sourceName ?? "mcp",
+      startTime,
+      subjectId: subject.id,
+      unitId: unit.id,
+      value: input.value,
+    },
+    update: {
+      duration: input.duration,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      note: input.note,
+      originalUnitId: unit.id,
+      originalValue: input.value,
+      recordedByUserId: input.userId,
+      sourceName: input.sourceName ?? "mcp",
+      unitId: unit.id,
+      value: input.value,
+    },
+    where: {
+      subjectId_globalVariableId_startTime: {
+        globalVariableId: variable.id,
+        startTime,
+        subjectId: subject.id,
+      },
+    },
+  });
+  return {
+    globalVariable: variable,
+    measurement,
+    nOf1Variable,
+    subjectId: subject.id,
+  };
+}
+
+async function recordTrackingMeasurement(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const value = parseRequiredFiniteNumber(input.value, "value");
+  const prisma = await getPrisma();
+  return prisma.$transaction((tx) =>
+    recordTrackingMeasurementWithTx(tx, {
+      ...parseTrackingVariableArgs(input),
+      duration: parseOptionalNonnegativeInteger(input.duration, "duration"),
+      latitude: parseOptionalFiniteNumberInput(input, "latitude") ?? null,
+      longitude: parseOptionalFiniteNumberInput(input, "longitude") ?? null,
+      note: optionalString(input.note),
+      sourceName: optionalString(input.sourceName),
+      startTime: parseOptionalDateValue(input.startTime, "startTime"),
+      userId,
+      value,
+    }),
+  );
+}
+
+async function upsertTrackingReminderForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const reminderStartTime = parseTimeOfDay(
+    input.reminderStartTime,
+    "reminderStartTime",
+  );
+  const reminderFrequency = parsePositiveInteger(
+    input.reminderFrequency,
+    "reminderFrequency",
+    86_400,
+  );
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const subject = await trackingUserSubject(tx, userId);
+    const variableArgs = parseTrackingVariableArgs(input);
+    const { unit, variable } = await resolveTrackingVariable(
+      tx,
+      variableArgs,
+      variableArgs.categoryName ?? "Treatment",
+    );
+    const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
+      defaultUnitId: unit.id,
+      fillingType: variableArgs.fillingType,
+      globalVariableId: variable.id,
+      subjectId: subject.id,
+    });
+    const reminder = await tx.trackingReminder.upsert({
+      create: {
+        active: typeof input.active === "boolean" ? input.active : true,
+        defaultValue:
+          parseOptionalFiniteNumberInput(input, "defaultValue") ?? null,
+        globalVariableId: variable.id,
+        instructions: optionalString(input.instructions),
+        nOf1VariableId: nOf1Variable.id,
+        reminderEndTime: parseOptionalTimeOfDay(
+          input.reminderEndTime,
+          "reminderEndTime",
+        ),
+        reminderFrequency,
+        reminderStartTime,
+        startTrackingDate: parseOptionalDateValue(
+          input.startTrackingDate,
+          "startTrackingDate",
+        ),
+        stopTrackingDate: parseOptionalDateValue(
+          input.stopTrackingDate,
+          "stopTrackingDate",
+        ),
+        userId,
+      },
+      include: TRACKING_REMINDER_INCLUDE,
+      update: {
+        active: typeof input.active === "boolean" ? input.active : true,
+        defaultValue:
+          parseOptionalFiniteNumberInput(input, "defaultValue") ?? null,
+        deletedAt: null,
+        instructions: optionalString(input.instructions),
+        nOf1VariableId: nOf1Variable.id,
+        reminderEndTime: parseOptionalTimeOfDay(
+          input.reminderEndTime,
+          "reminderEndTime",
+        ),
+        startTrackingDate: parseOptionalDateValue(
+          input.startTrackingDate,
+          "startTrackingDate",
+        ),
+        stopTrackingDate: parseOptionalDateValue(
+          input.stopTrackingDate,
+          "stopTrackingDate",
+        ),
+      },
+      where: {
+        userId_globalVariableId_reminderStartTime_reminderFrequency: {
+          globalVariableId: variable.id,
+          reminderFrequency,
+          reminderStartTime,
+          userId,
+        },
+      },
+    });
+    return { reminder, subjectId: subject.id };
+  });
+}
+
+async function listTrackingRemindersForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const prisma = await getPrisma();
+  return prisma.trackingReminder.findMany({
+    include: TRACKING_REMINDER_INCLUDE,
+    orderBy: [{ active: "desc" }, { reminderStartTime: "asc" }],
+    where: {
+      deletedAt: null,
+      userId,
+      ...(input.includeInactive === true ? {} : { active: true }),
+    },
+  });
+}
+
+async function listDueTrackingRemindersForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const dateKey = parseDateKey(input.dateKey);
+  const { end, start } = dayRange(dateKey);
+  const prisma = await getPrisma();
+  const reminders = await prisma.trackingReminder.findMany({
+    include: TRACKING_REMINDER_INCLUDE,
+    orderBy: [{ reminderStartTime: "asc" }],
+    where: {
+      active: true,
+      deletedAt: null,
+      userId,
+      AND: [
+        {
+          OR: [
+            { startTrackingDate: null },
+            { startTrackingDate: { lte: end } },
+          ],
+        },
+        {
+          OR: [
+            { stopTrackingDate: null },
+            { stopTrackingDate: { gte: start } },
+          ],
+        },
+      ],
+    },
+  });
+  if (reminders.length === 0) return { dateKey, reminders: [] };
+
+  const notifications = await prisma.trackingReminderNotification.findMany({
+    orderBy: [{ notifyAt: "asc" }],
+    where: {
+      deletedAt: null,
+      notifyAt: { gte: start, lt: end },
+      trackingReminderId: { in: reminders.map((reminder) => reminder.id) },
+      userId,
+    },
+  });
+  const byReminderId = new Map(
+    notifications.map((notification) => [
+      notification.trackingReminderId,
+      notification,
+    ]),
+  );
+  const remindersWithStatus = reminders
+    .map((reminder) => {
+      // null = no notification recorded yet for this dateKey (reminder still pending), not an error.
+      const existingNotification = byReminderId.get(reminder.id);
+      const notification =
+        existingNotification === undefined ? null : existingNotification;
+      return {
+        dateKey,
+        defaultValue: cleanNumber(reminder.defaultValue),
+        globalVariable: reminder.globalVariable,
+        instructions: reminder.instructions,
+        notification,
+        notifyAt:
+          notification?.notifyAt ??
+          reminderNotifyAt(dateKey, reminder.reminderStartTime),
+        reminderEndTime: reminder.reminderEndTime,
+        reminderFrequency: reminder.reminderFrequency,
+        reminderId: reminder.id,
+        reminderStartTime: reminder.reminderStartTime,
+        status: notification?.status ?? NotificationStatus.PENDING,
+      };
+    })
+    .filter((reminder) => {
+      if (input.includeCompleted === true) return true;
+      return (
+        reminder.status === NotificationStatus.PENDING ||
+        reminder.status === NotificationStatus.SENT
+      );
+    });
+  return { dateKey, reminders: remindersWithStatus };
+}
+
+async function findOrCreateTrackingNotification(
+  tx: Prisma.TransactionClient,
+  input: {
+    notifyAt: Date;
+    status: NotificationStatus;
+    trackedValue: number | null;
+    trackingReminderId: string;
+    userId: string;
+  },
+) {
+  const existing = await tx.trackingReminderNotification.findFirst({
+    where: {
+      deletedAt: null,
+      notifyAt: input.notifyAt,
+      trackingReminderId: input.trackingReminderId,
+      userId: input.userId,
+    },
+  });
+  const data = {
+    receivedAt: new Date(),
+    status: input.status,
+    trackedValue: input.trackedValue,
+  };
+  if (existing) {
+    return tx.trackingReminderNotification.update({
+      data,
+      where: { id: existing.id },
+    });
+  }
+  return tx.trackingReminderNotification.create({
+    data: {
+      ...data,
+      notifyAt: input.notifyAt,
+      trackingReminderId: input.trackingReminderId,
+      userId: input.userId,
+    },
+  });
+}
+
+async function respondToTrackingReminderForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const status =
+    parseEnumInput(NotificationStatus, input.status, "status") ??
+    NotificationStatus.TRACKED;
+  if (
+    status !== NotificationStatus.TRACKED &&
+    status !== NotificationStatus.SKIPPED &&
+    status !== NotificationStatus.SNOOZED
+  ) {
+    throw new Error("status must be TRACKED, SKIPPED, or SNOOZED.");
+  }
+  const trackingReminderId = optionalString(input.trackingReminderId);
+  if (!trackingReminderId) throw new Error("trackingReminderId is required.");
+  const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
+  const dateKey = parseDateKey(
+    input.dateKey,
+    dateKeyFromDate(trackedAt ?? new Date()),
+  );
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const reminder = await tx.trackingReminder.findFirst({
+      include: TRACKING_REMINDER_INCLUDE,
+      where: {
+        deletedAt: null,
+        id: trackingReminderId,
+        userId,
+      },
+    });
+    if (!reminder) {
+      throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
+    }
+    const trackedValue =
+      status === NotificationStatus.TRACKED
+        ? (parseOptionalFiniteNumberInput(input, "value") ??
+          cleanNumber(reminder.defaultValue))
+        : null;
+    if (status === NotificationStatus.TRACKED && trackedValue == null) {
+      throw new Error(
+        "Provide value or configure defaultValue before marking this reminder TRACKED.",
+      );
+    }
+    const notifyAt = reminderNotifyAt(dateKey, reminder.reminderStartTime);
+    const notification = await findOrCreateTrackingNotification(tx, {
+      notifyAt,
+      status,
+      trackedValue,
+      trackingReminderId,
+      userId,
+    });
+    let measurement = null;
+    if (status === NotificationStatus.TRACKED) {
+      const value = trackedValue;
+      if (value == null) {
+        throw new Error(
+          "Provide value or configure defaultValue before marking this reminder TRACKED.",
+        );
+      }
+      const tracked = await recordTrackingMeasurementWithTx(tx, {
+        categoryName: reminder.globalVariable.variableCategory.name,
+        duration: null,
+        fillingType: reminder.nOf1Variable.fillingType,
+        globalVariableId: reminder.globalVariableId,
+        latitude: null,
+        longitude: null,
+        note: optionalString(input.note),
+        sourceName: optionalString(input.sourceName) ?? "mcp-reminder",
+        startTime: trackedAt ?? new Date(),
+        unitAbbreviation: optionalString(input.unitAbbreviation),
+        unitId:
+          optionalString(input.unitId) ?? reminder.globalVariable.defaultUnitId,
+        unitName: optionalString(input.unitName),
+        userId,
+        value,
+      });
+      measurement = tracked.measurement;
+    }
+    if (status === NotificationStatus.TRACKED) {
+      await tx.trackingReminder.update({
+        data: { lastTracked: trackedAt ?? new Date() },
+        where: { id: reminder.id },
+      });
+    }
+    return { dateKey, measurement, notification, reminderId: reminder.id };
+  });
+}
+
 function nextActionRecommendation(task: PersonalQueueRow | null) {
   if (!task) {
     return {
@@ -4511,8 +5261,152 @@ const USER_MATCHING_PROFILE_PROPERTIES = {
   longitude: { type: ["number", "null"] },
 } as const;
 
+const TRACKING_TOOL_DEFINITIONS = [
+  {
+    name: RECORD_MEASUREMENT_TOOL_NAME,
+    description:
+      "Record a personal dFDA/N-of-1 measurement such as a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        variableName: { type: "string" },
+        categoryName: {
+          type: "string",
+          description:
+            "Variable category such as Treatment, Food, Symptom, Emotion, Sleep, Activity, Vital Sign, or Lab Result.",
+        },
+        value: { type: "number" },
+        unitId: { type: "string" },
+        unitAbbreviation: {
+          type: "string",
+          description: "Short unit such as mg, IU, serving, count, or 1-5.",
+        },
+        unitName: { type: "string" },
+        startTime: { type: "string", description: "ISO date/time." },
+        duration: { type: "number", description: "Duration in seconds." },
+        note: { type: "string" },
+        sourceName: { type: "string" },
+        combinationOperation: { type: "string", enum: ["SUM", "MEAN"] },
+        fillingType: {
+          type: "string",
+          enum: ["ZERO", "NONE", "INTERPOLATION", "VALUE"],
+        },
+        latitude: { type: "number" },
+        longitude: { type: "number" },
+      },
+      required: ["value"],
+    },
+  },
+  {
+    name: "upsertTrackingReminder",
+    description:
+      "Create or update a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        variableName: { type: "string" },
+        categoryName: { type: "string" },
+        defaultValue: {
+          type: "number",
+          description:
+            "Pre-filled value, such as a normal medication dose or symptom rating.",
+        },
+        unitId: { type: "string" },
+        unitAbbreviation: { type: "string" },
+        unitName: { type: "string" },
+        reminderStartTime: {
+          type: "string",
+          description: "Local wall-clock time in HH:mm, for example 08:00.",
+        },
+        reminderEndTime: {
+          type: "string",
+          description: "Optional local end/quiet time in HH:mm.",
+        },
+        reminderFrequency: {
+          type: "number",
+          description: "Seconds between reminders. Default 86400.",
+        },
+        active: { type: "boolean" },
+        instructions: { type: "string" },
+        startTrackingDate: { type: "string", description: "ISO date/time." },
+        stopTrackingDate: { type: "string", description: "ISO date/time." },
+        combinationOperation: { type: "string", enum: ["SUM", "MEAN"] },
+        fillingType: {
+          type: "string",
+          enum: ["ZERO", "NONE", "INTERPOLATION", "VALUE"],
+        },
+      },
+      required: ["reminderStartTime"],
+    },
+  },
+  {
+    name: "listTrackingReminders",
+    description:
+      "List the authenticated user's personal tracking reminders, active by default.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        includeInactive: { type: "boolean" },
+      },
+    },
+  },
+  {
+    name: "listDueTrackingReminders",
+    description:
+      "List medication, food, symptom, and other tracking reminders due for a date. Use this to answer what the user is supposed to take or track today.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        includeCompleted: {
+          type: "boolean",
+          description:
+            "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
+        },
+      },
+    },
+  },
+  {
+    name: "respondToTrackingReminder",
+    description:
+      "Answer a due tracking reminder. Use TRACKED when the user took/logged it, SKIPPED when they skipped it, or SNOOZED when they want to delay it. Pass value to record a different dosage or rating.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        trackingReminderId: { type: "string" },
+        status: {
+          type: "string",
+          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+        },
+        value: {
+          type: "number",
+          description:
+            "Override dose/rating/value. If omitted for TRACKED, the reminder defaultValue is used.",
+        },
+        unitId: { type: "string" },
+        unitAbbreviation: { type: "string" },
+        unitName: { type: "string" },
+        trackedAt: { type: "string", description: "ISO date/time." },
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults from trackedAt.",
+        },
+        note: { type: "string" },
+        sourceName: { type: "string" },
+      },
+      required: ["trackingReminderId", "status"],
+    },
+  },
+] as const;
+
 const TASK_TOOL_DEFINITIONS = [
   ...EARTH_DATA_TOOL_DEFINITIONS,
+  ...TRACKING_TOOL_DEFINITIONS,
   {
     name: "getNextTask",
     description:
@@ -7981,6 +8875,59 @@ export function createMcpServer(
                   limit: typeof a.limit === "number" ? a.limit : undefined,
                 }),
             );
+          }
+
+          case RECORD_MEASUREMENT_TOOL_NAME: {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records your personal tracking measurements.",
+              );
+            return ok({
+              result: await recordTrackingMeasurement(a, userId),
+            });
+          }
+
+          case "upsertTrackingReminder": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool manages your personal tracking reminders.",
+              );
+            return ok({
+              result: await upsertTrackingReminderForUser(a, userId),
+            });
+          }
+
+          case "listTrackingReminders": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool lists your personal tracking reminders.",
+              );
+            return ok({
+              reminders: await listTrackingRemindersForUser(a, userId),
+            });
+          }
+
+          case "listDueTrackingReminders": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool lists your due personal tracking reminders.",
+              );
+            return ok(await listDueTrackingRemindersForUser(a, userId));
+          }
+
+          case "respondToTrackingReminder": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records your response to a tracking reminder.",
+              );
+            return ok({
+              result: await respondToTrackingReminderForUser(a, userId),
+            });
           }
 
           case "reportContent": {

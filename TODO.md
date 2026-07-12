@@ -16,8 +16,16 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 - [ ] Execution-planner audit follow-through (`feature/mcp-execution-plan-audit`):
       TaskDifficulty removal, executionMode capability wiring, MCP output fixes.
       (Other agent; do not duplicate.)
-- [ ] Documentation consolidation: `docs/PRD.md`, `docs/FEATURES.md`, ROADMAP
-      rewrite, doc dedup, `docs/archive/`. (This pass.)
+- [x] Documentation consolidation: `docs/PRD.md`, `docs/FEATURES.md`, ROADMAP
+      rewrite, doc dedup, `docs/archive/` (committed b9834f37).
+- [x] dFDA tracking MCP tools (companion-loop stage 1 capture): recordMeasurement,
+      upsertTrackingReminder, listTrackingReminders, listDueTrackingReminders,
+      respondToTrackingReminder — applied from stash, response-shape bug fixed,
+      7 behavioral tests added (OPT-HEALTH-02/06 groundwork). Deploy unlocks
+      measurement writes + re-parenting (updateTask parentTaskId ships too).
+- [ ] Post-deploy: execute the 77-task re-parenting plan (clusters approved in
+      session 2026-07-11), re-parent personal:health:* tasks from `dfda` to the
+      health container, create Optimize Optimitron dev branch + edges.
 
 ## Next Up
 
