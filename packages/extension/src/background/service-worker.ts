@@ -1,10 +1,15 @@
 /**
  * Background service worker — handles alarms, notifications, and scheduling.
- * Uses chrome.alarms API for treatment reminders and symptom check-ins.
+ * Uses chrome.alarms API for treatment reminders and symptom check-ins, plus
+ * a 5-minute agenda poll against optimitron.com (badge + due notifications).
  */
 
 import type { Treatment, Settings } from "../types/schema.js";
 import { DEFAULT_SETTINGS, PRESET_SYMPTOMS } from "../types/schema.js";
+import { isOverdue, snoozeUntil } from "../lib/agenda-logic.js";
+import { isQuietHours as isAgendaQuietHours } from "../lib/quiet-hours.js";
+import { completeTask, getAgenda, snoozeTask } from "../lib/api.js";
+import { getValidAccessToken } from "../lib/auth.js";
 
 // ---------- Storage helpers (duplicated to avoid import issues in SW) ----------
 
@@ -41,6 +46,95 @@ function isQuietHours(settings: Settings): boolean {
 
 const TREATMENT_REMINDER_ALARM = "treatment-reminder";
 const SYMPTOM_CHECKIN_ALARM = "symptom-checkin";
+const AGENDA_POLL_ALARM = "agenda-poll";
+const AGENDA_POLL_MINUTES = 5;
+
+// ---------- Agenda poll: badge + due notifications ----------
+
+const AGENDA_NOTIFICATION_PREFIX = "agenda:";
+const NOTIFIED_KEY = "agendaNotified";
+
+/** taskId → dueAt ISO we already notified for (re-notify only if dueAt moves). */
+async function getNotifiedMap(): Promise<Record<string, string>> {
+  return getStorageValue<Record<string, string>>(NOTIFIED_KEY, {});
+}
+
+async function setBadge(overdueCount: number): Promise<void> {
+  await chrome.action.setBadgeText({
+    text: overdueCount > 0 ? String(overdueCount) : "",
+  });
+  if (overdueCount > 0) {
+    await chrome.action.setBadgeBackgroundColor({ color: "#ef4444" });
+  }
+}
+
+async function pollAgenda(): Promise<void> {
+  const token = await getValidAccessToken();
+  if (!token) {
+    await setBadge(0);
+    return;
+  }
+
+  let agenda;
+  try {
+    agenda = await getAgenda();
+  } catch {
+    // Network/server failure — keep the last badge, try again next alarm.
+    return;
+  }
+
+  const now = new Date();
+  const due = agenda.tasks.filter(
+    (task) => task.dueAt !== null && isOverdue(task, now),
+  );
+  await setBadge(due.length);
+
+  // Quiet hours 23:30–08:30 America/Chicago: badge only, no notifications.
+  if (isAgendaQuietHours(now)) return;
+
+  const notified = await getNotifiedMap();
+  const nextNotified: Record<string, string> = {};
+  for (const task of due) {
+    if (task.dueAt) nextNotified[task.id] = task.dueAt;
+  }
+
+  for (const task of due) {
+    if (!task.dueAt) continue;
+    if (notified[task.id] === task.dueAt) continue; // already notified for this dueAt
+    await chrome.notifications.create(
+      `${AGENDA_NOTIFICATION_PREFIX}${task.id}`,
+      {
+        type: "basic",
+        iconUrl: "icons/icon128.png",
+        title: "📅 Due now",
+        message: task.title,
+        priority: 1,
+        requireInteraction: true,
+        buttons: [{ title: "✅ Done" }, { title: "⏰ Snooze 1h" }],
+      },
+    );
+  }
+
+  await chrome.storage.local.set({ [NOTIFIED_KEY]: nextNotified });
+}
+
+async function handleAgendaNotificationButton(
+  notificationId: string,
+  buttonIndex: number,
+): Promise<void> {
+  const taskId = notificationId.slice(AGENDA_NOTIFICATION_PREFIX.length);
+  try {
+    if (buttonIndex === 0) {
+      await completeTask(taskId);
+    } else {
+      await snoozeTask(taskId, snoozeUntil("1h", new Date()).toISOString());
+    }
+    chrome.notifications.clear(notificationId);
+    await pollAgenda();
+  } catch {
+    // Token expired or network down — leave the notification up.
+  }
+}
 
 // ---------- Setup alarms ----------
 
@@ -61,6 +155,13 @@ async function setupAlarms(): Promise<void> {
   await chrome.alarms.create(SYMPTOM_CHECKIN_ALARM, {
     periodInMinutes: settings.reminderFrequencyMinutes,
     delayInMinutes: settings.reminderFrequencyMinutes,
+  });
+
+  // Agenda poll — every 5 minutes while the browser runs
+  await chrome.alarms.clear(AGENDA_POLL_ALARM);
+  await chrome.alarms.create(AGENDA_POLL_ALARM, {
+    periodInMinutes: AGENDA_POLL_MINUTES,
+    delayInMinutes: 1,
   });
 }
 
@@ -108,6 +209,8 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     void showTreatmentReminder();
   } else if (alarm.name === SYMPTOM_CHECKIN_ALARM) {
     void showSymptomCheckin();
+  } else if (alarm.name === AGENDA_POLL_ALARM) {
+    void pollAgenda();
   } else if (alarm.name.startsWith("snooze-")) {
     // Snooze timer fired — show individual treatment reminder
     const treatmentId = alarm.name.replace("snooze-", "");
@@ -131,8 +234,13 @@ async function showSnoozedReminder(treatmentId: string): Promise<void> {
   });
 }
 
-// Open popup when notification button clicked
-chrome.notifications.onButtonClicked.addListener((_notifId, _btnIdx) => {
+// Notification buttons: agenda notifications act on the task; health
+// notifications just open the popup.
+chrome.notifications.onButtonClicked.addListener((notifId, btnIdx) => {
+  if (notifId.startsWith(AGENDA_NOTIFICATION_PREFIX)) {
+    void handleAgendaNotificationButton(notifId, btnIdx);
+    return;
+  }
   // Open the extension popup (can't programmatically open popup, so open options as fallback)
   void chrome.action.openPopup().catch(() => {
     // openPopup not available in all contexts — user can just click the icon
@@ -172,3 +280,4 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 // Setup on startup
 void setupAlarms();
+void pollAgenda();

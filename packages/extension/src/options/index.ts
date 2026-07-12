@@ -15,6 +15,8 @@ import {
   getAllData,
 } from "../lib/storage.js";
 import { exportJSON, exportCSV, downloadFile } from "../lib/export.js";
+import { getApiBase, setApiBase } from "../lib/config.js";
+import { isSignedIn, signOut } from "../lib/auth.js";
 import { generateId } from "../lib/utils.js";
 import { generateAnalysisPairs, calculateDataSpanDays } from "../lib/analysis.js";
 import type { Treatment, Settings } from "../types/schema.js";
@@ -238,8 +240,6 @@ function setupExport(): void {
 // Analysis
 // ============================================================
 
-const WEB_APP_URL = "http://localhost:3001"; // TODO: change to production URL
-
 let analysisResults: AnalysisRelationshipResult[] = [];
 let sortField: string = "pis";
 let sortAscending = false;
@@ -253,6 +253,7 @@ async function getOrCreateContributorId(): Promise<string> {
 }
 
 function setupAnalysis(): void {
+  void setVerifyPersonhoodLink();
   const runBtn = document.getElementById("run-analysis-btn");
   runBtn?.addEventListener("click", () => void runAnalysis());
 
@@ -283,11 +284,12 @@ function setupAnalysis(): void {
     });
   }
 
-  // Set verify personhood link
+}
+
+async function setVerifyPersonhoodLink(): Promise<void> {
   const verifyLink = document.getElementById("verify-personhood-link") as HTMLAnchorElement | null;
-  if (verifyLink) {
-    verifyLink.href = `${WEB_APP_URL}/personhood`;
-  }
+  if (!verifyLink) return;
+  verifyLink.href = `${await getApiBase()}/personhood`;
 }
 
 async function runAnalysis(): Promise<void> {
@@ -417,7 +419,7 @@ async function shareResults(): Promise<void> {
     const data = await getAllData();
     const dataSpanDays = calculateDataSpanDays(data);
 
-    const response = await fetch(`${WEB_APP_URL}/api/health-analysis/submit`, {
+    const response = await fetch(`${await getApiBase()}/api/health-analysis/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -456,6 +458,37 @@ async function shareResults(): Promise<void> {
 }
 
 // ============================================================
+// Optimitron connection (API base + account)
+// ============================================================
+
+async function setupConnection(): Promise<void> {
+  const input = document.getElementById("api-base") as HTMLInputElement | null;
+  const saveBtn = document.getElementById("save-api-base-btn");
+  const signOutBtn = document.getElementById("sign-out-btn");
+  const status = document.getElementById("connection-status");
+
+  if (input) input.value = await getApiBase();
+
+  const setStatus = (text: string): void => {
+    if (status) status.textContent = text;
+  };
+
+  saveBtn?.addEventListener("click", async () => {
+    if (!input) return;
+    await setApiBase(input.value);
+    input.value = await getApiBase();
+    setStatus("Saved.");
+  });
+
+  signOutBtn?.addEventListener("click", async () => {
+    await signOut();
+    setStatus("Signed out.");
+  });
+
+  setStatus((await isSignedIn()) ? "Signed in." : "Not signed in.");
+}
+
+// ============================================================
 // Init
 // ============================================================
 
@@ -470,6 +503,7 @@ async function init(): Promise<void> {
     renderPresetSymptoms(),
     renderCustomSymptoms(),
     renderReminderSettings(),
+    setupConnection(),
   ]);
 }
 

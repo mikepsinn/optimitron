@@ -9,9 +9,23 @@
 <body>
   <div id="app">
     <header>
-      <h1>⚙️ Digital Twin Safe Settings</h1>
-      <p class="subtitle">All data stays on your device. Nothing is sent anywhere.</p>
+      <h1>⚙️ Optimitron Settings</h1>
+      <p class="subtitle">Health logs stay on your device. Your schedule syncs with your Optimitron account.</p>
     </header>
+
+    <section class="settings-section">
+      <h2>🔌 Optimitron Connection</h2>
+      <div class="form-group">
+        <label for="api-base">API server</label>
+        <input type="url" id="api-base" placeholder="https://optimitron.com" style="width:100%">
+        <p class="section-desc">Default: https://optimitron.com — for local dev use http://localhost:3001</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="save-api-base-btn" class="btn btn-primary">Save</button>
+        <button id="sign-out-btn" class="btn btn-secondary">Sign out</button>
+        <span id="connection-status" class="progress-text"></span>
+      </div>
+    </section>
 
     <section class="settings-section">
       <h2>💊 Treatments &amp; Supplements</h2>
