@@ -12,7 +12,7 @@ Optimal Policy Generator — ranks and scores policies using causal evidence, we
 
 ## Tests
 
-213 unit tests.
+Unit-tested — run `pnpm --filter @optimitron/opg test` for the live count.
 
 ```bash
 pnpm test --filter @optimitron/opg

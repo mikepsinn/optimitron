@@ -112,7 +112,6 @@ export const TASK_TRIGGER_TOOL_DEFINITIONS = [
               impactStatementTemplate: { type: "string" },
               roleTitleTemplate: { type: "string" },
               category: { type: "string" },
-              difficulty: { type: "string" },
               estimatedEffortHours: { type: "number" },
               dueDays: { type: "number" },
               availableInDays: { type: "number" },

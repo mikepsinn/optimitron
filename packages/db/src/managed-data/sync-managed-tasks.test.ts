@@ -5,7 +5,6 @@ import {
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
   TaskDeadlinePolicy,
-  TaskDifficulty,
   TaskKind,
   TaskStatus,
 } from "../generated/prisma/client.js";
@@ -50,7 +49,6 @@ type FakeTask = {
   executionMode: string;
   category: typeof TaskCategory[keyof typeof TaskCategory];
   kind: typeof TaskKind[keyof typeof TaskKind];
-  difficulty: typeof TaskDifficulty[keyof typeof TaskDifficulty];
   estimatedEffortHours: number | null;
   skillTags: string[];
   preferredSkillTags: string[];
@@ -151,7 +149,6 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     executionMode: "HUMAN_OR_AGENT",
     category: TaskCategory.OTHER,
     kind: TaskKind.TASK,
-    difficulty: TaskDifficulty.INTERMEDIATE,
     estimatedEffortHours: null,
     skillTags: [],
     preferredSkillTags: [],
@@ -234,7 +231,6 @@ const fakeTaskScalarFields = new Set<keyof FakeTask>([
   "deadlinePolicy",
   "deletedAt",
   "description",
-  "difficulty",
   "dueAt",
   "estimatedEffortHours",
   "estimatedHoursPerWeekMax",
@@ -567,7 +563,6 @@ const activeRecord: ManagedTaskRecord = {
   description: "Managed root description.",
   category: TaskCategory.GOVERNANCE,
   claimPolicy: TaskClaimPolicy.OPEN_MANY,
-  difficulty: TaskDifficulty.INTERMEDIATE,
   ownerOrganizationId: "org-managed-owner",
   compensationKind: "PAID",
   compensationCadence: "ANNUAL",

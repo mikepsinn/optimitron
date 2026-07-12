@@ -80,7 +80,6 @@ const NULL_NEW_CENSUS_FIELDS = {
   heightCm: null,
   internetAccessType: null,
   interestTags: [],
-  maxTaskDifficulty: null,
   personId: null,
   skillTags: [],
 };

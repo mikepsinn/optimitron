@@ -1,4 +1,4 @@
-import { TaskKind, TaskStatus } from "@optimitron/db";
+import { TaskStatus } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
   buildExecutionPlan,
@@ -16,14 +16,17 @@ function task(
     activeChildTaskCount: 0,
     availableAt: null,
     blockers: [],
+    capabilityReasons: [],
+    capabilityStatus: "eligible",
     deadlinePolicy: "NONE",
     deadlineStatus: "none",
     dueAt: null,
+    executionEligible: true,
     executorType: "Self",
+    effortEstimateSource: "task-estimate",
     hasMarginalEstimate: true,
     hours: 1,
     id,
-    kind: TaskKind.TASK,
     parentTaskId: "mike-project",
     priority: 100,
     realEv: 100,
@@ -47,16 +50,25 @@ function plan(tasks: ExecutionPlanningTask[], overrides = {}) {
 }
 
 describe("buildExecutionPlan", () => {
-  it("never places projects, parents, milestones, or unrooted rows in the checklist", () => {
+  it("never places parents, milestones, or unrooted rows in the checklist", () => {
     const result = plan([
-      task("project", { kind: TaskKind.PROJECT, priority: 10_000 }),
-      task("parent", { activeChildTaskCount: 1, priority: 9_000 }),
+      task("parent", { activeChildTaskCount: 1, priority: 10_000 }),
       task("milestone", { completionMilestone: true, priority: 8_000 }),
       task("unrooted", { rooted: false, priority: 7_000 }),
       task("atomic", { priority: 1 }),
     ]);
 
     expect(result.checklist.map((item) => item.id)).toEqual(["atomic"]);
+  });
+
+  it("never places application listings in execution outputs", () => {
+    const result = plan([
+      task("listing", { executionEligible: false, priority: 10_000 }),
+      task("atomic", { priority: 1 }),
+    ]);
+
+    expect(result.checklist.map((item) => item.id)).toEqual(["atomic"]);
+    expect(result.itemsNeedingEstimates).toEqual([]);
   });
 
   it("simulates completion to unlock the next feasible dependency", () => {
@@ -189,5 +201,34 @@ describe("buildExecutionPlan", () => {
       id: "unknown-value",
     });
     expect(result.plannerVersion).toBe(EXECUTION_PLANNER_VERSION);
+  });
+
+  it("reports unknown and mismatched capabilities outside execution queues", () => {
+    const result = plan([
+      task("unknown", {
+        capabilityReasons: ["No skills are recorded for the target executor."],
+        capabilityStatus: "unknown",
+      }),
+      task("mismatch", {
+        capabilityReasons: ["Missing required skills: bookkeeping."],
+        capabilityStatus: "ineligible",
+      }),
+    ]);
+
+    expect(result.checklist).toEqual([]);
+    expect(result.itemsNeedingCapabilityConfirmation).toEqual([
+      {
+        id: "unknown",
+        reasons: ["No skills are recorded for the target executor."],
+        title: "unknown",
+      },
+    ]);
+    expect(result.capabilityExcludedWork).toEqual([
+      {
+        id: "mismatch",
+        reasons: ["Missing required skills: bookkeeping."],
+        title: "mismatch",
+      },
+    ]);
   });
 });

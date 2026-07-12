@@ -489,7 +489,6 @@ async function runTriggerRoundtripScenario() {
         titleTemplate: "Smoke roundtrip task: {{run.label}}",
         descriptionTemplate: "Run id {{run.id}}.",
         category: "OTHER",
-        difficulty: "TRIVIAL",
         creatorResolver: "actor",
         parentResolver: "none",
       },

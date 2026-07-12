@@ -1,4 +1,4 @@
-import { TaskCategory, TaskDifficulty, type Prisma } from "@optimitron/db";
+import { TaskCategory, type Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { createTask } from "@/lib/tasks.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
@@ -184,7 +184,6 @@ export async function createFeedbackTask(input: CreateFeedbackTaskInput) {
       submitterEmail,
       submitterUserId,
     }),
-    difficulty: TaskDifficulty.BEGINNER,
     estimatedEffortHours: 0.25,
     interestTags: ["feedback", "site improvement", "war and disease"],
     isPublic: false,

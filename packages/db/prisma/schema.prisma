@@ -444,15 +444,6 @@ enum WishReason {
   TASK_COMPLETED
 }
 
-/// Canonical task difficulty used for matching and onboarding
-enum TaskDifficulty {
-  TRIVIAL
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  EXPERT
-}
-
 /// High-level task taxonomy for filtering and recommendations
 enum TaskCategory {
   ADVOCACY
@@ -1800,9 +1791,6 @@ model User {
   /// When availability and matching preferences were last updated
   availabilityUpdatedAt DateTime?
 
-  /// Highest difficulty the user is comfortable claiming
-  maxTaskDifficulty TaskDifficulty?
-
   /// When the census/location snapshot was last updated
   censusUpdatedAt DateTime?
 
@@ -1912,7 +1900,6 @@ model User {
   @@index([censusUpdatedAt])
   @@index([availableHoursPerWeek])
   @@index([availableFrom])
-  @@index([maxTaskDifficulty])
   @@index([createdAt])
   @@index([deletedAt])
   @@index([unsubscribedScopes], type: Gin)
@@ -5649,9 +5636,6 @@ model Task {
   /// Expected commitment shape for matching and applications.
   engagementKind TaskEngagementKind @default(ONE_OFF)
 
-  /// Estimated difficulty for matching
-  difficulty TaskDifficulty @default(INTERMEDIATE)
-
   /// Estimated effort in hours for the person expected to complete the task
   estimatedEffortHours Float?
 
@@ -5853,7 +5837,6 @@ model Task {
   @@index([category])
   @@index([kind, status])
   @@index([engagementKind])
-  @@index([difficulty])
   @@index([availableAt])
   @@index([dueAt])
   @@index([deadlinePolicy, dueAt])
@@ -7972,8 +7955,7 @@ model TaskSpawnSpec {
   roleTitleTemplate String?
 
   // -- Static defaults --
-  category             TaskCategory   @default(OTHER)
-  difficulty           TaskDifficulty @default(TRIVIAL)
+  category             TaskCategory @default(OTHER)
   estimatedEffortHours Float?
 
   /// Days from now until dueAt. NULL = no due date.

@@ -48,13 +48,6 @@ const AssigneeProfileSchema = z.object({
   contactChannels: z.array(ContactChannelSchema).optional(),
 });
 
-const DifficultySchema = z.object({
-  whatItMeans: z.string().optional(),
-  label: z.string().optional(),
-  timeRequiredSeconds: z.number().optional(),
-  skillsRequired: z.string().optional(),
-});
-
 const UnlockBeforeAfterSchema = z.object({
   label: z.string(),
   before: z.string(),
@@ -133,7 +126,6 @@ const CurrentActivitySchema = z.object({
 export const TaskContextJsonSchema = z
   .object({
     assigneeProfile: AssigneeProfileSchema.optional(),
-    difficulty: DifficultySchema.optional(),
     costOfDelayNote: z.string().optional(),
     unlocks: z.array(UnlockSchema).optional(),
     performanceReview: PerformanceReviewSchema.optional(),
@@ -147,7 +139,6 @@ export const TaskContextJsonSchema = z
 
 export type TaskContext = z.infer<typeof TaskContextJsonSchema>;
 export type TaskContextAssigneeProfile = z.infer<typeof AssigneeProfileSchema>;
-export type TaskContextDifficulty = z.infer<typeof DifficultySchema>;
 export type TaskContextUnlock = z.infer<typeof UnlockSchema>;
 export type TaskContextPerformanceReview = z.infer<typeof PerformanceReviewSchema>;
 export type TaskContextReminder = z.infer<typeof ReminderSchema>;

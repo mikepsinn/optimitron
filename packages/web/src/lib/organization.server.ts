@@ -9,7 +9,6 @@ import {
   OrgType,
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskStatus,
   type Prisma,
 } from "@optimitron/db";
@@ -78,7 +77,6 @@ export async function ensureOrganizationTreatyActivationTask(
       contextJson,
       createdByUserId: creatorUserId,
       description,
-      difficulty: TaskDifficulty.BEGINNER,
       estimatedEffortHours: 1,
       interestTags: ["1% Treaty", "organization", "member survey"],
       isPublic: true,

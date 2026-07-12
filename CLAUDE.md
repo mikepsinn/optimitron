@@ -6,19 +6,11 @@
 
 Optimitron is an **Earth Optimization Machine** for coordinating 8 billion humans to maximize median healthy life-years and real median after-tax income. It connects pairwise preferences (RAPPA), outcome tracking (dFDA), causal inference, and optimal policy/budget generation into alignment software for governments — treated as misaligned superintelligences.
 
-The current public campaign is the **International Campaign to End War and Disease** at `warondisease.org`. Until the 1% Treaty passes, that campaign is the product. `optimitron.com` is the operating system and proof engine behind it.
+Programs are EV-ranked under the `optimize-earth` task root. The **1% Treaty** campaign (International Campaign to End War and Disease, `warondisease.org`) is the current highest-EV program — a ranked bet, not an axiom; if the analysis finds a better bet for the two medians, the queue reorders and the product follows. In parallel, the **Daily Companion Loop** (`docs/PRD.md` §3) runs as a dogfood track. `optimitron.com` is the operating system and proof engine behind both.
 
 **Earth Optimization Services (EOS)** is the company form of the machine. Every human on Earth is a president of EOS. It buys controlling shares of the corporations that control governments and redirects their ~$4.4B/yr lobbying (`US_TOTAL_LOBBYING_ANNUAL`; defense-only subset is `DEFENSE_LOBBYING_ANNUAL`, ~$198M — don't conflate) toward maximizing median healthy life expectancy and median real after-tax income.
 
-Default priority order during campaign mode:
-
-1. Increase treaty vote conversion.
-2. Increase referral propagation: each voter gets two more humans to vote.
-3. Get organizations to endorse, embed, and recruit their own people.
-4. Register plaintiffs and connect the case framing to voting.
-5. Remind country leaders and treaty signers.
-6. Improve discoverability and trust in people, organization, task, and evidence pages.
-7. Preserve Optimitron's broader governance OS as the proof layer, not as a competing homepage.
+Campaign priority order: the canonical numbered list lives in `AGENTS.md` §Mission Focus — do not duplicate it here. Product spec: `docs/PRD.md`. Feature status: `docs/FEATURES.md`. Sequencing: `docs/ROADMAP.md`.
 
 ## Wishonia: Voice of the Site
 
@@ -114,7 +106,7 @@ optimitron/packages/
 ├── chat-ui/     # Conversational health tracking components
 ├── storage/     # Storacha snapshots
 ├── hypercerts/  # Hypercert builders + AT Protocol publishing
-├── examples/    # Worked examples
+├── wishonia-widget/ # Embeddable Wishonia chat widget
 └── extension/   # Chrome extension (Digital Twin Safe)
 ```
 
@@ -131,12 +123,9 @@ optimitron/packages/
 ## Treasury: Three Independent Mechanisms
 
 Don't mix them. Don't put one on another's page. Don't conflate their economics.
-
-| Mechanism                               | Page        | Purpose                                                 | Contracts                                            | Flow                                                                                                                                                                                                                                                                                                                                                                           |
-| --------------------------------------- | ----------- | ------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Earth Optimization Prize** (Phase 1)  | `/prize`    | Fund referendum proving demand for the 1% Treaty        | `VoteToken`, `VoterPrizeTreasury` (Base Sepolia)     | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. **Success:** VOTE holders claim prize share. **Failure** (15yr): depositors claim principal + ~4.2× yield (`$100 × 1.10^15 = $418`). Dominant assurance — break-even P = 0.0067%, zero downside. |
-| **Incentive Alignment Bonds** (Phase 2) | IAB pages   | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool`         | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors (272% annual) / 10% aligned-politician super PACs. **If treaty fails, bonds lose everything.** Not an assurance contract.                                                                                                                 |
-| **$WISH Token / UBI**                   | `/treasury` | Replace welfare + IRS + inflationary monetary policy    | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax (no income tax/filing), UBI at poverty line, algorithmic 0% inflation, tx taxes + productivity gains allocated by 8B people via Wishocracy RAPPA.                                                                                                                                                                                                             |
+Prize (`/prize`, dominant assurance contract), IABs (bond pages, all-or-nothing
+lobbying bonds), $WISH/UBI (`/treasury`, monetary reform). Full canonical table:
+`docs/PRD.md` §9.2; deployment status: `docs/FEATURES.md` OPT-TREAS-01..03.
 
 Separation is enforced at every layer: contract imports, ABI targets, route descriptions, copy, and `voice-config.ts` (which explicitly gags Wishonia from mentioning IABs on prize pages). Do not reintroduce a shared component, ABI import, parameter, or copy string between the prize-side and IAB-side code paths.
 

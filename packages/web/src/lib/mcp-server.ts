@@ -13,9 +13,12 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import {
+  CombinationOperation,
   ContentReportStatus,
   AgentExecutorStatus,
+  FillingType,
   McpToolCallStatus,
+  NotificationStatus,
   OrgStatus,
   OrgType,
   ReferendumKind,
@@ -31,7 +34,6 @@ import {
   TaskClaimPolicy,
   TaskCompensationCadence,
   TaskCompensationKind,
-  TaskDifficulty,
   TaskEdgeType,
   TaskEngagementKind,
   TaskImpactFrameKey,
@@ -43,6 +45,11 @@ import {
   VotePosition,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
+import {
+  assessTaskCapability,
+  type TaskCapabilityAssessment,
+  type TaskExecutorCapabilities,
+} from "@optimitron/agent/task-capability";
 
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
@@ -74,6 +81,8 @@ import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
+import { isExecutableWorkItem } from "./tasks/execution-eligibility";
+import { ensureSubjectForUser } from "./subject.server";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -96,6 +105,7 @@ import {
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_CONSENT_SCOPES, ALL_SCOPES, McpScope };
 
 const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
+const RECORD_MEASUREMENT_TOOL_NAME = "recordMeasurement" as const;
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
@@ -184,6 +194,11 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   getQueueAudit: [McpScope.TASKS_PERSONAL],
+  [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
+  upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
+  listTrackingReminders: [McpScope.TASKS_PERSONAL],
+  listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
+  respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
   searchRepo: [McpScope.GITHUB],
@@ -298,8 +313,13 @@ async function loadSessionPersonId(userId: string): Promise<string | null> {
 // ---------------------------------------------------------------------------
 
 function ok(data: unknown) {
+  const text = stringifyJsonSafe(data, 2);
+  const json = JSON.parse(text) as unknown;
   return {
-    content: [{ type: "text" as const, text: stringifyJsonSafe(data, 2) }],
+    content: [{ type: "text" as const, text }],
+    ...(json != null && typeof json === "object" && !Array.isArray(json)
+      ? { structuredContent: json as Record<string, unknown> }
+      : {}),
   };
 }
 
@@ -581,11 +601,6 @@ function authRequired(toolName: string, reason: string) {
   };
 }
 
-function toTaskDifficulty(value: unknown) {
-  if (typeof value !== "string") return null;
-  return TaskDifficulty[value as keyof typeof TaskDifficulty] ?? null;
-}
-
 function enumValue<T extends Record<string, string>>(
   values: T,
   value: unknown,
@@ -597,10 +612,13 @@ function enumValue<T extends Record<string, string>>(
 
 function buildAgentCapabilities(args: Record<string, unknown>) {
   return {
+    accessTags: (args.accessTags as string[]) ?? [],
     availableHoursPerWeek: (args.availableHoursPerWeek as number) ?? null,
+    credentialTags: (args.credentialTags as string[]) ?? [],
     interestTags: (args.interestTags as string[]) ?? [],
-    maxTaskDifficulty: toTaskDifficulty(args.maxDifficulty)?.toString() ?? null,
+    languageTags: (args.languageTags as string[]) ?? [],
     skillTags: (args.skillTags as string[]) ?? [],
+    toolTags: (args.toolTags as string[]) ?? [],
   };
 }
 
@@ -874,7 +892,6 @@ const USER_MATCHING_SELECT = {
   languageTags: true,
   latitude: true,
   longitude: true,
-  maxTaskDifficulty: true,
   personId: true,
   postalCode: true,
   preferredPaymentRails: true,
@@ -934,14 +951,6 @@ function buildUserMatchingProfileData(input: Record<string, unknown>) {
     data.availableHoursPerWeek = availableHoursPerWeek;
   }
 
-  const maxTaskDifficulty = parseNullableEnumInput(
-    TaskDifficulty,
-    input,
-    "maxTaskDifficulty",
-  );
-  if (maxTaskDifficulty !== undefined)
-    data.maxTaskDifficulty = maxTaskDifficulty;
-
   if ("availableFrom" in input) {
     const raw = input.availableFrom;
     data.availableFrom = raw == null || raw === "" ? null : parseTaskDate(raw);
@@ -969,7 +978,6 @@ function summarizeMatchingUser(user: UserMatchingRecord) {
     id: user.id,
     interestTags: user.interestTags,
     languageTags: user.languageTags,
-    maxTaskDifficulty: user.maxTaskDifficulty,
     person: user.person,
     personId: user.personId,
     postalCode: user.postalCode,
@@ -992,7 +1000,6 @@ function toRankableUser(user: UserMatchingRecord) {
     credentialTags: user.credentialTags,
     interestTags: user.interestTags,
     languageTags: user.languageTags,
-    maxTaskDifficulty: user.maxTaskDifficulty,
     preferredPaymentRails: user.preferredPaymentRails,
     regionCode: user.regionCode,
     skillTags: user.skillTags,
@@ -1199,7 +1206,6 @@ type SummarizableTask = {
   description?: string | null;
   status?: string | null;
   category?: string | null;
-  difficulty?: string | null;
   taskKey?: string | null;
   dueAt?: Date | string | null;
   isPublic?: boolean | null;
@@ -1275,7 +1281,6 @@ function buildStoredProposalContext(input: {
         (input.candidate.acceptanceCriteria as string[]) ?? [],
       impact: (input.candidate.impact as Record<string, unknown>) ?? null,
       isPublic: (input.candidate.isPublic as boolean) ?? false,
-      kind: (input.candidate.kind as string) ?? TaskKind.TASK,
       parentTaskRef: (input.candidate.parentTaskRef as string) ?? null,
       proposalRef:
         input.decision?.proposalRef ??
@@ -1335,13 +1340,6 @@ function inferProposalCategory(candidate: Record<string, unknown>) {
   return TaskCategory.OTHER;
 }
 
-function inferProposalDifficulty(candidate: Record<string, unknown>) {
-  const effort = (candidate.estimatedEffortHours as number) ?? 0;
-  if (effort >= 6) return TaskDifficulty.ADVANCED;
-  if (effort >= 2) return TaskDifficulty.INTERMEDIATE;
-  return TaskDifficulty.BEGINNER;
-}
-
 function getProposalGovernanceImpact(candidate: Record<string, unknown>) {
   const impact = asObject(candidate.impact) ?? {};
   const hours = parseFiniteNumber(candidate.estimatedEffortHours);
@@ -1396,7 +1394,6 @@ function taskProposalCandidateFromRecord(task: {
   estimatedEffortHours?: number | null;
   id: string;
   isPublic: boolean;
-  kind?: TaskKind | string | null;
   roleTitle?: string | null;
   status: string;
   taskKey?: string | null;
@@ -1429,7 +1426,7 @@ function taskProposalCandidateFromRecord(task: {
     estimatedEffortHours:
       (proposal?.estimatedEffortHours as number) ??
       task.estimatedEffortHours ??
-      (task.kind === TaskKind.PROJECT ? 0.1 : null),
+      null,
     id: task.id,
     impact: getProposalGovernanceImpact({
       estimatedEffortHours:
@@ -1546,6 +1543,8 @@ async function attachProposalImpactEstimate(input: {
 function normalizeProposalCandidate(
   candidate: Record<string, unknown>,
 ): Record<string, unknown> {
+  const candidateFields = { ...candidate };
+  delete candidateFields.kind;
   const source = asObject(candidate.source);
   const sourceSystem =
     typeof source?.sourceSystem === "string"
@@ -1600,12 +1599,10 @@ function normalizeProposalCandidate(
       : candidate.taskKey;
 
   return {
-    ...candidate,
+    ...candidateFields,
     blockerRefs,
     dependencies,
     isPublic: candidate.isPublic === true,
-    kind:
-      candidate.kind === TaskKind.PROJECT ? TaskKind.PROJECT : TaskKind.TASK,
     source: normalizedSource,
     sourceUrls,
     taskKey: generatedTaskKey,
@@ -1626,11 +1623,11 @@ async function ensureExecutionPlanningBranch(input: {
       deletedAt: null,
       id: OPTIMIZE_EARTH_ROOT_TASK_ID,
     },
-    select: { id: true, kind: true },
+    select: { id: true },
   });
-  if (!root || root.kind !== TaskKind.PROJECT) {
+  if (!root) {
     throw new Error(
-      "Optimize Earth PROJECT root is missing. Run managed task sync before proposing planning tasks.",
+      "Optimize Earth root is missing. Run managed task sync before proposing planning tasks.",
     );
   }
 
@@ -1640,7 +1637,6 @@ async function ensureExecutionPlanningBranch(input: {
     createdByUserId: true,
     id: true,
     isPublic: true,
-    kind: true,
     ownerOrganizationId: true,
     parentTaskId: true,
     taskKey: true,
@@ -1651,7 +1647,6 @@ async function ensureExecutionPlanningBranch(input: {
     createdByUserId: string;
     id: string;
     isPublic: boolean;
-    kind: TaskKind;
     ownerOrganizationId: string | null;
     parentTaskId: string | null;
     taskKey: string | null;
@@ -1665,14 +1660,9 @@ async function ensureExecutionPlanningBranch(input: {
           branch.assigneeOrganizationId == null &&
           branch.ownerOrganizationId == null &&
           branch.createdByUserId === input.userId;
-    if (
-      branch.kind !== TaskKind.PROJECT ||
-      branch.parentTaskId !== root.id ||
-      branch.isPublic ||
-      !matchesTarget
-    ) {
+    if (branch.parentTaskId !== root.id || branch.isPublic || !matchesTarget) {
       throw new Error(
-        `Reserved execution planning branch ${taskKey} is not the expected private, rooted PROJECT for this target.`,
+        `Reserved execution planning branch ${taskKey} is not private, rooted, and assigned to the expected target.`,
       );
     }
     return { id: branch.id, taskKey: branch.taskKey };
@@ -1693,18 +1683,16 @@ async function ensureExecutionPlanningBranch(input: {
         createdByUserId: input.userId,
         description:
           targetKind === "organization"
-            ? "Projects owned or assigned to this organization."
-            : "Projects and tasks for this person.",
-        difficulty: TaskDifficulty.INTERMEDIATE,
+            ? "Tasks owned or assigned to this organization."
+            : "Tasks for this person.",
         isPublic: false,
-        kind: TaskKind.PROJECT,
         parentTaskId: root.id,
         status: TaskStatus.ACTIVE,
         taskKey,
         title:
           targetKind === "organization"
-            ? "Organization projects"
-            : "Personal projects",
+            ? "Organization tasks"
+            : "Personal tasks",
       },
       select: { id: true, taskKey: true },
     });
@@ -1866,7 +1854,6 @@ function summarizeTask(task: SummarizableTask) {
     description: task.description,
     status: task.status,
     category: task.category,
-    difficulty: task.difficulty,
     taskKey: task.taskKey,
     dueAt: task.dueAt,
     isPublic:
@@ -1943,12 +1930,16 @@ type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   blockersCount: number;
   blockersResolved: number;
   blockersResolvedPercent: number;
+  capabilityReasons: string[];
+  capabilityStatus: TaskCapabilityAssessment["status"];
   evMath: string;
   availableAt: string | null;
   cashCost: number;
   deadlinePolicy: DeadlinePolicy;
   deadlineRationale: string | null;
   deadlineStatus: DeadlineStatus;
+  executionEligible: boolean;
+  effortEstimateSource: EffortEstimateSource;
   hours: number | null;
   latestStartAt: string | null;
   createdByUserId?: string | null;
@@ -1981,6 +1972,29 @@ type PersonalQueueTaskRecord = Record<string, unknown> &
     isPublic?: boolean | null;
     blockerStatuses?: TaskStatus[] | null;
     activeChildTaskCount?: number | null;
+    candidateMatches?: Array<{
+      agentExecutorId?: string | null;
+      candidateOrganizationId?: string | null;
+      candidatePersonId?: string | null;
+      candidateUserId?: string | null;
+      estimatedDurationSeconds?: number | null;
+      status?: string | null;
+      updatedAt?: Date | string | null;
+    }> | null;
+    claims?: Array<{
+      actualEffortSeconds?: number | null;
+      userId?: string | null;
+    }> | null;
+    executionAttempts?: Array<{
+      actualDurationSeconds?: number | null;
+      agentExecutorId?: string | null;
+      completedAt?: Date | string | null;
+      executorOrganizationId?: string | null;
+      executorPersonId?: string | null;
+      executorUserId?: string | null;
+      status?: string | null;
+      updatedAt?: Date | string | null;
+    }> | null;
     incomingEdges?: Array<{
       fromTask?: {
         id?: string | null;
@@ -1988,6 +2002,265 @@ type PersonalQueueTaskRecord = Record<string, unknown> &
       } | null;
     }> | null;
   };
+
+type EffortEstimateSource =
+  | "target-actual-history"
+  | "candidate-estimate"
+  | "task-estimate"
+  | "impact-frame"
+  | "missing";
+
+interface PlanningExecutorProfile extends TaskExecutorCapabilities {
+  agentExecutorId?: string | null;
+  organizationId?: string | null;
+  personId?: string | null;
+  userId?: string | null;
+}
+
+function matchesPlanningExecutor(
+  record: {
+    agentExecutorId?: string | null;
+    candidateOrganizationId?: string | null;
+    candidatePersonId?: string | null;
+    candidateUserId?: string | null;
+    executorOrganizationId?: string | null;
+    executorPersonId?: string | null;
+    executorUserId?: string | null;
+  },
+  profile: PlanningExecutorProfile,
+) {
+  return Boolean(
+    (profile.agentExecutorId &&
+      profile.agentExecutorId === record.agentExecutorId) ||
+      (profile.organizationId &&
+        profile.organizationId ===
+          (record.executorOrganizationId ?? record.candidateOrganizationId)) ||
+      (profile.personId &&
+        profile.personId ===
+          (record.executorPersonId ?? record.candidatePersonId)) ||
+      (profile.userId &&
+        profile.userId === (record.executorUserId ?? record.candidateUserId)),
+  );
+}
+
+function assessQueueTaskCapability(
+  task: PersonalQueueTaskRecord,
+  profiles: PlanningExecutorProfile[],
+): TaskCapabilityAssessment {
+  const executorKind =
+    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
+  const matchingProfiles = profiles.filter(
+    (profile) => profile.executorKind === executorKind,
+  );
+  const assessments = (matchingProfiles.length > 0
+    ? matchingProfiles
+    : [{ executorKind } as PlanningExecutorProfile]
+  ).map((executor) => assessTaskCapability({ executor, task }));
+  const eligible = assessments.find(
+    (assessment) => assessment.status === "eligible",
+  );
+  if (eligible) return eligible;
+
+  const status = assessments.some(
+    (assessment) => assessment.status === "unknown",
+  )
+    ? "unknown"
+    : "ineligible";
+  return {
+    missingProfileFields: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.missingProfileFields)),
+    ),
+    missingRequiredTags: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.missingRequiredTags)),
+    ),
+    reasons: Array.from(
+      new Set(assessments.flatMap((assessment) => assessment.reasons)),
+    ),
+    status,
+  };
+}
+
+function resolveQueueEffortEstimate(
+  task: PersonalQueueTaskRecord,
+  selectedImpactFrame: Record<string, unknown> | null,
+  profiles: PlanningExecutorProfile[],
+) {
+  // Effort evidence must come from executors of the task's own kind —
+  // otherwise an agent's completed attempt becomes the schedule estimate for
+  // a human task (and vice versa). Mirrors assessQueueTaskCapability.
+  const taskExecutorKind =
+    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
+  const kindProfiles = profiles.filter(
+    (profile) => profile.executorKind === taskExecutorKind,
+  );
+  const actualSeconds = (task.executionAttempts ?? []).find(
+    (attempt) =>
+      attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
+      typeof attempt.actualDurationSeconds === "number" &&
+      attempt.actualDurationSeconds > 0 &&
+      kindProfiles.some((profile) => matchesPlanningExecutor(attempt, profile)),
+  )?.actualDurationSeconds;
+  const claimedActualSeconds = (task.claims ?? []).find(
+    (claim) =>
+      typeof claim.actualEffortSeconds === "number" &&
+      claim.actualEffortSeconds > 0 &&
+      kindProfiles.some(
+        (profile) => profile.userId && profile.userId === claim.userId,
+      ),
+  )?.actualEffortSeconds;
+  const targetActualSeconds = actualSeconds ?? claimedActualSeconds;
+  if (targetActualSeconds != null) {
+    return {
+      hours: targetActualSeconds / 3600,
+      source: "target-actual-history" as const,
+    };
+  }
+
+  const candidateSeconds = (task.candidateMatches ?? []).find(
+    (candidate) =>
+      candidate.status !== TaskCandidateMatchStatus.DECLINED &&
+      candidate.status !== TaskCandidateMatchStatus.REJECTED &&
+      typeof candidate.estimatedDurationSeconds === "number" &&
+      candidate.estimatedDurationSeconds > 0 &&
+      kindProfiles.some((profile) =>
+        matchesPlanningExecutor(candidate, profile),
+      ),
+  )?.estimatedDurationSeconds;
+  if (candidateSeconds != null) {
+    return {
+      hours: candidateSeconds / 3600,
+      source: "candidate-estimate" as const,
+    };
+  }
+
+  if (
+    typeof task.estimatedEffortHours === "number" &&
+    Number.isFinite(task.estimatedEffortHours) &&
+    task.estimatedEffortHours > 0
+  ) {
+    return {
+      hours: task.estimatedEffortHours,
+      source: "task-estimate" as const,
+    };
+  }
+
+  const impactHours = firstFiniteNumber([
+    selectedImpactFrame?.estimatedEffortHoursBase,
+  ]);
+  if (impactHours != null && impactHours > 0) {
+    return { hours: impactHours, source: "impact-frame" as const };
+  }
+
+  return { hours: null, source: "missing" as const };
+}
+
+async function attachPlanningEffortEvidence(
+  tasks: PersonalQueueTaskRecord[],
+  profiles: PlanningExecutorProfile[],
+) {
+  const taskIds = tasks.map((task) => task.id);
+  if (taskIds.length === 0) return tasks;
+
+  const executionTargets = profiles.flatMap(
+    (profile): Prisma.TaskExecutionAttemptWhereInput[] => [
+      ...(profile.agentExecutorId
+        ? [{ agentExecutorId: profile.agentExecutorId }]
+        : []),
+      ...(profile.organizationId
+        ? [{ executorOrganizationId: profile.organizationId }]
+        : []),
+      ...(profile.personId ? [{ executorPersonId: profile.personId }] : []),
+      ...(profile.userId ? [{ executorUserId: profile.userId }] : []),
+    ],
+  );
+  const candidateTargets = profiles.flatMap(
+    (profile): Prisma.TaskCandidateMatchWhereInput[] => [
+      ...(profile.agentExecutorId
+        ? [{ agentExecutorId: profile.agentExecutorId }]
+        : []),
+      ...(profile.organizationId
+        ? [{ candidateOrganizationId: profile.organizationId }]
+        : []),
+      ...(profile.personId ? [{ candidatePersonId: profile.personId }] : []),
+      ...(profile.userId ? [{ candidateUserId: profile.userId }] : []),
+    ],
+  );
+  if (executionTargets.length === 0 && candidateTargets.length === 0) {
+    return tasks;
+  }
+
+  const prisma = await getPrisma();
+  const [executionAttempts, candidateMatches] = await Promise.all([
+    executionTargets.length > 0
+      ? prisma.taskExecutionAttempt.findMany({
+          where: {
+            actualDurationSeconds: { gt: 0 },
+            deletedAt: null,
+            OR: executionTargets,
+            status: TaskExecutionAttemptStatus.COMPLETED,
+            taskId: { in: taskIds },
+          },
+          orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
+          select: {
+            actualDurationSeconds: true,
+            agentExecutorId: true,
+            completedAt: true,
+            executorOrganizationId: true,
+            executorPersonId: true,
+            executorUserId: true,
+            status: true,
+            taskId: true,
+            updatedAt: true,
+          },
+        })
+      : Promise.resolve([]),
+    candidateTargets.length > 0
+      ? prisma.taskCandidateMatch.findMany({
+          where: {
+            deletedAt: null,
+            estimatedDurationSeconds: { gt: 0 },
+            OR: candidateTargets,
+            status: {
+              in: [
+                TaskCandidateMatchStatus.SUGGESTED,
+                TaskCandidateMatchStatus.CONTACTED,
+              ],
+            },
+            taskId: { in: taskIds },
+          },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            agentExecutorId: true,
+            candidateOrganizationId: true,
+            candidatePersonId: true,
+            candidateUserId: true,
+            estimatedDurationSeconds: true,
+            status: true,
+            taskId: true,
+            updatedAt: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
+  const attemptsByTask = new Map<string, typeof executionAttempts>();
+  for (const attempt of executionAttempts) {
+    const entries = attemptsByTask.get(attempt.taskId) ?? [];
+    entries.push(attempt);
+    attemptsByTask.set(attempt.taskId, entries);
+  }
+  const matchesByTask = new Map<string, typeof candidateMatches>();
+  for (const match of candidateMatches) {
+    const entries = matchesByTask.get(match.taskId) ?? [];
+    entries.push(match);
+    matchesByTask.set(match.taskId, entries);
+  }
+
+  return tasks.map((task) => ({
+    ...task,
+    candidateMatches: matchesByTask.get(task.id) ?? [],
+    executionAttempts: attemptsByTask.get(task.id) ?? [],
+  }));
+}
 
 function parsePositiveNumber(value: unknown, fallback: number) {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
@@ -2233,7 +2506,7 @@ function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
 
 function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
   return (
-    (task.kind ?? TaskKind.TASK) === TaskKind.TASK &&
+    isExecutableWorkItem(task) &&
     (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
     !isCompletionMilestone(task)
   );
@@ -2248,7 +2521,6 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         task.activeChildTaskCount ?? task.childTasks?.length ?? 0,
       hasMarginalEstimate: hasMarginalEstimate(task),
       id: task.id,
-      kind: (task.kind as TaskKind | null | undefined) ?? TaskKind.TASK,
       parentTaskId: task.parentTaskId ?? null,
     });
   }
@@ -2268,13 +2540,11 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         where: { deletedAt: null, id: { in: pendingParentIds } },
         select: {
           id: true,
-          kind: true,
           parentTaskId: true,
         },
       })) as
         | Array<{
             id: string;
-            kind?: TaskKind | null;
             parentTaskId?: string | null;
           }>
         | undefined) ?? [];
@@ -2283,7 +2553,6 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
         activeChildTaskCount: 0,
         hasMarginalEstimate: false,
         id: parent.id,
-        kind: parent.kind ?? TaskKind.TASK,
         parentTaskId: parent.parentTaskId ?? null,
       });
     }
@@ -2303,6 +2572,97 @@ async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
     graphTasks,
     rootedTaskIds: getRootedTaskIds(graphTasks),
   };
+}
+
+async function validateExplicitTaskParent(input: {
+  isAdminWriter: boolean;
+  parentTaskId: string;
+  prisma: Awaited<ReturnType<typeof getPrisma>>;
+  sessionPersonId: string | null;
+  taskId?: string;
+  userId: string;
+}) {
+  if (input.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID) {
+    throw new Error(
+      "Optimize Earth is reserved for managed top-level branches. Choose the closest existing objective or task instead.",
+    );
+  }
+
+  const parent = await input.prisma.task.findFirst({
+    where: { deletedAt: null, id: input.parentTaskId },
+    select: {
+      assigneeOrganizationId: true,
+      assigneePersonId: true,
+      createdByUserId: true,
+      id: true,
+      isPublic: true,
+      kind: true,
+      ownerOrganizationId: true,
+      parentTaskId: true,
+    },
+  });
+  if (!parent) {
+    throw new Error(
+      `Parent task ${JSON.stringify(input.parentTaskId)} was not found. Search the existing task tree and choose a valid parent.`,
+    );
+  }
+  if (!isExecutableWorkItem(parent)) {
+    throw new Error(
+      "A job, volunteer, or bounty listing cannot be a parent task.",
+    );
+  }
+
+  let canUseParent =
+    input.isAdminWriter ||
+    parent.isPublic ||
+    parent.createdByUserId === input.userId ||
+    (input.sessionPersonId != null &&
+      parent.assigneePersonId === input.sessionPersonId);
+  if (!canUseParent) {
+    const organizationIds = Array.from(
+      new Set(
+        [parent.ownerOrganizationId, parent.assigneeOrganizationId].filter(
+          (id): id is string => Boolean(id),
+        ),
+      ),
+    );
+    if (organizationIds.length > 0) {
+      const { canManageOrganization } = await import("./organization.server");
+      for (const organizationId of organizationIds) {
+        if (await canManageOrganization(input.userId, organizationId)) {
+          canUseParent = true;
+          break;
+        }
+      }
+    }
+  }
+  if (!canUseParent) {
+    throw new Error("The selected parent task is not accessible to this user.");
+  }
+  if (input.taskId === parent.id) {
+    throw new Error("A task cannot be its own parent.");
+  }
+
+  if (parent.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID) {
+    return parent;
+  }
+
+  const graph = await loadExecutionGraphContext([
+    parent as unknown as PersonalQueueTaskRecord,
+  ]);
+  if (
+    input.taskId &&
+    graph.graphTasks.some((task) => task.id === input.taskId)
+  ) {
+    throw new Error("Reparenting would create a task hierarchy cycle.");
+  }
+  if (!graph.rootedTaskIds.has(parent.id)) {
+    throw new Error(
+      "The selected parent is not rooted under Optimize Earth. Choose a rooted parent task.",
+    );
+  }
+
+  return parent;
 }
 
 async function loadReachableDependencyEdges(
@@ -2598,6 +2958,7 @@ function buildPersonalQueueRows(
   },
   buybackRate?: number,
   options?: {
+    executorProfiles?: PlanningExecutorProfile[];
     requireExecutable?: boolean;
     requireUnblocked?: boolean;
     limit?: number;
@@ -2639,9 +3000,19 @@ function buildPersonalQueueRows(
     .map((task) => {
       const sourceTask = task as PersonalQueueTaskRecord;
       const marginalImpactFrame = getMarginalImpactFrame(sourceTask);
+      const capability = assessQueueTaskCapability(
+        sourceTask,
+        options?.executorProfiles ?? [],
+      );
+      const effort = resolveQueueEffortEstimate(
+        sourceTask,
+        marginalImpactFrame,
+        options?.executorProfiles ?? [],
+      );
       const score = ranking.computeTaskPriority(
         {
           ...sourceTask,
+          estimatedEffortHours: effort.hours,
           selectedImpactFrame: marginalImpactFrame,
         } as TaskPriorityInput,
         {
@@ -2651,11 +3022,7 @@ function buildPersonalQueueRows(
       const summary = summarizeTask(sourceTask);
       const context = getTaskContext(sourceTask);
       const selectedImpactFrame = marginalImpactFrame;
-      const hours = firstFiniteNumber([
-        sourceTask.estimatedEffortHours,
-        selectedImpactFrame?.estimatedEffortHoursBase,
-        context.hours,
-      ]);
+      const hours = effort.hours;
       const value = firstFiniteNumber([context.value, context.grossValue]);
       const pSuccess = firstFiniteNumber([
         context.p_success,
@@ -2686,6 +3053,8 @@ function buildPersonalQueueRows(
           score.blockersCount > 0
             ? (score.unblockedBlockers / score.blockersCount) * 100
             : 100,
+        capabilityReasons: capability.reasons,
+        capabilityStatus: capability.status,
         availableAt: deadline.availableAt,
         buybackRate: score.buybackRate,
         cashCost,
@@ -2694,6 +3063,8 @@ function buildPersonalQueueRows(
         deadlineStatus: deadline.deadlineStatus,
         dueAt: deadline.dueAt,
         evMath: score.evMath,
+        executionEligible: isExecutableWorkItem(sourceTask),
+        effortEstimateSource: effort.source,
         hours,
         latestStartAt: deadline.latestStartAt,
         executorType: getTaskExecutorType(sourceTask),
@@ -2719,6 +3090,7 @@ function buildPersonalQueueRows(
       (row) =>
         !options?.requireExecutable ||
         (isAtomicExecutionRecord(row) &&
+          row.capabilityStatus === "eligible" &&
           row.rooted &&
           row.hasMarginalEstimate &&
           row.valid &&
@@ -2742,17 +3114,20 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
     activeChildTaskCount: row.activeChildTaskCount,
     availableAt: row.availableAt ?? null,
     blockers: row.blockers,
+    capabilityReasons: row.capabilityReasons,
+    capabilityStatus: row.capabilityStatus,
     completionMilestone: isCompletionMilestone(
       row as unknown as PersonalQueueTaskRecord,
     ),
     deadlinePolicy: row.deadlinePolicy,
     deadlineStatus: row.deadlineStatus,
     dueAt: row.dueAt ?? null,
+    executionEligible: row.executionEligible,
     executorType: row.executorType,
+    effortEstimateSource: row.effortEstimateSource,
     hasMarginalEstimate: row.hasMarginalEstimate,
     hours: row.hours,
     id: row.id,
-    kind: row.kind ?? TaskKind.TASK,
     parentTaskId: row.parentTaskId ?? null,
     priority: row.priority,
     realEv: row.realEv,
@@ -2763,10 +3138,101 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
   };
 }
 
+function summarizeCapabilityWork(rows: PersonalQueueRow[]) {
+  const summarize = (row: PersonalQueueRow) => ({
+    id: row.id,
+    reasons: row.capabilityReasons,
+    title: row.title,
+  });
+  const atomicRows = rows.filter(
+    (row) => row.executionEligible && row.activeChildTaskCount === 0 && row.rooted,
+  );
+  return {
+    capabilityExcludedWork: atomicRows
+      .filter((row) => row.capabilityStatus === "ineligible")
+      .map(summarize),
+    itemsNeedingCapabilityConfirmation: atomicRows
+      .filter((row) => row.capabilityStatus === "unknown")
+      .map(summarize),
+  };
+}
+
 type AuthorizedPlanningTarget =
   | { kind: "self"; personId: string | null; userId: string }
   | { kind: "person"; personId: string }
   | { kind: "organization"; organizationId: string };
+
+async function loadHumanPlanningProfiles(
+  target: AuthorizedPlanningTarget,
+): Promise<PlanningExecutorProfile[]> {
+  if (target.kind === "organization") {
+    return [
+      {
+        executorKind: "human",
+        organizationId: target.organizationId,
+      },
+    ];
+  }
+
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    where:
+      target.kind === "self"
+        ? { id: target.userId }
+        : { personId: target.personId },
+    select: {
+      accessTags: true,
+      credentialTags: true,
+      id: true,
+      languageTags: true,
+      personId: true,
+      skillTags: true,
+      toolTags: true,
+    },
+  });
+  if (!user) {
+    return [
+      {
+        executorKind: "human",
+        personId: target.personId,
+      },
+    ];
+  }
+
+  return [
+    {
+      accessTags: user.accessTags,
+      credentialTags: user.credentialTags,
+      executorKind: "human",
+      languageTags: user.languageTags,
+      personId: user.personId,
+      skillTags: user.skillTags,
+      toolTags: user.toolTags,
+      userId: user.id,
+    },
+  ];
+}
+
+async function loadAgentPlanningProfiles(): Promise<PlanningExecutorProfile[]> {
+  const prisma = await getPrisma();
+  const agents = await prisma.agentExecutor.findMany({
+    where: { deletedAt: null, status: AgentExecutorStatus.ACTIVE },
+    orderBy: { agentKey: "asc" },
+    select: {
+      accessTags: true,
+      capabilityTags: true,
+      id: true,
+      toolTags: true,
+    },
+  });
+  return agents.map((agent) => ({
+    accessTags: agent.accessTags,
+    agentExecutorId: agent.id,
+    executorKind: "agent" as const,
+    skillTags: agent.capabilityTags,
+    toolTags: agent.toolTags,
+  }));
+}
 
 async function resolveAuthorizedPlanningTarget(input: {
   args: Record<string, unknown>;
@@ -2901,6 +3367,746 @@ function summarizeReferendum(referendum: ReferendumToolRecord) {
     updatedAt: referendum.updatedAt.toISOString(),
     voteCount: referendum._count.votes,
   };
+}
+
+type AppPrismaClient = Awaited<ReturnType<typeof getPrisma>>;
+type TrackingDbClient = Prisma.TransactionClient | AppPrismaClient;
+
+const TRACKING_UNIT_SELECT = {
+  abbreviatedName: true,
+  id: true,
+  name: true,
+  ucumCode: true,
+} satisfies Prisma.UnitSelect;
+
+const TRACKING_VARIABLE_SELECT = {
+  defaultUnit: { select: TRACKING_UNIT_SELECT },
+  defaultUnitId: true,
+  id: true,
+  name: true,
+  variableCategory: { select: { id: true, name: true } },
+  variableCategoryId: true,
+} satisfies Prisma.GlobalVariableSelect;
+
+const TRACKING_REMINDER_INCLUDE = {
+  globalVariable: { select: TRACKING_VARIABLE_SELECT },
+  nOf1Variable: {
+    select: {
+      defaultUnitId: true,
+      fillingType: true,
+      id: true,
+    },
+  },
+} satisfies Prisma.TrackingReminderInclude;
+
+interface TrackingVariableArgs {
+  categoryName?: string | null;
+  combinationOperation?: CombinationOperation;
+  fillingType?: FillingType;
+  globalVariableId?: string | null;
+  unitAbbreviation?: string | null;
+  unitId?: string | null;
+  unitName?: string | null;
+  variableName?: string | null;
+}
+
+interface RecordTrackingMeasurementArgs extends TrackingVariableArgs {
+  duration?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  note?: string | null;
+  sourceName?: string | null;
+  startTime?: Date | null;
+  userId: string;
+  value: number;
+}
+
+function parseOptionalDateValue(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  if (value instanceof Date) {
+    if (!Number.isNaN(value.getTime())) return value;
+    throw new Error(`${fieldName} must be a valid date.`);
+  }
+  if (typeof value !== "string") {
+    throw new Error(`${fieldName} must be an ISO date string.`);
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`${fieldName} must be a valid date.`);
+  }
+  return date;
+}
+
+function parseRequiredFiniteNumber(value: unknown, fieldName: string) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`${fieldName} must be a finite number.`);
+  }
+  return value;
+}
+
+function parseOptionalNonnegativeInteger(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  if (
+    typeof value !== "number" ||
+    !Number.isInteger(value) ||
+    !Number.isFinite(value) ||
+    value < 0
+  ) {
+    throw new Error(`${fieldName} must be a non-negative integer.`);
+  }
+  return value;
+}
+
+function parsePositiveInteger(
+  value: unknown,
+  fieldName: string,
+  fallback: number,
+) {
+  if (value == null || value === "") return fallback;
+  if (
+    typeof value !== "number" ||
+    !Number.isInteger(value) ||
+    !Number.isFinite(value) ||
+    value <= 0
+  ) {
+    throw new Error(`${fieldName} must be a positive integer.`);
+  }
+  return value;
+}
+
+function parseTimeOfDay(value: unknown, fieldName: string) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  const normalized = value.trim();
+  if (!/^\d{1,2}:\d{2}$/.test(normalized)) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  const [rawHours, rawMinutes] = normalized.split(":");
+  const hours = Number(rawHours);
+  const minutes = Number(rawMinutes);
+  if (
+    !Number.isInteger(hours) ||
+    !Number.isInteger(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    throw new Error(`${fieldName} must be HH:mm local time.`);
+  }
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+function parseOptionalTimeOfDay(value: unknown, fieldName: string) {
+  if (value == null || value === "") return null;
+  return parseTimeOfDay(value, fieldName);
+}
+
+function parseDateKey(value: unknown, fallback = dateKeyFromDate(new Date())) {
+  if (value == null || value === "") return fallback;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+    throw new Error("dateKey must use YYYY-MM-DD.");
+  }
+  return value.trim();
+}
+
+function dateKeyFromDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function dayRange(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return {
+    end: new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0)),
+    start: new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)),
+  };
+}
+
+function reminderNotifyAt(dateKey: string, reminderStartTime: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const [hours, minutes] = reminderStartTime.split(":").map(Number);
+  return new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
+}
+
+function cleanNumber(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function parseTrackingVariableArgs(
+  input: Record<string, unknown>,
+): TrackingVariableArgs {
+  return {
+    categoryName: optionalString(input.categoryName),
+    combinationOperation: parseEnumInput(
+      CombinationOperation,
+      input.combinationOperation,
+      "combinationOperation",
+    ),
+    fillingType: parseEnumInput(FillingType, input.fillingType, "fillingType"),
+    globalVariableId: optionalString(input.globalVariableId),
+    unitAbbreviation: optionalString(input.unitAbbreviation),
+    unitId: optionalString(input.unitId),
+    unitName: optionalString(input.unitName),
+    variableName: optionalString(input.variableName),
+  };
+}
+
+async function resolveTrackingUnit(
+  db: TrackingDbClient,
+  input: Pick<TrackingVariableArgs, "unitAbbreviation" | "unitId" | "unitName">,
+) {
+  if (input.unitId) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { deletedAt: null, id: input.unitId },
+    });
+  }
+  if (input.unitAbbreviation) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { abbreviatedName: input.unitAbbreviation, deletedAt: null },
+    });
+  }
+  if (input.unitName) {
+    return db.unit.findFirst({
+      select: TRACKING_UNIT_SELECT,
+      where: { deletedAt: null, name: input.unitName },
+    });
+  }
+  return null;
+}
+
+async function resolveTrackingVariable(
+  db: TrackingDbClient,
+  input: TrackingVariableArgs,
+  defaultCategoryName: string,
+) {
+  if (input.globalVariableId) {
+    const variable = await db.globalVariable.findFirst({
+      select: TRACKING_VARIABLE_SELECT,
+      where: { deletedAt: null, id: input.globalVariableId },
+    });
+    if (!variable) {
+      throw new Error(`GlobalVariable not found: ${input.globalVariableId}`);
+    }
+    const requestedUnit = await resolveTrackingUnit(db, input);
+    if (
+      (input.unitAbbreviation || input.unitId || input.unitName) &&
+      !requestedUnit
+    ) {
+      throw new Error("Requested unit was not found.");
+    }
+    return { unit: requestedUnit ?? variable.defaultUnit, variable };
+  }
+
+  if (!input.variableName) {
+    throw new Error("Provide globalVariableId or variableName.");
+  }
+
+  const existing = await db.globalVariable.findFirst({
+    select: TRACKING_VARIABLE_SELECT,
+    where: { deletedAt: null, name: input.variableName },
+  });
+  if (existing) {
+    const requestedUnit = await resolveTrackingUnit(db, input);
+    if (
+      (input.unitAbbreviation || input.unitId || input.unitName) &&
+      !requestedUnit
+    ) {
+      throw new Error("Requested unit was not found.");
+    }
+    return { unit: requestedUnit ?? existing.defaultUnit, variable: existing };
+  }
+
+  const categoryName = input.categoryName ?? defaultCategoryName;
+  const category = await db.variableCategory.findFirst({
+    select: {
+      combinationOperation: true,
+      defaultUnit: { select: TRACKING_UNIT_SELECT },
+      defaultUnitId: true,
+      durationOfAction: true,
+      id: true,
+      name: true,
+      onsetDelay: true,
+      outcome: true,
+      predictorOnly: true,
+    },
+    where: { deletedAt: null, name: categoryName },
+  });
+  if (!category?.defaultUnitId) {
+    throw new Error(
+      `Variable category is not seeded or has no default unit: ${categoryName}`,
+    );
+  }
+
+  const requestedUnit = await resolveTrackingUnit(db, input);
+  if (
+    (input.unitAbbreviation || input.unitId || input.unitName) &&
+    !requestedUnit
+  ) {
+    throw new Error("Requested unit was not found.");
+  }
+  const unit = requestedUnit ?? category.defaultUnit;
+  if (!unit) {
+    throw new Error(`No unit available for variable category: ${categoryName}`);
+  }
+
+  const variable = await db.globalVariable.upsert({
+    create: {
+      combinationOperation:
+        input.combinationOperation ?? category.combinationOperation,
+      defaultUnitId: unit.id,
+      durationOfAction: category.durationOfAction,
+      fillingType: input.fillingType ?? FillingType.NONE,
+      name: input.variableName,
+      onsetDelay: category.onsetDelay,
+      outcome: category.outcome,
+      predictorOnly: category.predictorOnly,
+      variableCategoryId: category.id,
+    },
+    select: TRACKING_VARIABLE_SELECT,
+    update: {
+      deletedAt: null,
+    },
+    where: { name: input.variableName },
+  });
+
+  return { unit, variable };
+}
+
+async function trackingUserSubject(
+  tx: Prisma.TransactionClient,
+  userId: string,
+) {
+  const user = await tx.user.findUniqueOrThrow({
+    select: { email: true, id: true, personId: true },
+    where: { id: userId },
+  });
+  return ensureSubjectForUser(tx, user);
+}
+
+async function ensureTrackingNOf1Variable(
+  db: TrackingDbClient,
+  input: {
+    defaultUnitId: string;
+    fillingType?: FillingType;
+    globalVariableId: string;
+    subjectId: string;
+  },
+) {
+  return db.nOf1Variable.upsert({
+    create: {
+      defaultUnitId: input.defaultUnitId,
+      fillingType: input.fillingType ?? FillingType.NONE,
+      globalVariableId: input.globalVariableId,
+      subjectId: input.subjectId,
+    },
+    update: {
+      defaultUnitId: input.defaultUnitId,
+      ...(input.fillingType ? { fillingType: input.fillingType } : {}),
+    },
+    where: {
+      subjectId_globalVariableId: {
+        globalVariableId: input.globalVariableId,
+        subjectId: input.subjectId,
+      },
+    },
+  });
+}
+
+async function recordTrackingMeasurementWithTx(
+  tx: Prisma.TransactionClient,
+  input: RecordTrackingMeasurementArgs,
+) {
+  const subject = await trackingUserSubject(tx, input.userId);
+  const { unit, variable } = await resolveTrackingVariable(
+    tx,
+    input,
+    input.categoryName ?? "Symptom",
+  );
+  const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
+    defaultUnitId: unit.id,
+    fillingType: input.fillingType,
+    globalVariableId: variable.id,
+    subjectId: subject.id,
+  });
+  const startTime = input.startTime ?? new Date();
+  const measurement = await tx.measurement.upsert({
+    create: {
+      duration: input.duration,
+      globalVariableId: variable.id,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      nOf1VariableId: nOf1Variable.id,
+      note: input.note,
+      originalUnitId: unit.id,
+      originalValue: input.value,
+      recordedByUserId: input.userId,
+      sourceName: input.sourceName ?? "mcp",
+      startTime,
+      subjectId: subject.id,
+      unitId: unit.id,
+      value: input.value,
+    },
+    update: {
+      duration: input.duration,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      note: input.note,
+      originalUnitId: unit.id,
+      originalValue: input.value,
+      recordedByUserId: input.userId,
+      sourceName: input.sourceName ?? "mcp",
+      unitId: unit.id,
+      value: input.value,
+    },
+    where: {
+      subjectId_globalVariableId_startTime: {
+        globalVariableId: variable.id,
+        startTime,
+        subjectId: subject.id,
+      },
+    },
+  });
+  return {
+    globalVariable: variable,
+    measurement,
+    nOf1Variable,
+    subjectId: subject.id,
+  };
+}
+
+async function recordTrackingMeasurement(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const value = parseRequiredFiniteNumber(input.value, "value");
+  const prisma = await getPrisma();
+  return prisma.$transaction((tx) =>
+    recordTrackingMeasurementWithTx(tx, {
+      ...parseTrackingVariableArgs(input),
+      duration: parseOptionalNonnegativeInteger(input.duration, "duration"),
+      latitude: parseOptionalFiniteNumberInput(input, "latitude") ?? null,
+      longitude: parseOptionalFiniteNumberInput(input, "longitude") ?? null,
+      note: optionalString(input.note),
+      sourceName: optionalString(input.sourceName),
+      startTime: parseOptionalDateValue(input.startTime, "startTime"),
+      userId,
+      value,
+    }),
+  );
+}
+
+async function upsertTrackingReminderForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const reminderStartTime = parseTimeOfDay(
+    input.reminderStartTime,
+    "reminderStartTime",
+  );
+  const reminderFrequency = parsePositiveInteger(
+    input.reminderFrequency,
+    "reminderFrequency",
+    86_400,
+  );
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const subject = await trackingUserSubject(tx, userId);
+    const variableArgs = parseTrackingVariableArgs(input);
+    const { unit, variable } = await resolveTrackingVariable(
+      tx,
+      variableArgs,
+      variableArgs.categoryName ?? "Treatment",
+    );
+    const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
+      defaultUnitId: unit.id,
+      fillingType: variableArgs.fillingType,
+      globalVariableId: variable.id,
+      subjectId: subject.id,
+    });
+    const reminder = await tx.trackingReminder.upsert({
+      create: {
+        active: typeof input.active === "boolean" ? input.active : true,
+        defaultValue:
+          parseOptionalFiniteNumberInput(input, "defaultValue") ?? null,
+        globalVariableId: variable.id,
+        instructions: optionalString(input.instructions),
+        nOf1VariableId: nOf1Variable.id,
+        reminderEndTime: parseOptionalTimeOfDay(
+          input.reminderEndTime,
+          "reminderEndTime",
+        ),
+        reminderFrequency,
+        reminderStartTime,
+        startTrackingDate: parseOptionalDateValue(
+          input.startTrackingDate,
+          "startTrackingDate",
+        ),
+        stopTrackingDate: parseOptionalDateValue(
+          input.stopTrackingDate,
+          "stopTrackingDate",
+        ),
+        userId,
+      },
+      include: TRACKING_REMINDER_INCLUDE,
+      update: {
+        active: typeof input.active === "boolean" ? input.active : true,
+        defaultValue:
+          parseOptionalFiniteNumberInput(input, "defaultValue") ?? null,
+        deletedAt: null,
+        instructions: optionalString(input.instructions),
+        nOf1VariableId: nOf1Variable.id,
+        reminderEndTime: parseOptionalTimeOfDay(
+          input.reminderEndTime,
+          "reminderEndTime",
+        ),
+        startTrackingDate: parseOptionalDateValue(
+          input.startTrackingDate,
+          "startTrackingDate",
+        ),
+        stopTrackingDate: parseOptionalDateValue(
+          input.stopTrackingDate,
+          "stopTrackingDate",
+        ),
+      },
+      where: {
+        userId_globalVariableId_reminderStartTime_reminderFrequency: {
+          globalVariableId: variable.id,
+          reminderFrequency,
+          reminderStartTime,
+          userId,
+        },
+      },
+    });
+    return { reminder, subjectId: subject.id };
+  });
+}
+
+async function listTrackingRemindersForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const prisma = await getPrisma();
+  return prisma.trackingReminder.findMany({
+    include: TRACKING_REMINDER_INCLUDE,
+    orderBy: [{ active: "desc" }, { reminderStartTime: "asc" }],
+    where: {
+      deletedAt: null,
+      userId,
+      ...(input.includeInactive === true ? {} : { active: true }),
+    },
+  });
+}
+
+async function listDueTrackingRemindersForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const dateKey = parseDateKey(input.dateKey);
+  const { end, start } = dayRange(dateKey);
+  const prisma = await getPrisma();
+  const reminders = await prisma.trackingReminder.findMany({
+    include: TRACKING_REMINDER_INCLUDE,
+    orderBy: [{ reminderStartTime: "asc" }],
+    where: {
+      active: true,
+      deletedAt: null,
+      userId,
+      AND: [
+        {
+          OR: [
+            { startTrackingDate: null },
+            { startTrackingDate: { lte: end } },
+          ],
+        },
+        {
+          OR: [
+            { stopTrackingDate: null },
+            { stopTrackingDate: { gte: start } },
+          ],
+        },
+      ],
+    },
+  });
+  if (reminders.length === 0) return { dateKey, reminders: [] };
+
+  const notifications = await prisma.trackingReminderNotification.findMany({
+    orderBy: [{ notifyAt: "asc" }],
+    where: {
+      deletedAt: null,
+      notifyAt: { gte: start, lt: end },
+      trackingReminderId: { in: reminders.map((reminder) => reminder.id) },
+      userId,
+    },
+  });
+  const byReminderId = new Map(
+    notifications.map((notification) => [
+      notification.trackingReminderId,
+      notification,
+    ]),
+  );
+  const remindersWithStatus = reminders
+    .map((reminder) => {
+      // null = no notification recorded yet for this dateKey (reminder still pending), not an error.
+      const existingNotification = byReminderId.get(reminder.id);
+      const notification =
+        existingNotification === undefined ? null : existingNotification;
+      return {
+        dateKey,
+        defaultValue: cleanNumber(reminder.defaultValue),
+        globalVariable: reminder.globalVariable,
+        instructions: reminder.instructions,
+        notification,
+        notifyAt:
+          notification?.notifyAt ??
+          reminderNotifyAt(dateKey, reminder.reminderStartTime),
+        reminderEndTime: reminder.reminderEndTime,
+        reminderFrequency: reminder.reminderFrequency,
+        reminderId: reminder.id,
+        reminderStartTime: reminder.reminderStartTime,
+        status: notification?.status ?? NotificationStatus.PENDING,
+      };
+    })
+    .filter((reminder) => {
+      if (input.includeCompleted === true) return true;
+      return (
+        reminder.status === NotificationStatus.PENDING ||
+        reminder.status === NotificationStatus.SENT
+      );
+    });
+  return { dateKey, reminders: remindersWithStatus };
+}
+
+async function findOrCreateTrackingNotification(
+  tx: Prisma.TransactionClient,
+  input: {
+    notifyAt: Date;
+    status: NotificationStatus;
+    trackedValue: number | null;
+    trackingReminderId: string;
+    userId: string;
+  },
+) {
+  const existing = await tx.trackingReminderNotification.findFirst({
+    where: {
+      deletedAt: null,
+      notifyAt: input.notifyAt,
+      trackingReminderId: input.trackingReminderId,
+      userId: input.userId,
+    },
+  });
+  const data = {
+    receivedAt: new Date(),
+    status: input.status,
+    trackedValue: input.trackedValue,
+  };
+  if (existing) {
+    return tx.trackingReminderNotification.update({
+      data,
+      where: { id: existing.id },
+    });
+  }
+  return tx.trackingReminderNotification.create({
+    data: {
+      ...data,
+      notifyAt: input.notifyAt,
+      trackingReminderId: input.trackingReminderId,
+      userId: input.userId,
+    },
+  });
+}
+
+async function respondToTrackingReminderForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const status =
+    parseEnumInput(NotificationStatus, input.status, "status") ??
+    NotificationStatus.TRACKED;
+  if (
+    status !== NotificationStatus.TRACKED &&
+    status !== NotificationStatus.SKIPPED &&
+    status !== NotificationStatus.SNOOZED
+  ) {
+    throw new Error("status must be TRACKED, SKIPPED, or SNOOZED.");
+  }
+  const trackingReminderId = optionalString(input.trackingReminderId);
+  if (!trackingReminderId) throw new Error("trackingReminderId is required.");
+  const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
+  const dateKey = parseDateKey(
+    input.dateKey,
+    dateKeyFromDate(trackedAt ?? new Date()),
+  );
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const reminder = await tx.trackingReminder.findFirst({
+      include: TRACKING_REMINDER_INCLUDE,
+      where: {
+        deletedAt: null,
+        id: trackingReminderId,
+        userId,
+      },
+    });
+    if (!reminder) {
+      throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
+    }
+    const trackedValue =
+      status === NotificationStatus.TRACKED
+        ? (parseOptionalFiniteNumberInput(input, "value") ??
+          cleanNumber(reminder.defaultValue))
+        : null;
+    if (status === NotificationStatus.TRACKED && trackedValue == null) {
+      throw new Error(
+        "Provide value or configure defaultValue before marking this reminder TRACKED.",
+      );
+    }
+    const notifyAt = reminderNotifyAt(dateKey, reminder.reminderStartTime);
+    const notification = await findOrCreateTrackingNotification(tx, {
+      notifyAt,
+      status,
+      trackedValue,
+      trackingReminderId,
+      userId,
+    });
+    let measurement = null;
+    if (status === NotificationStatus.TRACKED) {
+      const value = trackedValue;
+      if (value == null) {
+        throw new Error(
+          "Provide value or configure defaultValue before marking this reminder TRACKED.",
+        );
+      }
+      const tracked = await recordTrackingMeasurementWithTx(tx, {
+        categoryName: reminder.globalVariable.variableCategory.name,
+        duration: null,
+        fillingType: reminder.nOf1Variable.fillingType,
+        globalVariableId: reminder.globalVariableId,
+        latitude: null,
+        longitude: null,
+        note: optionalString(input.note),
+        sourceName: optionalString(input.sourceName) ?? "mcp-reminder",
+        startTime: trackedAt ?? new Date(),
+        unitAbbreviation: optionalString(input.unitAbbreviation),
+        unitId:
+          optionalString(input.unitId) ?? reminder.globalVariable.defaultUnitId,
+        unitName: optionalString(input.unitName),
+        userId,
+        value,
+      });
+      measurement = tracked.measurement;
+    }
+    if (status === NotificationStatus.TRACKED) {
+      await tx.trackingReminder.update({
+        data: { lastTracked: trackedAt ?? new Date() },
+        where: { id: reminder.id },
+      });
+    }
+    return { dateKey, measurement, notification, reminderId: reminder.id };
+  });
 }
 
 function nextActionRecommendation(task: PersonalQueueRow | null) {
@@ -3058,29 +4264,6 @@ const TASK_CONTEXT_JSON_SCHEMA = {
             },
             required: ["kind", "label", "href"],
           },
-        },
-      },
-    },
-    difficulty: {
-      type: "object" as const,
-      description:
-        "Task-level difficulty callout — drives the TaskDifficultyStrip block (TASK / WHAT IT MEANS / DIFFICULTY / TIME / SKILLS).",
-      properties: {
-        whatItMeans: {
-          type: "string",
-          description: "One-line plain-language restatement of the task",
-        },
-        label: {
-          type: "string",
-          description: "Difficulty label, e.g. 'Sign a piece of paper'",
-        },
-        timeRequiredSeconds: {
-          type: "number",
-          description: "Estimated time to complete in seconds",
-        },
-        skillsRequired: {
-          type: "string",
-          description: "Skills needed, e.g. 'Holding a pen'",
         },
       },
     },
@@ -4080,10 +5263,6 @@ const USER_MATCHING_PROFILE_PROPERTIES = {
   unavailableTaskTags: { type: "array", items: { type: "string" } },
   availableHoursPerWeek: { type: ["number", "null"] },
   availableFrom: { type: ["string", "null"], description: "ISO 8601 date." },
-  maxTaskDifficulty: {
-    type: ["string", "null"],
-    enum: [...Object.values(TaskDifficulty), null],
-  },
   countryCode: { type: ["string", "null"] },
   regionCode: { type: ["string", "null"] },
   city: { type: ["string", "null"] },
@@ -4092,8 +5271,152 @@ const USER_MATCHING_PROFILE_PROPERTIES = {
   longitude: { type: ["number", "null"] },
 } as const;
 
+const TRACKING_TOOL_DEFINITIONS = [
+  {
+    name: RECORD_MEASUREMENT_TOOL_NAME,
+    description:
+      "Record a personal dFDA/N-of-1 measurement such as a medication dose, food, symptom, mood, sleep, activity, lab, or vital sign. Use variableName plus category/unit for new variables, or globalVariableId for an existing variable.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        variableName: { type: "string" },
+        categoryName: {
+          type: "string",
+          description:
+            "Variable category such as Treatment, Food, Symptom, Emotion, Sleep, Activity, Vital Sign, or Lab Result.",
+        },
+        value: { type: "number" },
+        unitId: { type: "string" },
+        unitAbbreviation: {
+          type: "string",
+          description: "Short unit such as mg, IU, serving, count, or 1-5.",
+        },
+        unitName: { type: "string" },
+        startTime: { type: "string", description: "ISO date/time." },
+        duration: { type: "number", description: "Duration in seconds." },
+        note: { type: "string" },
+        sourceName: { type: "string" },
+        combinationOperation: { type: "string", enum: ["SUM", "MEAN"] },
+        fillingType: {
+          type: "string",
+          enum: ["ZERO", "NONE", "INTERPOLATION", "VALUE"],
+        },
+        latitude: { type: "number" },
+        longitude: { type: "number" },
+      },
+      required: ["value"],
+    },
+  },
+  {
+    name: "upsertTrackingReminder",
+    description:
+      "Create or update a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        variableName: { type: "string" },
+        categoryName: { type: "string" },
+        defaultValue: {
+          type: "number",
+          description:
+            "Pre-filled value, such as a normal medication dose or symptom rating.",
+        },
+        unitId: { type: "string" },
+        unitAbbreviation: { type: "string" },
+        unitName: { type: "string" },
+        reminderStartTime: {
+          type: "string",
+          description: "Local wall-clock time in HH:mm, for example 08:00.",
+        },
+        reminderEndTime: {
+          type: "string",
+          description: "Optional local end/quiet time in HH:mm.",
+        },
+        reminderFrequency: {
+          type: "number",
+          description: "Seconds between reminders. Default 86400.",
+        },
+        active: { type: "boolean" },
+        instructions: { type: "string" },
+        startTrackingDate: { type: "string", description: "ISO date/time." },
+        stopTrackingDate: { type: "string", description: "ISO date/time." },
+        combinationOperation: { type: "string", enum: ["SUM", "MEAN"] },
+        fillingType: {
+          type: "string",
+          enum: ["ZERO", "NONE", "INTERPOLATION", "VALUE"],
+        },
+      },
+      required: ["reminderStartTime"],
+    },
+  },
+  {
+    name: "listTrackingReminders",
+    description:
+      "List the authenticated user's personal tracking reminders, active by default.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        includeInactive: { type: "boolean" },
+      },
+    },
+  },
+  {
+    name: "listDueTrackingReminders",
+    description:
+      "List medication, food, symptom, and other tracking reminders due for a date. Use this to answer what the user is supposed to take or track today.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        includeCompleted: {
+          type: "boolean",
+          description:
+            "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
+        },
+      },
+    },
+  },
+  {
+    name: "respondToTrackingReminder",
+    description:
+      "Answer a due tracking reminder. Use TRACKED when the user took/logged it, SKIPPED when they skipped it, or SNOOZED when they want to delay it. Pass value to record a different dosage or rating.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        trackingReminderId: { type: "string" },
+        status: {
+          type: "string",
+          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+        },
+        value: {
+          type: "number",
+          description:
+            "Override dose/rating/value. If omitted for TRACKED, the reminder defaultValue is used.",
+        },
+        unitId: { type: "string" },
+        unitAbbreviation: { type: "string" },
+        unitName: { type: "string" },
+        trackedAt: { type: "string", description: "ISO date/time." },
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults from trackedAt.",
+        },
+        note: { type: "string" },
+        sourceName: { type: "string" },
+      },
+      required: ["trackingReminderId", "status"],
+    },
+  },
+] as const;
+
 const TASK_TOOL_DEFINITIONS = [
   ...EARTH_DATA_TOOL_DEFINITIONS,
+  ...TRACKING_TOOL_DEFINITIONS,
   {
     name: "getNextTask",
     description:
@@ -4111,11 +5434,10 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description: "Agent's interest tags for personalized ranking",
         },
-        maxDifficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Max difficulty the agent can handle",
-        },
+        credentialTags: { type: "array", items: { type: "string" } },
+        languageTags: { type: "array", items: { type: "string" } },
+        toolTags: { type: "array", items: { type: "string" } },
+        accessTags: { type: "array", items: { type: "string" } },
         availableHoursPerWeek: {
           type: "number",
           description: "Hours per week the agent can commit",
@@ -4132,8 +5454,7 @@ const TASK_TOOL_DEFINITIONS = [
       properties: {
         score: {
           type: "number",
-          description:
-            "Earth-level ranking score used by the legacy ranking path.",
+          description: "Expected net value per hour-equivalent priority.",
         },
         task: {
           type: "object",
@@ -4323,6 +5644,24 @@ const TASK_TOOL_DEFINITIONS = [
                 type: "string",
                 description: "Self or AI Agent.",
               },
+              capabilityStatus: {
+                type: "string",
+                enum: ["eligible", "unknown", "ineligible"],
+              },
+              capabilityReasons: {
+                type: "array",
+                items: { type: "string" },
+              },
+              effortEstimateSource: {
+                type: "string",
+                enum: [
+                  "target-actual-history",
+                  "candidate-estimate",
+                  "task-estimate",
+                  "impact-frame",
+                  "missing",
+                ],
+              },
               realEv: {
                 type: "number",
                 description:
@@ -4342,6 +5681,14 @@ const TASK_TOOL_DEFINITIONS = [
               },
             },
           },
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
       },
     },
@@ -4468,6 +5815,24 @@ const TASK_TOOL_DEFINITIONS = [
                 type: "string",
                 description: "Self or AI Agent.",
               },
+              capabilityStatus: {
+                type: "string",
+                enum: ["eligible", "unknown", "ineligible"],
+              },
+              capabilityReasons: {
+                type: "array",
+                items: { type: "string" },
+              },
+              effortEstimateSource: {
+                type: "string",
+                enum: [
+                  "target-actual-history",
+                  "candidate-estimate",
+                  "task-estimate",
+                  "impact-frame",
+                  "missing",
+                ],
+              },
               realEv: {
                 type: "number",
                 description:
@@ -4475,6 +5840,14 @@ const TASK_TOOL_DEFINITIONS = [
               },
             },
           },
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
       },
     },
@@ -4558,6 +5931,14 @@ const TASK_TOOL_DEFINITIONS = [
           type: "array",
           items: { type: "object" },
         },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
+        },
         assumptions: { type: "array", items: { type: "string" } },
       },
     },
@@ -4596,6 +5977,14 @@ const TASK_TOOL_DEFINITIONS = [
         priority: {
           type: "number",
           description: "Computed priority score for the suggested task.",
+        },
+        itemsNeedingCapabilityConfirmation: {
+          type: "array",
+          items: { type: "object" },
+        },
+        capabilityExcludedWork: {
+          type: "array",
+          items: { type: "object" },
         },
         deadlineOverride: {
           type: "boolean",
@@ -4641,11 +6030,10 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description: "Agent's interest tags for capability matching",
         },
-        maxDifficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Max difficulty the agent can handle",
-        },
+        credentialTags: { type: "array", items: { type: "string" } },
+        languageTags: { type: "array", items: { type: "string" } },
+        toolTags: { type: "array", items: { type: "string" } },
+        accessTags: { type: "array", items: { type: "string" } },
         availableHoursPerWeek: {
           type: "number",
           description: "Hours per week the agent can commit",
@@ -4806,7 +6194,7 @@ const TASK_TOOL_DEFINITIONS = [
         preferLeafExecution: {
           type: "boolean",
           description:
-            "When true, return only executable childless TASK rows; never fall back to parents or projects.",
+            "When true, return only executable tasks without active subtasks; never fall back to parent tasks.",
         },
       },
     },
@@ -5485,10 +6873,10 @@ const TASK_TOOL_DEFINITIONS = [
     name: "createTask",
     description:
       "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
-      "Required: title, description, category, hours, value, p_success, acceptanceCriteria, impactStatement. Every one is load-bearing — a task that omits them either fails validation or lands at score 0 and never surfaces. " +
+      "Required: title, description, parentTaskId, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
-      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, difficulty, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
+      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5499,7 +6887,8 @@ const TASK_TOOL_DEFINITIONS = [
         },
         parentTaskId: {
           type: "string",
-          description: "Parent task ID for subtask hierarchy",
+          description:
+            "Required existing parent task ID. Search the accessible task tree first and choose the closest objective or task; do not use Optimize Earth directly.",
         },
         taskKey: {
           type: "string",
@@ -5521,12 +6910,6 @@ const TASK_TOOL_DEFINITIONS = [
             "OTHER",
           ],
           description: "Task category",
-        },
-        difficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description:
-            "Optional metadata for public task presentation and capability filtering; not part of personal priority.",
         },
         skillTags: {
           type: "array",
@@ -5706,7 +7089,13 @@ const TASK_TOOL_DEFINITIONS = [
             "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score.",
         },
       },
-      required: ["title", "description", "category", "impactStatement"],
+      required: [
+        "title",
+        "description",
+        "parentTaskId",
+        "category",
+        "impactStatement",
+      ],
     },
   },
 
@@ -5950,12 +7339,6 @@ const TASK_TOOL_DEFINITIONS = [
             type: "object",
             properties: {
               title: { type: "string", description: "Short imperative title" },
-              kind: {
-                type: "string",
-                enum: ["TASK", "PROJECT"],
-                description:
-                  "TASK for an atomic action or PROJECT for a non-executable grouping row.",
-              },
               description: {
                 type: "string",
                 description: "Action and acceptance criteria",
@@ -6000,7 +7383,8 @@ const TASK_TOOL_DEFINITIONS = [
               },
               parentTaskRef: {
                 type: "string",
-                description: "ID or taskKey of parent task",
+                description:
+                  "Required ID/taskKey of the best existing or same-bundle parent. Search first. Use $target-root only when no more specific parent exists.",
               },
               estimatedEffortHours: { type: "number" },
               isPublic: { type: "boolean" },
@@ -6079,7 +7463,7 @@ const TASK_TOOL_DEFINITIONS = [
                 },
               },
             },
-            required: ["title"],
+            required: ["title", "parentTaskRef"],
           },
           description: "Tasks to propose",
         },
@@ -6106,7 +7490,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update a task's estimates, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
+      "Update a task's estimates, parent, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To reparent, search the task tree and pass an existing parentTaskId; Optimize Earth itself is reserved. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6117,6 +7501,11 @@ const TASK_TOOL_DEFINITIONS = [
         },
         title: { type: "string" },
         description: { type: "string" },
+        parentTaskId: {
+          type: "string",
+          description:
+            "Existing rooted parent task ID. Search first; cannot be Optimize Earth or create a hierarchy cycle.",
+        },
         completionEvidence: {
           type: "string",
           description: "Evidence that the task is done",
@@ -6139,11 +7528,6 @@ const TASK_TOOL_DEFINITIONS = [
           ],
           description:
             "Re-categorize the task. Affects category-filtered listTasks queries; not part of personal priority score.",
-        },
-        difficulty: {
-          type: "string",
-          enum: ["TRIVIAL", "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"],
-          description: "Optional metadata; not part of personal priority.",
         },
         ...TASK_ROUTING_INPUT_PROPERTIES,
         taskKey: { type: "string", description: "Stable dedup key" },
@@ -7503,6 +8887,59 @@ export function createMcpServer(
             );
           }
 
+          case RECORD_MEASUREMENT_TOOL_NAME: {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records your personal tracking measurements.",
+              );
+            return ok({
+              result: await recordTrackingMeasurement(a, userId),
+            });
+          }
+
+          case "upsertTrackingReminder": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool manages your personal tracking reminders.",
+              );
+            return ok({
+              result: await upsertTrackingReminderForUser(a, userId),
+            });
+          }
+
+          case "listTrackingReminders": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool lists your personal tracking reminders.",
+              );
+            return ok({
+              reminders: await listTrackingRemindersForUser(a, userId),
+            });
+          }
+
+          case "listDueTrackingReminders": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool lists your due personal tracking reminders.",
+              );
+            return ok(await listDueTrackingRemindersForUser(a, userId));
+          }
+
+          case "respondToTrackingReminder": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records your response to a tracking reminder.",
+              );
+            return ok({
+              result: await respondToTrackingReminderForUser(a, userId),
+            });
+          }
+
           case "reportContent": {
             if (!userId)
               return authRequired(
@@ -7623,27 +9060,41 @@ export function createMcpServer(
           // ── getNextTask ────────────────────────────────────────
           case "getNextTask": {
             const { tasks, ranking, lease } = await getTaskFunctions();
-            const allTasks = await tasks.listTasks({
+            const allTasks = (await tasks.listTasks({
               limit: 5000,
               visibility: "public",
               status: TaskStatus.ACTIVE,
-            });
-            const user = {
+            })) as PersonalQueueTaskRecord[];
+            const executorProfiles: PlanningExecutorProfile[] = [{
+              accessTags: (a.accessTags as string[]) ?? [],
+              credentialTags: (a.credentialTags as string[]) ?? [],
+              executorKind: "agent",
+              languageTags: (a.languageTags as string[]) ?? [],
               skillTags: (a.skillTags as string[]) ?? [],
-              interestTags: (a.interestTags as string[]) ?? [],
-              maxTaskDifficulty: (a.maxDifficulty as TaskDifficulty) ?? null,
-              availableHoursPerWeek:
-                (a.availableHoursPerWeek as number) ?? null,
-            };
-            const ranked = ranking.rankTasksForUser(allTasks, user, 100, {
-              preferLeafExecution: true,
-            });
+              toolTags: (a.toolTags as string[]) ?? [],
+            }];
+            const graph = await loadExecutionGraphContext(allTasks);
+            const planningTasks = await attachPlanningEffortEvidence(
+              allTasks,
+              executorProfiles,
+            );
+            const ranked = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              parsePositiveNumber(a.buybackRate, DEFAULT_PERSONAL_BUYBACK_RATE),
+              {
+                executorProfiles,
+                limit: 100,
+                requireExecutable: true,
+                requireUnblocked: true,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
 
             const agentId = (a.agentId as string) ?? null;
             const available = [];
             for (const entry of ranked) {
-              const taskId = (entry.task as Record<string, unknown>)
-                .id as string;
+              const taskId = entry.id;
               const leaseStatus = await lease.isTaskLeased(taskId);
               if (!leaseStatus.leased || leaseStatus.agentId === agentId) {
                 available.push(entry);
@@ -7655,7 +9106,7 @@ export function createMcpServer(
               return ok({ message: "No actionable tasks found", task: null });
             }
             const best = available[0]!;
-            return ok({ score: best.score, task: summarizeTask(best.task) });
+            return ok({ score: best.priority, task: best });
           }
 
           // ── getMyQueue ─────────────────────────────────────────
@@ -7683,14 +9134,34 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadHumanPlanningProfiles({
+              kind: "self",
+              personId,
+              userId,
+            });
             const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               selfTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: selfTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: maxResults,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7698,7 +9169,11 @@ export function createMcpServer(
               },
             );
 
-            return ok({ buybackRate, queue });
+            return ok({
+              buybackRate,
+              queue,
+              ...summarizeCapabilityWork(allRows),
+            });
           }
 
           // ── getAIQueue ────────────────────────────────────────
@@ -7726,14 +9201,30 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadAgentPlanningProfiles();
             const assignedTasks = (personalTasks as unknown[]).filter((task) =>
               isAIExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               assignedTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: assignedTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: maxResults,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7741,7 +9232,11 @@ export function createMcpServer(
               },
             );
 
-            return ok({ buybackRate, queue });
+            return ok({
+              buybackRate,
+              queue,
+              ...summarizeCapabilityWork(allRows),
+            });
           }
 
           // ── getExecutionPlan ───────────────────────────────────
@@ -7790,11 +9285,20 @@ export function createMcpServer(
               parseTaskDate(a.planningWindowEnd) ??
               new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
             const graph = await loadExecutionGraphContext(targetTasks);
-            const rows = buildPersonalQueueRows(
+            const executorProfiles = [
+              ...(await loadHumanPlanningProfiles(target)),
+              ...(await loadAgentPlanningProfiles()),
+            ];
+            const planningTasks = await attachPlanningEffortEvidence(
               targetTasks,
+              executorProfiles,
+            );
+            const rows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: targetTasks.length,
                 now: planningWindowStart,
                 rootedTaskIds: graph.rootedTaskIds,
@@ -7855,23 +9359,37 @@ export function createMcpServer(
               visibility: "personal",
             })) as PersonalQueueTaskRecord[];
             const graph = await loadExecutionGraphContext(personalTasks);
+            const executorProfiles = [
+              ...(await loadHumanPlanningProfiles({
+                kind: "self",
+                personId,
+                userId,
+              })),
+              ...(await loadAgentPlanningProfiles()),
+            ];
+            const planningTasks = await attachPlanningEffortEvidence(
+              personalTasks,
+              executorProfiles,
+            );
             const activeCreatedTasks = personalTasks.filter(
               (task) => task.createdByUserId === userId,
             ).length;
             const rankedRows = buildPersonalQueueRows(
-              personalTasks,
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: personalTasks.length,
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
             const executableRows = buildPersonalQueueRows(
-              personalTasks,
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
                 limit: personalTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -7950,8 +9468,34 @@ export function createMcpServer(
             for (const task of personalTasks) {
               const row = rowById.get(task.id);
               if (!row) continue;
+              const needsExecutionEstimate = isAtomicExecutionRecord(task);
 
               if (
+                needsExecutionEstimate &&
+                row.capabilityStatus === "unknown"
+              ) {
+                issues.push({
+                  code: "CAPABILITY_UNKNOWN",
+                  message: `Task ${task.id} has required capabilities that are not recorded for its target executor.`,
+                  severity: "medium",
+                  taskId: task.id,
+                });
+              }
+
+              if (
+                needsExecutionEstimate &&
+                row.capabilityStatus === "ineligible"
+              ) {
+                issues.push({
+                  code: "CAPABILITY_MISMATCH",
+                  message: `Task ${task.id} requires capabilities its target executor does not have.`,
+                  severity: "medium",
+                  taskId: task.id,
+                });
+              }
+
+              if (
+                needsExecutionEstimate &&
                 row.validationNotes.some((note) =>
                   note.toLowerCase().includes("missing"),
                 )
@@ -7964,7 +9508,7 @@ export function createMcpServer(
                 });
               }
 
-              if (!row.valid) {
+              if (needsExecutionEstimate && !row.valid) {
                 issues.push({
                   code: "INVALID_SCORE",
                   message: `Task ${task.id} has invalid priority inputs.`,
@@ -8068,14 +9612,34 @@ export function createMcpServer(
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
             );
+            const executorProfiles = await loadHumanPlanningProfiles({
+              kind: "self",
+              personId,
+              userId,
+            });
             const selfTasks = (personalTasks as unknown[]).filter((task) =>
               isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            );
-            const queue = buildPersonalQueueRows(
+            ) as PersonalQueueTaskRecord[];
+            const planningTasks = await attachPlanningEffortEvidence(
               selfTasks,
+              executorProfiles,
+            );
+            const allRows = buildPersonalQueueRows(
+              planningTasks,
               ranking,
               buybackRate,
               {
+                executorProfiles,
+                limit: selfTasks.length,
+                rootedTaskIds: graph.rootedTaskIds,
+              },
+            );
+            const queue = buildPersonalQueueRows(
+              planningTasks,
+              ranking,
+              buybackRate,
+              {
+                executorProfiles,
                 limit: selfTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
@@ -8102,6 +9666,7 @@ export function createMcpServer(
               selectionReason: selection.selectionReason,
               task: topAction,
               priority: topAction?.priority ?? 0,
+              ...summarizeCapabilityWork(allRows),
               queueAudit: {
                 activeCreatedTasks: personalTasks.filter(
                   (task) =>
@@ -9463,6 +11028,21 @@ export function createMcpServer(
             }
 
             const isAdminTaskWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
+            const parentTaskId = requiredString(a.parentTaskId, "parentTaskId");
+            if (typeof parentTaskId !== "string") return parentTaskId;
+            try {
+              await validateExplicitTaskParent({
+                isAdminWriter: isAdminTaskWriter,
+                parentTaskId,
+                prisma,
+                sessionPersonId: await loadSessionPersonId(userId),
+                userId,
+              });
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Invalid parent task.",
+              );
+            }
 
             if (dependencyTaskIds.length > 0) {
               const dependencyTasks = await prisma.task.findMany({
@@ -9518,12 +11098,6 @@ export function createMcpServer(
               }
             }
 
-            // Prisma's TaskCreateInput accepts FK relations (`parentTask: { connect }`)
-            // but rejects bare scalar FKs (`parentTaskId`) on null. The unchecked
-            // variant accepts scalars, but to stay compatible with both we just
-            // omit the FK fields entirely when no value was supplied.
-            const parentTaskId =
-              (a.parentTaskId as string | undefined) || undefined;
             const assigneePersonId =
               (a.assigneePersonId as string | undefined) || undefined;
             const assigneeOrganizationId =
@@ -9571,14 +11145,11 @@ export function createMcpServer(
             const data: Record<string, unknown> = {
               title: a.title as string,
               description,
-              ...(parentTaskId ? { parentTaskId } : {}),
+              parentTaskId,
               taskKey: (a.taskKey as string) ?? null,
               category: a.category
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
                 : TaskCategory.OTHER,
-              difficulty: a.difficulty
-                ? TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty]
-                : TaskDifficulty.INTERMEDIATE,
               skillTags: (a.skillTags as string[]) ?? [],
               interestTags: (a.interestTags as string[]) ?? [],
               ...routingData,
@@ -9702,9 +11273,6 @@ export function createMcpServer(
             }
             if (a.executor_type === undefined && a.executorType === undefined) {
               missingFields.push("executor_type");
-            }
-            if (!a.difficulty) {
-              missingFields.push("difficulty");
             }
             if (parseFiniteNumber(a.timeToImpactStartDays) == null) {
               missingFields.push("timeToImpactStartDays");
@@ -10441,9 +12009,13 @@ export function createMcpServer(
                     "Forbidden: organization proposals require an owner or admin membership.",
                   );
                 }
-              } else if (!isAdmin) {
+              } else {
                 assigneePersonId ??= sessionPersonId;
-                if (assigneePersonId && assigneePersonId !== sessionPersonId) {
+                if (
+                  !isAdmin &&
+                  assigneePersonId &&
+                  assigneePersonId !== sessionPersonId
+                ) {
                   return err(
                     "Forbidden: personal proposals may only target your own Person record.",
                   );
@@ -10463,12 +12035,23 @@ export function createMcpServer(
                 });
                 planningBranches.set(branchKey, branch);
               }
+              const requestedParentTaskRef = optionalString(
+                candidate.parentTaskRef,
+              );
+              if (!requestedParentTaskRef) {
+                return err(
+                  `Candidate ${JSON.stringify(candidate.title ?? candidate.id ?? "untitled")} requires parentTaskRef. Search existing tasks and choose the best parent; use "$target-root" only when no more specific parent exists.`,
+                );
+              }
               candidates.push({
                 ...candidate,
                 assigneeOrganizationId,
                 assigneePersonId,
                 isPublic: isAdmin && candidate.isPublic === true,
-                parentTaskRef: (candidate.parentTaskRef as string) || branch.id,
+                parentTaskRef:
+                  requestedParentTaskRef === "$target-root"
+                    ? branch.id
+                    : requestedParentTaskRef,
               });
             }
 
@@ -10552,6 +12135,24 @@ export function createMcpServer(
             for (const task of existingTasks) {
               existingTaskByRef.set(task.id, task);
               if (task.taskKey) existingTaskByRef.set(task.taskKey, task);
+            }
+
+            for (const candidate of candidates) {
+              const targetKey = targetKeyForCandidate(candidate);
+              const branch = planningBranches.get(targetKey)!;
+              const parentRef = String(candidate.parentTaskRef ?? "");
+              const parentCandidate = candidateByRef.get(parentRef);
+              const parentTask = existingTaskByRef.get(parentRef);
+              const isBranch =
+                parentRef === branch.id || parentRef === branch.taskKey;
+              if (parentCandidate === candidate) {
+                return err("A proposed task cannot be its own parent.");
+              }
+              if (!isBranch && !parentCandidate && !parentTask) {
+                return err(
+                  `Invalid parentTaskRef ${JSON.stringify(parentRef)}. Search existing tasks or reference another candidate in this bundle.`,
+                );
+              }
             }
 
             if (!isAdmin) {
@@ -10712,8 +12313,7 @@ export function createMcpServer(
                 blockerRefs: (c.blockerRefs as string[]) ?? [],
                 parentTaskRef: (c.parentTaskRef as string) ?? null,
                 estimatedEffortHours:
-                  (c.estimatedEffortHours as number) ??
-                  (c.kind === TaskKind.PROJECT ? 0.1 : null),
+                  (c.estimatedEffortHours as number) ?? null,
                 isPublic: (c.isPublic as boolean) ?? false,
                 impact: getProposalGovernanceImpact(c),
                 status: "DRAFT",
@@ -10769,8 +12369,6 @@ export function createMcpServer(
                   createdByUserId: userId,
                   taskKey: (candidate.taskKey as string) ?? null,
                   category: inferProposalCategory(candidate),
-                  difficulty: inferProposalDifficulty(candidate),
-                  kind: candidate.kind as TaskKind,
                   assigneePersonId:
                     (candidate.assigneePersonId as string) ?? null,
                   assigneeOrganizationId:
@@ -10962,7 +12560,6 @@ export function createMcpServer(
                 estimatedEffortHours: true,
                 id: true,
                 isPublic: true,
-                kind: true,
                 ownerOrganizationId: true,
                 parentTaskId: true,
                 roleTitle: true,
@@ -11095,7 +12692,6 @@ export function createMcpServer(
                 assigneeOrganizationId: true,
                 assigneePersonId: true,
                 id: true,
-                kind: true,
                 roleTitle: true,
                 status: true,
                 taskKey: true,
@@ -11251,6 +12847,30 @@ export function createMcpServer(
             if (existingTask.isPublic && !isAdminWriter) {
               return err("Updating public tasks requires an admin user.");
             }
+            if (a.parentTaskId !== undefined) {
+              const parentTaskId = requiredString(
+                a.parentTaskId,
+                "parentTaskId",
+              );
+              if (typeof parentTaskId !== "string") return parentTaskId;
+              try {
+                await validateExplicitTaskParent({
+                  isAdminWriter,
+                  parentTaskId,
+                  prisma,
+                  sessionPersonId: await loadSessionPersonId(userId),
+                  taskId: existingTask.id,
+                  userId,
+                });
+              } catch (error) {
+                return err(
+                  error instanceof Error
+                    ? error.message
+                    : "Invalid parent task.",
+                );
+              }
+              updates.parentTaskId = parentTaskId;
+            }
             const dependencyPatchProvided =
               Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
             const blockerTaskIds = dependencyPatchProvided
@@ -11319,7 +12939,6 @@ export function createMcpServer(
                     activeChildTaskCount: 0,
                     hasMarginalEstimate: false,
                     id: existingTask.id,
-                    kind: TaskKind.TASK,
                     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
                   },
                 ],
@@ -11350,9 +12969,6 @@ export function createMcpServer(
               updates.category =
                 TaskCategory[a.category as keyof typeof TaskCategory];
             }
-            if (a.difficulty)
-              updates.difficulty =
-                TaskDifficulty[a.difficulty as keyof typeof TaskDifficulty];
             if (a.taskKey) updates.taskKey = a.taskKey;
             if (a.roleTitle !== undefined)
               updates.roleTitle = (a.roleTitle as string) || null;
@@ -12125,7 +13741,6 @@ export function createMcpServer(
                   activeChildTaskCount: 0,
                   hasMarginalEstimate: false,
                   id: blockedTaskId,
-                  kind: TaskKind.TASK,
                   parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
                 },
               ],

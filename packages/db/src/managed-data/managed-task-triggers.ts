@@ -7,7 +7,6 @@ import {
   Prisma,
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   type PrismaClient,
 } from "../generated/prisma/client.js";
 import {
@@ -27,7 +26,6 @@ export interface ManagedTaskSpawnSpecInput {
   impactStatementTemplate?: string;
   roleTitleTemplate?: string;
   category?: keyof typeof TaskCategory;
-  difficulty?: keyof typeof TaskDifficulty;
   estimatedEffortHours?: number;
   dueDays?: number;
   availableInDays?: number;
@@ -177,7 +175,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate: USER_TREATY_DESCRIPTION,
       roleTitleTemplate: USER_TREATY_TASK_ROLE_TITLE,
       category: "OTHER",
-      difficulty: "TRIVIAL",
       dueDays: 0,
       claimPolicy: "ASSIGNED_ONLY",
       isPublic: false,
@@ -198,7 +195,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Pick someone you trust. Send them a named invitation. If they vote, they get promoted too.",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
       dueDays: 0,
       creatorResolver: "actor",
@@ -213,7 +209,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Pick a second person. Same deal. {{params.directHumanAssignments}} reports is the minimum viable team.",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.1,
       dueDays: 0,
       creatorResolver: "actor",
@@ -228,7 +223,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Post your referral URL anywhere — text, social, email. Votes that arrive through it count toward your direct reports.",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.02,
       dueDays: 0,
       creatorResolver: "actor",
@@ -243,7 +237,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Voting on this site is private. Signing on warondisease.org is public. You can't credibly ask a friend to do something you haven't publicly committed to yourself.",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.01,
       dueDays: 0,
       creatorResolver: "actor",
@@ -262,7 +255,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       titleTemplate: HUMANITY_MANAGEMENT.callOneHumanTaskTitle,
       descriptionTemplate: PHONE_SCRIPT_DESCRIPTION,
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.5,
       dueDays: 0,
       creatorResolver: "actor",
@@ -277,7 +269,6 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Auto-completes when the five tasks above are done. You don't action this one directly.",
       category: "OTHER",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.25,
       creatorResolver: "actor",
       assigneePersonResolver: "actor",
@@ -308,7 +299,6 @@ const referralVoteInvitation: ManagedTaskTriggerInput = {
         "{{recipient.firstName}} was invited to vote on the 1% Treaty.\n\nThe task is complete when their verified vote converts the invitation.",
       roleTitleTemplate: "Referred treaty voter",
       category: "OUTREACH",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.01,
       dueDays: 3,
       claimPolicy: "ASSIGNED_ONLY",
@@ -347,7 +337,6 @@ const treatySignerReminder: ManagedTaskTriggerInput = {
         "Remind {{signer.leaderName}} ({{signer.governmentName}}) to sign the 1% Treaty.\n\nFind their contact info via the action link, then send the message template.\n\nWhen {{signer.leaderName}} signs via your referral code, this task verifies automatically and the parent signer task closes.",
       roleTitleTemplate: "1% Treaty Reminder Sender",
       category: "OUTREACH",
-      difficulty: "TRIVIAL",
       estimatedEffortHours: 0.05,
       claimPolicy: "ASSIGNED_ONLY",
       isPublic: false,
@@ -388,7 +377,6 @@ const treatyRatify: ManagedTaskTriggerInput = {
       descriptionTemplate:
         "Get every signing-eligible head of state to ratify the 1% Treaty. Children are per-country signer tasks.",
       category: "OTHER",
-      difficulty: "ADVANCED",
       claimPolicy: "ASSIGNED_ONLY",
       isPublic: true,
       creatorResolver: "system",
@@ -455,7 +443,6 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
         "Convince {{slot.leaderName}} ({{slot.role}} of {{slot.countryName}}) to sign the 1% Treaty. Recipients of the assignee's signature: their citizens.",
       roleTitleTemplate: "{{slot.role}} of {{slot.countryName}}",
       category: "OTHER",
-      difficulty: "INTERMEDIATE",
       claimPolicy: "OPEN_MANY",
       isPublic: true,
       creatorResolver: "system",
@@ -776,9 +763,6 @@ function toSpawnSpecCreate(spec: ManagedTaskSpawnSpecInput) {
     impactStatementTemplate: spec.impactStatementTemplate ?? null,
     roleTitleTemplate: spec.roleTitleTemplate ?? null,
     category: spec.category ? TaskCategory[spec.category] : TaskCategory.OTHER,
-    difficulty: spec.difficulty
-      ? TaskDifficulty[spec.difficulty]
-      : TaskDifficulty.TRIVIAL,
     estimatedEffortHours: spec.estimatedEffortHours ?? null,
     dueDays: spec.dueDays ?? null,
     availableInDays: spec.availableInDays ?? null,
@@ -889,7 +873,6 @@ function normalizeSpawnSpecRows(
       impactStatementTemplate: row.impactStatementTemplate ?? null,
       roleTitleTemplate: row.roleTitleTemplate ?? null,
       category: row.category,
-      difficulty: row.difficulty,
       estimatedEffortHours: row.estimatedEffortHours ?? null,
       dueDays: row.dueDays ?? null,
       availableInDays: row.availableInDays ?? null,

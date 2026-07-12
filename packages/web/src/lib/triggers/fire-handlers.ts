@@ -141,7 +141,6 @@ export async function fireSpawnTasks(
       impactStatement,
       roleTitle,
       category: spec.category,
-      difficulty: spec.difficulty,
       estimatedEffortHours: spec.estimatedEffortHours,
       dueAt,
       availableAt,

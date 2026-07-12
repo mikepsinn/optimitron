@@ -102,7 +102,6 @@ UPDATE public."User" SET "internetAccessType" = NULL WHERE "internetAccessType" 
 UPDATE public."User" SET "skillTags" = ARRAY[]::text[] WHERE "skillTags" IS NOT NULL;
 UPDATE public."User" SET "interestTags" = ARRAY[]::text[] WHERE "interestTags" IS NOT NULL;
 UPDATE public."User" SET "availableHoursPerWeek" = NULL WHERE "availableHoursPerWeek" IS NOT NULL;
-UPDATE public."User" SET "maxTaskDifficulty" = NULL WHERE "maxTaskDifficulty" IS NOT NULL;
 UPDATE public."User" SET "phoneNumber" = anon.dummy_cell_number() WHERE "phoneNumber" IS NOT NULL;
 UPDATE public."Account" SET "providerAccountId" = md5("providerAccountId"::text) WHERE "providerAccountId" IS NOT NULL;
 UPDATE public."Account" SET "refresh_token" = NULL WHERE "refresh_token" IS NOT NULL;

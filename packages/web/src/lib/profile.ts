@@ -1,4 +1,3 @@
-import { TaskDifficulty } from "@optimitron/db/enums";
 import { z } from "zod";
 
 export const HEALTH_VARIABLE_NAME = "Overall Health";
@@ -148,10 +147,6 @@ export const profileSnapshotInputSchema = z
     skillTags: stringArray(32, 64),
     interestTags: stringArray(32, 64),
     availableHoursPerWeek: nullableInt(0, 168),
-    maxTaskDifficulty: z.preprocess(
-      normalizeOptionalString,
-      z.nativeEnum(TaskDifficulty).nullable().optional(),
-    ),
     // Notes
     censusNotes: nullableString(1000),
   })
@@ -236,7 +231,6 @@ export interface ProfileSnapshotData {
   skillTags: string[];
   interestTags: string[];
   availableHoursPerWeek: number | null;
-  maxTaskDifficulty: TaskDifficulty | null;
   // Notes
   censusNotes: string | null;
   // Metadata
@@ -345,14 +339,6 @@ export const INTERNET_ACCESS_OPTIONS = [
   { label: "Broadband (home internet)", value: "broadband" },
   { label: "Mobile only", value: "mobile_only" },
   { label: "No internet access", value: "none" },
-] as const;
-
-export const TASK_DIFFICULTY_OPTIONS = [
-  { label: "Trivial", value: TaskDifficulty.TRIVIAL },
-  { label: "Beginner", value: TaskDifficulty.BEGINNER },
-  { label: "Intermediate", value: TaskDifficulty.INTERMEDIATE },
-  { label: "Advanced", value: TaskDifficulty.ADVANCED },
-  { label: "Expert", value: TaskDifficulty.EXPERT },
 ] as const;
 
 export const CHRONIC_CONDITION_OPTIONS = [

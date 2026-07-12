@@ -39,12 +39,12 @@ async function loadLocalImageAsDataUri(
 
 const COLORS = {
   frame: "#111111",
-  card: "#fff7ed",
+  card: "#ffffff",
   muted: "#444444",
   faint: "#888888",
-  accent: "#e11d48",
-  statRed: "#fee2e2",
-  statYellow: "#fef3c7",
+  accent: "#111111",
+  statRed: "#ffffff",
+  statYellow: "#ffffff",
   statBorder: "#111111",
 };
 
@@ -96,16 +96,12 @@ export default async function TaskOpengraphImage({
     });
   }
 
-  const subtitle = context.difficulty?.whatItMeans ?? null;
-  const difficultyLabel = context.difficulty?.label ?? null;
+  const subtitle = task.impactStatement ?? null;
   const timeRequired =
-    context.difficulty?.timeRequiredSeconds != null
-      ? formatSeconds(context.difficulty.timeRequiredSeconds)
+    task.estimatedEffortHours != null
+      ? formatSeconds(task.estimatedEffortHours * 3600)
       : null;
-  const difficultyStripParts: string[] = [];
-  if (difficultyLabel) difficultyStripParts.push(`Difficulty: ${difficultyLabel}`);
-  if (timeRequired) difficultyStripParts.push(`Time: ${timeRequired}`);
-  const difficultyStrip = difficultyStripParts.join(" · ");
+  const taskDetails = timeRequired ? `Time: ${timeRequired}` : null;
 
   const assigneeName =
     task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? null;
@@ -130,8 +126,7 @@ export default async function TaskOpengraphImage({
     <div
       style={{
         alignItems: "stretch",
-        background:
-          "linear-gradient(135deg, #f7d64a 0%, #ff6b9d 45%, #111111 100%)",
+        backgroundColor: "#ffffff",
         display: "flex",
         height: "100%",
         padding: "36px",
@@ -141,8 +136,7 @@ export default async function TaskOpengraphImage({
       <div
         style={{
           backgroundColor: COLORS.card,
-          border: `6px solid ${COLORS.frame}`,
-          boxShadow: "18px 18px 0 #111111",
+          border: `3px solid ${COLORS.frame}`,
           color: COLORS.frame,
           display: "flex",
           flexDirection: "column",
@@ -161,11 +155,11 @@ export default async function TaskOpengraphImage({
             display: "flex",
             fontSize: 22,
             fontWeight: 900,
-            letterSpacing: 1.4,
+            letterSpacing: 0,
             textTransform: "uppercase",
           }}
         >
-          ⚡ Optimitron · Task reminder
+          Optimitron · Task reminder
         </div>
 
         {/* Title + subtitle */}
@@ -182,7 +176,7 @@ export default async function TaskOpengraphImage({
               display: "flex",
               fontSize: 68,
               fontWeight: 900,
-              letterSpacing: -2,
+              letterSpacing: 0,
               lineHeight: 1.0,
             }}
           >
@@ -230,11 +224,11 @@ export default async function TaskOpengraphImage({
                 <div
                   style={{
                     color: COLORS.accent,
-                    display: "flex",
-                    fontSize: 16,
-                    fontWeight: 900,
-                    letterSpacing: 1.1,
-                    textTransform: "uppercase",
+                  display: "flex",
+                  fontSize: 16,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  textTransform: "uppercase",
                   }}
                 >
                   {stat.label}
@@ -255,8 +249,8 @@ export default async function TaskOpengraphImage({
           </div>
         ) : null}
 
-        {/* Difficulty strip */}
-        {difficultyStrip ? (
+        {/* Effort */}
+        {taskDetails ? (
           <div
             style={{
               color: COLORS.muted,
@@ -266,7 +260,7 @@ export default async function TaskOpengraphImage({
               textTransform: "uppercase",
             }}
           >
-            {difficultyStrip}
+            {taskDetails}
           </div>
         ) : null}
 

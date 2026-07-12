@@ -12,7 +12,7 @@ Optimal Budget Generator — optimizes budget allocation using diminishing retur
 
 ## Tests
 
-146 unit tests.
+Unit-tested — run `pnpm --filter @optimitron/obg test` for the live count.
 
 ```bash
 pnpm test --filter @optimitron/obg

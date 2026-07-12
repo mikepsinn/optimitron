@@ -11,6 +11,10 @@ All data stays on your device. Nothing is ever sent to any server.
 - **🍽️ Food Logging** — Quick text entry, recent foods for one-tap re-logging
 - **⏰ Smart Reminders** — chrome.alarms-based scheduling with quiet hours
 - **📤 Data Export** — JSON backup or CSV (compatible with @optimitron/optimizer TimeSeries format)
+- **🧠 On-Device Analysis** — runs `@optimitron/optimizer`'s full causal analysis in a Web Worker (`src/workers/analysis.worker.ts`); results never leave the device
+
+Status: working standalone tracker; **no test suite yet** (registry: OPT-EXT-01
+in [docs/FEATURES.md](../../docs/FEATURES.md)).
 
 ## Install (Development)
 
@@ -58,6 +62,7 @@ All data uses `chrome.storage.local` with ISO 8601 timestamps:
 
 ## Future
 
-- Direct integration with `@optimitron/optimizer` for on-device analysis
-- Health data importers (Apple Health, Fitbit, Oura)
+- Health data importers in-extension (Apple Health, Fitbit, Oura — parsers
+  already exist in `@optimitron/data/src/importers/`)
 - Anonymous submission to Layer 3 (on-chain)
+- Test suite (currently none)

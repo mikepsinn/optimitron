@@ -1,7 +1,6 @@
 import {
   TaskCategory,
   TaskClaimPolicy,
-  TaskDifficulty,
   TaskImpactFrameKey,
   TaskStatus,
 } from "@optimitron/db";
@@ -40,7 +39,6 @@ const CreateTaskBodySchema = z.object({
   contactTemplate: z.string().nullish(),
   contactUrl: z.string().nullish(),
   description: z.string().nullish(),
-  difficulty: z.nativeEnum(TaskDifficulty).nullish(),
   dueAt: z.string().datetime().nullish(),
   estimatedEffortHours: z.number().nonnegative().nullish(),
   interestTags: z.array(z.string()).nullish(),

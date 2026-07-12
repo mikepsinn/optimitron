@@ -71,7 +71,6 @@ const profileUserSelect = {
   skillTags: true,
   interestTags: true,
   availableHoursPerWeek: true,
-  maxTaskDifficulty: true,
   // Notes & meta
   censusNotes: true,
   censusUpdatedAt: true,
@@ -406,7 +405,6 @@ function serializeProfileUser(user: ProfileUser, lastIncomeReportedAt: Date | nu
     skillTags: user.skillTags,
     interestTags: user.interestTags,
     availableHoursPerWeek: user.availableHoursPerWeek,
-    maxTaskDifficulty: user.maxTaskDifficulty,
     // Notes & meta
     censusNotes: user.censusNotes,
     censusUpdatedAt: user.censusUpdatedAt ? user.censusUpdatedAt.toISOString() : null,

@@ -46,6 +46,9 @@ priority = (P(success) * value - cash_cost) / (hours + cash_cost / buybackRate)
 
 The default `buybackRate` is `$1000/hr`. Dependencies decide what is available; `priority` ranks available tasks.
 
+This is the canonical, live EV formula. The Notion prototype it replaced is
+archived at [archive/EXPECTED_VALUE_DATABASE.md](./archive/EXPECTED_VALUE_DATABASE.md).
+
 Use these fields when creating personal tasks:
 
 - `hours`: expected user work hours, not calendar duration.
@@ -133,17 +136,15 @@ Example impact frame for a subjective but useful outreach task:
 
 ## Naming Boundaries
 
-- `Task` is the work item: owner, assignee, status, effort, impact, and dependencies.
-- `TaskCommunicationEndpoint` stores assignee contact methods such as email, mailto, official forms, public pages, profiles, in-app, or manual instructions.
-- `TaskComment` stores the readable task thread: comments, outgoing messages, inbound replies, manual assignee responses, and status notes.
-- `TaskCommunication` stores the delivery/contact envelope: channel, recipient, endpoint, provider IDs, status, metadata, and the link to the readable comment.
-- `EmailLog` stores provider-level email delivery details.
-- `Activity` is a lightweight audit feed, not the canonical message store.
+Model ownership (Task / TaskCommunicationEndpoint / TaskComment /
+TaskCommunication / EmailLog / Activity), lifecycle statuses, and write rules
+are specified in [TASK_COMMUNICATION_MODEL.md](./TASK_COMMUNICATION_MODEL.md)
+— the single owner of that contract. MCP-specific notes:
+
 - User/agent comments are the normal MCP-facing coordination path. `TaskCommunication` rows are internal delivery/audit envelopes, not tools agents should call directly.
 - Use `externalUrl` for opened office forms, public pages, and profiles. Do not call it `formSubmission` unless Optimitron actually verifies that a form was submitted.
 - `TrackingReminder` is for health-variable measurement reminders, not task assignee contact or assignment.
 - `ReferralInvitation` is the invite lifecycle. `ShareAttempt` is the exact outbound-message ledger.
-- `TaskCommunication.status` is intentionally small: `DRAFT`, `SENT`, `RECEIVED`, `FAILED`, `CANCELLED`. External URL/form details such as `openedAt` and `submittedAt` live in `metadataJson`; only record `submittedAt` when a user or agent confirms submission.
 
 ## Tool Groups
 
@@ -184,7 +185,6 @@ Claude:
         "titleTemplate": "Write your 1% Treaty elevator pitch",
         "descriptionTemplate": "One paragraph. Why does the treaty matter? Who is harmed by inaction? Plain words.",
         "category": "OTHER",
-        "difficulty": "TRIVIAL",
         "estimatedEffortHours": 0.25,
         "ownerResolver": "actor",
         "assigneePersonResolver": "actor",
@@ -215,7 +215,7 @@ Local Claude Code runs can use the stdio MCP server with a real Optimitron user 
     "optimitron-tasks": {
       "command": "pnpm",
       "args": ["--filter", "@optimitron/web", "exec", "tsx", "scripts/mcp-task-server.ts"],
-      "cwd": "E:/code/optimitron",
+      "cwd": "E:/eos/optimitron",
       "env": {
         "MCP_USER_EMAIL": "you@example.com"
       }

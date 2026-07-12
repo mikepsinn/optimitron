@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { TaskDifficulty } from "@optimitron/db";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { ArcadeTag } from "@/components/ui/arcade-tag";
 import { BrutalCard } from "@/components/ui/brutal-card";
@@ -8,7 +7,6 @@ import { getTaskPath, ROUTES } from "@/lib/routes";
 interface TopTask {
   canClaim: boolean;
   description: string;
-  difficulty: TaskDifficulty;
   estimatedEffortHours: number | null;
   id: string;
   title: string;
@@ -40,7 +38,6 @@ export function TopTasksCard({ tasks }: { tasks: TopTask[] }) {
           {tasks.map((task) => (
             <div key={task.id} className="rounded-md border-4 border-primary bg-background p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <div className="mb-3 flex flex-wrap gap-2">
-                <ArcadeTag>{task.difficulty.toLowerCase()}</ArcadeTag>
                 {task.estimatedEffortHours != null ? (
                   <ArcadeTag>{`${task.estimatedEffortHours}h`}</ArcadeTag>
                 ) : null}

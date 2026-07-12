@@ -16,7 +16,7 @@ All importers are file-based and local-first — parse user data exports without
 
 ## Tests
 
-296 unit tests.
+Unit-tested — run `pnpm --filter @optimitron/data test` for the live count.
 
 ```bash
 pnpm test --filter @optimitron/data

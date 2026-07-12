@@ -3,7 +3,6 @@ import {
   TaskClaimPolicy,
   TaskStatus,
   type TaskCategory,
-  type TaskDifficulty,
 } from "@optimitron/db";
 import { getPersonHref } from "@/lib/person-href";
 import { getTaskDescriptionSummary } from "@/components/tasks/task-description";
@@ -71,7 +70,6 @@ export interface TaskCardTask {
     url?: string | null;
   }> | null;
   description: string;
-  difficulty: TaskDifficulty;
   dueAt: Date | string | null;
   estimatedEffortHours: number | null;
   id: string;
@@ -206,7 +204,6 @@ export function TaskCard({
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
     claimPolicy: task.claimPolicy,
-    difficulty: task.difficulty,
     estimatedEffortHours: task.estimatedEffortHours,
     interestTags: task.interestTags,
     maxClaims: task.maxClaims,
@@ -237,7 +234,6 @@ export function TaskCard({
         <div className="flex flex-wrap gap-2">
           <ArcadeTag>{task.taskKey ?? task.id}</ArcadeTag>
           <ArcadeTag>{task.category.toLowerCase()}</ArcadeTag>
-          <ArcadeTag>{task.difficulty.toLowerCase()}</ArcadeTag>
           <ArcadeTag>
             {task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY
               ? "assigned"

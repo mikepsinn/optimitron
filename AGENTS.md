@@ -15,11 +15,20 @@
 
 ## Mission Focus
 
-- Until the 1% Treaty passes, optimize for the International Campaign to End War and Disease at `warondisease.org`.
+- North star: raise median healthy life expectancy and median real after-tax income to the `earthOptimizationPrizeWinCondition` targets by 2040. Programs are EV-ranked under the `optimize-earth` task root; the **1% Treaty** campaign at `warondisease.org` is the current highest-EV program — a ranked bet, not an axiom. If the analysis finds a better bet, the queue reorders and the product follows (`docs/ROADMAP.md`).
+- Two Now tracks run in parallel (`docs/ROADMAP.md`): the treaty campaign, and the Daily Companion Loop dogfood (`docs/PRD.md` §3). Campaign wins ties.
+- **Canonical campaign priority order** (the one copy — other docs point here):
+  1. Increase treaty vote conversion.
+  2. Increase referral propagation: each voter gets two more humans to vote.
+  3. Get organizations to endorse, embed, and recruit their own people.
+  4. Register plaintiffs and connect the case framing to voting.
+  5. Remind country leaders and treaty signers — they are paid by the citizenry to promote welfare and are late on a 30-second task.
+  6. Improve discoverability and trust in people, organization, task, and evidence pages.
+  7. Preserve Optimitron's broader governance OS as the proof layer, not as a competing homepage.
 - Legal nonprofit: Accelerated Medicine Foundation. Registered DBAs include Institute for Accelerated Medicine and International Campaign to End War and Disease.
-- The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, pressure a leader, or trust the quantified case enough to act?
-- Treat `optimitron.com` as the operating system and proof engine behind the campaign: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let the broader platform compete with the campaign for attention during this phase.
-- Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce campaign friction or protect an already-shipping path.
+- The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, remind a leader, complete a companion-loop stage, or trust the quantified case enough to act?
+- Treat `optimitron.com` as the operating system and proof engine: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let generic platform breadth compete with the Now tracks for attention.
+- Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce friction on a Now track or protect an already-shipping path.
 - For development and visual review, make the War on Disease variant the primary surface. Keep secondary variant screenshots/links available for regression checks, but put the campaign gallery first so PR review load stays low.
 
 ## Local Dev Safety
@@ -79,8 +88,11 @@
 
 ## Documentation
 
-Detailed docs live in `docs/`. Read the relevant ones before working:
+Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones before working:
 
+- `docs/PRD.md` — Product spec: the four-layer optimization machine and the Daily Companion Loop
+- `docs/FEATURES.md` — Feature registry: what actually exists, with evidence (the only doc allowed to assert maturity status)
+- `docs/ROADMAP.md` — Sequencing (Now/Next/Later/Parked/Won't) + code-cleanup backlog
 - `docs/TYPE_SYSTEM.md` — How types flow from Prisma → all packages
 - `docs/h2ewd.md` — Wishonia/H2EWD voice for public-facing persuasion copy
 

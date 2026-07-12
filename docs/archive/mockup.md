@@ -43,7 +43,7 @@ OPTIMITRON TASK PAGES — FINAL MOCKUPS
 ║       │  📋  RATIFY THE 1% TREATY                  🔴 OVERDUE     │      ║
 ║       │                                                            │      ║
 ║       │  Redirect 1% of military spending to clinical trials.      │      ║
-║       │  Task difficulty: Sign a piece of paper. 30 seconds.       │      ║
+║       │  Sign a piece of paper. 30 seconds.                        │      ║
 ║       │                                                            │      ║
 ║       │  ⏰ 119 of 119 assignees overdue                           │      ║
 ║       │  💀 273,000,000 deaths during delay                        │      ║
@@ -325,7 +325,6 @@ OPTIMITRON TASK PAGES — FINAL MOCKUPS
 ║   │   │  30-second task.                                         │   │   ║
 ║   │   │                                                          │   │   ║
 ║   │   │  The task: Sign the 1% Treaty.                           │   │   ║
-║   │   │  The difficulty: Hold pen. Sign paper.                   │   │   ║
 ║   │   │  The time: 30 seconds.                                   │   │   ║
 ║   │   │                                                          │   │   ║
 ║   │   │  While you haven't done it:                              │   │   ║

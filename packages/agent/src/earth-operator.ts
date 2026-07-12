@@ -37,13 +37,18 @@ export interface EarthOperatorTask extends RuntimeTask {
   countryCode?: string | null;
   countryName?: string | null;
   description?: string | null;
-  difficulty?: string | null;
   dueAt?: Date | string | null;
   estimatedEffortHours?: number | null;
+  executionMode?: string | null;
   impact?: EarthOperatorImpact | null;
   interestTags?: string[];
   maxClaims?: number | null;
+  preferredSkillTags?: string[];
   programKey?: string | null;
+  requiredAccessTags?: string[];
+  requiredCredentialTags?: string[];
+  requiredLanguageTags?: string[];
+  requiredToolTags?: string[];
   roleTitle?: string | null;
   skillTags?: string[];
   sourceUrls?: string[];
@@ -98,11 +103,14 @@ export interface PlanNextEarthOperatorStepInput {
 export interface EarthOperatorRuntimeAdapters
   extends TaskOperatorRuntimeAdapters<EarthOperatorTask> {
   getNextAction?(input: {
+    accessTags?: string[] | null;
     agentId: string;
     availableHoursPerWeek?: number | null;
+    credentialTags?: string[] | null;
     interestTags: string[];
-    maxTaskDifficulty?: string | null;
+    languageTags?: string[] | null;
     skillTags: string[];
+    toolTags?: string[] | null;
   }): Promise<EarthNextActionDecision>;
   getQueueAudit?(): Promise<unknown>;
   recordTaskActuals?(input: {
@@ -291,13 +299,16 @@ export function createTreatyTaskPlanner(input?: {
     plan({ agent, now, task }) {
       const decision = selectNextTreatyAction({
         capabilities: {
+          accessTags: agent.accessTags,
           allowedCountryCodes: agent.allowedCountryCodes,
           channels: agent.channels as never[],
+          credentialTags: agent.credentialTags,
+          languageTags: agent.languageTags,
           maxDailyLiveActions: agent.maxDailyLiveActions ?? null,
-          maxTaskDifficulty: agent.maxTaskDifficulty ?? null,
           mode: normalizeMode(agent.mode),
           requiresHumanReview: agent.requiresHumanReview,
           skillTags: agent.skillTags,
+          toolTags: agent.toolTags,
         },
         executions: agent.executions ?? [],
         now,
@@ -400,11 +411,14 @@ export async function planNextEarthOperatorStep(
     await input.adapters.getQueueAudit?.();
 
     const action = await input.adapters.getNextAction({
+      accessTags: input.agent.accessTags,
       agentId: input.agent.agentId,
       availableHoursPerWeek: input.agent.availableHoursPerWeek ?? null,
+      credentialTags: input.agent.credentialTags,
       interestTags: input.agent.interestTags,
-      maxTaskDifficulty: input.agent.maxTaskDifficulty ?? null,
+      languageTags: input.agent.languageTags,
       skillTags: input.agent.skillTags,
+      toolTags: input.agent.toolTags,
     });
 
     if (action.task === null) {

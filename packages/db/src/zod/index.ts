@@ -320,15 +320,6 @@ export const WishReasonSchema = z.enum([
 ]);
 export type WishReason = z.infer<typeof WishReasonSchema>;
 
-export const TaskDifficultySchema = z.enum([
-  'TRIVIAL',
-  'BEGINNER',
-  'INTERMEDIATE',
-  'ADVANCED',
-  'EXPERT',
-]);
-export type TaskDifficulty = z.infer<typeof TaskDifficultySchema>;
-
 export const TaskCategorySchema = z.enum([
   'ADVOCACY',
   'RESEARCH',
@@ -1061,7 +1052,6 @@ export const UserSchema = z.object({
   availableHoursPerWeek: z.number().int().nullable().optional(),
   availableFrom: nullableDateSchema,
   availabilityUpdatedAt: nullableDateSchema,
-  maxTaskDifficulty: TaskDifficultySchema.nullable().optional(),
   censusUpdatedAt: nullableDateSchema,
   isAdmin: z.boolean().default(false),
   phoneNumber: z.string().nullable().optional(),
@@ -2228,7 +2218,6 @@ export const TaskSchema = z.object({
   category: TaskCategorySchema.default('OTHER'),
   kind: TaskKindSchema.default('TASK'),
   engagementKind: TaskEngagementKindSchema.default('ONE_OFF'),
-  difficulty: TaskDifficultySchema.default('INTERMEDIATE'),
   estimatedEffortHours: z.number().nullable().optional(),
   actualEffortSeconds: z.number().int().nullable().optional(),
   actualCashCostUsd: z.number().nullable().optional(),
