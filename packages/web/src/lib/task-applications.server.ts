@@ -4,6 +4,7 @@ import {
   TaskApplicationStatus,
 } from "@optimitron/db/enums";
 import { prisma } from "@/lib/prisma";
+import { canUserViewTask } from "@/lib/tasks/task-visibility.server";
 
 export const applicationSelect = {
   id: true,
@@ -153,6 +154,11 @@ export async function assertCanReviewTaskApplications(
   }
 
   if (!(await canReviewTaskApplications(userId, taskId))) {
+    // A private task the caller can't even view must stay indistinguishable
+    // from a missing one — same predicate as /tasks/[id].
+    if (!(await canUserViewTask(taskId, userId))) {
+      throw new Error("Task not found");
+    }
     throw new Error("Forbidden");
   }
 }

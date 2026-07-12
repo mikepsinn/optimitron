@@ -14303,6 +14303,15 @@ export function createMcpServer(
                 ? (a.mediaUrl as string)
                 : null;
 
+            // Same gate as the comment feed: you can only write where you
+            // can read. Private tasks look identical to missing ones.
+            const { canUserViewTask } = await import(
+              "./tasks/task-visibility.server"
+            );
+            if (!(await canUserViewTask(taskId, userId))) {
+              return err("Task not found");
+            }
+
             // Rate limit: 5 per user per task per hour
             const recentCount = await countUserCommentsInWindow(
               taskId,
@@ -14400,7 +14409,7 @@ export function createMcpServer(
               }),
               cursor
                 ? Promise.resolve([])
-                : getTaskActivityTimeline(taskId, 50),
+                : getTaskActivityTimeline(taskId, 50, userId ?? null),
             ]);
 
             return ok({

@@ -5,6 +5,7 @@
 
 import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import { assertUserCanViewTask } from "@/lib/tasks/task-visibility.server";
 import { userDisplaySelect } from "@/lib/user-display";
 
 const MAX_MESSAGE_LENGTH = 20_000;
@@ -183,6 +184,18 @@ export async function voteComment(input: {
   downvoteCount: number;
   userVote: 1 | -1 | 0;
 }> {
+  // Voting requires the same task access as reading the feed — otherwise a
+  // signed-in user could interact with (and confirm the existence of)
+  // comments on private tasks.
+  const target = await prisma.taskComment.findUnique({
+    where: { id: input.commentId },
+    select: { taskId: true },
+  });
+  if (!target) {
+    throw new Error("Comment not found");
+  }
+  await assertUserCanViewTask(target.taskId, input.userId);
+
   return prisma.$transaction(async (tx) => {
     const existing = await tx.taskCommentVote.findUnique({
       where: { commentId_userId: { commentId: input.commentId, userId: input.userId } },
@@ -319,6 +332,11 @@ export async function getTaskCommentFeed(input: {
   nextCursor: Date | null;
   total: number;
 }> {
+  // Same predicate as /tasks/[id]: a task whose page 404s for this viewer
+  // must 404 its comment feed too (private tasks stay indistinguishable
+  // from missing ones — never a 401/403).
+  await assertUserCanViewTask(input.taskId, input.currentUserId);
+
   const sort = input.sort ?? "new";
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
 
@@ -384,7 +402,12 @@ export async function getTaskCommentFeed(input: {
 export async function getTaskActivityTimeline(
   taskId: string,
   limit = 50,
+  currentUserId?: string | null,
 ): Promise<TaskActivityRow[]> {
+  // Same visibility gate as the comment feed: activity on a private task is
+  // as sensitive as its comments.
+  await assertUserCanViewTask(taskId, currentUserId);
+
   const rows = await prisma.activity.findMany({
     where: {
       entityType: "Task",

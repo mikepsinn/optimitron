@@ -15,6 +15,10 @@ import {
   type CommentSortKey,
 } from "@/lib/tasks/task-comments.server";
 import {
+  canUserViewTask,
+  TASK_NOT_FOUND_MESSAGE,
+} from "@/lib/tasks/task-visibility.server";
+import {
   buildCitationsJson,
   generateAndPostWishoniaReply,
   prepareWishoniaReply,
@@ -56,7 +60,9 @@ export async function GET(
       }),
       // Only fetch activities on the first page load (no cursor) — they're
       // not paginated, they're just a supplementary timeline.
-      cursor ? Promise.resolve([]) : getTaskActivityTimeline(taskId, 50),
+      cursor
+        ? Promise.resolve([])
+        : getTaskActivityTimeline(taskId, 50, currentUser?.id ?? null),
     ]);
 
     return NextResponse.json({
@@ -68,6 +74,10 @@ export async function GET(
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (error instanceof Error && error.message === TASK_NOT_FOUND_MESSAGE) {
+      // Private tasks 404 exactly like missing ones — same as /tasks/[id].
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
 
     console.error("[TASKS] Failed to fetch comment feed:", error);
@@ -114,6 +124,13 @@ export async function POST(
         : null;
     const mediaUrl =
       typeof body?.mediaUrl === "string" && body.mediaUrl.length > 0 ? body.mediaUrl : null;
+
+    // Same visibility gate as GET: you can only write where you can read.
+    // (postComment itself stays ungated so server-initiated Wishonia replies
+    // can land on private tasks.)
+    if (!(await canUserViewTask(taskId, currentUser.id))) {
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
+    }
 
     // Rate limit: 5 comments per user per task per hour
     const recentCount = await countUserCommentsInWindow(

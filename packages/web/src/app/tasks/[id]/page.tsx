@@ -46,6 +46,11 @@ import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
+// The feed/timeline helpers throw the shared "Task not found" for tasks the
+// viewer can't see. The page already renders TaskAccessGate when `data` is
+// null, so swallow the throw into an empty feed instead of a 500.
+const EMPTY_COMMENT_FEED = { comments: [], nextCursor: null, total: 0 };
+
 async function getPublicTaskPageData(id: string) {
   const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
     getTaskDetailData(id, null),
@@ -54,8 +59,8 @@ async function getPublicTaskPageData(id: string) {
       sort: "new",
       limit: 100,
       currentUserId: null,
-    }),
-    getTaskActivityTimeline(id, 50),
+    }).catch(() => EMPTY_COMMENT_FEED),
+    getTaskActivityTimeline(id, 50, null).catch(() => []),
     getTaskAncestors(id),
   ]);
 
@@ -370,8 +375,8 @@ export default async function TaskDetailPage({
           sort: "new",
           limit: 100,
           currentUserId: userId,
-        }),
-        getTaskActivityTimeline(id, 50),
+        }).catch(() => EMPTY_COMMENT_FEED),
+        getTaskActivityTimeline(id, 50, userId).catch(() => []),
         getWishoniaUserId().catch(() => null),
         getTaskAncestors(id),
         prisma.user

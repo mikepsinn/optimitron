@@ -65,6 +65,13 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 
 Bugs and concrete debt:
 
+- [x] Private-task comment leak (task `optimitron:dev:comment-visibility-gate`):
+      anonymous GET `/api/tasks/<id>/comments` returned comments for PRIVATE
+      tasks. Feed, activity timeline, comment votes, and comment posting now
+      reuse the /tasks/[id] predicate (`lib/tasks/task-visibility.server.ts`);
+      private tasks 404 like missing ones. Note: org-member access is not in
+      the page predicate, so it is not in the comment gate either — extend the
+      shared predicate deliberately if ever wanted.
 - [ ] MCP `getTask` double-escapes nested child descriptions (contamination
       vector; bug report a063947f, no fix commit found).
 - [ ] Task-payout hardening remainder: cron reconciliation for VERIFIED claims
