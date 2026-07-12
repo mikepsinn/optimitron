@@ -553,6 +553,20 @@ export const DEFENSE_LOBBYING_ANNUAL: Parameter = {
   manualPageTitle: "Frequently Asked Objections",
 };
 
+export const DEFENSE_NET_PROFIT_MARGIN: Parameter = {
+  value: 0.0499,
+  parameterName: "DEFENSE_NET_PROFIT_MARGIN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_net_profit_margin",
+  unit: "percent",
+  displayName: "Aerospace/Defense Net Profit Margin",
+  description: "Net profit margin for Aerospace/Defense industry (79 firms, Damodaran Jan 2026)",
+  sourceType: "external",
+  confidence: "high",
+  confidenceInterval: [0.04, 0.06],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/love-letter.html",
+  manualPageTitle: "The Love Letter",
+};
+
 export const DEFENSE_PRIMES_MARKET_CAP_ALLIED: Parameter = {
   value: 132000000000.0,
   parameterName: "DEFENSE_PRIMES_MARKET_CAP_ALLIED",
@@ -2338,6 +2352,20 @@ export const PHARMA_LIFE_YEARS_SAVED_ANNUAL: Parameter = {
   confidenceInterval: [79400000.0, 239800000.0],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
   manualPageTitle: "The Invisible Graveyard: Quantifying the Mortality Cost of FDA Efficacy Lag",
+};
+
+export const PHARMA_NET_PROFIT_MARGIN: Parameter = {
+  value: 0.1854,
+  parameterName: "PHARMA_NET_PROFIT_MARGIN",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-pharma_net_profit_margin",
+  unit: "percent",
+  displayName: "Pharmaceutical Net Profit Margin",
+  description: "Net profit margin for Drugs (Pharmaceutical) industry (228 firms, Damodaran Jan 2026)",
+  sourceType: "external",
+  confidence: "high",
+  confidenceInterval: [0.15, 0.22],
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/love-letter.html",
+  manualPageTitle: "The Love Letter",
 };
 
 export const PHARMA_ROI_CURRENT_SYSTEM_PCT: Parameter = {
@@ -7928,6 +7956,21 @@ export const PHARMA_LIVES_SAVED_ANNUAL: Parameter = {
   confidenceInterval: [7724804.622624174, 18601068.29172305],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
   manualPageTitle: "The Invisible Graveyard: Quantifying the Mortality Cost of FDA Efficacy Lag",
+};
+
+export const PHARMA_VS_DEFENSE_NET_MARGIN_RATIO: Parameter = {
+  value: 3.7154308617234473,
+  parameterName: "PHARMA_VS_DEFENSE_NET_MARGIN_RATIO",
+  calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-pharma_vs_defense_net_margin_ratio",
+  unit: "x",
+  displayName: "Pharma-to-Defense Net Profit Margin Ratio",
+  description: "Ratio of pharmaceutical to defense net profit margins",
+  sourceType: "calculated",
+  confidence: "high",
+  formula: "PHARMA_NET_PROFIT_MARGIN / DEFENSE_NET_PROFIT_MARGIN",
+  latex: "\\begin{gathered}\n\\frac{Margin_{pharma}}{Margin_{def}} \\\\\n= \\frac{Margin_{pharma}}{Margin_{def}} \\\\\n= \\frac{18.5\\%}{4.99\\%} \\\\\n= 3.72\n\\end{gathered}",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/love-letter.html",
+  manualPageTitle: "The Love Letter",
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
@@ -13534,6 +13577,7 @@ export const parameters = {
   CURRENT_TRIAL_ABANDONMENT_RATE,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
   DEFENSE_LOBBYING_ANNUAL,
+  DEFENSE_NET_PROFIT_MARGIN,
   DEFENSE_PRIMES_MARKET_CAP_ALLIED,
   DEFENSE_PRIMES_MARKET_CAP_US,
   DEFENSE_PRIMES_TRADEABLE_FLOAT,
@@ -13648,6 +13692,7 @@ export const parameters = {
   PHARMA_DRUG_DEVELOPMENT_COST_CURRENT,
   PHARMA_DRUG_REVENUE_AVERAGE_CURRENT,
   PHARMA_LIFE_YEARS_SAVED_ANNUAL,
+  PHARMA_NET_PROFIT_MARGIN,
   PHARMA_ROI_CURRENT_SYSTEM_PCT,
   PHARMA_SUCCESS_RATE_CURRENT_PCT,
   PHASE_1_PASSED_COMPOUNDS_GLOBAL,
@@ -13998,6 +14043,7 @@ export const parameters = {
   PER_CAPITA_CHRONIC_DISEASE_COST,
   PER_CAPITA_MENTAL_HEALTH_COST,
   PHARMA_LIVES_SAVED_ANNUAL,
+  PHARMA_VS_DEFENSE_NET_MARGIN_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_PCT_GDP,
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
@@ -16920,9 +16966,9 @@ export const citations: Record<string, Citation> = {
 
 /** Summary statistics */
 export const PARAMETER_STATS = {
-  total: 869,
-  external: 239,
-  calculated: 444,
+  total: 872,
+  external: 241,
+  calculated: 445,
   definitions: 186,
   citations: 184,
 } as const;
