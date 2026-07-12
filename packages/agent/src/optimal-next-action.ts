@@ -291,13 +291,20 @@ export function assessOptimalActorCapability(
   task: OptimalActionTask,
   actor: OptimalActorCapabilities,
 ): TaskCapabilityAssessment {
+  // Organization tags describe an organization's collective capability, so
+  // they satisfy hard skill requirements only for ORGANIZATION actors. A
+  // human or agent actor's org affiliations never count as personal skills.
+  const skillTags =
+    actor.kind === 'ORGANIZATION'
+      ? [...actor.skillTags, ...(actor.organizationTags ?? [])]
+      : actor.skillTags;
   return assessTaskCapability({
     executor: {
       accessTags: actor.accessTags,
       credentialTags: actor.credentialTags,
       executorKind: executorKind(actor),
       languageTags: actor.languageTags,
-      skillTags: [...actor.skillTags, ...(actor.organizationTags ?? [])],
+      skillTags,
       toolTags: actor.toolTags,
     },
     task,

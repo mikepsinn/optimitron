@@ -2085,18 +2085,26 @@ function resolveQueueEffortEstimate(
   selectedImpactFrame: Record<string, unknown> | null,
   profiles: PlanningExecutorProfile[],
 ) {
+  // Effort evidence must come from executors of the task's own kind —
+  // otherwise an agent's completed attempt becomes the schedule estimate for
+  // a human task (and vice versa). Mirrors assessQueueTaskCapability.
+  const taskExecutorKind =
+    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
+  const kindProfiles = profiles.filter(
+    (profile) => profile.executorKind === taskExecutorKind,
+  );
   const actualSeconds = (task.executionAttempts ?? []).find(
     (attempt) =>
       attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
       typeof attempt.actualDurationSeconds === "number" &&
       attempt.actualDurationSeconds > 0 &&
-      profiles.some((profile) => matchesPlanningExecutor(attempt, profile)),
+      kindProfiles.some((profile) => matchesPlanningExecutor(attempt, profile)),
   )?.actualDurationSeconds;
   const claimedActualSeconds = (task.claims ?? []).find(
     (claim) =>
       typeof claim.actualEffortSeconds === "number" &&
       claim.actualEffortSeconds > 0 &&
-      profiles.some(
+      kindProfiles.some(
         (profile) => profile.userId && profile.userId === claim.userId,
       ),
   )?.actualEffortSeconds;
@@ -2114,7 +2122,9 @@ function resolveQueueEffortEstimate(
       candidate.status !== TaskCandidateMatchStatus.REJECTED &&
       typeof candidate.estimatedDurationSeconds === "number" &&
       candidate.estimatedDurationSeconds > 0 &&
-      profiles.some((profile) => matchesPlanningExecutor(candidate, profile)),
+      kindProfiles.some((profile) =>
+        matchesPlanningExecutor(candidate, profile),
+      ),
   )?.estimatedDurationSeconds;
   if (candidateSeconds != null) {
     return {

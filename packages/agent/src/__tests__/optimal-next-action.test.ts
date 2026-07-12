@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assessOptimalActorCapability,
   buildNotionExpectedValueImpactFrame,
   earthOptimizationPointsFromUsd,
   evaluateActionOption,
@@ -506,6 +507,31 @@ describe('rankActionOptions', () => {
 
     expect(decision.action?.capabilityFit).toBeGreaterThan(0.75);
     expect(decision.action?.assumptions.join(' ')).toContain('Wish Points/tokens');
+  });
+
+  it('does not let a non-organization actor satisfy required skills via organization tags', () => {
+    const requiresLegal = task({
+      id: 'requires_legal',
+      skillTags: ['legal'],
+      title: 'Requires legal skill',
+    });
+    const affiliatedHuman = {
+      ...actor,
+      organizationTags: ['legal'],
+      skillTags: ['typescript'],
+    };
+    const legalOrg = {
+      interestTags: [],
+      kind: 'ORGANIZATION' as const,
+      organizationId: 'org_legal',
+      organizationTags: ['legal'],
+      skillTags: [],
+    };
+
+    expect(assessOptimalActorCapability(requiresLegal, affiliatedHuman).status).toBe(
+      'ineligible',
+    );
+    expect(assessOptimalActorCapability(requiresLegal, legalOrg).status).toBe('eligible');
   });
 
   it('scales queue repair value with missing estimate count', () => {
