@@ -9,6 +9,7 @@ import {
   DESTRUCTIVE_ECONOMY_35PCT_YEAR,
   DFDA_ROI_RD_ONLY,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
+  EFFICACY_LAG_YEARS,
   GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE,
@@ -21,13 +22,21 @@ import {
   US_TOTAL_LOBBYING_ANNUAL,
   WISHONIA_TRAJECTORY_GDP_YEAR_20,
 } from "@optimitron/data/parameters";
+import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { ParameterValue } from "@/components/shared/ParameterValue";
+import { AgencyBooths } from "@/components/eos-retro/AgencyBooths";
+import { BudgetFrontierExhibit } from "@/components/eos-retro/BudgetFrontierExhibit";
+import { CollapseClock } from "@/components/eos-retro/CollapseClock";
 import { DeathCounter } from "@/components/eos-retro/DeathCounter";
+import { DfdaOutcomeLabel } from "@/components/eos-retro/DfdaOutcomeLabel";
 import { FourEarthsChart } from "@/components/eos-retro/FourEarthsChart";
 import { HumanityManagerQueue } from "@/components/eos-retro/HumanityManagerQueue";
 import { MachineDiagram } from "@/components/eos-retro/MachineDiagram";
+import { OptimizedDayTimeline } from "@/components/eos-retro/OptimizedDayTimeline";
+import { PolicyGradeTable } from "@/components/eos-retro/PolicyGradeTable";
 import { Starfield } from "@/components/eos-retro/Starfield";
-import { ROUTES } from "@/lib/routes";
+import { WishocracyBooth } from "@/components/eos-retro/WishocracyBooth";
+import { agenciesLink, ROUTES, wishocracyLink } from "@/lib/routes";
 import "./eos-retro.css";
 
 const righteous = Righteous({
@@ -63,6 +72,39 @@ function Section({
         <div className="mt-10">{children}</div>
       </div>
     </section>
+  );
+}
+
+function Exhibit({
+  children,
+  id,
+  letter,
+  title,
+  intro,
+  stepInsideHref,
+  stepInsideLabel,
+}: {
+  children: ReactNode;
+  id: string;
+  letter: string;
+  title: string;
+  intro?: ReactNode;
+  stepInsideHref: string;
+  stepInsideLabel: string;
+}) {
+  return (
+    <div className="er-exhibit" id={id}>
+      <h3 className="er-exhibit-title">
+        Exhibit {letter} · <em>{title}</em>
+      </h3>
+      {intro ? <p className="er-body mt-4 max-w-3xl">{intro}</p> : null}
+      <div className="mt-6">{children}</div>
+      <p className="mt-6">
+        <Link className="er-link er-mono text-sm" href={stepInsideHref}>
+          {stepInsideLabel}
+        </Link>
+      </p>
+    </div>
   );
 }
 
@@ -122,6 +164,45 @@ function AtomOrnament() {
   );
 }
 
+const PAVILIONS = [
+  {
+    emoji: AGENCIES.dcbo.emoji,
+    name: AGENCIES.dcbo.dName,
+    desc: AGENCIES.dcbo.tagline,
+    anchor: "#exhibit-opg",
+  },
+  {
+    emoji: AGENCIES.domb.emoji,
+    name: AGENCIES.domb.dName,
+    desc: AGENCIES.domb.tagline,
+    anchor: "#exhibit-obg",
+  },
+  {
+    emoji: wishocracyLink.emoji ?? "🗳️",
+    name: wishocracyLink.label,
+    desc: wishocracyLink.tagline ?? "",
+    anchor: "#exhibit-wishocracy",
+  },
+  {
+    emoji: AGENCIES.dfda.emoji,
+    name: AGENCIES.dfda.dName,
+    desc: AGENCIES.dfda.tagline,
+    anchor: "#exhibit-dfda",
+  },
+  {
+    emoji: agenciesLink.emoji ?? "🏛️",
+    name: "The Department Store",
+    desc: agenciesLink.tagline ?? "",
+    anchor: "#exhibit-agencies",
+  },
+  {
+    emoji: "🧠",
+    name: "The Human Optimization System",
+    desc: "The same engine, pointed at one human: you.",
+    anchor: "#exhibit-you",
+  },
+];
+
 export function EosRetroLandingPage() {
   return (
     <div className={`eos-retro ${righteous.variable}`}>
@@ -141,33 +222,174 @@ export function EosRetroLandingPage() {
               className="er-display er-hero-headline max-w-5xl"
               style={{ fontSize: "clamp(2.1rem, 5vw, 4rem)" }}
             >
-              Buy the machine that&apos;s making you <em>poorer and deader</em>.
-              Reprogram it to make you <strong>healthier and wealthier</strong>.
+              Live on a planet without <em>war</em> and <strong>disease</strong>.
             </h1>
             <p className="er-body mt-6 max-w-2xl text-lg">
-              Earth Optimization Services has been upgrading civilizations
-              since before your sun ignited. Over 300 planets optimized. Yours
-              is next.
+              Now accepting applications. Earth Optimization Services has
+              upgraded over 300 planets. Yours is next.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <a className="er-btn er-btn-solid" href="#the-tax">
-                See what you&apos;re buying
-              </a>
-              <a className="er-btn" href="#the-deal">
-                I have money and want to help
+              <a className="er-btn er-btn-solid" href="#exhibits">
+                Tour the machine
               </a>
             </div>
           </div>
 
           <p className="pb-6 text-center">
-            <a aria-label="Continue to the first exhibit" className="er-down" href="#the-tax">
+            <a aria-label="Continue to the exhibits" className="er-down" href="#exhibits">
               ▼
             </a>
           </p>
         </div>
       </header>
 
-      {/* ── 2 · The Political Dysfunction Tax ────────────────── */}
+      {/* ── 2 · The Exhibits ─────────────────────────────────── */}
+      <Section
+        deck="Six pavilions from the government of the future, running on real data. Pick a booth or walk the hall in order. The gift shop comes at the end, as is traditional."
+        id="exhibits"
+        title="The exhibits"
+      >
+        <div className="er-pavilion-grid">
+          {PAVILIONS.map((p) => (
+            <a className="er-pavilion" href={p.anchor} key={p.anchor}>
+              <div aria-hidden="true" className="er-pavilion-emoji">
+                {p.emoji}
+              </div>
+              <div className="er-pavilion-name">{p.name}</div>
+              <div className="er-pavilion-desc">{p.desc}</div>
+            </a>
+          ))}
+        </div>
+
+        <Exhibit
+          id="exhibit-opg"
+          intro={AGENCIES.dcbo.wishoniaQuote}
+          letter="A"
+          stepInsideHref={ROUTES.opg}
+          stepInsideLabel="Step inside the Policy Generator"
+          title="Laws graded like homework"
+        >
+          <PolicyGradeTable />
+        </Exhibit>
+
+        <Exhibit
+          id="exhibit-obg"
+          intro={AGENCIES.domb.wishoniaQuote}
+          letter="B"
+          stepInsideHref={ROUTES.obg}
+          stepInsideLabel="Step inside the Budget Generator"
+          title="The budget, solved like an equation"
+        >
+          <BudgetFrontierExhibit />
+        </Exhibit>
+
+        <Exhibit
+          id="exhibit-wishocracy"
+          intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This booth is live. Drag it."
+          letter="C"
+          stepInsideHref={ROUTES.vote}
+          stepInsideLabel="Step inside and cast the vote that counts"
+          title="The ninety-second legislature"
+        >
+          <WishocracyBooth />
+        </Exhibit>
+
+        <Exhibit
+          id="exhibit-dfda"
+          intro={
+            <>
+              Earth&apos;s current system makes a treatment wait{" "}
+              <ParameterValue figures={2} param={EFFICACY_LAG_YEARS} /> years after it is
+              proven safe. Just sitting there. Being safe. The replacement is
+              a label that updates as fast as the data arrives.
+            </>
+          }
+          letter="D"
+          stepInsideHref={ROUTES.dfda}
+          stepInsideLabel="Step inside the Decentralized FDA"
+          title="Medicine without the waiting room"
+        >
+          <DfdaOutcomeLabel />
+        </Exhibit>
+
+        <Exhibit
+          id="exhibit-agencies"
+          intro="Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each booth shows what the old way costs and the lines that replace it."
+          letter="E"
+          stepInsideHref={ROUTES.agencies}
+          stepInsideLabel="Step inside the department store"
+          title="The department store"
+        >
+          <AgencyBooths />
+        </Exhibit>
+
+        <div className="er-exhibit" id="exhibit-you">
+          <h3 className="er-exhibit-title">
+            Exhibit F · <em>The Human Optimization System</em>
+          </h3>
+          <p className="er-body mt-4 max-w-3xl">
+            The same engine, pointed at one human: you.
+          </p>
+          <div className="mt-6 grid gap-10 lg:grid-cols-2">
+            <HumanityManagerQueue />
+            <div>
+              <p className="er-body text-lg">
+                Every human on Earth is a president of Earth Optimization
+                Services. The machine computes your highest-value next action,
+                from taking your medication to redirecting{" "}
+                <ParameterValue param={TREATY_ANNUAL_FUNDING} />, with the same
+                arithmetic. It is running today. Connect any AI assistant to
+                the MCP server and ask it what you should do next.
+              </p>
+              <p className="er-body mt-6">
+                The health engine already generated outcome labels from 12
+                million datapoints contributed by 10,000 people. The rankings
+                are public at{" "}
+                <a
+                  className="er-link"
+                  href={STUDIES_URL}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  studies.dfda.earth
+                </a>
+                .
+              </p>
+              <div className="mt-8">
+                <Link className="er-btn" href={ROUTES.mcp}>
+                  Ask the machine what to do next
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ── 3 · A Day in the Optimized Life ──────────────────── */}
+      <section className="er-section er-day" id="day">
+        <div className="er-container">
+          <h2 className="er-day-title text-4xl sm:text-5xl md:text-6xl">
+            A day in the optimized life
+          </h2>
+          <p className="er-day-deck mt-5 max-w-3xl">
+            Year twelve after the upgrade. An ordinary Tuesday.
+          </p>
+          <div className="mt-10">
+            <OptimizedDayTimeline />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4a · The Collapse Clock ──────────────────────────── */}
+      <Section
+        deck="You have now seen the future on offer. Here is the schedule if you decline."
+        id="collapse"
+        title="The collapse clock"
+      >
+        <CollapseClock />
+      </Section>
+
+      {/* ── 4b · The Political Dysfunction Tax ───────────────── */}
       <Section id="the-tax" title="The political dysfunction tax">
         <div className="er-giant">
           <ParameterValue
@@ -235,8 +457,9 @@ export function EosRetroLandingPage() {
         </div>
       </Section>
 
-      {/* ── 3 · Someone Already Ran The Experiment ───────────── */}
+      {/* ── 5 · Someone Already Ran The Experiment ───────────── */}
       <Section
+        deck="The machine making you poorer and deader is publicly traded. Twelve people already proved you can buy the controls."
         id="experiment"
         title="Someone already ran the experiment"
       >
@@ -308,38 +531,7 @@ export function EosRetroLandingPage() {
         </blockquote>
       </Section>
 
-      {/* ── 4 · Your Money, Twenty Years, Four Ways ──────────── */}
-      <Section
-        id="four-earths"
-        title="Type your net worth. Watch twenty years happen to it."
-      >
-        <div className="er-panel p-5 sm:p-8">
-          <FourEarthsChart />
-        </div>
-        <p className="er-body mt-8 max-w-3xl">
-          The red line is not a prophecy. It is the current trend line,
-          extended, using growth rates already measured: the destructive
-          economy runs at{" "}
-          <ParameterValue param={GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP} /> of
-          world output today and crosses 35% around{" "}
-          <ParameterValue display="integer" param={DESTRUCTIVE_ECONOMY_35PCT_YEAR} />
-          . Whole-Earth output at 2045:{" "}
-          <ParameterValue param={CURRENT_TRAJECTORY_GDP_YEAR_20} /> if the
-          luck holds, <ParameterValue param={TREATY_TRAJECTORY_GDP_YEAR_20} />{" "}
-          with the 1% redirect,{" "}
-          <ParameterValue param={WISHONIA_TRAJECTORY_GDP_YEAR_20} /> once the
-          stupidity stops.
-        </p>
-        <p
-          className="er-mono mt-6 text-sm"
-          style={{ color: "var(--er-gold)" }}
-        >
-          Every decision is locally sensible. The aggregate output does not
-          have to be extinction.
-        </p>
-      </Section>
-
-      {/* ── 5 · The Machine ──────────────────────────────────── */}
+      {/* ── 5b · The Machine ─────────────────────────────────── */}
       <Section
         deck="Left to right: your money becomes better laws. The return conveyor at the bottom is what makes it a machine and not a charity."
         id="machine"
@@ -372,44 +564,35 @@ export function EosRetroLandingPage() {
         </div>
       </Section>
 
-      {/* ── 6 · The Human Optimization System ────────────────── */}
+      {/* ── 6 · Your Money, Twenty Years, Four Ways ──────────── */}
       <Section
-        deck="The same engine, pointed at one human: you."
-        id="manager"
-        title="The Human Optimization System"
+        id="four-earths"
+        title="Type your net worth. Watch twenty years happen to it."
       >
-        <div className="grid gap-10 lg:grid-cols-2">
-          <HumanityManagerQueue />
-          <div>
-            <p className="er-body text-lg">
-              Every human on Earth is a president of Earth Optimization
-              Services. The machine computes your highest-value next action,
-              from taking your medication to redirecting{" "}
-              <ParameterValue param={TREATY_ANNUAL_FUNDING} />, with the same
-              arithmetic. It is running today. Connect any AI assistant to
-              the MCP server and ask it what you should do next.
-            </p>
-            <p className="er-body mt-6">
-              The health engine already generated outcome labels from 12
-              million datapoints contributed by 10,000 people. The rankings
-              are public at{" "}
-              <a
-                className="er-link"
-                href={STUDIES_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                studies.dfda.earth
-              </a>
-              .
-            </p>
-            <div className="mt-8">
-              <Link className="er-btn" href={ROUTES.mcp}>
-                Ask the machine what to do next
-              </Link>
-            </div>
-          </div>
+        <div className="er-panel p-5 sm:p-8">
+          <FourEarthsChart />
         </div>
+        <p className="er-body mt-8 max-w-3xl">
+          The red line is not a prophecy. It is the current trend line,
+          extended, using growth rates already measured: the destructive
+          economy runs at{" "}
+          <ParameterValue param={GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP} /> of
+          world output today and crosses 35% around{" "}
+          <ParameterValue display="integer" param={DESTRUCTIVE_ECONOMY_35PCT_YEAR} />
+          . Whole-Earth output at 2045:{" "}
+          <ParameterValue param={CURRENT_TRAJECTORY_GDP_YEAR_20} /> if the
+          luck holds, <ParameterValue param={TREATY_TRAJECTORY_GDP_YEAR_20} />{" "}
+          with the 1% redirect,{" "}
+          <ParameterValue param={WISHONIA_TRAJECTORY_GDP_YEAR_20} /> once the
+          stupidity stops.
+        </p>
+        <p
+          className="er-mono mt-6 text-sm"
+          style={{ color: "var(--er-gold)" }}
+        >
+          Every decision is locally sensible. The aggregate output does not
+          have to be extinction.
+        </p>
       </Section>
 
       {/* ── 7 · The Deal ─────────────────────────────────────── */}

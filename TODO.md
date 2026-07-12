@@ -29,13 +29,19 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 
 ## Next Up
 
-- [ ] EOS retro landing Phase B (`feature/eos-landing-retro` shipped Phase A):
+- [ ] EOS retro landing Phase B (`feature/eos-landing-retro` shipped Phase A;
+      round 2 restructured it exhibits-first, money-last):
       homepage variant flip pending Mike approval (one-liner in `app/page.tsx`);
       extend sanctioned dark theme to `/fund`; add parameters for numbers now
       copy-only (Engine No. 1 facts, dFDA 12M datapoints / 10K contributors,
       use-of-proceeds $500K/$1M/$2M ladder, model parameter count "670");
       spec §9 "thirteen channels" upside passage not in manual — used canonical
       flywheel passage instead, restore if Mike supplies the source.
+- [ ] EOS landing round-2 follow-ups: dFDA exhibit card is an illustrative
+      statin sample (labeled) — wire to a real studies.dfda.earth feed;
+      collapse-clock parasitic-base calibration (11.5% @ 2020) copied from the
+      Sierra slide — promote to a parameter; pavilion grid "expand" is
+      anchor-scroll, revisit if Mike wants in-place expansion.
 
 Bugs and concrete debt:
 
