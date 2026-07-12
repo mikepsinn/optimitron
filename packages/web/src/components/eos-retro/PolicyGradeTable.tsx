@@ -7,7 +7,7 @@ import { usPolicyAnalysis } from "@/data/us-policy-analysis";
  * generated usPolicyAnalysis dataset (same source as /opg).
  */
 
-const ROW_LIMIT = 5;
+export const POLICY_ROW_LIMIT = 5;
 
 type PolicyRowData = (typeof usPolicyAnalysis.policies)[number];
 
@@ -25,7 +25,7 @@ export function topDistinctPolicies(): PolicyRowData[] {
   for (const policy of usPolicyAnalysis.policies) {
     if (BENCHMARK_TEMPLATE_ROW.test(policy.name)) continue;
     rows.push(policy);
-    if (rows.length >= ROW_LIMIT) break;
+    if (rows.length >= POLICY_ROW_LIMIT) break;
   }
   return rows;
 }

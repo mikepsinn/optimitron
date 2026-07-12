@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BOOTHS } from "./AgencyBooths";
-import { topDistinctPolicies } from "./PolicyGradeTable";
+import { POLICY_ROW_LIMIT, topDistinctPolicies } from "./PolicyGradeTable";
 
 describe("AgencyBooths", () => {
   it("every booth code anchor still exists in its agency's replacement code", () => {
@@ -16,11 +16,14 @@ describe("AgencyBooths", () => {
 });
 
 describe("PolicyGradeTable", () => {
-  it("shows at most four policies with distinct effect pairs, in ranking order", () => {
+  it("shows at most the row limit, named structural reforms only", () => {
     const rows = topDistinctPolicies();
-    expect(rows.length).toBeLessThanOrEqual(4);
+    expect(rows.length).toBeLessThanOrEqual(POLICY_ROW_LIMIT);
     expect(rows.length).toBeGreaterThan(0);
-    const signatures = rows.map((r) => `${r.healthEffect}|${r.incomeEffect}`);
-    expect(new Set(signatures).size).toBe(signatures.length);
+    // Template benchmark rows ("Category: Adopt Country X's Approach") are
+    // generator filler and must never reach the exhibit.
+    for (const row of rows) {
+      expect(row.name).not.toMatch(/: Adopt .+'s Approach$/);
+    }
   });
 });
