@@ -25,5 +25,5 @@
 - Humanity built TikTok and a website where people argue about sandwiches. This is a TypeScript monorepo that might help prevent extinction. Fifteen packages. Open source.
 - [GITHUB](https://github.com/mikepsinn/optimitron)
 #### DATA
-- You are a meat robot with 37 trillion cells breaking in 7,000 different ways. Track what you put in it. The dFDA can learn what is actually working.
+- You are a meat robot with 37 trillion cells breaking in 7,000 different ways. Log what goes in. The dFDA finds what actually works across millions of you.
 - [TRANSMIT DATA](/transmit)

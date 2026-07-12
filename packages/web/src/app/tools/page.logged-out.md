@@ -13,9 +13,9 @@
 
 ## Visible Page Copy
 
-- 28 TOOLS
+- 30 TOOLS
 ## THE ARMORY
-- Your toolkit for fixing the mess described above. Browse. Equip. Try not to break anything important.
+- Every machine I used to optimize my planet, now yours to run. Pick one. Point it at a number that needs moving.
 ### ANALYSIS
 - [📋OPTIMAL POLICY GENERATOR Grade every policy A–F by what actually happened](/opg)
 - [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](/obg)
@@ -23,7 +23,7 @@
 - [🏛️POLITICIAN LEADERBOARD How your representatives actually vote vs what you want](/governments/US/politicians)
 - [📊HUMANITY'S SCOREBOARD Worst leaders, best signature collectors](/scoreboard)
 ### HEALTH
-- [🧬OPTIMAL INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH](/agencies/dih)
+- [🧬DECENTRALIZED INSTITUTES OF HEALTH 97% clinical trials, 3% overhead — the exact mirror of your NIH](/agencies/dih)
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](/agencies/dfda)
 - [🩺CONDITIONS Find disease evidence](/agencies/dfda/conditions)
 - [💊TREATMENTS Compare treatment evidence](/agencies/dfda/treatments)
@@ -48,9 +48,11 @@
 - [🪪REMIND PRESIDENTS Remind presidents to promote the general welfare](/employees)
 - [📡TRANSMIT Thirty seconds — what you ate, how you slept, how you feel](/transmit)
 - [📊MANAGE HUMANITY Get humanity to agree](/dashboard)
+- [🔌MCP Connect your AI agent to the live task graph](/mcp)
+- [{}DEVELOPERS Optimize Earth from your own app](/developers)
 - [📋CENSUS Location, income, demographics - become a useful data point](/census)
 - [☀️CHECK-IN Thirty seconds a day of minimum viable self-awareness](/check-in)
-### STILL BROWSING?
+### DONE BROWSING?
 - The metrics won't move themselves.
 - [PLAY THE GAME](/prize)
 - [VIEW SCOREBOARD](/scoreboard)

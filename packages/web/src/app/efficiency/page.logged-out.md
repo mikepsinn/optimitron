@@ -14,8 +14,8 @@
 ## Visible Page Copy
 
 - EFFICIENCY RANKINGS
-## CHEAPEST HIGH PERFORMERS, NOT WISHFUL THINKING
-- These are the comparator countries the current OBG output is using when it says the US is overspending. Each row links back to the underlying budget category and, where available, the drafted legislation.
+## SAME RESULTS, LOWER PRICE. HERE IS WHO ALREADY DOES IT
+- Every row is a country buying the same outcome for less. The US pays more and ranks lower. Open any row for the budget category and, where available, the drafted legislation.
 | CATEGORY | BEST COUNTRY | US SPEND / CAP | BEST SPEND / CAP | US RANK | OVERSPEND | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- | --- | --- |
 | [Military](/obg/military) [OPEN LEGISLATION](/legislation/military-reform) | Switzerland Life Expectancy: 83.37 | $2,052 | $389 | 27/28 | 5.3x | $564B |
@@ -37,6 +37,6 @@
 | [State Department / Diplomacy](/obg/state-department-diplomacy) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
 | [Interior / Natural Resources](/obg/interior-natural-resources) | Singapore After-Tax Median Income (PPP): 36844.31 | $12,848 | $7,868 | 23/26 | 1.6x | $1.7T |
 - [BACK TO OBG Full category-by-category spending analysis.](/obg)
-- [OPTIMIZATION DIVIDEND Translate the savings into household-level payouts.](/dividend)
+- [OPTIMIZATION DIVIDEND See the savings as a check to your household.](/dividend)
 - [GOVERNMENT SIZE Look at the whole-government floor instead of individual budget lines.](/government-size)
-- Generated 4/6/2026 from the live web analysis pipeline.
+- Generated 7/12/2026 from live public spending data.

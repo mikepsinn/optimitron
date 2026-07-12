@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Optimal Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron | International Campaign to End War and Disease
+- Page title: Decentralized Institutes of Health: National Institutes of Health + FDA — DEPRECATED | Optimitron | International Campaign to End War and Disease
 - Meta description: You spend $47 billion a year on medical research and 3.3% of it funds actual trials. The rest funds grant proposals about trials. It's like buying 4.7 million cars and spending $1 on a mechanic.
 - Canonical: [missing]
 - Open Graph title: International Campaign to End War and Disease
@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 - DEPRECATED
-- OPTIMAL INSTITUTES OF HEALTH
+- DECENTRALIZED INSTITUTES OF HEALTH
 ## NATIONAL INSTITUTES OF HEALTH + FDA
 - “97% clinical trials, 3% overhead — the exact mirror of your NIH”
 - — WISHONIA, PLANETARY SYSTEMS ENGINEER

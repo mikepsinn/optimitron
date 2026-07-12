@@ -29,6 +29,40 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 
 ## Next Up
 
+- [ ] EOS retro landing Phase B (`feature/eos-landing-retro` shipped Phase A;
+      round 2 restructured it exhibits-first, money-last):
+      homepage variant flip pending Mike approval (one-liner in `app/page.tsx`);
+      extend sanctioned dark theme to `/fund`; add parameters for numbers now
+      copy-only (Engine No. 1 facts, dFDA 12M datapoints / 10K contributors,
+      use-of-proceeds $500K/$1M/$2M ladder, model parameter count "670");
+      spec §9 "thirteen channels" upside passage not in manual — used canonical
+      flywheel passage instead, restore if Mike supplies the source.
+- [ ] EOS landing round-2 follow-ups: dFDA exhibit card is an illustrative
+      statin sample (labeled) — wire to a real studies.dfda.earth feed;
+      collapse-clock parasitic-base calibration (11.5% @ 2020) copied from the
+      Sierra slide — promote to a parameter; pavilion grid "expand" is
+      anchor-scroll, revisit if Mike wants in-place expansion.
+
+- [ ] Door-to-door YES sheet follow-ups (`/door-to-door` shipped on
+      `feature/eos-landing-retro`): optional full-treaty-text back page;
+      per-referendum sheet generalization (3 referendums configured; only the
+      treaty has a live vote flow today); phase-2 canvass upload flow (sheet
+      photo → sourceArtifact → represented votes — needs `ReferendumVote`
+      provenance field + paper-pending vote source, schema change requires
+      Mike's approval); canvass mission task under the campaign branch once
+      the optimitron MCP connector is re-authed.
+- [ ] OPG generated-data quality: 18 of 23 US policy rows are templated
+      "Category: Adopt Country X's Approach" benchmark transplants with
+      copy-pasted effect pairs. Landing exhibit now filters them
+      (`PolicyGradeTable.topDistinctPolicies`) — fix the generator to emit
+      distinct defensible per-category estimates, then drop the filter.
+- [ ] /compute "Basement Professor" follow-ups (Phase 1 shipped on
+      `feature/eos-landing-retro`): scheduled price-snapshot refresh
+      (eBay/vast.ai) instead of hand-curated asOf dates; per-card price
+      history; sovereign-compute program task under `optimize-earth` +
+      basement-node MCP client spec (getAIQueue worker loop); install-lead
+      handling beyond the mailto CTA.
+
 Bugs and concrete debt:
 
 - [ ] MCP `getTask` double-escapes nested child descriptions (contamination
@@ -137,9 +171,10 @@ Needs Mike (one-line answers unblock):
 - Funding split: retail donations fund campaign operations; chain treasuries
   are a separate prize-pool track. Never divert charitable donations into the
   prize contract.
-- Plan files need a Cost-Benefit Matrix before `/autoplan` final gate
-  (hook-enforced); new-feature plans must acknowledge existing
-  routes/branches/commits for the feature noun (hook-enforced).
+- Copy commits require Mike seeing verbatim before/after + approving via
+  AskUserQuestion first (binding convention; blocking hooks retired
+  2026-07-12 — all pre-commit checks are advisory now, new hooks only when
+  Mike asks).
 
 ## Commit Contract
 

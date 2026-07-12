@@ -33,7 +33,7 @@
 - ROLE
 - [Abd al-Hamid Dbeibeh Government of Libya Public official / LY 1 task](/people/abd-al-hamid-dbeibeh-ly)
 - [Abdalla Hamdok Government of Sudan Public official / SD 1 task](/people/abdalla-hamdok-sd)
-- [[initials]Abdoulaye Maïga Government of Mali Public official / ML 1 task](/people/abdoulaye-maiga-ml)
+- [[initials] Abdoulaye Maïga Government of Mali Public official / ML 1 task](/people/abdoulaye-maiga-ml)
 - [Abdoulkader Kamil Mohamed Government of Djibouti Public official / DJ 1 task](/people/abdoulkader-kamil-mohamed-dj)
 - [Abdulla Aripov Government of Uzbekistan Public official / UZ 1 task](/people/abdulla-aripov-uz)
 - [Abiy Ahmed Government of Ethiopia Public official / ET 1 task](/people/abiy-ahmed-et)

@@ -418,8 +418,18 @@ export const ${exportName}: ${typeName} = ${json};
 
 // ── Generate budget analysis ──────────────────────────────────────
 
-// Import efficient frontier decile data for scatter plot visualization
-import { SPENDING_CATEGORIES } from '../../examples/src/us-federal-analysis/generate-efficient-frontier-report.js';
+// Efficient-frontier decile data for the scatter plot. Vendored from the
+// last output of the deleted examples/ package
+// (examples/src/us-federal-analysis/generate-efficient-frontier-report.js)
+// so `pnpm generate` runs without it; regenerate from @optimitron/obg when
+// the frontier pipeline moves in-package.
+import SPENDING_CATEGORIES_JSON from './spending-category-deciles.json';
+
+const SPENDING_CATEGORIES = SPENDING_CATEGORIES_JSON as Array<{
+  categoryId: string;
+  categoryName: string;
+  deciles: Array<{ decile: number; avgSpending: number; outcome: number }>;
+}>;
 
 // Natural experiments kept as standalone file for now — needs OPG pipeline integration
 

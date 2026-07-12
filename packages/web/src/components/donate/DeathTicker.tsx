@@ -1,25 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { GLOBAL_DISEASE_DEATHS_PER_MINUTE } from "@optimitron/data/parameters";
 import { BrutalCard } from "@/components/ui/brutal-card";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-
-const DEATHS_PER_SECOND = GLOBAL_DISEASE_DEATHS_PER_MINUTE.value / 60;
+import { useDeathTick } from "@/hooks/useDeathTick";
 
 export function DeathTicker() {
-  const startedAt = useRef<number | null>(null);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    startedAt.current = Date.now();
-    const id = setInterval(() => {
-      if (startedAt.current === null) return;
-      const elapsedSec = (Date.now() - startedAt.current) / 1000;
-      setCount(Math.floor(elapsedSec * DEATHS_PER_SECOND));
-    }, 250);
-    return () => clearInterval(id);
-  }, []);
+  const { open } = useDeathTick();
+  const count = Math.floor(open);
 
   return (
     <BrutalCard bgColor="red" shadowSize={8} className="mb-6">

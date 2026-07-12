@@ -282,12 +282,14 @@ export default async function PosterPage({
             font-size: 0.68in !important;
           }
 
+          /* 296mm (not 297mm): Chrome pixel rounding on exact-A4 sheets
+             spills a blank trailing page. */
           .poster-sheet[data-paper-size="a4"] {
             page: poster-a4;
             width: 210mm !important;
-            height: 297mm !important;
-            min-height: 297mm !important;
-            max-height: 297mm !important;
+            height: 296mm !important;
+            min-height: 296mm !important;
+            max-height: 296mm !important;
           }
 
           .poster-sheet[data-paper-size="a4"] .poster-headline {
@@ -371,6 +373,16 @@ export default async function PosterPage({
             Print it, tape it up, and share it. Every human who votes through
             your link earns you optimization points and moves humanity one
             click closer to ending war and disease.
+          </p>
+          <p className="mt-3 text-sm font-bold text-foreground">
+            Going door to door?{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.doorToDoor}
+            >
+              Print the YES signature sheet
+            </Link>{" "}
+            instead.
           </p>
           {hasPersonalReferralUrl ? (
             <p className="mt-2 break-all text-sm font-bold text-muted-foreground">

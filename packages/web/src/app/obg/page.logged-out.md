@@ -16,7 +16,7 @@
 ## THE US FEDERAL BUDGET, DIAGNOSED
 - Your government's $6.71T shopping list, reviewed by someone who's actually done the maths. 18 categories. Most of them wrong.
 ### RELATED ANALYSIS
-- [OPTIMIZATION DIVIDEND Translate the savings into household payouts.](/dividend)
+- [OPTIMIZATION DIVIDEND See the savings land in your household as cash.](/dividend)
 - [EFFICIENCY RANKINGS See the comparator countries behind each overspend claim.](/efficiency)
 - [GOVERNMENT SIZE Switch from federal line items to whole-government floor analysis.](/government-size)
 - [MODEL LEGISLATION Read the drafted bills built from this analysis.](/legislation)
@@ -66,7 +66,7 @@
 | [State Department / Diplomacy](/obg/state-department-diplomacy) | $19B | $12B | +37.5% | 1.6× | Decrease |
 | [Interior / Natural Resources](/obg/interior-natural-resources) | $17B | $11B | +37.5% | 1.6× | Decrease |
 | [EPA / Environment](/obg/epa-environment) | $12B | $6B | +52.4% | 2.1× | Decrease |
-- Generated 4/6/2026 · Source: Optimitron OBG (Optimal Budget Generator)
+- Generated 7/12/2026 · Source: Optimitron OBG (Optimal Budget Generator)
 ### THE EFFICIENT FRONTIER
 - Every country is a data point. The frontier shows what the best-performing countries achieve at each spending level, measured by life expectancy — the metric that actually tells you if people are alive and functional. The US is spending 2.6x what the frontier countries spend — for worse outcomes. On my planet, we call this “paying extra to be worse at things.”
 #### SPENDING VS LIFE EXPECTANCY

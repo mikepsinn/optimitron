@@ -621,6 +621,16 @@ jobs:
           fi
           publish_root="packages/web/output/playwright/pages-per-pr"
           touch "$publish_root/.nojekyll"
+          # Vercel reads vercel.json from the DEPLOYED commit's tree, so the
+          # repo's gh-pages:false rule never applies to the gh-pages branch
+          # itself (it only contains these screenshots). Publish a
+          # deployment kill-switch into the branch at both paths Vercel
+          # might resolve (repo root and the project's packages/web root)
+          # so every visual-review push stops producing a failed Vercel
+          # deploy + failure email.
+          echo '{"git":{"deploymentEnabled":false},"github":{"enabled":false}}' > "$publish_root/vercel.json"
+          mkdir -p "$publish_root/packages/web"
+          echo '{"git":{"deploymentEnabled":false},"github":{"enabled":false}}' > "$publish_root/packages/web/vercel.json"
           cat > "$publish_root/index.html" <<'HTML'
           <!doctype html>
           <html lang="en">

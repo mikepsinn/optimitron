@@ -665,9 +665,40 @@ export const usPolicyAnalysis: PolicyReportJSON = {
       "blockingFactors": [
         "political_opposition"
       ]
+    },
+    {
+      "name": "Right to Trial & FDA Upgrade Act",
+      "type": "regulation",
+      "category": "health_research",
+      "description": "Guarantee every patient the right to join a pragmatic trial of any treatment that passed safety testing, and upgrade the FDA to publish real-time outcome labels from all treatment data.",
+      "recommendationType": "implement",
+      "evidenceGrade": "B",
+      "causalConfidenceScore": 0.554,
+      "policyImpactScore": 0.49,
+      "welfareScore": 39,
+      "incomeEffect": 0.05,
+      "healthEffect": 0.35,
+      "bradfordHillScores": {
+        "strength": 0.931,
+        "consistency": 0.451,
+        "temporality": 1,
+        "gradient": 0.265,
+        "experiment": 0.25,
+        "plausibility": 1,
+        "coherence": 0.699,
+        "analogy": 0.85,
+        "specificity": 0.477
+      },
+      "rationale": "Oxford RECOVERY enrolled 49,000+ patients through routine hospital care and found four life-saving COVID treatments in months at roughly $500/patient versus ~$41,000 in conventional trials. Most patients are ineligible for conventional trials, and 6,650 diseases have zero approved treatments. The act applies the RECOVERY model to every disease: universal trial-access rights plus automated real-time outcome labels. US Right to Try (2018) and Japan conditional approval are narrow enacted precedents; no country has implemented the full model.",
+      "currentStatus": "Draft legislation; most patients ineligible for conventional trials; 6,650 diseases with zero FDA-approved treatments",
+      "recommendedTarget": "Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)",
+      "blockingFactors": [
+        "industry_resistance",
+        "institutional_resistance"
+      ]
     }
   ],
-  "generatedAt": "2026-04-06T06:40:06.290Z",
+  "generatedAt": "2026-07-12T07:26:48.637Z",
   "generatedBy": "@optimitron/opg",
   "note": "Generated using Bradford Hill scoring and welfare calculation from real cross-country evidence."
 };

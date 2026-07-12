@@ -15,6 +15,7 @@
 
 ## PRINT YOUR REFERRAL POSTER
 - Print it, tape it up, and share it. Every human who votes through your link earns you optimization points and moves humanity one click closer to ending war and disease.
+- Going door to door? [Print the YES signature sheet](/door-to-door) instead.
 - This prints the generic campaign URL. [Sign in](/auth/signin) to personalize the URL and QR code.
 - PRINT
 - COPY LINK

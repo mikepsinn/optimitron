@@ -22,6 +22,12 @@ export function WishocracyItemInclusion({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [includedItemIds, setIncludedItemIds] = useState<Set<WishocraticItemId>>(new Set())
   const [direction, setDirection] = useState<'left' | 'right' | null>(null)
+  const [showDescription, setShowDescription] = useState(false)
+
+  // Each card starts collapsed, including when navigating back.
+  useEffect(() => {
+    setShowDescription(false)
+  }, [currentIndex])
 
   const currentItemId = allItems[currentIndex]
   const category = WISHOCRATIC_ITEMS[currentItemId]
@@ -176,9 +182,19 @@ export function WishocracyItemInclusion({
                 <h3 className="text-2xl md:text-3xl font-black uppercase mb-4">
                   {category.name}
                 </h3>
-                <p className="text-lg text-muted-foreground">
-                  {category.description}
-                </p>
+                {showDescription ? (
+                  <p className="text-lg text-muted-foreground">
+                    {category.description}
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowDescription(true)}
+                    className="text-sm font-bold uppercase underline text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    What&apos;s this?
+                  </button>
+                )}
               </div>
 
               {/* Action Buttons */}

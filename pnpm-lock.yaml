@@ -509,6 +509,9 @@ importers:
       '@sentry/nextjs':
         specifier: ^10.47.0
         version: 10.47.0(@opentelemetry/context-async-hooks@2.6.1)(@opentelemetry/core@2.6.1)(@opentelemetry/sdk-trace-base@2.6.1)(next@15.5.15)(react@18.3.1)(webpack@5.105.4)
+      '@tanstack/query-core':
+        specifier: 5.95.2
+        version: 5.95.2
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.95.2(react@18.3.1)
@@ -642,8 +645,8 @@ importers:
         specifier: ^2
         version: 2.47.6(typescript@5.7.3)(zod@3.25.76)
       wagmi:
-        specifier: ^3.5.0
-        version: 3.6.0(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6)
+        specifier: 3.5.0
+        version: 3.5.0(@tanstack/query-core@5.95.2)(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6)
       web-push:
         specifier: ^3.6.7
         version: 3.6.7
@@ -10355,15 +10358,15 @@ packages:
       pretty-format: 29.7.0
     dev: true
 
-  /@wagmi/connectors@8.0.0(@wagmi/core@3.4.1)(@walletconnect/ethereum-provider@2.23.8)(typescript@5.7.3)(viem@2.47.6):
-    resolution: {integrity: sha512-Uvo1Y75o7/5ShuVJdmNPpAreGKHTLongAn2CO1pwPhVvaInt9FqR8bHjIraUp8aHjE1Xk81drc7K62khKVMg+Q==}
+  /@wagmi/connectors@7.2.1(@wagmi/core@3.4.0)(@walletconnect/ethereum-provider@2.23.8)(typescript@5.7.3)(viem@2.47.6):
+    resolution: {integrity: sha512-/tyDepUMDM8eNzNX3ofjqHNRFZ6XcZ3u0+cQp5x0/LHCpMA8tRh7A1/e7dTrYiIJeL7iLgHzfHUXCsU02OKMLQ==}
     peerDependencies:
       '@base-org/account': ^2.5.1
       '@coinbase/wallet-sdk': ^4.3.6
-      '@metamask/connect-evm': ~0.9.0
+      '@metamask/sdk': ~0.33.1
       '@safe-global/safe-apps-provider': ~0.18.6
       '@safe-global/safe-apps-sdk': ^9.1.0
-      '@wagmi/core': 3.4.1
+      '@wagmi/core': 3.4.0
       '@walletconnect/ethereum-provider': ^2.21.1
       porto: ~0.2.35
       typescript: '>=5.7.3'
@@ -10373,7 +10376,7 @@ packages:
         optional: true
       '@coinbase/wallet-sdk':
         optional: true
-      '@metamask/connect-evm':
+      '@metamask/sdk':
         optional: true
       '@safe-global/safe-apps-provider':
         optional: true
@@ -10386,14 +10389,14 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@wagmi/core': 3.4.1(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6)
+      '@wagmi/core': 3.4.0(@tanstack/query-core@5.95.2)(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6)
       '@walletconnect/ethereum-provider': 2.23.8(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(zod@3.25.76)
       typescript: 5.7.3
       viem: 2.47.6(typescript@5.7.3)(zod@3.25.76)
     dev: false
 
-  /@wagmi/core@3.4.1(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6):
-    resolution: {integrity: sha512-sEiwTERUmmxYwcvTEmKfN8ERDftt7JwutSAwa8RRAjmtJblUNBJp5VcPEzgQ+NPfnSO9Kq05OBSKSiocLNhhOQ==}
+  /@wagmi/core@3.4.0(@tanstack/query-core@5.95.2)(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6):
+    resolution: {integrity: sha512-EU5gDsUp5t7+cuLv12/L8hfyWfCIKsBNiiBqpOqxZJxvAcAiQk4xFe2jMgaQPqApc3Omvxrk032M8AQ4N0cQeg==}
     peerDependencies:
       '@tanstack/query-core': '>=5.0.0'
       ox: '>=0.11.1'
@@ -10407,6 +10410,7 @@ packages:
       typescript:
         optional: true
     dependencies:
+      '@tanstack/query-core': 5.95.2
       eventemitter3: 5.0.1
       mipd: 0.0.7(typescript@5.7.3)
       typescript: 5.7.3
@@ -21464,8 +21468,8 @@ packages:
       xml-name-validator: 5.0.0
     dev: true
 
-  /wagmi@3.6.0(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6):
-    resolution: {integrity: sha512-PIpihH3N4tDbtiJNmH4uExPjE4nwL7zU+y+DlUBoSGPw92bXl11mU6NXlruSCx+JKG+/ThAYeJivh+ByTpPQrw==}
+  /wagmi@3.5.0(@tanstack/query-core@5.95.2)(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6):
+    resolution: {integrity: sha512-39uiY6Vkc28NiAHrxJzVTodoRgSVGG97EewwUxRf+jcFMTe8toAnaM8pJZA3Zw/6snMg4tSgWLJAtMnOacLe7w==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       react: '>=18'
@@ -21476,8 +21480,8 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-query': 5.95.2(react@18.3.1)
-      '@wagmi/connectors': 8.0.0(@wagmi/core@3.4.1)(@walletconnect/ethereum-provider@2.23.8)(typescript@5.7.3)(viem@2.47.6)
-      '@wagmi/core': 3.4.1(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6)
+      '@wagmi/connectors': 7.2.1(@wagmi/core@3.4.0)(@walletconnect/ethereum-provider@2.23.8)(typescript@5.7.3)(viem@2.47.6)
+      '@wagmi/core': 3.4.0(@tanstack/query-core@5.95.2)(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.47.6)
       react: 18.3.1
       typescript: 5.7.3
       use-sync-external-store: 1.4.0(react@18.3.1)
@@ -21485,7 +21489,7 @@ packages:
     transitivePeerDependencies:
       - '@base-org/account'
       - '@coinbase/wallet-sdk'
-      - '@metamask/connect-evm'
+      - '@metamask/sdk'
       - '@safe-global/safe-apps-provider'
       - '@safe-global/safe-apps-sdk'
       - '@tanstack/query-core'

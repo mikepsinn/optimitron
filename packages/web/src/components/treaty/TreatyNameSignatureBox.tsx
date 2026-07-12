@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { DashboardShareCard } from "@/components/dashboard/DashboardShareCard";
@@ -64,7 +64,47 @@ export function TreatyNameSignatureBox({
   const [submitting, setSubmitting] = useState(false);
   const [signed, setSigned] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Server-recorded signature for the session user: undefined = still
+   *  checking, null = none, object = already signed (fresh page loads,
+   *  e.g. returning from the email sign-in link). */
+  const [existingVote, setExistingVote] = useState<
+    { displayName: string | null; signedOn: string } | null | undefined
+  >(undefined);
   const now = useHydratedNow();
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      if (status === "unauthenticated") setExistingVote(null);
+      return;
+    }
+    let cancelled = false;
+    void fetch(`/api/referendums/${referendumSlug}/vote`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then(
+        (data: {
+          vote: { answer: string; createdAt: string; displayName: string | null } | null;
+        } | null) => {
+          if (cancelled) return;
+          if (data?.vote && data.vote.answer === REFERENDUM_ANSWER.YES) {
+            setExistingVote({
+              displayName: data.vote.displayName,
+              signedOn: new Date(data.vote.createdAt).toLocaleDateString(
+                "en-US",
+                { year: "numeric", month: "long", day: "numeric" },
+              ),
+            });
+          } else {
+            setExistingVote(null);
+          }
+        },
+      )
+      .catch(() => {
+        if (!cancelled) setExistingVote(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, referendumSlug]);
 
   const referralUrl = useMemo(
     () => buildUserReferralUrl(session?.user),
@@ -153,20 +193,42 @@ export function TreatyNameSignatureBox({
     setSigned(true);
   }
 
-  if (signed && status === "authenticated") {
+  if ((signed || existingVote) && status === "authenticated") {
     // Catch the user at peak commitment — right after signing — and put
     // the share kit in front of them inline. Reuses the same
     // `<DashboardShareCard>` that lives on /dashboard so the Humanity
     // Manager copy + apocalypse math + canonical share message stay in
-    // exactly one place.
+    // exactly one place. Returning signers (fresh page load, e.g. back
+    // from the email sign-in link) get the same state with their
+    // recorded signature instead of the box.
     return (
       <div className={cn("mx-auto w-full max-w-2xl", className)}>
-        <p className="mb-6 text-center text-2xl font-black uppercase text-foreground">
-          Signed. Thank you for ending war and disease.
+        <p className="mb-2 text-center text-2xl font-black uppercase text-foreground">
+          {signed
+            ? "Signed. Thank you for ending war and disease."
+            : "You signed the treaty."}
         </p>
+        {existingVote && !signed ? (
+          <p className="mb-6 text-center text-base font-bold text-muted-foreground">
+            {existingVote.displayName ?? "Recorded"}, {existingVote.signedOn}.
+            One vote per human — yours is on the register.
+          </p>
+        ) : (
+          <div className="mb-4" />
+        )}
         <DashboardShareCard referralUrl={referralUrl} />
       </div>
     );
+  }
+
+  // Session still resolving, or authenticated but the already-signed
+  // check hasn't answered yet: don't flash a signature box at someone
+  // who may have signed.
+  if (
+    status === "loading" ||
+    (status === "authenticated" && existingVote === undefined)
+  ) {
+    return <div className={cn("mx-auto w-full max-w-md", className)} />;
   }
 
   if (signed) {

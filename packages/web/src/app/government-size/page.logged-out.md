@@ -17,7 +17,7 @@
 ## WHOLE-GOVERNMENT FLOOR, NOT JUST FEDERAL LINE ITEMS
 - This view asks a different question from OBG: how much total government spending is consistent with strong direct welfare outcomes in the cross-country panel, before we even argue about composition.
 ### OBJECTIVE FLOORS
-- The headline floor is not the only one published. These variants show how the answer moves when you isolate health-only versus combined direct welfare objectives.
+- Ask a government to keep you alive: that is one number. Ask it to keep you alive and not poor: that is a bigger one. Governments find this distinction surprising. Both numbers are below.
 - COMBINED DIRECT WELFARE
 - 23.4%
 - US-EQUIVALENT SPENDING SHARE
@@ -38,7 +38,7 @@
 | 1995 to 2023 | 27.8% | 24.3% - 44.7% | within optimal band |
 | 2000 to 2023 | 22.0% | 20.0% - 24.3% | above optimal band |
 ### EFFICIENT JURISDICTIONS
-- Jurisdictions with repeated observations inside the minimum-efficient per-capita band.
+- Countries that spend little and keep their people alive anyway. On my planet we call that the whole job.
 - FINLAND
 - 2 QUALIFYING OBSERVATIONS
 - $19,030
@@ -70,7 +70,7 @@
 #### TOP SCALE-DOWNS
 - MILITARY
 - -59.7% reallocation · target share 5.3%
-- [CATEGORY BUDGETS Return to the federal line-item analysis.](/obg)
-- [EFFICIENCY RANKINGS See the cross-country comparators driving the budget case.](/efficiency)
-- [OPTIMIZATION DIVIDEND Translate the savings into household-level outcomes.](/dividend)
-- Generated 4/6/2026 from the current government-size analysis artifact.
+- [CATEGORY BUDGETS See where every federal dollar should go.](/obg)
+- [EFFICIENCY RANKINGS See which countries get more life per dollar.](/efficiency)
+- [OPTIMIZATION DIVIDEND See what the savings put in your household's pocket.](/dividend)
+- Numbers refreshed 4/6/2026 from the current government-size analysis.

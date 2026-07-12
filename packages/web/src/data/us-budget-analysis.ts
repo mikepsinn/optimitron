@@ -2482,7 +2482,7 @@ export const usBudgetAnalysis: BudgetReportJSON = {
     "Justice / Law Enforcement: United States spends $12848/cap (rank 25/26). South Korea spends $6037/cap with Life Expectancy 83.57. Overspend: 2.1x. Potential savings: $2.3T/yr",
     "Energy: United States spends $1991/cap (rank 25/28). Netherlands spends $1064/cap with After-Tax Median Income (PPP) 31221.39. Overspend: 1.9x. Potential savings: $314B/yr"
   ],
-  "generatedAt": "2026-04-06T06:40:06.277Z",
+  "generatedAt": "2026-07-12T07:26:48.627Z",
   "generatedBy": "@optimitron/obg + OECD cross-country panel",
   "inflationAdjustment": {
     "method": "CPI-U deflator",

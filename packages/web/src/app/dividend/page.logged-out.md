@@ -14,10 +14,10 @@
 ## Visible Page Copy
 
 - OPTIMIZATION DIVIDEND
-## WHAT EFFICIENCY PAYS BACK TO ACTUAL PEOPLE
-- This is the household-facing view of the budget analysis. We deduplicate overlapping OECD buckets, take the cheapest high-performing comparator in each category, and translate the savings into a per-adult dividend.
+## YOUR GOVERNMENT IS OVERCHARGING YOU. HERE IS THE REFUND.
+- On my planet, when the state buys a service for triple the going rate, the difference goes back to the household. So we did the math for yours. We line up every category against the cheapest country that gets better results, and split the overspend per adult. That is your dividend.
 ### BREAKDOWN
-- Each row is the cleanest spend-too-much, get-worse-results comparison available in the current OBG data.
+- Every row: your government pays more and gets worse results than a country that already solved it. Pick the cheaper one.
 | CATEGORY | MODEL | OVERSPEND | SAVINGS / ADULT | SAVINGS / YEAR |
 | --- | --- | --- | --- | --- |
 | [Justice / Law Enforcement](/obg/justice-law-enforcement) | South Korea | 2.1x | $8,950 | $2.3T |
@@ -67,7 +67,7 @@
 - Total national savings
 - $25348.0B/yr
 - Don't like a reform? Redirect your dividend back to any program you choose. Your money, your call.
-- [BUDGET ANALYSIS See the underlying category-by-category evidence and the spending deltas.](/obg)
-- [EFFICIENCY RANKINGS Inspect the cheapest high performers and the current US rank in each tracked bucket.](/efficiency)
-- [MODEL LEGISLATION Read the drafted bills that turn the spending diagnosis into concrete policy text.](/legislation)
-- Generated 4/6/2026 from the live web analysis pipeline.
+- [BUDGET ANALYSIS Every category, every number, every country that does it cheaper. The receipts.](/obg)
+- [EFFICIENCY RANKINGS Who delivers more for less, and where the US actually ranks in each category.](/efficiency)
+- [MODEL LEGISLATION The bills that turn the overspend into law. Already written.](/legislation)
+- Generated 7/12/2026 from live public spending data.

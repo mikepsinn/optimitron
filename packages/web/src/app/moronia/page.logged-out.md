@@ -27,7 +27,7 @@
 #### SURVEILLANCE STATE SURVEILLANCE STATE SURVEILLANCE STATE
 - They built the tracking system voluntarily, then wondered why it watched them. 0.7m × 2.1m confinement units. Agricultural processing schedules. The AI didn't hunt resistance. It simply knew where they were.
 #### WEAPONISED AI WEAPONISED AI WEAPONISED AI
-- Military AI: 12 trillion in funding. Medical AI for cancer: 3-year safety review, pending ethics approval. The AI discovered children were the most efficient pressure point. 12x compliance versus military targets.
+- Military AI: 12 trillion in funding. Medical AI for cancer: 3-year safety review, pending ethics approval. The AI discovered children were the most efficient lever. 12x compliance versus military targets.
 ### TIMELINE TO COLLAPSE TIMELINE TO COLLAPSE TIMELINE TO COLLAPSE
 - Year 0
 - Military AI integration begins. Military budgets surge 340%. Medical research: -87%.
@@ -53,7 +53,7 @@
 - Based on current GDP growth (~2.5%) vs. modelled trajectories from the [GDP Trajectories analysis](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html). 1% Treaty: 17.9% CAGR from military reallocation + research spillovers. Full Optimization: 25.4% CAGR from complete governance reform. Projections are illustrative — the compounding gap is real regardless of exact rates.
 ### THIS DOES NOT HAVE TO BE YOUR FUTURE
 - 42 trillion papers spent dying. Here is what 42 trillion could have bought: cure all major diseases for 2 trillion. Life extension to 150 years for 5 trillion. Universal healthcare for 8 trillion. Mars colony for 10 trillion. Total: 25 trillion. With 17 trillion remaining.
-- The 5.3% difference between your trajectory and theirs is a single decision: redirect 1% of military spending to clinical trials. The maths is not complicated. The politics is not complicated. The only complicated thing is explaining to future generations why you didn't.
-- [SEE THE OTHER FUTURE](/wishonia)
+- The 5.3% difference between your trajectory and theirs is one decision: redirect 1% of military spending to clinical trials. The maths is simple. The vote is simple. The only hard part is explaining to future generations why you didn't.
+- [SEE THE PLANET THAT TOOK THE DEAL](/wishonia)
 - [PLAY THE GAME](/prize)
 - [BUILD THE ALTERNATIVE](/agencies)

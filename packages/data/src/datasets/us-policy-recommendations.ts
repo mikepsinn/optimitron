@@ -84,6 +84,18 @@ export const STRUCTURAL_POLICY_REFORMS: PolicyRecommendation[] = [
     blockingFactors: ['institutional_resistance', 'industry_resistance'],
   },
   {
+    name: 'Right to Trial & FDA Upgrade Act',
+    type: 'regulation', category: 'health_research',
+    description: 'Guarantee every patient the right to join a pragmatic trial of any treatment that passed safety testing, and upgrade the FDA to publish real-time outcome labels from all treatment data.',
+    effectSize: 0.8, studyCount: 6, hasPredecessor: true, doseResponseExists: false,
+    hasRCT: false, mechanismKnown: true, consistentWithTheory: true, analogyExists: true, outcomeCount: 2,
+    incomeEffect: 0.05, healthEffect: 0.35,
+    rationale: 'Oxford RECOVERY enrolled 49,000+ patients through routine hospital care and found four life-saving COVID treatments in months at roughly $500/patient versus ~$41,000 in conventional trials. Most patients are ineligible for conventional trials, and 6,650 diseases have zero approved treatments. The act applies the RECOVERY model to every disease: universal trial-access rights plus automated real-time outcome labels. US Right to Try (2018) and Japan conditional approval are narrow enacted precedents; no country has implemented the full model.',
+    currentStatus: 'Draft legislation; most patients ineligible for conventional trials; 6,650 diseases with zero FDA-approved treatments',
+    recommendedTarget: 'Enact patient trial-access rights plus a real-time FDA outcome-label platform (dFDA)',
+    blockingFactors: ['industry_resistance', 'institutional_resistance'],
+  },
+  {
     name: 'Housing Supply Deregulation',
     type: 'regulation', category: 'housing',
     description: 'Remove restrictive zoning that constrains housing supply. Tokyo, Minneapolis, Oregon show reduced housing cost growth.',

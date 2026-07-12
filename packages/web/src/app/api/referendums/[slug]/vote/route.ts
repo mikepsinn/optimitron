@@ -388,3 +388,64 @@ export async function POST(
     return NextResponse.json({ error: "Failed to cast vote" }, { status: 500 });
   }
 }
+
+/**
+ * GET /api/referendums/[slug]/vote — the session user's own vote, if any.
+ * Lets signature surfaces render the already-signed state on a fresh page
+ * load (e.g. returning from an email sign-in link) instead of re-offering
+ * the signature box.
+ */
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  try {
+    const { userId } = await requireAuth(request);
+    const { slug } = await params;
+
+    const referendum = await prisma.referendum.findUnique({
+      where: { slug, deletedAt: null },
+      select: { id: true },
+    });
+    if (!referendum) {
+      return NextResponse.json(
+        { error: "Referendum not found" },
+        { status: 404 },
+      );
+    }
+
+    const person = await ensurePersonForUser(userId);
+    const vote = await prisma.referendumVote.findUnique({
+      where: {
+        referendumId_personId: {
+          referendumId: referendum.id,
+          personId: person.id,
+        },
+      },
+      select: {
+        answer: true,
+        createdAt: true,
+        deletedAt: true,
+        isPublic: true,
+        person: { select: { displayName: true } },
+      },
+    });
+
+    return NextResponse.json({
+      vote: vote && !vote.deletedAt
+        ? {
+            answer: vote.answer,
+            createdAt: vote.createdAt,
+            displayName: vote.person.displayName,
+            isPublic: vote.isPublic,
+          }
+        : null,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    log.error("Error", error);
+    return NextResponse.json({ error: "Failed to load vote" }, { status: 500 });
+  }
+}

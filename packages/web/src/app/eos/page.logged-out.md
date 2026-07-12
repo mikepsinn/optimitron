@@ -13,90 +13,261 @@
 
 ## Visible Page Copy
 
+- [page-open-deaths]
 - EARTH OPTIMIZATION SERVICES
-- CORRECTION: YOUR APPLICATION WAS ACCEPTED AT BIRTH. YOU ARE ONE OF 8,000,000,000 PRESIDENTS.
-- [TOUR THE DEPARTMENTS](#departments)
-- [SHOP THE SERVICE COUNTER](#service-counter)
-## THE GOVERNMENT OF TOMORROW IS IN STOCK.
-- It measures whether people live longer and earn more, keeps the policies that work, and drops the ones that don't. Your current model spends [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)x more testing weapons than cures. Trade-ins accepted.
-### WHAT THIS IS
-- A government has one job: promote the general welfare — make the median citizen healthier and richer. The current models misplace about [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) a year — the gap between the policies you get and the optimal ones a working government would pick. Below is the replacement catalog, plus a service counter of repairs you can order today. All of it is open source. This page is just the tour.
-### YOUR GOVERNMENT HAS NO THERMOSTAT.
-- Your oven measures the temperature, compares it to what you asked for, and adjusts. So does your fridge, your cruise control, your toilet. Your government runs the most complex system on Earth with less feedback than a toaster.
-#### YOUR OVEN
-- IT CHECKS, THEN ADJUSTS
-- This is why your food is edible.
-#### YOUR GOVERNMENT
-- IT DOESN'T CHECK ANYTHING
-- It never checks whether the policy worked. This is why your citizens are dead.
-- INSTALLS THE THERMOSTAT
-- Measure two numbers — how long people live, how much they earn — keep the policies that raise them, drop the ones that don't, repeat.
-### THE DEPARTMENTS
-- Every agency you already pay for, rebuilt so it can tell whether it's working. Prices are for planetary installation.
-- REPLACES: LEGISLATIVE GUESSWORK
-#### THE OPTIMITRON
-- The machine that writes laws and budgets from evidence. Two centuries of data from nearly every country go in. Three features come standard: the Optimal Policy Generator finds the laws that raise health and income, the Optimal Budget Generator does the same for spending, and Wishocracy is the ballot where eight billion presidents split the budget with simple this-or-that choices. It already runs as software. The math is public.
-- [READ THE SPEC](https://optimocracy.warondisease.org)
-- REPLACES: FOOD AND DRUG ADMINISTRATION
-#### DECENTRALIZED FDA
-- Turns ordinary healthcare into evidence. Pragmatic trials at [$929/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) instead of [$41,000/patient](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), run in real clinics on outcomes that matter. It prevents a year of death and suffering for [84 cents](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html), which is the best price anyone has quoted on anything.
-- [$40.0 million](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
-- [READ THE SPEC](https://manual.warondisease.org/knowledge/appendix/dfda-impact-paper.html)
-- REPLACES: THE NIH
-#### DECENTRALIZED INSTITUTES OF HEALTH
-- Receives the treaty's [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) and pays for results instead of grant paperwork. Nobody gets paid for writing essays about why they should be allowed to try curing things. They get paid for curing things.
-- [$230 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$21.1 million/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html)
-- [READ THE BLUEPRINT](https://manual.warondisease.org/knowledge/solution/dih.html)
-- REPLACES: COURTS THAT CAN'T SUBPOENA A GOVERNMENT
-#### COURT OF HUMANITY
-- Where eight billion humans judge governments that spend public money against the public. Registers plaintiffs, summons jurors, publishes the evidence, renders the verdict, and enforces the settlement — the 1% Treaty.
-- [$30.0 million](https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html)
-- [ENTER THE COURT](/court)
-- REPLACES: DEPARTMENT OF DEFENSE (NÉE DEPARTMENT OF WAR)
-#### DEPARTMENT OF PEACE
-- You are picturing a very strong robot that collects the missiles and throws them into the sun. We have something stronger: a buy order. The department buys the weapons companies — the sellers get richer, and nobody shoots at a brokerage account — converts the stockpiles into reactor fuel (your species already did this once; it powered your lightbulbs for twenty years), and retires the war budget at 1% a year, verified. Disputes take six minutes. Nobody dies.
-- [$2.72 trillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- [$290,000](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
-- [READ THE SPEC](https://manual.warondisease.org/knowledge/solution/department-of-peace.html)
-- REPLACES: INTERNAL REVENUE SERVICE
-#### AUTOMATED REVENUE SERVICE
-- Your tax code is 17.5 Harry Potters long, except Harry Potter has a coherent plot and your tax code has loopholes. The replacement is six lines of code: every transfer sends 0.5% to the treasury. No filing. No forms. No audits. You cannot lobby a smart contract.
-- [$12.3 billion](https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html)
-- [$150 million](https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html)
-- [$1,670](https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html)
-- [READ THE SPEC](https://manual.warondisease.org/knowledge/solution/automated-revenue-service.html)
-- REPLACES: SOCIAL SECURITY ADMINISTRATION + WELFARE BUREAUCRACY
-#### UNIVERSAL SECURITY ADMINISTRATION
-- The welfare bureaucracy becomes a for-loop: if you are human, you qualify. No applications, no caseworkers, no 45-day wait while the hungry stay hungry. Running the whole thing costs [$0.30](https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html) per citizen a year.
-- [$101 million](https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html)
-- [READ THE SPEC](https://manual.warondisease.org/knowledge/solution/universal-security-administration.html)
-- REPLACES: FEDERAL ELECTION COMMISSION + CAMPAIGN FINANCE SYSTEM
-#### ALIGNED ELECTION COMMISSION
-- One number per politician: how closely their votes match what citizens actually want. Score high, get funded. Represent donors instead, get nothing. The current system is a vending machine where lobbyists insert money and legislation comes out. The replacement is a scoreboard where citizens insert preferences and representation comes out.
-- [$7.00 million](https://manual.WarOnDisease.org/knowledge/solution/aligned-election-commission.html)
-- [READ THE SPEC](https://manual.warondisease.org/knowledge/solution/aligned-election-commission.html)
-### THE SERVICE COUNTER
-- Order civilization repairs like anything else you shop for. Every item shows the price, what you get, and the return on your dollar. Money-back guarantee: if the work never happens, your money comes back.
-#### [Ratify the 1% Treaty](/tasks/1-pct-treaty#funding)
-- The fastest known settlement is one percent of the war budget pointed at disease.
-- $2,500 COMMITTED - 0%
-- [GET IT NOW](/tasks/1-pct-treaty#funding)
-#### [Establish the Court of Humanity](/tasks/court-of-humanity#funding)
-- A majority jury needs a court-shaped place to render the verdict.
-- OPENING DAY. BE THE FIRST.
-- [GET IT NOW](/tasks/court-of-humanity#funding)
-#### [Fund the decentralized FDA directly](/tasks/dfda#funding)
-- The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.
-- [GET IT NOW](/tasks/dfda#funding)
-#### [The Loving Takeover](/tasks/loving-takeover#funding)
-- The best lobbyists money can buy currently block the treaty. So we buy them.
-- [GET IT NOW](/tasks/loving-takeover#funding)
-#### [Seed the shirt cascade](/tasks/shirt-seed#funding)
-- A small paid seed of visible wearers turns into billions of free ones. The funder buys the spark, not the fire.
-- [GET IT NOW](/tasks/shirt-seed#funding)
-### EMPLOYEE MANUAL
-- The manual at manual.warondisease.org is the employee handbook. Earth Optimization Services is the Company, which is you and everyone else. You run the planet now.
-- [READ THE EMPLOYEE MANUAL](https://manual.warondisease.org)
-- EOS also sells shares. That conversation is legally required to be boring, so it happens over here.
-- [SHAREHOLDER PAPERWORK](/fund)
+## LIVE ON A PLANET WITHOUT WAR AND DISEASE.
+- Now accepting applications. Earth Optimization Services has upgraded over 300 planets. Yours is next.
+- [TOUR THE MACHINE](#exhibits)
+- [▼](#exhibits)
+### THE EXHIBITS
+- Six pavilions from the government of the future, running on real data. Pick a booth or walk the hall in order. The gift shop comes at the end, as is traditional.
+- [📋OPTIMAL POLICY GENERATOR Grade every policy A–F by what actually happened](#exhibit-opg)
+- [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](#exhibit-obg)
+- [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](#exhibit-wishocracy)
+- [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#exhibit-dfda)
+- [🏛️THE DEPARTMENT STORE 22 agencies. No bureaucracy. Just code.](#exhibit-agencies)
+- [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#exhibit-you)
+#### EXHIBIT A · LAWS GRADED LIKE HOMEWORK
+- 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. But sure, let the humans keep guessing.
+| POLICY | HEALTH | INCOME | GRADE | VERDICT |
+| --- | --- | --- | --- | --- |
+| Universal Pre-K (Ages 3-4) | +0.10 yrs | +0.15 pp/yr | A | REALLOCATE |
+| Pragmatic Clinical Trial Funding Reform | +0.30 yrs | +0.05 pp/yr | A | ENACT |
+| Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp/yr | B | ENACT |
+| Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
+| Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
+- Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
+- [Step inside the Policy Generator](/opg)
+#### EXHIBIT B · THE BUDGET, SOLVED LIKE AN EQUATION
+- 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone and costs nothing.
+- Fig. 2 · OECD countries grouped into ten health-spending deciles. Past the gold point, every extra dollar buys less life. The dot on the far right is the decile the United States lives in.
+- MILITARY: WHAT YOU PAY VS THE EFFICIENT FLOOR
+- Current, per person
+- $2K
+- Efficient floor
+- $377
+- Source: OECD efficient frontier (28 countries, rank 27/28). The generator's verdict: major decrease, closing 81% of the gap.
+- Run every category this way and the whole government costs $8.7K per person instead of $21.8K, for equal or better outcomes. A 2.5x markup, currently billed to you.
+- [Step inside the Budget Generator](/obg)
+#### EXHIBIT C · THE NINETY-SECOND LEGISLATURE
+- Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This booth is live. Drag it.
+- One live pair from the ballot. Of the money available for both, drag the handle to split it. Your drag stays on this page.
+- PRAGMATIC CLINICAL TRIALS
+- $2B/yr today · ROI 45:1
+- BOMBING IRAN
+- $37B/yr today · Negative ROI
+- LOCK IN MY SPLIT
+- [Step inside and cast the vote that counts](/vote)
+#### EXHIBIT D · MEDICINE WITHOUT THE WAITING ROOM
+- Earth's current system makes a treatment wait [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years after it is proven safe. Just sitting there. Being safe. The replacement is a label that updates as fast as the data arrives.
+- OUTCOME LABEL
+- Lipid-lowering agent
+- ATORVASTATIN 20MG
+- LDL Cholesterol
+- -43%
+- Cardiovascular Risk
+- -36%
+- HDL Cholesterol
+- +5%
+- Side effects: Muscle Pain 8.2% · Liver Enzymes 1.2%
+- 42 trials, 48,500 participants
+- TREATMENT RANKINGS
+- High cholesterol, ranked by effectiveness
+- Atorvastatin 20mg
+- 87% effective · 92% safe · 95% confidence
+- Rosuvastatin 10mg
+- 84% effective · 89% safe · 91% confidence
+- Ezetimibe 10mg
+- 62% effective · 96% safe · 88% confidence
+- Exhibit sample typeset from published statin trial aggregates. The live labels update continuously as real-world data arrives.
+- [Step inside the Decentralized FDA](/agencies/dfda)
+#### EXHIBIT E · THE DEPARTMENT STORE
+- Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each booth shows what the old way costs and the lines that replace it.
+- 🧾
+- AUTOMATED REVENUE SERVICE
+- Replaces Internal Revenue Service
+- $212B+
+- recovered every year, mostly from paperwork
+- [Visit the booth](/agencies/dtreasury/dirs)
+- 🏦
+- ALGORITHMIC RESERVE
+- Replaces Federal Reserve System
+- 96%
+- of the dollar's purchasing power lost since 1913, no longer confiscatable
+- [Visit the booth](/agencies/dtreasury/dfed)
+- 🍞
+- UNIVERSAL SECURITY ADMINISTRATION
+- Replaces Social Security Administration + Welfare Bureaucracy
+- $1.1 TRILLION
+- in annual admin overhead deleted by one for-loop
+- [Visit the booth](/agencies/dtreasury/dssa)
+- 🌐
+- DECENTRALIZED CENSUS BUREAU
+- Replaces United States Census Bureau
+- $1.4B
+- a year saved by one view function that never undercounts
+- [Visit the booth](/agencies/dcensus)
+- 💀
+- DEPARTMENT OF PEACE
+- Replaces Department of Defense (née Department of War)
+- $2.72T
+- in annual global military spending on a negative-sum game
+- [Visit the booth](/agencies/ddod)
+- 🧬
+- DECENTRALIZED INSTITUTES OF HEALTH
+- Replaces National Institutes of Health + FDA
+- $45.5B
+- a year redirected from grant paperwork to actual trials
+- [Visit the booth](/agencies/dih)
+- 📚
+- LEARNING FREEDOM NETWORK
+- Replaces Department of Education
+- $10B+
+- a year of compliance churn; money follows the child instead
+- [Visit the booth](/agencies/dedu)
+- 🏠
+- HOUSING ABUNDANCE EXCHANGE
+- Replaces Department of Housing and Urban Development
+- $25B+
+- a year of scarcity management replaced by permission to build
+- [Visit the booth](/agencies/dhome)
+- The letter chip is the Earth agency's current report-card grade, computed from its spending trend against its outcome trend.
+- [SEE ALL 22 DEPARTMENTS](/agencies)
+- [Step inside the department store](/agencies)
+#### EXHIBIT F · THE HUMAN OPTIMIZATION SYSTEM
+- The same engine, pointed at one human: you.
+- OPTIMITRON // NEXT BEST ACTION
+- OPERATOR: YOU
+- #1
+- OVERDUE
+- Sign the 1% Treaty publicly
+- 36 seconds
+- #2
+- 22:30
+- Take night meds
+- 2 min
+- #3
+- 23:00
+- Record mood + energy (1 to 5)
+- 1 min
+- #4
+- QUEUED
+- Apply for the Survival and Flourishing Fund grant
+- 2.5 h, EV $70,000
+- awaiting input _
+- Every human on Earth is a president of Earth Optimization Services. The machine computes your highest-value next action, from taking your medication to redirecting [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), with the same arithmetic. It is running today. Connect any AI assistant to the MCP server and ask it what you should do next.
+- The health engine already generated outcome labels from 12 million datapoints contributed by 10,000 people. The rankings are public at [studies.dfda.earth](https://studies.dfda.earth).
+- [ASK THE MACHINE WHAT TO DO NEXT](/mcp)
+### A DAY IN THE OPTIMIZED LIFE
+- Year twelve after the upgrade. An ordinary Tuesday.
+- 6:00 AM
+- You wake up without an alarm. Also without the depression. The treatment that worked was ranked first for your biology by an outcome label, not discovered by accident in year nine of trying things.
+- 7:30 AM
+- Breakfast. The advice on the carton comes from outcome data on millions of real people, not from whichever food lobby bought the guidelines that decade.
+- 12:00 PM
+- You vote on the national budget over lunch. Ten pairs, ninety seconds. Clinical trials or another aircraft carrier. You feel strongly about one of these.
+- 3:00 PM
+- Your daughter's history class covers how citizens used to change policy: they walked long distances in large groups, holding signs, and hoped. She raises her hand. “They WALKED? That was the plan?” Nobody laughs. It was the plan.
+- 6:00 PM
+- Groceries. The 0.5% transaction tax settles itself somewhere between the register and your account. You have never filed a tax form. April is just a month.
+- 9:00 PM
+- The news is boring on purpose. The last war is a documentary, and “medical bankruptcy” is a phrase your daughter will need a historian to explain. You do not set an alarm.
+### THE COLLAPSE CLOCK
+- You have now seen the future on offer. Here is the schedule if you decline.
+- [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
+- The year the parasitic half of the economy outweighs the productive half, at growth rates already measured.
+- [collapse-countdown]
+- States that reached these extraction loads, and what happened next:
+- Argentina 2001
+- 38%
+- Yugoslavia 1991
+- 40%
+- Soviet Union 1991
+- 45%
+- [The trajectory math](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html#two-paths)
+- Fig. 3 · Share of world output, 2015 to 2045. The red line is war, fraud, cybercrime, and enforced waste, growing at its measured rate. Dotted thresholds, bottom to top: Argentina at 38%, Yugoslavia at 40%, the Soviet Union at 45%. No country has crossed them and kept its government.
+### THE POLITICAL DYSFUNCTION TAX
+- [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html)
+- /YEAR
+- This is not the national debt. This is not the deficit. This is the annual cost of having a government that optimizes for the wrong things. It spends [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)x more on the capacity to kill people than on the research to save them. Not taken from you in taxes. Taken from you in a future that doesn't arrive.
+- [$12,600/year](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)
+- Your share, per person
+- Withheld annually. No statement mailed.
+- [52 cents](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html)
+- Value per dollar of government
+- A vending machine at this hit rate gets unplugged.
+- [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
+- Kill capacity vs. cure testing
+- Dollars spent on weapons capacity for every government dollar testing cures.
+- [Read the full forensic audit](/dysfunction-tax)
+- The good news: miscalibration is fixable. That is what calibration means.
+### SOMEONE ALREADY RAN THE EXPERIMENT
+- The machine making you poorer and deader is publicly traded. Twelve people already proved you can buy the controls.
+- ENGINE NO. 1 · 2021
+- In 2021, twelve people with $12.5 million and 0.02% of ExxonMobil won three seats on its board. Vanguard and BlackRock, who own roughly 60%, voted with them. The argument was: your strategy is destroying the value of the people who own this company.
+- WHAT LAWS COST, RETAIL
+- Military policy, bought annually
+- [$198 million/year](https://manual.WarOnDisease.org/knowledge/appendix/faq.html)
+- All of it: every sector, every committee
+- [$4.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/algorithmic-public-administration-paper.html)/yr
+- Board seats across the military-industrial complex
+- [$48.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html)
+- That last number is [0.016%](https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html) of the money on Earth. These numbers buy your laws. They are also, in capital markets terms, very small numbers.
+- Warren Buffett got rich doing one boring thing repeatedly: buy a badly managed company cheap, install better management, pocket the gap. This is the same trade, run on governance instead of management, against the whole economy instead of one company. BlackRock and Vanguard own both sides of every trade on the market, so they only make money when the entire economy grows, and the thing that decides how fast the economy grows is governance. Show them the arithmetic and their votes arrive with it. You are not picking winners. You are fixing the room they all sit in.
+- WE TRIED MORAL PERSUASION FOR 9,000 YEARS. THEN WE TRIED PAYING THEM. TOOK SIX MONTHS.
+### MONEY GOES IN. BETTER LAWS COME OUT.
+- Left to right: your money becomes better laws. The return conveyor at the bottom is what makes it a machine and not a charity.
+- At the intake: [$4.4 billion](https://manual.WarOnDisease.org/knowledge/appendix/algorithmic-public-administration-paper.html) a year currently buys the laws. At the output: a [$101 trillion](https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html) a year gap, waiting to be collected.
+- Your money buys shares of the companies whose lobbying writes the budget. The floor is: you own real companies with real earnings, bought at market price.
+- Shares become board seats: letters the board is legally required to read, votes the index funds are legally required to cast in their portfolio's interest.
+- Board seats redirect the lobbying. The pitch to Lockheed's board is not disarmament. It is: make the same weapons, sell them to the same government, and stop needing a war to justify the invoice.
+- Redirected lobbying changes policy. Better policy grows the economy, and a bigger economy makes every share worth more, including yours. The machine funds its own next turn. You kick it once.
+### TYPE YOUR NET WORTH. WATCH TWENTY YEARS HAPPEN TO IT.
+- NET WORTH
+- ANNUAL INCOME
+- Until you type, the chart runs Earth's median after-tax income: [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) a year. If your number is bigger, congratulations — you are ahead of half of Earth's [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) people.
+- COLLAPSE
+- the trend line, extended
+- FANTASY
+- requires 20 consecutive lucky years
+- 1% TREATY
+- the 1% redirect
+- OPTIMAL
+- stop being stupid
+- Fig. 1 · The Four Earths on offer. Red line: growth rates already measured, left running — extraction load passes 25% of output around 2033 and 35% around 2037. Hover it for the historical company it keeps.
+- The red line is not a prophecy. It is the current trend line, extended, using growth rates already measured: the destructive economy runs at [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of world output today and crosses 35% around [2037](https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html). Whole-Earth output at 2045: [$188 trillion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) if the luck holds, [$322 trillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) with the 1% redirect, [$10.7 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) once the stupidity stops.
+- Every decision is locally sensible. The aggregate output does not have to be extinction.
+### THE DEAL: GET RICH FIXING THE ROOM
+- Earth Optimization Services Inc is a Delaware public benefit corporation. Investors receive non-voting equity: a share of the profit, never the steering wheel.
+- Concentrated power has a terrible track record. Every genocide and every unjust war was started by a small group that had the power to start one; none was ever started by a public vote. So the decisions here get made one civic vote per human, and those votes are not for sale. You cannot buy the steering wheel, no matter how many shares you own.
+- THE FLOOR
+- Part of every dollar buys shares of public companies at market price. Part funds the campaign that makes them worth more. The floor is the portfolio: real companies, real earnings, dividend histories through every war and recession in living memory. The exact split lives in the offering documents.
+- THE UPSIDE
+- Win one board fight and three things happen: the stock goes up, which funds the next fight; the redirected lobbying gets better policy passed, which grows the whole economy; and a bigger economy makes every company worth more, including the ones already in the portfolio. Each feeds the other two. The model pricing all of it is public.
+- THE ARITHMETIC
+- Total campaign cost, worst case
+- [$1 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Unlocked every year the treaty holds
+- [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Trial capacity per research dollar
+- [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+- Return, trial savings alone
+- [637](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)x
+- Return, existing drugs alone
+- [290,000](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html):1
+- All returns are projections from a published model, not guarantees. The model, its 670 parameters, and every derivation chain are public. Equity is illiquid until an exit or listing; do not invest money you need. Full terms are in the offering documents.
+- [REQUEST THE OFFERING DOCUMENTS](/fund)
+- [Who the hell is telling you all this →](https://manual.warondisease.org/knowledge/economics/eos-pitch.html)
+### YOUR MOVE
+- INVEST
+- Non-voting equity in the machine you just toured.
+- [REREAD THE DEAL](#the-deal)
+- BUILD
+- Every module needs engineers, researchers, lawyers, organizers. The Earth Optimization Prize pays cash for completed work.
+- [CLAIM A TASK](/tasks)
+- SPREAD
+- You have a phone. Every person who sees this page brings the timeline forward.
+- [VOTE, THEN SHARE IT](/vote)
+- The disease coming for someone you love almost certainly has no cure yet. This is how one gets found.
+- I love you very much and I do not want you and everyone you have ever loved to be slowly tortured and brutally murdered by horrible diseases.
+- EARTH OPTIMIZATION SERVICES · A WISHONIA PRODUCTION · YOUR APPLICATION WAS ACCEPTED AT BIRTH
