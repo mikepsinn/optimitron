@@ -20,6 +20,9 @@ import type { GpuFleetCard } from "@optimitron/data";
 export const HOURS_PER_MONTH = 730;
 export const SIM_MONTHS = 60;
 
+/** Beyond ~30 years, "never" is the honest payback answer. */
+export const PAYBACK_NEVER_CAP_MONTHS = 360;
+
 /** Cards resell near market value; cases/PSUs/wiring mostly don't. */
 export const CARD_RESALE_FRACTION = 0.92;
 export const SYSTEM_RESALE_FRACTION = 0.3;
@@ -146,7 +149,11 @@ export interface FleetEconomics {
   monthlyFixedUsd: number;
   monthlyTaxUsd: number;
   monthlyNetUsd: number;
-  /** First month where cumulative after-tax net repays capital; null if never within SIM_MONTHS. */
+  /**
+   * First month where cumulative after-tax net repays capital. Extended
+   * analytically past SIM_MONTHS at the month-60 steady state; null means
+   * payback exceeds PAYBACK_NEVER_CAP_MONTHS or income never turns positive.
+   */
   paybackMonths: number | null;
   /** Hardware resale value at month m. */
   resaleAt: (month: number) => number;
@@ -208,6 +215,7 @@ export function computeFleetEconomics(
 
   const cum: number[] = [0];
   let payback: number | null = null;
+  let lastNetM = 0;
   for (let m = 1; m <= SIM_MONTHS; m++) {
     const util = util0 * utilizationAgeFactor(m);
     const rateM = scenario.ratePerHourUsd * (rateMult[m] ?? 1);
@@ -215,7 +223,18 @@ export function computeFleetEconomics(
     const preTaxM = grossM - grossM * feeFrac - monthlyPowerUsd - monthlyFixedUsd;
     const netM = preTaxM - Math.max(0, preTaxM) * taxFrac;
     cum[m] = (cum[m - 1] ?? 0) + netM;
+    lastNetM = netM;
     if (payback === null && units > 0 && (cum[m] ?? 0) >= capitalUsd) payback = m;
+  }
+
+  // Past month 60 the trend taper is a constant residual and the occupancy
+  // curve has bottomed out, so month-60 net income is a steady state:
+  // extend payback analytically instead of reporting ">60 months".
+  // PAYBACK_NEVER_CAP_MONTHS keeps absurd tails (e.g. $3/mo on $100K) honest.
+  if (payback === null && units > 0 && lastNetM > 0) {
+    const remaining = capitalUsd - (cum[SIM_MONTHS] ?? 0);
+    const extended = SIM_MONTHS + Math.ceil(remaining / lastNetM);
+    payback = extended <= PAYBACK_NEVER_CAP_MONTHS ? extended : null;
   }
 
   const clampMonth = (m: number): number =>

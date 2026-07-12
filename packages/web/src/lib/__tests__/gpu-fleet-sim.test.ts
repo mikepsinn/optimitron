@@ -47,9 +47,22 @@ describe("computeFleetEconomics golden values ($100K, defaults, 36-month horizon
     });
   }
 
-  it("finds no payback within 60 months at defaults for any fleet", () => {
+  it("extends payback past the 60-month window instead of capping at >60", () => {
+    // No fleet repays within the 60-month sim at defaults. Fleets whose
+    // month-60 income is still positive get an exact analytic month count;
+    // fleets bleeding cash by month 60 (rate drift compounding against the
+    // older cards) are honestly "never", not ">60".
     for (const g of GOLDENS) {
-      expect(baseEconomicsAtDefaults(g.id).paybackMonths).toBeNull();
+      const payback = baseEconomicsAtDefaults(g.id).paybackMonths;
+      if (payback !== null) {
+        expect(Number.isInteger(payback)).toBe(true);
+        expect(payback).toBeGreaterThan(60);
+        expect(payback).toBeLessThanOrEqual(360);
+      }
+    }
+    // The strong-economics fleets must resolve to a real month count.
+    for (const id of ["pro6000", "h100"] as const) {
+      expect(baseEconomicsAtDefaults(id).paybackMonths).not.toBeNull();
     }
   });
 

@@ -39,8 +39,8 @@ export interface FleetAnalyzerInitialState {
 }
 
 const SECTIONS = [
-  { id: "assumptions", num: "01", label: "Assumptions" },
-  { id: "fleet", num: "02", label: "Fleet" },
+  { id: "fleet", num: "01", label: "Fleet" },
+  { id: "assumptions", num: "02", label: "Assumptions" },
   { id: "marketplaces", num: "03", label: "Marketplaces" },
   { id: "economics", num: "04", label: "Economics" },
   { id: "returns", num: "05", label: "Returns" },
@@ -223,7 +223,11 @@ function fmtSignedInt(n: number): string {
 
 function paybackLabel(e: FleetEconomics): string {
   if (e.units === 0) return "—";
-  if (e.paybackMonths === null) return e.monthlyNetUsd > 0 ? ">60 mo" : "Never";
+  if (e.paybackMonths === null) return "Never at these assumptions";
+  if (e.paybackMonths > 24) {
+    const years = e.paybackMonths / 12;
+    return `${e.paybackMonths} mo (~${years.toFixed(years >= 10 ? 0 : 1)} yr)`;
+  }
   return `${e.paybackMonths} mo`;
 }
 
@@ -291,8 +295,9 @@ export function FleetAnalyzer({
   );
   const [quant, setQuant] = useState<GlmQuant>(initialQuant);
   const [preset, setPreset] = useState<FleetPresetId | "custom">(initialPreset);
-  const [activeSection, setActiveSection] = useState<string>("assumptions");
+  const [activeSection, setActiveSection] = useState<string>("fleet");
   const [copyState, setCopyState] = useState<"copied" | "idle">("idle");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -410,11 +415,11 @@ export function FleetAnalyzer({
       );
       return { id: p.id, name: p.name, value: e.valueAt(horizon) };
     }).sort((a, b) => a.value - b.value);
-    const max = Math.max(
-      investUsd * 1.3,
-      ...rows.filter((r) => r.id !== "singularity").map((r) => r.value * 1.1),
-    );
-    const scale = (v: number) => Math.min(100, Math.max(1, (v / max) * 100));
+    // Linear scale over the TRUE max, singularity included — compressing the
+    // ordinary bars is the honest picture; clamping the outlier was a lie.
+    const max =
+      Math.max(investUsd, ...rows.map((r) => r.value), 1) * 1.05;
+    const scale = (v: number) => Math.max(0.5, (v / max) * 100);
     return {
       rows: rows.map((r) => ({ ...r, pct: scale(r.value) })),
       investPct: scale(investUsd),
@@ -507,8 +512,13 @@ export function FleetAnalyzer({
     });
   }
 
+  const presetLabel =
+    preset === "custom"
+      ? "Custom scenario"
+      : FLEET_PRESETS.find((p) => p.id === preset)?.name ?? "Custom scenario";
+
   return (
-    <div>
+    <div className="pb-16">
       {/* sticky pill nav */}
       <nav
         aria-label="Page sections"
@@ -536,9 +546,116 @@ export function FleetAnalyzer({
         ))}
       </nav>
 
-      {/* ============ 01 ASSUMPTIONS ============ */}
+      {/* ============ 01 FLEET ============ */}
+      <section className="scroll-mt-32 pt-12" id="fleet">
+        <SectionHeading num="01" title="Choose the fleet" />
+        <p className="mt-2 max-w-3xl text-sm font-bold leading-relaxed text-muted-foreground">
+          The price shown includes the GPU itself plus its share of the
+          computer it plugs into (case, processor, power supply, cables). The
+          hourly rate is what a renter — called a &quot;host&quot; — actually
+          earns, before the marketplace takes its cut. &quot;Price trend&quot;
+          shows whether that card&apos;s resale price has been rising or
+          falling lately. Buy links are below each card; rental rates by
+          marketplace are compared in §03.
+        </p>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {allFleets.map(({ card, base: e }) => {
+            const combinedDrift = card.resaleDriftPctPerYear + drift;
+            const selected = card.id === cardId;
+            return (
+              <div
+                aria-pressed={selected}
+                className={`flex cursor-pointer flex-col gap-2 border-2 border-foreground p-3 ${
+                  selected ? "bg-muted" : "bg-background hover:bg-muted"
+                }`}
+                key={card.id}
+                onClick={() => setCardId(card.id)}
+                onKeyDown={(ev) => {
+                  if (ev.key === "Enter" || ev.key === " ") {
+                    ev.preventDefault();
+                    setCardId(card.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-sm font-black uppercase leading-tight">
+                    {card.name}
+                  </span>
+                  <span className="whitespace-nowrap border border-foreground px-1.5 py-0.5 text-[10px] font-black">
+                    {card.vramGb} GB
+                  </span>
+                </div>
+                <dl className="space-y-1 text-xs font-bold">
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Per card</dt>
+                    <dd>{fmtMoney(card.priceUsd + card.overheadUsd)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Rents for</dt>
+                    <dd>${card.ratePerHourUsd.toFixed(2)}/hr</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Power use</dt>
+                    <dd>{card.watts} W</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Price trend</dt>
+                    <dd>{fmtSignedInt(combinedDrift)}%/yr</dd>
+                  </div>
+                </dl>
+                <p className="border-t border-foreground pt-2 text-xs font-bold">
+                  Your budget buys{" "}
+                  <span className="font-black">
+                    {e.units} {e.units === 1 ? "card" : "cards"}
+                  </span>
+                </p>
+                <a
+                  className="text-xs font-black underline underline-offset-4"
+                  href={card.buyUrl}
+                  onClick={(ev) => ev.stopPropagation()}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {card.buyLabel} ↗
+                </a>
+                <a
+                  className="text-[10px] font-bold text-muted-foreground underline"
+                  href={card.priceSourceUrl}
+                  onClick={(ev) => ev.stopPropagation()}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  price src: {card.priceSourceLabel} ↗
+                </a>
+              </div>
+            );
+          })}
+        </div>
+        <p className="mt-3 max-w-3xl text-xs font-bold leading-relaxed text-muted-foreground">
+          Nvidia stopped making two of these five cards (RTX 3090, RTX 4090) —
+          every listing you&apos;ll find is used. Before paying: check the
+          seller&apos;s rating, ask for a photo of the card running{" "}
+          <a
+            className="underline"
+            href="https://www.techpowerup.com/gpuz/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            GPU-Z
+          </a>{" "}
+          (confirms it&apos;s genuinely that card and not a relabeled cheaper
+          one), and pay through eBay/PayPal rather than a direct wire so
+          you&apos;re covered if it arrives dead. No manufacturer warranty
+          left is normal for these two; a steep discount paired with a vague
+          listing is the sign to walk away.
+        </p>
+      </section>
+
+      {/* ============ 02 ASSUMPTIONS ============ */}
       <section className="scroll-mt-32 pt-12" id="assumptions">
-        <SectionHeading num="01" title="Assumptions" />
+        <SectionHeading num="02" title="Assumptions" />
         <p className="mt-2 max-w-3xl text-sm font-bold leading-relaxed text-muted-foreground">
           Every number below updates instantly as you move a slider. The
           starting values come from real 2026 GPU-rental earnings, typical US
@@ -747,16 +864,27 @@ export function FleetAnalyzer({
           <StatTile
             caption="rental income earned so far + what the cards would sell for today"
             label={`Total value after ${horizonLabel} hold`}
+            range={
+              base.units === 0
+                ? undefined
+                : `worst ${fmtMoney(lo.valueAt(T))} — best ${fmtMoney(hi.valueAt(T))}`
+            }
             value={base.units === 0 ? "—" : fmtMoney(base.valueAt(T))}
           />
           <StatTile
             caption={`like saying "this would have been a X%/yr investment"`}
             label={`Yearly return (${horizonLabel} hold, after tax)`}
+            range={base.units === 0 ? undefined : `worst to best: ${roiRange}`}
             value={roiHeadline}
           />
           <StatTile
             caption="from rental income alone, not counting what the cards are still worth"
             label="Time to earn it back"
+            range={
+              base.units === 0
+                ? undefined
+                : `worst ${paybackLabel(lo)} — best ${paybackLabel(hi)}`
+            }
             value={paybackLabel(base)}
           />
         </div>
@@ -783,113 +911,6 @@ export function FleetAnalyzer({
             Send it to the family member with capital.
           </p>
         </div>
-      </section>
-
-      {/* ============ 02 FLEET ============ */}
-      <section className="scroll-mt-32 pt-12" id="fleet">
-        <SectionHeading num="02" title="Choose the fleet" />
-        <p className="mt-2 max-w-3xl text-sm font-bold leading-relaxed text-muted-foreground">
-          The price shown includes the GPU itself plus its share of the
-          computer it plugs into (case, processor, power supply, cables). The
-          hourly rate is what a renter — called a &quot;host&quot; — actually
-          earns, before the marketplace takes its cut. &quot;Price trend&quot;
-          shows whether that card&apos;s resale price has been rising or
-          falling lately. Buy links are below each card; rental rates by
-          marketplace are compared in §03.
-        </p>
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {allFleets.map(({ card, base: e }) => {
-            const combinedDrift = card.resaleDriftPctPerYear + drift;
-            const selected = card.id === cardId;
-            return (
-              <div
-                aria-pressed={selected}
-                className={`flex cursor-pointer flex-col gap-2 border-2 border-foreground p-3 ${
-                  selected ? "bg-muted" : "bg-background hover:bg-muted"
-                }`}
-                key={card.id}
-                onClick={() => setCardId(card.id)}
-                onKeyDown={(ev) => {
-                  if (ev.key === "Enter" || ev.key === " ") {
-                    ev.preventDefault();
-                    setCardId(card.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-sm font-black uppercase leading-tight">
-                    {card.name}
-                  </span>
-                  <span className="whitespace-nowrap border border-foreground px-1.5 py-0.5 text-[10px] font-black">
-                    {card.vramGb} GB
-                  </span>
-                </div>
-                <dl className="space-y-1 text-xs font-bold">
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Per card</dt>
-                    <dd>{fmtMoney(card.priceUsd + card.overheadUsd)}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Rents for</dt>
-                    <dd>${card.ratePerHourUsd.toFixed(2)}/hr</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Power use</dt>
-                    <dd>{card.watts} W</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Price trend</dt>
-                    <dd>{fmtSignedInt(combinedDrift)}%/yr</dd>
-                  </div>
-                </dl>
-                <p className="border-t border-foreground pt-2 text-xs font-bold">
-                  Your budget buys{" "}
-                  <span className="font-black">
-                    {e.units} {e.units === 1 ? "card" : "cards"}
-                  </span>
-                </p>
-                <a
-                  className="text-xs font-black underline underline-offset-4"
-                  href={card.buyUrl}
-                  onClick={(ev) => ev.stopPropagation()}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {card.buyLabel} ↗
-                </a>
-                <a
-                  className="text-[10px] font-bold text-muted-foreground underline"
-                  href={card.priceSourceUrl}
-                  onClick={(ev) => ev.stopPropagation()}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  price src: {card.priceSourceLabel} ↗
-                </a>
-              </div>
-            );
-          })}
-        </div>
-        <p className="mt-3 max-w-3xl text-xs font-bold leading-relaxed text-muted-foreground">
-          Nvidia stopped making two of these five cards (RTX 3090, RTX 4090) —
-          every listing you&apos;ll find is used. Before paying: check the
-          seller&apos;s rating, ask for a photo of the card running{" "}
-          <a
-            className="underline"
-            href="https://www.techpowerup.com/gpuz/"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            GPU-Z
-          </a>{" "}
-          (confirms it&apos;s genuinely that card and not a relabeled cheaper
-          one), and pay through eBay/PayPal rather than a direct wire so
-          you&apos;re covered if it arrives dead. No manufacturer warranty
-          left is normal for these two; a steep discount paired with a vague
-          listing is the sign to walk away.
-        </p>
       </section>
 
       {/* ============ 03 MARKETPLACES ============ */}
@@ -1791,6 +1812,147 @@ export function FleetAnalyzer({
           ))}
         </div>
       </section>
+
+      {/* sticky results footer — the verdict follows you; settings expand up */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-foreground bg-background">
+        {drawerOpen ? (
+          <div className="max-h-[70vh] overflow-y-auto border-b-2 border-foreground px-4 py-4 sm:px-6">
+            <div className="mx-auto max-w-5xl">
+              <p className="text-xs font-black uppercase">Fleet</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {GPU_FLEET_CATALOG.map((c) => (
+                  <button
+                    className={`border-2 border-foreground px-3 py-1.5 text-xs font-black uppercase ${
+                      c.id === cardId
+                        ? "bg-foreground text-background"
+                        : "bg-background text-foreground hover:bg-muted"
+                    }`}
+                    key={c.id}
+                    onClick={() => setCardId(c.id)}
+                    type="button"
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+
+              <p className="mt-4 text-xs font-black uppercase">Scenario</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {FLEET_PRESETS.map((p) => (
+                  <button
+                    className={`border-2 border-foreground px-3 py-1.5 text-xs font-black uppercase ${
+                      preset === p.id
+                        ? "bg-foreground text-background"
+                        : "bg-background text-foreground hover:bg-muted"
+                    }`}
+                    key={p.id}
+                    onClick={() => applyPreset(p.id)}
+                    type="button"
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-2 grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+                <Slider
+                  format={(v) => fmtMoney(v)}
+                  label="Initial investment"
+                  max={500_000}
+                  min={2000}
+                  onChange={manual(setInvestUsd)}
+                  step={1000}
+                  value={investUsd}
+                />
+                <Slider
+                  format={(v) => `${v}¢/kWh`}
+                  label="Electricity rate"
+                  max={45}
+                  min={5}
+                  onChange={manual(setElec)}
+                  step={0.5}
+                  value={elec}
+                />
+                <Slider
+                  format={(v) => `${v}%`}
+                  label="Utilization"
+                  max={95}
+                  min={30}
+                  onChange={manual(setUtil)}
+                  step={1}
+                  value={util}
+                />
+                <Slider
+                  format={(v) => `${v}%`}
+                  label="Marketplace fee"
+                  max={40}
+                  min={0}
+                  onChange={manual(setFee)}
+                  step={1}
+                  value={fee}
+                />
+                <Slider
+                  format={(v) => `${fmtSignedInt(v)}%/yr`}
+                  label="Card price trend"
+                  max={70}
+                  min={-30}
+                  onChange={manual(setDrift)}
+                  step={1}
+                  value={drift}
+                />
+                <Slider
+                  format={(v) => `${fmtSignedInt(v)}%/yr`}
+                  label="Rental rate trend"
+                  max={60}
+                  min={-40}
+                  onChange={manual(setRateDrift)}
+                  step={1}
+                  value={rateDrift}
+                />
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <p className="text-xs font-black uppercase">Holding period</p>
+                {HORIZON_OPTIONS.map((h) => (
+                  <button
+                    className={`border-2 border-foreground px-3 py-1 text-xs font-black ${
+                      horizon === h
+                        ? "bg-foreground text-background"
+                        : "bg-background text-foreground hover:bg-muted"
+                    }`}
+                    key={h}
+                    onClick={() => setHorizon(h)}
+                    type="button"
+                  >
+                    {h / 12} yr
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2 sm:px-6">
+          <p className="hidden min-w-0 truncate text-xs font-bold text-muted-foreground sm:block">
+            {selCard.name} · {presetLabel} · {horizonLabel} hold
+          </p>
+          <div className="flex flex-1 items-center justify-end gap-x-4 gap-y-1">
+            <p className="text-sm font-black tabular-nums sm:text-base">
+              {base.units === 0 ? "—" : fmtMoney(base.valueAt(T))}
+            </p>
+            <p className="text-sm font-black tabular-nums text-muted-foreground sm:text-base">
+              {roiHeadline}/yr
+            </p>
+            <button
+              className="border-2 border-foreground bg-foreground px-3 py-1.5 text-xs font-black uppercase text-background hover:bg-background hover:text-foreground"
+              onClick={() => setDrawerOpen((v) => !v)}
+              type="button"
+            >
+              {drawerOpen ? "Close ▾" : "Adjust ▴"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1848,16 +2010,22 @@ function Slider({
 function StatTile({
   caption,
   label,
+  range,
   value,
 }: {
   caption: string;
   label: string;
+  /** Worst-to-best band across the lo/hi scenarios. */
+  range?: string;
   value: string;
 }) {
   return (
     <div className="bg-foreground p-4 text-background sm:p-5">
       <p className="text-xs font-black uppercase">{label}</p>
       <p className="mt-1 text-3xl font-black tabular-nums">{value}</p>
+      {range ? (
+        <p className="mt-0.5 text-xs font-bold tabular-nums">{range}</p>
+      ) : null}
       <p className="mt-1 text-[11px] font-bold">{caption}</p>
     </div>
   );
