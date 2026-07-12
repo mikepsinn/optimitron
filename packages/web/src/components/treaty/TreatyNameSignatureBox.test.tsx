@@ -152,6 +152,72 @@ describe("TreatyNameSignatureBox", () => {
     });
   });
 
+  it("shows the recorded signature instead of the box for a returning signed-in signer", async () => {
+    sessionMock.status = "authenticated";
+    sessionMock.data = { user: { handle: "mike" } };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        vote: {
+          answer: "YES",
+          createdAt: "2026-07-12T17:00:00.000Z",
+          displayName: "Mike Sinn",
+          isPublic: true,
+        },
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await act(async () => {
+      root.render(
+        React.createElement(
+          TreatyNameSignatureBox as React.ComponentType<
+            Record<string, unknown>
+          >,
+          {},
+        ),
+      );
+    });
+    await act(async () => {});
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/referendums/one-percent-treaty/vote",
+    );
+    expect(container.textContent).toContain("You signed the treaty.");
+    expect(container.textContent).toContain("Mike Sinn");
+    expect(
+      container.querySelector('input[aria-label="Your name"]'),
+    ).toBeNull();
+    vi.unstubAllGlobals();
+  });
+
+  it("still offers the box to a signed-in user with no recorded vote", async () => {
+    sessionMock.status = "authenticated";
+    sessionMock.data = { user: { handle: "mike" } };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ vote: null }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await act(async () => {
+      root.render(
+        React.createElement(
+          TreatyNameSignatureBox as React.ComponentType<
+            Record<string, unknown>
+          >,
+          {},
+        ),
+      );
+    });
+    await act(async () => {});
+
+    expect(
+      container.querySelector('input[aria-label="Your name"]'),
+    ).not.toBeNull();
+    vi.unstubAllGlobals();
+  });
+
   it("stages a named public Court signature with the current referral", async () => {
     await act(async () => {
       root.render(
