@@ -15,6 +15,8 @@ import {
   getAllData,
 } from "../lib/storage.js";
 import { exportJSON, exportCSV, downloadFile } from "../lib/export.js";
+import { getApiBase, setApiBase } from "../lib/config.js";
+import { isSignedIn, signOut } from "../lib/auth.js";
 import { generateId } from "../lib/utils.js";
 import { generateAnalysisPairs, calculateDataSpanDays } from "../lib/analysis.js";
 import type { Treatment, Settings } from "../types/schema.js";
@@ -456,6 +458,37 @@ async function shareResults(): Promise<void> {
 }
 
 // ============================================================
+// Optimitron connection (API base + account)
+// ============================================================
+
+async function setupConnection(): Promise<void> {
+  const input = document.getElementById("api-base") as HTMLInputElement | null;
+  const saveBtn = document.getElementById("save-api-base-btn");
+  const signOutBtn = document.getElementById("sign-out-btn");
+  const status = document.getElementById("connection-status");
+
+  if (input) input.value = await getApiBase();
+
+  const setStatus = (text: string): void => {
+    if (status) status.textContent = text;
+  };
+
+  saveBtn?.addEventListener("click", async () => {
+    if (!input) return;
+    await setApiBase(input.value);
+    input.value = await getApiBase();
+    setStatus("Saved.");
+  });
+
+  signOutBtn?.addEventListener("click", async () => {
+    await signOut();
+    setStatus("Signed out.");
+  });
+
+  setStatus((await isSignedIn()) ? "Signed in." : "Not signed in.");
+}
+
+// ============================================================
 // Init
 // ============================================================
 
@@ -470,6 +503,7 @@ async function init(): Promise<void> {
     renderPresetSymptoms(),
     renderCustomSymptoms(),
     renderReminderSettings(),
+    setupConnection(),
   ]);
 }
 
