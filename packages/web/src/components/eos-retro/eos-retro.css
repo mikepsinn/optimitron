@@ -31,9 +31,12 @@
   background-color: var(--er-bg);
   color: var(--er-cream);
   font-family: var(--er-font-body);
+  /* Dead space reserved for the fixed death-counter chip so it never sits
+     over the last line of content at full scroll. */
+  padding-bottom: 3.5rem;
 }
 
-/* Smooth in-page travel between pavilions. */
+/* Smooth in-page travel between sections. */
 html:has(.eos-retro) {
   scroll-behavior: smooth;
 }
@@ -80,6 +83,23 @@ html:has(.eos-retro) {
   font-weight: 600;
 }
 
+/* Card heading: small display type, not a tracked-out label row. */
+.er-card-title {
+  font-family: var(--er-font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--er-gold);
+}
+
+/* Small factual caption under stats, charts, diagrams. */
+.er-caption {
+  font-family: var(--er-font-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--er-cream-muted);
+}
+
 /* ── Structure ──────────────────────────────────────────────── */
 
 .er-container {
@@ -95,14 +115,15 @@ html:has(.eos-retro) {
   }
 }
 
+/* Content sets the height; spacing is generous, never empty. */
 .er-section {
   border-top: 1px solid var(--er-line);
-  padding-block: 5rem;
+  padding-block: 3.5rem;
 }
 
 @media (min-width: 768px) {
   .er-section {
-    padding-block: 7rem;
+    padding-block: 5rem;
   }
 }
 
@@ -212,28 +233,14 @@ html:has(.eos-retro) {
   min-width: 2rem;
 }
 
-/* ── Scroll reveal ──────────────────────────────────────────── */
-
-.er-reveal {
-  opacity: 0;
-  transform: translateY(26px);
-  transition:
-    opacity 700ms ease,
-    transform 700ms ease;
-}
-
-.er-reveal.er-in {
-  opacity: 1;
-  transform: none;
-}
-
 /* ── Hero ───────────────────────────────────────────────────── */
 
 .er-hero {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
+  /* Fill the viewport minus the site nav, so the down-arrow is on-screen. */
+  min-height: calc(100svh - 4.5rem);
   overflow: hidden;
 }
 
@@ -276,20 +283,40 @@ html:has(.eos-retro) {
   }
 }
 
+/* Unobtrusive down-arrow at the bottom of the hero. */
+.er-down {
+  display: inline-block;
+  color: var(--er-cream-muted);
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.er-down:hover {
+  color: var(--er-cream);
+}
+
 /* ── Death counter ──────────────────────────────────────────── */
 
+/* Compact single-line chip, bottom-left (bottom-right belongs to the
+   CampaignActionFab). pointer-events: none means it can never block a
+   click; low z-index keeps it under nav and dialogs; the page's bottom
+   padding reserves it a dead zone at full scroll. */
 .er-death-counter {
   position: fixed;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 40;
-  max-width: 17rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  z-index: 10;
+  max-width: calc(100vw - 1.5rem);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
   border: 1px solid var(--er-line-strong);
   background: rgba(6, 9, 19, 0.92);
-  padding: 0.6rem 0.8rem;
+  padding: 0.35rem 0.6rem;
   font-family: var(--er-font-mono);
-  font-size: 0.68rem;
-  line-height: 1.5;
+  font-size: 0.66rem;
+  line-height: 1.4;
   color: var(--er-cream-soft);
   backdrop-filter: blur(2px);
 }
@@ -300,78 +327,51 @@ html:has(.eos-retro) {
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 640px) {
-  .er-death-counter {
-    max-width: 12.5rem;
-    padding: 0.4rem 0.55rem;
-    font-size: 0.6rem;
-  }
+/* ── Machine diagram (technical-drawing style) ──────────────── */
 
-  .er-death-counter .er-death-rate {
-    display: none;
-  }
-}
-
-/* ── Flywheel ───────────────────────────────────────────────── */
-
-.er-flywheel-ring {
+.er-m-line {
   fill: none;
   stroke: var(--er-line-strong);
   stroke-width: 1.5;
-  stroke-dasharray: 10 8;
-  animation: er-ring-spin 30s linear infinite;
 }
 
-@keyframes er-ring-spin {
-  to {
-    stroke-dashoffset: -720;
-  }
+.er-m-fine {
+  fill: none;
+  stroke: var(--er-line);
+  stroke-width: 1;
 }
 
-.er-flywheel-node {
-  fill: var(--er-panel);
-  stroke: var(--er-line-strong);
+.er-m-dash {
+  stroke-dasharray: 7 7;
+}
+
+.er-m-gold {
+  fill: none;
+  stroke: var(--er-gold);
   stroke-width: 1.5;
 }
 
-.er-flywheel-node-label {
+.er-m-label {
   fill: var(--er-cream);
   font-family: var(--er-font-mono);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.er-flywheel-step {
-  fill: var(--er-gold);
-  font-family: var(--er-font-mono);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.er-flywheel-center-title {
-  fill: var(--er-gold);
-  font-family: var(--er-font-display);
-  font-size: 30px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.er-flywheel-center-sub {
+.er-m-tag {
   fill: var(--er-cream-muted);
   font-family: var(--er-font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.er-flywheel-spark {
-  fill: var(--er-cyan);
-}
-
-.er-flywheel-spark-gold {
-  fill: var(--er-gold);
+.er-gear {
+  animation: er-spin 24s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 /* ── Humanity Manager terminal ──────────────────────────────── */
@@ -481,6 +481,21 @@ html:has(.eos-retro) {
   color: inherit;
 }
 
+/* Giant display numbers carry no citation chrome at rest; the dotted
+   underline appears only on hover, as a quiet affordance. */
+.eos-retro .er-giant button,
+.eos-retro .er-stat-value button {
+  text-decoration-line: none;
+}
+
+.eos-retro .er-giant button:hover,
+.eos-retro .er-giant button:focus-visible,
+.eos-retro .er-stat-value button:hover,
+.eos-retro .er-stat-value button:focus-visible {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+}
+
 .er-stat-value {
   font-family: var(--er-font-display);
   font-size: clamp(1.9rem, 4vw, 2.9rem);
@@ -525,6 +540,19 @@ html:has(.eos-retro) {
   outline-offset: 0;
 }
 
+/* The Four Earths input: prominent, pre-focused visual weight. */
+.er-input-hero {
+  border: 2px solid var(--er-gold);
+  font-size: 1.5rem;
+  padding: 0.65rem 1rem;
+  width: 15rem;
+  max-width: 100%;
+}
+
+.er-input-hero::placeholder {
+  color: var(--er-cream-muted);
+}
+
 .er-toggle {
   border: 1px solid var(--er-line-strong);
   background: transparent;
@@ -562,14 +590,8 @@ html:has(.eos-retro) {
     scroll-behavior: auto;
   }
 
-  .er-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
   .er-atom,
-  .er-flywheel-ring,
+  .er-gear,
   .er-blink {
     animation: none;
   }

@@ -21,6 +21,7 @@ import {
   TREATY_TRAJECTORY_CAGR_YEAR_20,
   WISHONIA_TRAJECTORY_CAGR_YEAR_20,
 } from "@optimitron/data/parameters";
+import { ParameterValue } from "@/components/shared/ParameterValue";
 
 /**
  * Four Earths: the visitor's own number (income or net worth) run through the
@@ -183,11 +184,15 @@ function EarthTooltip({
 }
 
 export function FourEarthsChart() {
-  const [mode, setMode] = useState<"income" | "networth">("income");
-  const [input, setInput] = useState<number>(DEFAULT_INPUT);
+  const [mode, setMode] = useState<"income" | "networth">("networth");
+  const [input, setInput] = useState<number>(Number.NaN);
   const inputId = useId();
 
-  const amount = Number.isFinite(input) && input > 0 ? input : DEFAULT_INPUT;
+  const usingDefault = !(Number.isFinite(input) && input > 0);
+  const amount = usingDefault ? DEFAULT_INPUT : input;
+  // Until the visitor types, the chart runs the median human's yearly
+  // income, whatever the toggle says — so the tooltip keeps the /yr suffix.
+  const suffixMode = usingDefault ? "income" : mode;
 
   const data = useMemo<EarthPoint[]>(
     () =>
@@ -215,54 +220,58 @@ export function FourEarthsChart() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-end gap-4">
-        <div>
-          <label className="er-kicker mb-2 block" htmlFor={inputId}>
-            Price the four Earths in your
-          </label>
-          <div className="flex">
-            <button
-              className="er-toggle"
-              data-active={mode === "income"}
-              onClick={() => setMode("income")}
-              type="button"
-            >
-              Annual income
-            </button>
-            <button
-              className="er-toggle"
-              data-active={mode === "networth"}
-              onClick={() => setMode("networth")}
-              style={{ borderLeft: "none" }}
-              type="button"
-            >
-              Net worth
-            </button>
-          </div>
+      <div className="mb-3 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="er-mono text-3xl"
+            style={{ color: "var(--er-gold)" }}
+          >
+            $
+          </span>
+          <input
+            aria-label="Your net worth or annual income, in dollars"
+            className="er-input er-input-hero"
+            id={inputId}
+            inputMode="numeric"
+            min={0}
+            onChange={(e) => setInput(e.target.valueAsNumber)}
+            placeholder="your number"
+            step={100}
+            type="number"
+            value={Number.isFinite(input) ? input : ""}
+          />
         </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span aria-hidden="true" className="er-mono" style={{ color: "var(--er-gold)" }}>
-              $
-            </span>
-            <input
-              className="er-input"
-              id={inputId}
-              inputMode="numeric"
-              min={0}
-              onChange={(e) => setInput(e.target.valueAsNumber)}
-              step={100}
-              type="number"
-              value={Number.isFinite(input) ? input : ""}
-            />
-            {mode === "income" ? (
-              <span className="er-mono text-xs" style={{ color: "var(--er-cream-muted)" }}>
-                /yr
-              </span>
-            ) : null}
-          </div>
+        <div className="flex">
+          <button
+            className="er-toggle"
+            data-active={mode === "networth"}
+            onClick={() => setMode("networth")}
+            type="button"
+          >
+            Net worth
+          </button>
+          <button
+            className="er-toggle"
+            data-active={mode === "income"}
+            onClick={() => setMode("income")}
+            style={{ borderLeft: "none" }}
+            type="button"
+          >
+            Annual income
+          </button>
         </div>
       </div>
+      {usingDefault ? (
+        <p className="er-caption mb-6">
+          Until you type, the chart runs Earth&apos;s median after-tax income:{" "}
+          <ParameterValue figures={4} param={GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025} />{" "}
+          a year. If your number is bigger, congratulations — you are ahead
+          of 4 billion people.
+        </p>
+      ) : (
+        <div className="mb-6" />
+      )}
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {SERIES_META.map((s) => (
@@ -316,7 +325,7 @@ export function FourEarthsChart() {
               width={64}
             />
             <Tooltip
-              content={<EarthTooltip mode={mode} />}
+              content={<EarthTooltip mode={suffixMode} />}
               cursor={{ stroke: COLORS.axis, strokeDasharray: "3 3" }}
             />
             <Area
@@ -387,9 +396,10 @@ export function FourEarthsChart() {
       </div>
 
       <p className="er-mono mt-3 text-xs" style={{ color: "var(--er-cream-muted)" }}>
-        Red line: growth rates already measured, left running. Extraction load
-        passes 25% of output around {YEAR_25PCT} and 35% around {YEAR_35PCT}.
-        Hover it for the historical company it keeps.
+        Fig. 1 · The Four Earths on offer. Red line: growth rates already
+        measured, left running — extraction load passes 25% of output around{" "}
+        {YEAR_25PCT} and 35% around {YEAR_35PCT}. Hover it for the historical
+        company it keeps.
       </p>
     </div>
   );
