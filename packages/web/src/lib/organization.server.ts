@@ -18,7 +18,10 @@ import { slugify } from "@/lib/slugify";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import { getBaseUrl } from "@/lib/url";
 
-type DbClient = Prisma.TransactionClient | typeof prisma;
+type DbClient = Pick<
+  Prisma.TransactionClient,
+  "organization" | "organizationMember" | "task"
+>;
 
 export async function ensureOrganizationTreatyActivationTask(
   input: {

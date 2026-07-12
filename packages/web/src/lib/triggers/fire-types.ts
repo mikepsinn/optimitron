@@ -1,5 +1,4 @@
 import type { Prisma, TaskStatus } from "@optimitron/db";
-import { prisma } from "@/lib/prisma";
 
 export interface SpawnedSpec {
   /** The TaskSpawnSpec.kind that produced this task (e.g. "shareReferralUrl"). */
@@ -35,6 +34,20 @@ export interface FireResult {
   error?: string;
 }
 
+// Keep this structural: comparing the full PrismaClient and TransactionClient
+// types makes TypeScript expand the entire generated schema at each union site.
+export type FireDb = Pick<
+  Prisma.TransactionClient,
+  | "person"
+  | "task"
+  | "taskComment"
+  | "taskCommunication"
+  | "taskCommunicationEndpoint"
+  | "taskTrigger"
+  | "taskTriggerFire"
+  | "user"
+>;
+
 export interface FireOptions {
   dryRun?: boolean;
   actorUserId?: string | null;
@@ -42,10 +55,8 @@ export interface FireOptions {
    * Optional caller-supplied transaction client. When provided, the trigger
    * runs inside the caller's transaction (no nested $transaction).
    */
-  db?: Prisma.TransactionClient | typeof prisma;
+  db?: FireDb;
 }
-
-export type FireDb = Prisma.TransactionClient | typeof prisma;
 
 export type LoadedTrigger = Prisma.TaskTriggerGetPayload<{
   include: { spawnSpecs: true; communicationSpawnSpecs: true };
