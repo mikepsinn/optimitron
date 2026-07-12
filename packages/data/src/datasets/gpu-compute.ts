@@ -191,6 +191,126 @@ export const GPU_RIG_TIERS: GpuRigTier[] = [
 ];
 
 /**
+ * Fleet catalog for the /compute fleet ROI analyzer (v2).
+ *
+ * Five cards, each priced as card + rest-of-system overhead share.
+ * `ratePerHourUsd` / `rateLowPerHourUsd` / `rateHighPerHourUsd` are what a
+ * marketplace HOST earns per card-hour (base / worst / best case), anchored
+ * to Vast.ai's published host-earnings guide. `resaleDriftPctPerYear` is the
+ * card's own recent resale-price trend; the analyzer adds the user's global
+ * drift slider on top. Snapshot of July 2026; every price links to its source.
+ */
+export interface GpuFleetCard {
+  id: string;
+  name: string;
+  vramGb: number;
+  /** USD for the card alone. */
+  priceUsd: number;
+  /** USD share of the system the card plugs into (case, CPU, PSU, cables). */
+  overheadUsd: number;
+  /** Per-card TDP in watts. */
+  watts: number;
+  /** Base-case host earnings, USD per card-hour. */
+  ratePerHourUsd: number;
+  /** Worst-case host earnings, USD per card-hour. */
+  rateLowPerHourUsd: number;
+  /** Best-case host earnings, USD per card-hour. */
+  rateHighPerHourUsd: number;
+  /** This card's own resale trend, % per year (user's drift slider adds to it). */
+  resaleDriftPctPerYear: number;
+  buyUrl: string;
+  buyLabel: string;
+  priceSourceUrl: string;
+  priceSourceLabel: string;
+}
+
+export const GPU_FLEET_CATALOG: GpuFleetCard[] = [
+  {
+    id: 'rtx3090',
+    name: 'RTX 3090 (used)',
+    vramGb: 24,
+    priceUsd: 1050,
+    overheadUsd: 600,
+    watts: 350,
+    ratePerHourUsd: 0.17,
+    rateLowPerHourUsd: 0.09,
+    rateHighPerHourUsd: 0.25,
+    resaleDriftPctPerYear: -5,
+    buyUrl: 'https://www.ebay.com/sch/i.html?_nkw=rtx+3090',
+    buyLabel: 'eBay (used)',
+    priceSourceUrl:
+      'https://bestvaluegpu.com/history/new-and-used-rtx-3090-price-history-and-specs/',
+    priceSourceLabel: 'BestValueGPU, Jul 2026',
+  },
+  {
+    id: 'rtx4090',
+    name: 'RTX 4090',
+    vramGb: 24,
+    priceUsd: 2270,
+    overheadUsd: 650,
+    watts: 450,
+    ratePerHourUsd: 0.3,
+    rateLowPerHourUsd: 0.2,
+    rateHighPerHourUsd: 0.45,
+    resaleDriftPctPerYear: -15,
+    buyUrl: 'https://www.ebay.com/sch/i.html?_nkw=rtx+4090',
+    buyLabel: 'eBay (used)',
+    priceSourceUrl:
+      'https://bestvaluegpu.com/history/new-and-used-rtx-4090-price-history-and-specs/',
+    priceSourceLabel: 'BestValueGPU, Jul 2026',
+  },
+  {
+    id: 'rtx5090',
+    name: 'RTX 5090',
+    vramGb: 32,
+    priceUsd: 3600,
+    overheadUsd: 700,
+    watts: 575,
+    ratePerHourUsd: 0.45,
+    rateLowPerHourUsd: 0.3,
+    rateHighPerHourUsd: 0.65,
+    resaleDriftPctPerYear: 18,
+    buyUrl: 'https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0',
+    buyLabel: 'eBay',
+    priceSourceUrl: 'https://gpupoet.com/blogs/news/gpu-market-report-february-2026',
+    priceSourceLabel: 'GPUPoet, Apr 2026',
+  },
+  {
+    id: 'pro6000',
+    name: 'RTX PRO 6000',
+    vramGb: 96,
+    priceUsd: 13250,
+    overheadUsd: 1100,
+    watts: 600,
+    ratePerHourUsd: 1.05,
+    rateLowPerHourUsd: 0.75,
+    rateHighPerHourUsd: 1.45,
+    resaleDriftPctPerYear: 12,
+    buyUrl: 'https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB',
+    buyLabel: 'eBay',
+    priceSourceUrl:
+      'https://mlq.ai/news/nvidia-raises-rtx-pro-6000-blackwell-msrp-to-13250-a-55-hike-in-one-year/',
+    priceSourceLabel: "Tom's Hardware, Jun 2026 (+55% MSRP hike)",
+  },
+  {
+    id: 'h100',
+    name: 'H100 80GB',
+    vramGb: 80,
+    priceUsd: 30000,
+    overheadUsd: 2400,
+    watts: 700,
+    ratePerHourUsd: 2.6,
+    rateLowPerHourUsd: 2.15,
+    rateHighPerHourUsd: 3.6,
+    resaleDriftPctPerYear: 25,
+    buyUrl: 'https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB',
+    buyLabel: 'eBay',
+    priceSourceUrl: 'https://intuitionlabs.ai/',
+    priceSourceLabel: 'IntuitionLabs 2026 ($27K–$40K range)',
+  },
+];
+
+/**
  * Macro numbers behind the supply-demand gap argument. Sourced 2026-07-12;
  * every figure links to where it can be re-checked.
  */
