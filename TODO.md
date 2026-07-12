@@ -68,6 +68,10 @@ Bugs and concrete debt:
 - [ ] `/earth-optimization-day` MVP: countdown/RSVP + existing widgets.
 - [ ] President/leader reminder tooling batch: rename consideration, dashboard
       link, copyable reminder language, managed-data-only.
+- [ ] Add `DEFENSE_NET_PROFIT_MARGIN`, `PHARMA_NET_PROFIT_MARGIN`,
+      `PHARMA_VS_DEFENSE_NET_MARGIN_RATIO` to the external `dih_models/parameters.py`
+      generator source (not in this repo) so the next regeneration of
+      `parameters-calculations-citations.ts` doesn't drop them (PR #112 review).
 - [ ] Startup-bro filler-word copy sweep (off-ramp, enforcement stack, …).
 - [ ] Visual-review workflow batch: missing-screenshot banner, Neon
       branch-per-preview investigation, `/dev/email` index, GH Actions
