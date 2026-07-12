@@ -62,6 +62,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toEqual({
@@ -89,6 +91,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toEqual({
@@ -110,6 +114,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toEqual({
@@ -130,6 +136,8 @@ describe("resolveTaskRecipient", () => {
       ],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toEqual({
@@ -150,6 +158,8 @@ describe("resolveTaskRecipient", () => {
       ],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(mocks.taskFindUnique).toHaveBeenCalledWith(
@@ -179,6 +189,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     const result = await resolveTaskRecipient("task_1");
     expect(result).toBeNull();
@@ -198,6 +210,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     mocks.userFindMany.mockResolvedValue([
       { id: "admin_1", email: "admin@example.com" },
@@ -223,6 +237,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
     mocks.userFindMany.mockResolvedValue([
       { id: "admin_1", email: "admin@example.com" },
@@ -263,6 +279,8 @@ describe("resolveTaskRecipient", () => {
       communicationEndpoints: [{ id: "endpoint_1", email: "Same@Example.com" }],
       deletedAt: null,
       id: "task_1",
+      isPublic: true,
+      status: "ACTIVE",
     });
 
     const result = await resolveTaskRecipients("task_1");
@@ -273,6 +291,91 @@ describe("resolveTaskRecipient", () => {
         reason: "You're getting this because this task is assigned to you.",
         role: "assignee_person",
       },
+    ]);
+  });
+});
+
+describe("private/draft task guard", () => {
+  beforeEach(() => {
+    mocks.taskFindUnique.mockReset();
+    mocks.userFindMany.mockReset();
+    mocks.userFindMany.mockResolvedValue([]);
+  });
+
+  function privateTaskWithExternals(overrides: Record<string, unknown> = {}) {
+    return {
+      assigneeOrganization: {
+        contactEmail: "org@example.com",
+        deletedAt: null,
+        id: "org_1",
+      },
+      assigneePerson: {
+        deletedAt: null,
+        email: "person@example.com",
+        id: "person_1",
+        user: null,
+      },
+      communicationEndpoints: [
+        { email: "endpoint@example.com", id: "endpoint_1" },
+      ],
+      createdByUser: null,
+      deletedAt: null,
+      id: "task_1",
+      isPublic: false,
+      status: "ACTIVE",
+      ...overrides,
+    };
+  }
+
+  it("drops external recipients for private tasks", async () => {
+    mocks.taskFindUnique.mockResolvedValue(privateTaskWithExternals());
+    await expect(resolveTaskRecipients("task_1")).resolves.toEqual([]);
+  });
+
+  it("drops external recipients for DRAFT tasks even when public", async () => {
+    mocks.taskFindUnique.mockResolvedValue(
+      privateTaskWithExternals({ isPublic: true, status: "DRAFT" }),
+    );
+    await expect(resolveTaskRecipients("task_1")).resolves.toEqual([]);
+  });
+
+  it("keeps User-account recipients on private tasks", async () => {
+    mocks.taskFindUnique.mockResolvedValue(
+      privateTaskWithExternals({
+        assigneePerson: {
+          deletedAt: null,
+          email: "person@example.com",
+          id: "person_1",
+          user: { deletedAt: null, email: "user@example.com", id: "user_1" },
+        },
+        createdByUser: {
+          deletedAt: null,
+          email: "creator@example.com",
+          id: "creator_1",
+        },
+      }),
+    );
+
+    const result = await resolveTaskRecipients("task_1", {
+      includeCreator: true,
+    });
+    expect(result.map((recipient) => recipient.email)).toEqual([
+      "user@example.com",
+      "creator@example.com",
+    ]);
+    expect(result.every((recipient) => Boolean(recipient.userId))).toBe(true);
+  });
+
+  it("keeps external recipients when the explicit override is passed", async () => {
+    mocks.taskFindUnique.mockResolvedValue(privateTaskWithExternals());
+
+    const result = await resolveTaskRecipients("task_1", {
+      allowExternalOnRestrictedTask: true,
+    });
+    expect(result.map((recipient) => recipient.role)).toEqual([
+      "assignee_person",
+      "assignee_organization",
+      "endpoint",
     ]);
   });
 });

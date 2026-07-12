@@ -34,6 +34,8 @@ import {
   TaskClaimPolicy,
   TaskCompensationCadence,
   TaskCompensationKind,
+  TaskCommunicationChannel,
+  TaskCommunicationStatus,
   TaskEdgeType,
   TaskEngagementKind,
   TaskImpactFrameKey,
@@ -178,6 +180,10 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   listTaskEmails: [McpScope.TASKS_ADMIN],
   listRecipientEmails: [McpScope.TASKS_ADMIN],
   listEmailLogs: [McpScope.TASKS_ADMIN],
+  // Personal-scope communications audit: handlers scope non-admin callers to
+  // tasks they created or are assigned to, so these are NOT admin-only.
+  listCommunications: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  getCommunicationLog: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   getMyQueue: [McpScope.TASKS_PERSONAL],
   getAIQueue: [McpScope.TASKS_PERSONAL],
   getNextAction: [McpScope.TASKS_PERSONAL],
@@ -6513,6 +6519,61 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "listCommunications",
+    description:
+      "List task communications (email, in-app, external URL, manual) across all channels. Admins see everything; other callers see only communications on tasks they created or are assigned to, with recipient emails masked (m***@domain). Suppressed sends surface as FAILED/CANCELLED rows with a suppressionReason.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Filter to one task." },
+        organizationId: {
+          type: "string",
+          description: "Filter by recipient organization ID.",
+        },
+        personId: {
+          type: "string",
+          description: "Filter by recipient person ID.",
+        },
+        sinceIso: {
+          type: "string",
+          description:
+            "Only rows created at or after this ISO-8601 timestamp.",
+        },
+        untilIso: {
+          type: "string",
+          description:
+            "Only rows created at or before this ISO-8601 timestamp.",
+        },
+        channel: {
+          type: "string",
+          enum: Object.values(TaskCommunicationChannel),
+          description: "Filter by communication channel.",
+        },
+        status: {
+          type: "string",
+          enum: Object.values(TaskCommunicationStatus),
+          description: "Filter by lifecycle status.",
+        },
+        limit: {
+          type: "number",
+          description: "Max rows to return (default 50, max 200).",
+        },
+      },
+    },
+  },
+  {
+    name: "getCommunicationLog",
+    description:
+      "Fetch one task communication by ID: full message body (via the linked task comment), envelope metadata, email delivery details (provider IDs, delivery status), and trigger/idempotency metadata. Same visibility and masking rules as listCommunications.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        id: { type: "string", description: "TaskCommunication ID." },
+      },
+      required: ["id"],
+    },
+  },
+  {
     name: "listOrganizations",
     description:
       "List organizations (for example to create task targets), optionally including active/target-filtered tasks.",
@@ -10902,6 +10963,81 @@ export function createMcpServer(
                 userId: optionalString(a.userId),
               }),
             );
+          }
+
+          case "listCommunications": {
+            if (!userId && !isAdmin) {
+              return authRequired(
+                name,
+                "Non-admin communication reads are scoped to tasks you created or are assigned to.",
+              );
+            }
+            const channel = optionalString(a.channel);
+            if (channel && !(channel in TaskCommunicationChannel)) {
+              return err(
+                `channel must be one of: ${Object.values(TaskCommunicationChannel).join(", ")}.`,
+              );
+            }
+            const status = optionalString(a.status);
+            if (status && !(status in TaskCommunicationStatus)) {
+              return err(
+                `status must be one of: ${Object.values(TaskCommunicationStatus).join(", ")}.`,
+              );
+            }
+            const sinceIso = optionalString(a.sinceIso);
+            const since = sinceIso ? new Date(sinceIso) : null;
+            if (since && Number.isNaN(since.getTime())) {
+              return err("sinceIso must be an ISO-8601 timestamp.");
+            }
+            const untilIso = optionalString(a.untilIso);
+            const until = untilIso ? new Date(untilIso) : null;
+            if (until && Number.isNaN(until.getTime())) {
+              return err("untilIso must be an ISO-8601 timestamp.");
+            }
+            const personId = userId ? await loadSessionPersonId(userId) : null;
+            // userId is undefined for anonymous admin stdio sessions —
+            // normalize explicitly so the viewer scope stays typed.
+            const sessionUserId = typeof userId === "string" ? userId : null;
+            const audit = await import("./communications-audit.server");
+            return ok(
+              await audit.listCommunicationsForViewer(
+                { isAdmin, personId, userId: sessionUserId },
+                {
+                  channel: channel as TaskCommunicationChannel | null,
+                  limit: typeof a.limit === "number" ? a.limit : null,
+                  organizationId: optionalString(a.organizationId),
+                  personId: optionalString(a.personId),
+                  since,
+                  status: status as TaskCommunicationStatus | null,
+                  taskId: optionalString(a.taskId),
+                  until,
+                },
+              ),
+            );
+          }
+
+          case "getCommunicationLog": {
+            if (!userId && !isAdmin) {
+              return authRequired(
+                name,
+                "Non-admin communication reads are scoped to tasks you created or are assigned to.",
+              );
+            }
+            const id = requiredString(a.id, "id");
+            if (typeof id !== "string") return id;
+            const personId = userId ? await loadSessionPersonId(userId) : null;
+            // userId is undefined for anonymous admin stdio sessions —
+            // normalize explicitly so the viewer scope stays typed.
+            const sessionUserId = typeof userId === "string" ? userId : null;
+            const audit = await import("./communications-audit.server");
+            const communication = await audit.getCommunicationLogForViewer(
+              { isAdmin, personId, userId: sessionUserId },
+              id,
+            );
+            if (!communication) {
+              return err("Communication not found or not visible to you.");
+            }
+            return ok({ communication });
           }
 
           // ── createTask ────────────────────────────────────────

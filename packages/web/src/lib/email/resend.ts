@@ -6,6 +6,10 @@ import {
   DEFAULT_UNSUBSCRIBE_EMAIL,
   formatDefaultSystemEmailFromHeader,
 } from "@/lib/email/from-address";
+import {
+  evaluateOutboundEmailPolicy,
+  type OutboundSuppressionReason,
+} from "@/lib/email/outbound-mode";
 import { composeOutboundEmailBody } from "@/lib/email/preview-envelope";
 import { renderReactEmailBody } from "@/lib/email/render-react-email";
 import { isTransactionalScope } from "@/lib/email/scopes";
@@ -70,7 +74,7 @@ interface ExternalResendMessage {
 
 export type SendResult =
   | { status: "disabled" }
-  | { status: "suppressed"; reason: "user_opt_out" }
+  | { status: "suppressed"; reason: "user_opt_out" | OutboundSuppressionReason }
   | { status: "sent"; id: string | null; unsubscribeUrl: string | null };
 
 export interface ReceivedEmailContent {
@@ -96,6 +100,22 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
     id: `mock_resend_${randomUUID()}`,
     unsubscribeUrl,
   };
+}
+
+// Env-level outbound kill switch (OUTBOUND_EMAIL_MODE / OUTBOUND_EMAIL_ALLOWLIST).
+// Lives at the lowest-level send paths — including mock sends — so no call
+// site can forget it. Returns null when the send may proceed.
+function checkOutboundKillSwitch(to: string): SendResult | null {
+  const decision = evaluateOutboundEmailPolicy({
+    allowlist: serverEnv.OUTBOUND_EMAIL_ALLOWLIST,
+    mode: serverEnv.OUTBOUND_EMAIL_MODE,
+    to,
+  });
+  if (decision.allowed) return null;
+  console.warn(
+    `[OUTBOUND-EMAIL] Suppressed send to ${to}: ${decision.reason} (OUTBOUND_EMAIL_MODE=${serverEnv.OUTBOUND_EMAIL_MODE ?? "on"})`,
+  );
+  return { status: "suppressed", reason: decision.reason };
 }
 
 export function getEmailFromAddress() {
@@ -275,6 +295,9 @@ export async function sendResendEmail(
     return { status: "disabled" };
   }
 
+  const killSwitch = checkOutboundKillSwitch(message.to);
+  if (killSwitch) return killSwitch;
+
   if (!message.skipSuppressionCheck) {
     const allowed = await canSendEmailToUser(message.userId, message.scope);
     if (!allowed) {
@@ -331,6 +354,9 @@ export async function sendReactEmail(
     return { status: "disabled" };
   }
 
+  const killSwitch = checkOutboundKillSwitch(message.to);
+  if (killSwitch) return killSwitch;
+
   if (!message.skipSuppressionCheck) {
     const allowed = await canSendEmailToUser(message.userId, message.scope);
     if (!allowed) {
@@ -384,6 +410,11 @@ export async function sendExternalResendEmail(
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
+
+  // External recipients have no per-user suppression check, so the env-level
+  // kill switch is the only gate on this path.
+  const killSwitch = checkOutboundKillSwitch(message.to);
+  if (killSwitch) return killSwitch;
 
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);

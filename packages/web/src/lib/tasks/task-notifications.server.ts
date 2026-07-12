@@ -614,15 +614,22 @@ export async function sendDraftTaskNotification(
         });
 
     if (result.status !== "sent") {
+      // Keep the concrete suppression reason (user_opt_out /
+      // outbound_mode_off / recipient_not_allowlisted) visible in the
+      // EmailLog + TaskCommunication audit trail.
+      const abortReason =
+        result.status === "suppressed"
+          ? `${result.status}:${result.reason}`
+          : result.status;
       await markEmailLogStatus({
         emailLogId: claimed.emailLogId,
-        errorMessage: `send_aborted:${result.status}`,
+        errorMessage: `send_aborted:${abortReason}`,
         status: EmailLogStatus.FAILED,
       });
       await markCommunicationFailed({
         communicationId: communication.id,
         emailLogId: claimed.emailLogId,
-        errorMessage: `send_aborted:${result.status}`,
+        errorMessage: `send_aborted:${abortReason}`,
       });
       return result;
     }

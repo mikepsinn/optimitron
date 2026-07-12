@@ -45,6 +45,16 @@ const serverSchema = z.object({
   EMAIL_MONITOR_BCC: optionalNonEmptyString,
   RESEND_API_KEY: z.string().optional(),
   RESEND_MOCK_SEND: z.enum(["1"]).optional(),
+  /// Outbound email kill switch: "off" suppresses every send, "allowlist"
+  /// sends only to OUTBOUND_EMAIL_ALLOWLIST matches, unset/"on" sends
+  /// normally (production default). Enforced in @/lib/email/resend.
+  OUTBOUND_EMAIL_MODE: z.preprocess(
+    blankToUndefined,
+    z.enum(["off", "allowlist", "on"]).optional(),
+  ),
+  /// Comma-separated emails and/or @domains that may receive email when
+  /// OUTBOUND_EMAIL_MODE=allowlist, e.g. "m@thinkbynumbers.org,@example.org".
+  OUTBOUND_EMAIL_ALLOWLIST: optionalNonEmptyString,
   /// Signing secret for the Resend webhook. Configured in Resend dashboard
   /// under "Webhooks" and pasted here. Required only if webhooks are wired.
   RESEND_WEBHOOK_SECRET: z.string().optional(),

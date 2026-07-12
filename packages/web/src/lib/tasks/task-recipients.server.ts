@@ -1,4 +1,4 @@
-import { TaskCommunicationEndpointKind } from "@optimitron/db/enums";
+import { TaskCommunicationEndpointKind, TaskStatus } from "@optimitron/db/enums";
 import { prisma } from "@/lib/prisma";
 
 export interface ResolvedTaskRecipient {
@@ -19,6 +19,13 @@ export interface ResolvedTaskRecipient {
 }
 
 export interface ResolveTaskRecipientsOptions {
+  /// PRIVATE/DRAFT guard override: by default, tasks that are not public or
+  /// are still drafts only resolve recipients with a User account (assignee
+  /// user, creator, admin monitors) — endpoint emails, bare person emails,
+  /// and org contact addresses are dropped so private work never emails
+  /// external parties. Pass true ONLY when the caller has explicitly decided
+  /// external contact is intended for a restricted task.
+  allowExternalOnRestrictedTask?: boolean;
   includeAdminMonitors?: boolean;
   includeCreator?: boolean;
 }
@@ -87,6 +94,8 @@ export async function resolveTaskRecipients(
         },
         deletedAt: true,
         id: true,
+        isPublic: true,
+        status: true,
       },
     }),
     options.includeAdminMonitors
@@ -201,6 +210,13 @@ export async function resolveTaskRecipients(
       role: "admin_monitor",
       userId: adminUser.id,
     });
+  }
+
+  // PRIVATE/DRAFT guard: restricted tasks keep only recipients backed by a
+  // User account so private coordination never emails external parties.
+  const restricted = !task.isPublic || task.status === TaskStatus.DRAFT;
+  if (restricted && options.allowExternalOnRestrictedTask !== true) {
+    return recipients.filter((recipient) => Boolean(recipient.userId));
   }
 
   return recipients;

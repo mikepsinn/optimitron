@@ -1,0 +1,214 @@
+# Nightly encrypted Neon → Cloudflare R2 database backups.
+#
+# Encryption model: each dump is compressed (zstd -9) and encrypted with a
+# fresh random AES-256-CTR session key; the session key (KEYHEX:IVHEX) is then
+# RSA-OAEP-encrypted to BACKUP_RSA_PUBLIC_KEY. Only the offline private key —
+# held by the operator, never in CI or repo secrets — can decrypt.
+#
+# Because CI has no private key, a FULL restore drill (decrypt → pg_restore
+# into a throwaway branch) is impossible in CI by design. Instead:
+#   - Job "backup" verifies the dump BEFORE encryption (pg_restore --list must
+#     show the Task/User/Person/Measurement tables) and records the encrypted
+#     artifact's sha256 as object metadata.
+#   - Job "restore-verify" (monthly) verifies offsite integrity only: the
+#     latest object pair exists, is fresh, is >1MB, and its sha256 matches the
+#     metadata recorded at upload time.
+#   - The full decrypt-and-restore drill is a MANUAL QUARTERLY step for the
+#     operator — see "Restore from backup" in docs/LOCAL_DB.md.
+name: DB Backup
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily encrypted backup
+    - cron: "0 9 1 * *" # monthly offsite integrity check
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NEON_PROJECT_ID: shy-brook-99598052
+  AWS_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+  # R2 uses the literal region "auto"; the *_CHECKSUM_* settings stop aws-cli
+  # >= 2.23 from sending new default integrity checksums that R2 rejects.
+  AWS_DEFAULT_REGION: auto
+  AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+  AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+  R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
+  R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
+
+jobs:
+  backup:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 8 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Install postgresql-client-17 and zstd
+        run: |
+          set -euo pipefail
+          # PGDG repo: ubuntu-latest ships client 16; Neon may run a newer
+          # server major, and pg_dump must be >= the server major version.
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 zstd
+
+      - name: Resolve production connection URI via Neon API
+        env:
+          NEON_API_KEY: ${{ secrets.BACKUP_NEON_API_KEY }}
+        run: |
+          set -euo pipefail
+          api="https://console.neon.tech/api/v2"
+          auth=(-H "Authorization: Bearer $NEON_API_KEY" -H "Accept: application/json")
+
+          branches=$(curl -fsS "${auth[@]}" "$api/projects/$NEON_PROJECT_ID/branches")
+          # Prefer the default branch; older API payloads call it "primary".
+          # Explicit fallback to the first branch so a rename never blanks it.
+          branch_id=$(echo "$branches" | jq -r 'first(.branches[] | select(.default == true or .primary == true)) // .branches[0] | .id')
+          [ -n "$branch_id" ] && [ "$branch_id" != "null" ] || { echo "::error::could not resolve default Neon branch"; exit 1; }
+
+          databases=$(curl -fsS "${auth[@]}" "$api/projects/$NEON_PROJECT_ID/branches/$branch_id/databases")
+          db_name=$(echo "$databases" | jq -r 'first(.databases[] | select(.name != "postgres" and (.name | startswith("template") | not))) | .name')
+          role_name=$(echo "$databases" | jq -r 'first(.databases[] | select(.name != "postgres" and (.name | startswith("template") | not))) | .owner_name')
+          [ -n "$db_name" ] && [ "$db_name" != "null" ] || { echo "::error::no non-system database found"; exit 1; }
+
+          uri=$(curl -fsS "${auth[@]}" \
+            "$api/projects/$NEON_PROJECT_ID/connection_uri?branch_id=$branch_id&database_name=$db_name&role_name=$role_name&pooled=false" \
+            | jq -r '.uri')
+          [ -n "$uri" ] && [ "$uri" != "null" ] || { echo "::error::Neon returned no connection URI"; exit 1; }
+
+          # Never echo the URI; mask before persisting to the job environment.
+          echo "::add-mask::$uri"
+          echo "DATABASE_URL=$uri" >> "$GITHUB_ENV"
+          echo "Resolved branch=$branch_id database=$db_name role=$role_name"
+
+      - name: Dump database (custom format)
+        run: |
+          set -euo pipefail
+          /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner --no-privileges \
+            --file=db.dump "$DATABASE_URL"
+          ls -la db.dump
+
+      - name: Verify dump contents before encryption
+        run: |
+          set -euo pipefail
+          /usr/lib/postgresql/17/bin/pg_restore --list db.dump > toc.txt
+          for t in Task User Person Measurement; do
+            grep -qE "TABLE DATA public \"?${t}\"? " toc.txt \
+              || { echo "::error::table ${t} missing from dump"; exit 1; }
+          done
+          table_count=$(grep -cE "TABLE DATA" toc.txt)
+          {
+            echo "### DB backup verification"
+            echo "- \`pg_restore --list\` table-data entries: **${table_count}**"
+            echo "- Required tables present: Task, User, Person, Measurement"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Compress and encrypt
+        env:
+          RSA_PUBLIC_KEY_PEM: ${{ secrets.BACKUP_RSA_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+          zstd -9 --force db.dump -o dump.zst
+
+          printf '%s\n' "$RSA_PUBLIC_KEY_PEM" > backup_pub.pem
+
+          key_hex=$(openssl rand -hex 32)
+          iv_hex=$(openssl rand -hex 16)
+          echo "::add-mask::$key_hex"
+          echo "::add-mask::$iv_hex"
+
+          openssl enc -aes-256-ctr -K "$key_hex" -iv "$iv_hex" \
+            -in dump.zst -out dump.zst.enc
+
+          # Session key envelope: "KEYHEX:IVHEX", RSA-OAEP(sha256) to the
+          # offline backup public key. Decrypt path: docs/LOCAL_DB.md.
+          printf '%s:%s' "$key_hex" "$iv_hex" > session-key.txt
+          openssl pkeyutl -encrypt -pubin -inkey backup_pub.pem \
+            -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+            -in session-key.txt -out key.rsa
+
+          rm -f session-key.txt dump.zst db.dump
+          sha256sum dump.zst.enc | cut -d' ' -f1 > dump.sha256
+          echo "- Encrypted artifact sha256: \`$(cat dump.sha256)\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload to R2
+        run: |
+          set -euo pipefail
+          # First-run bootstrap. Advisory error-swallow rule: ONLY the
+          # already-exists/owned errors are tolerated — anything else fails.
+          if ! aws s3api create-bucket --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT" 2> create-bucket.err; then
+            grep -qE "BucketAlreadyOwnedByYou|BucketAlreadyExists" create-bucket.err \
+              || { cat create-bucket.err; exit 1; }
+          fi
+
+          prefix="backups/$(date -u +%Y/%m/%d)"
+          sha=$(cat dump.sha256)
+          aws s3 cp dump.zst.enc "s3://$R2_BUCKET/$prefix/dump.zst.enc" \
+            --endpoint-url "$R2_ENDPOINT" --metadata "sha256=$sha"
+          aws s3 cp key.rsa "s3://$R2_BUCKET/$prefix/key.rsa" \
+            --endpoint-url "$R2_ENDPOINT"
+          echo "- Uploaded to \`$prefix/\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prune old backups (keep 30 daily + every 1st-of-month)
+        run: |
+          set -euo pipefail
+          prefixes=$(aws s3 ls "s3://$R2_BUCKET/backups/" --recursive --endpoint-url "$R2_ENDPOINT" \
+            | awk '{print $4}' \
+            | grep -oE '^backups/[0-9]{4}/[0-9]{2}/[0-9]{2}' \
+            | sort -u)
+          keep=$(echo "$prefixes" | tail -n 30)
+          deleted=0
+          while IFS= read -r p; do
+            [ -n "$p" ] || continue
+            if echo "$keep" | grep -qx "$p"; then continue; fi
+            day="${p##*/}"
+            # Monthly archive: never prune 1st-of-month backups.
+            if [ "$day" = "01" ]; then continue; fi
+            aws s3 rm "s3://$R2_BUCKET/$p/" --recursive --endpoint-url "$R2_ENDPOINT"
+            deleted=$((deleted + 1))
+          done <<< "$prefixes"
+          echo "- Pruned $deleted old daily prefixes" >> "$GITHUB_STEP_SUMMARY"
+
+  restore-verify:
+    if: github.event.schedule == '0 9 1 * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Verify latest offsite backup integrity
+        run: |
+          set -euo pipefail
+          latest=$(aws s3 ls "s3://$R2_BUCKET/backups/" --recursive --endpoint-url "$R2_ENDPOINT" \
+            | awk '{print $4}' \
+            | grep -oE '^backups/[0-9]{4}/[0-9]{2}/[0-9]{2}' \
+            | sort -u | tail -n 1)
+          [ -n "$latest" ] || { echo "::error::no backups found in bucket"; exit 1; }
+
+          d="${latest#backups/}"; d="${d//\//-}"
+          age_days=$(( ( $(date -u +%s) - $(date -u -d "$d" +%s) ) / 86400 ))
+          [ "$age_days" -le 2 ] || { echo "::error::latest backup ($latest) is ${age_days} days old"; exit 1; }
+
+          size=$(aws s3api head-object --bucket "$R2_BUCKET" --key "$latest/dump.zst.enc" \
+            --endpoint-url "$R2_ENDPOINT" --query ContentLength --output text)
+          [ "$size" -gt 1048576 ] || { echo "::error::dump.zst.enc is only ${size} bytes (<1MB)"; exit 1; }
+
+          # Session-key object must exist alongside the dump.
+          aws s3api head-object --bucket "$R2_BUCKET" --key "$latest/key.rsa" \
+            --endpoint-url "$R2_ENDPOINT" > /dev/null
+
+          meta_sha=$(aws s3api head-object --bucket "$R2_BUCKET" --key "$latest/dump.zst.enc" \
+            --endpoint-url "$R2_ENDPOINT" --query 'Metadata.sha256' --output text)
+          [ -n "$meta_sha" ] && [ "$meta_sha" != "None" ] || { echo "::error::no sha256 metadata on object"; exit 1; }
+
+          aws s3 cp "s3://$R2_BUCKET/$latest/dump.zst.enc" ./dump.zst.enc --endpoint-url "$R2_ENDPOINT"
+          actual_sha=$(sha256sum dump.zst.enc | cut -d' ' -f1)
+          [ "$actual_sha" = "$meta_sha" ] || { echo "::error::sha256 mismatch: object=$actual_sha metadata=$meta_sha"; exit 1; }
+
+          {
+            echo "### Offsite backup integrity"
+            echo "- Latest prefix: \`$latest\` (${age_days} day(s) old)"
+            echo "- dump.zst.enc size: ${size} bytes"
+            echo "- sha256 matches upload-time metadata: yes"
+            echo "- Full restore drill requires the offline private key — manual quarterly step (docs/LOCAL_DB.md)."
+          } >> "$GITHUB_STEP_SUMMARY"
