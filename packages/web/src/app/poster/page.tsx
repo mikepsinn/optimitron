@@ -372,6 +372,16 @@ export default async function PosterPage({
             your link earns you optimization points and moves humanity one
             click closer to ending war and disease.
           </p>
+          <p className="mt-3 text-sm font-bold text-foreground">
+            Going door to door?{" "}
+            <Link
+              className="underline underline-offset-4"
+              href={ROUTES.doorToDoor}
+            >
+              Print the YES signature sheet
+            </Link>{" "}
+            instead.
+          </p>
           {hasPersonalReferralUrl ? (
             <p className="mt-2 break-all text-sm font-bold text-muted-foreground">
               This poster uses your referral link: {visibleTargetUrl}

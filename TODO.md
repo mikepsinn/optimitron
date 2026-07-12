@@ -43,6 +43,20 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
       Sierra slide — promote to a parameter; pavilion grid "expand" is
       anchor-scroll, revisit if Mike wants in-place expansion.
 
+- [ ] Door-to-door YES sheet follow-ups (`/door-to-door` shipped on
+      `feature/eos-landing-retro`): optional full-treaty-text back page;
+      per-referendum sheet generalization (3 referendums configured; only the
+      treaty has a live vote flow today); phase-2 canvass upload flow (sheet
+      photo → sourceArtifact → represented votes — needs `ReferendumVote`
+      provenance field + paper-pending vote source, schema change requires
+      Mike's approval); canvass mission task under the campaign branch once
+      the optimitron MCP connector is re-authed.
+- [ ] OPG generated-data quality: 18 of 22 US policy rows are templated
+      "Category: Adopt Country X's Approach" benchmark transplants with
+      copy-pasted effect pairs. Landing exhibit now filters them
+      (`PolicyGradeTable.topDistinctPolicies`) — fix the generator to emit
+      distinct defensible per-category estimates, then drop the filter.
+
 Bugs and concrete debt:
 
 - [ ] MCP `getTask` double-escapes nested child descriptions (contamination

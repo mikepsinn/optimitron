@@ -116,6 +116,7 @@ export const ROUTES = {
   messages: "/messages",
   love: "/love",
   poster: "/poster",
+  doorToDoor: "/door-to-door",
   shirt: "/shirt",
   joke: "/joke",
   store: "/store",
@@ -1150,6 +1151,18 @@ export const posterLink: NavItem = {
   cta: "Print",
 };
 
+export const doorToDoorLink: NavItem = {
+  href: ROUTES.doorToDoor,
+  label: "Go Door to Door",
+  emoji: "🚪",
+  description:
+    "The referendum lives on the internet, but some presidents of Earth still answer the door instead. Print the YES sheet, read the twenty-second pitch, and register the neighbors the internet has not reached. Every scan of your code counts instantly — and credits you.",
+  tagline: "Print the YES sheet. Knock.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Print",
+};
+
 export const shirtLink: NavItem = {
   href: ROUTES.shirt,
   label: "Get the Shirt",
@@ -1789,6 +1802,7 @@ export const routeReviewNavItems = [
   missionsLink,
   messagesLink,
   posterLink,
+  doorToDoorLink,
   jokeLink,
   storeLink,
   shirtLink,
