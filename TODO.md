@@ -29,6 +29,14 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 
 ## Next Up
 
+- [ ] EOS retro landing Phase B (`feature/eos-landing-retro` shipped Phase A):
+      homepage variant flip pending Mike approval (one-liner in `app/page.tsx`);
+      extend sanctioned dark theme to `/fund`; add parameters for numbers now
+      copy-only (Engine No. 1 facts, dFDA 12M datapoints / 10K contributors,
+      use-of-proceeds $500K/$1M/$2M ladder, model parameter count "670");
+      spec §9 "thirteen channels" upside passage not in manual — used canonical
+      flywheel passage instead, restore if Mike supplies the source.
+
 Bugs and concrete debt:
 
 - [ ] MCP `getTask` double-escapes nested child descriptions (contamination
