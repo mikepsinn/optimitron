@@ -72,6 +72,10 @@ Bugs and concrete debt:
       private tasks 404 like missing ones. Note: org-member access is not in
       the page predicate, so it is not in the comment gate either — extend the
       shared predicate deliberately if ever wanted.
+- [x] Single GA measurement ID: `site.ts` read `NEXT_PUBLIC_GA_DFDA_ID` /
+      `NEXT_PUBLIC_GA_DIH_ID` / `NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID`, none of
+      which were set — warondisease.org served no GA tag. All sites now use
+      `NEXT_PUBLIC_GA_MEASUREMENT_ID` (Mike's call, 2026-07-12).
 - [ ] MCP `getTask` double-escapes nested child descriptions (contamination
       vector; bug report a063947f, no fix commit found).
 - [ ] Task-payout hardening remainder: cron reconciliation for VERIFIED claims
