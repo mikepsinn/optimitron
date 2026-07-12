@@ -1,0 +1,51 @@
+name: Update PR branches
+
+# Whenever main moves (a merge landed), bring every open, behind, conflict-free
+# PR branch up to date so the next merge never waits on a manual "Update
+# branch" click. PRs with conflicts are skipped (they need a human anyway) and
+# listed in the job summary.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-pr-branches
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update open PR branches that are behind main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -u
+          updated=""; skipped=""; failed=""
+          for num in $(gh pr list --repo "$REPO" --state open --base main --json number --jq '.[].number'); do
+            state=$(gh pr view "$num" --repo "$REPO" --json mergeStateStatus --jq .mergeStateStatus)
+            if [ "$state" = "BEHIND" ]; then
+              if out=$(gh pr update-branch "$num" --repo "$REPO" 2>&1); then
+                updated="$updated #$num"
+              else
+                # Usually a merge conflict with main; needs a human rebase.
+                echo "::warning::PR #$num update-branch failed: $out"
+                failed="$failed #$num"
+              fi
+            else
+              skipped="$skipped #$num($state)"
+            fi
+          done
+          {
+            echo "## PR branch update"
+            echo "- Updated:${updated:- none}"
+            echo "- Needs human (conflict/update failed):${failed:- none}"
+            echo "- Skipped (not behind):${skipped:- none}"
+          } >> "$GITHUB_STEP_SUMMARY"
