@@ -50,4 +50,12 @@ const result = spawnSync(process.execPath, [verifyScript], {
   stdio: ["pipe", "inherit", "inherit"],
 });
 
-process.exit(result.status ?? 0);
+// ADVISORY MODE as of 2026-07-12 (Mike's call): the gates print their
+// findings above but never block the commit. The agent is expected to read
+// the warnings and act on real ones; false positives stop costing lockouts.
+if ((result.status ?? 0) !== 0) {
+  process.stderr.write(
+    "[pre-commit-checklist] ADVISORY ONLY — findings above did NOT block this commit. Fix real issues; ignore false positives.\n",
+  );
+}
+process.exit(0);

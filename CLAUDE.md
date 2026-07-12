@@ -59,7 +59,7 @@ Do not ask Mike engineering questions. Agents decide implementation details. Ask
 
 When asking, use the smallest multiple-choice question with a recommended default and optional Other. For copy changes, show verbatim before/after. If Mike says "I don't know, what do you think?", choose, record the decision, and proceed.
 
-**Hook-enforced rules.** Pre-architect Read on Write to `packages/*/src/` and "should it really / I thought / aren't we" detection on UserPromptSubmit are enforced by hooks. When a hook fires, treat its output as authoritative.
+**Hooks (simplified 2026-07-12, Mike's call).** Remaining hooks: snapshot-handedit block, safety-gate, pre-commit checklist (ADVISORY — warnings never block; act on real findings, ignore false positives), session-start PR/dev-server info, surprise-signal nudge. The copy-review rule (verbatim before/after + AskUserQuestion before committing user-facing copy) is BINDING on agents by convention even though no hook blocks it anymore. New hooks only when Mike asks.
 
 **Diagram-before-code** for non-trivial changes. When a change touches >1 system (DB + deploy + CI; UI + API + DB), or you estimate >100 lines new, or the user used "I thought we had / aren't we / why is this so" phrasing: draw current + proposed flow (ASCII boxes or terse prose) in chat BEFORE the Write/Edit. Trivial fixes skip this.
 

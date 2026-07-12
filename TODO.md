@@ -141,9 +141,10 @@ Needs Mike (one-line answers unblock):
 - Funding split: retail donations fund campaign operations; chain treasuries
   are a separate prize-pool track. Never divert charitable donations into the
   prize contract.
-- Plan files need a Cost-Benefit Matrix before `/autoplan` final gate
-  (hook-enforced); new-feature plans must acknowledge existing
-  routes/branches/commits for the feature noun (hook-enforced).
+- Copy commits require Mike seeing verbatim before/after + approving via
+  AskUserQuestion first (binding convention; blocking hooks retired
+  2026-07-12 — all pre-commit checks are advisory now, new hooks only when
+  Mike asks).
 
 ## Commit Contract
 
