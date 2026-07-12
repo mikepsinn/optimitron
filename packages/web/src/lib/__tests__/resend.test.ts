@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
     EMAIL_FROM: "team@optimitron.com" as string | undefined,
     EMAIL_MONITOR_BCC: undefined as string | undefined,
     NODE_ENV: "development",
+    OUTBOUND_EMAIL_ALLOWLIST: undefined as string | undefined,
+    OUTBOUND_EMAIL_MODE: undefined as "off" | "allowlist" | "on" | undefined,
     RESEND_API_KEY: "resend_test_key" as string | undefined,
     RESEND_MOCK_SEND: undefined as "1" | undefined,
   },
@@ -77,6 +79,8 @@ describe("sendResendEmail", () => {
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = undefined;
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = undefined;
     mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
     mocks.serverEnv.RESEND_MOCK_SEND = undefined;
     mocks.canSendEmailToUser.mockResolvedValue(true);
@@ -448,5 +452,119 @@ describe("sendResendEmail", () => {
     });
 
     expect(mocks.receivingGet).toHaveBeenCalledWith("received_1");
+  });
+});
+
+describe("outbound email kill switch", () => {
+  beforeEach(() => {
+    mocks.canSendEmailToUser.mockReset();
+    mocks.emailSend.mockReset();
+    mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
+    mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
+    mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = undefined;
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = undefined;
+    mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
+    mocks.serverEnv.RESEND_MOCK_SEND = undefined;
+    mocks.canSendEmailToUser.mockResolvedValue(true);
+    mocks.emailSend.mockResolvedValue({ data: { id: "email_1" }, error: null });
+  });
+
+  function baseMessage() {
+    return {
+      html: "<p>Hello</p>",
+      scope: "task_notifications" as const,
+      subject: "Hello",
+      text: "Hello",
+      to: "citizen@example.com",
+      userId: "user_1",
+    };
+  }
+
+  it("suppresses both user and external send paths when OUTBOUND_EMAIL_MODE=off", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "off";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(sendResendEmail(baseMessage())).resolves.toEqual({
+      status: "suppressed",
+      reason: "outbound_mode_off",
+    });
+    await expect(
+      sendExternalResendEmail({
+        html: "<p>Hello</p>",
+        subject: "Hello",
+        text: "Hello",
+        to: "senator@example.gov",
+      }),
+    ).resolves.toEqual({ status: "suppressed", reason: "outbound_mode_off" });
+
+    expect(mocks.emailSend).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("outbound_mode_off"),
+    );
+    warn.mockRestore();
+  });
+
+  it("beats RESEND_MOCK_SEND so mock runs cannot fake sends past the switch", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "off";
+    mocks.serverEnv.RESEND_MOCK_SEND = "1";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(sendResendEmail(baseMessage())).resolves.toEqual({
+      status: "suppressed",
+      reason: "outbound_mode_off",
+    });
+    warn.mockRestore();
+  });
+
+  it("sends only to allowlisted recipients in allowlist mode", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "allowlist";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST =
+      "citizen@example.com,@warondisease.org";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(sendResendEmail(baseMessage())).resolves.toMatchObject({
+      status: "sent",
+    });
+    await expect(
+      sendResendEmail({ ...baseMessage(), to: "Team@WarOnDisease.org" }),
+    ).resolves.toMatchObject({ status: "sent" });
+    await expect(
+      sendResendEmail({ ...baseMessage(), to: "stranger@example.org" }),
+    ).resolves.toEqual({
+      status: "suppressed",
+      reason: "recipient_not_allowlisted",
+    });
+
+    expect(mocks.emailSend).toHaveBeenCalledTimes(2);
+    warn.mockRestore();
+  });
+
+  it("suppresses external sends to recipients off the allowlist", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "allowlist";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = "@warondisease.org";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(
+      sendExternalResendEmail({
+        html: "<p>Hello</p>",
+        subject: "Hello",
+        text: "Hello",
+        to: "senator@example.gov",
+      }),
+    ).resolves.toEqual({
+      status: "suppressed",
+      reason: "recipient_not_allowlisted",
+    });
+    expect(mocks.emailSend).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it("sends normally when the mode is explicitly on", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "on";
+
+    await expect(sendResendEmail(baseMessage())).resolves.toMatchObject({
+      status: "sent",
+    });
   });
 });

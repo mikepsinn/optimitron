@@ -667,6 +667,25 @@ describe("triggers/fire integration", () => {
       );
       expect(store.communications[0]?.status).toBe("SENT");
     });
+
+    it("blocks endpoint emails for private tasks and records the reason", async () => {
+      const taskId = await setupTriggerAndTask("demo:escalate-private");
+      await db.task.update({
+        where: { id: taskId },
+        data: { isPublic: false },
+      });
+
+      const result = await fireTaskTrigger("demo:escalate-private", {
+        task: { id: taskId },
+      });
+
+      expect(result.result).toBe("failed");
+      expect(emailMocks.sendTaskNotificationEmail).not.toHaveBeenCalled();
+      expect(store.communications[0]?.status).toBe("FAILED");
+      expect(store.communications[0]?.errorMessage).toContain(
+        "private_task_external_recipient_blocked",
+      );
+    });
   });
 
   describe("dryRun", () => {

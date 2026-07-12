@@ -37,10 +37,12 @@ import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 function mockAssignedOrganizationTask(overrides?: {
   contactEmail?: string | null;
+  isPublic?: boolean;
   members?: Array<{
     role: string;
     user: { email: string | null; id: string };
   }>;
+  status?: string;
 }) {
   mocks.taskFindUnique.mockResolvedValue({
     assigneeOrganization: {
@@ -57,6 +59,8 @@ function mockAssignedOrganizationTask(overrides?: {
     description:
       "Put the survey link on your site and share it once with your members.",
     id: "task_iam",
+    isPublic: overrides?.isPublic ?? true,
+    status: overrides?.status ?? "ACTIVE",
     title: ORGANIZATION_ACTIVATION_TASK_TITLE,
   });
 }
@@ -153,6 +157,54 @@ describe("notifyTaskAssigneeOfAssignment", () => {
 
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("skips private tasks whose assignee email has no User account", async () => {
+    mockAssignedOrganizationTask({ isPublic: false });
+
+    await expect(
+      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+    ).resolves.toEqual({
+      reason: "private_task_external_recipient",
+      status: "skipped",
+    });
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("skips DRAFT tasks whose assignee email has no User account", async () => {
+    mockAssignedOrganizationTask({ status: "DRAFT" });
+
+    await expect(
+      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+    ).resolves.toEqual({
+      reason: "private_task_external_recipient",
+      status: "skipped",
+    });
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("still notifies User-account assignees on private tasks", async () => {
+    mockAssignedOrganizationTask({
+      contactEmail: null,
+      isPublic: false,
+      members: [
+        {
+          role: "owner",
+          user: { email: "owner@example.org", id: "user_owner" },
+        },
+      ],
+    });
+
+    const result = await notifyTaskAssigneeOfAssignment({
+      senderUserId: "demo-user-id",
+      taskId: "task_iam",
+    });
+
+    expect(result).toEqual({ status: "sent" });
+    expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({ recipientUserId: "user_owner" }),
+    );
   });
 
   it("returns a failed result instead of throwing when lookup fails", async () => {

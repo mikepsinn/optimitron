@@ -51,6 +51,39 @@ pnpm db:sync:managed-data -- --apply
 pnpm db:reset
 ```
 
+## Restore from backup
+
+Nightly encrypted production dumps land in the R2 bucket
+(`optimitron-db-backups`, see `.github/workflows/db-backup.yml`) under
+`backups/YYYY/MM/DD/` as a pair:
+
+- `dump.zst.enc` — pg_dump custom format, zstd-compressed, AES-256-CTR encrypted
+- `key.rsa` — the session key (`KEYHEX:IVHEX`), RSA-OAEP(sha256)-encrypted to
+  the offline backup public key
+
+CI never sees the private key, so decryption (and the full restore drill) is a
+manual step with the offline `backup_private.pem`, run quarterly:
+
+```bash
+# 1. Recover the session key (file contains "KEYHEX:IVHEX")
+openssl pkeyutl -decrypt -inkey backup_private.pem \
+  -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+  -in key.rsa -out session-key.txt
+KEY_HEX=$(cut -d: -f1 session-key.txt)
+IV_HEX=$(cut -d: -f2 session-key.txt)
+
+# 2. Decrypt + decompress
+openssl enc -d -aes-256-ctr -K "$KEY_HEX" -iv "$IV_HEX" \
+  -in dump.zst.enc -out dump.zst
+zstd -d dump.zst -o db.dump
+
+# 3. Restore (target an empty database or a throwaway Neon branch)
+pg_restore --no-owner --no-privileges -d "$DATABASE_URL" db.dump
+```
+
+Shred `session-key.txt` afterwards. Restore into local Docker or a throwaway
+Neon branch — never over production without an explicit decision.
+
 ## Notes
 
 - `pnpm db:migrate` is for creating new development migrations after schema changes.
