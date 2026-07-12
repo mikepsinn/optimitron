@@ -117,6 +117,7 @@ export const ROUTES = {
   love: "/love",
   poster: "/poster",
   doorToDoor: "/door-to-door",
+  compute: "/compute",
   shirt: "/shirt",
   joke: "/joke",
   store: "/store",
@@ -1151,6 +1152,18 @@ export const posterLink: NavItem = {
   cta: "Print",
 };
 
+export const computeLink: NavItem = {
+  href: ROUTES.compute,
+  label: "The Basement Professor",
+  emoji: "🖥️",
+  description:
+    "The work an AI can do alone doubles every 89 days; chip-packaging capacity doubles about once a year. Price a basement rig against that gap: rental income while civilization holds, a resident professor if it wobbles.",
+  tagline: "Price a basement rig.",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Calculate",
+};
+
 export const doorToDoorLink: NavItem = {
   href: ROUTES.doorToDoor,
   label: "Go Door to Door",
@@ -1803,6 +1816,7 @@ export const routeReviewNavItems = [
   messagesLink,
   posterLink,
   doorToDoorLink,
+  computeLink,
   jokeLink,
   storeLink,
   shirtLink,

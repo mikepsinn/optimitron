@@ -13,6 +13,7 @@ export * from './policy-exemplars';
 export * from './to-time-series';
 export * from './us-drug-war';
 export * from './us-regulation';
+export * from './gpu-compute';
 export * from './us-immigration-tariffs';
 export * from './us-immigration-impact';
 export * from './us-minimum-wage';

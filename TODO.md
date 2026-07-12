@@ -51,11 +51,17 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
       provenance field + paper-pending vote source, schema change requires
       Mike's approval); canvass mission task under the campaign branch once
       the optimitron MCP connector is re-authed.
-- [ ] OPG generated-data quality: 18 of 22 US policy rows are templated
+- [ ] OPG generated-data quality: 18 of 23 US policy rows are templated
       "Category: Adopt Country X's Approach" benchmark transplants with
       copy-pasted effect pairs. Landing exhibit now filters them
       (`PolicyGradeTable.topDistinctPolicies`) — fix the generator to emit
       distinct defensible per-category estimates, then drop the filter.
+- [ ] /compute "Basement Professor" follow-ups (Phase 1 shipped on
+      `feature/eos-landing-retro`): scheduled price-snapshot refresh
+      (eBay/vast.ai) instead of hand-curated asOf dates; per-card price
+      history; sovereign-compute program task under `optimize-earth` +
+      basement-node MCP client spec (getAIQueue worker loop); install-lead
+      handling beyond the mailto CTA.
 
 Bugs and concrete debt:
 
