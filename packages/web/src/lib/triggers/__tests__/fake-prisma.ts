@@ -309,6 +309,9 @@ export function createFakeTriggerDb() {
             id: nextId("task"),
             deletedAt: null,
             status: TaskStatus.ACTIVE,
+            // Mirrors the Prisma schema default (Task.isPublic @default(true))
+            // so the private/draft outbound guard sees the same shape as prod.
+            isPublic: true,
             ...data,
           } as FakeTask;
           store.tasks.push(task);
@@ -408,6 +411,8 @@ export function createFakeTriggerDb() {
             id: nextId("task"),
             deletedAt: null,
             status: TaskStatus.ACTIVE,
+            // Mirrors the Prisma schema default (Task.isPublic @default(true)).
+            isPublic: true,
             ...create,
           } as FakeTask;
           store.tasks.push(task);

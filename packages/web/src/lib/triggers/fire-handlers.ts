@@ -465,7 +465,7 @@ export async function fireSpawnCommunication(
       },
     });
 
-    const recipient = await resolveTaskRecipientEmail(tx, taskId);
+    const resolved = await resolveTaskRecipientEmail(tx, taskId);
     const replyTo = getReplyAddress(taskId);
 
     const communication = await tx.taskCommunication.create({
@@ -473,12 +473,12 @@ export async function fireSpawnCommunication(
         taskId,
         taskCommentId: comment.id,
         direction: "OUTBOUND",
-        recipientEmail: recipient ?? null,
-        failedAt: recipient ? null : new Date(),
-        status: recipient
+        recipientEmail: resolved.email,
+        failedAt: resolved.email ? null : new Date(),
+        status: resolved.email
           ? TaskCommunicationStatus.DRAFT
           : TaskCommunicationStatus.FAILED,
-        errorMessage: recipient ? null : "no recipient email resolved",
+        errorMessage: resolved.email === null ? resolved.reason : null,
         metadataJson: {
           triggerId: trigger.id,
           triggerKey: trigger.triggerKey,
@@ -495,10 +495,11 @@ export async function fireSpawnCommunication(
     });
     attemptedSendCount++;
 
-    if (!recipient) {
-      unsentReasons.push(`${spec.kind}: no recipient email resolved`);
+    if (resolved.email === null) {
+      unsentReasons.push(`${spec.kind}: ${resolved.reason}`);
       continue;
     }
+    const recipient = resolved.email;
 
     const sendResult = await sendTaskNotificationEmail({
       taskId,
@@ -561,18 +562,54 @@ export async function fireSpawnCommunication(
   };
 }
 
+type ResolvedTriggerRecipient =
+  | { email: string }
+  | { email: null; reason: string };
+
 /**
  * Resolve the email address for a task notification.
  *
  * Priority: primary EMAIL/MAILTO TaskCommunicationEndpoint, then the assignee
- * organization's contactEmail, then the assignee person's email. Returns
- * null when no email can be resolved — the caller marks the
- * TaskCommunication row as FAILED so the omission is visible.
+ * organization's contactEmail, then the assignee person's email.
+ *
+ * PRIVATE/DRAFT guard: non-public or draft tasks must not email external
+ * parties (endpoint emails, org contact addresses, bare person emails) —
+ * only an assignee backed by a User account may be contacted. When nothing
+ * resolves, the caller marks the TaskCommunication row FAILED with the
+ * returned reason so the omission is visible in audit reads.
  */
 async function resolveTaskRecipientEmail(
   tx: FireDb,
   taskId: string,
-): Promise<string | null> {
+): Promise<ResolvedTriggerRecipient> {
+  const task = await tx.task.findUnique({
+    where: { id: taskId },
+    select: {
+      isPublic: true,
+      status: true,
+      assigneeOrganization: { select: { contactEmail: true } },
+      assigneePerson: {
+        select: {
+          email: true,
+          user: { select: { deletedAt: true, email: true } },
+        },
+      },
+    },
+  });
+  if (!task) {
+    return { email: null, reason: "no recipient email resolved" };
+  }
+
+  const restricted = !task.isPublic || task.status === TaskStatus.DRAFT;
+  if (restricted) {
+    const userEmail =
+      task.assigneePerson?.user && !task.assigneePerson.user.deletedAt
+        ? task.assigneePerson.user.email
+        : null;
+    if (userEmail) return { email: userEmail };
+    return { email: null, reason: "private_task_external_recipient_blocked" };
+  }
+
   // 1) Primary email-capable endpoint takes precedence (operator-set contact method).
   const endpoint = await tx.taskCommunicationEndpoint.findFirst({
     where: {
@@ -584,25 +621,17 @@ async function resolveTaskRecipientEmail(
     },
     select: { email: true },
   });
-  if (endpoint?.email) return endpoint.email;
+  if (endpoint?.email) return { email: endpoint.email };
 
   // 2) Assignee org contactEmail
-  const task = await tx.task.findUnique({
-    where: { id: taskId },
-    select: {
-      assigneeOrganizationId: true,
-      assigneePersonId: true,
-      assigneeOrganization: { select: { contactEmail: true } },
-      assigneePerson: { select: { email: true } },
-    },
-  });
-  if (task?.assigneeOrganization?.contactEmail) {
-    return task.assigneeOrganization.contactEmail;
+  if (task.assigneeOrganization?.contactEmail) {
+    return { email: task.assigneeOrganization.contactEmail };
   }
-  if (task?.assigneePerson?.email) {
-    return task.assigneePerson.email;
+  // 3) Assignee person email
+  if (task.assigneePerson?.email) {
+    return { email: task.assigneePerson.email };
   }
-  return null;
+  return { email: null, reason: "no recipient email resolved" };
 }
 
 export async function dryRunFire(

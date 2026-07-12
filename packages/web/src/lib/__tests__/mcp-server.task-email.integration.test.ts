@@ -46,6 +46,10 @@ const db = vi.hoisted(() => {
     title: "Ask Test Foundation to review the treaty",
     description: "Confirm whether Test Foundation can help recruit jurors.",
     deletedAt: null,
+    // Public + active so the private/draft outbound guard permits emailing
+    // the external foundation contact in this round-trip test.
+    isPublic: true,
+    status: "ACTIVE",
     createdByUserId: "user_creator",
     createdByUser: { id: "user_creator", email: "creator@example.org" },
     assigneeOrganization: {

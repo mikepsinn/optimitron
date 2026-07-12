@@ -121,12 +121,13 @@ export async function sendTaskNotificationEmail(
       return { status: "disabled", replyTo };
     }
     if (result.status === "suppressed") {
-      // External path doesn't run user-suppression checks — this branch is
-      // unreachable today, but the type union forces us to handle it.
+      // Reached when the env-level outbound kill switch (OUTBOUND_EMAIL_MODE)
+      // blocks the send. Carry the concrete reason so the TaskCommunication
+      // row's errorMessage explains the suppression in audit reads.
       return {
         status: "failed",
         replyTo,
-        errorMessage: "Email suppressed by user opt-out",
+        errorMessage: `Email suppressed: ${result.reason}`,
       };
     }
     return {

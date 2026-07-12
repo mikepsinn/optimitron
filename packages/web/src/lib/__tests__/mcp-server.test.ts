@@ -110,6 +110,8 @@ const mocks = vi.hoisted(() => ({
   getPageContent: vi.fn(),
   listAdminTaskEmailCommunications: vi.fn(),
   listAdminEmailLogs: vi.fn(),
+  listCommunicationsForViewer: vi.fn(),
+  getCommunicationLogForViewer: vi.fn(),
   sourceArtifactUpsert: vi.fn(),
   taskSourceArtifactUpsert: vi.fn(),
   ensureSubjectForUser: vi.fn(),
@@ -226,6 +228,11 @@ vi.mock("../site-inventory.server", () => ({
 vi.mock("../admin-communications.server", () => ({
   listAdminTaskEmailCommunications: mocks.listAdminTaskEmailCommunications,
   listAdminEmailLogs: mocks.listAdminEmailLogs,
+}));
+
+vi.mock("../communications-audit.server", () => ({
+  getCommunicationLogForViewer: mocks.getCommunicationLogForViewer,
+  listCommunicationsForViewer: mocks.listCommunicationsForViewer,
 }));
 
 vi.mock("../earth-data.server", () => ({
@@ -882,6 +889,130 @@ describe("MCP server tool dispatch", () => {
     const body = parseToolBody(result);
     expect(body.error).toContain("Pass at least one recipient filter");
     expect(mocks.listAdminTaskEmailCommunications).not.toHaveBeenCalled();
+  });
+
+  describe("communications audit tools", () => {
+    it("exposes the tools to non-admin personal-scope users", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const names = (await client.listTools()).tools.map((tool) => tool.name);
+
+      expect(names).toContain("listCommunications");
+      expect(names).toContain("getCommunicationLog");
+    });
+
+    it("passes a non-admin viewer with the session person id", async () => {
+      mocks.userFindUnique.mockResolvedValue({ personId: "person-1" });
+      mocks.listCommunicationsForViewer.mockResolvedValue({
+        communications: [],
+        limit: 50,
+        total: 0,
+      });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "listCommunications",
+        arguments: {
+          channel: "EMAIL",
+          limit: 10,
+          sinceIso: "2026-07-01T00:00:00.000Z",
+          taskId: "task-1",
+        },
+      });
+
+      const body = parseToolBody(result);
+      expect(body.total).toBe(0);
+      expect(mocks.listCommunicationsForViewer).toHaveBeenCalledWith(
+        { isAdmin: false, personId: "person-1", userId: "user-1" },
+        expect.objectContaining({
+          channel: "EMAIL",
+          limit: 10,
+          since: new Date("2026-07-01T00:00:00.000Z"),
+          taskId: "task-1",
+        }),
+      );
+    });
+
+    it("passes an admin viewer for admin sessions", async () => {
+      mocks.userFindUnique.mockResolvedValue({ personId: "person-admin" });
+      mocks.listCommunicationsForViewer.mockResolvedValue({
+        communications: [],
+        limit: 50,
+        total: 0,
+      });
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      await client.callTool({ name: "listCommunications", arguments: {} });
+
+      expect(mocks.listCommunicationsForViewer).toHaveBeenCalledWith(
+        { isAdmin: true, personId: "person-admin", userId: "admin-1" },
+        expect.anything(),
+      );
+    });
+
+    it("requires authentication for anonymous non-admin sessions", async () => {
+      const client = await setup(undefined, ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "listCommunications",
+        arguments: {},
+      });
+
+      const body = parseToolBody(result);
+      expect(body.error).toBe("authentication_required");
+      expect(mocks.listCommunicationsForViewer).not.toHaveBeenCalled();
+    });
+
+    it("rejects invalid channel and date filters", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const badChannel = parseToolBody(
+        await client.callTool({
+          name: "listCommunications",
+          arguments: { channel: "CARRIER_PIGEON" },
+        }),
+      );
+      expect(badChannel.error).toContain("channel must be one of");
+
+      const badDate = parseToolBody(
+        await client.callTool({
+          name: "listCommunications",
+          arguments: { sinceIso: "not-a-date" },
+        }),
+      );
+      expect(badDate.error).toContain("sinceIso");
+      expect(mocks.listCommunicationsForViewer).not.toHaveBeenCalled();
+    });
+
+    it("fetches one communication and reports not-found rows", async () => {
+      mocks.userFindUnique.mockResolvedValue({ personId: "person-1" });
+      mocks.getCommunicationLogForViewer.mockResolvedValueOnce({
+        id: "comm-1",
+        status: "SENT",
+      });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const found = parseToolBody(
+        await client.callTool({
+          name: "getCommunicationLog",
+          arguments: { id: "comm-1" },
+        }),
+      );
+      expect(found.communication).toMatchObject({ id: "comm-1" });
+      expect(mocks.getCommunicationLogForViewer).toHaveBeenCalledWith(
+        { isAdmin: false, personId: "person-1", userId: "user-1" },
+        "comm-1",
+      );
+
+      mocks.getCommunicationLogForViewer.mockResolvedValueOnce(null);
+      const missing = parseToolBody(
+        await client.callTool({
+          name: "getCommunicationLog",
+          arguments: { id: "comm-404" },
+        }),
+      );
+      expect(missing.error).toContain("not found");
+    });
   });
 
   it("exposes Earth-data write tools to authenticated earthdata writers and moderation tools only to admins", async () => {

@@ -2,6 +2,7 @@ import {
   TaskCommunicationAudience,
   TaskCommunicationChannel,
   TaskCommunicationPurpose,
+  TaskStatus,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
@@ -45,6 +46,7 @@ async function resolveSenderDisplayName(
 
 async function resolveAssignmentRecipient(taskId: string): Promise<{
   recipient: AssignmentRecipient;
+  restricted: boolean;
   task: { description: string; id: string; title: string };
 } | null> {
   const task = await prisma.task.findUnique({
@@ -76,6 +78,8 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
       deletedAt: true,
       description: true,
       id: true,
+      isPublic: true,
+      status: true,
       title: true,
     },
   });
@@ -83,6 +87,10 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
   if (!task || task.deletedAt) {
     return null;
   }
+
+  // PRIVATE/DRAFT guard input: restricted tasks may only notify recipients
+  // backed by a User account (see notifyTaskAssigneeOfAssignment).
+  const restricted = !task.isPublic || task.status === TaskStatus.DRAFT;
 
   if (task.assigneeOrganization) {
     const member = task.assigneeOrganization.members.find((candidate) =>
@@ -107,6 +115,7 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
             ? (member?.user.id ?? null)
             : null,
       },
+      restricted,
       task,
     };
   }
@@ -131,6 +140,7 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
             ? (task.assigneePerson.user?.id ?? null)
             : null,
       },
+      restricted,
       task,
     };
   }
@@ -139,6 +149,10 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
 }
 
 export async function notifyTaskAssigneeOfAssignment(input: {
+  /// PRIVATE/DRAFT guard override — see ResolveTaskRecipientsOptions in
+  /// task-recipients.server.ts for the semantics. No production caller
+  /// passes true today.
+  allowExternalOnRestrictedTask?: boolean;
   senderUserId?: string | null;
   taskId: string;
 }) {
@@ -148,7 +162,19 @@ export async function notifyTaskAssigneeOfAssignment(input: {
       return { reason: "no_assignee_email", status: "skipped" as const };
     }
 
-    const { recipient, task } = resolved;
+    const { recipient, restricted, task } = resolved;
+    if (
+      restricted &&
+      !recipient.userId &&
+      input.allowExternalOnRestrictedTask !== true
+    ) {
+      // Private or draft task whose assignee email is not backed by a User
+      // account — never email external parties about non-public work.
+      return {
+        reason: "private_task_external_recipient",
+        status: "skipped" as const,
+      };
+    }
     const senderName = await resolveSenderDisplayName(input.senderUserId);
     // The share footer is optional decoration — never block the
     // assignment email if the referral lookup throws.
