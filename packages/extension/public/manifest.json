@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Optimitron",
   "version": "0.1.0",
-  "description": "Tells you the best next thing to do. Tasks, medication reminders, and your day's schedule from optimitron.com — snooze, skip, or mark done.",
+  "description": "Tells you the best next thing to do: tasks, meds, and your day's schedule from optimitron.com. Snooze, skip, or mark done.",
   "permissions": [
     "alarms",
     "storage",

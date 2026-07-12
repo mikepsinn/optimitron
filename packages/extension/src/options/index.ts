@@ -240,8 +240,6 @@ function setupExport(): void {
 // Analysis
 // ============================================================
 
-const WEB_APP_URL = "http://localhost:3001"; // TODO: change to production URL
-
 let analysisResults: AnalysisRelationshipResult[] = [];
 let sortField: string = "pis";
 let sortAscending = false;
@@ -255,6 +253,7 @@ async function getOrCreateContributorId(): Promise<string> {
 }
 
 function setupAnalysis(): void {
+  void setVerifyPersonhoodLink();
   const runBtn = document.getElementById("run-analysis-btn");
   runBtn?.addEventListener("click", () => void runAnalysis());
 
@@ -285,11 +284,12 @@ function setupAnalysis(): void {
     });
   }
 
-  // Set verify personhood link
+}
+
+async function setVerifyPersonhoodLink(): Promise<void> {
   const verifyLink = document.getElementById("verify-personhood-link") as HTMLAnchorElement | null;
-  if (verifyLink) {
-    verifyLink.href = `${WEB_APP_URL}/personhood`;
-  }
+  if (!verifyLink) return;
+  verifyLink.href = `${await getApiBase()}/personhood`;
 }
 
 async function runAnalysis(): Promise<void> {
@@ -419,7 +419,7 @@ async function shareResults(): Promise<void> {
     const data = await getAllData();
     const dataSpanDays = calculateDataSpanDays(data);
 
-    const response = await fetch(`${WEB_APP_URL}/api/health-analysis/submit`, {
+    const response = await fetch(`${await getApiBase()}/api/health-analysis/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
