@@ -154,7 +154,7 @@
 - QUEUED
 - Apply for the Survival and Flourishing Fund grant
 - 2.5 h, EV $70,000
-- awaiting input
+- awaiting input _
 - Every human on Earth is a president of Earth Optimization Services. The machine computes your highest-value next action, from taking your medication to redirecting [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), with the same arithmetic. It is running today. Connect any AI assistant to the MCP server and ask it what you should do next.
 - The health engine already generated outcome labels from 12 million datapoints contributed by 10,000 people. The rankings are public at [studies.dfda.earth](https://studies.dfda.earth).
 - [ASK THE MACHINE WHAT TO DO NEXT](/mcp)
@@ -225,7 +225,7 @@
 ### TYPE YOUR NET WORTH. WATCH TWENTY YEARS HAPPEN TO IT.
 - NET WORTH
 - ANNUAL INCOME
-- Until you type, the chart runs Earth's median after-tax income: [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) a year. If your number is bigger, congratulations — you are ahead of 4 billion people.
+- Until you type, the chart runs Earth's median after-tax income: [$2,138](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) a year. If your number is bigger, congratulations — you are ahead of half of Earth's [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) people.
 - COLLAPSE
 - the trend line, extended
 - FANTASY

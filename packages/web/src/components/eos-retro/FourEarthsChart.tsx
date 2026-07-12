@@ -18,6 +18,7 @@ import {
   GLOBAL_CYBERCRIME_CAGR,
   GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
+  GLOBAL_POPULATION_2024,
   TREATY_TRAJECTORY_CAGR_YEAR_20,
   WISHONIA_TRAJECTORY_CAGR_YEAR_20,
 } from "@optimitron/data/parameters";
@@ -86,11 +87,20 @@ function yPct(index: number): number {
   return PLOT.top + (1 - Math.min(index, CAP_INDEX) / CAP_INDEX) * PLOT.height;
 }
 
+/** ~3 significant figures without scientific notation (toPrecision emits
+ *  "1.00e+4" once the scaled value reaches 10,000, e.g. $1e16 inputs). */
+function fmtScaled(v: number): string {
+  const abs = Math.abs(v);
+  if (abs >= 100) return Math.round(v).toLocaleString("en-US");
+  if (abs >= 10) return v.toFixed(1);
+  return v.toFixed(2);
+}
+
 function fmtMoney(n: number): string {
   const abs = Math.abs(n);
-  if (abs >= 1e12) return `$${(n / 1e12).toPrecision(3)}T`;
-  if (abs >= 1e9) return `$${(n / 1e9).toPrecision(3)}B`;
-  if (abs >= 1e6) return `$${(n / 1e6).toPrecision(3)}M`;
+  if (abs >= 1e12) return `$${fmtScaled(n / 1e12)}T`;
+  if (abs >= 1e9) return `$${fmtScaled(n / 1e9)}B`;
+  if (abs >= 1e6) return `$${fmtScaled(n / 1e6)}M`;
   if (abs >= 1e4) return `$${Math.round(n / 1e3)}K`;
   return `$${Math.round(n).toLocaleString()}`;
 }
@@ -188,7 +198,8 @@ export function FourEarthsChart() {
   const [input, setInput] = useState<number>(Number.NaN);
   const inputId = useId();
 
-  const usingDefault = !(Number.isFinite(input) && input > 0);
+  const touched = Number.isFinite(input);
+  const usingDefault = !(touched && input > 0);
   const amount = usingDefault ? DEFAULT_INPUT : input;
   // Until the visitor types, the chart runs the median human's yearly
   // income, whatever the toggle says — so the tooltip keeps the /yr suffix.
@@ -264,10 +275,21 @@ export function FourEarthsChart() {
       </div>
       {usingDefault ? (
         <p className="er-caption mb-6">
-          Until you type, the chart runs Earth&apos;s median after-tax income:{" "}
+          {touched
+            ? "The chart needs a number above zero, so it is running "
+            : "Until you type, the chart runs "}
+          Earth&apos;s median after-tax income:{" "}
           <ParameterValue figures={4} param={GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025} />{" "}
-          a year. If your number is bigger, congratulations — you are ahead
-          of 4 billion people.
+          a year.
+          {touched ? null : (
+            <>
+              {" "}
+              If your number is bigger, congratulations — you are ahead of
+              half of Earth&apos;s{" "}
+              <ParameterValue figures={1} param={GLOBAL_POPULATION_2024} />{" "}
+              people.
+            </>
+          )}
         </p>
       ) : (
         <div className="mb-6" />
@@ -379,7 +401,7 @@ export function FourEarthsChart() {
             top: `${PLOT.top + 4}%`,
           }}
         >
-          optimal leaves the chart in year {Math.ceil(OPTIMAL_EXIT_T)}
+          optimal leaves the chart in {BASE_YEAR + Math.ceil(OPTIMAL_EXIT_T)}
         </div>
         <div
           className="er-chart-annotation hidden sm:block"

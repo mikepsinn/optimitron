@@ -35,9 +35,12 @@ export function Starfield() {
     let stars: Star[] = [];
     let raf = 0;
     let running = true;
+    // Cached at seed()/resize so draw() never forces a layout read per frame.
+    let width = 0;
+    let height = 0;
 
     const seed = () => {
-      const { width, height } = canvas.getBoundingClientRect();
+      ({ width, height } = canvas.getBoundingClientRect());
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
@@ -53,7 +56,6 @@ export function Starfield() {
     };
 
     const draw = (t: number) => {
-      const { width, height } = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, width, height);
       for (const s of stars) {
         const alpha = reducedMotion
