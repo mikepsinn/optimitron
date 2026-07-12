@@ -11,6 +11,47 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
 `optimitron.com` (app/proof engine). Every task roots under
 `OPTIMIZE_EARTH_ROOT_TASK_ID` (`program:optimize-earth`).
 
+## Agent handoff — 2026-07-12 evening (session ending)
+
+- **This PR (`feature/docs-model-comment-privacy`):** comment-privacy gate
+  (0607410f — fixes anonymous reads of private-task comments, verified leak on
+  prod) + single GA ID (6b35688d — `NEXT_PUBLIC_GA_MEASUREMENT_ID` for all
+  sites; Mike still owes the GA4 Admin "Configure your domains" click for
+  cross-domain sessions) + Document model v1 (Prisma `Document` + versions,
+  MCP createDocument/updateDocument/getDocument/listDocuments,
+  `/documents/[id]`, task-page doc list). After merge, re-mirror grant drafts
+  as task comments (they're PUBLIC-readable until this deploys).
+- **Next dev tasks (specs in Optimitron, EV-ranked):**
+  `optimitron:dev:llms-txt-comprehensive` (cmridzl5n — llms.txt is
+  campaign-only; must expose MCP/API/directories, generate from `routes.ts`);
+  `optimitron:dev:person-capability-profile` (cmridvdbt —
+  GitHub-profile-style redesign of `/people/[handle]`; full spec + Mike's
+  critique in task comments; bio/headline currently DON'T render on the page —
+  worst defect); `optimitron:dev:createtask-deadline-policy` (cmri8tcvz —
+  EXPIRES silently downgraded to SOFT);
+  `optimitron:dev:task-tree-visualization` (cmri3k975); extension OAuth
+  end-to-end live verification (PR #113 merged, untested against prod).
+- **Funding/prizes:** task tree under `funding:prizes-2026-q3` (cmri80ldt) —
+  Coefficient Giving due Aug 21 (top priority), Schmidt go/no-go Jul 25,
+  XPRIZE Future Vision due Aug 15, Build with Gemini decide Jul 20; every
+  Apply task has a Review-&-SUBMIT child for Mike with an embedded
+  browser-agent prompt; drafts in Notion under "Grant Applications Q3 2026" +
+  mirrored as task comments.
+- **Binding content rules (Mike, 2026-07-12):** never name QuantiModo/CureDAO
+  in application narratives (claim the work: 10+ yrs open-source health
+  infra, studies.dfda.earth); never claim cures are known-but-withheld (95%
+  of diseases have no treatment — the machine FINDS cures); "but the economy"
+  always paired with the math-error counter
+  (`war_counterfactual_income_multiple`); Optimitron = OPG/OBG optimal
+  policies+budgets, not just "move 1%"; canonical bio =
+  optimitron.com/people/mike; film/script/public-argument content lives in
+  the manual repo (canonical educational film:
+  `manual/knowledge/educational-film.qmd`), Notion only for private drafts.
+- **Mike's open decisions:** icon pick (64 candidates, sheets in
+  chat/scratchpad), Coefficient applicant entity (AMF 501c3 vs EOS PBC —
+  rec: AMF), bio scale figure (10M+ data points vs 50k+ studies), merge this
+  PR.
+
 ## In Flight
 
 - [ ] Execution-planner audit follow-through (`feature/mcp-execution-plan-audit`):
@@ -62,6 +103,15 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
       history; sovereign-compute program task under `optimize-earth` +
       basement-node MCP client spec (getAIQueue worker loop); install-lead
       handling beyond the mailto CTA.
+
+- [x] Document model v1 (task `optimitron:dev:document-model`): versioned
+      markdown `Document` rows (new version = new row, `isCurrent` flips in a
+      transaction), private by default; MCP createDocument / updateDocument /
+      getDocument / listDocuments; `/documents/[id]` page with version list +
+      creator-only editor; task page lists attached documents.
+- [ ] Document model follow-ups: `/documents` index page; delete/archive (no
+      deletedAt in v1); visibility levels beyond PUBLIC/PRIVATE (org-shared);
+      move a Notion working doc across as the first dogfood.
 
 Bugs and concrete debt:
 

@@ -1869,6 +1869,7 @@ model User {
   taskComments                       TaskComment[]                    @relation("TaskCommentAuthor")
   moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
   taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
+  createdDocuments                   Document[]                       @relation("DocumentCreator")
   oauthAuthCodes                     OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
   oauthGrants                        OAuthGrant[]                     @relation("UserOAuthGrants")
   mcpToolCallAudits                  McpToolCallAudit[]               @relation("UserMcpToolCallAudits")
@@ -3752,6 +3753,7 @@ model Jurisdiction {
   conflicts                     Conflict[]                       @relation("ConflictPrimaryJurisdiction")
   memorialResponsibleParties    PersonMemorialResponsibleParty[] @relation("JurisdictionPersonMemorialResponsibleParties")
   interventionApprovalTimelines InterventionApprovalTimeline[]   @relation("JurisdictionInterventionApprovalTimelines")
+  documents                     Document[]                       @relation("JurisdictionDocuments")
 
   @@index([type])
   @@index([parentJurisdictionId])
@@ -5820,6 +5822,7 @@ model Task {
   fundingTarget             TaskFundingTarget?          @relation("TaskFundingTargetTask")
   fundingPayments           TaskFundingPayment[]        @relation("TaskFundingPaymentTask")
   payouts                   TaskPayout[]                @relation("TaskPayoutTask")
+  documents                 Document[]                  @relation("TaskDocuments")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -5896,6 +5899,65 @@ model TaskManager {
   @@index([userId, role])
   @@index([createdByUserId])
   @@index([deletedAt])
+}
+
+/// Who can see a Document.
+enum DocumentVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+/// Versioned markdown document, optionally attached to a task. Working docs
+/// live here instead of Notion. One row per version: every version of a
+/// logical document shares documentKey, and exactly one row per documentKey
+/// has isCurrent = true (enforced in the update transaction).
+model Document {
+  /// Unique identifier for this version row
+  id String @id @default(cuid())
+
+  /// Optional jurisdiction this document belongs to
+  jurisdictionId String?
+
+  /// Stable identity shared by every version of this logical document
+  documentKey String @default(cuid())
+
+  /// Optional task this document is attached to
+  taskId String?
+
+  /// Document title
+  title String
+
+  /// Markdown body
+  body String
+
+  /// Monotonic version number within a documentKey, starting at 1
+  version Int @default(1)
+
+  /// Whether this row is the version readers see by default
+  isCurrent Boolean @default(true)
+
+  /// Who can see this document. Private by default.
+  visibility DocumentVisibility @default(PRIVATE)
+
+  /// User who created this version
+  createdByUserId String
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  // -- Relations --
+  jurisdiction  Jurisdiction? @relation("JurisdictionDocuments", fields: [jurisdictionId], references: [id])
+  task          Task?         @relation("TaskDocuments", fields: [taskId], references: [id], onDelete: SetNull)
+  createdByUser User          @relation("DocumentCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([documentKey, version])
+  @@index([taskId, isCurrent])
+  @@index([createdByUserId, isCurrent])
+  @@index([jurisdictionId])
+  @@index([visibility, isCurrent])
 }
 
 /// Non-human executor that can be matched to tasks by agents.

@@ -14,6 +14,7 @@ import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgre
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
+import { TaskDocumentsList } from "@/components/documents/task-documents-list";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatusPanel";
 import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
@@ -675,6 +676,8 @@ export default async function TaskDetailPage({
             <TaskDescription markdown={task.description} />
           </article>
         </section>
+
+        <TaskDocumentsList taskId={task.id} userId={userId} />
 
         <TaskDependenciesSection task={task} viewer={viewer} />
 

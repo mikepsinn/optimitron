@@ -84,6 +84,7 @@ const mocks = vi.hoisted(() => ({
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
   postComment: vi.fn(),
+  canUserViewTask: vi.fn(),
   notifyTaskCommentRecipients: vi.fn(),
   generateAndPostWishoniaReply: vi.fn(),
   getProfileIdentityData: vi.fn(),
@@ -166,6 +167,12 @@ vi.mock("../tasks/task-communication-endpoints.server", () => ({
 vi.mock("../tasks/task-comments.server", () => ({
   countUserCommentsInWindow: mocks.countUserCommentsInWindow,
   postComment: mocks.postComment,
+}));
+vi.mock("../tasks/task-visibility.server", () => ({
+  TASK_NOT_FOUND_MESSAGE: "Task not found",
+  canUserViewTask: mocks.canUserViewTask,
+  assertUserCanViewTask: vi.fn(),
+  getTaskVisibilityWhere: vi.fn(),
 }));
 vi.mock("../tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
@@ -536,6 +543,8 @@ function makePriority(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
+  // Default: the caller can view the task. Visibility-denial cases override.
+  mocks.canUserViewTask.mockResolvedValue(true);
   vi.unstubAllGlobals();
   delete process.env.GITHUB_PAT;
   delete process.env.GITHUB_TOKEN;
@@ -4975,6 +4984,23 @@ describe("MCP server tool dispatch", () => {
         message: "Owner/assignee update",
         taskId: "task-1",
       });
+    });
+
+    it("postTaskComment 404s tasks the caller cannot view without writing", async () => {
+      mocks.canUserViewTask.mockResolvedValue(false);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "postTaskComment",
+        arguments: {
+          taskId: "private-task",
+          message: "should not land",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.postComment).not.toHaveBeenCalled();
     });
   });
 

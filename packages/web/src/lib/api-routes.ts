@@ -30,6 +30,9 @@ export const API_ROUTES = {
     application: (id: string, applicationId: string) =>
       `/api/tasks/${id}/applications/${applicationId}`,
   },
+  documents: {
+    document: (id: string) => `/api/documents/${id}`,
+  },
   push: {
     vapidKey: "/api/push/vapid-key",
     subscribe: "/api/push/subscribe",
