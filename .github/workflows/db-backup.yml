@@ -136,13 +136,7 @@ jobs:
       - name: Upload to R2
         run: |
           set -euo pipefail
-          # First-run bootstrap. Advisory error-swallow rule: ONLY the
-          # already-exists/owned errors are tolerated — anything else fails.
-          if ! aws s3api create-bucket --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT" 2> create-bucket.err; then
-            grep -qE "BucketAlreadyOwnedByYou|BucketAlreadyExists" create-bucket.err \
-              || { cat create-bucket.err; exit 1; }
-          fi
-
+          # The bucket is provisioned separately; this token has object access only.
           prefix="backups/$(date -u +%Y/%m/%d)"
           sha=$(cat dump.sha256)
           aws s3 cp dump.zst.enc "s3://$R2_BUCKET/$prefix/dump.zst.enc" \
