@@ -136,6 +136,7 @@ jobs:
       - name: Upload to R2
         run: |
           set -euo pipefail
+          # The bucket is provisioned separately; this token has object access only.
           prefix="backups/$(date -u +%Y/%m/%d)"
           sha=$(cat dump.sha256)
           aws s3 cp dump.zst.enc "s3://$R2_BUCKET/$prefix/dump.zst.enc" \
