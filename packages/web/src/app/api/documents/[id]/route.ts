@@ -10,7 +10,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import {
+  DOCUMENT_EMPTY_PATCH_MESSAGE,
   DOCUMENT_NOT_FOUND_MESSAGE,
+  DOCUMENT_PRIVATE_TASK_MESSAGE,
   getDocumentForViewer,
   toDocumentDto,
   updateDocument,
@@ -103,7 +105,9 @@ export async function POST(
     if (
       error instanceof Error &&
       (error.message.includes("cannot be empty") ||
-        error.message.includes("character limit"))
+        error.message.includes("character limit") ||
+        error.message === DOCUMENT_EMPTY_PATCH_MESSAGE ||
+        error.message === DOCUMENT_PRIVATE_TASK_MESSAGE)
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

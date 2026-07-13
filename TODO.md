@@ -19,8 +19,11 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
   sites; Mike still owes the GA4 Admin "Configure your domains" click for
   cross-domain sessions) + Document model v1 (Prisma `Document` + versions,
   MCP createDocument/updateDocument/getDocument/listDocuments,
-  `/documents/[id]`, task-page doc list). After merge, re-mirror grant drafts
-  as task comments (they're PUBLIC-readable until this deploys).
+  `/documents/[id]`, task-page doc list). Re-mirror grant drafts as task
+  comments only once the comment-privacy fix is confirmed LIVE IN PRODUCTION
+  (not just merged — a merge can lag deploy) and a smoke test confirms
+  anonymous GET on a private task returns no comments; they're
+  PUBLIC-readable until this actually deploys.
 - **Next dev tasks (specs in Optimitron, EV-ranked):**
   `optimitron:dev:llms-txt-comprehensive` (cmridzl5n — llms.txt is
   campaign-only; must expose MCP/API/directories, generate from `routes.ts`);
@@ -109,9 +112,11 @@ referendum — 32 doubling rounds at 2 recruits per voter reaches ~4.3B. Sites:
       transaction), private by default; MCP createDocument / updateDocument /
       getDocument / listDocuments; `/documents/[id]` page with version list +
       creator-only editor; task page lists attached documents.
-- [ ] Document model follow-ups: `/documents` index page; delete/archive (no
-      deletedAt in v1); visibility levels beyond PUBLIC/PRIVATE (org-shared);
-      move a Notion working doc across as the first dogfood.
+- [ ] Document model follow-ups: `/documents` index page; delete/archive
+      endpoint (schema has `deletedAt` as of 2026-07-12 per Mike's call on PR
+      #114 review — reads already filter it out — but no delete/archive API
+      or UI wired to set it yet); visibility levels beyond PUBLIC/PRIVATE
+      (org-shared); move a Notion working doc across as the first dogfood.
 
 Bugs and concrete debt:
 

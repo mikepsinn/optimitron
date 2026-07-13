@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { listDocumentsForViewer } from "@/lib/documents.server";
+import { listDocumentSummariesForViewer } from "@/lib/documents.server";
 
 /**
  * Small list of documents attached to a task, shown under the description.
- * Renders nothing when the viewer can see no documents on the task.
+ * Renders nothing when the viewer can see no documents on the task. Fetches
+ * id/title/version only — not the (up to 500k char) markdown body every
+ * DocumentRow carries, which this list never renders.
  */
 export async function TaskDocumentsList({
   taskId,
@@ -14,7 +16,7 @@ export async function TaskDocumentsList({
 }) {
   // Swallow query errors (e.g. code deployed ahead of the Document migration)
   // instead of taking down the whole task page for a side list.
-  const documents = await listDocumentsForViewer({
+  const documents = await listDocumentSummariesForViewer({
     taskId,
     userId,
     limit: 50,

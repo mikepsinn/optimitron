@@ -82,7 +82,7 @@ export const DOCUMENT_TOOL_DEFINITIONS = [
   {
     name: "getDocument",
     description:
-      "Read one document version plus its version list. Private documents 404 unless you created them.",
+      "Read one document version plus its version list. Private documents 404 unless you created them or are an administrator.",
     inputSchema: {
       type: "object" as const,
       properties: {

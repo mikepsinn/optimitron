@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getDocumentForViewer } from "@/lib/documents.server";
+import { canUserViewTask } from "@/lib/tasks/task-visibility.server";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { DocumentEditForm } from "@/components/documents/document-edit-form";
 
@@ -49,6 +50,14 @@ export default async function DocumentPage({
 
   const { document, versions, viewerCanEdit } = result;
   const currentVersion = versions.find((v) => v.isCurrent) ?? null;
+  // A public document can (still) be attached to a task the viewer can't
+  // see — e.g. the task was made private after the document was attached.
+  // Only render the link when the viewer can actually view that task, so a
+  // public document page never leaks a private task's id to anyone who
+  // couldn't otherwise find it.
+  const canViewAttachedTask = document.taskId
+    ? await canUserViewTask(document.taskId, userId)
+    : false;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
@@ -62,7 +71,7 @@ export default async function DocumentPage({
           {document.visibility === "PRIVATE" ? "Private." : "Public."}{" "}
           {document.createdAt.toLocaleDateString("en-US", DOCUMENT_DATE_FORMAT)}.
         </p>
-        {document.taskId ? (
+        {document.taskId && canViewAttachedTask ? (
           <p className="mt-1 text-sm font-bold">
             <Link
               className="underline underline-offset-4"

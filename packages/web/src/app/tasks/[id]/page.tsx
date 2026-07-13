@@ -44,13 +44,20 @@ import {
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import { TASK_NOT_FOUND_MESSAGE } from "@/lib/tasks/task-visibility.server";
 import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
 // The feed/timeline helpers throw the shared "Task not found" for tasks the
 // viewer can't see. The page already renders TaskAccessGate when `data` is
-// null, so swallow the throw into an empty feed instead of a 500.
+// null, so swallow ONLY that specific throw into an empty feed — any other
+// rejection (DB error, bug in assertUserCanViewTask) should surface as a 500
+// instead of a silent, indistinguishable "no comments yet".
 const EMPTY_COMMENT_FEED = { comments: [], nextCursor: null, total: 0 };
+
+function isTaskNotFoundError(error: unknown): boolean {
+  return error instanceof Error && error.message === TASK_NOT_FOUND_MESSAGE;
+}
 
 async function getPublicTaskPageData(id: string) {
   const [data, commentFeed, activityTimeline, ancestors] = await Promise.all([
@@ -60,8 +67,14 @@ async function getPublicTaskPageData(id: string) {
       sort: "new",
       limit: 100,
       currentUserId: null,
-    }).catch(() => EMPTY_COMMENT_FEED),
-    getTaskActivityTimeline(id, 50, null).catch(() => []),
+    }).catch((error) => {
+      if (isTaskNotFoundError(error)) return EMPTY_COMMENT_FEED;
+      throw error;
+    }),
+    getTaskActivityTimeline(id, 50, null).catch((error) => {
+      if (isTaskNotFoundError(error)) return [];
+      throw error;
+    }),
     getTaskAncestors(id),
   ]);
 
@@ -376,8 +389,14 @@ export default async function TaskDetailPage({
           sort: "new",
           limit: 100,
           currentUserId: userId,
-        }).catch(() => EMPTY_COMMENT_FEED),
-        getTaskActivityTimeline(id, 50, userId).catch(() => []),
+        }).catch((error) => {
+          if (isTaskNotFoundError(error)) return EMPTY_COMMENT_FEED;
+          throw error;
+        }),
+        getTaskActivityTimeline(id, 50, userId).catch((error) => {
+          if (isTaskNotFoundError(error)) return [];
+          throw error;
+        }),
         getWishoniaUserId().catch(() => null),
         getTaskAncestors(id),
         prisma.user

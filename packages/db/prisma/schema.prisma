@@ -5948,6 +5948,9 @@ model Document {
   /// When this record was last updated
   updatedAt DateTime @updatedAt
 
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
   // -- Relations --
   jurisdiction  Jurisdiction? @relation("JurisdictionDocuments", fields: [jurisdictionId], references: [id])
   task          Task?         @relation("TaskDocuments", fields: [taskId], references: [id], onDelete: SetNull)
@@ -5958,6 +5961,7 @@ model Document {
   @@index([createdByUserId, isCurrent])
   @@index([jurisdictionId])
   @@index([visibility, isCurrent])
+  @@index([deletedAt])
 }
 
 /// Non-human executor that can be matched to tasks by agents.

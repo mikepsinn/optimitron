@@ -15,6 +15,7 @@ CREATE TABLE "Document" (
     "createdByUserId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
@@ -30,6 +31,9 @@ CREATE INDEX "Document_jurisdictionId_idx" ON "Document"("jurisdictionId");
 
 -- CreateIndex
 CREATE INDEX "Document_visibility_isCurrent_idx" ON "Document"("visibility", "isCurrent");
+
+-- CreateIndex
+CREATE INDEX "Document_deletedAt_idx" ON "Document"("deletedAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Document_documentKey_version_key" ON "Document"("documentKey", "version");

@@ -11,7 +11,11 @@ vi.mock("@/lib/auth-utils", () => ({
 }));
 
 vi.mock("@/lib/documents.server", () => ({
+  DOCUMENT_EMPTY_PATCH_MESSAGE:
+    "At least one of title, body, or visibility must be provided",
   DOCUMENT_NOT_FOUND_MESSAGE: "Document not found",
+  DOCUMENT_PRIVATE_TASK_MESSAGE:
+    "Cannot make a document attached to a private task public",
   getDocumentForViewer: mocks.getDocumentForViewer,
   toDocumentDto: (row: unknown) => row,
   updateDocument: mocks.updateDocument,
@@ -91,5 +95,41 @@ describe("POST /api/documents/[id]", () => {
     );
 
     expect(response.status).toBe(404);
+  });
+
+  it("maps the empty-patch rejection to 400", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    mocks.updateDocument.mockRejectedValue(
+      new Error(
+        "At least one of title, body, or visibility must be provided",
+      ),
+    );
+
+    const response = await POST(
+      new Request("http://localhost/api/documents/doc_1", {
+        method: "POST",
+        body: JSON.stringify({}),
+      }),
+      { params: Promise.resolve({ id: "doc_1" }) },
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("maps the public-visibility-on-a-private-task rejection to 400", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    mocks.updateDocument.mockRejectedValue(
+      new Error("Cannot make a document attached to a private task public"),
+    );
+
+    const response = await POST(
+      new Request("http://localhost/api/documents/doc_1", {
+        method: "POST",
+        body: JSON.stringify({ visibility: "PUBLIC" }),
+      }),
+      { params: Promise.resolve({ id: "doc_1" }) },
+    );
+
+    expect(response.status).toBe(400);
   });
 });

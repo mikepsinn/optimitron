@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/retroui/Button";
 import { Input } from "@/components/retroui/Input";
 import { Textarea } from "@/components/retroui/Textarea";
@@ -26,42 +26,46 @@ export function DocumentEditForm({
   const [title, setTitle] = useState(initialTitle);
   const [body, setBody] = useState(initialBody);
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  // Tracks the in-flight POST itself (not just the transition callback) so a
+  // fast double-click can't fire two saves before the first response lands
+  // and trips the (documentKey, version) unique constraint server-side.
+  const [isSaving, setIsSaving] = useState(false);
 
   return (
     <form
       className="space-y-3"
       onSubmit={(event) => {
         event.preventDefault();
+        if (isSaving) return;
         setError(null);
-        startTransition(() => {
-          void fetch(API_ROUTES.documents.document(documentId), {
-            body: JSON.stringify({ title, body }),
-            headers: { "Content-Type": "application/json" },
-            method: "POST",
+        setIsSaving(true);
+        void fetch(API_ROUTES.documents.document(documentId), {
+          body: JSON.stringify({ title, body }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        })
+          .then(async (response) => {
+            const payload = (await response.json().catch(() => null)) as {
+              document?: { id?: string };
+              error?: string;
+            } | null;
+
+            if (!response.ok) {
+              throw new Error(payload?.error ?? "Save failed.");
+            }
+
+            const newId = payload?.document?.id;
+            if (newId && newId !== documentId) {
+              router.push(`/documents/${newId}`);
+            }
+            router.refresh();
           })
-            .then(async (response) => {
-              const payload = (await response.json().catch(() => null)) as {
-                document?: { id?: string };
-                error?: string;
-              } | null;
-
-              if (!response.ok) {
-                throw new Error(payload?.error ?? "Save failed.");
-              }
-
-              const newId = payload?.document?.id;
-              if (newId && newId !== documentId) {
-                router.push(`/documents/${newId}`);
-              }
-              router.refresh();
-            })
-            .catch((saveError) => {
-              setError(
-                saveError instanceof Error ? saveError.message : "Save failed.",
-              );
-            });
-        });
+          .catch((saveError) => {
+            setError(
+              saveError instanceof Error ? saveError.message : "Save failed.",
+            );
+          })
+          .finally(() => setIsSaving(false));
       }}
     >
       <label className="block text-sm font-black uppercase tracking-[0.12em]">
@@ -80,8 +84,8 @@ export function DocumentEditForm({
           onChange={(event) => setBody(event.target.value)}
         />
       </label>
-      <Button className="font-black uppercase" disabled={isPending} type="submit">
-        {isPending ? "Saving..." : "Save."}
+      <Button className="font-black uppercase" disabled={isSaving} type="submit">
+        {isSaving ? "Saving..." : "Save."}
       </Button>
       <p className="text-sm font-bold text-muted-foreground">
         Saving makes a new version. Old versions stay.
