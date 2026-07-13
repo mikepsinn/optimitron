@@ -48,6 +48,11 @@ export async function POST(
 
     return NextResponse.json(result);
   } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (message === "Task not found" || message === "Comment not found") {
+      // Comments on private tasks are indistinguishable from missing ones.
+      return NextResponse.json({ error: "Comment not found." }, { status: 404 });
+    }
     console.error("[TASKS] Failed to vote on comment:", error);
     return NextResponse.json({ error: "Failed to vote." }, { status: 500 });
   }

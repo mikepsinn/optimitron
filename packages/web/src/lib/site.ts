@@ -668,7 +668,7 @@ const DFDA_CONFIG: SiteConfig = {
   description:
     "Find conditions, treatments, outcomes, and clinical trials in one evidence system.",
   ogImage: "/site-assets/dfda/dfda-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_DFDA_ID,
+  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
   organizationName: ORGANIZATION_NAME,
   organizationUrl: ORGANIZATION_URL,
@@ -777,7 +777,7 @@ const DIH_CONFIG: SiteConfig = {
   description:
     "Create and fund disease-focused research institutes, then allocate resources by verified public priorities.",
   ogImage: "/site-assets/dih/dih-og-social-70s-utopian-1280x640.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_DIH_ID,
+  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
   organizationName: ORGANIZATION_NAME,
   organizationUrl: ORGANIZATION_URL,
@@ -897,7 +897,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   ],
   description: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
   ogImage: "/site-assets/warondisease/war-on-disease-og-1200x630.png",
-  analyticsId: process.env.NEXT_PUBLIC_GA_WAR_ON_DISEASE_ID,
+  analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: "onePercentTreaty",
   // Public-facing campaign brand on WoD; compliance surfaces name the
   // nonprofit legal entity and campaign DBA.

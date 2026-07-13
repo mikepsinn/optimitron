@@ -79,6 +79,12 @@ import {
   handleTaskTemplateToolCall,
   isTaskTemplateToolName,
 } from "./mcp-tools/task-templates";
+import {
+  DOCUMENT_TOOL_DEFINITIONS,
+  DOCUMENT_TOOL_SCOPES,
+  handleDocumentToolCall,
+  isDocumentToolName,
+} from "./mcp-tools/documents";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
@@ -213,6 +219,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   githubApi: [McpScope.GITHUB],
   ...TASK_TEMPLATE_TOOL_SCOPES,
   ...TASK_TRIGGER_TOOL_SCOPES,
+  ...DOCUMENT_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -8376,6 +8383,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   },
   ...TASK_TEMPLATE_TOOL_DEFINITIONS,
   ...TASK_TRIGGER_TOOL_DEFINITIONS,
+  ...DOCUMENT_TOOL_DEFINITIONS,
 ];
 
 // ---------------------------------------------------------------------------
@@ -8448,6 +8456,13 @@ export function createMcpServer(
         }
         if (isTaskTemplateToolName(name)) {
           return handleTaskTemplateToolCall({
+            args: a,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isDocumentToolName(name)) {
+          return handleDocumentToolCall({
             args: a,
             name,
             userId: userId ?? null,
@@ -14303,6 +14318,15 @@ export function createMcpServer(
                 ? (a.mediaUrl as string)
                 : null;
 
+            // Same gate as the comment feed: you can only write where you
+            // can read. Private tasks look identical to missing ones.
+            const { canUserViewTask } = await import(
+              "./tasks/task-visibility.server"
+            );
+            if (!(await canUserViewTask(taskId, userId))) {
+              return err("Task not found");
+            }
+
             // Rate limit: 5 per user per task per hour
             const recentCount = await countUserCommentsInWindow(
               taskId,
@@ -14400,7 +14424,7 @@ export function createMcpServer(
               }),
               cursor
                 ? Promise.resolve([])
-                : getTaskActivityTimeline(taskId, 50),
+                : getTaskActivityTimeline(taskId, 50, userId ?? null),
             ]);
 
             return ok({
