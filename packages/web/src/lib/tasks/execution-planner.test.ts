@@ -96,6 +96,58 @@ describe("buildExecutionPlan", () => {
     });
   });
 
+  it("reconsiders required work after a required prerequisite completes", () => {
+    const requiredWithoutImpact = {
+      deadlinePolicy: "REQUIRED" as const,
+      deadlineStatus: "future" as const,
+      hasMarginalEstimate: false,
+      priority: 0,
+      realEv: 0,
+      valid: false,
+    };
+    const result = plan([
+      task("required-prerequisite", {
+        ...requiredWithoutImpact,
+        dueAt: "2026-07-10T16:00:00.000Z",
+      }),
+      task("required-dependent", {
+        ...requiredWithoutImpact,
+        blockers: [
+          { status: TaskStatus.ACTIVE, taskId: "required-prerequisite" },
+        ],
+        dueAt: "2026-07-10T17:00:00.000Z",
+      }),
+    ]);
+
+    expect(result.checklist.map((item) => item.id)).toEqual([
+      "required-prerequisite",
+      "required-dependent",
+    ]);
+  });
+
+  it("reconsiders required work after an estimated prerequisite completes", () => {
+    const result = plan([
+      task("estimated-prerequisite"),
+      task("required-dependent", {
+        blockers: [
+          { status: TaskStatus.ACTIVE, taskId: "estimated-prerequisite" },
+        ],
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "future",
+        dueAt: "2026-07-10T17:00:00.000Z",
+        hasMarginalEstimate: false,
+        priority: 0,
+        realEv: 0,
+        valid: false,
+      }),
+    ]);
+
+    expect(result.checklist.map((item) => item.id)).toEqual([
+      "estimated-prerequisite",
+      "required-dependent",
+    ]);
+  });
+
   it("keeps externally blocked work out of the checklist", () => {
     const result = plan([
       task("blocked", {

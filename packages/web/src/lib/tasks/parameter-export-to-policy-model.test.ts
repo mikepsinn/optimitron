@@ -47,6 +47,7 @@ describe("buildPolicyModelRunFromParameterExport", () => {
           description: "Trial capacity multiplier after redirect.",
           displayName: "Trial Capacity Multiplier",
           sourceType: "calculated",
+          computeExpr: "TRIAL_SLOTS / CURRENT_TRIAL_SLOTS",
           chapterUrl:
             "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
         },
@@ -147,6 +148,14 @@ describe("buildPolicyModelRunFromParameterExport", () => {
     expect(run.calculationVersion).toBe("dih-parameter-export-v1");
     expect(run.calculations.map((calc) => calc.outputKey)).toContain(
       "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS",
+    );
+    expect(run.calculations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          formula: "TRIAL_SLOTS / CURRENT_TRIAL_SLOTS",
+          outputKey: "DFDA_TRIAL_CAPACITY_MULTIPLIER",
+        }),
+      ]),
     );
     expect(run.frames[0]?.canonical.expectedDalysAverted.base).toBe(
       7_940_000_000,

@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
     aggregate: vi.fn(),
     findFirst: vi.fn(),
     findMany: vi.fn(),
+    queryRaw: vi.fn(),
     transaction: vi.fn(),
     update: vi.fn(),
     updateMany: vi.fn(),
@@ -76,8 +77,10 @@ beforeEach(() => {
   mocks.canUserViewInternalTaskContent.mockResolvedValue(false);
   mocks.prisma.aggregate.mockResolvedValue({ _sum: { sizeBytes: 0 } });
   mocks.prisma.count.mockResolvedValue(0);
+  mocks.prisma.queryRaw.mockResolvedValue([]);
   mocks.prisma.transaction.mockImplementation((callback) =>
     callback({
+      $queryRaw: mocks.prisma.queryRaw,
       taskCommentAttachment: {
         aggregate: mocks.prisma.aggregate,
         count: mocks.prisma.count,

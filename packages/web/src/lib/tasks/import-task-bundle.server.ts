@@ -561,11 +561,16 @@ export async function upsertImportedTaskBundle(
         task.id,
         bundle.impactEstimate,
       );
-      await syncImpactParameterInputs(
+      const parameterLinks = await syncImpactParameterInputs(
         tx,
         estimateSet.id,
         bundle.impactEstimate.parameterKeys,
       );
+      if (parameterLinks.missingKeys.length > 0) {
+        throw new Error(
+          `Impact estimate references missing or unpublished parameters: ${parameterLinks.missingKeys.join(", ")}.`,
+        );
+      }
 
       for (const frame of bundle.impactEstimate.frames) {
         const frameRecord = await upsertImpactFrame(tx, estimateSet.id, frame);

@@ -16,6 +16,7 @@ import {
   TaskCompensationCadence,
   TaskCompensationKind,
   TaskEngagementKind,
+  TaskEdgeType,
   TaskExecutionAttemptStatus,
   TaskExecutionMode,
   TaskKind,
@@ -564,6 +565,7 @@ beforeEach(() => {
         },
         taskEdge: {
           createMany: mocks.taskEdgeCreateMany,
+          findMany: mocks.taskEdgeFindMany,
           updateMany: mocks.taskEdgeUpdateMany,
         },
         taskApplication: {
@@ -4822,7 +4824,7 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
-    it("updateTask replaces dependencies without losing retained soft-deleted edges", async () => {
+    it("updateTask preserves the type of a retained soft-deleted dependency", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
           task: makeCreatedTask({
@@ -4846,6 +4848,15 @@ describe("MCP server tool dispatch", () => {
       mocks.taskFindMany.mockResolvedValue([
         { id: "new-blocker", isPublic: false, createdByUserId: "user-1" },
       ]);
+      mocks.taskEdgeFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
+        {
+          createdAt: new Date("2026-07-01T00:00:00.000Z"),
+          deletedAt: new Date("2026-07-02T00:00:00.000Z"),
+          edgeType: TaskEdgeType.DEPENDS_ON,
+          fromTaskId: "new-blocker",
+          id: "existing-dependency",
+        },
+      ]);
       mocks.computeTaskPriority.mockReturnValue(
         makePriority({ priority: 100 }),
       );
@@ -4867,24 +4878,11 @@ describe("MCP server tool dispatch", () => {
       );
       expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({
-            toTaskId: "task-1",
-            fromTaskId: { in: ["new-blocker"] },
-          }),
+          where: { id: { in: ["existing-dependency"] } },
           data: { deletedAt: null },
         }),
       );
-      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: [
-            expect.objectContaining({
-              fromTaskId: "new-blocker",
-              toTaskId: "task-1",
-            }),
-          ],
-          skipDuplicates: true,
-        }),
-      );
+      expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
     });
 
     it("updateTask rejects a dependency replacement that creates a cycle", async () => {

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Prisma } from "@optimitron/db";
+import { TaskCommentVisibility } from "@optimitron/db/enums";
 import {
   deletePrivateObject,
   headPrivateObject,
@@ -90,6 +91,7 @@ export async function createPendingTaskCommentAttachment(input: {
   );
   const now = new Date();
   await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext('task-comment-attachment-quota'), hashtext(${input.userId}))`;
     const where = {
       commentId: null,
       deletedAt: null,
@@ -275,7 +277,7 @@ export async function getTaskCommentAttachmentDownload(input: {
 
   await assertUserCanViewTask(attachment.taskId, input.userId);
   if (
-    comment.visibility === "INTERNAL" &&
+    comment.visibility === TaskCommentVisibility.INTERNAL &&
     !(await canUserViewInternalTaskContent(attachment.taskId, input.userId))
   ) {
     throw new Error(TASK_NOT_FOUND_MESSAGE);

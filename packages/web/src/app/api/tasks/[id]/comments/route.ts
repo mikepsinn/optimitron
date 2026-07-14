@@ -45,7 +45,7 @@ export async function GET(
     const cursor = cursorParam ? new Date(cursorParam) : null;
     const limitParam = Number(url.searchParams.get("limit") ?? 50);
     const limit = Number.isFinite(limitParam)
-      ? Math.min(Math.max(limitParam, 1), 100)
+      ? Math.min(Math.max(Math.trunc(limitParam), 1), 100)
       : 50;
 
     const currentUser = await getCurrentUser(request, [

@@ -471,39 +471,54 @@ function planHumanChecklist(input: {
         input.planningWindowEnd,
       ),
     )
-    .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
     .sort(compareRequiredReservations);
 
-  for (const task of requiredTasks) {
-    const estimatedMinutes = taskMinutes(task)!;
-    if (checklist.length >= input.limit || estimatedMinutes > remainingMinutes)
-      break;
-    const bounds = taskSchedulingBounds(task, input.now, completionTimes);
-    const slot =
-      bounds.notAfter == null || isRequiredGuardrail(task)
-        ? findPlanningSlot(
-            freeIntervals,
-            estimatedMinutes,
-            bounds.notBefore,
-            bounds.notAfter,
-          )
-        : findLatestPlanningSlot(
-            freeIntervals,
-            estimatedMinutes,
-            bounds.notBefore,
-            bounds.notAfter,
-          );
-    if (!slot) continue;
-    reservePlanningSlot(freeIntervals, slot);
+  while (checklist.length < input.limit && remainingMinutes > 0) {
+    const candidates = requiredTasks
+      .filter((task) => !completedIds.has(task.id))
+      .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
+      .filter((task) => taskMinutes(task)! <= remainingMinutes)
+      .map((task) => {
+        const estimatedMinutes = taskMinutes(task)!;
+        const bounds = taskSchedulingBounds(task, input.now, completionTimes);
+        const slot =
+          bounds.notAfter == null || isRequiredGuardrail(task)
+            ? findPlanningSlot(
+                freeIntervals,
+                estimatedMinutes,
+                bounds.notBefore,
+                bounds.notAfter,
+              )
+            : findLatestPlanningSlot(
+                freeIntervals,
+                estimatedMinutes,
+                bounds.notBefore,
+                bounds.notAfter,
+              );
+        return { slot, task };
+      })
+      .filter(
+        (
+          candidate,
+        ): candidate is { slot: PlanningSlot; task: ExecutionPlanningTask } =>
+          candidate.slot != null,
+      )
+      .sort((left, right) =>
+        compareRequiredReservations(left.task, right.task),
+      );
+    const next = candidates[0];
+    if (!next) break;
+    const estimatedMinutes = taskMinutes(next.task)!;
+    reservePlanningSlot(freeIntervals, next.slot);
     checklist.push(
       scheduledAction(
-        task,
-        slot,
+        next.task,
+        next.slot,
         "Required work is reserved inside its due window.",
       ),
     );
-    completedIds.add(task.id);
-    completionTimes.set(task.id, slot.end);
+    completedIds.add(next.task.id);
+    completionTimes.set(next.task.id, next.slot.end);
     remainingMinutes -= estimatedMinutes;
   }
 
@@ -514,7 +529,15 @@ function planHumanChecklist(input: {
       .filter((task) => isAtomicTask(task) && task.rooted)
       .filter(hasConfirmedCapability)
       .filter((task) => task.deadlineStatus !== "expired")
-      .filter(isSchedulable)
+      .filter(
+        (task) =>
+          isSchedulable(task) ||
+          isRequiredInWindow(
+            task,
+            input.planningWindowStart,
+            input.planningWindowEnd,
+          ),
+      )
       .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
       .filter(
         (task) =>
@@ -522,13 +545,29 @@ function planHumanChecklist(input: {
       )
       .map((task) => {
         const bounds = taskSchedulingBounds(task, input.now, completionTimes);
+        const estimatedMinutes = taskMinutes(task)!;
+        const requiredInWindow = isRequiredInWindow(
+          task,
+          input.planningWindowStart,
+          input.planningWindowEnd,
+        );
         return {
-          slot: findPlanningSlot(
-            freeIntervals,
-            taskMinutes(task)!,
-            bounds.notBefore,
-            bounds.notAfter,
-          ),
+          slot:
+            requiredInWindow &&
+            bounds.notAfter != null &&
+            !isRequiredGuardrail(task)
+              ? findLatestPlanningSlot(
+                  freeIntervals,
+                  estimatedMinutes,
+                  bounds.notBefore,
+                  bounds.notAfter,
+                )
+              : findPlanningSlot(
+                  freeIntervals,
+                  estimatedMinutes,
+                  bounds.notBefore,
+                  bounds.notAfter,
+                ),
           task,
         };
       })
@@ -538,7 +577,22 @@ function planHumanChecklist(input: {
         ): candidate is { slot: PlanningSlot; task: ExecutionPlanningTask } =>
           candidate.slot != null,
       )
-      .sort((left, right) => compareExecutionTasks(left.task, right.task));
+      .sort((left, right) => {
+        const leftRequired = isRequiredInWindow(
+          left.task,
+          input.planningWindowStart,
+          input.planningWindowEnd,
+        );
+        const rightRequired = isRequiredInWindow(
+          right.task,
+          input.planningWindowStart,
+          input.planningWindowEnd,
+        );
+        if (leftRequired !== rightRequired) return leftRequired ? -1 : 1;
+        return leftRequired
+          ? compareRequiredReservations(left.task, right.task)
+          : compareExecutionTasks(left.task, right.task);
+      });
 
     const next = candidates[0];
     if (!next) break;

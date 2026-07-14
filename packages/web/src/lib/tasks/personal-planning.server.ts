@@ -3,6 +3,7 @@ import {
   AgentExecutorStatus,
   TaskCandidateMatchStatus,
   TaskExecutionAttemptStatus,
+  TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db/enums";
 import {
@@ -668,8 +669,8 @@ function getTaskImpactEstimateStatus(task: PersonalQueueTaskRecord) {
     estimateInputsStale: currentSet?.parameterInputsStale === true,
     estimatePublicationEligible:
       task.isPublic !== true ||
-      currentSet?.publicationStatus === "PUBLISHED" ||
-      currentSet?.publicationStatus === "REVIEWED",
+      currentSet?.publicationStatus === TaskImpactPublicationStatus.PUBLISHED ||
+      currentSet?.publicationStatus === TaskImpactPublicationStatus.REVIEWED,
   };
 }
 
@@ -961,6 +962,7 @@ export function buildPersonalQueueRows(
         assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
         assigneePersonId: sourceTask.assigneePersonId ?? null,
         blockers: getPlanningBlockers(sourceTask),
+        contextJson: sourceTask.contextJson,
         createdByUserId: sourceTask.createdByUserId ?? null,
         blockersCount: score.blockersCount,
         blockersResolved: score.blockersResolved,

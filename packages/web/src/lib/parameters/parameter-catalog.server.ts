@@ -20,6 +20,9 @@ import {
 } from "./manual-parameter-import";
 
 type CatalogDb = PrismaClient | Prisma.TransactionClient;
+type ParameterInputRevision = Prisma.ParameterRevisionGetPayload<{
+  include: { parameter: true };
+}>;
 
 export interface ParameterActor {
   isAdmin: boolean;
@@ -592,17 +595,58 @@ async function resolveProposalInputs(
   proposals: ParameterRevisionProposal[],
   actor: ParameterActor,
 ) {
+  const references = proposals.flatMap((proposal) => proposal.inputs);
+  const revisionIds = [
+    ...new Set(references.flatMap((reference) => reference.revisionId ?? [])),
+  ];
+  const parameterKeys = [
+    ...new Set(
+      references
+        .filter((reference) => reference.revisionId == null)
+        .map((reference) => reference.parameterKey),
+    ),
+  ];
+  const [revisions, definitions] = await Promise.all([
+    revisionIds.length > 0
+      ? db.parameterRevision.findMany({
+          where: { id: { in: revisionIds } },
+          include: { parameter: true },
+        })
+      : Promise.resolve([]),
+    parameterKeys.length > 0
+      ? db.parameterDefinition.findMany({
+          where: { key: { in: parameterKeys } },
+          include: { currentRevision: { include: { parameter: true } } },
+        })
+      : Promise.resolve([]),
+  ]);
+  const revisionsById = new Map(
+    revisions.map((revision) => [revision.id, revision]),
+  );
+  const revisionsByParameterKey = new Map(
+    definitions.flatMap((definition) =>
+      definition.currentRevision
+        ? [[definition.key, definition.currentRevision] as const]
+        : [],
+    ),
+  );
   const resolved = new Map<
     string,
     Array<{
-      revision: Awaited<ReturnType<typeof loadRevision>>;
+      revision: ParameterInputRevision;
       symbol: string;
     }>
   >();
   for (const proposal of proposals) {
     const entries = [];
     for (const reference of proposal.inputs) {
-      const revision = await loadRevision(db, reference, actor);
+      const revision = assertReadableInputRevision(
+        reference.revisionId
+          ? (revisionsById.get(reference.revisionId) ?? null)
+          : (revisionsByParameterKey.get(reference.parameterKey) ?? null),
+        reference,
+        actor,
+      );
       entries.push({ revision, symbol: reference.symbol });
     }
     resolved.set(proposal.key, entries);
@@ -610,22 +654,11 @@ async function resolveProposalInputs(
   return resolved;
 }
 
-async function loadRevision(
-  db: CatalogDb,
+function assertReadableInputRevision(
+  revision: ParameterInputRevision | null,
   reference: z.infer<typeof ParameterInputReferenceSchema>,
   actor: ParameterActor,
 ) {
-  const revision = reference.revisionId
-    ? await db.parameterRevision.findUnique({
-        where: { id: reference.revisionId },
-        include: { parameter: true },
-      })
-    : await db.parameterDefinition
-        .findUnique({
-          where: { key: reference.parameterKey },
-          include: { currentRevision: { include: { parameter: true } } },
-        })
-        .then((definition) => definition?.currentRevision ?? null);
   if (!revision || revision.deletedAt || revision.parameter.deletedAt) {
     throw new Error(`Parameter input not found: ${reference.parameterKey}.`);
   }
@@ -662,7 +695,7 @@ export async function proposeParameterBundle(
     proposalKeys.add(proposal.key);
   }
 
-  return db.$transaction(async (tx) => {
+  const createProposalBundle = async (tx: Prisma.TransactionClient) => {
     const resolved = await resolveProposalInputs(tx, proposals, actor);
     const reviews = [];
     for (const proposal of proposals) {
@@ -670,6 +703,11 @@ export async function proposeParameterBundle(
         where: { key: proposal.key },
         include: { currentRevision: true },
       });
+      if (existing?.deletedAt) {
+        throw new Error(
+          `Parameter proposal will not restore deleted definition ${proposal.key}.`,
+        );
+      }
       const definition =
         existing ??
         (await tx.parameterDefinition.create({
@@ -861,6 +899,11 @@ export async function proposeParameterBundle(
       });
     }
     return { requiresExplicitPublication: true, reviews };
+  };
+
+  return db.$transaction(createProposalBundle, {
+    maxWait: 20_000,
+    timeout: 120_000,
   });
 }
 

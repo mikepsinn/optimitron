@@ -12468,7 +12468,7 @@ export function createMcpServer(
                       edgeType: TaskEdgeType.BLOCKS,
                     }));
                   if (incomingEdges.length > 0) {
-                    await tx.taskEdge.updateMany({
+                    const existingEdges = await tx.taskEdge.findMany({
                       where: {
                         toTaskId: updated.id,
                         fromTaskId: {
@@ -12476,12 +12476,59 @@ export function createMcpServer(
                         },
                         edgeType: { in: dependencyEdgeTypes },
                       },
-                      data: { deletedAt: null },
+                      orderBy: { createdAt: "asc" },
+                      select: {
+                        deletedAt: true,
+                        edgeType: true,
+                        fromTaskId: true,
+                        id: true,
+                      },
                     });
-                    await tx.taskEdge.createMany({
-                      data: incomingEdges,
-                      skipDuplicates: true,
-                    });
+                    const retainedByBlockerId = new Map<
+                      string,
+                      (typeof existingEdges)[number]
+                    >();
+                    for (const edge of existingEdges) {
+                      const retained = retainedByBlockerId.get(edge.fromTaskId);
+                      if (
+                        !retained ||
+                        (retained.deletedAt != null && edge.deletedAt == null)
+                      ) {
+                        retainedByBlockerId.set(edge.fromTaskId, edge);
+                      }
+                    }
+                    const retainedIds = [...retainedByBlockerId.values()].map(
+                      (edge) => edge.id,
+                    );
+                    if (retainedIds.length > 0) {
+                      await tx.taskEdge.updateMany({
+                        where: { id: { in: retainedIds } },
+                        data: { deletedAt: null },
+                      });
+                    }
+                    const duplicateActiveIds = existingEdges
+                      .filter(
+                        (edge) =>
+                          edge.deletedAt == null &&
+                          retainedByBlockerId.get(edge.fromTaskId)?.id !==
+                            edge.id,
+                      )
+                      .map((edge) => edge.id);
+                    if (duplicateActiveIds.length > 0) {
+                      await tx.taskEdge.updateMany({
+                        where: { id: { in: duplicateActiveIds } },
+                        data: { deletedAt: new Date() },
+                      });
+                    }
+                    const missingEdges = incomingEdges.filter(
+                      (edge) => !retainedByBlockerId.has(edge.fromTaskId),
+                    );
+                    if (missingEdges.length > 0) {
+                      await tx.taskEdge.createMany({
+                        data: missingEdges,
+                        skipDuplicates: true,
+                      });
+                    }
                   }
                 }
                 if (economicsPatch) {
@@ -12760,8 +12807,7 @@ export function createMcpServer(
                     typeof a.estimateSetId === "string"
                       ? a.estimateSetId
                       : undefined,
-                  taskId:
-                    typeof a.taskId === "string" ? a.taskId : undefined,
+                  taskId: typeof a.taskId === "string" ? a.taskId : undefined,
                 },
                 { isAdmin, userId: userId ?? null },
               ),

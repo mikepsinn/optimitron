@@ -466,10 +466,10 @@ export function buildPolicyModelRunFromParameterExport(
   }));
 
   const calculations = Object.entries(entryMap)
-    .filter(
-      ([, entry]) =>
-        typeof entry.formula === "string" && entry.formula.trim().length > 0,
-    )
+    .filter(([, entry]) => {
+      const formula = entry.computeExpr ?? entry.formula;
+      return typeof formula === "string" && formula.trim().length > 0;
+    })
     .map(([parameterKey, entry]) => ({
       chapterUrl: normalizeUrl(entry.chapterUrl),
       description: entry.description ?? null,

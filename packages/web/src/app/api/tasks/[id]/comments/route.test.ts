@@ -47,10 +47,13 @@ import { GET, POST } from "./route";
 
 const FEED = { comments: [], nextCursor: null, total: 0 };
 
-function getRequest(taskId: string) {
-  return GET(new Request(`http://localhost/api/tasks/${taskId}/comments`), {
-    params: Promise.resolve({ id: taskId }),
-  });
+function getRequest(taskId: string, query = "") {
+  return GET(
+    new Request(`http://localhost/api/tasks/${taskId}/comments${query}`),
+    {
+      params: Promise.resolve({ id: taskId }),
+    },
+  );
 }
 
 beforeEach(() => {
@@ -111,6 +114,19 @@ describe("GET /api/tasks/[id]/comments", () => {
       "public_task",
       50,
       null,
+    );
+  });
+
+  it("truncates fractional page limits before querying Prisma", async () => {
+    mocks.getCurrentUser.mockResolvedValue(null);
+    mocks.getTaskCommentFeed.mockResolvedValue(FEED);
+    mocks.getTaskActivityTimeline.mockResolvedValue([]);
+
+    const response = await getRequest("public_task", "?limit=50.5");
+
+    expect(response.status).toBe(200);
+    expect(mocks.getTaskCommentFeed).toHaveBeenCalledWith(
+      expect.objectContaining({ limit: 50 }),
     );
   });
 });
