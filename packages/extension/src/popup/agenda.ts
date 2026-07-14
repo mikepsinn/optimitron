@@ -140,10 +140,14 @@ function renderTaskRow(
     "div",
     `agenda-task${overdue ? " overdue" : ""}${pinned ? " next-action" : ""}`,
   );
-  row.tabIndex = 0;
-  row.setAttribute("role", "button");
-  row.setAttribute("aria-label", `Open task details: ${task.title}`);
-  row.addEventListener("click", () => {
+
+  if (pinned) row.appendChild(el("div", "next-action-label", "NEXT ACTION"));
+
+  const header = el("button", "agenda-task-open") as HTMLButtonElement;
+  header.type = "button";
+  header.title = `Open task details: ${task.title}`;
+  header.setAttribute("aria-label", `Open task details: ${task.title}`);
+  header.addEventListener("click", () => {
     void openTask(task).catch((error: unknown) =>
       showToast(
         error instanceof Error ? error.message : "Could not open task",
@@ -151,17 +155,8 @@ function renderTaskRow(
       ),
     );
   });
-  row.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    row.click();
-  });
-
-  if (pinned) row.appendChild(el("div", "next-action-label", "NEXT ACTION"));
-
-  const header = el("div", "agenda-task-header");
-  header.appendChild(el("div", "agenda-task-title", task.title));
-  const meta = el("div", "agenda-task-meta");
+  header.appendChild(el("span", "agenda-task-title", task.title));
+  const meta = el("span", "agenda-task-meta");
   const due = el("span", `due-label${overdue ? " overdue-label" : ""}`);
   due.textContent = formatDueLabel(task, now);
   meta.appendChild(due);

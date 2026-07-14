@@ -6,6 +6,8 @@ import path from "node:path";
 const WEB_ROOT = path.resolve(__dirname, "..");
 const localRequire = createRequire(path.join(WEB_ROOT, "package.json"));
 const TSX_CLI = localRequire.resolve("tsx/cli");
+const COPY_PREVIEW_TIMEOUT_MS = 4 * 60_000 + 45_000;
+const COPY_PREVIEW_KILL_GRACE_MS = 5_000;
 
 test("capture rendered copy for the visual review", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "default");
@@ -32,8 +34,37 @@ function runCopyPreview() {
       },
     );
 
-    child.on("error", reject);
+    let timedOut = false;
+    let forceKillTimer: ReturnType<typeof setTimeout> | null = null;
+    const timeoutTimer = setTimeout(() => {
+      timedOut = true;
+      child.kill("SIGTERM");
+      forceKillTimer = setTimeout(() => {
+        if (child.exitCode === null && child.signalCode === null) {
+          child.kill("SIGKILL");
+        }
+      }, COPY_PREVIEW_KILL_GRACE_MS);
+    }, COPY_PREVIEW_TIMEOUT_MS);
+
+    const cleanup = () => {
+      clearTimeout(timeoutTimer);
+      if (forceKillTimer) clearTimeout(forceKillTimer);
+    };
+
+    child.on("error", (error) => {
+      cleanup();
+      reject(error);
+    });
     child.on("exit", (code, signal) => {
+      cleanup();
+      if (timedOut) {
+        reject(
+          new Error(
+            `Copy preview exceeded ${COPY_PREVIEW_TIMEOUT_MS / 1000} seconds`,
+          ),
+        );
+        return;
+      }
       if (signal) {
         reject(new Error(`Copy preview exited from signal ${signal}`));
         return;

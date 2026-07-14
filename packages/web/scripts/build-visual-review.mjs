@@ -337,10 +337,7 @@ function buildReviewPageRoute(group) {
     changed: group.changed,
     copyChanged: Boolean(markdownDiff),
     errored: group.errored,
-    statusLabel:
-      markdownDiff && group.pairs.length === 0
-        ? "copy changed - no screenshot"
-        : routeStatusLabel(group),
+    statusLabel: reviewStatusLabel(group, markdownDiff),
     markdownDiff,
     pairs: group.pairs.map((pair) => buildReviewPagePair(pair)),
   };
@@ -1144,10 +1141,18 @@ function summarizeGroups(groups) {
   return {
     changedRoutes: groups.filter((group) => group.changed).length,
     copyOnlyRoutes: groups.filter(
-      (group) => !group.changed && Boolean(buildMarkdownDiff(group.routeName)),
+      (group) =>
+        !group.changed &&
+        !group.errored &&
+        Boolean(buildMarkdownDiff(group.routeName)),
     ).length,
     erroredRoutes: groups.filter((group) => group.errored).length,
-    unchangedRoutes: groups.filter((group) => !group.changed && !group.errored).length,
+    unchangedRoutes: groups.filter(
+      (group) =>
+        !group.changed &&
+        !group.errored &&
+        !buildMarkdownDiff(group.routeName),
+    ).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
 }
@@ -1167,7 +1172,8 @@ function buildReviewManifest(groups) {
     reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
     summary: summarizeGroups(groups),
     routes: groups.map((group) => {
-      const copyChanged = Boolean(buildMarkdownDiff(group.routeName));
+      const markdownDiff = buildMarkdownDiff(group.routeName);
+      const copyChanged = Boolean(markdownDiff);
       return {
         routeName: group.routeName,
         routeLabel: labelRoute(group.routeName),
@@ -1180,10 +1186,7 @@ function buildReviewManifest(groups) {
         changedPairs: group.changedPairs,
         missingPairs: group.missingPairs,
         erroredPairs: group.erroredPairs,
-        statusLabel:
-          copyChanged && group.pairs.length === 0
-            ? "copy changed - no screenshot"
-            : routeStatusLabel(group),
+        statusLabel: reviewStatusLabel(group, markdownDiff),
         reviewUrl: reviewBase
           ? `${reviewBase}/latest.html#route=${encodeURIComponent(group.routeName)}`
           : null,
@@ -1198,6 +1201,13 @@ function buildReviewManifest(groups) {
       };
     }),
   };
+}
+
+function reviewStatusLabel(group, markdownDiff) {
+  if (!markdownDiff) return routeStatusLabel(group);
+  if (group.pairs.length === 0) return "copy changed - no screenshot";
+  if (!group.changed && !group.errored) return "copy changed";
+  return routeStatusLabel(group);
 }
 
 function getBlockingReviewIssues(groups, screenshots) {

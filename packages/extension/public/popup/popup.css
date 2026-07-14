@@ -311,7 +311,6 @@ h3 {
   background: var(--background);
   color: var(--foreground);
   font-size: 13px;
-  outline: none;
 }
 
 .food-input-group input:focus {
@@ -396,11 +395,21 @@ h3 {
 
 .agenda-task {
   padding: 10px 12px;
-  cursor: pointer;
 }
 
-.agenda-task:hover {
-  border-color: var(--border-strong);
+.agenda-task-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.agenda-task-open:hover .agenda-task-title {
+  text-decoration: underline;
 }
 
 .agenda-task.overdue {
@@ -422,6 +431,7 @@ h3 {
 }
 
 .agenda-task-title {
+  display: block;
   font-size: 13px;
   font-weight: 650;
   line-height: 1.35;
