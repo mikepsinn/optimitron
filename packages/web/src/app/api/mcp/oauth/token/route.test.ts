@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   findAuthCode: vi.fn(),
@@ -59,8 +59,10 @@ function refreshRequest(refreshToken: string) {
 
 describe("MCP OAuth token route", () => {
   beforeEach(() => {
-    process.env.NEXTAUTH_SECRET = "test-nextauth-secret";
-    process.env.NEXTAUTH_URL = "https://optimitron.com";
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-14T12:00:00Z"));
+    vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret");
+    vi.stubEnv("NEXTAUTH_URL", "https://optimitron.com");
     mocks.findAuthCode.mockReset();
     mocks.updateAuthCode.mockReset();
     mocks.findGrant.mockReset();
@@ -78,6 +80,11 @@ describe("MCP OAuth token route", () => {
     });
     mocks.updateAuthCode.mockResolvedValue(null);
     mocks.upsertGrant.mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   it("accepts the Codex loopback hostname alias on the same listener", async () => {
