@@ -145,24 +145,27 @@ function AttachmentPicker({
 }) {
   function addFiles(selectedFiles: File[]) {
     const next = [...files];
+    let error: string | null = null;
     for (const file of selectedFiles) {
       if (next.length >= TASK_COMMENT_ATTACHMENT_MAX_COUNT) {
-        onError(
-          `A comment can have at most ${TASK_COMMENT_ATTACHMENT_MAX_COUNT} files.`,
-        );
-        return;
+        error = `A comment can have at most ${TASK_COMMENT_ATTACHMENT_MAX_COUNT} files.`;
+        break;
       }
-      if (file.size < 1 || file.size > TASK_COMMENT_ATTACHMENT_MAX_BYTES) {
-        onError(`${file.name} is larger than 25 MB.`);
-        return;
+      if (file.size < 1) {
+        error ??= `${file.name} is empty.`;
+        continue;
+      }
+      if (file.size > TASK_COMMENT_ATTACHMENT_MAX_BYTES) {
+        error ??= `${file.name} is larger than 25 MB.`;
+        continue;
       }
       const contentType = normalizeTaskCommentAttachmentContentType(
         file.name,
         file.type,
       );
       if (!ALLOWED_TASK_COMMENT_ATTACHMENT_TYPES.has(contentType)) {
-        onError(`${file.name} is not a supported file type.`);
-        return;
+        error ??= `${file.name} is not a supported file type.`;
+        continue;
       }
       const duplicate = next.some(
         (candidate) =>
@@ -172,7 +175,7 @@ function AttachmentPicker({
       );
       if (!duplicate) next.push(file);
     }
-    onError(null);
+    onError(error);
     onFilesChange(next);
   }
 
@@ -248,6 +251,7 @@ export function TaskCommentFeed({
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
+  const [replyError, setReplyError] = useState<string | null>(null);
   const [wishoniaNotice, setWishoniaNotice] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: string;
@@ -355,7 +359,8 @@ export function TaskCommentFeed({
     files: File[],
   ) {
     setSubmitting(true);
-    setPostError(null);
+    if (parentCommentId) setReplyError(null);
+    else setPostError(null);
 
     // Synthetic placeholder id for Wishonia's streaming row. Replaced by the
     // real server-assigned id once the stream emits `wishonia-done`.
@@ -391,6 +396,7 @@ export function TaskCommentFeed({
         setReplyingTo(null);
         setReplyDraft("");
         setReplyFiles([]);
+        setReplyError(null);
       } else {
         setDraft("");
         setDraftMediaUrl("");
@@ -534,9 +540,10 @@ export function TaskCommentFeed({
         }
       }
     } catch (err) {
-      setPostError(
-        err instanceof Error ? err.message : "Failed to post comment",
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to post comment";
+      if (parentCommentId) setReplyError(message);
+      else setPostError(message);
       // Clean up any streaming placeholder that was inserted before the error
       setComments((prev) =>
         prev.filter((c) => c.id !== streamingPlaceholderId),
@@ -829,8 +836,8 @@ export function TaskCommentFeed({
             submitting={submitting}
             onVote={(id, value) => void castVote(id, value)}
             onDelete={onDelete}
-            onAttachmentError={setPostError}
-            attachmentError={postError}
+            onAttachmentError={setReplyError}
+            attachmentError={replyError}
             onSubmitReply={(parentId, message, files) =>
               void submitComment(message, parentId, null, files)
             }
@@ -1150,6 +1157,7 @@ function CommentNode({
               className="flex items-center gap-1 text-xs font-bold uppercase text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setReplyFiles([]);
+                onAttachmentError(null);
                 setReplyingTo(replyingTo === comment.id ? null : comment.id);
               }}
             >
@@ -1195,6 +1203,7 @@ function CommentNode({
                   setReplyingTo(null);
                   setReplyDraft("");
                   setReplyFiles([]);
+                  onAttachmentError(null);
                 }}
               >
                 Cancel
