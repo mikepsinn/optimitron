@@ -22,6 +22,7 @@ import {
   snoozeTask,
 } from "../lib/api.js";
 import { isSignedIn, signIn } from "../lib/auth.js";
+import { getApiBase } from "../lib/config.js";
 import { showToast } from "../lib/utils.js";
 
 function root(): HTMLElement | null {
@@ -35,6 +36,13 @@ function el(tag: string, className?: string, text?: string): HTMLElement {
   return node;
 }
 
+async function openTask(task: AgendaTask): Promise<void> {
+  const base = await getApiBase();
+  await chrome.tabs.create({
+    url: `${base}/tasks/${encodeURIComponent(task.id)}`,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Sign-in state
 // ---------------------------------------------------------------------------
@@ -46,7 +54,11 @@ function renderSignIn(container: HTMLElement, message?: string): void {
   card.appendChild(
     el("p", "signin-text", message ?? "Sign in to see your day."),
   );
-  const button = el("button", "btn btn-primary", "Sign in to Optimitron") as HTMLButtonElement;
+  const button = el(
+    "button",
+    "btn btn-primary",
+    "Sign in to Optimitron",
+  ) as HTMLButtonElement;
   button.addEventListener("click", () => {
     button.disabled = true;
     button.textContent = "Opening sign-in…";
@@ -111,22 +123,40 @@ function actionButton(
 ): HTMLButtonElement {
   const button = el("button", className, label) as HTMLButtonElement;
   button.title = title;
-  button.addEventListener("click", onClick);
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onClick();
+  });
   return button;
 }
 
-function renderTaskRow(task: AgendaTask, now: Date, pinned = false): HTMLElement {
+function renderTaskRow(
+  task: AgendaTask,
+  now: Date,
+  pinned = false,
+): HTMLElement {
   const overdue = isOverdue(task, now);
   const row = el(
     "div",
     `agenda-task${overdue ? " overdue" : ""}${pinned ? " next-action" : ""}`,
   );
 
-  if (pinned) row.appendChild(el("div", "next-action-label", "▶ NEXT ACTION"));
+  if (pinned) row.appendChild(el("div", "next-action-label", "NEXT ACTION"));
 
-  const header = el("div", "agenda-task-header");
-  header.appendChild(el("div", "agenda-task-title", task.title));
-  const meta = el("div", "agenda-task-meta");
+  const header = el("button", "agenda-task-open") as HTMLButtonElement;
+  header.type = "button";
+  header.title = `Open task details: ${task.title}`;
+  header.setAttribute("aria-label", `Open task details: ${task.title}`);
+  header.addEventListener("click", () => {
+    void openTask(task).catch((error: unknown) =>
+      showToast(
+        error instanceof Error ? error.message : "Could not open task",
+        3000,
+      ),
+    );
+  });
+  header.appendChild(el("span", "agenda-task-title", task.title));
+  const meta = el("span", "agenda-task-meta");
   const due = el("span", `due-label${overdue ? " overdue-label" : ""}`);
   due.textContent = formatDueLabel(task, now);
   meta.appendChild(due);
@@ -137,6 +167,7 @@ function renderTaskRow(task: AgendaTask, now: Date, pinned = false): HTMLElement
       el("span", "effort-label", `${task.estimatedEffortHours}h`),
     );
   }
+  meta.appendChild(el("span", "open-label", "Open"));
   header.appendChild(meta);
   row.appendChild(header);
 
@@ -150,14 +181,19 @@ function renderTaskRow(task: AgendaTask, now: Date, pinned = false): HTMLElement
   };
 
   actions.appendChild(
-    actionButton("✅ Done", "Mark done", act("done"), "btn btn-success btn-small"),
+    actionButton("Done", "Mark done", act("done"), "btn btn-success btn-small"),
   );
 
   // Snooze dropdown
   const snoozeWrap = el("div", "snooze-dropdown");
-  const snoozeBtn = actionButton("⏰ Snooze", "Snooze", () => {
-    options.classList.toggle("show");
-  }, "btn btn-warning btn-small snooze-btn");
+  const snoozeBtn = actionButton(
+    "Snooze",
+    "Snooze",
+    () => {
+      options.classList.toggle("show");
+    },
+    "btn btn-warning btn-small snooze-btn",
+  );
   const options = el("div", "snooze-options");
   for (const [option, label] of [
     ["10m", "10 minutes"],
@@ -165,15 +201,18 @@ function renderTaskRow(task: AgendaTask, now: Date, pinned = false): HTMLElement
     ["tonight", "Tonight"],
   ] as const) {
     const optionBtn = el("button", "snooze-option", label);
-    optionBtn.addEventListener("click", act(option));
+    optionBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      act(option)();
+    });
     options.appendChild(optionBtn);
   }
   snoozeWrap.appendChild(snoozeBtn);
   snoozeWrap.appendChild(options);
   actions.appendChild(snoozeWrap);
 
-  actions.appendChild(actionButton("⏭️ Skip", "Skip (recorded)", act("skip")));
-  actions.appendChild(actionButton("🗑️", "Delete task", act("delete")));
+  actions.appendChild(actionButton("Skip", "Skip (recorded)", act("skip")));
+  actions.appendChild(actionButton("Delete", "Delete task", act("delete")));
   row.appendChild(actions);
 
   return row;

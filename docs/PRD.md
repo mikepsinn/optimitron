@@ -40,6 +40,28 @@ Every task in the system is, directly or through its ancestors, a bet on
 moving one of those two numbers. A task that is not such a bet should not
 exist.
 
+### 1.1 Acceptance stories
+
+These stories are the product acceptance test. A model, field, tool, or UI
+element must help satisfy at least one story below, enforce its privacy or
+authorization boundary, or preserve the evidence needed to audit it.
+
+| ID                | User story                                                                                                                                                                                              | Done when                                                                                                                                                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PERSONAL-NEXT     | As an individual, I want one ranked next action and a realistic plan for today so that I spend my time on what matters most without neglecting medication, food, sleep, exercise, or fixed commitments. | `getNextAction` and `getExecutionPlan` use the same eligibility and EV rules, exclude blocked work, and include due personal routines.                                                                                                                 |
+| PERSONAL-SCHEDULE | As an individual, I want Optimitron to continuously generate and revise my schedule so that I always know what to do and when, for as long as I use it.                                                 | Durable recurrence rules, time windows, deadlines, dependencies, and fixed commitments are projected into a bounded rolling calendar; completion, new information, or elapsed time triggers replanning instead of creating infinite future event rows. |
+| PERSONAL-CAPTURE  | As an individual, I want to brain-dump obligations and ideas so that my agent turns them into private, atomic, estimated tasks in the right part of my objective tree.                                  | The agent proposes deduplicated tasks with an explicit parent, dependencies, effort, cost, probability, value, and acceptance criteria before promotion.                                                                                               |
+| PERSONAL-TRACK    | As an individual, I want to tell my agent what I did, took, ate, and felt so that completed tasks and health measurements are actually recorded without a separate data-entry app.                      | The conversation persists task completion, Measurements, and InterventionExperience records; it never claims to have logged data that was not written.                                                                                                 |
+| PERSONAL-LEARN    | As an individual, I want Optimitron to learn what improves or worsens my outcomes so that future recommendations rely increasingly on observed effects instead of guesses.                              | Before/after and temporal analyses produce reviewable effect estimates that can update the relevant task-impact inputs.                                                                                                                                |
+| PERSONAL-DELEGATE | As an individual, I want agents to perform suitable work in parallel so that I only do the parts requiring my judgment, identity, or body.                                                              | Agents lease non-blocked executable tasks; sending, spending, publishing, and other external effects require approval of the concrete action.                                                                                                          |
+| ORG-PLAN          | As an organization leader, I want one ranked queue for the organization so that people, money, and agents work on the highest-value feasible actions.                                                   | The organization plan respects ownership, capabilities, dependencies, deadlines, capacity, and human-versus-agent execution routes.                                                                                                                    |
+| WORKER-MATCH      | As a volunteer or agent, I want feasible tasks ranked by the expected value of my time so that each available hour goes to the most valuable work I can actually complete.                              | Discovery ranks open, unblocked tasks by marginal expected value per executor-hour after capability and access filtering, without placing containers or milestones in execution queues.                                                                |
+| FUNDER-COMPARE    | As a donor or investor, I want fundable work ranked by the expected value of my next dollar so that I can allocate money to the highest-impact available use.                                           | Discovery ranks remaining fundable units by marginal expected value per dollar; each estimate shows uncertainty, a readable calculation, assumptions, and a trace from named inputs to primary sources.                                                |
+| ANALYST-MODEL     | As an analyst, I want to propose sourced parameters and formulas so that task estimates are reproducible, reviewable, and updated when important assumptions change.                                    | Published calculations pin exact reviewed parameter revisions; changed inputs mark affected estimate sets stale until a replacement succeeds.                                                                                                          |
+| GOVERNMENT-PLAN   | As a citizen or government, I want preferences, evidence, policies, and budgets converted into ranked programs so that public resources maximize welfare rather than political intuition.               | Wishocracy, OPG, or OBG outputs can become sourced task bundles that compete under the same EV rules as other programs.                                                                                                                                |
+| CAMPAIGN-ACT      | As a human or organization, I want to vote, recruit others, endorse, register a plaintiff, or remind a leader so that the current highest-EV campaign gains measurable support.                         | Each action has a direct completion path and its referral, endorsement, case, or reminder outcome is recorded.                                                                                                                                         |
+| OPERATOR-INGEST   | As a user leaving other productivity tools, I want existing tasks and calendar commitments deduplicated into Optimitron so that I can use one canonical ranked system.                                  | Imports use stable source identities; meetings constrain capacity, while actionable work becomes reviewable task proposals rather than duplicate databases.                                                                                            |
+
 ---
 
 ## 2. The objective chain — four layers, one tree
@@ -50,12 +72,12 @@ a child's contribution to its parent is `child.delta / parent.delta`
 (`computeParentContributionShare`). The four layers are views into that one
 tree, not separate systems:
 
-| Layer | Actor | Question | Primary surface |
-|---|---|---|---|
-| Personal | A human + their AI agent | What should I do right now? | MCP server via any AI chat (OPT-API-01) |
-| Organization | Teams, companies, nonprofits | What should our people work on? | Org tasks, membership, task marketplace (OPT-TASK-01) |
-| Government | Jurisdictions | What policies and budgets maximize welfare? | OPG / OBG / Wishocracy (OPT-GOV-01..05) |
-| Earth | Humanity | Which programs move the two medians most? | EV-ranked programs under `optimize-earth` (OPT-EARTH-*) |
+| Layer        | Actor                        | Question                                    | Primary surface                                          |
+| ------------ | ---------------------------- | ------------------------------------------- | -------------------------------------------------------- |
+| Personal     | A human + their AI agent     | What should I do right now?                 | MCP server via any AI chat (OPT-API-01)                  |
+| Organization | Teams, companies, nonprofits | What should our people work on?             | Org tasks, membership, task marketplace (OPT-TASK-01)    |
+| Government   | Jurisdictions                | What policies and budgets maximize welfare? | OPG / OBG / Wishocracy (OPT-GOV-01..05)                  |
+| Earth        | Humanity                     | Which programs move the two medians most?   | EV-ranked programs under `optimize-earth` (OPT-EARTH-\*) |
 
 Personal subtrees graft under reserved `planner:person:<id>` branches;
 organizational subtrees under `planner:organization:<id>`. Same table, same
@@ -85,6 +107,9 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
 - The queue SHALL interleave health actions (medication times, meals,
   exercise, hygiene) with work tasks in one stream (OPT-EV-04). One queue,
   not two apps.
+- The signed-in calendar SHALL render that same execution plan as a day
+  timeline. It is a view of Optimitron tasks and commitments, not a second
+  scheduler or a copy of the plan.
 - Ranking is expected value per hour:
   `priority = (P(success) × value − cash_cost) / (hours + cash_cost / buybackRate)`.
   The canonical formula and its inputs are documented in
@@ -156,9 +181,9 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
 - Notion pages and Google Calendar events import as task/commitment
   proposals with stable source keys, hash-based change detection, and
   duplicate collapsing. The normalization layer exists and is tested against
-  realistic fixtures; the API connections do not exist yet. Optimitron does
-  not rebuild Notion or Google Calendar; it ingests them until it can
-  replace them.
+  realistic fixtures; the API connections do not exist yet. These are
+  migration and invitation sources. Optimitron owns the resulting planning
+  state and projects it into its own task and calendar views.
 
 ---
 
@@ -275,11 +300,11 @@ earth layers.
 Never mixed, never sharing components, ABIs, or copy (full table below;
 contract status in FEATURES.md OPT-TREAS-01..03):
 
-| Mechanism | Page | Purpose | Contracts | Flow |
-|---|---|---|---|---|
-| **Earth Optimization Prize** (Phase 1) | `/prize` | Fund referendum proving demand for the 1% Treaty | `VoteToken`, `VoterPrizeTreasury` | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. Success: VOTE holders claim prize share. Failure (15yr): depositors claim principal + yield. Dominant assurance contract. |
-| **Incentive Alignment Bonds** (Phase 2) | IAB pages | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool` | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors / 10% aligned-politician super PACs. If treaty fails, bonds lose everything. Not an assurance contract. |
-| **$WISH Token / UBI** | `/treasury` | Replace welfare + IRS + inflationary monetary policy | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax, UBI at poverty line, algorithmic 0% inflation, allocation via Wishocracy RAPPA. |
+| Mechanism                               | Page        | Purpose                                                 | Contracts                                            | Flow                                                                                                                                                                                                              |
+| --------------------------------------- | ----------- | ------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Earth Optimization Prize** (Phase 1)  | `/prize`    | Fund referendum proving demand for the 1% Treaty        | `VoteToken`, `VoterPrizeTreasury`                    | Deposit USDC → Aave yield → share referral → World ID voters → referrer earns VOTE 1:1. Success: VOTE holders claim prize share. Failure (15yr): depositors claim principal + yield. Dominant assurance contract. |
+| **Incentive Alignment Bonds** (Phase 2) | IAB pages   | Raise ~$1B to lobby the 1% Treaty once demand is proven | `IABVault`, `IABSplitter`, `PublicGoodsPool`         | Investors buy bonds → capital funds lobbying → treaty passes → $27B/yr splits 80% trials / 10% investors / 10% aligned-politician super PACs. If treaty fails, bonds lose everything. Not an assurance contract.  |
+| **$WISH Token / UBI**                   | `/treasury` | Replace welfare + IRS + inflationary monetary policy    | `WishToken`, `WishocraticTreasury`, `UBIDistributor` | Flat 0.5% tx tax, UBI at poverty line, algorithmic 0% inflation, allocation via Wishocracy RAPPA.                                                                                                                 |
 
 ### 9.3 MCP and API surface
 

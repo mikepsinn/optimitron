@@ -1306,10 +1306,11 @@ export async function syncManagedTreatyAccountabilityData() {
   // fell back to "Head of government of {country}" for displayName when a real
   // leader name was missing. This sync uses ISO2 ids and curated leader names.
   // Delete the junk set so the list page renders the real leaders.
-  const deletedGhostTasks = await prisma.task.deleteMany({
+  const deletedGhostTasks = await prisma.task.updateMany({
     where: {
       taskKey: { startsWith: "program:one-percent-treaty:signer:" },
     },
+    data: { deletedAt: new Date() },
   });
   if (deletedGhostTasks.count > 0) {
     console.log(`  🧹 Cleared ${deletedGhostTasks.count} existing signer tasks for clean reseed`);
@@ -2534,7 +2535,10 @@ async function createTaskWithImpact(input: {
     ...taskScalars,
     createdByUserId: resolvedCreatedByUserId,
   };
-  const updateData: Prisma.TaskUncheckedUpdateInput = { ...taskScalars };
+  const updateData: Prisma.TaskUncheckedUpdateInput = {
+    ...taskScalars,
+    deletedAt: null,
+  };
   if (explicitCreatedByUserId) {
     updateData.createdByUserId = explicitCreatedByUserId;
   }

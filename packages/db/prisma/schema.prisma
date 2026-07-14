@@ -787,8 +787,37 @@ enum SourceArtifactType {
   OBG_BUDGET_CATEGORY
   OBG_BUDGET_REPORT
   PARAMETER_SET
+  CALCULATION_SOURCE
   CALCULATION_RUN
   EXTERNAL_SOURCE
+}
+
+/// How a parameter value was established
+enum ParameterSourceType {
+  EXTERNAL
+  CALCULATED
+  DEFINITION
+  AI_ESTIMATED
+  CURATED
+}
+
+/// Supported uncertainty distributions retained from the manual parameter catalog
+enum ParameterDistributionType {
+  FIXED
+  NORMAL
+  LOGNORMAL
+  BETA
+  GAMMA
+  TRIANGULAR
+  UNIFORM
+}
+
+/// Publication lifecycle for immutable parameter revisions
+enum ModelRevisionStatus {
+  DRAFT
+  PUBLISHED
+  SUPERSEDED
+  REJECTED
 }
 
 /// Whether an impact estimate is ex-ante, ex-post, or mixed
@@ -1867,6 +1896,7 @@ model User {
   verifiedTasks                      Task[]                           @relation("TaskVerifiedByUser")
   verifiedTaskClaims                 TaskClaim[]                      @relation("TaskClaimVerifiedByUser")
   taskComments                       TaskComment[]                    @relation("TaskCommentAuthor")
+  uploadedTaskCommentAttachments     TaskCommentAttachment[]          @relation("TaskCommentAttachmentUploader")
   moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
   taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
   createdDocuments                   Document[]                       @relation("DocumentCreator")
@@ -1892,6 +1922,9 @@ model User {
   stripeConnectedAccount             StripeConnectedAccount?          @relation("UserStripeConnectedAccount")
   taskPayouts                        TaskPayout[]                     @relation("UserTaskPayouts")
   approvedTaskPayouts                TaskPayout[]                     @relation("UserApprovedTaskPayouts")
+  createdParameterDefinitions        ParameterDefinition[]            @relation("UserCreatedParameterDefinitions")
+  proposedParameterRevisions         ParameterRevision[]              @relation("UserProposedParameterRevisions")
+  reviewedParameterRevisions         ParameterRevision[]              @relation("UserReviewedParameterRevisions")
 
   @@index([email])
   @@index([referralCode])
@@ -5807,6 +5840,7 @@ model Task {
   distributionAttempts      TaskDistributionAttempt[]   @relation("TaskDistributionAttempts")
   managers                  TaskManager[]               @relation("TaskManagers")
   comments                  TaskComment[]               @relation("TaskComments")
+  commentAttachments        TaskCommentAttachment[]     @relation("TaskCommentAttachments")
   sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
   outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
   incomingEdges             TaskEdge[]                  @relation("TaskIncomingEdges")
@@ -7013,12 +7047,132 @@ model SourceArtifact {
   variableRelationshipEvidenceEstimates VariableRelationshipEvidenceEstimate[] @relation("SourceArtifactVariableRelationshipEvidenceEstimates")
   interventionRankingRuns               InterventionRankingRun[]               @relation("SourceArtifactInterventionRankingRuns")
   courtCaseEvidence                     CourtCaseEvidence[]                    @relation("CourtCaseEvidenceSourceArtifact")
+  parameterRevisionLinks                ParameterRevisionSourceArtifact[]      @relation("ParameterRevisionSourceArtifactLinks")
 
   @@index([sourceSystem, artifactType])
   @@index([externalKey])
   @@index([versionKey])
   @@index([sourceRef])
   @@index([contentHash])
+  @@index([deletedAt])
+}
+
+/// Stable parameter identity. Values and metadata live in immutable revisions.
+model ParameterDefinition {
+  id                String    @id @default(cuid())
+  key               String
+  createdByUserId   String?
+  currentRevisionId String?   @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  createdByUser   User?               @relation("UserCreatedParameterDefinitions", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  currentRevision ParameterRevision?  @relation("CurrentParameterRevision", fields: [currentRevisionId], references: [id], onDelete: SetNull)
+  revisions       ParameterRevision[] @relation("ParameterDefinitionRevisions")
+
+  @@unique([key])
+  @@index([deletedAt])
+}
+
+/// Immutable value, metadata, uncertainty, and source snapshot for a parameter
+model ParameterRevision {
+  id                         String                     @id @default(cuid())
+  parameterId                String
+  revision                   Int
+  status                     ModelRevisionStatus        @default(DRAFT)
+  value                      Float
+  manualRef                  String?
+  sourceRef                  String?
+  sourceType                 ParameterSourceType
+  description                String
+  unit                       String
+  formulaText                String?
+  formulaLatex               String?
+  calculationCode            String?
+  calculationLanguage        String?
+  confidence                 String
+  sourceLastUpdated          String?
+  peerReviewed               Boolean                    @default(false)
+  conservative               Boolean                    @default(false)
+  sensitivity                Float?
+  displayValue               String?
+  displayName                String?
+  keywords                   String[]                   @default([])
+  validationMin              Float?
+  validationMax              Float?
+  confidenceIntervalLow      Float?
+  confidenceIntervalHigh     Float?
+  stdError                   Float?
+  distributionType           ParameterDistributionType?
+  distributionParametersJson Json?
+  latexSymbol                String?
+  hideConfidenceInterval     Boolean                    @default(false)
+  summaryStatsJson           Json?
+  rawSourceJson              Json?
+  sourceContentHash          String
+  rationale                  String?
+  assumptionsJson            Json?
+  proposedByUserId           String?
+  reviewedByUserId           String?
+  reviewedAt                 DateTime?
+  publishedAt                DateTime?
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
+  deletedAt                  DateTime?
+
+  parameter        ParameterDefinition               @relation("ParameterDefinitionRevisions", fields: [parameterId], references: [id], onDelete: Cascade)
+  currentFor       ParameterDefinition?              @relation("CurrentParameterRevision")
+  proposedByUser   User?                             @relation("UserProposedParameterRevisions", fields: [proposedByUserId], references: [id], onDelete: SetNull)
+  reviewedByUser   User?                             @relation("UserReviewedParameterRevisions", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  inputs           ParameterRevisionInput[]          @relation("CalculatedParameterRevisionInputs")
+  usedAsInput      ParameterRevisionInput[]          @relation("InputParameterRevisionUses")
+  sourceArtifacts  ParameterRevisionSourceArtifact[] @relation("ParameterRevisionSourceArtifactRevisions")
+  taskImpactInputs TaskImpactEstimateInput[]         @relation("TaskImpactEstimateParameterRevisionInputs")
+
+  @@unique([parameterId, revision])
+  @@unique([parameterId, sourceContentHash])
+  @@index([parameterId, status])
+  @@index([sourceRef])
+  @@index([sourceType])
+  @@index([deletedAt])
+}
+
+/// Ordered, revision-pinned input to a calculated parameter revision
+model ParameterRevisionInput {
+  id                   String    @id @default(cuid())
+  calculatedRevisionId String
+  inputRevisionId      String
+  symbol               String
+  position             Int
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+
+  calculatedRevision ParameterRevision @relation("CalculatedParameterRevisionInputs", fields: [calculatedRevisionId], references: [id], onDelete: Cascade)
+  inputRevision      ParameterRevision @relation("InputParameterRevisionUses", fields: [inputRevisionId], references: [id], onDelete: Restrict)
+
+  @@unique([calculatedRevisionId, symbol])
+  @@unique([calculatedRevisionId, position])
+  @@index([inputRevisionId])
+  @@index([deletedAt])
+}
+
+/// Source and citation link for a parameter revision
+model ParameterRevisionSourceArtifact {
+  id                  String    @id @default(cuid())
+  parameterRevisionId String
+  sourceArtifactId    String
+  isPrimary           Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+
+  parameterRevision ParameterRevision @relation("ParameterRevisionSourceArtifactRevisions", fields: [parameterRevisionId], references: [id], onDelete: Cascade)
+  sourceArtifact    SourceArtifact    @relation("ParameterRevisionSourceArtifactLinks", fields: [sourceArtifactId], references: [id], onDelete: Cascade)
+
+  @@unique([parameterRevisionId, sourceArtifactId])
+  @@index([sourceArtifactId])
   @@index([deletedAt])
 }
 
@@ -7116,16 +7270,17 @@ model TaskComment {
   updatedAt DateTime @updatedAt
 
   // -- Relations --
-  task               Task                @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
-  taskApplication    TaskApplication?    @relation("TaskApplicationComments", fields: [taskApplicationId, taskId], references: [id, taskId], onDelete: NoAction)
-  parentComment      TaskComment?        @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
-  replies            TaskComment[]       @relation("CommentReplies")
-  authorUser         User?               @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
-  authorPerson       Person?             @relation("TaskCommentAuthorPerson", fields: [authorPersonId], references: [id], onDelete: SetNull)
-  authorOrganization Organization?       @relation("TaskCommentAuthorOrganization", fields: [authorOrganizationId], references: [id], onDelete: SetNull)
-  moderatedBy        User?               @relation("TaskCommentModerator", fields: [moderatedByUserId], references: [id], onDelete: SetNull)
-  votes              TaskCommentVote[]   @relation("TaskCommentVotes")
-  communications     TaskCommunication[] @relation("TaskCommentCommunications")
+  task               Task                    @relation("TaskComments", fields: [taskId], references: [id], onDelete: Cascade)
+  taskApplication    TaskApplication?        @relation("TaskApplicationComments", fields: [taskApplicationId, taskId], references: [id, taskId], onDelete: NoAction)
+  parentComment      TaskComment?            @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: SetNull)
+  replies            TaskComment[]           @relation("CommentReplies")
+  authorUser         User?                   @relation("TaskCommentAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorPerson       Person?                 @relation("TaskCommentAuthorPerson", fields: [authorPersonId], references: [id], onDelete: SetNull)
+  authorOrganization Organization?           @relation("TaskCommentAuthorOrganization", fields: [authorOrganizationId], references: [id], onDelete: SetNull)
+  moderatedBy        User?                   @relation("TaskCommentModerator", fields: [moderatedByUserId], references: [id], onDelete: SetNull)
+  votes              TaskCommentVote[]       @relation("TaskCommentVotes")
+  communications     TaskCommunication[]     @relation("TaskCommentCommunications")
+  attachments        TaskCommentAttachment[] @relation("TaskCommentAttachmentComment")
 
   @@index([taskId, createdAt])
   @@index([taskApplicationId, createdAt])
@@ -7140,6 +7295,55 @@ model TaskComment {
   @@index([source])
   @@index([deletedAt])
   @@index([path])
+}
+
+/// Private file uploaded for a task comment. The object key is never exposed
+/// to clients; reads are authorized against the task and comment first.
+model TaskCommentAttachment {
+  id String @id @default(cuid())
+
+  /// Task access controls every upload and download.
+  taskId String
+
+  /// Null while the direct-to-storage upload is pending.
+  commentId String?
+
+  /// Signed-in user who requested the upload.
+  uploadedByUserId String?
+
+  /// Opaque key in the private object-storage bucket.
+  storageKey String @unique
+
+  /// Original display filename, never used as an object key.
+  fileName String
+
+  /// Validated media type used for upload and download headers.
+  contentType String
+
+  /// Expected byte count, verified before linking to a comment.
+  sizeBytes Int
+
+  /// Browser-computed SHA-256 checksum bound into the signed upload URL.
+  checksumSha256 String
+
+  /// Set after the object is verified and linked to a comment.
+  uploadedAt DateTime?
+
+  /// Pending uploads cannot be attached after this time; null once linked.
+  expiresAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  task       Task         @relation("TaskCommentAttachments", fields: [taskId], references: [id], onDelete: Restrict)
+  comment    TaskComment? @relation("TaskCommentAttachmentComment", fields: [commentId], references: [id], onDelete: Restrict)
+  uploadedBy User?        @relation("TaskCommentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([taskId, createdAt])
+  @@index([commentId])
+  @@index([uploadedByUserId, expiresAt])
+  @@index([deletedAt])
 }
 
 /// A user's vote on a task comment (+1 or -1)
@@ -7267,7 +7471,7 @@ model TaskEdge {
   @@index([deletedAt])
 }
 
-/// Immutable run of impact calculations for a task
+/// Immutable impact-calculation snapshot for a task
 model TaskImpactEstimateSet {
   /// Unique identifier
   id String @id @default(cuid())
@@ -7302,6 +7506,18 @@ model TaskImpactEstimateSet {
   /// Structured assumptions used to generate the estimate
   assumptionsJson Json?
 
+  /// Human-readable equation or derivation used for this estimate
+  formulaText String?
+
+  /// Optional display-quality mathematical notation
+  formulaLatex String?
+
+  /// Inert calculation source for agents to inspect or execute in a sandbox
+  calculationCode String?
+
+  /// Language of calculationCode, such as python or javascript
+  calculationLanguage String?
+
   /// When this estimate set was created
   createdAt DateTime @default(now())
 
@@ -7316,11 +7532,32 @@ model TaskImpactEstimateSet {
   currentForTask  Task?                      @relation("CurrentTaskImpactEstimateSet")
   frames          TaskImpactFrameEstimate[]  @relation("TaskImpactEstimateSetFrames")
   sourceArtifacts TaskImpactSourceArtifact[] @relation("TaskImpactEstimateSetSourceArtifacts")
+  inputs          TaskImpactEstimateInput[]  @relation("TaskImpactEstimateSetInputs")
 
   @@unique([taskId, estimateKind, sourceSystem, calculationVersion, methodologyKey, parameterSetHash, counterfactualKey])
   @@index([taskId, isCurrent])
   @@index([publicationStatus])
   @@index([sourceSystem])
+  @@index([deletedAt])
+}
+
+/// Exact parameter revision used by an immutable task-impact estimate set
+model TaskImpactEstimateInput {
+  id                      String    @id @default(cuid())
+  taskImpactEstimateSetId String
+  parameterRevisionId     String
+  symbol                  String
+  position                Int
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  deletedAt               DateTime?
+
+  estimateSet       TaskImpactEstimateSet @relation("TaskImpactEstimateSetInputs", fields: [taskImpactEstimateSetId], references: [id], onDelete: Cascade)
+  parameterRevision ParameterRevision     @relation("TaskImpactEstimateParameterRevisionInputs", fields: [parameterRevisionId], references: [id], onDelete: Restrict)
+
+  @@unique([taskImpactEstimateSetId, symbol])
+  @@unique([taskImpactEstimateSetId, position])
+  @@index([parameterRevisionId])
   @@index([deletedAt])
 }
 

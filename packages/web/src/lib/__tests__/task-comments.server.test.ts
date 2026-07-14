@@ -2,18 +2,28 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   assertUserCanViewTask: vi.fn(),
+  canUserViewInternalTaskContent: vi.fn(),
+  deleteTaskCommentAttachmentObjects: vi.fn(),
+  verifyPendingTaskCommentAttachments: vi.fn(),
   prisma: {
     activityFindMany: vi.fn(),
     taskCommentCount: vi.fn(),
+    taskCommentFindFirst: vi.fn(),
     taskCommentFindMany: vi.fn(),
     taskCommentFindUnique: vi.fn(),
     taskCommentUpdate: vi.fn(),
+    taskCommentAttachmentDeleteMany: vi.fn(),
+    taskCommentAttachmentFindMany: vi.fn(),
     taskCommentVoteFindMany: vi.fn(),
     transaction: vi.fn(),
   },
   tx: {
+    taskCommentCreate: vi.fn(),
     taskCommentDeleteMany: vi.fn(),
+    taskCommentFindUnique: vi.fn(),
     taskCommentUpdate: vi.fn(),
+    taskCommentAttachmentUpdateMany: vi.fn(),
+    taskCommentAttachmentDeleteMany: vi.fn(),
   },
 }));
 
@@ -25,6 +35,7 @@ vi.mock("@/lib/prisma", () => ({
     },
     taskComment: {
       count: mocks.prisma.taskCommentCount,
+      findFirst: mocks.prisma.taskCommentFindFirst,
       findMany: mocks.prisma.taskCommentFindMany,
       findUnique: mocks.prisma.taskCommentFindUnique,
       update: mocks.prisma.taskCommentUpdate,
@@ -32,26 +43,51 @@ vi.mock("@/lib/prisma", () => ({
     taskCommentVote: {
       findMany: mocks.prisma.taskCommentVoteFindMany,
     },
+    taskCommentAttachment: {
+      deleteMany: mocks.prisma.taskCommentAttachmentDeleteMany,
+      findMany: mocks.prisma.taskCommentAttachmentFindMany,
+    },
   },
 }));
 
 vi.mock("@/lib/tasks/task-visibility.server", () => ({
   TASK_NOT_FOUND_MESSAGE: "Task not found",
   assertUserCanViewTask: mocks.assertUserCanViewTask,
+  canUserViewInternalTaskContent: mocks.canUserViewInternalTaskContent,
+}));
+
+vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
+  TaskCommentAttachmentInputError: class extends Error {},
+  deleteTaskCommentAttachmentObjects: mocks.deleteTaskCommentAttachmentObjects,
+  taskCommentAttachmentPublicSelect: {
+    contentType: true,
+    fileName: true,
+    id: true,
+    sizeBytes: true,
+  },
+  verifyPendingTaskCommentAttachments:
+    mocks.verifyPendingTaskCommentAttachments,
 }));
 
 import {
   deleteComment,
   getTaskActivityTimeline,
   getTaskCommentFeed,
+  postComment,
   voteComment,
 } from "../tasks/task-comments.server";
 
 function createTxClient() {
   return {
     taskComment: {
+      create: mocks.tx.taskCommentCreate,
       deleteMany: mocks.tx.taskCommentDeleteMany,
+      findUnique: mocks.tx.taskCommentFindUnique,
       update: mocks.tx.taskCommentUpdate,
+    },
+    taskCommentAttachment: {
+      deleteMany: mocks.tx.taskCommentAttachmentDeleteMany,
+      updateMany: mocks.tx.taskCommentAttachmentUpdateMany,
     },
   };
 }
@@ -65,7 +101,86 @@ function resetAllMocks() {
   mocks.assertUserCanViewTask.mockReset();
   // Default: caller may view the task. Denial tests override per-case.
   mocks.assertUserCanViewTask.mockResolvedValue(undefined);
+  mocks.canUserViewInternalTaskContent.mockReset();
+  mocks.canUserViewInternalTaskContent.mockResolvedValue(false);
+  mocks.verifyPendingTaskCommentAttachments.mockReset();
+  mocks.verifyPendingTaskCommentAttachments.mockResolvedValue([]);
+  mocks.deleteTaskCommentAttachmentObjects.mockReset();
+  mocks.deleteTaskCommentAttachmentObjects.mockResolvedValue(undefined);
+  mocks.prisma.taskCommentAttachmentFindMany.mockResolvedValue([]);
 }
+
+describe("postComment attachments", () => {
+  beforeEach(() => {
+    resetAllMocks();
+    mocks.prisma.transaction.mockImplementation(
+      async (cb: (tx: ReturnType<typeof createTxClient>) => unknown) =>
+        cb(createTxClient()),
+    );
+  });
+
+  it("links only the verified pending files in the comment transaction", async () => {
+    mocks.verifyPendingTaskCommentAttachments.mockResolvedValue([
+      "attachment_1",
+    ]);
+    mocks.tx.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
+    mocks.tx.taskCommentAttachmentUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.taskCommentUpdate.mockResolvedValue({
+      attachments: [{ id: "attachment_1" }],
+      id: "comment_1",
+    });
+
+    await postComment({
+      attachmentIds: ["attachment_1"],
+      authorUserId: "user_1",
+      message: "Evidence attached",
+      taskId: "task_1",
+    });
+
+    expect(mocks.verifyPendingTaskCommentAttachments).toHaveBeenCalledWith({
+      attachmentIds: ["attachment_1"],
+      taskId: "task_1",
+      userId: "user_1",
+    });
+    expect(mocks.tx.taskCommentAttachmentUpdateMany).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        commentId: null,
+        id: { in: ["attachment_1"] },
+        taskId: "task_1",
+        uploadedByUserId: "user_1",
+      }),
+      data: expect.objectContaining({
+        commentId: "comment_1",
+        expiresAt: null,
+        uploadedAt: expect.any(Date),
+      }),
+    });
+  });
+
+  it("rejects replies to internal comments the author cannot view", async () => {
+    mocks.prisma.taskCommentFindFirst.mockResolvedValue({
+      visibility: "INTERNAL",
+    });
+    mocks.canUserViewInternalTaskContent.mockResolvedValue(false);
+
+    await expect(
+      postComment({
+        authorUserId: "user_1",
+        enforceParentVisibility: true,
+        message: "Reply",
+        parentCommentId: "internal_comment",
+        taskId: "task_1",
+      }),
+    ).rejects.toThrow("Task not found");
+
+    expect(mocks.canUserViewInternalTaskContent).toHaveBeenCalledWith(
+      "task_1",
+      "user_1",
+    );
+    expect(mocks.verifyPendingTaskCommentAttachments).not.toHaveBeenCalled();
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+});
 
 describe("deleteComment", () => {
   beforeEach(() => {
@@ -85,6 +200,12 @@ describe("deleteComment", () => {
         parentCommentId: null,
       });
       mocks.tx.taskCommentDeleteMany.mockResolvedValue({ count: 3 });
+      mocks.prisma.taskCommentAttachmentFindMany.mockResolvedValue([
+        {
+          id: "attachment_1",
+          storageKey: "task-comment-attachments/attachment_1",
+        },
+      ]);
 
       await deleteComment({
         commentId: "root_1",
@@ -95,6 +216,22 @@ describe("deleteComment", () => {
       expect(mocks.tx.taskCommentDeleteMany).toHaveBeenCalledWith({
         where: { path: { startsWith: "/root_1" } },
       });
+      expect(mocks.deleteTaskCommentAttachmentObjects).toHaveBeenCalledWith([
+        "task-comment-attachments/attachment_1",
+      ]);
+      expect(mocks.tx.taskCommentAttachmentUpdateMany).toHaveBeenCalledWith({
+        where: { id: { in: ["attachment_1"] } },
+        data: {
+          commentId: null,
+          deletedAt: expect.any(Date),
+          expiresAt: expect.any(Date),
+        },
+      });
+      expect(mocks.prisma.taskCommentAttachmentDeleteMany).toHaveBeenCalledWith(
+        {
+          where: { id: { in: ["attachment_1"] } },
+        },
+      );
       expect(mocks.tx.taskCommentUpdate).not.toHaveBeenCalled();
     });
 
@@ -141,6 +278,40 @@ describe("deleteComment", () => {
       expect(mocks.prisma.taskCommentUpdate).not.toHaveBeenCalled();
     });
 
+    it("removes the comment even when object storage is unavailable", async () => {
+      mocks.prisma.taskCommentFindUnique.mockResolvedValue({
+        authorUserId: "author_1",
+        deletedAt: null,
+        path: "/root_1",
+        parentCommentId: null,
+      });
+      mocks.prisma.taskCommentAttachmentFindMany.mockResolvedValue([
+        {
+          id: "attachment_1",
+          storageKey: "task-comment-attachments/attachment_1",
+        },
+      ]);
+      mocks.deleteTaskCommentAttachmentObjects.mockRejectedValue(
+        new Error("R2 unavailable"),
+      );
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await expect(
+        deleteComment({
+          asModerator: true,
+          commentId: "root_1",
+          userId: "admin_1",
+        }),
+      ).resolves.toBeUndefined();
+
+      expect(mocks.tx.taskCommentDeleteMany).toHaveBeenCalled();
+      expect(mocks.tx.taskCommentAttachmentUpdateMany).toHaveBeenCalled();
+      expect(
+        mocks.prisma.taskCommentAttachmentDeleteMany,
+      ).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
     it("falls back to /{commentId} when the stored path is empty", async () => {
       mocks.prisma.taskCommentFindUnique.mockResolvedValue({
         authorUserId: "author_1",
@@ -163,28 +334,46 @@ describe("deleteComment", () => {
   });
 
   describe("author soft delete", () => {
-    it("sets deletedAt and does not run the hard-delete transaction", async () => {
+    it("sets deletedAt without hard-deleting the thread", async () => {
       mocks.prisma.taskCommentFindUnique.mockResolvedValue({
         authorUserId: "author_1",
         deletedAt: null,
         path: "/root_1",
         parentCommentId: null,
       });
-      mocks.prisma.taskCommentUpdate.mockResolvedValue({ id: "root_1" });
+      mocks.tx.taskCommentUpdate.mockResolvedValue({ id: "root_1" });
+      mocks.prisma.taskCommentAttachmentFindMany.mockResolvedValue([
+        {
+          id: "attachment_1",
+          storageKey: "task-comment-attachments/attachment_1",
+        },
+      ]);
 
       await deleteComment({
         commentId: "root_1",
         userId: "author_1",
       });
 
-      expect(mocks.prisma.taskCommentUpdate).toHaveBeenCalledWith({
+      expect(mocks.tx.taskCommentUpdate).toHaveBeenCalledWith({
         where: { id: "root_1" },
         data: expect.objectContaining({
           deletedAt: expect.any(Date),
           version: { increment: 1 },
         }),
       });
-      expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+      expect(mocks.prisma.transaction).toHaveBeenCalled();
+      expect(mocks.deleteTaskCommentAttachmentObjects).toHaveBeenCalledWith([
+        "task-comment-attachments/attachment_1",
+      ]);
+      expect(mocks.tx.taskCommentAttachmentUpdateMany).toHaveBeenCalledWith({
+        where: { id: { in: ["attachment_1"] } },
+        data: { deletedAt: expect.any(Date) },
+      });
+      expect(mocks.prisma.taskCommentAttachmentDeleteMany).toHaveBeenCalledWith(
+        {
+          where: { id: { in: ["attachment_1"] } },
+        },
+      );
       expect(mocks.tx.taskCommentDeleteMany).not.toHaveBeenCalled();
     });
 
@@ -296,6 +485,23 @@ describe("getTaskCommentFeed visibility gate", () => {
     );
     expect(result.comments).toEqual([]);
     expect(result.total).toBe(0);
+    expect(mocks.prisma.taskCommentFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ visibility: "PUBLIC" }),
+      }),
+    );
+  });
+
+  it("includes internal comments only for an internal task collaborator", async () => {
+    mocks.canUserViewInternalTaskContent.mockResolvedValue(true);
+
+    await getTaskCommentFeed({
+      taskId: "public_task",
+      currentUserId: "manager_1",
+    });
+
+    const where = mocks.prisma.taskCommentFindMany.mock.calls[0]?.[0]?.where;
+    expect(where.visibility).toBeUndefined();
   });
 });
 

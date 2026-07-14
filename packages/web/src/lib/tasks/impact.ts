@@ -65,6 +65,13 @@ export interface TaskImpactEstimateSetSummary {
   isCurrent: boolean;
   methodologyKey: string;
   parameterSetHash: string;
+  parameterInputsStale?: boolean;
+  inputs?: Array<{
+    parameterRevisionId: string;
+    parameterRevision: {
+      parameter: { currentRevisionId: string | null };
+    };
+  }>;
   publicationStatus: string;
   sourceArtifacts: TaskImpactSourceArtifactSummary[];
   sourceSystem: string;
@@ -86,7 +93,7 @@ export interface TaskImpactSourceArtifactSummary {
 
 export interface TaskImpactSelection {
   availableFrames: TaskImpactFrameSummary[];
-  currentSet: Omit<TaskImpactEstimateSetSummary, "frames"> | null;
+  currentSet: Omit<TaskImpactEstimateSetSummary, "frames" | "inputs"> | null;
   metricsByKey: Record<string, TaskImpactMetricSummary>;
   selectedFrame: TaskImpactFrameSummary | null;
 }
@@ -100,7 +107,9 @@ function normalizeFrameSlug(value: string | null | undefined) {
 }
 
 function toMetricMap(metrics: TaskImpactMetricSummary[]) {
-  return Object.fromEntries(metrics.map((metric) => [metric.metricKey, metric]));
+  return Object.fromEntries(
+    metrics.map((metric) => [metric.metricKey, metric]),
+  );
 }
 
 export function getMetricBaseValue(
@@ -112,7 +121,11 @@ export function getMetricBaseValue(
 
 export function selectImpactFrame(
   estimateSet: TaskImpactEstimateSetSummary | null | undefined,
-  requestedFrame: TaskImpactFrameKey | string | null | undefined = DEFAULT_TASK_IMPACT_FRAME,
+  requestedFrame:
+    | TaskImpactFrameKey
+    | string
+    | null
+    | undefined = DEFAULT_TASK_IMPACT_FRAME,
 ): TaskImpactSelection {
   if (!estimateSet) {
     return {
@@ -127,16 +140,26 @@ export function selectImpactFrame(
   const requestedSlug = normalizeFrameSlug(requestedFrame?.toString());
 
   const selectedFrame =
-    availableFrames.find((frame) => normalizeFrameSlug(frame.frameSlug) === requestedSlug) ??
+    availableFrames.find(
+      (frame) => normalizeFrameSlug(frame.frameSlug) === requestedSlug,
+    ) ??
     availableFrames.find((frame) => frame.frameKey === requestedFrame) ??
-    availableFrames.find((frame) => frame.frameKey === DEFAULT_TASK_IMPACT_FRAME) ??
+    availableFrames.find(
+      (frame) => frame.frameKey === DEFAULT_TASK_IMPACT_FRAME,
+    ) ??
     availableFrames[0] ??
     null;
-
   return {
     availableFrames,
     currentSet: {
       assumptionsJson: estimateSet.assumptionsJson,
+      parameterInputsStale:
+        estimateSet.inputs?.some(
+          (input) =>
+            input.parameterRevision.parameter.currentRevisionId != null &&
+            input.parameterRevision.parameter.currentRevisionId !==
+              input.parameterRevisionId,
+        ) ?? false,
       calculationVersion: estimateSet.calculationVersion,
       counterfactualKey: estimateSet.counterfactualKey,
       createdAt: estimateSet.createdAt,
@@ -154,7 +177,9 @@ export function selectImpactFrame(
   };
 }
 
-export function deriveImpactRatios(frame: TaskImpactFrameSummary | null | undefined) {
+export function deriveImpactRatios(
+  frame: TaskImpactFrameSummary | null | undefined,
+) {
   if (!frame) {
     return {
       costPerDalyUsd: null,
@@ -170,12 +195,16 @@ export function deriveImpactRatios(frame: TaskImpactFrameSummary | null | undefi
   // preserve sign so net-negative costs (e.g. treaty peace dividend) flow through.
   const costUsd = Math.abs(rawCostUsd) < 0.0001 ? 0.0001 : rawCostUsd;
 
-  const expectedValuePerHourDalys = (frame.expectedDalysAvertedBase ?? 0) / effortHours;
-  const expectedValuePerHourUsd = (frame.expectedEconomicValueUsdBase ?? 0) / effortHours;
-  const expectedValuePerDollar = (frame.expectedEconomicValueUsdBase ?? 0) / costUsd;
+  const expectedValuePerHourDalys =
+    (frame.expectedDalysAvertedBase ?? 0) / effortHours;
+  const expectedValuePerHourUsd =
+    (frame.expectedEconomicValueUsdBase ?? 0) / effortHours;
+  const expectedValuePerDollar =
+    (frame.expectedEconomicValueUsdBase ?? 0) / costUsd;
   const costPerDalyUsd =
     (frame.expectedDalysAvertedBase ?? 0) > 0
-      ? (frame.estimatedCashCostUsdBase ?? 0) / (frame.expectedDalysAvertedBase ?? 0)
+      ? (frame.estimatedCashCostUsdBase ?? 0) /
+        (frame.expectedDalysAvertedBase ?? 0)
       : null;
 
   return {
@@ -250,7 +279,9 @@ function scaleValue(value: number | null | undefined, factor: number) {
 }
 
 function sumValues(values: Array<number | null | undefined>) {
-  const presentValues = values.filter((value): value is number => value != null);
+  const presentValues = values.filter(
+    (value): value is number => value != null,
+  );
   if (presentValues.length === 0) {
     return null;
   }
@@ -266,13 +297,18 @@ export function scaleImpactFrameSummary(
   const scaled = { ...frame };
 
   for (const key of ADDITIVE_FRAME_KEYS) {
-    scaled[key] = scaleValue(frame[key], factor) as TaskImpactFrameSummary[typeof key];
+    scaled[key] = scaleValue(
+      frame[key],
+      factor,
+    ) as TaskImpactFrameSummary[typeof key];
   }
 
   return {
     ...scaled,
     customFrameLabel:
-      overrides?.customFrameLabel ?? frame.customFrameLabel ?? `Scaled ${frame.frameSlug}`,
+      overrides?.customFrameLabel ??
+      frame.customFrameLabel ??
+      `Scaled ${frame.frameSlug}`,
     metrics: overrides?.metrics ?? frame.metrics,
     summaryStatsJson: overrides?.summaryStatsJson ?? frame.summaryStatsJson,
     ...overrides,
@@ -317,12 +353,17 @@ export function sumImpactFrameSummaries(
   const merged = { ...seed };
 
   for (const key of ADDITIVE_FRAME_KEYS) {
-    merged[key] = sumValues(frames.map((frame) => frame[key])) as TaskImpactFrameSummary[typeof key];
+    merged[key] = sumValues(
+      frames.map((frame) => frame[key]),
+    ) as TaskImpactFrameSummary[typeof key];
   }
 
   return {
     ...merged,
-    customFrameLabel: overrides?.customFrameLabel ?? seed.customFrameLabel ?? "Aggregated impact",
+    customFrameLabel:
+      overrides?.customFrameLabel ??
+      seed.customFrameLabel ??
+      "Aggregated impact",
     metrics: overrides?.metrics ?? [],
     summaryStatsJson: overrides?.summaryStatsJson ?? null,
     ...overrides,
@@ -337,7 +378,9 @@ function normalizeLog(value: number, logScale: number) {
   return Math.min(1, Math.log10(value + 1) / logScale);
 }
 
-export function getNormalizedImpactComponents(frame: TaskImpactFrameSummary | null | undefined) {
+export function getNormalizedImpactComponents(
+  frame: TaskImpactFrameSummary | null | undefined,
+) {
   if (!frame) {
     return {
       actorHourComponent: 0,
@@ -348,8 +391,14 @@ export function getNormalizedImpactComponents(frame: TaskImpactFrameSummary | nu
   }
 
   const derived = deriveImpactRatios(frame);
-  const healthComponent = normalizeLog(derived.expectedValuePerHourDalys ?? 0, 6);
-  const economicComponent = normalizeLog(derived.expectedValuePerHourUsd ?? 0, 12);
+  const healthComponent = normalizeLog(
+    derived.expectedValuePerHourDalys ?? 0,
+    6,
+  );
+  const economicComponent = normalizeLog(
+    derived.expectedValuePerHourUsd ?? 0,
+    12,
+  );
   const delayComponent = Math.max(
     normalizeLog(frame.delayDalysLostPerDayBase ?? 0, 6),
     normalizeLog(frame.delayEconomicValueUsdLostPerDayBase ?? 0, 12),
@@ -363,7 +412,9 @@ export function getNormalizedImpactComponents(frame: TaskImpactFrameSummary | nu
   };
 }
 
-export function scoreImpactFrame(frame: TaskImpactFrameSummary | null | undefined) {
+export function scoreImpactFrame(
+  frame: TaskImpactFrameSummary | null | undefined,
+) {
   if (!frame) {
     return 0.35;
   }

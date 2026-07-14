@@ -6,6 +6,7 @@ import {
   signMcpRefreshToken,
   verifyMcpRefreshToken,
   hashRefreshToken,
+  isAuthorizationCodeRedirectMatch,
   ACCESS_TOKEN_TTL,
 } from "@/lib/mcp-oauth";
 import { scopesToWire } from "@/lib/mcp-scopes";
@@ -47,9 +48,13 @@ async function handleAuthorizationCode(
   const redirectUri = params.redirect_uri as string;
   const codeVerifier = params.code_verifier as string;
 
-  if (!code || !clientId || !codeVerifier) {
+  if (!code || !clientId || !redirectUri || !codeVerifier) {
     return NextResponse.json(
-      { error: "invalid_request", error_description: "code, client_id, and code_verifier are required" },
+      {
+        error: "invalid_request",
+        error_description:
+          "code, client_id, redirect_uri, and code_verifier are required",
+      },
       { status: 400 },
     );
   }
@@ -88,7 +93,7 @@ async function handleAuthorizationCode(
     );
   }
 
-  if (redirectUri && authCode.redirectUri !== redirectUri) {
+  if (!isAuthorizationCodeRedirectMatch(authCode.redirectUri, redirectUri)) {
     return NextResponse.json(
       { error: "invalid_grant", error_description: "redirect_uri mismatch" },
       { status: 400 },
@@ -174,7 +179,6 @@ async function handleRefreshToken(
     );
   }
 
-  // Check the grant is still active
   const grant = await prisma.oAuthGrant.findUnique({
     where: {
       refreshTokenHash: hashRefreshToken(refreshToken),
@@ -191,19 +195,14 @@ async function handleRefreshToken(
   // Issue new tokens
   const scopes = grant.scopes;
   const newAccessToken = await signMcpAccessToken(grant.userId, grant.clientId, scopes);
-  const newRefreshToken = await signMcpRefreshToken(grant.userId, grant.clientId);
-
-  // Rotate refresh token
-  await prisma.oAuthGrant.update({
-    where: { id: grant.id },
-    data: { refreshTokenHash: hashRefreshToken(newRefreshToken) },
-  });
 
   return NextResponse.json({
     access_token: newAccessToken,
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_TTL,
-    refresh_token: newRefreshToken,
+    // Codex Desktop caches credentials per task. Keeping the refresh token
+    // stable prevents one task's refresh from invalidating every other task.
+    refresh_token: refreshToken,
     scope: scopesToWire(scopes),
   });
 }

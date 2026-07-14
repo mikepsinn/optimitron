@@ -37,33 +37,46 @@ export async function EosServiceCounter() {
       task.taskKey ? [[task.taskKey, task] as const] : [],
     ),
   );
-  const services = SERVICE_TASK_KEYS.flatMap((key) => {
+  const emptyState = (
+    <p className="max-w-3xl text-lg font-bold leading-8">
+      The counter is restocking.{" "}
+      <Link className="underline underline-offset-4" href={ROUTES.fund}>
+        The full price list is here.
+      </Link>
+    </p>
+  );
+  const serviceTasks = SERVICE_TASK_KEYS.flatMap((key) => {
     const task = byKey.get(key);
     if (!task) return [];
-    const denominator = getFundingDenominator(task);
-    if (!denominator) return [];
-    return [{ denominator, task }];
+    return [task];
   });
 
-  if (services.length === 0) {
-    return (
-      <p className="max-w-3xl text-lg font-bold leading-8">
-        The counter is restocking.{" "}
-        <Link className="underline underline-offset-4" href={ROUTES.fund}>
-          The full price list is here.
-        </Link>
-      </p>
-    );
+  if (serviceTasks.length === 0) {
+    return emptyState;
   }
 
   const fundingStatuses = new Map(
     await Promise.all(
-      services.map(
-        async ({ task }) =>
-          [task.id, await getTaskFundingStatus(task.id).catch(() => null)] as const,
+      serviceTasks.map(
+        async (task) =>
+          [
+            task.id,
+            task.fundingTarget
+              ? await getTaskFundingStatus(task.id).catch(() => null)
+              : null,
+          ] as const,
       ),
     ),
   );
+  const services = serviceTasks.flatMap((task) => {
+    const denominator = getFundingDenominator(
+      task,
+      fundingStatuses.get(task.id) ?? null,
+    );
+    return denominator ? [{ denominator, task }] : [];
+  });
+
+  if (services.length === 0) return emptyState;
 
   return (
     <div className="grid gap-4">

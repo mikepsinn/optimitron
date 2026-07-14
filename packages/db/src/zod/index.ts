@@ -9,773 +9,1123 @@
  *   const result = MeasurementSchema.safeParse(data);
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // ENUMS
 // ============================================================================
 
-export const CombinationOperationSchema = z.enum(['SUM', 'MEAN']);
+export const CombinationOperationSchema = z.enum(["SUM", "MEAN"]);
 export type CombinationOperation = z.infer<typeof CombinationOperationSchema>;
 
-export const FillingTypeSchema = z.enum(['ZERO', 'NONE', 'INTERPOLATION', 'VALUE']);
+export const FillingTypeSchema = z.enum([
+  "ZERO",
+  "NONE",
+  "INTERPOLATION",
+  "VALUE",
+]);
 export type FillingType = z.infer<typeof FillingTypeSchema>;
 
-export const ValenceSchema = z.enum(['POSITIVE', 'NEGATIVE', 'NEUTRAL']);
+export const ValenceSchema = z.enum(["POSITIVE", "NEGATIVE", "NEUTRAL"]);
 export type Valence = z.infer<typeof ValenceSchema>;
 
-export const MeasurementScaleSchema = z.enum(['NOMINAL', 'ORDINAL', 'INTERVAL', 'RATIO']);
+export const MeasurementScaleSchema = z.enum([
+  "NOMINAL",
+  "ORDINAL",
+  "INTERVAL",
+  "RATIO",
+]);
 export type MeasurementScale = z.infer<typeof MeasurementScaleSchema>;
 
-export const UnitCodeSystemSchema = z.enum(['UCUM']);
+export const UnitCodeSystemSchema = z.enum(["UCUM"]);
 export type UnitCodeSystem = z.infer<typeof UnitCodeSystemSchema>;
 
-export const AnalysisStatusSchema = z.enum(['WAITING', 'ANALYZING', 'DONE', 'ERROR']);
+export const AnalysisStatusSchema = z.enum([
+  "WAITING",
+  "ANALYZING",
+  "DONE",
+  "ERROR",
+]);
 export type AnalysisStatus = z.infer<typeof AnalysisStatusSchema>;
 
 export const StrengthLevelSchema = z.enum([
-  'VERY_STRONG',
-  'STRONG',
-  'MODERATE',
-  'WEAK',
-  'VERY_WEAK',
+  "VERY_STRONG",
+  "STRONG",
+  "MODERATE",
+  "WEAK",
+  "VERY_WEAK",
 ]);
 export type StrengthLevel = z.infer<typeof StrengthLevelSchema>;
 
-export const ConfidenceLevelSchema = z.enum(['HIGH', 'MEDIUM', 'LOW']);
+export const ConfidenceLevelSchema = z.enum(["HIGH", "MEDIUM", "LOW"]);
 export type ConfidenceLevel = z.infer<typeof ConfidenceLevelSchema>;
 
-export const RelationshipDirectionSchema = z.enum(['POSITIVE', 'NEGATIVE', 'NONE']);
+export const RelationshipDirectionSchema = z.enum([
+  "POSITIVE",
+  "NEGATIVE",
+  "NONE",
+]);
 export type RelationshipDirection = z.infer<typeof RelationshipDirectionSchema>;
 
-export const EvidenceGradeSchema = z.enum(['A', 'B', 'C', 'D', 'F']);
+export const EvidenceGradeSchema = z.enum(["A", "B", "C", "D", "F"]);
 export type EvidenceGrade = z.infer<typeof EvidenceGradeSchema>;
 
 export const NotificationStatusSchema = z.enum([
-  'PENDING',
-  'SENT',
-  'TRACKED',
-  'SKIPPED',
-  'SNOOZED',
+  "PENDING",
+  "SENT",
+  "TRACKED",
+  "SKIPPED",
+  "SNOOZED",
 ]);
 export type NotificationStatus = z.infer<typeof NotificationStatusSchema>;
 
-export const JurisdictionTypeSchema = z.enum(['CITY', 'COUNTY', 'STATE', 'COUNTRY']);
+export const JurisdictionTypeSchema = z.enum([
+  "CITY",
+  "COUNTY",
+  "STATE",
+  "COUNTRY",
+]);
 export type JurisdictionType = z.infer<typeof JurisdictionTypeSchema>;
 
-export const SubjectTypeSchema = z.enum(['USER', 'PERSON', 'JURISDICTION', 'COHORT', 'ORGANIZATION']);
+export const SubjectTypeSchema = z.enum([
+  "USER",
+  "PERSON",
+  "JURISDICTION",
+  "COHORT",
+  "ORGANIZATION",
+]);
 export type SubjectType = z.infer<typeof SubjectTypeSchema>;
 
-export const ReferralAnswerSchema = z.enum(['YES', 'NO']);
+export const ReferralAnswerSchema = z.enum(["YES", "NO"]);
 export type ReferralAnswer = z.infer<typeof ReferralAnswerSchema>;
 
-export const PersonhoodProviderSchema = z.enum(['WORLD_ID', 'HUMAN_PASSPORT']);
+export const PersonhoodProviderSchema = z.enum(["WORLD_ID", "HUMAN_PASSPORT"]);
 export type PersonhoodProvider = z.infer<typeof PersonhoodProviderSchema>;
 
-export const PersonhoodVerificationStatusSchema = z.enum(['VERIFIED', 'REVOKED']);
-export type PersonhoodVerificationStatus = z.infer<typeof PersonhoodVerificationStatusSchema>;
+export const PersonhoodVerificationStatusSchema = z.enum([
+  "VERIFIED",
+  "REVOKED",
+]);
+export type PersonhoodVerificationStatus = z.infer<
+  typeof PersonhoodVerificationStatusSchema
+>;
 
-export const PersonLifeStatusSchema = z.enum(['UNKNOWN', 'LIVING', 'DECEASED']);
+export const PersonLifeStatusSchema = z.enum(["UNKNOWN", "LIVING", "DECEASED"]);
 export type PersonLifeStatus = z.infer<typeof PersonLifeStatusSchema>;
 
-export const PersonConditionStatusSchema = z.enum(['UNKNOWN', 'ACTIVE', 'PAST', 'CAUSE_OF_DEATH']);
+export const PersonConditionStatusSchema = z.enum([
+  "UNKNOWN",
+  "ACTIVE",
+  "PAST",
+  "CAUSE_OF_DEATH",
+]);
 export type PersonConditionStatus = z.infer<typeof PersonConditionStatusSchema>;
 
 export const PersonDeathCauseCategorySchema = z.enum([
-  'UNKNOWN',
-  'DISEASE',
-  'ARMED_CONFLICT',
-  'STATE_VIOLENCE',
-  'TERRORISM',
-  'OTHER_PREVENTABLE',
-  'OTHER',
+  "UNKNOWN",
+  "DISEASE",
+  "ARMED_CONFLICT",
+  "STATE_VIOLENCE",
+  "TERRORISM",
+  "OTHER_PREVENTABLE",
+  "OTHER",
 ]);
-export type PersonDeathCauseCategory = z.infer<typeof PersonDeathCauseCategorySchema>;
+export type PersonDeathCauseCategory = z.infer<
+  typeof PersonDeathCauseCategorySchema
+>;
 
-export const PersonCivilianStatusSchema = z.enum(['UNKNOWN', 'CIVILIAN', 'COMBATANT']);
+export const PersonCivilianStatusSchema = z.enum([
+  "UNKNOWN",
+  "CIVILIAN",
+  "COMBATANT",
+]);
 export type PersonCivilianStatus = z.infer<typeof PersonCivilianStatusSchema>;
 
 export const PersonMemorialEvidenceKindSchema = z.enum([
-  'PHOTO',
-  'DOCUMENT',
-  'NEWS_ARTICLE',
-  'HOSPITAL_RECORD',
-  'DEATH_RECORD',
-  'WITNESS_STATEMENT',
-  'OTHER',
+  "PHOTO",
+  "DOCUMENT",
+  "NEWS_ARTICLE",
+  "HOSPITAL_RECORD",
+  "DEATH_RECORD",
+  "WITNESS_STATEMENT",
+  "OTHER",
 ]);
-export type PersonMemorialEvidenceKind = z.infer<typeof PersonMemorialEvidenceKindSchema>;
+export type PersonMemorialEvidenceKind = z.infer<
+  typeof PersonMemorialEvidenceKindSchema
+>;
 
 export const EfficacyLagEvidenceStatusSchema = z.enum([
-  'CANDIDATE',
-  'CONFIRMED',
-  'REJECTED',
+  "CANDIDATE",
+  "CONFIRMED",
+  "REJECTED",
 ]);
-export type EfficacyLagEvidenceStatus = z.infer<typeof EfficacyLagEvidenceStatusSchema>;
+export type EfficacyLagEvidenceStatus = z.infer<
+  typeof EfficacyLagEvidenceStatusSchema
+>;
 
 export const InterventionExperienceStatusSchema = z.enum([
-  'UNKNOWN',
-  'CURRENT',
-  'PAST',
-  'PLANNED',
-  'NEVER_TRIED',
+  "UNKNOWN",
+  "CURRENT",
+  "PAST",
+  "PLANNED",
+  "NEVER_TRIED",
 ]);
-export type InterventionExperienceStatus = z.infer<typeof InterventionExperienceStatusSchema>;
+export type InterventionExperienceStatus = z.infer<
+  typeof InterventionExperienceStatusSchema
+>;
 
 export const InterventionOutcomeRatingSchema = z.enum([
-  'UNKNOWN',
-  'MUCH_WORSE',
-  'WORSE',
-  'NO_EFFECT',
-  'MODERATE_IMPROVEMENT',
-  'MAJOR_IMPROVEMENT',
+  "UNKNOWN",
+  "MUCH_WORSE",
+  "WORSE",
+  "NO_EFFECT",
+  "MODERATE_IMPROVEMENT",
+  "MAJOR_IMPROVEMENT",
 ]);
-export type InterventionOutcomeRating = z.infer<typeof InterventionOutcomeRatingSchema>;
+export type InterventionOutcomeRating = z.infer<
+  typeof InterventionOutcomeRatingSchema
+>;
 
 export const InterventionSideEffectSeveritySchema = z.enum([
-  'UNKNOWN',
-  'NONE',
-  'MINIMAL',
-  'MILD',
-  'MODERATE',
-  'SEVERE',
-  'EXTREME',
+  "UNKNOWN",
+  "NONE",
+  "MINIMAL",
+  "MILD",
+  "MODERATE",
+  "SEVERE",
+  "EXTREME",
 ]);
-export type InterventionSideEffectSeverity = z.infer<typeof InterventionSideEffectSeveritySchema>;
+export type InterventionSideEffectSeverity = z.infer<
+  typeof InterventionSideEffectSeveritySchema
+>;
 
 export const VariableEvidenceMetricKindSchema = z.enum([
-  'EFFECT_SIZE',
-  'EFFECTIVENESS',
-  'SAFETY',
-  'NNT',
-  'NNH',
-  'COST',
-  'COST_PER_QALY',
-  'QALYS_GAINED',
-  'REMISSION_RATE',
-  'RESPONSE_RATE',
-  'ACCESS',
-  'CONFIDENCE',
-  'OTHER',
+  "EFFECT_SIZE",
+  "EFFECTIVENESS",
+  "SAFETY",
+  "NNT",
+  "NNH",
+  "COST",
+  "COST_PER_QALY",
+  "QALYS_GAINED",
+  "REMISSION_RATE",
+  "RESPONSE_RATE",
+  "ACCESS",
+  "CONFIDENCE",
+  "OTHER",
 ]);
-export type VariableEvidenceMetricKind = z.infer<typeof VariableEvidenceMetricKindSchema>;
+export type VariableEvidenceMetricKind = z.infer<
+  typeof VariableEvidenceMetricKindSchema
+>;
 
 export const VariableRelationshipEvidenceSourceTypeSchema = z.enum([
-  'IMPORTED_STUDY',
-  'USER_REPORT',
-  'OPTIMIZER_N_OF_1',
-  'OPTIMIZER_AGGREGATE',
-  'CURATED_DATASET',
-  'MANUAL',
-  'OTHER',
+  "IMPORTED_STUDY",
+  "USER_REPORT",
+  "OPTIMIZER_N_OF_1",
+  "OPTIMIZER_AGGREGATE",
+  "CURATED_DATASET",
+  "MANUAL",
+  "OTHER",
 ]);
-export type VariableRelationshipEvidenceSourceType = z.infer<typeof VariableRelationshipEvidenceSourceTypeSchema>;
+export type VariableRelationshipEvidenceSourceType = z.infer<
+  typeof VariableRelationshipEvidenceSourceTypeSchema
+>;
 
-export const InterventionRankingRunStatusSchema = z.enum([
-  'DRAFT',
-  'ACTIVE',
-]);
-export type InterventionRankingRunStatus = z.infer<typeof InterventionRankingRunStatusSchema>;
+export const InterventionRankingRunStatusSchema = z.enum(["DRAFT", "ACTIVE"]);
+export type InterventionRankingRunStatus = z.infer<
+  typeof InterventionRankingRunStatusSchema
+>;
 
-export const VotePositionSchema = z.enum(['YES', 'NO', 'ABSTAIN']);
+export const VotePositionSchema = z.enum(["YES", "NO", "ABSTAIN"]);
 export type VotePosition = z.infer<typeof VotePositionSchema>;
 
-export const ReferendumVoteSourceSchema = z.enum(['SELF', 'REPRESENTED']);
+export const ReferendumVoteSourceSchema = z.enum(["SELF", "REPRESENTED"]);
 export type ReferendumVoteSource = z.infer<typeof ReferendumVoteSourceSchema>;
 
-export const ReferendumStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'CLOSED']);
+export const ReferendumStatusSchema = z.enum(["DRAFT", "ACTIVE", "CLOSED"]);
 export type ReferendumStatus = z.infer<typeof ReferendumStatusSchema>;
 
 export const ReferendumKindSchema = z.enum([
-  'GENERAL',
-  'DECLARATION',
-  'TREATY',
-  'MEMBERSHIP',
-  'COURT_CASE',
-  'AMENDMENT',
-  'BUDGET',
+  "GENERAL",
+  "DECLARATION",
+  "TREATY",
+  "MEMBERSHIP",
+  "COURT_CASE",
+  "AMENDMENT",
+  "BUDGET",
 ]);
 export type ReferendumKind = z.infer<typeof ReferendumKindSchema>;
 
-export const CourtCaseStatusSchema = z.enum(['DRAFT', 'OPEN', 'VOTING', 'JUDGED', 'ARCHIVED']);
+export const CourtCaseStatusSchema = z.enum([
+  "DRAFT",
+  "OPEN",
+  "VOTING",
+  "JUDGED",
+  "ARCHIVED",
+]);
 export type CourtCaseStatus = z.infer<typeof CourtCaseStatusSchema>;
 
 export const CourtCasePartyRoleSchema = z.enum([
-  'NOMINAL_PLAINTIFF',
-  'NAMED_PLAINTIFF',
-  'REPRESENTATIVE_CLASS',
-  'RESPONDENT',
-  'AMICUS',
-  'BENEFICIARY',
+  "NOMINAL_PLAINTIFF",
+  "NAMED_PLAINTIFF",
+  "REPRESENTATIVE_CLASS",
+  "RESPONDENT",
+  "AMICUS",
+  "BENEFICIARY",
 ]);
 export type CourtCasePartyRole = z.infer<typeof CourtCasePartyRoleSchema>;
 
 export const CourtCasePartyCapacitySchema = z.enum([
-  'INSTITUTIONAL',
-  'OFFICIAL_CAPACITY',
-  'PERSONAL_CAPACITY',
-  'OVERSIGHT_CAPACITY',
-  'CLASS_REPRESENTATIVE',
+  "INSTITUTIONAL",
+  "OFFICIAL_CAPACITY",
+  "PERSONAL_CAPACITY",
+  "OVERSIGHT_CAPACITY",
+  "CLASS_REPRESENTATIVE",
 ]);
-export type CourtCasePartyCapacity = z.infer<typeof CourtCasePartyCapacitySchema>;
+export type CourtCasePartyCapacity = z.infer<
+  typeof CourtCasePartyCapacitySchema
+>;
 
 export const CourtCaseItemStatusSchema = z.enum([
-  'PROPOSED',
-  'ACCEPTED',
-  'REJECTED',
-  'SUPERSEDED',
+  "PROPOSED",
+  "ACCEPTED",
+  "REJECTED",
+  "SUPERSEDED",
 ]);
 export type CourtCaseItemStatus = z.infer<typeof CourtCaseItemStatusSchema>;
 
-export const PointMintStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'CONFIRMED', 'FAILED']);
+export const PointMintStatusSchema = z.enum([
+  "PENDING",
+  "SUBMITTED",
+  "CONFIRMED",
+  "FAILED",
+]);
 export type PointMintStatus = z.infer<typeof PointMintStatusSchema>;
 
 export const ActivityTypeSchema = z.enum([
-  'VOTED_REFERENDUM',
-  'SUBMITTED_COMPARISON',
-  'DEPOSITED_PRIZE',
-  'RECRUITED_VOTER',
-  'CONTACTED_ASSIGNEE',
-  'VERIFIED_PERSONHOOD',
-  'TRACKED_MEASUREMENT',
-  'UPDATED_PROFILE',
-  'EARNED_BADGE',
-  'CREATED_SURVEY',
-  'COMPLETED_SURVEY',
-  'JOINED_ORGANIZATION',
+  "VOTED_REFERENDUM",
+  "SUBMITTED_COMPARISON",
+  "DEPOSITED_PRIZE",
+  "RECRUITED_VOTER",
+  "CONTACTED_ASSIGNEE",
+  "VERIFIED_PERSONHOOD",
+  "TRACKED_MEASUREMENT",
+  "UPDATED_PROFILE",
+  "EARNED_BADGE",
+  "CREATED_SURVEY",
+  "COMPLETED_SURVEY",
+  "JOINED_ORGANIZATION",
 ]);
 export type ActivityType = z.infer<typeof ActivityTypeSchema>;
 
 export const NotificationTypeSchema = z.enum([
-  'REFERRAL_SIGNUP',
-  'REFERENDUM_MILESTONE',
-  'ALIGNMENT_SCORE_PUBLISHED',
-  'DEPOSIT_CONFIRMED',
-  'BADGE_EARNED',
-  'SURVEY_INVITE',
-  'DAILY_CHECKIN_REMINDER',
-  'ORGANIZATION_INVITE',
-  'SYSTEM_ANNOUNCEMENT',
+  "REFERRAL_SIGNUP",
+  "REFERENDUM_MILESTONE",
+  "ALIGNMENT_SCORE_PUBLISHED",
+  "DEPOSIT_CONFIRMED",
+  "BADGE_EARNED",
+  "SURVEY_INVITE",
+  "DAILY_CHECKIN_REMINDER",
+  "ORGANIZATION_INVITE",
+  "SYSTEM_ANNOUNCEMENT",
 ]);
 export type NotificationType = z.infer<typeof NotificationTypeSchema>;
 
-export const NotificationChannelSchema = z.enum(['EMAIL', 'IN_APP', 'SMS', 'PUSH']);
+export const NotificationChannelSchema = z.enum([
+  "EMAIL",
+  "IN_APP",
+  "SMS",
+  "PUSH",
+]);
 export type NotificationChannel = z.infer<typeof NotificationChannelSchema>;
 
 export const OrgTypeSchema = z.enum([
-  'UNIVERSITY',
-  'RESEARCH_CENTER',
-  'NONPROFIT',
-  'DAO',
-  'GOVERNMENT',
-  'GOVERNMENT_AGENCY',
-  'HOSPITAL',
-  'BIOTECH',
-  'COMPANY',
-  'FOUNDATION',
-  'INTERGOVERNMENTAL',
-  'MEDIA',
-  'POLITICAL_PARTY',
-  'ADVOCACY',
-  'OTHER',
+  "UNIVERSITY",
+  "RESEARCH_CENTER",
+  "NONPROFIT",
+  "DAO",
+  "GOVERNMENT",
+  "GOVERNMENT_AGENCY",
+  "HOSPITAL",
+  "BIOTECH",
+  "COMPANY",
+  "FOUNDATION",
+  "INTERGOVERNMENTAL",
+  "MEDIA",
+  "POLITICAL_PARTY",
+  "ADVOCACY",
+  "OTHER",
 ]);
 export type OrgType = z.infer<typeof OrgTypeSchema>;
 
-export const OrgStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED']);
+export const OrgStatusSchema = z.enum(["PENDING", "APPROVED", "REJECTED"]);
 export type OrgStatus = z.infer<typeof OrgStatusSchema>;
 
 export const SocialPlatformSchema = z.enum([
-  'TWITTER',
-  'GITHUB',
-  'ETHEREUM',
-  'BASE',
-  'DISCORD',
-  'TELEGRAM',
+  "TWITTER",
+  "GITHUB",
+  "ETHEREUM",
+  "BASE",
+  "DISCORD",
+  "TELEGRAM",
 ]);
 export type SocialPlatform = z.infer<typeof SocialPlatformSchema>;
 
 export const BadgeTypeSchema = z.enum([
-  'FIRST_COMPARISON',
-  'HUNDRED_COMPARISONS',
-  'FIRST_RECRUIT',
-  'TEN_RECRUITS',
-  'VERIFIED_HUMAN',
-  'EARLY_ADOPTER',
-  'DEPOSITOR',
+  "FIRST_COMPARISON",
+  "HUNDRED_COMPARISONS",
+  "FIRST_RECRUIT",
+  "TEN_RECRUITS",
+  "VERIFIED_HUMAN",
+  "EARLY_ADOPTER",
+  "DEPOSITOR",
 ]);
 export type BadgeType = z.infer<typeof BadgeTypeSchema>;
 
 export const WishReasonSchema = z.enum([
-  'WORLD_ID_VERIFICATION',
-  'KYC_COMPLETION',
-  'CENSUS_SNAPSHOT',
-  'DAILY_CHECKIN',
-  'WISHOCRATIC_ALLOCATION',
-  'REFERENDUM_VOTE',
-  'ALIGNMENT_CHECK',
-  'REFERRAL',
-  'PRIZE_DEPOSIT',
-  'SHARE_REPORT',
-  'TASK_COMPLETED',
+  "WORLD_ID_VERIFICATION",
+  "KYC_COMPLETION",
+  "CENSUS_SNAPSHOT",
+  "DAILY_CHECKIN",
+  "WISHOCRATIC_ALLOCATION",
+  "REFERENDUM_VOTE",
+  "ALIGNMENT_CHECK",
+  "REFERRAL",
+  "PRIZE_DEPOSIT",
+  "SHARE_REPORT",
+  "TASK_COMPLETED",
 ]);
 export type WishReason = z.infer<typeof WishReasonSchema>;
 
 export const TaskCategorySchema = z.enum([
-  'ADVOCACY',
-  'RESEARCH',
-  'COMMUNICATION',
-  'ENGINEERING',
-  'ORGANIZING',
-  'OUTREACH',
-  'GOVERNANCE',
-  'SCIENCE',
-  'LEGAL',
-  'CREATIVE',
-  'OTHER',
+  "ADVOCACY",
+  "RESEARCH",
+  "COMMUNICATION",
+  "ENGINEERING",
+  "ORGANIZING",
+  "OUTREACH",
+  "GOVERNANCE",
+  "SCIENCE",
+  "LEGAL",
+  "CREATIVE",
+  "OTHER",
 ]);
 export type TaskCategory = z.infer<typeof TaskCategorySchema>;
 
 export const TaskKindSchema = z.enum([
-  'TASK',
-  'ROLE_OPENING',
-  'PROJECT',
-  'BOUNTY',
-  'VOLUNTEER_ROLE',
+  "TASK",
+  "ROLE_OPENING",
+  "PROJECT",
+  "BOUNTY",
+  "VOLUNTEER_ROLE",
 ]);
 export type TaskKind = z.infer<typeof TaskKindSchema>;
 
 export const TaskEngagementKindSchema = z.enum([
-  'ONE_OFF',
-  'ONGOING',
-  'PART_TIME',
-  'FULL_TIME',
-  'CONTRACT',
+  "ONE_OFF",
+  "ONGOING",
+  "PART_TIME",
+  "FULL_TIME",
+  "CONTRACT",
 ]);
 export type TaskEngagementKind = z.infer<typeof TaskEngagementKindSchema>;
 
 export const TaskCompensationKindSchema = z.enum([
-  'UNSPECIFIED',
-  'VOLUNTEER',
-  'PAID',
-  'BOUNTY',
-  'EQUITY',
-  'OTHER',
+  "UNSPECIFIED",
+  "VOLUNTEER",
+  "PAID",
+  "BOUNTY",
+  "EQUITY",
+  "OTHER",
 ]);
 export type TaskCompensationKind = z.infer<typeof TaskCompensationKindSchema>;
 
 export const TaskCompensationCadenceSchema = z.enum([
-  'FIXED',
-  'HOURLY',
-  'WEEKLY',
-  'MONTHLY',
-  'ANNUAL',
+  "FIXED",
+  "HOURLY",
+  "WEEKLY",
+  "MONTHLY",
+  "ANNUAL",
 ]);
-export type TaskCompensationCadence = z.infer<typeof TaskCompensationCadenceSchema>;
+export type TaskCompensationCadence = z.infer<
+  typeof TaskCompensationCadenceSchema
+>;
 
 export const TaskRemotePolicySchema = z.enum([
-  'UNSPECIFIED',
-  'REMOTE',
-  'HYBRID',
-  'ONSITE',
+  "UNSPECIFIED",
+  "REMOTE",
+  "HYBRID",
+  "ONSITE",
 ]);
 export type TaskRemotePolicy = z.infer<typeof TaskRemotePolicySchema>;
 
 export const TaskExecutionModeSchema = z.enum([
-  'HUMAN_OR_AGENT',
-  'HUMAN_ONLY',
-  'AGENT_ONLY',
+  "HUMAN_OR_AGENT",
+  "HUMAN_ONLY",
+  "AGENT_ONLY",
 ]);
 export type TaskExecutionMode = z.infer<typeof TaskExecutionModeSchema>;
 
 export const TaskCandidateKindSchema = z.enum([
-  'USER',
-  'PERSON',
-  'ORGANIZATION',
-  'AGENT',
-  'EXTERNAL',
+  "USER",
+  "PERSON",
+  "ORGANIZATION",
+  "AGENT",
+  "EXTERNAL",
 ]);
 export type TaskCandidateKind = z.infer<typeof TaskCandidateKindSchema>;
 
 export const TaskCandidateMatchStatusSchema = z.enum([
-  'SUGGESTED',
-  'CONTACTED',
-  'DECLINED',
-  'REJECTED',
+  "SUGGESTED",
+  "CONTACTED",
+  "DECLINED",
+  "REJECTED",
 ]);
-export type TaskCandidateMatchStatus = z.infer<typeof TaskCandidateMatchStatusSchema>;
+export type TaskCandidateMatchStatus = z.infer<
+  typeof TaskCandidateMatchStatusSchema
+>;
 
 export const TaskExecutionAttemptStatusSchema = z.enum([
-  'QUEUED',
-  'RUNNING',
-  'COMPLETED',
-  'FAILED',
-  'REJECTED',
-  'CANCELLED',
+  "QUEUED",
+  "RUNNING",
+  "COMPLETED",
+  "FAILED",
+  "REJECTED",
+  "CANCELLED",
 ]);
-export type TaskExecutionAttemptStatus = z.infer<typeof TaskExecutionAttemptStatusSchema>;
+export type TaskExecutionAttemptStatus = z.infer<
+  typeof TaskExecutionAttemptStatusSchema
+>;
 
 export const AgentExecutorStatusSchema = z.enum([
-  'ACTIVE',
-  'PAUSED',
-  'RETIRED',
+  "ACTIVE",
+  "PAUSED",
+  "RETIRED",
 ]);
 export type AgentExecutorStatus = z.infer<typeof AgentExecutorStatusSchema>;
 
 export const TaskMarketplaceListingKindSchema = z.enum([
-  'TASK_POSTING',
-  'FEATURED_PLACEMENT',
+  "TASK_POSTING",
+  "FEATURED_PLACEMENT",
 ]);
-export type TaskMarketplaceListingKind = z.infer<typeof TaskMarketplaceListingKindSchema>;
+export type TaskMarketplaceListingKind = z.infer<
+  typeof TaskMarketplaceListingKindSchema
+>;
 
 export const TaskMarketplaceFeePolicySchema = z.enum([
-  'FREE',
-  'PAID_POSTING',
-  'SUBSCRIPTION',
+  "FREE",
+  "PAID_POSTING",
+  "SUBSCRIPTION",
 ]);
-export type TaskMarketplaceFeePolicy = z.infer<typeof TaskMarketplaceFeePolicySchema>;
+export type TaskMarketplaceFeePolicy = z.infer<
+  typeof TaskMarketplaceFeePolicySchema
+>;
 
 export const TaskMarketplaceListingStatusSchema = z.enum([
-  'DRAFT',
-  'ACTIVE',
-  'PAUSED',
-  'CLOSED',
-  'EXPIRED',
-  'CANCELLED',
+  "DRAFT",
+  "ACTIVE",
+  "PAUSED",
+  "CLOSED",
+  "EXPIRED",
+  "CANCELLED",
 ]);
-export type TaskMarketplaceListingStatus = z.infer<typeof TaskMarketplaceListingStatusSchema>;
+export type TaskMarketplaceListingStatus = z.infer<
+  typeof TaskMarketplaceListingStatusSchema
+>;
 
 export const TaskDistributionChannelSchema = z.enum([
-  'JOB_BOARD',
-  'SOCIAL',
-  'COMMUNITY',
-  'FREELANCE_MARKETPLACE',
-  'GRANTS',
-  'SEARCH_INDEX',
-  'WEBHOOK',
-  'TASK_PLATFORM',
-  'OTHER',
+  "JOB_BOARD",
+  "SOCIAL",
+  "COMMUNITY",
+  "FREELANCE_MARKETPLACE",
+  "GRANTS",
+  "SEARCH_INDEX",
+  "WEBHOOK",
+  "TASK_PLATFORM",
+  "OTHER",
 ]);
-export type TaskDistributionChannel = z.infer<typeof TaskDistributionChannelSchema>;
+export type TaskDistributionChannel = z.infer<
+  typeof TaskDistributionChannelSchema
+>;
 
 export const TaskDistributionOperationSchema = z.enum([
-  'CREATE',
-  'UPDATE',
-  'REMOVE',
-  'INDEX',
+  "CREATE",
+  "UPDATE",
+  "REMOVE",
+  "INDEX",
 ]);
-export type TaskDistributionOperation = z.infer<typeof TaskDistributionOperationSchema>;
+export type TaskDistributionOperation = z.infer<
+  typeof TaskDistributionOperationSchema
+>;
 
 export const TaskDistributionTargetStatusSchema = z.enum([
-  'ACTIVE',
-  'PAUSED',
-  'RETIRED',
+  "ACTIVE",
+  "PAUSED",
+  "RETIRED",
 ]);
-export type TaskDistributionTargetStatus = z.infer<typeof TaskDistributionTargetStatusSchema>;
+export type TaskDistributionTargetStatus = z.infer<
+  typeof TaskDistributionTargetStatusSchema
+>;
 
 export const TaskDistributionAttemptStatusSchema = z.enum([
-  'DRAFT',
-  'QUEUED',
-  'APPROVAL_REQUIRED',
-  'SUCCEEDED',
-  'FAILED',
-  'CANCELLED',
-  'EXPIRED',
+  "DRAFT",
+  "QUEUED",
+  "APPROVAL_REQUIRED",
+  "SUCCEEDED",
+  "FAILED",
+  "CANCELLED",
+  "EXPIRED",
 ]);
-export type TaskDistributionAttemptStatus = z.infer<typeof TaskDistributionAttemptStatusSchema>;
+export type TaskDistributionAttemptStatus = z.infer<
+  typeof TaskDistributionAttemptStatusSchema
+>;
 
 export const TaskClaimPolicySchema = z.enum([
-  'ASSIGNED_ONLY',
-  'OPEN_SINGLE',
-  'OPEN_MANY',
+  "ASSIGNED_ONLY",
+  "OPEN_SINGLE",
+  "OPEN_MANY",
 ]);
 export type TaskClaimPolicy = z.infer<typeof TaskClaimPolicySchema>;
 
 export const TaskStatusSchema = z.enum([
-  'DRAFT',
-  'ACTIVE',
-  'VERIFIED',
-  'STALE',
+  "DRAFT",
+  "ACTIVE",
+  "VERIFIED",
+  "STALE",
 ]);
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 
 export const TaskDeadlinePolicySchema = z.enum([
-  'NONE',
-  'SOFT',
-  'EXPIRES',
-  'REQUIRED',
+  "NONE",
+  "SOFT",
+  "EXPIRES",
+  "REQUIRED",
 ]);
 export type TaskDeadlinePolicy = z.infer<typeof TaskDeadlinePolicySchema>;
 
 export const TaskApplicationPolicySchema = z.enum([
-  'CLOSED',
-  'OPEN',
-  'INVITE_ONLY',
+  "CLOSED",
+  "OPEN",
+  "INVITE_ONLY",
 ]);
 export type TaskApplicationPolicy = z.infer<typeof TaskApplicationPolicySchema>;
 
 export const TaskApplicationStatusSchema = z.enum([
-  'APPLIED',
-  'INVITED',
-  'UNDER_REVIEW',
-  'SHORTLISTED',
-  'INTERVIEWING',
-  'OFFERED',
-  'ACCEPTED',
-  'REJECTED',
-  'WITHDRAWN',
-  'ARCHIVED',
+  "APPLIED",
+  "INVITED",
+  "UNDER_REVIEW",
+  "SHORTLISTED",
+  "INTERVIEWING",
+  "OFFERED",
+  "ACCEPTED",
+  "REJECTED",
+  "WITHDRAWN",
+  "ARCHIVED",
 ]);
 export type TaskApplicationStatus = z.infer<typeof TaskApplicationStatusSchema>;
 
 export const TaskApplicationEventTypeSchema = z.enum([
-  'CREATED',
-  'STATUS_CHANGED',
-  'REVIEWED',
-  'COMMENTED',
-  'INVITED',
-  'WITHDRAWN',
+  "CREATED",
+  "STATUS_CHANGED",
+  "REVIEWED",
+  "COMMENTED",
+  "INVITED",
+  "WITHDRAWN",
 ]);
-export type TaskApplicationEventType = z.infer<typeof TaskApplicationEventTypeSchema>;
+export type TaskApplicationEventType = z.infer<
+  typeof TaskApplicationEventTypeSchema
+>;
 
 export const TaskClaimStatusSchema = z.enum([
-  'CLAIMED',
-  'IN_PROGRESS',
-  'COMPLETED',
-  'VERIFIED',
-  'REJECTED',
-  'ABANDONED',
+  "CLAIMED",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "VERIFIED",
+  "REJECTED",
+  "ABANDONED",
 ]);
 export type TaskClaimStatus = z.infer<typeof TaskClaimStatusSchema>;
 
 export const TaskEdgeTypeSchema = z.enum([
-  'DEPENDS_ON',
-  'BLOCKS',
-  'INCREASES_PROBABILITY_OF',
-  'ACCELERATES',
+  "DEPENDS_ON",
+  "BLOCKS",
+  "INCREASES_PROBABILITY_OF",
+  "ACCELERATES",
 ]);
 export type TaskEdgeType = z.infer<typeof TaskEdgeTypeSchema>;
 
 export const TaskFundingTargetStatusSchema = z.enum([
-  'OPEN',
-  'THRESHOLD_MET',
-  'EXPIRED',
-  'CANCELLED',
+  "OPEN",
+  "THRESHOLD_MET",
+  "EXPIRED",
+  "CANCELLED",
 ]);
-export type TaskFundingTargetStatus = z.infer<typeof TaskFundingTargetStatusSchema>;
+export type TaskFundingTargetStatus = z.infer<
+  typeof TaskFundingTargetStatusSchema
+>;
 
-export const TaskFundingPledgerKindSchema = z.enum(['PERSON', 'ORGANIZATION']);
-export type TaskFundingPledgerKind = z.infer<typeof TaskFundingPledgerKindSchema>;
+export const TaskFundingPledgerKindSchema = z.enum(["PERSON", "ORGANIZATION"]);
+export type TaskFundingPledgerKind = z.infer<
+  typeof TaskFundingPledgerKindSchema
+>;
 
 export const TaskFundingPledgeStatusSchema = z.enum([
-  'ACTIVE',
-  'CANCELLED',
-  'EXPIRED',
-  'CALLED',
-  'FULFILLED',
+  "ACTIVE",
+  "CANCELLED",
+  "EXPIRED",
+  "CALLED",
+  "FULFILLED",
 ]);
-export type TaskFundingPledgeStatus = z.infer<typeof TaskFundingPledgeStatusSchema>;
+export type TaskFundingPledgeStatus = z.infer<
+  typeof TaskFundingPledgeStatusSchema
+>;
 
 export const TaskFundingEventTypeSchema = z.enum([
-  'PLEDGE_CREATED',
-  'PLEDGE_UPDATED',
-  'PLEDGE_CANCELLED',
-  'TARGET_UPDATED',
-  'THRESHOLD_MET',
-  'NOTIFICATION_SENT',
+  "PLEDGE_CREATED",
+  "PLEDGE_UPDATED",
+  "PLEDGE_CANCELLED",
+  "TARGET_UPDATED",
+  "THRESHOLD_MET",
+  "NOTIFICATION_SENT",
 ]);
 export type TaskFundingEventType = z.infer<typeof TaskFundingEventTypeSchema>;
 
 export const SourceSystemSchema = z.enum([
-  'MANUAL',
-  'OPG',
-  'OBG',
-  'PARAMETER_CATALOG',
-  'EXTERNAL',
-  'CURATED',
-  'COMBINED',
+  "MANUAL",
+  "OPG",
+  "OBG",
+  "PARAMETER_CATALOG",
+  "EXTERNAL",
+  "CURATED",
+  "COMBINED",
 ]);
 export type SourceSystem = z.infer<typeof SourceSystemSchema>;
 
 export const SourceArtifactTypeSchema = z.enum([
-  'MANUAL_SECTION',
-  'MANUAL_SNAPSHOT',
-  'OPG_POLICY_RECOMMENDATION',
-  'OPG_POLICY_REPORT',
-  'OBG_BUDGET_CATEGORY',
-  'OBG_BUDGET_REPORT',
-  'PARAMETER_SET',
-  'CALCULATION_RUN',
-  'EXTERNAL_SOURCE',
+  "MANUAL_SECTION",
+  "MANUAL_SNAPSHOT",
+  "OPG_POLICY_RECOMMENDATION",
+  "OPG_POLICY_REPORT",
+  "OBG_BUDGET_CATEGORY",
+  "OBG_BUDGET_REPORT",
+  "PARAMETER_SET",
+  "CALCULATION_SOURCE",
+  "CALCULATION_RUN",
+  "EXTERNAL_SOURCE",
 ]);
 export type SourceArtifactType = z.infer<typeof SourceArtifactTypeSchema>;
 
-export const TaskImpactEstimateKindSchema = z.enum([
-  'FORECAST',
-  'OBSERVED',
-  'HYBRID',
+export const ParameterSourceTypeSchema = z.enum([
+  "EXTERNAL",
+  "CALCULATED",
+  "DEFINITION",
+  "AI_ESTIMATED",
+  "CURATED",
 ]);
-export type TaskImpactEstimateKind = z.infer<typeof TaskImpactEstimateKindSchema>;
+export type ParameterSourceType = z.infer<typeof ParameterSourceTypeSchema>;
+
+export const ParameterDistributionTypeSchema = z.enum([
+  "FIXED",
+  "NORMAL",
+  "LOGNORMAL",
+  "BETA",
+  "GAMMA",
+  "TRIANGULAR",
+  "UNIFORM",
+]);
+export type ParameterDistributionType = z.infer<
+  typeof ParameterDistributionTypeSchema
+>;
+
+export const ModelRevisionStatusSchema = z.enum([
+  "DRAFT",
+  "PUBLISHED",
+  "SUPERSEDED",
+  "REJECTED",
+]);
+export type ModelRevisionStatus = z.infer<typeof ModelRevisionStatusSchema>;
+
+export const TaskImpactEstimateKindSchema = z.enum([
+  "FORECAST",
+  "OBSERVED",
+  "HYBRID",
+]);
+export type TaskImpactEstimateKind = z.infer<
+  typeof TaskImpactEstimateKindSchema
+>;
 
 export const TaskImpactPublicationStatusSchema = z.enum([
-  'DRAFT',
-  'REVIEWED',
-  'PUBLISHED',
-  'SUPERSEDED',
+  "DRAFT",
+  "REVIEWED",
+  "PUBLISHED",
+  "SUPERSEDED",
 ]);
-export type TaskImpactPublicationStatus = z.infer<typeof TaskImpactPublicationStatusSchema>;
+export type TaskImpactPublicationStatus = z.infer<
+  typeof TaskImpactPublicationStatusSchema
+>;
 
 export const TaskImpactFrameKeySchema = z.enum([
-  'IMMEDIATE',
-  'ONE_YEAR',
-  'FIVE_YEAR',
-  'TWENTY_YEAR',
-  'LIFETIME',
-  'CUSTOM',
+  "IMMEDIATE",
+  "ONE_YEAR",
+  "FIVE_YEAR",
+  "TWENTY_YEAR",
+  "LIFETIME",
+  "CUSTOM",
 ]);
 export type TaskImpactFrameKey = z.infer<typeof TaskImpactFrameKeySchema>;
 
-export const TaskCommunicationAudienceSchema = z.enum(['RECIPIENT', 'SENDER', 'OBSERVER', 'ASSIGNEE']);
-export type TaskCommunicationAudience = z.infer<typeof TaskCommunicationAudienceSchema>;
+export const TaskCommunicationAudienceSchema = z.enum([
+  "RECIPIENT",
+  "SENDER",
+  "OBSERVER",
+  "ASSIGNEE",
+]);
+export type TaskCommunicationAudience = z.infer<
+  typeof TaskCommunicationAudienceSchema
+>;
 
 export const TaskCommunicationPurposeSchema = z.enum([
-  'INVITATION',
-  'ASSIGNMENT',
-  'REMINDER',
-  'FOLLOW_UP',
-  'EVIDENCE_REQUEST',
-  'STATUS_UPDATE',
-  'REPLY',
-  'SCORECARD',
-  'RE_ENGAGEMENT',
-  'VOTE_CONFIRMED',
-  'RECIPIENT_VOTED',
-  'SHARE',
+  "INVITATION",
+  "ASSIGNMENT",
+  "REMINDER",
+  "FOLLOW_UP",
+  "EVIDENCE_REQUEST",
+  "STATUS_UPDATE",
+  "REPLY",
+  "SCORECARD",
+  "RE_ENGAGEMENT",
+  "VOTE_CONFIRMED",
+  "RECIPIENT_VOTED",
+  "SHARE",
 ]);
-export type TaskCommunicationPurpose = z.infer<typeof TaskCommunicationPurposeSchema>;
+export type TaskCommunicationPurpose = z.infer<
+  typeof TaskCommunicationPurposeSchema
+>;
 
-export const TaskCommunicationFormatSchema = z.enum(['DEFAULT', 'TASK_NOTIFICATION', 'SINCERE']);
-export type TaskCommunicationFormat = z.infer<typeof TaskCommunicationFormatSchema>;
+export const TaskCommunicationFormatSchema = z.enum([
+  "DEFAULT",
+  "TASK_NOTIFICATION",
+  "SINCERE",
+]);
+export type TaskCommunicationFormat = z.infer<
+  typeof TaskCommunicationFormatSchema
+>;
 
-export const TaskCommunicationDirectionSchema = z.enum(['OUTBOUND', 'INBOUND']);
-export type TaskCommunicationDirection = z.infer<typeof TaskCommunicationDirectionSchema>;
+export const TaskCommunicationDirectionSchema = z.enum(["OUTBOUND", "INBOUND"]);
+export type TaskCommunicationDirection = z.infer<
+  typeof TaskCommunicationDirectionSchema
+>;
 
-export const TaskCommunicationChannelSchema = z.enum(['EMAIL', 'IN_APP', 'SMS', 'PUSH', 'EXTERNAL_URL', 'MAILTO', 'MANUAL']);
-export type TaskCommunicationChannel = z.infer<typeof TaskCommunicationChannelSchema>;
+export const TaskCommunicationChannelSchema = z.enum([
+  "EMAIL",
+  "IN_APP",
+  "SMS",
+  "PUSH",
+  "EXTERNAL_URL",
+  "MAILTO",
+  "MANUAL",
+]);
+export type TaskCommunicationChannel = z.infer<
+  typeof TaskCommunicationChannelSchema
+>;
 
-export const TaskCommunicationStatusSchema = z.enum(['DRAFT', 'SENT', 'RECEIVED', 'FAILED', 'CANCELLED']);
-export type TaskCommunicationStatus = z.infer<typeof TaskCommunicationStatusSchema>;
+export const TaskCommunicationStatusSchema = z.enum([
+  "DRAFT",
+  "SENT",
+  "RECEIVED",
+  "FAILED",
+  "CANCELLED",
+]);
+export type TaskCommunicationStatus = z.infer<
+  typeof TaskCommunicationStatusSchema
+>;
 
-export const TaskCommunicationEndpointKindSchema = z.enum(['EMAIL', 'MAILTO', 'EXTERNAL_URL', 'FORM_URL', 'PUBLIC_PROFILE', 'IN_APP', 'MANUAL']);
-export type TaskCommunicationEndpointKind = z.infer<typeof TaskCommunicationEndpointKindSchema>;
+export const TaskCommunicationEndpointKindSchema = z.enum([
+  "EMAIL",
+  "MAILTO",
+  "EXTERNAL_URL",
+  "FORM_URL",
+  "PUBLIC_PROFILE",
+  "IN_APP",
+  "MANUAL",
+]);
+export type TaskCommunicationEndpointKind = z.infer<
+  typeof TaskCommunicationEndpointKindSchema
+>;
 
-export const TaskCommunicationEndpointVerificationStatusSchema = z.enum(['UNVERIFIED', 'VERIFIED', 'STALE', 'FAILED']);
-export type TaskCommunicationEndpointVerificationStatus = z.infer<typeof TaskCommunicationEndpointVerificationStatusSchema>;
+export const TaskCommunicationEndpointVerificationStatusSchema = z.enum([
+  "UNVERIFIED",
+  "VERIFIED",
+  "STALE",
+  "FAILED",
+]);
+export type TaskCommunicationEndpointVerificationStatus = z.infer<
+  typeof TaskCommunicationEndpointVerificationStatusSchema
+>;
 
-export const TaskCommentKindSchema = z.enum(['COMMENT', 'OUTBOUND_MESSAGE', 'INBOUND_MESSAGE', 'STATUS_UPDATE', 'SYSTEM_NOTE']);
+export const TaskCommentKindSchema = z.enum([
+  "COMMENT",
+  "OUTBOUND_MESSAGE",
+  "INBOUND_MESSAGE",
+  "STATUS_UPDATE",
+  "SYSTEM_NOTE",
+]);
 export type TaskCommentKind = z.infer<typeof TaskCommentKindSchema>;
 
-export const TaskCommentVisibilitySchema = z.enum(['PUBLIC', 'INTERNAL']);
+export const TaskCommentVisibilitySchema = z.enum(["PUBLIC", "INTERNAL"]);
 export type TaskCommentVisibility = z.infer<typeof TaskCommentVisibilitySchema>;
 
-export const TaskCommentSourceSchema = z.enum(['WEB', 'AGENT', 'EMAIL_REPLY', 'MANUAL_IMPORT', 'SYSTEM']);
+export const TaskCommentSourceSchema = z.enum([
+  "WEB",
+  "AGENT",
+  "EMAIL_REPLY",
+  "MANUAL_IMPORT",
+  "SYSTEM",
+]);
 export type TaskCommentSource = z.infer<typeof TaskCommentSourceSchema>;
 
 export const McpScopeSchema = z.enum([
-  'TASKS_ADMIN',
-  'TASKS_PERSONAL',
-  'EARTHDATA_WRITE',
-  'EARTHDATA_ADMIN',
-  'AGENT_RUN',
-  'GITHUB',
+  "TASKS_ADMIN",
+  "TASKS_PERSONAL",
+  "EARTHDATA_WRITE",
+  "EARTHDATA_ADMIN",
+  "AGENT_RUN",
+  "GITHUB",
 ]);
 export type McpScope = z.infer<typeof McpScopeSchema>;
 
-export const McpToolCallStatusSchema = z.enum(['SUCCEEDED', 'FAILED']);
+export const McpToolCallStatusSchema = z.enum(["SUCCEEDED", "FAILED"]);
 export type McpToolCallStatus = z.infer<typeof McpToolCallStatusSchema>;
 
-export const ContentReportStatusSchema = z.enum(['OPEN', 'RESOLVED', 'DISMISSED']);
+export const ContentReportStatusSchema = z.enum([
+  "OPEN",
+  "RESOLVED",
+  "DISMISSED",
+]);
 export type ContentReportStatus = z.infer<typeof ContentReportStatusSchema>;
 
 export const QuestionTypeSchema = z.enum([
-  'MULTIPLE_CHOICE',
-  'FREE_TEXT',
-  'RATING',
-  'BOOLEAN',
-  'NUMERIC',
+  "MULTIPLE_CHOICE",
+  "FREE_TEXT",
+  "RATING",
+  "BOOLEAN",
+  "NUMERIC",
 ]);
 export type QuestionType = z.infer<typeof QuestionTypeSchema>;
 
-export const EmailLogStatusSchema = z.enum(['QUEUED', 'SENT', 'DELIVERED', 'OPENED', 'BOUNCED', 'FAILED']);
+export const EmailLogStatusSchema = z.enum([
+  "QUEUED",
+  "SENT",
+  "DELIVERED",
+  "OPENED",
+  "BOUNCED",
+  "FAILED",
+]);
 export type EmailLogStatus = z.infer<typeof EmailLogStatusSchema>;
 
-export const DatingProfileStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'HIDDEN', 'MODERATION_HOLD', 'BANNED']);
+export const DatingProfileStatusSchema = z.enum([
+  "DRAFT",
+  "ACTIVE",
+  "PAUSED",
+  "HIDDEN",
+  "MODERATION_HOLD",
+  "BANNED",
+]);
 export type DatingProfileStatus = z.infer<typeof DatingProfileStatusSchema>;
 
-export const DatingRelationshipIntentSchema = z.enum(['FRIENDS', 'DATES', 'LONG_TERM', 'LIFE_PARTNER', 'CASUAL', 'NON_MONOGAMY', 'UNSURE']);
-export type DatingRelationshipIntent = z.infer<typeof DatingRelationshipIntentSchema>;
+export const DatingRelationshipIntentSchema = z.enum([
+  "FRIENDS",
+  "DATES",
+  "LONG_TERM",
+  "LIFE_PARTNER",
+  "CASUAL",
+  "NON_MONOGAMY",
+  "UNSURE",
+]);
+export type DatingRelationshipIntent = z.infer<
+  typeof DatingRelationshipIntentSchema
+>;
 
-export const DatingProfilePhotoStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'HIDDEN']);
-export type DatingProfilePhotoStatus = z.infer<typeof DatingProfilePhotoStatusSchema>;
+export const DatingProfilePhotoStatusSchema = z.enum([
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "HIDDEN",
+]);
+export type DatingProfilePhotoStatus = z.infer<
+  typeof DatingProfilePhotoStatusSchema
+>;
 
-export const DatingQuestionStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'RETIRED']);
+export const DatingQuestionStatusSchema = z.enum([
+  "DRAFT",
+  "ACTIVE",
+  "RETIRED",
+]);
 export type DatingQuestionStatus = z.infer<typeof DatingQuestionStatusSchema>;
 
-export const DatingQuestionAnswerVisibilitySchema = z.enum(['PUBLIC', 'PRIVATE']);
-export type DatingQuestionAnswerVisibility = z.infer<typeof DatingQuestionAnswerVisibilitySchema>;
+export const DatingQuestionAnswerVisibilitySchema = z.enum([
+  "PUBLIC",
+  "PRIVATE",
+]);
+export type DatingQuestionAnswerVisibility = z.infer<
+  typeof DatingQuestionAnswerVisibilitySchema
+>;
 
-export const DatingQuestionImportanceSchema = z.enum(['IRRELEVANT', 'A_LITTLE', 'SOMEWHAT', 'VERY', 'MANDATORY']);
-export type DatingQuestionImportance = z.infer<typeof DatingQuestionImportanceSchema>;
+export const DatingQuestionImportanceSchema = z.enum([
+  "IRRELEVANT",
+  "A_LITTLE",
+  "SOMEWHAT",
+  "VERY",
+  "MANDATORY",
+]);
+export type DatingQuestionImportance = z.infer<
+  typeof DatingQuestionImportanceSchema
+>;
 
-export const DatingPreferenceImportanceSchema = z.enum(['PREFERENCE', 'DEALBREAKER']);
-export type DatingPreferenceImportance = z.infer<typeof DatingPreferenceImportanceSchema>;
+export const DatingPreferenceImportanceSchema = z.enum([
+  "PREFERENCE",
+  "DEALBREAKER",
+]);
+export type DatingPreferenceImportance = z.infer<
+  typeof DatingPreferenceImportanceSchema
+>;
 
-export const DatingInteractionKindSchema = z.enum(['LIKE', 'PASS', 'SUPERLIKE', 'INTRO']);
+export const DatingInteractionKindSchema = z.enum([
+  "LIKE",
+  "PASS",
+  "SUPERLIKE",
+  "INTRO",
+]);
 export type DatingInteractionKind = z.infer<typeof DatingInteractionKindSchema>;
 
-export const DatingInteractionStatusSchema = z.enum(['ACTIVE', 'RETRACTED', 'MODERATION_HOLD']);
-export type DatingInteractionStatus = z.infer<typeof DatingInteractionStatusSchema>;
+export const DatingInteractionStatusSchema = z.enum([
+  "ACTIVE",
+  "RETRACTED",
+  "MODERATION_HOLD",
+]);
+export type DatingInteractionStatus = z.infer<
+  typeof DatingInteractionStatusSchema
+>;
 
-export const DatingMatchStatusSchema = z.enum(['ACTIVE', 'UNMATCHED', 'BLOCKED']);
+export const DatingMatchStatusSchema = z.enum([
+  "ACTIVE",
+  "UNMATCHED",
+  "BLOCKED",
+]);
 export type DatingMatchStatus = z.infer<typeof DatingMatchStatusSchema>;
 
-export const DatingConversationStatusSchema = z.enum(['ACTIVE', 'ARCHIVED', 'MODERATION_HOLD']);
-export type DatingConversationStatus = z.infer<typeof DatingConversationStatusSchema>;
+export const DatingConversationStatusSchema = z.enum([
+  "ACTIVE",
+  "ARCHIVED",
+  "MODERATION_HOLD",
+]);
+export type DatingConversationStatus = z.infer<
+  typeof DatingConversationStatusSchema
+>;
 
-export const DatingMessageStatusSchema = z.enum(['SENT', 'HIDDEN', 'DELETED', 'MODERATION_HOLD']);
+export const DatingMessageStatusSchema = z.enum([
+  "SENT",
+  "HIDDEN",
+  "DELETED",
+  "MODERATION_HOLD",
+]);
 export type DatingMessageStatus = z.infer<typeof DatingMessageStatusSchema>;
 
-export const DatingDatePlanStatusSchema = z.enum(['PROPOSED', 'ACCEPTED', 'DECLINED', 'CANCELED', 'COMPLETED', 'NO_SHOW']);
+export const DatingDatePlanStatusSchema = z.enum([
+  "PROPOSED",
+  "ACCEPTED",
+  "DECLINED",
+  "CANCELED",
+  "COMPLETED",
+  "NO_SHOW",
+]);
 export type DatingDatePlanStatus = z.infer<typeof DatingDatePlanStatusSchema>;
 
-export const DatingBlockScopeSchema = z.enum(['DISCOVERY', 'MESSAGES', 'ALL']);
+export const DatingBlockScopeSchema = z.enum(["DISCOVERY", "MESSAGES", "ALL"]);
 export type DatingBlockScope = z.infer<typeof DatingBlockScopeSchema>;
 
-export const DatingSafetyReportStatusSchema = z.enum(['OPEN', 'REVIEWING', 'RESOLVED', 'DISMISSED']);
-export type DatingSafetyReportStatus = z.infer<typeof DatingSafetyReportStatusSchema>;
+export const DatingSafetyReportStatusSchema = z.enum([
+  "OPEN",
+  "REVIEWING",
+  "RESOLVED",
+  "DISMISSED",
+]);
+export type DatingSafetyReportStatus = z.infer<
+  typeof DatingSafetyReportStatusSchema
+>;
 
-export const CommerceOfferKindSchema = z.enum(['PHYSICAL_GOOD', 'SPONSORSHIP', 'SUBSCRIPTION', 'DIGITAL_ACCESS', 'SERVICE', 'DONATION']);
+export const CommerceOfferKindSchema = z.enum([
+  "PHYSICAL_GOOD",
+  "SPONSORSHIP",
+  "SUBSCRIPTION",
+  "DIGITAL_ACCESS",
+  "SERVICE",
+  "DONATION",
+]);
 export type CommerceOfferKind = z.infer<typeof CommerceOfferKindSchema>;
 
-export const CommerceOfferStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'RETIRED']);
+export const CommerceOfferStatusSchema = z.enum(["DRAFT", "ACTIVE", "RETIRED"]);
 export type CommerceOfferStatus = z.infer<typeof CommerceOfferStatusSchema>;
 
-export const CommerceFulfillmentKindSchema = z.enum(['NONE', 'PHYSICAL_GOOD', 'DIGITAL_ENTITLEMENT', 'MANUAL_SPONSORSHIP']);
-export type CommerceFulfillmentKind = z.infer<typeof CommerceFulfillmentKindSchema>;
+export const CommerceFulfillmentKindSchema = z.enum([
+  "NONE",
+  "PHYSICAL_GOOD",
+  "DIGITAL_ENTITLEMENT",
+  "MANUAL_SPONSORSHIP",
+]);
+export type CommerceFulfillmentKind = z.infer<
+  typeof CommerceFulfillmentKindSchema
+>;
 
-export const CommercePaymentProviderSchema = z.enum(['STRIPE', 'MANUAL']);
-export type CommercePaymentProvider = z.infer<typeof CommercePaymentProviderSchema>;
+export const CommercePaymentProviderSchema = z.enum(["STRIPE", "MANUAL"]);
+export type CommercePaymentProvider = z.infer<
+  typeof CommercePaymentProviderSchema
+>;
 
-export const CommerceFulfillmentProviderSchema = z.enum(['NONE', 'CUSTOMCAT', 'MANUAL', 'STRIPE']);
-export type CommerceFulfillmentProvider = z.infer<typeof CommerceFulfillmentProviderSchema>;
+export const CommerceFulfillmentProviderSchema = z.enum([
+  "NONE",
+  "CUSTOMCAT",
+  "MANUAL",
+  "STRIPE",
+]);
+export type CommerceFulfillmentProvider = z.infer<
+  typeof CommerceFulfillmentProviderSchema
+>;
 
-export const CommerceOrderStatusSchema = z.enum(['PENDING_PAYMENT', 'PAID', 'FULFILLING', 'SUBMITTED', 'SHIPPED', 'FAILED', 'CANCELED', 'REFUNDED']);
+export const CommerceOrderStatusSchema = z.enum([
+  "PENDING_PAYMENT",
+  "PAID",
+  "FULFILLING",
+  "SUBMITTED",
+  "SHIPPED",
+  "FAILED",
+  "CANCELED",
+  "REFUNDED",
+]);
 export type CommerceOrderStatus = z.infer<typeof CommerceOrderStatusSchema>;
 
-export const CommerceFulfillmentStatusSchema = z.enum(['PENDING', 'SUBMITTED', 'SHIPPED', 'DELIVERED', 'FAILED', 'CANCELED']);
-export type CommerceFulfillmentStatus = z.infer<typeof CommerceFulfillmentStatusSchema>;
+export const CommerceFulfillmentStatusSchema = z.enum([
+  "PENDING",
+  "SUBMITTED",
+  "SHIPPED",
+  "DELIVERED",
+  "FAILED",
+  "CANCELED",
+]);
+export type CommerceFulfillmentStatus = z.infer<
+  typeof CommerceFulfillmentStatusSchema
+>;
 
-export const CommerceEntitlementStatusSchema = z.enum(['PENDING', 'ACTIVE', 'EXPIRED', 'CANCELED', 'REVOKED']);
-export type CommerceEntitlementStatus = z.infer<typeof CommerceEntitlementStatusSchema>;
+export const CommerceEntitlementStatusSchema = z.enum([
+  "PENDING",
+  "ACTIVE",
+  "EXPIRED",
+  "CANCELED",
+  "REVOKED",
+]);
+export type CommerceEntitlementStatus = z.infer<
+  typeof CommerceEntitlementStatusSchema
+>;
 
 // ============================================================================
 // HELPER: coerce string dates to Date objects
@@ -788,9 +1138,9 @@ const decimalSchema = z.union([
   z.string(),
   z.custom<{ toString(): string }>(
     (value) =>
-      typeof value === 'object' &&
+      typeof value === "object" &&
       value !== null &&
-      typeof (value as { toString?: unknown }).toString === 'function'
+      typeof (value as { toString?: unknown }).toString === "function",
   ),
 ]);
 const nullableDecimalSchema = decimalSchema.nullable().optional();
@@ -816,7 +1166,7 @@ export const PersonSchema = z.object({
   website: z.string().nullable().optional(),
   isPublic: z.boolean().default(false),
   isPublicFigure: z.boolean().default(false),
-  lifeStatus: PersonLifeStatusSchema.default('UNKNOWN'),
+  lifeStatus: PersonLifeStatusSchema.default("UNKNOWN"),
   createdByUserId: z.string().nullable().optional(),
   sourceUrl: z.string().nullable().optional(),
   sourceRef: z.string().nullable().optional(),
@@ -848,7 +1198,7 @@ export const PersonConditionSchema = z.object({
   conditionCodeSystem: z.string().nullable().optional(),
   conditionCode: z.string().nullable().optional(),
   globalVariableId: z.string().nullable().optional(),
-  status: PersonConditionStatusSchema.default('ACTIVE'),
+  status: PersonConditionStatusSchema.default("ACTIVE"),
   reportedByUserId: z.string().nullable().optional(),
   sourceUrl: z.string().nullable().optional(),
   isPublic: z.boolean().default(true),
@@ -878,12 +1228,12 @@ export type ConflictType = z.infer<typeof ConflictSchema>;
 export const PersonMemorialSchema = z.object({
   id: z.string(),
   personId: z.string(),
-  causeCategory: PersonDeathCauseCategorySchema.default('UNKNOWN'),
+  causeCategory: PersonDeathCauseCategorySchema.default("UNKNOWN"),
   primaryPersonConditionId: z.string().nullable().optional(),
   deathCountryCode: z.string().nullable().optional(),
   deathLocation: z.string().nullable().optional(),
   conflictId: z.string().nullable().optional(),
-  civilianStatus: PersonCivilianStatusSchema.default('UNKNOWN'),
+  civilianStatus: PersonCivilianStatusSchema.default("UNKNOWN"),
   wasChild: z.boolean().nullable().optional(),
   circumstances: z.string().nullable().optional(),
   isPublic: z.boolean().default(false),
@@ -908,7 +1258,9 @@ export const PersonMemorialSubmissionSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PersonMemorialSubmissionType = z.infer<typeof PersonMemorialSubmissionSchema>;
+export type PersonMemorialSubmissionType = z.infer<
+  typeof PersonMemorialSubmissionSchema
+>;
 
 /** Zod schema for the PersonMemorialResponsibleParty model */
 export const PersonMemorialResponsiblePartySchema = z.object({
@@ -928,7 +1280,9 @@ export const PersonMemorialResponsiblePartySchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PersonMemorialResponsiblePartyType = z.infer<typeof PersonMemorialResponsiblePartySchema>;
+export type PersonMemorialResponsiblePartyType = z.infer<
+  typeof PersonMemorialResponsiblePartySchema
+>;
 
 /** Zod schema for the PersonMemorialEvidence model */
 export const PersonMemorialEvidenceSchema = z.object({
@@ -937,7 +1291,7 @@ export const PersonMemorialEvidenceSchema = z.object({
   submittedByUserId: z.string().nullable().optional(),
   submissionId: z.string().nullable().optional(),
   sourceArtifactId: z.string().nullable().optional(),
-  evidenceKind: PersonMemorialEvidenceKindSchema.default('OTHER'),
+  evidenceKind: PersonMemorialEvidenceKindSchema.default("OTHER"),
   title: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   sourceUrl: z.string().nullable().optional(),
@@ -947,7 +1301,9 @@ export const PersonMemorialEvidenceSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PersonMemorialEvidenceType = z.infer<typeof PersonMemorialEvidenceSchema>;
+export type PersonMemorialEvidenceType = z.infer<
+  typeof PersonMemorialEvidenceSchema
+>;
 
 /** Zod schema for the InterventionApprovalTimeline model */
 export const InterventionApprovalTimelineSchema = z.object({
@@ -972,7 +1328,9 @@ export const InterventionApprovalTimelineSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type InterventionApprovalTimelineType = z.infer<typeof InterventionApprovalTimelineSchema>;
+export type InterventionApprovalTimelineType = z.infer<
+  typeof InterventionApprovalTimelineSchema
+>;
 
 /** Zod schema for the PersonEfficacyLagEvidence model */
 export const PersonEfficacyLagEvidenceSchema = z.object({
@@ -980,7 +1338,7 @@ export const PersonEfficacyLagEvidenceSchema = z.object({
   memorialId: z.string(),
   personConditionId: z.string().nullable().optional(),
   interventionApprovalTimelineId: z.string(),
-  status: EfficacyLagEvidenceStatusSchema.default('CANDIDATE'),
+  status: EfficacyLagEvidenceStatusSchema.default("CANDIDATE"),
   diedBeforeApprovalDays: z.number().int().nullable().optional(),
   explanation: z.string().nullable().optional(),
   confidenceScore: z.number().nullable().optional(),
@@ -991,7 +1349,9 @@ export const PersonEfficacyLagEvidenceSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PersonEfficacyLagEvidenceType = z.infer<typeof PersonEfficacyLagEvidenceSchema>;
+export type PersonEfficacyLagEvidenceType = z.infer<
+  typeof PersonEfficacyLagEvidenceSchema
+>;
 
 // ============================================================================
 // AUTH / ACCOUNT MODELS
@@ -1111,7 +1471,7 @@ export const PersonhoodVerificationSchema = z.object({
   id: z.string(),
   userId: z.string(),
   provider: PersonhoodProviderSchema,
-  status: PersonhoodVerificationStatusSchema.default('VERIFIED'),
+  status: PersonhoodVerificationStatusSchema.default("VERIFIED"),
   externalId: z.string(),
   action: z.string().nullable().optional(),
   verificationLevel: z.string().nullable().optional(),
@@ -1124,7 +1484,9 @@ export const PersonhoodVerificationSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PersonhoodVerificationType = z.infer<typeof PersonhoodVerificationSchema>;
+export type PersonhoodVerificationType = z.infer<
+  typeof PersonhoodVerificationSchema
+>;
 
 // ============================================================================
 // LAYER 1 — Universal Measurement System Models
@@ -1135,13 +1497,13 @@ export const UnitSchema = z.object({
   id: z.string(),
   name: z.string(),
   abbreviatedName: z.string(),
-  codeSystem: UnitCodeSystemSchema.default('UCUM'),
+  codeSystem: UnitCodeSystemSchema.default("UCUM"),
   ucumCode: z.string(),
   unitCategoryId: z.string(),
   minimumValue: z.number().nullable().optional(),
   maximumValue: z.number().nullable().optional(),
-  fillingType: FillingTypeSchema.default('NONE'),
-  scale: MeasurementScaleSchema.default('RATIO'),
+  fillingType: FillingTypeSchema.default("NONE"),
+  scale: MeasurementScaleSchema.default("RATIO"),
   conversionSteps: z.string().nullable().optional(),
   advanced: z.boolean().default(false),
   manualTracking: z.boolean().default(true),
@@ -1157,7 +1519,7 @@ export const VariableCategorySchema = z.object({
   name: z.string(),
   description: z.string().nullable().optional(),
   defaultUnitId: z.string().nullable().optional(),
-  combinationOperation: CombinationOperationSchema.default('SUM'),
+  combinationOperation: CombinationOperationSchema.default("SUM"),
   onsetDelay: z.number().int().default(0),
   durationOfAction: z.number().int().default(86400),
   predictorOnly: z.boolean().default(false),
@@ -1176,10 +1538,10 @@ export const GlobalVariableSchema = z.object({
   description: z.string().nullable().optional(),
   variableCategoryId: z.string(),
   defaultUnitId: z.string(),
-  combinationOperation: CombinationOperationSchema.default('SUM'),
+  combinationOperation: CombinationOperationSchema.default("SUM"),
   onsetDelay: z.number().int().nullable().optional(),
   durationOfAction: z.number().int().nullable().optional(),
-  fillingType: FillingTypeSchema.default('NONE'),
+  fillingType: FillingTypeSchema.default("NONE"),
   fillingValue: z.number().nullable().optional(),
   predictorOnly: z.boolean().default(false),
   outcome: z.boolean().nullable().optional(),
@@ -1200,14 +1562,14 @@ export const GlobalVariableSchema = z.object({
   minimumRecordedValue: z.number().nullable().optional(),
   maximumRecordedValue: z.number().nullable().optional(),
   numberOfNOf1Variables: z.number().int().default(0),
-  status: AnalysisStatusSchema.default('WAITING'),
+  status: AnalysisStatusSchema.default("WAITING"),
   analysisRequestedAt: nullableDateSchema,
   analysisStartedAt: nullableDateSchema,
   analysisEndedAt: nullableDateSchema,
   imageUrl: z.string().nullable().optional(),
   informationalUrl: z.string().nullable().optional(),
   synonyms: z.string().nullable().optional(),
-  valence: ValenceSchema.default('NEUTRAL'),
+  valence: ValenceSchema.default("NEUTRAL"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -1227,12 +1589,14 @@ export const GlobalVariableExternalCodeSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type GlobalVariableExternalCodeType = z.infer<typeof GlobalVariableExternalCodeSchema>;
+export type GlobalVariableExternalCodeType = z.infer<
+  typeof GlobalVariableExternalCodeSchema
+>;
 
 /** Zod schema for the Subject model */
 export const SubjectSchema = z.object({
   id: z.string(),
-  subjectType: SubjectTypeSchema.default('USER'),
+  subjectType: SubjectTypeSchema.default("USER"),
   externalId: z.string().nullable().optional(),
   userId: z.string().nullable().optional(),
   personId: z.string().nullable().optional(),
@@ -1253,7 +1617,7 @@ export const NOf1VariableSchema = z.object({
   defaultUnitId: z.string().nullable().optional(),
   onsetDelay: z.number().int().nullable().optional(),
   durationOfAction: z.number().int().nullable().optional(),
-  fillingType: FillingTypeSchema.default('NONE'),
+  fillingType: FillingTypeSchema.default("NONE"),
   fillingValue: z.number().nullable().optional(),
   minimumAllowedValue: z.number().nullable().optional(),
   maximumAllowedValue: z.number().nullable().optional(),
@@ -1268,7 +1632,7 @@ export const NOf1VariableSchema = z.object({
   skewness: z.number().nullable().optional(),
   minimumRecordedValue: z.number().nullable().optional(),
   maximumRecordedValue: z.number().nullable().optional(),
-  status: AnalysisStatusSchema.default('WAITING'),
+  status: AnalysisStatusSchema.default("WAITING"),
   analysisStartedAt: nullableDateSchema,
   analysisEndedAt: nullableDateSchema,
   createdAt: dateSchema,
@@ -1308,7 +1672,7 @@ export const InterventionExperienceSchema = z.object({
   reportedByUserId: z.string().nullable().optional(),
   conditionGlobalVariableId: z.string().nullable().optional(),
   interventionGlobalVariableId: z.string(),
-  status: InterventionExperienceStatusSchema.default('UNKNOWN'),
+  status: InterventionExperienceStatusSchema.default("UNKNOWN"),
   startedAt: nullableDateSchema,
   endedAt: nullableDateSchema,
   doseValue: z.number().nullable().optional(),
@@ -1321,14 +1685,16 @@ export const InterventionExperienceSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type InterventionExperienceType = z.infer<typeof InterventionExperienceSchema>;
+export type InterventionExperienceType = z.infer<
+  typeof InterventionExperienceSchema
+>;
 
 /** Zod schema for the InterventionExperienceOutcome model */
 export const InterventionExperienceOutcomeSchema = z.object({
   id: z.string(),
   interventionExperienceId: z.string(),
   outcomeGlobalVariableId: z.string(),
-  rating: InterventionOutcomeRatingSchema.default('UNKNOWN'),
+  rating: InterventionOutcomeRatingSchema.default("UNKNOWN"),
   value: z.number().nullable().optional(),
   unitId: z.string().nullable().optional(),
   beforeMeasurementId: z.string().nullable().optional(),
@@ -1339,14 +1705,16 @@ export const InterventionExperienceOutcomeSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type InterventionExperienceOutcomeType = z.infer<typeof InterventionExperienceOutcomeSchema>;
+export type InterventionExperienceOutcomeType = z.infer<
+  typeof InterventionExperienceOutcomeSchema
+>;
 
 /** Zod schema for the InterventionExperienceSideEffect model */
 export const InterventionExperienceSideEffectSchema = z.object({
   id: z.string(),
   interventionExperienceId: z.string(),
   sideEffectGlobalVariableId: z.string(),
-  severity: InterventionSideEffectSeveritySchema.default('UNKNOWN'),
+  severity: InterventionSideEffectSeveritySchema.default("UNKNOWN"),
   onsetAt: nullableDateSchema,
   resolvedAt: nullableDateSchema,
   isSerious: z.boolean().nullable().optional(),
@@ -1357,7 +1725,9 @@ export const InterventionExperienceSideEffectSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type InterventionExperienceSideEffectType = z.infer<typeof InterventionExperienceSideEffectSchema>;
+export type InterventionExperienceSideEffectType = z.infer<
+  typeof InterventionExperienceSideEffectSchema
+>;
 
 /** Zod schema for the TrackingReminder model */
 export const TrackingReminderSchema = z.object({
@@ -1389,7 +1759,7 @@ export const TrackingReminderNotificationSchema = z.object({
   notifiedAt: nullableDateSchema,
   receivedAt: nullableDateSchema,
   trackedValue: z.number().nullable().optional(),
-  status: NotificationStatusSchema.default('PENDING'),
+  status: NotificationStatusSchema.default("PENDING"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -1526,7 +1896,7 @@ export const VariableRelationshipEvidenceEstimateSchema = z.object({
   outcomeGlobalVariableId: z.string(),
   contextGlobalVariableId: z.string().nullable().optional(),
   metricKind: VariableEvidenceMetricKindSchema,
-  sourceType: VariableRelationshipEvidenceSourceTypeSchema.default('OTHER'),
+  sourceType: VariableRelationshipEvidenceSourceTypeSchema.default("OTHER"),
   value: z.number().nullable().optional(),
   unitId: z.string().nullable().optional(),
   confidenceScore: z.number().nullable().optional(),
@@ -1550,14 +1920,16 @@ export const InterventionRankingRunSchema = z.object({
   conditionGlobalVariableId: z.string().nullable().optional(),
   algorithmKey: z.string(),
   algorithmVersion: z.string().nullable().optional(),
-  status: InterventionRankingRunStatusSchema.default('DRAFT'),
+  status: InterventionRankingRunStatusSchema.default("DRAFT"),
   rankedAt: dateSchema,
   sourceArtifactId: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type InterventionRankingRunType = z.infer<typeof InterventionRankingRunSchema>;
+export type InterventionRankingRunType = z.infer<
+  typeof InterventionRankingRunSchema
+>;
 
 /** Zod schema for the RankedIntervention model */
 export const RankedInterventionSchema = z.object({
@@ -1618,7 +1990,9 @@ export const IntegrationConnectionSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type IntegrationConnectionType = z.infer<typeof IntegrationConnectionSchema>;
+export type IntegrationConnectionType = z.infer<
+  typeof IntegrationConnectionSchema
+>;
 
 /** Zod schema for the IntegrationSyncLog model */
 export const IntegrationSyncLogSchema = z.object({
@@ -1646,7 +2020,7 @@ export const JurisdictionSchema = z.object({
   type: JurisdictionTypeSchema,
   parentJurisdictionId: z.string().nullable().optional(),
   code: z.string().nullable().optional(),
-  currency: z.string().default('USD'),
+  currency: z.string().default("USD"),
   population: z.number().int().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -1675,7 +2049,6 @@ export const ItemSchema = WishocraticItemSchema;
 /** @deprecated Use WishocraticItemType instead */
 export type ItemType = WishocraticItemType;
 
-
 /** Zod schema for the Referral model */
 export const ReferralSchema = z.object({
   id: z.string(),
@@ -1700,7 +2073,9 @@ export const WishocraticAllocationSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type WishocraticAllocationType = z.infer<typeof WishocraticAllocationSchema>;
+export type WishocraticAllocationType = z.infer<
+  typeof WishocraticAllocationSchema
+>;
 
 /** Zod schema for the WishocraticItemInclusion model */
 export const WishocraticItemInclusionSchema = z.object({
@@ -1715,7 +2090,6 @@ export const WishocraticItemInclusionSchema = z.object({
 export type WishocraticItemInclusionType = z.infer<
   typeof WishocraticItemInclusionSchema
 >;
-
 
 /** Zod schema for the PreferenceWeight model */
 export const PreferenceWeightSchema = z.object({
@@ -1799,7 +2173,9 @@ export const WishocraticItemAlignmentScoreSchema = z.object({
   itemId: z.string(),
   score: z.number(),
 });
-export type WishocraticItemAlignmentScoreType = z.infer<typeof WishocraticItemAlignmentScoreSchema>;
+export type WishocraticItemAlignmentScoreType = z.infer<
+  typeof WishocraticItemAlignmentScoreSchema
+>;
 
 /** Zod schema for the CitizenBillVote model */
 export const CitizenBillVoteSchema = z.object({
@@ -1838,8 +2214,8 @@ export const UserPreferenceSchema = z.object({
   userId: z.string(),
   pushEnabled: z.boolean().default(true),
   reminderFrequencyMinutes: z.number().int().default(1440),
-  reminderStartTime: z.string().default('09:00'),
-  quietHoursStart: z.string().default('21:00'),
+  reminderStartTime: z.string().default("09:00"),
+  quietHoursStart: z.string().default("21:00"),
   lastPushSentAt: nullableDateSchema,
   lastCheckInAt: nullableDateSchema,
   createdAt: dateSchema,
@@ -1859,7 +2235,7 @@ export const WishocraticEncryptedAllocationSchema = z.object({
   userId: z.string(),
   ciphertext: z.string(),
   iv: z.string(),
-  algorithm: z.string().default('AES-GCM-256'),
+  algorithm: z.string().default("AES-GCM-256"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -1874,7 +2250,7 @@ export const ReferendumSchema = z.object({
   title: z.string(),
   slug: z.string(),
   question: z.string(),
-  kind: ReferendumKindSchema.default('GENERAL'),
+  kind: ReferendumKindSchema.default("GENERAL"),
   description: z.string().nullable().optional(),
   bodyMarkdown: z.string().nullable().optional(),
   publishedAt: nullableDateSchema,
@@ -1882,7 +2258,7 @@ export const ReferendumSchema = z.object({
   contentHash: z.string().nullable().optional(),
   createdByUserId: z.string().nullable().optional(),
   jurisdictionId: z.string().nullable().optional(),
-  status: ReferendumStatusSchema.default('ACTIVE'),
+  status: ReferendumStatusSchema.default("ACTIVE"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -1896,7 +2272,7 @@ export const ReferendumVoteSchema = z.object({
   personId: z.string(),
   referendumId: z.string(),
   answer: VotePositionSchema,
-  voteSource: ReferendumVoteSourceSchema.default('SELF'),
+  voteSource: ReferendumVoteSourceSchema.default("SELF"),
   referredByUserId: z.string().nullable().optional(),
   organizationId: z.string().nullable().optional(),
   publicComment: z.string().nullable().optional(),
@@ -1914,7 +2290,7 @@ export const CourtCaseSchema = z.object({
   slug: z.string(),
   title: z.string(),
   summary: z.string().nullable().optional(),
-  status: CourtCaseStatusSchema.default('DRAFT'),
+  status: CourtCaseStatusSchema.default("DRAFT"),
   isPublic: z.boolean().default(false),
   createdByUserId: z.string().nullable().optional(),
   nominalPlaintiffSubjectId: z.string().nullable().optional(),
@@ -1961,7 +2337,7 @@ export const CourtCaseClaimSchema = z.object({
   claimType: z.string().nullable().optional(),
   argumentMarkdown: z.string(),
   requestedFinding: z.string().nullable().optional(),
-  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  status: CourtCaseItemStatusSchema.default("PROPOSED"),
   juryReferendumId: z.string().nullable().optional(),
   sortOrder: z.number().int().default(0),
   isPublic: z.boolean().default(true),
@@ -1992,7 +2368,7 @@ export const CourtCaseHarmSchema = z.object({
   confidenceScore: z.number().nullable().optional(),
   sortOrder: z.number().int().default(0),
   isPublic: z.boolean().default(true),
-  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  status: CourtCaseItemStatusSchema.default("PROPOSED"),
   createdByUserId: z.string().nullable().optional(),
   metadataJson: nullableJsonSchema,
   createdAt: dateSchema,
@@ -2019,7 +2395,7 @@ export const CourtCaseEvidenceSchema = z.object({
   contentHash: z.string().nullable().optional(),
   isPublic: z.boolean().default(true),
   containsSensitiveData: z.boolean().default(false),
-  reviewStatus: CourtCaseItemStatusSchema.default('PROPOSED'),
+  reviewStatus: CourtCaseItemStatusSchema.default("PROPOSED"),
   confidenceScore: z.number().nullable().optional(),
   sortOrder: z.number().int().default(0),
   createdByUserId: z.string().nullable().optional(),
@@ -2045,7 +2421,7 @@ export const CourtCaseRemedySchema = z.object({
   amountUsdHigh: z.number().nullable().optional(),
   deadlineAt: nullableDateSchema,
   enforcementTaskId: z.string().nullable().optional(),
-  status: CourtCaseItemStatusSchema.default('PROPOSED'),
+  status: CourtCaseItemStatusSchema.default("PROPOSED"),
   sortOrder: z.number().int().default(0),
   isPublic: z.boolean().default(true),
   createdByUserId: z.string().nullable().optional(),
@@ -2067,7 +2443,9 @@ export const PublicGoodsRecipientSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PublicGoodsRecipientType = z.infer<typeof PublicGoodsRecipientSchema>;
+export type PublicGoodsRecipientType = z.infer<
+  typeof PublicGoodsRecipientSchema
+>;
 
 /** Zod schema for the WishocraticDistribution model */
 export const WishocraticDistributionSchema = z.object({
@@ -2080,7 +2458,9 @@ export const WishocraticDistributionSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type WishocraticDistributionType = z.infer<typeof WishocraticDistributionSchema>;
+export type WishocraticDistributionType = z.infer<
+  typeof WishocraticDistributionSchema
+>;
 
 // ============================================================================
 // VOTE TOKEN & VOTER PRIZE TREASURY
@@ -2096,7 +2476,7 @@ export const PointMintSchema = z.object({
   amount: z.string(),
   txHash: z.string().nullable().optional(),
   chainId: z.number().int(),
-  status: PointMintStatusSchema.default('PENDING'),
+  status: PointMintStatusSchema.default("PENDING"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -2115,7 +2495,9 @@ export const PrizeTreasuryDepositSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type PrizeTreasuryDepositType = z.infer<typeof PrizeTreasuryDepositSchema>;
+export type PrizeTreasuryDepositType = z.infer<
+  typeof PrizeTreasuryDepositSchema
+>;
 
 // ============================================================================
 // ACTIVITY LOG & NOTIFICATIONS
@@ -2156,7 +2538,9 @@ export const NotificationPreferencePerTypeSchema = z.object({
   channel: NotificationChannelSchema,
   enabled: z.boolean().default(true),
 });
-export type NotificationPreferencePerTypeType = z.infer<typeof NotificationPreferencePerTypeSchema>;
+export type NotificationPreferencePerTypeType = z.infer<
+  typeof NotificationPreferencePerTypeSchema
+>;
 
 // ============================================================================
 // ORGANIZATIONS
@@ -2169,7 +2553,7 @@ export const OrganizationSchema = z.object({
   slug: z.string(),
   description: z.string().nullable().optional(),
   type: OrgTypeSchema,
-  status: OrgStatusSchema.default('PENDING'),
+  status: OrgStatusSchema.default("PENDING"),
   jurisdictionId: z.string().nullable().optional(),
   creatorId: z.string().nullable().optional(),
   website: z.string().nullable().optional(),
@@ -2190,7 +2574,7 @@ export const OrganizationMemberSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   userId: z.string(),
-  role: z.string().default('member'),
+  role: z.string().default("member"),
   joinedAt: dateSchema,
 });
 export type OrganizationMemberType = z.infer<typeof OrganizationMemberSchema>;
@@ -2215,9 +2599,9 @@ export const TaskSchema = z.object({
   impactStatement: z.string().nullable().optional(),
   roleTitle: z.string().nullable().optional(),
   assigneeAffiliationSnapshot: z.string().nullable().optional(),
-  category: TaskCategorySchema.default('OTHER'),
-  kind: TaskKindSchema.default('TASK'),
-  engagementKind: TaskEngagementKindSchema.default('ONE_OFF'),
+  category: TaskCategorySchema.default("OTHER"),
+  kind: TaskKindSchema.default("TASK"),
+  engagementKind: TaskEngagementKindSchema.default("ONE_OFF"),
   estimatedEffortHours: z.number().nullable().optional(),
   actualEffortSeconds: z.number().int().nullable().optional(),
   actualCashCostUsd: z.number().nullable().optional(),
@@ -2233,9 +2617,9 @@ export const TaskSchema = z.object({
   requiredAccessTags: z.array(z.string()).default([]),
   preferredAccessTags: z.array(z.string()).default([]),
   contextJson: nullableJsonSchema,
-  claimPolicy: TaskClaimPolicySchema.default('OPEN_SINGLE'),
-  applicationPolicy: TaskApplicationPolicySchema.default('CLOSED'),
-  compensationKind: TaskCompensationKindSchema.default('UNSPECIFIED'),
+  claimPolicy: TaskClaimPolicySchema.default("OPEN_SINGLE"),
+  applicationPolicy: TaskApplicationPolicySchema.default("CLOSED"),
+  compensationKind: TaskCompensationKindSchema.default("UNSPECIFIED"),
   compensationCadence: TaskCompensationCadenceSchema.nullable().optional(),
   compensationCurrency: z.string().nullable().optional(),
   compensationMinAmountMinorUnits: z.bigint().nullable().optional(),
@@ -2243,7 +2627,7 @@ export const TaskSchema = z.object({
   compensationPaymentRails: z.array(z.string()).default([]),
   estimatedHoursPerWeekMin: z.number().int().nullable().optional(),
   estimatedHoursPerWeekMax: z.number().int().nullable().optional(),
-  remotePolicy: TaskRemotePolicySchema.default('UNSPECIFIED'),
+  remotePolicy: TaskRemotePolicySchema.default("UNSPECIFIED"),
   locationText: z.string().nullable().optional(),
   workLocationCountryCode: z.string().nullable().optional(),
   workLocationRegionCode: z.string().nullable().optional(),
@@ -2254,14 +2638,14 @@ export const TaskSchema = z.object({
   workLocationRadiusKm: z.number().nullable().optional(),
   workTimeZone: z.string().nullable().optional(),
   applicationQuestionsJson: nullableJsonSchema,
-  executionMode: TaskExecutionModeSchema.default('HUMAN_OR_AGENT'),
+  executionMode: TaskExecutionModeSchema.default("HUMAN_OR_AGENT"),
   maxClaims: z.number().int().nullable().optional(),
-  status: TaskStatusSchema.default('ACTIVE'),
+  status: TaskStatusSchema.default("ACTIVE"),
   isPublic: z.boolean().default(true),
   completionEvidence: z.string().nullable().optional(),
   availableAt: nullableDateSchema,
   dueAt: nullableDateSchema,
-  deadlinePolicy: TaskDeadlinePolicySchema.default('NONE'),
+  deadlinePolicy: TaskDeadlinePolicySchema.default("NONE"),
   completedAt: nullableDateSchema,
   verifiedAt: nullableDateSchema,
   sortOrder: z.number().int().default(0),
@@ -2277,7 +2661,7 @@ export const TaskManagerSchema = z.object({
   taskId: z.string(),
   userId: z.string(),
   createdByUserId: z.string().nullable().optional(),
-  role: z.string().default('manager'),
+  role: z.string().default("manager"),
   notes: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -2299,7 +2683,7 @@ export const AgentExecutorSchema = z.object({
   averageCostUsd: z.number().nullable().optional(),
   averageLatencySeconds: z.number().nullable().optional(),
   successRate: z.number().nullable().optional(),
-  status: AgentExecutorStatusSchema.default('ACTIVE'),
+  status: AgentExecutorStatusSchema.default("ACTIVE"),
   metadata: nullableJsonSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -2325,7 +2709,7 @@ export const TaskCandidateMatchSchema = z.object({
   estimatedCostMinorUnits: z.bigint().nullable().optional(),
   estimatedCostCurrency: z.string().nullable().optional(),
   estimatedDurationSeconds: z.number().int().nullable().optional(),
-  status: TaskCandidateMatchStatusSchema.default('SUGGESTED'),
+  status: TaskCandidateMatchStatusSchema.default("SUGGESTED"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -2347,7 +2731,7 @@ export const TaskExecutionAttemptSchema = z.object({
   taskApplicationId: z.string().nullable().optional(),
   taskClaimId: z.string().nullable().optional(),
   agentTaskLeaseId: z.string().nullable().optional(),
-  status: TaskExecutionAttemptStatusSchema.default('QUEUED'),
+  status: TaskExecutionAttemptStatusSchema.default("QUEUED"),
   estimatedCostMinorUnits: z.bigint().nullable().optional(),
   estimatedCostCurrency: z.string().nullable().optional(),
   estimatedDurationSeconds: z.number().int().nullable().optional(),
@@ -2365,7 +2749,9 @@ export const TaskExecutionAttemptSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskExecutionAttemptType = z.infer<typeof TaskExecutionAttemptSchema>;
+export type TaskExecutionAttemptType = z.infer<
+  typeof TaskExecutionAttemptSchema
+>;
 
 /** Zod schema for the TaskMarketplaceListing model */
 export const TaskMarketplaceListingSchema = z.object({
@@ -2375,11 +2761,11 @@ export const TaskMarketplaceListingSchema = z.object({
   posterUserId: z.string().nullable().optional(),
   posterOrganizationId: z.string().nullable().optional(),
   commerceEntitlementId: z.string().nullable().optional(),
-  listingKind: TaskMarketplaceListingKindSchema.default('TASK_POSTING'),
-  feePolicy: TaskMarketplaceFeePolicySchema.default('FREE'),
-  currency: z.string().default('usd'),
+  listingKind: TaskMarketplaceListingKindSchema.default("TASK_POSTING"),
+  feePolicy: TaskMarketplaceFeePolicySchema.default("FREE"),
+  currency: z.string().default("usd"),
   postingFeeMinorUnits: z.bigint().nullable().optional(),
-  status: TaskMarketplaceListingStatusSchema.default('DRAFT'),
+  status: TaskMarketplaceListingStatusSchema.default("DRAFT"),
   activatedAt: nullableDateSchema,
   expiresAt: nullableDateSchema,
   closedAt: nullableDateSchema,
@@ -2388,7 +2774,9 @@ export const TaskMarketplaceListingSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskMarketplaceListingType = z.infer<typeof TaskMarketplaceListingSchema>;
+export type TaskMarketplaceListingType = z.infer<
+  typeof TaskMarketplaceListingSchema
+>;
 
 /** Zod schema for the TaskDistributionTarget model */
 export const TaskDistributionTargetSchema = z.object({
@@ -2398,7 +2786,7 @@ export const TaskDistributionTargetSchema = z.object({
   targetKey: z.string(),
   displayName: z.string(),
   description: z.string().nullable().optional(),
-  status: TaskDistributionTargetStatusSchema.default('ACTIVE'),
+  status: TaskDistributionTargetStatusSchema.default("ACTIVE"),
   requiresManualApproval: z.boolean().default(true),
   defaultCostMinorUnits: z.bigint().nullable().optional(),
   defaultCostCurrency: z.string().nullable().optional(),
@@ -2407,7 +2795,9 @@ export const TaskDistributionTargetSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskDistributionTargetType = z.infer<typeof TaskDistributionTargetSchema>;
+export type TaskDistributionTargetType = z.infer<
+  typeof TaskDistributionTargetSchema
+>;
 
 /** Zod schema for the TaskDistributionAttempt model */
 export const TaskDistributionAttemptSchema = z.object({
@@ -2420,8 +2810,8 @@ export const TaskDistributionAttemptSchema = z.object({
   requestedByUserId: z.string().nullable().optional(),
   approvedByUserId: z.string().nullable().optional(),
   channel: TaskDistributionChannelSchema,
-  operation: TaskDistributionOperationSchema.default('CREATE'),
-  status: TaskDistributionAttemptStatusSchema.default('DRAFT'),
+  operation: TaskDistributionOperationSchema.default("CREATE"),
+  status: TaskDistributionAttemptStatusSchema.default("DRAFT"),
   externalObjectId: z.string().nullable().optional(),
   externalUrl: z.string().nullable().optional(),
   externalStatus: z.string().nullable().optional(),
@@ -2441,17 +2831,19 @@ export const TaskDistributionAttemptSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskDistributionAttemptType = z.infer<typeof TaskDistributionAttemptSchema>;
+export type TaskDistributionAttemptType = z.infer<
+  typeof TaskDistributionAttemptSchema
+>;
 
 /** Zod schema for the TaskFundingTarget model */
 export const TaskFundingTargetSchema = z.object({
   id: z.string(),
   taskId: z.string(),
   targetAmountCents: z.bigint(),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   primaryUnitKey: z.string().nullable().optional(),
   primaryUnitTargetQuantity: nullableDecimalSchema,
-  status: TaskFundingTargetStatusSchema.default('OPEN'),
+  status: TaskFundingTargetStatusSchema.default("OPEN"),
   termsVersion: z.string().nullable().optional(),
   expiresAt: nullableDateSchema,
   thresholdMetAt: nullableDateSchema,
@@ -2480,14 +2872,14 @@ export const TaskFundingPledgeSchema = z.object({
   unitQuantity: decimalSchema,
   unitAmountCentsSnapshot: z.bigint().nullable().optional(),
   committedAmountCents: z.bigint(),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   conversionVersion: z.string(),
   conversionSource: z.string().nullable().optional(),
   commerceOfferId: z.string().nullable().optional(),
   commerceOfferVariantId: z.string().nullable().optional(),
   termsVersion: z.string().nullable().optional(),
   termsNote: z.string().nullable().optional(),
-  status: TaskFundingPledgeStatusSchema.default('ACTIVE'),
+  status: TaskFundingPledgeStatusSchema.default("ACTIVE"),
   idempotencyKey: z.string().nullable().optional(),
   cancelledAt: nullableDateSchema,
   cancelledByUserId: z.string().nullable().optional(),
@@ -2526,7 +2918,7 @@ export const TaskApplicationSchema = z.object({
   reviewerUserId: z.string().nullable().optional(),
   referralInvitationId: z.string().nullable().optional(),
   shareAttemptId: z.string().nullable().optional(),
-  status: TaskApplicationStatusSchema.default('APPLIED'),
+  status: TaskApplicationStatusSchema.default("APPLIED"),
   applicationMessage: z.string().nullable().optional(),
   answersJson: nullableJsonSchema,
   applicantNameSnapshot: z.string().nullable().optional(),
@@ -2564,7 +2956,9 @@ export const TaskApplicationEventSchema = z.object({
   createdAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskApplicationEventTypeModel = z.infer<typeof TaskApplicationEventSchema>;
+export type TaskApplicationEventTypeModel = z.infer<
+  typeof TaskApplicationEventSchema
+>;
 
 /** Zod schema for the TaskClaim model */
 export const TaskClaimSchema = z.object({
@@ -2572,7 +2966,7 @@ export const TaskClaimSchema = z.object({
   taskId: z.string(),
   userId: z.string(),
   verifiedByUserId: z.string().nullable().optional(),
-  status: TaskClaimStatusSchema.default('CLAIMED'),
+  status: TaskClaimStatusSchema.default("CLAIMED"),
   completionEvidence: z.string().nullable().optional(),
   verificationNote: z.string().nullable().optional(),
   actualEffortSeconds: z.number().int().nullable().optional(),
@@ -2605,6 +2999,131 @@ export const SourceArtifactSchema = z.object({
 });
 export type SourceArtifactTypeModel = z.infer<typeof SourceArtifactSchema>;
 
+/** Zod schema for the ParameterDefinition model */
+export const ParameterDefinitionSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  createdByUserId: z.string().nullable().optional(),
+  currentRevisionId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ParameterDefinitionType = z.infer<typeof ParameterDefinitionSchema>;
+
+/** Zod schema for the ParameterRevision model */
+export const ParameterRevisionSchema = z.object({
+  id: z.string(),
+  parameterId: z.string(),
+  revision: z.number().int(),
+  status: ModelRevisionStatusSchema.default("DRAFT"),
+  value: z.number(),
+  manualRef: z.string().nullable().optional(),
+  sourceRef: z.string().nullable().optional(),
+  sourceType: ParameterSourceTypeSchema,
+  description: z.string(),
+  unit: z.string(),
+  formulaText: z.string().nullable().optional(),
+  formulaLatex: z.string().nullable().optional(),
+  calculationCode: z.string().nullable().optional(),
+  calculationLanguage: z.string().nullable().optional(),
+  confidence: z.string(),
+  sourceLastUpdated: z.string().nullable().optional(),
+  peerReviewed: z.boolean().default(false),
+  conservative: z.boolean().default(false),
+  sensitivity: z.number().nullable().optional(),
+  displayValue: z.string().nullable().optional(),
+  displayName: z.string().nullable().optional(),
+  keywords: z.array(z.string()).default([]),
+  validationMin: z.number().nullable().optional(),
+  validationMax: z.number().nullable().optional(),
+  confidenceIntervalLow: z.number().nullable().optional(),
+  confidenceIntervalHigh: z.number().nullable().optional(),
+  stdError: z.number().nullable().optional(),
+  distributionType: ParameterDistributionTypeSchema.nullable().optional(),
+  distributionParametersJson: nullableJsonSchema,
+  latexSymbol: z.string().nullable().optional(),
+  hideConfidenceInterval: z.boolean().default(false),
+  summaryStatsJson: nullableJsonSchema,
+  rawSourceJson: nullableJsonSchema,
+  sourceContentHash: z.string(),
+  rationale: z.string().nullable().optional(),
+  assumptionsJson: nullableJsonSchema,
+  proposedByUserId: z.string().nullable().optional(),
+  reviewedByUserId: z.string().nullable().optional(),
+  reviewedAt: nullableDateSchema,
+  publishedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ParameterRevisionType = z.infer<typeof ParameterRevisionSchema>;
+
+/** Zod schema for the ParameterRevisionInput model */
+export const ParameterRevisionInputSchema = z.object({
+  id: z.string(),
+  calculatedRevisionId: z.string(),
+  inputRevisionId: z.string(),
+  symbol: z.string(),
+  position: z.number().int(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ParameterRevisionInputType = z.infer<
+  typeof ParameterRevisionInputSchema
+>;
+
+/** Zod schema for the ParameterRevisionSourceArtifact model */
+export const ParameterRevisionSourceArtifactSchema = z.object({
+  id: z.string(),
+  parameterRevisionId: z.string(),
+  sourceArtifactId: z.string(),
+  isPrimary: z.boolean().default(false),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ParameterRevisionSourceArtifactType = z.infer<
+  typeof ParameterRevisionSourceArtifactSchema
+>;
+
+/** Zod schema for an exact parameter revision used by a task-impact estimate */
+export const TaskImpactEstimateInputSchema = z.object({
+  id: z.string(),
+  taskImpactEstimateSetId: z.string(),
+  parameterRevisionId: z.string(),
+  symbol: z.string(),
+  position: z.number().int(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskImpactEstimateInputType = z.infer<
+  typeof TaskImpactEstimateInputSchema
+>;
+
+/** Zod schema for the TaskCommentAttachment model */
+export const TaskCommentAttachmentSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  commentId: z.string().nullable().optional(),
+  uploadedByUserId: z.string().nullable().optional(),
+  storageKey: z.string(),
+  fileName: z.string(),
+  contentType: z.string(),
+  sizeBytes: z.number().int(),
+  checksumSha256: z.string(),
+  uploadedAt: nullableDateSchema,
+  expiresAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskCommentAttachmentType = z.infer<
+  typeof TaskCommentAttachmentSchema
+>;
+
 /** Zod schema for the McpToolCallAudit model */
 export const McpToolCallAuditSchema = z.object({
   id: z.string(),
@@ -2636,7 +3155,7 @@ export const ContentReportSchema = z.object({
   message: z.string().nullable().optional(),
   correctionJson: nullableJsonSchema,
   sourceUrl: z.string().nullable().optional(),
-  status: ContentReportStatusSchema.default('OPEN'),
+  status: ContentReportStatusSchema.default("OPEN"),
   reviewedByUserId: z.string().nullable().optional(),
   reviewedAt: nullableDateSchema,
   resolutionNote: z.string().nullable().optional(),
@@ -2684,18 +3203,24 @@ export const TaskImpactEstimateSetSchema = z.object({
   taskId: z.string(),
   isCurrent: z.boolean().default(false),
   estimateKind: TaskImpactEstimateKindSchema,
-  publicationStatus: TaskImpactPublicationStatusSchema.default('DRAFT'),
+  publicationStatus: TaskImpactPublicationStatusSchema.default("DRAFT"),
   sourceSystem: SourceSystemSchema,
   calculationVersion: z.string(),
   methodologyKey: z.string(),
   parameterSetHash: z.string(),
   counterfactualKey: z.string(),
   assumptionsJson: nullableJsonSchema,
+  formulaText: z.string().nullable().optional(),
+  formulaLatex: z.string().nullable().optional(),
+  calculationCode: z.string().nullable().optional(),
+  calculationLanguage: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskImpactEstimateSetType = z.infer<typeof TaskImpactEstimateSetSchema>;
+export type TaskImpactEstimateSetType = z.infer<
+  typeof TaskImpactEstimateSetSchema
+>;
 
 /** Zod schema for the TaskImpactFrameEstimate model */
 export const TaskImpactFrameEstimateSchema = z.object({
@@ -2741,7 +3266,9 @@ export const TaskImpactFrameEstimateSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskImpactFrameEstimateType = z.infer<typeof TaskImpactFrameEstimateSchema>;
+export type TaskImpactFrameEstimateType = z.infer<
+  typeof TaskImpactFrameEstimateSchema
+>;
 
 /** Zod schema for the TaskImpactMetric model */
 export const TaskImpactMetricSchema = z.object({
@@ -2771,7 +3298,9 @@ export const TaskImpactSourceArtifactSchema = z.object({
   createdAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type TaskImpactSourceArtifactType = z.infer<typeof TaskImpactSourceArtifactSchema>;
+export type TaskImpactSourceArtifactType = z.infer<
+  typeof TaskImpactSourceArtifactSchema
+>;
 
 // ============================================================================
 // SURVEY SYSTEM
@@ -2885,7 +3414,7 @@ export const EmailLogSchema = z.object({
   toAddress: z.string(),
   subject: z.string(),
   templateId: z.string().nullable().optional(),
-  status: EmailLogStatusSchema.default('SENT'),
+  status: EmailLogStatusSchema.default("SENT"),
   sentAt: dateSchema,
   deliveredAt: nullableDateSchema,
   openedAt: nullableDateSchema,
@@ -2901,7 +3430,7 @@ export type EmailLogType = z.infer<typeof EmailLogSchema>;
 export const DatingProfileSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  status: DatingProfileStatusSchema.default('DRAFT'),
+  status: DatingProfileStatusSchema.default("DRAFT"),
   headline: z.string().nullable().optional(),
   bio: z.string().nullable().optional(),
   lookingForText: z.string().nullable().optional(),
@@ -2934,7 +3463,7 @@ export const DatingProfilePhotoSchema = z.object({
   altText: z.string().nullable().optional(),
   blurhash: z.string().nullable().optional(),
   sortOrder: z.number().int().default(0),
-  status: DatingProfilePhotoStatusSchema.default('PENDING'),
+  status: DatingProfilePhotoStatusSchema.default("PENDING"),
   moderationReason: z.string().nullable().optional(),
   reviewedByUserId: z.string().nullable().optional(),
   reviewedAt: nullableDateSchema,
@@ -2977,7 +3506,7 @@ export const DatingQuestionSchema = z.object({
   category: z.string().nullable().optional(),
   answerOptions: z.unknown(),
   allowMultiple: z.boolean().default(false),
-  status: DatingQuestionStatusSchema.default('ACTIVE'),
+  status: DatingQuestionStatusSchema.default("ACTIVE"),
   sortOrder: z.number().int().default(0),
   managed: z.boolean().default(false),
   metadata: nullableJsonSchema,
@@ -2993,22 +3522,24 @@ export const DatingQuestionAnswerSchema = z.object({
   questionId: z.string(),
   answerValues: z.unknown(),
   acceptableValues: nullableJsonSchema,
-  importance: DatingQuestionImportanceSchema.default('SOMEWHAT'),
-  visibility: DatingQuestionAnswerVisibilitySchema.default('PUBLIC'),
+  importance: DatingQuestionImportanceSchema.default("SOMEWHAT"),
+  visibility: DatingQuestionAnswerVisibilitySchema.default("PUBLIC"),
   explanation: z.string().nullable().optional(),
   answeredAt: dateSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type DatingQuestionAnswerType = z.infer<typeof DatingQuestionAnswerSchema>;
+export type DatingQuestionAnswerType = z.infer<
+  typeof DatingQuestionAnswerSchema
+>;
 
 export const DatingPreferenceSchema = z.object({
   id: z.string(),
   profileId: z.string(),
   key: z.string(),
   valueJson: z.unknown(),
-  importance: DatingPreferenceImportanceSchema.default('PREFERENCE'),
+  importance: DatingPreferenceImportanceSchema.default("PREFERENCE"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -3038,7 +3569,7 @@ export const DatingInteractionSchema = z.object({
   fromProfileId: z.string(),
   toProfileId: z.string(),
   kind: DatingInteractionKindSchema,
-  status: DatingInteractionStatusSchema.default('ACTIVE'),
+  status: DatingInteractionStatusSchema.default("ACTIVE"),
   introMessage: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -3050,7 +3581,7 @@ export const DatingMatchSchema = z.object({
   id: z.string(),
   profileAId: z.string(),
   profileBId: z.string(),
-  status: DatingMatchStatusSchema.default('ACTIVE'),
+  status: DatingMatchStatusSchema.default("ACTIVE"),
   matchedAt: dateSchema,
   unmatchedAt: nullableDateSchema,
   lastMessageAt: nullableDateSchema,
@@ -3063,7 +3594,7 @@ export type DatingMatchType = z.infer<typeof DatingMatchSchema>;
 export const DatingConversationSchema = z.object({
   id: z.string(),
   matchId: z.string(),
-  status: DatingConversationStatusSchema.default('ACTIVE'),
+  status: DatingConversationStatusSchema.default("ACTIVE"),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -3075,7 +3606,7 @@ export const DatingMessageSchema = z.object({
   conversationId: z.string(),
   senderProfileId: z.string(),
   body: z.string(),
-  status: DatingMessageStatusSchema.default('SENT'),
+  status: DatingMessageStatusSchema.default("SENT"),
   readAt: nullableDateSchema,
   editedAt: nullableDateSchema,
   createdAt: dateSchema,
@@ -3090,7 +3621,7 @@ export const DatingDatePlanSchema = z.object({
   conversationId: z.string().nullable().optional(),
   proposedByProfileId: z.string(),
   acceptedByProfileId: z.string().nullable().optional(),
-  status: DatingDatePlanStatusSchema.default('PROPOSED'),
+  status: DatingDatePlanStatusSchema.default("PROPOSED"),
   title: z.string(),
   description: z.string().nullable().optional(),
   startsAt: nullableDateSchema,
@@ -3113,7 +3644,7 @@ export const DatingBlockSchema = z.object({
   id: z.string(),
   blockerProfileId: z.string(),
   blockedProfileId: z.string(),
-  scope: DatingBlockScopeSchema.default('ALL'),
+  scope: DatingBlockScopeSchema.default("ALL"),
   reason: z.string().nullable().optional(),
   createdAt: dateSchema,
   deletedAt: nullableDateSchema,
@@ -3128,7 +3659,7 @@ export const DatingSafetyReportSchema = z.object({
   datePlanId: z.string().nullable().optional(),
   reason: z.string(),
   description: z.string().nullable().optional(),
-  status: DatingSafetyReportStatusSchema.default('OPEN'),
+  status: DatingSafetyReportStatusSchema.default("OPEN"),
   reviewerUserId: z.string().nullable().optional(),
   resolutionNote: z.string().nullable().optional(),
   resolvedAt: nullableDateSchema,
@@ -3144,10 +3675,10 @@ export const CommerceOfferSchema = z.object({
   id: z.string(),
   key: z.string(),
   kind: CommerceOfferKindSchema,
-  status: CommerceOfferStatusSchema.default('ACTIVE'),
+  status: CommerceOfferStatusSchema.default("ACTIVE"),
   title: z.string(),
   description: z.string().nullable().optional(),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   defaultUnitAmountCents: z.number().int().nullable().optional(),
   defaultFmvCents: z.number().int().default(0),
   minUnitAmountCents: z.number().int().nullable().optional(),
@@ -3155,7 +3686,7 @@ export const CommerceOfferSchema = z.object({
   allowCustomAmount: z.boolean().default(false),
   isTaxDeductible: z.boolean().default(false),
   taxCode: z.string().nullable().optional(),
-  fulfillmentKind: CommerceFulfillmentKindSchema.default('NONE'),
+  fulfillmentKind: CommerceFulfillmentKindSchema.default("NONE"),
   managed: z.boolean().default(false),
   sortOrder: z.number().int().default(0),
   metadata: nullableJsonSchema,
@@ -3171,7 +3702,7 @@ export const CommerceOfferVariantSchema = z.object({
   key: z.string(),
   variantKey: z.string(),
   label: z.string(),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   unitAmountCents: z.number().int().nullable().optional(),
   fmvCents: z.number().int().nullable().optional(),
   minUnitAmountCents: z.number().int().nullable().optional(),
@@ -3188,7 +3719,9 @@ export const CommerceOfferVariantSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type CommerceOfferVariantType = z.infer<typeof CommerceOfferVariantSchema>;
+export type CommerceOfferVariantType = z.infer<
+  typeof CommerceOfferVariantSchema
+>;
 
 export const CommerceFulfillmentMappingSchema = z.object({
   id: z.string(),
@@ -3203,13 +3736,15 @@ export const CommerceFulfillmentMappingSchema = z.object({
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type CommerceFulfillmentMappingType = z.infer<typeof CommerceFulfillmentMappingSchema>;
+export type CommerceFulfillmentMappingType = z.infer<
+  typeof CommerceFulfillmentMappingSchema
+>;
 
 export const CommerceOrderSchema = z.object({
   id: z.string(),
   purposeKey: z.string().nullable().optional(),
-  status: CommerceOrderStatusSchema.default('PENDING_PAYMENT'),
-  paymentProvider: CommercePaymentProviderSchema.default('STRIPE'),
+  status: CommerceOrderStatusSchema.default("PENDING_PAYMENT"),
+  paymentProvider: CommercePaymentProviderSchema.default("STRIPE"),
   stripeCheckoutSessionId: z.string().nullable().optional(),
   stripePaymentIntentId: z.string().nullable().optional(),
   stripeCustomerId: z.string().nullable().optional(),
@@ -3225,7 +3760,7 @@ export const CommerceOrderSchema = z.object({
   shippingState: z.string().nullable().optional(),
   shippingPostalCode: z.string().nullable().optional(),
   shippingCountry: z.string().nullable().optional(),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   subtotalCents: z.number().int().default(0),
   taxCents: z.number().int().default(0),
   shippingCents: z.number().int().default(0),
@@ -3256,7 +3791,7 @@ export const CommerceOrderItemSchema = z.object({
   offerVariantKey: z.string().nullable().optional(),
   title: z.string(),
   quantity: z.number().int().default(1),
-  currency: z.string().default('usd'),
+  currency: z.string().default("usd"),
   unitAmountCents: z.number().int().default(0),
   unitFmvCents: z.number().int().default(0),
   unitDonationCents: z.number().int().default(0),
@@ -3265,7 +3800,7 @@ export const CommerceOrderItemSchema = z.object({
   totalDonationCents: z.number().int().default(0),
   taxable: z.boolean().default(false),
   taxCode: z.string().nullable().optional(),
-  fulfillmentKind: CommerceFulfillmentKindSchema.default('NONE'),
+  fulfillmentKind: CommerceFulfillmentKindSchema.default("NONE"),
   fulfillmentMetadata: nullableJsonSchema,
   metadata: nullableJsonSchema,
   createdAt: dateSchema,
@@ -3279,7 +3814,7 @@ export const CommerceFulfillmentSchema = z.object({
   orderId: z.string(),
   orderItemId: z.string().nullable().optional(),
   provider: CommerceFulfillmentProviderSchema,
-  status: CommerceFulfillmentStatusSchema.default('PENDING'),
+  status: CommerceFulfillmentStatusSchema.default("PENDING"),
   externalOrderId: z.string().nullable().optional(),
   providerOrderId: z.string().nullable().optional(),
   providerStatus: z.string().nullable().optional(),
@@ -3304,7 +3839,7 @@ export const CommerceEntitlementSchema = z.object({
   offerId: z.string().nullable().optional(),
   offerVariantId: z.string().nullable().optional(),
   entitlementType: z.string(),
-  status: CommerceEntitlementStatusSchema.default('PENDING'),
+  status: CommerceEntitlementStatusSchema.default("PENDING"),
   subjectUserId: z.string().nullable().optional(),
   subjectOrganizationId: z.string().nullable().optional(),
   startsAt: nullableDateSchema,

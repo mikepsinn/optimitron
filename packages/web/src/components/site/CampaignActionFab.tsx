@@ -11,13 +11,16 @@ import { buildUserReferralUrl } from "@/lib/url";
 const HIDDEN_PATH_PREFIXES = [
   "/api",
   "/auth",
+  "/calendar",
   "/dashboard",
+  "/fund",
   "/survey",
   "/vote",
 ] as const;
 
 function shouldHideForPath(pathname: string | null) {
   if (!pathname) return true;
+  if (pathname.startsWith("/tasks/")) return true;
   return HIDDEN_PATH_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

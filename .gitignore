@@ -86,6 +86,7 @@ packages/web/src/app/**/page.logged-in.md
 packages/web/src/app/**/page.authed.md
 NUL
 .vercel
+.playwright-cli/
 .playwright-mcp/
 .optimitron/
 .mcp.json

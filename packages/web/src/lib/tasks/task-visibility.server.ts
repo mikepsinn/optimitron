@@ -135,6 +135,61 @@ export async function canUserViewTask(
   return task != null;
 }
 
+/**
+ * Internal task-thread items are narrower than public task access. They are
+ * visible to admins, the task creator or assignee, direct task managers, and
+ * owner/admin members of an owning or assigned organization.
+ */
+export async function canUserViewInternalTaskContent(
+  taskId: string,
+  userId?: string | null,
+): Promise<boolean> {
+  const normalizedTaskId = typeof taskId === "string" ? taskId.trim() : "";
+  if (!normalizedTaskId || !userId) return false;
+
+  const viewer = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { isAdmin: true, personId: true },
+  });
+  if (!viewer) return false;
+
+  const internalAccess: Prisma.TaskWhereInput[] = [
+    { createdByUserId: userId },
+    {
+      managers: {
+        some: { deletedAt: null, userId },
+      },
+    },
+    {
+      ownerOrganization: {
+        members: {
+          some: { role: { in: ["owner", "admin"] }, userId },
+        },
+      },
+    },
+    {
+      assigneeOrganization: {
+        members: {
+          some: { role: { in: ["owner", "admin"] }, userId },
+        },
+      },
+    },
+  ];
+  if (viewer.personId) {
+    internalAccess.push({ assigneePersonId: viewer.personId });
+  }
+
+  const task = await prisma.task.findFirst({
+    where: {
+      deletedAt: null,
+      id: normalizedTaskId,
+      ...(viewer.isAdmin ? {} : { OR: internalAccess }),
+    },
+    select: { id: true },
+  });
+  return task != null;
+}
+
 /** Throw the 404-mapped error unless the viewer can see the task. */
 export async function assertUserCanViewTask(
   taskId: string,

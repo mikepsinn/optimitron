@@ -6,6 +6,7 @@ import {
   getPolicyModelFrame,
   getPrimaryPolicyModelArtifacts,
 } from "./policy-model-run";
+import { ParameterExportSchema } from "./parameter-export-to-policy-model";
 
 describe("PolicyModelRunSchema", () => {
   const treatyRun = {
@@ -15,7 +16,8 @@ describe("PolicyModelRunSchema", () => {
         artifactType: "MANUAL_SECTION",
         sourceRef: "1-pct-treaty-impact",
         sourceSystem: "MANUAL",
-        sourceUrl: "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+        sourceUrl:
+          "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
         title: "1% treaty impact",
       },
       {
@@ -47,11 +49,13 @@ describe("PolicyModelRunSchema", () => {
           "trial_capacity_multiplier",
           "canonical.expectedDalysAverted",
         ],
-        summary: "Redirecting 1% of military spending materially expands pragmatic trial capacity.",
+        summary:
+          "Redirecting 1% of military spending materially expands pragmatic trial capacity.",
       },
     ],
     executionHints: {
-      parentTaskDescription: "Secure adoption of the 1% treaty in the United States.",
+      parentTaskDescription:
+        "Secure adoption of the 1% treaty in the United States.",
       parentTaskTitle: "United States signs the 1% treaty",
       supporterLevers: ["coalition", "media", "legislation", "public pressure"],
       targetActors: [
@@ -75,11 +79,27 @@ describe("PolicyModelRunSchema", () => {
         benefitDurationYears: 20,
         canonical: {
           delayDalysLostPerDay: { base: 100_000, high: 150_000, low: 50_000 },
-          delayEconomicValueUsdLostPerDay: { base: 15_000_000_000, high: 20_000_000_000, low: 10_000_000_000 },
-          estimatedCashCostUsd: { base: 500_000_000, high: 750_000_000, low: 250_000_000 },
+          delayEconomicValueUsdLostPerDay: {
+            base: 15_000_000_000,
+            high: 20_000_000_000,
+            low: 10_000_000_000,
+          },
+          estimatedCashCostUsd: {
+            base: 500_000_000,
+            high: 750_000_000,
+            low: 250_000_000,
+          },
           estimatedEffortHours: { base: 0.0083, high: 0.02, low: 0.001 },
-          expectedDalysAverted: { base: 7_900_000_000, high: 10_000_000_000, low: 5_000_000_000 },
-          expectedEconomicValueUsd: { base: 1_200_000_000_000_000, high: 1_500_000_000_000_000, low: 900_000_000_000_000 },
+          expectedDalysAverted: {
+            base: 7_900_000_000,
+            high: 10_000_000_000,
+            low: 5_000_000_000,
+          },
+          expectedEconomicValueUsd: {
+            base: 1_200_000_000_000_000,
+            high: 1_500_000_000_000_000,
+            low: 900_000_000_000_000,
+          },
           medianHealthyLifeYearsEffect: { base: 0.9, high: 1.2, low: 0.5 },
           medianIncomeGrowthEffectPpPerYear: { base: 0.3, high: 0.5, low: 0.1 },
           successProbability: { base: 0.25, high: 0.4, low: 0.1 },
@@ -120,7 +140,8 @@ describe("PolicyModelRunSchema", () => {
     parameterSetHash: "sha256:abc123",
     parameters: [
       {
-        chapterUrl: "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
+        chapterUrl:
+          "https://manual.warondisease.org/knowledge/economics/1-pct-treaty-impact.html",
         description: "Global military spending in 2024.",
         displayName: "Global Military Spending in 2024",
         key: "GLOBAL_MILITARY_SPENDING_ANNUAL_2024",
@@ -139,11 +160,13 @@ describe("PolicyModelRunSchema", () => {
       policyName: "1% Treaty",
       policyType: "treaty",
       recommendedTarget: "signed",
-      summary: "Redirect 1% of military spending to pragmatic trials and disease eradication.",
+      summary:
+        "Redirect 1% of military spending to pragmatic trials and disease eradication.",
       tags: ["treaty", "clinical-trials", "war-on-disease"],
     },
     schemaVersion: PolicyModelRunSchemaVersion,
-    summary: "Compiled multi-horizon treaty impact model with evidence, parameters, and execution hints.",
+    summary:
+      "Compiled multi-horizon treaty impact model with evidence, parameters, and execution hints.",
     title: "1% Treaty Impact Model",
   };
 
@@ -160,12 +183,38 @@ describe("PolicyModelRunSchema", () => {
   it("selects the requested frame and extracts referenced artifacts", () => {
     const parsed = PolicyModelRunSchema.parse(treatyRun);
 
-    expect(getPolicyModelFrame(parsed, TaskImpactFrameKey.TWENTY_YEAR)?.frameSlug).toBe(
-      "twenty-year",
-    );
-    expect(getPrimaryPolicyModelArtifacts(parsed).map((artifact) => artifact.artifactKey)).toEqual([
-      "manual:treaty-impact",
-      "calc:treaty-run-2026-04-09",
-    ]);
+    expect(
+      getPolicyModelFrame(parsed, TaskImpactFrameKey.TWENTY_YEAR)?.frameSlug,
+    ).toBe("twenty-year");
+    expect(
+      getPrimaryPolicyModelArtifacts(parsed).map(
+        (artifact) => artifact.artifactKey,
+      ),
+    ).toEqual(["manual:treaty-impact", "calc:treaty-run-2026-04-09"]);
+  });
+
+  it("preserves unrecognized manual export metadata", () => {
+    const parsed = ParameterExportSchema.parse({
+      citations: {
+        SOURCE: {
+          id: "SOURCE",
+          customCitationField: "retained",
+        },
+      },
+      parameters: {
+        INPUT: {
+          customParameterField: { retained: true },
+          value: 1,
+        },
+      },
+      sourceFile: "dih_models/parameters.py",
+      topLevelMetadata: "retained",
+    });
+
+    expect(parsed.parameters.INPUT?.customParameterField).toEqual({
+      retained: true,
+    });
+    expect(parsed.citations.SOURCE?.customCitationField).toBe("retained");
+    expect(parsed.topLevelMetadata).toBe("retained");
   });
 });

@@ -13,8 +13,11 @@ import { ALL_WIRE_SCOPES, type McpScope } from "./mcp-scopes";
 // Config
 // ---------------------------------------------------------------------------
 
-const ACCESS_TOKEN_TTL = 60 * 60; // 1 hour
-const REFRESH_TOKEN_TTL = 30 * 24 * 60 * 60; // 30 days
+// Codex Desktop can retain an access token for the lifetime of a task instead
+// of refreshing it. A one-day token keeps long-running tasks usable while the
+// refresh token remains the durable, revocable credential.
+const ACCESS_TOKEN_TTL = 24 * 60 * 60; // 1 day
+const REFRESH_TOKEN_TTL = 180 * 24 * 60 * 60; // 180 days
 const AUTH_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 function getSecret() {
@@ -151,6 +154,28 @@ export function isRedirectUriAllowed(
       registeredUri === requestedUri ||
       isSameLoopbackRedirect(registeredUri, requestedUri),
   );
+}
+
+export function isAuthorizationCodeRedirectMatch(
+  authorizedUri: string,
+  tokenRequestUri: string,
+) {
+  if (authorizedUri === tokenRequestUri) return true;
+  try {
+    const authorized = new URL(authorizedUri);
+    const requested = new URL(tokenRequestUri);
+    return (
+      isLoopbackHost(authorized.hostname) &&
+      isLoopbackHost(requested.hostname) &&
+      authorized.protocol === requested.protocol &&
+      authorized.port === requested.port &&
+      authorized.pathname === requested.pathname &&
+      authorized.search === requested.search &&
+      authorized.hash === requested.hash
+    );
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------

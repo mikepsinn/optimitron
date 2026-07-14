@@ -1,8 +1,19 @@
 /* === Reset & Base === */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #666666;
+  --muted-soft: #f6f6f6;
+  --border: #d8d8d8;
+  --border-strong: #111111;
+  --danger: #9f1d1d;
 }
 
 body {
@@ -10,150 +21,171 @@ body {
   min-height: 500px;
   max-height: 600px;
   overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
-  color: #1a1a2e;
-  background: #f8f9fc;
 }
 
-#app {
-  padding: 0;
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+.agenda-task:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
 }
 
 /* === Navigation === */
 .nav {
-  display: flex;
-  background: #1a1a2e;
   position: sticky;
   top: 0;
   z-index: 10;
+  display: flex;
+  background: var(--background);
+  border-bottom: 1px solid var(--border-strong);
 }
 
-.nav-btn {
+.sub-nav {
+  position: static;
+  border-bottom-color: var(--border);
+}
+
+.nav-btn,
+.view-btn {
   flex: 1;
-  padding: 10px 6px;
-  border: none;
-  background: transparent;
-  color: #a0a0c0;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 11px 6px 10px;
+  border: 0;
   border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.nav-btn:hover {
-  color: #e0e0ff;
-  background: rgba(255, 255, 255, 0.05);
+.view-btn {
+  font-size: 13px;
 }
 
-.nav-btn.active {
-  color: #7c5cfc;
-  border-bottom-color: #7c5cfc;
+.nav-btn:hover,
+.view-btn:hover {
+  background: var(--muted-soft);
+  color: var(--foreground);
 }
 
-/* === Tab content === */
+.nav-btn.active,
+.view-btn.active {
+  border-bottom-color: var(--foreground);
+  color: var(--foreground);
+}
+
+/* === Views and tabs === */
+.view,
 .tab-content {
   display: none;
-  padding: 16px;
 }
 
+.view.active,
 .tab-content.active {
   display: block;
 }
 
+.tab-content {
+  padding: 16px;
+}
+
 h2 {
-  font-size: 16px;
-  font-weight: 600;
   margin-bottom: 12px;
-  color: #1a1a2e;
+  color: var(--foreground);
+  font-size: 16px;
+  font-weight: 650;
 }
 
 h3 {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 16px 0 8px;
-  color: #666;
+  margin: 18px 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* === Buttons === */
 .btn {
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
   cursor: pointer;
-  transition: all 0.15s;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
 }
 
-.btn-primary {
-  background: #7c5cfc;
-  color: white;
+.btn:hover {
+  background: var(--foreground);
+  color: var(--background);
 }
 
-.btn-primary:hover {
-  background: #6a48e8;
-}
-
+.btn-primary,
 .btn-success {
-  background: #22c55e;
-  color: white;
+  background: var(--foreground);
+  color: var(--background);
 }
 
+.btn-primary:hover,
 .btn-success:hover {
-  background: #16a34a;
+  background: var(--background);
+  color: var(--foreground);
 }
 
-.btn-warning {
-  background: #f59e0b;
-  color: white;
-}
-
-.btn-warning:hover {
-  background: #d97706;
-}
-
+.btn-warning,
 .btn-secondary {
-  background: #e2e8f0;
-  color: #475569;
-}
-
-.btn-secondary:hover {
-  background: #cbd5e1;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .btn-small {
-  padding: 4px 10px;
+  padding: 5px 8px;
   font-size: 12px;
 }
 
-/* === Treatment Cards === */
-.treatment-card {
-  background: white;
-  border-radius: 12px;
-  padding: 12px 16px;
+/* === Cards and rows === */
+.treatment-card,
+.symptom-item,
+.agenda-task {
   margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+  box-shadow: none;
+}
+
+.treatment-card {
+  padding: 12px 14px;
 }
 
 .treatment-card .name {
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 650;
 }
 
 .treatment-card .dose {
-  color: #666;
-  font-size: 12px;
   margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
-.treatment-actions {
+.treatment-actions,
+.agenda-actions {
   display: flex;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .treatment-actions .btn {
@@ -169,17 +201,16 @@ h3 {
 }
 
 .snooze-options {
-  display: none;
   position: absolute;
+  right: 0;
   bottom: 100%;
   left: 0;
-  right: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 5;
+  display: none;
   margin-bottom: 4px;
   overflow: hidden;
-  z-index: 5;
+  border: 1px solid var(--border-strong);
+  background: var(--background);
 }
 
 .snooze-options.show {
@@ -189,61 +220,57 @@ h3 {
 .snooze-option {
   display: block;
   width: 100%;
-  padding: 8px 12px;
-  border: none;
-  background: white;
-  text-align: left;
-  font-size: 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
   cursor: pointer;
+  font-size: 12px;
+  text-align: left;
+}
+
+.snooze-option:last-child {
+  border-bottom: 0;
 }
 
 .snooze-option:hover {
-  background: #f1f5f9;
+  background: var(--muted-soft);
 }
 
 /* === Emoji mood rating === */
 .emoji-rating {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
   padding: 8px 0;
 }
 
 .mood-btn {
-  font-size: 28px;
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
   padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--background);
   cursor: pointer;
-  transition: all 0.15s;
+  font-size: 26px;
   line-height: 1;
 }
 
-.mood-btn:hover {
-  border-color: #7c5cfc;
-  transform: scale(1.15);
-}
-
+.mood-btn:hover,
 .mood-btn.selected {
-  border-color: #7c5cfc;
-  background: #f0ecfe;
-  transform: scale(1.15);
+  border-color: var(--border-strong);
+  background: var(--muted-soft);
 }
 
 /* === Symptom rating === */
 .symptom-item {
-  background: white;
-  border-radius: 12px;
-  padding: 10px 16px;
-  margin-bottom: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 10px 12px;
 }
 
 .symptom-item .symptom-name {
-  font-weight: 500;
-  font-size: 13px;
   margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .symptom-scale {
@@ -254,24 +281,20 @@ h3 {
 .symptom-scale .scale-btn {
   flex: 1;
   padding: 6px 2px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background: white;
-  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
   cursor: pointer;
+  font-size: 12px;
   text-align: center;
-  transition: all 0.15s;
 }
 
-.symptom-scale .scale-btn:hover {
-  border-color: #7c5cfc;
-  background: #f0ecfe;
-}
-
+.symptom-scale .scale-btn:hover,
 .symptom-scale .scale-btn.selected {
-  border-color: #7c5cfc;
-  background: #7c5cfc;
-  color: white;
+  border-color: var(--border-strong);
+  background: var(--foreground);
+  color: var(--background);
 }
 
 /* === Food input === */
@@ -282,34 +305,33 @@ h3 {
 
 .food-input-group input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
   font-size: 13px;
-  outline: none;
 }
 
 .food-input-group input:focus {
-  border-color: #7c5cfc;
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+  border-color: var(--border-strong);
 }
 
-/* === Recent foods chips === */
 .food-chip {
   display: inline-block;
-  padding: 4px 12px;
   margin: 2px 4px 2px 0;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
   cursor: pointer;
-  transition: all 0.15s;
+  font-size: 12px;
 }
 
 .food-chip:hover {
-  border-color: #7c5cfc;
-  background: #f0ecfe;
+  border-color: var(--border-strong);
+  background: var(--muted-soft);
 }
 
 /* === Log entries === */
@@ -317,20 +339,20 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 
 .log-entry:last-child {
-  border-bottom: none;
+  border-bottom: 0;
 }
 
 .log-time {
-  color: #94a3b8;
+  min-width: 50px;
+  color: var(--muted);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  min-width: 50px;
 }
 
 .log-action {
@@ -342,52 +364,24 @@ h3 {
 }
 
 /* === Empty state === */
-.empty-state {
+.empty-state,
+.agenda-signin {
+  padding: 32px 24px;
+  color: var(--muted);
+  font-size: 13px;
   text-align: center;
-  padding: 24px;
-  color: #94a3b8;
-  font-size: 13px;
 }
 
-.empty-state .emoji {
-  font-size: 32px;
+.empty-state .emoji,
+.agenda-signin .emoji {
   margin-bottom: 8px;
+  font-size: 30px;
 }
 
-/* === Views (Today / Health) === */
-.view {
-  display: none;
-}
-
-.view.active {
-  display: block;
-}
-
-.view-btn {
-  flex: 1;
-  padding: 10px 6px;
-  border: none;
-  background: transparent;
-  color: #a0a0c0;
+.agenda-signin .signin-text {
+  margin-bottom: 16px;
+  color: var(--muted);
   font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-bottom: 2px solid transparent;
-}
-
-.view-btn:hover {
-  color: #e0e0ff;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.view-btn.active {
-  color: #7c5cfc;
-  border-bottom-color: #7c5cfc;
-}
-
-.sub-nav {
-  background: #2a2a44;
 }
 
 /* === Agenda (Today view) === */
@@ -399,103 +393,90 @@ h3 {
   margin-top: 0;
 }
 
-.agenda-signin {
-  text-align: center;
-  padding: 40px 24px;
-}
-
-.agenda-signin .emoji {
-  font-size: 36px;
-  margin-bottom: 12px;
-}
-
-.agenda-signin .signin-text {
-  color: #666;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-
 .agenda-task {
-  background: white;
-  border-radius: 12px;
   padding: 10px 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border-left: 3px solid transparent;
+}
+
+.agenda-task-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.agenda-task-open:hover .agenda-task-title {
+  text-decoration: underline;
 }
 
 .agenda-task.overdue {
-  border-left-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--danger);
+  background: #fffafa;
 }
 
 .agenda-task.next-action {
-  border-left-color: #7c5cfc;
-  background: #f5f2ff;
-  box-shadow: 0 2px 6px rgba(124, 92, 252, 0.25);
+  border-color: var(--border-strong);
+  background: var(--muted-soft);
 }
 
 .next-action-label {
+  margin-bottom: 5px;
+  color: var(--muted);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #7c5cfc;
-  margin-bottom: 4px;
+  letter-spacing: 0.1em;
 }
 
 .agenda-task-title {
-  font-weight: 600;
+  display: block;
   font-size: 13px;
-  line-height: 1.3;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .agenda-task-meta {
   display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 4px;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-.due-label {
+.due-label,
+.effort-label,
+.ev-badge,
+.open-label {
+  color: var(--muted);
   font-size: 11px;
-  color: #64748b;
   font-variant-numeric: tabular-nums;
 }
 
 .due-label.overdue-label {
-  color: #dc2626;
+  color: var(--danger);
   font-weight: 700;
 }
 
 .ev-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: #166534;
-  background: #dcfce7;
-  border-radius: 6px;
-  padding: 1px 6px;
+  border: 1px solid var(--border);
+  padding: 1px 5px;
 }
 
-.effort-label {
-  font-size: 10px;
-  color: #94a3b8;
-}
-
-.agenda-actions {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
+.open-label {
+  margin-left: auto;
 }
 
 .agenda-actions .btn {
-  padding: 4px 8px;
+  flex: 1;
+  padding: 5px 7px;
   font-size: 11px;
   white-space: nowrap;
 }
 
 .agenda-actions .snooze-dropdown {
-  flex: 0 1 auto;
+  flex: 1;
 }
 
 /* === Toast notification === */
@@ -503,14 +484,14 @@ h3 {
   position: fixed;
   bottom: 16px;
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: #1a1a2e;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  transition: transform 0.3s ease;
   z-index: 100;
+  padding: 10px 18px;
+  border: 1px solid var(--border-strong);
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 13px;
+  transform: translateX(-50%) translateY(100px);
+  transition: transform 0.2s ease;
 }
 
 .toast.show {

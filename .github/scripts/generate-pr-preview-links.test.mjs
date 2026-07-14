@@ -72,6 +72,42 @@ test("lists authenticated and logged-out preview states for hybrid routes", () =
   assert.match(output, /https:\/\/preview\.example\.vercel\.app\/tasks\?login=demo/);
 });
 
+test("includes copy-only review states from the visual manifest", () => {
+  const previewUrl = "https://preview.example.vercel.app";
+  const visualReviewUrl =
+    "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html";
+  const output = runGenerator({
+    PREVIEW_URL: previewUrl,
+    VISUAL_REVIEW_URL: visualReviewUrl,
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "survey",
+          routeLabel: "Survey",
+          routePath: "/survey",
+          routeUrl: `${previewUrl}/survey`,
+          authState: "demo-logged-in",
+          changed: false,
+          copyChanged: true,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 0,
+          erroredPairs: 0,
+          reviewUrl: `${visualReviewUrl}#route=survey`,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(output, /<!-- review-item:visual:survey:demo-logged-in -->/);
+  assert.match(output, /copy changed/);
+  assert.match(
+    output,
+    /https:\/\/preview\.example\.vercel\.app\/survey\?login=demo/,
+  );
+});
+
 test("reports when no user-facing page or component routes are inferred", () => {
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app",

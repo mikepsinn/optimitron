@@ -48,6 +48,7 @@
     "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
+    "import:manual-parameters": "tsx scripts/import-manual-parameters.ts",
     "sync:treaty-signers": "tsx scripts/sync-treaty-signers.ts",
     "sync:task-triggers": "tsx scripts/sync-task-triggers.ts",
     "mcp:tasks": "tsx scripts/mcp-task-server.ts",
@@ -59,7 +60,12 @@
     "check:r2-upload": "tsx scripts/check-r2-upload.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1037.0",
     "@aws-sdk/s3-request-presigner": "^3.1037.0",
+    "@fullcalendar/core": "6.1.21",
+    "@fullcalendar/luxon3": "6.1.21",
+    "@fullcalendar/react": "6.1.21",
+    "@fullcalendar/timegrid": "6.1.21",
     "@google/genai": "^1.48.0",
     "@headlessui/react": "^2.2.9",
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -121,6 +127,7 @@
     "jose": "^6.2.2",
     "katex": "^0.16.38",
     "lucide-react": "^0.563.0",
+    "luxon": "3.7.2",
     "nanoid": "^5.1.6",
     "next": "15.5.15",
     "next-auth": "^4.24.11",
@@ -152,7 +159,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.1037.0",
     "@axe-core/playwright": "^4.11.1",
     "@next/bundle-analyzer": "^16.2.2",
     "@playwright/test": "1.58.2",

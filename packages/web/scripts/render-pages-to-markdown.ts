@@ -14,6 +14,7 @@
  *
  * The generated `page.logged-out.md` files are deterministic copy inventory files.
  * Authenticated `page.logged-in.md` files are local-only and gitignored.
+ * CI sets COPY_PREVIEW_OUTPUT_ROOT to keep both kinds inside its review artifact.
  *
  * Usage:
  *   pnpm --filter @optimitron/web copy:preview
@@ -33,6 +34,9 @@ import { getRouteReviewSpecs } from "../src/lib/routes";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = path.resolve(__dirname, "..");
 const APP_DIR = path.resolve(WEB_ROOT, "src/app");
+const OUTPUT_ROOT = process.env.COPY_PREVIEW_OUTPUT_ROOT
+  ? path.resolve(WEB_ROOT, process.env.COPY_PREVIEW_OUTPUT_ROOT)
+  : APP_DIR;
 
 const BASE = process.env.PREVIEW_BASE_URL ?? "http://127.0.0.1:3001";
 const SITE_KEY = process.env.PREVIEW_SITE_KEY ?? "warOnDisease";
@@ -42,16 +46,30 @@ const ROUTES_PER_BROWSER = Math.max(
 );
 
 const DEFAULT_LOGGED_OUT_ROUTES = filterRedirectOnlyRoutes(
-  getRouteReviewSpecs("copyPreview").map((spec) => spec.path),
+  dedupeRoutes([
+    ...getRouteReviewSpecs("copyPreview").map((spec) => spec.path),
+    ...getRouteReviewSpecs("screenshot").map((spec) => spec.path),
+  ]),
 );
 const DEFAULT_AUTHENTICATED_ROUTES = filterRedirectOnlyRoutes(
-  getRouteReviewSpecs("authenticatedCopyPreview").map((spec) => spec.path),
+  dedupeRoutes([
+    ...getRouteReviewSpecs("authenticatedCopyPreview").map(
+      (spec) => spec.path,
+    ),
+    ...getRouteReviewSpecs("authenticatedScreenshot").map(
+      (spec) => spec.path,
+    ),
+  ]),
 );
 const DEFAULT_AUTHENTICATED_ROUTE_SET = new Set(DEFAULT_AUTHENTICATED_ROUTES);
 const GLOBAL_LOADING_TEXT = [
   "Booting Earth Optimization System",
   "Your civilization is very important to us.",
 ];
+
+function dedupeRoutes(routes: string[]) {
+  return [...new Set(routes)];
+}
 
 function parseRoutesFromArgs(): {
   authenticatedRoutes: string[];
@@ -103,8 +121,8 @@ function routeToDirPath(route: string): string {
   ) {
     throw new Error(`Invalid route segment in "${route}"`);
   }
-  const outPath = path.resolve(APP_DIR, ...segments);
-  const relative = path.relative(APP_DIR, outPath);
+  const outPath = path.resolve(OUTPUT_ROOT, ...segments);
+  const relative = path.relative(OUTPUT_ROOT, outPath);
   if (relative.startsWith("..") || path.isAbsolute(relative)) {
     throw new Error(`Resolved path escapes app dir for route "${route}"`);
   }
@@ -605,7 +623,11 @@ async function captureRoutes(
   let failures = 0;
   for (let index = 0; index < routes.length; index += ROUTES_PER_BROWSER) {
     const batch = routes.slice(index, index + ROUTES_PER_BROWSER);
-    const browser = await chromium.launch();
+    const browser = await chromium.launch(
+      process.env.PLAYWRIGHT_BROWSER_CHANNEL === "chrome"
+        ? { channel: "chrome" }
+        : undefined,
+    );
     try {
       failures += await capturePass(browser, batch, filename, options);
     } finally {

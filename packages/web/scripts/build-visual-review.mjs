@@ -22,10 +22,18 @@ const require = createRequire(import.meta.url);
 const { isRedirectOnlyRoutePath } = require("../src/lib/redirects.js");
 const webRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(webRoot, "../..");
-const screenshotsRoot = path.resolve(webRoot, "screenshots");
+const screenshotsRoot = process.env.VISUAL_AFTER_ROOT
+  ? resolveInputPath(process.env.VISUAL_AFTER_ROOT)
+  : path.resolve(webRoot, "screenshots");
 const routeManifestPath = path.join(screenshotsRoot, "routes.json");
 const beforeScreenshotsRoot = process.env.VISUAL_BEFORE_ROOT
   ? resolveInputPath(process.env.VISUAL_BEFORE_ROOT)
+  : null;
+const beforeCopySnapshotsRoot = process.env.VISUAL_COPY_BEFORE_ROOT
+  ? resolveInputPath(process.env.VISUAL_COPY_BEFORE_ROOT)
+  : null;
+const afterCopySnapshotsRoot = process.env.VISUAL_COPY_AFTER_ROOT
+  ? resolveInputPath(process.env.VISUAL_COPY_AFTER_ROOT)
   : null;
 const pageLinkBaseUrl = parseOptionalUrl(
   process.env.VISUAL_REVIEW_BASE_URL ??
@@ -63,16 +71,6 @@ const routeSpecs = loadRouteSpecs();
 const routePaths = new Map(
   [...routeSpecs.entries()].map(([name, spec]) => [name, spec.path]),
 );
-const authenticatedSnapshotRouteNames = new Set([
-  "dashboard",
-  "organizations",
-  "plaintiffs-manage",
-  "settings",
-  "side-menu-auth",
-  "messages",
-  "people-missions",
-  "people-missions-romantic",
-]);
 const markdownDiffCache = new Map();
 let imageDiffDependenciesPromise = null;
 
@@ -96,6 +94,7 @@ const routeOrder = [
   "side-menu-auth",
   "create-task-dialog-person",
   "dashboard",
+  "calendar",
   "employees",
   "vote",
   "treaty",
@@ -151,7 +150,9 @@ async function main() {
       : []),
     ...collectScreenshots(screenshotsRoot, "after"),
   ];
-  const grouped = await analyzeGroups(groupScreenshots(screenshots));
+  const grouped = appendCopyOnlyGroups(
+    await analyzeGroups(groupScreenshots(screenshots)),
+  );
   const html = renderHtml(grouped);
   const manifest = buildReviewManifest(grouped);
   const blockingIssues = getBlockingReviewIssues(grouped, screenshots);
@@ -336,7 +337,7 @@ function buildReviewPageRoute(group) {
     changed: group.changed,
     copyChanged: Boolean(markdownDiff),
     errored: group.errored,
-    statusLabel: routeStatusLabel(group),
+    statusLabel: reviewStatusLabel(group, markdownDiff),
     markdownDiff,
     pairs: group.pairs.map((pair) => buildReviewPagePair(pair)),
   };
@@ -385,6 +386,27 @@ async function analyzeGroups(groups) {
     });
   }
   return analyzed;
+}
+
+function appendCopyOnlyGroups(groups) {
+  const representedRoutes = new Set(groups.map((group) => group.routeName));
+  for (const routeName of routePaths.keys()) {
+    if (representedRoutes.has(routeName) || !buildMarkdownDiff(routeName)) {
+      continue;
+    }
+    groups.push({
+      routeName,
+      changed: false,
+      changedPairs: 0,
+      errored: false,
+      erroredPairs: 0,
+      missingPairs: 0,
+      pairs: [],
+    });
+  }
+  return groups.sort(
+    (a, b) => routeSortIndex(a.routeName) - routeSortIndex(b.routeName),
+  );
 }
 
 function loadImageDiffDependencies() {
@@ -777,20 +799,34 @@ function buildMarkdownDiff(routeName) {
     return markdownDiffCache.get(snapshot.repoRelativePath);
   }
 
+  const generatedAfter = readCopySnapshot(
+    afterCopySnapshotsRoot,
+    snapshot.artifactRelativePath,
+  );
   const workingPath = path.join(repoRoot, snapshot.repoRelativePath);
-  if (!existsSync(workingPath)) {
+  if (generatedAfter === null && !existsSync(workingPath)) {
     markdownDiffCache.set(snapshot.repoRelativePath, null);
     return null;
   }
 
-  const before = readMainFile(snapshot.repoRelativePath);
-  if (before === null) {
+  const generatedBefore = readCopySnapshot(
+    beforeCopySnapshotsRoot,
+    snapshot.artifactRelativePath,
+  );
+  const gitBefore = readMainFile(snapshot.repoRelativePath);
+  const before = generatedBefore ?? gitBefore;
+  const isNewRoute = before === null && isNewRouteSnapshot(snapshot);
+  if (before === null && !isNewRoute) {
     markdownDiffCache.set(snapshot.repoRelativePath, null);
     return null;
   }
 
-  const after = readFileSync(workingPath, "utf8");
-  const lines = buildUnifiedMarkdownDiffLines(before, after, snapshot.repoRelativePath);
+  const after = generatedAfter ?? readFileSync(workingPath, "utf8");
+  const lines = buildUnifiedMarkdownDiffLines(
+    before ?? "",
+    after,
+    snapshot.repoRelativePath,
+  );
   const addedLines = lines.filter((line) => line.kind === "add").length;
   const removedLines = lines.filter((line) => line.kind === "del").length;
   if (addedLines === 0 && removedLines === 0) {
@@ -800,7 +836,9 @@ function buildMarkdownDiff(routeName) {
   const diff = {
     addedLines,
     fileName: snapshot.fileName,
-    label: `Text diff: ${snapshot.fileName}`,
+    label: isNewRoute
+      ? `Text snapshot: ${snapshot.fileName} (new route)`
+      : `Text diff: ${snapshot.fileName}`,
     lines,
     metaChanges: [],
     removedLines,
@@ -825,6 +863,7 @@ function getMarkdownSnapshot(routeName) {
     path.join("packages", "web", "src", "app", ...segments, fileName),
   );
   return {
+    artifactRelativePath: toPosix(path.join(...segments, fileName)),
     fileName,
     repoRelativePath,
   };
@@ -832,10 +871,31 @@ function getMarkdownSnapshot(routeName) {
 
 function isAuthenticatedMarkdownRoute(routeName) {
   return (
-    authenticatedSnapshotRouteNames.has(routeName) ||
+    routeSpecs.get(routeName)?.authenticated === true ||
     /-auth(\b|$)/.test(routeName) ||
     routeName.endsWith("-auth")
   );
+}
+
+function isNewRouteSnapshot(snapshot) {
+  const pageSourcePath = toPosix(
+    path.posix.join(path.posix.dirname(snapshot.repoRelativePath), "page.tsx"),
+  );
+  return readMainFile(pageSourcePath) === null;
+}
+
+function readCopySnapshot(root, relativePath) {
+  if (!root) return null;
+  const candidate = path.resolve(root, relativePath);
+  const relative = path.relative(root, candidate);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    return null;
+  }
+  try {
+    return readFileSync(candidate, "utf8");
+  } catch {
+    return null;
+  }
 }
 
 let cachedBaselineRef;
@@ -1080,8 +1140,19 @@ function buildDiffFileName(fileName) {
 function summarizeGroups(groups) {
   return {
     changedRoutes: groups.filter((group) => group.changed).length,
+    copyOnlyRoutes: groups.filter(
+      (group) =>
+        !group.changed &&
+        !group.errored &&
+        Boolean(buildMarkdownDiff(group.routeName)),
+    ).length,
     erroredRoutes: groups.filter((group) => group.errored).length,
-    unchangedRoutes: groups.filter((group) => !group.changed && !group.errored).length,
+    unchangedRoutes: groups.filter(
+      (group) =>
+        !group.changed &&
+        !group.errored &&
+        !buildMarkdownDiff(group.routeName),
+    ).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
 }
@@ -1100,31 +1171,43 @@ function buildReviewManifest(groups) {
     previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
     reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
     summary: summarizeGroups(groups),
-    routes: groups.map((group) => ({
-      routeName: group.routeName,
-      routeLabel: labelRoute(group.routeName),
-      routePath: routePaths.get(group.routeName) ?? null,
-      routeUrl: getRouteUrl(group.routeName),
-      authState: getRouteAuthState(group.routeName),
-      changed: group.changed,
-      errored: group.errored,
-      changedPairs: group.changedPairs,
-      missingPairs: group.missingPairs,
-      erroredPairs: group.erroredPairs,
-      statusLabel: routeStatusLabel(group),
-      reviewUrl: reviewBase
-        ? `${reviewBase}/latest.html#route=${encodeURIComponent(group.routeName)}`
-        : null,
-      projects: group.pairs.map((pair) => ({
-        projectName: pair.projectName,
-        projectLabel: labelProject(pair.projectName),
-        changed: Boolean(pair.diff?.changed),
-        missing: Boolean(pair.diff?.missing),
-        errored: Boolean(pair.diff?.errored),
-        diffLabel: pair.diff?.label ?? null,
-      })),
-    })),
+    routes: groups.map((group) => {
+      const markdownDiff = buildMarkdownDiff(group.routeName);
+      const copyChanged = Boolean(markdownDiff);
+      return {
+        routeName: group.routeName,
+        routeLabel: labelRoute(group.routeName),
+        routePath: routePaths.get(group.routeName) ?? null,
+        routeUrl: getRouteUrl(group.routeName),
+        authState: getRouteAuthState(group.routeName),
+        changed: group.changed,
+        copyChanged,
+        errored: group.errored,
+        changedPairs: group.changedPairs,
+        missingPairs: group.missingPairs,
+        erroredPairs: group.erroredPairs,
+        statusLabel: reviewStatusLabel(group, markdownDiff),
+        reviewUrl: reviewBase
+          ? `${reviewBase}/latest.html#route=${encodeURIComponent(group.routeName)}`
+          : null,
+        projects: group.pairs.map((pair) => ({
+          projectName: pair.projectName,
+          projectLabel: labelProject(pair.projectName),
+          changed: Boolean(pair.diff?.changed),
+          missing: Boolean(pair.diff?.missing),
+          errored: Boolean(pair.diff?.errored),
+          diffLabel: pair.diff?.label ?? null,
+        })),
+      };
+    }),
   };
+}
+
+function reviewStatusLabel(group, markdownDiff) {
+  if (!markdownDiff) return routeStatusLabel(group);
+  if (group.pairs.length === 0) return "copy changed - no screenshot";
+  if (!group.changed && !group.errored) return "copy changed";
+  return routeStatusLabel(group);
 }
 
 function getBlockingReviewIssues(groups, screenshots) {
@@ -1294,9 +1377,8 @@ function loadRouteSpecs() {
 }
 
 function getPublishedReviewBase() {
-  const sha = reviewCommitSha ? shortSha(reviewCommitSha) : null;
-  return prNumber && sha
-    ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/${sha}`
+  return prNumber
+    ? `https://mikepsinn.github.io/optimitron/pr-${prNumber}/latest`
     : null;
 }
 

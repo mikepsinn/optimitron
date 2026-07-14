@@ -2,6 +2,8 @@ export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 
 export interface ExecutionGraphTask {
   activeChildTaskCount: number;
+  estimatePublicationEligible?: boolean;
+  estimateInputsStale?: boolean;
   hasMarginalEstimate: boolean;
   id: string;
   parentTaskId: string | null;
@@ -163,6 +165,26 @@ export function auditExecutionGraph(input: {
       findings.push({
         code: "MISSING_MARGINAL_ESTIMATE",
         message: `Atomic task ${task.id} has no direct or explicitly edge-derived marginal estimate.`,
+        severity: "medium",
+        taskId: task.id,
+      });
+    }
+    if (
+      task.activeChildTaskCount === 0 &&
+      task.hasMarginalEstimate &&
+      task.estimatePublicationEligible === false
+    ) {
+      findings.push({
+        code: "UNREVIEWED_PUBLIC_ESTIMATE",
+        message: `Atomic task ${task.id} uses a public estimate that has not been reviewed or published.`,
+        severity: "high",
+        taskId: task.id,
+      });
+    }
+    if (task.estimateInputsStale) {
+      findings.push({
+        code: "STALE_ESTIMATE_INPUT",
+        message: `Task ${task.id} uses a superseded parameter input.`,
         severity: "medium",
         taskId: task.id,
       });

@@ -16,6 +16,7 @@ import {
   TaskCompensationCadence,
   TaskCompensationKind,
   TaskEngagementKind,
+  TaskEdgeType,
   TaskExecutionAttemptStatus,
   TaskExecutionMode,
   TaskKind,
@@ -40,8 +41,9 @@ const mocks = vi.hoisted(() => ({
   taskEdgeCreate: vi.fn(),
   taskEdgeFindMany: vi.fn(),
   taskEdgeUpdateMany: vi.fn(),
-  taskImpactEstimateSetCreate: vi.fn(),
-  taskImpactFrameEstimateCreate: vi.fn(),
+  createDirectTaskImpact: vi.fn(),
+  createDirectTaskImpactInTransaction: vi.fn(),
+  getTaskImpactTrace: vi.fn(),
   referendumCreate: vi.fn(),
   referendumFindMany: vi.fn(),
   mcpToolCallAuditCreate: vi.fn(),
@@ -160,6 +162,12 @@ vi.mock("../tasks/agent-lease.server", () => ({
 }));
 
 vi.mock("../tasks/impact", () => ({}));
+vi.mock("../parameters/task-impact-calculation.server", () => ({
+  createDirectTaskImpact: mocks.createDirectTaskImpact,
+  createDirectTaskImpactInTransaction:
+    mocks.createDirectTaskImpactInTransaction,
+  getTaskImpactTrace: mocks.getTaskImpactTrace,
+}));
 vi.mock("../tasks/task-communication-endpoints.server", () => ({
   upsertPrimaryTaskCommunicationEndpoint:
     mocks.upsertPrimaryTaskCommunicationEndpoint,
@@ -320,8 +328,6 @@ vi.mock("../prisma", () => ({
       findMany: mocks.taskEdgeFindMany,
       updateMany: mocks.taskEdgeUpdateMany,
     },
-    taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
-    taskImpactFrameEstimate: { create: mocks.taskImpactFrameEstimateCreate },
     taskApplication: {
       create: mocks.taskApplicationCreate,
       findFirst: mocks.taskApplicationFindFirst,
@@ -559,11 +565,8 @@ beforeEach(() => {
         },
         taskEdge: {
           createMany: mocks.taskEdgeCreateMany,
+          findMany: mocks.taskEdgeFindMany,
           updateMany: mocks.taskEdgeUpdateMany,
-        },
-        taskImpactEstimateSet: { create: mocks.taskImpactEstimateSetCreate },
-        taskImpactFrameEstimate: {
-          create: mocks.taskImpactFrameEstimateCreate,
         },
         taskApplication: {
           create: mocks.taskApplicationCreate,
@@ -624,8 +627,12 @@ beforeEach(() => {
   mocks.canManageOrganization.mockResolvedValue(false);
   mocks.sourceArtifactUpsert.mockResolvedValue({ id: "source-artifact-1" });
   mocks.taskSourceArtifactUpsert.mockResolvedValue({ id: "task-source-1" });
-  mocks.taskImpactEstimateSetCreate.mockResolvedValue({ id: "estimate-set-1" });
-  mocks.taskImpactFrameEstimateCreate.mockResolvedValue({ id: "frame-1" });
+  mocks.createDirectTaskImpact.mockResolvedValue({
+    estimateSetId: "estimate-set-1",
+  });
+  mocks.createDirectTaskImpactInTransaction.mockResolvedValue({
+    estimateSetId: "estimate-set-1",
+  });
   mocks.taskApplicationFindFirst.mockResolvedValue(null);
   mocks.taskApplicationFindMany.mockResolvedValue([]);
   mocks.taskApplicationCreate.mockResolvedValue(makeTaskApplication());
@@ -851,6 +858,29 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("listTaskEmails");
     expect(adminNames).toContain("listRecipientEmails");
     expect(adminNames).toContain("listEmailLogs");
+  });
+
+  it("dispatches task impact trace reads", async () => {
+    mocks.getTaskImpactTrace.mockResolvedValue({
+      id: "estimate-1",
+      stale: false,
+      taskId: "task-1",
+    });
+    const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+    const result = await client.callTool({
+      name: "getTaskImpactTrace",
+      arguments: { taskId: "task-1" },
+    });
+
+    expect(mocks.getTaskImpactTrace).toHaveBeenCalledWith(
+      { estimateSetId: undefined, taskId: "task-1" },
+      { isAdmin: false, userId: "user-1" },
+    );
+    expect(parseToolBody(result)).toMatchObject({
+      id: "estimate-1",
+      taskId: "task-1",
+    });
   });
 
   it("lets admins list task email communications over MCP", async () => {
@@ -2461,7 +2491,7 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("returns a required-deadline task when it has reached latest-start time even if another task has higher priority", async () => {
+    it("keeps a required latest-start task in every personal queue while its EV needs review", async () => {
       const dueSoon = new Date(Date.now() + 60 * 60 * 1000).toISOString();
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
@@ -2475,6 +2505,7 @@ describe("MCP server tool dispatch", () => {
           dueAt: dueSoon,
           deadlinePolicy: "REQUIRED",
           estimatedEffortHours: 2,
+          marginalImpactFrame: null,
           contextJson: {
             deadline_rationale: "Taxes must be filed by the legal deadline.",
           },
@@ -2482,25 +2513,45 @@ describe("MCP server tool dispatch", () => {
       ]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
-        makePriority({ priority: task.id === "big-upside" ? 999 : 10 }),
+        task.id === "big-upside"
+          ? makePriority({ priority: 999 })
+          : makePriority({
+              priority: 0,
+              realEv: 0,
+              valid: false,
+              validationNotes: ["Missing marginal expected-value estimate."],
+            }),
       );
 
       const client = await setup("user-1", ALL_SCOPES);
+      const queueResult = await client.callTool({
+        name: "getMyQueue",
+        arguments: {},
+      });
       const result = await client.callTool({
         name: "getNextAction",
         arguments: {},
       });
 
+      const queue = parseToolBody(queueResult).queue as Array<{
+        hasMarginalEstimate: boolean;
+        id: string;
+      }>;
+      expect(queue[0]).toMatchObject({
+        hasMarginalEstimate: false,
+        id: "taxes",
+      });
       const body = parseToolBody(result);
       expect(body.task).toMatchObject({
         id: "taxes",
         deadlinePolicy: "REQUIRED",
         deadlineStatus: "start_now",
-        priority: 10,
+        hasMarginalEstimate: false,
+        priority: 0,
       });
       expect(body.deadlineOverride).toBe(true);
       expect(body.selectionReason).toBe("deadline_latest_start");
-      expect(body.priority).toBe(10);
+      expect(body.priority).toBe(0);
     });
   });
 
@@ -3104,13 +3155,16 @@ describe("MCP server tool dispatch", () => {
           }),
         }),
       );
-      expect(mocks.taskImpactFrameEstimateCreate).toHaveBeenCalledWith(
+      expect(mocks.createDirectTaskImpact).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({
+          frame: expect.objectContaining({
             expectedEconomicValueUsdBase: 5_000,
             successProbabilityBase: 0.9,
           }),
         }),
+        expect.objectContaining({ userId: "user-1" }),
+        { publish: false },
+        expect.anything(),
       );
       expect(mocks.taskUpdate).toHaveBeenCalledWith({
         where: { id: "draft-mercury" },
@@ -3503,6 +3557,37 @@ describe("MCP server tool dispatch", () => {
           enum: ["PUBLIC", "PRIVATE"],
         },
       });
+    });
+
+    it("rejects organization-owned tasks from callers who cannot manage the organization", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          acceptanceCriteria: ["The task is complete."],
+          category: "ENGINEERING",
+          description: "Complete work for an organization.",
+          hours: 1,
+          impactStatement: "The organization can make progress.",
+          ownerOrganizationId: "other-org",
+          parentTaskId: "personal-project",
+          p_success: 0.5,
+          title: "Organization work",
+          value: 100,
+          visibility: "PRIVATE",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "requires an owner or admin membership",
+      );
+      expect(mocks.canManageOrganization).toHaveBeenCalledWith(
+        "user-1",
+        "other-org",
+      );
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
     it("createTask persists routing metadata for roles, locations, compensation, and matching tags", async () => {
@@ -3976,7 +4061,8 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("allows explicit private visibility for organization-assigned tasks", async () => {
+    it("allows organization managers to create explicitly private assigned tasks", async () => {
+      mocks.canManageOrganization.mockResolvedValue(true);
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "created-task",
@@ -4033,7 +4119,8 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("non-admin org-assigned tasks default to private and create successfully", async () => {
+    it("organization-manager tasks default to private and create successfully", async () => {
+      mocks.canManageOrganization.mockResolvedValue(true);
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "created-task",
@@ -4658,15 +4745,20 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.taskImpactFrameEstimateCreate).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          estimatedCashCostUsdBase: 50,
-          estimatedEffortHoursBase: 8,
-          expectedEconomicValueUsdBase: 1234,
-          successProbabilityBase: 0.25,
-          timeToImpactStartDays: 14,
+      expect(mocks.createDirectTaskImpactInTransaction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          frame: expect.objectContaining({
+            estimatedCashCostUsdBase: 50,
+            estimatedEffortHoursBase: 8,
+            expectedEconomicValueUsdBase: 1234,
+            successProbabilityBase: 0.25,
+            timeToImpactStartDays: 14,
+          }),
         }),
-      });
+        expect.objectContaining({ userId: "admin-1" }),
+        { publish: false },
+        expect.anything(),
+      );
     });
 
     it("allows deleteTask for admin users without tasks:admin when another user created the task", async () => {
@@ -4732,7 +4824,7 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
-    it("updateTask replaces dependencies without losing retained soft-deleted edges", async () => {
+    it("updateTask preserves the type of a retained soft-deleted dependency", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
           task: makeCreatedTask({
@@ -4756,6 +4848,15 @@ describe("MCP server tool dispatch", () => {
       mocks.taskFindMany.mockResolvedValue([
         { id: "new-blocker", isPublic: false, createdByUserId: "user-1" },
       ]);
+      mocks.taskEdgeFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
+        {
+          createdAt: new Date("2026-07-01T00:00:00.000Z"),
+          deletedAt: new Date("2026-07-02T00:00:00.000Z"),
+          edgeType: TaskEdgeType.DEPENDS_ON,
+          fromTaskId: "new-blocker",
+          id: "existing-dependency",
+        },
+      ]);
       mocks.computeTaskPriority.mockReturnValue(
         makePriority({ priority: 100 }),
       );
@@ -4777,24 +4878,11 @@ describe("MCP server tool dispatch", () => {
       );
       expect(mocks.taskEdgeUpdateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({
-            toTaskId: "task-1",
-            fromTaskId: { in: ["new-blocker"] },
-          }),
+          where: { id: { in: ["existing-dependency"] } },
           data: { deletedAt: null },
         }),
       );
-      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: [
-            expect.objectContaining({
-              fromTaskId: "new-blocker",
-              toTaskId: "task-1",
-            }),
-          ],
-          skipDuplicates: true,
-        }),
-      );
+      expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
     });
 
     it("updateTask rejects a dependency replacement that creates a cycle", async () => {
@@ -4973,6 +5061,7 @@ describe("MCP server tool dispatch", () => {
       expect(body.comment).toMatchObject({ id: "comment-1" });
       expect(mocks.postComment).toHaveBeenCalledWith({
         authorUserId: "user-1",
+        enforceParentVisibility: true,
         mediaUrl: null,
         message: "Owner/assignee update",
         parentCommentId: null,
@@ -6365,9 +6454,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(1);
       expect(
         mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
       ).toMatchObject({
@@ -6416,9 +6503,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(1);
       expect(
         mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
       ).toMatchObject({

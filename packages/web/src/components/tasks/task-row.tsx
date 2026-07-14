@@ -44,6 +44,7 @@ function PrivateTaskLock({ isPublic }: { isPublic: boolean }) {
 }
 
 export type TaskSortKey =
+  | "recommendation"
   | "title"
   | "assignee"
   | "status"
@@ -129,14 +130,22 @@ function ImpactCell({
   return <span className={base}>{value}</span>;
 }
 
-function StatusBadge({ children, variant = "default" }: { children: React.ReactNode; variant?: "default" | "overdue" | "done" }) {
+function StatusBadge({
+  children,
+  variant = "default",
+}: {
+  children: React.ReactNode;
+  variant?: "default" | "overdue" | "done";
+}) {
   const colors = {
     default: "bg-muted text-muted-foreground",
     overdue: "bg-brutal-red text-brutal-red-foreground",
     done: "bg-brutal-green text-brutal-green-foreground",
   };
   return (
-    <span className={`inline-block rounded-sm border-2 border-foreground px-2 py-0.5 text-xs font-bold ${colors[variant]}`}>
+    <span
+      className={`inline-block rounded-sm border-2 border-foreground px-2 py-0.5 text-xs font-bold ${colors[variant]}`}
+    >
       {children}
     </span>
   );
@@ -145,8 +154,10 @@ function StatusBadge({ children, variant = "default" }: { children: React.ReactN
 function getLeftBorderColor(task: TaskCardTask): string {
   const econ = task.impact?.selectedFrame?.expectedEconomicValueUsdBase;
   const dalys = task.impact?.selectedFrame?.expectedDalysAvertedBase;
-  const hasNegative = (econ != null && econ < 0) || (dalys != null && dalys < 0);
-  const hasPositive = (econ != null && econ > 0) || (dalys != null && dalys > 0);
+  const hasNegative =
+    (econ != null && econ < 0) || (dalys != null && dalys < 0);
+  const hasPositive =
+    (econ != null && econ > 0) || (dalys != null && dalys > 0);
 
   if (task.status === "VERIFIED" && hasNegative) return "border-l-brutal-red";
   if (task.status === "VERIFIED" && hasPositive) return "border-l-brutal-green";
@@ -169,6 +180,7 @@ function impactSignClass(value: number | null | undefined): string {
 }
 
 const SORT_LABELS: Record<TaskSortKey, string> = {
+  recommendation: "Expected Value / Hour",
   title: "Task",
   assignee: "Assignee",
   status: "Status",
@@ -204,7 +216,8 @@ export function TaskTableHeader({
         className={`${className} ${onSort ? "cursor-pointer select-none hover:text-foreground" : ""}`}
         onClick={onSort ? () => onSort(key) : undefined}
       >
-        {SORT_LABELS[key]}{arrow}
+        {SORT_LABELS[key]}
+        {arrow}
       </span>
     );
   }
@@ -214,7 +227,11 @@ export function TaskTableHeader({
   if (variant === "signer") {
     // Dense signer leaderboard: photo · assignee · task · 💀 deaths · 💸 wasted · time · remind · details
     // Desktop-only header (>= lg). Mobile uses the packed caption inside each row.
-    function signerHeaderCell(key: TaskSortKey, emoji: string, className: string) {
+    function signerHeaderCell(
+      key: TaskSortKey,
+      emoji: string,
+      className: string,
+    ) {
       const isActive = sortKey === key;
       const arrow = isActive ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
       return (
@@ -232,7 +249,11 @@ export function TaskTableHeader({
         {hideAssignee ? null : <span className="h-14 w-14 shrink-0" />}
         {hideAssignee ? null : headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
         {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
-        {signerHeaderCell("deathsLockedIn", "💀", `w-40 shrink-0 text-right ${hdr}`)}
+        {signerHeaderCell(
+          "deathsLockedIn",
+          "💀",
+          `w-40 shrink-0 text-right ${hdr}`,
+        )}
         {signerHeaderCell("cost", "💸", `w-44 shrink-0 text-right ${hdr}`)}
         {signerHeaderCell("time", "⏱", `w-20 shrink-0 text-right ${hdr}`)}
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -245,7 +266,11 @@ export function TaskTableHeader({
 
   if (variant === "completed") {
     // Completed leaderboard: photo · assignee · task · 💀 lives saved · 💸 $ saved · completed date
-    function completedHeaderCell(key: TaskSortKey, emoji: string, className: string) {
+    function completedHeaderCell(
+      key: TaskSortKey,
+      emoji: string,
+      className: string,
+    ) {
       const isActive = sortKey === key;
       const arrow = isActive ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
       return (
@@ -263,8 +288,16 @@ export function TaskTableHeader({
         {hideAssignee ? null : <span className="h-14 w-14 shrink-0" />}
         {hideAssignee ? null : headerCell("assignee", `w-56 shrink-0 ${hdr}`)}
         {headerCell("title", `min-w-0 flex-[1.2] ${hdr}`)}
-        {completedHeaderCell("impactLives", "💀", `w-40 shrink-0 text-right ${hdr}`)}
-        {completedHeaderCell("impactMoney", "💸", `w-44 shrink-0 text-right ${hdr}`)}
+        {completedHeaderCell(
+          "impactLives",
+          "💀",
+          `w-40 shrink-0 text-right ${hdr}`,
+        )}
+        {completedHeaderCell(
+          "impactMoney",
+          "💸",
+          `w-44 shrink-0 text-right ${hdr}`,
+        )}
         {headerCell("verifiedAt", `w-24 shrink-0 text-right ${hdr}`)}
       </div>
     );
@@ -276,7 +309,10 @@ export function TaskTableHeader({
       {headerCell("assignee", `hidden w-44 shrink-0 sm:block ${hdr}`)}
       {headerCell("title", `min-w-0 flex-1 ${hdr}`)}
       {headerCell("status", `hidden shrink-0 sm:block ${hdr}`)}
-      {headerCell("deathsLockedIn", `hidden w-40 shrink-0 text-right lg:block ${hdr}`)}
+      {headerCell(
+        "deathsLockedIn",
+        `hidden w-40 shrink-0 text-right lg:block ${hdr}`,
+      )}
       {headerCell("cost", `hidden w-44 shrink-0 text-right lg:block ${hdr}`)}
       {headerCell("time", `hidden w-16 shrink-0 text-right xl:block ${hdr}`)}
       <span className="hidden shrink-0 md:block text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -316,7 +352,8 @@ export function TaskRow({
 
   const shareText = buildTaskShareText({
     currentDelayDays: delayStats?.currentDelayDays ?? 0,
-    currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
+    currentEconomicValueUsdLost:
+      delayStats?.currentEconomicValueUsdLost ?? null,
     currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
     currentSufferingHoursLost: delayStats?.currentSufferingHoursLost ?? null,
     targetLabel: shareTargetLabel,
@@ -324,20 +361,24 @@ export function TaskRow({
   });
   const leaderHandle = getLeaderHandle(task);
 
-  const shareTokens = now ? buildTaskShareTokens({
-    countryCode,
-    currentDelayDays: delayStats?.currentDelayDays ?? 0,
-    currentEconomicValueUsdLost: delayStats?.currentEconomicValueUsdLost ?? null,
-    currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
-    currentSufferingHoursLost: delayStats?.currentSufferingHoursLost ?? null,
-    governmentBudgetUsdPerYear: governmentBudgetUsd,
-    leaderHandle,
-    militaryToClinicalTrialsRatio,
-    militaryBudgetUsdPerYear: assigneeBudget,
-    now,
-    targetLabel: shareTargetLabel,
-    taskTitle: task.title,
-  }) : undefined;
+  const shareTokens = now
+    ? buildTaskShareTokens({
+        countryCode,
+        currentDelayDays: delayStats?.currentDelayDays ?? 0,
+        currentEconomicValueUsdLost:
+          delayStats?.currentEconomicValueUsdLost ?? null,
+        currentHumanLivesLost: delayStats?.currentHumanLivesLost ?? null,
+        currentSufferingHoursLost:
+          delayStats?.currentSufferingHoursLost ?? null,
+        governmentBudgetUsdPerYear: governmentBudgetUsd,
+        leaderHandle,
+        militaryToClinicalTrialsRatio,
+        militaryBudgetUsdPerYear: assigneeBudget,
+        now,
+        targetLabel: shareTargetLabel,
+        taskTitle: task.title,
+      })
+    : undefined;
 
   const pressurePrompt: string | null = null;
 
@@ -365,13 +406,18 @@ export function TaskRow({
 
   // Continuous death counter inputs: convert per-day healthy life-years lost
   // into per-second, then divide by years-per-death to get deaths/sec.
-  const yearsPerSecond = perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
+  const yearsPerSecond =
+    perDayDalys != null && perDayDalys > 0 ? perDayDalys / 86400 : null;
   const deathClockStartMs = dueMs;
-  const showDeathCounter = yearsPerSecond != null && deathClockStartMs != null && isOverdue;
+  const showDeathCounter =
+    yearsPerSecond != null && deathClockStartMs != null && isOverdue;
 
   const calculationsUrl =
-    (task.currentImpactEstimateSet?.assumptionsJson as { calculationsUrl?: string } | null)
-      ?.calculationsUrl ?? null;
+    (
+      task.currentImpactEstimateSet?.assumptionsJson as {
+        calculationsUrl?: string;
+      } | null
+    )?.calculationsUrl ?? null;
   const assigneeHref = task.assigneePerson
     ? getPersonHref(task.assigneePerson)
     : null;
@@ -416,35 +462,47 @@ export function TaskRow({
       attribution != null;
     // Compact packed caption for mobile (desktop uses full numbers below).
     const deathsTextCompact =
-      attribution != null ? formatCompactCount(attribution.deathsFromDelay) : "—";
+      attribution != null
+        ? formatCompactCount(attribution.deathsFromDelay)
+        : "—";
     const wastedTextCompact =
       attribution != null ? formatCompactCurrency(attribution.wastedUsd) : "—";
     const signerShareText = buildTaskShareText({
       currentDelayDays: delayStats?.currentDelayDays ?? 0,
       currentEconomicValueUsdLost:
-        attribution?.wastedUsd ?? delayStats?.currentEconomicValueUsdLost ?? null,
+        attribution?.wastedUsd ??
+        delayStats?.currentEconomicValueUsdLost ??
+        null,
       currentHumanLivesLost:
-        attribution?.deathsFromDelay ?? delayStats?.currentHumanLivesLost ?? null,
+        attribution?.deathsFromDelay ??
+        delayStats?.currentHumanLivesLost ??
+        null,
       currentSufferingHoursLost: null,
       targetLabel,
       taskTitle: task.title,
     });
-    const signerShareTokens = now ? buildTaskShareTokens({
-      countryCode,
-      currentDelayDays: delayStats?.currentDelayDays ?? 0,
-      currentEconomicValueUsdLost:
-        attribution?.wastedUsd ?? delayStats?.currentEconomicValueUsdLost ?? null,
-      currentHumanLivesLost:
-        attribution?.deathsFromDelay ?? delayStats?.currentHumanLivesLost ?? null,
-      currentSufferingHoursLost: null,
-      governmentBudgetUsdPerYear: governmentBudgetUsd,
-      leaderHandle,
-      militaryToClinicalTrialsRatio,
-      militaryBudgetUsdPerYear: assigneeBudget,
-      now,
-      targetLabel,
-      taskTitle: task.title,
-    }) : undefined;
+    const signerShareTokens = now
+      ? buildTaskShareTokens({
+          countryCode,
+          currentDelayDays: delayStats?.currentDelayDays ?? 0,
+          currentEconomicValueUsdLost:
+            attribution?.wastedUsd ??
+            delayStats?.currentEconomicValueUsdLost ??
+            null,
+          currentHumanLivesLost:
+            attribution?.deathsFromDelay ??
+            delayStats?.currentHumanLivesLost ??
+            null,
+          currentSufferingHoursLost: null,
+          governmentBudgetUsdPerYear: governmentBudgetUsd,
+          leaderHandle,
+          militaryToClinicalTrialsRatio,
+          militaryBudgetUsdPerYear: assigneeBudget,
+          now,
+          targetLabel,
+          taskTitle: task.title,
+        })
+      : undefined;
     return (
       <div
         className={`relative flex items-center gap-3 border-l-4 px-3 py-3 transition-colors hover:bg-muted/50 sm:px-4 ${getLeftBorderColor(task)}`}
@@ -614,7 +672,8 @@ export function TaskRow({
   if (variant === "completed") {
     const roleLabel =
       task.assigneePerson?.currentAffiliation ?? task.roleTitle ?? null;
-    const econ = task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? null;
+    const econ =
+      task.impact?.selectedFrame?.expectedEconomicValueUsdBase ?? null;
     const dalys = task.impact?.selectedFrame?.expectedDalysAvertedBase ?? null;
     const livesSaved = dalys != null ? dalys / YEARS_PER_AVERTED_DEATH : null;
     const livesClass = impactSignClass(livesSaved);
@@ -667,9 +726,7 @@ export function TaskRow({
               <div className={`${livesClass} font-black`}>
                 💀 {livesText} lives
               </div>
-              <div className={`${moneyClass} font-black`}>
-                💸 {moneyText}
-              </div>
+              <div className={`${moneyClass} font-black`}>💸 {moneyText}</div>
               {completedText !== "—" ? (
                 <div>completed {completedText}</div>
               ) : null}
@@ -691,9 +748,7 @@ export function TaskRow({
               <div className={`${livesClass} font-black`}>
                 💀 {livesText} lives
               </div>
-              <div className={`${moneyClass} font-black`}>
-                💸 {moneyText}
-              </div>
+              <div className={`${moneyClass} font-black`}>💸 {moneyText}</div>
               {completedText !== "—" ? (
                 <div>completed {completedText}</div>
               ) : null}
@@ -824,7 +879,9 @@ export function TaskRow({
 
       {/* Live death counter — desktop. Full comma-separated integers. */}
       <div className="relative z-[1] hidden w-40 shrink-0 break-all text-right text-sm font-black leading-tight text-brutal-red lg:block">
-        {defaultDeathsPerSecond != null && deathClockStartMs != null && isOverdue ? (
+        {defaultDeathsPerSecond != null &&
+        deathClockStartMs != null &&
+        isOverdue ? (
           <>
             💀{" "}
             <LiveCounter
@@ -860,11 +917,7 @@ export function TaskRow({
 
       {/* Time required — xl desktop */}
       <div className="relative z-[1] hidden xl:block">
-        <ImpactCell
-          value={formatDuration(time)}
-          href={null}
-          className="w-16"
-        />
+        <ImpactCell value={formatDuration(time)} href={null} className="w-16" />
       </div>
 
       <div className="relative z-[1] hidden shrink-0 md:block">
@@ -882,8 +935,13 @@ export function TaskRow({
   );
 }
 
-export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string | number {
+export function getTaskSortValue(
+  task: TaskCardTask,
+  key: TaskSortKey,
+): string | number {
   switch (key) {
+    case "recommendation":
+      return task.recommendationScore ?? 0;
     case "deathsLockedIn": {
       // Deaths from delay for signer tasks are proportional to share of
       // global military spending → sort by budget to preserve order.
@@ -898,7 +956,9 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
       // Non-signer tasks fall through to per-day delay econ value.
       const budget = getAssigneeMilitaryBudgetUsd(task.contextJson);
       if (budget != null) return budget;
-      return task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? 0;
+      return (
+        task.impact?.selectedFrame?.delayEconomicValueUsdLostPerDayBase ?? 0
+      );
     }
     case "time":
       // Lower time required = easier; ascending puts fastest first
@@ -913,7 +973,11 @@ export function getTaskSortValue(task: TaskCardTask, key: TaskSortKey): string |
     case "verifiedAt":
       return getTaskDateMs(task.verifiedAt) ?? 0;
     case "assignee":
-      return task.assigneePerson?.displayName ?? task.assigneeOrganization?.name ?? "";
+      return (
+        task.assigneePerson?.displayName ??
+        task.assigneeOrganization?.name ??
+        ""
+      );
     case "status":
       return getTaskDateMs(task.dueAt) ?? Infinity;
     case "title":

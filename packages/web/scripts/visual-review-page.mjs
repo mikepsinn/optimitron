@@ -377,6 +377,9 @@ const CSS = `
   .sbs figure { margin: 0; min-width: 0; }
   .sbs figcaption { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); margin-bottom: 4px; }
   .sbs img { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: #fff; }
+  .single-shot { margin: 0; }
+  .single-shot figcaption { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); margin-bottom: 4px; }
+  .single-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: #fff; }
 
   /* ---------- copy diff ---------- */
   .tbl-scroll { overflow-x: auto; margin-bottom: 10px; }
@@ -951,19 +954,21 @@ const CLIENT_JS = `
         function () { return pairName; },
         function (val) { pairName = val; hunkPointer = -1; renderPane(true); }
       ));
-      toolbar.appendChild(el("span", { class: "seg-label", text: "Compare" }));
-      var hunkCount = visibleHunks(pair).length;
-      toolbar.appendChild(segControl(
-        [
-          { v: "hunks", t: "Hunks" + ((pair.hunks || []).length ? " (" + hunkCount + ")" : "") },
-          { v: "full", t: "Full page" },
-          { v: "swipe", t: "Swipe" },
-          { v: "onion", t: "Onion skin" },
-          { v: "overlay", t: "Overlay", disabled: !pair.diffRelPath }
-        ],
-        function () { return cmpMode; },
-        function (val) { cmpMode = val; renderPane(true); }
-      ));
+      if (pair.beforeRelPath && pair.afterRelPath) {
+        toolbar.appendChild(el("span", { class: "seg-label", text: "Compare" }));
+        var hunkCount = visibleHunks(pair).length;
+        toolbar.appendChild(segControl(
+          [
+            { v: "hunks", t: "Hunks" + ((pair.hunks || []).length ? " (" + hunkCount + ")" : "") },
+            { v: "full", t: "Full page" },
+            { v: "swipe", t: "Swipe" },
+            { v: "onion", t: "Onion skin" },
+            { v: "overlay", t: "Overlay", disabled: !pair.diffRelPath }
+          ],
+          function () { return cmpMode; },
+          function (val) { cmpMode = val; renderPane(true); }
+        ));
+      }
       content.appendChild(toolbar);
 
       var info = el("p", { class: "vp-info" });
@@ -977,8 +982,20 @@ const CLIENT_JS = `
       if (pair.errored) {
         cmpCard.appendChild(el("div", { class: "err-note", text: "This capture errored \\u2014 " + (pair.diffLabel || "no image pair.") }));
       }
-      if (pair.missing) {
+      if (!pair.beforeRelPath && !pair.afterRelPath) {
         cmpCard.appendChild(el("div", { class: "img-missing", text: "No screenshots for this viewport." }));
+      } else if (!pair.beforeRelPath) {
+        cmpCard.appendChild(el("div", {
+          class: "no-copy",
+          text: "This route has no baseline screenshot yet. Showing the version from this PR."
+        }));
+        cmpCard.appendChild(buildSingleScreenshot(pair.afterRelPath, "After \u2014 this PR"));
+      } else if (!pair.afterRelPath) {
+        cmpCard.appendChild(el("div", {
+          class: "err-note",
+          text: "The PR screenshot is missing. Showing the baseline only."
+        }));
+        cmpCard.appendChild(buildSingleScreenshot(pair.beforeRelPath, "Before \u2014 baseline"));
       } else {
         cmpCard.appendChild(buildComparator(r, pair));
       }
@@ -1160,6 +1177,19 @@ const CLIENT_JS = `
 
   function lazyImg(src, cls, alt) {
     return el("img", { src: src, loading: "lazy", alt: alt || "", class: cls || "" });
+  }
+
+  function buildSingleScreenshot(relPath, label) {
+    var figure = el("figure", { class: "single-shot" }, [
+      el("figcaption", { text: label })
+    ]);
+    var img = lazyImg(relPath, "", label);
+    img.addEventListener("error", function () {
+      figure.innerHTML = "";
+      figure.appendChild(el("div", { class: "img-missing", text: label + ": image unavailable." }));
+    });
+    figure.appendChild(img);
+    return figure;
   }
 
   /* ---------------- comparator dispatch ---------------- */

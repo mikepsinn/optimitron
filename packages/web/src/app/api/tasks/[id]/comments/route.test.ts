@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   getTaskActivityTimeline: vi.fn(),
   getTaskCommentFeed: vi.fn(),
   postComment: vi.fn(),
+  generateAndPostWishoniaReply: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -25,13 +26,19 @@ vi.mock("@/lib/tasks/task-visibility.server", () => ({
   canUserViewTask: mocks.canUserViewTask,
 }));
 
+vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
+  TaskCommentAttachmentInputError: class extends Error {
+    status = 400;
+  },
+}));
+
 vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: vi.fn(),
 }));
 
 vi.mock("@/lib/tasks/wishonia-task-reply.server", () => ({
   buildCitationsJson: vi.fn(),
-  generateAndPostWishoniaReply: vi.fn(),
+  generateAndPostWishoniaReply: mocks.generateAndPostWishoniaReply,
   prepareWishoniaReply: vi.fn(),
   streamWishoniaReplyText: vi.fn(),
 }));
@@ -40,16 +47,22 @@ import { GET, POST } from "./route";
 
 const FEED = { comments: [], nextCursor: null, total: 0 };
 
-function getRequest(taskId: string) {
-  return GET(new Request(`http://localhost/api/tasks/${taskId}/comments`), {
-    params: Promise.resolve({ id: taskId }),
-  });
+function getRequest(taskId: string, query = "") {
+  return GET(
+    new Request(`http://localhost/api/tasks/${taskId}/comments${query}`),
+    {
+      params: Promise.resolve({ id: taskId }),
+    },
+  );
 }
 
 beforeEach(() => {
   for (const fn of Object.values(mocks)) {
     fn.mockReset();
   }
+  mocks.canUserViewTask.mockResolvedValue(true);
+  mocks.countUserCommentsInWindow.mockResolvedValue(0);
+  mocks.postComment.mockResolvedValue({ id: "comment_1" });
 });
 
 describe("GET /api/tasks/[id]/comments", () => {
@@ -103,6 +116,19 @@ describe("GET /api/tasks/[id]/comments", () => {
       null,
     );
   });
+
+  it("truncates fractional page limits before querying Prisma", async () => {
+    mocks.getCurrentUser.mockResolvedValue(null);
+    mocks.getTaskCommentFeed.mockResolvedValue(FEED);
+    mocks.getTaskActivityTimeline.mockResolvedValue([]);
+
+    const response = await getRequest("public_task", "?limit=50.5");
+
+    expect(response.status).toBe(200);
+    expect(mocks.getTaskCommentFeed).toHaveBeenCalledWith(
+      expect.objectContaining({ limit: 50 }),
+    );
+  });
 });
 
 describe("POST /api/tasks/[id]/comments", () => {
@@ -119,6 +145,45 @@ describe("POST /api/tasks/[id]/comments", () => {
     );
 
     expect(response.status).toBe(404);
+    expect(mocks.postComment).not.toHaveBeenCalled();
+  });
+
+  it("posts an attachment-only comment without starting an AI reply", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "owner_1" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks/task_1/comments", {
+        method: "POST",
+        body: JSON.stringify({ attachmentIds: ["attachment_1"], message: "" }),
+      }),
+      { params: Promise.resolve({ id: "task_1" }) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.postComment).toHaveBeenCalledWith({
+      attachmentIds: ["attachment_1"],
+      authorUserId: "owner_1",
+      enforceParentVisibility: true,
+      mediaUrl: null,
+      message: "",
+      parentCommentId: null,
+      taskId: "task_1",
+    });
+    expect(mocks.generateAndPostWishoniaReply).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed attachment IDs before posting", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "owner_1" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks/task_1/comments", {
+        method: "POST",
+        body: JSON.stringify({ attachmentIds: [42], message: "Evidence" }),
+      }),
+      { params: Promise.resolve({ id: "task_1" }) },
+    );
+
+    expect(response.status).toBe(400);
     expect(mocks.postComment).not.toHaveBeenCalled();
   });
 });

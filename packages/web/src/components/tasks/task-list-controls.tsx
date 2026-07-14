@@ -12,6 +12,7 @@ import type { TaskCardTask } from "./task-card";
 import { useHydratedNow } from "@/lib/use-hydrated-now";
 
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
+  { key: "recommendation", label: "Expected Value / Hour" },
   { key: "deathsLockedIn", label: "Deaths From Delay" },
   { key: "cost", label: "Wasted By Delay" },
   { key: "impactLives", label: "Lives Saved" },
@@ -64,6 +65,13 @@ export function SortableTaskList({
   const [sortDir, setSortDir] = useState<"asc" | "desc">(defaultSortDir);
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(0);
+  const availableSortOptions = useMemo(
+    () =>
+      tasks.some((task) => typeof task.recommendationScore === "number")
+        ? SORT_OPTIONS
+        : SORT_OPTIONS.filter((option) => option.key !== "recommendation"),
+    [tasks],
+  );
 
   const sorted = useMemo(() => {
     const filtered = tasks.filter((t) => matchesFilter(t, filter));
@@ -104,7 +112,10 @@ export function SortableTaskList({
           onChange={(e) => setFilter(e.target.value)}
         />
         <div className="flex items-center gap-2 lg:hidden">
-          <label htmlFor="task-sort" className="text-xs font-bold uppercase text-muted-foreground">
+          <label
+            htmlFor="task-sort"
+            className="text-xs font-bold uppercase text-muted-foreground"
+          >
             Sort
           </label>
           <select
@@ -117,7 +128,7 @@ export function SortableTaskList({
               setSortDir(ASC_SORT_KEYS.has(key) ? "asc" : "desc");
             }}
           >
-            {SORT_OPTIONS.map((opt) => (
+            {availableSortOptions.map((opt) => (
               <option key={opt.key} value={opt.key}>
                 {opt.label}
               </option>

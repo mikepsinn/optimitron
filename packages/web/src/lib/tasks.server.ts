@@ -206,6 +206,19 @@ const impactFrameSelect = {
 
 const impactEstimateSetSelect = {
   assumptionsJson: true,
+  inputs: {
+    where: { deletedAt: null },
+    select: {
+      parameterRevisionId: true,
+      parameterRevision: {
+        select: {
+          parameter: {
+            select: { currentRevisionId: true },
+          },
+        },
+      },
+    },
+  },
   calculationVersion: true,
   counterfactualKey: true,
   createdAt: true,
@@ -311,6 +324,7 @@ const taskListSelect = {
   assigneeAffiliationSnapshot: true,
   applicationPolicy: true,
   applicationQuestionsJson: true,
+  availableAt: true,
   compensationCadence: true,
   compensationCurrency: true,
   compensationKind: true,
@@ -322,6 +336,7 @@ const taskListSelect = {
   },
   contextJson: true,
   description: true,
+  deadlinePolicy: true,
   dueAt: true,
   engagementKind: true,
   estimatedHoursPerWeekMax: true,

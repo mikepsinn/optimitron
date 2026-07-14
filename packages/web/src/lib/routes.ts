@@ -140,6 +140,7 @@ export const ROUTES = {
   // Player
   profile: "/profile",
   dashboard: "/dashboard",
+  calendar: "/calendar",
   tasks: "/tasks",
   employees: "/employees",
   census: "/census",
@@ -188,9 +189,9 @@ export interface NavItem {
   screenshot?: boolean;
   /** Capture this route again as the seeded demo user. */
   authenticatedScreenshot?: boolean;
-  /** Generate a logged-out page.logged-out.md copy preview for this route. */
+  /** Generate a logged-out copy preview even without a screenshot. */
   copyPreview?: boolean;
-  /** Generate a page.logged-in.md copy preview as the seeded demo user. */
+  /** Generate a seeded logged-in copy preview even without a screenshot. */
   authenticatedCopyPreview?: boolean;
   /** Stable screenshot/copy-review id when the path alone is ambiguous. */
   reviewName?: string;
@@ -523,6 +524,17 @@ export const tasksLink: NavItem = {
   reviewName: "tasks-index",
   screenshot: true,
   cta: "Open the list",
+};
+
+export const calendarLink: NavItem = {
+  href: ROUTES.calendar,
+  label: "Calendar",
+  emoji: "📅",
+  description:
+    "See fixed commitments and the highest-value work that fits around them.",
+  tagline: "Know what to do and when",
+  authenticatedScreenshot: true,
+  cta: "Open Calendar",
 };
 
 export const presidentManagementLink: NavItem = {
@@ -1234,7 +1246,7 @@ export const navSections: NavSection[] = [
     id: "primary",
     label: "Primary",
     primary: true,
-    items: [prizeLink, tasksLink, peopleLink, dashboardLink],
+    items: [prizeLink, tasksLink, calendarLink, peopleLink, dashboardLink],
   },
   {
     id: "track",
@@ -1337,6 +1349,7 @@ export const toolSections: NavSection[] = [
     label: "Player",
     items: [
       tasksLink,
+      calendarLink,
       missionsLink,
       storeLink,
       shirtLink,
@@ -1359,6 +1372,7 @@ export const footerAppLinks: NavItem[] = [
   alignmentLink,
   dashboardLink,
   tasksLink,
+  calendarLink,
   presidentManagementLink,
   editProfileLink,
   censusLink,
@@ -1805,6 +1819,7 @@ export const routeReviewNavItems = [
   dashboardLink,
   editProfileLink,
   tasksLink,
+  calendarLink,
   peopleLink,
   questionsLink,
   trialSurveyLink,

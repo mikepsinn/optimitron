@@ -2,12 +2,11 @@ import Link from "next/link";
 import { FundingTaskCard } from "@/components/task-funding/FundingTaskCard";
 import { EosInvestmentCalculator } from "@/components/site/EosInvestmentCalculator";
 import { getRouteMetadata } from "@/lib/metadata";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { fundLink, ROUTES } from "@/lib/routes";
 import {
   collectFundableTasks,
-  getExpectedValueUsd,
-  getFundingDenominator,
-  type FundingTask,
+  rankFundingTasks,
 } from "@/lib/task-funding/fundable-tasks.server";
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { getTasksPageData } from "@/lib/tasks.server";
@@ -16,10 +15,10 @@ export const metadata = getRouteMetadata(fundLink);
 
 const requestDataRoomSubject = "EOS data room request";
 const bookCallSubject = "EOS investor call";
-const requestDataRoomHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
+const requestDataRoomHref = `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
   requestDataRoomSubject,
 )}`;
-const bookCallHref = `mailto:m@warondisease.org?subject=${encodeURIComponent(
+const bookCallHref = `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
   bookCallSubject,
 )}`;
 const requestDataRoomLabel = "Request the data room";
@@ -56,69 +55,25 @@ const terms = [
   },
 ] as const;
 
-interface RankedFundingTask {
-  denominatorCents: bigint;
-  expectedValueUsd: number;
-  fundingSource: "target" | "compensation";
-  score: number;
-  task: FundingTask;
-}
-
-function dedupeRankedTasks(tasks: RankedFundingTask[]) {
-  const byTitle = new Map<string, RankedFundingTask>();
-  for (const task of tasks) {
-    const key = task.task.title.trim().toLowerCase();
-    const existing = byTitle.get(key);
-    if (
-      !existing ||
-      task.score > existing.score ||
-      (task.score === existing.score &&
-        task.task.id.localeCompare(existing.task.id) < 0)
-    ) {
-      byTitle.set(key, task);
-    }
-  }
-  return Array.from(byTitle.values());
-}
-
-function rankFundingTasks(tasks: FundingTask[]) {
-  const ranked = tasks.flatMap((task): RankedFundingTask[] => {
-    const denominator = getFundingDenominator(task);
-    const expectedValueUsd = getExpectedValueUsd(task);
-    if (
-      !denominator ||
-      denominator.denominatorCents <= 0n ||
-      expectedValueUsd <= 0
-    ) {
-      return [];
-    }
-    return [
-      {
-        denominatorCents: denominator.denominatorCents,
-        expectedValueUsd,
-        fundingSource: denominator.fundingSource,
-        score: expectedValueUsd / (Number(denominator.denominatorCents) / 100),
-        task,
-      },
-    ];
-  });
-
-  return dedupeRankedTasks(ranked).sort((left, right) => {
-    if (right.score !== left.score) return right.score - left.score;
-    return left.task.title.localeCompare(right.task.title);
-  });
-}
-
 export default async function FundPage() {
   const data = await getTasksPageData(null);
-  const rankedTasks = rankFundingTasks(collectFundableTasks(data)).slice(0, 12);
+  const candidates = collectFundableTasks(data);
   const fundingStatuses = new Map(
     await Promise.all(
-      rankedTasks.map(
-        async ({ task }) =>
-          [task.id, await getTaskFundingStatus(task.id).catch(() => null)] as const,
+      candidates.map(
+        async (task) =>
+          [
+            task.id,
+            task.fundingTarget
+              ? await getTaskFundingStatus(task.id).catch(() => null)
+              : null,
+          ] as const,
       ),
     ),
+  );
+  const rankedTasks = rankFundingTasks(candidates, fundingStatuses).slice(
+    0,
+    12,
   );
 
   return (
@@ -179,9 +134,9 @@ export default async function FundPage() {
           <div className="border border-foreground p-6">
             <h2 className="text-xl font-black">No priced bottlenecks yet</h2>
             <p className="mt-2 text-sm font-bold text-muted-foreground">
-              Tasks rank here once they carry a funding target or a fixed
-              worker payout. Until then, any public task will still take your
-              money on its own page.
+              Tasks rank here once they carry a funding target or a fixed worker
+              payout. Until then, any public task will still take your money on
+              its own page.
             </p>
           </div>
         )}

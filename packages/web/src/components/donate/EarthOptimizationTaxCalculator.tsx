@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/retroui/Button";
 import { defaultButtonClassName } from "@/components/ui/default-button";
 import { Input } from "@/components/retroui/Input";
+import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { STATES } from "@/lib/tax-optimizer/brackets";
 import {
   compareDonationStrategies,
@@ -288,7 +289,7 @@ export function EarthOptimizationTaxCalculator({ onClose }: Props) {
           className={`${defaultButtonClassName} w-full`}
         >
           <a
-            href={`mailto:m@warondisease.org?subject=${encodeURIComponent(
+            href={`mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
               "Major-gift transfer: " +
                 (assetType === "cash"
                   ? "wire"

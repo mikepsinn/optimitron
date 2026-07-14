@@ -30,7 +30,10 @@ function toCitationAuthor(citation: Citation): string | null {
     return null;
   }
 
-  if (typeof firstAuthor.literal === "string" && firstAuthor.literal.trim().length > 0) {
+  if (
+    typeof firstAuthor.literal === "string" &&
+    firstAuthor.literal.trim().length > 0
+  ) {
     return firstAuthor.literal.trim();
   }
 
@@ -43,7 +46,9 @@ function toCitationAuthor(citation: Citation): string | null {
   return family ?? given ?? null;
 }
 
-function toParameterExportCitation(citation: Citation): ParameterExportCitation {
+function toParameterExportCitation(
+  citation: Citation,
+): ParameterExportCitation {
   const url = citation.URL ?? null;
 
   return {
@@ -60,7 +65,10 @@ function toParameterExportCitation(citation: Citation): ParameterExportCitation 
   };
 }
 
-function toParameterExportEntry(parameterName: string, parameter: Parameter): ParameterExportEntry {
+function toParameterExportEntry(
+  parameterName: string,
+  parameter: Parameter,
+): ParameterExportEntry {
   return {
     chapterUrl: parameter.manualPageUrl ?? null,
     confidence: parameter.confidence ?? null,
@@ -75,7 +83,9 @@ function toParameterExportEntry(parameterName: string, parameter: Parameter): Pa
     sourceType: parameter.sourceType ?? null,
     sourceUrl:
       parameter.sourceUrl ??
-      (parameter.sourceRef ? (citations[parameter.sourceRef]?.URL ?? null) : null),
+      (parameter.sourceRef
+        ? (citations[parameter.sourceRef]?.URL ?? null)
+        : null),
     stdError: parameter.stdError ?? null,
     unit: parameter.unit ?? null,
     value: parameter.value,
@@ -103,9 +113,9 @@ function normalizeForStableHash(value: unknown): unknown {
 }
 
 function buildStableHash(value: unknown) {
-  return `sha256:${createHash("sha256").update(
-    JSON.stringify(normalizeForStableHash(value)),
-  ).digest("hex")}`;
+  return `sha256:${createHash("sha256")
+    .update(JSON.stringify(normalizeForStableHash(value)))
+    .digest("hex")}`;
 }
 
 let cachedTreatyParameterExport: ParameterExport | null = null;
@@ -118,7 +128,10 @@ export function buildTreatyParameterExport(): ParameterExport {
 
   cachedTreatyParameterExport = {
     citations: Object.fromEntries(
-      Object.entries(citations).map(([key, citation]) => [key, toParameterExportCitation(citation)]),
+      Object.entries(citations).map(([key, citation]) => [
+        key,
+        toParameterExportCitation(citation),
+      ]),
     ),
     parameters: Object.fromEntries(
       Object.entries(parameters).map(([parameterName, parameter]) => [
@@ -135,7 +148,9 @@ export function buildTreatyParameterExport(): ParameterExport {
 
 export function getTreatyParameterSetHash() {
   if (!cachedTreatyParameterSetHash) {
-    cachedTreatyParameterSetHash = buildStableHash(buildTreatyParameterExport());
+    cachedTreatyParameterSetHash = buildStableHash(
+      buildTreatyParameterExport(),
+    );
   }
 
   return cachedTreatyParameterSetHash;

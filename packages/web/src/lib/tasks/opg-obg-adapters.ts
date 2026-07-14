@@ -4,10 +4,7 @@ import type {
   PolicyReportJSON,
   PolicyReportPolicy,
 } from "@optimitron/opg";
-import type {
-  BudgetReportCategory,
-  BudgetReportJSON,
-} from "@optimitron/obg";
+import type { BudgetReportCategory, BudgetReportJSON } from "@optimitron/obg";
 import {
   OrgType,
   SourceArtifactType,
@@ -87,11 +84,16 @@ export interface ImportedImpactFrameDraft {
 
 export interface ImportedImpactEstimateDraft {
   assumptionsJson: Record<string, unknown>;
+  calculationCode?: string | null;
+  calculationLanguage?: string | null;
   calculationVersion: string;
   counterfactualKey: string;
   estimateKind: TaskImpactEstimateKind;
+  formulaLatex?: string | null;
+  formulaText?: string | null;
   frames: ImportedImpactFrameDraft[];
   methodologyKey: string;
+  parameterKeys?: string[];
   parameterSetHash: string;
   publicationStatus: TaskImpactPublicationStatus;
   sourceSystem: SourceSystem;
@@ -183,9 +185,11 @@ export function buildOpgRecommendationTaskBundle(input: {
   recommendation: PolicyRecommendation;
 }) {
   const { policy, policyReport, recommendation, reportPolicy } = input;
-  const policyName = policy?.name ?? reportPolicy?.name ?? recommendation.policyId;
+  const policyName =
+    policy?.name ?? reportPolicy?.name ?? recommendation.policyId;
   const policyType = policy?.type ?? reportPolicy?.type ?? "policy";
-  const recommendationTarget = recommendation.recommendedTarget ?? reportPolicy?.recommendedTarget ?? null;
+  const recommendationTarget =
+    recommendation.recommendedTarget ?? reportPolicy?.recommendedTarget ?? null;
   const reportArtifactKey = policyReport
     ? `opg:report:${slugify(policyReport.jurisdiction)}:${slugify(policyName)}:${slugify(policyReport.generatedAt)}`
     : null;
@@ -227,7 +231,8 @@ export function buildOpgRecommendationTaskBundle(input: {
           expectedEconomicValueUsdLow: null,
           frameKey: TaskImpactFrameKey.TWENTY_YEAR,
           frameSlug: "twenty-year",
-          medianHealthyLifeYearsEffectBase: recommendation.welfareEffect.healthEffect,
+          medianHealthyLifeYearsEffectBase:
+            recommendation.welfareEffect.healthEffect,
           medianHealthyLifeYearsEffectHigh:
             recommendation.welfareEffect.healthEffectCIHigh ?? null,
           medianHealthyLifeYearsEffectLow:

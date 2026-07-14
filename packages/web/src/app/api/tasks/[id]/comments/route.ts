@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
+import { TaskCommentAttachmentInputError } from "@/lib/tasks/task-comment-attachments.server";
 import {
   countUserCommentsInWindow,
   getTaskActivityTimeline,
@@ -43,27 +44,31 @@ export async function GET(
     const cursorParam = url.searchParams.get("cursor");
     const cursor = cursorParam ? new Date(cursorParam) : null;
     const limitParam = Number(url.searchParams.get("limit") ?? 50);
-    const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 50;
+    const limit = Number.isFinite(limitParam)
+      ? Math.min(Math.max(Math.trunc(limitParam), 1), 100)
+      : 50;
 
     const currentUser = await getCurrentUser(request, [
       McpScope.TASKS_PERSONAL,
       McpScope.TASKS_ADMIN,
     ]);
 
-    const [{ comments, nextCursor, total }, activityEvents] = await Promise.all([
-      getTaskCommentFeed({
-        taskId,
-        sort,
-        cursor: cursor && !Number.isNaN(cursor.getTime()) ? cursor : null,
-        limit,
-        currentUserId: currentUser?.id ?? null,
-      }),
-      // Only fetch activities on the first page load (no cursor) — they're
-      // not paginated, they're just a supplementary timeline.
-      cursor
-        ? Promise.resolve([])
-        : getTaskActivityTimeline(taskId, 50, currentUser?.id ?? null),
-    ]);
+    const [{ comments, nextCursor, total }, activityEvents] = await Promise.all(
+      [
+        getTaskCommentFeed({
+          taskId,
+          sort,
+          cursor: cursor && !Number.isNaN(cursor.getTime()) ? cursor : null,
+          limit,
+          currentUserId: currentUser?.id ?? null,
+        }),
+        // Only fetch activities on the first page load (no cursor) — they're
+        // not paginated, they're just a supplementary timeline.
+        cursor
+          ? Promise.resolve([])
+          : getTaskActivityTimeline(taskId, 50, currentUser?.id ?? null),
+      ],
+    );
 
     return NextResponse.json({
       comments,
@@ -81,7 +86,10 @@ export async function GET(
     }
 
     console.error("[TASKS] Failed to fetch comment feed:", error);
-    return NextResponse.json({ error: "Failed to fetch comments." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch comments." },
+      { status: 500 },
+    );
   }
 }
 
@@ -95,22 +103,22 @@ export async function POST(
       McpScope.TASKS_ADMIN,
     ]);
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+      return NextResponse.json(
+        { error: "Authentication required." },
+        { status: 401 },
+      );
     }
 
     const { id: taskId } = await context.params;
-    const body = (await request.json().catch(() => null)) as
-      | {
-          message?: unknown;
-          parentCommentId?: unknown;
-          mediaUrl?: unknown;
-        }
-      | null;
+    const body = (await request.json().catch(() => null)) as {
+      message?: unknown;
+      parentCommentId?: unknown;
+      mediaUrl?: unknown;
+      attachmentIds?: unknown;
+    } | null;
 
-    const message = typeof body?.message === "string" ? body.message.trim() : "";
-    if (message.length < 1) {
-      return NextResponse.json({ error: "Message cannot be empty." }, { status: 400 });
-    }
+    const message =
+      typeof body?.message === "string" ? body.message.trim() : "";
     if (message.length > MAX_MESSAGE_LENGTH) {
       return NextResponse.json(
         { error: `Message exceeds ${MAX_MESSAGE_LENGTH} character limit.` },
@@ -119,11 +127,41 @@ export async function POST(
     }
 
     const parentCommentId =
-      typeof body?.parentCommentId === "string" && body.parentCommentId.length > 0
+      typeof body?.parentCommentId === "string" &&
+      body.parentCommentId.length > 0
         ? body.parentCommentId
         : null;
     const mediaUrl =
-      typeof body?.mediaUrl === "string" && body.mediaUrl.length > 0 ? body.mediaUrl : null;
+      typeof body?.mediaUrl === "string" && body.mediaUrl.length > 0
+        ? body.mediaUrl
+        : null;
+    if (body?.attachmentIds != null && !Array.isArray(body.attachmentIds)) {
+      return NextResponse.json(
+        { error: "Attachment IDs must be an array." },
+        { status: 400 },
+      );
+    }
+    const attachmentIds = Array.isArray(body?.attachmentIds)
+      ? body.attachmentIds.filter(
+          (value): value is string =>
+            typeof value === "string" && value.length > 0,
+        )
+      : [];
+    if (
+      Array.isArray(body?.attachmentIds) &&
+      attachmentIds.length !== body.attachmentIds.length
+    ) {
+      return NextResponse.json(
+        { error: "Invalid attachment ID." },
+        { status: 400 },
+      );
+    }
+    if (message.length < 1 && !mediaUrl && attachmentIds.length === 0) {
+      return NextResponse.json(
+        { error: "Add a message, link, or file." },
+        { status: 400 },
+      );
+    }
 
     // Same visibility gate as GET: you can only write where you can read.
     // (postComment itself stays ungated so server-initiated Wishonia replies
@@ -153,12 +191,18 @@ export async function POST(
       parentCommentId,
       message,
       mediaUrl,
+      attachmentIds,
+      enforceParentVisibility: true,
     });
+
+    const notificationMessage =
+      message ||
+      `Attached ${attachmentIds.length} ${attachmentIds.length === 1 ? "file" : "files"}`;
 
     void notifyTaskCommentRecipients({
       authorUserId: currentUser.id,
       commentId: comment.id,
-      message,
+      message: notificationMessage,
       taskId,
     });
 
@@ -177,21 +221,38 @@ export async function POST(
 
     // Non-streaming clients (MCP, curl, older browsers): background-fire
     // Wishonia reply so the user's comment returns immediately.
-    void generateAndPostWishoniaReply({
-      taskId,
-      parentCommentId: comment.id,
-      userComment: message,
-      userCommentAuthorId: currentUser.id,
-    });
+    if (message) {
+      void generateAndPostWishoniaReply({
+        taskId,
+        parentCommentId: comment.id,
+        userComment: message,
+        userCommentAuthorId: currentUser.id,
+      });
+    }
 
     return NextResponse.json({ comment });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (error instanceof TaskCommentAttachmentInputError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    if (error instanceof Error && error.message === TASK_NOT_FOUND_MESSAGE) {
+      return NextResponse.json(
+        { error: "Comment not found." },
+        { status: 404 },
+      );
+    }
 
     console.error("[TASKS] Failed to post comment:", error);
-    return NextResponse.json({ error: "Failed to post comment." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to post comment." },
+      { status: 500 },
+    );
   }
 }
 
@@ -223,6 +284,12 @@ function streamCommentResponse(args: {
       try {
         // 1. Echo the user comment immediately so the client can render it
         send({ type: "user", comment: args.comment });
+
+        if (!args.userMessage.trim()) {
+          send({ type: "wishonia-skip", reason: "too-short" });
+          controller.close();
+          return;
+        }
 
         // 2. Check Wishonia eligibility
         const prepResult = await prepareWishoniaReply({
