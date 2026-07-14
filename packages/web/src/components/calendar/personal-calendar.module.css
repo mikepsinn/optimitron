@@ -1,0 +1,119 @@
+.calendar {
+  --calendar-border: var(--foreground);
+}
+
+.calendar :global(.fc) {
+  --fc-border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+  --fc-neutral-bg-color: var(--background);
+  --fc-page-bg-color: var(--background);
+  --fc-today-bg-color: color-mix(in srgb, var(--foreground) 5%, transparent);
+  color: var(--foreground);
+  font-family: inherit;
+}
+
+.calendar :global(.fc-theme-standard .fc-scrollgrid),
+.calendar :global(.fc-theme-standard td),
+.calendar :global(.fc-theme-standard th) {
+  border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+}
+
+.calendar :global(.fc-scrollgrid) {
+  border: 2px solid var(--calendar-border);
+  border-radius: 0;
+}
+
+.calendar :global(.fc-col-header-cell-cushion),
+.calendar :global(.fc-timegrid-axis-cushion),
+.calendar :global(.fc-timegrid-slot-label-cushion) {
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.calendar :global(.fc-timegrid-slot) {
+  height: 2rem;
+}
+
+.calendar :global(.fc-timegrid-now-indicator-line) {
+  border-color: var(--foreground);
+  border-width: 2px 0 0;
+}
+
+.calendar :global(.fc-timegrid-now-indicator-arrow) {
+  border-color: transparent var(--foreground) transparent transparent;
+}
+
+.calendar :global(.fc-event) {
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.calendar :global(.optimitron-calendar-task) {
+  --fc-event-bg-color: var(--background);
+  --fc-event-border-color: var(--foreground);
+  --fc-event-text-color: var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.calendar :global(.optimitron-calendar-required) {
+  --fc-event-bg-color: var(--foreground);
+  --fc-event-border-color: var(--foreground);
+  --fc-event-text-color: var(--background);
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.calendar :global(.optimitron-calendar-task .fc-event-main) {
+  color: var(--foreground);
+}
+
+.calendar :global(.optimitron-calendar-required .fc-event-main) {
+  color: var(--background);
+}
+
+.eventContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+  padding: 2px 4px;
+  line-height: 1.15;
+}
+
+.eventTime {
+  font-size: 0.625rem;
+  font-weight: 900;
+}
+
+.eventTitle {
+  overflow: hidden;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar :global(.fc-timegrid-event-short) .eventContent {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.calendar :global(.fc-timegrid-event-short) .eventTime {
+  flex: none;
+}
+
+@media (min-width: 768px) {
+  .calendar :global(.fc-timegrid-slot) {
+    height: 2.5rem;
+  }
+
+  .eventTitle {
+    font-size: 0.75rem;
+  }
+}

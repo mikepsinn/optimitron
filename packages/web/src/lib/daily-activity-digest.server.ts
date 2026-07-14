@@ -3,12 +3,16 @@ import { PersonhoodVerificationStatus } from "@optimitron/db";
 import { createAppPasswordAgent } from "@optimitron/hypercerts";
 import { getContracts } from "@optimitron/treasury-shared/addresses";
 import { ethers } from "ethers";
-import { getProvider, getVoterPrizeTreasuryContract } from "@/lib/contracts/server-client";
+import {
+  getProvider,
+  getVoterPrizeTreasuryContract,
+} from "@/lib/contracts/server-client";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
 import { ROUTES } from "@/lib/routes";
 import { getConfiguredSiteOrigin } from "@/lib/site";
+import { getStartOfZonedDayUtc, getZonedDateParts } from "@/lib/time-zone";
 
 const logger = createLogger("daily-activity-digest");
 const DAILY_DIGEST_COLLECTION = "app.bsky.feed.post";
@@ -19,15 +23,6 @@ const ZERO_ADDRESS = /^0x0{40}$/i;
 interface PrizeDepositSummary {
   count: number;
   totalAmount: string;
-}
-
-interface ZonedDateParts {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
 }
 
 export interface DailyActivityDigestWindow {
@@ -70,7 +65,8 @@ function getDigestTimeZone() {
 }
 
 function getTreasuryChainId() {
-  const raw = process.env.TREASURY_CHAIN_ID ?? process.env.EOP_CHAIN_ID ?? "84532";
+  const raw =
+    process.env.TREASURY_CHAIN_ID ?? process.env.EOP_CHAIN_ID ?? "84532";
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
 }
@@ -87,50 +83,9 @@ function pluralize(count: number, singular: string, plural = `${singular}s`) {
   return count === 1 ? singular : plural;
 }
 
-function getZonedDateParts(date: Date, timeZone: string): ZonedDateParts {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-
-  const values = new Map(parts.map((part) => [part.type, part.value]));
-
-  return {
-    year: Number(values.get("year")),
-    month: Number(values.get("month")),
-    day: Number(values.get("day")),
-    hour: Number(values.get("hour")),
-    minute: Number(values.get("minute")),
-    second: Number(values.get("second")),
-  };
-}
-
-function getTimeZoneOffsetMs(date: Date, timeZone: string) {
-  const parts = getZonedDateParts(date, timeZone);
-  const utcTimestamp = Date.UTC(
-    parts.year,
-    parts.month - 1,
-    parts.day,
-    parts.hour,
-    parts.minute,
-    parts.second,
-  );
-  return utcTimestamp - date.getTime();
-}
-
-function getStartOfZonedDayUtc(parts: Pick<ZonedDateParts, "year" | "month" | "day">, timeZone: string) {
-  const utcGuess = new Date(Date.UTC(parts.year, parts.month - 1, parts.day, 0, 0, 0));
-  const offsetMs = getTimeZoneOffsetMs(utcGuess, timeZone);
-  return new Date(utcGuess.getTime() - offsetMs);
-}
-
-export function getDailyActivityDigestWindow(referenceDate: Date = new Date()): DailyActivityDigestWindow {
+export function getDailyActivityDigestWindow(
+  referenceDate: Date = new Date(),
+): DailyActivityDigestWindow {
   const timeZone = getDigestTimeZone();
   const currentDayParts = getZonedDateParts(referenceDate, timeZone);
   const end = getStartOfZonedDayUtc(currentDayParts, timeZone);
@@ -178,7 +133,11 @@ async function scanPrizeDepositSummaryForWindow(
   const end = new Date(endIso);
   const provider = getProvider(chainId);
   const treasury = getVoterPrizeTreasuryContract(chainId, provider);
-  const logs = await treasury.queryFilter(treasury.filters.Deposited(), 0, "latest");
+  const logs = await treasury.queryFilter(
+    treasury.filters.Deposited(),
+    0,
+    "latest",
+  );
   const blockTimeCache = new Map<number, Date>();
 
   let count = 0;
@@ -298,7 +257,9 @@ export function buildDailyActivityDigestText(
   const lines = [`Optimitron daily digest for ${summary.label}`];
 
   if (summary.totalVotes > 0) {
-    lines.push(`${summary.totalVotes} ${pluralize(summary.totalVotes, "vote")} cast`);
+    lines.push(
+      `${summary.totalVotes} ${pluralize(summary.totalVotes, "vote")} cast`,
+    );
   }
 
   if (summary.verifiedVotes > 0) {
@@ -306,7 +267,9 @@ export function buildDailyActivityDigestText(
   }
 
   if (summary.referralSignups > 0) {
-    lines.push(`${summary.referralSignups} ${pluralize(summary.referralSignups, "referral")} captured`);
+    lines.push(
+      `${summary.referralSignups} ${pluralize(summary.referralSignups, "referral")} captured`,
+    );
   }
 
   if (summary.prizeDepositCount > 0) {
@@ -345,7 +308,9 @@ export async function publishDailyActivityDigest(
   const did = process.env.ATPROTO_DID;
   const password = process.env.ATPROTO_PASSWORD;
   if (!did || !password) {
-    logger.info("AT Protocol credentials missing, skipping daily digest publication");
+    logger.info(
+      "AT Protocol credentials missing, skipping daily digest publication",
+    );
     return {
       status: "skipped",
       reason: "missing-atproto-credentials",

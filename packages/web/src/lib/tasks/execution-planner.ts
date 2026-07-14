@@ -63,9 +63,14 @@ export interface ExecutionPlanInput {
   tasks: ExecutionPlanningTask[];
 }
 
-export interface PlannedAction extends ExecutionPlanningTask {
+export interface EstimatedAction extends ExecutionPlanningTask {
   estimatedMinutes: number;
   reason: string;
+}
+
+export interface PlannedAction extends EstimatedAction {
+  scheduledEndAt: string;
+  scheduledStartAt: string;
 }
 
 export interface ExecutionPlan {
@@ -95,8 +100,19 @@ export interface ExecutionPlan {
   }>;
   nextAction: PlannedAction | null;
   plannerVersion: typeof EXECUTION_PLANNER_VERSION;
-  proposedAiAssistedWork: PlannedAction[];
+  proposedAiAssistedWork: EstimatedAction[];
   unusedMinutes: number;
+}
+
+interface FreeInterval {
+  end: number;
+  start: number;
+}
+
+interface PlanningSlot {
+  end: number;
+  intervalIndex: number;
+  start: number;
 }
 
 function asDate(value: Date | string | null | undefined) {
@@ -125,7 +141,7 @@ function overlapInterval(
     : null;
 }
 
-function totalCommitmentMinutes(
+function mergedCommitmentIntervals(
   commitments: PlanningCommitment[],
   windowStart: Date,
   windowEnd: Date,
@@ -136,7 +152,7 @@ function totalCommitmentMinutes(
       (interval): interval is readonly [number, number] => interval != null,
     )
     .sort((left, right) => left[0] - right[0]);
-  let totalMilliseconds = 0;
+  const merged: FreeInterval[] = [];
   let currentStart: number | null = null;
   let currentEnd: number | null = null;
 
@@ -150,14 +166,106 @@ function totalCommitmentMinutes(
       currentEnd = Math.max(currentEnd, end);
       continue;
     }
-    totalMilliseconds += currentEnd - currentStart;
+    merged.push({ end: currentEnd, start: currentStart });
     currentStart = start;
     currentEnd = end;
   }
   if (currentStart != null && currentEnd != null) {
-    totalMilliseconds += currentEnd - currentStart;
+    merged.push({ end: currentEnd, start: currentStart });
   }
-  return totalMilliseconds / 60_000;
+  return merged;
+}
+
+function totalCommitmentMinutes(
+  commitments: PlanningCommitment[],
+  windowStart: Date,
+  windowEnd: Date,
+) {
+  return (
+    mergedCommitmentIntervals(commitments, windowStart, windowEnd).reduce(
+      (total, interval) => total + interval.end - interval.start,
+      0,
+    ) / 60_000
+  );
+}
+
+function freePlanningIntervals(
+  commitments: PlanningCommitment[],
+  windowStart: Date,
+  windowEnd: Date,
+) {
+  const free: FreeInterval[] = [];
+  let cursor = windowStart.getTime();
+  for (const commitment of mergedCommitmentIntervals(
+    commitments,
+    windowStart,
+    windowEnd,
+  )) {
+    if (commitment.start > cursor) {
+      free.push({ end: commitment.start, start: cursor });
+    }
+    cursor = Math.max(cursor, commitment.end);
+  }
+  if (cursor < windowEnd.getTime()) {
+    free.push({ end: windowEnd.getTime(), start: cursor });
+  }
+  return free;
+}
+
+function findPlanningSlot(
+  intervals: FreeInterval[],
+  durationMinutes: number,
+  notBefore: number,
+  notAfter?: number | null,
+): PlanningSlot | null {
+  const durationMs = durationMinutes * 60_000;
+  for (
+    let intervalIndex = 0;
+    intervalIndex < intervals.length;
+    intervalIndex += 1
+  ) {
+    const interval = intervals[intervalIndex]!;
+    const start = Math.max(interval.start, notBefore);
+    const end = start + durationMs;
+    const latestEnd =
+      notAfter == null ? interval.end : Math.min(interval.end, notAfter);
+    if (end <= latestEnd) return { end, intervalIndex, start };
+  }
+  return null;
+}
+
+function findLatestPlanningSlot(
+  intervals: FreeInterval[],
+  durationMinutes: number,
+  notBefore: number,
+  notAfter: number,
+): PlanningSlot | null {
+  const durationMs = durationMinutes * 60_000;
+  for (
+    let intervalIndex = intervals.length - 1;
+    intervalIndex >= 0;
+    intervalIndex -= 1
+  ) {
+    const interval = intervals[intervalIndex]!;
+    const end = Math.min(interval.end, notAfter);
+    const start = end - durationMs;
+    if (start >= Math.max(interval.start, notBefore)) {
+      return { end, intervalIndex, start };
+    }
+  }
+  return null;
+}
+
+function reservePlanningSlot(intervals: FreeInterval[], slot: PlanningSlot) {
+  const interval = intervals[slot.intervalIndex]!;
+  const replacements: FreeInterval[] = [];
+  if (interval.start < slot.start) {
+    replacements.push({ end: slot.start, start: interval.start });
+  }
+  if (slot.end < interval.end) {
+    replacements.push({ end: interval.end, start: slot.end });
+  }
+  intervals.splice(slot.intervalIndex, 1, ...replacements);
 }
 
 function taskMinutes(task: ExecutionPlanningTask) {
@@ -192,6 +300,33 @@ function hasUsableEstimate(task: ExecutionPlanningTask) {
     task.realEv !== 0 &&
     taskMinutes(task) != null
   );
+}
+
+function isRequiredGuardrail(task: ExecutionPlanningTask) {
+  return (
+    task.deadlinePolicy === "REQUIRED" &&
+    (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") &&
+    taskMinutes(task) != null
+  );
+}
+
+function isRequiredInWindow(
+  task: ExecutionPlanningTask,
+  windowStart: Date,
+  windowEnd: Date,
+) {
+  if (task.deadlinePolicy !== "REQUIRED" || taskMinutes(task) == null) {
+    return false;
+  }
+  if (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") {
+    return true;
+  }
+  const dueAt = asDate(task.dueAt);
+  return dueAt != null && dueAt > windowStart && dueAt <= windowEnd;
+}
+
+function isSchedulable(task: ExecutionPlanningTask) {
+  return hasUsableEstimate(task) || isRequiredGuardrail(task);
 }
 
 function unresolvedBlockers(
@@ -249,15 +384,128 @@ function actionReason(task: ExecutionPlanningTask, unlocked: boolean) {
   return "Highest-priority feasible atomic task on the current frontier.";
 }
 
+function scheduledAction(
+  task: ExecutionPlanningTask,
+  slot: PlanningSlot,
+  reason: string,
+): PlannedAction {
+  return {
+    ...task,
+    estimatedMinutes: taskMinutes(task)!,
+    reason,
+    scheduledEndAt: new Date(slot.end).toISOString(),
+    scheduledStartAt: new Date(slot.start).toISOString(),
+  };
+}
+
+function plannedBlockerCompletion(
+  task: ExecutionPlanningTask,
+  completionTimes: ReadonlyMap<string, number>,
+) {
+  return task.blockers.reduce(
+    (latest, blocker) =>
+      Math.max(latest, completionTimes.get(blocker.taskId) ?? 0),
+    0,
+  );
+}
+
+function taskSchedulingBounds(
+  task: ExecutionPlanningTask,
+  now: Date,
+  completionTimes: ReadonlyMap<string, number>,
+) {
+  const availableAt = asDate(task.availableAt)?.getTime() ?? 0;
+  const blockerCompletion = plannedBlockerCompletion(task, completionTimes);
+  const dueAt = asDate(task.dueAt);
+  const hasHardDeadline =
+    task.deadlinePolicy === "REQUIRED" || task.deadlinePolicy === "EXPIRES";
+  return {
+    notAfter:
+      hasHardDeadline && dueAt != null && dueAt > now ? dueAt.getTime() : null,
+    notBefore: Math.max(now.getTime(), availableAt, blockerCompletion),
+  };
+}
+
+function compareRequiredReservations(
+  left: ExecutionPlanningTask,
+  right: ExecutionPlanningTask,
+) {
+  const leftIsImmediate = isRequiredGuardrail(left);
+  const rightIsImmediate = isRequiredGuardrail(right);
+  if (leftIsImmediate !== rightIsImmediate) return leftIsImmediate ? -1 : 1;
+
+  const leftDueAt = asDate(left.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  const rightDueAt = asDate(right.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  if (leftDueAt !== rightDueAt) return leftDueAt - rightDueAt;
+
+  return compareExecutionTasks(left, right);
+}
+
 function planHumanChecklist(input: {
   availableMinutes: number;
+  commitments: PlanningCommitment[];
   limit: number;
   now: Date;
+  planningWindowEnd: Date;
+  planningWindowStart: Date;
   tasks: ExecutionPlanningTask[];
 }) {
   const checklist: PlannedAction[] = [];
   const completedIds = new Set<string>();
+  const completionTimes = new Map<string, number>();
+  const freeIntervals = freePlanningIntervals(
+    input.commitments,
+    input.planningWindowStart,
+    input.planningWindowEnd,
+  );
   let remainingMinutes = input.availableMinutes;
+
+  const requiredTasks = input.tasks
+    .filter((task) => task.executorType !== AI_EXECUTOR)
+    .filter((task) => isAtomicTask(task) && task.rooted)
+    .filter(hasConfirmedCapability)
+    .filter((task) =>
+      isRequiredInWindow(
+        task,
+        input.planningWindowStart,
+        input.planningWindowEnd,
+      ),
+    )
+    .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
+    .sort(compareRequiredReservations);
+
+  for (const task of requiredTasks) {
+    const estimatedMinutes = taskMinutes(task)!;
+    if (checklist.length >= input.limit || estimatedMinutes > remainingMinutes)
+      break;
+    const bounds = taskSchedulingBounds(task, input.now, completionTimes);
+    const slot =
+      bounds.notAfter == null || isRequiredGuardrail(task)
+        ? findPlanningSlot(
+            freeIntervals,
+            estimatedMinutes,
+            bounds.notBefore,
+            bounds.notAfter,
+          )
+        : findLatestPlanningSlot(
+            freeIntervals,
+            estimatedMinutes,
+            bounds.notBefore,
+            bounds.notAfter,
+          );
+    if (!slot) continue;
+    reservePlanningSlot(freeIntervals, slot);
+    checklist.push(
+      scheduledAction(
+        task,
+        slot,
+        "Required work is reserved inside its due window.",
+      ),
+    );
+    completedIds.add(task.id);
+    completionTimes.set(task.id, slot.end);
+    remainingMinutes -= estimatedMinutes;
+  }
 
   while (checklist.length < input.limit && remainingMinutes > 0) {
     const candidates = input.tasks
@@ -265,30 +513,52 @@ function planHumanChecklist(input: {
       .filter((task) => !completedIds.has(task.id))
       .filter((task) => isAtomicTask(task) && task.rooted)
       .filter(hasConfirmedCapability)
-      .filter((task) => isTimeAvailable(task, input.now))
       .filter((task) => task.deadlineStatus !== "expired")
-      .filter(hasUsableEstimate)
+      .filter(isSchedulable)
       .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
       .filter(
         (task) =>
           (taskMinutes(task) ?? Number.POSITIVE_INFINITY) <= remainingMinutes,
       )
-      .sort(compareExecutionTasks);
+      .map((task) => {
+        const bounds = taskSchedulingBounds(task, input.now, completionTimes);
+        return {
+          slot: findPlanningSlot(
+            freeIntervals,
+            taskMinutes(task)!,
+            bounds.notBefore,
+            bounds.notAfter,
+          ),
+          task,
+        };
+      })
+      .filter(
+        (
+          candidate,
+        ): candidate is { slot: PlanningSlot; task: ExecutionPlanningTask } =>
+          candidate.slot != null,
+      )
+      .sort((left, right) => compareExecutionTasks(left.task, right.task));
 
     const next = candidates[0];
     if (!next) break;
-    const estimatedMinutes = taskMinutes(next)!;
-    const unlocked = next.blockers.some((blocker) =>
+    const estimatedMinutes = taskMinutes(next.task)!;
+    const unlocked = next.task.blockers.some((blocker) =>
       completedIds.has(blocker.taskId),
     );
-    checklist.push({
-      ...next,
-      estimatedMinutes,
-      reason: actionReason(next, unlocked),
-    });
-    completedIds.add(next.id);
+    reservePlanningSlot(freeIntervals, next.slot);
+    checklist.push(
+      scheduledAction(next.task, next.slot, actionReason(next.task, unlocked)),
+    );
+    completedIds.add(next.task.id);
+    completionTimes.set(next.task.id, next.slot.end);
     remainingMinutes -= estimatedMinutes;
   }
+
+  checklist.sort((left, right) => {
+    const byStart = left.scheduledStartAt.localeCompare(right.scheduledStartAt);
+    return byStart !== 0 ? byStart : left.id.localeCompare(right.id);
+  });
 
   return { checklist, completedIds, remainingMinutes };
 }
@@ -316,8 +586,11 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
   const limit = clampLimit(input.limit);
   const { checklist, completedIds, remainingMinutes } = planHumanChecklist({
     availableMinutes,
+    commitments: input.commitments ?? [],
     limit,
     now,
+    planningWindowEnd: windowEnd,
+    planningWindowStart: windowStart,
     tasks: input.tasks,
   });
 
@@ -327,7 +600,7 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
     .filter(hasConfirmedCapability)
     .filter((task) => isTimeAvailable(task, now))
     .filter((task) => task.deadlineStatus !== "expired")
-    .filter(hasUsableEstimate)
+    .filter(isSchedulable)
     .filter((task) => unresolvedBlockers(task, completedIds).length === 0)
     .sort(compareExecutionTasks)
     .slice(0, limit)
@@ -396,7 +669,8 @@ export function buildExecutionPlan(input: ExecutionPlanInput): ExecutionPlan {
       "This is repeated feasible-frontier selection, not a globally optimal finite schedule.",
       "Only rooted tasks without incomplete subtasks and with non-zero marginal estimates can enter the checklist.",
       "Completing a checklist item is simulated only to test which dependency becomes feasible next.",
-      "Calendar commitments reduce capacity but are not imported as tasks.",
+      "Calendar commitments reserve time but are not imported as tasks.",
+      "Required work due inside the planning window reserves a slot even when its expected-value estimate needs review.",
       "AI-routed work is proposed for approval and is never started by this planner.",
       "Tasks with unknown or mismatched required capabilities are reported separately and cannot enter an execution queue.",
     ],

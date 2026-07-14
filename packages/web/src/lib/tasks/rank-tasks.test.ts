@@ -228,7 +228,11 @@ describe("rankTasksForUser", () => {
       },
     };
 
-    const ranked = rankTasksForUser([strongFitTask, modestFitHugeImpactTask], user, 2);
+    const ranked = rankTasksForUser(
+      [strongFitTask, modestFitHugeImpactTask],
+      user,
+      2,
+    );
 
     expect(ranked[0]?.task).toBe(modestFitHugeImpactTask);
   });
@@ -385,6 +389,17 @@ describe("rankTasksForUser", () => {
     expect(ranked).toHaveLength(1);
   });
 
+  it("does not recommend tasks without a positive impact estimate", () => {
+    const unestimated = {
+      ...strongFitTask,
+      id: "unestimated",
+      marginalImpactFrame: null,
+      selectedImpactFrame: null,
+    };
+
+    expect(rankTasksForUser([unestimated], user, 10)).toEqual([]);
+  });
+
   it("prefers executable leaf tasks over parent orchestration nodes", () => {
     const parentTask = {
       ...strongFitTask,
@@ -476,14 +491,24 @@ describe("isTaskBlocked", () => {
 
   it("returns true when any blocker is not completed/verified", () => {
     expect(isTaskBlocked({ blockerStatuses: [TaskStatus.ACTIVE] })).toBe(true);
-    expect(isTaskBlocked({ blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.ACTIVE] })).toBe(true);
+    expect(
+      isTaskBlocked({
+        blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.ACTIVE],
+      }),
+    ).toBe(true);
     expect(isTaskBlocked({ blockerStatuses: [TaskStatus.DRAFT] })).toBe(true);
     expect(isTaskBlocked({ blockerStatuses: [TaskStatus.STALE] })).toBe(true);
   });
 
   it("returns false when all blockers are verified", () => {
-    expect(isTaskBlocked({ blockerStatuses: [TaskStatus.VERIFIED] })).toBe(false);
-    expect(isTaskBlocked({ blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.VERIFIED] })).toBe(false);
+    expect(isTaskBlocked({ blockerStatuses: [TaskStatus.VERIFIED] })).toBe(
+      false,
+    );
+    expect(
+      isTaskBlocked({
+        blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.VERIFIED],
+      }),
+    ).toBe(false);
   });
 });
 
@@ -494,15 +519,27 @@ describe("blockerProgress", () => {
   });
 
   it("returns 0 when no blockers are resolved", () => {
-    expect(blockerProgress({ blockerStatuses: [TaskStatus.ACTIVE, TaskStatus.DRAFT] })).toBe(0);
+    expect(
+      blockerProgress({
+        blockerStatuses: [TaskStatus.ACTIVE, TaskStatus.DRAFT],
+      }),
+    ).toBe(0);
   });
 
   it("returns fractional progress", () => {
-    expect(blockerProgress({ blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.ACTIVE] })).toBe(0.5);
+    expect(
+      blockerProgress({
+        blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.ACTIVE],
+      }),
+    ).toBe(0.5);
   });
 
   it("returns 1 when all blockers are resolved", () => {
-    expect(blockerProgress({ blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.VERIFIED] })).toBe(1);
+    expect(
+      blockerProgress({
+        blockerStatuses: [TaskStatus.VERIFIED, TaskStatus.VERIFIED],
+      }),
+    ).toBe(1);
   });
 });
 
@@ -510,6 +547,8 @@ describe("hasActiveChildTasks", () => {
   it("returns true only when the task still has child tasks to execute", () => {
     expect(hasActiveChildTasks({ activeChildTaskCount: 1 })).toBe(true);
     expect(hasActiveChildTasks({ activeChildTaskCount: 0 })).toBe(false);
-    expect(hasActiveChildTasks({ activeChildTaskCount: undefined })).toBe(false);
+    expect(hasActiveChildTasks({ activeChildTaskCount: undefined })).toBe(
+      false,
+    );
   });
 });

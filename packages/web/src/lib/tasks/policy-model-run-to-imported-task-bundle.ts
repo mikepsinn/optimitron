@@ -70,9 +70,7 @@ function slugify(value: string) {
 function normalizeTags(values: string[]) {
   return Array.from(
     new Set(
-      values
-        .map((value) => slugify(value))
-        .filter((value) => value.length > 0),
+      values.map((value) => slugify(value)).filter((value) => value.length > 0),
     ),
   );
 }
@@ -93,8 +91,12 @@ function toSourceSystem(value: string): SourceSystem {
   throw new Error(`Unsupported source system: ${value}`);
 }
 
-function deriveEstimateSourceSystem(sourceArtifacts: ImportedSourceArtifactDraft[]) {
-  const uniqueSystems = new Set(sourceArtifacts.map((artifact) => artifact.sourceSystem));
+function deriveEstimateSourceSystem(
+  sourceArtifacts: ImportedSourceArtifactDraft[],
+) {
+  const uniqueSystems = new Set(
+    sourceArtifacts.map((artifact) => artifact.sourceSystem),
+  );
 
   if (uniqueSystems.size <= 1) {
     return sourceArtifacts[0]?.sourceSystem ?? SourceSystem.CURATED;
@@ -118,7 +120,8 @@ function mapMetric(metric: PolicyModelMetric): ImportedImpactMetricDraft {
     metricKey: metric.key,
     summaryStatsJson: metric.summaryStats ?? null,
     unit: metric.unit,
-    valueJson: metric.valueKind === "numeric" ? null : (metric.valueJson ?? null),
+    valueJson:
+      metric.valueKind === "numeric" ? null : (metric.valueJson ?? null),
   };
 }
 
@@ -138,11 +141,21 @@ function mapFrame(frame: PolicyModelFrame): ImportedImpactFrameDraft {
   const medianHealthyLifeYearsEffect = mapEstimate(
     frame.canonical.medianHealthyLifeYearsEffect,
   );
-  const expectedDalysAverted = mapEstimate(frame.canonical.expectedDalysAverted);
-  const expectedEconomicValueUsd = mapEstimate(frame.canonical.expectedEconomicValueUsd);
-  const estimatedCashCostUsd = mapEstimate(frame.canonical.estimatedCashCostUsd);
-  const estimatedEffortHours = mapEstimate(frame.canonical.estimatedEffortHours);
-  const delayDalysLostPerDay = mapEstimate(frame.canonical.delayDalysLostPerDay);
+  const expectedDalysAverted = mapEstimate(
+    frame.canonical.expectedDalysAverted,
+  );
+  const expectedEconomicValueUsd = mapEstimate(
+    frame.canonical.expectedEconomicValueUsd,
+  );
+  const estimatedCashCostUsd = mapEstimate(
+    frame.canonical.estimatedCashCostUsd,
+  );
+  const estimatedEffortHours = mapEstimate(
+    frame.canonical.estimatedEffortHours,
+  );
+  const delayDalysLostPerDay = mapEstimate(
+    frame.canonical.delayDalysLostPerDay,
+  );
   const delayEconomicValueUsdLostPerDay = mapEstimate(
     frame.canonical.delayEconomicValueUsdLostPerDay,
   );
@@ -176,8 +189,10 @@ function mapFrame(frame: PolicyModelFrame): ImportedImpactFrameDraft {
     medianHealthyLifeYearsEffectBase: medianHealthyLifeYearsEffect.base,
     medianHealthyLifeYearsEffectHigh: medianHealthyLifeYearsEffect.high,
     medianHealthyLifeYearsEffectLow: medianHealthyLifeYearsEffect.low,
-    medianIncomeGrowthEffectPpPerYearBase: medianIncomeGrowthEffectPpPerYear.base,
-    medianIncomeGrowthEffectPpPerYearHigh: medianIncomeGrowthEffectPpPerYear.high,
+    medianIncomeGrowthEffectPpPerYearBase:
+      medianIncomeGrowthEffectPpPerYear.base,
+    medianIncomeGrowthEffectPpPerYearHigh:
+      medianIncomeGrowthEffectPpPerYear.high,
     medianIncomeGrowthEffectPpPerYearLow: medianIncomeGrowthEffectPpPerYear.low,
     metrics: frame.metrics.map(mapMetric),
     successProbabilityBase: successProbability.base,
@@ -188,7 +203,9 @@ function mapFrame(frame: PolicyModelFrame): ImportedImpactFrameDraft {
   };
 }
 
-function mapSourceArtifacts(run: PolicyModelRun): ImportedSourceArtifactDraft[] {
+function mapSourceArtifacts(
+  run: PolicyModelRun,
+): ImportedSourceArtifactDraft[] {
   return run.artifacts.map((artifact) => ({
     artifactType: toSourceArtifactType(artifact.artifactType),
     contentHash: artifact.contentHash ?? null,
@@ -212,13 +229,17 @@ function pickAssigneeActor(run: PolicyModelRun) {
   const actors = run.executionHints?.targetActors ?? [];
 
   return (
-    actors.find((actor) => actor.claimPolicyHint === TaskClaimPolicy.ASSIGNED_ONLY) ??
+    actors.find(
+      (actor) => actor.claimPolicyHint === TaskClaimPolicy.ASSIGNED_ONLY,
+    ) ??
     actors[0] ??
     null
   );
 }
 
-function toAssigneeHint(actor: PolicyExecutionActor | null): PolicyModelRunImportAssigneeHint | null {
+function toAssigneeHint(
+  actor: PolicyExecutionActor | null,
+): PolicyModelRunImportAssigneeHint | null {
   if (!actor) {
     return null;
   }
@@ -240,7 +261,11 @@ function toAssigneeHint(actor: PolicyExecutionActor | null): PolicyModelRunImpor
   };
 }
 
-function deriveTaskTitle(run: PolicyModelRun, actor: PolicyExecutionActor | null, override: string | undefined) {
+function deriveTaskTitle(
+  run: PolicyModelRun,
+  actor: PolicyExecutionActor | null,
+  override: string | undefined,
+) {
   if (override) {
     return override;
   }
@@ -284,12 +309,17 @@ function deriveSkillTags(
   return normalizeTags([
     "policy",
     "governance",
-    ...(actor?.role === "decision_maker" ? ["executive-action", "diplomacy"] : []),
+    ...(actor?.role === "decision_maker"
+      ? ["executive-action", "diplomacy"]
+      : []),
     ...(run.executionHints?.supporterLevers ?? []),
   ]);
 }
 
-function deriveInterestTags(run: PolicyModelRun, override: string[] | undefined) {
+function deriveInterestTags(
+  run: PolicyModelRun,
+  override: string[] | undefined,
+) {
   if (override) {
     return normalizeTags(override);
   }
@@ -313,6 +343,14 @@ function deriveTaskContext(run: PolicyModelRun, frameKey: TaskImpactFrameKey) {
   };
 }
 
+function joinCalculationField(run: PolicyModelRun, field: "formula" | "latex") {
+  const lines = run.calculations.flatMap((calculation) => {
+    const expression = calculation[field]?.trim();
+    return expression ? [`${calculation.outputKey} = ${expression}`] : [];
+  });
+  return lines.length > 0 ? lines.join("\n") : null;
+}
+
 export function buildImportedTaskBundleFromPolicyModelRun(
   run: PolicyModelRun,
   options?: PolicyModelRunToTaskBundleOptions,
@@ -323,7 +361,9 @@ export function buildImportedTaskBundleFromPolicyModelRun(
   const defaultFrame = getPolicyModelFrame(run, run.defaultFrameKey);
 
   if (!defaultFrame) {
-    throw new Error(`Policy model run ${run.modelKey} does not define any impact frames.`);
+    throw new Error(
+      `Policy model run ${run.modelKey} does not define any impact frames.`,
+    );
   }
 
   const claimPolicy =
@@ -336,18 +376,25 @@ export function buildImportedTaskBundleFromPolicyModelRun(
     bundle: {
       impactEstimate: {
         assumptionsJson: {
-          primaryArtifactKeys: sourceArtifacts.slice(0, 3).map((artifact) => artifact.sourceKey),
+          primaryArtifactKeys: sourceArtifacts
+            .slice(0, 3)
+            .map((artifact) => artifact.sourceKey),
           summary: run.summary,
           title: run.title,
         },
         calculationVersion: run.calculationVersion,
         counterfactualKey: run.policy.counterfactualKey,
         estimateKind: TaskImpactEstimateKind.FORECAST,
+        formulaLatex: joinCalculationField(run, "latex"),
+        formulaText: joinCalculationField(run, "formula"),
         frames: run.frames.map(mapFrame),
         methodologyKey: run.methodologyKey,
+        parameterKeys: run.parameters.map((parameter) => parameter.key),
         parameterSetHash: run.parameterSetHash,
-        publicationStatus: options?.publicationStatus ?? TaskImpactPublicationStatus.REVIEWED,
-        sourceSystem: options?.sourceSystem ?? deriveEstimateSourceSystem(sourceArtifacts),
+        publicationStatus:
+          options?.publicationStatus ?? TaskImpactPublicationStatus.REVIEWED,
+        sourceSystem:
+          options?.sourceSystem ?? deriveEstimateSourceSystem(sourceArtifacts),
       },
       sourceArtifacts,
       task: {
@@ -363,7 +410,8 @@ export function buildImportedTaskBundleFromPolicyModelRun(
         contactUrl: assigneeActor?.contactUrl ?? null,
         description: deriveTaskDescription(run),
         dueAt: options?.dueAt ?? null,
-        estimatedEffortHours: defaultFrame.canonical.estimatedEffortHours.base ?? null,
+        estimatedEffortHours:
+          defaultFrame.canonical.estimatedEffortHours.base ?? null,
         impactStatement: options?.impactStatement ?? run.summary,
         interestTags: deriveInterestTags(run, options?.interestTags),
         roleTitle: assigneeActor?.roleTitle ?? null,

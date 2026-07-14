@@ -1,7 +1,4 @@
-import {
-  TaskClaimPolicy,
-  TaskImpactFrameKey,
-} from "@optimitron/db";
+import { TaskClaimPolicy, TaskImpactFrameKey } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import { PolicyModelRunSchemaVersion } from "./policy-model-run";
 import { buildImportedTaskBundleFromPolicyModelRun } from "./policy-model-run-to-imported-task-bundle";
@@ -21,7 +18,17 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
         },
       ],
       calculationVersion: "treaty-compiler-v1",
-      calculations: [],
+      calculations: [
+        {
+          displayName: "Treaty expected value",
+          formula: "P_SUCCESS * GROSS_VALUE",
+          inputs: ["P_SUCCESS", "GROSS_VALUE"],
+          key: "calc:treaty-expected-value",
+          outputKey: "EXPECTED_VALUE",
+          sourceArtifactKeys: ["manual:treaty-impact"],
+          unit: "USD",
+        },
+      ],
       defaultFrameKey: TaskImpactFrameKey.TWENTY_YEAR,
       evidenceClaims: [],
       executionHints: {
@@ -52,13 +59,33 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
           benefitDurationYears: 20,
           canonical: {
             delayDalysLostPerDay: { base: 10, high: 20, low: 5 },
-            delayEconomicValueUsdLostPerDay: { base: 1000, high: 1200, low: 800 },
-            estimatedCashCostUsd: { base: 1_000_000_000, high: null, low: null },
+            delayEconomicValueUsdLostPerDay: {
+              base: 1000,
+              high: 1200,
+              low: 800,
+            },
+            estimatedCashCostUsd: {
+              base: 1_000_000_000,
+              high: null,
+              low: null,
+            },
             estimatedEffortHours: { base: 30 / 3600, high: null, low: null },
-            expectedDalysAverted: { base: 5_000_000_000, high: 6_000_000_000, low: 1_000_000_000 },
-            expectedEconomicValueUsd: { base: 800_000_000_000_000, high: null, low: null },
+            expectedDalysAverted: {
+              base: 5_000_000_000,
+              high: 6_000_000_000,
+              low: 1_000_000_000,
+            },
+            expectedEconomicValueUsd: {
+              base: 800_000_000_000_000,
+              high: null,
+              low: null,
+            },
             medianHealthyLifeYearsEffect: { base: 21.7, high: null, low: null },
-            medianIncomeGrowthEffectPpPerYear: { base: 8.4, high: null, low: null },
+            medianIncomeGrowthEffectPpPerYear: {
+              base: 8.4,
+              high: null,
+              low: null,
+            },
             successProbability: { base: 0.01, high: 0.1, low: 0.001 },
           },
           evaluationHorizonYears: 20,
@@ -86,7 +113,19 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
       methodologyKey: "one-percent-treaty-impact-compiler",
       modelKey: "policy:usa-federal:one-percent-treaty",
       parameterSetHash: "sha256:test",
-      parameters: [],
+      parameters: [
+        {
+          description: "Probability that the campaign causes adoption.",
+          displayName: "Success probability",
+          inputs: [],
+          key: "P_SUCCESS",
+          keywords: [],
+          sourceArtifactKeys: ["manual:treaty-impact"],
+          sourceType: "curated",
+          unit: "probability",
+          value: 0.01,
+        },
+      ],
       policy: {
         blockingFactors: ["political"],
         counterfactualKey: "current-policy-baseline",
@@ -104,10 +143,16 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
       title: "1% Treaty Impact Model",
     });
 
-    expect(draft.assigneeHint?.displayName).toBe("President of the United States");
-    expect(draft.assigneeHint?.contactUrl).toBe("https://www.whitehouse.gov/contact/");
+    expect(draft.assigneeHint?.displayName).toBe(
+      "President of the United States",
+    );
+    expect(draft.assigneeHint?.contactUrl).toBe(
+      "https://www.whitehouse.gov/contact/",
+    );
     expect(draft.bundle.task.claimPolicy).toBe(TaskClaimPolicy.ASSIGNED_ONLY);
-    expect(draft.bundle.task.title).toBe("President of the United States signs the 1% Treaty");
+    expect(draft.bundle.task.title).toBe(
+      "President of the United States signs the 1% Treaty",
+    );
     expect(draft.bundle.task.contactLabel).toBe("White House contact form");
     expect(draft.bundle.task.contextJson).toMatchObject({
       frameKey: TaskImpactFrameKey.TWENTY_YEAR,
@@ -115,11 +160,21 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
       parameterSetHash: "sha256:test",
     });
     expect(draft.bundle.task.contextJson).not.toHaveProperty("generatedAt");
-    expect(draft.bundle.impactEstimate.calculationVersion).toBe("treaty-compiler-v1");
-    expect(draft.bundle.impactEstimate.frames[0]?.frameSlug).toBe("twenty-year");
+    expect(draft.bundle.impactEstimate.calculationVersion).toBe(
+      "treaty-compiler-v1",
+    );
+    expect(draft.bundle.impactEstimate.formulaText).toBe(
+      "EXPECTED_VALUE = P_SUCCESS * GROSS_VALUE",
+    );
+    expect(draft.bundle.impactEstimate.parameterKeys).toEqual(["P_SUCCESS"]);
+    expect(draft.bundle.impactEstimate.frames[0]?.frameSlug).toBe(
+      "twenty-year",
+    );
     expect(draft.bundle.impactEstimate.frames[0]?.metrics[0]?.metricKey).toBe(
       "trial_capacity_multiplier",
     );
-    expect(draft.bundle.sourceArtifacts[0]?.artifactType).toBe("MANUAL_SECTION");
+    expect(draft.bundle.sourceArtifacts[0]?.artifactType).toBe(
+      "MANUAL_SECTION",
+    );
   });
 });

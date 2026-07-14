@@ -14,6 +14,7 @@ import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgre
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
+import { TaskImpactTraceDisclosure } from "@/components/tasks/task-impact-trace-disclosure";
 import { TaskDocumentsList } from "@/components/documents/task-documents-list";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatusPanel";
@@ -195,7 +196,10 @@ function isFixedStripePaidTask(task: {
   ) {
     return false;
   }
-  if (!task.compensationMaxAmountMinorUnits || task.compensationMaxAmountMinorUnits <= 0n) {
+  if (
+    !task.compensationMaxAmountMinorUnits ||
+    task.compensationMaxAmountMinorUnits <= 0n
+  ) {
     return false;
   }
   if (task.compensationPaymentRails.length === 0) {
@@ -463,8 +467,7 @@ export default async function TaskDetailPage({
   const fundingStatus = task.isPublic
     ? await getTaskFundingStatus(task.id).catch(() => null)
     : null;
-  const showTaskFunding =
-    task.isPublic && task.status === TaskStatus.ACTIVE;
+  const showTaskFunding = task.isPublic && task.status === TaskStatus.ACTIVE;
   const isPaidTask = isFixedStripePaidTask(task);
   const stripeConnectStatus =
     isPaidTask && userId
@@ -641,6 +644,10 @@ export default async function TaskDetailPage({
           </section>
         ) : null}
 
+        {task.impact.currentSet ? (
+          <TaskImpactTraceDisclosure taskId={task.id} />
+        ) : null}
+
         {showTaskFunding ? (
           <section
             id="funding"
@@ -657,7 +664,10 @@ export default async function TaskDetailPage({
                   </p>
                 </div>
                 {fundingStatus ? (
-                  <TaskFundingProgress status={fundingStatus} taskId={task.id} />
+                  <TaskFundingProgress
+                    status={fundingStatus}
+                    taskId={task.id}
+                  />
                 ) : (
                   <div className="border border-foreground p-4 text-sm font-bold">
                     No funding target yet. The first payment creates one.

@@ -156,7 +156,11 @@ async function upsertImpactEstimateSet(
       where: { id: existing.id },
       data: {
         assumptionsJson: toJsonValue(draft.assumptionsJson),
+        calculationCode: draft.calculationCode ?? null,
+        calculationLanguage: draft.calculationLanguage ?? null,
         deletedAt: null,
+        formulaLatex: draft.formulaLatex ?? null,
+        formulaText: draft.formulaText ?? null,
         publicationStatus: draft.publicationStatus,
       },
     });
@@ -165,9 +169,13 @@ async function upsertImpactEstimateSet(
   return tx.taskImpactEstimateSet.create({
     data: {
       assumptionsJson: toJsonValue(draft.assumptionsJson),
+      calculationCode: draft.calculationCode ?? null,
+      calculationLanguage: draft.calculationLanguage ?? null,
       calculationVersion: draft.calculationVersion,
       counterfactualKey: draft.counterfactualKey,
       estimateKind: draft.estimateKind,
+      formulaLatex: draft.formulaLatex ?? null,
+      formulaText: draft.formulaText ?? null,
       methodologyKey: draft.methodologyKey,
       parameterSetHash: draft.parameterSetHash,
       publicationStatus: draft.publicationStatus,
@@ -175,6 +183,54 @@ async function upsertImpactEstimateSet(
       taskId,
     },
   });
+}
+
+export async function syncImpactParameterInputs(
+  tx: Prisma.TransactionClient,
+  taskImpactEstimateSetId: string,
+  parameterKeys: readonly string[] | undefined,
+) {
+  if (parameterKeys == null) return { linked: 0, missingKeys: [] };
+  const keys = [
+    ...new Set(parameterKeys.map((key) => key.trim()).filter(Boolean)),
+  ].sort();
+  const definitions = await tx.parameterDefinition.findMany({
+    where: {
+      currentRevisionId: { not: null },
+      deletedAt: null,
+      key: { in: keys },
+    },
+    select: { currentRevisionId: true, key: true },
+  });
+  const byKey = new Map(
+    definitions.flatMap((definition) =>
+      definition.currentRevisionId
+        ? [[definition.key, definition.currentRevisionId] as const]
+        : [],
+    ),
+  );
+  const linked = keys.flatMap((key) => {
+    const revisionId = byKey.get(key);
+    return revisionId ? [{ key, revisionId }] : [];
+  });
+
+  await tx.taskImpactEstimateInput.deleteMany({
+    where: { taskImpactEstimateSetId },
+  });
+  if (linked.length > 0) {
+    await tx.taskImpactEstimateInput.createMany({
+      data: linked.map((input, position) => ({
+        parameterRevisionId: input.revisionId,
+        position,
+        symbol: input.key,
+        taskImpactEstimateSetId,
+      })),
+    });
+  }
+  return {
+    linked: linked.length,
+    missingKeys: keys.filter((key) => !byKey.has(key)),
+  };
 }
 
 async function upsertImpactFrame(
@@ -197,9 +253,12 @@ async function upsertImpactFrame(
       delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
       delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
       delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,
-      delayEconomicValueUsdLostPerDayBase: frame.delayEconomicValueUsdLostPerDayBase,
-      delayEconomicValueUsdLostPerDayHigh: frame.delayEconomicValueUsdLostPerDayHigh,
-      delayEconomicValueUsdLostPerDayLow: frame.delayEconomicValueUsdLostPerDayLow,
+      delayEconomicValueUsdLostPerDayBase:
+        frame.delayEconomicValueUsdLostPerDayBase,
+      delayEconomicValueUsdLostPerDayHigh:
+        frame.delayEconomicValueUsdLostPerDayHigh,
+      delayEconomicValueUsdLostPerDayLow:
+        frame.delayEconomicValueUsdLostPerDayLow,
       estimatedCashCostUsdBase: frame.estimatedCashCostUsdBase,
       estimatedCashCostUsdHigh: frame.estimatedCashCostUsdHigh,
       estimatedCashCostUsdLow: frame.estimatedCashCostUsdLow,
@@ -218,9 +277,12 @@ async function upsertImpactFrame(
       medianHealthyLifeYearsEffectBase: frame.medianHealthyLifeYearsEffectBase,
       medianHealthyLifeYearsEffectHigh: frame.medianHealthyLifeYearsEffectHigh,
       medianHealthyLifeYearsEffectLow: frame.medianHealthyLifeYearsEffectLow,
-      medianIncomeGrowthEffectPpPerYearBase: frame.medianIncomeGrowthEffectPpPerYearBase,
-      medianIncomeGrowthEffectPpPerYearHigh: frame.medianIncomeGrowthEffectPpPerYearHigh,
-      medianIncomeGrowthEffectPpPerYearLow: frame.medianIncomeGrowthEffectPpPerYearLow,
+      medianIncomeGrowthEffectPpPerYearBase:
+        frame.medianIncomeGrowthEffectPpPerYearBase,
+      medianIncomeGrowthEffectPpPerYearHigh:
+        frame.medianIncomeGrowthEffectPpPerYearHigh,
+      medianIncomeGrowthEffectPpPerYearLow:
+        frame.medianIncomeGrowthEffectPpPerYearLow,
       successProbabilityBase: frame.successProbabilityBase,
       successProbabilityHigh: frame.successProbabilityHigh,
       successProbabilityLow: frame.successProbabilityLow,
@@ -236,9 +298,12 @@ async function upsertImpactFrame(
       delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
       delayDalysLostPerDayHigh: frame.delayDalysLostPerDayHigh,
       delayDalysLostPerDayLow: frame.delayDalysLostPerDayLow,
-      delayEconomicValueUsdLostPerDayBase: frame.delayEconomicValueUsdLostPerDayBase,
-      delayEconomicValueUsdLostPerDayHigh: frame.delayEconomicValueUsdLostPerDayHigh,
-      delayEconomicValueUsdLostPerDayLow: frame.delayEconomicValueUsdLostPerDayLow,
+      delayEconomicValueUsdLostPerDayBase:
+        frame.delayEconomicValueUsdLostPerDayBase,
+      delayEconomicValueUsdLostPerDayHigh:
+        frame.delayEconomicValueUsdLostPerDayHigh,
+      delayEconomicValueUsdLostPerDayLow:
+        frame.delayEconomicValueUsdLostPerDayLow,
       deletedAt: null,
       estimatedCashCostUsdBase: frame.estimatedCashCostUsdBase,
       estimatedCashCostUsdHigh: frame.estimatedCashCostUsdHigh,
@@ -257,9 +322,12 @@ async function upsertImpactFrame(
       medianHealthyLifeYearsEffectBase: frame.medianHealthyLifeYearsEffectBase,
       medianHealthyLifeYearsEffectHigh: frame.medianHealthyLifeYearsEffectHigh,
       medianHealthyLifeYearsEffectLow: frame.medianHealthyLifeYearsEffectLow,
-      medianIncomeGrowthEffectPpPerYearBase: frame.medianIncomeGrowthEffectPpPerYearBase,
-      medianIncomeGrowthEffectPpPerYearHigh: frame.medianIncomeGrowthEffectPpPerYearHigh,
-      medianIncomeGrowthEffectPpPerYearLow: frame.medianIncomeGrowthEffectPpPerYearLow,
+      medianIncomeGrowthEffectPpPerYearBase:
+        frame.medianIncomeGrowthEffectPpPerYearBase,
+      medianIncomeGrowthEffectPpPerYearHigh:
+        frame.medianIncomeGrowthEffectPpPerYearHigh,
+      medianIncomeGrowthEffectPpPerYearLow:
+        frame.medianIncomeGrowthEffectPpPerYearLow,
       successProbabilityBase: frame.successProbabilityBase,
       successProbabilityHigh: frame.successProbabilityHigh,
       successProbabilityLow: frame.successProbabilityLow,
@@ -401,150 +469,161 @@ export async function upsertImportedTaskBundle(
   const createdByUserId =
     options?.createdByUserId?.trim() ||
     options?.verifiedByUserId?.trim() ||
-    await getWishoniaUserId();
+    (await getWishoniaUserId());
 
-  return prisma.$transaction(async (tx) => {
-    const assigneeOrganization =
-      options?.assigneeOrganizationId?.trim()
+  return prisma.$transaction(
+    async (tx) => {
+      const assigneeOrganization = options?.assigneeOrganizationId?.trim()
         ? await tx.organization.findUniqueOrThrow({
             where: { id: options.assigneeOrganizationId.trim() },
           })
         : bundle.task.assigneeOrganizationName
           ? await upsertTrustedOrganization(
-               {
-                 name: bundle.task.assigneeOrganizationName,
-                 sourceRef: bundle.task.assigneeOrganizationSourceRef,
+              {
+                name: bundle.task.assigneeOrganizationName,
+                sourceRef: bundle.task.assigneeOrganizationSourceRef,
                 type: bundle.task.assigneeOrganizationType,
               },
               tx,
             )
           : null;
 
-    const task = await tx.task.upsert({
-      where: {
-        taskKey: bundle.task.taskKey,
-      },
-      create: {
-        id: options?.taskId?.trim() || undefined,
-        assigneeOrganizationId: assigneeOrganization?.id ?? null,
-        assigneePersonId: options?.assigneePersonId ?? null,
-        assigneeAffiliationSnapshot: bundle.task.assigneeAffiliationSnapshot,
-        category: bundle.task.category,
-        claimPolicy: bundle.task.claimPolicy,
-        contextJson: toJsonValue(bundle.task.contextJson),
-        createdByUserId,
-        deletedAt: null,
-        description: bundle.task.description,
-        dueAt: bundle.task.dueAt,
-        estimatedEffortHours: bundle.task.estimatedEffortHours,
-        impactStatement: bundle.task.impactStatement,
-        interestTags: bundle.task.interestTags,
-        isPublic: options?.isPublic ?? true,
-        jurisdictionId: options?.jurisdictionId ?? null,
-        roleTitle: bundle.task.roleTitle,
-        parentTaskId: options?.parentTaskId ?? null,
-        skillTags: bundle.task.skillTags,
-        status: bundle.task.status,
-        taskKey: bundle.task.taskKey,
-        title: bundle.task.title,
-        verifiedByUserId: options?.verifiedByUserId ?? null,
-      },
-      update: {
-        assigneeOrganizationId: assigneeOrganization?.id ?? null,
-        assigneePersonId: options?.assigneePersonId ?? null,
-        assigneeAffiliationSnapshot: bundle.task.assigneeAffiliationSnapshot,
-        category: bundle.task.category,
-        claimPolicy: bundle.task.claimPolicy,
-        contextJson: toJsonValue(bundle.task.contextJson),
-        deletedAt: null,
-        description: bundle.task.description,
-        dueAt: bundle.task.dueAt,
-        estimatedEffortHours: bundle.task.estimatedEffortHours,
-        impactStatement: bundle.task.impactStatement,
-        interestTags: bundle.task.interestTags,
-        isPublic: options?.isPublic ?? true,
-        jurisdictionId: options?.jurisdictionId ?? null,
-        roleTitle: bundle.task.roleTitle,
-        parentTaskId: options?.parentTaskId ?? null,
-        skillTags: bundle.task.skillTags,
-        status: bundle.task.status,
-        title: bundle.task.title,
-        verifiedByUserId: options?.verifiedByUserId ?? null,
-      },
-      select: {
-        id: true,
-        taskKey: true,
-      },
-    });
+      const task = await tx.task.upsert({
+        where: {
+          taskKey: bundle.task.taskKey,
+        },
+        create: {
+          id: options?.taskId?.trim() || undefined,
+          assigneeOrganizationId: assigneeOrganization?.id ?? null,
+          assigneePersonId: options?.assigneePersonId ?? null,
+          assigneeAffiliationSnapshot: bundle.task.assigneeAffiliationSnapshot,
+          category: bundle.task.category,
+          claimPolicy: bundle.task.claimPolicy,
+          contextJson: toJsonValue(bundle.task.contextJson),
+          createdByUserId,
+          deletedAt: null,
+          description: bundle.task.description,
+          dueAt: bundle.task.dueAt,
+          estimatedEffortHours: bundle.task.estimatedEffortHours,
+          impactStatement: bundle.task.impactStatement,
+          interestTags: bundle.task.interestTags,
+          isPublic: options?.isPublic ?? true,
+          jurisdictionId: options?.jurisdictionId ?? null,
+          roleTitle: bundle.task.roleTitle,
+          parentTaskId: options?.parentTaskId ?? null,
+          skillTags: bundle.task.skillTags,
+          status: bundle.task.status,
+          taskKey: bundle.task.taskKey,
+          title: bundle.task.title,
+          verifiedByUserId: options?.verifiedByUserId ?? null,
+        },
+        update: {
+          assigneeOrganizationId: assigneeOrganization?.id ?? null,
+          assigneePersonId: options?.assigneePersonId ?? null,
+          assigneeAffiliationSnapshot: bundle.task.assigneeAffiliationSnapshot,
+          category: bundle.task.category,
+          claimPolicy: bundle.task.claimPolicy,
+          contextJson: toJsonValue(bundle.task.contextJson),
+          deletedAt: null,
+          description: bundle.task.description,
+          dueAt: bundle.task.dueAt,
+          estimatedEffortHours: bundle.task.estimatedEffortHours,
+          impactStatement: bundle.task.impactStatement,
+          interestTags: bundle.task.interestTags,
+          isPublic: options?.isPublic ?? true,
+          jurisdictionId: options?.jurisdictionId ?? null,
+          roleTitle: bundle.task.roleTitle,
+          parentTaskId: options?.parentTaskId ?? null,
+          skillTags: bundle.task.skillTags,
+          status: bundle.task.status,
+          title: bundle.task.title,
+          verifiedByUserId: options?.verifiedByUserId ?? null,
+        },
+        select: {
+          id: true,
+          taskKey: true,
+        },
+      });
 
-    await upsertPrimaryTaskCommunicationEndpoint(tx, task.id, {
-      instructions: bundle.task.contactTemplate,
-      label: bundle.task.contactLabel,
-      url: bundle.task.contactUrl,
-    });
+      await upsertPrimaryTaskCommunicationEndpoint(tx, task.id, {
+        instructions: bundle.task.contactTemplate,
+        label: bundle.task.contactLabel,
+        url: bundle.task.contactUrl,
+      });
 
-    const sourceArtifacts = await syncTaskSourceArtifacts(
-      tx,
-      task.id,
-      bundle.sourceArtifacts,
-    );
-    const estimateSet = await upsertImpactEstimateSet(
-      tx,
-      task.id,
-      bundle.impactEstimate,
-    );
+      const sourceArtifacts = await syncTaskSourceArtifacts(
+        tx,
+        task.id,
+        bundle.sourceArtifacts,
+      );
+      const estimateSet = await upsertImpactEstimateSet(
+        tx,
+        task.id,
+        bundle.impactEstimate,
+      );
+      await syncImpactParameterInputs(
+        tx,
+        estimateSet.id,
+        bundle.impactEstimate.parameterKeys,
+      );
 
-    for (const frame of bundle.impactEstimate.frames) {
-      const frameRecord = await upsertImpactFrame(tx, estimateSet.id, frame);
-      await syncImpactMetrics(tx, frameRecord.id, frame.metrics);
-    }
+      for (const frame of bundle.impactEstimate.frames) {
+        const frameRecord = await upsertImpactFrame(tx, estimateSet.id, frame);
+        await syncImpactMetrics(tx, frameRecord.id, frame.metrics);
+      }
 
-    await syncImpactSourceArtifacts(tx, estimateSet.id, bundle.sourceArtifacts);
+      await syncImpactSourceArtifacts(
+        tx,
+        estimateSet.id,
+        bundle.sourceArtifacts,
+      );
 
-    await tx.taskImpactEstimateSet.updateMany({
-      where: {
-        deletedAt: null,
-        isCurrent: true,
-        taskId: task.id,
-        NOT: {
+      await tx.taskImpactEstimateSet.updateMany({
+        where: {
+          deletedAt: null,
+          isCurrent: true,
+          taskId: task.id,
+          NOT: {
+            id: estimateSet.id,
+          },
+        },
+        data: {
+          isCurrent: false,
+        },
+      });
+
+      const currentEstimateSet = await tx.taskImpactEstimateSet.update({
+        where: {
           id: estimateSet.id,
         },
-      },
-      data: {
-        isCurrent: false,
-      },
-    });
+        data: {
+          isCurrent: true,
+          publicationStatus: bundle.impactEstimate.publicationStatus,
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    const currentEstimateSet = await tx.taskImpactEstimateSet.update({
-      where: {
-        id: estimateSet.id,
-      },
-      data: {
-        isCurrent: true,
-        publicationStatus: bundle.impactEstimate.publicationStatus,
-      },
-      select: {
-        id: true,
-      },
-    });
+      await tx.task.update({
+        where: {
+          id: task.id,
+        },
+        data: {
+          currentImpactEstimateSetId: currentEstimateSet.id,
+        },
+      });
 
-    await tx.task.update({
-      where: {
-        id: task.id,
-      },
-      data: {
-        currentImpactEstimateSetId: currentEstimateSet.id,
-      },
-    });
-
-    return {
-      estimateSetId: currentEstimateSet.id,
-      sourceArtifactIds: sourceArtifacts.map((artifact) => artifact.id),
-      taskId: task.id,
-      taskKey: task.taskKey,
-    };
-  }, {
-    maxWait: 30_000,
-    timeout: 120_000,
-  });
+      return {
+        estimateSetId: currentEstimateSet.id,
+        sourceArtifactIds: sourceArtifacts.map((artifact) => artifact.id),
+        taskId: task.id,
+        taskKey: task.taskKey,
+      };
+    },
+    {
+      maxWait: 30_000,
+      timeout: 120_000,
+    },
+  );
 }

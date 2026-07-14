@@ -8,43 +8,70 @@ import {
   type PolicyModelParameter,
 } from "./policy-model-run";
 
-export const ParameterExportEntrySchema = z.object({
-  chapterUrl: z.string().nullish(),
-  confidence: z.string().nullish(),
-  confidenceInterval: z.tuple([z.number(), z.number()]).nullish(),
-  conservative: z.boolean().nullish(),
-  description: z.string().nullish(),
-  displayName: z.string().nullish(),
-  formatted: z.string().nullish(),
-  formula: z.string().nullish(),
-  latex: z.string().nullish(),
-  sourceRef: z.string().nullish(),
-  sourceType: z.string().nullish(),
-  sourceUrl: z.string().nullish(),
-  stdError: z.number().nonnegative().nullish(),
-  unit: z.string().nullish(),
-  value: z.number(),
-});
+export const ParameterExportEntrySchema = z
+  .object({
+    chapterUrl: z.string().nullish(),
+    confidence: z.string().nullish(),
+    confidenceInterval: z.tuple([z.number(), z.number()]).nullish(),
+    conservative: z.boolean().nullish(),
+    computeExpr: z.string().nullish(),
+    computeInputsUsed: z.array(z.string()).optional(),
+    declaredLatex: z.string().nullish(),
+    definitionSource: z.string().nullish(),
+    description: z.string().nullish(),
+    displayName: z.string().nullish(),
+    displayValue: z.string().nullish(),
+    distribution: z.string().nullish(),
+    formatted: z.string().nullish(),
+    formula: z.string().nullish(),
+    hideCi: z.boolean().nullish(),
+    inputs: z.array(z.string()).optional(),
+    keywords: z.array(z.string()).optional(),
+    lastUpdated: z.string().nullish(),
+    latex: z.string().nullish(),
+    latexSymbol: z.string().nullish(),
+    manualRef: z.string().nullish(),
+    peerReviewed: z.boolean().nullish(),
+    rawProperties: z.record(z.unknown()).optional(),
+    sensitivity: z.number().finite().nullish(),
+    sourceRef: z.string().nullish(),
+    sourceEndLine: z.number().int().positive().nullish(),
+    sourceStartLine: z.number().int().positive().nullish(),
+    sourceType: z.string().nullish(),
+    sourceUrl: z.string().nullish(),
+    stdError: z.number().nonnegative().nullish(),
+    unit: z.string().nullish(),
+    validationMax: z.number().finite().nullish(),
+    validationMin: z.number().finite().nullish(),
+    value: z.number().finite(),
+  })
+  .passthrough();
 
-export const ParameterExportCitationSchema = z.object({
-  author: z.string().nullish(),
-  id: z.string().min(1),
-  note: z.string().nullish(),
-  quote: z.string().nullish(),
-  source: z.string().nullish(),
-  title: z.string().nullish(),
-  type: z.string().nullish(),
-  url: z.string().nullish(),
-  urls: z.array(z.string()).default([]),
-  year: z.string().nullish(),
-});
+export const ParameterExportCitationSchema = z
+  .object({
+    author: z.string().nullish(),
+    id: z.string().min(1),
+    note: z.string().nullish(),
+    quote: z.string().nullish(),
+    source: z.string().nullish(),
+    title: z.string().nullish(),
+    type: z.string().nullish(),
+    url: z.string().nullish(),
+    urls: z.array(z.string()).default([]),
+    year: z.string().nullish(),
+  })
+  .passthrough();
 
-export const ParameterExportSchema = z.object({
-  citations: z.record(ParameterExportCitationSchema).default({}),
-  parameters: z.record(ParameterExportEntrySchema),
-  shareableSnippets: z.record(z.unknown()).default({}),
-  sourceFile: z.string().min(1),
-});
+export const ParameterExportSchema = z
+  .object({
+    citations: z.record(ParameterExportCitationSchema).default({}),
+    parameters: z.record(ParameterExportEntrySchema),
+    schemaVersion: z.string().optional(),
+    shareableSnippets: z.record(z.unknown()).default({}),
+    sourceContentHash: z.string().optional(),
+    sourceFile: z.string().min(1),
+  })
+  .passthrough();
 
 export const CanonicalFieldKeySchema = z.enum([
   "successProbability",
@@ -83,7 +110,9 @@ export const MetricBindingSchema = z.object({
   key: z.string().min(1),
   parameterKey: z.string().min(1),
   unit: z.string().nullish(),
-  valueKind: z.enum(["numeric", "categorical", "boolean", "text"]).default("numeric"),
+  valueKind: z
+    .enum(["numeric", "categorical", "boolean", "text"])
+    .default("numeric"),
 });
 
 export const FrameCompileConfigSchema = z.object({
@@ -128,12 +157,16 @@ export const PolicyExecutionActorHintSchema = z.object({
 export const PolicyModelCompileConfigSchema = z.object({
   blockingFactors: z.array(z.string().min(1)).default([]),
   counterfactualKey: z.string().min(1),
-  defaultFrameKey: z.nativeEnum(TaskImpactFrameKey).default(TaskImpactFrameKey.TWENTY_YEAR),
+  defaultFrameKey: z
+    .nativeEnum(TaskImpactFrameKey)
+    .default(TaskImpactFrameKey.TWENTY_YEAR),
   evidenceClaims: z
     .array(
       z.object({
         claimKey: z.string().min(1),
-        confidence: z.enum(["very_high", "high", "medium", "low", "estimated"]).nullish(),
+        confidence: z
+          .enum(["very_high", "high", "medium", "low", "estimated"])
+          .nullish(),
         description: z.string().nullish(),
         evidenceNote: z.string().nullish(),
         sourceArtifactKeys: z.array(z.string().min(1)).default([]),
@@ -154,7 +187,14 @@ export const PolicyModelCompileConfigSchema = z.object({
   frames: z.array(FrameCompileConfigSchema).min(1),
   generatedAt: z.string().datetime(),
   generator: z.object({
-    kind: z.enum(["manual_python", "manual_compiled", "gemini_grounded", "gemini_curated", "hybrid", "other"]),
+    kind: z.enum([
+      "manual_python",
+      "manual_compiled",
+      "gemini_grounded",
+      "gemini_curated",
+      "hybrid",
+      "other",
+    ]),
     model: z.string().nullish(),
     notes: z.string().nullish(),
   }),
@@ -178,14 +218,14 @@ export const PolicyModelCompileConfigSchema = z.object({
 });
 
 export type ParameterExport = z.infer<typeof ParameterExportSchema>;
-export type ParameterExportCitation = z.infer<typeof ParameterExportCitationSchema>;
+export type ParameterExportCitation = z.infer<
+  typeof ParameterExportCitationSchema
+>;
 export type ParameterExportEntry = z.infer<typeof ParameterExportEntrySchema>;
-export type PolicyModelCompileConfig = z.infer<typeof PolicyModelCompileConfigSchema>;
+export type PolicyModelCompileConfig = z.infer<
+  typeof PolicyModelCompileConfigSchema
+>;
 export type EstimateBinding = z.infer<typeof EstimateBindingSchema>;
-
-function getCalculationRunArtifactKey(config: Pick<PolicyModelCompileConfig, "modelKey" | "parameterSetHash">) {
-  return `calculation-run:${config.modelKey}:${config.parameterSetHash}`;
-}
 
 function slugify(value: string) {
   return value
@@ -258,8 +298,12 @@ function buildEstimate(
   }
 
   const baseEntry = entryMap[binding.parameterKey];
-  const lowEntry = binding.lowParameterKey ? entryMap[binding.lowParameterKey] : null;
-  const highEntry = binding.highParameterKey ? entryMap[binding.highParameterKey] : null;
+  const lowEntry = binding.lowParameterKey
+    ? entryMap[binding.lowParameterKey]
+    : null;
+  const highEntry = binding.highParameterKey
+    ? entryMap[binding.highParameterKey]
+    : null;
 
   if (!baseEntry) {
     throw new Error(`Missing parameter binding for ${binding.parameterKey}`);
@@ -267,14 +311,8 @@ function buildEstimate(
 
   return {
     base: baseEntry.value,
-    high:
-      highEntry?.value ??
-      baseEntry.confidenceInterval?.[1] ??
-      null,
-    low:
-      lowEntry?.value ??
-      baseEntry.confidenceInterval?.[0] ??
-      null,
+    high: highEntry?.value ?? baseEntry.confidenceInterval?.[1] ?? null,
+    low: lowEntry?.value ?? baseEntry.confidenceInterval?.[0] ?? null,
   };
 }
 
@@ -304,17 +342,6 @@ function buildSourceArtifacts(
     versionKey: config.parameterSetHash,
   });
 
-  const calculationRunArtifactKey = getCalculationRunArtifactKey(config);
-
-  artifacts.set(calculationRunArtifactKey, {
-    artifactKey: calculationRunArtifactKey,
-    artifactType: "CALCULATION_RUN",
-    sourceRef: config.methodologyKey,
-    sourceSystem: config.generator.kind === "gemini_grounded" ? "COMBINED" : "CURATED",
-    title: `${config.title} calculation run`,
-    versionKey: config.parameterSetHash,
-  });
-
   for (const [parameterKey, entry] of Object.entries(exportData.parameters)) {
     if (entry.chapterUrl) {
       const artifactKey = `manual-section:${entry.chapterUrl}`;
@@ -331,8 +358,11 @@ function buildSourceArtifacts(
     }
 
     if (entry.sourceUrl || entry.sourceRef) {
-      const citation = entry.sourceRef ? exportData.citations[entry.sourceRef] : null;
-      const sourceIdentity = citation?.id ?? entry.sourceRef ?? entry.sourceUrl ?? parameterKey;
+      const citation = entry.sourceRef
+        ? exportData.citations[entry.sourceRef]
+        : null;
+      const sourceIdentity =
+        citation?.id ?? entry.sourceRef ?? entry.sourceUrl ?? parameterKey;
       const artifactKey = `external-source:${sourceIdentity}`;
       if (!artifacts.has(artifactKey)) {
         artifacts.set(artifactKey, {
@@ -340,8 +370,12 @@ function buildSourceArtifacts(
           artifactType: "EXTERNAL_SOURCE",
           sourceRef: citation?.id ?? entry.sourceRef ?? null,
           sourceSystem:
-            normalizeSourceType(entry.sourceType) === "external" ? "EXTERNAL" : "CURATED",
-          sourceUrl: normalizeUrl(citation?.url ?? citation?.urls[0] ?? entry.sourceUrl ?? null),
+            normalizeSourceType(entry.sourceType) === "external"
+              ? "EXTERNAL"
+              : "CURATED",
+          sourceUrl: normalizeUrl(
+            citation?.url ?? citation?.urls[0] ?? entry.sourceUrl ?? null,
+          ),
           title: citation?.title ?? entry.displayName ?? parameterKey,
         });
       }
@@ -364,7 +398,9 @@ function buildParameterArtifactKeys(
 
   if (entry.sourceUrl || entry.sourceRef) {
     const citation = entry.sourceRef ? citations[entry.sourceRef] : null;
-    keys.add(`external-source:${citation?.id ?? entry.sourceRef ?? entry.sourceUrl ?? parameterKey}`);
+    keys.add(
+      `external-source:${citation?.id ?? entry.sourceRef ?? entry.sourceUrl ?? parameterKey}`,
+    );
   }
 
   return Array.from(keys);
@@ -382,7 +418,9 @@ export function buildPolicyModelRunFromParameterExport(
   );
 
   const entryMap = Object.fromEntries(
-    Object.entries(exportData.parameters).filter(([parameterKey]) => includedKeys.has(parameterKey)),
+    Object.entries(exportData.parameters).filter(([parameterKey]) =>
+      includedKeys.has(parameterKey),
+    ),
   );
 
   const artifacts = buildSourceArtifacts(
@@ -405,16 +443,20 @@ export function buildPolicyModelRunFromParameterExport(
     conservative: entry.conservative ?? null,
     description: entry.description ?? parameterKey,
     displayName: entry.displayName ?? parameterKey,
-    displayValue: entry.formatted ?? null,
-    distribution: null,
+    displayValue: entry.displayValue ?? entry.formatted ?? null,
+    distribution: entry.distribution ?? null,
     formula: entry.formula ?? null,
     formatted: entry.formatted ?? null,
-    inputs: [],
+    inputs: entry.inputs ?? [],
     key: parameterKey,
-    keywords: [],
-    latex: entry.latex ?? null,
-    peerReviewed: null,
-    sourceArtifactKeys: buildParameterArtifactKeys(parameterKey, entry, exportData.citations),
+    keywords: entry.keywords ?? [],
+    latex: entry.declaredLatex ?? entry.latex ?? null,
+    peerReviewed: entry.peerReviewed ?? null,
+    sourceArtifactKeys: buildParameterArtifactKeys(
+      parameterKey,
+      entry,
+      exportData.citations,
+    ),
     sourceRef: entry.sourceRef ?? null,
     sourceType: normalizeSourceType(entry.sourceType),
     sourceUrl: normalizeUrl(entry.sourceUrl),
@@ -424,20 +466,20 @@ export function buildPolicyModelRunFromParameterExport(
   }));
 
   const calculations = Object.entries(entryMap)
-    .filter(([, entry]) => typeof entry.formula === "string" && entry.formula.trim().length > 0)
+    .filter(
+      ([, entry]) =>
+        typeof entry.formula === "string" && entry.formula.trim().length > 0,
+    )
     .map(([parameterKey, entry]) => ({
       chapterUrl: normalizeUrl(entry.chapterUrl),
       description: entry.description ?? null,
       displayName: entry.displayName ?? parameterKey,
-      formula: entry.formula ?? null,
-      inputs: [],
+      formula: entry.computeExpr ?? entry.formula ?? null,
+      inputs: entry.inputs ?? entry.computeInputsUsed ?? [],
       key: `calc:${slugify(parameterKey)}`,
-      latex: entry.latex ?? null,
+      latex: entry.declaredLatex ?? entry.latex ?? null,
       outputKey: parameterKey,
-      sourceArtifactKeys: [
-        `parameter-set:${config.modelKey}`,
-        getCalculationRunArtifactKey(config),
-      ],
+      sourceArtifactKeys: [`parameter-set:${config.modelKey}`],
       unit: entry.unit ?? "unitless",
     }));
 
@@ -446,14 +488,26 @@ export function buildPolicyModelRunFromParameterExport(
     adoptionRampYears: frameConfig.adoptionRampYears,
     benefitDurationYears: frameConfig.benefitDurationYears,
     canonical: {
-      delayDalysLostPerDay: buildEstimate(entryMap, frameConfig.canonicalBindings.delayDalysLostPerDay),
+      delayDalysLostPerDay: buildEstimate(
+        entryMap,
+        frameConfig.canonicalBindings.delayDalysLostPerDay,
+      ),
       delayEconomicValueUsdLostPerDay: buildEstimate(
         entryMap,
         frameConfig.canonicalBindings.delayEconomicValueUsdLostPerDay,
       ),
-      estimatedCashCostUsd: buildEstimate(entryMap, frameConfig.canonicalBindings.estimatedCashCostUsd),
-      estimatedEffortHours: buildEstimate(entryMap, frameConfig.canonicalBindings.estimatedEffortHours),
-      expectedDalysAverted: buildEstimate(entryMap, frameConfig.canonicalBindings.expectedDalysAverted),
+      estimatedCashCostUsd: buildEstimate(
+        entryMap,
+        frameConfig.canonicalBindings.estimatedCashCostUsd,
+      ),
+      estimatedEffortHours: buildEstimate(
+        entryMap,
+        frameConfig.canonicalBindings.estimatedEffortHours,
+      ),
+      expectedDalysAverted: buildEstimate(
+        entryMap,
+        frameConfig.canonicalBindings.expectedDalysAverted,
+      ),
       expectedEconomicValueUsd: buildEstimate(
         entryMap,
         frameConfig.canonicalBindings.expectedEconomicValueUsd,
@@ -466,7 +520,10 @@ export function buildPolicyModelRunFromParameterExport(
         entryMap,
         frameConfig.canonicalBindings.medianIncomeGrowthEffectPpPerYear,
       ),
-      successProbability: buildEstimate(entryMap, frameConfig.canonicalBindings.successProbability),
+      successProbability: buildEstimate(
+        entryMap,
+        frameConfig.canonicalBindings.successProbability,
+      ),
     },
     customFrameLabel: frameConfig.customFrameLabel ?? null,
     evaluationHorizonYears: frameConfig.evaluationHorizonYears,
@@ -476,7 +533,9 @@ export function buildPolicyModelRunFromParameterExport(
       const entry = entryMap[metricBinding.parameterKey];
 
       if (!entry) {
-        throw new Error(`Missing metric parameter binding for ${metricBinding.parameterKey}`);
+        throw new Error(
+          `Missing metric parameter binding for ${metricBinding.parameterKey}`,
+        );
       }
 
       return {
@@ -505,7 +564,7 @@ export function buildPolicyModelRunFromParameterExport(
             ? null
             : metricBinding.valueKind === "boolean"
               ? Boolean(entry.value)
-              : entry.formatted ?? entry.value,
+              : (entry.formatted ?? entry.value),
         valueKind: metricBinding.valueKind,
       };
     }),

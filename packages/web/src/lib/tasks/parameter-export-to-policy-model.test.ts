@@ -79,7 +79,8 @@ describe("buildPolicyModelRunFromParameterExport", () => {
         },
       ],
       executionHints: {
-        parentTaskDescription: "Secure adoption of the 1% treaty in the United States.",
+        parentTaskDescription:
+          "Secure adoption of the 1% treaty in the United States.",
         parentTaskTitle: "United States signs the 1% treaty",
         supporterLevers: ["coalition", "media"],
         targetActors: [
@@ -147,25 +148,33 @@ describe("buildPolicyModelRunFromParameterExport", () => {
     expect(run.calculations.map((calc) => calc.outputKey)).toContain(
       "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS",
     );
-    expect(run.frames[0]?.canonical.expectedDalysAverted.base).toBe(7_940_000_000);
+    expect(run.frames[0]?.canonical.expectedDalysAverted.base).toBe(
+      7_940_000_000,
+    );
     expect(run.frames[0]?.canonical.successProbability.low).toBe(0.1);
     expect(run.frames[0]?.metrics[0]?.key).toBe("trial_capacity_multiplier");
     expect(run.executionHints?.targetActors[0]?.claimPolicyHint).toBe(
       TaskClaimPolicy.ASSIGNED_ONLY,
     );
-    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain("PARAMETER_SET");
-    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain("CALCULATION_RUN");
-    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain("MANUAL_SECTION");
-    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain("EXTERNAL_SOURCE");
-    expect(run.artifacts.find((artifact) => artifact.sourceRef === "sipri-global-military-spending")?.title).toBe(
-      "SIPRI military expenditure database",
+    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain(
+      "PARAMETER_SET",
     );
-    expect(run.artifacts.find((artifact) => artifact.artifactType === "CALCULATION_RUN")).toMatchObject({
-      artifactKey: "calculation-run:policy:usa-federal:one-percent-treaty:sha256:test",
-      versionKey: "sha256:test",
-    });
+    expect(
+      run.artifacts.map((artifact) => artifact.artifactType),
+    ).not.toContain("CALCULATION_RUN");
+    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain(
+      "MANUAL_SECTION",
+    );
+    expect(run.artifacts.map((artifact) => artifact.artifactType)).toContain(
+      "EXTERNAL_SOURCE",
+    );
+    expect(
+      run.artifacts.find(
+        (artifact) => artifact.sourceRef === "sipri-global-military-spending",
+      )?.title,
+    ).toBe("SIPRI military expenditure database");
     expect(run.calculations[0]?.sourceArtifactKeys).toContain(
-      "calculation-run:policy:usa-federal:one-percent-treaty:sha256:test",
+      "parameter-set:policy:usa-federal:one-percent-treaty",
     );
   });
 });

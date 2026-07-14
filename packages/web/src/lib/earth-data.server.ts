@@ -40,6 +40,10 @@ import {
 import { prisma } from "./prisma";
 import { slugify } from "./slugify";
 import { ensureSubjectForPerson, ensureSubjectForUser } from "./subject.server";
+import {
+  assertCalculationSourceArtifactIsImmutable,
+  prepareSourceArtifactContent,
+} from "./source-artifacts";
 
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
@@ -155,25 +159,54 @@ export async function upsertSourceArtifact(
   db: DbClient = prisma,
 ) {
   const data = sourceArtifactInputSchema.parse(input);
-  return db.sourceArtifact.upsert({
+  const content = await prepareSourceArtifactContent(data);
+  if (
+    data.artifactType === SourceArtifactType.CALCULATION_SOURCE &&
+    !content.contentHash
+  ) {
+    throw new Error(
+      "Calculation model artifacts require source payload data or a content hash.",
+    );
+  }
+  const existing = await db.sourceArtifact.findUnique({
     where: { sourceKey: data.sourceKey },
-    update: {
-      artifactType: data.artifactType,
-      contentHash: data.contentHash,
-      externalKey: data.externalKey,
-      payloadJson: nullishJson(data.payloadJson),
-      sourceRef: data.sourceRef,
-      sourceSystem: data.sourceSystem,
-      sourceUrl: data.sourceUrl,
-      title: data.title,
-      versionKey: data.versionKey,
-      deletedAt: null,
-    },
+    select: { artifactType: true, contentHash: true },
+  });
+  assertCalculationSourceArtifactIsImmutable(existing, {
+    artifactType: data.artifactType,
+    contentHash: content.contentHash,
+  });
+  const isInertCalculationSource =
+    data.artifactType === SourceArtifactType.CALCULATION_SOURCE &&
+    content.payloadJson != null;
+  const artifact = await db.sourceArtifact.upsert({
+    where: { sourceKey: data.sourceKey },
+    update: isInertCalculationSource
+      ? {
+          deletedAt: null,
+          externalKey: data.externalKey,
+          sourceRef: data.sourceRef,
+          sourceUrl: data.sourceUrl,
+          title: data.title,
+          versionKey: data.versionKey,
+        }
+      : {
+          artifactType: data.artifactType,
+          contentHash: content.contentHash,
+          externalKey: data.externalKey,
+          payloadJson: nullishJson(content.payloadJson),
+          sourceRef: data.sourceRef,
+          sourceSystem: data.sourceSystem,
+          sourceUrl: data.sourceUrl,
+          title: data.title,
+          versionKey: data.versionKey,
+          deletedAt: null,
+        },
     create: {
       artifactType: data.artifactType,
-      contentHash: data.contentHash,
+      contentHash: content.contentHash,
       externalKey: data.externalKey,
-      payloadJson: nullishJson(data.payloadJson),
+      payloadJson: nullishJson(content.payloadJson),
       sourceKey: data.sourceKey,
       sourceRef: data.sourceRef,
       sourceSystem: data.sourceSystem,
@@ -182,6 +215,11 @@ export async function upsertSourceArtifact(
       versionKey: data.versionKey,
     },
   });
+  assertCalculationSourceArtifactIsImmutable(artifact, {
+    artifactType: data.artifactType,
+    contentHash: content.contentHash,
+  });
+  return artifact;
 }
 
 export const resolveGlobalVariableInputSchema = z.object({

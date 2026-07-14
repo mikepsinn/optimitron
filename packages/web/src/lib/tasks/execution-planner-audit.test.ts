@@ -129,4 +129,26 @@ describe("auditExecutionGraph", () => {
     ).toHaveLength(2);
     expect(findings[0]?.severity).toBe("high");
   });
+
+  it("audits stale parameter inputs and unpublished estimates", () => {
+    const findings = auditExecutionGraph({
+      edges: [],
+      tasks: [
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
+        graphTask("research", OPTIMIZE_EARTH_ROOT_TASK_ID, {
+          estimateInputsStale: true,
+        }),
+        graphTask("treaty", OPTIMIZE_EARTH_ROOT_TASK_ID, {
+          estimatePublicationEligible: false,
+        }),
+      ],
+    });
+
+    expect(findings.map((finding) => finding.code)).toEqual(
+      expect.arrayContaining([
+        "STALE_ESTIMATE_INPUT",
+        "UNREVIEWED_PUBLIC_ESTIMATE",
+      ]),
+    );
+  });
 });

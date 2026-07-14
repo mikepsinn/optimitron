@@ -5,7 +5,18 @@
 
 import { Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
-import { assertUserCanViewTask } from "@/lib/tasks/task-visibility.server";
+import {
+  TaskCommentAttachmentInputError,
+  deleteTaskCommentAttachmentObjects,
+  taskCommentAttachmentPublicSelect,
+  type TaskCommentAttachmentPublicRow,
+  verifyPendingTaskCommentAttachments,
+} from "@/lib/tasks/task-comment-attachments.server";
+import {
+  assertUserCanViewTask,
+  canUserViewInternalTaskContent,
+  TASK_NOT_FOUND_MESSAGE,
+} from "@/lib/tasks/task-visibility.server";
 import { userDisplaySelect } from "@/lib/user-display";
 
 const MAX_MESSAGE_LENGTH = 20_000;
@@ -17,9 +28,10 @@ export interface TaskCommentRow {
   id: string;
   taskId: string;
   parentCommentId: string | null;
-  authorUserId: string;
+  authorUserId: string | null;
   message: string;
   mediaUrl: string | null;
+  attachments: TaskCommentAttachmentPublicRow[];
   mentionedUserIds: string[];
   upvoteCount: number;
   downvoteCount: number;
@@ -91,11 +103,42 @@ export async function postComment(input: {
   parentCommentId?: string | null;
   message: string;
   mediaUrl?: string | null;
+  attachmentIds?: string[];
+  enforceParentVisibility?: boolean;
   citationsJson?: Prisma.InputJsonValue | null;
 }): Promise<TaskCommentRow> {
   const trimmed = input.message.trim();
-  if (trimmed.length < MIN_MESSAGE_LENGTH) {
-    throw new Error("Comment message cannot be empty");
+  if (input.parentCommentId && input.enforceParentVisibility) {
+    const parent = await prisma.taskComment.findFirst({
+      where: {
+        deletedAt: null,
+        id: input.parentCommentId,
+        taskId: input.taskId,
+      },
+      select: { visibility: true },
+    });
+    if (
+      !parent ||
+      (parent.visibility === "INTERNAL" &&
+        !(await canUserViewInternalTaskContent(
+          input.taskId,
+          input.authorUserId,
+        )))
+    ) {
+      throw new Error(TASK_NOT_FOUND_MESSAGE);
+    }
+  }
+  const attachmentIds = await verifyPendingTaskCommentAttachments({
+    attachmentIds: input.attachmentIds ?? [],
+    taskId: input.taskId,
+    userId: input.authorUserId,
+  });
+  if (
+    trimmed.length < MIN_MESSAGE_LENGTH &&
+    attachmentIds.length === 0 &&
+    !input.mediaUrl
+  ) {
+    throw new Error("Comment message or attachment is required");
   }
   if (trimmed.length > MAX_MESSAGE_LENGTH) {
     throw new Error(`Comment exceeds ${MAX_MESSAGE_LENGTH} character limit`);
@@ -107,10 +150,16 @@ export async function postComment(input: {
   const result = await prisma.$transaction(async (tx) => {
     // Compute the materialized path: parent.path + "/" + newId (we don't know the new id yet, so use a placeholder and update after insert).
     let parentPath = "";
+    let parentVisibility: "PUBLIC" | "INTERNAL" | undefined;
     if (input.parentCommentId) {
       const parent = await tx.taskComment.findUnique({
         where: { id: input.parentCommentId },
-        select: { path: true, taskId: true, deletedAt: true },
+        select: {
+          path: true,
+          taskId: true,
+          deletedAt: true,
+          visibility: true,
+        },
       });
       if (!parent || parent.deletedAt != null) {
         throw new Error("Parent comment not found");
@@ -119,6 +168,7 @@ export async function postComment(input: {
         throw new Error("Parent comment is on a different task");
       }
       parentPath = parent.path;
+      parentVisibility = parent.visibility;
     }
 
     const comment = await tx.taskComment.create({
@@ -128,6 +178,7 @@ export async function postComment(input: {
         authorUserId: input.authorUserId,
         message: trimmed,
         mediaUrl: input.mediaUrl ?? null,
+        visibility: parentVisibility,
         mentionedUserIds,
         citationsJson: input.citationsJson ?? Prisma.JsonNull,
         path: "", // set in next step
@@ -136,17 +187,50 @@ export async function postComment(input: {
         authorUser: {
           select: userDisplaySelect,
         },
+        attachments: {
+          where: { deletedAt: null },
+          select: taskCommentAttachmentPublicSelect,
+        },
       },
     });
 
+    if (attachmentIds.length > 0) {
+      const linked = await tx.taskCommentAttachment.updateMany({
+        where: {
+          commentId: null,
+          deletedAt: null,
+          expiresAt: { gt: new Date() },
+          id: { in: attachmentIds },
+          taskId: input.taskId,
+          uploadedByUserId: input.authorUserId,
+        },
+        data: {
+          commentId: comment.id,
+          expiresAt: null,
+          uploadedAt: new Date(),
+        },
+      });
+      if (linked.count !== attachmentIds.length) {
+        throw new TaskCommentAttachmentInputError(
+          "One or more attachments are unavailable.",
+        );
+      }
+    }
+
     // Materialize the path now that we have the ID
-    const newPath = parentPath ? `${parentPath}/${comment.id}` : `/${comment.id}`;
+    const newPath = parentPath
+      ? `${parentPath}/${comment.id}`
+      : `/${comment.id}`;
     const finalized = await tx.taskComment.update({
       where: { id: comment.id },
       data: { path: newPath },
       include: {
         authorUser: {
           select: userDisplaySelect,
+        },
+        attachments: {
+          where: { deletedAt: null },
+          select: taskCommentAttachmentPublicSelect,
         },
       },
     });
@@ -189,16 +273,24 @@ export async function voteComment(input: {
   // comments on private tasks.
   const target = await prisma.taskComment.findUnique({
     where: { id: input.commentId },
-    select: { taskId: true },
+    select: { taskId: true, visibility: true },
   });
   if (!target) {
     throw new Error("Comment not found");
   }
   await assertUserCanViewTask(target.taskId, input.userId);
+  if (
+    target.visibility === "INTERNAL" &&
+    !(await canUserViewInternalTaskContent(target.taskId, input.userId))
+  ) {
+    throw new Error("Comment not found");
+  }
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.taskCommentVote.findUnique({
-      where: { commentId_userId: { commentId: input.commentId, userId: input.userId } },
+      where: {
+        commentId_userId: { commentId: input.commentId, userId: input.userId },
+      },
     });
 
     if (input.value === 0) {
@@ -237,8 +329,12 @@ export async function voteComment(input: {
 
     // Recompute cached counts atomically
     const [upvoteCount, downvoteCount] = await Promise.all([
-      tx.taskCommentVote.count({ where: { commentId: input.commentId, value: 1 } }),
-      tx.taskCommentVote.count({ where: { commentId: input.commentId, value: -1 } }),
+      tx.taskCommentVote.count({
+        where: { commentId: input.commentId, value: 1 },
+      }),
+      tx.taskCommentVote.count({
+        where: { commentId: input.commentId, value: -1 },
+      }),
     ]);
     const voteScore = upvoteCount - downvoteCount;
 
@@ -254,7 +350,9 @@ export async function voteComment(input: {
 
     // Determine the viewer's effective vote after the op
     const afterVote = await tx.taskCommentVote.findUnique({
-      where: { commentId_userId: { commentId: input.commentId, userId: input.userId } },
+      where: {
+        commentId_userId: { commentId: input.commentId, userId: input.userId },
+      },
     });
 
     return {
@@ -278,7 +376,12 @@ export async function deleteComment(input: {
 }): Promise<void> {
   const comment = await prisma.taskComment.findUnique({
     where: { id: input.commentId },
-    select: { authorUserId: true, deletedAt: true, path: true, parentCommentId: true },
+    select: {
+      authorUserId: true,
+      deletedAt: true,
+      path: true,
+      parentCommentId: true,
+    },
   });
   if (!comment) throw new Error("Comment not found");
 
@@ -288,10 +391,23 @@ export async function deleteComment(input: {
   }
 
   if (input.asModerator) {
-    // Hard delete: drop the target row and every descendant. Vote rows cascade
-    // via the schema, so no manual cleanup needed.
+    // Revoke attachment access in the database before contacting object
+    // storage. Moderation must still succeed during an R2 outage.
     const prefix = comment.path || `/${input.commentId}`;
+    const attachments = await prisma.taskCommentAttachment.findMany({
+      where: {
+        comment: { path: { startsWith: prefix } },
+      },
+      select: { id: true, storageKey: true },
+    });
+    const now = new Date();
     await prisma.$transaction(async (tx) => {
+      if (attachments.length > 0) {
+        await tx.taskCommentAttachment.updateMany({
+          where: { id: { in: attachments.map((attachment) => attachment.id) } },
+          data: { commentId: null, deletedAt: now, expiresAt: now },
+        });
+      }
       await tx.taskComment.deleteMany({
         where: { path: { startsWith: prefix } },
       });
@@ -302,19 +418,61 @@ export async function deleteComment(input: {
         });
       }
     });
+    if (attachments.length > 0) {
+      try {
+        await deleteTaskCommentAttachmentObjects(
+          attachments.map((attachment) => attachment.storageKey),
+        );
+        await prisma.taskCommentAttachment.deleteMany({
+          where: { id: { in: attachments.map((attachment) => attachment.id) } },
+        });
+      } catch (error) {
+        console.error(
+          "[TASKS] Failed to purge moderated comment attachments:",
+          error,
+        );
+      }
+    }
     return;
   }
 
   // Author soft-delete path.
   if (comment.deletedAt) return; // already soft-deleted
   const now = new Date();
-  await prisma.taskComment.update({
-    where: { id: input.commentId },
-    data: {
-      deletedAt: now,
-      version: { increment: 1 },
-    },
+  const attachments = await prisma.taskCommentAttachment.findMany({
+    where: { commentId: input.commentId, deletedAt: null },
+    select: { id: true, storageKey: true },
   });
+  await prisma.$transaction(async (tx) => {
+    if (attachments.length > 0) {
+      await tx.taskCommentAttachment.updateMany({
+        where: { id: { in: attachments.map((attachment) => attachment.id) } },
+        data: { deletedAt: now },
+      });
+    }
+    await tx.taskComment.update({
+      where: { id: input.commentId },
+      data: {
+        deletedAt: now,
+        version: { increment: 1 },
+      },
+    });
+  });
+  if (attachments.length > 0) {
+    try {
+      await deleteTaskCommentAttachmentObjects(
+        attachments.map((attachment) => attachment.storageKey),
+      );
+      await prisma.taskCommentAttachment.deleteMany({
+        where: { id: { in: attachments.map((attachment) => attachment.id) } },
+      });
+    } catch (error) {
+      console.error(
+        "[TASKS] Failed to purge deleted comment attachments:",
+        error,
+      );
+    }
+  }
 }
 
 /**
@@ -336,6 +494,10 @@ export async function getTaskCommentFeed(input: {
   // must 404 its comment feed too (private tasks stay indistinguishable
   // from missing ones — never a 401/403).
   await assertUserCanViewTask(input.taskId, input.currentUserId);
+  const canSeeInternal = await canUserViewInternalTaskContent(
+    input.taskId,
+    input.currentUserId,
+  );
 
   const sort = input.sort ?? "new";
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
@@ -343,6 +505,7 @@ export async function getTaskCommentFeed(input: {
   const baseWhere: Prisma.TaskCommentWhereInput = {
     taskId: input.taskId,
     deletedAt: null,
+    ...(canSeeInternal ? {} : { visibility: "PUBLIC" }),
   };
   const where: Prisma.TaskCommentWhereInput = {
     ...baseWhere,
@@ -362,6 +525,10 @@ export async function getTaskCommentFeed(input: {
       include: {
         authorUser: {
           select: userDisplaySelect,
+        },
+        attachments: {
+          where: { deletedAt: null },
+          select: taskCommentAttachmentPublicSelect,
         },
       },
     }),

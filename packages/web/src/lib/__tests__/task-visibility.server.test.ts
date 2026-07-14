@@ -20,6 +20,7 @@ vi.mock("@/lib/prisma", () => ({
 
 import {
   assertUserCanViewTask,
+  canUserViewInternalTaskContent,
   canUserViewTask,
   getTaskVisibilityWhere,
 } from "../tasks/task-visibility.server";
@@ -114,6 +115,53 @@ describe("canUserViewTask", () => {
     await expect(canUserViewTask("  ", "user_1")).resolves.toBe(false);
 
     expect(mocks.prisma.taskFindFirst).not.toHaveBeenCalled();
+  });
+});
+
+describe("canUserViewInternalTaskContent", () => {
+  it("rejects anonymous viewers without querying the task", async () => {
+    await expect(canUserViewInternalTaskContent("task_1", null)).resolves.toBe(
+      false,
+    );
+
+    expect(mocks.prisma.taskFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("checks creator, assignee, manager, and organization-admin access", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      isAdmin: false,
+      personId: "person_1",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({ id: "task_1" });
+
+    await expect(
+      canUserViewInternalTaskContent("task_1", "user_1"),
+    ).resolves.toBe(true);
+
+    const where = mocks.prisma.taskFindFirst.mock.calls[0]?.[0]?.where;
+    expect(where.OR).toEqual(
+      expect.arrayContaining([
+        { createdByUserId: "user_1" },
+        { assigneePersonId: "person_1" },
+        {
+          managers: {
+            some: { deletedAt: null, userId: "user_1" },
+          },
+        },
+      ]),
+    );
+  });
+
+  it("does not grant internal access merely because the task is public", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      isAdmin: false,
+      personId: null,
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue(null);
+
+    await expect(
+      canUserViewInternalTaskContent("public_task", "stranger_1"),
+    ).resolves.toBe(false);
   });
 });
 

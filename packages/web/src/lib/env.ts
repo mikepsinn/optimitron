@@ -134,6 +134,9 @@ const serverSchema = z.object({
   R2_ENDPOINT: optionalUrl,
   R2_BUCKET: z.string().optional(),
   R2_PUBLIC_URL: optionalUrl,
+  R2_PRIVATE_BUCKET: z.string().optional(),
+  R2_PRIVATE_ACCESS_KEY_ID: z.string().optional(),
+  R2_PRIVATE_SECRET_ACCESS_KEY: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
 });

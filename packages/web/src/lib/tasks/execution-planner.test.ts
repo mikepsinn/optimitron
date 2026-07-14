@@ -86,6 +86,14 @@ describe("buildExecutionPlan", () => {
       "bank-dependent",
     ]);
     expect(result.checklist[1]?.reason).toContain("unlocks");
+    expect(result.checklist[0]).toMatchObject({
+      scheduledStartAt: "2026-07-10T14:00:00.000Z",
+      scheduledEndAt: "2026-07-10T15:00:00.000Z",
+    });
+    expect(result.checklist[1]).toMatchObject({
+      scheduledStartAt: "2026-07-10T15:00:00.000Z",
+      scheduledEndAt: "2026-07-10T16:00:00.000Z",
+    });
   });
 
   it("keeps externally blocked work out of the checklist", () => {
@@ -125,6 +133,28 @@ describe("buildExecutionPlan", () => {
     expect(result.nextAction?.id).toBe("file-taxes");
   });
 
+  it("schedules required health guardrails even while their EV needs review", () => {
+    const result = plan([
+      task("take-medication", {
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "start_now",
+        hasMarginalEstimate: false,
+        priority: 0,
+        realEv: 0,
+        valid: false,
+        validationNotes: ["Missing expected economic value estimate."],
+      }),
+      task("ordinary-work", { priority: 1_000_000 }),
+    ]);
+
+    expect(result.nextAction?.id).toBe("take-medication");
+    expect(result.itemsNeedingEstimates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "take-medication" }),
+      ]),
+    );
+  });
+
   it("subtracts fixed commitments and stops at the remaining capacity", () => {
     const result = plan(
       [task("first", { hours: 1 }), task("second", { hours: 1 })],
@@ -147,7 +177,7 @@ describe("buildExecutionPlan", () => {
   });
 
   it("counts overlapping fixed commitments only once", () => {
-    const result = plan([task("work", { hours: 2 })], {
+    const result = plan([task("work", { hours: 1 })], {
       commitments: [
         {
           startAt: "2026-07-10T15:00:00.000Z",
@@ -166,6 +196,149 @@ describe("buildExecutionPlan", () => {
     expect(result.fixedCommitmentMinutes).toBe(120);
     expect(result.availableMinutes).toBe(120);
     expect(result.checklist.map((item) => item.id)).toEqual(["work"]);
+  });
+
+  it("does not pretend a task fits across disconnected calendar gaps", () => {
+    const result = plan([task("deep-work", { hours: 2 })], {
+      commitments: [
+        {
+          startAt: "2026-07-10T15:00:00.000Z",
+          endAt: "2026-07-10T17:00:00.000Z",
+          title: "Meetings",
+        },
+      ],
+      planningWindowEnd: "2026-07-10T18:00:00.000Z",
+    });
+
+    expect(result.availableMinutes).toBe(120);
+    expect(result.checklist).toEqual([]);
+    expect(result.unusedMinutes).toBe(120);
+  });
+
+  it("schedules future-available work no earlier than its availability", () => {
+    const result = plan([
+      task("later", {
+        availableAt: "2026-07-10T17:30:00.000Z",
+        hours: 0.5,
+      }),
+    ]);
+
+    expect(result.checklist[0]).toMatchObject({
+      scheduledStartAt: "2026-07-10T17:30:00.000Z",
+      scheduledEndAt: "2026-07-10T18:00:00.000Z",
+    });
+  });
+
+  it("reserves required work in its due window before flexible work", () => {
+    const result = plan(
+      [
+        task("deep-work", { hours: 1.5, priority: 1_000_000 }),
+        task("take-medication", {
+          availableAt: "2026-07-10T15:00:00.000Z",
+          deadlinePolicy: "REQUIRED",
+          deadlineStatus: "future",
+          dueAt: "2026-07-10T15:10:00.000Z",
+          hasMarginalEstimate: false,
+          hours: 1 / 6,
+          priority: 0,
+          realEv: 0,
+          valid: false,
+        }),
+      ],
+      { availableMinutes: 100 },
+    );
+
+    expect(result.checklist.map((item) => item.id)).toEqual([
+      "take-medication",
+      "deep-work",
+    ]);
+    expect(result.checklist[0]).toMatchObject({
+      scheduledStartAt: "2026-07-10T15:00:00.000Z",
+      scheduledEndAt: "2026-07-10T15:10:00.000Z",
+    });
+    expect(result.checklist[1]).toMatchObject({
+      scheduledStartAt: "2026-07-10T15:10:00.000Z",
+      scheduledEndAt: "2026-07-10T16:40:00.000Z",
+    });
+  });
+
+  it("reserves earlier required deadlines before higher-value later ones", () => {
+    const result = plan([
+      task("later-high-value", {
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "future",
+        dueAt: "2026-07-10T18:00:00.000Z",
+        priority: 1_000_000,
+      }),
+      task("earlier-low-value", {
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "future",
+        dueAt: "2026-07-10T16:00:00.000Z",
+        priority: 1,
+      }),
+    ]);
+
+    expect(result.checklist).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "earlier-low-value",
+          scheduledEndAt: "2026-07-10T16:00:00.000Z",
+        }),
+        expect.objectContaining({
+          id: "later-high-value",
+          scheduledEndAt: "2026-07-10T18:00:00.000Z",
+        }),
+      ]),
+    );
+  });
+
+  it("leaves time before a future required task for flexible work", () => {
+    const result = plan([
+      task("future-required", {
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "future",
+        dueAt: "2026-07-10T18:00:00.000Z",
+        priority: 1,
+      }),
+      task("flexible", { priority: 1_000 }),
+    ]);
+
+    expect(result.checklist.map((item) => item.id)).toEqual([
+      "flexible",
+      "future-required",
+    ]);
+    expect(result.nextAction?.id).toBe("flexible");
+    expect(result.checklist[1]).toMatchObject({
+      scheduledStartAt: "2026-07-10T17:00:00.000Z",
+      scheduledEndAt: "2026-07-10T18:00:00.000Z",
+    });
+  });
+
+  it("treats a soft due date as guidance rather than a scheduling cutoff", () => {
+    const result = plan(
+      [
+        task("soft-deadline", {
+          deadlinePolicy: "SOFT",
+          deadlineStatus: "future",
+          dueAt: "2026-07-10T14:30:00.000Z",
+          hours: 1,
+        }),
+      ],
+      {
+        commitments: [
+          {
+            startAt: "2026-07-10T14:00:00.000Z",
+            endAt: "2026-07-10T15:00:00.000Z",
+            title: "Meeting",
+          },
+        ],
+      },
+    );
+
+    expect(result.checklist[0]).toMatchObject({
+      id: "soft-deadline",
+      scheduledStartAt: "2026-07-10T15:00:00.000Z",
+    });
   });
 
   it("separates AI-routed work and never starts it automatically", () => {

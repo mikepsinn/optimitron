@@ -47,12 +47,6 @@ import {
   VotePosition,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
-import {
-  assessTaskCapability,
-  type TaskCapabilityAssessment,
-  type TaskExecutorCapabilities,
-} from "@optimitron/agent/task-capability";
-
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
 // components (consent UI, dev portal) can pull just the catalog without
@@ -91,24 +85,35 @@ import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { isExecutableWorkItem } from "./tasks/execution-eligibility";
 import { ensureSubjectForUser } from "./subject.server";
-import type {
-  RankableTask,
-  TaskPriorityInput,
-  TaskPriorityResult,
-} from "./tasks/rank-tasks";
-import {
-  buildExecutionPlan,
-  type ExecutionPlanningTask,
-  type PlanningBlocker,
-  type PlanningCommitment,
-} from "./tasks/execution-planner";
+import type { RankableTask } from "./tasks/rank-tasks";
+import type { PlanningCommitment } from "./tasks/execution-planner";
 import {
   auditExecutionGraph,
-  getRootedTaskIds,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   type ExecutionGraphEdge,
   type ExecutionGraphTask,
 } from "./tasks/execution-planner-audit";
+import {
+  attachPlanningEffortEvidence,
+  buildPersonalQueueRows,
+  DEFAULT_PERSONAL_BUYBACK_RATE,
+  getAuthorizedExecutionPlan,
+  isAIExecutableTask,
+  isAtomicExecutionRecord,
+  isSelfExecutableTask,
+  loadAgentPlanningProfiles,
+  loadExecutionGraphContext,
+  loadHumanPlanningProfiles,
+  summarizeCapabilityWork,
+  summarizeTask,
+  type AuthorizedExecutionPlanRequest,
+  type PersonalQueueRow,
+  type PersonalQueueTaskRecord,
+  type PlanningExecutorProfile,
+  type SummarizableTask,
+} from "./tasks/personal-planning.server";
+
+export { getAuthorizedExecutionPlan } from "./tasks/personal-planning.server";
 
 export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_CONSENT_SCOPES, ALL_SCOPES, McpScope };
 
@@ -127,6 +132,12 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   deleteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   setTaskImpact: [McpScope.TASKS_ADMIN],
+  proposeTaskImpact: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  searchParameters: [McpScope.TASKS_PERSONAL, McpScope.EARTHDATA_WRITE],
+  getParameterTrace: [McpScope.TASKS_PERSONAL, McpScope.EARTHDATA_WRITE],
+  proposeParameterBundle: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  reviewParameterRevision: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  getTaskImpactTrace: [McpScope.TASKS_PERSONAL, McpScope.EARTHDATA_WRITE],
   recordTaskActuals: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   addDependency: [McpScope.TASKS_ADMIN],
   createReferendum: [McpScope.TASKS_ADMIN],
@@ -1213,58 +1224,6 @@ function getCommunicationEndpointUrl(input?: {
   return null;
 }
 
-type SummarizableTask = {
-  id: string;
-  title: string;
-  description?: string | null;
-  status?: string | null;
-  category?: string | null;
-  taskKey?: string | null;
-  dueAt?: Date | string | null;
-  isPublic?: boolean | null;
-  parentTaskId?: string | null;
-  impactStatement?: string | null;
-  primaryEndpoint?: {
-    email?: string | null;
-    instructions?: string | null;
-    kind?: string | null;
-    label?: string | null;
-    url?: string | null;
-  } | null;
-  claimPolicy?: string | null;
-  applicationPolicy?: string | null;
-  compensationCadence?: string | null;
-  compensationCurrency?: string | null;
-  compensationKind?: string | null;
-  compensationMaxAmountMinorUnits?: bigint | number | string | null;
-  compensationMinAmountMinorUnits?: bigint | number | string | null;
-  compensationPaymentRails?: string[] | null;
-  engagementKind?: string | null;
-  estimatedHoursPerWeekMax?: number | null;
-  estimatedHoursPerWeekMin?: number | null;
-  executionMode?: string | null;
-  kind?: string | null;
-  locationText?: string | null;
-  ownerOrganizationId?: string | null;
-  preferredSkillTags?: string[] | null;
-  remotePolicy?: string | null;
-  requiredAccessTags?: string[] | null;
-  requiredCredentialTags?: string[] | null;
-  requiredLanguageTags?: string[] | null;
-  requiredToolTags?: string[] | null;
-  skillTags?: string[] | null;
-  interestTags?: string[] | null;
-  estimatedEffortHours?: number | null;
-  workLocationCity?: string | null;
-  workLocationCountryCode?: string | null;
-  workLocationRegionCode?: string | null;
-  assigneePerson?: { displayName?: string | null } | null;
-  assigneeOrganization?: { name?: string | null } | null;
-  blockerStatuses?: string[] | null;
-  childTasks?: unknown[] | null;
-  _count?: { childTasks?: number | null } | null;
-};
-
 function buildStoredProposalContext(input: {
   candidate: Record<string, unknown>;
   decision?: {
@@ -1459,10 +1418,12 @@ function taskProposalCandidateFromRecord(task: {
 }
 
 async function attachProposalImpactEstimate(input: {
+  actor: { isAdmin: boolean; userId: string };
   prisma: Awaited<ReturnType<typeof getPrisma>>;
   taskId: string;
   estimatedEffortHours: number | null;
   impact: Record<string, unknown> | null;
+  sourceUrls: string[];
 }) {
   const impact = input.impact;
   if (!impact) return null;
@@ -1471,86 +1432,93 @@ async function attachProposalImpactEstimate(input: {
     (value) => typeof value === "number" && value !== 0,
   );
   if (!hasMeaningfulImpact) return null;
-
-  const estimateSet = await input.prisma.taskImpactEstimateSet.create({
-    data: {
-      assumptionsJson: {
-        assumptions: asStringArray(impact.assumptions),
-        source: "mcp-proposal",
-      },
+  const taskImpact =
+    await import("./parameters/task-impact-calculation.server");
+  const expectedValuePerHourUsd = parseFiniteNumber(
+    impact.expectedValuePerHourUsd,
+  );
+  const expectedEconomicValueUsdBase =
+    parseFiniteNumber(impact.expectedEconomicValueUsdBase) ??
+    (input.estimatedEffortHours == null || expectedValuePerHourUsd == null
+      ? null
+      : expectedValuePerHourUsd * input.estimatedEffortHours);
+  return taskImpact.createDirectTaskImpact(
+    {
+      assumptions: asStringArray(impact.assumptions),
       calculationVersion: "mcp-proposal-v2",
-      counterfactualKey: "status-quo",
-      estimateKind: "FORECAST",
-      isCurrent: true,
-      methodologyKey: "agent-proposal",
-      parameterSetHash: `mcp-proposal:${input.taskId}`,
-      publicationStatus: "DRAFT",
-      sourceSystem: "MANUAL",
+      estimateNotes: "Created with the MCP task proposal.",
+      frame: {
+        adoptionRampYears: 0,
+        annualDiscountRate: 0.03,
+        benefitDurationYears: 20,
+        delayDalysLostPerDayBase: parseFiniteNumber(
+          impact.delayDalysLostPerDay,
+        ),
+        delayEconomicValueUsdLostPerDayBase: parseFiniteNumber(
+          impact.delayEconomicValueUsdLostPerDay,
+        ),
+        estimatedCashCostUsdBase: parseFiniteNumber(
+          impact.estimatedCashCostUsdBase,
+        ),
+        estimatedCashCostUsdHigh: parseFiniteNumber(
+          impact.estimatedCashCostUsdHigh,
+        ),
+        estimatedCashCostUsdLow: parseFiniteNumber(
+          impact.estimatedCashCostUsdLow,
+        ),
+        estimatedEffortHoursBase: input.estimatedEffortHours,
+        evaluationHorizonYears: 20,
+        expectedDalysAvertedBase: parseFiniteNumber(
+          impact.expectedDalysAvertedBase,
+        ),
+        expectedDalysAvertedHigh: parseFiniteNumber(
+          impact.expectedDalysAvertedHigh,
+        ),
+        expectedDalysAvertedLow: parseFiniteNumber(
+          impact.expectedDalysAvertedLow,
+        ),
+        expectedEconomicValueUsdBase,
+        expectedEconomicValueUsdHigh: parseFiniteNumber(
+          impact.expectedEconomicValueUsdHigh,
+        ),
+        expectedEconomicValueUsdLow: parseFiniteNumber(
+          impact.expectedEconomicValueUsdLow,
+        ),
+        medianHealthyLifeYearsEffectBase: parseFiniteNumber(
+          impact.medianHealthyLifeYearsEffectBase,
+        ),
+        medianHealthyLifeYearsEffectHigh: parseFiniteNumber(
+          impact.medianHealthyLifeYearsEffectHigh,
+        ),
+        medianHealthyLifeYearsEffectLow: parseFiniteNumber(
+          impact.medianHealthyLifeYearsEffectLow,
+        ),
+        medianIncomeGrowthEffectPpPerYearBase: parseFiniteNumber(
+          impact.medianIncomeGrowthEffectPpPerYearBase,
+        ),
+        medianIncomeGrowthEffectPpPerYearHigh: parseFiniteNumber(
+          impact.medianIncomeGrowthEffectPpPerYearHigh,
+        ),
+        medianIncomeGrowthEffectPpPerYearLow: parseFiniteNumber(
+          impact.medianIncomeGrowthEffectPpPerYearLow,
+        ),
+        successProbabilityBase: parseFiniteNumber(
+          impact.successProbabilityBase,
+        ),
+        successProbabilityHigh: parseFiniteNumber(
+          impact.successProbabilityHigh,
+        ),
+        successProbabilityLow: parseFiniteNumber(impact.successProbabilityLow),
+        timeToImpactStartDays: 0,
+      },
+      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
+      sourceUrls: input.sourceUrls,
       taskId: input.taskId,
     },
-  });
-
-  await input.prisma.taskImpactFrameEstimate.create({
-    data: {
-      taskImpactEstimateSetId: estimateSet.id,
-      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
-      frameSlug: "twenty-year-proposal",
-      evaluationHorizonYears: 20,
-      successProbabilityLow: (impact.successProbabilityLow as number) ?? null,
-      successProbabilityBase: (impact.successProbabilityBase as number) ?? null,
-      successProbabilityHigh: (impact.successProbabilityHigh as number) ?? null,
-      delayDalysLostPerDayBase: (impact.delayDalysLostPerDay as number) ?? null,
-      delayEconomicValueUsdLostPerDayBase:
-        (impact.delayEconomicValueUsdLostPerDay as number) ?? null,
-      expectedDalysAvertedLow:
-        (impact.expectedDalysAvertedLow as number) ?? null,
-      expectedDalysAvertedBase:
-        (impact.expectedDalysAvertedBase as number) ?? null,
-      expectedDalysAvertedHigh:
-        (impact.expectedDalysAvertedHigh as number) ?? null,
-      medianHealthyLifeYearsEffectLow:
-        (impact.medianHealthyLifeYearsEffectLow as number) ?? null,
-      medianHealthyLifeYearsEffectBase:
-        (impact.medianHealthyLifeYearsEffectBase as number) ?? null,
-      medianHealthyLifeYearsEffectHigh:
-        (impact.medianHealthyLifeYearsEffectHigh as number) ?? null,
-      medianIncomeGrowthEffectPpPerYearLow:
-        (impact.medianIncomeGrowthEffectPpPerYearLow as number) ?? null,
-      medianIncomeGrowthEffectPpPerYearBase:
-        (impact.medianIncomeGrowthEffectPpPerYearBase as number) ?? null,
-      medianIncomeGrowthEffectPpPerYearHigh:
-        (impact.medianIncomeGrowthEffectPpPerYearHigh as number) ?? null,
-      expectedEconomicValueUsdLow:
-        (impact.expectedEconomicValueUsdLow as number) ?? null,
-      expectedEconomicValueUsdBase:
-        (impact.expectedEconomicValueUsdBase as number) ??
-        (input.estimatedEffortHours == null ||
-        impact.expectedValuePerHourUsd == null
-          ? null
-          : (impact.expectedValuePerHourUsd as number) *
-            input.estimatedEffortHours),
-      expectedEconomicValueUsdHigh:
-        (impact.expectedEconomicValueUsdHigh as number) ?? null,
-      estimatedCashCostUsdLow:
-        (impact.estimatedCashCostUsdLow as number) ?? null,
-      estimatedCashCostUsdBase:
-        (impact.estimatedCashCostUsdBase as number) ?? null,
-      estimatedCashCostUsdHigh:
-        (impact.estimatedCashCostUsdHigh as number) ?? null,
-      estimatedEffortHoursBase: input.estimatedEffortHours ?? null,
-      adoptionRampYears: 0,
-      annualDiscountRate: 0.03,
-      benefitDurationYears: 20,
-      timeToImpactStartDays: 0,
-    },
-  });
-
-  await input.prisma.task.update({
-    where: { id: input.taskId },
-    data: { currentImpactEstimateSetId: estimateSet.id },
-  });
-
-  return estimateSet.id;
+    input.actor,
+    { publish: false },
+    input.prisma,
+  );
 }
 
 function normalizeProposalCandidate(
@@ -1790,7 +1758,9 @@ async function attachProposalSourceArtifact(input: {
 }
 
 async function attachDirectTaskImpactEstimate(input: {
-  prisma: Awaited<ReturnType<typeof getPrisma>> | Prisma.TransactionClient;
+  actor: { isAdmin: boolean; userId: string };
+  prisma: Prisma.TransactionClient;
+  publish: boolean;
   taskId: string;
   estimatedEffortHours: number;
   estimatedCashCostUsdBase: number;
@@ -1798,482 +1768,38 @@ async function attachDirectTaskImpactEstimate(input: {
   successProbabilityBase: number;
   timeToImpactStartDays: number;
 }) {
-  const estimateSet = await input.prisma.taskImpactEstimateSet.create({
-    data: {
-      assumptionsJson: {
-        source: "mcp-create-task",
-        evidenceType: "user-supplied",
-        notes: "Direct task inputs used for task priority scoring.",
+  const taskImpact =
+    await import("./parameters/task-impact-calculation.server");
+  return taskImpact.createDirectTaskImpactInTransaction(
+    {
+      assumptions: ["Values supplied through MCP task creation or update."],
+      calculationVersion: "mcp-direct-v2",
+      frame: {
+        adoptionRampYears: 0,
+        annualDiscountRate: 0.03,
+        benefitDurationYears: 5,
+        estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
+        estimatedEffortHoursBase: input.estimatedEffortHours,
+        evaluationHorizonYears: 5,
+        expectedEconomicValueUsdBase: input.expectedEconomicValueUsdBase,
+        successProbabilityBase: input.successProbabilityBase,
+        timeToImpactStartDays: input.timeToImpactStartDays,
       },
-      calculationVersion: "mcp-direct-v1",
-      counterfactualKey: "status-quo",
-      estimateKind: "FORECAST",
-      isCurrent: true,
-      methodologyKey: "agent-direct",
-      parameterSetHash: `mcp-direct:${input.taskId}:${Date.now()}:${Math.random().toString(36).slice(2)}`,
-      publicationStatus: "DRAFT",
-      sourceSystem: "MANUAL",
+      frameKey: TaskImpactFrameKey.FIVE_YEAR,
       taskId: input.taskId,
     },
-  });
-
-  await input.prisma.taskImpactFrameEstimate.create({
-    data: {
-      taskImpactEstimateSetId: estimateSet.id,
-      frameKey: TaskImpactFrameKey.FIVE_YEAR,
-      frameSlug: "five-year-direct",
-      evaluationHorizonYears: 5,
-      successProbabilityLow: null,
-      successProbabilityBase: input.successProbabilityBase,
-      successProbabilityHigh: null,
-      delayDalysLostPerDayBase: null,
-      delayDalysLostPerDayLow: null,
-      delayDalysLostPerDayHigh: null,
-      delayEconomicValueUsdLostPerDayBase: null,
-      delayEconomicValueUsdLostPerDayLow: null,
-      delayEconomicValueUsdLostPerDayHigh: null,
-      expectedDalysAvertedBase: null,
-      expectedDalysAvertedLow: null,
-      expectedDalysAvertedHigh: null,
-      expectedEconomicValueUsdBase: input.expectedEconomicValueUsdBase,
-      expectedEconomicValueUsdLow: null,
-      expectedEconomicValueUsdHigh: null,
-      estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
-      estimatedCashCostUsdLow: null,
-      estimatedCashCostUsdHigh: null,
-      estimatedEffortHoursBase: input.estimatedEffortHours,
-      estimatedEffortHoursLow: null,
-      estimatedEffortHoursHigh: null,
-      adoptionRampYears: 0,
-      annualDiscountRate: 0.03,
-      benefitDurationYears: 5,
-      timeToImpactStartDays: input.timeToImpactStartDays,
-    },
-  });
-
-  await input.prisma.task.update({
-    where: { id: input.taskId },
-    data: { currentImpactEstimateSetId: estimateSet.id },
-  });
-
-  return estimateSet.id;
+    input.actor,
+    { publish: input.publish },
+    input.prisma,
+  );
 }
-
-function summarizeTask(task: SummarizableTask) {
-  const visibility = formatTaskVisibility(task.isPublic);
-  return {
-    id: task.id,
-    title: task.title,
-    description: task.description,
-    status: task.status,
-    category: task.category,
-    taskKey: task.taskKey,
-    dueAt: task.dueAt,
-    isPublic:
-      visibility === undefined
-        ? undefined
-        : visibility === TaskVisibility.PUBLIC,
-    visibility,
-    parentTaskId: task.parentTaskId,
-    impactStatement: task.impactStatement,
-    primaryEndpoint: task.primaryEndpoint ?? null,
-    claimPolicy: task.claimPolicy,
-    applicationPolicy: task.applicationPolicy,
-    compensationCadence: task.compensationCadence,
-    compensationCurrency: task.compensationCurrency,
-    compensationKind: task.compensationKind,
-    compensationMaxAmountMinorUnits: toJsonSafe(
-      task.compensationMaxAmountMinorUnits,
-    ),
-    compensationMinAmountMinorUnits: toJsonSafe(
-      task.compensationMinAmountMinorUnits,
-    ),
-    compensationPaymentRails: task.compensationPaymentRails,
-    engagementKind: task.engagementKind,
-    estimatedHoursPerWeekMax: task.estimatedHoursPerWeekMax,
-    estimatedHoursPerWeekMin: task.estimatedHoursPerWeekMin,
-    executionMode: task.executionMode,
-    kind: task.kind,
-    locationText: task.locationText,
-    ownerOrganizationId: task.ownerOrganizationId,
-    preferredSkillTags: task.preferredSkillTags,
-    remotePolicy: task.remotePolicy,
-    requiredAccessTags: task.requiredAccessTags,
-    requiredCredentialTags: task.requiredCredentialTags,
-    requiredLanguageTags: task.requiredLanguageTags,
-    requiredToolTags: task.requiredToolTags,
-    skillTags: task.skillTags,
-    interestTags: task.interestTags,
-    estimatedEffortHours: task.estimatedEffortHours,
-    workLocationCity: task.workLocationCity,
-    workLocationCountryCode: task.workLocationCountryCode,
-    workLocationRegionCode: task.workLocationRegionCode,
-    assigneePersonName: task.assigneePerson?.displayName ?? null,
-    assigneeOrgName: task.assigneeOrganization?.name ?? null,
-    blocked:
-      task.blockerStatuses?.some((status) => status !== TaskStatus.VERIFIED) ??
-      false,
-    blockerCount: task.blockerStatuses?.length ?? 0,
-    childTaskCount: task.childTasks?.length ?? task._count?.childTasks ?? 0,
-  };
-}
-
-const DEFAULT_PERSONAL_BUYBACK_RATE = 1000;
-const MS_PER_HOUR = 60 * 60 * 1000;
-
-type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
-type DeadlineStatus =
-  | "none"
-  | "future"
-  | "start_now"
-  | "overdue"
-  | "missed"
-  | "expired";
 
 enum TaskVisibility {
   PUBLIC = "PUBLIC",
   PRIVATE = "PRIVATE",
 }
 
-type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
-  activeChildTaskCount: number;
-  assigneeOrganizationId?: string | null;
-  assigneePersonId?: string | null;
-  blockers: PlanningBlocker[];
-  blockersCount: number;
-  blockersResolved: number;
-  blockersResolvedPercent: number;
-  capabilityReasons: string[];
-  capabilityStatus: TaskCapabilityAssessment["status"];
-  evMath: string;
-  availableAt: string | null;
-  cashCost: number;
-  deadlinePolicy: DeadlinePolicy;
-  deadlineRationale: string | null;
-  deadlineStatus: DeadlineStatus;
-  executionEligible: boolean;
-  effortEstimateSource: EffortEstimateSource;
-  hours: number | null;
-  latestStartAt: string | null;
-  createdByUserId?: string | null;
-  executorType: string;
-  hasMarginalEstimate: boolean;
-  pSuccess: number | null;
-  priority: number;
-  realEv: number;
-  rooted: boolean;
-  buybackRate: number;
-  unblockedBlockers: number;
-  unresolvedBlockers: number;
-  timeUntilDueHours: number | null;
-  valid: boolean;
-  value: number | null;
-  validationNotes: string[];
-};
-
-type PersonalQueueTaskRecord = Record<string, unknown> &
-  SummarizableTask & {
-    assigneeOrganizationId?: string | null;
-    assigneePersonId?: string | null;
-    createdByUserId?: string | null;
-    availableAt?: Date | string | null;
-    deadlinePolicy?: DeadlinePolicy | string | null;
-    contextJson?: unknown;
-    directImpactFrame?: unknown;
-    marginalImpactFrame?: unknown;
-    selectedImpactFrame?: unknown;
-    isPublic?: boolean | null;
-    blockerStatuses?: TaskStatus[] | null;
-    activeChildTaskCount?: number | null;
-    candidateMatches?: Array<{
-      agentExecutorId?: string | null;
-      candidateOrganizationId?: string | null;
-      candidatePersonId?: string | null;
-      candidateUserId?: string | null;
-      estimatedDurationSeconds?: number | null;
-      status?: string | null;
-      updatedAt?: Date | string | null;
-    }> | null;
-    claims?: Array<{
-      actualEffortSeconds?: number | null;
-      userId?: string | null;
-    }> | null;
-    executionAttempts?: Array<{
-      actualDurationSeconds?: number | null;
-      agentExecutorId?: string | null;
-      completedAt?: Date | string | null;
-      executorOrganizationId?: string | null;
-      executorPersonId?: string | null;
-      executorUserId?: string | null;
-      status?: string | null;
-      updatedAt?: Date | string | null;
-    }> | null;
-    incomingEdges?: Array<{
-      fromTask?: {
-        id?: string | null;
-        status?: TaskStatus | string | null;
-      } | null;
-    }> | null;
-  };
-
-type EffortEstimateSource =
-  | "target-actual-history"
-  | "candidate-estimate"
-  | "task-estimate"
-  | "impact-frame"
-  | "missing";
-
-interface PlanningExecutorProfile extends TaskExecutorCapabilities {
-  agentExecutorId?: string | null;
-  organizationId?: string | null;
-  personId?: string | null;
-  userId?: string | null;
-}
-
-function matchesPlanningExecutor(
-  record: {
-    agentExecutorId?: string | null;
-    candidateOrganizationId?: string | null;
-    candidatePersonId?: string | null;
-    candidateUserId?: string | null;
-    executorOrganizationId?: string | null;
-    executorPersonId?: string | null;
-    executorUserId?: string | null;
-  },
-  profile: PlanningExecutorProfile,
-) {
-  return Boolean(
-    (profile.agentExecutorId &&
-      profile.agentExecutorId === record.agentExecutorId) ||
-      (profile.organizationId &&
-        profile.organizationId ===
-          (record.executorOrganizationId ?? record.candidateOrganizationId)) ||
-      (profile.personId &&
-        profile.personId ===
-          (record.executorPersonId ?? record.candidatePersonId)) ||
-      (profile.userId &&
-        profile.userId === (record.executorUserId ?? record.candidateUserId)),
-  );
-}
-
-function assessQueueTaskCapability(
-  task: PersonalQueueTaskRecord,
-  profiles: PlanningExecutorProfile[],
-): TaskCapabilityAssessment {
-  const executorKind =
-    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
-  const matchingProfiles = profiles.filter(
-    (profile) => profile.executorKind === executorKind,
-  );
-  const assessments = (matchingProfiles.length > 0
-    ? matchingProfiles
-    : [{ executorKind } as PlanningExecutorProfile]
-  ).map((executor) => assessTaskCapability({ executor, task }));
-  const eligible = assessments.find(
-    (assessment) => assessment.status === "eligible",
-  );
-  if (eligible) return eligible;
-
-  const status = assessments.some(
-    (assessment) => assessment.status === "unknown",
-  )
-    ? "unknown"
-    : "ineligible";
-  return {
-    missingProfileFields: Array.from(
-      new Set(assessments.flatMap((assessment) => assessment.missingProfileFields)),
-    ),
-    missingRequiredTags: Array.from(
-      new Set(assessments.flatMap((assessment) => assessment.missingRequiredTags)),
-    ),
-    reasons: Array.from(
-      new Set(assessments.flatMap((assessment) => assessment.reasons)),
-    ),
-    status,
-  };
-}
-
-function resolveQueueEffortEstimate(
-  task: PersonalQueueTaskRecord,
-  selectedImpactFrame: Record<string, unknown> | null,
-  profiles: PlanningExecutorProfile[],
-) {
-  // Effort evidence must come from executors of the task's own kind —
-  // otherwise an agent's completed attempt becomes the schedule estimate for
-  // a human task (and vice versa). Mirrors assessQueueTaskCapability.
-  const taskExecutorKind =
-    getTaskExecutorType(task) === AI_EXECUTOR_TYPE ? "agent" : "human";
-  const kindProfiles = profiles.filter(
-    (profile) => profile.executorKind === taskExecutorKind,
-  );
-  const actualSeconds = (task.executionAttempts ?? []).find(
-    (attempt) =>
-      attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
-      typeof attempt.actualDurationSeconds === "number" &&
-      attempt.actualDurationSeconds > 0 &&
-      kindProfiles.some((profile) => matchesPlanningExecutor(attempt, profile)),
-  )?.actualDurationSeconds;
-  const claimedActualSeconds = (task.claims ?? []).find(
-    (claim) =>
-      typeof claim.actualEffortSeconds === "number" &&
-      claim.actualEffortSeconds > 0 &&
-      kindProfiles.some(
-        (profile) => profile.userId && profile.userId === claim.userId,
-      ),
-  )?.actualEffortSeconds;
-  const targetActualSeconds = actualSeconds ?? claimedActualSeconds;
-  if (targetActualSeconds != null) {
-    return {
-      hours: targetActualSeconds / 3600,
-      source: "target-actual-history" as const,
-    };
-  }
-
-  const candidateSeconds = (task.candidateMatches ?? []).find(
-    (candidate) =>
-      candidate.status !== TaskCandidateMatchStatus.DECLINED &&
-      candidate.status !== TaskCandidateMatchStatus.REJECTED &&
-      typeof candidate.estimatedDurationSeconds === "number" &&
-      candidate.estimatedDurationSeconds > 0 &&
-      kindProfiles.some((profile) =>
-        matchesPlanningExecutor(candidate, profile),
-      ),
-  )?.estimatedDurationSeconds;
-  if (candidateSeconds != null) {
-    return {
-      hours: candidateSeconds / 3600,
-      source: "candidate-estimate" as const,
-    };
-  }
-
-  if (
-    typeof task.estimatedEffortHours === "number" &&
-    Number.isFinite(task.estimatedEffortHours) &&
-    task.estimatedEffortHours > 0
-  ) {
-    return {
-      hours: task.estimatedEffortHours,
-      source: "task-estimate" as const,
-    };
-  }
-
-  const impactHours = firstFiniteNumber([
-    selectedImpactFrame?.estimatedEffortHoursBase,
-  ]);
-  if (impactHours != null && impactHours > 0) {
-    return { hours: impactHours, source: "impact-frame" as const };
-  }
-
-  return { hours: null, source: "missing" as const };
-}
-
-async function attachPlanningEffortEvidence(
-  tasks: PersonalQueueTaskRecord[],
-  profiles: PlanningExecutorProfile[],
-) {
-  const taskIds = tasks.map((task) => task.id);
-  if (taskIds.length === 0) return tasks;
-
-  const executionTargets = profiles.flatMap(
-    (profile): Prisma.TaskExecutionAttemptWhereInput[] => [
-      ...(profile.agentExecutorId
-        ? [{ agentExecutorId: profile.agentExecutorId }]
-        : []),
-      ...(profile.organizationId
-        ? [{ executorOrganizationId: profile.organizationId }]
-        : []),
-      ...(profile.personId ? [{ executorPersonId: profile.personId }] : []),
-      ...(profile.userId ? [{ executorUserId: profile.userId }] : []),
-    ],
-  );
-  const candidateTargets = profiles.flatMap(
-    (profile): Prisma.TaskCandidateMatchWhereInput[] => [
-      ...(profile.agentExecutorId
-        ? [{ agentExecutorId: profile.agentExecutorId }]
-        : []),
-      ...(profile.organizationId
-        ? [{ candidateOrganizationId: profile.organizationId }]
-        : []),
-      ...(profile.personId ? [{ candidatePersonId: profile.personId }] : []),
-      ...(profile.userId ? [{ candidateUserId: profile.userId }] : []),
-    ],
-  );
-  if (executionTargets.length === 0 && candidateTargets.length === 0) {
-    return tasks;
-  }
-
-  const prisma = await getPrisma();
-  const [executionAttempts, candidateMatches] = await Promise.all([
-    executionTargets.length > 0
-      ? prisma.taskExecutionAttempt.findMany({
-          where: {
-            actualDurationSeconds: { gt: 0 },
-            deletedAt: null,
-            OR: executionTargets,
-            status: TaskExecutionAttemptStatus.COMPLETED,
-            taskId: { in: taskIds },
-          },
-          orderBy: [{ completedAt: "desc" }, { updatedAt: "desc" }],
-          select: {
-            actualDurationSeconds: true,
-            agentExecutorId: true,
-            completedAt: true,
-            executorOrganizationId: true,
-            executorPersonId: true,
-            executorUserId: true,
-            status: true,
-            taskId: true,
-            updatedAt: true,
-          },
-        })
-      : Promise.resolve([]),
-    candidateTargets.length > 0
-      ? prisma.taskCandidateMatch.findMany({
-          where: {
-            deletedAt: null,
-            estimatedDurationSeconds: { gt: 0 },
-            OR: candidateTargets,
-            status: {
-              in: [
-                TaskCandidateMatchStatus.SUGGESTED,
-                TaskCandidateMatchStatus.CONTACTED,
-              ],
-            },
-            taskId: { in: taskIds },
-          },
-          orderBy: { updatedAt: "desc" },
-          select: {
-            agentExecutorId: true,
-            candidateOrganizationId: true,
-            candidatePersonId: true,
-            candidateUserId: true,
-            estimatedDurationSeconds: true,
-            status: true,
-            taskId: true,
-            updatedAt: true,
-          },
-        })
-      : Promise.resolve([]),
-  ]);
-  const attemptsByTask = new Map<string, typeof executionAttempts>();
-  for (const attempt of executionAttempts) {
-    const entries = attemptsByTask.get(attempt.taskId) ?? [];
-    entries.push(attempt);
-    attemptsByTask.set(attempt.taskId, entries);
-  }
-  const matchesByTask = new Map<string, typeof candidateMatches>();
-  for (const match of candidateMatches) {
-    const entries = matchesByTask.get(match.taskId) ?? [];
-    entries.push(match);
-    matchesByTask.set(match.taskId, entries);
-  }
-
-  return tasks.map((task) => ({
-    ...task,
-    candidateMatches: matchesByTask.get(task.id) ?? [],
-    executionAttempts: attemptsByTask.get(task.id) ?? [],
-  }));
-}
+type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
 
 function parsePositiveNumber(value: unknown, fallback: number) {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
@@ -2478,115 +2004,6 @@ function enrichTaskForMcp(task: unknown) {
   };
 }
 
-function isSelfExecutableTask(task: PersonalQueueTaskRecord) {
-  return getTaskExecutorType(task) !== AI_EXECUTOR_TYPE;
-}
-
-function isAIExecutableTask(task: PersonalQueueTaskRecord) {
-  return getTaskExecutorType(task) === AI_EXECUTOR_TYPE;
-}
-
-function isCompletionMilestone(task: PersonalQueueTaskRecord) {
-  if (task.taskKey?.endsWith(":completeTraining")) return true;
-  const plannerContext = asObject(getTaskContext(task).executionPlanner);
-  return plannerContext?.completionMilestone === true;
-}
-
-function getPlanningBlockers(task: PersonalQueueTaskRecord): PlanningBlocker[] {
-  const edgeBlockers = (task.incomingEdges ?? []).flatMap((edge) => {
-    const taskId = edge.fromTask?.id;
-    const status = edge.fromTask?.status;
-    return taskId && status ? [{ taskId, status }] : [];
-  });
-  if (edgeBlockers.length > 0) return edgeBlockers;
-  return (task.blockerStatuses ?? []).map((status, index) => ({
-    status,
-    taskId: `unresolved-blocker:${task.id}:${index}`,
-  }));
-}
-
-function getMarginalImpactFrame(task: PersonalQueueTaskRecord) {
-  return asObject(task.marginalImpactFrame);
-}
-
-function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
-  return (
-    parseFiniteNumber(
-      getMarginalImpactFrame(task)?.expectedEconomicValueUsdBase,
-    ) != null
-  );
-}
-
-function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
-  return (
-    isExecutableWorkItem(task) &&
-    (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
-    !isCompletionMilestone(task)
-  );
-}
-
-async function loadExecutionGraphContext(tasks: PersonalQueueTaskRecord[]) {
-  const prisma = await getPrisma();
-  const graphTaskById = new Map<string, ExecutionGraphTask>();
-  for (const task of tasks) {
-    graphTaskById.set(task.id, {
-      activeChildTaskCount:
-        task.activeChildTaskCount ?? task.childTasks?.length ?? 0,
-      hasMarginalEstimate: hasMarginalEstimate(task),
-      id: task.id,
-      parentTaskId: task.parentTaskId ?? null,
-    });
-  }
-
-  let pendingParentIds = Array.from(
-    new Set(
-      tasks
-        .map((task) => task.parentTaskId)
-        .filter(
-          (id): id is string => Boolean(id) && !graphTaskById.has(id as string),
-        ),
-    ),
-  );
-  for (let depth = 0; depth < 64 && pendingParentIds.length > 0; depth += 1) {
-    const storedParents =
-      ((await prisma.task.findMany({
-        where: { deletedAt: null, id: { in: pendingParentIds } },
-        select: {
-          id: true,
-          parentTaskId: true,
-        },
-      })) as
-        | Array<{
-            id: string;
-            parentTaskId?: string | null;
-          }>
-        | undefined) ?? [];
-    for (const parent of storedParents) {
-      graphTaskById.set(parent.id, {
-        activeChildTaskCount: 0,
-        hasMarginalEstimate: false,
-        id: parent.id,
-        parentTaskId: parent.parentTaskId ?? null,
-      });
-    }
-    pendingParentIds = Array.from(
-      new Set(
-        storedParents
-          .map((parent) => parent.parentTaskId)
-          .filter(
-            (id): id is string =>
-              Boolean(id) && !graphTaskById.has(id as string),
-          ),
-      ),
-    );
-  }
-  const graphTasks = Array.from(graphTaskById.values());
-  return {
-    graphTasks,
-    rootedTaskIds: getRootedTaskIds(graphTasks),
-  };
-}
-
 async function validateExplicitTaskParent(input: {
   isAdminWriter: boolean;
   parentTaskId: string;
@@ -2723,82 +2140,6 @@ async function loadReachableDependencyEdges(
   }
 
   return Array.from(edgeByKey.values());
-}
-
-function isTaskTimeAvailable(task: PersonalQueueTaskRecord, now: Date) {
-  const availableAt = parseTaskDate(task.availableAt);
-  return !availableAt || availableAt.getTime() <= now.getTime();
-}
-
-function computeDeadlineSummary(
-  task: PersonalQueueTaskRecord,
-  hours: number | null,
-  now: Date,
-) {
-  const availableAt = parseTaskDate(task.availableAt);
-  const dueAt = parseTaskDate(task.dueAt);
-  const context = getTaskContext(task);
-  const rawPolicy =
-    task.deadlinePolicy ?? context.deadline_policy ?? context.deadlinePolicy;
-  const deadlinePolicy = normalizeDeadlinePolicy(
-    rawPolicy,
-    dueAt ? "SOFT" : "NONE",
-  );
-  const deadlineRationale =
-    typeof context.deadline_rationale === "string"
-      ? context.deadline_rationale
-      : typeof context.deadlineRationale === "string"
-        ? context.deadlineRationale
-        : null;
-
-  if (!dueAt || deadlinePolicy === "NONE") {
-    return {
-      availableAt: toIsoOrNull(availableAt),
-      deadlinePolicy,
-      deadlineRationale,
-      deadlineStatus: "none" as DeadlineStatus,
-      dueAt: toIsoOrNull(dueAt),
-      latestStartAt: null,
-      timeUntilDueHours: dueAt
-        ? (dueAt.getTime() - now.getTime()) / MS_PER_HOUR
-        : null,
-    };
-  }
-
-  const usableHours =
-    typeof hours === "number" && Number.isFinite(hours) && hours > 0
-      ? hours
-      : null;
-  const latestStartAt =
-    usableHours == null
-      ? null
-      : new Date(dueAt.getTime() - usableHours * MS_PER_HOUR);
-  const timeUntilDueHours = (dueAt.getTime() - now.getTime()) / MS_PER_HOUR;
-  let deadlineStatus: DeadlineStatus = "future";
-  if (timeUntilDueHours < 0) {
-    deadlineStatus =
-      deadlinePolicy === "REQUIRED"
-        ? "missed"
-        : deadlinePolicy === "EXPIRES"
-          ? "expired"
-          : "overdue";
-  } else if (
-    (deadlinePolicy === "REQUIRED" || deadlinePolicy === "EXPIRES") &&
-    latestStartAt &&
-    now.getTime() >= latestStartAt.getTime()
-  ) {
-    deadlineStatus = "start_now";
-  }
-
-  return {
-    availableAt: toIsoOrNull(availableAt),
-    deadlinePolicy,
-    deadlineRationale,
-    deadlineStatus,
-    dueAt: dueAt.toISOString(),
-    latestStartAt: toIsoOrNull(latestStartAt),
-    timeUntilDueHours,
-  };
 }
 
 function resolveTaskEconomics(
@@ -2958,334 +2299,6 @@ function hasEconomicsPatch(args: Record<string, unknown>) {
     "estimatedCashCostUsdBase",
     "expectedEconomicValueUsdBase",
   ].some((key) => args[key] !== undefined);
-}
-
-function buildPersonalQueueRows(
-  tasks: unknown[],
-  ranking: {
-    computeTaskPriority: (
-      task: TaskPriorityInput,
-      options?: { buybackRate?: number },
-    ) => TaskPriorityResult;
-    isTaskBlocked?: (task: Pick<RankableTask, "blockerStatuses">) => boolean;
-  },
-  buybackRate?: number,
-  options?: {
-    executorProfiles?: PlanningExecutorProfile[];
-    requireExecutable?: boolean;
-    requireUnblocked?: boolean;
-    limit?: number;
-    now?: Date;
-    rootedTaskIds?: ReadonlySet<string>;
-  },
-) {
-  const limit = parseQueueLimit(
-    options?.limit,
-    50,
-    Math.min(5000, tasks.length),
-  );
-  const parsedBuybackRate = parsePositiveNumber(
-    buybackRate,
-    DEFAULT_PERSONAL_BUYBACK_RATE,
-  );
-  const now = options?.now ?? new Date();
-  const filtered = options?.requireUnblocked
-    ? tasks.filter((task) => {
-        const sourceTask = task as PersonalQueueTaskRecord;
-        if (!isTaskTimeAvailable(sourceTask, now)) return false;
-        if (
-          ranking.isTaskBlocked?.({
-            blockerStatuses: sourceTask.blockerStatuses ?? undefined,
-          }) ??
-          false
-        ) {
-          return false;
-        }
-        const deadline = computeDeadlineSummary(sourceTask, null, now);
-        return !(
-          deadline.deadlinePolicy === "EXPIRES" &&
-          deadline.deadlineStatus === "expired"
-        );
-      })
-    : tasks;
-
-  const ranked = filtered
-    .map((task) => {
-      const sourceTask = task as PersonalQueueTaskRecord;
-      const marginalImpactFrame = getMarginalImpactFrame(sourceTask);
-      const capability = assessQueueTaskCapability(
-        sourceTask,
-        options?.executorProfiles ?? [],
-      );
-      const effort = resolveQueueEffortEstimate(
-        sourceTask,
-        marginalImpactFrame,
-        options?.executorProfiles ?? [],
-      );
-      const score = ranking.computeTaskPriority(
-        {
-          ...sourceTask,
-          estimatedEffortHours: effort.hours,
-          selectedImpactFrame: marginalImpactFrame,
-        } as TaskPriorityInput,
-        {
-          buybackRate: parsedBuybackRate,
-        },
-      );
-      const summary = summarizeTask(sourceTask);
-      const context = getTaskContext(sourceTask);
-      const selectedImpactFrame = marginalImpactFrame;
-      const hours = effort.hours;
-      const value = firstFiniteNumber([context.value, context.grossValue]);
-      const pSuccess = firstFiniteNumber([
-        context.p_success,
-        context.pSuccess,
-        selectedImpactFrame?.successProbabilityBase,
-      ]);
-      const cashCost =
-        firstFiniteNumber(
-          [
-            context.cash_cost,
-            context.cashCost,
-            selectedImpactFrame?.estimatedCashCostUsdBase,
-          ],
-          0,
-        ) ?? 0;
-      const deadline = computeDeadlineSummary(sourceTask, hours, now);
-      return {
-        ...summary,
-        activeChildTaskCount:
-          sourceTask.activeChildTaskCount ?? sourceTask.childTasks?.length ?? 0,
-        assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
-        assigneePersonId: sourceTask.assigneePersonId ?? null,
-        blockers: getPlanningBlockers(sourceTask),
-        createdByUserId: sourceTask.createdByUserId ?? null,
-        blockersCount: score.blockersCount,
-        blockersResolved: score.blockersResolved,
-        blockersResolvedPercent:
-          score.blockersCount > 0
-            ? (score.unblockedBlockers / score.blockersCount) * 100
-            : 100,
-        capabilityReasons: capability.reasons,
-        capabilityStatus: capability.status,
-        availableAt: deadline.availableAt,
-        buybackRate: score.buybackRate,
-        cashCost,
-        deadlinePolicy: deadline.deadlinePolicy,
-        deadlineRationale: deadline.deadlineRationale,
-        deadlineStatus: deadline.deadlineStatus,
-        dueAt: deadline.dueAt,
-        evMath: score.evMath,
-        executionEligible: isExecutableWorkItem(sourceTask),
-        effortEstimateSource: effort.source,
-        hours,
-        latestStartAt: deadline.latestStartAt,
-        executorType: getTaskExecutorType(sourceTask),
-        hasMarginalEstimate: hasMarginalEstimate(sourceTask),
-        priority: score.priority,
-        pSuccess,
-        realEv: score.realEv,
-        rooted:
-          options?.rootedTaskIds?.has(sourceTask.id) ??
-          sourceTask.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID,
-        timeUntilDueHours: deadline.timeUntilDueHours,
-        unblockedBlockers: score.unblockedBlockers,
-        unresolvedBlockers: Math.max(
-          0,
-          score.blockersCount - score.unblockedBlockers,
-        ),
-        valid: score.valid,
-        value,
-        validationNotes: score.validationNotes,
-      } as PersonalQueueTaskRecord & PersonalQueueRow;
-    })
-    .filter(
-      (row) =>
-        !options?.requireExecutable ||
-        (isAtomicExecutionRecord(row) &&
-          row.capabilityStatus === "eligible" &&
-          row.rooted &&
-          row.hasMarginalEstimate &&
-          row.valid &&
-          row.realEv !== 0),
-    )
-    .sort((left, right) => {
-      if (right.priority !== left.priority) {
-        return right.priority - left.priority;
-      }
-      const leftDueAt = parseTaskDate(left.dueAt)?.getTime() ?? Infinity;
-      const rightDueAt = parseTaskDate(right.dueAt)?.getTime() ?? Infinity;
-      if (leftDueAt !== rightDueAt) return leftDueAt - rightDueAt;
-      return left.id.localeCompare(right.id);
-    });
-
-  return ranked.slice(0, limit);
-}
-
-function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
-  return {
-    activeChildTaskCount: row.activeChildTaskCount,
-    availableAt: row.availableAt ?? null,
-    blockers: row.blockers,
-    capabilityReasons: row.capabilityReasons,
-    capabilityStatus: row.capabilityStatus,
-    completionMilestone: isCompletionMilestone(
-      row as unknown as PersonalQueueTaskRecord,
-    ),
-    deadlinePolicy: row.deadlinePolicy,
-    deadlineStatus: row.deadlineStatus,
-    dueAt: row.dueAt ?? null,
-    executionEligible: row.executionEligible,
-    executorType: row.executorType,
-    effortEstimateSource: row.effortEstimateSource,
-    hasMarginalEstimate: row.hasMarginalEstimate,
-    hours: row.hours,
-    id: row.id,
-    parentTaskId: row.parentTaskId ?? null,
-    priority: row.priority,
-    realEv: row.realEv,
-    rooted: row.rooted,
-    title: row.title,
-    valid: row.valid,
-    validationNotes: row.validationNotes,
-  };
-}
-
-function summarizeCapabilityWork(rows: PersonalQueueRow[]) {
-  const summarize = (row: PersonalQueueRow) => ({
-    id: row.id,
-    reasons: row.capabilityReasons,
-    title: row.title,
-  });
-  const atomicRows = rows.filter(
-    (row) => row.executionEligible && row.activeChildTaskCount === 0 && row.rooted,
-  );
-  return {
-    capabilityExcludedWork: atomicRows
-      .filter((row) => row.capabilityStatus === "ineligible")
-      .map(summarize),
-    itemsNeedingCapabilityConfirmation: atomicRows
-      .filter((row) => row.capabilityStatus === "unknown")
-      .map(summarize),
-  };
-}
-
-type AuthorizedPlanningTarget =
-  | { kind: "self"; personId: string | null; userId: string }
-  | { kind: "person"; personId: string }
-  | { kind: "organization"; organizationId: string };
-
-async function loadHumanPlanningProfiles(
-  target: AuthorizedPlanningTarget,
-): Promise<PlanningExecutorProfile[]> {
-  if (target.kind === "organization") {
-    return [
-      {
-        executorKind: "human",
-        organizationId: target.organizationId,
-      },
-    ];
-  }
-
-  const prisma = await getPrisma();
-  const user = await prisma.user.findUnique({
-    where:
-      target.kind === "self"
-        ? { id: target.userId }
-        : { personId: target.personId },
-    select: {
-      accessTags: true,
-      credentialTags: true,
-      id: true,
-      languageTags: true,
-      personId: true,
-      skillTags: true,
-      toolTags: true,
-    },
-  });
-  if (!user) {
-    return [
-      {
-        executorKind: "human",
-        personId: target.personId,
-      },
-    ];
-  }
-
-  return [
-    {
-      accessTags: user.accessTags,
-      credentialTags: user.credentialTags,
-      executorKind: "human",
-      languageTags: user.languageTags,
-      personId: user.personId,
-      skillTags: user.skillTags,
-      toolTags: user.toolTags,
-      userId: user.id,
-    },
-  ];
-}
-
-async function loadAgentPlanningProfiles(): Promise<PlanningExecutorProfile[]> {
-  const prisma = await getPrisma();
-  const agents = await prisma.agentExecutor.findMany({
-    where: { deletedAt: null, status: AgentExecutorStatus.ACTIVE },
-    orderBy: { agentKey: "asc" },
-    select: {
-      accessTags: true,
-      capabilityTags: true,
-      id: true,
-      toolTags: true,
-    },
-  });
-  return agents.map((agent) => ({
-    accessTags: agent.accessTags,
-    agentExecutorId: agent.id,
-    executorKind: "agent" as const,
-    skillTags: agent.capabilityTags,
-    toolTags: agent.toolTags,
-  }));
-}
-
-async function resolveAuthorizedPlanningTarget(input: {
-  args: Record<string, unknown>;
-  isAdmin: boolean;
-  userId: string;
-}): Promise<AuthorizedPlanningTarget> {
-  const target = asObject(input.args.target) ?? {};
-  const kind = String(target.kind ?? target.type ?? "self").toLowerCase();
-  const targetId =
-    typeof target.id === "string" && target.id.trim() ? target.id.trim() : null;
-  const sessionPersonId = await loadSessionPersonId(input.userId);
-
-  if (kind === "self") {
-    return { kind: "self", personId: sessionPersonId, userId: input.userId };
-  }
-  if (kind === "person") {
-    if (!targetId)
-      throw new Error("target.id is required for a person target.");
-    if (!input.isAdmin && targetId !== sessionPersonId) {
-      throw new Error(
-        "Forbidden: you may only plan for your own Person record.",
-      );
-    }
-    return { kind: "person", personId: targetId };
-  }
-  if (kind === "organization") {
-    if (!targetId) {
-      throw new Error("target.id is required for an organization target.");
-    }
-    if (!input.isAdmin) {
-      const { canManageOrganization } = await import("./organization.server");
-      if (!(await canManageOrganization(input.userId, targetId))) {
-        throw new Error(
-          "Forbidden: organization planning requires an owner or admin membership.",
-        );
-      }
-    }
-    return { kind: "organization", organizationId: targetId };
-  }
-  throw new Error("target.kind must be self, person, or organization.");
 }
 
 function parseQueueLimit(value: unknown, fallback = 20, max = 100) {
@@ -4702,7 +3715,7 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
   {
     name: "upsertSourceArtifact",
     description:
-      "Idempotently store source/provenance metadata for imports and evidence.",
+      "Store source/provenance data without executing it. For Python, notebooks, or other calculation code, use artifactType CALCULATION_SOURCE and payloadJson with language and source; Optimitron marks it inert, computes its content hash, and rejects mutation under the same sourceKey.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -4715,7 +3728,11 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         versionKey: { type: "string" },
         title: { type: "string" },
         contentHash: { type: "string" },
-        payloadJson: { type: "object" },
+        payloadJson: {
+          type: "object",
+          description:
+            "For calculation code: { language, source, runtime?, dependencies?, entrypoint?, inputs?, outputs?, notes? }. Code is retained as inert data and is never run by this tool or by the web application.",
+        },
       },
       required: ["sourceKey"],
     },
@@ -6543,8 +5560,7 @@ const TASK_TOOL_DEFINITIONS = [
         },
         sinceIso: {
           type: "string",
-          description:
-            "Only rows created at or after this ISO-8601 timestamp.",
+          description: "Only rows created at or after this ISO-8601 timestamp.",
         },
         untilIso: {
           type: "string",
@@ -7712,6 +6728,232 @@ const TASK_TOOL_DEFINITIONS = [
         },
       },
       required: ["taskId"],
+    },
+  },
+  {
+    name: "searchParameters",
+    description: "Search published parameters used by Optimitron calculations.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description: "Key, display name, or description text.",
+        },
+        limit: {
+          type: "number",
+          description: "Maximum results (default 20, max 100).",
+        },
+      },
+    },
+  },
+  {
+    name: "getParameterTrace",
+    description:
+      "Get one exact parameter revision with formula, uncertainty, pinned input revisions, complete source artifacts (including inert calculation code), assumptions, and publication state.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        revisionId: {
+          type: "string",
+          description: "Exact revision id. Preferred for reproducible traces.",
+        },
+        key: {
+          type: "string",
+          description: "Parameter key when looking up the current revision.",
+        },
+      },
+    },
+  },
+  {
+    name: "proposeParameterBundle",
+    description:
+      "Create one or more immutable parameter revision drafts. Returns numerical diffs, safe formula ASTs, exact input revisions, and provenance for human review. This never publishes revisions.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        parameters: {
+          type: "array",
+          minItems: 1,
+          maxItems: 100,
+          items: {
+            type: "object",
+            properties: {
+              key: { type: "string" },
+              value: { type: "number" },
+              unit: { type: "string" },
+              description: { type: "string" },
+              displayName: { type: "string" },
+              displayValue: { type: "string" },
+              keywords: { type: "array", items: { type: "string" } },
+              sourceType: {
+                type: "string",
+                enum: [
+                  "EXTERNAL",
+                  "CALCULATED",
+                  "DEFINITION",
+                  "AI_ESTIMATED",
+                  "CURATED",
+                ],
+              },
+              sourceRef: { type: "string" },
+              sourceUrls: {
+                type: "array",
+                items: { type: "string", format: "uri" },
+              },
+              calculationSource: {
+                type: "object",
+                description:
+                  "Exact Python, notebook, or other calculation source to retain as inert content-addressed data. Optimitron stores but never executes it.",
+                properties: {
+                  language: { type: "string" },
+                  source: { type: "string" },
+                  runtime: { type: "object" },
+                  dependencies: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                  entrypoint: { type: "string" },
+                  inputs: { type: "array", items: { type: "object" } },
+                  outputs: { type: "array", items: { type: "object" } },
+                  notes: { type: "string" },
+                },
+                required: ["language", "source"],
+              },
+              formulaText: { type: "string" },
+              formulaLatex: { type: "string" },
+              manualRef: { type: "string" },
+              latexSymbol: { type: "string" },
+              confidence: { type: "string" },
+              sourceLastUpdated: { type: "string" },
+              peerReviewed: { type: "boolean" },
+              conservative: { type: "boolean" },
+              sensitivity: { type: "number" },
+              confidenceIntervalLow: { type: "number" },
+              confidenceIntervalHigh: { type: "number" },
+              stdError: { type: "number" },
+              distributionType: {
+                type: "string",
+                enum: [
+                  "FIXED",
+                  "NORMAL",
+                  "LOGNORMAL",
+                  "BETA",
+                  "GAMMA",
+                  "TRIANGULAR",
+                  "UNIFORM",
+                ],
+              },
+              distributionParameters: { type: "object" },
+              summaryStats: { type: "object" },
+              hideConfidenceInterval: { type: "boolean" },
+              validationMin: { type: "number" },
+              validationMax: { type: "number" },
+              rationale: { type: "string" },
+              assumptions: { type: "array", items: { type: "string" } },
+              inputs: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    symbol: { type: "string" },
+                    parameterKey: { type: "string" },
+                    revisionId: { type: "string" },
+                  },
+                  required: ["symbol", "parameterKey"],
+                },
+              },
+            },
+            required: ["key", "value", "unit", "description", "rationale"],
+          },
+        },
+      },
+      required: ["parameters"],
+    },
+  },
+  {
+    name: "reviewParameterRevision",
+    description: "Publish or reject one reviewed parameter revision.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        revisionId: { type: "string" },
+        action: { type: "string", enum: ["publish", "reject"] },
+      },
+      required: ["revisionId", "action"],
+    },
+  },
+  {
+    name: "proposeTaskImpact",
+    description:
+      "Create an immutable task-impact draft with materialized values, formulas or inert calculation code, exact parameter revision inputs, assumptions, and sources. Public drafts require admin review before use.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string" },
+        frameKey: {
+          type: "string",
+          enum: [
+            "IMMEDIATE",
+            "ONE_YEAR",
+            "FIVE_YEAR",
+            "TWENTY_YEAR",
+            "LIFETIME",
+          ],
+        },
+        frame: { type: "object", additionalProperties: { type: "number" } },
+        metrics: { type: "array", items: { type: "object" } },
+        assumptions: { type: "array", items: { type: "string" } },
+        formulaText: { type: "string" },
+        formulaLatex: { type: "string" },
+        calculationCode: { type: "string" },
+        calculationLanguage: { type: "string" },
+        parameterInputs: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              parameterKey: { type: "string" },
+              revisionId: { type: "string" },
+              symbol: { type: "string" },
+            },
+            required: ["parameterKey", "symbol"],
+          },
+        },
+        sourceUrls: { type: "array", items: { type: "string" } },
+        calculationSource: {
+          type: "object",
+          description:
+            "Exact Python, notebook, or other calculation source to retain as inert content-addressed data. Optimitron stores but never executes it.",
+          properties: {
+            language: { type: "string" },
+            source: { type: "string" },
+            runtime: { type: "object" },
+            dependencies: { type: "array", items: { type: "string" } },
+            entrypoint: { type: "string" },
+            inputs: { type: "array", items: { type: "object" } },
+            outputs: { type: "array", items: { type: "object" } },
+            notes: { type: "string" },
+          },
+          required: ["language", "source"],
+        },
+        estimateNotes: { type: "string" },
+        calculationVersion: { type: "string" },
+        methodologyKey: { type: "string" },
+      },
+      required: ["taskId"],
+    },
+  },
+  {
+    name: "getTaskImpactTrace",
+    description:
+      "Trace the current or specified task-impact estimate through its formula, materialized values, and complete recursive parameter/source tree.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string" },
+        estimateSetId: { type: "string" },
+      },
     },
   },
   {
@@ -9141,14 +8383,16 @@ export function createMcpServer(
               visibility: "public",
               status: TaskStatus.ACTIVE,
             })) as PersonalQueueTaskRecord[];
-            const executorProfiles: PlanningExecutorProfile[] = [{
-              accessTags: (a.accessTags as string[]) ?? [],
-              credentialTags: (a.credentialTags as string[]) ?? [],
-              executorKind: "agent",
-              languageTags: (a.languageTags as string[]) ?? [],
-              skillTags: (a.skillTags as string[]) ?? [],
-              toolTags: (a.toolTags as string[]) ?? [],
-            }];
+            const executorProfiles: PlanningExecutorProfile[] = [
+              {
+                accessTags: (a.accessTags as string[]) ?? [],
+                credentialTags: (a.credentialTags as string[]) ?? [],
+                executorKind: "agent",
+                languageTags: (a.languageTags as string[]) ?? [],
+                skillTags: (a.skillTags as string[]) ?? [],
+                toolTags: (a.toolTags as string[]) ?? [],
+              },
+            ];
             const graph = await loadExecutionGraphContext(allTasks);
             const planningTasks = await attachPlanningEffortEvidence(
               allTasks,
@@ -9323,63 +8567,6 @@ export function createMcpServer(
                 "It builds an authorized personal or organization execution plan.",
               );
             }
-            const target = await resolveAuthorizedPlanningTarget({
-              args: a,
-              isAdmin,
-              userId,
-            });
-            const { tasks, ranking } = await getTaskFunctions();
-            const buybackRate = parsePositiveNumber(
-              a.buybackRate,
-              DEFAULT_PERSONAL_BUYBACK_RATE,
-            );
-            const maxResults = parseQueueLimit(a.maxResults, 20, 100);
-            const targetTasks = (await (target.kind === "self"
-              ? tasks.listTasks({
-                  limit: 5000,
-                  personId: target.personId,
-                  status: TaskStatus.ACTIVE,
-                  userId: target.userId,
-                  visibility: "personal",
-                })
-              : target.kind === "person"
-                ? tasks.listTasks({
-                    assigneePersonId: target.personId,
-                    limit: 5000,
-                    status: TaskStatus.ACTIVE,
-                    visibility: "target",
-                  })
-                : tasks.listTasks({
-                    limit: 5000,
-                    status: TaskStatus.ACTIVE,
-                    targetOrganizationId: target.organizationId,
-                    visibility: "target",
-                  }))) as PersonalQueueTaskRecord[];
-            const planningWindowStart =
-              parseTaskDate(a.planningWindowStart) ?? new Date();
-            const planningWindowEnd =
-              parseTaskDate(a.planningWindowEnd) ??
-              new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
-            const graph = await loadExecutionGraphContext(targetTasks);
-            const executorProfiles = [
-              ...(await loadHumanPlanningProfiles(target)),
-              ...(await loadAgentPlanningProfiles()),
-            ];
-            const planningTasks = await attachPlanningEffortEvidence(
-              targetTasks,
-              executorProfiles,
-            );
-            const rows = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: targetTasks.length,
-                now: planningWindowStart,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
             const fixedCommitments = Array.isArray(a.fixedCommitments)
               ? (a.fixedCommitments as Array<Record<string, unknown>>).map(
                   (commitment) => ({
@@ -9392,24 +8579,32 @@ export function createMcpServer(
                   }),
                 )
               : [];
-            const plan = buildExecutionPlan({
-              availableMinutes:
-                typeof a.availableMinutes === "number"
-                  ? a.availableMinutes
-                  : null,
-              commitments: fixedCommitments as PlanningCommitment[],
-              limit: maxResults,
-              now: planningWindowStart,
-              planningWindowEnd,
-              planningWindowStart,
-              tasks: rows.map(toExecutionPlanningTask),
-            });
-
-            return ok({
-              ...plan,
-              buybackRate,
-              target,
-            });
+            return ok(
+              await getAuthorizedExecutionPlan({
+                availableMinutes:
+                  typeof a.availableMinutes === "number"
+                    ? a.availableMinutes
+                    : null,
+                buybackRate:
+                  typeof a.buybackRate === "number" ? a.buybackRate : null,
+                fixedCommitments: fixedCommitments as PlanningCommitment[],
+                isAdmin,
+                maxResults:
+                  typeof a.maxResults === "number" ? a.maxResults : null,
+                planningWindowEnd:
+                  typeof a.planningWindowEnd === "string"
+                    ? a.planningWindowEnd
+                    : null,
+                planningWindowStart:
+                  typeof a.planningWindowStart === "string"
+                    ? a.planningWindowStart
+                    : null,
+                target: asObject(a.target) as
+                  | AuthorizedExecutionPlanRequest["target"]
+                  | undefined,
+                userId,
+              }),
+            );
           }
 
           // ── getQueueAudit ──────────────────────────────────────
@@ -9530,8 +8725,10 @@ export function createMcpServer(
                 const row = rowByGraphTaskId.get(task.id);
                 return {
                   ...task,
-                  hasMarginalEstimate:
-                    row?.hasMarginalEstimate ?? task.hasMarginalEstimate,
+                  hasMarginalEstimate: task.hasMarginalEstimate,
+                  estimateInputsStale: row?.estimateInputsStale ?? false,
+                  estimatePublicationEligible:
+                    row?.estimatePublicationEligible ?? false,
                   priority: row?.priority ?? null,
                   queueEligible: queueEligibleIds.has(task.id),
                 } satisfies ExecutionGraphTask;
@@ -11253,6 +10450,28 @@ export function createMcpServer(
               (a.assigneePersonId as string | undefined) || undefined;
             const assigneeOrganizationId =
               (a.assigneeOrganizationId as string | undefined) || undefined;
+            const ownerOrganizationId =
+              typeof a.ownerOrganizationId === "string" &&
+              a.ownerOrganizationId.trim()
+                ? a.ownerOrganizationId.trim()
+                : undefined;
+            if (!isAdminTaskWriter) {
+              const organizationIds = dedupeStrings([
+                ...(assigneeOrganizationId ? [assigneeOrganizationId] : []),
+                ...(ownerOrganizationId ? [ownerOrganizationId] : []),
+              ]);
+              if (organizationIds.length > 0) {
+                const { canManageOrganization } =
+                  await import("./organization.server");
+                for (const organizationId of organizationIds) {
+                  if (!(await canManageOrganization(userId, organizationId))) {
+                    return err(
+                      `Organization ${JSON.stringify(organizationId)} requires an owner or admin membership.`,
+                    );
+                  }
+                }
+              }
+            }
             let isPublic: boolean;
             try {
               isPublic = resolveCreateTaskIsPublic(
@@ -11331,56 +10550,61 @@ export function createMcpServer(
                 : TaskStatus.ACTIVE,
             };
             data.createdByUserId = userId;
-            const task = await prisma.$transaction(async (tx) => {
-              const created = await tx.task.create({ data: data as any });
-              await endpoints.upsertPrimaryTaskCommunicationEndpoint(
-                tx,
-                created.id,
-                {
-                  label: (a.contactLabel as string) ?? null,
-                  url: (a.contactUrl as string) ?? null,
-                },
-              );
-              const { TaskEdgeType } = await import("@optimitron/db");
-              const incomingEdges = blockerTaskIds
-                .filter((id) => id !== created.id)
-                .map((blockerTaskId) => ({
-                  fromTaskId: blockerTaskId,
-                  toTaskId: created.id,
-                  edgeType: TaskEdgeType.BLOCKS,
-                }));
-              if (incomingEdges.length > 0) {
-                await tx.taskEdge.createMany({
-                  data: incomingEdges,
-                  skipDuplicates: true,
-                });
-              }
+            const task = await prisma.$transaction(
+              async (tx) => {
+                const created = await tx.task.create({ data: data as any });
+                await endpoints.upsertPrimaryTaskCommunicationEndpoint(
+                  tx,
+                  created.id,
+                  {
+                    label: (a.contactLabel as string) ?? null,
+                    url: (a.contactUrl as string) ?? null,
+                  },
+                );
+                const { TaskEdgeType } = await import("@optimitron/db");
+                const incomingEdges = blockerTaskIds
+                  .filter((id) => id !== created.id)
+                  .map((blockerTaskId) => ({
+                    fromTaskId: blockerTaskId,
+                    toTaskId: created.id,
+                    edgeType: TaskEdgeType.BLOCKS,
+                  }));
+                if (incomingEdges.length > 0) {
+                  await tx.taskEdge.createMany({
+                    data: incomingEdges,
+                    skipDuplicates: true,
+                  });
+                }
 
-              const outgoingEdges = blockedTaskIds
-                .filter((id) => id !== created.id)
-                .map((blockedTaskId) => ({
-                  fromTaskId: created.id,
-                  toTaskId: blockedTaskId,
-                  edgeType: TaskEdgeType.BLOCKS,
-                }));
-              if (outgoingEdges.length > 0) {
-                await tx.taskEdge.createMany({
-                  data: outgoingEdges,
-                  skipDuplicates: true,
+                const outgoingEdges = blockedTaskIds
+                  .filter((id) => id !== created.id)
+                  .map((blockedTaskId) => ({
+                    fromTaskId: created.id,
+                    toTaskId: blockedTaskId,
+                    edgeType: TaskEdgeType.BLOCKS,
+                  }));
+                if (outgoingEdges.length > 0) {
+                  await tx.taskEdge.createMany({
+                    data: outgoingEdges,
+                    skipDuplicates: true,
+                  });
+                }
+                await attachDirectTaskImpactEstimate({
+                  actor: { isAdmin: isAdminTaskWriter, userId },
+                  prisma: tx,
+                  publish: isPublic,
+                  taskId: created.id,
+                  estimatedEffortHours: economics.estimatedEffortHours,
+                  estimatedCashCostUsdBase: economics.estimatedCashCostUsdBase,
+                  expectedEconomicValueUsdBase:
+                    economics.expectedEconomicValueUsdBase,
+                  successProbabilityBase: economics.pSuccess,
+                  timeToImpactStartDays: economics.timeToImpactStartDays,
                 });
-              }
-              await attachDirectTaskImpactEstimate({
-                prisma: tx,
-                taskId: created.id,
-                estimatedEffortHours: economics.estimatedEffortHours,
-                estimatedCashCostUsdBase: economics.estimatedCashCostUsdBase,
-                expectedEconomicValueUsdBase:
-                  economics.expectedEconomicValueUsdBase,
-                successProbabilityBase: economics.pSuccess,
-                timeToImpactStartDays: economics.timeToImpactStartDays,
-              });
-              return created;
-            });
+                return created;
+              },
+              { maxWait: 10_000, timeout: 60_000 },
+            );
 
             // Mirror the web-side createTask call site so MCP-driven task
             // creation also fires the assignment email. Best-effort — never
@@ -12554,10 +11778,12 @@ export function createMcpServer(
                 },
               );
               await attachProposalImpactEstimate({
+                actor: { isAdmin, userId },
                 estimatedEffortHours:
                   (candidate.estimatedEffortHours as number) ?? null,
                 impact: (candidate.impact as Record<string, unknown>) ?? null,
                 prisma,
+                sourceUrls: asStringArray(candidate.sourceUrls),
                 taskId: task.id,
               });
               await attachProposalSourceArtifact({
@@ -13208,69 +12434,75 @@ export function createMcpServer(
               );
             }
 
-            const task = await prisma.$transaction(async (tx) => {
-              const updated = await tx.task.update({
-                where: { id: a.taskId as string },
-                data:
-                  Object.keys(updates).length > 0
-                    ? (updates as any)
-                    : { updatedAt: new Date() },
-              });
-              if (dependencyPatchProvided) {
-                const { TaskEdgeType } = await import("@optimitron/db");
-                const dependencyEdgeTypes = [
-                  TaskEdgeType.BLOCKS,
-                  TaskEdgeType.DEPENDS_ON,
-                ];
-                await tx.taskEdge.updateMany({
-                  where: {
-                    deletedAt: null,
-                    toTaskId: updated.id,
-                    edgeType: { in: dependencyEdgeTypes },
-                    ...(blockerTaskIds.length > 0
-                      ? { fromTaskId: { notIn: blockerTaskIds } }
-                      : {}),
-                  },
-                  data: { deletedAt: new Date() },
+            const task = await prisma.$transaction(
+              async (tx) => {
+                const updated = await tx.task.update({
+                  where: { id: a.taskId as string },
+                  data:
+                    Object.keys(updates).length > 0
+                      ? (updates as any)
+                      : { updatedAt: new Date() },
                 });
-                const incomingEdges = blockerTaskIds
-                  .filter((id) => id !== updated.id)
-                  .map((blockerTaskId) => ({
-                    fromTaskId: blockerTaskId,
-                    toTaskId: updated.id,
-                    edgeType: TaskEdgeType.BLOCKS,
-                  }));
-                if (incomingEdges.length > 0) {
+                if (dependencyPatchProvided) {
+                  const { TaskEdgeType } = await import("@optimitron/db");
+                  const dependencyEdgeTypes = [
+                    TaskEdgeType.BLOCKS,
+                    TaskEdgeType.DEPENDS_ON,
+                  ];
                   await tx.taskEdge.updateMany({
                     where: {
+                      deletedAt: null,
                       toTaskId: updated.id,
-                      fromTaskId: {
-                        in: incomingEdges.map((edge) => edge.fromTaskId),
-                      },
                       edgeType: { in: dependencyEdgeTypes },
+                      ...(blockerTaskIds.length > 0
+                        ? { fromTaskId: { notIn: blockerTaskIds } }
+                        : {}),
                     },
-                    data: { deletedAt: null },
+                    data: { deletedAt: new Date() },
                   });
-                  await tx.taskEdge.createMany({
-                    data: incomingEdges,
-                    skipDuplicates: true,
+                  const incomingEdges = blockerTaskIds
+                    .filter((id) => id !== updated.id)
+                    .map((blockerTaskId) => ({
+                      fromTaskId: blockerTaskId,
+                      toTaskId: updated.id,
+                      edgeType: TaskEdgeType.BLOCKS,
+                    }));
+                  if (incomingEdges.length > 0) {
+                    await tx.taskEdge.updateMany({
+                      where: {
+                        toTaskId: updated.id,
+                        fromTaskId: {
+                          in: incomingEdges.map((edge) => edge.fromTaskId),
+                        },
+                        edgeType: { in: dependencyEdgeTypes },
+                      },
+                      data: { deletedAt: null },
+                    });
+                    await tx.taskEdge.createMany({
+                      data: incomingEdges,
+                      skipDuplicates: true,
+                    });
+                  }
+                }
+                if (economicsPatch) {
+                  await attachDirectTaskImpactEstimate({
+                    actor: { isAdmin: isAdminWriter, userId },
+                    prisma: tx,
+                    publish: existingTask.isPublic === true,
+                    taskId: updated.id,
+                    estimatedEffortHours: economics.estimatedEffortHours,
+                    estimatedCashCostUsdBase:
+                      economics.estimatedCashCostUsdBase,
+                    expectedEconomicValueUsdBase:
+                      economics.expectedEconomicValueUsdBase,
+                    successProbabilityBase: economics.pSuccess,
+                    timeToImpactStartDays: economics.timeToImpactStartDays,
                   });
                 }
-              }
-              if (economicsPatch) {
-                await attachDirectTaskImpactEstimate({
-                  prisma: tx,
-                  taskId: updated.id,
-                  estimatedEffortHours: economics.estimatedEffortHours,
-                  estimatedCashCostUsdBase: economics.estimatedCashCostUsdBase,
-                  expectedEconomicValueUsdBase:
-                    economics.expectedEconomicValueUsdBase,
-                  successProbabilityBase: economics.pSuccess,
-                  timeToImpactStartDays: economics.timeToImpactStartDays,
-                });
-              }
-              return updated;
-            });
+                return updated;
+              },
+              { maxWait: 10_000, timeout: 60_000 },
+            );
             const fresh = await tasks.getTaskDetailData(task.id, userId);
             const scored = fresh
               ? buildPersonalQueueRows(
@@ -13488,165 +12720,115 @@ export function createMcpServer(
             });
           }
 
-          // ── setTaskImpact ──────────────────────────────────────
-          case "setTaskImpact": {
-            const prisma = await getPrisma();
-            const taskId = a.taskId as string;
-
-            const task = await prisma.task.findUnique({
-              where: { id: taskId },
-              select: { id: true, taskKey: true },
-            });
-            if (!task) return err("Task not found");
-
-            const frameInput =
-              (a.frame as Record<string, number | null> | undefined) ?? {};
-            const metricsInput =
-              (a.metrics as Array<Record<string, unknown>> | undefined) ?? [];
-            const frameKeyStr = (a.frameKey as string) ?? "FIVE_YEAR";
-            const frameKey =
-              TaskImpactFrameKey[
-                frameKeyStr as keyof typeof TaskImpactFrameKey
-              ] ?? TaskImpactFrameKey.FIVE_YEAR;
-            const calculationVersion =
-              (a.calculationVersion as string) ?? "agent-estimate-v1";
-            const frameSlug = `${frameKeyStr.toLowerCase()}-agent`;
-            const impactAssumptionsJson: Prisma.InputJsonObject = {
-              assumptions: asStringArray(a.assumptions),
-              estimateNotes:
-                typeof a.estimateNotes === "string" ? a.estimateNotes : null,
-              expectedEconomicValueSemantics:
-                "expectedEconomicValueUsd* values are already probability-weighted",
-              sourceUrls: asStringArray(a.sourceUrls),
-            };
-
-            const result = await prisma.$transaction(
-              async (tx) => {
-                const estimateSet = await tx.taskImpactEstimateSet.create({
-                  data: {
-                    assumptionsJson: impactAssumptionsJson,
-                    calculationVersion,
-                    counterfactualKey: "status-quo",
-                    estimateKind: "FORECAST",
-                    isCurrent: false,
-                    methodologyKey: "agent-direct",
-                    parameterSetHash: `agent:${new Date().toISOString()}`,
-                    publicationStatus: "DRAFT",
-                    sourceSystem: "MANUAL",
-                    taskId,
-                  },
-                });
-
-                const frame = await tx.taskImpactFrameEstimate.create({
-                  data: {
-                    taskImpactEstimateSetId: estimateSet.id,
-                    frameKey,
-                    frameSlug,
-                    evaluationHorizonYears:
-                      (frameInput.evaluationHorizonYears as number) ?? 5,
-                    successProbabilityLow:
-                      (frameInput.successProbabilityLow as number) ?? null,
-                    successProbabilityBase:
-                      (frameInput.successProbabilityBase as number) ?? null,
-                    successProbabilityHigh:
-                      (frameInput.successProbabilityHigh as number) ?? null,
-                    delayDalysLostPerDayLow:
-                      (frameInput.delayDalysLostPerDayLow as number) ?? null,
-                    delayDalysLostPerDayBase:
-                      (frameInput.delayDalysLostPerDayBase as number) ?? null,
-                    delayDalysLostPerDayHigh:
-                      (frameInput.delayDalysLostPerDayHigh as number) ?? null,
-                    delayEconomicValueUsdLostPerDayLow:
-                      (frameInput.delayEconomicValueUsdLostPerDayLow as number) ??
-                      null,
-                    delayEconomicValueUsdLostPerDayBase:
-                      (frameInput.delayEconomicValueUsdLostPerDayBase as number) ??
-                      null,
-                    delayEconomicValueUsdLostPerDayHigh:
-                      (frameInput.delayEconomicValueUsdLostPerDayHigh as number) ??
-                      null,
-                    expectedDalysAvertedLow:
-                      (frameInput.expectedDalysAvertedLow as number) ?? null,
-                    expectedDalysAvertedBase:
-                      (frameInput.expectedDalysAvertedBase as number) ?? null,
-                    expectedDalysAvertedHigh:
-                      (frameInput.expectedDalysAvertedHigh as number) ?? null,
-                    expectedEconomicValueUsdLow:
-                      (frameInput.expectedEconomicValueUsdLow as number) ??
-                      null,
-                    expectedEconomicValueUsdBase:
-                      (frameInput.expectedEconomicValueUsdBase as number) ??
-                      null,
-                    expectedEconomicValueUsdHigh:
-                      (frameInput.expectedEconomicValueUsdHigh as number) ??
-                      null,
-                    estimatedCashCostUsdLow:
-                      (frameInput.estimatedCashCostUsdLow as number) ?? null,
-                    estimatedCashCostUsdBase:
-                      (frameInput.estimatedCashCostUsdBase as number) ?? null,
-                    estimatedCashCostUsdHigh:
-                      (frameInput.estimatedCashCostUsdHigh as number) ?? null,
-                    estimatedEffortHoursLow:
-                      (frameInput.estimatedEffortHoursLow as number) ?? null,
-                    estimatedEffortHoursBase:
-                      (frameInput.estimatedEffortHoursBase as number) ?? null,
-                    estimatedEffortHoursHigh:
-                      (frameInput.estimatedEffortHoursHigh as number) ?? null,
-                    adoptionRampYears: 0,
-                    annualDiscountRate: 0.03,
-                    benefitDurationYears:
-                      (frameInput.evaluationHorizonYears as number) ?? 5,
-                    timeToImpactStartDays: 0,
-                  },
-                });
-
-                for (const metric of metricsInput) {
-                  await tx.taskImpactMetric.create({
-                    data: {
-                      taskImpactFrameEstimateId: frame.id,
-                      metricKey: metric.metricKey as string,
-                      baseValue: (metric.baseValue as number) ?? null,
-                      lowValue: (metric.lowValue as number) ?? null,
-                      highValue: (metric.highValue as number) ?? null,
-                      unit: (metric.unit as string) ?? "unknown",
-                      displayGroup: (metric.displayGroup as string) ?? null,
-                    },
-                  });
-                }
-
-                await tx.taskImpactEstimateSet.updateMany({
-                  where: {
-                    taskId,
-                    isCurrent: true,
-                    NOT: { id: estimateSet.id },
-                  },
-                  data: { isCurrent: false },
-                });
-
-                await tx.taskImpactEstimateSet.update({
-                  where: { id: estimateSet.id },
-                  data: { isCurrent: true },
-                });
-
-                await tx.task.update({
-                  where: { id: taskId },
-                  data: { currentImpactEstimateSetId: estimateSet.id },
-                });
-
-                return {
-                  estimateSetId: estimateSet.id,
-                  frameId: frame.id,
-                  metricCount: metricsInput.length,
-                };
-              },
-              { maxWait: 10_000, timeout: 30_000 },
+          // ── Parameter catalog and deterministic impacts ────────
+          case "searchParameters": {
+            const catalog =
+              await import("./parameters/parameter-catalog.server");
+            return ok(
+              await catalog.searchParameters(
+                {
+                  limit: typeof a.limit === "number" ? a.limit : undefined,
+                  query: typeof a.query === "string" ? a.query : undefined,
+                },
+                { isAdmin, userId: userId ?? null },
+              ),
             );
+          }
 
-            return ok({
-              taskId,
-              ...result,
-              message: `Impact estimate set with ${result.metricCount} metrics attached to task.`,
-            });
+          case "getParameterTrace": {
+            const catalog =
+              await import("./parameters/parameter-catalog.server");
+            return ok(
+              await catalog.getParameterTrace(
+                {
+                  key: typeof a.key === "string" ? a.key : undefined,
+                  revisionId:
+                    typeof a.revisionId === "string" ? a.revisionId : undefined,
+                },
+                { isAdmin, userId: userId ?? null },
+              ),
+            );
+          }
+
+          case "getTaskImpactTrace": {
+            const impact =
+              await import("./parameters/task-impact-calculation.server");
+            return ok(
+              await impact.getTaskImpactTrace(
+                {
+                  estimateSetId:
+                    typeof a.estimateSetId === "string"
+                      ? a.estimateSetId
+                      : undefined,
+                  taskId:
+                    typeof a.taskId === "string" ? a.taskId : undefined,
+                },
+                { isAdmin, userId: userId ?? null },
+              ),
+            );
+          }
+
+          case "proposeParameterBundle": {
+            if (!userId)
+              return authRequired(
+                name,
+                "Parameter proposals need an identified owner.",
+              );
+            const catalog =
+              await import("./parameters/parameter-catalog.server");
+            return ok(
+              await catalog.proposeParameterBundle(a.parameters, {
+                isAdmin,
+                userId,
+              }),
+            );
+          }
+
+          case "reviewParameterRevision": {
+            if (!userId)
+              return authRequired(
+                name,
+                "Parameter review requires authentication.",
+              );
+            if (a.action !== "publish" && a.action !== "reject") {
+              return err("action must be publish or reject");
+            }
+            const catalog =
+              await import("./parameters/parameter-catalog.server");
+            return ok(
+              await catalog.reviewParameterRevision(
+                {
+                  action: a.action,
+                  revisionId: String(a.revisionId ?? ""),
+                },
+                { isAdmin, userId },
+              ),
+            );
+          }
+
+          case "proposeTaskImpact":
+          case "setTaskImpact": {
+            if (!userId)
+              return authRequired(
+                name,
+                "Task-impact estimates need an identified proposer.",
+              );
+            const impact =
+              await import("./parameters/task-impact-calculation.server");
+            return ok(
+              await impact.createDirectTaskImpact(
+                {
+                  ...a,
+                  frameKey: enumValue(
+                    TaskImpactFrameKey,
+                    a.frameKey,
+                    TaskImpactFrameKey.FIVE_YEAR,
+                  ),
+                },
+                { isAdmin, userId },
+                { publish: name === "setTaskImpact" },
+              ),
+            );
           }
 
           // ── claimTask ──────────────────────────────────────────
@@ -14320,9 +13502,8 @@ export function createMcpServer(
 
             // Same gate as the comment feed: you can only write where you
             // can read. Private tasks look identical to missing ones.
-            const { canUserViewTask } = await import(
-              "./tasks/task-visibility.server"
-            );
+            const { canUserViewTask } =
+              await import("./tasks/task-visibility.server");
             if (!(await canUserViewTask(taskId, userId))) {
               return err("Task not found");
             }
@@ -14345,6 +13526,7 @@ export function createMcpServer(
               parentCommentId,
               message,
               mediaUrl,
+              enforceParentVisibility: true,
             });
 
             void notifyTaskCommentRecipients({

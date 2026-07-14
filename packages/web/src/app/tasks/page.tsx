@@ -42,11 +42,13 @@ function TreatyVoteCta() {
             Vote on the 1% Treaty
           </h3>
           <p className="text-sm font-bold leading-6 text-muted-foreground">
-            Redirect 1% of military spending to clinical trials. 30 seconds.
-            One vote. The only task that matters until you cast it.
+            Redirect 1% of military spending to clinical trials. 30 seconds. One
+            vote. The only task that matters until you cast it.
           </p>
         </div>
-        <span aria-hidden className="text-3xl font-black">→</span>
+        <span aria-hidden className="text-3xl font-black">
+          →
+        </span>
       </div>
     </Link>
   );
@@ -59,6 +61,7 @@ export default async function TasksPage() {
   const topLevelTasks: TopLevelTaskCardTask[] = data.topLevelTasks;
   const root = topLevelTasks.find((t) => t.id === OPTIMIZE_EARTH_ROOT_TASK_ID);
   const yourTasks = data.assignedToMe as TaskCardTask[];
+  const recommendedTasks = data.forYou as TaskCardTask[];
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -68,9 +71,9 @@ export default async function TasksPage() {
             Earth Optimization Tasks
           </h1>
           <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
-            A public to-do list for optimizing Earth. Each task names the
-            human or organization, gives them a specific job, and shows the
-            cost of waiting.
+            A public to-do list for optimizing Earth. Each task names the human
+            or organization, gives them a specific job, and shows the cost of
+            waiting.
           </p>
         </header>
 
@@ -84,6 +87,20 @@ export default async function TasksPage() {
               defaultSortKey="cost"
               defaultSortDir="desc"
               pageSize={1}
+            />
+          </section>
+        ) : null}
+
+        {recommendedTasks.length > 0 ? (
+          <section className="space-y-3">
+            <h2 className="text-lg font-black uppercase tracking-tight sm:text-2xl">
+              Highest-value tasks you can do now
+            </h2>
+            <SortableTaskList
+              tasks={recommendedTasks}
+              defaultSortKey="recommendation"
+              defaultSortDir="desc"
+              pageSize={24}
             />
           </section>
         ) : null}

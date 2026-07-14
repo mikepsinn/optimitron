@@ -92,7 +92,8 @@ function finiteNumber(value: unknown) {
 
 function resolveEstimatedEffortHours(input: TaskPriorityInput) {
   return finiteNumber(
-    input.estimatedEffortHours ?? input.selectedImpactFrame?.estimatedEffortHoursBase,
+    input.estimatedEffortHours ??
+      input.selectedImpactFrame?.estimatedEffortHoursBase,
   );
 }
 
@@ -112,7 +113,10 @@ export function computeTaskPriority(
   },
 ): TaskPriorityResult {
   const parsedBuyback = finiteNumber(options?.buybackRate);
-  const buybackRate = parsedBuyback == null || parsedBuyback <= 0 ? DEFAULT_BUYBACK_RATE : parsedBuyback;
+  const buybackRate =
+    parsedBuyback == null || parsedBuyback <= 0
+      ? DEFAULT_BUYBACK_RATE
+      : parsedBuyback;
   const blockerStatuses = task.blockerStatuses ?? [];
   const totalBlockers = blockerStatuses.length;
   const resolvedStatuses: Set<TaskStatus> = new Set([TaskStatus.VERIFIED]);
@@ -122,7 +126,10 @@ export function computeTaskPriority(
   const estimatedEffortHours = resolveEstimatedEffortHours(task);
   const validationNotes: string[] = [];
   const frame = task.selectedImpactFrame;
-  const cashCost = Math.max(0, finiteNumber(frame?.estimatedCashCostUsdBase) ?? 0);
+  const cashCost = Math.max(
+    0,
+    finiteNumber(frame?.estimatedCashCostUsdBase) ?? 0,
+  );
   const realEv = finiteNumber(frame?.expectedEconomicValueUsdBase) ?? 0;
 
   if (frame?.expectedEconomicValueUsdBase == null) {
@@ -138,7 +145,9 @@ export function computeTaskPriority(
   let valid = true;
   if (denominator <= ZERO_DIVISION_GUARD) {
     valid = false;
-    validationNotes.push("Invalid denominator for task priority (hours + cash/buyback too small).");
+    validationNotes.push(
+      "Invalid denominator for task priority (hours + cash/buyback too small).",
+    );
   }
 
   const priority = valid ? (realEv - cashCost) / denominator : 0;
@@ -170,9 +179,7 @@ export function computeTaskPriority(
 function normalizeTags(tags: readonly string[] | null | undefined) {
   return Array.from(
     new Set(
-      (tags ?? [])
-        .map((tag) => tag.trim().toLowerCase())
-        .filter(Boolean),
+      (tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean),
     ),
   );
 }
@@ -265,7 +272,12 @@ export function hoursFitScore(
     return 1;
   }
 
-  return Math.max(0, 1 - (estimatedEffortHours - availableHoursPerWeek) / Math.max(availableHoursPerWeek, 1));
+  return Math.max(
+    0,
+    1 -
+      (estimatedEffortHours - availableHoursPerWeek) /
+        Math.max(availableHoursPerWeek, 1),
+  );
 }
 
 function weeklyHoursFitScore(
@@ -286,7 +298,10 @@ function weeklyHoursFitScore(
   }
 
   if (maxHours != null && availableHoursPerWeek > maxHours) {
-    return Math.max(0.5, 1 - (availableHoursPerWeek - maxHours) / Math.max(maxHours, 1));
+    return Math.max(
+      0.5,
+      1 - (availableHoursPerWeek - maxHours) / Math.max(maxHours, 1),
+    );
   }
 
   return 1;
@@ -311,7 +326,8 @@ function locationFitScore(task: RankableTask, user: RankableUser) {
   if (task.workLocationCountryCode) {
     weight += 0.3;
     score +=
-      task.workLocationCountryCode.toLowerCase() === user.countryCode?.toLowerCase()
+      task.workLocationCountryCode.toLowerCase() ===
+      user.countryCode?.toLowerCase()
         ? 0.3
         : 0;
   }
@@ -319,7 +335,8 @@ function locationFitScore(task: RankableTask, user: RankableUser) {
   if (task.workLocationRegionCode) {
     weight += 0.3;
     score +=
-      task.workLocationRegionCode.toLowerCase() === user.regionCode?.toLowerCase()
+      task.workLocationRegionCode.toLowerCase() ===
+      user.regionCode?.toLowerCase()
         ? 0.3
         : 0;
   }
@@ -337,7 +354,9 @@ function locationFitScore(task: RankableTask, user: RankableUser) {
   }
 
   const normalized = score / weight;
-  return task.remotePolicy === "HYBRID" ? Math.max(0.25, normalized) : normalized;
+  return task.remotePolicy === "HYBRID"
+    ? Math.max(0.25, normalized)
+    : normalized;
 }
 
 function paymentRailFitScore(task: RankableTask, user: RankableUser) {
@@ -349,16 +368,23 @@ function paymentRailFitScore(task: RankableTask, user: RankableUser) {
   return coverageScore(rails, user.preferredPaymentRails) ?? 0;
 }
 
-function scoreWeightedComponents(scores: Array<{ score: number; weight: number }>) {
+function scoreWeightedComponents(
+  scores: Array<{ score: number; weight: number }>,
+) {
   const totalWeight = scores.reduce((sum, item) => sum + item.weight, 0);
   if (totalWeight <= 0) {
     return 0.5;
   }
 
-  return scores.reduce((sum, item) => sum + item.score * item.weight, 0) / totalWeight;
+  return (
+    scores.reduce((sum, item) => sum + item.score * item.weight, 0) /
+    totalWeight
+  );
 }
 
-export function isTaskClaimable(task: Pick<RankableTask, "claimPolicy" | "status">) {
+export function isTaskClaimable(
+  task: Pick<RankableTask, "claimPolicy" | "status">,
+) {
   return (
     task.claimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY &&
     task.status === TaskStatus.ACTIVE
@@ -376,16 +402,17 @@ export function canTaskAcceptMoreClaims(task: Omit<RankableTask, "id">) {
     return activeClaimCount === 0;
   }
 
-  if (task.claimPolicy === TaskClaimPolicy.OPEN_MANY && task.maxClaims != null) {
+  if (
+    task.claimPolicy === TaskClaimPolicy.OPEN_MANY &&
+    task.maxClaims != null
+  ) {
     return activeClaimCount < task.maxClaims;
   }
 
   return true;
 }
 
-const RESOLVED_STATUSES = new Set<TaskStatus>([
-  TaskStatus.VERIFIED,
-]);
+const RESOLVED_STATUSES = new Set<TaskStatus>([TaskStatus.VERIFIED]);
 
 /**
  * A task is blocked if any of its blocker/dependency tasks are not yet
@@ -412,7 +439,9 @@ export function blockerProgress(task: Pick<RankableTask, "blockerStatuses">) {
   return resolved / statuses.length;
 }
 
-export function hasActiveChildTasks(task: Pick<RankableTask, "activeChildTaskCount">) {
+export function hasActiveChildTasks(
+  task: Pick<RankableTask, "activeChildTaskCount">,
+) {
   return (task.activeChildTaskCount ?? 0) > 0;
 }
 
@@ -432,12 +461,19 @@ export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
   }
 
   const skillScore =
-    requiredPreferredFit(task.skillTags, task.preferredSkillTags, user.skillTags) ?? 1;
+    requiredPreferredFit(
+      task.skillTags,
+      task.preferredSkillTags,
+      user.skillTags,
+    ) ?? 1;
   const interestScore =
     task.interestTags.length === 0
       ? 1
       : jaccardScore(task.interestTags, user.interestTags);
-  const effortScore = hoursFitScore(task.estimatedEffortHours, user.availableHoursPerWeek);
+  const effortScore = hoursFitScore(
+    task.estimatedEffortHours,
+    user.availableHoursPerWeek,
+  );
   const baseFitScore =
     0.6 * skillScore + 0.3 * interestScore + 0.1 * effortScore;
   const fitComponents: Array<{ score: number; weight: number }> = [];
@@ -462,7 +498,11 @@ export function scoreTaskForUser(task: RankableTask, user: RankableUser) {
   );
   addWeightedScore(
     fitComponents,
-    requiredPreferredFit(task.requiredToolTags, task.preferredToolTags, user.toolTags),
+    requiredPreferredFit(
+      task.requiredToolTags,
+      task.preferredToolTags,
+      user.toolTags,
+    ),
     0.1,
   );
   addWeightedScore(
@@ -519,13 +559,18 @@ function scoreImpactFrame(frame: TaskImpactFrameSummary | null) {
   }
 
   const ratios = deriveImpactRatios(frame);
-  const { actorHourComponent, delayComponent } = getNormalizedImpactComponents(frame);
+  const { actorHourComponent, delayComponent } =
+    getNormalizedImpactComponents(frame);
   const valuePerDollarComponent =
     ratios.expectedValuePerDollar == null
       ? 0
       : Math.min(1, Math.log10(ratios.expectedValuePerDollar + 1) / 8);
 
-  return actorHourComponent * 0.45 + delayComponent * 0.45 + valuePerDollarComponent * 0.1;
+  return (
+    actorHourComponent * 0.45 +
+    delayComponent * 0.45 +
+    valuePerDollarComponent * 0.1
+  );
 }
 
 export function rankTasksForUser<T extends RankableTask>(
@@ -547,25 +592,35 @@ export function rankTasksForUser<T extends RankableTask>(
   const selectionPool = executionPool;
 
   return selectionPool
-    .map((task) => ({
-      score: scoreTaskForUser(task, user),
-      task,
-    }))
+    .map((task) => {
+      const priority = computeTaskPriority({
+        blockerStatuses: task.blockerStatuses,
+        estimatedEffortHours: task.estimatedEffortHours,
+        selectedImpactFrame: getExecutionImpactFrame(task),
+      });
+      return {
+        fitScore: scoreTaskForUser(task, user),
+        score: priority.priority,
+        task,
+        valid: priority.valid,
+      };
+    })
+    .filter(({ score, valid }) => valid && score > 0)
     .sort((left, right) => {
       if (right.score !== left.score) {
         return right.score - left.score;
       }
 
-      const rightAccountability = scoreTaskForAccountability(right.task);
-      const leftAccountability = scoreTaskForAccountability(left.task);
-      if (rightAccountability !== leftAccountability) {
-        return rightAccountability - leftAccountability;
+      if (right.fitScore !== left.fitScore) {
+        return right.fitScore - left.fitScore;
       }
 
       const rightValuePerHour =
-        deriveImpactRatios(getExecutionImpactFrame(right.task)).expectedValuePerHourUsd ?? 0;
+        deriveImpactRatios(getExecutionImpactFrame(right.task))
+          .expectedValuePerHourUsd ?? 0;
       const leftValuePerHour =
-        deriveImpactRatios(getExecutionImpactFrame(left.task)).expectedValuePerHourUsd ?? 0;
+        deriveImpactRatios(getExecutionImpactFrame(left.task))
+          .expectedValuePerHourUsd ?? 0;
       if (rightValuePerHour !== leftValuePerHour) {
         return rightValuePerHour - leftValuePerHour;
       }

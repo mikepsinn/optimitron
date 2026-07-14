@@ -22,6 +22,8 @@ export const API_ROUTES = {
     complete: (id: string) => `/api/tasks/${id}/complete`,
     comments: (id: string, query?: string) =>
       `/api/tasks/${id}/comments${query ? `?${query}` : ""}`,
+    attachmentPresign: (id: string) => `/api/tasks/${id}/attachments/presign`,
+    attachment: (id: string) => `/api/tasks/attachments/${id}`,
     comment: (id: string) => `/api/tasks/comments/${id}`,
     commentVote: (id: string) => `/api/tasks/comments/${id}/vote`,
     verify: (id: string) => `/api/tasks/${id}/verify`,
