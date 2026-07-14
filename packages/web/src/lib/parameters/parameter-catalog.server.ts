@@ -14,10 +14,9 @@ import {
   storeInlineCalculationSourceArtifact,
 } from "../source-artifacts";
 import {
-  compileManualParameterCatalog,
-  ManualParameterExportSchema,
-  type CompiledManualParameter,
-} from "./manual-parameter-import";
+  compileGeneratedParameterCatalog,
+  type CompiledGeneratedParameter,
+} from "./generated-parameter-catalog";
 
 type CatalogDb = PrismaClient | Prisma.TransactionClient;
 type ParameterInputRevision = Prisma.ParameterRevisionGetPayload<{
@@ -124,7 +123,7 @@ export function canReadParameterRevision(
   );
 }
 
-function parameterRevisionData(parameter: CompiledManualParameter) {
+function parameterRevisionData(parameter: CompiledGeneratedParameter) {
   assertSemanticBounds(parameter);
   return {
     assumptionsJson: Prisma.JsonNull,
@@ -141,20 +140,17 @@ function parameterRevisionData(parameter: CompiledManualParameter) {
     calculationLanguage: parameter.calculationLanguage,
     formulaLatex: parameter.formulaLatex,
     formulaText: parameter.formulaText,
-    hideConfidenceInterval: parameter.hideConfidenceInterval,
-    keywords: parameter.keywords,
     latexSymbol: parameter.latexSymbol,
     manualRef: parameter.manualRef,
     peerReviewed: parameter.peerReviewed,
     rationale: null,
-    rawSourceJson: json(parameter.rawSource),
     sensitivity: parameter.sensitivity,
     sourceContentHash: parameter.sourceContentHash,
     sourceLastUpdated: parameter.sourceLastUpdated,
     sourceRef: parameter.sourceRef,
     sourceType: parameter.sourceType,
     stdError: parameter.stdError,
-    summaryStatsJson: nullableJson(parameter.summaryStats),
+    summaryStatsJson: Prisma.JsonNull,
     unit: parameter.unit,
     validationMax: parameter.validationMax,
     validationMin: parameter.validationMin,
@@ -165,25 +161,21 @@ function parameterRevisionData(parameter: CompiledManualParameter) {
   >;
 }
 
-export interface ImportManualParameterCatalogInput {
+export interface BootstrapGeneratedParameterCatalogInput {
+  citations?: unknown;
   dryRun?: boolean;
-  exportData: unknown;
-  pythonSource: string;
-  summaries?: unknown;
+  parameters: unknown;
 }
 
-export async function importManualParameterCatalog(
-  input: ImportManualParameterCatalogInput,
+export async function bootstrapGeneratedParameterCatalog(
+  input: BootstrapGeneratedParameterCatalogInput,
   db: PrismaClient = defaultPrisma,
 ) {
-  const parsedExport = ManualParameterExportSchema.parse(input.exportData);
-  const catalog = await compileManualParameterCatalog(
-    input.exportData,
-    input.summaries ?? {},
+  const catalog = await compileGeneratedParameterCatalog(
+    input.parameters,
+    input.citations ?? {},
   );
-  const pythonSourceHash = await sha256CanonicalJson({
-    content: input.pythonSource,
-  });
+  for (const parameter of catalog.parameters) assertSemanticBounds(parameter);
   const citations = await Promise.all(
     Object.entries(catalog.citations).map(async ([key, value]) => ({
       contentHash: await sha256CanonicalJson(value),
@@ -191,14 +183,10 @@ export async function importManualParameterCatalog(
       value,
     })),
   );
-
   const validation = {
     ...catalog.counts,
     citationCount: citations.length,
-    exportContentHash: catalog.exportContentHash,
-    parameterSetHash: catalog.parameterSetHash,
-    pythonSourceHash,
-    sourceContentHash: catalog.sourceContentHash,
+    catalogContentHash: catalog.catalogContentHash,
   };
   if (input.dryRun !== false) return { applied: false, ...validation };
 
@@ -207,67 +195,59 @@ export async function importManualParameterCatalog(
       const keys = catalog.parameters.map((parameter) => parameter.key);
       const existingDefinitions = await tx.parameterDefinition.findMany({
         where: { key: { in: keys } },
-        include: {
-          currentRevision: { select: { id: true, sourceContentHash: true } },
+        select: {
+          currentRevisionId: true,
+          deletedAt: true,
+          id: true,
+          key: true,
         },
       });
-      const deletedDefinition = existingDefinitions.find(
-        (definition) => definition.deletedAt !== null,
+      const invalidExistingDefinitions = existingDefinitions.filter(
+        (definition) =>
+          definition.deletedAt != null || definition.currentRevisionId == null,
       );
-      if (deletedDefinition) {
+      if (invalidExistingDefinitions.length > 0) {
         throw new Error(
-          `Parameter bootstrap will not restore deleted definition ${deletedDefinition.key}.`,
+          `Existing parameters must have a current revision: ${invalidExistingDefinitions
+            .map((definition) => definition.key)
+            .join(", ")}.`,
         );
       }
-      const parameterByKey = new Map(
-        catalog.parameters.map((parameter) => [parameter.key, parameter]),
+      const existingKeys = new Set(
+        existingDefinitions.map((definition) => definition.key),
       );
-      const conflicting = existingDefinitions.find((definition) => {
-        const bootstrapParameter = parameterByKey.get(definition.key);
-        return (
-          !bootstrapParameter ||
-          definition.currentRevision?.sourceContentHash !==
-            bootstrapParameter.sourceContentHash
-        );
-      });
-      if (conflicting) {
-        throw new Error(
-          `Parameter bootstrap cannot resume because ${conflicting.key} has already diverged from the bootstrap source.`,
-        );
-      }
-      if (existingDefinitions.length === keys.length) {
+      const newParameters = catalog.parameters.filter(
+        (parameter) => !existingKeys.has(parameter.key),
+      );
+      if (newParameters.length === 0) {
         return {
           createdDefinitionCount: 0,
           createdRevisionCount: 0,
-          importedCalculatedRevisionCount: catalog.parameters.filter(
-            (parameter) => parameter.sourceType === "CALCULATED",
-          ).length,
+          importedCalculatedRevisionCount: 0,
           skippedExistingDefinitionCount: existingDefinitions.length,
         };
       }
-      const parameterSetSourceKey = `manual:parameter-set:${catalog.exportContentHash}`;
-      const pythonSourceKey = `manual:python-source:${pythonSourceHash}`;
+
+      const requiredRevisionKeys = new Set(
+        newParameters.flatMap((parameter) => [
+          parameter.key,
+          ...parameter.inputs,
+        ]),
+      );
+      const parameterSetSourceKey = `generated:parameter-set:${catalog.catalogContentHash}`;
       await tx.sourceArtifact.createMany({
         data: [
           {
             artifactType: SourceArtifactType.PARAMETER_SET,
-            contentHash: catalog.exportContentHash,
-            payloadJson: json(input.exportData),
+            contentHash: catalog.catalogContentHash,
+            payloadJson: json({
+              citations: catalog.citations,
+              parameters: input.parameters,
+            }),
             sourceKey: parameterSetSourceKey,
-            sourceRef: parsedExport.sourceFile,
+            sourceRef: "@optimitron/data/parameters",
             sourceSystem: SourceSystem.PARAMETER_CATALOG,
-            title: `Manual parameter export ${catalog.exportContentHash.slice(0, 12)}`,
-            versionKey: catalog.schemaVersion,
-          },
-          {
-            artifactType: SourceArtifactType.MANUAL_SNAPSHOT,
-            contentHash: pythonSourceHash,
-            payloadJson: json({ content: input.pythonSource }),
-            sourceKey: pythonSourceKey,
-            sourceRef: parsedExport.sourceFile,
-            sourceSystem: SourceSystem.MANUAL,
-            title: `Manual parameter source ${pythonSourceHash.slice(0, 12)}`,
-            versionKey: catalog.schemaVersion,
+            title: `Generated parameter catalog ${catalog.catalogContentHash.slice(0, 12)}`,
           },
           ...citations.map((citation) => ({
             artifactType: SourceArtifactType.EXTERNAL_SOURCE,
@@ -278,10 +258,13 @@ export async function importManualParameterCatalog(
             sourceRef: citation.key,
             sourceSystem: SourceSystem.MANUAL,
             sourceUrl:
-              typeof (citation.value as Record<string, unknown>)?.url ===
+              typeof (citation.value as Record<string, unknown>)?.URL ===
               "string"
-                ? ((citation.value as Record<string, unknown>).url as string)
-                : null,
+                ? ((citation.value as Record<string, unknown>).URL as string)
+                : typeof (citation.value as Record<string, unknown>)?.url ===
+                    "string"
+                  ? ((citation.value as Record<string, unknown>).url as string)
+                  : null,
             title:
               typeof (citation.value as Record<string, unknown>)?.title ===
               "string"
@@ -291,15 +274,8 @@ export async function importManualParameterCatalog(
         ],
         skipDuplicates: true,
       });
-
       await tx.parameterDefinition.createMany({
-        data: keys
-          .filter(
-            (key) =>
-              !existingDefinitions.some((definition) => definition.key === key),
-          )
-          .map((key) => ({ key })),
-        skipDuplicates: true,
+        data: newParameters.map((parameter) => ({ key: parameter.key })),
       });
 
       const definitions = await tx.parameterDefinition.findMany({
@@ -307,96 +283,59 @@ export async function importManualParameterCatalog(
       });
       if (definitions.length !== keys.length) {
         throw new Error(
-          `Expected ${keys.length} manual definitions, found ${definitions.length}.`,
+          `Expected ${keys.length} parameter definitions, found ${definitions.length}.`,
         );
       }
       const definitionByKey = new Map(
         definitions.map((definition) => [definition.key, definition]),
       );
-      const existingRevisions = await tx.parameterRevision.findMany({
-        where: {
-          parameterId: { in: definitions.map((definition) => definition.id) },
-        },
-        select: {
-          id: true,
-          parameterId: true,
-          revision: true,
-          sourceContentHash: true,
-        },
-      });
-      const existingRevisionByIdentity = new Map(
-        existingRevisions.map((revision) => [
-          `${revision.parameterId}:${revision.sourceContentHash}`,
-          revision,
-        ]),
-      );
-      const maxRevisionByParameter = new Map<string, number>();
-      for (const revision of existingRevisions) {
-        maxRevisionByParameter.set(
-          revision.parameterId,
-          Math.max(
-            maxRevisionByParameter.get(revision.parameterId) ?? 0,
-            revision.revision,
-          ),
-        );
-      }
-
-      const revisionsToCreate: Prisma.ParameterRevisionCreateManyInput[] = [];
-      for (const parameter of catalog.parameters) {
-        const definition = definitionByKey.get(parameter.key)!;
-        if (
-          existingRevisionByIdentity.has(
-            `${definition.id}:${parameter.sourceContentHash}`,
-          )
-        )
-          continue;
-        const revision = (maxRevisionByParameter.get(definition.id) ?? 0) + 1;
-        maxRevisionByParameter.set(definition.id, revision);
-        revisionsToCreate.push({
+      const publishedAt = new Date();
+      await tx.parameterRevision.createMany({
+        data: newParameters.map((parameter) => ({
           ...parameterRevisionData(parameter),
-          parameterId: definition.id,
-          revision,
-          status: ModelRevisionStatus.DRAFT,
-        });
-      }
-      if (revisionsToCreate.length > 0) {
-        await tx.parameterRevision.createMany({
-          data: revisionsToCreate,
-          skipDuplicates: true,
-        });
-      }
-
-      const importedRevisions = await tx.parameterRevision.findMany({
-        where: {
-          parameterId: { in: definitions.map((definition) => definition.id) },
-        },
-        select: { id: true, parameterId: true, sourceContentHash: true },
+          parameterId: definitionByKey.get(parameter.key)!.id,
+          publishedAt,
+          revision: 1,
+          status: ModelRevisionStatus.PUBLISHED,
+        })),
       });
-      const revisionByKey = new Map<
-        string,
-        { id: string; parameterId: string; sourceContentHash: string }
-      >();
-      for (const parameter of catalog.parameters) {
-        const definition = definitionByKey.get(parameter.key)!;
-        const revision = importedRevisions.find(
-          (candidate) =>
-            candidate.parameterId === definition.id &&
-            candidate.sourceContentHash === parameter.sourceContentHash,
+
+      const createdRevisions = await tx.parameterRevision.findMany({
+        where: {
+          parameterId: {
+            in: newParameters.map(
+              (parameter) => definitionByKey.get(parameter.key)!.id,
+            ),
+          },
+        },
+        select: { id: true, parameterId: true },
+      });
+      if (createdRevisions.length !== newParameters.length) {
+        throw new Error(
+          `Expected ${newParameters.length} new revisions, found ${createdRevisions.length}.`,
         );
-        if (!revision)
-          throw new Error(
-            `Revision missing after import for ${parameter.key}.`,
-          );
-        revisionByKey.set(parameter.key, revision);
+      }
+      const createdRevisionByParameterId = new Map(
+        createdRevisions.map((revision) => [revision.parameterId, revision]),
+      );
+      const revisionByKey = new Map<string, { id: string }>();
+      for (const key of requiredRevisionKeys) {
+        const definition = definitionByKey.get(key)!;
+        const revisionId =
+          createdRevisionByParameterId.get(definition.id)?.id ??
+          definition.currentRevisionId;
+        if (!revisionId)
+          throw new Error(`Parameter ${key} has no current revision.`);
+        revisionByKey.set(key, { id: revisionId });
       }
 
       const inputRows: Prisma.ParameterRevisionInputCreateManyInput[] = [];
-      for (const parameter of catalog.parameters) {
+      for (const parameter of newParameters) {
         const calculatedRevision = revisionByKey.get(parameter.key)!;
         parameter.inputs.forEach((symbol, position) => {
           const inputRevision = revisionByKey.get(symbol);
           if (!inputRevision)
-            throw new Error(`Missing imported input revision ${symbol}.`);
+            throw new Error(`Missing parameter input revision ${symbol}.`);
           inputRows.push({
             calculatedRevisionId: calculatedRevision.id,
             inputRevisionId: inputRevision.id,
@@ -406,10 +345,7 @@ export async function importManualParameterCatalog(
         });
       }
       if (inputRows.length > 0) {
-        await tx.parameterRevisionInput.createMany({
-          data: inputRows,
-          skipDuplicates: true,
-        });
+        await tx.parameterRevisionInput.createMany({ data: inputRows });
       }
 
       const artifacts = await tx.sourceArtifact.findMany({
@@ -417,7 +353,6 @@ export async function importManualParameterCatalog(
           sourceKey: {
             in: [
               parameterSetSourceKey,
-              pythonSourceKey,
               ...citations.map(
                 (citation) =>
                   `manual:citation:${citation.key}:${citation.contentHash}`,
@@ -429,10 +364,9 @@ export async function importManualParameterCatalog(
       });
       const parameterSetArtifact = artifacts.find(
         (artifact) => artifact.sourceKey === parameterSetSourceKey,
-      )!;
-      const pythonArtifact = artifacts.find(
-        (artifact) => artifact.sourceKey === pythonSourceKey,
-      )!;
+      );
+      if (!parameterSetArtifact)
+        throw new Error("Generated parameter catalog artifact is missing.");
       const citationByRef = new Map(
         artifacts
           .filter((artifact) => artifact.sourceRef)
@@ -440,20 +374,13 @@ export async function importManualParameterCatalog(
       );
       const sourceLinks: Prisma.ParameterRevisionSourceArtifactCreateManyInput[] =
         [];
-      for (const parameter of catalog.parameters) {
+      for (const parameter of newParameters) {
         const revision = revisionByKey.get(parameter.key)!;
-        sourceLinks.push(
-          {
-            isPrimary: false,
-            parameterRevisionId: revision.id,
-            sourceArtifactId: parameterSetArtifact.id,
-          },
-          {
-            isPrimary: parameter.sourceRef == null,
-            parameterRevisionId: revision.id,
-            sourceArtifactId: pythonArtifact.id,
-          },
-        );
+        sourceLinks.push({
+          isPrimary: parameter.sourceRef == null,
+          parameterRevisionId: revision.id,
+          sourceArtifactId: parameterSetArtifact.id,
+        });
         const citation = parameter.sourceRef
           ? citationByRef.get(parameter.sourceRef)
           : null;
@@ -467,10 +394,9 @@ export async function importManualParameterCatalog(
       }
       await tx.parameterRevisionSourceArtifact.createMany({
         data: sourceLinks,
-        skipDuplicates: true,
       });
 
-      const pointerRows = catalog.parameters.map((parameter) => ({
+      const pointerRows = newParameters.map((parameter) => ({
         parameterId: definitionByKey.get(parameter.key)!.id,
         revisionId: revisionByKey.get(parameter.key)!.id,
       }));
@@ -480,22 +406,6 @@ export async function importManualParameterCatalog(
         ),
       );
       await tx.$executeRaw(Prisma.sql`
-        UPDATE "ParameterRevision" AS revision
-        SET "status" = 'SUPERSEDED'::"ModelRevisionStatus", "updatedAt" = CURRENT_TIMESTAMP
-        FROM (VALUES ${values}) AS current("parameterId", "revisionId")
-        WHERE revision."parameterId" = current."parameterId"
-          AND revision."id" <> current."revisionId"
-          AND revision."status" = 'PUBLISHED'::"ModelRevisionStatus"
-      `);
-      await tx.$executeRaw(Prisma.sql`
-        UPDATE "ParameterRevision" AS revision
-        SET "status" = 'PUBLISHED'::"ModelRevisionStatus",
-            "publishedAt" = COALESCE(revision."publishedAt", CURRENT_TIMESTAMP),
-            "updatedAt" = CURRENT_TIMESTAMP
-        FROM (VALUES ${values}) AS current("parameterId", "revisionId")
-        WHERE revision."id" = current."revisionId"
-      `);
-      await tx.$executeRaw(Prisma.sql`
         UPDATE "ParameterDefinition" AS parameter
         SET "currentRevisionId" = current."revisionId", "updatedAt" = CURRENT_TIMESTAMP
         FROM (VALUES ${values}) AS current("parameterId", "revisionId")
@@ -503,9 +413,9 @@ export async function importManualParameterCatalog(
       `);
 
       return {
-        createdDefinitionCount: keys.length - existingDefinitions.length,
-        createdRevisionCount: revisionsToCreate.length,
-        importedCalculatedRevisionCount: catalog.parameters.filter(
+        createdDefinitionCount: newParameters.length,
+        createdRevisionCount: newParameters.length,
+        importedCalculatedRevisionCount: newParameters.filter(
           (parameter) => parameter.sourceType === "CALCULATED",
         ).length,
         skippedExistingDefinitionCount: existingDefinitions.length,
@@ -564,8 +474,6 @@ export const ParameterRevisionProposalSchema = z
     formulaText: z.string().nullable().optional(),
     inputs: ParameterInputReferencesSchema.default([]),
     key: z.string().min(1),
-    keywords: z.array(z.string()).default([]),
-    hideConfidenceInterval: z.boolean().default(false),
     latexSymbol: z.string().nullable().optional(),
     manualRef: z.string().nullable().optional(),
     peerReviewed: z.boolean().default(false),
@@ -789,18 +697,12 @@ export async function proposeParameterBundle(
           distributionType: proposal.distributionType ?? null,
           formulaLatex: proposal.formulaLatex ?? null,
           formulaText: proposal.formulaText ?? null,
-          hideConfidenceInterval: proposal.hideConfidenceInterval,
-          keywords: proposal.keywords,
           latexSymbol: proposal.latexSymbol ?? null,
           manualRef: proposal.manualRef ?? null,
           parameterId: definition.id,
           proposedByUserId: actor.userId,
           peerReviewed: proposal.peerReviewed,
           rationale: proposal.rationale,
-          rawSourceJson: json({
-            ...proposalWithoutCalculationSource,
-            sourceArtifacts: artifactFingerprints,
-          }),
           revision: (latest._max.revision ?? 0) + 1,
           sourceContentHash,
           sourceLastUpdated: proposal.sourceLastUpdated ?? null,
@@ -1078,7 +980,6 @@ export interface ParameterTraceNode {
     artifactType: string;
     contentHash: string | null;
     id: string;
-    payloadJson: unknown;
     sourceKey: string;
     sourceRef: string | null;
     sourceSystem: string;
@@ -1124,7 +1025,21 @@ async function loadParameterTraceNode(
       parameter: true,
       sourceArtifacts: {
         where: { deletedAt: null },
-        include: { sourceArtifact: true },
+        select: {
+          sourceArtifact: {
+            select: {
+              artifactType: true,
+              contentHash: true,
+              id: true,
+              sourceKey: true,
+              sourceRef: true,
+              sourceSystem: true,
+              sourceUrl: true,
+              title: true,
+              versionKey: true,
+            },
+          },
+        },
       },
     },
   });
@@ -1173,7 +1088,6 @@ async function loadParameterTraceNode(
       artifactType: sourceArtifact.artifactType,
       contentHash: sourceArtifact.contentHash,
       id: sourceArtifact.id,
-      payloadJson: sourceArtifact.payloadJson,
       sourceKey: sourceArtifact.sourceKey,
       sourceRef: sourceArtifact.sourceRef,
       sourceSystem: sourceArtifact.sourceSystem,

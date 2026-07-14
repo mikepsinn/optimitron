@@ -7098,7 +7098,6 @@ model ParameterRevision {
   sensitivity                Float?
   displayValue               String?
   displayName                String?
-  keywords                   String[]                   @default([])
   validationMin              Float?
   validationMax              Float?
   confidenceIntervalLow      Float?
@@ -7107,9 +7106,7 @@ model ParameterRevision {
   distributionType           ParameterDistributionType?
   distributionParametersJson Json?
   latexSymbol                String?
-  hideConfidenceInterval     Boolean                    @default(false)
   summaryStatsJson           Json?
-  rawSourceJson              Json?
   sourceContentHash          String
   rationale                  String?
   assumptionsJson            Json?
