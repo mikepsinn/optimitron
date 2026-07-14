@@ -55,6 +55,14 @@ describe("compileGeneratedParameterCatalog", () => {
     ).rejects.toThrow("missing input MISSING");
   });
 
+  it("rejects unsupported uncertainty distributions", async () => {
+    await expect(
+      compileGeneratedParameterCatalog({
+        INPUT: { distribution: "bell-curve", value: 1 },
+      }),
+    ).rejects.toThrow();
+  });
+
   it("does not invent metadata for plain numeric constants", async () => {
     const catalog = await compileGeneratedParameterCatalog({
       DAYS_PER_YEAR: { parameterName: "DAYS_PER_YEAR", value: 365 },

@@ -376,14 +376,14 @@ export async function bootstrapGeneratedParameterCatalog(
         [];
       for (const parameter of newParameters) {
         const revision = revisionByKey.get(parameter.key)!;
-        sourceLinks.push({
-          isPrimary: parameter.sourceRef == null,
-          parameterRevisionId: revision.id,
-          sourceArtifactId: parameterSetArtifact.id,
-        });
         const citation = parameter.sourceRef
           ? citationByRef.get(parameter.sourceRef)
           : null;
+        sourceLinks.push({
+          isPrimary: citation == null,
+          parameterRevisionId: revision.id,
+          sourceArtifactId: parameterSetArtifact.id,
+        });
         if (citation) {
           sourceLinks.push({
             isPrimary: true,

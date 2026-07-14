@@ -3,6 +3,18 @@ import { z } from "zod";
 
 const NullableStringSchema = z.string().nullable().optional();
 const NullableFiniteNumberSchema = z.number().finite().nullable().optional();
+const GeneratedDistributionSchema = z
+  .enum([
+    "fixed",
+    "normal",
+    "lognormal",
+    "beta",
+    "gamma",
+    "triangular",
+    "uniform",
+  ])
+  .nullable()
+  .optional();
 
 export const GeneratedParameterEntrySchema = z
   .object({
@@ -16,7 +28,7 @@ export const GeneratedParameterEntrySchema = z
     conservative: z.boolean().optional(),
     description: NullableStringSchema,
     displayName: NullableStringSchema,
-    distribution: NullableStringSchema,
+    distribution: GeneratedDistributionSchema,
     formula: NullableStringSchema,
     inputs: z.array(z.string()).optional(),
     latex: NullableStringSchema,
@@ -244,10 +256,7 @@ export async function compileGeneratedParameterCatalog(
         value: entry.value,
       };
       const sourceContentHash = await sha256CanonicalJson({
-        citation:
-          entry.sourceRef && Object.hasOwn(citations, entry.sourceRef)
-            ? citations[entry.sourceRef]
-            : null,
+        citation: entry.sourceRef ? citations[entry.sourceRef] : null,
         key,
         normalizedRevision,
       });
