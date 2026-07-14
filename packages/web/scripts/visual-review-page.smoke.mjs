@@ -32,7 +32,7 @@ const input = {
     reviewUrl: "https://mikepsinn.github.io/optimitron/pr-123/abc1234/",
     baselineDescription: "screenshots vs main @ 871661d, copy vs pre-merge snapshots",
   },
-  summary: { changedRoutes: 1, copyOnlyRoutes: 1, unchangedRoutes: 0, erroredRoutes: 0, totalRoutes: 2 },
+  summary: { changedRoutes: 2, copyOnlyRoutes: 1, unchangedRoutes: 0, erroredRoutes: 0, totalRoutes: 3 },
   routes: [
     {
       routeName: "home",
@@ -106,6 +106,37 @@ const input = {
       ],
     },
     {
+      routeName: "calendar",
+      routeLabel: "Calendar",
+      routePath: "/calendar",
+      routeUrl: "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo",
+      authState: "demo-logged-in",
+      changed: true,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "1 changed / 1 missing",
+      markdownDiff: null,
+      pairs: [
+        {
+          projectName: "default",
+          projectLabel: "Desktop",
+          changed: true,
+          missing: true,
+          errored: false,
+          diffLabel: "missing before",
+          beforeRelPath: null,
+          afterRelPath: "assets/after/default/calendar.png",
+          diffRelPath: null,
+          beforeWidth: null,
+          beforeHeight: null,
+          afterWidth: 1440,
+          afterHeight: 1200,
+          hunks: [],
+          alignmentAnchors: [],
+        },
+      ],
+    },
+    {
       routeName: "prize",
       routeLabel: "Prize",
       routePath: "/prize",
@@ -155,9 +186,9 @@ assert(html.includes("Originating PR: #"), "complaint payload preserves originat
 assert(!html.includes('<script>alert("xss")</script>'), "route label XSS not raw in HTML");
 assert(!/<script>alert\(1\)<\/script>/.test(html), "copy-diff XSS not raw in HTML");
 assert(html.includes("\\u003c"), "JSON island escapes < sequences");
-assert(html.includes("1 changed"), "summary chip: changed");
+assert(html.includes("2 changed"), "summary chip: changed");
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
-assert(html.includes("2 routes"), "summary chip: total");
+assert(html.includes("3 routes"), "summary chip: total");
 
 // ---------- extract inline JS and node --check it ----------
 const scripts = [];
@@ -176,7 +207,7 @@ assert(check.status === 0, "node --check on extracted client JS: " + (check.stde
 try {
   const island = /<script type="application\/json" id="review-data">([\s\S]*?)<\/script>/.exec(html);
   const parsed = JSON.parse(island[1]);
-  assert(parsed.routes.length === 2, "JSON island round-trips (routes)");
+  assert(parsed.routes.length === 3, "JSON island round-trips (routes)");
   assert(parsed.routes[0].pairs[0].hunks.length === 3, "JSON island round-trips (hunks)");
   assert(parsed.routes[0].routeLabel === XSS, "JSON island preserves raw strings");
 } catch (err) {

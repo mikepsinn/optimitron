@@ -219,7 +219,11 @@ function changedManifestRoutes(manifest) {
   return routes
     .filter((route) =>
       route &&
-      (route.changed || route.errored || route.missingPairs > 0 || route.erroredPairs > 0),
+      (route.changed ||
+        route.copyChanged ||
+        route.errored ||
+        route.missingPairs > 0 ||
+        route.erroredPairs > 0),
     )
     .sort((a, b) => String(a.routeName).localeCompare(String(b.routeName)));
 }
@@ -266,10 +270,14 @@ function authLabel(authState) {
 function visualStatusLabel(route) {
   if (route.errored || route.erroredPairs > 0) return "visual review errored";
   const parts = [];
-  if (route.changedPairs > 0) parts.push(`${route.changedPairs} changed`);
-  if (route.missingPairs > 0) parts.push(`${route.missingPairs} missing`);
-  if (parts.length === 0) parts.push("changed");
-  return `${parts.join(" / ")} screenshot${parts.length === 1 && parts[0] === "changed" ? "" : "s"}`;
+  const screenshotParts = [];
+  if (route.changedPairs > 0) screenshotParts.push(`${route.changedPairs} changed`);
+  if (route.missingPairs > 0) screenshotParts.push(`${route.missingPairs} missing`);
+  if (screenshotParts.length > 0) {
+    parts.push(`${screenshotParts.join(" / ")} screenshots`);
+  }
+  if (route.copyChanged) parts.push("copy changed");
+  return parts.join(" / ") || "changed";
 }
 
 function buildPreviewItems(routeChanges) {

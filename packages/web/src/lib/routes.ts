@@ -189,9 +189,9 @@ export interface NavItem {
   screenshot?: boolean;
   /** Capture this route again as the seeded demo user. */
   authenticatedScreenshot?: boolean;
-  /** Generate a logged-out page.logged-out.md copy preview for this route. */
+  /** Generate a logged-out copy preview even without a screenshot. */
   copyPreview?: boolean;
-  /** Generate a page.logged-in.md copy preview as the seeded demo user. */
+  /** Generate a seeded logged-in copy preview even without a screenshot. */
   authenticatedCopyPreview?: boolean;
   /** Stable screenshot/copy-review id when the path alone is ambiguous. */
   reviewName?: string;

@@ -49,7 +49,9 @@ const MODE_SPECS = {
   "treaty-screenshots": ["e2e/treaty-vote-post-vote-screenshots.spec.ts"],
   "treaty-reminder-one-human": ["e2e/treaty-reminder-one-human.spec.ts"],
   visual: [
+    "e2e/copy-preview-capture.spec.ts",
     "e2e/visual-regression.spec.ts",
+    "e2e/visual-review-page.spec.ts",
     "e2e/email-screenshots.spec.ts",
   ],
   // Kept as a standalone mode for ad-hoc local screenshot regeneration

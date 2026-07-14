@@ -334,6 +334,14 @@ jobs:
           path: packages/web/screenshots
           if-no-files-found: error
 
+      - name: Upload PR markdown copy snapshots for review publishing
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name == 'pull_request' && steps.visual_regression.outcome == 'success' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-pr-copy-snapshots
+          path: packages/web/output/playwright/copy-snapshots
+          if-no-files-found: error
+
       - name: Build visual review index
         if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true && github.event_name != 'pull_request' }}
         env:
@@ -342,6 +350,7 @@ jobs:
           VISUAL_REVIEW_PR_NUMBER: ""
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.ref_name }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
+          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/packages/web/output/playwright/copy-snapshots
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -364,6 +373,7 @@ jobs:
           name: web-visual-review
           path: |
             packages/web/output/playwright/review
+            packages/web/output/playwright/copy-snapshots
             packages/web/screenshots
             packages/web/playwright-report
             packages/web/test-results
@@ -426,6 +436,12 @@ jobs:
           name: web-pr-visual-screenshots
           path: packages/web/screenshots
 
+      - name: Download PR markdown copy snapshots
+        uses: actions/download-artifact@v6
+        with:
+          name: web-pr-copy-snapshots
+          path: packages/web/output/playwright/copy-after
+
       - name: Preserve PR visual screenshots
         shell: bash
         run: |
@@ -462,6 +478,16 @@ jobs:
               for screenshots_dir in "$run_root/screenshots" "$run_root/packages/web/screenshots"; do
                 if [ -d "$screenshots_dir" ]; then
                   echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
+                  for copy_dir in \
+                    "$run_root/copy-snapshots" \
+                    "$run_root/output/playwright/copy-snapshots" \
+                    "$run_root/packages/web/output/playwright/copy-snapshots"; do
+                    if [ -d "$copy_dir" ]; then
+                      echo "VISUAL_COPY_BEFORE_ROOT=$GITHUB_WORKSPACE/$copy_dir" >> "$GITHUB_ENV"
+                      echo "Using rendered copy baseline from main run $run_id."
+                      break
+                    fi
+                  done
                   echo "Downloaded visual baseline from main run $run_id."
                   rm -rf packages/web/screenshots
                   cp -R "$pr_screenshots" packages/web/screenshots
@@ -573,6 +599,7 @@ jobs:
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
+          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/packages/web/output/playwright/copy-after
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -595,6 +622,7 @@ jobs:
           name: web-visual-review
           path: |
             packages/web/output/playwright/review
+            packages/web/output/playwright/copy-after
             packages/web/screenshots
             packages/web/playwright-report
             packages/web/test-results
@@ -748,7 +776,7 @@ jobs:
         uses: actions/github-script@v8
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
-          VISUAL_REVIEW_URL: ${{ steps.wait_visual_review_pages.outputs.target_url || steps.prepare_pages.outputs.review_url }}
+          VISUAL_REVIEW_URL: ${{ steps.prepare_pages.outputs.latest_review_url }}
           VISUAL_REVIEW_MANIFEST_PATH: packages/web/output/playwright/review/manifest.json
         with:
           script: |

@@ -7,6 +7,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
+import { getRouteReviewSpecs } from "@/lib/routes";
 import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
@@ -72,21 +74,51 @@ const REVIEW_AFTER_ROOT = path.resolve(
   "after",
 );
 const ROUTE_MANIFEST_PATH = path.join(SCREENSHOT_ROOT, "routes.json");
+const ROUTE_REVIEW_MANIFEST = buildRouteReviewManifest();
+
+function buildRouteReviewManifest() {
+  const entries = VISUAL_ROUTES.map((route) => ({
+    name: route.name,
+    path: route.path,
+    authenticated: route.authenticated === true,
+  }));
+  const representedStates = new Set(
+    entries.map((entry) => `${entry.path}\u0000${entry.authenticated}`),
+  );
+
+  const appendCopyRoutes = (
+    mode: "copyPreview" | "authenticatedCopyPreview",
+    authenticated: boolean,
+  ) => {
+    for (const spec of getRouteReviewSpecs(mode)) {
+      if (isRedirectOnlyRoutePath(spec.path)) continue;
+      const stateKey = `${spec.path}\u0000${authenticated}`;
+      if (representedStates.has(stateKey)) continue;
+
+      const hasLoggedOutState = entries.some(
+        (entry) => entry.path === spec.path && !entry.authenticated,
+      );
+      entries.push({
+        name:
+          authenticated && hasLoggedOutState ? `${spec.name}-auth` : spec.name,
+        path: spec.path,
+        authenticated,
+      });
+      representedStates.add(stateKey);
+    }
+  };
+
+  appendCopyRoutes("copyPreview", false);
+  appendCopyRoutes("authenticatedCopyPreview", true);
+  return entries;
+}
 
 test.describe("route visual regression", () => {
   test.beforeAll(async () => {
     await mkdir(SCREENSHOT_ROOT, { recursive: true });
     await writeFile(
       ROUTE_MANIFEST_PATH,
-      JSON.stringify(
-        VISUAL_ROUTES.map((route) => ({
-          name: route.name,
-          path: route.path,
-          authenticated: route.authenticated === true,
-        })),
-        null,
-        2,
-      ),
+      JSON.stringify(ROUTE_REVIEW_MANIFEST, null, 2),
       "utf8",
     );
   });
