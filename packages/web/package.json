@@ -48,7 +48,7 @@
     "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
-    "import:manual-parameters": "tsx scripts/import-manual-parameters.ts",
+    "bootstrap:parameters": "tsx scripts/bootstrap-parameters.ts",
     "sync:treaty-signers": "tsx scripts/sync-treaty-signers.ts",
     "sync:task-triggers": "tsx scripts/sync-task-triggers.ts",
     "mcp:tasks": "tsx scripts/mcp-task-server.ts",

@@ -6750,7 +6750,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getParameterTrace",
     description:
-      "Get one exact parameter revision with formula, uncertainty, pinned input revisions, complete source artifacts (including inert calculation code), assumptions, and publication state.",
+      "Get one exact parameter revision with formula, uncertainty, pinned input revisions, source metadata, inert calculation code, assumptions, and publication state.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6768,7 +6768,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "proposeParameterBundle",
     description:
-      "Create one or more immutable parameter revision drafts. Returns numerical diffs, safe formula ASTs, exact input revisions, and provenance for human review. This never publishes revisions.",
+      "Create one or more immutable parameter revision drafts. Returns numerical diffs, formulas or inert calculation code, exact input revisions, and provenance for human review. This never publishes revisions.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6785,7 +6785,6 @@ const TASK_TOOL_DEFINITIONS = [
               description: { type: "string" },
               displayName: { type: "string" },
               displayValue: { type: "string" },
-              keywords: { type: "array", items: { type: "string" } },
               sourceType: {
                 type: "string",
                 enum: [
@@ -6846,7 +6845,6 @@ const TASK_TOOL_DEFINITIONS = [
               },
               distributionParameters: { type: "object" },
               summaryStats: { type: "object" },
-              hideConfidenceInterval: { type: "boolean" },
               validationMin: { type: "number" },
               validationMax: { type: "number" },
               rationale: { type: "string" },
@@ -6947,7 +6945,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getTaskImpactTrace",
     description:
-      "Trace the current or specified task-impact estimate through its formula, materialized values, and complete recursive parameter/source tree.",
+      "Trace the current or specified task-impact estimate through its formula, materialized values, recursive parameter tree, and source metadata.",
     inputSchema: {
       type: "object" as const,
       properties: {

@@ -681,7 +681,21 @@ export async function getTaskImpactTrace(
       },
       sourceArtifacts: {
         where: { deletedAt: null },
-        include: { sourceArtifact: true },
+        select: {
+          sourceArtifact: {
+            select: {
+              artifactType: true,
+              contentHash: true,
+              id: true,
+              sourceKey: true,
+              sourceRef: true,
+              sourceSystem: true,
+              sourceUrl: true,
+              title: true,
+              versionKey: true,
+            },
+          },
+        },
       },
       task: {
         select: {

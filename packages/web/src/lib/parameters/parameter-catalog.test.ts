@@ -1,9 +1,9 @@
 import { ModelRevisionStatus } from "@optimitron/db/enums";
 import { describe, expect, it, vi } from "vitest";
 import {
+  bootstrapGeneratedParameterCatalog,
   canReadParameterRevision,
   getParameterTrace,
-  importManualParameterCatalog,
   ParameterRevisionProposalSchema,
 } from "./parameter-catalog.server";
 
@@ -51,16 +51,14 @@ describe("parameter catalog authorization", () => {
     });
   });
 
-  it("rejects a changed bootstrap instead of reporting a false no-op", async () => {
+  it("does not overwrite an existing database-owned parameter", async () => {
     const tx = {
       parameterDefinition: {
         findMany: vi.fn().mockResolvedValue([
           {
-            currentRevision: {
-              id: "revision-1",
-              sourceContentHash: "old-hash",
-            },
+            currentRevisionId: "revision-1",
             deletedAt: null,
+            id: "parameter-1",
             key: "A",
           },
         ]),
@@ -71,19 +69,19 @@ describe("parameter catalog authorization", () => {
     };
 
     await expect(
-      importManualParameterCatalog(
+      bootstrapGeneratedParameterCatalog(
         {
           dryRun: false,
-          exportData: {
-            parameters: { A: { value: 1 } },
-            sourceFile: "parameters.py",
-          },
-          pythonSource: "A = 1",
-          summaries: {},
+          parameters: { A: { value: 1 } },
         },
         db as never,
       ),
-    ).rejects.toThrow("already diverged");
+    ).resolves.toMatchObject({
+      applied: true,
+      createdDefinitionCount: 0,
+      createdRevisionCount: 0,
+      skippedExistingDefinitionCount: 1,
+    });
   });
 
   it("returns the complete recursive parameter dependency trace", async () => {
@@ -120,7 +118,25 @@ describe("parameter catalog authorization", () => {
       proposedByUserId: null,
       rationale: null,
       revision: 1,
-      sourceArtifacts: [],
+      sourceArtifacts:
+        id === "input"
+          ? [
+              {
+                sourceArtifact: {
+                  artifactType: "PARAMETER_SET",
+                  contentHash: "catalog-hash",
+                  id: "catalog-artifact",
+                  payloadJson: { parameters: "large internal payload" },
+                  sourceKey: "generated:parameter-set:catalog-hash",
+                  sourceRef: "@optimitron/data/parameters",
+                  sourceSystem: "PARAMETER_CATALOG",
+                  sourceUrl: null,
+                  title: "Generated parameter catalog",
+                  versionKey: null,
+                },
+              },
+            ]
+          : [],
       sourceContentHash: `${id}-hash`,
       sourceRef: null,
       sourceType: id === "output" ? "CALCULATED" : "EXTERNAL",
@@ -160,5 +176,8 @@ describe("parameter catalog authorization", () => {
       key: "OUTPUT",
       value: 20,
     });
+    expect(trace.inputs[0]?.revision.sourceArtifacts[0]).not.toHaveProperty(
+      "payloadJson",
+    );
   });
 });
