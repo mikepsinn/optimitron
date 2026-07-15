@@ -1844,6 +1844,8 @@ export const routeReviewNavItems = [
   editProfileLink,
   tasksLink,
   calendarLink,
+  documentsLink,
+  collectionsLink,
   peopleLink,
   questionsLink,
   trialSurveyLink,

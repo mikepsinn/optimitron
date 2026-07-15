@@ -1,5 +1,9 @@
 import { getRouteReviewSpecs, ROUTES } from "@/lib/routes";
 import {
+  MANAGED_DEMO_COLLECTION_ID,
+  MANAGED_DEMO_DOCUMENT_ID,
+} from "@optimitron/db/constants";
+import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
 } from "@/lib/redirect-review";
@@ -11,6 +15,7 @@ export type VisualRoute = {
   expectSettings?: boolean;
   name: string;
   openCreateTask?: boolean;
+  openContentShare?: boolean;
   openMenu?: boolean;
   path: string;
   required: boolean;
@@ -59,6 +64,35 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
 ];
 
 const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
+  {
+    name: "document-detail",
+    path: `/documents/${MANAGED_DEMO_DOCUMENT_ID}`,
+    required: true,
+    authenticated: true,
+    requiredText: /^Current decision$/,
+  },
+  {
+    name: "collection-detail",
+    path: `/collections/${MANAGED_DEMO_COLLECTION_ID}`,
+    required: true,
+    authenticated: true,
+    requiredText: /^Finish the Vaultanium Systems proposal$/,
+  },
+  {
+    name: "collection-share",
+    path: `/collections/${MANAGED_DEMO_COLLECTION_ID}`,
+    required: true,
+    authenticated: true,
+    openContentShare: true,
+    requiredText: /^Only you can access this item\.$/,
+  },
+  {
+    name: "content-search",
+    path: "/search?q=Vaultanium",
+    required: true,
+    authenticated: true,
+    requiredText: /^Finish the Vaultanium Systems proposal$/,
+  },
   {
     name: "referendum-one-percent-treaty",
     path: "/agencies/dcongress/referendums/one-percent-treaty",

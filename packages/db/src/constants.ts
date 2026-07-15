@@ -12,6 +12,10 @@ export const HUMANITY_V_GOVERNMENT_CASE_SLUG = "humanity-v-government";
 export const HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG =
   "court-humanity-v-government-verdict";
 
+// Stable private demo content used by product previews and visual review.
+export const MANAGED_DEMO_DOCUMENT_ID = "managed-demo-apg-operating-note";
+export const MANAGED_DEMO_COLLECTION_ID = "managed-demo-apg-projects";
+
 // Task keys (taskKey prefixes, root IDs, builders) live in ./task-keys.ts
 // and are re-exported from the package barrel so consumers can do
 // `import { TREATY_PARENT_TASK_ID } from "@optimitron/db"`.

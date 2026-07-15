@@ -4,6 +4,10 @@ import {
   syncManagedDemoUser,
 } from "./managed-demo-user.js";
 import {
+  formatManagedDemoContentResult,
+  syncManagedDemoContent,
+} from "./managed-demo-content.js";
+import {
   formatManagedGrandmaKayResult,
   syncManagedGrandmaKay,
 } from "./managed-grandma-kay.js";
@@ -81,6 +85,7 @@ export interface SyncManagedDataResult {
   >;
   grandmaKay: Awaited<ReturnType<typeof syncManagedGrandmaKay>>;
   demoUser: Awaited<ReturnType<typeof syncManagedDemoUser>>;
+  demoContent: Awaited<ReturnType<typeof syncManagedDemoContent>>;
   iamOrganization: Awaited<ReturnType<typeof syncManagedIamOrganization>>;
   commerceCatalog: Awaited<ReturnType<typeof syncManagedCommerceCatalog>>;
   datingCatalog: Awaited<ReturnType<typeof syncManagedDatingCatalog>>;
@@ -176,6 +181,10 @@ export async function syncManagedData(
     syncManagedDemoUser(prisma, { apply: options.apply }),
   );
 
+  const demoContent = await timeStep("demo-content", () =>
+    syncManagedDemoContent(prisma, { apply: options.apply }),
+  );
+
   // IAM is the campaign nonprofit org fixture + owner account.
   const iamOrganization = await timeStep("iam-organization", () =>
     syncManagedIamOrganization(prisma, { apply: options.apply }),
@@ -201,6 +210,7 @@ export async function syncManagedData(
     humanityVGovernmentCase,
     grandmaKay,
     demoUser,
+    demoContent,
     iamOrganization,
     commerceCatalog,
     datingCatalog,
@@ -221,6 +231,7 @@ export function formatManagedDataResult(result: SyncManagedDataResult) {
     formatManagedTaskTriggersResult(result.taskTriggers),
     formatManagedGrandmaKayResult(result.grandmaKay),
     formatManagedDemoUserResult(result.demoUser),
+    formatManagedDemoContentResult(result.demoContent),
     formatManagedIamOrganizationResult(result.iamOrganization),
     formatManagedCommerceCatalogResult(result.commerceCatalog),
     formatManagedDatingCatalogResult(result.datingCatalog),
@@ -239,6 +250,7 @@ export {
   OPTIMIZE_EARTH_TASK_TREE,
   OPTIMIZE_EARTH_TASK_TREE_COLLECTION_KEY,
   ensureManagedDataSystemUser,
+  formatManagedDemoContentResult,
   formatManagedDemoUserResult,
   formatManagedGrandmaKayResult,
   formatManagedCommerceCatalogResult,
@@ -249,6 +261,7 @@ export {
   formatManagedTaskTriggersResult,
   formatManagedTasksResult,
   syncManagedDemoUser,
+  syncManagedDemoContent,
   syncManagedGrandmaKay,
   syncManagedCommerceCatalog,
   syncManagedDatingCatalog,

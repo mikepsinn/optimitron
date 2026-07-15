@@ -164,6 +164,9 @@ test.describe("route visual regression", () => {
           mode: route.createTaskMode,
         });
       }
+      if ("openContentShare" in route && route.openContentShare) {
+        await openContentShare(page);
+      }
 
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
@@ -455,6 +458,15 @@ async function openCreateTaskDialog(
     await expect(dialog.getByText("New person")).toBeVisible();
   }
 
+  await forceAnimationsComplete(page);
+  await waitForPaint(page);
+}
+
+async function openContentShare(page: Page) {
+  const summary = page.locator("summary").filter({ hasText: /^Share$/ });
+  await expect(summary).toHaveCount(1);
+  await summary.click();
+  await expect(page.getByLabel("Collaborator email")).toBeVisible();
   await forceAnimationsComplete(page);
   await waitForPaint(page);
 }
