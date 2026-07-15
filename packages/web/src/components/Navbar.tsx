@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
-import { Menu, Search, User, UserPlus } from "lucide-react";
+import { FileText, Menu, Search, TableProperties, User, UserPlus } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -19,6 +19,8 @@ import { getSiteVariantUiConfig, type SiteNavConfig } from "@/config/site-varian
 import { getPersonHref } from "@/lib/person-href";
 import {
   ROUTES,
+  collectionsLink,
+  documentsLink,
   editProfileLink,
   getSignInPath,
   isNavItemActive,
@@ -35,7 +37,7 @@ function getNavItemAriaLabel(item: NavItem): string {
 export function getAuthenticatedProfileLinks(
   publicProfileHref: string | null,
 ): NavItem[] {
-  const links = [editProfileLink];
+  const links = [documentsLink, collectionsLink, editProfileLink];
 
   if (publicProfileHref) {
     links.push({
@@ -375,7 +377,14 @@ export default function Navbar({ config = defaultNavConfig }: NavbarProps) {
                             title={item.description}
                             aria-label={getNavItemAriaLabel(item)}
                           >
-                            {item.emoji} {item.label}
+                            {item.href === ROUTES.documents ? (
+                              <FileText className="h-4 w-4" />
+                            ) : item.href === ROUTES.collections ? (
+                              <TableProperties className="h-4 w-4" />
+                            ) : (
+                              item.emoji
+                            )}
+                            {item.label}
                           </Link>
                         </SheetClose>
                       ))}

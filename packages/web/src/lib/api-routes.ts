@@ -33,7 +33,27 @@ export const API_ROUTES = {
       `/api/tasks/${id}/applications/${applicationId}`,
   },
   documents: {
+    root: "/api/documents",
     document: (id: string) => `/api/documents/${id}`,
+  },
+  collections: {
+    root: "/api/collections",
+    collection: (id: string) => `/api/collections/${id}`,
+    records: (id: string) => `/api/collections/${id}/records`,
+    recordBatch: (id: string) => `/api/collections/${id}/records/batch`,
+    record: (id: string, recordId: string) =>
+      `/api/collections/${id}/records/${recordId}`,
+    views: (id: string) => `/api/collections/${id}/views`,
+  },
+  content: {
+    access: "/api/content/access",
+    export: "/api/content/export",
+    attachments: "/api/content/attachments",
+    attachment: (id: string) => `/api/content/attachments/${id}`,
+    completeAttachment: (id: string) =>
+      `/api/content/attachments/${id}/complete`,
+    notionImport: "/api/content/imports/notion",
+    search: "/api/content/search",
   },
   push: {
     vapidKey: "/api/push/vapid-key",

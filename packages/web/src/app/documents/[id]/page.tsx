@@ -4,9 +4,13 @@ import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getDocumentForViewer } from "@/lib/documents.server";
-import { canUserViewTask } from "@/lib/tasks/task-visibility.server";
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { DocumentEditForm } from "@/components/documents/document-edit-form";
+import { ContentAttachments } from "@/components/content/content-attachments";
+import { ContentSharePanel } from "@/components/content/content-share-panel";
+import { ContentAccessLevel } from "@optimitron/db/enums";
+import { listContentAttachments } from "@/lib/content-attachments.server";
+import { listContentAccessGrants } from "@/lib/content-access.server";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +33,7 @@ export async function generateMetadata({
     return { title: "Document not found" };
   }
   return {
-    title: result.document.title,
+    title: result.revision.title,
     robots: { index: false },
   };
 }
@@ -48,41 +52,51 @@ export default async function DocumentPage({
     notFound();
   }
 
-  const { document, versions, viewerCanEdit } = result;
+  const { document, revision, versions, visibleTaskId, viewerCanEdit } = result;
+  const isCurrent = revision.id === document.currentRevisionId;
   const currentVersion = versions.find((v) => v.isCurrent) ?? null;
-  // A public document can (still) be attached to a task the viewer can't
-  // see — e.g. the task was made private after the document was attached.
-  // Only render the link when the viewer can actually view that task, so a
-  // public document page never leaks a private task's id to anyone who
-  // couldn't otherwise find it.
-  const canViewAttachedTask = document.taskId
-    ? await canUserViewTask(document.taskId, userId)
-    : false;
-
+  const canShare =
+    result.effectivePermission === ContentAccessLevel.FULL_ACCESS;
+  const [attachments, grants] = await Promise.all([
+    listContentAttachments({ documentId: document.id, userId }),
+    canShare && userId
+      ? listContentAccessGrants({
+          actorUserId: userId,
+          resource: { id: document.id, type: "document" },
+        })
+      : Promise.resolve([]),
+  ]);
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
       <header className="border-b-2 border-foreground pb-4">
-        <h1 className="text-4xl font-black uppercase tracking-tight sm:text-5xl">
-          {document.title}
+        <Link
+          className="text-sm font-medium underline underline-offset-4"
+          href="/documents"
+        >
+          Documents
+        </Link>
+        <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
+          {revision.title}
         </h1>
-        <p className="mt-2 text-sm font-bold text-muted-foreground">
-          Version {document.version}
-          {document.isCurrent ? " (current)" : ""}.{" "}
+        <p className="mt-2 text-sm text-muted-foreground">
+          Version {revision.version}
+          {isCurrent ? " (current)" : ""}.{" "}
           {document.visibility === "PRIVATE" ? "Private." : "Public."}{" "}
-          {document.createdAt.toLocaleDateString("en-US", DOCUMENT_DATE_FORMAT)}.
+          {revision.createdAt.toLocaleDateString("en-US", DOCUMENT_DATE_FORMAT)}
+          .
         </p>
-        {document.taskId && canViewAttachedTask ? (
-          <p className="mt-1 text-sm font-bold">
+        {visibleTaskId ? (
+          <p className="mt-1 text-sm font-medium">
             <Link
               className="underline underline-offset-4"
-              href={`/tasks/${document.taskId}`}
+              href={`/tasks/${visibleTaskId}`}
             >
               Attached task.
             </Link>
           </p>
         ) : null}
-        {!document.isCurrent && currentVersion ? (
-          <p className="mt-1 text-sm font-bold">
+        {!isCurrent && currentVersion ? (
+          <p className="mt-1 text-sm font-medium">
             This is an old version.{" "}
             <Link
               className="underline underline-offset-4"
@@ -95,19 +109,41 @@ export default async function DocumentPage({
       </header>
 
       <section className="border-b border-foreground py-6">
-        <RichMarkdown markdown={document.body} />
+        <RichMarkdown markdown={revision.body} />
       </section>
 
-      {viewerCanEdit && document.isCurrent ? (
+      <ContentAttachments
+        attachments={attachments.map((attachment) => ({
+          ...attachment,
+          uploadedAt: attachment.uploadedAt?.toISOString() ?? null,
+        }))}
+        canEdit={viewerCanEdit && isCurrent}
+        resource={{ documentId: document.id }}
+      />
+
+      {canShare ? (
+        <ContentSharePanel
+          initialGrants={grants.map((grant) => ({
+            accessLevel: grant.accessLevel,
+            id: grant.id,
+            organization: grant.organization,
+            organizationId: grant.organizationId,
+            user: grant.user,
+            userId: grant.userId,
+          }))}
+          resource={{ id: document.id, type: "document" }}
+        />
+      ) : null}
+
+      {viewerCanEdit && isCurrent ? (
         <details className="border-b border-foreground py-5">
-          <summary className="cursor-pointer text-sm font-black uppercase tracking-[0.12em]">
-            Edit
-          </summary>
+          <summary className="cursor-pointer font-bold">Edit</summary>
           <div className="mt-4">
             <DocumentEditForm
               documentId={document.id}
-              initialTitle={document.title}
-              initialBody={document.body}
+              expectedVersion={document.version}
+              initialTitle={revision.title}
+              initialBody={revision.body}
             />
           </div>
         </details>
@@ -115,22 +151,20 @@ export default async function DocumentPage({
 
       {versions.length > 1 ? (
         <section className="py-5">
-          <h2 className="text-sm font-black uppercase tracking-[0.12em]">
-            Versions
-          </h2>
+          <h2 className="font-bold">Versions</h2>
           <ul className="mt-3 space-y-1">
             {versions.map((version) => (
-              <li key={version.id} className="text-sm font-bold">
-                {version.id === document.id ? (
+              <li key={version.id} className="text-sm font-medium">
+                {version.id === revision.id ? (
                   <span>
-                    v{version.version} — {version.title} (you are here)
+                    v{version.version} - {version.title} (you are here)
                   </span>
                 ) : (
                   <Link
                     className="underline underline-offset-4"
                     href={`/documents/${version.id}`}
                   >
-                    v{version.version} — {version.title}
+                    v{version.version} - {version.title}
                     {version.isCurrent ? " (current)" : ""}
                   </Link>
                 )}

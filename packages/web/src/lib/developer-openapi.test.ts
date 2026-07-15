@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getDeveloperOpenApiDocument } from "@/lib/developer-openapi";
 
 describe("developer OpenAPI document", () => {
-  it("publishes OAuth, MCP, task, referral, vote, people, and organization APIs", () => {
+  it("publishes OAuth, MCP, task, content, referral, vote, people, and organization APIs", () => {
     const doc = getDeveloperOpenApiDocument("https://optimitron.test/");
 
     expect(doc.openapi).toBe("3.1.0");
@@ -12,6 +12,14 @@ describe("developer OpenAPI document", () => {
     expect(doc.paths).toHaveProperty("/api/mcp/oauth/token");
     expect(doc.paths).toHaveProperty("/api/mcp/tools");
     expect(doc.paths).toHaveProperty("/api/tasks");
+    expect(doc.paths).toHaveProperty("/api/documents");
+    expect(doc.paths).toHaveProperty("/api/collections/{id}/records");
+    expect(doc.paths).toHaveProperty("/api/collections/{id}/records/batch");
+    expect(doc.paths).toHaveProperty("/api/content/search");
+    expect(doc.paths).toHaveProperty("/api/content/export");
+    expect(doc.paths).toHaveProperty("/api/content/access");
+    expect(doc.paths).toHaveProperty("/api/content/attachments/{attachmentId}");
+    expect(doc.paths).toHaveProperty("/api/content/imports/notion");
     expect(doc.paths).toHaveProperty("/api/referral-invitations");
     expect(doc.paths).toHaveProperty("/api/referendums/{slug}/vote");
     expect(doc.paths).toHaveProperty("/api/profile");
@@ -47,6 +55,20 @@ describe("developer OpenAPI document", () => {
       { OptimitronOAuth: ["tasks:admin"] },
     ]);
     expect(doc.paths["/api/tasks/{id}/comments"].post.security).toEqual([
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/documents"].post.security).toEqual([
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(doc.paths["/api/content/access"].post.security).toEqual([
+      { OptimitronOAuth: ["tasks:personal"] },
+      { OptimitronOAuth: ["tasks:admin"] },
+    ]);
+    expect(
+      doc.paths["/api/collections/{id}/records/batch"].post.security,
+    ).toEqual([
       { OptimitronOAuth: ["tasks:personal"] },
       { OptimitronOAuth: ["tasks:admin"] },
     ]);
@@ -91,6 +113,53 @@ describe("developer OpenAPI document", () => {
           required: ["grant_type", "client_id", "refresh_token"],
         },
       ],
+    });
+  });
+
+  it("publishes concrete document, collection, and import contracts", () => {
+    const doc = getDeveloperOpenApiDocument("https://optimitron.test");
+
+    expect(
+      doc.paths["/api/documents"].post.requestBody.content["application/json"]
+        .schema,
+    ).toEqual({ $ref: "#/components/schemas/CreateDocumentRequest" });
+    expect(doc.paths["/api/collections/{id}/records"].get.parameters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "filters", in: "query" }),
+        expect.objectContaining({ name: "sorts", in: "query" }),
+        { $ref: "#/components/parameters/cursor" },
+      ]),
+    );
+    expect(
+      doc.paths["/api/collections/{id}/records"].post.requestBody.content[
+        "application/json"
+      ].schema,
+    ).toEqual({
+      $ref: "#/components/schemas/CreateCollectionRecordRequest",
+    });
+    expect(
+      doc.paths["/api/content/access"].post.requestBody.content[
+        "application/json"
+      ].schema,
+    ).toEqual({ $ref: "#/components/schemas/ContentGrantRequest" });
+    expect(
+      doc.paths["/api/content/imports/notion"].post.requestBody.content[
+        "application/json"
+      ].schema,
+    ).toEqual({ $ref: "#/components/schemas/NotionImportRequest" });
+    expect(doc.components.schemas.NotionImportBundle).toMatchObject({
+      required: ["workspaceId"],
+      properties: {
+        collections: {
+          items: {
+            required: ["sourceId", "name"],
+            properties: {
+              fields: { type: "array", maxItems: 200 },
+              records: { type: "array", maxItems: 20000 },
+            },
+          },
+        },
+      },
     });
   });
 });

@@ -321,6 +321,7 @@ enum ActivityType {
   COMPLETED_SURVEY
   JOINED_ORGANIZATION
   UNSUBSCRIBED
+  CONTENT_ACCESS_CHANGED
 }
 
 /// Channel from which a share was produced. Both channels use the same template catalog
@@ -767,6 +768,45 @@ enum TaskPayoutStatus {
   CANCELED
 }
 
+/// Public/private discoverability for documents and collections. Explicit
+/// grants provide the finer-grained signed-in access levels.
+enum ContentVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+/// Effective content permission. Higher levels include every capability below
+/// them; the application resolves the broadest applicable grant.
+enum ContentAccessLevel {
+  VIEW
+  COMMENT
+  EDIT_CONTENT
+  EDIT
+  FULL_ACCESS
+}
+
+/// Bounded field types supported by generic collections. Domain records remain
+/// canonical Task, Person, Organization, and Document rows.
+enum CollectionFieldType {
+  TEXT
+  RICH_TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  SELECT
+  MULTI_SELECT
+  URL
+  EMAIL
+  FILE
+  RELATION
+  TASK
+  PERSON
+  ORGANIZATION
+  DOCUMENT
+  FORMULA
+  ROLLUP
+}
+
 /// Upstream source family for tasks, impacts, and analytical artifacts
 enum SourceSystem {
   MANUAL
@@ -776,6 +816,7 @@ enum SourceSystem {
   EXTERNAL
   CURATED
   COMBINED
+  NOTION
 }
 
 /// Type of upstream artifact used to derive tasks or impact estimates
@@ -790,6 +831,10 @@ enum SourceArtifactType {
   CALCULATION_SOURCE
   CALCULATION_RUN
   EXTERNAL_SOURCE
+  NOTION_PAGE
+  NOTION_DATABASE
+  NOTION_EXPORT
+  FILE_IMPORT
 }
 
 /// How a parameter value was established
@@ -1125,6 +1170,8 @@ model Person {
   taskFundingPledges          TaskFundingPledge[]      @relation("PersonTaskFundingPledges")
   stripeConnectedAccounts     StripeConnectedAccount[] @relation("PersonStripeConnectedAccounts")
   taskPayouts                 TaskPayout[]             @relation("PersonTaskPayouts")
+  linkedCollectionRecords     CollectionRecord[]       @relation("CollectionRecordPerson")
+  targetedCollectionRelations CollectionRelation[]     @relation("CollectionRelationPersonTarget")
 
   @@index([displayName])
   @@index([lastName, firstName])
@@ -1900,6 +1947,15 @@ model User {
   moderatedTaskComments              TaskComment[]                    @relation("TaskCommentModerator")
   taskCommentVotes                   TaskCommentVote[]                @relation("TaskCommentVoter")
   createdDocuments                   Document[]                       @relation("DocumentCreator")
+  createdDocumentRevisions           DocumentRevision[]               @relation("DocumentRevisionCreator")
+  createdCollections                 Collection[]                     @relation("CollectionCreator")
+  createdCollectionFields            CollectionField[]                @relation("CollectionFieldCreator")
+  createdCollectionRecords           CollectionRecord[]               @relation("CollectionRecordCreator")
+  createdCollectionRelations         CollectionRelation[]             @relation("CollectionRelationCreator")
+  createdCollectionViews             CollectionView[]                 @relation("CollectionViewCreator")
+  receivedContentAccessGrants        ContentAccessGrant[]             @relation("ContentGrantUser")
+  issuedContentAccessGrants          ContentAccessGrant[]             @relation("ContentGrantGrantedBy")
+  uploadedContentAttachments         ContentAttachment[]              @relation("ContentAttachmentUploader")
   oauthAuthCodes                     OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
   oauthGrants                        OAuthGrant[]                     @relation("UserOAuthGrants")
   mcpToolCallAudits                  McpToolCallAudit[]               @relation("UserMcpToolCallAudits")
@@ -3787,6 +3843,7 @@ model Jurisdiction {
   memorialResponsibleParties    PersonMemorialResponsibleParty[] @relation("JurisdictionPersonMemorialResponsibleParties")
   interventionApprovalTimelines InterventionApprovalTimeline[]   @relation("JurisdictionInterventionApprovalTimelines")
   documents                     Document[]                       @relation("JurisdictionDocuments")
+  collections                   Collection[]                     @relation("JurisdictionCollections")
 
   @@index([type])
   @@index([parentJurisdictionId])
@@ -5507,23 +5564,28 @@ model Organization {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction               Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
-  creator                    User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
-  members                    OrganizationMember[]
-  assignedTasks              Task[]                           @relation("TaskAssigneeOrganization")
-  ownedTasks                 Task[]                           @relation("TaskOwnerOrganization")
-  taskCandidateMatches       TaskCandidateMatch[]             @relation("OrganizationTaskCandidateMatches")
-  taskExecutionAttempts      TaskExecutionAttempt[]           @relation("OrganizationTaskExecutionAttempts")
-  taskMarketplaceListings    TaskMarketplaceListing[]         @relation("OrganizationTaskMarketplaceListings")
-  authoredTaskComments       TaskComment[]                    @relation("TaskCommentAuthorOrganization")
-  receivedTaskCommunications TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
-  subjects                   Subject[]                        @relation("OrganizationSubject")
-  referendumPositions        OrganizationReferendumPosition[]
-  referendumVotes            ReferendumVote[]                 @relation("OrganizationReferendumVotes")
-  surveyResponses            SurveyResponse[]                 @relation("OrganizationSurveyResponses")
-  memorialResponsibleParties PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
-  taskFundingPledges         TaskFundingPledge[]              @relation("OrganizationTaskFundingPledges")
-  taskFundingPayments        TaskFundingPayment[]             @relation("OrganizationTaskFundingPayments")
+  jurisdiction                Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
+  creator                     User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
+  members                     OrganizationMember[]
+  assignedTasks               Task[]                           @relation("TaskAssigneeOrganization")
+  ownedTasks                  Task[]                           @relation("TaskOwnerOrganization")
+  taskCandidateMatches        TaskCandidateMatch[]             @relation("OrganizationTaskCandidateMatches")
+  taskExecutionAttempts       TaskExecutionAttempt[]           @relation("OrganizationTaskExecutionAttempts")
+  taskMarketplaceListings     TaskMarketplaceListing[]         @relation("OrganizationTaskMarketplaceListings")
+  authoredTaskComments        TaskComment[]                    @relation("TaskCommentAuthorOrganization")
+  receivedTaskCommunications  TaskCommunication[]              @relation("TaskCommunicationRecipientOrganization")
+  subjects                    Subject[]                        @relation("OrganizationSubject")
+  referendumPositions         OrganizationReferendumPosition[]
+  referendumVotes             ReferendumVote[]                 @relation("OrganizationReferendumVotes")
+  surveyResponses             SurveyResponse[]                 @relation("OrganizationSurveyResponses")
+  memorialResponsibleParties  PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
+  taskFundingPledges          TaskFundingPledge[]              @relation("OrganizationTaskFundingPledges")
+  taskFundingPayments         TaskFundingPayment[]             @relation("OrganizationTaskFundingPayments")
+  ownedDocuments              Document[]                       @relation("OrganizationDocuments")
+  ownedCollections            Collection[]                     @relation("OrganizationCollections")
+  receivedContentAccessGrants ContentAccessGrant[]             @relation("ContentGrantOrganization")
+  linkedCollectionRecords     CollectionRecord[]               @relation("CollectionRecordOrganization")
+  targetedCollectionRelations CollectionRelation[]             @relation("CollectionRelationOrganizationTarget")
 
   @@index([slug])
   @@index([type])
@@ -5822,41 +5884,43 @@ model Task {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction              Jurisdiction?               @relation(fields: [jurisdictionId], references: [id])
-  parentTask                Task?                       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
-  childTasks                Task[]                      @relation("TaskHierarchy")
-  assigneePerson            Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
-  assigneeOrganization      Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
-  ownerOrganization         Organization?               @relation("TaskOwnerOrganization", fields: [ownerOrganizationId], references: [id], onDelete: SetNull)
-  verifiedByUser            User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
-  createdByUser             User                        @relation("TaskCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  currentImpactEstimateSet  TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
-  impactEstimateSets        TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
-  claims                    TaskClaim[]                 @relation("TaskClaims")
-  applications              TaskApplication[]           @relation("TaskApplications")
-  candidateMatches          TaskCandidateMatch[]        @relation("TaskCandidateMatches")
-  executionAttempts         TaskExecutionAttempt[]      @relation("TaskExecutionAttempts")
-  marketplaceListings       TaskMarketplaceListing[]    @relation("TaskMarketplaceListings")
-  distributionAttempts      TaskDistributionAttempt[]   @relation("TaskDistributionAttempts")
-  managers                  TaskManager[]               @relation("TaskManagers")
-  comments                  TaskComment[]               @relation("TaskComments")
-  commentAttachments        TaskCommentAttachment[]     @relation("TaskCommentAttachments")
-  sourceArtifacts           TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
-  outgoingEdges             TaskEdge[]                  @relation("TaskOutgoingEdges")
-  incomingEdges             TaskEdge[]                  @relation("TaskIncomingEdges")
-  agentLeases               AgentTaskLease[]            @relation("TaskAgentLeases")
-  shareAttempts             ShareAttempt[]              @relation("TaskShareAttempts")
-  referralInvitations       ReferralInvitation[]        @relation("TaskReferralInvitations")
-  datingDatePlans           DatingDatePlan[]            @relation("TaskDatingDatePlans")
-  communicationEndpoints    TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
-  communicationTemplates    TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
-  communications            TaskCommunication[]         @relation("TaskCommunications")
-  courtCaseRootFor          CourtCase?                  @relation("CourtCaseRootTask")
-  courtCaseRemediesEnforced CourtCaseRemedy[]           @relation("CourtCaseRemedyEnforcementTask")
-  fundingTarget             TaskFundingTarget?          @relation("TaskFundingTargetTask")
-  fundingPayments           TaskFundingPayment[]        @relation("TaskFundingPaymentTask")
-  payouts                   TaskPayout[]                @relation("TaskPayoutTask")
-  documents                 Document[]                  @relation("TaskDocuments")
+  jurisdiction                Jurisdiction?               @relation(fields: [jurisdictionId], references: [id])
+  parentTask                  Task?                       @relation("TaskHierarchy", fields: [parentTaskId], references: [id], onDelete: SetNull)
+  childTasks                  Task[]                      @relation("TaskHierarchy")
+  assigneePerson              Person?                     @relation("TaskAssigneePerson", fields: [assigneePersonId], references: [id], onDelete: SetNull)
+  assigneeOrganization        Organization?               @relation("TaskAssigneeOrganization", fields: [assigneeOrganizationId], references: [id], onDelete: SetNull)
+  ownerOrganization           Organization?               @relation("TaskOwnerOrganization", fields: [ownerOrganizationId], references: [id], onDelete: SetNull)
+  verifiedByUser              User?                       @relation("TaskVerifiedByUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  createdByUser               User                        @relation("TaskCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  currentImpactEstimateSet    TaskImpactEstimateSet?      @relation("CurrentTaskImpactEstimateSet", fields: [currentImpactEstimateSetId], references: [id], onDelete: SetNull)
+  impactEstimateSets          TaskImpactEstimateSet[]     @relation("TaskImpactEstimateSets")
+  claims                      TaskClaim[]                 @relation("TaskClaims")
+  applications                TaskApplication[]           @relation("TaskApplications")
+  candidateMatches            TaskCandidateMatch[]        @relation("TaskCandidateMatches")
+  executionAttempts           TaskExecutionAttempt[]      @relation("TaskExecutionAttempts")
+  marketplaceListings         TaskMarketplaceListing[]    @relation("TaskMarketplaceListings")
+  distributionAttempts        TaskDistributionAttempt[]   @relation("TaskDistributionAttempts")
+  managers                    TaskManager[]               @relation("TaskManagers")
+  comments                    TaskComment[]               @relation("TaskComments")
+  commentAttachments          TaskCommentAttachment[]     @relation("TaskCommentAttachments")
+  sourceArtifacts             TaskSourceArtifact[]        @relation("TaskSourceArtifacts")
+  outgoingEdges               TaskEdge[]                  @relation("TaskOutgoingEdges")
+  incomingEdges               TaskEdge[]                  @relation("TaskIncomingEdges")
+  agentLeases                 AgentTaskLease[]            @relation("TaskAgentLeases")
+  shareAttempts               ShareAttempt[]              @relation("TaskShareAttempts")
+  referralInvitations         ReferralInvitation[]        @relation("TaskReferralInvitations")
+  datingDatePlans             DatingDatePlan[]            @relation("TaskDatingDatePlans")
+  communicationEndpoints      TaskCommunicationEndpoint[] @relation("TaskCommunicationEndpoints")
+  communicationTemplates      TaskCommunicationTemplate[] @relation("TaskCommunicationTemplates")
+  communications              TaskCommunication[]         @relation("TaskCommunications")
+  courtCaseRootFor            CourtCase?                  @relation("CourtCaseRootTask")
+  courtCaseRemediesEnforced   CourtCaseRemedy[]           @relation("CourtCaseRemedyEnforcementTask")
+  fundingTarget               TaskFundingTarget?          @relation("TaskFundingTargetTask")
+  fundingPayments             TaskFundingPayment[]        @relation("TaskFundingPaymentTask")
+  payouts                     TaskPayout[]                @relation("TaskPayoutTask")
+  documents                   Document[]                  @relation("TaskDocuments")
+  linkedCollectionRecords     CollectionRecord[]          @relation("CollectionRecordTask")
+  targetedCollectionRelations CollectionRelation[]        @relation("CollectionRelationTaskTarget")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -5935,46 +5999,53 @@ model TaskManager {
   @@index([deletedAt])
 }
 
-/// Who can see a Document.
-enum DocumentVisibility {
-  PUBLIC
-  PRIVATE
-}
-
-/// Versioned markdown document, optionally attached to a task. Working docs
-/// live here instead of Notion. One row per version: every version of a
-/// logical document shares documentKey, and exactly one row per documentKey
-/// has isCurrent = true (enforced in the update transaction).
+/// Stable markdown document, optionally attached to a task or organization.
+/// Editable content lives in immutable DocumentRevision rows.
 model Document {
-  /// Unique identifier for this version row
+  /// Stable identifier used by links, grants, attachments, and collection records
   id String @id @default(cuid())
 
   /// Optional jurisdiction this document belongs to
   jurisdictionId String?
 
-  /// Stable identity shared by every version of this logical document
-  documentKey String @default(cuid())
-
   /// Optional task this document is attached to
   taskId String?
 
-  /// Document title
+  /// Optional organization that owns this document
+  organizationId String?
+
+  /// Optional parent whose grants are inherited
+  parentDocumentId String?
+
+  /// Current revision; null only during the create/migration transaction
+  currentRevisionId String? @unique
+
+  /// Materialized current title for lists and search
   title String
 
-  /// Markdown body
-  body String
-
-  /// Monotonic version number within a documentKey, starting at 1
-  version Int @default(1)
-
-  /// Whether this row is the version readers see by default
-  isCurrent Boolean @default(true)
+  /// Current optimistic-concurrency and revision number
+  version Int @default(0)
 
   /// Who can see this document. Private by default.
-  visibility DocumentVisibility @default(PRIVATE)
+  visibility ContentVisibility @default(PRIVATE)
 
-  /// User who created this version
+  /// User who created the stable document
   createdByUserId String
+
+  /// Stable upstream identity for idempotent imports
+  sourceKey String? @unique
+
+  /// Upstream URL retained for provenance
+  sourceUrl String?
+
+  /// Materialized title/body text used by the full-text index
+  searchText String @default("")
+
+  /// Agent/API create idempotency key, unique per creator
+  idempotencyKey String?
+
+  /// Hash of the normalized create request bound to idempotencyKey
+  requestHash String?
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -5986,15 +6057,334 @@ model Document {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction  Jurisdiction? @relation("JurisdictionDocuments", fields: [jurisdictionId], references: [id])
-  task          Task?         @relation("TaskDocuments", fields: [taskId], references: [id], onDelete: SetNull)
-  createdByUser User          @relation("DocumentCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  jurisdiction            Jurisdiction?        @relation("JurisdictionDocuments", fields: [jurisdictionId], references: [id])
+  task                    Task?                @relation("TaskDocuments", fields: [taskId], references: [id], onDelete: SetNull)
+  organization            Organization?        @relation("OrganizationDocuments", fields: [organizationId], references: [id], onDelete: SetNull)
+  parentDocument          Document?            @relation("DocumentHierarchy", fields: [parentDocumentId], references: [id], onDelete: SetNull)
+  childDocuments          Document[]           @relation("DocumentHierarchy")
+  currentRevision         DocumentRevision?    @relation("CurrentDocumentRevision", fields: [currentRevisionId, id], references: [id, documentId], onDelete: Restrict)
+  revisions               DocumentRevision[]   @relation("DocumentRevisions")
+  createdByUser           User                 @relation("DocumentCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  accessGrants            ContentAccessGrant[] @relation("DocumentAccessGrants")
+  attachments             ContentAttachment[]  @relation("DocumentAttachments")
+  linkedCollectionRecords CollectionRecord[]   @relation("CollectionRecordDocument")
+  targetedRelations       CollectionRelation[] @relation("CollectionRelationDocumentTarget")
 
-  @@unique([documentKey, version])
-  @@index([taskId, isCurrent])
-  @@index([createdByUserId, isCurrent])
+  @@unique([createdByUserId, idempotencyKey])
+  @@unique([currentRevisionId, id])
+  @@index([taskId])
+  @@index([organizationId])
+  @@index([parentDocumentId])
+  @@index([createdByUserId])
   @@index([jurisdictionId])
-  @@index([visibility, isCurrent])
+  @@index([visibility])
+  @@index([sourceKey])
+  @@index([deletedAt])
+}
+
+/// Immutable markdown snapshot for one stable document.
+model DocumentRevision {
+  id String @id @default(cuid())
+
+  documentId String
+
+  /// Monotonic revision number within the document
+  version Int
+
+  title String
+  body  String
+
+  /// User or importing agent identity that wrote this revision
+  createdByUserId String
+
+  /// Exact source artifact used for an imported revision
+  sourceArtifactId String?
+
+  /// SHA-256 of normalized title/body content
+  contentHash String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  document       Document        @relation("DocumentRevisions", fields: [documentId], references: [id], onDelete: Cascade)
+  currentFor     Document?       @relation("CurrentDocumentRevision")
+  createdByUser  User            @relation("DocumentRevisionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  sourceArtifact SourceArtifact? @relation("DocumentRevisionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+
+  @@unique([documentId, version])
+  @@unique([id, documentId])
+  @@index([documentId, createdAt])
+  @@index([createdByUserId])
+  @@index([sourceArtifactId])
+  @@index([contentHash])
+  @@index([deletedAt])
+}
+
+/// User-defined database with a bounded set of field types. Domain entities
+/// remain canonical and may be linked from collection records.
+model Collection {
+  id String @id @default(cuid())
+
+  jurisdictionId   String?
+  organizationId   String?
+  createdByUserId  String
+  sourceArtifactId String?
+
+  name        String
+  description String?
+  visibility  ContentVisibility @default(PRIVATE)
+
+  /// Optimistic-concurrency version for metadata and field changes
+  version Int @default(1)
+
+  sourceKey String? @unique
+  sourceUrl String?
+
+  idempotencyKey String?
+  requestHash    String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  jurisdiction    Jurisdiction?        @relation("JurisdictionCollections", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  organization    Organization?        @relation("OrganizationCollections", fields: [organizationId], references: [id], onDelete: SetNull)
+  createdByUser   User                 @relation("CollectionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  sourceArtifact  SourceArtifact?      @relation("CollectionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  fields          CollectionField[]    @relation("CollectionFields")
+  relationTargets CollectionField[]    @relation("CollectionFieldTargetCollection")
+  records         CollectionRecord[]   @relation("CollectionRecords")
+  views           CollectionView[]     @relation("CollectionViews")
+  accessGrants    ContentAccessGrant[] @relation("CollectionAccessGrants")
+
+  @@unique([createdByUserId, idempotencyKey])
+  @@index([jurisdictionId])
+  @@index([organizationId])
+  @@index([createdByUserId])
+  @@index([sourceArtifactId])
+  @@index([visibility])
+  @@index([deletedAt])
+}
+
+model CollectionField {
+  id String @id @default(cuid())
+
+  collectionId       String
+  targetCollectionId String?
+  createdByUserId    String
+
+  /// Immutable machine key; the display name may be renamed safely
+  key      String
+  name     String
+  type     CollectionFieldType
+  required Boolean             @default(false)
+  position Int                 @default(0)
+
+  /// Select options and other type-specific presentation metadata
+  optionsJson Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  collection       Collection           @relation("CollectionFields", fields: [collectionId], references: [id], onDelete: Cascade)
+  targetCollection Collection?          @relation("CollectionFieldTargetCollection", fields: [targetCollectionId], references: [id], onDelete: SetNull)
+  createdByUser    User                 @relation("CollectionFieldCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  relations        CollectionRelation[] @relation("CollectionRelationField")
+
+  @@unique([collectionId, key])
+  @@index([collectionId, position])
+  @@index([targetCollectionId])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+model CollectionRecord {
+  id String @id @default(cuid())
+
+  collectionId     String
+  createdByUserId  String
+  sourceArtifactId String?
+
+  /// Scalar values keyed by immutable CollectionField.key values
+  valuesJson Json
+
+  /// Materialized scalar text used by the full-text index
+  searchText String @default("")
+
+  /// At most one canonical entity may be represented by this record
+  taskId         String?
+  personId       String?
+  organizationId String?
+  documentId     String?
+
+  version Int @default(1)
+
+  sourceKey String?
+  sourceUrl String?
+
+  idempotencyKey String?
+  requestHash    String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  collection        Collection           @relation("CollectionRecords", fields: [collectionId], references: [id], onDelete: Cascade)
+  createdByUser     User                 @relation("CollectionRecordCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  sourceArtifact    SourceArtifact?      @relation("CollectionRecordSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  task              Task?                @relation("CollectionRecordTask", fields: [taskId], references: [id], onDelete: SetNull)
+  person            Person?              @relation("CollectionRecordPerson", fields: [personId], references: [id], onDelete: SetNull)
+  organization      Organization?        @relation("CollectionRecordOrganization", fields: [organizationId], references: [id], onDelete: SetNull)
+  document          Document?            @relation("CollectionRecordDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  outgoingRelations CollectionRelation[] @relation("CollectionRelationSource")
+  incomingRelations CollectionRelation[] @relation("CollectionRelationRecordTarget")
+  attachments       ContentAttachment[]  @relation("CollectionRecordAttachments")
+
+  @@unique([collectionId, sourceKey])
+  @@unique([collectionId, idempotencyKey])
+  @@index([collectionId, updatedAt])
+  @@index([createdByUserId])
+  @@index([sourceArtifactId])
+  @@index([taskId])
+  @@index([personId])
+  @@index([organizationId])
+  @@index([documentId])
+  @@index([deletedAt])
+}
+
+/// Normalized relation value. Exactly one target column is populated.
+model CollectionRelation {
+  id String @id @default(cuid())
+
+  sourceRecordId String
+  fieldId        String
+
+  targetRecordId       String?
+  targetTaskId         String?
+  targetPersonId       String?
+  targetOrganizationId String?
+  targetDocumentId     String?
+
+  position        Int    @default(0)
+  createdByUserId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  sourceRecord       CollectionRecord  @relation("CollectionRelationSource", fields: [sourceRecordId], references: [id], onDelete: Cascade)
+  field              CollectionField   @relation("CollectionRelationField", fields: [fieldId], references: [id], onDelete: Cascade)
+  targetRecord       CollectionRecord? @relation("CollectionRelationRecordTarget", fields: [targetRecordId], references: [id], onDelete: Cascade)
+  targetTask         Task?             @relation("CollectionRelationTaskTarget", fields: [targetTaskId], references: [id], onDelete: Cascade)
+  targetPerson       Person?           @relation("CollectionRelationPersonTarget", fields: [targetPersonId], references: [id], onDelete: Cascade)
+  targetOrganization Organization?     @relation("CollectionRelationOrganizationTarget", fields: [targetOrganizationId], references: [id], onDelete: Cascade)
+  targetDocument     Document?         @relation("CollectionRelationDocumentTarget", fields: [targetDocumentId], references: [id], onDelete: Cascade)
+  createdByUser      User              @relation("CollectionRelationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([sourceRecordId, fieldId, position])
+  @@index([targetRecordId])
+  @@index([targetTaskId])
+  @@index([targetPersonId])
+  @@index([targetOrganizationId])
+  @@index([targetDocumentId])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+/// Saved table configuration. Other Notion-style view types are intentionally
+/// deferred until a migrated workflow requires them.
+model CollectionView {
+  id String @id @default(cuid())
+
+  collectionId    String
+  createdByUserId String
+  name            String
+
+  visibleFieldIds String[] @default([])
+  filterJson      Json?
+  sortJson        Json?
+  isDefault       Boolean  @default(false)
+  version         Int      @default(1)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  collection    Collection @relation("CollectionViews", fields: [collectionId], references: [id], onDelete: Cascade)
+  createdByUser User       @relation("CollectionViewCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([collectionId, name])
+  @@index([collectionId, isDefault])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+/// Explicit user or organization access to one stable document or collection.
+/// Database checks enforce exactly one resource and exactly one grantee.
+model ContentAccessGrant {
+  id String @id @default(cuid())
+
+  documentId   String?
+  collectionId String?
+
+  userId         String?
+  organizationId String?
+
+  accessLevel     ContentAccessLevel
+  grantedByUserId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  document      Document?     @relation("DocumentAccessGrants", fields: [documentId], references: [id], onDelete: Cascade)
+  collection    Collection?   @relation("CollectionAccessGrants", fields: [collectionId], references: [id], onDelete: Cascade)
+  user          User?         @relation("ContentGrantUser", fields: [userId], references: [id], onDelete: Cascade)
+  organization  Organization? @relation("ContentGrantOrganization", fields: [organizationId], references: [id], onDelete: Cascade)
+  grantedByUser User          @relation("ContentGrantGrantedBy", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([documentId, accessLevel])
+  @@index([collectionId, accessLevel])
+  @@index([userId])
+  @@index([organizationId])
+  @@index([grantedByUserId])
+  @@index([deletedAt])
+}
+
+/// Private R2 object attached to a document or collection record. Exactly one
+/// content owner is populated; storage keys are never returned directly.
+model ContentAttachment {
+  id String @id @default(cuid())
+
+  documentId         String?
+  collectionRecordId String?
+  uploadedByUserId   String?
+  sourceArtifactId   String?
+
+  storageKey     String @unique
+  fileName       String
+  contentType    String
+  sizeBytes      Int
+  checksumSha256 String
+
+  uploadedAt DateTime?
+  expiresAt  DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  document         Document?         @relation("DocumentAttachments", fields: [documentId], references: [id], onDelete: Restrict)
+  collectionRecord CollectionRecord? @relation("CollectionRecordAttachments", fields: [collectionRecordId], references: [id], onDelete: Restrict)
+  uploadedBy       User?             @relation("ContentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  sourceArtifact   SourceArtifact?   @relation("ContentAttachmentSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+
+  @@index([documentId, createdAt])
+  @@index([collectionRecordId, createdAt])
+  @@index([uploadedByUserId, expiresAt])
+  @@index([sourceArtifactId])
   @@index([deletedAt])
 }
 
@@ -7048,6 +7438,10 @@ model SourceArtifact {
   interventionRankingRuns               InterventionRankingRun[]               @relation("SourceArtifactInterventionRankingRuns")
   courtCaseEvidence                     CourtCaseEvidence[]                    @relation("CourtCaseEvidenceSourceArtifact")
   parameterRevisionLinks                ParameterRevisionSourceArtifact[]      @relation("ParameterRevisionSourceArtifactLinks")
+  documentRevisions                     DocumentRevision[]                     @relation("DocumentRevisionSourceArtifact")
+  collections                           Collection[]                           @relation("CollectionSourceArtifact")
+  collectionRecords                     CollectionRecord[]                     @relation("CollectionRecordSourceArtifact")
+  contentAttachments                    ContentAttachment[]                    @relation("ContentAttachmentSourceArtifact")
 
   @@index([sourceSystem, artifactType])
   @@index([externalKey])

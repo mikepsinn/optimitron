@@ -3,7 +3,8 @@ import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
   getServerSession: vi.fn(),
-  userFindUnique: vi.fn(),
+  oAuthGrantFindFirst: vi.fn(),
+  userFindFirst: vi.fn(),
   verifyMcpAccessToken: vi.fn(),
 }));
 
@@ -21,8 +22,11 @@ vi.mock("@/lib/mcp-oauth", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    oAuthGrant: {
+      findFirst: mocks.oAuthGrantFindFirst,
+    },
     user: {
-      findUnique: mocks.userFindUnique,
+      findFirst: mocks.userFindFirst,
     },
   },
 }));
@@ -36,8 +40,16 @@ import {
 describe("auth-utils OAuth support", () => {
   beforeEach(() => {
     mocks.getServerSession.mockReset();
-    mocks.userFindUnique.mockReset();
+    mocks.oAuthGrantFindFirst.mockReset();
+    mocks.userFindFirst.mockReset();
     mocks.verifyMcpAccessToken.mockReset();
+    mocks.oAuthGrantFindFirst.mockResolvedValue({
+      scopes: [McpScope.TASKS_PERSONAL],
+    });
+    mocks.userFindFirst.mockResolvedValue({
+      email: "dev@example.org",
+      id: "user_oauth",
+    });
   });
 
   it("accepts a valid OAuth Bearer token with a required scope", async () => {
@@ -46,7 +58,7 @@ describe("auth-utils OAuth support", () => {
       scopes: [McpScope.TASKS_PERSONAL],
       sub: "user_oauth",
     });
-    mocks.userFindUnique.mockResolvedValue({
+    mocks.userFindFirst.mockResolvedValue({
       email: "dev@example.org",
       id: "user_oauth",
     });
@@ -74,7 +86,7 @@ describe("auth-utils OAuth support", () => {
       scopes: [McpScope.TASKS_PERSONAL],
       sub: "user_oauth",
     });
-    mocks.userFindUnique.mockResolvedValue({
+    mocks.userFindFirst.mockResolvedValue({
       email: "dev@example.org",
       id: "user_oauth",
     });
@@ -133,7 +145,7 @@ describe("auth-utils OAuth support", () => {
       scopes: [McpScope.TASKS_PERSONAL],
       sub: "user_oauth",
     });
-    mocks.userFindUnique.mockRejectedValue(dbError);
+    mocks.userFindFirst.mockRejectedValue(dbError);
 
     await expect(
       requireAuth(
@@ -149,6 +161,10 @@ describe("auth-utils OAuth support", () => {
   it("falls back to the NextAuth session when there is no Bearer token", async () => {
     mocks.getServerSession.mockResolvedValue({
       user: { email: "browser@example.org", id: "user_session" },
+    });
+    mocks.userFindFirst.mockResolvedValue({
+      email: "browser@example.org",
+      id: "user_session",
     });
 
     await expect(requireAuth()).resolves.toEqual({
@@ -169,7 +185,7 @@ describe("auth-utils OAuth support", () => {
       scopes: [McpScope.TASKS_PERSONAL],
       sub: "user_oauth",
     });
-    mocks.userFindUnique
+    mocks.userFindFirst
       .mockResolvedValueOnce({ email: "dev@example.org", id: "user_oauth" })
       .mockResolvedValueOnce(fullUser);
 
@@ -182,5 +198,23 @@ describe("auth-utils OAuth support", () => {
       ),
     ).resolves.toBe(fullUser);
     expect(mocks.getServerSession).not.toHaveBeenCalled();
+  });
+
+  it("rejects a token after its OAuth grant is revoked", async () => {
+    mocks.verifyMcpAccessToken.mockResolvedValue({
+      clientId: "client_field_app",
+      scopes: [McpScope.TASKS_PERSONAL],
+      sub: "user_oauth",
+    });
+    mocks.oAuthGrantFindFirst.mockResolvedValue(null);
+
+    await expect(
+      requireAuth(
+        new Request("https://optimitron.test/api/tasks", {
+          headers: { Authorization: "Bearer access_token" },
+        }),
+        [McpScope.TASKS_PERSONAL],
+      ),
+    ).rejects.toThrow("Unauthorized");
   });
 });

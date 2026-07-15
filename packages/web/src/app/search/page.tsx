@@ -27,7 +27,7 @@ const sampleQueries = [
   "donation math",
 ];
 
-type SearchScope = "all" | "manual" | "pages" | "tasks";
+type SearchScope = "all" | "content" | "manual" | "pages" | "tasks";
 
 type SearchResultItem = {
   description: string;
@@ -41,6 +41,7 @@ type SearchResultItem = {
 };
 
 const SEARCH_SCOPE_PRIORITY: Record<SearchResultItem["scope"], number> = {
+  content: 4,
   pages: 3,
   manual: 2,
   tasks: 1,
@@ -80,6 +81,7 @@ function getScopeCounts(
 
   return {
     all: items.length,
+    content: items.filter((item) => item.scope === "content").length,
     manual: items.filter((item) => item.scope === "manual").length,
     pages: items.filter((item) => item.scope === "pages").length,
     tasks: items.filter((item) => item.scope === "tasks").length,
@@ -103,18 +105,29 @@ function getResultItems(
   results: Awaited<ReturnType<typeof searchSiteContent>>,
   pageSourceLabel: string,
 ): SearchResultItem[] {
+  const contentItems: SearchResultItem[] = results.content.map((item) => ({
+    description: item.snippet,
+    external: false,
+    href: item.url,
+    meta: item.kind === "collectionRecord" ? "Collection" : null,
+    scope: "content",
+    score: item.rank,
+    source: item.kind === "collectionRecord" ? item.collectionName : "Document",
+    title: item.title,
+  }));
+
   const pageItems: SearchResultItem[] = results.pages
     .filter((page) => !page.external)
     .map((page) => ({
-    description: page.description,
-    external: false,
-    href: page.href,
-    meta: page.section,
-    scope: "pages",
-    score: page.score,
-    source: pageSourceLabel,
-    title: page.title,
-  }));
+      description: page.description,
+      external: false,
+      href: page.href,
+      meta: page.section,
+      scope: "pages",
+      score: page.score,
+      source: pageSourceLabel,
+      title: page.title,
+    }));
 
   const taskItems: SearchResultItem[] = results.tasks.map((task) => ({
     description: task.snippet ?? "Task result",
@@ -144,7 +157,12 @@ function getResultItems(
     title: entry.title,
   }));
 
-  return dedupeResultItems([...pageItems, ...taskItems, ...manualItems]).sort((left, right) => {
+  return dedupeResultItems([
+    ...contentItems,
+    ...pageItems,
+    ...taskItems,
+    ...manualItems,
+  ]).sort((left, right) => {
     const priorityDelta =
       SEARCH_SCOPE_PRIORITY[right.scope] - SEARCH_SCOPE_PRIORITY[left.scope];
 
@@ -219,13 +237,19 @@ function SearchResultRow({
     <div className="space-y-1">
       <div className="flex items-center gap-3">
         <Avatar className="h-5 w-5 border border-primary/25 bg-background">
-          <Avatar.Image src={faviconUrl} alt="" className="h-full w-full object-cover" />
+          <Avatar.Image
+            src={faviconUrl}
+            alt=""
+            className="h-full w-full object-cover"
+          />
           <Avatar.Fallback className="bg-background text-[9px] font-black text-foreground">
             {source.charAt(0)}
           </Avatar.Fallback>
         </Avatar>
         <div className="min-w-0">
-          <div className="truncate text-xs font-bold text-foreground">{source}</div>
+          <div className="truncate text-xs font-bold text-foreground">
+            {source}
+          </div>
           <div className="truncate text-xs text-muted-foreground">
             {displayUrl}
             {meta ? <span>{` / ${meta}`}</span> : null}
@@ -235,14 +259,21 @@ function SearchResultRow({
       <h2 className="text-xl font-bold text-foreground transition-colors hover:text-primary">
         {title}
       </h2>
-      <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>
+      <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
     </div>
   );
 
   return (
     <div className="border-b border-primary/20 pb-6">
       {external ? (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="block">
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
           {row}
         </a>
       ) : (
@@ -264,6 +295,7 @@ export default async function SearchPage({
   const site = getSiteFromHeaders(hdrs);
   const query = typeof params.q === "string" ? params.q : "";
   const scope: SearchScope =
+    params.scope === "content" ||
     params.scope === "pages" ||
     params.scope === "tasks" ||
     params.scope === "manual"
@@ -272,6 +304,7 @@ export default async function SearchPage({
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
   const results = await searchSiteContent(query, {
+    contentLimit: 24,
     pageLimit: 24,
     site,
     taskLimit: 24,
@@ -279,14 +312,19 @@ export default async function SearchPage({
   });
   const allResults = getResultItems(results, site.shortName);
   const visibleResults =
-    scope === "all" ? allResults : allResults.filter((result) => result.scope === scope);
+    scope === "all"
+      ? allResults
+      : allResults.filter((result) => result.scope === scope);
   const counts = getScopeCounts(results, site.shortName);
 
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <section className="space-y-4 border-b border-primary/30 pb-4">
-          <form action={ROUTES.search} className="flex flex-col gap-3 md:flex-row md:items-center">
+          <form
+            action={ROUTES.search}
+            className="flex flex-col gap-3 md:flex-row md:items-center"
+          >
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -299,7 +337,9 @@ export default async function SearchPage({
                 type="search"
               />
             </div>
-            {scope !== "all" ? <input type="hidden" name="scope" value={scope} /> : null}
+            {scope !== "all" ? (
+              <input type="hidden" name="scope" value={scope} />
+            ) : null}
             <button
               type="submit"
               className="inline-flex h-14 items-center justify-center border-2 border-foreground bg-foreground px-6 text-sm font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
@@ -315,6 +355,12 @@ export default async function SearchPage({
                 href={buildScopeHref(query, "all")}
                 isActive={scope === "all"}
                 label="All"
+              />
+              <SearchTab
+                count={counts.content}
+                href={buildScopeHref(query, "content")}
+                isActive={scope === "content"}
+                label="Documents & records"
               />
               <SearchTab
                 count={counts.pages}
@@ -342,11 +388,12 @@ export default async function SearchPage({
           <>
             <section className="space-y-2">
               <p className="text-sm font-bold text-muted-foreground">
-                {visibleResults.length.toLocaleString()} result{visibleResults.length === 1 ? "" : "s"} for{" "}
-                <span className="text-foreground">&quot;{results.query}&quot;</span>
-                {scope !== "all" ? (
-                  <span>{` in ${scope}`}</span>
-                ) : null}
+                {visibleResults.length.toLocaleString()} result
+                {visibleResults.length === 1 ? "" : "s"} for{" "}
+                <span className="text-foreground">
+                  &quot;{results.query}&quot;
+                </span>
+                {scope !== "all" ? <span>{` in ${scope}`}</span> : null}
               </p>
               {results.manualError ? (
                 <div className="max-w-3xl border-2 border-primary bg-background px-4 py-3 text-sm font-bold text-foreground">
@@ -357,10 +404,13 @@ export default async function SearchPage({
 
             {visibleResults.length === 0 ? (
               <section className="max-w-3xl border-2 border-foreground bg-background p-6">
-                <h2 className="text-2xl font-black uppercase text-foreground">No Matches</h2>
+                <h2 className="text-2xl font-black uppercase text-foreground">
+                  No Matches
+                </h2>
                 <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-                  Try a broader term, a person name, a system name, or a concrete phrase like
-                  &quot;clinical trials&quot; or &quot;fund optimization&quot;.
+                  Try a broader term, a person name, a system name, or a
+                  concrete phrase like &quot;clinical trials&quot; or &quot;fund
+                  optimization&quot;.
                 </p>
               </section>
             ) : null}

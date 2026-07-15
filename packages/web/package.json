@@ -48,6 +48,7 @@
     "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
     "import:treaty-model": "tsx scripts/import-treaty-policy-model.ts",
+    "import:notion": "node scripts/guard-local-dev-db.mjs && tsx scripts/import-notion-bundle.ts",
     "bootstrap:parameters": "tsx scripts/bootstrap-parameters.ts",
     "sync:treaty-signers": "tsx scripts/sync-treaty-signers.ts",
     "sync:task-triggers": "tsx scripts/sync-task-triggers.ts",
@@ -114,6 +115,8 @@
     "@vercel/og": "^0.11.1",
     "@walletconnect/ethereum-provider": "^2.23.8",
     "@worldcoin/idkit": "^4.0.9",
+    "ag-grid-community": "35.3.1",
+    "ag-grid-react": "35.3.1",
     "bcryptjs": "^3.0.2",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
@@ -156,7 +159,8 @@
     "viem": "^2",
     "wagmi": "3.5.0",
     "web-push": "^3.6.7",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "3.25.2"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",

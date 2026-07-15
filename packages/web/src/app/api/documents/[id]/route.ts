@@ -1,18 +1,15 @@
 /**
- * GET  /api/documents/[id] — read one document version + version list.
- * POST /api/documents/[id] — append a new version (creator only).
- *
- * Private documents return 404 for everyone but their creator (and admins on
- * GET) — indistinguishable from missing ones.
+ * GET  /api/documents/[id] - read one document revision and its history.
+ * POST /api/documents/[id] - append a revision using optimistic concurrency.
  */
 
-import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth-utils";
+import {
+  contentErrorResponse,
+  noStoreJson,
+} from "@/lib/content-http.server";
 import { McpScope } from "@/lib/mcp-scopes";
 import {
-  DOCUMENT_EMPTY_PATCH_MESSAGE,
-  DOCUMENT_NOT_FOUND_MESSAGE,
-  DOCUMENT_PRIVATE_TASK_MESSAGE,
   getDocumentForViewer,
   toDocumentDto,
   updateDocument,
@@ -33,20 +30,22 @@ export async function GET(
 
     const result = await getDocumentForViewer(id, currentUser?.id ?? null);
     if (!result) {
-      return NextResponse.json({ error: "Document not found." }, { status: 404 });
+      return noStoreJson(
+        { code: "CONTENT_NOT_FOUND", error: "Content not found." },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json({
-      document: toDocumentDto(result.document),
+    return noStoreJson({
+      document: toDocumentDto(result),
       versions: result.versions,
       viewerCanEdit: result.viewerCanEdit,
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const response = contentErrorResponse(error);
+    if (response) return response;
     console.error("[DOCUMENTS] Failed to fetch document:", error);
-    return NextResponse.json(
+    return noStoreJson(
       { error: "Failed to fetch document." },
       { status: 500 },
     );
@@ -63,7 +62,7 @@ export async function POST(
       McpScope.TASKS_ADMIN,
     ]);
     if (!currentUser) {
-      return NextResponse.json(
+      return noStoreJson(
         { error: "Authentication required." },
         { status: 401 },
       );
@@ -73,11 +72,17 @@ export async function POST(
     const body = (await request.json().catch(() => null)) as {
       title?: unknown;
       body?: unknown;
+      expectedVersion?: unknown;
+      organizationId?: unknown;
+      parentDocumentId?: unknown;
+      taskId?: unknown;
       visibility?: unknown;
     } | null;
 
     const title = typeof body?.title === "string" ? body.title : null;
     const markdown = typeof body?.body === "string" ? body.body : null;
+    const expectedVersion =
+      typeof body?.expectedVersion === "number" ? body.expectedVersion : NaN;
     const visibility =
       body?.visibility === "PUBLIC" || body?.visibility === "PRIVATE"
         ? body.visibility
@@ -88,31 +93,30 @@ export async function POST(
       editorUserId: currentUser.id,
       title,
       body: markdown,
+      expectedVersion,
+      organizationId:
+        typeof body?.organizationId === "string" ||
+        body?.organizationId === null
+          ? body.organizationId
+          : undefined,
+      parentDocumentId:
+        typeof body?.parentDocumentId === "string" ||
+        body?.parentDocumentId === null
+          ? body.parentDocumentId
+          : undefined,
+      taskId:
+        typeof body?.taskId === "string" || body?.taskId === null
+          ? body.taskId
+          : undefined,
       visibility,
     });
 
-    return NextResponse.json({ document: toDocumentDto(updated) });
+    return noStoreJson({ document: toDocumentDto(updated) });
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    if (
-      error instanceof Error &&
-      error.message === DOCUMENT_NOT_FOUND_MESSAGE
-    ) {
-      return NextResponse.json({ error: "Document not found." }, { status: 404 });
-    }
-    if (
-      error instanceof Error &&
-      (error.message.includes("cannot be empty") ||
-        error.message.includes("character limit") ||
-        error.message === DOCUMENT_EMPTY_PATCH_MESSAGE ||
-        error.message === DOCUMENT_PRIVATE_TASK_MESSAGE)
-    ) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+    const response = contentErrorResponse(error);
+    if (response) return response;
     console.error("[DOCUMENTS] Failed to update document:", error);
-    return NextResponse.json(
+    return noStoreJson(
       { error: "Failed to update document." },
       { status: 500 },
     );

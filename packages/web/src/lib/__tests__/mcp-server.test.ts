@@ -825,6 +825,13 @@ describe("MCP server tool dispatch", () => {
     expect(names).toContain("getTask");
     expect(names).toContain("searchManual");
     expect(names).toContain("askWishonia");
+    expect(names).toEqual(
+      expect.arrayContaining([
+        "manageContentAccess",
+        "manageContentFiles",
+        "exportContent",
+      ]),
+    );
   });
 
   it("hides public Earth write tools from non-admin MCP users", async () => {
@@ -2381,7 +2388,7 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("catch block", () => {
-    it("surfaces the actual error message + stack when a handler throws", async () => {
+    it("returns the error without exposing stack or actor identity", async () => {
       mocks.listTasks.mockRejectedValue(
         new Error("Simulated DB failure: relation does not exist"),
       );
@@ -2399,21 +2406,22 @@ describe("MCP server tool dispatch", () => {
       expect(body.message).toBe(
         "Simulated DB failure: relation does not exist",
       );
-      expect(body.stack).toContain("Error: Simulated DB failure");
-      expect(body.userId).toBe("user-1");
+      expect(body).not.toHaveProperty("stack");
+      expect(body).not.toHaveProperty("userId");
     });
 
-    it("includes args in the error payload so we can replay the failing call", async () => {
+    it("does not replay private arguments in an error payload", async () => {
       mocks.listTasks.mockRejectedValue(new Error("boom"));
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
         name: "getNextAction",
-        arguments: { buybackRate: 500 },
+        arguments: { body: "private document text", buybackRate: 500 },
       });
 
       const body = parseToolBody(result);
-      expect(body.args).toEqual({ buybackRate: 500 });
+      expect(body).not.toHaveProperty("args");
+      expect(JSON.stringify(body)).not.toContain("private document text");
     });
   });
 

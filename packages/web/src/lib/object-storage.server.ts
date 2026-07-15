@@ -248,6 +248,24 @@ export async function presignPrivateUpload(input: PresignUploadInput): Promise<{
   return { expiresInSeconds: PRESIGN_EXPIRY_SECONDS, uploadUrl };
 }
 
+export async function uploadPrivateObject({
+  body,
+  contentLength,
+  contentType,
+  key,
+}: UploadObjectInput): Promise<void> {
+  const { client, config } = getPrivateClient();
+  await client.send(
+    new PutObjectCommand({
+      Body: body,
+      Bucket: config.bucket,
+      ContentLength: contentLength ?? body.byteLength,
+      ContentType: contentType,
+      Key: key,
+    }),
+  );
+}
+
 export async function headPrivateObject(
   key: string,
 ): Promise<PrivateObjectMetadata> {

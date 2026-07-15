@@ -91,7 +91,7 @@ export async function createPendingTaskCommentAttachment(input: {
   );
   const now = new Date();
   await prisma.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext('task-comment-attachment-quota'), hashtext(${input.userId}))`;
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('task-comment-attachment-quota'), hashtext(${input.userId}))`;
     const where = {
       commentId: null,
       deletedAt: null,

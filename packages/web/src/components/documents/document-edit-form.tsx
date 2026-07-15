@@ -9,16 +9,17 @@ import { API_ROUTES } from "@/lib/api-routes";
 
 interface DocumentEditFormProps {
   documentId: string;
+  expectedVersion: number;
   initialTitle: string;
   initialBody: string;
 }
 
 /**
- * Creator-only editor. Saving writes a NEW version row server-side; the old
- * version stays readable in the version list.
+ * Saving appends an immutable revision. The stable document ID does not change.
  */
 export function DocumentEditForm({
   documentId,
+  expectedVersion,
   initialTitle,
   initialBody,
 }: DocumentEditFormProps) {
@@ -40,13 +41,12 @@ export function DocumentEditForm({
         setError(null);
         setIsSaving(true);
         void fetch(API_ROUTES.documents.document(documentId), {
-          body: JSON.stringify({ title, body }),
+          body: JSON.stringify({ title, body, expectedVersion }),
           headers: { "Content-Type": "application/json" },
           method: "POST",
         })
           .then(async (response) => {
             const payload = (await response.json().catch(() => null)) as {
-              document?: { id?: string };
               error?: string;
             } | null;
 
@@ -54,10 +54,6 @@ export function DocumentEditForm({
               throw new Error(payload?.error ?? "Save failed.");
             }
 
-            const newId = payload?.document?.id;
-            if (newId && newId !== documentId) {
-              router.push(`/documents/${newId}`);
-            }
             router.refresh();
           })
           .catch((saveError) => {
@@ -68,30 +64,30 @@ export function DocumentEditForm({
           .finally(() => setIsSaving(false));
       }}
     >
-      <label className="block text-sm font-black uppercase tracking-[0.12em]">
+      <label className="block text-sm font-bold">
         Title
         <Input
-          className="mt-1"
+          className="mt-1 rounded-none shadow-none"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
       </label>
-      <label className="block text-sm font-black uppercase tracking-[0.12em]">
+      <label className="block text-sm font-bold">
         Body
         <Textarea
-          className="mt-1 min-h-64 font-mono text-sm"
+          className="mt-1 min-h-64 rounded-none font-mono text-sm shadow-none"
           value={body}
           onChange={(event) => setBody(event.target.value)}
         />
       </label>
-      <Button className="font-black uppercase" disabled={isSaving} type="submit">
-        {isSaving ? "Saving..." : "Save."}
+      <Button className="shadow-none" disabled={isSaving} type="submit">
+        {isSaving ? "Saving" : "Save"}
       </Button>
-      <p className="text-sm font-bold text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         Saving makes a new version. Old versions stay.
       </p>
       {error ? (
-        <p className="text-sm font-bold text-foreground">{error}</p>
+        <p className="text-sm font-medium text-foreground">{error}</p>
       ) : null}
     </form>
   );

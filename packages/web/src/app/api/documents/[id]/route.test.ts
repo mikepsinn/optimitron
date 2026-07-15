@@ -11,8 +11,10 @@ vi.mock("@/lib/auth-utils", () => ({
 }));
 
 vi.mock("@/lib/documents.server", () => ({
+  DOCUMENT_CONFLICT_MESSAGE:
+    "Document changed since it was loaded. Refresh and try again.",
   DOCUMENT_EMPTY_PATCH_MESSAGE:
-    "At least one of title, body, or visibility must be provided",
+    "At least one editable document field must be provided",
   DOCUMENT_NOT_FOUND_MESSAGE: "Document not found",
   DOCUMENT_PRIVATE_TASK_MESSAGE:
     "Cannot make a document attached to a private task public",
@@ -41,7 +43,8 @@ describe("GET /api/documents/[id]", () => {
 
     expect(response.status).toBe(404);
     await expect(response.json()).resolves.toEqual({
-      error: "Document not found.",
+      code: "CONTENT_NOT_FOUND",
+      error: "Content not found.",
     });
   });
 
@@ -101,7 +104,7 @@ describe("POST /api/documents/[id]", () => {
     mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
     mocks.updateDocument.mockRejectedValue(
       new Error(
-        "At least one of title, body, or visibility must be provided",
+        "At least one editable document field must be provided",
       ),
     );
 
@@ -131,5 +134,22 @@ describe("POST /api/documents/[id]", () => {
     );
 
     expect(response.status).toBe(400);
+  });
+
+  it("maps an optimistic concurrency conflict to 409", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    mocks.updateDocument.mockRejectedValue(
+      new Error("Document changed since it was loaded. Refresh and try again."),
+    );
+
+    const response = await POST(
+      new Request("http://localhost/api/documents/doc_1", {
+        method: "POST",
+        body: JSON.stringify({ body: "new", expectedVersion: 2 }),
+      }),
+      { params: Promise.resolve({ id: "doc_1" }) },
+    );
+
+    expect(response.status).toBe(409);
   });
 });

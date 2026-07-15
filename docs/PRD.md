@@ -178,12 +178,17 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
 
 ### 3.7 External sources (OPT-INTG-01, OPT-INTG-02)
 
-- Notion pages and Google Calendar events import as task/commitment
-  proposals with stable source keys, hash-based change detection, and
-  duplicate collapsing. The normalization layer exists and is tested against
-  realistic fixtures; the API connections do not exist yet. These are
-  migration and invitation sources. Optimitron owns the resulting planning
-  state and projects it into its own task and calendar views.
+- Notion pages and databases import through lossless normalized bundles with
+  workspace-scoped source keys, hash-based change detection, source artifacts,
+  private-file copying, and duplicate collapsing. Documents, bounded table
+  collections, and migration tooling exist; the live Notion API connection
+  does not. Imported formulas and rollups retain their definitions and current
+  values but do not execute in Optimitron.
+- Google Calendar events import as fixed commitments for the execution
+  planner. The normalization seam exists; the live API connection does not.
+  These systems are migration and invitation sources. Optimitron owns the
+  resulting planning state and projects it into its own task and calendar
+  views.
 
 ---
 
@@ -329,9 +334,11 @@ do not ship.
 
 ## 10. Non-goals
 
-- **Not rebuilding Notion or Google Calendar** while import seams suffice
-  (OPT-INTG-01/02). Build capture-and-rank first; replace incumbents only
-  when the queue proves it must.
+- **Not cloning Notion feature-for-feature.** Optimitron replaces the used
+  workflows with canonical tasks, documents, bounded table collections, and
+  its own calendar. Generic formula execution, real-time block collaboration,
+  and generic automation are added only when a migrated workflow cannot be
+  represented by typed task/planner/TaskTrigger behavior.
 - **Not a social network.** People and organization pages exist for trust and
   coordination, not engagement farming.
 - **Not mixing treasury mechanisms** (§9.2) — separation is enforced at

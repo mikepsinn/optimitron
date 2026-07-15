@@ -545,6 +545,12 @@ importers:
       '@worldcoin/idkit':
         specifier: ^4.0.9
         version: 4.0.11(react-dom@18.3.1)(react@18.3.1)
+      ag-grid-community:
+        specifier: 35.3.1
+        version: 35.3.1
+      ag-grid-react:
+        specifier: 35.3.1
+        version: 35.3.1(react-dom@18.3.1)(react@18.3.1)
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.3
@@ -674,6 +680,9 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.25.76
+      zod-to-json-schema:
+        specifier: 3.25.2
+        version: 3.25.2(zod@3.25.76)
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.1
@@ -11399,6 +11408,28 @@ packages:
 
   /aes-js@4.0.0-beta.5:
     resolution: {integrity: sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==}
+
+  /ag-charts-types@13.3.1:
+    resolution: {integrity: sha512-m37eUe4g//swvGh8PWMlYQH3gknjSsPeW4sQwBhM3/auGAHmN0wvxEWlrdAn98pBPg4HoKbtOy+yf7gPCYsnvQ==}
+    dev: false
+
+  /ag-grid-community@35.3.1:
+    resolution: {integrity: sha512-Wmkd/xYTCbAApcZZO74nBggZCnd/oX753NY3MJ4zYARVpfBHRWWhIBJ2sFTFKbDWwHZOWsx3YT9+kkyeuyLKlw==}
+    dependencies:
+      ag-charts-types: 13.3.1
+    dev: false
+
+  /ag-grid-react@35.3.1(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-M3ljCQyGL+qzoyPN0BYrn4eAlgZr6Ailcjd8+a7OcneSiVsMNSJb/gTkIMUwmYivkPLIA8EEJ4hTxxKSaya6mQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    dependencies:
+      ag-grid-community: 35.3.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
 
   /agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
