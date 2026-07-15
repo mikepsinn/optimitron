@@ -1,10 +1,29 @@
+import type { ZodTypeAny } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import {
+  collectionFieldInputSchema,
+  collectionFilterSchema,
+  collectionRecordBatchOperationSchema,
+  collectionRelationInputSchema,
+  collectionSortSchema,
+} from "@/lib/collections.server";
 import {
   ALL_SCOPES,
   MCP_SCOPE_DESCRIPTIONS,
   scopeToWire,
 } from "@/lib/mcp-scopes";
+import { notionImportBundleSchema } from "@/lib/notion-import.schema";
 
 type JsonSchema = Record<string, unknown>;
+
+function openApiSchema(schema: ZodTypeAny): JsonSchema {
+  const converted = zodToJsonSchema(schema, {
+    $refStrategy: "none",
+    target: "openApi3",
+  }) as JsonSchema;
+  delete converted.$schema;
+  return converted;
+}
 
 const errorResponse = {
   description: "Request failed",
@@ -29,6 +48,15 @@ const unauthorizedResponse = {
     },
   },
 } as const;
+
+const jsonObjectResponse = (description: string) => ({
+  description,
+  content: {
+    "application/json": {
+      schema: { type: "object", additionalProperties: true },
+    },
+  },
+});
 
 const successEnvelope = (schema: JsonSchema) => ({
   type: "object",
@@ -90,9 +118,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
     openapi: "3.1.0",
     info: {
       title: "Earth Optimization API",
-      version: "2026-06-25",
+      version: "2026-07-14",
       description:
-        "Earth Optimization Services' OAuth, MCP, task, referral, voting, people, and organization endpoints for apps and websites that integrate with Optimitron.",
+        "Earth Optimization Services' OAuth, MCP, task, document, collection, referral, voting, people, and organization endpoints for apps and websites that integrate with Optimitron.",
       license: {
         name: "MIT",
         url: "https://opensource.org/licenses/MIT",
@@ -103,6 +131,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
       { name: "OAuth" },
       { name: "MCP" },
       { name: "Tasks" },
+      { name: "Documents" },
+      { name: "Collections" },
+      { name: "Content" },
       { name: "Referrals" },
       { name: "Referendums" },
       { name: "People" },
@@ -150,7 +181,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
             required: true,
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/OAuthClientRegistration" },
+                schema: {
+                  $ref: "#/components/schemas/OAuthClientRegistration",
+                },
               },
             },
           },
@@ -350,7 +383,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
               description: "Created task",
               content: {
                 "application/json": {
-                  schema: successEnvelope({ $ref: "#/components/schemas/Task" }),
+                  schema: successEnvelope({
+                    $ref: "#/components/schemas/Task",
+                  }),
                 },
               },
             },
@@ -399,7 +434,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
               description: "Updated task",
               content: {
                 "application/json": {
-                  schema: successEnvelope({ $ref: "#/components/schemas/Task" }),
+                  schema: successEnvelope({
+                    $ref: "#/components/schemas/Task",
+                  }),
                 },
               },
             },
@@ -555,6 +592,510 @@ export function getDeveloperOpenApiDocument(origin: string) {
           },
         },
       },
+      "/api/documents": {
+        get: {
+          tags: ["Documents"],
+          summary: "List documents the caller can view",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/limit" },
+            {
+              name: "taskId",
+              in: "query",
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Authorized document list"),
+            "401": unauthorizedResponse,
+          },
+        },
+        post: {
+          tags: ["Documents"],
+          summary: "Create a private Markdown document",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/idempotencyKey" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/CreateDocumentRequest" },
+              },
+            },
+          },
+          responses: {
+            "201": jsonObjectResponse("Created document"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/documents/{id}": {
+        get: {
+          tags: ["Documents"],
+          summary: "Get an authorized document revision",
+          security: optionalTaskReadSecurity,
+          parameters: [{ $ref: "#/components/parameters/documentId" }],
+          responses: {
+            "200": jsonObjectResponse("Document and revision history"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Documents"],
+          summary: "Append a document revision with optimistic concurrency",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/documentId" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/UpdateDocumentRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Updated document"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+            "409": errorResponse,
+          },
+        },
+      },
+      "/api/collections": {
+        get: {
+          tags: ["Collections"],
+          summary: "List collections the caller can view",
+          security: optionalTaskReadSecurity,
+          parameters: [{ $ref: "#/components/parameters/limit" }],
+          responses: {
+            "200": jsonObjectResponse("Authorized collection list"),
+            "401": unauthorizedResponse,
+          },
+        },
+        post: {
+          tags: ["Collections"],
+          summary: "Create a collection with stable fields",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/idempotencyKey" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/CreateCollectionRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            "201": jsonObjectResponse("Created collection"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/collections/{id}": {
+        get: {
+          tags: ["Collections"],
+          summary: "Get an authorized collection schema and saved views",
+          security: optionalTaskReadSecurity,
+          parameters: [{ $ref: "#/components/parameters/collectionId" }],
+          responses: {
+            "200": jsonObjectResponse("Collection schema and permission"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Collections"],
+          summary: "Update a collection with optimistic concurrency",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/collectionId" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/UpdateCollectionRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Updated collection"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+            "409": errorResponse,
+          },
+        },
+      },
+      "/api/collections/{id}/records": {
+        get: {
+          tags: ["Collections"],
+          summary: "Filter, sort, and page through authorized records",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/collectionId" },
+            { $ref: "#/components/parameters/cursor" },
+            { $ref: "#/components/parameters/limit" },
+            {
+              name: "q",
+              in: "query",
+              schema: { type: "string", maxLength: 500 },
+            },
+            {
+              name: "filters",
+              in: "query",
+              description: "JSON-encoded CollectionFilter array",
+              schema: { type: "string" },
+            },
+            {
+              name: "sorts",
+              in: "query",
+              description: "JSON-encoded CollectionSort array",
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Collection records"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Collections"],
+          summary: "Create an idempotent collection record",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/collectionId" },
+            { $ref: "#/components/parameters/idempotencyKey" },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/CreateCollectionRecordRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            "201": jsonObjectResponse("Created record"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/collections/{id}/records/{recordId}": {
+        get: {
+          tags: ["Collections"],
+          summary: "Get an authorized collection record",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/collectionId" },
+            { $ref: "#/components/parameters/recordId" },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Collection record"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Collections"],
+          summary: "Update a record with optimistic concurrency",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/collectionId" },
+            { $ref: "#/components/parameters/recordId" },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/UpdateCollectionRecordRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Updated record"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+            "409": errorResponse,
+          },
+        },
+      },
+      "/api/collections/{id}/records/batch": {
+        post: {
+          tags: ["Collections"],
+          summary: "Atomically create or update collection records",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/collectionId" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["operations"],
+                  properties: {
+                    operations: {
+                      type: "array",
+                      minItems: 1,
+                      maxItems: 100,
+                      items: {
+                        $ref: "#/components/schemas/CollectionRecordBatchOperation",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Applied record batch"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+            "409": errorResponse,
+          },
+        },
+      },
+      "/api/collections/{id}/views": {
+        post: {
+          tags: ["Collections"],
+          summary: "Create or update a saved table view",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/collectionId" }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/CollectionViewRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Saved collection view"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/content/search": {
+        get: {
+          tags: ["Content"],
+          summary: "Search only documents and records the caller may view",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            {
+              name: "q",
+              in: "query",
+              required: true,
+              schema: { type: "string", minLength: 2, maxLength: 500 },
+            },
+            { $ref: "#/components/parameters/limit" },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Authorized search results"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/content/export": {
+        get: {
+          tags: ["Content"],
+          summary: "Export an authorized document or collection page",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            {
+              name: "resourceType",
+              in: "query",
+              required: true,
+              schema: { enum: ["document", "collection"] },
+            },
+            {
+              name: "resourceId",
+              in: "query",
+              required: true,
+              schema: { type: "string" },
+            },
+            { $ref: "#/components/parameters/cursor" },
+            { $ref: "#/components/parameters/limit" },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Authorized content export"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+      },
+      "/api/content/access": {
+        get: {
+          tags: ["Content"],
+          summary: "List direct grants for content the caller owns",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [
+            { $ref: "#/components/parameters/resourceType" },
+            { $ref: "#/components/parameters/resourceId" },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Content access grants"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Content"],
+          summary: "Grant content access to a user or organization",
+          security: taskPersonalOrAdminSecurity,
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ContentGrantRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Updated content grant"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        delete: {
+          tags: ["Content"],
+          summary: "Revoke a direct content access grant",
+          security: taskPersonalOrAdminSecurity,
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ContentRevokeRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Revoked content grant"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+      },
+      "/api/content/attachments": {
+        get: {
+          tags: ["Content"],
+          summary: "List authorized private files",
+          security: optionalTaskReadSecurity,
+          parameters: [
+            {
+              name: "documentId",
+              in: "query",
+              schema: { type: "string" },
+            },
+            {
+              name: "collectionRecordId",
+              in: "query",
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": jsonObjectResponse("Private file metadata"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        post: {
+          tags: ["Content"],
+          summary: "Prepare an authorized private file upload",
+          security: taskPersonalOrAdminSecurity,
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/CreateContentAttachmentRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            "201": jsonObjectResponse("Short-lived private upload URL"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+      },
+      "/api/content/attachments/{attachmentId}": {
+        get: {
+          tags: ["Content"],
+          summary: "Get a short-lived authorized private download URL",
+          security: optionalTaskReadSecurity,
+          parameters: [{ $ref: "#/components/parameters/attachmentId" }],
+          responses: {
+            "200": jsonObjectResponse("Short-lived private download URL"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+        delete: {
+          tags: ["Content"],
+          summary: "Delete an authorized private file",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/attachmentId" }],
+          responses: {
+            "200": jsonObjectResponse("Deleted private file"),
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+      },
+      "/api/content/attachments/{attachmentId}/complete": {
+        post: {
+          tags: ["Content"],
+          summary: "Verify and finish a private file upload",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/attachmentId" }],
+          responses: {
+            "200": jsonObjectResponse("Completed private file upload"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+            "404": errorResponse,
+          },
+        },
+      },
+      "/api/content/imports/notion": {
+        post: {
+          tags: ["Content"],
+          summary: "Dry-run or apply an idempotent Notion export bundle",
+          security: taskPersonalOrAdminSecurity,
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/NotionImportRequest" },
+              },
+            },
+          },
+          responses: {
+            "200": jsonObjectResponse("Per-item import review"),
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
       "/api/referral-invitations": {
         get: {
           tags: ["Referrals"],
@@ -580,7 +1121,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
             required: true,
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/CreateReferralInvitationRequest" },
+                schema: {
+                  $ref: "#/components/schemas/CreateReferralInvitationRequest",
+                },
               },
             },
           },
@@ -606,7 +1149,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
             required: true,
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/UpdateReferralInvitationRequest" },
+                schema: {
+                  $ref: "#/components/schemas/UpdateReferralInvitationRequest",
+                },
               },
             },
           },
@@ -745,13 +1290,16 @@ export function getDeveloperOpenApiDocument(origin: string) {
         },
         post: {
           tags: ["Organizations"],
-          summary: "Create an approved organization owned by the authenticated user",
+          summary:
+            "Create an approved organization owned by the authenticated user",
           security: earthdataWriteOrTasksAdminSecurity,
           requestBody: {
             required: true,
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/CreateOrganizationRequest" },
+                schema: {
+                  $ref: "#/components/schemas/CreateOrganizationRequest",
+                },
               },
             },
           },
@@ -798,7 +1346,9 @@ export function getDeveloperOpenApiDocument(origin: string) {
             required: true,
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/UpdateOrganizationRequest" },
+                schema: {
+                  $ref: "#/components/schemas/UpdateOrganizationRequest",
+                },
               },
             },
           },
@@ -833,6 +1383,35 @@ export function getDeveloperOpenApiDocument(origin: string) {
         },
       },
       parameters: {
+        cursor: {
+          name: "cursor",
+          in: "query",
+          schema: { type: "string" },
+        },
+        limit: {
+          name: "limit",
+          in: "query",
+          schema: { type: "integer", minimum: 1, maximum: 500 },
+        },
+        idempotencyKey: {
+          name: "Idempotency-Key",
+          in: "header",
+          description:
+            "Preferred idempotency key location. The JSON body may carry the same field.",
+          schema: { type: "string", minLength: 1, maxLength: 500 },
+        },
+        resourceType: {
+          name: "resourceType",
+          in: "query",
+          required: true,
+          schema: { enum: ["document", "collection"] },
+        },
+        resourceId: {
+          name: "resourceId",
+          in: "query",
+          required: true,
+          schema: { type: "string" },
+        },
         taskId: {
           name: "id",
           in: "path",
@@ -841,6 +1420,30 @@ export function getDeveloperOpenApiDocument(origin: string) {
         },
         organizationId: {
           name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+        },
+        documentId: {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+        },
+        collectionId: {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+        },
+        recordId: {
+          name: "recordId",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+        },
+        attachmentId: {
+          name: "attachmentId",
           in: "path",
           required: true,
           schema: { type: "string" },
@@ -890,6 +1493,213 @@ export function getDeveloperOpenApiDocument(origin: string) {
           type: "object",
           properties: { error: { type: "string" } },
           required: ["error"],
+        },
+        ContentResource: {
+          type: "object",
+          additionalProperties: false,
+          required: ["type", "id"],
+          properties: {
+            type: { enum: ["document", "collection"] },
+            id: { type: "string", minLength: 1 },
+          },
+        },
+        ContentGrantee: {
+          oneOf: [
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["type", "id"],
+              properties: {
+                type: { const: "user" },
+                id: { type: "string", minLength: 1 },
+              },
+            },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["type", "email"],
+              properties: {
+                type: { const: "user" },
+                email: { type: "string", format: "email" },
+              },
+            },
+            {
+              type: "object",
+              additionalProperties: false,
+              required: ["type", "id"],
+              properties: {
+                type: { const: "organization" },
+                id: { type: "string", minLength: 1 },
+              },
+            },
+          ],
+        },
+        ContentGrantRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["accessLevel", "grantee", "resource"],
+          properties: {
+            accessLevel: {
+              enum: ["VIEW", "COMMENT", "EDIT_CONTENT", "EDIT", "FULL_ACCESS"],
+            },
+            grantee: { $ref: "#/components/schemas/ContentGrantee" },
+            resource: { $ref: "#/components/schemas/ContentResource" },
+          },
+        },
+        ContentRevokeRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["grantee", "resource"],
+          properties: {
+            grantee: { $ref: "#/components/schemas/ContentGrantee" },
+            resource: { $ref: "#/components/schemas/ContentResource" },
+          },
+        },
+        CreateDocumentRequest: {
+          type: "object",
+          required: ["title"],
+          properties: {
+            title: { type: "string", minLength: 1, maxLength: 300 },
+            body: { type: "string", maxLength: 500000 },
+            visibility: { enum: ["PUBLIC", "PRIVATE"] },
+            jurisdictionId: { type: ["string", "null"] },
+            organizationId: { type: ["string", "null"] },
+            parentDocumentId: { type: ["string", "null"] },
+            taskId: { type: ["string", "null"] },
+            idempotencyKey: { type: ["string", "null"] },
+          },
+        },
+        UpdateDocumentRequest: {
+          type: "object",
+          required: ["expectedVersion"],
+          properties: {
+            expectedVersion: { type: "integer", minimum: 1 },
+            title: { type: "string", minLength: 1, maxLength: 300 },
+            body: { type: "string", maxLength: 500000 },
+            visibility: { enum: ["PUBLIC", "PRIVATE"] },
+            organizationId: { type: ["string", "null"] },
+            parentDocumentId: { type: ["string", "null"] },
+            taskId: { type: ["string", "null"] },
+          },
+        },
+        CollectionField: openApiSchema(collectionFieldInputSchema),
+        CollectionRelation: openApiSchema(collectionRelationInputSchema),
+        CollectionFilter: openApiSchema(collectionFilterSchema),
+        CollectionSort: openApiSchema(collectionSortSchema),
+        CreateCollectionRequest: {
+          type: "object",
+          required: ["name"],
+          properties: {
+            name: { type: "string", minLength: 1, maxLength: 200 },
+            description: { type: ["string", "null"], maxLength: 20000 },
+            fields: {
+              type: "array",
+              maxItems: 200,
+              items: { $ref: "#/components/schemas/CollectionField" },
+            },
+            visibility: { enum: ["PUBLIC", "PRIVATE"] },
+            jurisdictionId: { type: ["string", "null"] },
+            organizationId: { type: ["string", "null"] },
+            idempotencyKey: { type: ["string", "null"] },
+          },
+        },
+        UpdateCollectionRequest: {
+          type: "object",
+          required: ["expectedVersion"],
+          properties: {
+            expectedVersion: { type: "integer", minimum: 1 },
+            name: { type: ["string", "null"], maxLength: 200 },
+            description: { type: ["string", "null"], maxLength: 20000 },
+            fields: {
+              type: "array",
+              maxItems: 200,
+              items: { $ref: "#/components/schemas/CollectionField" },
+            },
+            visibility: { enum: ["PUBLIC", "PRIVATE", null] },
+            organizationId: { type: ["string", "null"] },
+          },
+        },
+        CreateCollectionRecordRequest: {
+          type: "object",
+          required: ["values"],
+          properties: {
+            values: { type: "object", additionalProperties: true },
+            relations: {
+              type: "array",
+              maxItems: 2000,
+              items: { $ref: "#/components/schemas/CollectionRelation" },
+            },
+            documentId: { type: ["string", "null"] },
+            organizationId: { type: ["string", "null"] },
+            personId: { type: ["string", "null"] },
+            taskId: { type: ["string", "null"] },
+            idempotencyKey: { type: ["string", "null"] },
+          },
+        },
+        UpdateCollectionRecordRequest: {
+          type: "object",
+          required: ["expectedVersion"],
+          properties: {
+            expectedVersion: { type: "integer", minimum: 1 },
+            values: { type: "object", additionalProperties: true },
+            relations: {
+              type: "array",
+              maxItems: 2000,
+              items: { $ref: "#/components/schemas/CollectionRelation" },
+            },
+            documentId: { type: ["string", "null"] },
+            organizationId: { type: ["string", "null"] },
+            personId: { type: ["string", "null"] },
+            taskId: { type: ["string", "null"] },
+          },
+        },
+        CollectionRecordBatchOperation: openApiSchema(
+          collectionRecordBatchOperationSchema,
+        ),
+        CollectionViewRequest: {
+          type: "object",
+          required: ["name"],
+          properties: {
+            name: { type: "string", minLength: 1, maxLength: 200 },
+            viewId: { type: "string" },
+            expectedVersion: { type: "integer", minimum: 1 },
+            isDefault: { type: "boolean" },
+            filters: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CollectionFilter" },
+            },
+            sorts: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CollectionSort" },
+            },
+            visibleFieldIds: { type: "array", items: { type: "string" } },
+          },
+        },
+        CreateContentAttachmentRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["checksumSha256", "fileName", "sizeBytes"],
+          properties: {
+            checksumSha256: {
+              type: "string",
+              pattern: "^[A-Za-z0-9+/]{43}=$",
+            },
+            collectionRecordId: { type: ["string", "null"] },
+            documentId: { type: ["string", "null"] },
+            contentType: { type: "string", maxLength: 160 },
+            fileName: { type: "string", minLength: 1, maxLength: 512 },
+            sizeBytes: { type: "integer", minimum: 1 },
+          },
+        },
+        NotionImportBundle: openApiSchema(notionImportBundleSchema),
+        NotionImportRequest: {
+          type: "object",
+          additionalProperties: false,
+          required: ["bundle"],
+          properties: {
+            dryRun: { type: "boolean", default: true },
+            bundle: { $ref: "#/components/schemas/NotionImportBundle" },
+          },
         },
         OAuthClientRegistration: {
           type: "object",

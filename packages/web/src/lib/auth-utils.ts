@@ -38,21 +38,34 @@ async function getOAuthIdentity(
   const payload = await verifyMcpAccessToken(token).catch(() => {
     throw new Error("Unauthorized");
   });
-  if (!hasAnyScope(payload.scopes, requiredScopes)) {
+  const [user, grant] = await Promise.all([
+    prisma.user.findFirst({
+      where: { id: payload.sub, deletedAt: null },
+      select: { email: true, id: true },
+    }),
+    prisma.oAuthGrant.findFirst({
+      where: {
+        active: true,
+        clientId: payload.clientId,
+        revokedAt: null,
+        userId: payload.sub,
+      },
+      select: { scopes: true },
+    }),
+  ]);
+  if (!user || !grant) {
     throw new Error("Unauthorized");
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: payload.sub },
-    select: { email: true, id: true },
-  });
-  if (!user) {
+  const activeScopes = payload.scopes.filter((scope) =>
+    grant.scopes.includes(scope),
+  );
+  if (!hasAnyScope(activeScopes, requiredScopes)) {
     throw new Error("Unauthorized");
   }
 
   return {
     clientId: payload.clientId,
-    scopes: payload.scopes,
+    scopes: activeScopes,
     userEmail: user.email,
     userId: user.id,
   };
@@ -65,8 +78,8 @@ export async function getCurrentUser(
   const oauth = await getOAuthIdentity(request, requiredScopes);
   const userId = oauth?.userId;
   if (userId) {
-    return prisma.user.findUnique({
-      where: { id: userId },
+    return prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
       include: {
         person: {
           select: {
@@ -90,8 +103,8 @@ export async function getCurrentUser(
   // Include the linked Person so display reads (handle / displayName /
   // image) work directly off the returned object. Returning the full User
   // row preserves account-level field access for callers that need it.
-  return prisma.user.findUnique({
-    where: { id: sessionUserId },
+  return prisma.user.findFirst({
+    where: { id: sessionUserId, deletedAt: null },
     include: {
       person: {
         select: {
@@ -121,8 +134,11 @@ export async function requireAuth(
     throw new Error("Unauthorized");
   }
 
-  return {
-    userId,
-    userEmail: session.user.email,
-  };
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    select: { email: true, id: true },
+  });
+  if (!user) throw new Error("Unauthorized");
+
+  return { userId: user.id, userEmail: user.email };
 }

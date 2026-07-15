@@ -79,6 +79,18 @@ import {
   handleDocumentToolCall,
   isDocumentToolName,
 } from "./mcp-tools/documents";
+import {
+  COLLECTION_TOOL_DEFINITIONS,
+  COLLECTION_TOOL_SCOPES,
+  handleCollectionToolCall,
+  isCollectionToolName,
+} from "./mcp-tools/collections";
+import {
+  CONTENT_TOOL_DEFINITIONS,
+  CONTENT_TOOL_SCOPES,
+  handleContentToolCall,
+  isContentToolName,
+} from "./mcp-tools/content";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
@@ -121,6 +133,22 @@ const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
 const RECORD_MEASUREMENT_TOOL_NAME = "recordMeasurement" as const;
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
+  // Explicitly public, read-only tools. Missing entries are a registry error.
+  getNextTask: [],
+  evaluateTaskEconomics: [],
+  listTasks: [],
+  getTask: [],
+  listOrganizations: [],
+  getOrganizationTasks: [],
+  listPeople: [],
+  getPersonTasks: [],
+  getBlockers: [],
+  listReferendums: [],
+  listSitePages: [],
+  getPageContent: [],
+  searchManual: [],
+  askWishonia: [],
+  searchTasks: [],
   createOrganization: [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ADMIN],
   [UPLOAD_IMAGE_FROM_URL_TOOL_NAME]: [
     McpScope.EARTHDATA_WRITE,
@@ -230,7 +258,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   githubApi: [McpScope.GITHUB],
   ...TASK_TEMPLATE_TOOL_SCOPES,
   ...TASK_TRIGGER_TOOL_SCOPES,
+  ...COLLECTION_TOOL_SCOPES,
   ...DOCUMENT_TOOL_SCOPES,
+  ...CONTENT_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -281,7 +311,8 @@ function hasScope(
   // passes the scopes granted at OAuth consent time.
   if (!grantedScopes) return false;
   const required = TOOL_SCOPES[toolName];
-  if (!required) return true;
+  if (!required) return false;
+  if (required.length === 0) return true;
   return required.some((s) => grantedScopes.includes(s));
 }
 
@@ -7623,8 +7654,43 @@ Posting a comment automatically sends comment notifications to task recipients a
   },
   ...TASK_TEMPLATE_TOOL_DEFINITIONS,
   ...TASK_TRIGGER_TOOL_DEFINITIONS,
+  ...COLLECTION_TOOL_DEFINITIONS,
   ...DOCUMENT_TOOL_DEFINITIONS,
+  ...CONTENT_TOOL_DEFINITIONS,
 ];
+
+function assertToolRegistrationIntegrity(): void {
+  const definitionNames = new Set(
+    TASK_TOOL_DEFINITIONS.map((tool) => tool.name),
+  );
+  const duplicateDefinitions = TASK_TOOL_DEFINITIONS.filter(
+    (tool, index) =>
+      TASK_TOOL_DEFINITIONS.findIndex(
+        (candidate) => candidate.name === tool.name,
+      ) !== index,
+  ).map((tool) => tool.name);
+  const definitionsWithoutScopes = [...definitionNames].filter(
+    (name) => !TOOL_SCOPES[name],
+  );
+  const scopesWithoutDefinitions = Object.keys(TOOL_SCOPES).filter(
+    (name) => !definitionNames.has(name),
+  );
+  if (
+    duplicateDefinitions.length ||
+    definitionsWithoutScopes.length ||
+    scopesWithoutDefinitions.length
+  ) {
+    throw new Error(
+      `Invalid MCP tool registry: ${JSON.stringify({
+        definitionsWithoutScopes,
+        duplicateDefinitions,
+        scopesWithoutDefinitions,
+      })}`,
+    );
+  }
+}
+
+assertToolRegistrationIntegrity();
 
 // ---------------------------------------------------------------------------
 // Factory
@@ -7703,6 +7769,20 @@ export function createMcpServer(
         }
         if (isDocumentToolName(name)) {
           return handleDocumentToolCall({
+            args: a,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isCollectionToolName(name)) {
+          return handleCollectionToolCall({
+            args: a,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isContentToolName(name)) {
+          return handleContentToolCall({
             args: a,
             name,
             userId: userId ?? null,
@@ -13666,11 +13746,6 @@ export function createMcpServer(
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        const stack = error instanceof Error ? error.stack : undefined;
-        const cause =
-          error instanceof Error && error.cause instanceof Error
-            ? error.cause.message
-            : undefined;
         // Server-side: full stack ends up in Vercel/runtime logs.
         console.error(`[mcp] tool "${name}" threw:`, error);
         // Sentry: send-fire-and-forget so we don't block the response. The
@@ -13684,15 +13759,14 @@ export function createMcpServer(
               scope.setTag("mcp.tool", name);
               scope.setTag("mcp.surface", "tool_dispatch");
               if (userId) scope.setUser({ id: userId });
-              scope.setContext("mcpToolArgs", a as Record<string, unknown>);
+              scope.setContext("mcpToolInput", mcpToolInputSummary(a));
               Sentry.captureException(error);
             });
           })
           .catch(() => {
             // Sentry unavailable (CI / unit tests / startup race) — already logged above.
           });
-        // Wire-side: structured payload so the LLM (and humans reading the SSE
-        // stream) get the actual failure, not a generic "execution error".
+        // Wire responses never replay private arguments, actor IDs, or stacks.
         return {
           content: [
             {
@@ -13702,12 +13776,6 @@ export function createMcpServer(
                   error: "tool_execution_failed",
                   tool: name,
                   message,
-                  cause,
-                  stack: stack
-                    ? stack.split("\n").slice(0, 10).join("\n")
-                    : undefined,
-                  args: a,
-                  userId: userId ?? null,
                 },
                 null,
                 2,

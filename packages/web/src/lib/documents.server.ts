@@ -1,401 +1,729 @@
-/**
- * Document server helpers. A logical document is a chain of immutable version
- * rows sharing one documentKey; exactly one row per chain has isCurrent.
- * Updates never mutate a version — they append a new row and flip isCurrent
- * inside a transaction.
- *
- * Visibility: PRIVATE by default. Private documents are readable by their
- * creator (and admins) only, and 404 for everyone else — same principle as
- * private tasks. Visibility is enforced at the CHAIN level: every read gates
- * on the documentKey's current row, not the requested row's own (possibly
- * stale) visibility field, so an old PUBLIC version can't outlive a later
- * PRIVATE one and a downgrade can't be bypassed by linking an old version id.
- */
-
-import type { Prisma } from "@optimitron/db";
-import { DocumentVisibility } from "@optimitron/db/enums";
+import { Prisma } from "@optimitron/db";
+import { ContentAccessLevel, ContentVisibility } from "@optimitron/db/enums";
+import { sha256CanonicalJson } from "@optimitron/data/parameters";
+import {
+  assertDocumentAccess,
+  assertValidDocumentParent,
+  CONTENT_NOT_FOUND_MESSAGE,
+  hasContentAccess,
+  lockContentResources,
+  resolveDocumentAccess,
+  resolveDocumentAccessBatch,
+} from "@/lib/content-access.server";
+import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 
 export const DOCUMENT_NOT_FOUND_MESSAGE = "Document not found";
 export const DOCUMENT_EMPTY_PATCH_MESSAGE =
-  "At least one of title, body, or visibility must be provided";
+  "At least one editable document field must be provided";
 export const DOCUMENT_PRIVATE_TASK_MESSAGE =
   "Cannot make a document attached to a private task public";
+export const DOCUMENT_CONFLICT_MESSAGE =
+  "Document changed since it was loaded. Refresh and try again.";
+export const DOCUMENT_IDEMPOTENCY_CONFLICT_MESSAGE =
+  "Document idempotency key was already used for different content";
 
 const MAX_TITLE_LENGTH = 300;
 const MAX_BODY_LENGTH = 500_000;
+const MAX_LIST_LIMIT = 500;
+const DOCUMENT_LIST_BATCH_SIZE = 500;
+const MAX_DOCUMENT_LIST_SCAN = 5_000;
 
-export type DocumentRow = Prisma.DocumentGetPayload<Record<string, never>>;
+const documentInclude = {
+  currentRevision: true,
+} satisfies Prisma.DocumentInclude;
 
-/** Wire shape for API/MCP responses: dates as ISO strings. Omits
- * createdByUserId — raw User ids don't go to anonymous readers; route
- * creator attribution through Person if this ever needs a byline. */
-export interface DocumentDto {
+export type DocumentWithCurrentRevision = Prisma.DocumentGetPayload<{
+  include: typeof documentInclude;
+}>;
+
+export interface DocumentVersionSummary {
+  createdAt: string;
   id: string;
-  documentKey: string;
+  isCurrent: boolean;
+  title: string;
+  version: number;
+}
+
+export interface DocumentDto {
+  body: string;
+  createdAt: string;
+  effectivePermission: ContentAccessLevel;
+  id: string;
+  isCurrent: boolean;
   jurisdictionId: string | null;
+  organizationId: string | null;
+  parentDocumentId: string | null;
+  revisionId: string;
+  sourceKey: string | null;
+  sourceUrl: string | null;
   taskId: string | null;
   title: string;
-  body: string;
-  version: number;
-  isCurrent: boolean;
-  visibility: DocumentVisibility;
-  createdAt: string;
   updatedAt: string;
+  version: number;
+  visibility: ContentVisibility;
 }
 
 export interface DocumentSummary {
+  effectivePermission: ContentAccessLevel;
   id: string;
+  organizationId: string | null;
+  taskId: string | null;
   title: string;
+  updatedAt: string;
   version: number;
+  visibility: ContentVisibility;
 }
 
-export function toDocumentDto(row: DocumentRow): DocumentDto {
-  return {
-    id: row.id,
-    documentKey: row.documentKey,
-    jurisdictionId: row.jurisdictionId,
-    taskId: row.taskId,
-    title: row.title,
-    body: row.body,
-    version: row.version,
-    isCurrent: row.isCurrent,
-    visibility: row.visibility,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  };
+export interface DocumentView {
+  document: DocumentWithCurrentRevision;
+  effectivePermission: ContentAccessLevel;
+  revision: NonNullable<DocumentWithCurrentRevision["currentRevision"]>;
+  versions: DocumentVersionSummary[];
+  visibleParentDocumentId: string | null;
+  visibleTaskId: string | null;
+  viewerCanEdit: boolean;
 }
 
 function normalizeVisibility(
   value: unknown,
-  fallback: DocumentVisibility,
-): DocumentVisibility {
-  return value === DocumentVisibility.PUBLIC ||
-    value === DocumentVisibility.PRIVATE
+  fallback: ContentVisibility,
+): ContentVisibility {
+  return value === ContentVisibility.PUBLIC ||
+    value === ContentVisibility.PRIVATE
     ? value
     : fallback;
 }
 
 function validateTitleAndBody(title: string, body: string): void {
-  if (!title.trim()) {
-    throw new Error("Title cannot be empty");
-  }
+  if (!title.trim()) throw new Error("Title cannot be empty");
   if (title.length > MAX_TITLE_LENGTH) {
     throw new Error(`Title exceeds ${MAX_TITLE_LENGTH} character limit`);
   }
-  if (!body.trim()) {
-    throw new Error("Body cannot be empty");
-  }
+  if (!body.trim()) throw new Error("Body cannot be empty");
   if (body.length > MAX_BODY_LENGTH) {
     throw new Error(`Body exceeds ${MAX_BODY_LENGTH} character limit`);
   }
 }
 
-async function getViewerFlags(
-  userId?: string | null,
-): Promise<{ id: string; isAdmin: boolean } | null> {
-  if (!userId) return null;
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, isAdmin: true },
-  });
-  return user ? { id: user.id, isAdmin: user.isAdmin ?? false } : null;
+function normalizeOptional(value: string | null | undefined): string | null {
+  return value?.trim() || null;
 }
 
-/** Pure visibility rule: public docs are readable by anyone; private docs by
- * their creator or an admin. */
-export function canViewDocument(
-  document: Pick<DocumentRow, "visibility" | "createdByUserId">,
-  viewer: { id: string; isAdmin: boolean } | null,
-): boolean {
-  if (document.visibility === DocumentVisibility.PUBLIC) return true;
-  if (!viewer) return false;
-  return viewer.isAdmin || document.createdByUserId === viewer.id;
+function isUniqueConstraintError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  );
 }
 
-/** Public + creator/admin visibility OR, shared by both list helpers below. */
-async function buildDocumentVisibilityWhere(
-  userId?: string | null,
-): Promise<Prisma.DocumentWhereInput> {
-  const viewer = await getViewerFlags(userId);
-  const visibilityOr: Prisma.DocumentWhereInput[] = [
-    { visibility: DocumentVisibility.PUBLIC },
-  ];
-  if (viewer?.isAdmin) {
-    // Admins get the same private read access canViewDocument grants them.
-    visibilityOr.push({ visibility: DocumentVisibility.PRIVATE });
-  } else if (viewer) {
-    visibilityOr.push({ createdByUserId: viewer.id });
+function searchText(title: string, body: string): string {
+  return `${title}\n${body}`;
+}
+
+async function canViewerSeeTask(
+  taskId: string,
+  userId: string | null,
+): Promise<boolean> {
+  const { canUserViewTask } =
+    await import("@/lib/tasks/task-visibility.server");
+  return canUserViewTask(taskId, userId);
+}
+
+async function assertDocumentAccessOrNotFound(
+  documentId: string,
+  userId: string,
+  required: ContentAccessLevel,
+): Promise<ContentAccessLevel> {
+  try {
+    return await assertDocumentAccess(documentId, userId, required);
+  } catch (error) {
+    throw mapContentAccessError(error);
   }
-  return { OR: visibilityOr };
 }
 
-/**
- * Create version 1 of a new document. Private by default. When taskId is
- * given, the creator must be able to view that task (same predicate as
- * /tasks/[id]) so documents can't be attached to tasks the author can't see.
- * A document can only be made PUBLIC on a task that is itself public —
- * otherwise the document would leak the private task's existence/id to
- * anyone who can read the document.
- */
+async function assertTaskLink(input: {
+  taskId: string | null;
+  userId: string;
+  visibility: ContentVisibility;
+}): Promise<{ jurisdictionId: string | null } | null> {
+  if (!input.taskId) return null;
+  const { assertUserCanViewTask } =
+    await import("@/lib/tasks/task-visibility.server");
+  await assertUserCanViewTask(input.taskId, input.userId);
+  const task = await prisma.task.findFirst({
+    where: { id: input.taskId, deletedAt: null },
+    select: { isPublic: true, jurisdictionId: true },
+  });
+  if (!task) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  if (input.visibility === ContentVisibility.PUBLIC && !task.isPublic) {
+    throw new Error(DOCUMENT_PRIVATE_TASK_MESSAGE);
+  }
+  return task;
+}
+
+async function assertOrganizationOwner(
+  input: {
+    organizationId: string | null;
+    userId: string;
+  },
+  db: Pick<Prisma.TransactionClient, "organizationMember"> = prisma,
+): Promise<void> {
+  if (
+    input.organizationId &&
+    !(await canManageOrganization(input.userId, input.organizationId, db))
+  ) {
+    throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
+}
+
+async function loadDocumentAndRevision(documentOrRevisionId: string): Promise<{
+  document: DocumentWithCurrentRevision;
+  revision: NonNullable<DocumentWithCurrentRevision["currentRevision"]>;
+} | null> {
+  const normalizedId = documentOrRevisionId.trim();
+  if (!normalizedId) return null;
+
+  const directDocument = await prisma.document.findFirst({
+    where: { id: normalizedId, deletedAt: null },
+    include: documentInclude,
+  });
+  if (directDocument?.currentRevision) {
+    return {
+      document: directDocument,
+      revision: directDocument.currentRevision,
+    };
+  }
+
+  const revision = await prisma.documentRevision.findFirst({
+    where: { id: normalizedId, deletedAt: null },
+    include: { document: { include: documentInclude } },
+  });
+  if (!revision?.document.currentRevision || revision.document.deletedAt) {
+    return null;
+  }
+  return { document: revision.document, revision };
+}
+
+export function toDocumentDto(view: DocumentView): DocumentDto {
+  const { document, effectivePermission, revision } = view;
+  return {
+    body: revision.body,
+    createdAt: revision.createdAt.toISOString(),
+    effectivePermission,
+    id: document.id,
+    isCurrent: revision.id === document.currentRevisionId,
+    jurisdictionId: document.jurisdictionId,
+    organizationId: document.organizationId,
+    parentDocumentId: view.visibleParentDocumentId,
+    revisionId: revision.id,
+    sourceKey:
+      effectivePermission === ContentAccessLevel.FULL_ACCESS
+        ? document.sourceKey
+        : null,
+    sourceUrl:
+      effectivePermission === ContentAccessLevel.FULL_ACCESS
+        ? document.sourceUrl
+        : null,
+    taskId: view.visibleTaskId,
+    title: revision.title,
+    updatedAt: document.updatedAt.toISOString(),
+    version: revision.version,
+    visibility: document.visibility,
+  };
+}
+
+async function buildDocumentView(input: {
+  document: DocumentWithCurrentRevision;
+  revision: NonNullable<DocumentWithCurrentRevision["currentRevision"]>;
+  userId: string | null;
+}): Promise<DocumentView | null> {
+  const effectivePermission = await resolveDocumentAccess(
+    input.document.id,
+    input.userId,
+  );
+  if (!effectivePermission) return null;
+
+  const versions = await prisma.documentRevision.findMany({
+    where: { documentId: input.document.id, deletedAt: null },
+    orderBy: { version: "desc" },
+    select: { id: true, version: true, title: true, createdAt: true },
+  });
+  const [canViewTask, canViewParent] = await Promise.all([
+    input.document.taskId
+      ? import("@/lib/tasks/task-visibility.server").then(
+          ({ canUserViewTask }) =>
+            canUserViewTask(input.document.taskId as string, input.userId),
+        )
+      : Promise.resolve(false),
+    input.document.parentDocumentId
+      ? resolveDocumentAccess(
+          input.document.parentDocumentId,
+          input.userId,
+        ).then((access) => access != null)
+      : Promise.resolve(false),
+  ]);
+
+  return {
+    document: input.document,
+    revision: input.revision,
+    effectivePermission,
+    visibleParentDocumentId: canViewParent
+      ? input.document.parentDocumentId
+      : null,
+    visibleTaskId: canViewTask ? input.document.taskId : null,
+    viewerCanEdit: hasContentAccess(
+      effectivePermission,
+      ContentAccessLevel.EDIT_CONTENT,
+    ),
+    versions: versions.map((revision) => ({
+      ...revision,
+      createdAt: revision.createdAt.toISOString(),
+      isCurrent: revision.id === input.document.currentRevisionId,
+    })),
+  };
+}
+
+export async function getDocumentForViewer(
+  documentOrRevisionId: string,
+  userId?: string | null,
+): Promise<DocumentView | null> {
+  const loaded = await loadDocumentAndRevision(documentOrRevisionId);
+  if (!loaded) return null;
+  return buildDocumentView({ ...loaded, userId: userId?.trim() || null });
+}
+
 export async function createDocument(input: {
-  title: string;
   body: string;
   createdByUserId: string;
-  taskId?: string | null;
+  idempotencyKey?: string | null;
   jurisdictionId?: string | null;
-  visibility?: DocumentVisibility | null;
-}): Promise<DocumentRow> {
+  organizationId?: string | null;
+  parentDocumentId?: string | null;
+  requestHash?: string | null;
+  sourceArtifactId?: string | null;
+  sourceKey?: string | null;
+  sourceUrl?: string | null;
+  taskId?: string | null;
+  title: string;
+  visibility?: ContentVisibility | null;
+}): Promise<DocumentView> {
   const title = input.title.trim();
   const body = input.body;
   validateTitleAndBody(title, body);
 
-  const taskId = input.taskId?.trim() || null;
-  let jurisdictionId = input.jurisdictionId?.trim() || null;
+  const taskId = normalizeOptional(input.taskId);
+  const organizationId = normalizeOptional(input.organizationId);
+  const parentDocumentId = normalizeOptional(input.parentDocumentId);
+  const idempotencyKey = normalizeOptional(input.idempotencyKey);
+  const sourceKey = normalizeOptional(input.sourceKey);
+  const sourceUrl = normalizeOptional(input.sourceUrl);
+  const sourceArtifactId = normalizeOptional(input.sourceArtifactId);
   const visibility = normalizeVisibility(
     input.visibility,
-    DocumentVisibility.PRIVATE,
+    ContentVisibility.PRIVATE,
   );
 
-  if (taskId) {
-    const { assertUserCanViewTask } = await import(
-      "@/lib/tasks/task-visibility.server"
-    );
-    await assertUserCanViewTask(taskId, input.createdByUserId);
+  const [task] = await Promise.all([
+    assertTaskLink({ taskId, userId: input.createdByUserId, visibility }),
+    assertOrganizationOwner({
+      organizationId,
+      userId: input.createdByUserId,
+    }),
+    parentDocumentId
+      ? assertDocumentAccessOrNotFound(
+          parentDocumentId,
+          input.createdByUserId,
+          ContentAccessLevel.EDIT,
+        )
+      : Promise.resolve(null),
+  ]);
 
-    const task = await prisma.task.findUnique({
-      where: { id: taskId },
-      select: { jurisdictionId: true, isPublic: true },
-    });
-    if (!jurisdictionId) {
-      jurisdictionId = task?.jurisdictionId ?? null;
+  const jurisdictionId =
+    normalizeOptional(input.jurisdictionId) ?? task?.jurisdictionId ?? null;
+  const requestHash =
+    normalizeOptional(input.requestHash) ??
+    (await sha256CanonicalJson({
+      body,
+      jurisdictionId,
+      organizationId,
+      parentDocumentId,
+      sourceArtifactId,
+      sourceKey,
+      sourceUrl,
+      taskId,
+      title,
+      visibility,
+    }));
+
+  const findExisting = async () => {
+    const [byIdempotencyKey, bySourceKey] = await Promise.all([
+      idempotencyKey
+        ? prisma.document.findUnique({
+            where: {
+              createdByUserId_idempotencyKey: {
+                createdByUserId: input.createdByUserId,
+                idempotencyKey,
+              },
+            },
+            select: { id: true, requestHash: true },
+          })
+        : null,
+      sourceKey
+        ? prisma.document.findUnique({
+            where: { sourceKey },
+            select: { id: true, requestHash: true },
+          })
+        : null,
+    ]);
+    if (
+      byIdempotencyKey &&
+      bySourceKey &&
+      byIdempotencyKey.id !== bySourceKey.id
+    ) {
+      throw new Error(DOCUMENT_IDEMPOTENCY_CONFLICT_MESSAGE);
     }
-    if (visibility === DocumentVisibility.PUBLIC && !task?.isPublic) {
-      throw new Error(DOCUMENT_PRIVATE_TASK_MESSAGE);
+    return byIdempotencyKey ?? bySourceKey;
+  };
+  const returnExisting = async (existing: {
+    id: string;
+    requestHash: string | null;
+  }) => {
+    if (existing.requestHash !== requestHash) {
+      throw new Error(DOCUMENT_IDEMPOTENCY_CONFLICT_MESSAGE);
     }
+    const view = await getDocumentForViewer(existing.id, input.createdByUserId);
+    if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+    return view;
+  };
+  const existing = await findExisting();
+  if (existing) {
+    return returnExisting(existing);
   }
 
-  return prisma.document.create({
-    data: {
-      title,
-      body,
-      taskId,
-      jurisdictionId,
-      visibility,
-      createdByUserId: input.createdByUserId,
-    },
-  });
+  let documentId: string;
+  try {
+    documentId = await prisma.$transaction(async (tx) => {
+      if (parentDocumentId) {
+        await lockContentResources(tx, [
+          { type: "document", id: parentDocumentId },
+        ]);
+        await assertDocumentAccess(
+          parentDocumentId,
+          input.createdByUserId,
+          ContentAccessLevel.EDIT,
+          tx,
+        );
+      }
+      await assertOrganizationOwner(
+        { organizationId, userId: input.createdByUserId },
+        tx,
+      );
+      const document = await tx.document.create({
+        data: {
+          createdByUserId: input.createdByUserId,
+          idempotencyKey,
+          jurisdictionId,
+          organizationId,
+          parentDocumentId,
+          requestHash,
+          searchText: searchText(title, body),
+          sourceKey,
+          sourceUrl,
+          taskId,
+          title,
+          version: 0,
+          visibility,
+        },
+        select: { id: true },
+      });
+      const revision = await tx.documentRevision.create({
+        data: {
+          body,
+          contentHash: await sha256CanonicalJson({ body, title }),
+          createdByUserId: input.createdByUserId,
+          documentId: document.id,
+          sourceArtifactId,
+          title,
+          version: 1,
+        },
+        select: { id: true },
+      });
+      await tx.document.update({
+        where: { id: document.id },
+        data: { currentRevisionId: revision.id, version: 1 },
+      });
+      return document.id;
+    });
+  } catch (error) {
+    if (!isUniqueConstraintError(error) || (!idempotencyKey && !sourceKey)) {
+      throw error;
+    }
+    const raced = await findExisting();
+    if (!raced) throw error;
+    return returnExisting(raced);
+  }
+
+  const view = await getDocumentForViewer(documentId, input.createdByUserId);
+  if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  return view;
 }
 
-/**
- * Append a new version. Only the document's creator may update. Runs in one
- * transaction: the current row loses isCurrent, the new row (version + 1)
- * gains it. Untouched fields carry forward. Rejects patches that touch none
- * of title/body/visibility instead of appending a no-op version, and — same
- * rule as createDocument — refuses to flip an attached document PUBLIC while
- * its task is private.
- */
 export async function updateDocument(input: {
+  body?: string | null;
   documentId: string;
   editorUserId: string;
+  expectedVersion: number;
+  organizationId?: string | null;
+  parentDocumentId?: string | null;
+  requestHash?: string | null;
+  sourceArtifactId?: string | null;
+  sourceUrl?: string | null;
+  taskId?: string | null;
   title?: string | null;
-  body?: string | null;
-  visibility?: DocumentVisibility | null;
-}): Promise<DocumentRow> {
-  if (input.title == null && input.body == null && input.visibility == null) {
+  visibility?: ContentVisibility | null;
+}): Promise<DocumentView> {
+  const hasContentPatch = input.title != null || input.body != null;
+  const hasMetadataPatch =
+    input.visibility != null ||
+    input.organizationId !== undefined ||
+    input.parentDocumentId !== undefined ||
+    input.requestHash !== undefined ||
+    input.sourceArtifactId !== undefined ||
+    input.sourceUrl !== undefined ||
+    input.taskId !== undefined;
+  if (!hasContentPatch && !hasMetadataPatch) {
     throw new Error(DOCUMENT_EMPTY_PATCH_MESSAGE);
   }
+  if (!Number.isInteger(input.expectedVersion) || input.expectedVersion < 1) {
+    throw new Error("expectedVersion must be a positive integer");
+  }
 
-  return prisma.$transaction(async (tx) => {
-    const existing = await tx.document.findFirst({
-      where: { id: input.documentId, deletedAt: null },
-      select: { documentKey: true, createdByUserId: true },
-    });
-    if (!existing) {
-      throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
-    }
-    if (existing.createdByUserId !== input.editorUserId) {
-      // Non-creators get the same 404 as a missing document so private
-      // documents stay indistinguishable from nonexistent ones.
-      throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
-    }
-
-    const current = await tx.document.findFirst({
-      where: {
-        documentKey: existing.documentKey,
-        isCurrent: true,
-        deletedAt: null,
-      },
-      orderBy: { version: "desc" },
-    });
-    if (!current) {
-      throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
-    }
-
-    const title = input.title?.trim() || current.title;
-    const body = input.body ?? current.body;
-    validateTitleAndBody(title, body);
-
-    const visibility = normalizeVisibility(input.visibility, current.visibility);
-    if (visibility === DocumentVisibility.PUBLIC && current.taskId) {
-      const task = await tx.task.findUnique({
-        where: { id: current.taskId },
-        select: { isPublic: true },
-      });
-      if (!task?.isPublic) {
-        throw new Error(DOCUMENT_PRIVATE_TASK_MESSAGE);
-      }
-    }
-
-    await tx.document.update({
-      where: { id: current.id },
-      data: { isCurrent: false },
-    });
-
-    return tx.document.create({
-      data: {
-        documentKey: current.documentKey,
-        title,
-        body,
-        taskId: current.taskId,
-        jurisdictionId: current.jurisdictionId,
-        version: current.version + 1,
-        isCurrent: true,
-        visibility,
-        createdByUserId: current.createdByUserId,
-      },
-    });
-  });
-}
-
-export interface DocumentVersionSummary {
-  id: string;
-  version: number;
-  isCurrent: boolean;
-  title: string;
-  createdAt: Date;
-}
-
-/**
- * Load one version row plus the version list for its chain, gated by the
- * CHAIN's current visibility (not the requested row's own field — see file
- * header). Returns null (callers 404) when missing, soft-deleted, or not
- * viewable.
- */
-export async function getDocumentForViewer(
-  documentId: string,
-  userId?: string | null,
-): Promise<{
-  document: DocumentRow;
-  versions: DocumentVersionSummary[];
-  viewerCanEdit: boolean;
-} | null> {
-  const normalizedId = documentId?.trim();
-  if (!normalizedId) return null;
-
-  const document = await prisma.document.findFirst({
-    where: { id: normalizedId, deletedAt: null },
-  });
-  if (!document) return null;
+  await assertDocumentAccessOrNotFound(
+    input.documentId,
+    input.editorUserId,
+    hasMetadataPatch
+      ? ContentAccessLevel.FULL_ACCESS
+      : ContentAccessLevel.EDIT_CONTENT,
+  );
 
   const current = await prisma.document.findFirst({
-    where: {
-      documentKey: document.documentKey,
-      isCurrent: true,
-      deletedAt: null,
-    },
-    orderBy: { version: "desc" },
+    where: { id: input.documentId, deletedAt: null },
+    include: documentInclude,
   });
-  if (!current) return null;
+  if (!current?.currentRevision) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  if (current.version !== input.expectedVersion) {
+    throw new Error(DOCUMENT_CONFLICT_MESSAGE);
+  }
 
-  const viewer = await getViewerFlags(userId);
-  if (!canViewDocument(current, viewer)) return null;
+  const title = input.title?.trim() || current.currentRevision.title;
+  const body = input.body ?? current.currentRevision.body;
+  validateTitleAndBody(title, body);
 
-  const versions = await prisma.document.findMany({
-    where: { documentKey: document.documentKey, deletedAt: null },
-    orderBy: { version: "desc" },
-    select: {
-      id: true,
-      version: true,
-      isCurrent: true,
-      title: true,
-      createdAt: true,
-    },
+  const visibility = normalizeVisibility(input.visibility, current.visibility);
+  const taskId =
+    input.taskId === undefined
+      ? current.taskId
+      : normalizeOptional(input.taskId);
+  const organizationId =
+    input.organizationId === undefined
+      ? current.organizationId
+      : normalizeOptional(input.organizationId);
+  const parentDocumentId =
+    input.parentDocumentId === undefined
+      ? current.parentDocumentId
+      : normalizeOptional(input.parentDocumentId);
+  const requestHash =
+    input.requestHash === undefined
+      ? current.requestHash
+      : normalizeOptional(input.requestHash);
+  const sourceArtifactId = normalizeOptional(input.sourceArtifactId);
+  const sourceUrl =
+    input.sourceUrl === undefined
+      ? current.sourceUrl
+      : normalizeOptional(input.sourceUrl);
+
+  await Promise.all([
+    assertTaskLink({ taskId, userId: input.editorUserId, visibility }),
+    assertOrganizationOwner({ organizationId, userId: input.editorUserId }),
+    assertValidDocumentParent({
+      documentId: current.id,
+      parentDocumentId,
+    }),
+    parentDocumentId
+      ? assertDocumentAccessOrNotFound(
+          parentDocumentId,
+          input.editorUserId,
+          ContentAccessLevel.EDIT,
+        )
+      : Promise.resolve(null),
+  ]);
+
+  const nextVersion = current.version + 1;
+  await prisma.$transaction(async (tx) => {
+    await lockContentResources(tx, [
+      { type: "document", id: current.id },
+      ...(parentDocumentId
+        ? [{ type: "document" as const, id: parentDocumentId }]
+        : []),
+    ]);
+    try {
+      await assertDocumentAccess(
+        current.id,
+        input.editorUserId,
+        hasMetadataPatch
+          ? ContentAccessLevel.FULL_ACCESS
+          : ContentAccessLevel.EDIT_CONTENT,
+        tx,
+      );
+      await assertOrganizationOwner(
+        { organizationId, userId: input.editorUserId },
+        tx,
+      );
+      await assertValidDocumentParent(
+        { documentId: current.id, parentDocumentId },
+        tx,
+      );
+      if (parentDocumentId) {
+        await assertDocumentAccess(
+          parentDocumentId,
+          input.editorUserId,
+          ContentAccessLevel.EDIT,
+          tx,
+        );
+      }
+    } catch (error) {
+      throw mapContentAccessError(error);
+    }
+    const claimed = await tx.document.updateMany({
+      where: {
+        id: current.id,
+        version: input.expectedVersion,
+        deletedAt: null,
+      },
+      data: {
+        organizationId,
+        parentDocumentId,
+        requestHash,
+        searchText: searchText(title, body),
+        sourceUrl,
+        taskId,
+        title,
+        version: nextVersion,
+        visibility,
+      },
+    });
+    if (claimed.count !== 1) throw new Error(DOCUMENT_CONFLICT_MESSAGE);
+
+    const revision = await tx.documentRevision.create({
+      data: {
+        body,
+        contentHash: await sha256CanonicalJson({ body, title }),
+        createdByUserId: input.editorUserId,
+        documentId: current.id,
+        sourceArtifactId,
+        title,
+        version: nextVersion,
+      },
+      select: { id: true },
+    });
+    await tx.document.update({
+      where: { id: current.id },
+      data: { currentRevisionId: revision.id },
+    });
   });
 
-  return {
-    document,
-    versions,
-    viewerCanEdit: viewer != null && current.createdByUserId === viewer.id,
-  };
+  const view = await getDocumentForViewer(current.id, input.editorUserId);
+  if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  return view;
 }
 
-/**
- * List current versions the viewer can see: public documents, the viewer's
- * own, and (for admins) every private document too — same access
- * canViewDocument grants. Anonymous viewers see public documents only. When
- * taskId is given, the viewer must be able to view that task itself — a
- * document-list query can't become a way to probe private task ids.
- */
 export async function listDocumentsForViewer(input: {
-  userId?: string | null;
-  taskId?: string | null;
   limit?: number | null;
-}): Promise<DocumentRow[]> {
-  const limit = Math.min(Math.max(input.limit ?? 100, 1), 500);
-  const taskId = input.taskId?.trim() || null;
+  taskId?: string | null;
+  userId?: string | null;
+}): Promise<DocumentSummary[]> {
+  const limit = Math.min(Math.max(input.limit ?? 100, 1), MAX_LIST_LIMIT);
+  const taskId = normalizeOptional(input.taskId);
 
   if (taskId) {
-    const { canUserViewTask } = await import(
-      "@/lib/tasks/task-visibility.server"
-    );
+    const { canUserViewTask } =
+      await import("@/lib/tasks/task-visibility.server");
     if (!(await canUserViewTask(taskId, input.userId ?? null))) return [];
   }
 
-  const visibilityWhere = await buildDocumentVisibilityWhere(input.userId);
+  const viewerUserId = input.userId?.trim() || null;
+  const summaries: DocumentSummary[] = [];
+  let cursor: string | undefined;
+  let scanned = 0;
 
-  return prisma.document.findMany({
-    where: {
-      isCurrent: true,
-      deletedAt: null,
-      ...(taskId ? { taskId } : {}),
-      ...visibilityWhere,
-    },
-    orderBy: { updatedAt: "desc" },
-    take: limit,
-  });
+  while (summaries.length < limit && scanned < MAX_DOCUMENT_LIST_SCAN) {
+    const take = Math.min(
+      DOCUMENT_LIST_BATCH_SIZE,
+      MAX_DOCUMENT_LIST_SCAN - scanned,
+    );
+    const rows = await prisma.document.findMany({
+      where: {
+        deletedAt: null,
+        ...(taskId ? { taskId } : {}),
+      },
+      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      select: {
+        id: true,
+        organizationId: true,
+        taskId: true,
+        title: true,
+        updatedAt: true,
+        version: true,
+        visibility: true,
+      },
+    });
+    if (rows.length === 0) break;
+    scanned += rows.length;
+    cursor = rows.at(-1)?.id;
+
+    const accessById = await resolveDocumentAccessBatch(
+      rows.map((document) => document.id),
+      viewerUserId,
+    );
+    for (const document of rows) {
+      const effectivePermission = accessById.get(document.id) ?? null;
+      if (!effectivePermission) continue;
+      summaries.push({
+        effectivePermission,
+        id: document.id,
+        organizationId: document.organizationId,
+        taskId:
+          document.taskId &&
+          (taskId || (await canViewerSeeTask(document.taskId, viewerUserId)))
+            ? document.taskId
+            : null,
+        title: document.title,
+        updatedAt: document.updatedAt.toISOString(),
+        version: document.version,
+        visibility: document.visibility,
+      });
+      if (summaries.length === limit) break;
+    }
+    if (rows.length < take) break;
+  }
+
+  return summaries;
 }
 
-/**
- * Minimal id/title/version list for a task's attached documents — used by
- * TaskDocumentsList, which never renders the body. Avoids shipping full
- * markdown bodies (up to 500k chars each) on every task page load.
- */
 export async function listDocumentSummariesForViewer(input: {
-  userId?: string | null;
-  taskId: string;
   limit?: number | null;
+  taskId: string;
+  userId?: string | null;
 }): Promise<DocumentSummary[]> {
-  const taskId = input.taskId?.trim();
-  if (!taskId) return [];
-  const limit = Math.min(Math.max(input.limit ?? 50, 1), 500);
+  return listDocumentsForViewer(input);
+}
 
-  const { canUserViewTask } = await import(
-    "@/lib/tasks/task-visibility.server"
-  );
-  if (!(await canUserViewTask(taskId, input.userId ?? null))) return [];
-
-  const visibilityWhere = await buildDocumentVisibilityWhere(input.userId);
-
-  return prisma.document.findMany({
-    where: {
-      isCurrent: true,
-      deletedAt: null,
-      taskId,
-      ...visibilityWhere,
-    },
-    orderBy: { updatedAt: "desc" },
-    take: limit,
-    select: { id: true, title: true, version: true },
-  });
+export function mapContentAccessError(error: unknown): Error {
+  if (error instanceof Error && error.message === CONTENT_NOT_FOUND_MESSAGE) {
+    return new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
+  return error instanceof Error ? error : new Error("Unknown document error");
 }

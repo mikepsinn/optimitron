@@ -142,6 +142,8 @@ export const ROUTES = {
   dashboard: "/dashboard",
   calendar: "/calendar",
   tasks: "/tasks",
+  documents: "/documents",
+  collections: "/collections",
   employees: "/employees",
   census: "/census",
   checkIn: "/check-in",
@@ -535,6 +537,29 @@ export const calendarLink: NavItem = {
   tagline: "Know what to do and when",
   authenticatedScreenshot: true,
   cta: "Open Calendar",
+};
+
+export const documentsLink: NavItem = {
+  href: ROUTES.documents,
+  label: "Documents",
+  emoji: "",
+  description: "Write, revise, and share Markdown documents.",
+  tagline: "Write and share documents",
+  authenticatedCopyPreview: true,
+  authenticatedScreenshot: true,
+  cta: "Open Documents",
+};
+
+export const collectionsLink: NavItem = {
+  href: ROUTES.collections,
+  label: "Collections",
+  emoji: "",
+  description:
+    "Keep structured records beside the tasks and people they describe.",
+  tagline: "Keep structured records",
+  authenticatedCopyPreview: true,
+  authenticatedScreenshot: true,
+  cta: "Open Collections",
 };
 
 export const presidentManagementLink: NavItem = {
@@ -1820,6 +1845,8 @@ export const routeReviewNavItems = [
   editProfileLink,
   tasksLink,
   calendarLink,
+  documentsLink,
+  collectionsLink,
   peopleLink,
   questionsLink,
   trialSurveyLink,

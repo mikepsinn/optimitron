@@ -8,6 +8,7 @@ import {
   type StaticSiteSearchDocument,
 } from "@/lib/site-search";
 import type { SiteConfig } from "@/lib/site";
+import { searchContent } from "@/lib/content-search.server";
 import { searchTasks, type TaskSearchResult } from "@/lib/tasks.server";
 
 const MANUAL_BASE_URL = "https://manual.warondisease.org";
@@ -21,6 +22,7 @@ export interface ManualSiteSearchResult {
 }
 
 export interface SiteSearchResults {
+  content: Awaited<ReturnType<typeof searchContent>>["results"];
   manual: ManualSiteSearchResult[];
   manualError: string | null;
   pages: Array<StaticSiteSearchDocument & { score: number }>;
@@ -65,6 +67,7 @@ function getManualEntryHref(entry: ManualSearchEntry) {
 export async function searchSiteContent(
   query: string,
   options?: {
+    contentLimit?: number;
     pageLimit?: number;
     site?: SiteConfig;
     taskLimit?: number;
@@ -75,6 +78,7 @@ export async function searchSiteContent(
 
   if (!trimmedQuery) {
     return {
+      content: [],
       manual: [],
       manualError: null,
       pages: [],
@@ -84,7 +88,7 @@ export async function searchSiteContent(
     };
   }
 
-  const [pages, tasks, manualResponse] = await Promise.all([
+  const [pages, tasks, contentResponse, manualResponse] = await Promise.all([
     Promise.resolve(
       searchStaticSiteDocuments(trimmedQuery, {
         limit: options?.pageLimit ?? 12,
@@ -95,22 +99,30 @@ export async function searchSiteContent(
       limit: options?.taskLimit ?? 12,
       userId: options?.userId ?? null,
     }),
+    trimmedQuery.length >= 2
+      ? searchContent({
+          limit: options?.contentLimit ?? 24,
+          query: trimmedQuery,
+          userId: options?.userId ?? null,
+        })
+      : Promise.resolve({
+          results: [] as Awaited<ReturnType<typeof searchContent>>["results"],
+          truncated: false,
+        }),
     (async () => {
       try {
         const manualIndex = await getManualSearchIndex();
         const manualResults = dedupeManualResults(
-          searchManualContent(
-          manualIndex,
-          trimmedQuery,
-          8,
-          3200,
-        ).results.map((result) => ({
-            description: result.entry.description ?? "Manual reference",
-            href: getManualEntryHref(result.entry),
-            score: Number(result.score.toFixed(3)),
-            section: result.entry.section ?? result.entry.sections?.[0] ?? null,
-            title: result.entry.title ?? "Untitled",
-          })),
+          searchManualContent(manualIndex, trimmedQuery, 8, 3200).results.map(
+            (result) => ({
+              description: result.entry.description ?? "Manual reference",
+              href: getManualEntryHref(result.entry),
+              score: Number(result.score.toFixed(3)),
+              section:
+                result.entry.section ?? result.entry.sections?.[0] ?? null,
+              title: result.entry.title ?? "Untitled",
+            }),
+          ),
         );
 
         return {
@@ -129,11 +141,16 @@ export async function searchSiteContent(
   ]);
 
   return {
+    content: contentResponse.results,
     manual: manualResponse.manual,
     manualError: manualResponse.manualError,
     pages,
     query: trimmedQuery,
     tasks,
-    totalResults: pages.length + tasks.length + manualResponse.manual.length,
+    totalResults:
+      contentResponse.results.length +
+      pages.length +
+      tasks.length +
+      manualResponse.manual.length,
   };
 }

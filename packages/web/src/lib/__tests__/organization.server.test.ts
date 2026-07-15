@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OrgStatus, OrgType } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
+  organizationFindFirst: vi.fn(),
   organizationFindUnique: vi.fn(),
-  organizationMemberFindUnique: vi.fn(),
+  organizationMemberFindFirst: vi.fn(),
   organizationMemberUpsert: vi.fn(),
   transaction: vi.fn(),
   txOrganizationCreate: vi.fn(),
@@ -16,10 +17,11 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
     organization: {
+      findFirst: mocks.organizationFindFirst,
       findUnique: mocks.organizationFindUnique,
     },
     organizationMember: {
-      findUnique: mocks.organizationMemberFindUnique,
+      findFirst: mocks.organizationMemberFindFirst,
       upsert: mocks.organizationMemberUpsert,
     },
   },
@@ -27,6 +29,7 @@ vi.mock("@/lib/prisma", () => ({
 
 import {
   canManageOrganization,
+  canUserViewOrganization,
   createOrganizationWithOwner,
   upsertTrustedOrganization,
 } from "@/lib/organization.server";
@@ -39,7 +42,8 @@ describe("organization.server", () => {
     mocks.txOrganizationFindUnique.mockReset();
     mocks.txOrganizationMemberCreate.mockReset();
     mocks.organizationFindUnique.mockReset();
-    mocks.organizationMemberFindUnique.mockReset();
+    mocks.organizationFindFirst.mockReset();
+    mocks.organizationMemberFindFirst.mockReset();
     mocks.organizationMemberUpsert.mockReset();
   });
 
@@ -264,12 +268,53 @@ describe("organization.server", () => {
   });
 
   it("does not treat creatorId as organization management permission without a membership row", async () => {
-    mocks.organizationMemberFindUnique.mockResolvedValue(null);
+    mocks.organizationMemberFindFirst.mockResolvedValue(null);
     mocks.organizationFindUnique.mockResolvedValue({ creatorId: "user_1" });
 
     await expect(canManageOrganization("user_1", "org_1")).resolves.toBe(false);
 
     expect(mocks.organizationFindUnique).not.toHaveBeenCalled();
     expect(mocks.organizationMemberUpsert).not.toHaveBeenCalled();
+  });
+
+  it("allows approved organizations to be linked for anonymous viewers", async () => {
+    mocks.organizationFindFirst.mockResolvedValue({ id: "org_1" });
+
+    await expect(canUserViewOrganization("org_1", null)).resolves.toBe(true);
+
+    expect(mocks.organizationFindFirst).toHaveBeenCalledWith({
+      where: {
+        id: "org_1",
+        deletedAt: null,
+        OR: [{ status: OrgStatus.APPROVED }],
+      },
+      select: { id: true },
+    });
+  });
+
+  it("allows pending organizations only for their creator or members", async () => {
+    mocks.organizationFindFirst
+      .mockResolvedValueOnce({ id: "org_1" })
+      .mockResolvedValueOnce(null);
+
+    await expect(canUserViewOrganization("org_1", "user_1")).resolves.toBe(
+      true,
+    );
+    await expect(canUserViewOrganization("org_1", "outsider")).resolves.toBe(
+      false,
+    );
+
+    expect(mocks.organizationFindFirst).toHaveBeenNthCalledWith(1, {
+      where: {
+        id: "org_1",
+        deletedAt: null,
+        OR: [
+          { status: OrgStatus.APPROVED },
+          { creatorId: "user_1" },
+          { members: { some: { userId: "user_1" } } },
+        ],
+      },
+      select: { id: true },
+    });
   });
 });

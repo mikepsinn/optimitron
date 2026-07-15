@@ -137,26 +137,26 @@ async function handleMcpRequest(req: Request): Promise<Response> {
     }
 
     const [user, oauthGrant] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
+      prisma.user.findFirst({
+        where: { id: userId, deletedAt: null },
         select: { isAdmin: true },
       }),
-      prisma.oAuthGrant.findUnique({
-        where: {
-          clientId_userId: {
-            clientId,
-            userId,
-          },
-        },
-        select: { id: true },
+      prisma.oAuthGrant.findFirst({
+        where: { active: true, clientId, revokedAt: null, userId },
+        select: { id: true, scopes: true },
       }),
     ]);
+
+    if (!user || !oauthGrant) {
+      return unauthorized(req, "invalid_token");
+    }
+    scopes = scopes.filter((scope) => oauthGrant.scopes.includes(scope));
 
     const transport = new WebStandardStreamableHTTPServerTransport();
     const server = createMcpServer(userId, scopes, {
       clientId,
-      isAdmin: user?.isAdmin === true,
-      oauthGrantId: oauthGrant?.id ?? null,
+      isAdmin: user.isAdmin === true,
+      oauthGrantId: oauthGrant.id,
     });
     await server.connect(transport);
     return transport.handleRequest(req);

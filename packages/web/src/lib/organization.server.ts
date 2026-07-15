@@ -433,10 +433,13 @@ const MANAGE_ROLES = new Set(["owner", "admin"]);
 export async function canManageOrganization(
   userId: string,
   organizationId: string,
+  db: Pick<DbClient, "organizationMember"> = prisma,
 ): Promise<boolean> {
-  const membership = await prisma.organizationMember.findUnique({
+  const membership = await db.organizationMember.findFirst({
     where: {
-      organizationId_userId: { organizationId, userId },
+      organizationId,
+      userId,
+      organization: { deletedAt: null },
     },
     select: { role: true },
   });
@@ -446,6 +449,31 @@ export async function canManageOrganization(
   }
 
   return false;
+}
+
+export async function canUserViewOrganization(
+  organizationId: string,
+  userId?: string | null,
+  db: Pick<DbClient, "organization"> = prisma,
+): Promise<boolean> {
+  const normalizedUserId = userId?.trim() || null;
+  const organization = await db.organization.findFirst({
+    where: {
+      id: organizationId.trim(),
+      deletedAt: null,
+      OR: [
+        { status: OrgStatus.APPROVED },
+        ...(normalizedUserId
+          ? [
+              { creatorId: normalizedUserId },
+              { members: { some: { userId: normalizedUserId } } },
+            ]
+          : []),
+      ],
+    },
+    select: { id: true },
+  });
+  return organization != null;
 }
 
 export async function getManageableOrganizationsForUser(userId: string) {

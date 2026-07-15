@@ -59,10 +59,10 @@ flowing in:
 
 1. **Capture** — persist conversational health logging (OPT-HEALTH-02) and
    spawn recurring tracking tasks in the queue (OPT-HEALTH-06).
-   *Open implementation decision:* recurring tasks via the proven TaskTrigger
+   _Open implementation decision:_ recurring tasks via the proven TaskTrigger
    cron engine (OPT-TASK-03) vs reviving the dead `TrackingReminder` model
    (OPT-HEALTH-04). Exploration favors TaskTrigger; decide at build time.
-   *Head start:* stash `preserve-dfda-tracking-mcp-tools-found-uncommitted-2026-07-07`
+   _Head start:_ stash `preserve-dfda-tracking-mcp-tools-found-uncommitted-2026-07-07`
    holds draft regimen→tasks→logging MCP tools — review before writing fresh.
 2. **One queue** — interleave health and work actions in
    getNextAction/getMyQueue (OPT-EV-04).
@@ -81,7 +81,7 @@ flowing in:
   surface (PRD is the internal spec; this is its public counterpart).
 - Person/Org conversion surfaces (former P1 roadmap, PR-A…E: foundation-action
   seed tasks, org-page task display, add-org/assign-task admin UX,
-  public-figure catalog, AI-cataloged activity). *Re-audit before building:*
+  public-figure catalog, AI-cataloged activity). _Re-audit before building:_
   `isPublicFigure` already exists and is used by president tracking — the
   celebrity-catalog concept must share or fork that flag deliberately;
   PR-A's `campaign-action` category is not in managed seed data.
@@ -92,9 +92,11 @@ flowing in:
 
 ## Later
 
-- Notion import (OPT-INTG-01) and Google Calendar import (OPT-INTG-02) — the
-  normalization seams exist; connect real APIs after companion-loop stages
-  1–2 prove the queue.
+- Connect the implemented lossless Notion bundle importer (OPT-INTG-01) to
+  Notion OAuth/API and add Google Calendar import (OPT-INTG-02) after
+  companion-loop stages 1–2 prove the queue. Documents and table collections
+  already ship as OPT-CONTENT-01; formula execution, block collaboration, and
+  generic automations wait for a concrete migrated workflow.
 - Treasury deployments (OPT-TREAS-01/02/03) — contracts are unit-tested and
   undeployed; deploy when campaign scale warrants (IABs explicitly gated on
   demonstrated treaty demand).

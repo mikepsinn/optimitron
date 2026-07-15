@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import Link from "next/link";
 import { CopyableCode } from "@/components/ui/copyable-code";
 import {
@@ -11,7 +12,7 @@ import {
   scopeToWire,
 } from "@/lib/mcp-scopes";
 import { mcpLink } from "@/lib/routes";
-import { getConfiguredSiteOrigin } from "@/lib/site";
+import { getRequestSiteOrigin } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export const metadata = getRouteMetadata(mcpLink);
@@ -135,8 +136,13 @@ function ToolGroupCard({
   );
 }
 
-export default function McpPage() {
-  const baseUrl = getConfiguredSiteOrigin();
+export default async function McpPage() {
+  const headerList = await headers();
+  const baseUrl = getRequestSiteOrigin({
+    forwardedHost: headerList.get("x-forwarded-host"),
+    forwardedProto: headerList.get("x-forwarded-proto"),
+    host: headerList.get("host"),
+  });
   const mcpUrl = `${baseUrl}/api/mcp`;
   const toolsUrl = `${mcpUrl}/tools`;
   const oauthMetadataUrl = `${baseUrl}/.well-known/oauth-authorization-server`;

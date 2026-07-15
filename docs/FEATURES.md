@@ -27,14 +27,16 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Task system
 
 ### OPT-TASK-01 — Task engine: CRUD, claims, comments, marketplace
+
 - **Layer:** personal / org
 - **Status:** implemented
 - **Summary:** Full task lifecycle over MCP (~110 tools) and REST: create/update/delete, claim → complete → verify, threaded comments, applications and candidate matching, org ownership.
-- **Evidence:** packages/web/src/lib/mcp-server.ts; packages/web/src/lib/tasks.server.ts (`createTask`); packages/web/src/lib/tasks/task-comments.server.ts; tests: packages/web/src/lib/__tests__/mcp-server.test.ts, __tests__/tasks.server.test.ts, __tests__/task-comments.server.test.ts
+- **Evidence:** packages/web/src/lib/mcp-server.ts; packages/web/src/lib/tasks.server.ts (`createTask`); packages/web/src/lib/tasks/task-comments.server.ts; tests: packages/web/src/lib/**tests**/mcp-server.test.ts, **tests**/tasks.server.test.ts, **tests**/task-comments.server.test.ts
 - **Acceptance:** An MCP client can create a task under an explicit parent, claim it, complete the claim, and read the comment thread — all persisted.
 - **Roadmap:** shipped — maintain
 
 ### OPT-TASK-02 — Dependency graph (TaskEdge) with blocker gating
+
 - **Layer:** personal / org
 - **Status:** implemented
 - **Summary:** Directed edges (DEPENDS_ON / BLOCKS / INCREASES_PROBABILITY_OF / ACCELERATES) with probability/time-delta triples; blocked tasks are excluded from execution queues.
@@ -44,15 +46,17 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** Managed/seed data contains zero edges; the graph is populated only at runtime by explicit MCP calls.
 
 ### OPT-TASK-03 — Trigger/spawn automation engine
+
 - **Layer:** cross-cutting
 - **Status:** implemented
 - **Summary:** Data-driven triggers fire on named events (user signup, cron, task status changes), template-substitute into spawned tasks or outbound communications, with idempotency keys and completion gates. Backbone of treaty signer-reminder flows.
-- **Evidence:** packages/web/src/lib/triggers/admin.ts; packages/web/src/lib/triggers/fire.ts; tests: triggers/__tests__/fire.integration.test.ts, triggers/__tests__/one-percent-treaty-blueprints.test.ts
+- **Evidence:** packages/web/src/lib/triggers/admin.ts; packages/web/src/lib/triggers/fire.ts; tests: triggers/**tests**/fire.integration.test.ts, triggers/**tests**/one-percent-treaty-blueprints.test.ts
 - **Acceptance:** Firing a trigger for a matching event spawns the specified task exactly once (idempotent on re-fire).
 - **Roadmap:** shipped — maintain
 - **Notes:** "TaskTemplate" MCP tools are a facade over TaskTrigger rows (`metadata.taskTemplateFacade`), not a second engine.
 
 ### OPT-TASK-04 — Queue audit graph linter
+
 - **Layer:** personal / org
 - **Status:** implemented
 - **Summary:** Validates the execution graph: cycles, unrooted tasks, non-atomic tasks in queues, missing marginal estimates, invalid/unannotated value edges, nondeterministic ties.
@@ -61,6 +65,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-TASK-05 — Brain-dump capture via MCP
+
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** Free-form ideas become structured tasks: createTask with EV estimates, proposeTaskBundle for multi-task proposals, addDependency for prerequisites.
@@ -69,6 +74,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-TASK-06 — Parent-task selection for new tasks
+
 - **Layer:** personal / org
 - **Status:** partial
 - **Summary:** The MCP createTask tool requires an explicit parentTaskId and rejects direct attachment to the optimize-earth root; agents are instructed to searchTasks first. No automated best-parent matching exists, and the non-MCP path still defaults to root.
@@ -78,6 +84,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** Gap is path-specific: MCP enforces, REST/feedback (`feedback.server.ts`) silently roots.
 
 ### OPT-TASK-07 — AI decomposition into atomic subtasks
+
 - **Layer:** personal
 - **Status:** partial
 - **Summary:** proposeTaskBundle accepts multi-task decompositions and the audit flags non-atomic tasks in queues (EXECUTABLE_PARENT), but decomposition is agent-prompted via tool descriptions — there is no automated splitter or confirm-flow.
@@ -88,6 +95,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Expected-value engine
 
 ### OPT-EV-01 — EV task ranking
+
 - **Layer:** personal / org
 - **Status:** implemented
 - **Summary:** `priority = (realEv − cashCost) / (hours + cashCost / buybackRate)` with default buybackRate $1000/hr; expectedEconomicValueUsd is probability-weighted upstream. Execution-mode capability gating (human vs agent) is wired into scoring. The former decorative `difficulty` field is removed.
@@ -96,6 +104,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-EV-02 — Execution planner (capacity-bounded day plan)
+
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** "frontier-replanning-v1": repeatedly picks the highest-priority feasible atomic task, simulates completion to unlock dependents, respects caller-supplied fixed commitments, returns checklist / AI-assisted work / blocked work / items needing estimates.
@@ -104,6 +113,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-EV-03 — Impact estimate sets (uncertainty-aware value model)
+
 - **Layer:** cross-cutting
 - **Status:** implemented
 - **Summary:** Per-task impact frames with low/base/high triples for probability, economic value, DALYs, HALE effect, income-growth effect, cost, effort, and delay losses; Monte Carlo summary stats; feeds ranking via impact.ts.
@@ -113,6 +123,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** Known unit issue: `medianIncomeGrowthEffectPpPerYearBase` (a rate) sits in ADDITIVE_FRAME_KEYS and is aggregated like an absolute quantity — cleanup item #6 in ROADMAP.md Appendix A. EV inputs are also duplicated into `contextJson` for display — cleanup item #5.
 
 ### OPT-EV-04 — Health/work interleaved next action
+
 - **Layer:** personal
 - **Status:** planned
 - **Summary:** getNextAction/getMyQueue output interleaves health actions (medication times, meals, exercise, hygiene) with work tasks in one EV-ranked stream. No interleaving logic exists today.
@@ -123,6 +134,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Health / dFDA
 
 ### OPT-HEALTH-01 — Daily measurement check-in
+
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** Daily 1–5 health/happiness ratings persisted as Measurement rows via the /check-in page; unique per subject/variable/startTime.
@@ -132,6 +144,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** Narrow scope: one page, 1–5 scales. The conversational path is OPT-HEALTH-02.
 
 ### OPT-HEALTH-02 — Conversational health logging
+
 - **Layer:** personal
 - **Status:** partial
 - **Summary:** chat-ui parses "took 200mg ibuprofen" into structured measurements (LLM + regex fallback) — but ChatPage only renders a "Logged:" bubble and local state; nothing is persisted. The MCP write paths (Measurement, InterventionExperience) exist for agents that call them explicitly.
@@ -141,6 +154,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** A stash (`preserve-dfda-tracking-mcp-tools-found-uncommitted-2026-07-07`) contains draft dFDA tracking MCP tools (regimen → tasks → logging) worth reviewing before building fresh.
 
 ### OPT-HEALTH-03 — Intervention experience recording
+
 - **Layer:** personal / earth
 - **Status:** implemented
 - **Summary:** Structured "what treatment, what dose, what outcome, what side effect" records tied to before/after measurements; Zod-validated transactional MCP write.
@@ -149,6 +163,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-HEALTH-04 — TrackingReminder model
+
 - **Layer:** personal
 - **Status:** dead
 - **Summary:** Schema for scheduled health-variable reminders ("rate mood daily at 8am") with zero application usage: no scheduler, no UI, no trigger reads it.
@@ -157,6 +172,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** decision recorded in ROADMAP.md companion-loop track: revive with a scheduler, or supersede via TaskTrigger cron (OPT-TASK-03) and drop the model.
 
 ### OPT-HEALTH-05 — Wearable/app health importers
+
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** Nine importers normalize external health exports into measurement time series: Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, generic CSV.
@@ -165,14 +181,16 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-HEALTH-06 — Recurring tracking tasks in the queue
+
 - **Layer:** personal
 - **Status:** planned
 - **Summary:** Scheduled mood/energy/symptom ratings and medication reminders appear IN the task queue as recurring atomic tasks; completing one writes a Measurement. No cron trigger spawns check-in tasks today.
-- **Evidence:** absence verified in packages/web/src/lib/triggers/ and app/api/cron/run-due-triggers/route.ts (no cron.* trigger spawning measurement tasks)
+- **Evidence:** absence verified in packages/web/src/lib/triggers/ and app/api/cron/run-due-triggers/route.ts (no cron.\* trigger spawning measurement tasks)
 - **Acceptance:** A daily mood-rating task appears in getMyQueue each morning; completing it writes a Measurement and the next occurrence schedules itself.
 - **Roadmap:** now — companion loop stage 1 (implementation decision: TaskTrigger cron vs TrackingReminder revival)
 
 ### OPT-HEALTH-07 — Change-from-baseline outcome reports
+
 - **Layer:** personal
 - **Status:** planned
 - **Summary:** After starting an intervention, surface significant changes in regularly-rated variables. The statistics exist in the optimizer package; only the Chrome extension uses them on-device — nothing wires them to server-side Measurements.
@@ -183,6 +201,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Government / causal inference
 
 ### OPT-GOV-01 — Causal inference core (optimizer)
+
 - **Layer:** government / personal
 - **Status:** implemented
 - **Summary:** Domain-agnostic observational statistics: n-of-1 pair studies, adaptive binning, temporal alignment, response curves, hypothesis testing, evidence grading.
@@ -191,6 +210,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-GOV-02 — Optimal Policy Generator (opg)
+
 - **Layer:** government
 - **Status:** implemented
 - **Summary:** Policy evaluation with Bradford-Hill-style causal confidence scoring, welfare framing, jurisdiction handling.
@@ -199,6 +219,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-GOV-03 — Optimal Budget Generator (obg)
+
 - **Layer:** government
 - **Status:** implemented
 - **Summary:** Budget reallocation targets: cost-effectiveness, diminishing returns, efficient frontier, minimum effective spending, overspend ratios.
@@ -207,6 +228,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-GOV-04 — Wishocracy / RAPPA preference aggregation
+
 - **Layer:** government
 - **Status:** implemented
 - **Summary:** Randomized Aggregated Pairwise Preference Allocation: pairwise comparisons → stable budget weights with eigenvector weighting, consistency checks, bootstrap CIs, manipulation resistance.
@@ -217,6 +239,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Earth-layer campaign
 
 ### OPT-EARTH-01 — Treaty referendum voting
+
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Personhood-verified referendum voting on the 1% Treaty; UX spec in questions.md.
@@ -225,6 +248,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** now — campaign track
 
 ### OPT-EARTH-02 — Referral propagation
+
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Invite lifecycle (ReferralInvitation) and exact outbound-message ledger (ShareAttempt) with share surfaces across dashboard, post-vote flow, and task rows.
@@ -233,6 +257,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** now — campaign track
 
 ### OPT-EARTH-03 — Organization endorsement
+
 - **Layer:** earth / org
 - **Status:** implemented
 - **Summary:** Organizations sign the referendum and recruit members.
@@ -241,6 +266,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** now — campaign track
 
 ### OPT-EARTH-04 — Court of Humanity
+
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Structured accountability cases: parties, claims, harms, evidence, remedies, jury votes.
@@ -249,6 +275,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** now — campaign track (operational-surface rework queued in TODO.md)
 
 ### OPT-EARTH-05 — Leader/signer reminders
+
 - **Layer:** earth
 - **Status:** implemented
 - **Summary:** Overdue treaty-signer detection and claimable reminder tasks, spawned and routed by the trigger engine.
@@ -259,6 +286,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Treasury
 
 ### OPT-TREAS-01 — Earth Optimization Prize contracts
+
 - **Layer:** earth
 - **Status:** partial
 - **Summary:** VoterPrizeTreasury + EarthOptimizationPoint compiled and unit-tested under Hardhat; deployed to no live chain — every prize contract address is zero on Sepolia and Base Sepolia; the web UI falls back to demo data.
@@ -267,6 +295,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** later — deploy when campaign scale warrants
 
 ### OPT-TREAS-02 — Incentive Alignment Bonds contracts
+
 - **Layer:** earth
 - **Status:** partial
 - **Summary:** IABVault, IABSplitter, PublicGoodsPool, PoliticalIncentiveAllocator, AlignmentScoreOracle compiled and unit-tested; zero-address on all live chains.
@@ -275,6 +304,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** later — gated on demonstrated treaty demand (Phase 2)
 
 ### OPT-TREAS-03 — $WISH / UBI contracts
+
 - **Layer:** earth
 - **Status:** partial
 - **Summary:** WishToken, WishocraticTreasury, UBIDistributor compiled and unit-tested; zero-address on all live chains.
@@ -285,6 +315,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ## Extension, agents, integrations, platform
 
 ### OPT-EXT-01 — Chrome extension (Digital Twin Safe)
+
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** Standalone MV3 tracker: treatment reminders (chrome.alarms), symptom/mood/food logging, JSON/CSV export, and on-device causal analysis via the optimizer in a Web Worker. All data stays local; never touches the server or the Measurement model. Zero tests.
@@ -294,6 +325,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Notes:** Deliberately disconnected from the web account system (privacy by architecture).
 
 ### OPT-AGENT-01 — Autonomous policy analyst (agent package)
+
 - **Layer:** cross-cutting
 - **Status:** partial
 - **Summary:** Discovery→plan→execute→interpret→verify orchestration with guardrails (rate/spend/time limits), legislation drafting, CI triage — runnable as CLI, unit-tested, but not invoked by CI and its on-chain identity (ERC-8004) was never registered.
@@ -302,6 +334,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** later
 
 ### OPT-AGENT-02 — Approval-gated agent task execution
+
 - **Layer:** personal / org
 - **Status:** partial
 - **Summary:** Agents pull from getAIQueue under lease-based coordination (acquire/heartbeat/release), and task applications have a review flow — but no generalized propose → user-approve → execute gate exists for externally-effectful actions.
@@ -310,14 +343,25 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** now — companion loop stage 4
 
 ### OPT-INTG-01 — Notion import
+
 - **Layer:** personal
-- **Status:** vision
-- **Summary:** Notion pages become task/commitment proposals with stable source keys, change detection, and duplicate collapsing. The pure normalization layer exists and is pilot-tested against realistic fixtures; no Notion API client exists anywhere.
-- **Evidence:** packages/web/src/lib/tasks/execution-source-normalization.ts (`normalizeNotionPlanningItems`) + tests; @notionhq/client absent from every package.json
+- **Status:** partial
+- **Summary:** Lossless normalized Notion bundles dry-run and idempotently import pages, databases, records, views, private files, people, organizations, and draft tasks with workspace-scoped source keys and source artifacts. Formula and rollup definitions plus current outputs are preserved but not executed. A live Notion API client/OAuth connection is still absent.
+- **Evidence:** packages/web/src/lib/notion-import.schema.ts; packages/web/src/lib/notion-import.server.ts; packages/web/scripts/import-notion-bundle.ts; packages/web/src/lib/**tests**/fixtures/notion-operational-workspaces.ts; @notionhq/client absent from every package.json
 - **Acceptance:** Connecting a Notion workspace yields deduplicated task-import proposals that update on source edits.
-- **Roadmap:** later — after companion loop stages 1–2
+- **Roadmap:** foundation implemented; live connector later
+
+### OPT-CONTENT-01 — Documents and bounded collections
+
+- **Layer:** personal / org
+- **Status:** implemented
+- **Summary:** Stable Markdown documents with immutable revisions and Notion-style table collections support typed fields, canonical entity links, inline editing, sorting, filtering, search, column visibility, saved views, optimistic concurrency, transactional batch writes, scoped sharing, audit events, and private attachments. Formula/rollup fields are preserved snapshots; generic formula execution, collaborative block editing, and generic automations are deliberately excluded.
+- **Evidence:** packages/db/prisma/schema.prisma (`Document`, `DocumentRevision`, `Collection*`, `ContentAccessGrant`, `ContentAttachment`); packages/web/src/lib/documents.server.ts; packages/web/src/lib/collections.server.ts; packages/web/src/components/collections/collection-records-grid.tsx; packages/web/src/lib/content-access.server.ts; packages/web/src/lib/content-search.server.ts; REST/OpenAPI/MCP tests
+- **Acceptance:** A user can create and share a document or collection, edit and query table records without conflicts or authorization leaks, and retrieve a private file only through an authorized short-lived URL.
+- **Roadmap:** shipped foundation — expand only for migrated workflows
 
 ### OPT-INTG-02 — Google Calendar import
+
 - **Layer:** personal
 - **Status:** vision
 - **Summary:** Calendar events become fixed commitments for the execution planner. The planner accepts calendar-shaped data today (`fixedCommitments`); no Google API client, OAuth scope, or sync exists.
@@ -326,6 +370,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** later — after companion loop stages 1–2
 
 ### OPT-API-01 — Developer OAuth/OpenAPI surface
+
 - **Layer:** cross-cutting
 - **Status:** implemented
 - **Summary:** Open signup: OAuth authorization-code + PKCE, dynamic client registration, token rotation/revocation; /openapi.json and /developers; MCP and REST share one scope catalog. Anyone can connect an MCP client today.
@@ -334,6 +379,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain (further items in DEVELOPER_API_PLAN.md)
 
 ### OPT-DATA-01 — Dataset layer
+
 - **Layer:** cross-cutting
 - **Status:** implemented
 - **Summary:** Vendored economic-data snapshot (65 CSVs) with catalog, plus fetchers and parameter corpus with citations; docs in DATA_SOURCES.md.
@@ -342,6 +388,7 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Roadmap:** shipped — maintain
 
 ### OPT-PLAT-01 — Task dossier block components
+
 - **Layer:** platform
 - **Status:** dead
 - **Summary:** Twelve components under components/tasks/blocks/ (TaskUnlocks, TaskCostOfDelay, TaskPerformanceReview, …) map 1:1 to contextJson slots that seed data and MCP docs populate — but no page imports any of them; the task detail page never renders the dossier.
