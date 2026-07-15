@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, X } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   CollectionRecordsGrid,
@@ -210,6 +210,25 @@ export function CollectionRecordsClient({
   const [values, setValues] = useState<Record<string, unknown>>(() =>
     initialValues(fields, null),
   );
+  const recordsContextKey = useMemo(
+    () =>
+      [
+        collectionId,
+        initialView?.id ?? "no-view",
+        initialView?.version ?? 0,
+        focusedRecordId ?? "no-focus",
+        initialNextCursor ?? "no-cursor",
+        ...initialRecords.map((record) => `${record.id}:${record.version}`),
+      ].join("|"),
+    [
+      collectionId,
+      focusedRecordId,
+      initialNextCursor,
+      initialRecords,
+      initialView?.id,
+      initialView?.version,
+    ],
+  );
   const orderedFields = useMemo(
     () => [...fields].sort((left, right) => left.position - right.position),
     [fields],
@@ -217,6 +236,13 @@ export function CollectionRecordsClient({
   const hasEditableFields = orderedFields.some((field) =>
     EDITABLE_TYPES.has(field.type),
   );
+
+  useEffect(() => {
+    setRecords(initialRecords);
+    setEditing(null);
+    setOpen(false);
+    setError(null);
+  }, [initialRecords, recordsContextKey]);
 
   const beginEdit = useCallback(
     (record: CollectionRecord | null) => {
@@ -329,6 +355,7 @@ export function CollectionRecordsClient({
         focusedRecordId={focusedRecordId}
         initialNextCursor={initialNextCursor}
         initialView={initialView}
+        key={recordsContextKey}
         views={views}
         onEditRecord={beginEdit}
         onRecordsAdded={addRecords}
