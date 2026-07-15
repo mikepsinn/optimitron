@@ -27,16 +27,19 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - "Inventory every public page on `1percenttreaty.org`, then fetch the page copy before editing route metadata."
 - "Search the Optimitron repo for the helper that owns a behavior before writing another one."
 
-## Personal Task Engine Protocol
+## Private Execution Protocol
 
-For personal planning, the MCP server is an expected-value task engine. The loop is:
+For personal and organization planning, the MCP server is an expected-value task engine. The approved private-work loop is below; `FEATURES.md` and `/api/mcp/tools` remain authoritative about which tools have shipped:
 
-1. Create or update tasks with enough estimates to compute priority.
-2. Add dependencies for true prerequisites.
-3. Audit the queue with `getQueueAudit`.
-4. Ask `getNextAction` or inspect `getMyQueue`.
-5. When work is done, call `updateTask` with `status: "VERIFIED"`.
-6. Repeat; dependents automatically become available when all blockers are verified.
+1. `getMe` confirms OAuth identity, scopes, memberships, and stable private roots.
+2. Create individual tasks or call `reviewPrivateTaskBundle` for an explicitly selected source batch.
+3. Inspect every normalized action, duplicate, dependency, estimate, source anchor, and error. Apply the unchanged review with `applyPrivateTaskBundle`; private candidates become `ACTIVE`, never public proposals.
+4. Audit with `getQueueAudit`, then ask `getNextAction` or `getExecutionPlan`.
+5. Call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
+6. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
+7. Repeat; dependents become available only after accepted verification.
+
+`updateTask(status="VERIFIED")` is invalid. Claim and completion operations derive the actor from OAuth and never accept authority from a caller-supplied user ID.
 
 The canonical score is `priority`:
 
@@ -70,13 +73,15 @@ Deadline policy rules:
 
 Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, use `depends_on`.
 
-Recommended OAuth scopes for a personal life-planning AI:
+Recommended OAuth scope for a personal life-planning AI:
 
 ```text
 tasks:personal
 ```
 
 Do not request `tasks:admin` for personal planning. `tasks:admin` is reserved for admin users managing public Earth-level tasks. Public manual search and public task reads do not require OAuth permissions.
+
+Add `tasks:organization` only for work in organizations where the user is an explicit member. Human approval clients may receive `actions:approve`; agent tokens may not.
 
 Example private task:
 
@@ -87,6 +92,11 @@ Example private task:
   "value": 20000,
   "p_success": 0.99,
   "cash_cost": 150,
+  "expected_deliverable": "Accepted federal and state returns with filing receipts",
+  "acceptance_criteria": [
+    "Return totals match reviewed source documents",
+    "Filing receipt is attached"
+  ],
   "executor_type": "Self",
   "due_at": "2026-04-15T17:00:00-05:00",
   "deadline_policy": "REQUIRED",
@@ -146,10 +156,22 @@ are specified in [TASK_COMMUNICATION_MODEL.md](./TASK_COMMUNICATION_MODEL.md)
 - `TrackingReminder` is for health-variable measurement reminders, not task assignee contact or assignment.
 - `ReferralInvitation` is the invite lifecycle. `ShareAttempt` is the exact outbound-message ledger.
 
+## Private Resource Policy
+
+- One task policy protects task rows, blockers, search and counts, comments, attachments, source artifacts, attempts, artifacts, verification, audit, export, and deletion.
+- Authorization happens before lookup-derived disclosure, filtering, counting, and pagination. Outsiders receive the same response for missing and forbidden private resources.
+- Public ancestry never grants private access. Personal ownership and explicit organization membership do.
+- Platform admin status is not routine private access. Break-glass access is explicit and audited.
+- Private conversation sources retain safe hashes, anchors, aliases, timestamps, approved excerpts, and model metadata; never unrestricted transcripts.
+
 ## Tool Groups
 
 - Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
 - Personal task management: `createTask`, `updateTask`, `deleteTask`.
+- Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection` (target contract; see OPT-INTG-03 status).
+- Private execution: `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail` (target contract; see OPT-TASK-08 status).
+- External approval: `proposeExternalAction`, `recordExternalActionResult`; human approval is performed only by an `actions:approve` client (target contract; see OPT-AGENT-02 status).
+- Portability: `exportPrivateWork` (target contract; see OPT-TASK-08 status).
 - Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
 - Referendums: `listReferendums` for public active referendum inventory; `createReferendum` for admin-created draft referendum rows.
 - Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.

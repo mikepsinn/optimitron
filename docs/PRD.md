@@ -50,7 +50,7 @@ authorization boundary, or preserve the evidence needed to audit it.
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | PERSONAL-NEXT     | As an individual, I want one ranked next action and a realistic plan for today so that I spend my time on what matters most without neglecting medication, food, sleep, exercise, or fixed commitments. | `getNextAction` and `getExecutionPlan` use the same eligibility and EV rules, exclude blocked work, and include due personal routines.                                                                                                                 |
 | PERSONAL-SCHEDULE | As an individual, I want Optimitron to continuously generate and revise my schedule so that I always know what to do and when, for as long as I use it.                                                 | Durable recurrence rules, time windows, deadlines, dependencies, and fixed commitments are projected into a bounded rolling calendar; completion, new information, or elapsed time triggers replanning instead of creating infinite future event rows. |
-| PERSONAL-CAPTURE  | As an individual, I want to brain-dump obligations and ideas so that my agent turns them into private, atomic, estimated tasks in the right part of my objective tree.                                  | The agent proposes deduplicated tasks with an explicit parent, dependencies, effort, cost, probability, value, and acceptance criteria before promotion.                                                                                               |
+| PERSONAL-CAPTURE  | As an individual, I want to brain-dump obligations and ideas so that my agent turns them into private, atomic, estimated tasks in the right part of my objective tree.                                  | After explicit source and candidate review, every grounded nonduplicate action is created as a private active task with an explicit parent, dependencies, effort, cost, probability, value, deliverable, criteria, and provenance; ambiguity becomes a clarification task.                                            |
 | PERSONAL-TRACK    | As an individual, I want to tell my agent what I did, took, ate, and felt so that completed tasks and health measurements are actually recorded without a separate data-entry app.                      | The conversation persists task completion, Measurements, and InterventionExperience records; it never claims to have logged data that was not written.                                                                                                 |
 | PERSONAL-LEARN    | As an individual, I want Optimitron to learn what improves or worsens my outcomes so that future recommendations rely increasingly on observed effects instead of guesses.                              | Before/after and temporal analyses produce reviewable effect estimates that can update the relevant task-impact inputs.                                                                                                                                |
 | PERSONAL-DELEGATE | As an individual, I want agents to perform suitable work in parallel so that I only do the parts requiring my judgment, identity, or body.                                                              | Agents lease non-blocked executable tasks; sending, spending, publishing, and other external effects require approval of the concrete action.                                                                                                          |
@@ -60,7 +60,7 @@ authorization boundary, or preserve the evidence needed to audit it.
 | ANALYST-MODEL     | As an analyst, I want to propose sourced parameters and formulas so that task estimates are reproducible, reviewable, and updated when important assumptions change.                                    | Published calculations pin exact reviewed parameter revisions; changed inputs mark affected estimate sets stale until a replacement succeeds.                                                                                                          |
 | GOVERNMENT-PLAN   | As a citizen or government, I want preferences, evidence, policies, and budgets converted into ranked programs so that public resources maximize welfare rather than political intuition.               | Wishocracy, OPG, or OBG outputs can become sourced task bundles that compete under the same EV rules as other programs.                                                                                                                                |
 | CAMPAIGN-ACT      | As a human or organization, I want to vote, recruit others, endorse, register a plaintiff, or remind a leader so that the current highest-EV campaign gains measurable support.                         | Each action has a direct completion path and its referral, endorsement, case, or reminder outcome is recorded.                                                                                                                                         |
-| OPERATOR-INGEST   | As a user leaving other productivity tools, I want existing tasks and calendar commitments deduplicated into Optimitron so that I can use one canonical ranked system.                                  | Imports use stable source identities; meetings constrain capacity, while actionable work becomes reviewable task proposals rather than duplicate databases.                                                                                            |
+| OPERATOR-INGEST   | As a user leaving other productivity tools, I want existing tasks and calendar commitments deduplicated into Optimitron so that I can use one canonical ranked system.                                  | Explicitly selected imports use stable private source identities and atomic review/apply; every grounded action becomes active, duplicates gain source links, meetings constrain capacity, and raw private transcripts are not retained.                                                                               |
 
 ---
 
@@ -79,9 +79,12 @@ tree, not separate systems:
 | Government   | Jurisdictions                | What policies and budgets maximize welfare? | OPG / OBG / Wishocracy (OPT-GOV-01..05)                  |
 | Earth        | Humanity                     | Which programs move the two medians most?   | EV-ranked programs under `optimize-earth` (OPT-EARTH-\*) |
 
-Personal subtrees graft under reserved `planner:person:<id>` branches;
-organizational subtrees under `planner:organization:<id>`. Same table, same
-ranking math, ownership and visibility filtered at query time.
+Personal subtrees graft under reserved `planner:person:<id>` branches named
+`Optimize <person>'s life`; organizational subtrees use
+`planner:organization:<id>` branches named `Optimize <organization>`. Both
+sit directly beneath `optimize-earth`, but public ancestry never grants access
+to private descendants. Every work node is a `Task`; objectives, projects,
+and workflows are container tasks whose meaning comes from ancestry.
 
 ---
 
@@ -133,17 +136,22 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
 
 ### 3.3 Brain dump → tasks (OPT-TASK-05, OPT-TASK-06, OPT-TASK-07)
 
-- The user talks; the agent turns ideas and obligations into tasks with
-  explicit parent selection, EV estimates (value, P(success), hours, cash
-  cost), and dependency edges (OPT-TASK-02).
+- The user talks or explicitly selects a bounded source batch. The client
+  extracts candidates locally where the source is private, then shows the
+  exact source and normalized actions for review.
+- Every grounded, nonduplicate action selected in that review becomes a
+  private `ACTIVE` task with explicit parent selection, deliverable,
+  acceptance criteria, provenance, EV estimates (value, P(success), hours,
+  cash cost), and dependency edges (OPT-TASK-02). Ambiguity becomes a
+  clarification task; private work does not use the public proposal queue.
 - Parent selection SHALL search the existing tree and attach to the closest
   existing objective (OPT-TASK-06). Attaching directly to the
   `optimize-earth` root is an error for user tasks; silently defaulting to
   root is a defect (see cleanup backlog in ROADMAP.md).
-- Non-atomic ideas SHALL be decomposed into atomic subtasks the agent
-  generates and the user confirms (OPT-TASK-07). "Apply for an SFF grant"
-  becomes: draft answers, gather budget, get reference, submit — each
-  individually rankable and completable.
+- Non-atomic ideas SHALL be decomposed into child tasks during review
+  (OPT-TASK-07). A task with unresolved children is a container and never
+  enters an execution queue. Reserved mission, personal, and organization
+  roots are also permanently non-executable.
 
 ### 3.4 Recurring tracking (OPT-HEALTH-06)
 
@@ -189,18 +197,24 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
   These systems are migration and invitation sources. Optimitron owns the
   resulting planning state and projects it into its own task and calendar
   views.
+- WhatsApp, Discord, Telegram, email, Slack, meeting notes, Notion comments,
+  and GitHub discussions share one conversation-to-work pattern: explicit
+  selection, local raw-text extraction by default, exact human review, safe
+  source hashes/anchors, then atomic active-task creation. There is no ambient
+  account scraping or unreviewed whole-history import.
 
 ---
 
 ## 4. Layer 2: Organizations
 
-- Organizations own tasks, members, and roles (OPT-TASK-01). Org task queues
+- Organizations own tasks, members, and owner/admin/member/viewer roles
+  (OPT-TASK-01). Org task queues
   rank the same way personal queues do, rooted at
   `planner:organization:<id>`.
-- The task marketplace matches open tasks to people and agents: applications,
-  candidate matching, review (OPT-TASK-01). Bounties, role openings, and
-  volunteer roles are task kinds excluded from execution queues but visible
-  in discovery.
+- Listings, compensation, applications, and candidate matching describe how
+  ordinary tasks may be staffed (OPT-TASK-01). They do not create task types.
+  Container status is derived only from unresolved child tasks and reserved
+  root identity.
 - Organizations endorse referendums (`signReferendumAsOrganization`,
   OPT-EARTH-03), embed vote/referral surfaces, and recruit their own people —
   the org layer is how the earth layer scales.
@@ -313,11 +327,13 @@ contract status in FEATURES.md OPT-TREAS-01..03):
 
 ### 9.3 MCP and API surface
 
-The MCP server (`packages/web/src/lib/mcp-server.ts`, ~110 tools) is the
-primary product interface for the personal layer — any MCP-capable AI client
-is an Optimitron client. Scope-gated per tool, OAuth-authenticated, publicly
-connectable (OPT-API-01). The same capabilities are exposed as a REST/OpenAPI
-surface for non-MCP developers. Tool-by-tool reference:
+The MCP server (`packages/web/src/lib/mcp-server.ts`) is the primary product
+interface for the personal layer. Codex and Claude Code remain the chat,
+reasoning, connector, coding, and browser clients; Optimitron owns durable
+tasks, provenance, EV, permissions, approvals, verification, and audit.
+Tools are OAuth-authenticated and scope-gated (OPT-API-01). REST/OpenAPI
+exists for the narrow web and partner operations that need it, not as a
+second richer write contract. Tool reference:
 [MCP_SERVER.md](./MCP_SERVER.md).
 
 ### 9.4 Data provenance
@@ -341,6 +357,10 @@ do not ship.
   represented by typed task/planner/TaskTrigger behavior.
 - **Not a social network.** People and organization pages exist for trust and
   coordination, not engagement farming.
+- **Not another chat, coding agent, connector suite, terminal, or browser
+  controller.** Codex and Claude Code already own those client capabilities;
+  the Chrome extension is limited to explicit local capture, review, and
+  exact approval.
 - **Not mixing treasury mechanisms** (§9.2) — separation is enforced at
   contract, ABI, route, copy, and voice-config layers.
 - **Not shipping unverifiable claims.** A capability without evidence in

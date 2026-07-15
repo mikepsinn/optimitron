@@ -1,6 +1,6 @@
 # Task Model
 
-This document defines the invariants for the task system. If a future change violates these rules, it should be treated as a schema or architecture change, not a routine feature edit.
+This document defines the approved invariants for the task system. `FEATURES.md` states which parts currently ship. A change that violates these rules is a schema or architecture change, not a routine feature edit.
 
 ## Core Identity
 
@@ -11,7 +11,8 @@ This document defines the invariants for the task system. If a future change vio
 
 ## Task Ownership
 
-- `Task` is the only execution node. Do not introduce separate “objective”, “mission”, or “policy task” tables unless the task abstraction has clearly failed.
+- `Task` is the only work-graph node. There is no task-kind discriminator and no separate objective, project, workflow, mission, or policy-task table.
+- Objectives, projects, and workflows are ordinary container tasks identified by ancestry and context.
 - `Task.assigneePersonId` points to the human the task is addressed to, if any.
 - `Task.assigneeOrganizationId` points to the institution the task is addressed to, if any.
 - A task may point to neither, one, or both. This covers pure public work, institution-addressed work, and person-in-institution accountability work.
@@ -19,6 +20,16 @@ This document defines the invariants for the task system. If a future change vio
 - `Person.currentAffiliation` is actor metadata. It may change over time.
 - `Task.roleTitle` is task-facing display context, not a durable office-seat model.
 - `Organization.sourceRef` is the stable import key for institution identities when present.
+
+## Roots And Executability
+
+- The single mission root is `optimize-earth` (`program:optimize-earth`).
+- Each authenticated person lazily receives one private `planner:person:<personId>` root named `Optimize <person>'s life` directly beneath it.
+- Each organization lazily receives one private `planner:organization:<organizationId>` root named `Optimize <organization>` directly beneath it.
+- Public ancestry never grants access to a private task. Personal ownership and explicit organization membership are the access boundary.
+- Reserved mission, personal, and organization roots never execute.
+- Any task with unresolved child tasks is a container and never executes.
+- An executable task is `ACTIVE`, accessible, unblocked, executor-eligible, and childless with respect to unresolved work.
 
 ## Claimability
 
@@ -30,12 +41,12 @@ This document defines the invariants for the task system. If a future change vio
 
 Task status is intentionally narrow:
 
-- `DRAFT`: not yet live
+- `DRAFT`: a public/governance proposal not yet live
 - `ACTIVE`: available or pending
 - `VERIFIED`: accepted as complete
 - `STALE`: superseded by source or no longer current
 
-There is no separate long-lived `COMPLETED` task state. Completion that matters publicly should end in `VERIFIED`.
+Reviewed private source actions are created directly as private `ACTIVE` tasks. There is no separate long-lived `COMPLETED` task state. Only accepted verification may move a task to `VERIFIED`; generic update paths may not set it.
 
 ## Deadlines
 
@@ -54,11 +65,11 @@ Claim status is more expressive than task status because claims represent user w
 - `REJECTED`
 - `ABANDONED`
 
-Current public workflow is primarily:
+Claims coordinate public or multi-claimant work. `TaskExecutionAttempt` is the canonical record for each real execution. The execution workflow is:
 
-- `CLAIMED -> COMPLETED -> VERIFIED`
+- `ACTIVE task -> RUNNING attempt -> submitted attempt -> accepted or rejected verification`
 
-`ABANDONED` and `REJECTED` exist so claims can be released or reviewed without deleting history.
+Acceptance verifies the task and releases dependents. Rejection preserves the attempt, artifacts, criteria snapshot, and verdict, then requeues the task for a new attempt. `ABANDONED` and `REJECTED` claim states remain useful for claim coordination without deleting history.
 
 ## Provenance
 
@@ -66,6 +77,15 @@ Current public workflow is primarily:
 - `TaskImpactSourceArtifact` describes where the impact estimate came from.
 - These are intentionally separate. Do not collapse them.
 - `SourceArtifact.sourceKey` is the canonical upstream artifact identity.
+- A private source artifact has exactly one user or organization owner. Identifier knowledge never grants payload access.
+- Private conversation provenance stores safe metadata, anchors, hashes, and explicitly approved excerpts, not unrestricted transcripts.
+
+## Artifacts And Verification
+
+- `TaskExecutionArtifact` links one attempt to existing private content, an attachment, an external URL, or a structured result and stores an immutable content hash.
+- `TaskVerification` appends deterministic, rule-based, reviewer, or outcome evidence against snapshotted acceptance criteria and artifact hashes.
+- Agents may submit work but cannot grant their own human approval. OAuth identity, not caller-supplied user IDs, determines the human actor.
+- Later outcome observations do not rewrite the original deliverable verdict.
 
 ## Impact Estimates
 
@@ -92,4 +112,4 @@ Otherwise prefer:
 
 - `contextJson` for task-local structured details
 - `TaskImpactMetric` for new impact outputs
-- `SourceArtifact.payloadJson` for upstream artifact payloads
+- `SourceArtifact.payloadJson` for access-controlled safe upstream metadata, never unrestricted private transcripts

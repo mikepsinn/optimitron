@@ -12,6 +12,7 @@
 - Follow existing patterns — read surrounding code before writing new code
 - Changes to the Prisma schema or exported `@optimitron/db` types require explicit human approval.
 - If the human says `optimize earth`, follow `docs/OPTIMIZE_EARTH_PROTOCOL.md`.
+- Load `docs/SYSTEM_MAP.md` before cross-package architecture work.
 
 ## Mission Focus
 
@@ -28,6 +29,7 @@
 - Legal nonprofit: Accelerated Medicine Foundation. Registered DBAs include Institute for Accelerated Medicine and International Campaign to End War and Disease.
 - The default product question is: does this help a human vote, recruit two more humans, get an organization to join, register a plaintiff, remind a leader, complete a companion-loop stage, or trust the quantified case enough to act?
 - Treat `optimitron.com` as the operating system and proof engine: task coordination, referrals, communications, OPG/OBG/Wishocracy, politician grading, impact math, and AI-agent workflows. Do not let generic platform breadth compete with the Now tracks for attention.
+- Optimitron owns durable tasks, EV, provenance, permissions, approval, verification, and audit. Codex/Claude own chat, coding, connectors, and browser control; the extension owns explicit local capture and approval.
 - Park generic platform features, clever demos, cosmetic cleanup, and non-campaign variant work unless they directly reduce friction on a Now track or protect an already-shipping path.
 - For development and visual review, make the War on Disease variant the primary surface. Keep secondary variant screenshots/links available for regression checks, but put the campaign gallery first so PR review load stays low.
 
@@ -91,6 +93,7 @@
 Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones before working:
 
 - `docs/PRD.md` — Product spec: the four-layer optimization machine and the Daily Companion Loop
+- `docs/SYSTEM_MAP.md` — Fast architecture map and context-loading ladder
 - `docs/FEATURES.md` — Feature registry: what actually exists, with evidence (the only doc allowed to assert maturity status)
 - `docs/ROADMAP.md` — Sequencing (Now/Next/Later/Parked/Won't) + code-cleanup backlog
 - `docs/TYPE_SYSTEM.md` — How types flow from Prisma → all packages
