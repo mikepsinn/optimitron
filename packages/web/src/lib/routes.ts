@@ -554,7 +554,8 @@ export const collectionsLink: NavItem = {
   href: ROUTES.collections,
   label: "Collections",
   emoji: "",
-  description: "Keep structured records beside the tasks and people they describe.",
+  description:
+    "Keep structured records beside the tasks and people they describe.",
   tagline: "Keep structured records",
   authenticatedCopyPreview: true,
   authenticatedScreenshot: true,

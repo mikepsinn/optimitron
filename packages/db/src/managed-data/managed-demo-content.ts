@@ -11,8 +11,7 @@ import {
 } from "../constants.js";
 
 const MANAGED_DEMO_CONTENT_DATE = new Date("2026-07-15T00:00:00.000Z");
-const MANAGED_DEMO_DOCUMENT_REVISION_ID =
-  "managed-demo-apg-operating-note-v1";
+const MANAGED_DEMO_DOCUMENT_REVISION_ID = "managed-demo-apg-operating-note-v1";
 const MANAGED_DEMO_COLLECTION_SOURCE_KEY =
   "managed:demo:collection:apg-projects";
 const MANAGED_DEMO_DOCUMENT_SOURCE_KEY =
