@@ -102,6 +102,8 @@ const mocks = vi.hoisted(() => ({
   canUserManageTask: vi.fn(),
   softDeleteOrganization: vi.fn(),
   getTaskAccessWhere: vi.fn(),
+  getTaskClientAccessWhere: vi.fn(),
+  isTaskWithinClientAccessBoundary: vi.fn(),
   ensurePersonForUser: vi.fn(),
   organizationMemberFindMany: vi.fn(),
   organizationFindFirst: vi.fn(),
@@ -188,7 +190,10 @@ vi.mock("../tasks/task-visibility.server", () => ({
   canUserViewTask: mocks.canUserViewTask,
   assertUserCanViewTask: vi.fn(),
   getTaskAccessWhere: mocks.getTaskAccessWhere,
+  getTaskClientAccessWhere: mocks.getTaskClientAccessWhere,
   getTaskVisibilityWhere: vi.fn(),
+  isTaskWithinClientAccessBoundary:
+    mocks.isTaskWithinClientAccessBoundary,
 }));
 vi.mock("../person.server", () => ({
   ensurePersonForUser: mocks.ensurePersonForUser,
@@ -576,6 +581,8 @@ beforeEach(() => {
   mocks.canUserCommentOnTask.mockResolvedValue(true);
   mocks.canUserManageTask.mockResolvedValue(true);
   mocks.getTaskAccessWhere.mockReturnValue({});
+  mocks.getTaskClientAccessWhere.mockReturnValue({});
+  mocks.isTaskWithinClientAccessBoundary.mockReturnValue(true);
   mocks.ensurePersonForUser.mockResolvedValue({
     displayName: "Test User",
     id: "person-1",
@@ -656,10 +663,19 @@ beforeEach(() => {
     },
   );
   mocks.taskFindMany.mockImplementation(
-    async (args?: { where?: { id?: { in?: string[] } } }) =>
-      args?.where?.id?.in?.includes("optimize-earth")
+    async (args?: {
+      where?: {
+        AND?: Array<{ id?: { in?: string[] } }>;
+        id?: { in?: string[] };
+      };
+    }) => {
+      const ids =
+        args?.where?.id?.in ??
+        args?.where?.AND?.find((clause) => clause.id?.in)?.id?.in;
+      return ids?.includes("optimize-earth")
         ? [makeOptimizeEarthRoot()]
-        : [],
+        : [];
+    },
   );
   mocks.canManageOrganization.mockResolvedValue(false);
   mocks.sourceArtifactUpsert.mockResolvedValue({ id: "source-artifact-1" });
@@ -1853,6 +1869,10 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("getBlockers ignores soft-deleted dependency edges so it agrees with getTask visibility", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
       const client = await setup("user-1", ALL_SCOPES);
       await client.callTool({
         name: "getBlockers",
@@ -3602,6 +3622,9 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("rejects organization-owned tasks from callers without a contributor role", async () => {
+      mocks.taskFindFirst.mockResolvedValue(
+        makePlanningBranch({ ownerOrganizationId: "other-org" }),
+      );
       const client = await setup("user-1", ALL_SCOPES);
 
       const result = await client.callTool({
@@ -4043,6 +4066,9 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("defaults organization-assigned tasks to public active visibility", async () => {
+      mocks.taskFindFirst.mockResolvedValue(
+        makePlanningBranch({ isPublic: true }),
+      );
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "created-task",
@@ -4920,6 +4946,10 @@ describe("MCP server tool dispatch", () => {
 
   describe("task comments", () => {
     it("postTaskComment creates a comment and triggers comment notifications with the author excluded", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
       mocks.postComment.mockResolvedValueOnce({
         id: "comment-1",
         taskId: "task-1",
@@ -4954,7 +4984,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("postTaskComment 404s tasks the caller cannot comment on without writing", async () => {
-      mocks.canUserCommentOnTask.mockResolvedValue(false);
+      mocks.taskFindFirst.mockResolvedValue(null);
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({

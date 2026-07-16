@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  OrganizationMemberRole,
   TaskApplicationEventType,
   TaskApplicationStatus,
 } from "@optimitron/db/enums";
@@ -144,7 +145,12 @@ describe("canReviewTaskApplications", () => {
     expect(mocks.prisma.organizationMemberFindFirst).toHaveBeenCalledWith({
       where: {
         organizationId: { in: ["org_owner"] },
-        role: { in: ["owner", "admin"] },
+        role: {
+          in: [
+            OrganizationMemberRole.OWNER,
+            OrganizationMemberRole.ADMIN,
+          ],
+        },
         userId: "reviewer_user",
       },
       select: { role: true },
