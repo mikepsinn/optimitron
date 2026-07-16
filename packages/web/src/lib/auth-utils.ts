@@ -50,7 +50,7 @@ async function getOAuthIdentity(
         revokedAt: null,
         userId: payload.sub,
       },
-      select: { scopes: true },
+      select: { organizationIds: true, scopes: true },
     }),
   ]);
   if (!user || !grant) {
@@ -63,8 +63,31 @@ async function getOAuthIdentity(
     throw new Error("Unauthorized");
   }
 
+  const tokenOrganizationIds = payload.organizationIds ?? [];
+  const currentMemberships =
+    tokenOrganizationIds.length === 0
+      ? []
+      : await prisma.organizationMember.findMany({
+          where: {
+            organizationId: { in: tokenOrganizationIds },
+            organization: { deletedAt: null },
+            userId: user.id,
+          },
+          select: { organizationId: true },
+        });
+  const grantedOrganizationIds = new Set(grant.organizationIds ?? []);
+  const currentOrganizationIds = new Set(
+    currentMemberships.map((membership) => membership.organizationId),
+  );
+  const organizationIds = tokenOrganizationIds.filter(
+    (organizationId) =>
+      grantedOrganizationIds.has(organizationId) &&
+      currentOrganizationIds.has(organizationId),
+  );
+
   return {
     clientId: payload.clientId,
+    organizationIds,
     scopes: activeScopes,
     userEmail: user.email,
     userId: user.id,

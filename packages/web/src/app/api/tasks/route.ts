@@ -12,6 +12,7 @@ import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -128,13 +129,24 @@ async function findOrCreateInvitedAssigneePerson({
 
 export async function GET(request: Request) {
   try {
+    let clientAccessBoundary: TaskClientAccessBoundary | undefined;
     let userId: string | null = null;
     if (hasBearerAuthorization(request)) {
       const auth = await requireAuth(request, [
         McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ORGANIZATION,
         McpScope.TASKS_ADMIN,
       ]);
       userId = auth.userId;
+      const scopes = "scopes" in auth ? auth.scopes : [];
+      const organizationIds =
+        "organizationIds" in auth ? auth.organizationIds : [];
+      clientAccessBoundary = {
+        allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
+        organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
+          ? organizationIds
+          : [],
+      };
     } else {
       const session = await getServerSession(authOptions);
       userId = session?.user.id ?? null;
@@ -162,6 +174,7 @@ export async function GET(request: Request) {
     const tasks = await listTasks({
       assigneeOrganizationId,
       assigneePersonId,
+      ...(clientAccessBoundary ? { clientAccessBoundary } : {}),
       frameKey,
       status,
       userId,

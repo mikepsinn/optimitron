@@ -72,3 +72,24 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
     "smoke jobs should recover the active Vercel preview URL before failing inactive deployment events",
   );
 });
+
+test("preview smoke waits for the merge-ref database sync check", () => {
+  const waitBlocks = [
+    ...workflow.matchAll(
+      /- name: Wait for preview database sync[\s\S]*?(?=\n      - name:)/gu,
+    ),
+  ].map((match) => match[0]);
+
+  assert.equal(waitBlocks.length, 2);
+  for (const block of waitBlocks) {
+    assert.match(block, /listPullRequestsAssociatedWithCommit/u);
+    assert.match(block, /currentPull\.merge_commit_sha/u);
+    assert.match(block, /checkRefs\.add\(currentPull\.merge_commit_sha\)/u);
+    assert.match(block, /check\.conclusion === "success"/u);
+    assert.doesNotMatch(
+      block,
+      /\["success", "skipped", "neutral"\]/u,
+      "database deployment must succeed before preview smoke runs",
+    );
+  }
+});

@@ -88,6 +88,61 @@ describe("getTaskVisibilityWhere", () => {
     expect(where.isPublic).toBeUndefined();
   });
 
+  it("keeps the target-organization filter when composing accessible access", () => {
+    const where = getTaskVisibilityWhere({
+      personId: "person_1",
+      targetOrganizationId: "org_target",
+      userId: "user_1",
+      visibility: "accessible",
+    });
+
+    expect(where).toEqual({
+      AND: [
+        expect.objectContaining({ deletedAt: null }),
+        {
+          OR: [
+            { assigneeOrganizationId: "org_target" },
+            { ownerOrganizationId: "org_target" },
+          ],
+        },
+        expect.objectContaining({
+          OR: expect.arrayContaining([
+            { isPublic: true },
+            { createdByUserId: "user_1" },
+            { assigneePersonId: "person_1" },
+          ]),
+        }),
+      ],
+    });
+  });
+
+  it("keeps the target-organization filter when composing personal access", () => {
+    const where = getTaskVisibilityWhere({
+      personId: "person_1",
+      targetOrganizationId: "org_target",
+      userId: "user_1",
+      visibility: "personal",
+    });
+
+    expect(where).toEqual({
+      AND: [
+        expect.objectContaining({ deletedAt: null }),
+        {
+          OR: [
+            { assigneeOrganizationId: "org_target" },
+            { ownerOrganizationId: "org_target" },
+          ],
+        },
+        {
+          OR: [
+            { createdByUserId: "user_1" },
+            { assigneePersonId: "person_1" },
+          ],
+        },
+      ],
+    });
+  });
+
   it("keeps organization viewers read-only", () => {
     const readable = getTaskAccessWhere({
       action: "READ",

@@ -1,5 +1,6 @@
 import {
   ExternalActionRequestStatus,
+  TaskClaimStatus,
   TaskExecutionAttemptStatus,
   type Prisma,
 } from "@optimitron/db";
@@ -10,6 +11,11 @@ import { getTaskAccessWhere } from "@/lib/tasks/task-visibility.server";
 
 const MAX_APPROVAL_WINDOW_MS = 7 * 24 * 60 * 60 * 1_000;
 const DEFAULT_APPROVAL_WINDOW_MS = 24 * 60 * 60 * 1_000;
+const ACTIVE_CLAIM_STATUSES = [
+  TaskClaimStatus.CLAIMED,
+  TaskClaimStatus.IN_PROGRESS,
+  TaskClaimStatus.COMPLETED,
+] as const;
 
 const JsonObjectSchema = z.record(z.unknown());
 
@@ -52,6 +58,16 @@ export const RecordExternalActionResultSchema = z
 
 function jsonValue(value: unknown): Prisma.InputJsonValue {
   return value as Prisma.InputJsonValue;
+}
+
+function getStartedByUserId(metadata: unknown) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const startedByUserId = (metadata as Record<string, unknown>)[
+    "startedByUserId"
+  ];
+  return typeof startedByUserId === "string" ? startedByUserId : null;
 }
 
 function externalActionSelect() {
@@ -123,11 +139,32 @@ export async function proposeExternalAction(
       where: {
         deletedAt: null,
         id: input.taskId,
-        ...getTaskAccessWhere({
-          action: "EXECUTE",
-          personId: actor.personId,
-          userId: actorUserId,
-        }),
+        OR: [
+          getTaskAccessWhere({
+            action: "EXECUTE",
+            personId: actor.personId,
+            userId: actorUserId,
+          }),
+          ...(input.taskExecutionAttemptId
+            ? [
+                {
+                  claims: {
+                    some: {
+                      deletedAt: null,
+                      executionAttempts: {
+                        some: {
+                          deletedAt: null,
+                          id: input.taskExecutionAttemptId,
+                        },
+                      },
+                      status: { in: [...ACTIVE_CLAIM_STATUSES] },
+                      userId: actorUserId,
+                    },
+                  },
+                } satisfies Prisma.TaskWhereInput,
+              ]
+            : []),
+        ],
       },
       select: { id: true },
     });
@@ -142,7 +179,15 @@ export async function proposeExternalAction(
               { executorUserId: actorUserId },
               {
                 metadata: {
-                  equals: { startedByUserId: actorUserId },
+                  equals: actorUserId,
+                  path: ["startedByUserId"],
+                },
+              },
+              {
+                taskClaim: {
+                  deletedAt: null,
+                  status: { in: [...ACTIVE_CLAIM_STATUSES] },
+                  userId: actorUserId,
                 },
               },
             ],
@@ -263,7 +308,10 @@ export async function decideExternalActionRequest(
           { requestedByUserId: actorUserId },
           {
             taskExecutionAttempt: {
-              metadata: { equals: { startedByUserId: actorUserId } },
+              metadata: {
+                equals: actorUserId,
+                path: ["startedByUserId"],
+              },
             },
           },
         ],
@@ -309,18 +357,26 @@ export async function recordExternalActionResult(
       where: {
         deletedAt: null,
         id: input.externalActionRequestId,
-        task: {
-          deletedAt: null,
-          ...getTaskAccessWhere({
-            action: "EXECUTE",
-            personId: actor.personId,
-            userId: actorUserId,
-          }),
-        },
+        task: { deletedAt: null },
+        OR: [
+          { requestedByUserId: actorUserId },
+          {
+            requestedByAgentExecutorId: { not: null },
+            taskExecutionAttempt: {
+              deletedAt: null,
+              metadata: {
+                equals: actorUserId,
+                path: ["startedByUserId"],
+              },
+            },
+          },
+        ],
       },
       select: {
         ...externalActionSelect(),
-        taskExecutionAttempt: { select: { agentExecutorId: true } },
+        taskExecutionAttempt: {
+          select: { agentExecutorId: true, metadata: true },
+        },
       },
     });
     if (!request) throw new Error("External action request not found");
@@ -349,19 +405,24 @@ export async function recordExternalActionResult(
       });
     }
 
-    const agentExecutorId = request.taskExecutionAttempt?.agentExecutorId;
+    const agentExecutorId =
+      request.requestedByAgentExecutorId ===
+        request.taskExecutionAttempt?.agentExecutorId &&
+      getStartedByUserId(request.taskExecutionAttempt?.metadata) === actorUserId
+        ? request.requestedByAgentExecutorId
+        : null;
     const update = {
-        executedAt: now,
-        executedByAgentExecutorId: agentExecutorId ?? null,
-        executedByUserId: agentExecutorId ? null : actorUserId,
-        executionReceiptJson:
-          input.receipt == null ? undefined : jsonValue(input.receipt),
-        failureMessage: input.result === "FAILED" ? input.failureMessage : null,
-        status:
-          input.result === "EXECUTED"
-            ? ExternalActionRequestStatus.EXECUTED
-            : ExternalActionRequestStatus.FAILED,
-      } satisfies Prisma.ExternalActionRequestUpdateManyMutationInput;
+      executedAt: now,
+      executedByAgentExecutorId: agentExecutorId,
+      executedByUserId: agentExecutorId ? null : actorUserId,
+      executionReceiptJson:
+        input.receipt == null ? undefined : jsonValue(input.receipt),
+      failureMessage: input.result === "FAILED" ? input.failureMessage : null,
+      status:
+        input.result === "EXECUTED"
+          ? ExternalActionRequestStatus.EXECUTED
+          : ExternalActionRequestStatus.FAILED,
+    } satisfies Prisma.ExternalActionRequestUncheckedUpdateManyInput;
     const claimed = await tx.externalActionRequest.updateMany({
       where: {
         approvedPayloadHash: request.payloadHash,

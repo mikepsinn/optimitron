@@ -159,32 +159,39 @@ export function getTaskVisibilityWhere(input?: {
     deletedAt: null,
     id: input?.taskId ?? undefined,
     status: input?.status ?? undefined,
-    ...(input?.targetOrganizationId
-      ? {
-          OR: [
-            { assigneeOrganizationId: input.targetOrganizationId },
-            { ownerOrganizationId: input.targetOrganizationId },
-          ],
-        }
-      : {}),
+  };
+  const targetWhere: Prisma.TaskWhereInput | null = input?.targetOrganizationId
+    ? {
+        OR: [
+          { assigneeOrganizationId: input.targetOrganizationId },
+          { ownerOrganizationId: input.targetOrganizationId },
+        ],
+      }
+    : null;
+
+  const withTarget = (
+    accessWhere?: Prisma.TaskWhereInput,
+  ): Prisma.TaskWhereInput => {
+    if (targetWhere && accessWhere) {
+      return { AND: [baseWhere, targetWhere, accessWhere] };
+    }
+    return {
+      ...baseWhere,
+      ...(targetWhere ?? {}),
+      ...(accessWhere ?? {}),
+    };
   };
 
   const visibility = input?.visibility ?? "public";
   if (visibility === "target") {
-    return baseWhere;
+    return withTarget();
   }
   if (visibility === "created") {
     if (!input?.userId) {
-      return {
-        ...baseWhere,
-        createdByUserId: "__unreachable__",
-      };
+      return withTarget({ createdByUserId: "__unreachable__" });
     }
 
-    return {
-      ...baseWhere,
-      createdByUserId: input.userId,
-    };
+    return withTarget({ createdByUserId: input.userId });
   }
 
   // "personal" = anything I created OR anything assigned to my Person.
@@ -193,33 +200,29 @@ export function getTaskVisibilityWhere(input?: {
   // alongside tasks I authored myself.
   if (visibility === "personal") {
     if (!input?.userId) {
-      return { ...baseWhere, createdByUserId: "__unreachable__" };
+      return withTarget({ createdByUserId: "__unreachable__" });
     }
     const ors: Prisma.TaskWhereInput[] = [{ createdByUserId: input.userId }];
     if (input.personId) {
       ors.push({ assigneePersonId: input.personId });
     }
-    return { ...baseWhere, OR: ors };
+    return withTarget({ OR: ors });
   }
 
   if (visibility === "accessible" && input?.userId) {
     // Accessible tasks include public work and private work connected to the
     // viewer by creation, assignment, management, or organization membership.
     // from /tasks "Your Tasks" → /tasks/[id].
-    return {
-      ...baseWhere,
-      ...getTaskAccessWhere({
+    return withTarget(
+      getTaskAccessWhere({
         action: "READ",
         personId: input.personId,
         userId: input.userId,
       }),
-    };
+    );
   }
 
-  return {
-    ...baseWhere,
-    isPublic: true,
-  };
+  return withTarget({ isPublic: true });
 }
 
 /**

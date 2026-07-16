@@ -15,6 +15,7 @@ import {
   updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -58,19 +59,32 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
+    let clientAccessBoundary: TaskClientAccessBoundary | undefined;
     let userId: string | null = null;
     if (hasBearerAuthorization(_request)) {
       const auth = await requireAuth(_request, [
         McpScope.TASKS_PERSONAL,
+        McpScope.TASKS_ORGANIZATION,
         McpScope.TASKS_ADMIN,
       ]);
       userId = auth.userId;
+      const scopes = "scopes" in auth ? auth.scopes : [];
+      const organizationIds =
+        "organizationIds" in auth ? auth.organizationIds : [];
+      clientAccessBoundary = {
+        allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
+        organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
+          ? organizationIds
+          : [],
+      };
     } else {
       const session = await getServerSession(authOptions);
       userId = session?.user.id ?? null;
     }
     const { id } = await context.params;
-    const data = await getTaskDetailData(id, userId);
+    const data = clientAccessBoundary
+      ? await getTaskDetailData(id, userId, { clientAccessBoundary })
+      : await getTaskDetailData(id, userId);
 
     if (!data) {
       return NextResponse.json({ error: "Task not found." }, { status: 404 });

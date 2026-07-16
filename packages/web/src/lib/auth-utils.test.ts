@@ -3,6 +3,7 @@ import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
   getServerSession: vi.fn(),
+  organizationMemberFindMany: vi.fn(),
   oAuthGrantFindFirst: vi.fn(),
   userFindFirst: vi.fn(),
   verifyMcpAccessToken: vi.fn(),
@@ -22,6 +23,9 @@ vi.mock("@/lib/mcp-oauth", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    organizationMember: {
+      findMany: mocks.organizationMemberFindMany,
+    },
     oAuthGrant: {
       findFirst: mocks.oAuthGrantFindFirst,
     },
@@ -40,12 +44,15 @@ import {
 describe("auth-utils OAuth support", () => {
   beforeEach(() => {
     mocks.getServerSession.mockReset();
+    mocks.organizationMemberFindMany.mockReset();
     mocks.oAuthGrantFindFirst.mockReset();
     mocks.userFindFirst.mockReset();
     mocks.verifyMcpAccessToken.mockReset();
     mocks.oAuthGrantFindFirst.mockResolvedValue({
+      organizationIds: [],
       scopes: [McpScope.TASKS_PERSONAL],
     });
+    mocks.organizationMemberFindMany.mockResolvedValue([]);
     mocks.userFindFirst.mockResolvedValue({
       email: "dev@example.org",
       id: "user_oauth",
@@ -55,6 +62,7 @@ describe("auth-utils OAuth support", () => {
   it("accepts a valid OAuth Bearer token with a required scope", async () => {
     mocks.verifyMcpAccessToken.mockResolvedValue({
       clientId: "client_field_app",
+      organizationIds: [],
       scopes: [McpScope.TASKS_PERSONAL],
       sub: "user_oauth",
     });
@@ -72,12 +80,43 @@ describe("auth-utils OAuth support", () => {
 
     expect(auth).toEqual({
       clientId: "client_field_app",
+      organizationIds: [],
       scopes: [McpScope.TASKS_PERSONAL],
       userEmail: "dev@example.org",
       userId: "user_oauth",
     });
     expect(mocks.verifyMcpAccessToken).toHaveBeenCalledWith("access_token");
     expect(mocks.getServerSession).not.toHaveBeenCalled();
+  });
+
+  it("keeps only granted organizations where membership is still active", async () => {
+    mocks.verifyMcpAccessToken.mockResolvedValue({
+      clientId: "client_field_app",
+      organizationIds: ["org_active", "org_left", "org_not_granted"],
+      scopes: [McpScope.TASKS_ORGANIZATION],
+      sub: "user_oauth",
+    });
+    mocks.oAuthGrantFindFirst.mockResolvedValue({
+      organizationIds: ["org_active", "org_left"],
+      scopes: [McpScope.TASKS_ORGANIZATION],
+    });
+    mocks.organizationMemberFindMany.mockResolvedValue([
+      { organizationId: "org_active" },
+      { organizationId: "org_not_granted" },
+    ]);
+
+    await expect(
+      requireAuth(
+        new Request("https://optimitron.test/api/tasks", {
+          headers: { Authorization: "Bearer access_token" },
+        }),
+        [McpScope.TASKS_ORGANIZATION],
+      ),
+    ).resolves.toMatchObject({
+      organizationIds: ["org_active"],
+      scopes: [McpScope.TASKS_ORGANIZATION],
+      userId: "user_oauth",
+    });
   });
 
   it("accepts the Bearer scheme case-insensitively", async () => {

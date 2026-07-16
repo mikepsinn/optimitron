@@ -12598,7 +12598,10 @@ export function createMcpServer(
             }
             if (
               !isTaskWithinClientAccessBoundary(
-                existingTask,
+                {
+                  isPublic: existingTask.isPublic === true,
+                  ownerOrganizationId: existingTask.ownerOrganizationId,
+                },
                 taskClientBoundary,
               )
             ) {

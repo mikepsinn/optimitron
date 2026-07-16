@@ -147,6 +147,7 @@ function preparedKey(kind: string, sourceId: string): string {
 }
 
 async function prepareArtifact(input: {
+  actorUserId: string;
   artifactType: SourceArtifactType;
   kind: string;
   normalized: unknown;
@@ -166,7 +167,7 @@ async function prepareArtifact(input: {
     contentHash,
     externalKey: stableSourceKey(input.workspaceId, input.kind, input.sourceId),
     payloadJson: payload,
-    sourceKey: `${stableSourceKey(input.workspaceId, input.kind, input.sourceId)}:${contentHash}`,
+    sourceKey: `${stableSourceKey(input.workspaceId, input.kind, input.sourceId)}:user:${sourceDigest(input.actorUserId)}:${contentHash}`,
     sourceUrl: input.url ?? null,
     title: input.title?.trim() || null,
   };
@@ -222,7 +223,7 @@ function decodeBase64(value: string): Buffer {
   return bytes;
 }
 
-async function prepareBundle(bundle: NotionImportBundle) {
+async function prepareBundle(bundle: NotionImportBundle, actorUserId: string) {
   const artifacts = new Map<string, PreparedArtifact>();
   const attachments = new Map<string, PreparedAttachment>();
   const add = async (
@@ -237,6 +238,7 @@ async function prepareBundle(bundle: NotionImportBundle) {
     normalized: unknown = item,
   ) => {
     const artifact = await prepareArtifact({
+      actorUserId,
       artifactType,
       kind,
       normalized,
@@ -841,7 +843,7 @@ async function buildDryRun(input: {
     }),
     prisma.sourceArtifact.findMany({
       where: {
-        ...getSourceArtifactVisibilityWhere(actorUserId),
+        ...getSourceArtifactVisibilityWhere(input.actorUserId),
         sourceKey: {
           in: [...prepared.artifacts.values()].map((item) => item.sourceKey),
         },
@@ -1480,7 +1482,7 @@ export async function importNotionBundle(input: {
     select: { id: true, personId: true },
   });
   if (!actor) throw new Error("Unauthorized");
-  const prepared = await prepareBundle(bundle);
+  const prepared = await prepareBundle(bundle, actor.id);
   const reviewItems = await buildDryRun({
     actorUserId: actor.id,
     bundle,

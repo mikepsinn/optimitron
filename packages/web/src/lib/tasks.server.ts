@@ -1368,6 +1368,7 @@ export async function getTaskDetailData(
   taskId: string | null | undefined,
   userId?: string | null,
   options?: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {

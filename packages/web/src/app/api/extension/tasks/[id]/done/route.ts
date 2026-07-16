@@ -107,12 +107,14 @@ export async function POST(
       });
     }
 
-    const attempt =
+    const continuingAttempt =
       existingAttempt?.status === TaskExecutionAttemptStatus.RUNNING
         ? existingAttempt
-        : await startTaskExecution({ taskId: id }, userId);
+        : null;
+    const attempt =
+      continuingAttempt ?? (await startTaskExecution({ taskId: id }, userId));
 
-    if (existingAttempt?.artifacts.length !== 1) {
+    if (!continuingAttempt || continuingAttempt.artifacts.length === 0) {
       await submitTaskArtifact(
         {
           label: "Extension completion evidence",

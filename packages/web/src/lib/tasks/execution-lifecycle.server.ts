@@ -126,23 +126,46 @@ export async function startTaskExecution(
       personId: actor.personId,
       userId: actorUserId,
     });
+    const executionAccess: Prisma.TaskWhereInput = {
+      OR: [
+        taskAccess,
+        {
+          claims: {
+            some: {
+              deletedAt: null,
+              status: { in: [...ACTIVE_CLAIM_STATUSES] },
+              userId: actorUserId,
+            },
+          },
+        },
+      ],
+    };
+    const accessibleTask = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: input.taskId,
+        status: TaskStatus.ACTIVE,
+        ...executionAccess,
+      },
+      select: { id: true },
+    });
+    if (!accessibleTask) throw new Error("Task not found");
+
+    // Serialize attempt creation on the task row. Without this lock, two
+    // transactions can both observe no active attempt and both create one.
+    await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id"
+      FROM "Task"
+      WHERE "id" = ${accessibleTask.id}
+      FOR UPDATE
+    `;
+
     const task = await tx.task.findFirst({
       where: {
         deletedAt: null,
         id: input.taskId,
         status: TaskStatus.ACTIVE,
-        OR: [
-          taskAccess,
-          {
-            claims: {
-              some: {
-                deletedAt: null,
-                status: { in: [...ACTIVE_CLAIM_STATUSES] },
-                userId: actorUserId,
-              },
-            },
-          },
-        ],
+        ...executionAccess,
       },
       select: {
         childTasks: {
@@ -181,6 +204,16 @@ export async function startTaskExecution(
         },
         executionMode: true,
         id: true,
+        claims: {
+          where: {
+            deletedAt: null,
+            status: { in: [...ACTIVE_CLAIM_STATUSES] },
+            userId: actorUserId,
+          },
+          orderBy: { claimedAt: "desc" },
+          select: { id: true },
+          take: 1,
+        },
         incomingEdges: {
           where: {
             deletedAt: null,
@@ -247,6 +280,7 @@ export async function startTaskExecution(
         metadata: { startedByUserId: actorUserId },
         startedAt: new Date(),
         status: TaskExecutionAttemptStatus.RUNNING,
+        taskClaimId: task.claims[0]?.id ?? null,
         taskId: task.id,
       },
       select: {
@@ -276,24 +310,53 @@ async function loadAttemptForContribution(
     where: {
       deletedAt: null,
       id: attemptId,
-      task: {
-        deletedAt: null,
-        ...getTaskAccessWhere({
-          action: "EXECUTE",
-          personId: actor.personId,
-          userId: actorUserId,
-        }),
-      },
+      task: { deletedAt: null },
+      OR: [
+        { executorUserId: actorUserId },
+        {
+          metadata: {
+            equals: actorUserId,
+            path: ["startedByUserId"],
+          },
+        },
+        {
+          taskClaim: {
+            deletedAt: null,
+            status: { in: [...ACTIVE_CLAIM_STATUSES] },
+            userId: actorUserId,
+          },
+        },
+        {
+          task: {
+            ...getTaskAccessWhere({
+              action: "MANAGE",
+              personId: actor.personId,
+              userId: actorUserId,
+            }),
+          },
+        },
+      ],
     },
     select: {
       agentExecutorId: true,
       executorUserId: true,
       id: true,
+      metadata: true,
       status: true,
       task: { select: { contextJson: true, id: true } },
       taskId: true,
     },
   });
+}
+
+function getStartedByUserId(metadata: unknown) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const startedByUserId = (metadata as Record<string, unknown>)[
+    "startedByUserId"
+  ];
+  return typeof startedByUserId === "string" ? startedByUserId : null;
 }
 
 export async function submitTaskArtifact(
@@ -371,6 +434,11 @@ export async function submitTaskArtifact(
       });
     }
 
+    const submittedByAgentExecutorId =
+      attempt.agentExecutorId &&
+      getStartedByUserId(attempt.metadata) === actorUserId
+        ? attempt.agentExecutorId
+        : null;
     return tx.taskExecutionArtifact.create({
       data: {
         contentAttachmentId: input.contentAttachmentId ?? null,
@@ -384,8 +452,8 @@ export async function submitTaskArtifact(
           input.structuredResult === undefined
             ? undefined
             : jsonValue(input.structuredResult),
-        submittedByAgentExecutorId: attempt.agentExecutorId,
-        submittedByUserId: attempt.agentExecutorId ? null : actorUserId,
+        submittedByAgentExecutorId,
+        submittedByUserId: submittedByAgentExecutorId ? null : actorUserId,
         taskCommentAttachmentId: input.taskCommentAttachmentId ?? null,
         taskExecutionAttemptId: attempt.id,
       },

@@ -23,9 +23,11 @@ export async function POST(req: Request) {
   const scope = body.scope as string;
   const codeChallenge = body.code_challenge as string;
   const approved = body.approved as boolean;
-  const requestedOrganizationIds = Array.isArray(body.organization_ids)
+  const requestedOrganizationIds: string[] = Array.isArray(
+    body.organization_ids,
+  )
     ? Array.from(
-        new Set(
+        new Set<string>(
           body.organization_ids.filter(
             (value: unknown): value is string =>
               typeof value === "string" && value.trim().length > 0,

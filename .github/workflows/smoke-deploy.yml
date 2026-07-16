@@ -402,7 +402,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const sha =
+            const deploymentSha =
               context.payload.deployment?.sha ||
               context.payload.deployment_status?.deployment?.sha ||
               context.sha;
@@ -413,15 +413,45 @@ jobs:
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
 
-            async function latestCheck(name) {
-              const { data } = await github.rest.checks.listForRef({
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
                 owner,
                 repo,
-                ref: sha,
-                check_name: name,
-                per_page: 10,
+                commit_sha: deploymentSha,
+                per_page: 100,
+              },
+            );
+            const pull = pulls.find((candidate) => candidate.state === "open") || pulls[0];
+            const checkRefs = new Set([deploymentSha]);
+            if (pull?.number) {
+              const { data: currentPull } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: pull.number,
               });
-              return [...data.check_runs].sort((left, right) =>
+              if (
+                currentPull.head?.sha === deploymentSha &&
+                currentPull.merge_commit_sha
+              ) {
+                checkRefs.add(currentPull.merge_commit_sha);
+              }
+            }
+            core.info(`Waiting for preview checks on ${[...checkRefs].join(", ")}.`);
+
+            async function latestCheck(name) {
+              const runs = [];
+              for (const ref of checkRefs) {
+                const { data } = await github.rest.checks.listForRef({
+                  owner,
+                  repo,
+                  ref,
+                  check_name: name,
+                  per_page: 10,
+                });
+                runs.push(...data.check_runs);
+              }
+              return runs.sort((left, right) =>
                 Date.parse(right.started_at || right.created_at || "") -
                 Date.parse(left.started_at || left.created_at || ""),
               )[0];
@@ -434,7 +464,7 @@ jobs:
                 core.info(`${checkName}: ${lastStatus}`);
 
                 if (check.status === "completed") {
-                  if (["success", "skipped", "neutral"].includes(check.conclusion)) {
+                  if (check.conclusion === "success") {
                     return;
                   }
                   core.setFailed(`${checkName} concluded ${check.conclusion}: ${check.html_url}`);
@@ -446,13 +476,13 @@ jobs:
                   const upstreamStatus = `${upstreamCheck.status}/${upstreamCheck.conclusion || "pending"}`;
                   lastStatus = `${checkName}: not found; ${upstreamCheckName}: ${upstreamStatus}`;
                   core.info(lastStatus);
-                  if (upstreamCheck.status === "completed" && !["success", "skipped", "neutral"].includes(upstreamCheck.conclusion)) {
+                  if (upstreamCheck.status === "completed" && upstreamCheck.conclusion !== "success") {
                     core.setFailed(`${upstreamCheckName} concluded ${upstreamCheck.conclusion}: ${upstreamCheck.html_url}`);
                     return;
                   }
                 } else {
                   lastStatus = `${checkName}: not found; ${upstreamCheckName}: not found`;
-                  core.info(`${lastStatus} for ${sha}`);
+                  core.info(`${lastStatus} for ${[...checkRefs].join(", ")}`);
                 }
               }
 
@@ -897,7 +927,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const sha =
+            const deploymentSha =
               context.payload.deployment?.sha ||
               context.payload.deployment_status?.deployment?.sha ||
               context.sha;
@@ -908,15 +938,45 @@ jobs:
             const deadline = Date.now() + timeoutMs;
             let lastStatus = "not found";
 
-            async function latestCheck(name) {
-              const { data } = await github.rest.checks.listForRef({
+            const pulls = await github.paginate(
+              github.rest.repos.listPullRequestsAssociatedWithCommit,
+              {
                 owner,
                 repo,
-                ref: sha,
-                check_name: name,
-                per_page: 10,
+                commit_sha: deploymentSha,
+                per_page: 100,
+              },
+            );
+            const pull = pulls.find((candidate) => candidate.state === "open") || pulls[0];
+            const checkRefs = new Set([deploymentSha]);
+            if (pull?.number) {
+              const { data: currentPull } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: pull.number,
               });
-              return [...data.check_runs].sort((left, right) =>
+              if (
+                currentPull.head?.sha === deploymentSha &&
+                currentPull.merge_commit_sha
+              ) {
+                checkRefs.add(currentPull.merge_commit_sha);
+              }
+            }
+            core.info(`Waiting for preview checks on ${[...checkRefs].join(", ")}.`);
+
+            async function latestCheck(name) {
+              const runs = [];
+              for (const ref of checkRefs) {
+                const { data } = await github.rest.checks.listForRef({
+                  owner,
+                  repo,
+                  ref,
+                  check_name: name,
+                  per_page: 10,
+                });
+                runs.push(...data.check_runs);
+              }
+              return runs.sort((left, right) =>
                 Date.parse(right.started_at || right.created_at || "") -
                 Date.parse(left.started_at || left.created_at || ""),
               )[0];
@@ -929,7 +989,7 @@ jobs:
                 core.info(`${checkName}: ${lastStatus}`);
 
                 if (check.status === "completed") {
-                  if (["success", "skipped", "neutral"].includes(check.conclusion)) {
+                  if (check.conclusion === "success") {
                     return;
                   }
                   core.setFailed(`${checkName} concluded ${check.conclusion}: ${check.html_url}`);
@@ -941,13 +1001,13 @@ jobs:
                   const upstreamStatus = `${upstreamCheck.status}/${upstreamCheck.conclusion || "pending"}`;
                   lastStatus = `${checkName}: not found; ${upstreamCheckName}: ${upstreamStatus}`;
                   core.info(lastStatus);
-                  if (upstreamCheck.status === "completed" && !["success", "skipped", "neutral"].includes(upstreamCheck.conclusion)) {
+                  if (upstreamCheck.status === "completed" && upstreamCheck.conclusion !== "success") {
                     core.setFailed(`${upstreamCheckName} concluded ${upstreamCheck.conclusion}: ${upstreamCheck.html_url}`);
                     return;
                   }
                 } else {
                   lastStatus = `${checkName}: not found; ${upstreamCheckName}: not found`;
-                  core.info(`${lastStatus} for ${sha}`);
+                  core.info(`${lastStatus} for ${[...checkRefs].join(", ")}`);
                 }
               }
 
