@@ -25,6 +25,33 @@
 export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 export const OPTIMIZE_EARTH_ROOT_TASK_KEY = "program:optimize-earth";
 
+export const PERSON_PLANNING_ROOT_TASK_KEY_PREFIX = "planner:person";
+export const ORGANIZATION_PLANNING_ROOT_TASK_KEY_PREFIX =
+  "planner:organization";
+
+export function getPersonPlanningRootTaskKey(personId: string) {
+  return `${PERSON_PLANNING_ROOT_TASK_KEY_PREFIX}:${personId}`;
+}
+
+export function getOrganizationPlanningRootTaskKey(organizationId: string) {
+  return `${ORGANIZATION_PLANNING_ROOT_TASK_KEY_PREFIX}:${organizationId}`;
+}
+
+export function isReservedPlanningRootTask(input: {
+  id?: string | null;
+  taskKey?: string | null;
+}) {
+  return (
+    input.id === OPTIMIZE_EARTH_ROOT_TASK_ID ||
+    input.taskKey === OPTIMIZE_EARTH_ROOT_TASK_KEY ||
+    input.taskKey?.startsWith(`${PERSON_PLANNING_ROOT_TASK_KEY_PREFIX}:`) ===
+      true ||
+    input.taskKey?.startsWith(
+      `${ORGANIZATION_PLANNING_ROOT_TASK_KEY_PREFIX}:`,
+    ) === true
+  );
+}
+
 export const END_WAR_AND_DISEASE_TASK_ID = "end-war-and-disease";
 export const END_WAR_AND_DISEASE_TASK_KEY = "program:end-war-and-disease";
 

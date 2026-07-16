@@ -19,8 +19,8 @@ import {
 } from "./auth-logic.js";
 import { getApiBase } from "./config.js";
 
-/** OAuth wire scopes (Prisma identifiers TASKS_PERSONAL / EARTHDATA_WRITE). */
-export const OAUTH_SCOPES = "tasks:personal earthdata:write";
+/** The extension may manage private tasks and approve exact outbound payloads. */
+export const OAUTH_SCOPES = "tasks:personal actions:approve";
 
 const TOKENS_KEY = "oauthTokens";
 const CLIENT_KEY_PREFIX = "oauthClient:";

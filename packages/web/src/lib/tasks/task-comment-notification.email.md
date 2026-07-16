@@ -59,6 +59,6 @@ Love,
 
 Chief Optimization Officer
 
-Earth Optimization Services LLC
+Earth Optimization Services Inc.
 
 Maximizing median income and health-adjusted life years since 2026

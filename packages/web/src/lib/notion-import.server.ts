@@ -3,6 +3,7 @@ import { Prisma } from "@optimitron/db";
 import {
   ContentAccessLevel,
   OrgStatus,
+  OrganizationMemberRole,
   SourceArtifactType,
   SourceSystem,
   TaskClaimPolicy,
@@ -47,6 +48,7 @@ import {
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
+import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import { canUserViewTask } from "@/lib/tasks/task-visibility.server";
 import {
   ALLOWED_TASK_COMMENT_ATTACHMENT_TYPES,
@@ -173,13 +175,23 @@ async function prepareArtifact(input: {
 async function ensureArtifact(
   tx: Prisma.TransactionClient,
   artifact: PreparedArtifact,
+  actorUserId: string,
 ) {
+  const existing = await tx.sourceArtifact.findUnique({
+    where: { sourceKey: artifact.sourceKey },
+    select: { isPublic: true, ownerUserId: true },
+  });
+  if (existing && !existing.isPublic && existing.ownerUserId !== actorUserId) {
+    throw new Error("A private source artifact with this key is owned elsewhere.");
+  }
   return tx.sourceArtifact.upsert({
     where: { sourceKey: artifact.sourceKey },
     create: {
       artifactType: artifact.artifactType,
       contentHash: artifact.contentHash,
       externalKey: artifact.externalKey,
+      isPublic: false,
+      ownerUserId: actorUserId,
       payloadJson: artifact.payloadJson,
       sourceKey: artifact.sourceKey,
       sourceSystem: SourceSystem.NOTION,
@@ -187,7 +199,12 @@ async function ensureArtifact(
       title: artifact.title,
       versionKey: artifact.contentHash,
     },
-    update: { deletedAt: null },
+    update: {
+      deletedAt: null,
+      isPublic: false,
+      ownerOrganizationId: null,
+      ownerUserId: actorUserId,
+    },
   });
 }
 
@@ -824,6 +841,7 @@ async function buildDryRun(input: {
     }),
     prisma.sourceArtifact.findMany({
       where: {
+        ...getSourceArtifactVisibilityWhere(actorUserId),
         sourceKey: {
           in: [...prepared.artifacts.values()].map((item) => item.sourceKey),
         },
@@ -1522,7 +1540,7 @@ export async function importNotionBundle(input: {
             "An existing Person with this source is owned elsewhere.",
           );
         }
-        await ensureArtifact(tx, artifact);
+        await ensureArtifact(tx, artifact, actor.id);
         if (existing && existingArtifact) {
           return { action: "unchanged" as const, id: existing.id };
         }
@@ -1593,7 +1611,7 @@ export async function importNotionBundle(input: {
             "An existing Organization with this source is owned elsewhere.",
           );
         }
-        await ensureArtifact(tx, artifact);
+        await ensureArtifact(tx, artifact, actor.id);
         if (existing && existingArtifact) {
           return { action: "unchanged" as const, id: existing.id };
         }
@@ -1634,7 +1652,12 @@ export async function importNotionBundle(input: {
             status: OrgStatus.PENDING,
             type: organization.type,
             website: organization.website ?? null,
-            members: { create: { role: "owner", userId: actor.id } },
+            members: {
+              create: {
+                role: OrganizationMemberRole.OWNER,
+                userId: actor.id,
+              },
+            },
           },
         });
         return { action: "create" as const, id: row.id };
@@ -1670,7 +1693,7 @@ export async function importNotionBundle(input: {
             "The imported task was already promoted or is owned by another user.",
           );
         }
-        const sourceArtifact = await ensureArtifact(tx, artifact);
+        const sourceArtifact = await ensureArtifact(tx, artifact, actor.id);
         const existingHash =
           existing?.contextJson && typeof existing.contextJson === "object"
             ? (
@@ -2090,7 +2113,7 @@ export async function importNotionBundle(input: {
         sourceId: document.taskSourceId,
       });
       const sourceArtifact = await prisma.$transaction((tx) =>
-        ensureArtifact(tx, artifact),
+        ensureArtifact(tx, artifact, actor.id),
       );
       const sourceKey = stableSourceKey(
         bundle.workspaceId,
@@ -2161,7 +2184,7 @@ export async function importNotionBundle(input: {
         sourceId: collection.organizationSourceId,
       });
       const sourceArtifact = await prisma.$transaction((tx) =>
-        ensureArtifact(tx, artifact),
+        ensureArtifact(tx, artifact, actor.id),
       );
       const sourceKey = stableSourceKey(
         bundle.workspaceId,
@@ -2273,7 +2296,7 @@ export async function importNotionBundle(input: {
           record.sourceId,
         );
         const sourceArtifact = await prisma.$transaction((tx) =>
-          ensureArtifact(tx, artifact),
+          ensureArtifact(tx, artifact, actor.id),
         );
         const sourceKey = stableSourceKey(
           bundle.workspaceId,
@@ -2598,6 +2621,7 @@ export async function importNotionBundle(input: {
         const sourceArtifact = await ensureArtifact(
           tx,
           preparedAttachment.artifact,
+          actor.id,
         );
         const stale = await tx.contentAttachment.findMany({
           where: {
@@ -2681,7 +2705,7 @@ export async function importNotionBundle(input: {
         where: { sourceKey: artifact.sourceKey },
       });
       const row = await prisma.$transaction((tx) =>
-        ensureArtifact(tx, artifact),
+        ensureArtifact(tx, artifact, actor.id),
       );
       items.push({
         action: existing ? "unchanged" : "preserve",
@@ -2706,7 +2730,7 @@ export async function importNotionBundle(input: {
         where: { sourceKey: artifact.sourceKey },
       });
       const row = await prisma.$transaction((tx) =>
-        ensureArtifact(tx, artifact),
+        ensureArtifact(tx, artifact, actor.id),
       );
       items.push({
         action: existing ? "unchanged" : "preserve",

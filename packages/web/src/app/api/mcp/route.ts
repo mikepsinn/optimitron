@@ -117,11 +117,13 @@ async function handleMcpRequest(req: Request): Promise<Response> {
     }
 
     let clientId: string;
+    let organizationIds: string[];
     let userId: string;
     let scopes: McpScope[];
     try {
       const result = await verifyMcpAccessToken(authHeader.slice(7));
       clientId = result.clientId;
+      organizationIds = result.organizationIds;
       userId = result.sub;
       scopes = result.scopes;
     } catch (error) {
@@ -136,14 +138,22 @@ async function handleMcpRequest(req: Request): Promise<Response> {
       return unauthorized(req, "invalid_token");
     }
 
-    const [user, oauthGrant] = await Promise.all([
+    const [user, oauthGrant, currentMemberships] = await Promise.all([
       prisma.user.findFirst({
         where: { id: userId, deletedAt: null },
         select: { isAdmin: true },
       }),
       prisma.oAuthGrant.findFirst({
         where: { active: true, clientId, revokedAt: null, userId },
-        select: { id: true, scopes: true },
+        select: { id: true, organizationIds: true, scopes: true },
+      }),
+      prisma.organizationMember.findMany({
+        where: {
+          organizationId: { in: organizationIds },
+          organization: { deletedAt: null },
+          userId,
+        },
+        select: { organizationId: true },
       }),
     ]);
 
@@ -151,12 +161,22 @@ async function handleMcpRequest(req: Request): Promise<Response> {
       return unauthorized(req, "invalid_token");
     }
     scopes = scopes.filter((scope) => oauthGrant.scopes.includes(scope));
+    const grantedOrganizationIds = new Set(oauthGrant.organizationIds);
+    const currentOrganizationIds = new Set(
+      currentMemberships.map((membership) => membership.organizationId),
+    );
+    organizationIds = organizationIds.filter(
+      (organizationId) =>
+        grantedOrganizationIds.has(organizationId) &&
+        currentOrganizationIds.has(organizationId),
+    );
 
     const transport = new WebStandardStreamableHTTPServerTransport();
     const server = createMcpServer(userId, scopes, {
       clientId,
       isAdmin: user.isAdmin === true,
       oauthGrantId: oauthGrant.id,
+      organizationIds,
     });
     await server.connect(transport);
     return transport.handleRequest(req);

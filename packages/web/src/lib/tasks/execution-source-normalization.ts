@@ -6,7 +6,6 @@ export interface NotionPlanningItem {
   dependencySourceIds?: string[];
   estimatedEffortHours?: number | null;
   id: string;
-  kind?: "TASK" | "PROJECT";
   parentSourceId?: string | null;
   title: string;
   url: string;
@@ -83,7 +82,6 @@ export function normalizeNotionPlanningItems(input: {
       actionContext: item.actionContext ?? null,
       dependencySourceIds: item.dependencySourceIds ?? [],
       estimatedEffortHours: item.estimatedEffortHours ?? null,
-      kind: item.kind ?? "TASK",
       parentSourceId: item.parentSourceId ?? null,
       title: normalizeWhitespace(item.title),
     });
@@ -106,7 +104,6 @@ export function normalizeNotionPlanningItems(input: {
         item.actionContext ??
         "Review this imported planning item and define its acceptance criteria.",
       estimatedEffortHours: item.estimatedEffortHours ?? null,
-      kind: item.kind ?? "TASK",
       parentTaskRef: item.parentSourceId
         ? notionTaskKey(`notion:${item.parentSourceId}`)
         : null,
@@ -273,7 +270,6 @@ export function normalizeCalendarForPlanning(events: CalendarPlanningEvent[]) {
         description:
           "Create one recurring Optimitron task template for this routine; do not import each calendar occurrence.",
         estimatedEffortHours: calendarEventDurationHours(first),
-        kind: "TASK",
         source: {
           sourceHash: sourceHash(sourceSeries),
           sourceKey: stableSourceKey,
@@ -305,7 +301,6 @@ export function normalizeCalendarForPlanning(events: CalendarPlanningEvent[]) {
         description:
           "Migrate this one-off action from Calendar into Optimitron so Calendar remains a scheduling constraint rather than a second task database.",
         estimatedEffortHours: calendarEventDurationHours(event),
-        kind: "TASK",
         source: {
           sourceHash: sourceHash({
             endAt: new Date(event.endAt).toISOString(),

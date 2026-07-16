@@ -86,7 +86,7 @@ async function createOrganization(suffix: string, creatorId: string) {
   await prisma.organizationMember.create({
     data: {
       organizationId: org.id,
-      role: "owner",
+      role: "OWNER",
       userId: creatorId,
     },
   });

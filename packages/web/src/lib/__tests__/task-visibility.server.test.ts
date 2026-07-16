@@ -2,17 +2,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   prisma: {
+    activityCreate: vi.fn(),
     taskFindFirst: vi.fn(),
+    transaction: vi.fn(),
+    userFindFirst: vi.fn(),
     userFindUnique: vi.fn(),
   },
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
+    $transaction: mocks.prisma.transaction,
+    activity: {
+      create: mocks.prisma.activityCreate,
+    },
     task: {
       findFirst: mocks.prisma.taskFindFirst,
     },
     user: {
+      findFirst: mocks.prisma.userFindFirst,
       findUnique: mocks.prisma.userFindUnique,
     },
   },
@@ -20,14 +28,26 @@ vi.mock("@/lib/prisma", () => ({
 
 import {
   assertUserCanViewTask,
+  authorizeTaskBreakGlassAccess,
   canUserViewInternalTaskContent,
   canUserViewTask,
+  getTaskAccessWhere,
   getTaskVisibilityWhere,
 } from "../tasks/task-visibility.server";
 
 beforeEach(() => {
+  mocks.prisma.activityCreate.mockReset();
   mocks.prisma.taskFindFirst.mockReset();
+  mocks.prisma.transaction.mockReset();
+  mocks.prisma.userFindFirst.mockReset();
   mocks.prisma.userFindUnique.mockReset();
+  mocks.prisma.transaction.mockImplementation((callback) =>
+    callback({
+      activity: { create: mocks.prisma.activityCreate },
+      task: { findFirst: mocks.prisma.taskFindFirst },
+      user: { findFirst: mocks.prisma.userFindFirst },
+    }),
+  );
 });
 
 describe("getTaskVisibilityWhere", () => {
@@ -53,12 +73,40 @@ describe("getTaskVisibilityWhere", () => {
       visibility: "accessible",
     });
 
-    expect(where.OR).toEqual([
-      { isPublic: true },
-      { createdByUserId: "user_1" },
-      { assigneePersonId: "person_1" },
-    ]);
+    expect(where.OR).toEqual(
+      expect.arrayContaining([
+        { isPublic: true },
+        { createdByUserId: "user_1" },
+        { assigneePersonId: "person_1" },
+        {
+          managers: {
+            some: { deletedAt: null, userId: "user_1" },
+          },
+        },
+      ]),
+    );
     expect(where.isPublic).toBeUndefined();
+  });
+
+  it("keeps organization viewers read-only", () => {
+    const readable = getTaskAccessWhere({
+      action: "READ",
+      userId: "viewer_1",
+    });
+    const executable = getTaskAccessWhere({
+      action: "EXECUTE",
+      userId: "viewer_1",
+    });
+    const manageable = getTaskAccessWhere({
+      action: "MANAGE",
+      userId: "viewer_1",
+    });
+
+    expect(JSON.stringify(readable)).not.toContain("role");
+    expect(JSON.stringify(executable)).toContain('"MEMBER"');
+    expect(JSON.stringify(executable)).not.toContain('"VIEWER"');
+    expect(JSON.stringify(manageable)).toContain('"ADMIN"');
+    expect(JSON.stringify(manageable)).not.toContain('"MEMBER"');
   });
 
   it("defaults to public-only when no visibility is given", () => {
@@ -89,32 +137,71 @@ describe("canUserViewTask", () => {
     await expect(canUserViewTask("task_1", "user_1")).resolves.toBe(true);
 
     const where = mocks.prisma.taskFindFirst.mock.calls[0]?.[0]?.where;
-    expect(where.OR).toEqual([
-      { isPublic: true },
-      { createdByUserId: "user_1" },
-      { assigneePersonId: "person_1" },
-    ]);
+    expect(where.OR).toEqual(
+      expect.arrayContaining([
+        { isPublic: true },
+        { createdByUserId: "user_1" },
+        { assigneePersonId: "person_1" },
+      ]),
+    );
   });
 
-  it("lets admins view any non-deleted task", async () => {
+  it("does not give platform admins implicit private-task access", async () => {
     mocks.prisma.userFindUnique.mockResolvedValue({
       isAdmin: true,
       personId: null,
     });
-    mocks.prisma.taskFindFirst.mockResolvedValue({ id: "task_1" });
+    mocks.prisma.taskFindFirst.mockResolvedValue(null);
 
-    await expect(canUserViewTask("task_1", "admin_1")).resolves.toBe(true);
+    await expect(canUserViewTask("task_1", "admin_1")).resolves.toBe(false);
 
-    expect(mocks.prisma.taskFindFirst).toHaveBeenCalledWith({
-      where: { id: "task_1", deletedAt: null },
-      select: { id: true },
-    });
+    const where = mocks.prisma.taskFindFirst.mock.calls[0]?.[0]?.where;
+    expect(where.OR).toEqual(
+      expect.arrayContaining([{ createdByUserId: "admin_1" }]),
+    );
   });
 
   it("returns false for a blank task id without querying", async () => {
     await expect(canUserViewTask("  ", "user_1")).resolves.toBe(false);
 
     expect(mocks.prisma.taskFindFirst).not.toHaveBeenCalled();
+  });
+});
+
+describe("authorizeTaskBreakGlassAccess", () => {
+  it("requires an explicit reason and records the private access", async () => {
+    mocks.prisma.userFindFirst.mockResolvedValue({ id: "admin_1" });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      id: "private_task",
+      isPublic: false,
+    });
+    mocks.prisma.activityCreate.mockResolvedValue({ id: "audit_1" });
+
+    await authorizeTaskBreakGlassAccess({
+      adminUserId: "admin_1",
+      reason: "Investigating tenant-reported data corruption",
+      taskId: "private_task",
+    });
+
+    expect(mocks.prisma.activityCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        entityId: "private_task",
+        entityType: "Task",
+        userId: "admin_1",
+      }),
+    });
+  });
+
+  it("rejects vague break-glass requests before reading private data", async () => {
+    await expect(
+      authorizeTaskBreakGlassAccess({
+        adminUserId: "admin_1",
+        reason: "debug",
+        taskId: "private_task",
+      }),
+    ).rejects.toThrow("specific reason");
+
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
   });
 });
 

@@ -52,7 +52,7 @@ describe("assertCanPledgeForOrganization", () => {
     const owner = await createUser("owner");
     const org = await createOrganization(creator.id);
     await prisma.organizationMember.create({
-      data: { organizationId: org.id, userId: owner.id, role: "owner" },
+      data: { organizationId: org.id, userId: owner.id, role: "OWNER" },
     });
 
     await expect(
@@ -65,7 +65,7 @@ describe("assertCanPledgeForOrganization", () => {
     const admin = await createUser("admin");
     const org = await createOrganization(creator.id);
     await prisma.organizationMember.create({
-      data: { organizationId: org.id, userId: admin.id, role: "admin" },
+      data: { organizationId: org.id, userId: admin.id, role: "ADMIN" },
     });
 
     await expect(
@@ -78,7 +78,7 @@ describe("assertCanPledgeForOrganization", () => {
     const member = await createUser("member");
     const org = await createOrganization(creator.id);
     await prisma.organizationMember.create({
-      data: { organizationId: org.id, userId: member.id, role: "member" },
+      data: { organizationId: org.id, userId: member.id, role: "MEMBER" },
     });
 
     await expect(

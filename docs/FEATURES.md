@@ -95,10 +95,10 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 ### OPT-TASK-08 — Private execution kernel and tenant isolation
 
 - **Layer:** personal / organization
-- **Status:** planned
-- **Summary:** Approved work package to remove task kinds, derive containers from ancestry, create stable private person/organization roots, centralize authorization for tasks and every child resource, and make execution attempts, artifacts, typed verification, audit, export, and exact external-action approval one lifecycle. None of this should be inferred as shipped from the schema's partial foundations.
-- **Evidence:** docs/plans/phased-approach-optimitron.md; existing partial foundations in `TaskExecutionAttempt`, task visibility, organization membership, comments, content, OAuth/MCP, claims, and leases
-- **Acceptance:** Mike and Tom independently import 25-50 private active tasks and close 10 verified cycles each; adversarial tests and manual probes reveal no cross-tenant existence, count, source, artifact, execution, verification, or audit data.
+- **Status:** partial
+- **Summary:** The private-execution branch removes task kinds, adds stable private roots, expands task/source authorization, and implements the first MCP/service paths for reviewed imports, execution attempts, artifacts, typed verification, audit export, and exact external-action approval. It is a checkpoint, not a deployable release: the full TypeScript suite, adversarial isolation matrix, extension capture flow, migration preflight, and two-operator pilots remain incomplete.
+- **Evidence:** `docs/plans/phased-approach-optimitron.md`; `packages/db/prisma/migrations/20260715180000_private_execution_system/`; `packages/web/src/lib/mcp-tools/private-execution.ts`; `packages/web/src/lib/tasks/private-task-bundle.server.ts`; `packages/web/src/lib/tasks/execution-lifecycle.server.ts`; `packages/web/src/lib/tasks/external-action.server.ts`; `packages/web/src/lib/tasks/private-work-portability.server.ts`; `packages/web/src/lib/tasks/task-visibility.server.ts`; `packages/web/src/lib/source-artifact-visibility.server.ts`
+- **Acceptance:** The Primary Operator and Independent Operator each import 25-50 private active tasks and close 10 verified cycles; adversarial tests and manual probes reveal no cross-tenant existence, count, source, artifact, execution, verification, or audit data.
 - **Roadmap:** now — private Daily Companion Loop dogfood
 
 ## Expected-value engine

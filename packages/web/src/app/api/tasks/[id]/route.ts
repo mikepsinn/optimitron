@@ -31,6 +31,8 @@ const PrimaryEndpointBodySchema = z.object({
     .nullish(),
 });
 
+const MutableTaskStatusSchema = z.enum(["DRAFT", "ACTIVE", "STALE"]);
+
 const UpdateTaskBodySchema = z
   .object({
     category: z.nativeEnum(TaskCategory).nullish(),
@@ -44,7 +46,7 @@ const UpdateTaskBodySchema = z
     primaryEndpoint: PrimaryEndpointBodySchema.nullish(),
     roleTitle: z.string().nullish(),
     skillTags: z.array(z.string()).nullish(),
-    status: z.nativeEnum(TaskStatus).nullish(),
+    status: MutableTaskStatusSchema.nullish(),
     title: z.string().min(1).nullish(),
   })
   .refine((value) => Object.keys(value).length > 0, {

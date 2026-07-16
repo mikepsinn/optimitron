@@ -1,10 +1,11 @@
 import { headers } from "next/headers";
+import { LegalOperatorDetails } from "@/components/site/LegalOperatorDetails";
 import { Container } from "@/components/ui/container";
 import { getSiteMetadata } from "@/lib/metadata";
 import { ROUTES, termsLink } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 22, 2026";
+const UPDATED_AT = "July 16, 2026";
 const SECTION_HEADING_CLASS =
   "mb-4 text-2xl font-black uppercase text-foreground";
 
@@ -25,8 +26,6 @@ export async function generateMetadata() {
 export default async function TermsPage() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
-  const legalEntityName = site.legalEntityName;
-  const contactEmail = site.publicContactEmail;
   const websiteLabel = new URL(site.canonicalOrigin).hostname;
 
   return (
@@ -46,8 +45,9 @@ export default async function TermsPage() {
               <h2 className={SECTION_HEADING_CLASS}>1. Agreement</h2>
               <p className="font-bold leading-relaxed">
                 These terms govern your use of {site.name}, operated by{" "}
-                {legalEntityName}. By using {websiteLabel}, you agree to these
-                terms. If you do not agree, do not use the site.
+                {site.legalEntityName}, a {site.legalEntityType}. By using{" "}
+                {websiteLabel}, you agree to these terms. If you do not agree,
+                do not use the site.
               </p>
             </section>
 
@@ -68,16 +68,16 @@ export default async function TermsPage() {
               <p className="mb-4 font-bold leading-relaxed">
                 Earth Optimization Missions and similar coordination features
                 are for adults using the site to coordinate platonic campaign
-                work. We do not screen every user, verify backgrounds,
-                supervise sessions, or promise that another person is safe.
+                work. We do not screen every user, verify backgrounds, supervise
+                sessions, or promise that another person is safe.
               </p>
               <ul className="ml-4 list-inside list-disc space-y-2 font-bold">
                 <li>
                   Do not use mission coordination features if you are under 18.
                 </li>
                 <li>
-                  Choose the setting yourself: online, in public, or not at
-                  all. Leave whenever you want.
+                  Choose the setting yourself: online, in public, or not at all.
+                  Leave whenever you want.
                 </li>
                 <li>
                   Do not send money, bank details, passwords, identity
@@ -162,9 +162,9 @@ export default async function TermsPage() {
                   to represent them.
                 </li>
                 <li>
-                  Do not publicly disclose a living or unknown-status person&apos;s
-                  health condition unless you have consent or legal authority to
-                  make that disclosure.
+                  Do not publicly disclose a living or unknown-status
+                  person&apos;s health condition unless you have consent or
+                  legal authority to make that disclosure.
                 </li>
                 <li>
                   If you add a deceased person, use a good-faith family,
@@ -274,11 +274,7 @@ export default async function TermsPage() {
 
             <section>
               <h2 className={SECTION_HEADING_CLASS}>15. Contact</h2>
-              <div className="mt-4 border border-foreground bg-background p-4 text-foreground">
-                <p className="font-black">{legalEntityName}</p>
-                <p className="font-bold">Email: {contactEmail}</p>
-                <p className="font-bold">Website: {websiteLabel}</p>
-              </div>
+              <LegalOperatorDetails site={site} />
             </section>
           </div>
         </article>

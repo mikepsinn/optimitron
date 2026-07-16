@@ -5,7 +5,6 @@ import {
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
   TaskDeadlinePolicy,
-  TaskKind,
   TaskStatus,
 } from "../generated/prisma/client.js";
 import {
@@ -48,7 +47,6 @@ type FakeTask = {
   applicationQuestionsJson: unknown;
   executionMode: string;
   category: typeof TaskCategory[keyof typeof TaskCategory];
-  kind: typeof TaskKind[keyof typeof TaskKind];
   estimatedEffortHours: number | null;
   skillTags: string[];
   preferredSkillTags: string[];
@@ -148,7 +146,6 @@ function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): 
     applicationQuestionsJson: null,
     executionMode: "HUMAN_OR_AGENT",
     category: TaskCategory.OTHER,
-    kind: TaskKind.TASK,
     estimatedEffortHours: null,
     skillTags: [],
     preferredSkillTags: [],
@@ -240,7 +237,6 @@ const fakeTaskScalarFields = new Set<keyof FakeTask>([
   "impactStatement",
   "interestTags",
   "isPublic",
-  "kind",
   "locationText",
   "maxClaims",
   "ownerOrganizationId",

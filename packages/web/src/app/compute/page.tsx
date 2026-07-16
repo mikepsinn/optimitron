@@ -1,5 +1,5 @@
+import { EARTH_OPTIMIZATION_SERVICES } from "@/lib/corporate-identity";
 import { getRouteMetadata } from "@/lib/metadata";
-import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { computeLink } from "@/lib/routes";
 import {
   FleetAnalyzer,
@@ -8,7 +8,7 @@ import {
 
 export const metadata = getRouteMetadata(computeLink);
 
-const CONSULT_MAILTO = `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
+const CONSULT_MAILTO = `mailto:${EARTH_OPTIMIZATION_SERVICES.publicContactEmail}?subject=${encodeURIComponent(
   "On-premises rig install",
 )}`;
 
@@ -23,7 +23,8 @@ function str(value: string | string[] | undefined): string | undefined {
 
 const SOURCES: { label: string; url: string; note: string }[] = [
   {
-    label: "Host earnings: Vast.ai's guide for people renting out their own GPUs",
+    label:
+      "Host earnings: Vast.ai's guide for people renting out their own GPUs",
     url: "https://vast.ai/article/how-much-money-can-you-earn-renting-out-your-gpu-on-vast-ai",
     note: "May 2026 — RTX 5090-class cards earn $0.30–0.60/hour; H100/H200 cards earn $2.15–4.00+/hour.",
   },
@@ -76,7 +77,7 @@ const SOURCES: { label: string; url: string; note: string }[] = [
   {
     label: "GPU-rental company returns: SemiAnalysis",
     url: "https://newsletter.semianalysis.com/p/the-great-gpu-shortage-rental-capacity",
-    note: "2026 — long-term contracted GPU-rental deals typically lock in \"teens\" (roughly 15–20%) annual returns.",
+    note: '2026 — long-term contracted GPU-rental deals typically lock in "teens" (roughly 15–20%) annual returns.',
   },
   {
     label: "RTX 3090 / RTX 4090 pricing: BestValueGPU",
@@ -119,12 +120,14 @@ const SOURCES: { label: string; url: string; note: string }[] = [
     note: "2026 — an economics paper working out the conditions under which AI improving itself could cause runaway growth.",
   },
   {
-    label: 'AI capability benchmark: METR, "Measuring AI Ability to Complete Long Tasks"',
+    label:
+      'AI capability benchmark: METR, "Measuring AI Ability to Complete Long Tasks"',
     url: "https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/",
     note: "Mar 2025 — the length of task an AI can reliably do has doubled roughly every 7 months since 2019, and every 4 months since 2024.",
   },
   {
-    label: "AGI timeline forecast: Metaculus community prediction (via 80,000 Hours)",
+    label:
+      "AGI timeline forecast: Metaculus community prediction (via 80,000 Hours)",
     url: "https://www.metaculus.com/questions/5121/",
     note: "Feb 2026 — 25% chance by 2029, 50% chance by 2033.",
   },
@@ -140,7 +143,8 @@ const SOURCES: { label: string; url: string; note: string }[] = [
     note: "Apr 2026 — 1,100+ traders, average guess of 2033 for an AI that can fool people in conversation.",
   },
   {
-    label: "Survey of forecasters & experts: Forecasting Research Institute, LEAP Wave 8",
+    label:
+      "Survey of forecasters & experts: Forecasting Research Institute, LEAP Wave 8",
     url: "https://forecastingresearch.substack.com/p/leap-wave-8-ai-timelines",
     note: "May 2026 — average guess of 2028 (professional forecasters) / 2030 (independent experts) for an AI that can reliably do an 8-hour work task.",
   },
@@ -184,10 +188,10 @@ export default async function ComputePage({
             The Basement Professor
           </h1>
           <p className="mt-4 max-w-3xl text-base font-bold leading-relaxed sm:text-lg">
-            A simple, interactive look at buying computer chips called GPUs
-            and renting them out for income — what they cost to run, what
-            they&apos;re worth over time, and how the returns compare to
-            normal investments like stocks.
+            A simple, interactive look at buying computer chips called GPUs and
+            renting them out for income — what they cost to run, what
+            they&apos;re worth over time, and how the returns compare to normal
+            investments like stocks.
           </p>
         </header>
 
@@ -197,14 +201,14 @@ export default async function ComputePage({
               Why this works, in 30 seconds
             </h2>
             <p className="mt-3 text-base font-bold leading-relaxed">
-              AI is getting smarter fast — the computing power it needs
-              doubles roughly every 6–10 months. But chip factories can&apos;t
-              keep up: new ones take years to build, and even the fastest
-              expansion only doubles production every 18 months. That gap
-              means there aren&apos;t enough of these chips to go around,
-              which is why they&apos;re expensive — and why people will pay{" "}
-              <em>you</em> to rent yours. This page lets you play with the
-              numbers and see for yourself.
+              AI is getting smarter fast — the computing power it needs doubles
+              roughly every 6–10 months. But chip factories can&apos;t keep up:
+              new ones take years to build, and even the fastest expansion only
+              doubles production every 18 months. That gap means there
+              aren&apos;t enough of these chips to go around, which is why
+              they&apos;re expensive — and why people will pay <em>you</em> to
+              rent yours. This page lets you play with the numbers and see for
+              yourself.
             </p>
           </div>
 
@@ -215,9 +219,9 @@ export default async function ComputePage({
             <div className="mt-3 space-y-3 text-base font-bold leading-relaxed">
               <p>
                 Remember Gilligan&apos;s Island? Seven people stranded on an
-                island with no help coming. The only reason they didn&apos;t
-                all starve to death in the first week was the Professor — the
-                one guy who could build a radio out of coconuts, purify water,
+                island with no help coming. The only reason they didn&apos;t all
+                starve to death in the first week was the Professor — the one
+                guy who could build a radio out of coconuts, purify water,
                 diagnose Gilligan&apos;s mysterious rash, figure out which
                 berries would kill you, and generally keep six helpless people
                 alive through sheer competence. Take the Professor off that
@@ -225,17 +229,17 @@ export default async function ComputePage({
                 people who can&apos;t open a coconut.
               </p>
               <p>
-                That&apos;s what these chips give you. A Professor who lives
-                in your basement, works 24 hours a day, knows basically
-                everything, never asks for a raise, and — this is the
-                important part — <em>doesn&apos;t answer to anybody but you.</em>{" "}
-                Not Google. Not the government. Not some company that decided
-                your question violates their content policy. Your Professor.
-                Your basement. Your rules.
+                That&apos;s what these chips give you. A Professor who lives in
+                your basement, works 24 hours a day, knows basically everything,
+                never asks for a raise, and — this is the important part —{" "}
+                <em>doesn&apos;t answer to anybody but you.</em> Not Google. Not
+                the government. Not some company that decided your question
+                violates their content policy. Your Professor. Your basement.
+                Your rules.
               </p>
               <p>
-                And it&apos;s not theoretical. Right now, today, there&apos;s
-                a free program called{" "}
+                And it&apos;s not theoretical. Right now, today, there&apos;s a
+                free program called{" "}
                 <a
                   className="underline underline-offset-4"
                   href="https://hermes-agent.nousresearch.com/"
@@ -255,8 +259,8 @@ export default async function ComputePage({
                 stuff actually going to happen? The grid going down, the
                 government going nuts?&quot; Probably not. Your house will
                 probably not burn down either, but you still buy insurance.
-                Here&apos;s a fun thing to think about, though: Mark
-                Zuckerberg is spending{" "}
+                Here&apos;s a fun thing to think about, though: Mark Zuckerberg
+                is spending{" "}
                 <a
                   className="underline underline-offset-4"
                   href="https://www.insidehook.com/culture/doomsday-bunkers-billionaires"
@@ -279,8 +283,8 @@ export default async function ComputePage({
                   told The New Yorker
                 </a>{" "}
                 he keeps &quot;guns, gold, potassium iodide, antibiotics,
-                batteries, water, gas masks from the Israeli Defense Force,
-                and a big patch of land in Big Sur I can fly to.&quot; The two
+                batteries, water, gas masks from the Israeli Defense Force, and
+                a big patch of land in Big Sur I can fly to.&quot; The two
                 things he said he&apos;s most afraid of? A lab-made virus and
                 &quot;AI that attacks us.&quot; This is the man{" "}
                 <em>in charge of the AI.</em>
@@ -289,13 +293,15 @@ export default async function ComputePage({
                 Their insurance costs hundreds of millions of dollars and
                 doesn&apos;t make them a dime. Yours costs about as much as a
                 used car — and{" "}
-                <em>it pays you rent while you wait for nothing bad to happen.</em>{" "}
+                <em>
+                  it pays you rent while you wait for nothing bad to happen.
+                </em>{" "}
                 And if absolutely none of it happens — if the world stays
                 perfectly normal and boring forever? You still made money
-                renting out the computing power the whole time. That&apos;s
-                the punchline of this whole thing: the downside is &quot;I
-                guess I just made a bunch of money for nothing,&quot; and the
-                upside is &quot;I also have a Professor.&quot;
+                renting out the computing power the whole time. That&apos;s the
+                punchline of this whole thing: the downside is &quot;I guess I
+                just made a bunch of money for nothing,&quot; and the upside is
+                &quot;I also have a Professor.&quot;
               </p>
             </div>
           </div>
@@ -324,12 +330,12 @@ export default async function ComputePage({
           </ol>
           <p className="mt-4 max-w-3xl text-xs font-bold leading-relaxed text-muted-foreground">
             These marketplaces don&apos;t publish live, reliable price feeds
-            this page could safely pull from automatically, so the numbers
-            here are a dated snapshot — and every one is something you can
-            adjust above. Rental rates move with demand and can fall as well
-            as rise. Wishonia has been allocating capital for 4,237 years and
-            is still not a licensed financial advisor. Nothing on this page is
-            investment advice; it is arithmetic with sources.
+            this page could safely pull from automatically, so the numbers here
+            are a dated snapshot — and every one is something you can adjust
+            above. Rental rates move with demand and can fall as well as rise.
+            Wishonia has been allocating capital for 4,237 years and is still
+            not a licensed financial advisor. Nothing on this page is investment
+            advice; it is arithmetic with sources.
           </p>
         </footer>
 
@@ -339,9 +345,9 @@ export default async function ComputePage({
           </h2>
           <p className="mx-auto mt-2 max-w-2xl text-base font-bold leading-relaxed">
             Earth Optimization Services sets up on-premises rigs for lawyers,
-            funds, and families whose questions should never leave the
-            building. Attorney-client privilege works better when the
-            intelligence is inside the privilege.
+            funds, and families whose questions should never leave the building.
+            Attorney-client privilege works better when the intelligence is
+            inside the privilege.
           </p>
           <a
             className="mt-4 inline-block border-2 border-foreground bg-foreground px-6 py-3 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"

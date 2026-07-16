@@ -61,10 +61,10 @@ Build in this order:
 1. **Preparation and safety** — remove `TaskKind`, centralize task and child
    authorization, close actor-impersonation and verification bypasses, and
    create stable private person/organization roots (OPT-TASK-08).
-2. **Mike private alpha** — review selected sources, create 25-50 private
+2. **Primary Operator private alpha** — review selected sources, create 25-50 private
    active tasks, and close 10 verified cycles with attempts, artifacts,
    rejection/resubmission, and one approved outbound action.
-3. **Tom isolation acceptance** — independently connect through production
+3. **Independent Operator isolation acceptance** — independently connect through production
    MCP, import 25-50 tasks across Viral Vitalism, Optimitron productization,
    and Vaultanium, close 10 cycles, and prove cross-tenant non-disclosure.
 4. **Selected conversation capture** — make the extension a local-first
@@ -149,7 +149,7 @@ entries there). GitHub issues/projects mirror Now/Next/Later.
 Slop removal is part of the core objective: each item below actively detracts
 from the optimization loop, ranked by how much it obstructs it. **Do not
 execute these in documentation rounds** — each is a separate code PR with
-Mike's schema approval where noted.
+the human owner's schema approval where noted.
 
 1. **EV single source of truth** — `contextJson.{value,p_success,cash_cost}`
    duplicates `TaskImpactFrameEstimate`; the JSON copy is display-only and can
@@ -177,7 +177,7 @@ Mike's schema approval where noted.
    Removal is an API-surface change; decide with OPT-TASK-01 consumers.
 8. **Task-kind removal** — delete `TaskKind` and derive container status from
    unresolved children and reserved root identity. No compatibility reads.
-   Product-intent question for Mike.
+   Product-intent question for the human owner.
 
 Infra hygiene (lower priority):
 

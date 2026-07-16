@@ -190,7 +190,7 @@ The schema is designed to absorb new patterns without migrations: `eventName`, `
 
 **Worked example — talking to Claude to add a new onboarding subtask.**
 
-> Mike: "Add a subtask under the Humanity Management Training that asks the user to write a one-paragraph elevator pitch."
+> Primary Operator: "Add a subtask under the Humanity Management Training that asks the user to write a one-paragraph elevator pitch."
 
 Claude:
 

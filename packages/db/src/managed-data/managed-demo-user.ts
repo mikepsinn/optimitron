@@ -8,6 +8,7 @@ import {
 import {
   OrgStatus,
   OrgType,
+  OrganizationMemberRole,
   OrganizationReferendumPositionStatus,
   PersonLifeStatus,
   type Prisma,
@@ -126,10 +127,10 @@ export async function syncManagedDemoUser(
         userId: user.id,
       },
     },
-    update: { role: "owner" },
+    update: { role: OrganizationMemberRole.OWNER },
     create: {
       organizationId: organization.id,
-      role: "owner",
+      role: OrganizationMemberRole.OWNER,
       userId: user.id,
     },
   });

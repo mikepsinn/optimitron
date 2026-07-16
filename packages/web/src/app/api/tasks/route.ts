@@ -21,6 +21,8 @@ const TASK_VISIBILITY_FILTER = {
   PUBLIC: "public",
 } as const;
 
+const MutableTaskStatusSchema = z.enum(["DRAFT", "ACTIVE", "STALE"]);
+
 const CreateTaskBodySchema = z.object({
   assigneeOrganizationId: z.string().nullish(),
   assigneePersonIdentifier: z.string().nullish(),
@@ -47,7 +49,7 @@ const CreateTaskBodySchema = z.object({
   parentTaskId: z.string().trim().min(1).nullish(),
   roleTitle: z.string().nullish(),
   skillTags: z.array(z.string()).nullish(),
-  status: z.nativeEnum(TaskStatus).nullish(),
+  status: MutableTaskStatusSchema.nullish(),
   title: z.string().min(1),
 });
 

@@ -17,10 +17,22 @@ export function buildSiteStructuredData(site: SiteConfig) {
         "@type": "Organization",
         "@id": organizationId,
         name: site.organizationName,
+        legalName: site.legalEntityName,
         url: site.organizationUrl,
         logo: absoluteUrl(site.organizationUrl, site.organizationLogoPath),
-        description: site.description,
+        description: site.businessDescription,
         email: site.publicContactEmail,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: [site.mailingAddress.line1, site.mailingAddress.line2]
+            .filter(Boolean)
+            .join(", "),
+          addressLocality: site.mailingAddress.city,
+          addressRegion: site.mailingAddress.state,
+          postalCode: site.mailingAddress.postalCode,
+          addressCountry:
+            site.mailingAddress.countryCode ?? site.mailingAddress.country,
+        },
         contactPoint: [
           {
             "@type": "ContactPoint",

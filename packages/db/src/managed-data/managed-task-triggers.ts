@@ -16,6 +16,7 @@ import {
   TREATY_SIGNER_TASK_KEY_PREFIX,
   USER_TREATY_TASK_KEY_PREFIX,
 } from "../task-keys.js";
+import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "../system-identities.js";
 
 export interface ManagedTaskSpawnSpecInput {
   kind: string;
@@ -90,8 +91,7 @@ const TREATY_ACTION_PATH = "/treaty";
 // ---------------------------------------------------------------------------
 const USER_TREATY_TASK_TITLE =
   "Get {{params.majorityHumanity}} people to vote on the 1% Treaty";
-const USER_TREATY_TASK_ROLE_TITLE =
-  "Humanity Manager, Earth Optimization Services, LLC";
+const USER_TREATY_TASK_ROLE_TITLE = `Humanity Manager, ${EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}`;
 const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE = "Promote to Humanity Manager";
 
 // Per-user HMT root description = the Promotion content from
@@ -105,7 +105,7 @@ const PROMOTION_TO_HUMANITY_MANAGER_TASK_TITLE = "Promote to Humanity Manager";
 const USER_TREATY_DESCRIPTION = [
   "🎉 **CONGRATULATIONS**",
   "",
-  "You have been promoted to **Humanity Manager** at Earth Optimization Services, LLC.",
+  `You have been promoted to **Humanity Manager** at ${EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}.`,
   "",
   "**Direct reports:** ~{{params.globalHumanity}} humans",
   "**Primary KPI:** Hours of human suffering prevented per week",
@@ -464,14 +464,15 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
 // cost probably exceeds the completion uplift on passive signups. The HMT root
 // task description is the welcome and the nag; if a user comes back, they see
 // the task. Email stays reserved for transactional + asked-for signals.
-export const ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS: ManagedTaskTriggerInput[] = [
-  userOnboardingTreaty,
-  referralVoteInvitation,
-  treatySignerReminder,
-  treatyRatify,
-  hmtVerifyGate,
-  treatySignerPerSlot,
-];
+export const ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS: ManagedTaskTriggerInput[] =
+  [
+    userOnboardingTreaty,
+    referralVoteInvitation,
+    treatySignerReminder,
+    treatyRatify,
+    hmtVerifyGate,
+    treatySignerPerSlot,
+  ];
 
 export interface SyncManagedTaskTriggersOptions {
   apply: boolean;
@@ -489,15 +490,16 @@ export interface SyncManagedTaskTriggersResult {
 }
 
 type ManagedTaskSpawnSpecData = ReturnType<typeof toSpawnSpecCreate>;
-type ManagedTaskCommunicationSpawnSpecData = ReturnType<typeof toCommSpecCreate>;
+type ManagedTaskCommunicationSpawnSpecData = ReturnType<
+  typeof toCommSpecCreate
+>;
 
 interface ManagedTaskSpawnSpecRow extends ManagedTaskSpawnSpecData {
   id?: string;
   triggerId?: string;
 }
 
-interface ManagedTaskCommunicationSpawnSpecRow
-  extends ManagedTaskCommunicationSpawnSpecData {
+interface ManagedTaskCommunicationSpawnSpecRow extends ManagedTaskCommunicationSpawnSpecData {
   id?: string;
   triggerId?: string;
 }
@@ -628,7 +630,9 @@ function assertUniqueManagedTaskTriggers(records: ManagedTaskTriggerInput[]) {
 
   for (const record of records) {
     if (triggerKeys.has(record.triggerKey)) {
-      throw new Error(`Duplicate managed task trigger key: ${record.triggerKey}`);
+      throw new Error(
+        `Duplicate managed task trigger key: ${record.triggerKey}`,
+      );
     }
     triggerKeys.add(record.triggerKey);
 
@@ -638,7 +642,9 @@ function assertUniqueManagedTaskTriggers(records: ManagedTaskTriggerInput[]) {
       record.communicationSpawnSpecs ?? [],
     );
 
-    const parentSpecs = (record.spawnSpecs ?? []).filter((spec) => spec.isParent);
+    const parentSpecs = (record.spawnSpecs ?? []).filter(
+      (spec) => spec.isParent,
+    );
     if (parentSpecs.length > 1) {
       throw new Error(
         `Managed task trigger ${record.triggerKey} has multiple parent spawn specs`,
@@ -676,8 +682,7 @@ async function createManagedTaskTrigger(
       ...toTriggerScalars(record),
       createdByUserId: null,
       updatedByUserId: null,
-      spawnSpecs:
-        spawnSpecs.length > 0 ? { create: spawnSpecs } : undefined,
+      spawnSpecs: spawnSpecs.length > 0 ? { create: spawnSpecs } : undefined,
       communicationSpawnSpecs:
         communicationSpawnSpecs.length > 0
           ? { create: communicationSpawnSpecs }
@@ -741,7 +746,7 @@ function toTriggerScalars(record: ManagedTaskTriggerInput) {
     eventFilter: nullableJson(record.eventFilter),
     triggerKind: record.triggerKind ?? "spawnTasks",
     enabled,
-    disabledReason: enabled ? null : record.disabledReason ?? null,
+    disabledReason: enabled ? null : (record.disabledReason ?? null),
     idempotencyKeyTemplate: record.idempotencyKeyTemplate,
     completionGate: nullableJson(record.completionGate),
     jurisdictionId: record.jurisdictionId ?? null,
@@ -778,8 +783,7 @@ function toSpawnSpecCreate(spec: ManagedTaskSpawnSpecInput) {
     actionLinkInstructionsTemplate: spec.actionLinkInstructionsTemplate ?? null,
     creatorResolver: spec.creatorResolver ?? "actor",
     assigneePersonResolver: spec.assigneePersonResolver ?? "none",
-    assigneeOrganizationResolver:
-      spec.assigneeOrganizationResolver ?? "none",
+    assigneeOrganizationResolver: spec.assigneeOrganizationResolver ?? "none",
     parentResolver: spec.parentResolver ?? "trigger.parentSpec",
     contributesToGate: spec.contributesToGate ?? false,
     metadata: nullableJson(spec.metadata),
@@ -843,7 +847,9 @@ function managedTaskTriggerNeedsUpdate(
     ) ||
     !sameJson(
       normalizeCommunicationSpawnSpecRows(existing.communicationSpawnSpecs),
-      normalizeCommunicationSpawnSpecInputs(record.communicationSpawnSpecs ?? []),
+      normalizeCommunicationSpawnSpecInputs(
+        record.communicationSpawnSpecs ?? [],
+      ),
     )
   );
 }
@@ -938,7 +944,9 @@ function stableJson(value: unknown): unknown {
   }
 
   if (value && typeof value === "object") {
-    const entries = Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
+    const entries = Object.entries(value).sort(([a], [b]) =>
+      a.localeCompare(b),
+    );
     return Object.fromEntries(
       entries.map(([key, nested]) => [key, stableJson(nested)]),
     );

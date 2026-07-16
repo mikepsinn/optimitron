@@ -16,7 +16,7 @@ import {
   type CommentSortKey,
 } from "@/lib/tasks/task-comments.server";
 import {
-  canUserViewTask,
+  canUserCommentOnTask,
   TASK_NOT_FOUND_MESSAGE,
 } from "@/lib/tasks/task-visibility.server";
 import {
@@ -50,6 +50,7 @@ export async function GET(
 
     const currentUser = await getCurrentUser(request, [
       McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ORGANIZATION,
       McpScope.TASKS_ADMIN,
     ]);
 
@@ -100,6 +101,7 @@ export async function POST(
   try {
     const currentUser = await getCurrentUser(request, [
       McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ORGANIZATION,
       McpScope.TASKS_ADMIN,
     ]);
     if (!currentUser) {
@@ -166,7 +168,7 @@ export async function POST(
     // Same visibility gate as GET: you can only write where you can read.
     // (postComment itself stays ungated so server-initiated Wishonia replies
     // can land on private tasks.)
-    if (!(await canUserViewTask(taskId, currentUser.id))) {
+    if (!(await canUserCommentOnTask(taskId, currentUser.id))) {
       return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
 

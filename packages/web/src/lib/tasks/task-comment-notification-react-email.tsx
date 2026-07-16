@@ -1,4 +1,5 @@
 import { Img, Section, Text } from "@react-email/components";
+import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "@optimitron/db/system-identities";
 import * as React from "react";
 import {
   CampaignButton,
@@ -40,7 +41,9 @@ export function TaskCommentNotificationReactEmail({
 }) {
   const authorInitial = (authorName.trim()[0] ?? "?").toUpperCase();
   return (
-    <CampaignEmailShell preview={`${authorName} commented: ${commentMessage.slice(0, 80)}`}>
+    <CampaignEmailShell
+      preview={`${authorName} commented: ${commentMessage.slice(0, 80)}`}
+    >
       <CampaignHeading>{title}</CampaignHeading>
       <Section
         style={{
@@ -120,7 +123,9 @@ export function TaskCommentNotificationReactEmail({
           {secondaryCta.label}
         </CampaignButton>
       ) : null}
-      {replyInstruction ? <CampaignText muted>{replyInstruction}</CampaignText> : null}
+      {replyInstruction ? (
+        <CampaignText muted>{replyInstruction}</CampaignText>
+      ) : null}
       {recipientReason ? (
         <Text
           style={{
@@ -133,7 +138,9 @@ export function TaskCommentNotificationReactEmail({
           {recipientReason}
         </Text>
       ) : null}
-      {senderSignature ? <SenderSignatureBlock signature={senderSignature} /> : null}
+      {senderSignature ? (
+        <SenderSignatureBlock signature={senderSignature} />
+      ) : null}
       {recipientReferralUrl ? (
         <CampaignShareFooter
           referralUrl={recipientReferralUrl}
@@ -158,7 +165,7 @@ export function TaskCommentNotificationReactEmail({
 
 function SenderSignatureBlock({ signature }: { signature: SenderSignature }) {
   const role = signature.role ?? "Recently promoted to Humanity Manager";
-  const org = signature.org ?? "Earth Optimization Services LLC";
+  const org = signature.org ?? EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME;
   return (
     <Section
       style={{
@@ -167,7 +174,14 @@ function SenderSignatureBlock({ signature }: { signature: SenderSignature }) {
         paddingLeft: "16px",
       }}
     >
-      <Text style={{ color: "#3f3f46", fontSize: "14px", lineHeight: "1.4", margin: "0 0 8px" }}>
+      <Text
+        style={{
+          color: "#3f3f46",
+          fontSize: "14px",
+          lineHeight: "1.4",
+          margin: "0 0 8px",
+        }}
+      >
         Love,
       </Text>
       <Text
@@ -181,7 +195,14 @@ function SenderSignatureBlock({ signature }: { signature: SenderSignature }) {
       >
         {signature.name}
       </Text>
-      <Text style={{ color: "#3f3f46", fontSize: "14px", lineHeight: "1.4", margin: "2px 0 0" }}>
+      <Text
+        style={{
+          color: "#3f3f46",
+          fontSize: "14px",
+          lineHeight: "1.4",
+          margin: "2px 0 0",
+        }}
+      >
         {role}
       </Text>
       <Text

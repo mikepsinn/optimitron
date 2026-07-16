@@ -36,7 +36,7 @@ the same thing, the one listed here owns it — fix the other.
 | [PREVIEW_DATA_PRIVACY.md](./PREVIEW_DATA_PRIVACY.md) | Preview-DB anonymization mechanism and masked-column table. |
 | [DEVELOPER_API_PLAN.md](./DEVELOPER_API_PLAN.md) | Developer OAuth/OpenAPI surface: shipped/now/next/not-yet. |
 | [OPTIMIZE_EARTH_PROTOCOL.md](./OPTIMIZE_EARTH_PROTOCOL.md) | The protocol agents follow on "optimize earth". |
-| [plans/phased-approach-optimitron.md](./plans/phased-approach-optimitron.md) | Approved private-execution plan: Mike dogfood, Tom isolation acceptance, commercial kernel, and selected conversation ingestion. |
+| [plans/phased-approach-optimitron.md](./plans/phased-approach-optimitron.md) | Approved private-execution plan: Primary Operator dogfood, Independent Operator isolation acceptance, commercial kernel, and selected conversation ingestion. |
 
 ## Product surfaces & copy
 
@@ -44,8 +44,8 @@ the same thing, the one listed here owns it — fix the other.
 |---|---|
 | [questions.md](./questions.md) | Screen-by-screen spec of the treaty vote/share flow. |
 | [treaty-flow-variants.md](./treaty-flow-variants.md) | Registry of A/B treaty-flow variants. |
-| [h2ewd.md](./h2ewd.md) | Wishonia voice canon for persuasion copy (copy-gated by Mike). |
-| [prize-docs.md](./prize-docs.md) | Long-form /prize page copy source (copy-gated by Mike). |
+| [h2ewd.md](./h2ewd.md) | Wishonia voice canon for persuasion copy (human copy-owner gate). |
+| [prize-docs.md](./prize-docs.md) | Long-form /prize page copy source (human copy-owner gate). |
 | [game-design-guidelines.md](./game-design-guidelines.md) | Pixel/CRT design system — game/demo screens ONLY. |
 
 ## Generated — do not edit by hand

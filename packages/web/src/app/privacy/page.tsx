@@ -1,10 +1,11 @@
 import { headers } from "next/headers";
+import { LegalOperatorDetails } from "@/components/site/LegalOperatorDetails";
 import { Container } from "@/components/ui/container";
 import { getSiteMetadata } from "@/lib/metadata";
 import { privacyLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
-const UPDATED_AT = "May 23, 2026";
+const UPDATED_AT = "July 16, 2026";
 const SECTION_HEADING_CLASS =
   "mb-4 text-2xl font-black uppercase text-foreground";
 
@@ -25,7 +26,6 @@ export async function generateMetadata() {
 export default async function PrivacyPage() {
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
-  const legalEntityName = site.legalEntityName;
   const contactEmail = site.publicContactEmail;
   const websiteLabel = new URL(site.canonicalOrigin).hostname;
 
@@ -45,9 +45,10 @@ export default async function PrivacyPage() {
             <section>
               <h2 className={SECTION_HEADING_CLASS}>1. Who We Are</h2>
               <p className="font-bold leading-relaxed">
-                {site.name} is operated by {legalEntityName}. This policy
-                explains what we collect when you use {websiteLabel}, why we
-                collect it, when it may be public, and how to contact us.
+                {site.name} is operated by {site.legalEntityName}, a{" "}
+                {site.legalEntityType}. This policy explains what we collect
+                when you use {websiteLabel}, why we collect it, when it may be
+                public, and how to contact us.
               </p>
             </section>
 
@@ -136,8 +137,8 @@ export default async function PrivacyPage() {
                 public evidence, or share a public referral link, the site may
                 display the details you submitted, related public counts, and
                 referral impact. Public plaintiff and memorial pages may show
-                the person&apos;s name, photo, relationship, life or death status,
-                public comments, memorial details, evidence, and
+                the person&apos;s name, photo, relationship, life or death
+                status, public comments, memorial details, evidence, and
                 responsible-party claims. They may also show a condition or
                 cause when the form asks for public display and you confirm it.
                 For living people or people whose status is unknown, we publish
@@ -272,11 +273,7 @@ export default async function PrivacyPage() {
                 We may update this policy by posting a new version here. The
                 date above shows when it was last changed.
               </p>
-              <div className="mt-4 border border-foreground bg-background p-4 text-foreground">
-                <p className="font-black">{legalEntityName}</p>
-                <p className="font-bold">Email: {contactEmail}</p>
-                <p className="font-bold">Website: {websiteLabel}</p>
-              </div>
+              <LegalOperatorDetails site={site} />
             </section>
           </div>
         </article>

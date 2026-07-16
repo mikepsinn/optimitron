@@ -19,13 +19,16 @@ const mocks = vi.hoisted(() => ({
     taskFindMany: vi.fn(),
     personFindFirst: vi.fn(),
     transaction: vi.fn(),
+    userFindUnique: vi.fn(),
     userFindUniqueOrThrow: vi.fn(),
   },
   tx: {
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindUniqueOrThrow: vi.fn(),
+    taskFindFirst: vi.fn(),
     taskUpdate: vi.fn(),
+    userFindUnique: vi.fn(),
   },
 }));
 
@@ -50,6 +53,7 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.prisma.personFindFirst,
     },
     user: {
+      findUnique: mocks.prisma.userFindUnique,
       findUniqueOrThrow: mocks.prisma.userFindUniqueOrThrow,
     },
   },
@@ -81,9 +85,11 @@ import {
 function createTransactionClient() {
   return {
     task: {
+      findFirst: mocks.tx.taskFindFirst,
       findUniqueOrThrow: mocks.tx.taskFindUniqueOrThrow,
       update: mocks.tx.taskUpdate,
     },
+    user: { findUnique: mocks.tx.userFindUnique },
     taskClaim: {
       findUniqueOrThrow: mocks.tx.taskClaimFindUniqueOrThrow,
       update: mocks.tx.taskClaimUpdate,
@@ -112,7 +118,7 @@ function lastTaskFindManyArgs() {
 
 function mockTask(overrides: Record<string, unknown> = {}) {
   return {
-    _count: { childTasks: 0 },
+    _count: { childTasks: 0, executionAttempts: 0 },
     actualCashCostUsd: null,
     actualEffortSeconds: null,
     assigneeAffiliationSnapshot: null,
@@ -139,6 +145,7 @@ function mockTask(overrides: Record<string, unknown> = {}) {
     parentTask: null,
     parentTaskId: null,
     roleTitle: null,
+    referralInvitations: [],
     skillTags: [],
     sortOrder: 0,
     sourceArtifacts: [],
@@ -165,6 +172,15 @@ describe("tasks server", () => {
   beforeEach(() => {
     resetAllMocks();
     mocks.prisma.taskFindMany.mockResolvedValue([]);
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      isAdmin: true,
+      personId: "person_admin",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      id: "task_1",
+      status: TaskStatus.ACTIVE,
+    });
     mocks.prisma.transaction.mockImplementation(
       async (
         callback: (tx: ReturnType<typeof createTransactionClient>) => unknown,
@@ -243,10 +259,17 @@ describe("tasks server", () => {
   it("listTasks accessible visibility only includes public tasks plus the authenticated user's created tasks", async () => {
     await listTasks({ userId: "user-a", visibility: "accessible" });
 
-    expect(lastTaskFindManyArgs().where).toMatchObject({
-      deletedAt: null,
-      OR: [{ isPublic: true }, { createdByUserId: "user-a" }],
-    });
+    const where = lastTaskFindManyArgs().where as {
+      OR?: unknown[];
+      deletedAt?: unknown;
+    };
+    expect(where.deletedAt).toBeNull();
+    expect(where.OR).toEqual(
+      expect.arrayContaining([
+        { isPublic: true },
+        { createdByUserId: "user-a" },
+      ]),
+    );
   });
 
   it("gets only public assigned tasks for a person profile and splits open from verified", async () => {
@@ -444,15 +467,17 @@ describe("tasks server", () => {
     await searchTasks("secret grant memo", { userId: "user-a" });
 
     const args = lastTaskFindManyArgs();
-    expect(args.where).toMatchObject({
-      AND: [
-        expect.objectContaining({
-          deletedAt: null,
-          OR: [{ isPublic: true }, { createdByUserId: "user-a" }],
-        }),
-        expect.any(Object),
-      ],
-    });
+    const [visibility] = (args.where as { AND: unknown[] }).AND as Array<{
+      OR?: unknown[];
+      deletedAt?: unknown;
+    }>;
+    expect(visibility?.deletedAt).toBeNull();
+    expect(visibility?.OR).toEqual(
+      expect.arrayContaining([
+        { isPublic: true },
+        { createdByUserId: "user-a" },
+      ]),
+    );
   });
 
   it("records the creator on private tasks created by the creator", async () => {

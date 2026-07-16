@@ -6,7 +6,6 @@ import {
   TaskCompensationKind,
   TaskDeadlinePolicy,
   TaskExecutionMode,
-  TaskKind,
   TaskRemotePolicy,
   TaskStatus,
   type Prisma,
@@ -16,7 +15,6 @@ import {
   type TaskCompensationKind as TaskCompensationKindValue,
   type TaskDeadlinePolicy as TaskDeadlinePolicyValue,
   type TaskExecutionMode as TaskExecutionModeValue,
-  type TaskKind as TaskKindValue,
   type TaskRemotePolicy as TaskRemotePolicyValue,
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
@@ -46,7 +44,6 @@ export interface ManagedTaskRecord {
   impactStatement?: string | null;
   ownerOrganizationId?: string | null;
   category?: TaskCategoryValue;
-  kind?: TaskKindValue;
   estimatedEffortHours?: number | null;
   /** Gross conditional value (USD) if the task succeeds. Source from `@optimitron/data` parameters — never hand-typed. */
   expectedEconomicValueUsdBase?: number | null;
@@ -109,7 +106,6 @@ interface ManagedTaskRow {
   impactStatement: string | null;
   ownerOrganizationId: string | null;
   category: TaskCategoryValue;
-  kind: TaskKindValue;
   estimatedEffortHours: number | null;
   skillTags: string[];
   preferredSkillTags: string[];
@@ -423,7 +419,6 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     impactStatement: record.impactStatement ?? null,
     ownerOrganizationId: record.ownerOrganizationId ?? null,
     category: record.category ?? TaskCategory.GOVERNANCE,
-    kind: record.kind ?? TaskKind.TASK,
     estimatedEffortHours: record.estimatedEffortHours ?? null,
     skillTags: record.skillTags ?? [],
     preferredSkillTags: record.preferredSkillTags ?? [],
@@ -637,7 +632,6 @@ function managedTaskNeedsUpdate(
     existing.impactStatement !== scalars.impactStatement ||
     existing.ownerOrganizationId !== scalars.ownerOrganizationId ||
     existing.category !== scalars.category ||
-    existing.kind !== scalars.kind ||
     existing.estimatedEffortHours !== scalars.estimatedEffortHours ||
     !sameJson(existing.skillTags, scalars.skillTags) ||
     !sameJson(existing.preferredSkillTags, scalars.preferredSkillTags) ||
@@ -881,7 +875,6 @@ export async function syncManagedTasks(
       impactStatement: true,
       ownerOrganizationId: true,
       category: true,
-      kind: true,
       estimatedEffortHours: true,
       skillTags: true,
       preferredSkillTags: true,

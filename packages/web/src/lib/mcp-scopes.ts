@@ -17,6 +17,8 @@ export { McpScope };
 export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
   [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies",
   [McpScope.TASKS_PERSONAL]: "Manage your private tasks, dependencies, comments, queues, and next-action recommendations",
+  [McpScope.TASKS_ORGANIZATION]: "Manage private tasks for organizations where you have permission",
+  [McpScope.ACTIONS_APPROVE]: "Approve exact outbound-action payloads as an authenticated human",
   [McpScope.EARTHDATA_WRITE]: "Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports",
   [McpScope.EARTHDATA_ADMIN]: "Admin-only: hide, restore, merge, and resolve Earth-data records and reports",
   [McpScope.AGENT_RUN]: "Admin-only: run coordinated public-task agents with leases and run logs",
@@ -35,6 +37,8 @@ export const DEFAULT_CONSENT_SCOPES: McpScope[] = [
 
 export const ALL_SCOPES: McpScope[] = [
   McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ORGANIZATION,
+  McpScope.ACTIONS_APPROVE,
   McpScope.TASKS_ADMIN,
   McpScope.EARTHDATA_WRITE,
   McpScope.EARTHDATA_ADMIN,
@@ -44,6 +48,7 @@ export const ALL_SCOPES: McpScope[] = [
 
 export const ADMIN_MCP_SCOPES: readonly McpScope[] = [
   McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ORGANIZATION,
   McpScope.TASKS_ADMIN,
   McpScope.EARTHDATA_WRITE,
   McpScope.EARTHDATA_ADMIN,
@@ -53,18 +58,41 @@ export const ADMIN_MCP_SCOPES: readonly McpScope[] = [
 
 export const NON_ADMIN_MCP_SCOPES: readonly McpScope[] = [
   McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ORGANIZATION,
   McpScope.EARTHDATA_WRITE,
 ];
 
-export function allowedMcpScopesForUser(isAdmin: boolean): readonly McpScope[] {
-  return isAdmin ? ADMIN_MCP_SCOPES : NON_ADMIN_MCP_SCOPES;
+export function isHumanApprovalOAuthRedirectUri(value: string) {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      /^[a-p]{32}\.chromiumapp\.org$/.test(url.hostname) &&
+      url.pathname === "/oauth2"
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function allowedMcpScopesForUser(
+  isAdmin: boolean,
+  options?: { allowHumanApproval?: boolean },
+): readonly McpScope[] {
+  const base = isAdmin ? ADMIN_MCP_SCOPES : NON_ADMIN_MCP_SCOPES;
+  return options?.allowHumanApproval
+    ? [...base, McpScope.ACTIONS_APPROVE]
+    : base;
 }
 
 export function filterAllowedMcpScopes(
   requested: readonly McpScope[],
   isAdmin: boolean,
+  options?: { allowHumanApproval?: boolean },
 ): McpScope[] {
-  const allowed = new Set<McpScope>(allowedMcpScopesForUser(isAdmin));
+  const allowed = new Set<McpScope>(
+    allowedMcpScopesForUser(isAdmin, options),
+  );
   return requested.filter((scope) => allowed.has(scope));
 }
 
@@ -79,6 +107,8 @@ export function filterAllowedMcpScopes(
 
 const ENUM_TO_WIRE: Record<McpScope, string> = {
   [McpScope.TASKS_PERSONAL]: "tasks:personal",
+  [McpScope.TASKS_ORGANIZATION]: "tasks:organization",
+  [McpScope.ACTIONS_APPROVE]: "actions:approve",
   [McpScope.TASKS_ADMIN]: "tasks:admin",
   [McpScope.EARTHDATA_WRITE]: "earthdata:write",
   [McpScope.EARTHDATA_ADMIN]: "earthdata:admin",

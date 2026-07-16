@@ -412,15 +412,6 @@ export const TaskCategorySchema = z.enum([
 ]);
 export type TaskCategory = z.infer<typeof TaskCategorySchema>;
 
-export const TaskKindSchema = z.enum([
-  "TASK",
-  "ROLE_OPENING",
-  "PROJECT",
-  "BOUNTY",
-  "VOLUNTEER_ROLE",
-]);
-export type TaskKind = z.infer<typeof TaskKindSchema>;
-
 export const TaskEngagementKindSchema = z.enum([
   "ONE_OFF",
   "ONGOING",
@@ -495,6 +486,39 @@ export const TaskExecutionAttemptStatusSchema = z.enum([
 ]);
 export type TaskExecutionAttemptStatus = z.infer<
   typeof TaskExecutionAttemptStatusSchema
+>;
+
+export const TaskVerificationMethodSchema = z.enum([
+  "DETERMINISTIC",
+  "RULE_BASED",
+  "REVIEWER",
+  "OUTCOME",
+]);
+export type TaskVerificationMethod = z.infer<
+  typeof TaskVerificationMethodSchema
+>;
+
+export const TaskVerificationResultSchema = z.enum([
+  "PENDING",
+  "ACCEPTED",
+  "REJECTED",
+  "ERROR",
+]);
+export type TaskVerificationResult = z.infer<
+  typeof TaskVerificationResultSchema
+>;
+
+export const ExternalActionRequestStatusSchema = z.enum([
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "EXPIRED",
+  "EXECUTED",
+  "FAILED",
+  "CANCELLED",
+]);
+export type ExternalActionRequestStatus = z.infer<
+  typeof ExternalActionRequestStatusSchema
 >;
 
 export const AgentExecutorStatusSchema = z.enum([
@@ -594,6 +618,16 @@ export const TaskStatusSchema = z.enum([
   "STALE",
 ]);
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
+
+export const OrganizationMemberRoleSchema = z.enum([
+  "OWNER",
+  "ADMIN",
+  "MEMBER",
+  "VIEWER",
+]);
+export type OrganizationMemberRole = z.infer<
+  typeof OrganizationMemberRoleSchema
+>;
 
 export const TaskDeadlinePolicySchema = z.enum([
   "NONE",
@@ -887,6 +921,8 @@ export type TaskCommentSource = z.infer<typeof TaskCommentSourceSchema>;
 export const McpScopeSchema = z.enum([
   "TASKS_ADMIN",
   "TASKS_PERSONAL",
+  "TASKS_ORGANIZATION",
+  "ACTIONS_APPROVE",
   "EARTHDATA_WRITE",
   "EARTHDATA_ADMIN",
   "AGENT_RUN",
@@ -2574,7 +2610,7 @@ export const OrganizationMemberSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   userId: z.string(),
-  role: z.string().default("member"),
+  role: OrganizationMemberRoleSchema.default("MEMBER"),
   joinedAt: dateSchema,
 });
 export type OrganizationMemberType = z.infer<typeof OrganizationMemberSchema>;
@@ -2600,7 +2636,6 @@ export const TaskSchema = z.object({
   roleTitle: z.string().nullable().optional(),
   assigneeAffiliationSnapshot: z.string().nullable().optional(),
   category: TaskCategorySchema.default("OTHER"),
-  kind: TaskKindSchema.default("TASK"),
   engagementKind: TaskEngagementKindSchema.default("ONE_OFF"),
   estimatedEffortHours: z.number().nullable().optional(),
   actualEffortSeconds: z.number().int().nullable().optional(),
@@ -2751,6 +2786,80 @@ export const TaskExecutionAttemptSchema = z.object({
 });
 export type TaskExecutionAttemptType = z.infer<
   typeof TaskExecutionAttemptSchema
+>;
+
+/** Zod schema for an immutable artifact submitted for an execution attempt */
+export const TaskExecutionArtifactSchema = z.object({
+  id: z.string(),
+  taskExecutionAttemptId: z.string(),
+  documentRevisionId: z.string().nullable().optional(),
+  contentAttachmentId: z.string().nullable().optional(),
+  taskCommentAttachmentId: z.string().nullable().optional(),
+  externalUrl: z.string().nullable().optional(),
+  structuredResultJson: nullableJsonSchema,
+  label: z.string().nullable().optional(),
+  contentHash: z.string(),
+  submittedByUserId: z.string().nullable().optional(),
+  submittedByAgentExecutorId: z.string().nullable().optional(),
+  metadataJson: nullableJsonSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskExecutionArtifactType = z.infer<
+  typeof TaskExecutionArtifactSchema
+>;
+
+/** Zod schema for append-only verification evidence */
+export const TaskVerificationSchema = z.object({
+  id: z.string(),
+  taskExecutionAttemptId: z.string(),
+  method: TaskVerificationMethodSchema,
+  result: TaskVerificationResultSchema.default("PENDING"),
+  acceptanceCriteriaSnapshotJson: z.unknown(),
+  criterionResultsJson: nullableJsonSchema,
+  evidenceJson: nullableJsonSchema,
+  note: z.string().nullable().optional(),
+  ruleKey: z.string().nullable().optional(),
+  ruleVersion: z.string().nullable().optional(),
+  reviewerUserId: z.string().nullable().optional(),
+  reviewerAgentExecutorId: z.string().nullable().optional(),
+  selfReviewed: z.boolean().default(false),
+  completedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type TaskVerificationType = z.infer<typeof TaskVerificationSchema>;
+
+/** Zod schema for an exact external action awaiting human approval */
+export const ExternalActionRequestSchema = z.object({
+  id: z.string(),
+  taskId: z.string(),
+  taskExecutionAttemptId: z.string().nullable().optional(),
+  operation: z.string(),
+  destination: z.string(),
+  payloadJson: z.unknown(),
+  payloadHash: z.string(),
+  requestedByUserId: z.string().nullable().optional(),
+  requestedByAgentExecutorId: z.string().nullable().optional(),
+  status: ExternalActionRequestStatusSchema.default("PENDING"),
+  expiresAt: dateSchema,
+  approvedByUserId: z.string().nullable().optional(),
+  approvedAt: nullableDateSchema,
+  approvedPayloadHash: z.string().nullable().optional(),
+  executedByUserId: z.string().nullable().optional(),
+  executedByAgentExecutorId: z.string().nullable().optional(),
+  executedAt: nullableDateSchema,
+  executionReceiptJson: nullableJsonSchema,
+  failureMessage: z.string().nullable().optional(),
+  idempotencyKey: z.string(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type ExternalActionRequestType = z.infer<
+  typeof ExternalActionRequestSchema
 >;
 
 /** Zod schema for the TaskMarketplaceListing model */
@@ -2986,6 +3095,9 @@ export const SourceArtifactSchema = z.object({
   sourceSystem: SourceSystemSchema,
   artifactType: SourceArtifactTypeSchema,
   sourceKey: z.string(),
+  ownerUserId: z.string().nullable().optional(),
+  ownerOrganizationId: z.string().nullable().optional(),
+  isPublic: z.boolean().default(true),
   externalKey: z.string().nullable().optional(),
   versionKey: z.string().nullable().optional(),
   title: z.string().nullable().optional(),

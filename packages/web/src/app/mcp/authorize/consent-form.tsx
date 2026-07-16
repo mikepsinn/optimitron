@@ -14,6 +14,14 @@ const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
     title: "Manage private tasks",
     detail: "Create, update, delete, prioritize, and comment on your private tasks.",
   },
+  [McpScope.TASKS_ORGANIZATION]: {
+    title: "Manage organization tasks",
+    detail: "Manage private work for organizations where you have permission.",
+  },
+  [McpScope.ACTIONS_APPROVE]: {
+    title: "Approve outbound actions",
+    detail: "Approve an exact message or browser action as yourself.",
+  },
   [McpScope.EARTHDATA_WRITE]: {
     title: "Add Earth data",
     detail: "Create sourced memorials, evidence, organization signatures, intervention reports, and correction reports.",
@@ -38,19 +46,39 @@ export function McpConsentForm({
   state,
   requestedScopes,
   availableScopes,
+  availableOrganizations,
   codeChallenge,
+  initialOrganizationIds,
 }: {
   clientId: string;
   redirectUri: string;
   state: string | null;
   requestedScopes: McpScope[];
   availableScopes: readonly McpScope[];
+  availableOrganizations: Array<{
+    id: string;
+    name: string;
+    role: string;
+    slug: string;
+  }>;
   codeChallenge: string;
+  initialOrganizationIds: string[];
 }) {
   const [selected, setSelected] = useState<Set<McpScope>>(
     () => new Set(requestedScopes.filter((s) => availableScopes.includes(s))),
   );
+  const [selectedOrganizationIds, setSelectedOrganizationIds] = useState<
+    Set<string>
+  >(
+    () =>
+      new Set(
+        initialOrganizationIds.filter((id) =>
+          availableOrganizations.some((organization) => organization.id === id),
+        ),
+      ),
+  );
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function toggle(scope: McpScope) {
     setSelected((prev) => {
@@ -61,9 +89,22 @@ export function McpConsentForm({
     });
   }
 
+  function toggleOrganization(organizationId: string) {
+    setSelectedOrganizationIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(organizationId)) next.delete(organizationId);
+      else next.add(organizationId);
+      return next;
+    });
+  }
+
   async function handleApprove() {
-    if (selected.size === 0) return;
+    const organizationSelectionRequired =
+      selected.has(McpScope.TASKS_ORGANIZATION) &&
+      selectedOrganizationIds.size === 0;
+    if (selected.size === 0 || organizationSelectionRequired) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/mcp/oauth/consent", {
         method: "POST",
@@ -73,6 +114,9 @@ export function McpConsentForm({
           redirect_uri: redirectUri,
           state,
           scope: scopesToWire(Array.from(selected)),
+          organization_ids: selected.has(McpScope.TASKS_ORGANIZATION)
+            ? Array.from(selectedOrganizationIds)
+            : [],
           code_challenge: codeChallenge,
           approved: true,
         }),
@@ -81,8 +125,12 @@ export function McpConsentForm({
       const data = await res.json();
       if (data.redirect_url) {
         window.location.href = data.redirect_url;
+        return;
       }
+      setError(data.error_description ?? data.error ?? "Authorization failed.");
+      setLoading(false);
     } catch {
+      setError("Authorization failed. Try again.");
       setLoading(false);
     }
   }
@@ -128,10 +176,55 @@ export function McpConsentForm({
         })}
       </ul>
 
+      {selected.has(McpScope.TASKS_ORGANIZATION) ? (
+        <div className="mb-6">
+          <h2 className="text-sm font-black uppercase mb-3">Organizations</h2>
+          {availableOrganizations.length > 0 ? (
+            <ul className="space-y-2">
+              {availableOrganizations.map((organization) => (
+                <li key={organization.id}>
+                  <label className="flex gap-3 items-start cursor-pointer border-2 border-primary p-3 hover:bg-muted">
+                    <Checkbox
+                      checked={selectedOrganizationIds.has(organization.id)}
+                      onCheckedChange={() => toggleOrganization(organization.id)}
+                      className="mt-0.5"
+                    />
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-black uppercase break-words">
+                        {organization.name}
+                      </span>
+                      <span className="block text-xs font-bold text-muted-foreground mt-1">
+                        {organization.role.toLowerCase()} · {organization.slug}
+                      </span>
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs font-bold text-muted-foreground">
+              You do not belong to an organization. Remove organization access
+              to continue.
+            </p>
+          )}
+        </div>
+      ) : null}
+
+      {error ? (
+        <p role="alert" className="text-sm font-bold mb-4">
+          {error}
+        </p>
+      ) : null}
+
       <div className="flex gap-3">
         <Button
           onClick={handleApprove}
-          disabled={loading || selected.size === 0}
+          disabled={
+            loading ||
+            selected.size === 0 ||
+            (selected.has(McpScope.TASKS_ORGANIZATION) &&
+              selectedOrganizationIds.size === 0)
+          }
           className="flex-1"
         >
           {loading ? "Authorizing..." : selected.size === 0 ? "Select Permissions" : "Authorize"}

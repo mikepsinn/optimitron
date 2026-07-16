@@ -8,6 +8,7 @@ import {
   WAR_ON_DISEASE_CANONICAL_DOMAIN,
   WAR_ON_DISEASE_CANONICAL_ORIGIN,
 } from "@/lib/domains";
+import { EARTH_OPTIMIZATION_SERVICES } from "@/lib/corporate-identity";
 import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import type { ReferendumSiteContentKey } from "@/content/referendum-sites";
@@ -168,6 +169,27 @@ export interface SiteEmailBranding {
   secondaryColor: string;
 }
 
+export interface SiteMailingAddress {
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  countryCode?: string;
+}
+
+export function formatSiteMailingAddress(address: SiteMailingAddress): string {
+  return [
+    address.line1,
+    address.line2,
+    `${address.city}, ${address.state} ${address.postalCode}`,
+    address.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+}
+
 export interface SiteNavConfig {
   brandHref: string;
   brandLabel: string;
@@ -205,7 +227,7 @@ export interface SitePageVariants {
 
 /**
  * Recruitment / chain narrative frame for a site variant:
- * - "manager": Earth Optimization Services LLC is hiring humanity managers,
+ * - "manager": Earth Optimization Services Inc. is hiring humanity managers,
  *   each one hires 2 more. Identity-based, sustains chain behavior.
  * - "voter": Recruit verified voters for the referendum. Action-based,
  *   default for non-campaign and reference sites.
@@ -234,6 +256,9 @@ export interface SiteConfig {
   publicContactEmail: string;
   publicContactUrl: string;
   legalEntityName: string;
+  legalEntityType: string;
+  businessDescription: string;
+  mailingAddress: SiteMailingAddress;
   emailBranding: SiteEmailBranding;
   footerComplianceNotice: string | null;
   sameAs: string[];
@@ -253,20 +278,22 @@ export interface SiteConfig {
   pageVariants: SitePageVariants;
 }
 
-const ORGANIZATION_NAME = "Earth Optimization Services LLC";
+const ORGANIZATION_NAME = EARTH_OPTIMIZATION_SERVICES.legalName;
 const ORGANIZATION_URL = OPTIMITRON_CANONICAL_ORIGIN;
 const ORGANIZATION_LOGO_PATH = "/icons/icon-192.png";
-const PUBLIC_CONTACT_EMAIL = "hello@warondisease.org";
+const PUBLIC_CONTACT_EMAIL = EARTH_OPTIMIZATION_SERVICES.publicContactEmail;
 const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
-const EARTH_OPTIMIZATION_SERVICES_LLC = "Earth Optimization Services LLC";
-const NO_FOOTER_COMPLIANCE_NOTICE = null;
+const EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME =
+  EARTH_OPTIMIZATION_SERVICES.legalName;
+const getEarthOptimizationServicesFooterNotice = (productName: string) =>
+  `${productName} is operated by ${EARTH_OPTIMIZATION_SERVICES.legalName}, a ${EARTH_OPTIMIZATION_SERVICES.legalForm}.`;
 
 /// Public-facing campaign brand for sites operated by the campaign.
-/// Distinct from `EARTH_OPTIMIZATION_SERVICES_LLC` (the legal entity, used
+/// Distinct from `EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME` (the legal entity, used
 /// in compliance surfaces). Legacy campaign domains redirect into the War on
 /// Disease site; SEO + footer attribution should carry the campaign brand
-/// instead of the LLC name.
+/// instead of the corporation name.
 const INTERNATIONAL_CAMPAIGN_ORG_NAME = CAMPAIGN_NAME;
 const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
 const WAR_ON_DISEASE_LEGACY_NAME = "War on Disease";
@@ -566,7 +593,8 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   name: "Optimitron",
   shortName: "Optimitron",
   alternateSiteNames: ["The Earth Optimization Game"],
-  description: "The machine that optimizes Earth. Two numbers: how long you live, how much you keep.",
+  description:
+    "The machine that optimizes Earth. Two numbers: how long you live, how much you keep.",
   ogImage: "/og-image.jpg",
   analyticsId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   contentKey: null,
@@ -575,14 +603,18 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
+  legalEntityType: EARTH_OPTIMIZATION_SERVICES.legalForm,
+  businessDescription: EARTH_OPTIMIZATION_SERVICES.businessDescription,
+  mailingAddress: EARTH_OPTIMIZATION_SERVICES.mailingAddress,
   emailBranding: {
     fromName: "Earth Optimization Services",
     primaryColor: "#ff00ff",
     secondaryColor: "#00d9ff",
-    orgName: EARTH_OPTIMIZATION_SERVICES_LLC,
+    orgName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
+  footerComplianceNotice:
+    getEarthOptimizationServicesFooterNotice("Optimitron"),
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "optimizeEarth",
@@ -675,14 +707,17 @@ const DFDA_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
+  legalEntityType: EARTH_OPTIMIZATION_SERVICES.legalForm,
+  businessDescription: EARTH_OPTIMIZATION_SERVICES.businessDescription,
+  mailingAddress: EARTH_OPTIMIZATION_SERVICES.mailingAddress,
   emailBranding: {
     fromName: "DFDA",
     primaryColor: "#2563eb",
     secondaryColor: "#ffffff",
     orgName: "DFDA",
   },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
+  footerComplianceNotice: getEarthOptimizationServicesFooterNotice("DFDA"),
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "dfda",
@@ -784,14 +819,17 @@ const DIH_CONFIG: SiteConfig = {
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
   publicContactEmail: PUBLIC_CONTACT_EMAIL,
   publicContactUrl: PUBLIC_CONTACT_URL,
-  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LLC,
+  legalEntityName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
+  legalEntityType: EARTH_OPTIMIZATION_SERVICES.legalForm,
+  businessDescription: EARTH_OPTIMIZATION_SERVICES.businessDescription,
+  mailingAddress: EARTH_OPTIMIZATION_SERVICES.mailingAddress,
   emailBranding: {
     fromName: "DIH",
     primaryColor: "#ff6b9d",
     secondaryColor: "#00d4ff",
     orgName: "Decentralized Institutes of Health",
   },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
+  footerComplianceNotice: getEarthOptimizationServicesFooterNotice("DIH"),
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "dih",
@@ -902,18 +940,23 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
   // Public-facing campaign brand on WoD; compliance surfaces name the
   // nonprofit legal entity and campaign DBA.
   organizationName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
-  organizationUrl: ORGANIZATION_URL,
+  organizationUrl: WAR_ON_DISEASE_CANONICAL_ORIGIN,
   organizationLogoPath: ORGANIZATION_LOGO_PATH,
-  publicContactEmail: PUBLIC_CONTACT_EMAIL,
-  publicContactUrl: PUBLIC_CONTACT_URL,
+  publicContactEmail: NONPROFIT.publicContactEmail,
+  publicContactUrl: WAR_ON_DISEASE_CANONICAL_ORIGIN,
   legalEntityName: INTERNATIONAL_CAMPAIGN_LEGAL_ENTITY_NAME,
+  legalEntityType:
+    "Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3)",
+  businessDescription:
+    "Operates the International Campaign to End War and Disease and related public education and advocacy programs.",
+  mailingAddress: NONPROFIT.mailingAddress,
   emailBranding: {
     fromName: INTERNATIONAL_CAMPAIGN_SHORT_NAME,
     primaryColor: "#ff6b9d",
     secondaryColor: "#00d4ff",
     orgName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   },
-  footerComplianceNotice: NO_FOOTER_COMPLIANCE_NOTICE,
+  footerComplianceNotice: `${INTERNATIONAL_CAMPAIGN_ORG_NAME} is operated by ${NONPROFIT.legalName}, a Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3).`,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "warOnDisease",

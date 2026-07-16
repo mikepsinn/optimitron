@@ -131,7 +131,7 @@ describe("buildTaskCommentNotificationEmail", () => {
     });
     expect(email.html).toContain("Mike Sinn");
     expect(email.html).toContain("Recently promoted to Humanity Manager");
-    expect(email.html).toContain("Earth Optimization Services LLC");
+    expect(email.html).toContain("Earth Optimization Services Inc.");
     expect(email.html).toContain("Love,");
     expect(email.text).toContain("Mike Sinn");
     expect(email.text).toContain("Recently promoted to Humanity Manager");

@@ -1,7 +1,7 @@
 # Phased Optimitron Private Execution System
 
 Status: approved implementation plan  
-Operators: Mike first; Tom as the independent-user and tenant-isolation acceptance test  
+Personas: Primary Operator for first-party dogfood; Independent Operator for tenant-isolation acceptance
 Exit gate: each operator imports 25-50 real tasks and closes 10 verified task cycles
 
 ## Summary
@@ -19,7 +19,37 @@ Locked decisions:
 - Codex and Claude Code remain the chat, reasoning, coding, connector, browser, and execution clients. Optimitron owns durable tasks, provenance, EV, permissions, approval, verification, and audit.
 - The Chrome extension becomes the browser-facing Digital Twin Safe. Raw private content is captured by explicit user action and processed locally; it is not a second browser-control agent.
 - Use GPT-5.6 Sol Ultra for architecture, authorization, schema, and adjudication. Use lower-cost capable models for bounded implementation. Use local `gpt-oss-20b` at high reasoning for raw private extraction, with a benchmarked smaller fallback.
-- Success requires separate Mike and Tom passes: each imports 25-50 real tasks and closes 10 verified task cycles while recording every friction point.
+- Success requires separate Primary Operator and Independent Operator passes: each imports 25-50 real tasks and closes 10 verified task cycles while recording every friction point.
+
+## Implementation Checkpoint - July 16, 2026
+
+Branch: `feature/private-execution-system`
+
+This branch is a durable handoff, not a deployable release. `docs/FEATURES.md` owns the current maturity label.
+
+Present in the branch:
+
+- The approved architecture and agent context ladder are committed in `docs/SYSTEM_MAP.md`, this plan, `docs/TASK_MODEL.md`, and `docs/MCP_SERVER.md`.
+- The Prisma schema and migration remove `TaskKind`, add organization roles and private source ownership, and add execution artifacts, typed verification, and immutable external-action requests.
+- MCP OAuth includes personal, organization, and human approval scopes. New MCP definitions and service implementations cover reviewed private bundles, execution lifecycle, task audit, external-action requests, export, and private-source deletion.
+- Task and source visibility code has been expanded, personal and organization planning roots have stable keys, and generic task updates can no longer set `VERIFIED`.
+- Public Earth Optimization Services identity uses the filed name `Earth Optimization Services Inc.`, the public contact `wishonia@optimitron.com`, and the public mailing address. War on Disease remains attributed to Accelerated Medicine Foundation Inc.
+
+Checks completed before this checkpoint:
+
+- `pnpm --filter @optimitron/db build` passed.
+- Forty-nine focused database and web tests passed across managed task triggers, site structured data, messaging, email signatures, and task-comment email.
+- Focused linting reported no errors. Existing warnings remain.
+
+Required continuation work, in order:
+
+1. Regenerate Prisma and all generated schema/type documentation, then make the web app and test TypeScript checks pass. The interrupted branch currently reports generated Prisma/OAuth organization-scope mismatches plus pre-existing React, chart, and icon errors; do not deploy around them.
+2. Add adversarial owner/admin/member/viewer/outsider tests for every task child, aggregate, audit, export, and deletion path. Add state-machine and transaction tests for private bundles, attempts, artifacts, verification, and external-action replay/mutation/expiry.
+3. Apply the migration to a disposable production-shaped database, verify data translation and constraints, and write the production backup/preflight report before any production schema change.
+4. Finish the extension Capture, Review, and Approvals surfaces plus the local companion. The branch changes extension OAuth scopes but does not implement PA-06.
+5. Capture and inspect screenshots for the OAuth organization consent and public legal-identity surfaces. This checkpoint was requested before that review; visual and copy acceptance is still required before merge.
+6. Run the Primary Operator private alpha, record every friction item, then run the Independent Operator isolation acceptance. Neither pilot has started.
+7. Check CI and automated review on the pull request, fix only valid failures, and keep the pull request unmerged for human review.
 
 ## Product Boundary
 
@@ -79,8 +109,8 @@ Canonical mapping:
 | Phase | Deliverable and exit gate |
 |---|---|
 | 0: Preparation | Update agent documentation; baseline tests; export relevant production rows; remove `TaskKind`; centralize access control; close impersonation and verification bypasses. |
-| 1A: Mike private alpha | Create Mike's root and applicable organization roots; review selected recent sources; import 25-50 active tasks; close 10 cycles including two agent tasks, two dependency chains, one rejection/resubmission, and one approved outbound action. |
-| 1B: Tom acceptance | Tom connects independently through production MCP; create Viral Vitalism, Optimitron productization, and Vaultanium container tasks; import 25-50 tasks; close 10 cycles; prove Mike and Tom cannot infer each other's private data. |
+| 1A: Primary Operator private alpha | Create the operator's personal root and applicable organization roots; review selected recent sources; import 25-50 active tasks; close 10 cycles including two agent tasks, two dependency chains, one rejection/resubmission, and one approved outbound action. |
+| 1B: Independent Operator acceptance | A separate user connects independently through production MCP; creates three real work-domain containers; imports 25-50 tasks; closes 10 cycles; and proves the two operators cannot infer each other's private data. |
 | 2: Commercial kernel | Finish organization roles, private source ownership, export/deletion, assignee notifications, audit retrieval, and provider-neutral MCP onboarding. |
 | 3: Verification | Expand reviewer verification to deterministic, rule-based, and outcome-based checks; add criterion snapshots, artifact hashes, and robust rejection history. |
 | 4: Design partner | Give Triangle Direct Media one bounded project slice without migrating its company; test membership, selected import, queue, artifact, approval, and export. |
@@ -97,7 +127,7 @@ Canonical mapping:
 7. Start an execution attempt, coordinate through comments, submit artifacts and actuals, verify or reject, and repeat.
 8. Record friction in a private fixed-schema collection: stage, severity, expected behavior, actual behavior, evidence, workaround, and linked resolution task.
 
-Mike's ten cycles must include two agent-executable tasks, two dependency chains, one rejection and resubmission, and one approved outbound action. Tom repeats the import and ten-cycle test without admin scope. Automated and manual probes must prove that neither operator can infer the other's private task existence, counts, comments, sources, artifacts, attempts, verification, or audit records.
+The Primary Operator's ten cycles must include two agent-executable tasks, two dependency chains, one rejection and resubmission, and one approved outbound action. The Independent Operator repeats the import and ten-cycle test without admin scope. Automated and manual probes must prove that neither operator can infer the other's private task existence, counts, comments, sources, artifacts, attempts, verification, or audit records.
 
 Pilot telemetry:
 
@@ -192,7 +222,7 @@ Reviewer verification is the Phase 1 default. Each submission snapshots criteria
 - `REVIEWER`: an authorized human accepts or rejects criterion-level evidence and artifacts.
 - `OUTCOME`: a later observed result records whether the work produced its intended effect without delaying normal deliverable acceptance.
 
-Acceptance verifies the task and releases dependents. Rejection preserves the attempt, verification, evidence, and criteria snapshot, then makes the task actionable for a new attempt. Self-review is permitted for Mike's low-risk alpha tasks and marked `selfReviewed`; Tom and design-partner work uses an independent reviewer when another member is available. Payments, external claims, security/privacy changes, and partner deliverables always require a different human reviewer.
+Acceptance verifies the task and releases dependents. Rejection preserves the attempt, verification, evidence, and criteria snapshot, then makes the task actionable for a new attempt. Self-review is permitted for low-risk Primary Operator alpha tasks and marked `selfReviewed`; Independent Operator and design-partner work uses an independent reviewer when another member is available. Payments, external claims, security/privacy changes, and partner deliverables always require a different human reviewer.
 
 ## Engineering Work Packages
 
@@ -207,8 +237,8 @@ Acceptance verifies the task and releases dependents. Rejection preserves the at
 | PA-06 | Digital Twin capture and local companion in the extension. | PA-04. | Selected-content/file import, local-only extraction, review, zero unapproved network egress, approved bundle upload. Unit and Chrome integration tests. High. |
 | PA-07 | Canonical attempts, execution artifacts, and typed verification. | PA-02. | Completion awaits verification; acceptance verifies task; rejection retains attempt and requeues task; criteria and artifacts are immutable snapshots. State-machine tests. High. |
 | PA-08 | Exact external-action approval and extension approval UI. | PA-02, PA-07. | Agent cannot approve; payload mutation invalidates approval; one execution per idempotency key; receipt retained. Security and state tests. High. |
-| PA-09 | Organization scope, roles, notifications, export/deletion, and audit. | PA-02, PA-03. | Tom operates without admin scope; tenant isolation, assignment/verification notices, complete export, and deletion policy pass. Integration tests. High. |
-| PA-10 | Mike and Tom pilots plus friction conversion. | PA-04 through PA-09. | Both pilot gates pass; every friction item links to a backlog task or documented rejection; metrics and residual failures are published privately. End-to-end manual and automated checks. Medium. |
+| PA-09 | Organization scope, roles, notifications, export/deletion, and audit. | PA-02, PA-03. | The Independent Operator works without admin scope; tenant isolation, assignment/verification notices, complete export, and deletion policy pass. Integration tests. High. |
+| PA-10 | Primary and Independent Operator pilots plus friction conversion. | PA-04 through PA-09. | Both pilot gates pass; every friction item links to a backlog task or documented rejection; metrics and residual failures are published privately. End-to-end manual and automated checks. Medium. |
 
 ## Rollout And Required Tests
 
@@ -217,7 +247,7 @@ Acceptance verifies the task and releases dependents. Rejection preserves the at
 - Test import idempotency, source-hash changes, duplicate linking, malformed candidates, parent/dependency cycles, batch rollback, and negative-EV retention.
 - Test outbound approval expiry, payload mutation, replay, rejection, failed execution, and receipt recording.
 - Run extension typecheck/tests and a browser test proving raw selected text is sent only to the local companion.
-- Capture screenshots for changed UI and obtain Mike's approval before committing UI changes.
+- Capture screenshots for changed UI and obtain the human owner's approval before committing UI changes.
 
 ## Risks And Non-Goals
 
@@ -228,4 +258,4 @@ Acceptance verifies the task and releases dependents. Rejection preserves the at
 - Platform admin access is not a privacy shortcut. Break-glass access is explicit, time-bounded, reasoned, and audited.
 - Extraction may hallucinate. Preserve source anchors and confidence, validate every candidate, and require review before task creation.
 - Priority estimates are uncertain. Preserve ranges and assumptions; use clarification tasks instead of fabricated precision.
-- The Mike and Tom pilots require their real identities and explicitly selected private source batches. Implementation is not complete until those operational exit gates run.
+- Both operator pilots require distinct real identities and explicitly selected private source batches. Implementation is not complete until those operational exit gates run.

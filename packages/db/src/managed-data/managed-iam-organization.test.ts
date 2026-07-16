@@ -84,7 +84,7 @@ class FakeIamClient {
       id: "membership-other",
       organizationId: "org-user-created",
       userId: "user-other",
-      role: "owner",
+      role: "OWNER",
     },
   ];
 
@@ -255,12 +255,12 @@ describe("syncManagedIamOrganization", () => {
       expect.arrayContaining([
         expect.objectContaining({
           organizationId: "org-iam",
-          role: "owner",
+          role: "OWNER",
           userId: "user-mike",
         }),
         expect.objectContaining({
           organizationId: "org-user-created",
-          role: "owner",
+          role: "OWNER",
           userId: "user-other",
         }),
       ]),

@@ -31,6 +31,7 @@ async function main() {
   const identity = await resolveLocalMcpIdentity();
   const server = createMcpServer(identity.userId, ALL_SCOPES, {
     isAdmin: identity.isAdmin,
+    organizationIds: null,
   });
   const transport = new StdioServerTransport();
   await server.connect(transport);

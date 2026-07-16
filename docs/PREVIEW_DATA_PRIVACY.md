@@ -29,7 +29,7 @@ and row-shape verification completed.
 
 Do not weaken the failure behavior to best-effort masking.
 
-## Mike Dashboard Tasks
+## Operator Dashboard Tasks
 
 - Keep `NEON_API_KEY` configured in the GitHub `Preview` environment so CI can
   resolve branch-specific preview database connections from Neon.

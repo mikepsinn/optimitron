@@ -1,13 +1,15 @@
-import { TaskKind } from "@optimitron/db";
-
-const NON_EXECUTABLE_LISTING_KINDS = new Set<string>([
-  TaskKind.BOUNTY,
-  TaskKind.ROLE_OPENING,
-  TaskKind.VOLUNTEER_ROLE,
-]);
+import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 
 export function isExecutableWorkItem(task: {
-  kind?: TaskKind | string | null;
+  activeChildTaskCount?: number | null;
+  activeExecutionAttemptCount?: number | null;
+  childTasks?: readonly unknown[] | null;
+  id?: string | null;
+  taskKey?: string | null;
 }) {
-  return !task.kind || !NON_EXECUTABLE_LISTING_KINDS.has(task.kind);
+  return (
+    !isReservedPlanningRootTask(task) &&
+    (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
+    (task.activeExecutionAttemptCount ?? 0) === 0
+  );
 }

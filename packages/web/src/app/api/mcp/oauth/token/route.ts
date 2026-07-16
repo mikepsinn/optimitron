@@ -116,7 +116,13 @@ async function handleAuthorizationCode(
 
   // Issue tokens
   const scopes = authCode.scopes;
-  const accessToken = await signMcpAccessToken(authCode.userId, clientId, scopes);
+  const organizationIds = authCode.organizationIds;
+  const accessToken = await signMcpAccessToken(
+    authCode.userId,
+    clientId,
+    scopes,
+    organizationIds,
+  );
   const refreshToken = await signMcpRefreshToken(authCode.userId, clientId);
 
   // Upsert grant record
@@ -128,11 +134,13 @@ async function handleAuthorizationCode(
       clientId,
       userId: authCode.userId,
       scopes,
+      organizationIds,
       refreshTokenHash: hashRefreshToken(refreshToken),
       active: true,
     },
     update: {
       scopes,
+      organizationIds,
       refreshTokenHash: hashRefreshToken(refreshToken),
       active: true,
       revokedAt: null,
@@ -194,7 +202,12 @@ async function handleRefreshToken(
 
   // Issue new tokens
   const scopes = grant.scopes;
-  const newAccessToken = await signMcpAccessToken(grant.userId, grant.clientId, scopes);
+  const newAccessToken = await signMcpAccessToken(
+    grant.userId,
+    grant.clientId,
+    scopes,
+    grant.organizationIds,
+  );
 
   return NextResponse.json({
     access_token: newAccessToken,

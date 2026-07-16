@@ -233,7 +233,7 @@ describe("syncManagedDemoUser", () => {
     expect(client.organizationMembers).toEqual([
       expect.objectContaining({
         organizationId: "org-demo",
-        role: "owner",
+        role: "OWNER",
         userId: "user-demo",
       }),
     ]);

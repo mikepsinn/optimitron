@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import {
   DEFAULT_CONSENT_SCOPES,
   allowedMcpScopesForUser,
+  isHumanApprovalOAuthRedirectUri,
   scopesFromWire,
   scopesToWire,
 } from "@/lib/mcp-scopes";
@@ -44,11 +45,32 @@ export default async function McpAuthorizePage({
   }
 
   const requestedScopes = scopesFromWire(scope);
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true },
+  const [user, memberships, existingGrant] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isAdmin: true },
+    }),
+    prisma.organizationMember.findMany({
+      where: {
+        organization: { deletedAt: null },
+        userId: session.user.id,
+      },
+      orderBy: { joinedAt: "asc" },
+      select: {
+        organization: { select: { id: true, name: true, slug: true } },
+        role: true,
+      },
+    }),
+    prisma.oAuthGrant.findUnique({
+      where: {
+        clientId_userId: { clientId, userId: session.user.id },
+      },
+      select: { active: true, organizationIds: true },
+    }),
+  ]);
+  const availableScopes = allowedMcpScopesForUser(user?.isAdmin === true, {
+    allowHumanApproval: isHumanApprovalOAuthRedirectUri(redirectUri),
   });
-  const availableScopes = allowedMcpScopesForUser(user?.isAdmin === true);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground">
@@ -65,7 +87,14 @@ export default async function McpAuthorizePage({
             state={state}
             requestedScopes={requestedScopes}
             availableScopes={availableScopes}
+            availableOrganizations={memberships.map((membership) => ({
+              ...membership.organization,
+              role: membership.role,
+            }))}
             codeChallenge={codeChallenge}
+            initialOrganizationIds={
+              existingGrant?.active ? existingGrant.organizationIds : []
+            }
           />
 
           <p className="text-xs font-bold text-muted-foreground mt-6">

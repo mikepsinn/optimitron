@@ -1,5 +1,6 @@
 import {
   ModelRevisionStatus,
+  OrganizationMemberRole,
   SourceArtifactType,
   SourceSystem,
   TaskImpactEstimateKind,
@@ -10,6 +11,7 @@ import { Prisma, type PrismaClient } from "@optimitron/db";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma as defaultPrisma } from "../prisma";
+import { getSourceArtifactVisibilityWhere } from "../source-artifact-visibility.server";
 import {
   CalculationSourcePayloadSchema,
   sourceArtifactFingerprint,
@@ -280,7 +282,10 @@ async function canEditTask(
       },
       select: { role: true },
     });
-    if (membership?.role === "owner" || membership?.role === "admin")
+    if (
+      membership?.role === OrganizationMemberRole.OWNER ||
+      membership?.role === OrganizationMemberRole.ADMIN
+    )
       return true;
   }
   const user = await db.user.findUnique({
@@ -680,7 +685,10 @@ export async function getTaskImpactTrace(
         orderBy: { position: "asc" },
       },
       sourceArtifacts: {
-        where: { deletedAt: null },
+        where: {
+          deletedAt: null,
+          sourceArtifact: getSourceArtifactVisibilityWhere(actor.userId),
+        },
         select: {
           sourceArtifact: {
             select: {

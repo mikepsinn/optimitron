@@ -15,6 +15,7 @@ import {
   HUMANITY_MANAGEMENT,
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
+import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "@optimitron/db/system-identities";
 import { WELFARE_CLAIM_AMOUNT_TEXT } from "@/components/shared/WelfareClaim.core";
 
 const TREATY_REDUCTION_TEXT = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
@@ -54,24 +55,18 @@ export const CAMPAIGN_PRINT_COPY = {
     "for disease eradication",
     "at warondisease.org.",
   ],
-  shirtFrontLines: [
-    "THIS T-SHIRT",
-    "ENDED WAR",
-    "AND DISEASE.",
-  ],
+  shirtFrontLines: ["THIS T-SHIRT", "ENDED WAR", "AND DISEASE."],
 } as const;
 
-export const SHIRT_FRONT_COPY =
-  CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ");
+export const SHIRT_FRONT_COPY = CAMPAIGN_PRINT_COPY.shirtFrontLines.join(" ");
 export const SHIRT_BACK_COPY_LINES = CAMPAIGN_PRINT_COPY.shirtBackLines;
-export const SHIRT_BACK_COPY =
-  SHIRT_BACK_COPY_LINES.join(" ");
+export const SHIRT_BACK_COPY = SHIRT_BACK_COPY_LINES.join(" ");
 
 // ---------------------------------------------------------------------------
 // User-framing vocabulary (variant-aware)
 //
 // Two narrative frames live in the codebase:
-//   - "manager" — Earth Optimization Services LLC is hiring humanity managers,
+//   - "manager" — Earth Optimization Services Inc. is hiring humanity managers,
 //     each one hires 2 more. Identity-based, sustains chain behavior.
 //   - "voter" — Recruit verified voters for the referendum. Action-based.
 //
@@ -101,7 +96,7 @@ export interface UserFramingVocabulary {
     /** "Earth Optimization Services" — same across both framings; the legal
      *  entity is constant, only the recruitment vocabulary varies. */
     shortName: string;
-    /** "Earth Optimization Services LLC" */
+    /** "Earth Optimization Services Inc." */
     longName: string;
   };
   /** Pre-baked CTA strings (the unique recruitment-chain copy points). */
@@ -124,7 +119,7 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
   },
   org: {
     shortName: "Earth Optimization Services",
-    longName: "Earth Optimization Services LLC",
+    longName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
   recruitCtaShort: "Hire two humanity managers",
   shareLinkPrompt:
@@ -148,7 +143,7 @@ const VOTER_VOCAB: UserFramingVocabulary = {
   // Wishonia narrator asides, not the structural org name (per TODO.md).
   org: {
     shortName: "Earth Optimization Services",
-    longName: "Earth Optimization Services LLC",
+    longName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
   recruitCtaShort: "Recruit verified voters",
   shareLinkPrompt:
@@ -160,7 +155,9 @@ const VOTER_VOCAB: UserFramingVocabulary = {
   recruitedActivityVerb: "recruited a voter",
 };
 
-export function getUserFramingVocabulary(frame: UserFraming): UserFramingVocabulary {
+export function getUserFramingVocabulary(
+  frame: UserFraming,
+): UserFramingVocabulary {
   return frame === "manager" ? MANAGER_VOCAB : VOTER_VOCAB;
 }
 
@@ -220,23 +217,15 @@ export const CTA = {
 } as const;
 
 export const TAGLINES = {
-  gameObjective:
-    `Optimize public policy to stop making you poorer and deader and start making you healthier and wealthier!`,
-  onlyWayToLose:
-    `Your deposit grows at ~10% for 15 years either way. The break-even probability is 1 in 15,000. You lose money by not depositing.`,
+  gameObjective: `Optimize public policy to stop making you poorer and deader and start making you healthier and wealthier!`,
+  onlyWayToLose: `Your deposit grows at ~10% for 15 years either way. The break-even probability is 1 in 15,000. You lose money by not depositing.`,
   hedgeLine: "Your deposit is a hedge against your own species.",
-  arcadeHook:
-    `Deposit $100. If the plan fails, you get $${Math.round(100 * PRIZE_POOL_HORIZON_MULTIPLE.value)} back. If it works, you helped prevent 10.7 billion deaths. The maths are not complicated.`,
-  winBothWays:
-    `Depositors get ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x returns on failure. Recruiters get prize shares on success. Both scenarios pay.`,
-  everyPlayerWins:
-    `Failure pays ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x via projected fund yield. Success pays from the prize pool. The only scenario that costs you money is not depositing.`,
-  awarenessBarrier:
-    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. 95% of diseases have zero FDA-approved treatments. There are 9,500 known safe compounds and 99.7% of their potential uses have never been tested. At the current rate, testing them all takes 443 years. You will be dead in 80.`,
-  pluralisticIgnorance:
-    `Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on the first problem. You'd think someone would mention this. They did. You nailed him to a piece of wood.`,
-  alignTheSuperintelligence:
-    `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. Since 1913, that's $170T on things that make humans stop — enough for 38,000 years of clinical trials. You bought the other thing.`,
+  arcadeHook: `Deposit $100. If the plan fails, you get $${Math.round(100 * PRIZE_POOL_HORIZON_MULTIPLE.value)} back. If it works, you helped prevent 10.7 billion deaths. The maths are not complicated.`,
+  winBothWays: `Depositors get ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x returns on failure. Recruiters get prize shares on success. Both scenarios pay.`,
+  everyPlayerWins: `Failure pays ~${Math.round(PRIZE_POOL_HORIZON_MULTIPLE.value)}x via projected fund yield. Success pays from the prize pool. The only scenario that costs you money is not depositing.`,
+  awarenessBarrier: `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. 95% of diseases have zero FDA-approved treatments. There are 9,500 known safe compounds and 99.7% of their potential uses have never been tested. At the current rate, testing them all takes 443 years. You will be dead in 80.`,
+  pluralisticIgnorance: `Your chance of dying from terrorism: 1 in 30 million. Your chance of dying from disease: 100%. Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} more on the first problem. You'd think someone would mention this. They did. You nailed him to a piece of wood.`,
+  alignTheSuperintelligence: `Your governments spend ${fmtParam(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO)} on weapons per $1 of clinical trials. Since 1913, that's $170T on things that make humans stop — enough for 38,000 years of clinical trials. You bought the other thing.`,
   theObjective:
     "Maximize median healthy life years and median after-tax inflation-adjusted income. Two numbers. Everything else is a distraction your politicians use to avoid being measured.",
   rewardFunction:
@@ -316,8 +305,7 @@ export const VOTE_SECTION = {
     "on weapons and military systems for every $1 spent on clinical trials.",
   theQuestion:
     "Should all nations allocate just 1% of military spending to clinical trials to treat and cure disease together, making the world safer and ensuring no country is at a disadvantage?",
-  emailSuccessFooter:
-    `Your ${TREATY_REDUCTION_TEXT} Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
+  emailSuccessFooter: `Your ${TREATY_REDUCTION_TEXT} Treaty vote is saved. Now share your link to start earning ${POINT_NAME} Points.`,
 };
 
 export const VOTE_VALUE = {
@@ -325,19 +313,19 @@ export const VOTE_VALUE = {
   subheading:
     "You cast a free vote. Deposits into the prize fund back it with real money. The expected value is below. On my planet, we do this in primary school.",
   failHeading: "If the Plan Fails",
-  failBody: "projected annual fund returns — better than most hedge funds. The money compounds for 15 years regardless.",
+  failBody:
+    "projected annual fund returns — better than most hedge funds. The money compounds for 15 years regardless.",
   successHeading: "If the Plan Succeeds",
   successBody: `${POINT_NAME} Point holders claim proportional shares of the prize pool.`,
   breakEvenPrefix: "The break-even probability is 1 in",
-  breakEvenSuffix: "If you believe there's even a 0.0067% chance the plan works, depositing is positive expected value.",
+  breakEvenSuffix:
+    "If you believe there's even a 0.0067% chance the plan works, depositing is positive expected value.",
   deadlineHeading: "Your Civilisation Has a Countdown",
   deadlineBody:
     "The parasitic economy — military spending ($2.7T), cybercrime ($10.5T), regulatory capture — is $13.2T/yr and growing at 15% annually. The Soviet Union collapsed at 15% military-to-GDP. You're approaching that ratio with better technology and no plan. The Soviets had a terrible plan, and their terrible plan beat your no plan.",
-  deadlineQuip:
-    `Combined destructive economy is 11.5% of global GDP and growing faster than the productive economy. Once stealing pays better than building, production becomes irrational. You have a name for places where this already happened. You call them "failed states."`,
+  deadlineQuip: `Combined destructive economy is 11.5% of global GDP and growing faster than the productive economy. Once stealing pays better than building, production becomes irrational. You have a name for places where this already happened. You call them "failed states."`,
   flywheelHeading: "Why The Rich Show Up",
-  flywheelDescription:
-    `Billionaires prefer not dying of horrible diseases. There are 2,800 of them. Statistically, at least one prefers living. They deposit because returns beat conventional investing either way. Each verified voter increases the political leverage, which increases the probability of treaty passage, which increases the expected value of every ${POINT_NAME} Point.`,
+  flywheelDescription: `Billionaires prefer not dying of horrible diseases. There are 2,800 of them. Statistically, at least one prefers living. They deposit because returns beat conventional investing either way. Each verified voter increases the political leverage, which increases the probability of treaty passage, which increases the expected value of every ${POINT_NAME} Point.`,
   shopkeeperQuip:
     "The break-even probability is 0.0067%. You do not need to be altruistic. You need to be able to read a number.",
 };
@@ -353,17 +341,20 @@ export const ARMORY = {
     weapons: {
       icon: "⚔️",
       heading: "Weapons",
-      subtitle: "Data in. Optimal policy out. No opinions. No committees. Just maths.",
+      subtitle:
+        "Data in. Optimal policy out. No opinions. No committees. Just maths.",
     },
     scrolls: {
       icon: "📜",
       heading: "Scrolls",
-      subtitle: "Nobody asked 8 billion people what they actually want. These fix that.",
+      subtitle:
+        "Nobody asked 8 billion people what they actually want. These fix that.",
     },
     gold: {
       icon: "💰",
       heading: "Gold & Loot",
-      subtitle: "Diagnosing the problem is step one. These make fixing it profitable.",
+      subtitle:
+        "Diagnosing the problem is step one. These make fixing it profitable.",
     },
     seals: {
       icon: "🛡️",
@@ -373,7 +364,8 @@ export const ARMORY = {
     potions: {
       icon: "🧪",
       heading: "Potions",
-      subtitle: "The same causal inference that works on countries works on you.",
+      subtitle:
+        "The same causal inference that works on countries works on you.",
     },
   },
 } as const;
