@@ -42,6 +42,23 @@ test("deploy smoke waits for a successful deployment URL instead of skipping ear
   );
 });
 
+test("both smoke jobs recognize Vercel status creators on redeploys", () => {
+  const waitBlocks = [
+    ...workflow.matchAll(
+      /- name: Wait for successful deployment URL[\s\S]*?(?=\n      - name:)/gu,
+    ),
+  ].map((match) => match[0]);
+
+  assert.equal(waitBlocks.length, 2);
+  for (const block of waitBlocks) {
+    assert.match(
+      block,
+      /initialStatus\.creator\?\.login/u,
+      "CLI redeploy events identify Vercel through the deployment status creator",
+    );
+  }
+});
+
 test("deploy smoke can recover the Vercel preview URL from the PR comment", () => {
   assert.match(
     workflow,

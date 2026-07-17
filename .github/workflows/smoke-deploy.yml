@@ -770,7 +770,8 @@ jobs:
               initialStatus.deployment_id ||
               initialStatus.deployment?.id;
             const eventDeploymentCreator = String(
-              eventDeployment.creator?.login ||
+              initialStatus.creator?.login ||
+                eventDeployment.creator?.login ||
                 initialStatus.deployment?.creator?.login ||
                 "",
             );
