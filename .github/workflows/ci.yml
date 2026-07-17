@@ -907,15 +907,20 @@ jobs:
             if (!shouldSync) {
               await core.summary
                 .addHeading('Preview database sync')
-                .addRaw(`Skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs.`)
+                .addRaw(`Data sync skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs. Prisma migrations still apply so the branch preview database always matches the PR schema.`)
                 .write();
             }
 
+      # Migrations always apply (idempotent, seconds) so the branch preview
+      # database matches the PR's Prisma schema even when the PR itself
+      # changes no schema/data files — otherwise a PR branched after a merged
+      # schema change deploys code that queries tables its preview DB lacks,
+      # and preview smoke fails on an error boundary (P2021).
       - name: Check Preview database sync configuration
         id: preview_secrets
-        if: steps.preview_data_changes.outputs.should_sync == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          SHOULD_SYNC: ${{ steps.preview_data_changes.outputs.should_sync }}
         shell: bash
         run: |
           missing=()
@@ -929,6 +934,10 @@ jobs:
           fi
 
           echo "configured=false" >> "$GITHUB_OUTPUT"
+          if [ "$SHOULD_SYNC" != "true" ]; then
+            echo "::warning::Skipping preview database migrations: the GitHub Preview environment is missing ${missing[*]}."
+            exit 0
+          fi
           echo "::error::Preview database sync is blocked: the GitHub Preview environment is missing ${missing[*]}. Add the secret or variable in repo Settings before retrying."
           {
             echo "## Preview database sync"
@@ -941,30 +950,30 @@ jobs:
           exit 1
 
       - name: Enable Corepack
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_secrets.outputs.configured == 'true'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_secrets.outputs.configured == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Resolve preview Neon database env
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_secrets.outputs.configured == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         run: node .github/scripts/resolve-preview-neon-env.mjs
 
       - name: Install dependencies
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Apply preview database migrations
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_secrets.outputs.configured == 'true'
         env:
           PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
         run: pnpm db:deploy
