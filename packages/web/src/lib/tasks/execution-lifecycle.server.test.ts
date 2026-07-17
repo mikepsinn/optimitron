@@ -6,15 +6,18 @@ import {
   OrgType,
   TaskClaimStatus,
   TaskExecutionAttemptStatus,
+  TaskStatus,
   TaskVerificationMethod,
   TaskVerificationResult,
 } from "@optimitron/db";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import {
+  getTaskAuditTrail,
   startTaskExecution,
   submitTaskArtifact,
   submitTaskForVerification,
+  verifyTaskExecution,
 } from "./execution-lifecycle.server";
 import {
   decideExternalActionRequest,
@@ -149,6 +152,32 @@ async function createOrganizationWithMembers() {
     },
   });
   return { agent, organization, outsider, owner, starter };
+}
+
+async function submitCompletedAttempt(
+  taskId: string,
+  actorUserId: string,
+  options?: { actualCost?: { currency: string; minorUnits: number } },
+) {
+  const attempt = await startTaskExecution({ taskId }, actorUserId);
+  await submitTaskArtifact(
+    {
+      structuredResult: { completed: true },
+      taskExecutionAttemptId: attempt.id,
+    },
+    actorUserId,
+  );
+  const submission = await submitTaskForVerification(
+    {
+      ...(options?.actualCost ? { actualCost: options.actualCost } : {}),
+      actualDurationSeconds: 120,
+      method: TaskVerificationMethod.REVIEWER,
+      outputSummary: "Executor submitted the result for verification.",
+      taskExecutionAttemptId: attempt.id,
+    },
+    actorUserId,
+  );
+  return { attempt, submission };
 }
 
 describe.sequential("private execution lifecycle boundaries", () => {
@@ -463,5 +492,243 @@ describe.sequential("private execution lifecycle boundaries", () => {
       executedByUserId: null,
       status: ExternalActionRequestStatus.EXECUTED,
     });
+  });
+});
+
+describe.sequential("task verification decisions", () => {
+  beforeEach(cleanup);
+  afterAll(cleanup);
+
+  it("accepts a pending verification and copies attempt actuals onto the task", async () => {
+    const { organization, owner, starter } =
+      await createOrganizationWithMembers();
+    const task = await createTask({
+      creatorUserId: starter.user.id,
+      id: "verify_accept_task",
+      ownerOrganizationId: organization.id,
+    });
+    const { submission } = await submitCompletedAttempt(
+      task.id,
+      starter.user.id,
+      { actualCost: { currency: "USD", minorUnits: 2500 } },
+    );
+
+    const verification = await verifyTaskExecution(
+      {
+        criterionResults: [
+          { criterion: "A durable result was submitted", passed: true },
+        ],
+        result: "ACCEPTED",
+        taskVerificationId: submission.verification.id,
+      },
+      owner.user.id,
+    );
+
+    expect(verification.result).toBe(TaskVerificationResult.ACCEPTED);
+    expect(verification.selfReviewed).toBe(false);
+    await expect(
+      prisma.task.findUniqueOrThrow({
+        where: { id: task.id },
+        select: {
+          actualCashCostUsd: true,
+          actualEffortSeconds: true,
+          status: true,
+          verifiedByUserId: true,
+        },
+      }),
+    ).resolves.toEqual({
+      actualCashCostUsd: 25,
+      actualEffortSeconds: 120,
+      status: TaskStatus.VERIFIED,
+      verifiedByUserId: owner.user.id,
+    });
+  });
+
+  it("rejects a pending verification and reopens the task for a fresh attempt", async () => {
+    const { organization, owner, starter } =
+      await createOrganizationWithMembers();
+    const task = await createTask({
+      creatorUserId: starter.user.id,
+      id: "verify_reject_task",
+      ownerOrganizationId: organization.id,
+    });
+    const { attempt, submission } = await submitCompletedAttempt(
+      task.id,
+      starter.user.id,
+    );
+
+    const verification = await verifyTaskExecution(
+      {
+        criterionResults: [
+          { criterion: "A durable result was submitted", passed: false },
+        ],
+        result: "REJECTED",
+        taskVerificationId: submission.verification.id,
+      },
+      owner.user.id,
+    );
+
+    expect(verification.result).toBe(TaskVerificationResult.REJECTED);
+    await expect(
+      prisma.taskExecutionAttempt.findUniqueOrThrow({
+        where: { id: attempt.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskExecutionAttemptStatus.REJECTED });
+    await expect(
+      prisma.task.findUniqueOrThrow({
+        where: { id: task.id },
+        select: { status: true, verifiedAt: true, verifiedByUserId: true },
+      }),
+    ).resolves.toEqual({
+      status: TaskStatus.ACTIVE,
+      verifiedAt: null,
+      verifiedByUserId: null,
+    });
+
+    // Regression: the rejected attempt must release the active-attempt guard.
+    const retry = await startTaskExecution(
+      { taskId: task.id },
+      starter.user.id,
+    );
+    expect(retry.id).not.toBe(attempt.id);
+    expect(retry.status).toBe(TaskExecutionAttemptStatus.RUNNING);
+  });
+
+  it("blocks unrelated reviewers, records self-review, and refuses a second decision", async () => {
+    const actor = await createUser("self_verifier");
+    const unrelated = await createUser("verify_unrelated");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "self_verify_task",
+    });
+    const { submission } = await submitCompletedAttempt(
+      task.id,
+      actor.user.id,
+    );
+
+    await expect(
+      verifyTaskExecution(
+        {
+          criterionResults: [
+            { criterion: "A durable result was submitted", passed: true },
+          ],
+          result: "ACCEPTED",
+          taskVerificationId: submission.verification.id,
+        },
+        unrelated.user.id,
+      ),
+    ).rejects.toThrow("Task verification not found");
+
+    const verification = await verifyTaskExecution(
+      {
+        criterionResults: [
+          { criterion: "A durable result was submitted", passed: true },
+        ],
+        result: "ACCEPTED",
+        taskVerificationId: submission.verification.id,
+      },
+      actor.user.id,
+    );
+    expect(verification.result).toBe(TaskVerificationResult.ACCEPTED);
+    expect(verification.selfReviewed).toBe(true);
+
+    await expect(
+      verifyTaskExecution(
+        {
+          criterionResults: [
+            { criterion: "A durable result was submitted", passed: false },
+          ],
+          result: "REJECTED",
+          taskVerificationId: submission.verification.id,
+        },
+        actor.user.id,
+      ),
+    ).rejects.toThrow("Task verification not found");
+    await expect(
+      prisma.taskVerification.findUniqueOrThrow({
+        where: { id: submission.verification.id },
+        select: { result: true },
+      }),
+    ).resolves.toEqual({ result: TaskVerificationResult.ACCEPTED });
+  });
+
+  it("requires acceptance criteria only for rule-based verification methods", async () => {
+    const actor = await createUser("no_criteria");
+    const task = await prisma.task.create({
+      data: {
+        createdByUserId: actor.user.id,
+        description: "Task created without an acceptance-criteria snapshot.",
+        id: `${TEST_PREFIX}no_criteria_task`,
+        isPublic: false,
+        title: "Execute no_criteria_task",
+      },
+    });
+    const attempt = await startTaskExecution(
+      { taskId: task.id },
+      actor.user.id,
+    );
+    await submitTaskArtifact(
+      {
+        structuredResult: { completed: true },
+        taskExecutionAttemptId: attempt.id,
+      },
+      actor.user.id,
+    );
+
+    await expect(
+      submitTaskForVerification(
+        {
+          actualDurationSeconds: 60,
+          method: TaskVerificationMethod.DETERMINISTIC,
+          outputSummary: "Rule-based submission without criteria.",
+          taskExecutionAttemptId: attempt.id,
+        },
+        actor.user.id,
+      ),
+    ).rejects.toThrow("Task has no acceptance criteria snapshot");
+    // The failed rule-based submission must not consume the attempt.
+    await expect(
+      prisma.taskExecutionAttempt.findUniqueOrThrow({
+        where: { id: attempt.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskExecutionAttemptStatus.RUNNING });
+
+    const submission = await submitTaskForVerification(
+      {
+        actualDurationSeconds: 60,
+        method: TaskVerificationMethod.REVIEWER,
+        outputSummary: "Reviewer submission without criteria.",
+        taskExecutionAttemptId: attempt.id,
+      },
+      actor.user.id,
+    );
+    expect(submission.verification.result).toBe(TaskVerificationResult.PENDING);
+    expect(submission.verification.acceptanceCriteriaSnapshotJson).toEqual({
+      acceptanceCriteria: [],
+      expectedDeliverable: null,
+    });
+  });
+
+  it("returns the audit trail to the task creator and hides it from unrelated users", async () => {
+    const actor = await createUser("audit_creator");
+    const unrelated = await createUser("audit_unrelated");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "audit_trail_task",
+    });
+    const { attempt } = await submitCompletedAttempt(task.id, actor.user.id);
+
+    const auditTrail = await getTaskAuditTrail(task.id, actor.user.id);
+    expect(auditTrail.id).toBe(task.id);
+    expect(auditTrail.executionAttempts).toHaveLength(1);
+    expect(auditTrail.executionAttempts[0]?.id).toBe(attempt.id);
+    expect(auditTrail.executionAttempts[0]?.artifacts).toHaveLength(1);
+    expect(auditTrail.executionAttempts[0]?.verifications).toHaveLength(1);
+
+    await expect(
+      getTaskAuditTrail(task.id, unrelated.user.id),
+    ).rejects.toThrow("Task not found");
   });
 });
