@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { isRedirectUriAllowed } from "@/lib/mcp-oauth";
 import {
   DEFAULT_CONSENT_SCOPES,
   allowedMcpScopesForUser,
@@ -10,6 +11,17 @@ import {
 } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { McpConsentForm } from "./consent-form";
+
+function invalidRequest(message: string) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-foreground text-background">
+      <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h1 className="text-2xl font-black uppercase">Invalid Request</h1>
+        <p className="mt-2 font-bold">{message}</p>
+      </div>
+    </div>
+  );
+}
 
 export default async function McpAuthorizePage({
   searchParams,
@@ -25,14 +37,21 @@ export default async function McpAuthorizePage({
   const clientName = typeof params.client_name === "string" ? params.client_name : clientId;
 
   if (!clientId || !redirectUri || !codeChallenge) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-foreground text-background">
-        <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h1 className="text-2xl font-black uppercase">Invalid Request</h1>
-          <p className="mt-2 font-bold">Missing required OAuth parameters.</p>
-        </div>
-      </div>
-    );
+    return invalidRequest("Missing required OAuth parameters.");
+  }
+
+  // Validate the client and redirect URI before rendering the form. The
+  // Deny button navigates the browser to redirect_uri, so rendering consent
+  // for an unregistered redirect target is an open redirect.
+  const client = await prisma.oAuthClient.findUnique({
+    where: { clientId },
+    select: { redirectUris: true },
+  });
+  if (!client) {
+    return invalidRequest("Unknown OAuth client.");
+  }
+  if (!isRedirectUriAllowed(client.redirectUris, redirectUri)) {
+    return invalidRequest("Redirect URI is not registered for this client.");
   }
 
   const session = await getServerSession(authOptions);

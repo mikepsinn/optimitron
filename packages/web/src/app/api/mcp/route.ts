@@ -191,11 +191,10 @@ async function handleMcpRequest(req: Request): Promise<Response> {
       surface: "transport",
       details: { method: req.method, url: req.url },
     });
-    const message = error instanceof Error ? error.message : String(error);
     return new Response(
       JSON.stringify({
         error: "mcp_transport_error",
-        error_description: message,
+        error_description: "Request failed. See server logs for details.",
       }),
       {
         status: 500,

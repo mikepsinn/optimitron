@@ -36,14 +36,8 @@ export async function POST(req: Request) {
       )
     : [];
 
-  if (!approved) {
-    const url = new URL(redirectUri);
-    url.searchParams.set("error", "access_denied");
-    if (state) url.searchParams.set("state", state);
-    return NextResponse.json({ redirect_url: url.toString() });
-  }
-
-  // Verify client exists
+  // Validate the client and redirect target before building ANY redirect —
+  // including the deny redirect, which would otherwise be an open redirect.
   const client = await prisma.oAuthClient.findUnique({
     where: { clientId },
   });
@@ -52,8 +46,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unknown client" }, { status: 400 });
   }
 
-  if (!isRedirectUriAllowed(client.redirectUris, redirectUri)) {
+  if (
+    typeof redirectUri !== "string" ||
+    !URL.canParse(redirectUri) ||
+    !isRedirectUriAllowed(client.redirectUris, redirectUri)
+  ) {
     return NextResponse.json({ error: "Invalid redirect_uri" }, { status: 400 });
+  }
+
+  if (!approved) {
+    const url = new URL(redirectUri);
+    url.searchParams.set("error", "access_denied");
+    if (state) url.searchParams.set("state", state);
+    return NextResponse.json({ redirect_url: url.toString() });
   }
 
   // Filter to known and user-allowed scopes. Unknown strings are silently

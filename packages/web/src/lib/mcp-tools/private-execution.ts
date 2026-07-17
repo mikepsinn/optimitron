@@ -518,7 +518,9 @@ export async function handlePrivateExecutionToolCall(input: {
       organizationId &&
       !input.scopes?.includes(McpScope.TASKS_ORGANIZATION)
     ) {
-      return err(`${input.name} requires tasks:organization for this work`);
+      // Same message as the allowlist branch: a client without org scope
+      // must not learn that the resource exists and is org-owned.
+      return err("Private work resource not found");
     }
     if (
       organizationId &&
@@ -599,10 +601,13 @@ export async function handlePrivateExecutionToolCall(input: {
       }
     }
   } catch (error) {
-    return err(
-      error instanceof Error
-        ? error.message
-        : "Private execution operation failed",
-    );
+    // Domain and validation errors carry intentional messages; anything from
+    // the Prisma engine may leak schema/connection details, so log it and
+    // return a generic failure instead.
+    if (error instanceof Error && !error.name.startsWith("PrismaClient")) {
+      return err(error.message);
+    }
+    console.error(`[mcp] ${input.name} failed:`, error);
+    return err("Private execution operation failed");
   }
 }

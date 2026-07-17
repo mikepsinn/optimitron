@@ -32,9 +32,11 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    // Never echo internal error text (Prisma/config details) to an
+    // unauthenticated token-endpoint caller.
+    console.error("[oauth/token] unexpected failure:", error);
     return NextResponse.json(
-      { error: "server_error", error_description: message },
+      { error: "server_error" },
       { status: 500 },
     );
   }
