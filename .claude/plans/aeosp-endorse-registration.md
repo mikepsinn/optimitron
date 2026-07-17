@@ -33,7 +33,7 @@
 - `packages/web/src/components/organizations/OrganizationSurveyFrame.tsx:29-45` is the existing iframe preview surface.
 - `packages/web/src/components/organizations/OrganizationGrantCalculator.tsx:20-28` has hardcoded calculator defaults. `packages/web/src/components/organizations/OrganizationGrantCalculator.tsx:254-271` builds the current outreach grant draft.
 - `packages/web/src/lib/email/post-vote-share-email.ts:38-40` sets the existing "promoted to Humanity Manager" corporate-promotion email subject.
-- `packages/web/src/lib/humanity-manager-promotion-content.tsx:49-71` establishes the corporate promotion frame: "Humanity Manager" at Earth Optimization Services LLC.
+- `packages/web/src/lib/humanity-manager-promotion-content.tsx:49-71` establishes the corporate promotion frame: "Humanity Manager" at Earth Optimization Services Inc.
 - `packages/web/src/lib/humanity-manager-promotion-content.tsx:113-151` establishes the subordinate-humanity-manager and Earth Optimization Points joke. AEOSP should rhyme with this, not become generic partner-program copy.
 - `packages/data/src/parameters/parameters-calculations-citations.ts:9105-9117`, `:9175-9187`, and `:9440-9451` include broad campaign endorsement/partnership budget parameters, but no parameter specifically for organization endorsement conversion, AEOSP status, or badge generation. Do not add a parameter for this badge unless Mike separately asks for a modeled number.
 - `packages/web/src/lib/black-white-text-og-image-response.tsx:235-255` is the existing reusable server-generated black-and-white image response convention.
@@ -243,7 +243,7 @@ There are two defensible options. The smaller one is to make each badge link to 
 
 ### 7. Brand-protection / cold-stranger risk: AEOSP may sound too real without context
 
-"Authorized Earth Optimization Services Provider" is intentionally part of the Earth Optimization Services LLC corporate-promotion voice, and the TODO explicitly says to keep it. Still, a cold stranger seeing only a partner badge may not read it as satire. In the post-vote email, the joke is obvious because "promoted to Humanity Manager" and the forward-this-email context are absurd. A vendor-style certification badge can look like a real credential.
+"Authorized Earth Optimization Services Provider" is intentionally part of the Earth Optimization Services Inc. corporate-promotion voice, and the TODO explicitly says to keep it. Still, a cold stranger seeing only a partner badge may not read it as satire. In the post-vote email, the joke is obvious because "promoted to Humanity Manager" and the forward-this-email context are absurd. A vendor-style certification badge can look like a real credential.
 
 Mitigation should be part of the plan, not left to taste during implementation. The badge and verification page should include campaign context: "1% Treaty campaign participant" and "International Campaign to End War and Disease" help. The org page should avoid implying legal accreditation, government authorization, or operational vendor approval. Alt text and nearby copy should say what is true: the organization publicly supports the campaign and can recruit its audience.
 

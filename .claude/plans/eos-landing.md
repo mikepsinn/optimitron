@@ -9,7 +9,7 @@ Reframe optimitron.com's home from "The Earth Optimization Game" to the **Earth
 Optimization Services (EOS)** services+investment landing. Move the existing game scroll
 to `/game`. Leave `warondisease.org` untouched. optimitron.com is already legally EOS in
 `lib/site.ts` (legalEntityName/organizationName/emailBranding all say "Earth Optimization
-Services LLC", `userFraming: "manager"`); only the landing component still wears the "Game"
+Services Inc.", `userFraming: "manager"`); only the landing component still wears the "Game"
 costume.
 
 **Positioning (load-bearing):** the headline is the two-number objective —
@@ -282,7 +282,7 @@ GOAL: make them think "this is real, I must talk to them" → click **Request th
 Book a call** (NOT a checkout). The calculator is the credibility centerpiece.
 
 ### Sections (rewrite EarthOptimizationServicesLandingPage.tsx)
-1. Masthead — "PLANETARY OPTIMIZATION SERVICES / Earth Optimization Services, LLC — now
+1. Masthead — "PLANETARY OPTIMIZATION SERVICES / Earth Optimization Services Inc. — now
    accepting applications." Retro-ad voice from the EOS .qmd. CTAs: [See what your stake
    becomes ↓] [Talk to us].
 2. The offer — "Live on a planet without war and disease." (.qmd intro)
