@@ -10,7 +10,29 @@ const mocks = vi.hoisted(() => ({
   submitTaskForVerification: vi.fn(),
 }));
 
-vi.mock("@/lib/auth-utils", () => ({ requireAuth: mocks.requireAuth }));
+// requireAuth stays the auth seam; requireTaskRequestAuth mirrors the route
+// contract on top of it using the real scope→boundary derivation.
+vi.mock("@/lib/auth-utils", async () => {
+  const { taskBoundaryFromScopes } = await import("@/lib/mcp-scopes");
+  return {
+    requireAuth: mocks.requireAuth,
+    requireTaskRequestAuth: async (
+      request: Request,
+      requiredScopes?: readonly unknown[],
+    ) => {
+      const auth = await mocks.requireAuth(request, requiredScopes);
+      return "scopes" in auth
+        ? {
+            clientAccessBoundary: taskBoundaryFromScopes(
+              auth.scopes,
+              auth.organizationIds,
+            ),
+            userId: auth.userId,
+          }
+        : { userId: auth.userId };
+    },
+  };
+});
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     taskExecutionAttempt: { findFirst: mocks.findAttempt },

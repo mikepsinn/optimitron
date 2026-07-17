@@ -1,7 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
-import { McpScope } from "@/lib/mcp-scopes";
+import {
+  TASK_CLIENT_SCOPES,
+  taskBoundaryFromScopes,
+  type McpScope,
+} from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
@@ -165,27 +169,6 @@ export async function requireAuth(
   if (!user) throw new Error("Unauthorized");
 
   return { userId: user.id, userEmail: user.email };
-}
-
-export const TASK_CLIENT_SCOPES = [
-  McpScope.TASKS_PERSONAL,
-  McpScope.TASKS_ORGANIZATION,
-  McpScope.TASKS_ADMIN,
-] as const;
-
-/** Same boundary derivation as the MCP handlers (getMcpTaskClientBoundary):
- * private-personal access needs tasks:personal, org access needs
- * tasks:organization plus the org in the token's allowlist. */
-function taskBoundaryFromScopes(
-  scopes: readonly McpScope[],
-  organizationIds: readonly string[],
-): TaskClientAccessBoundary {
-  return {
-    allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
-    organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
-      ? organizationIds
-      : [],
-  };
 }
 
 /**

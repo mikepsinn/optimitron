@@ -63,6 +63,7 @@ import {
   ALL_SCOPES,
   McpScope,
   scopeToWire,
+  taskBoundaryFromScopes,
 } from "./mcp-scopes";
 import {
   TASK_TRIGGER_ADMIN_TOOL_NAMES,
@@ -380,18 +381,7 @@ function requiredPrivateTaskScope(ownerOrganizationId: string | null | undefined
     : McpScope.TASKS_PERSONAL;
 }
 
-function getMcpTaskClientBoundary(
-  scopes: McpScope[] | undefined,
-  organizationIds: readonly string[] | null,
-): TaskClientAccessBoundary {
-  return {
-    allowPersonalPrivate:
-      scopes?.includes(McpScope.TASKS_PERSONAL) === true,
-    organizationIds: scopes?.includes(McpScope.TASKS_ORGANIZATION)
-      ? organizationIds
-      : [],
-  };
-}
+const getMcpTaskClientBoundary = taskBoundaryFromScopes;
 
 function getTaskScopeWhere(
   scopes: McpScope[] | undefined,

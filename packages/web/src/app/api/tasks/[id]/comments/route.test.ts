@@ -11,8 +11,15 @@ const mocks = vi.hoisted(() => ({
   generateAndPostWishoniaReply: vi.fn(),
 }));
 
+// getCurrentUser stays the identity seam; getTaskRequestIdentity mirrors the
+// route contract on top of it (bearer requests would go through requireAuth,
+// which these session-only tests never exercise).
 vi.mock("@/lib/auth-utils", () => ({
   getCurrentUser: mocks.getCurrentUser,
+  getTaskRequestIdentity: async () => {
+    const user = await mocks.getCurrentUser();
+    return { userId: user?.id ?? null };
+  },
 }));
 
 vi.mock("@/lib/tasks/task-comments.server", () => ({
@@ -22,11 +29,15 @@ vi.mock("@/lib/tasks/task-comments.server", () => ({
   postComment: mocks.postComment,
 }));
 
-vi.mock("@/lib/tasks/task-visibility.server", () => ({
-  TASK_NOT_FOUND_MESSAGE: "Task not found",
-  canUserCommentOnTask: mocks.canUserCommentOnTask,
-  canUserViewTask: mocks.canUserViewTask,
-}));
+vi.mock("@/lib/tasks/task-visibility.server", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/lib/tasks/task-visibility.server")>();
+  return {
+    ...actual,
+    canUserCommentOnTask: mocks.canUserCommentOnTask,
+    canUserViewTask: mocks.canUserViewTask,
+  };
+});
 
 vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
   TaskCommentAttachmentInputError: class extends Error {

@@ -19,11 +19,45 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/auth-utils", () => ({
-  hasBearerAuthorization: (request?: Request) =>
-    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? ""),
-  requireAuth: mocks.requireAuth,
-}));
+// Mock requireAuth/getServerSession as the auth seams, but keep the REAL
+// scope→boundary derivation from mcp-scopes so boundary assertions exercise
+// production logic instead of a reimplementation.
+vi.mock("@/lib/auth-utils", async () => {
+  const { TASK_CLIENT_SCOPES, taskBoundaryFromScopes } =
+    await import("@/lib/mcp-scopes");
+  const hasBearerAuthorization = (request?: Request) =>
+    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? "");
+  const requireTaskRequestAuth = async (
+    request: Request,
+    requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+  ) => {
+    const auth = await mocks.requireAuth(request, requiredScopes);
+    return "scopes" in auth
+      ? {
+          clientAccessBoundary: taskBoundaryFromScopes(
+            auth.scopes,
+            auth.organizationIds,
+          ),
+          userId: auth.userId,
+        }
+      : { userId: auth.userId };
+  };
+  return {
+    getTaskRequestIdentity: async (
+      request: Request,
+      requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+    ) => {
+      if (hasBearerAuthorization(request)) {
+        return requireTaskRequestAuth(request, requiredScopes);
+      }
+      const session = await mocks.getServerSession();
+      return { userId: session?.user?.id ?? null };
+    },
+    hasBearerAuthorization,
+    requireAuth: mocks.requireAuth,
+    requireTaskRequestAuth,
+  };
+});
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {

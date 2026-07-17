@@ -11,8 +11,34 @@
  */
 
 import { McpScope } from "@optimitron/db/enums";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export { McpScope };
+
+/** Scopes that let a bearer client read or mutate tasks at all. */
+export const TASK_CLIENT_SCOPES = [
+  McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ORGANIZATION,
+  McpScope.TASKS_ADMIN,
+] as const;
+
+/**
+ * The one scope→boundary derivation, shared by the MCP handlers and the REST
+ * routes (and reused by route tests so mocked auth seams keep the real rule):
+ * private-personal access needs tasks:personal; org access needs
+ * tasks:organization plus the org in the token's allowlist.
+ */
+export function taskBoundaryFromScopes(
+  scopes: readonly McpScope[] | undefined,
+  organizationIds: readonly string[] | null,
+): TaskClientAccessBoundary {
+  return {
+    allowPersonalPrivate: scopes?.includes(McpScope.TASKS_PERSONAL) === true,
+    organizationIds: scopes?.includes(McpScope.TASKS_ORGANIZATION)
+      ? organizationIds
+      : [],
+  };
+}
 
 export const MCP_SCOPE_DESCRIPTIONS: Record<McpScope, string> = {
   [McpScope.TASKS_ADMIN]: "Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies",
