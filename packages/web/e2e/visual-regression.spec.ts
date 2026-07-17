@@ -9,6 +9,7 @@ import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import { getRouteReviewSpecs } from "@/lib/routes";
+import { SITE_VARIANT_OVERRIDE_HEADER } from "@/lib/site";
 import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
@@ -81,6 +82,7 @@ function buildRouteReviewManifest() {
     name: route.name,
     path: route.path,
     authenticated: route.authenticated === true,
+    ...(route.siteVariant ? { siteVariant: route.siteVariant } : {}),
   }));
   const representedStates = new Set(
     entries.map((entry) => `${entry.path}\u0000${entry.authenticated}`),
@@ -129,6 +131,13 @@ test.describe("route visual regression", () => {
 
   for (const route of VISUAL_ROUTES) {
     test(`${route.name}`, async ({ page }, testInfo) => {
+      if (route.siteVariant) {
+        // Only honored on local hosts (getSiteFromHeaders), which is all
+        // this spec ever targets.
+        await page.setExtraHTTPHeaders({
+          [SITE_VARIANT_OVERRIDE_HEADER]: route.siteVariant,
+        });
+      }
       if ("authenticated" in route && route.authenticated) {
         const signedIn = await signInDemoUser(page);
         expect(

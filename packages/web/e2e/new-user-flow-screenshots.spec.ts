@@ -51,6 +51,13 @@ const VARIANTS: readonly VariantConfig[] = [
     siteKey: "dfda",
     treatyFlow: false,
   },
+  {
+    slug: "dih",
+    label: "dih.earth",
+    host: "dih.earth",
+    siteKey: "dih",
+    treatyFlow: false,
+  },
 ];
 
 const VIEWPORTS = [

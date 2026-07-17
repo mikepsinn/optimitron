@@ -18,9 +18,11 @@
  *   meta: { prNumber, shortSha, commitSha, headBranch, repo, generatedAt,
  *           generatedAtCentral, previewBaseUrl, productionBaseUrl,
  *           reviewUrl, baselineDescription },
- *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, erroredRoutes, totalRoutes },
+ *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, variantRoutes, erroredRoutes, totalRoutes },
  *   routes: [{
  *     routeName, routeLabel, routePath, routeUrl, authState,
+ *     siteVariant,     // null for the default surface; site key for variant-delta shots
+ *     variantLabel,    // display domain, e.g. "optimitron.com"; null when siteVariant is null
  *     changed, copyChanged, errored, statusLabel,
  *     markdownDiff: null | { addedLines, removedLines,
  *       metaChanges: [{field,before,after}],
@@ -206,6 +208,7 @@ const CSS = `
   .badge.hot { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
   .badge.err { border-color: var(--err); color: var(--err); }
   .badge.copy { color: var(--ink); }
+  .badge.variant { border-color: #8250df; color: #8250df; background: #fbf7ff; }
   .badge .plus { color: var(--add-ink); }
   .badge .minus { color: var(--del-ink); }
   .kbd-hint { font-size: 11px; color: var(--dim); padding: 8px 10px 14px; }
@@ -582,6 +585,7 @@ const CLIENT_JS = `
   function groupOf(r) {
     if (r.changed || r.errored) return "changed";
     if (r.copyChanged) return "copy";
+    if (r.siteVariant) return "variants";
     return "cold";
   }
   function visibleHunks(pair) {
@@ -716,6 +720,7 @@ const CLIENT_JS = `
 
   /* ---------------- rail ---------------- */
   var coldOpen = false;
+  var variantsOpen = false;
   function renderRail() {
     var rail = document.getElementById("rail");
     rail.innerHTML = "";
@@ -732,6 +737,7 @@ const CLIENT_JS = `
     var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
     var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
     var cold = routes.filter(function (r) { return groupOf(r) === "cold"; });
+    var variants = routes.filter(function (r) { return groupOf(r) === "variants"; });
 
     function addGroup(title, list, key) {
       if (!list.length) return;
@@ -740,26 +746,28 @@ const CLIENT_JS = `
       list.forEach(function (r) { wrap.appendChild(routeRow(r)); });
       rail.appendChild(wrap);
     }
-    addGroup("Changed", changed, "changed");
-    addGroup("Copy only", copy, "copy");
-
-    // unchanged routes park behind a count toggle
-    if (cold.length) {
-      var wrap = el("div", { class: "rail-group", "data-title": "Unchanged", "data-total": String(cold.length), "data-key": "cold" });
+    // collapsed-by-default group behind a count toggle
+    function addColdGroup(title, list, key, isOpen, setOpen) {
+      if (!list.length) return;
+      var wrap = el("div", { class: "rail-group", "data-title": title, "data-total": String(list.length), "data-key": key });
       var toggle = el("button", {
-        type: "button", class: "rail-group-h", "aria-expanded": String(coldOpen),
-        text: (coldOpen ? "\\u25be" : "\\u25b8") + " Unchanged (" + cold.length + ")"
+        type: "button", class: "rail-group-h", "aria-expanded": String(isOpen),
+        text: (isOpen ? "\\u25be" : "\\u25b8") + " " + title + " (" + list.length + ")"
       });
       toggle.addEventListener("click", function () {
-        coldOpen = !coldOpen;
+        setOpen(!isOpen);
         renderRail();
         markSelectedRow();
         applyFilter();
       });
       wrap.appendChild(toggle);
-      if (coldOpen) cold.forEach(function (r) { wrap.appendChild(routeRow(r)); });
+      if (isOpen) list.forEach(function (r) { wrap.appendChild(routeRow(r)); });
       rail.appendChild(wrap);
     }
+    addGroup("Changed", changed, "changed");
+    addGroup("Copy only", copy, "copy");
+    addColdGroup("Unchanged", cold, "cold", coldOpen, function (v) { coldOpen = v; });
+    addColdGroup("Other variants", variants, "variants", variantsOpen, function (v) { variantsOpen = v; });
 
     rail.appendChild(el("div", {
       class: "kbd-hint",
@@ -793,6 +801,13 @@ const CLIENT_JS = `
 
   function fillRouteBadges(container, r) {
     container.innerHTML = "";
+    if (r.siteVariant) {
+      container.appendChild(el("span", {
+        class: "badge variant",
+        title: "Site variant: " + (r.variantLabel || r.siteVariant),
+        text: r.variantLabel || r.siteVariant
+      }));
+    }
     (r.pairs || []).forEach(function (p) {
       var initial = String(p.projectLabel || p.projectName || "?").charAt(0).toUpperCase();
       var cls = "badge";
@@ -860,7 +875,8 @@ const CLIENT_JS = `
     var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
     var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
     var cold = coldOpen ? routes.filter(function (r) { return groupOf(r) === "cold"; }) : [];
-    return changed.concat(copy, cold).map(function (r) { return r.routeName; });
+    var variants = variantsOpen ? routes.filter(function (r) { return groupOf(r) === "variants"; }) : [];
+    return changed.concat(copy, cold, variants).map(function (r) { return r.routeName; });
   }
   function markSelectedRow() {
     document.querySelectorAll(".route-row").forEach(function (row) {
@@ -1938,6 +1954,7 @@ function renderHeaderHtml(meta, summary) {
   chips.push(`<span class="chip changed">${escapeHtml(summary.changedRoutes)} changed</span>`);
   if (summary.copyOnlyRoutes) chips.push(`<span class="chip">${escapeHtml(summary.copyOnlyRoutes)} copy-only</span>`);
   chips.push(`<span class="chip">${escapeHtml(summary.unchangedRoutes)} unchanged</span>`);
+  if (summary.variantRoutes) chips.push(`<span class="chip">${escapeHtml(summary.variantRoutes)} variant</span>`);
   if (summary.erroredRoutes) chips.push(`<span class="chip errored">${escapeHtml(summary.erroredRoutes)} errored</span>`);
   chips.push(`<span class="chip">${escapeHtml(summary.totalRoutes)} routes</span>`);
   chips.push(`<span class="chip" id="chip-reviewed">0 reviewed</span>`);

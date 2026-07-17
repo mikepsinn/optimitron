@@ -3,6 +3,7 @@ import {
   MANAGED_DEMO_COLLECTION_ID,
   MANAGED_DEMO_DOCUMENT_ID,
 } from "@optimitron/db/constants";
+import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -21,6 +22,8 @@ export type VisualRoute = {
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
+  /** Capture under a non-default site variant (x-optimitron-site-key). */
+  siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
 
@@ -181,11 +184,65 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
+/**
+ * Variant-delta coverage: the non-default site variants share almost all
+ * route code with the default warOnDisease surface, so the review captures
+ * only what actually differs per variant — the homepage component, the
+ * chrome (nav/footer/branding) on one representative shared route, and for
+ * the allowlisted microsites one on-list route. Full-matrix capture would
+ * multiply review load for near-identical images; see AGENTS.md
+ * ("keep secondary variant screenshots/links available for regression
+ * checks ... so PR review load stays low").
+ *
+ * Deliberately NO disallowed-route probe: middleware redirects
+ * canonically-owned paths to the owning production domain, which would make
+ * the capture depend on an external site.
+ */
+const VARIANT_DELTA_ROUTES: VisualRoute[] = [
+  {
+    name: "variant-optimitron-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    name: "variant-optimitron-tasks",
+    path: ROUTES.tasks,
+    required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    name: "variant-dfda-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "dfda",
+  },
+  {
+    name: "variant-dfda-conditions",
+    path: "/conditions",
+    required: false,
+    siteVariant: "dfda",
+  },
+  {
+    name: "variant-dih-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "dih",
+  },
+  {
+    name: "variant-dih-institutes",
+    path: "/institutes",
+    required: false,
+    siteVariant: "dih",
+  },
+];
+
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([
   ...PUBLIC_SCREENSHOT_ROUTES,
   ...AUTHENTICATED_SCREENSHOT_ROUTES,
   ...SPECIAL_STATE_ROUTES,
   ...SEEDED_DYNAMIC_ROUTES,
+  ...VARIANT_DELTA_ROUTES,
 ]);
 
 function publicRouteHasScreenshot(path: string): boolean {
