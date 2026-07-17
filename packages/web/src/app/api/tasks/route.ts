@@ -5,14 +5,11 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
-import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
+import { getTaskRequestIdentity, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
-import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -129,28 +126,8 @@ async function findOrCreateInvitedAssigneePerson({
 
 export async function GET(request: Request) {
   try {
-    let clientAccessBoundary: TaskClientAccessBoundary | undefined;
-    let userId: string | null = null;
-    if (hasBearerAuthorization(request)) {
-      const auth = await requireAuth(request, [
-        McpScope.TASKS_PERSONAL,
-        McpScope.TASKS_ORGANIZATION,
-        McpScope.TASKS_ADMIN,
-      ]);
-      userId = auth.userId;
-      const scopes = "scopes" in auth ? auth.scopes : [];
-      const organizationIds =
-        "organizationIds" in auth ? auth.organizationIds : [];
-      clientAccessBoundary = {
-        allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
-        organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
-          ? organizationIds
-          : [],
-      };
-    } else {
-      const session = await getServerSession(authOptions);
-      userId = session?.user.id ?? null;
-    }
+    const { clientAccessBoundary, userId } =
+      await getTaskRequestIdentity(request);
     const { searchParams } = new URL(request.url);
     const assigneeOrganizationId = searchParams.get("assigneeOrganizationId");
     const assigneePersonId = searchParams.get("assigneePersonId");

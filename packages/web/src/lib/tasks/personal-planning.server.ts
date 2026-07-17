@@ -213,7 +213,6 @@ export interface AuthorizedExecutionPlanRequest {
   buybackRate?: number | null;
   clientAccessBoundary?: TaskClientAccessBoundary;
   fixedCommitments?: PlanningCommitment[] | null;
-  isAdmin: boolean;
   maxResults?: number | null;
   planningWindowEnd?: Date | string | null;
   planningWindowStart?: Date | string | null;
@@ -1146,7 +1145,6 @@ export async function loadAgentPlanningProfiles(): Promise<
 
 async function resolveAuthorizedPlanningTarget(input: {
   clientAccessBoundary?: TaskClientAccessBoundary;
-  isAdmin: boolean;
   target?: AuthorizedExecutionPlanRequest["target"];
   userId: string;
 }): Promise<AuthorizedPlanningTarget> {

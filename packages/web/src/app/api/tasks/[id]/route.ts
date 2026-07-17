@@ -4,18 +4,17 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
-import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
-import { McpScope } from "@/lib/mcp-scopes";
+import {
+  getTaskRequestIdentity,
+  requireTaskRequestAuth,
+} from "@/lib/auth-utils";
 import {
   deleteTaskCreatedByUser,
   getTaskDetailData,
   updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
-import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -59,28 +58,8 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    let clientAccessBoundary: TaskClientAccessBoundary | undefined;
-    let userId: string | null = null;
-    if (hasBearerAuthorization(_request)) {
-      const auth = await requireAuth(_request, [
-        McpScope.TASKS_PERSONAL,
-        McpScope.TASKS_ORGANIZATION,
-        McpScope.TASKS_ADMIN,
-      ]);
-      userId = auth.userId;
-      const scopes = "scopes" in auth ? auth.scopes : [];
-      const organizationIds =
-        "organizationIds" in auth ? auth.organizationIds : [];
-      clientAccessBoundary = {
-        allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
-        organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
-          ? organizationIds
-          : [],
-      };
-    } else {
-      const session = await getServerSession(authOptions);
-      userId = session?.user.id ?? null;
-    }
+    const { clientAccessBoundary, userId } =
+      await getTaskRequestIdentity(_request);
     const { id } = await context.params;
     const data = clientAccessBoundary
       ? await getTaskDetailData(id, userId, { clientAccessBoundary })
@@ -109,17 +88,28 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } =
+      await requireTaskRequestAuth(request);
     const { id } = await context.params;
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
-    const task = await updateTaskCreatedByUser(id, userId, {
-      ...rest,
-      dueAt: dueAt == null ? dueAt : new Date(dueAt),
-    });
+    // MCP parity: delegated clients never change publication state; the
+    // web app is the only disclosure surface.
+    if (clientAccessBoundary && rest.isPublic != null) {
+      return NextResponse.json(
+        { error: "Publishing tasks requires the web app." },
+        { status: 403 },
+      );
+    }
+    const task = await updateTaskCreatedByUser(
+      id,
+      userId,
+      {
+        ...rest,
+        dueAt: dueAt == null ? dueAt : new Date(dueAt),
+      },
+      { clientAccessBoundary },
+    );
 
     return NextResponse.json({ data: task, success: true });
   } catch (error) {
@@ -152,12 +142,12 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(_request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } =
+      await requireTaskRequestAuth(_request);
     const { id } = await context.params;
-    const result = await deleteTaskCreatedByUser(id, userId);
+    const result = await deleteTaskCreatedByUser(id, userId, {
+      clientAccessBoundary,
+    });
     return NextResponse.json({ data: result, success: true });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {

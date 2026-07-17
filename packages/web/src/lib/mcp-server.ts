@@ -8821,7 +8821,6 @@ export function createMcpServer(
                   typeof a.buybackRate === "number" ? a.buybackRate : null,
                 clientAccessBoundary: taskClientBoundary,
                 fixedCommitments: fixedCommitments as PlanningCommitment[],
-                isAdmin,
                 maxResults:
                   typeof a.maxResults === "number" ? a.maxResults : null,
                 planningWindowEnd:

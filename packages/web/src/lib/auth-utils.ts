@@ -1,8 +1,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
-import type { McpScope } from "@/lib/mcp-scopes";
+import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export function hasBearerAuthorization(request?: Request) {
   const authHeader = request?.headers.get("authorization");
@@ -164,4 +165,66 @@ export async function requireAuth(
   if (!user) throw new Error("Unauthorized");
 
   return { userId: user.id, userEmail: user.email };
+}
+
+export const TASK_CLIENT_SCOPES = [
+  McpScope.TASKS_PERSONAL,
+  McpScope.TASKS_ORGANIZATION,
+  McpScope.TASKS_ADMIN,
+] as const;
+
+/** Same boundary derivation as the MCP handlers (getMcpTaskClientBoundary):
+ * private-personal access needs tasks:personal, org access needs
+ * tasks:organization plus the org in the token's allowlist. */
+function taskBoundaryFromScopes(
+  scopes: readonly McpScope[],
+  organizationIds: readonly string[],
+): TaskClientAccessBoundary {
+  return {
+    allowPersonalPrivate: scopes.includes(McpScope.TASKS_PERSONAL),
+    organizationIds: scopes.includes(McpScope.TASKS_ORGANIZATION)
+      ? organizationIds
+      : [],
+  };
+}
+
+/**
+ * Auth for REST routes that read or mutate tasks. Bearer clients resolve to
+ * the user plus the client access boundary from their grant; session users
+ * act as themselves with no boundary.
+ */
+export async function requireTaskRequestAuth(
+  request: Request,
+  requiredScopes: readonly McpScope[] = TASK_CLIENT_SCOPES,
+): Promise<{
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  userId: string;
+}> {
+  const auth = await requireAuth(request, requiredScopes);
+  if (!("scopes" in auth)) {
+    return { userId: auth.userId };
+  }
+  return {
+    clientAccessBoundary: taskBoundaryFromScopes(
+      auth.scopes,
+      auth.organizationIds,
+    ),
+    userId: auth.userId,
+  };
+}
+
+/** Like requireTaskRequestAuth, but anonymous/session-less requests resolve
+ * to a null user instead of throwing — for routes with public GET access. */
+export async function getTaskRequestIdentity(
+  request: Request,
+  requiredScopes: readonly McpScope[] = TASK_CLIENT_SCOPES,
+): Promise<{
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  userId: string | null;
+}> {
+  if (hasBearerAuthorization(request)) {
+    return requireTaskRequestAuth(request, requiredScopes);
+  }
+  const session = await getServerSession(authOptions);
+  return { userId: session?.user?.id ?? null };
 }

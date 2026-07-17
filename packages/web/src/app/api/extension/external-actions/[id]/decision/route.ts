@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-utils";
+import { requireTaskRequestAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { decideExternalActionRequest } from "@/lib/tasks/external-action.server";
 
@@ -10,7 +10,10 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [McpScope.ACTIONS_APPROVE]);
+    const { clientAccessBoundary, userId } = await requireTaskRequestAuth(
+      request,
+      [McpScope.ACTIONS_APPROVE],
+    );
     const { id } = await context.params;
     const body = (await request.json().catch(() => null)) as {
       decision?: unknown;
@@ -21,6 +24,7 @@ export async function POST(
         externalActionRequestId: id,
       },
       userId,
+      { clientAccessBoundary },
     );
     return NextResponse.json({ data: result, success: true });
   } catch (error) {

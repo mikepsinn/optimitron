@@ -1,6 +1,6 @@
 import { ExternalActionRequestStatus } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-utils";
+import { requireTaskRequestAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 
@@ -8,7 +8,10 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
-    const { userId } = await requireAuth(request, [McpScope.ACTIONS_APPROVE]);
+    const { clientAccessBoundary, userId } = await requireTaskRequestAuth(
+      request,
+      [McpScope.ACTIONS_APPROVE],
+    );
     const url = new URL(request.url);
     const requestedStatus = url.searchParams.get("status");
     const status = Object.values(ExternalActionRequestStatus).includes(
@@ -18,6 +21,7 @@ export async function GET(request: Request) {
       : ExternalActionRequestStatus.PENDING;
     const requests = await listExternalActionRequestsForHuman({
       actorUserId: userId,
+      clientAccessBoundary,
       limit: 100,
       status,
       taskId: url.searchParams.get("taskId"),

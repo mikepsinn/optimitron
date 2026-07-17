@@ -7,7 +7,12 @@ import {
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getTaskAccessWhere } from "@/lib/tasks/task-visibility.server";
+import { getStartedByUserId } from "@/lib/tasks/execution-lifecycle.server";
+import {
+  getTaskAccessWhere,
+  getTaskClientAccessWhere,
+  type TaskClientAccessBoundary,
+} from "@/lib/tasks/task-visibility.server";
 
 const MAX_APPROVAL_WINDOW_MS = 7 * 24 * 60 * 60 * 1_000;
 const DEFAULT_APPROVAL_WINDOW_MS = 24 * 60 * 60 * 1_000;
@@ -58,16 +63,6 @@ export const RecordExternalActionResultSchema = z
 
 function jsonValue(value: unknown): Prisma.InputJsonValue {
   return value as Prisma.InputJsonValue;
-}
-
-function getStartedByUserId(metadata: unknown) {
-  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
-    return null;
-  }
-  const startedByUserId = (metadata as Record<string, unknown>)[
-    "startedByUserId"
-  ];
-  return typeof startedByUserId === "string" ? startedByUserId : null;
 }
 
 function externalActionSelect() {
@@ -239,27 +234,49 @@ export async function proposeExternalAction(
   });
 }
 
+/** MANAGE access for the actor, intersected with the delegated client's
+ * grant boundary when the call arrives via an OAuth token. */
+function actionTaskWhere(
+  actor: { personId: string | null },
+  actorUserId: string,
+  clientAccessBoundary?: TaskClientAccessBoundary,
+): Prisma.TaskWhereInput {
+  const manageWhere = getTaskAccessWhere({
+    action: "MANAGE",
+    personId: actor.personId,
+    userId: actorUserId,
+  });
+  return {
+    deletedAt: null,
+    AND: [
+      manageWhere,
+      ...(clientAccessBoundary
+        ? [getTaskClientAccessWhere(clientAccessBoundary)]
+        : []),
+    ],
+  };
+}
+
 export async function listExternalActionRequestsForHuman(input: {
   actorUserId: string;
+  clientAccessBoundary?: TaskClientAccessBoundary;
   limit?: number | null;
   status?: ExternalActionRequestStatus | null;
   taskId?: string | null;
 }) {
   const actor = await loadActor(prisma, input.actorUserId);
   if (!actor) return [];
+  const taskWhere = actionTaskWhere(
+    actor,
+    input.actorUserId,
+    input.clientAccessBoundary,
+  );
   await prisma.externalActionRequest.updateMany({
     where: {
       deletedAt: null,
       expiresAt: { lte: new Date() },
       status: ExternalActionRequestStatus.PENDING,
-      task: {
-        deletedAt: null,
-        ...getTaskAccessWhere({
-          action: "MANAGE",
-          personId: actor.personId,
-          userId: input.actorUserId,
-        }),
-      },
+      task: taskWhere,
     },
     data: { status: ExternalActionRequestStatus.EXPIRED },
   });
@@ -268,14 +285,7 @@ export async function listExternalActionRequestsForHuman(input: {
       deletedAt: null,
       status: input.status ?? undefined,
       taskId: input.taskId ?? undefined,
-      task: {
-        deletedAt: null,
-        ...getTaskAccessWhere({
-          action: "MANAGE",
-          personId: actor.personId,
-          userId: input.actorUserId,
-        }),
-      },
+      task: taskWhere,
     },
     orderBy: { createdAt: "desc" },
     select: externalActionSelect(),
@@ -286,6 +296,7 @@ export async function listExternalActionRequestsForHuman(input: {
 export async function decideExternalActionRequest(
   rawInput: unknown,
   actorUserId: string,
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
   const input = DecideExternalActionSchema.parse(rawInput);
   return prisma.$transaction(async (tx) => {
@@ -296,14 +307,11 @@ export async function decideExternalActionRequest(
         deletedAt: null,
         id: input.externalActionRequestId,
         status: ExternalActionRequestStatus.PENDING,
-        task: {
-          deletedAt: null,
-          ...getTaskAccessWhere({
-            action: "MANAGE",
-            personId: actor.personId,
-            userId: actorUserId,
-          }),
-        },
+        task: actionTaskWhere(
+          actor,
+          actorUserId,
+          options?.clientAccessBoundary,
+        ),
         OR: [
           { requestedByUserId: actorUserId },
           {
@@ -321,25 +329,33 @@ export async function decideExternalActionRequest(
     if (!request) throw new Error("External action request not found");
 
     const now = new Date();
-    if (request.expiresAt <= now) {
-      return tx.externalActionRequest.update({
-        where: { id: request.id },
-        data: { status: ExternalActionRequestStatus.EXPIRED },
-        select: externalActionSelect(),
-      });
+    // Guard every PENDING → terminal transition with a conditional write so
+    // two concurrent decisions can't both land (last-wins would let a
+    // rejection silently overwrite an approval, or vice versa).
+    const decided = await tx.externalActionRequest.updateMany({
+      where: {
+        deletedAt: null,
+        id: request.id,
+        status: ExternalActionRequestStatus.PENDING,
+      },
+      data:
+        request.expiresAt <= now
+          ? { status: ExternalActionRequestStatus.EXPIRED }
+          : input.decision === "APPROVE"
+            ? {
+                approvedAt: now,
+                approvedByUserId: actorUserId,
+                approvedPayloadHash: request.payloadHash,
+                status: ExternalActionRequestStatus.APPROVED,
+              }
+            : { status: ExternalActionRequestStatus.REJECTED },
+    });
+    if (decided.count === 0) {
+      throw new Error("External action request is no longer pending");
     }
 
-    return tx.externalActionRequest.update({
+    return tx.externalActionRequest.findUniqueOrThrow({
       where: { id: request.id },
-      data:
-        input.decision === "APPROVE"
-          ? {
-              approvedAt: now,
-              approvedByUserId: actorUserId,
-              approvedPayloadHash: request.payloadHash,
-              status: ExternalActionRequestStatus.APPROVED,
-            }
-          : { status: ExternalActionRequestStatus.REJECTED },
       select: externalActionSelect(),
     });
   });

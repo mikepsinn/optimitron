@@ -894,7 +894,6 @@ function mapTaskSearchResult(
 function buildParentInheritedImpactFrame(
   task: TaskListItem | TaskDetailItem,
   options?: {
-    clientAccessBoundary?: TaskClientAccessBoundary;
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
@@ -1247,10 +1246,60 @@ function sortTasksForAccountability<T extends ReturnType<typeof decorateTask>>(
   });
 }
 
+/**
+ * Prisma can't filter a to-one relation, so list selects always return the
+ * parent row even when the viewer has no access to it. Null out inaccessible
+ * parents before decoration so inherited impact frames can't leak a private
+ * parent's title or estimate numbers into list/planning surfaces. The detail
+ * path (getTaskDetailData) does the same check inline.
+ */
+async function nullInaccessibleParentTasks<
+  T extends { parentTask: { id: string } | null },
+>(
+  tasks: T[],
+  viewer: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    personId?: string | null;
+    userId?: string | null;
+  },
+): Promise<T[]> {
+  const parentIds = [
+    ...new Set(
+      tasks.flatMap((task) => (task.parentTask ? [task.parentTask.id] : [])),
+    ),
+  ];
+  if (parentIds.length === 0) return tasks;
+
+  const accessibleParents = await prisma.task.findMany({
+    where: {
+      deletedAt: null,
+      id: { in: parentIds },
+      AND: [
+        getTaskAccessWhere({
+          action: "READ",
+          personId: viewer.personId,
+          userId: viewer.userId,
+        }),
+        ...(viewer.clientAccessBoundary
+          ? [getTaskClientAccessWhere(viewer.clientAccessBoundary)]
+          : []),
+      ],
+    },
+    select: { id: true },
+  });
+  const accessibleParentIds = new Set(
+    accessibleParents.map((parent) => parent.id),
+  );
+  return tasks.map((task) =>
+    task.parentTask && !accessibleParentIds.has(task.parentTask.id)
+      ? { ...task, parentTask: null }
+      : task,
+  );
+}
+
 export async function getTasksPageData(
   userId?: string | null,
   options?: {
-    clientAccessBoundary?: TaskClientAccessBoundary;
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
@@ -1283,7 +1332,7 @@ export async function getTasksPageData(
     }),
   ]);
 
-  const assignedToMeRaw = viewer?.personId
+  const assignedToMeUnscoped = viewer?.personId
     ? await prisma.task.findMany({
         where: {
           deletedAt: null,
@@ -1301,8 +1350,18 @@ export async function getTasksPageData(
         }),
       })
     : [];
+  const viewerScope = {
+    personId: viewer?.personId ?? null,
+    userId: viewer?.id ?? null,
+  };
+  const [allTasksScoped, topLevelTasksScoped, assignedToMeRaw] =
+    await Promise.all([
+      nullInaccessibleParentTasks(allTasks, viewerScope),
+      nullInaccessibleParentTasks(topLevelTasks, viewerScope),
+      nullInaccessibleParentTasks(assignedToMeUnscoped, viewerScope),
+    ]);
 
-  const decoratedTasks = allTasks.map((task) =>
+  const decoratedTasks = allTasksScoped.map((task) =>
     decorateTask(task, {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
@@ -1325,12 +1384,12 @@ export async function getTasksPageData(
           recommendationScore: entry.score,
         }));
 
-  const topLevelTaskIds = new Set(topLevelTasks.map((t) => t.id));
+  const topLevelTaskIds = new Set(topLevelTasksScoped.map((t) => t.id));
   const topLevelChildIds = new Set(
-    topLevelTasks.flatMap((t) => t.childTasks.map((c) => c.id)),
+    topLevelTasksScoped.flatMap((t) => t.childTasks.map((c) => c.id)),
   );
 
-  const decoratedTopLevel = topLevelTasks.map((task) => ({
+  const decoratedTopLevel = topLevelTasksScoped.map((task) => ({
     ...decorateTask(task, {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
@@ -1580,9 +1639,14 @@ export async function listTasks(options?: {
     }),
     ...(options?.limit == null ? {} : { take: options.limit }),
   });
+  const scopedTasks = await nullInaccessibleParentTasks(tasks, {
+    clientAccessBoundary: options?.clientAccessBoundary,
+    personId: options?.personId,
+    userId: options?.userId,
+  });
 
   return sortTasksForAccountability(
-    tasks.map((task) =>
+    scopedTasks.map((task) =>
       decorateTask(task, {
         frameKey: options?.frameKey,
         userId: options?.userId ?? null,
@@ -1926,6 +1990,7 @@ export async function updateTaskCreatedByUser(
     status?: TaskStatus | null;
     title?: string | null;
   },
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
   if (input.status === TaskStatus.VERIFIED) {
     throw new Error("Task verification must use the verification flow.");
@@ -1939,11 +2004,18 @@ export async function updateTaskCreatedByUser(
     where: {
       deletedAt: null,
       id: taskId,
-      ...getTaskAccessWhere({
-        action: "MANAGE",
-        personId: actor.personId,
-        userId: creatorUserId,
-      }),
+      AND: [
+        getTaskAccessWhere({
+          action: "MANAGE",
+          personId: actor.personId,
+          userId: creatorUserId,
+        }),
+        // Delegated clients only reach tasks inside their grant boundary,
+        // matching the MCP updateTask handler.
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
+      ],
     },
     select: {
       claimPolicy: true,
@@ -2025,6 +2097,7 @@ export async function updateTaskCreatedByUser(
 export async function deleteTaskCreatedByUser(
   taskId: string,
   creatorUserId: string,
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
   const actor = await prisma.user.findUnique({
     where: { id: creatorUserId },
@@ -2035,11 +2108,16 @@ export async function deleteTaskCreatedByUser(
     where: {
       deletedAt: null,
       id: taskId,
-      ...getTaskAccessWhere({
-        action: "MANAGE",
-        personId: actor.personId,
-        userId: creatorUserId,
-      }),
+      AND: [
+        getTaskAccessWhere({
+          action: "MANAGE",
+          personId: actor.personId,
+          userId: creatorUserId,
+        }),
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
+      ],
     },
     select: { id: true, isPublic: true },
   });

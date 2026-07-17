@@ -4,7 +4,7 @@ import {
   TaskVerificationResult,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-utils";
+import { requireTaskRequestAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import {
@@ -12,7 +12,10 @@ import {
   submitTaskArtifact,
   submitTaskForVerification,
 } from "@/lib/tasks/execution-lifecycle.server";
-import { getTaskAccessWhere } from "@/lib/tasks/task-visibility.server";
+import {
+  getTaskAccessWhere,
+  isTaskWithinClientAccessBoundary,
+} from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -24,8 +27,23 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [McpScope.TASKS_PERSONAL]);
+    const { clientAccessBoundary, userId } = await requireTaskRequestAuth(
+      request,
+      [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+    );
     const { id } = await context.params;
+    if (clientAccessBoundary) {
+      const boundaryTask = await prisma.task.findFirst({
+        where: { deletedAt: null, id },
+        select: { isPublic: true, ownerOrganizationId: true },
+      });
+      if (
+        !boundaryTask ||
+        !isTaskWithinClientAccessBoundary(boundaryTask, clientAccessBoundary)
+      ) {
+        return NextResponse.json({ error: "Task not found." }, { status: 404 });
+      }
+    }
     const body = (await request.json().catch(() => null)) as {
       actualDurationSeconds?: unknown;
       completionEvidence?: unknown;

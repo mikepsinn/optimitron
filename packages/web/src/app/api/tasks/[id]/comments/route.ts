@@ -4,8 +4,8 @@
  */
 
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth-utils";
-import { McpScope } from "@/lib/mcp-scopes";
+import { getCurrentUser, getTaskRequestIdentity } from "@/lib/auth-utils";
+import { prisma } from "@/lib/prisma";
 import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import { TaskCommentAttachmentInputError } from "@/lib/tasks/task-comment-attachments.server";
 import {
@@ -17,7 +17,9 @@ import {
 } from "@/lib/tasks/task-comments.server";
 import {
   canUserCommentOnTask,
+  isTaskWithinClientAccessBoundary,
   TASK_NOT_FOUND_MESSAGE,
+  type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
 import {
   buildCitationsJson,
@@ -31,6 +33,20 @@ export const runtime = "nodejs";
 const MAX_MESSAGE_LENGTH = 20_000;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT_MAX_COMMENTS = 5;
+
+/** MCP parity (canAccessTaskResource): a delegated client only reaches a
+ * task's comment thread when the task is inside its grant boundary. */
+async function isTaskOutsideClientBoundary(
+  taskId: string,
+  boundary: TaskClientAccessBoundary | undefined,
+) {
+  if (!boundary) return false;
+  const task = await prisma.task.findFirst({
+    where: { deletedAt: null, id: taskId },
+    select: { isPublic: true, ownerOrganizationId: true },
+  });
+  return !task || !isTaskWithinClientAccessBoundary(task, boundary);
+}
 
 export async function GET(
   request: Request,
@@ -48,11 +64,11 @@ export async function GET(
       ? Math.min(Math.max(Math.trunc(limitParam), 1), 100)
       : 50;
 
-    const currentUser = await getCurrentUser(request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ORGANIZATION,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } =
+      await getTaskRequestIdentity(request);
+    if (await isTaskOutsideClientBoundary(taskId, clientAccessBoundary)) {
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
+    }
 
     const [{ comments, nextCursor, total }, activityEvents] = await Promise.all(
       [
@@ -61,13 +77,13 @@ export async function GET(
           sort,
           cursor: cursor && !Number.isNaN(cursor.getTime()) ? cursor : null,
           limit,
-          currentUserId: currentUser?.id ?? null,
+          currentUserId: userId,
         }),
         // Only fetch activities on the first page load (no cursor) — they're
         // not paginated, they're just a supplementary timeline.
         cursor
           ? Promise.resolve([])
-          : getTaskActivityTimeline(taskId, 50, currentUser?.id ?? null),
+          : getTaskActivityTimeline(taskId, 50, userId),
       ],
     );
 
@@ -99,10 +115,9 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const currentUser = await getCurrentUser(request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ORGANIZATION,
-      McpScope.TASKS_ADMIN,
+    const [currentUser, { clientAccessBoundary }] = await Promise.all([
+      getCurrentUser(request),
+      getTaskRequestIdentity(request),
     ]);
     if (!currentUser) {
       return NextResponse.json(
@@ -112,6 +127,9 @@ export async function POST(
     }
 
     const { id: taskId } = await context.params;
+    if (await isTaskOutsideClientBoundary(taskId, clientAccessBoundary)) {
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
+    }
     const body = (await request.json().catch(() => null)) as {
       message?: unknown;
       parentCommentId?: unknown;

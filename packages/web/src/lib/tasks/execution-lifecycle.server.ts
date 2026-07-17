@@ -349,7 +349,7 @@ async function loadAttemptForContribution(
   });
 }
 
-function getStartedByUserId(metadata: unknown) {
+export function getStartedByUserId(metadata: unknown) {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return null;
   }
@@ -490,25 +490,44 @@ export async function submitTaskForVerification(
     }
     const taskContext = readTaskContext(attempt.task.contextJson);
     const acceptanceCriteria = taskContext.acceptanceCriteria ?? [];
-    if (acceptanceCriteria.length === 0) {
+    // Rule-based methods need criteria to evaluate. A human REVIEWER judges
+    // the artifacts directly, and tasks created via REST or the web UI have
+    // no criteria — requiring them there dead-ends the extension done flow.
+    if (
+      acceptanceCriteria.length === 0 &&
+      input.method !== TaskVerificationMethod.REVIEWER
+    ) {
       throw new Error("Task has no acceptance criteria snapshot");
     }
 
     const completedAt = new Date();
+    // Conditional transition: a concurrent submission (e.g. a retried
+    // extension done call) must not complete the attempt twice and create
+    // competing PENDING verifications.
+    const claimed = await tx.taskExecutionAttempt.updateMany({
+      where: {
+        deletedAt: null,
+        id: attempt.id,
+        status: TaskExecutionAttemptStatus.RUNNING,
+      },
+      data: {
+        actualCostCurrency: input.actualCost?.currency ?? null,
+        actualCostMinorUnits:
+          input.actualCost?.minorUnits == null
+            ? null
+            : BigInt(input.actualCost.minorUnits),
+        actualDurationSeconds: input.actualDurationSeconds,
+        completedAt,
+        outputSummary: input.outputSummary,
+        status: TaskExecutionAttemptStatus.COMPLETED,
+      },
+    });
+    if (claimed.count === 0) {
+      throw new Error("Task execution attempt not found");
+    }
     const [updatedAttempt, verification] = await Promise.all([
-      tx.taskExecutionAttempt.update({
+      tx.taskExecutionAttempt.findUniqueOrThrow({
         where: { id: attempt.id },
-        data: {
-          actualCostCurrency: input.actualCost?.currency ?? null,
-          actualCostMinorUnits:
-            input.actualCost?.minorUnits == null
-              ? null
-              : BigInt(input.actualCost.minorUnits),
-          actualDurationSeconds: input.actualDurationSeconds,
-          completedAt,
-          outputSummary: input.outputSummary,
-          status: TaskExecutionAttemptStatus.COMPLETED,
-        },
         select: { completedAt: true, id: true, status: true, taskId: true },
       }),
       tx.taskVerification.create({
@@ -584,8 +603,15 @@ export async function verifyTaskExecution(
 
     const accepted = input.result === "ACCEPTED";
     const completedAt = new Date();
-    const updatedVerification = await tx.taskVerification.update({
-      where: { id: verification.id },
+    // Conditional PENDING → terminal transition: two concurrent reviewers
+    // (or an accept racing a reject) must not both land, or the task's
+    // terminal status becomes last-write-wins.
+    const claimed = await tx.taskVerification.updateMany({
+      where: {
+        deletedAt: null,
+        id: verification.id,
+        result: TaskVerificationResult.PENDING,
+      },
       data: {
         completedAt,
         criterionResultsJson: jsonValue(input.criterionResults),
@@ -599,6 +625,12 @@ export async function verifyTaskExecution(
         selfReviewed:
           verification.taskExecutionAttempt.executorUserId === actorUserId,
       },
+    });
+    if (claimed.count === 0) {
+      throw new Error("Task verification not found");
+    }
+    const updatedVerification = await tx.taskVerification.findUniqueOrThrow({
+      where: { id: verification.id },
       select: {
         completedAt: true,
         id: true,
