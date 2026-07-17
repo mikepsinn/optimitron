@@ -137,7 +137,9 @@ Bugs and concrete debt:
       with no `TaskPayout`; Stripe idempotency key on connected-account create;
       `AbortController` timeout on `stripeV2Request`; schema CHECK/FK hardening
       (needs Mike's schema approval).
-- [ ] Backfill `jurisdictionId` on the 25 models added in PR #86.
+- [ ] Backfill `jurisdictionId` on the 25 models added in PR #86, plus
+      `TaskExecutionArtifact`, `TaskVerification`, and `ExternalActionRequest`
+      added in PR #119 (needs Mike's schema approval).
 - [ ] Login page: slider-to-submit spacing pushes CTA below the fold on mobile.
 - [ ] Min-font-size enforcement remainder: email render-and-walk test, ESLint
       rule for `text-xs`/inline small fonts, named-token refactor of
