@@ -33,11 +33,17 @@ describe("source artifact visibility", () => {
   });
 
   it("keeps organization source deletion owner/admin-only", () => {
-    const where = JSON.stringify(getSourceArtifactManageWhere("user_1"));
-    expect(where).toContain('"OWNER"');
-    expect(where).toContain('"ADMIN"');
-    expect(where).not.toContain('"MEMBER"');
-    expect(where).not.toContain('"VIEWER"');
+    const where = getSourceArtifactManageWhere("user_1");
+    const organizationBranch = where.OR?.find(
+      (branch) => "ownerOrganization" in branch,
+    );
+    expect(organizationBranch).toMatchObject({
+      ownerOrganization: {
+        members: {
+          some: { role: { in: ["OWNER", "ADMIN"] }, userId: "user_1" },
+        },
+      },
+    });
   });
 
   it("returns false without leaking a private source's existence", async () => {

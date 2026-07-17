@@ -20,7 +20,8 @@ No evidence on disk → no `implemented`. Update the entry in the same PR that
 changes the behavior. Extract entries mechanically with `grep -A9 "^### OPT-"`.
 
 Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
-(2026-07-11).
+(2026-07-11); private-execution entries (OPT-TASK-08, OPT-EXT-02, OPT-INTG-03)
+verified against `feature/private-execution-system` (2026-07-17).
 
 ---
 

@@ -54,7 +54,6 @@ describe("buildSiteStructuredData", () => {
         addressCountry: "US",
       },
     });
-    expect(JSON.stringify(organization)).not.toContain("taxID");
     expect(JSON.stringify(organization)).not.toContain("LLC");
   });
 

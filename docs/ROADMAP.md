@@ -175,9 +175,9 @@ the human owner's schema approval where noted.
    revive; don't leave schema fiction.
 7. **`engagementKind`** — stored and filterable, never scored or branched on.
    Removal is an API-surface change; decide with OPT-TASK-01 consumers.
-8. **Task-kind removal** — delete `TaskKind` and derive container status from
-   unresolved children and reserved root identity. No compatibility reads.
-   Product-intent question for the human owner.
+8. **Task-kind removal** — done on `feature/private-execution-system`:
+   `TaskKind` is deleted and container status derives from unresolved children
+   and reserved root identity. No compatibility reads.
 
 Infra hygiene (lower priority):
 

@@ -144,6 +144,19 @@ describe("getTaskVisibilityWhere", () => {
   });
 
   it("keeps organization viewers read-only", () => {
+    // Walk the where tree and collect membership role filters so the
+    // assertion targets the actual query constraint, not string rendering.
+    const collectMembershipRoleFilters = (node: unknown): string[][] => {
+      if (Array.isArray(node)) return node.flatMap(collectMembershipRoleFilters);
+      if (!node || typeof node !== "object") return [];
+      return Object.entries(node).flatMap(([key, value]) => {
+        if (key === "role" && value && typeof value === "object" && "in" in value) {
+          return [[...(value as { in: string[] }).in]];
+        }
+        return collectMembershipRoleFilters(value);
+      });
+    };
+
     const readable = getTaskAccessWhere({
       action: "READ",
       userId: "viewer_1",
@@ -157,11 +170,16 @@ describe("getTaskVisibilityWhere", () => {
       userId: "viewer_1",
     });
 
-    expect(JSON.stringify(readable)).not.toContain("role");
-    expect(JSON.stringify(executable)).toContain('"MEMBER"');
-    expect(JSON.stringify(executable)).not.toContain('"VIEWER"');
-    expect(JSON.stringify(manageable)).toContain('"ADMIN"');
-    expect(JSON.stringify(manageable)).not.toContain('"MEMBER"');
+    // READ membership is unfiltered by role (viewers may read).
+    expect(collectMembershipRoleFilters(readable)).toEqual([]);
+    for (const roles of collectMembershipRoleFilters(executable)) {
+      expect(roles).toEqual(["OWNER", "ADMIN", "MEMBER"]);
+    }
+    for (const roles of collectMembershipRoleFilters(manageable)) {
+      expect(roles).toEqual(["OWNER", "ADMIN"]);
+    }
+    expect(collectMembershipRoleFilters(executable)).not.toHaveLength(0);
+    expect(collectMembershipRoleFilters(manageable)).not.toHaveLength(0);
   });
 
   it("defaults to public-only when no visibility is given", () => {
