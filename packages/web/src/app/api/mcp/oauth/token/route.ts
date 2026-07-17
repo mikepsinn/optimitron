@@ -32,9 +32,11 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    // Never echo internal error text (Prisma/config details) to an
+    // unauthenticated token-endpoint caller.
+    console.error("[oauth/token] unexpected failure:", error);
     return NextResponse.json(
-      { error: "server_error", error_description: message },
+      { error: "server_error" },
       { status: 500 },
     );
   }
@@ -116,7 +118,13 @@ async function handleAuthorizationCode(
 
   // Issue tokens
   const scopes = authCode.scopes;
-  const accessToken = await signMcpAccessToken(authCode.userId, clientId, scopes);
+  const organizationIds = authCode.organizationIds;
+  const accessToken = await signMcpAccessToken(
+    authCode.userId,
+    clientId,
+    scopes,
+    organizationIds,
+  );
   const refreshToken = await signMcpRefreshToken(authCode.userId, clientId);
 
   // Upsert grant record
@@ -128,11 +136,13 @@ async function handleAuthorizationCode(
       clientId,
       userId: authCode.userId,
       scopes,
+      organizationIds,
       refreshTokenHash: hashRefreshToken(refreshToken),
       active: true,
     },
     update: {
       scopes,
+      organizationIds,
       refreshTokenHash: hashRefreshToken(refreshToken),
       active: true,
       revokedAt: null,
@@ -194,7 +204,12 @@ async function handleRefreshToken(
 
   // Issue new tokens
   const scopes = grant.scopes;
-  const newAccessToken = await signMcpAccessToken(grant.userId, grant.clientId, scopes);
+  const newAccessToken = await signMcpAccessToken(
+    grant.userId,
+    grant.clientId,
+    scopes,
+    grant.organizationIds,
+  );
 
   return NextResponse.json({
     access_token: newAccessToken,

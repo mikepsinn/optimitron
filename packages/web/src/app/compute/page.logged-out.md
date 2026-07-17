@@ -341,4 +341,4 @@
 - These marketplaces don't publish live, reliable price feeds this page could safely pull from automatically, so the numbers here are a dated snapshot — and every one is something you can adjust above. Rental rates move with demand and can fall as well as rise. Wishonia has been allocating capital for 4,237 years and is still not a licensed financial advisor. Nothing on this page is investment advice; it is arithmetic with sources.
 ### WANT IT INSTALLED?
 - Earth Optimization Services sets up on-premises rigs for lawyers, funds, and families whose questions should never leave the building. Attorney-client privilege works better when the intelligence is inside the privilege.
-- [ASK ABOUT AN INSTALL.](mailto:hello@warondisease.org?subject=On-premises%20rig%20install)
+- [ASK ABOUT AN INSTALL.](mailto:wishonia@optimitron.com?subject=On-premises%20rig%20install)

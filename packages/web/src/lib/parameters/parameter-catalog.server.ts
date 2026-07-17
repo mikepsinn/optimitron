@@ -8,6 +8,7 @@ import { Prisma, type PrismaClient } from "@optimitron/db";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma as defaultPrisma } from "../prisma";
+import { getSourceArtifactVisibilityWhere } from "../source-artifact-visibility.server";
 import {
   CalculationSourcePayloadSchema,
   sourceArtifactFingerprint,
@@ -1024,7 +1025,10 @@ async function loadParameterTraceNode(
       },
       parameter: true,
       sourceArtifacts: {
-        where: { deletedAt: null },
+        where: {
+          deletedAt: null,
+          sourceArtifact: getSourceArtifactVisibilityWhere(actor.userId),
+        },
         select: {
           sourceArtifact: {
             select: {

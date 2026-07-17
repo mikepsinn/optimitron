@@ -76,7 +76,7 @@ async function getPublicTaskPageData(id: string) {
       if (isTaskNotFoundError(error)) return [];
       throw error;
     }),
-    getTaskAncestors(id),
+    getTaskAncestors(id, null),
   ]);
 
   return { data, commentFeed, activityTimeline, ancestors };
@@ -402,7 +402,7 @@ export default async function TaskDetailPage({
           throw error;
         }),
         getWishoniaUserId().catch(() => null),
-        getTaskAncestors(id),
+        getTaskAncestors(id, userId),
         prisma.user
           .findUnique({ where: { id: userId }, select: { isAdmin: true } })
           .then((u) => u?.isAdmin ?? false),

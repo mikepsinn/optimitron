@@ -9,6 +9,7 @@ import { TREATY_REFERENDUM_SLUG } from "../constants.js";
 import {
   OrgStatus,
   OrgType,
+  OrganizationMemberRole,
   OrganizationReferendumPositionStatus,
   PersonLifeStatus,
   TaskCategory,
@@ -135,10 +136,10 @@ export async function syncManagedIamOrganization(
         userId: user.id,
       },
     },
-    update: { role: "owner" },
+    update: { role: OrganizationMemberRole.OWNER },
     create: {
       organizationId: organization.id,
-      role: "owner",
+      role: OrganizationMemberRole.OWNER,
       userId: user.id,
     },
   });

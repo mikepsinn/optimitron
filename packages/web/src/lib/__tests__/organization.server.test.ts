@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { OrgStatus, OrgType } from "@optimitron/db";
+import {
+  OrganizationMemberRole,
+  OrgStatus,
+  OrgType,
+} from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   organizationFindFirst: vi.fn(),
@@ -78,7 +82,7 @@ describe("organization.server", () => {
     expect(mocks.txOrganizationMemberCreate).toHaveBeenCalledWith({
       data: {
         organizationId: "org_1",
-        role: "owner",
+        role: OrganizationMemberRole.OWNER,
         userId: "user_1",
       },
     });

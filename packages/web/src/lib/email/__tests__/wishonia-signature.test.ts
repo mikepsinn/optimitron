@@ -71,13 +71,16 @@ describe("Wishonia signature module", () => {
     it("renders the canonical 'Love,' sign-off, name, title, company, and tagline", () => {
       const text = buildWishoniaSignatureText({
         title: "Chief Optimization Officer",
-        tagline: "Maximizing median income and health-adjusted life years since 2026",
+        tagline:
+          "Maximizing median income and health-adjusted life years since 2026",
       });
       expect(text).toContain("Love,");
       expect(text).toContain("🛸 Wishonia");
       expect(text).toContain("Chief Optimization Officer");
-      expect(text).toContain("Earth Optimization Services LLC");
-      expect(text).toContain("Maximizing median income and health-adjusted life years since 2026");
+      expect(text).toContain("Earth Optimization Services Inc.");
+      expect(text).toContain(
+        "Maximizing median income and health-adjusted life years since 2026",
+      );
     });
 
     it("starts with a separator line so it visually disconnects from the body", () => {
@@ -89,14 +92,16 @@ describe("Wishonia signature module", () => {
   describe("buildWishoniaSignatureHtml", () => {
     it("includes the absolute avatar URL from the email base", () => {
       const html = buildWishoniaSignatureHtml({ title: "X", tagline: "Y" });
-      expect(html).toContain("https://test.example/sprites/wishonia/happy-smile.png");
+      expect(html).toContain(
+        "https://test.example/sprites/wishonia/happy-smile.png",
+      );
     });
 
     it("includes the canonical sign-off, name, and company", () => {
       const html = buildWishoniaSignatureHtml({ title: "X", tagline: "Y" });
       expect(html).toContain("Love,");
       expect(html).toContain("🛸 Wishonia");
-      expect(html).toContain("Earth Optimization Services LLC");
+      expect(html).toContain("Earth Optimization Services Inc.");
     });
 
     it("escapes HTML in title and tagline (defends against rogue array entries)", () => {
@@ -134,7 +139,10 @@ describe("Wishonia signature module", () => {
     it("appends to both html and text, picking ONE selection used for both", () => {
       // Pin the random selection so html/text agree.
       vi.spyOn(Math, "random").mockReturnValue(0); // first title, first tagline
-      const out = appendWishoniaSignature({ html: "<p>body</p>", text: "body" });
+      const out = appendWishoniaSignature({
+        html: "<p>body</p>",
+        text: "body",
+      });
       expect(out.text).toContain(WISHONIA_TITLES[0]!);
       expect(out.text).toContain(WISHONIA_TAGLINES[0]!);
       expect(out.html).toContain(WISHONIA_TITLES[0]!);
@@ -142,7 +150,10 @@ describe("Wishonia signature module", () => {
     });
 
     it("keeps the original body intact at the start", () => {
-      const out = appendWishoniaSignature({ html: "<p>body</p>", text: "BODY" });
+      const out = appendWishoniaSignature({
+        html: "<p>body</p>",
+        text: "BODY",
+      });
       expect(out.html.startsWith("<p>body</p>")).toBe(true);
       expect(out.text.startsWith("BODY")).toBe(true);
     });
@@ -154,7 +165,7 @@ describe("Wishonia signature module", () => {
       expect(text).toContain("Love,");
       expect(text).toContain("Mike Sinn");
       expect(text).toContain("Recently promoted to Humanity Manager");
-      expect(text).toContain("Earth Optimization Services LLC");
+      expect(text).toContain("Earth Optimization Services Inc.");
     });
 
     it("starts with a separator line", () => {

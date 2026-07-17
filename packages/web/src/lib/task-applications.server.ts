@@ -1,5 +1,6 @@
 import { Prisma } from "@optimitron/db";
 import {
+  OrganizationMemberRole,
   TaskApplicationEventType,
   TaskApplicationStatus,
 } from "@optimitron/db/enums";
@@ -81,7 +82,10 @@ export async function getTaskApplication(
   });
 }
 
-const REVIEWER_ORGANIZATION_ROLES = ["owner", "admin"] as const;
+const REVIEWER_ORGANIZATION_ROLES = [
+  OrganizationMemberRole.OWNER,
+  OrganizationMemberRole.ADMIN,
+] as const;
 const REVIEWER_TASK_MANAGER_ROLES = ["owner", "manager", "reviewer"] as const;
 
 export async function canReviewTaskApplications(

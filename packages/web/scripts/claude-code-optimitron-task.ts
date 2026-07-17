@@ -49,6 +49,7 @@ async function makeLocalMcpClient() {
   const identity = await resolveLocalMcpIdentity();
   const server = createMcpServer(identity.userId, ALL_SCOPES, {
     isAdmin: identity.isAdmin,
+    organizationIds: null,
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  canUserCommentOnTask: vi.fn(),
   canUserViewTask: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
   getCurrentUser: vi.fn(),
@@ -10,8 +11,15 @@ const mocks = vi.hoisted(() => ({
   generateAndPostWishoniaReply: vi.fn(),
 }));
 
+// getCurrentUser stays the identity seam; getTaskRequestIdentity mirrors the
+// route contract on top of it (bearer requests would go through requireAuth,
+// which these session-only tests never exercise).
 vi.mock("@/lib/auth-utils", () => ({
   getCurrentUser: mocks.getCurrentUser,
+  getTaskRequestIdentity: async () => {
+    const user = await mocks.getCurrentUser();
+    return { userId: user?.id ?? null };
+  },
 }));
 
 vi.mock("@/lib/tasks/task-comments.server", () => ({
@@ -21,10 +29,15 @@ vi.mock("@/lib/tasks/task-comments.server", () => ({
   postComment: mocks.postComment,
 }));
 
-vi.mock("@/lib/tasks/task-visibility.server", () => ({
-  TASK_NOT_FOUND_MESSAGE: "Task not found",
-  canUserViewTask: mocks.canUserViewTask,
-}));
+vi.mock("@/lib/tasks/task-visibility.server", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/lib/tasks/task-visibility.server")>();
+  return {
+    ...actual,
+    canUserCommentOnTask: mocks.canUserCommentOnTask,
+    canUserViewTask: mocks.canUserViewTask,
+  };
+});
 
 vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
   TaskCommentAttachmentInputError: class extends Error {
@@ -60,6 +73,7 @@ beforeEach(() => {
   for (const fn of Object.values(mocks)) {
     fn.mockReset();
   }
+  mocks.canUserCommentOnTask.mockResolvedValue(true);
   mocks.canUserViewTask.mockResolvedValue(true);
   mocks.countUserCommentsInWindow.mockResolvedValue(0);
   mocks.postComment.mockResolvedValue({ id: "comment_1" });
@@ -132,9 +146,9 @@ describe("GET /api/tasks/[id]/comments", () => {
 });
 
 describe("POST /api/tasks/[id]/comments", () => {
-  it("returns 404 when the author cannot view the task", async () => {
+  it("returns 404 when the author cannot comment on the task", async () => {
     mocks.getCurrentUser.mockResolvedValue({ id: "stranger_1" });
-    mocks.canUserViewTask.mockResolvedValue(false);
+    mocks.canUserCommentOnTask.mockResolvedValue(false);
 
     const response = await POST(
       new Request("http://localhost/api/tasks/private_task/comments", {

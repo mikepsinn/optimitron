@@ -29,6 +29,16 @@ if (!userId) {
   process.exit(1);
 }
 
-void signMcpAccessToken(userId, "mcp-mint-cli", ALL_SCOPES).then((token) => {
+const organizationIds = (process.env.MCP_TOKEN_ORGANIZATION_IDS ?? "")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+void signMcpAccessToken(
+  userId,
+  "mcp-mint-cli",
+  ALL_SCOPES,
+  organizationIds,
+).then((token) => {
   console.log(token);
 });

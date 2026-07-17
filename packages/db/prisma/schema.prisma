@@ -460,20 +460,6 @@ enum TaskCategory {
   OTHER
 }
 
-/// What kind of work/opportunity this task represents.
-enum TaskKind {
-  /// Default executable task.
-  TASK
-  /// Longer-running role opening that people apply for.
-  ROLE_OPENING
-  /// Multi-step project that may produce child tasks.
-  PROJECT
-  /// Paid or prize-like scoped work.
-  BOUNTY
-  /// Volunteer role or unpaid recurring responsibility.
-  VOLUNTEER_ROLE
-}
-
 /// Expected duration/commitment shape for matching and applications.
 enum TaskEngagementKind {
   ONE_OFF
@@ -541,6 +527,33 @@ enum TaskExecutionAttemptStatus {
   COMPLETED
   FAILED
   REJECTED
+  CANCELLED
+}
+
+/// How an execution attempt was checked.
+enum TaskVerificationMethod {
+  DETERMINISTIC
+  RULE_BASED
+  REVIEWER
+  OUTCOME
+}
+
+/// Immutable verdict recorded for an execution attempt.
+enum TaskVerificationResult {
+  PENDING
+  ACCEPTED
+  REJECTED
+  ERROR
+}
+
+/// Human-approval lifecycle for a concrete external action.
+enum ExternalActionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  EXECUTED
+  FAILED
   CANCELLED
 }
 
@@ -629,6 +642,14 @@ enum TaskStatus {
   ACTIVE
   VERIFIED
   STALE
+}
+
+/// Explicit permissions within a private organization.
+enum OrganizationMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
 }
 
 /// How a due date affects availability and next-action selection.
@@ -1019,17 +1040,19 @@ enum TaskCommentSource {
 /// `@map` gives the OAuth wire format ("tasks:personal") that's stored in the DB
 /// and surfaced in URLs / JWTs / OAuth metadata.
 enum McpScope {
-  TASKS_ADMIN     @map("tasks:admin")
-  TASKS_PERSONAL  @map("tasks:personal")
-  AGENT_RUN       @map("agent:run")
-  EARTHDATA_WRITE @map("earthdata:write")
-  EARTHDATA_ADMIN @map("earthdata:admin")
+  TASKS_ADMIN        @map("tasks:admin")
+  TASKS_PERSONAL     @map("tasks:personal")
+  TASKS_ORGANIZATION @map("tasks:organization")
+  ACTIONS_APPROVE    @map("actions:approve")
+  AGENT_RUN          @map("agent:run")
+  EARTHDATA_WRITE    @map("earthdata:write")
+  EARTHDATA_ADMIN    @map("earthdata:admin")
   /// Server-side GitHub API access via the configured PAT. Covers the
   /// repo-allowlist-gated read tools and the `githubApi` passthrough.
   /// Distinct from TASKS_ADMIN because GitHub access is orthogonal to
   /// task-platform admin — an integration could be granted GITHUB
   /// without touching task admin operations.
-  GITHUB          @map("github")
+  GITHUB             @map("github")
 }
 
 /// Status of a recorded MCP tool call.
@@ -1956,6 +1979,12 @@ model User {
   receivedContentAccessGrants        ContentAccessGrant[]             @relation("ContentGrantUser")
   issuedContentAccessGrants          ContentAccessGrant[]             @relation("ContentGrantGrantedBy")
   uploadedContentAttachments         ContentAttachment[]              @relation("ContentAttachmentUploader")
+  ownedSourceArtifacts               SourceArtifact[]                 @relation("SourceArtifactOwnerUser")
+  submittedTaskExecutionArtifacts    TaskExecutionArtifact[]          @relation("TaskExecutionArtifactSubmitterUser")
+  reviewedTaskVerifications          TaskVerification[]               @relation("TaskVerificationReviewerUser")
+  requestedExternalActions           ExternalActionRequest[]          @relation("ExternalActionRequesterUser")
+  approvedExternalActions            ExternalActionRequest[]          @relation("ExternalActionApproverUser")
+  executedExternalActions            ExternalActionRequest[]          @relation("ExternalActionExecutorUser")
   oauthAuthCodes                     OAuthAuthCode[]                  @relation("UserOAuthAuthCodes")
   oauthGrants                        OAuthGrant[]                     @relation("UserOAuthGrants")
   mcpToolCallAudits                  McpToolCallAudit[]               @relation("UserMcpToolCallAudits")
@@ -5586,6 +5615,7 @@ model Organization {
   receivedContentAccessGrants ContentAccessGrant[]             @relation("ContentGrantOrganization")
   linkedCollectionRecords     CollectionRecord[]               @relation("CollectionRecordOrganization")
   targetedCollectionRelations CollectionRelation[]             @relation("CollectionRelationOrganizationTarget")
+  ownedSourceArtifacts        SourceArtifact[]                 @relation("SourceArtifactOwnerOrganization")
 
   @@index([slug])
   @@index([type])
@@ -5606,8 +5636,8 @@ model OrganizationMember {
   /// The member user
   userId String
 
-  /// Role within the organization (e.g. "admin", "member", "viewer")
-  role String @default("member")
+  /// Explicit permission role within the organization.
+  role OrganizationMemberRole @default(MEMBER)
 
   /// When the user joined
   joinedAt DateTime @default(now())
@@ -5726,9 +5756,6 @@ model Task {
 
   /// Taxonomy for browsing and ranking
   category TaskCategory @default(OTHER)
-
-  /// Whether this task is a normal task, role opening, project, bounty, etc.
-  kind TaskKind @default(TASK)
 
   /// Expected commitment shape for matching and applications.
   engagementKind TaskEngagementKind @default(ONE_OFF)
@@ -5921,6 +5948,7 @@ model Task {
   documents                   Document[]                  @relation("TaskDocuments")
   linkedCollectionRecords     CollectionRecord[]          @relation("CollectionRecordTask")
   targetedCollectionRelations CollectionRelation[]        @relation("CollectionRelationTaskTarget")
+  externalActionRequests      ExternalActionRequest[]     @relation("TaskExternalActionRequests")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -5936,7 +5964,6 @@ model Task {
   @@index([executionMode, status])
   @@index([workLocationCountryCode, workLocationRegionCode])
   @@index([category])
-  @@index([kind, status])
   @@index([engagementKind])
   @@index([availableAt])
   @@index([dueAt])
@@ -6107,10 +6134,11 @@ model DocumentRevision {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  document       Document        @relation("DocumentRevisions", fields: [documentId], references: [id], onDelete: Cascade)
-  currentFor     Document?       @relation("CurrentDocumentRevision")
-  createdByUser  User            @relation("DocumentRevisionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  sourceArtifact SourceArtifact? @relation("DocumentRevisionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  document           Document                @relation("DocumentRevisions", fields: [documentId], references: [id], onDelete: Cascade)
+  currentFor         Document?               @relation("CurrentDocumentRevision")
+  createdByUser      User                    @relation("DocumentRevisionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  sourceArtifact     SourceArtifact?         @relation("DocumentRevisionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  executionArtifacts TaskExecutionArtifact[] @relation("TaskExecutionArtifactDocumentRevision")
 
   @@unique([documentId, version])
   @@unique([id, documentId])
@@ -6376,10 +6404,11 @@ model ContentAttachment {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  document         Document?         @relation("DocumentAttachments", fields: [documentId], references: [id], onDelete: Restrict)
-  collectionRecord CollectionRecord? @relation("CollectionRecordAttachments", fields: [collectionRecordId], references: [id], onDelete: Restrict)
-  uploadedBy       User?             @relation("ContentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
-  sourceArtifact   SourceArtifact?   @relation("ContentAttachmentSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  document           Document?               @relation("DocumentAttachments", fields: [documentId], references: [id], onDelete: Restrict)
+  collectionRecord   CollectionRecord?       @relation("CollectionRecordAttachments", fields: [collectionRecordId], references: [id], onDelete: Restrict)
+  uploadedBy         User?                   @relation("ContentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  sourceArtifact     SourceArtifact?         @relation("ContentAttachmentSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  executionArtifacts TaskExecutionArtifact[] @relation("TaskExecutionArtifactContentAttachment")
 
   @@index([documentId, createdAt])
   @@index([collectionRecordId, createdAt])
@@ -6442,9 +6471,13 @@ model AgentExecutor {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction      Jurisdiction?          @relation("JurisdictionAgentExecutors", fields: [jurisdictionId], references: [id], onDelete: SetNull)
-  candidateMatches  TaskCandidateMatch[]   @relation("AgentExecutorTaskCandidateMatches")
-  executionAttempts TaskExecutionAttempt[] @relation("AgentExecutorTaskExecutionAttempts")
+  jurisdiction                    Jurisdiction?           @relation("JurisdictionAgentExecutors", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  candidateMatches                TaskCandidateMatch[]    @relation("AgentExecutorTaskCandidateMatches")
+  executionAttempts               TaskExecutionAttempt[]  @relation("AgentExecutorTaskExecutionAttempts")
+  submittedTaskExecutionArtifacts TaskExecutionArtifact[] @relation("TaskExecutionArtifactSubmitterAgent")
+  reviewedTaskVerifications       TaskVerification[]      @relation("TaskVerificationReviewerAgent")
+  requestedExternalActions        ExternalActionRequest[] @relation("ExternalActionRequesterAgent")
+  executedExternalActions         ExternalActionRequest[] @relation("ExternalActionExecutorAgent")
 
   @@index([jurisdictionId, status])
   @@index([provider, modelName])
@@ -6630,16 +6663,19 @@ model TaskExecutionAttempt {
   deletedAt DateTime?
 
   // -- Relations --
-  jurisdiction         Jurisdiction?       @relation("JurisdictionTaskExecutionAttempts", fields: [jurisdictionId], references: [id], onDelete: SetNull)
-  task                 Task                @relation("TaskExecutionAttempts", fields: [taskId], references: [id], onDelete: Cascade)
-  candidateMatch       TaskCandidateMatch? @relation("TaskCandidateMatchExecutionAttempts", fields: [candidateMatchId], references: [id], onDelete: SetNull)
-  executorUser         User?               @relation("UserTaskExecutionAttempts", fields: [executorUserId], references: [id], onDelete: SetNull)
-  executorPerson       Person?             @relation("PersonTaskExecutionAttempts", fields: [executorPersonId], references: [id], onDelete: SetNull)
-  executorOrganization Organization?       @relation("OrganizationTaskExecutionAttempts", fields: [executorOrganizationId], references: [id], onDelete: SetNull)
-  agentExecutor        AgentExecutor?      @relation("AgentExecutorTaskExecutionAttempts", fields: [agentExecutorId], references: [id], onDelete: SetNull)
-  taskApplication      TaskApplication?    @relation("TaskApplicationExecutionAttempts", fields: [taskApplicationId], references: [id], onDelete: SetNull)
-  taskClaim            TaskClaim?          @relation("TaskClaimExecutionAttempts", fields: [taskClaimId], references: [id], onDelete: SetNull)
-  agentTaskLease       AgentTaskLease?     @relation("AgentTaskLeaseExecutionAttempts", fields: [agentTaskLeaseId], references: [id], onDelete: SetNull)
+  jurisdiction           Jurisdiction?           @relation("JurisdictionTaskExecutionAttempts", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  task                   Task                    @relation("TaskExecutionAttempts", fields: [taskId], references: [id], onDelete: Cascade)
+  candidateMatch         TaskCandidateMatch?     @relation("TaskCandidateMatchExecutionAttempts", fields: [candidateMatchId], references: [id], onDelete: SetNull)
+  executorUser           User?                   @relation("UserTaskExecutionAttempts", fields: [executorUserId], references: [id], onDelete: SetNull)
+  executorPerson         Person?                 @relation("PersonTaskExecutionAttempts", fields: [executorPersonId], references: [id], onDelete: SetNull)
+  executorOrganization   Organization?           @relation("OrganizationTaskExecutionAttempts", fields: [executorOrganizationId], references: [id], onDelete: SetNull)
+  agentExecutor          AgentExecutor?          @relation("AgentExecutorTaskExecutionAttempts", fields: [agentExecutorId], references: [id], onDelete: SetNull)
+  taskApplication        TaskApplication?        @relation("TaskApplicationExecutionAttempts", fields: [taskApplicationId], references: [id], onDelete: SetNull)
+  taskClaim              TaskClaim?              @relation("TaskClaimExecutionAttempts", fields: [taskClaimId], references: [id], onDelete: SetNull)
+  agentTaskLease         AgentTaskLease?         @relation("AgentTaskLeaseExecutionAttempts", fields: [agentTaskLeaseId], references: [id], onDelete: SetNull)
+  artifacts              TaskExecutionArtifact[] @relation("TaskExecutionAttemptArtifacts")
+  verifications          TaskVerification[]      @relation("TaskExecutionAttemptVerifications")
+  externalActionRequests ExternalActionRequest[] @relation("TaskExecutionAttemptExternalActions")
 
   @@index([jurisdictionId, status])
   @@index([taskId, status])
@@ -6655,6 +6691,134 @@ model TaskExecutionAttempt {
   @@index([agentTaskLeaseId])
   @@index([startedAt])
   @@index([completedAt])
+  @@index([deletedAt])
+}
+
+/// Immutable output submitted for one concrete execution attempt.
+model TaskExecutionArtifact {
+  id String @id @default(cuid())
+
+  taskExecutionAttemptId String
+
+  documentRevisionId      String?
+  contentAttachmentId     String?
+  taskCommentAttachmentId String?
+  externalUrl             String?
+  structuredResultJson    Json?
+
+  label       String?
+  contentHash String
+
+  submittedByUserId          String?
+  submittedByAgentExecutorId String?
+
+  metadataJson Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  taskExecutionAttempt  TaskExecutionAttempt   @relation("TaskExecutionAttemptArtifacts", fields: [taskExecutionAttemptId], references: [id], onDelete: Cascade)
+  documentRevision      DocumentRevision?      @relation("TaskExecutionArtifactDocumentRevision", fields: [documentRevisionId], references: [id], onDelete: Restrict)
+  contentAttachment     ContentAttachment?     @relation("TaskExecutionArtifactContentAttachment", fields: [contentAttachmentId], references: [id], onDelete: Restrict)
+  taskCommentAttachment TaskCommentAttachment? @relation("TaskExecutionArtifactTaskCommentAttachment", fields: [taskCommentAttachmentId], references: [id], onDelete: Restrict)
+  submittedByUser       User?                  @relation("TaskExecutionArtifactSubmitterUser", fields: [submittedByUserId], references: [id], onDelete: Restrict)
+  submittedByAgent      AgentExecutor?         @relation("TaskExecutionArtifactSubmitterAgent", fields: [submittedByAgentExecutorId], references: [id], onDelete: Restrict)
+
+  @@index([taskExecutionAttemptId, createdAt])
+  @@index([documentRevisionId])
+  @@index([contentAttachmentId])
+  @@index([taskCommentAttachmentId])
+  @@index([submittedByUserId])
+  @@index([submittedByAgentExecutorId])
+  @@index([contentHash])
+  @@index([deletedAt])
+}
+
+/// Append-only verification evidence for one execution attempt.
+model TaskVerification {
+  id String @id @default(cuid())
+
+  taskExecutionAttemptId String
+  method                 TaskVerificationMethod
+  result                 TaskVerificationResult @default(PENDING)
+
+  acceptanceCriteriaSnapshotJson Json
+  criterionResultsJson           Json?
+  evidenceJson                   Json?
+  note                           String?
+  ruleKey                        String?
+  ruleVersion                    String?
+
+  reviewerUserId          String?
+  reviewerAgentExecutorId String?
+  selfReviewed            Boolean   @default(false)
+  completedAt             DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  taskExecutionAttempt TaskExecutionAttempt @relation("TaskExecutionAttemptVerifications", fields: [taskExecutionAttemptId], references: [id], onDelete: Cascade)
+  reviewerUser         User?                @relation("TaskVerificationReviewerUser", fields: [reviewerUserId], references: [id], onDelete: Restrict)
+  reviewerAgent        AgentExecutor?       @relation("TaskVerificationReviewerAgent", fields: [reviewerAgentExecutorId], references: [id], onDelete: Restrict)
+
+  @@index([taskExecutionAttemptId, createdAt])
+  @@index([taskExecutionAttemptId, result])
+  @@index([reviewerUserId, result])
+  @@index([reviewerAgentExecutorId, result])
+  @@index([method, result])
+  @@index([deletedAt])
+}
+
+/// Exact external side effect proposed for human approval and idempotent execution.
+model ExternalActionRequest {
+  id String @id @default(cuid())
+
+  taskId                 String
+  taskExecutionAttemptId String?
+
+  operation   String
+  destination String
+  payloadJson Json
+  payloadHash String
+
+  requestedByUserId          String?
+  requestedByAgentExecutorId String?
+
+  status              ExternalActionRequestStatus @default(PENDING)
+  expiresAt           DateTime
+  approvedByUserId    String?
+  approvedAt          DateTime?
+  approvedPayloadHash String?
+
+  executedByUserId          String?
+  executedByAgentExecutorId String?
+  executedAt                DateTime?
+  executionReceiptJson      Json?
+  failureMessage            String?
+
+  idempotencyKey String @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  task                 Task                  @relation("TaskExternalActionRequests", fields: [taskId], references: [id], onDelete: Cascade)
+  taskExecutionAttempt TaskExecutionAttempt? @relation("TaskExecutionAttemptExternalActions", fields: [taskExecutionAttemptId], references: [id], onDelete: Cascade)
+  requestedByUser      User?                 @relation("ExternalActionRequesterUser", fields: [requestedByUserId], references: [id], onDelete: Restrict)
+  requestedByAgent     AgentExecutor?        @relation("ExternalActionRequesterAgent", fields: [requestedByAgentExecutorId], references: [id], onDelete: Restrict)
+  approvedByUser       User?                 @relation("ExternalActionApproverUser", fields: [approvedByUserId], references: [id], onDelete: Restrict)
+  executedByUser       User?                 @relation("ExternalActionExecutorUser", fields: [executedByUserId], references: [id], onDelete: Restrict)
+  executedByAgent      AgentExecutor?        @relation("ExternalActionExecutorAgent", fields: [executedByAgentExecutorId], references: [id], onDelete: Restrict)
+
+  @@index([taskId, status, createdAt])
+  @@index([taskExecutionAttemptId, status])
+  @@index([requestedByUserId, status])
+  @@index([requestedByAgentExecutorId, status])
+  @@index([approvedByUserId, status])
+  @@index([expiresAt, status])
+  @@index([payloadHash])
   @@index([deletedAt])
 }
 
@@ -7396,6 +7560,15 @@ model SourceArtifact {
   /// Stable identity for imports and syncs
   sourceKey String @unique
 
+  /// User owner for a private personal source.
+  ownerUserId String?
+
+  /// Organization owner for a private organization source.
+  ownerOrganizationId String?
+
+  /// Public sources are readable without a grant. Private sources require exactly one owner.
+  isPublic Boolean @default(true)
+
   /// Optional external identifier from the upstream system
   externalKey String?
 
@@ -7442,11 +7615,16 @@ model SourceArtifact {
   collections                           Collection[]                           @relation("CollectionSourceArtifact")
   collectionRecords                     CollectionRecord[]                     @relation("CollectionRecordSourceArtifact")
   contentAttachments                    ContentAttachment[]                    @relation("ContentAttachmentSourceArtifact")
+  ownerUser                             User?                                  @relation("SourceArtifactOwnerUser", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  ownerOrganization                     Organization?                          @relation("SourceArtifactOwnerOrganization", fields: [ownerOrganizationId], references: [id], onDelete: Restrict)
 
   @@index([sourceSystem, artifactType])
   @@index([externalKey])
   @@index([versionKey])
   @@index([sourceRef])
+  @@index([ownerUserId, isPublic])
+  @@index([ownerOrganizationId, isPublic])
+  @@index([isPublic])
   @@index([contentHash])
   @@index([deletedAt])
 }
@@ -7727,9 +7905,10 @@ model TaskCommentAttachment {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  task       Task         @relation("TaskCommentAttachments", fields: [taskId], references: [id], onDelete: Restrict)
-  comment    TaskComment? @relation("TaskCommentAttachmentComment", fields: [commentId], references: [id], onDelete: Restrict)
-  uploadedBy User?        @relation("TaskCommentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  task               Task                    @relation("TaskCommentAttachments", fields: [taskId], references: [id], onDelete: Restrict)
+  comment            TaskComment?            @relation("TaskCommentAttachmentComment", fields: [commentId], references: [id], onDelete: Restrict)
+  uploadedBy         User?                   @relation("TaskCommentAttachmentUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  executionArtifacts TaskExecutionArtifact[] @relation("TaskExecutionArtifactTaskCommentAttachment")
 
   @@index([taskId, createdAt])
   @@index([commentId])
@@ -10353,6 +10532,9 @@ model OAuthAuthCode {
   /// Granted scopes
   scopes McpScope[]
 
+  /// Organizations this client may access within tasks:organization.
+  organizationIds String[] @default([])
+
   /// When this code expires (10 minutes from creation)
   expiresAt DateTime
 
@@ -10385,6 +10567,9 @@ model OAuthGrant {
 
   /// Scopes the user approved
   scopes McpScope[]
+
+  /// Organizations this client may access within tasks:organization.
+  organizationIds String[] @default([])
 
   /// SHA-256 hash of the refresh token (for lookup during refresh)
   refreshTokenHash String? @unique

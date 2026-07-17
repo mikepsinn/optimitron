@@ -55,7 +55,7 @@ export default async function CalendarPage({
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { isAdmin: true, timeZone: true },
+    select: { timeZone: true },
   });
   if (!user) redirect(getSignInPath(ROUTES.calendar));
 
@@ -80,7 +80,6 @@ export default async function CalendarPage({
   const planningStart =
     dateKey === todayKey && now > dayStart && now < dayEnd ? now : dayStart;
   const plan = await getAuthorizedExecutionPlan({
-    isAdmin: user.isAdmin,
     maxResults: 100,
     planningWindowEnd: dayEnd,
     planningWindowStart: planningStart,

@@ -70,7 +70,7 @@ Complete directory of data needed across all packages, with sources, APIs, and e
 | Drug policy (legalization dates) | Manual curation | ❌ | ~200 rows | As changed | Cannabis, psychedelics, etc. |
 | Policy change dates | Manual curation | ❌ | ~1K rows | As changed | Key for causal analysis |
 
-## 📦 Mike's Existing Data (mikepsinn/economic-data)
+## 📦 Existing Economic Data Snapshot (mikepsinn/economic-data)
 
 65 files vendored from [mikepsinn/economic-data](https://github.com/mikepsinn/economic-data): 60 CSV files and 5 XLSX workbooks, ~21 MB total.
 
@@ -86,7 +86,7 @@ Complete directory of data needed across all packages, with sources, APIs, and e
 
 | Category | Strategy | Why |
 |----------|----------|-----|
-| Mike's economic-data snapshot (~21 MB) | **Vendored in repo** | Static core reference data; no submodule setup required |
+| Economic-data snapshot (~21 MB) | **Vendored in repo** | Static core reference data; no submodule setup required |
 | Country metadata | **In repo** (JSON/CSV) | Small, rarely changes |
 | Policy change dates | **In repo** (curated JSON) | Small, needs human curation |
 | OECD, World Bank, WHO | **API at runtime + cache** | Large, frequently updated, free APIs |

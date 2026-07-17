@@ -52,29 +52,32 @@ as a parallel Now track, dogfooded by the operator as user #1.
 - War on Disease is the default development and visual-review surface;
   Optimitron/dFDA/DIH galleries are regression links.
 
-### Track B — Personal Daily Companion Loop (dogfood; PRD §3)
+### Track B — Private Daily Companion Loop (dogfood; PRD §3)
 
-Data-first build order — nothing downstream works without measurements
-flowing in:
+The approved implementation contract is
+[plans/phased-approach-optimitron.md](./plans/phased-approach-optimitron.md).
+Build in this order:
 
-1. **Capture** — persist conversational health logging (OPT-HEALTH-02) and
-   spawn recurring tracking tasks in the queue (OPT-HEALTH-06).
-   _Open implementation decision:_ recurring tasks via the proven TaskTrigger
-   cron engine (OPT-TASK-03) vs reviving the dead `TrackingReminder` model
-   (OPT-HEALTH-04). Exploration favors TaskTrigger; decide at build time.
-   _Head start:_ stash `preserve-dfda-tracking-mcp-tools-found-uncommitted-2026-07-07`
-   holds draft regimen→tasks→logging MCP tools — review before writing fresh.
-2. **One queue** — interleave health and work actions in
-   getNextAction/getMyQueue (OPT-EV-04).
-3. **Learning** — change-from-baseline reports on server-side measurements
-   (OPT-HEALTH-07), reported through the agent conversation.
-4. **Delegation** — propose → approve → execute gate for agent actions with
-   external effects (OPT-AGENT-02).
+1. **Preparation and safety** — remove `TaskKind`, centralize task and child
+   authorization, close actor-impersonation and verification bypasses, and
+   create stable private person/organization roots (OPT-TASK-08).
+2. **Primary Operator private alpha** — review selected sources, create 25-50 private
+   active tasks, and close 10 verified cycles with attempts, artifacts,
+   rejection/resubmission, and one approved outbound action.
+3. **Independent Operator isolation acceptance** — independently connect through production
+   MCP, import 25-50 tasks across Viral Vitalism, Optimitron productization,
+   and Vaultanium, close 10 cycles, and prove cross-tenant non-disclosure.
+4. **Selected conversation capture** — make the extension a local-first
+   Digital Twin Safe for explicit Discord/Telegram/WhatsApp/email selections,
+   review, and exact approvals (OPT-INTG-03, OPT-EXT-02).
+5. **Health loop** — persist conversational health logging
+   (OPT-HEALTH-02), interleave recurring health tasks (OPT-HEALTH-06,
+   OPT-EV-04), then report change-from-baseline outcomes (OPT-HEALTH-07).
 
 ## Next
 
-- Automated parent-task matching for new tasks (OPT-TASK-06) and confirmed
-  AI decomposition into atomic subtasks (OPT-TASK-07).
+- Automated parent-task matching and reviewed decomposition into child tasks
+  (OPT-TASK-06, OPT-TASK-07) after the private bundle path proves the contract.
 - Task tree: cause-node split + seed the ~35 missing solution tasks
   (plan: `.claude/plans/task-tree-cause-split.md`; not started).
 - Earth Optimization Machine page — one canonical "what is the machine"
@@ -106,6 +109,9 @@ flowing in:
   notifications keyed to campaign progress.
 - Broader Optimitron home-page/product architecture once the campaign has
   measurable momentum.
+- Design-partner access to one bounded workflow, then a small paid
+  verified-work pilot using existing listings, compensation, and application
+  fields. No company-wide migration or open marketplace.
 
 ## Parked
 
@@ -126,6 +132,9 @@ Do not pick these up unless they directly unblock a Now track:
   generic gamified civics surfaces. The joke isn't worth the surface area.
 - A second task model, a separate personal-tracking app, or a bespoke
   outreach model — covered by standing policy in TODO.md.
+- A custom chat client, coding agent, connector suite, model gateway, terminal,
+  general browser controller, ambient private-message scraper, or credential
+  sharing/resale system.
 
 ## Status
 
@@ -140,7 +149,7 @@ entries there). GitHub issues/projects mirror Now/Next/Later.
 Slop removal is part of the core objective: each item below actively detracts
 from the optimization loop, ranked by how much it obstructs it. **Do not
 execute these in documentation rounds** — each is a separate code PR with
-Mike's schema approval where noted.
+the human owner's schema approval where noted.
 
 1. **EV single source of truth** — `contextJson.{value,p_success,cash_cost}`
    duplicates `TaskImpactFrameEstimate`; the JSON copy is display-only and can
@@ -166,9 +175,9 @@ Mike's schema approval where noted.
    revive; don't leave schema fiction.
 7. **`engagementKind`** — stored and filterable, never scored or branched on.
    Removal is an API-surface change; decide with OPT-TASK-01 consumers.
-8. **`kind: PROJECT`** — behaviorally identical to `TASK` everywhere; either
-   give it semantics (e.g. non-executable container) or fold it away.
-   Product-intent question for Mike.
+8. **Task-kind removal** — done on `feature/private-execution-system`:
+   `TaskKind` is deleted and container status derives from unresolved children
+   and reserved root identity. No compatibility reads.
 
 Infra hygiene (lower priority):
 

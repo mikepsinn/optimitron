@@ -4,11 +4,11 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
-import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
-import { McpScope } from "@/lib/mcp-scopes";
+import {
+  getTaskRequestIdentity,
+  requireTaskRequestAuth,
+} from "@/lib/auth-utils";
 import {
   deleteTaskCreatedByUser,
   getTaskDetailData,
@@ -31,6 +31,8 @@ const PrimaryEndpointBodySchema = z.object({
     .nullish(),
 });
 
+const MutableTaskStatusSchema = z.enum(["DRAFT", "ACTIVE", "STALE"]);
+
 const UpdateTaskBodySchema = z
   .object({
     category: z.nativeEnum(TaskCategory).nullish(),
@@ -44,7 +46,7 @@ const UpdateTaskBodySchema = z
     primaryEndpoint: PrimaryEndpointBodySchema.nullish(),
     roleTitle: z.string().nullish(),
     skillTags: z.array(z.string()).nullish(),
-    status: z.nativeEnum(TaskStatus).nullish(),
+    status: MutableTaskStatusSchema.nullish(),
     title: z.string().min(1).nullish(),
   })
   .refine((value) => Object.keys(value).length > 0, {
@@ -56,19 +58,12 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    let userId: string | null = null;
-    if (hasBearerAuthorization(_request)) {
-      const auth = await requireAuth(_request, [
-        McpScope.TASKS_PERSONAL,
-        McpScope.TASKS_ADMIN,
-      ]);
-      userId = auth.userId;
-    } else {
-      const session = await getServerSession(authOptions);
-      userId = session?.user.id ?? null;
-    }
+    const { clientAccessBoundary, userId } =
+      await getTaskRequestIdentity(_request);
     const { id } = await context.params;
-    const data = await getTaskDetailData(id, userId);
+    const data = clientAccessBoundary
+      ? await getTaskDetailData(id, userId, { clientAccessBoundary })
+      : await getTaskDetailData(id, userId);
 
     if (!data) {
       return NextResponse.json({ error: "Task not found." }, { status: 404 });
@@ -93,17 +88,28 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } =
+      await requireTaskRequestAuth(request);
     const { id } = await context.params;
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
-    const task = await updateTaskCreatedByUser(id, userId, {
-      ...rest,
-      dueAt: dueAt == null ? dueAt : new Date(dueAt),
-    });
+    // MCP parity: delegated clients never change publication state; the
+    // web app is the only disclosure surface.
+    if (clientAccessBoundary && rest.isPublic != null) {
+      return NextResponse.json(
+        { error: "Publishing tasks requires the web app." },
+        { status: 403 },
+      );
+    }
+    const task = await updateTaskCreatedByUser(
+      id,
+      userId,
+      {
+        ...rest,
+        dueAt: dueAt == null ? dueAt : new Date(dueAt),
+      },
+      { clientAccessBoundary },
+    );
 
     return NextResponse.json({ data: task, success: true });
   } catch (error) {
@@ -136,12 +142,12 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(_request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } =
+      await requireTaskRequestAuth(_request);
     const { id } = await context.params;
-    const result = await deleteTaskCreatedByUser(id, userId);
+    const result = await deleteTaskCreatedByUser(id, userId, {
+      clientAccessBoundary,
+    });
     return NextResponse.json({ data: result, success: true });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {

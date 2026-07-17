@@ -24,6 +24,10 @@ import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   type ExecutionGraphTask,
 } from "./execution-planner-audit";
+import {
+  getTaskClientAccessWhere,
+  type TaskClientAccessBoundary,
+} from "./task-visibility.server";
 import type {
   RankableTask,
   TaskPriorityInput,
@@ -74,7 +78,6 @@ export type SummarizableTask = {
   estimatedHoursPerWeekMax?: number | null;
   estimatedHoursPerWeekMin?: number | null;
   executionMode?: string | null;
-  kind?: string | null;
   locationText?: string | null;
   ownerOrganizationId?: string | null;
   preferredSkillTags?: string[] | null;
@@ -116,6 +119,7 @@ export type PersonalQueueTaskRecord = Record<string, unknown> &
     selectedImpactFrame?: unknown;
     blockerStatuses?: TaskStatus[] | null;
     activeChildTaskCount?: number | null;
+    activeExecutionAttemptCount?: number | null;
     candidateMatches?: Array<{
       agentExecutorId?: string | null;
       candidateOrganizationId?: string | null;
@@ -155,6 +159,7 @@ export type PersonalQueueTaskRecord = Record<string, unknown> &
 
 export type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   activeChildTaskCount: number;
+  activeExecutionAttemptCount: number;
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
   blockers: PlanningBlocker[];
@@ -206,8 +211,8 @@ type AuthorizedPlanningTarget =
 export interface AuthorizedExecutionPlanRequest {
   availableMinutes?: number | null;
   buybackRate?: number | null;
+  clientAccessBoundary?: TaskClientAccessBoundary;
   fixedCommitments?: PlanningCommitment[] | null;
-  isAdmin: boolean;
   maxResults?: number | null;
   planningWindowEnd?: Date | string | null;
   planningWindowStart?: Date | string | null;
@@ -358,7 +363,6 @@ export function summarizeTask(task: SummarizableTask) {
     estimatedHoursPerWeekMax: task.estimatedHoursPerWeekMax,
     estimatedHoursPerWeekMin: task.estimatedHoursPerWeekMin,
     executionMode: task.executionMode,
-    kind: task.kind,
     locationText: task.locationText,
     ownerOrganizationId: task.ownerOrganizationId,
     preferredSkillTags: task.preferredSkillTags,
@@ -720,15 +724,12 @@ function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
 }
 
 export function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
-  return (
-    isExecutableWorkItem(task) &&
-    (task.activeChildTaskCount ?? task.childTasks?.length ?? 0) === 0 &&
-    !isCompletionMilestone(task)
-  );
+  return isExecutableWorkItem(task) && !isCompletionMilestone(task);
 }
 
 export async function loadExecutionGraphContext(
   tasks: PersonalQueueTaskRecord[],
+  clientAccessBoundary?: TaskClientAccessBoundary,
 ) {
   const prisma = await getPrisma();
   const graphTaskById = new Map<string, ExecutionGraphTask>();
@@ -753,7 +754,14 @@ export async function loadExecutionGraphContext(
   );
   for (let depth = 0; depth < 64 && pendingParentIds.length > 0; depth += 1) {
     const storedParents = await prisma.task.findMany({
-      where: { deletedAt: null, id: { in: pendingParentIds } },
+      where: clientAccessBoundary
+        ? {
+            AND: [
+              { deletedAt: null, id: { in: pendingParentIds } },
+              getTaskClientAccessWhere(clientAccessBoundary),
+            ],
+          }
+        : { deletedAt: null, id: { in: pendingParentIds } },
       select: { id: true, parentTaskId: true },
     });
     for (const parent of storedParents) {
@@ -959,6 +967,8 @@ export function buildPersonalQueueRows(
         ...summary,
         activeChildTaskCount:
           sourceTask.activeChildTaskCount ?? sourceTask.childTasks?.length ?? 0,
+        activeExecutionAttemptCount:
+          sourceTask.activeExecutionAttemptCount ?? 0,
         assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
         assigneePersonId: sourceTask.assigneePersonId ?? null,
         blockers: getPlanningBlockers(sourceTask),
@@ -1010,7 +1020,7 @@ export function buildPersonalQueueRows(
         (isAtomicExecutionRecord(row) &&
           row.capabilityStatus === "eligible" &&
           row.rooted &&
-          ((row.hasMarginalEstimate && row.valid && row.realEv !== 0) ||
+          ((row.hasMarginalEstimate && row.valid && row.priority > 0) ||
             isRequiredPersonalGuardrail(row))),
     )
     .sort((left, right) =>
@@ -1134,7 +1144,7 @@ export async function loadAgentPlanningProfiles(): Promise<
 }
 
 async function resolveAuthorizedPlanningTarget(input: {
-  isAdmin: boolean;
+  clientAccessBoundary?: TaskClientAccessBoundary;
   target?: AuthorizedExecutionPlanRequest["target"];
   userId: string;
 }): Promise<AuthorizedPlanningTarget> {
@@ -1148,28 +1158,39 @@ async function resolveAuthorizedPlanningTarget(input: {
   const sessionPersonId = sessionUser?.personId ?? null;
 
   if (kind === "self") {
+    if (input.clientAccessBoundary?.allowPersonalPrivate === false) {
+      throw new Error("Forbidden: this client has no personal-task access.");
+    }
     return { kind: "self", personId: sessionPersonId, userId: input.userId };
   }
   if (kind === "person") {
     if (!targetId)
       throw new Error("target.id is required for a person target.");
-    if (!input.isAdmin && targetId !== sessionPersonId) {
+    if (targetId !== sessionPersonId) {
       throw new Error(
         "Forbidden: you may only plan for your own Person record.",
       );
+    }
+    if (input.clientAccessBoundary?.allowPersonalPrivate === false) {
+      throw new Error("Forbidden: this client has no personal-task access.");
     }
     return { kind: "person", personId: targetId };
   }
   if (!targetId) {
     throw new Error("target.id is required for an organization target.");
   }
-  if (!input.isAdmin) {
-    const { canManageOrganization } = await import("../organization.server");
-    if (!(await canManageOrganization(input.userId, targetId))) {
-      throw new Error(
-        "Forbidden: organization planning requires an owner or admin membership.",
-      );
-    }
+  if (
+    input.clientAccessBoundary &&
+    input.clientAccessBoundary.organizationIds !== null &&
+    !input.clientAccessBoundary.organizationIds.includes(targetId)
+  ) {
+    throw new Error("Forbidden: this client has no access to that organization.");
+  }
+  const { canManageOrganization } = await import("../organization.server");
+  if (!(await canManageOrganization(input.userId, targetId))) {
+    throw new Error(
+      "Forbidden: organization planning requires an owner or admin membership.",
+    );
   }
   return { kind: "organization", organizationId: targetId };
 }
@@ -1186,6 +1207,7 @@ export async function getAuthorizedExecutionPlan(
   const maxResults = parseQueueLimit(input.maxResults, 20, 100);
   const targetTasks = (await (target.kind === "self"
     ? tasks.listTasks({
+        clientAccessBoundary: input.clientAccessBoundary,
         limit: 5000,
         personId: target.personId,
         status: TaskStatus.ACTIVE,
@@ -1194,16 +1216,21 @@ export async function getAuthorizedExecutionPlan(
       })
     : target.kind === "person"
       ? tasks.listTasks({
+          clientAccessBoundary: input.clientAccessBoundary,
           assigneePersonId: target.personId,
           limit: 5000,
+          personId: target.personId,
           status: TaskStatus.ACTIVE,
-          visibility: "target",
+          userId: input.userId,
+          visibility: "accessible",
         })
       : tasks.listTasks({
+          clientAccessBoundary: input.clientAccessBoundary,
           limit: 5000,
           status: TaskStatus.ACTIVE,
           targetOrganizationId: target.organizationId,
-          visibility: "target",
+          userId: input.userId,
+          visibility: "accessible",
         }))) as PersonalQueueTaskRecord[];
   const planningTasksWithStaleness =
     await attachTransitiveEstimateStaleness(targetTasks);
@@ -1212,7 +1239,10 @@ export async function getAuthorizedExecutionPlan(
   const planningWindowEnd =
     parseTaskDate(input.planningWindowEnd) ??
     new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
-  const graph = await loadExecutionGraphContext(planningTasksWithStaleness);
+  const graph = await loadExecutionGraphContext(
+    planningTasksWithStaleness,
+    input.clientAccessBoundary,
+  );
   const executorProfiles = [
     ...(await loadHumanPlanningProfiles(target)),
     ...(await loadAgentPlanningProfiles()),

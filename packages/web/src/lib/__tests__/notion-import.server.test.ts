@@ -13,7 +13,10 @@ const mocks = vi.hoisted(() => ({
   organizationFindMany: vi.fn(),
   personFindMany: vi.fn(),
   sourceArtifactFindMany: vi.fn(),
+  sourceArtifactFindUnique: vi.fn(),
+  sourceArtifactUpsert: vi.fn(),
   taskFindMany: vi.fn(),
+  transaction: vi.fn(),
   userFindFirst: vi.fn(),
 }));
 
@@ -32,8 +35,12 @@ vi.mock("@/lib/prisma", () => ({
     document: { findMany: mocks.documentFindMany },
     organization: { findMany: mocks.organizationFindMany },
     person: { findMany: mocks.personFindMany },
-    sourceArtifact: { findMany: mocks.sourceArtifactFindMany },
+    sourceArtifact: {
+      findMany: mocks.sourceArtifactFindMany,
+      findUnique: mocks.sourceArtifactFindUnique,
+    },
     task: { findMany: mocks.taskFindMany },
+    $transaction: mocks.transaction,
     user: { findFirst: mocks.userFindFirst },
   },
 }));
@@ -119,6 +126,19 @@ beforeEach(() => {
   mocks.personFindMany.mockResolvedValue([]);
   mocks.organizationFindMany.mockResolvedValue([]);
   mocks.sourceArtifactFindMany.mockResolvedValue([]);
+  mocks.sourceArtifactFindUnique.mockResolvedValue(null);
+  mocks.sourceArtifactUpsert.mockImplementation(async ({ create }) => ({
+    ...create,
+    id: "source_artifact_1",
+  }));
+  mocks.transaction.mockImplementation(async (callback) =>
+    callback({
+      sourceArtifact: {
+        findUnique: mocks.sourceArtifactFindUnique,
+        upsert: mocks.sourceArtifactUpsert,
+      },
+    }),
+  );
 });
 
 describe("Notion import review", () => {
@@ -477,6 +497,53 @@ describe("Notion import review", () => {
         message: expect.stringContaining("owned elsewhere"),
       }),
     );
+  });
+
+  it("creates actor-scoped private copies instead of claiming legacy public provenance", async () => {
+    const exportItem = {
+      exportedAt: "2026-07-16T12:00:00.000Z",
+      sourceId: "export-1",
+      title: "Workspace export",
+    };
+    const contentHash = await sha256CanonicalJson(
+      cleanJson({ normalized: exportItem, raw: null }),
+    );
+    const legacySourceKey = `${stableSourceKey("export", exportItem.sourceId)}:${contentHash}`;
+
+    mocks.userFindFirst.mockImplementation(async ({ where }) => ({
+      id: where.id,
+      personId: `person_${where.id}`,
+    }));
+    mocks.sourceArtifactFindUnique.mockImplementation(async ({ where }) =>
+      where.sourceKey === legacySourceKey
+        ? { id: "legacy_public", isPublic: true, ownerUserId: null }
+        : null,
+    );
+    mocks.sourceArtifactUpsert
+      .mockResolvedValueOnce({ id: "source_user_1" })
+      .mockResolvedValueOnce({ id: "source_user_2" });
+
+    for (const actorUserId of ["user_1", "user_2"]) {
+      const result = await importNotionBundle({
+        actorUserId,
+        bundle: { export: exportItem, workspaceId: "workspace-1" },
+        dryRun: false,
+      });
+
+      expect(result).toMatchObject({ hasErrors: false });
+    }
+
+    const writes = mocks.sourceArtifactUpsert.mock.calls.map(([input]) => input);
+    expect(writes).toHaveLength(2);
+    expect(writes.map((input) => input.where.sourceKey)).not.toContain(
+      legacySourceKey,
+    );
+    expect(new Set(writes.map((input) => input.where.sourceKey)).size).toBe(2);
+    expect(writes.map((input) => input.create.ownerUserId)).toEqual([
+      "user_1",
+      "user_2",
+    ]);
+    expect(writes.every((input) => input.create.isPublic === false)).toBe(true);
   });
 
   it("keeps identical source IDs from different workspaces independent", async () => {

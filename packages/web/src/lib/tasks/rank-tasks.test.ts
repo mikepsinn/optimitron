@@ -1,7 +1,6 @@
 import {
   TaskClaimPolicy,
   TaskImpactFrameKey,
-  TaskKind,
   TaskStatus,
 } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
@@ -448,29 +447,38 @@ describe("rankTasksForUser", () => {
     ).toEqual([]);
   });
 
-  it("allows childless projects but excludes application and bounty listings", () => {
-    const leafProject = {
+  it("excludes reserved roots but allows any ordinary childless task", () => {
+    const ordinaryTask = {
       ...strongFitTask,
       activeChildTaskCount: 0,
-      id: "leaf-project",
-      kind: TaskKind.PROJECT,
+      id: "ordinary-task",
     };
-    const listings = [
-      TaskKind.BOUNTY,
-      TaskKind.ROLE_OPENING,
-      TaskKind.VOLUNTEER_ROLE,
-    ].map((kind) => ({
-      ...strongFitTask,
-      activeChildTaskCount: 0,
-      id: `listing-${kind}`,
-      kind,
-    }));
+    const roots = [
+      {
+        ...strongFitTask,
+        activeChildTaskCount: 0,
+        id: "optimize-earth",
+        taskKey: "program:optimize-earth",
+      },
+      {
+        ...strongFitTask,
+        activeChildTaskCount: 0,
+        id: "personal-root",
+        taskKey: "planner:person:person-1",
+      },
+      {
+        ...strongFitTask,
+        activeChildTaskCount: 0,
+        id: "organization-root",
+        taskKey: "planner:organization:org-1",
+      },
+    ];
 
     expect(
-      rankTasksForUser([...listings, leafProject], user, 10, {
+      rankTasksForUser([...roots, ordinaryTask], user, 10, {
         preferLeafExecution: true,
       }).map(({ task }) => task.id),
-    ).toEqual(["leaf-project"]);
+    ).toEqual(["ordinary-task"]);
   });
 
   it("uses the required task ID as the deterministic final tie-breaker", () => {

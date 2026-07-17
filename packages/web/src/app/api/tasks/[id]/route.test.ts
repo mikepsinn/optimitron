@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
   deleteTaskCreatedByUser: vi.fn(),
@@ -16,11 +17,45 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/auth-utils", () => ({
-  hasBearerAuthorization: (request?: Request) =>
-    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? ""),
-  requireAuth: mocks.requireAuth,
-}));
+// Mock requireAuth/getServerSession as the auth seams, but keep the REAL
+// scope→boundary derivation from mcp-scopes so boundary assertions exercise
+// production logic instead of a reimplementation.
+vi.mock("@/lib/auth-utils", async () => {
+  const { TASK_CLIENT_SCOPES, taskBoundaryFromScopes } =
+    await import("@/lib/mcp-scopes");
+  const hasBearerAuthorization = (request?: Request) =>
+    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? "");
+  const requireTaskRequestAuth = async (
+    request: Request,
+    requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+  ) => {
+    const auth = await mocks.requireAuth(request, requiredScopes);
+    return "scopes" in auth
+      ? {
+          clientAccessBoundary: taskBoundaryFromScopes(
+            auth.scopes,
+            auth.organizationIds,
+          ),
+          userId: auth.userId,
+        }
+      : { userId: auth.userId };
+  };
+  return {
+    getTaskRequestIdentity: async (
+      request: Request,
+      requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+    ) => {
+      if (hasBearerAuthorization(request)) {
+        return requireTaskRequestAuth(request, requiredScopes);
+      }
+      const session = await mocks.getServerSession();
+      return { userId: session?.user?.id ?? null };
+    },
+    hasBearerAuthorization,
+    requireAuth: mocks.requireAuth,
+    requireTaskRequestAuth,
+  };
+});
 
 vi.mock("@/lib/tasks.server", () => ({
   deleteTaskCreatedByUser: mocks.deleteTaskCreatedByUser,
@@ -77,7 +112,11 @@ describe("task detail route", () => {
 
   it("prefers an OAuth Bearer identity over a browser session", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
-    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.requireAuth.mockResolvedValue({
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      userId: "user_oauth",
+    });
     mocks.getTaskDetailData.mockResolvedValue({
       task: { id: "task_1" },
       viewer: null,
@@ -94,12 +133,30 @@ describe("task detail route", () => {
 
     expect(response.status).toBe(200);
     expect(mocks.getServerSession).not.toHaveBeenCalled();
-    expect(mocks.getTaskDetailData).toHaveBeenCalledWith("task_1", "user_oauth");
+    expect(mocks.requireAuth).toHaveBeenCalledWith(expect.any(Request), [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ORGANIZATION,
+      McpScope.TASKS_ADMIN,
+    ]);
+    expect(mocks.getTaskDetailData).toHaveBeenCalledWith(
+      "task_1",
+      "user_oauth",
+      {
+        clientAccessBoundary: {
+          allowPersonalPrivate: true,
+          organizationIds: [],
+        },
+      },
+    );
   });
 
   it("uses OAuth identity for lowercase bearer schemes", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
-    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.requireAuth.mockResolvedValue({
+      organizationIds: ["org_selected"],
+      scopes: [McpScope.TASKS_ORGANIZATION],
+      userId: "user_oauth",
+    });
     mocks.getTaskDetailData.mockResolvedValue({
       task: { id: "task_1" },
       viewer: null,
@@ -116,7 +173,16 @@ describe("task detail route", () => {
 
     expect(response.status).toBe(200);
     expect(mocks.getServerSession).not.toHaveBeenCalled();
-    expect(mocks.getTaskDetailData).toHaveBeenCalledWith("task_1", "user_oauth");
+    expect(mocks.getTaskDetailData).toHaveBeenCalledWith(
+      "task_1",
+      "user_oauth",
+      {
+        clientAccessBoundary: {
+          allowPersonalPrivate: false,
+          organizationIds: ["org_selected"],
+        },
+      },
+    );
   });
 
   it("updates a task created by the authenticated user", async () => {
@@ -148,6 +214,7 @@ describe("task detail route", () => {
         dueAt: expect.any(Date),
         title: "Updated",
       }),
+      { clientAccessBoundary: undefined },
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
@@ -191,6 +258,7 @@ describe("task detail route", () => {
     expect(mocks.deleteTaskCreatedByUser).toHaveBeenCalledWith(
       "task_1",
       "user_1",
+      { clientAccessBoundary: undefined },
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });

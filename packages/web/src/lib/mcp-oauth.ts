@@ -44,14 +44,16 @@ export interface McpAccessTokenPayload {
   sub: string; // userId
   clientId: string;
   scopes: McpScope[];
+  organizationIds: string[];
 }
 
 export async function signMcpAccessToken(
   userId: string,
   clientId: string,
   scopes: McpScope[],
+  organizationIds: string[],
 ): Promise<string> {
-  return new SignJWT({ clientId, scopes, type: "access" })
+  return new SignJWT({ clientId, organizationIds, scopes, type: "access" })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
     .setIssuer(getIssuerUrl())
@@ -82,9 +84,16 @@ export async function verifyMcpAccessToken(
   if (payload.type !== "access") {
     throw new Error("Not an access token");
   }
+  if (
+    !Array.isArray(payload.organizationIds) ||
+    !payload.organizationIds.every((value) => typeof value === "string")
+  ) {
+    throw new Error("Access token is missing its organization allowlist");
+  }
   return {
     sub: payload.sub!,
     clientId: payload.clientId as string,
+    organizationIds: payload.organizationIds,
     scopes: payload.scopes as McpScope[],
   };
 }

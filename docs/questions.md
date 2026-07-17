@@ -18,7 +18,7 @@ Full vote and share sequence for 1percenttreaty.org / warondisease.org. Each sec
 6. **Vote question** — reality check + Yes/No, on a single card after the slider submits. See below.
 7. **Verification** — required. See below.
 8. **Post-vote share sequence begins** — The Stakes screen.
-9. **Promotion** — bureaucratic appointment as Manager at Earth Optimization Services, LLC. Renders between Per-Vote Math and the first Send Loop iteration. See below.
+9. **Promotion** — bureaucratic appointment as Manager at Earth Optimization Services Inc. Renders between Per-Vote Math and the first Send Loop iteration. See below.
 
 **YES voters** see the default opener on The Stakes. **NO voters** see the NO-voter variant, then the same flow. The math doesn't care how they voted.
 
@@ -393,7 +393,7 @@ Renders between Per-Vote Math and the first Send Loop iteration. Wishonia bureau
 
 > 🎉 **CONGRATULATIONS**
 >
-> You have been promoted to **Humanity Manager** at Earth Optimization Services, LLC.
+> You have been promoted to **Humanity Manager** at Earth Optimization Services Inc.
 >
 > **Direct reports:** ~8 billion humans
 > **Primary KPI:** Hours of human suffering prevented per week
@@ -503,7 +503,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **[OVERDUE] End War and Disease**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services Inc.)
 > STATUS: Overdue (by approximately 443 years)
 > PRIORITY: Critical
 > ESTIMATED TIME: 30 seconds
@@ -513,7 +513,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > NOTE: This task was originally due several centuries ago but kept getting deprioritized in favor of building 122 apocalypses worth of nuclear weapons. Management apologizes for the delay.
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 #### A1-LOVE (Love mode / Sincere format)
 
@@ -533,7 +533,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > If you're wondering why this matters, the short version: 95% of diseases have zero treatments, and redirecting 1% of military spending to clinical trials could fix that in 36 years instead of 443. The math is at manual.warondisease.org if you want to check it.
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 ---
 
@@ -548,7 +548,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **TASK OVERDUE — 3 DAYS**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services Inc.)
 > STATUS: Incomplete
 > ESTIMATED TIME: 30 seconds
 > DAYS OVERDUE: 3 (plus the original 443 years)
@@ -557,7 +557,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > Your project manager ([Sender name]) has been notified of this delay. They seem disappointed. Not angry, just disappointed.
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 #### A2-LOVE
 
@@ -573,7 +573,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: 30 seconds → warondisease.org]
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 ---
 
@@ -588,7 +588,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 > ⚠️ **TASK ESCALATED**
 >
 > TASK: End War and Disease
-> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services, LLC)
+> ASSIGNED BY: [Sender name], Humanity Manager (Earth Optimization Services Inc.)
 > STATUS: Blocked (by you)
 > DAYS OVERDUE: 7 (plus the original 443 years)
 > BLOCKER: Jake has not clicked a button
@@ -601,7 +601,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > We'll stop sending task reminders after this if you don't respond.
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 #### A3-LOVE
 
@@ -619,7 +619,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [Sender name] asked us to send this because they care about you. We'll stop emailing after this if you don't respond.
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 ---
 
@@ -637,7 +637,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: COMPLETE TASK → warondisease.org]
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 #### A4-LOVE
 
@@ -653,7 +653,7 @@ Two user-facing message modes: **Bossy mode** and **Love mode**. Sender chooses 
 >
 > [BUTTON: warondisease.org]
 >
-> — Earth Optimization Services, LLC
+> — Earth Optimization Services Inc.
 
 After A4, no more emails regardless of outcome. Hard cap. Promise honored.
 

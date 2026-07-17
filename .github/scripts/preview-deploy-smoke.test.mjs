@@ -42,6 +42,23 @@ test("deploy smoke waits for a successful deployment URL instead of skipping ear
   );
 });
 
+test("both smoke jobs recognize Vercel status creators on redeploys", () => {
+  const waitBlocks = [
+    ...workflow.matchAll(
+      /- name: Wait for successful deployment URL[\s\S]*?(?=\n      - name:)/gu,
+    ),
+  ].map((match) => match[0]);
+
+  assert.equal(waitBlocks.length, 2);
+  for (const block of waitBlocks) {
+    assert.match(
+      block,
+      /initialStatus\.creator\?\.login/u,
+      "CLI redeploy events identify Vercel through the deployment status creator",
+    );
+  }
+});
+
 test("deploy smoke can recover the Vercel preview URL from the PR comment", () => {
   assert.match(
     workflow,
@@ -71,4 +88,25 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
     /state === "inactive"[\s\S]*resolveVercelStatusPreviewUrl/u,
     "smoke jobs should recover the active Vercel preview URL before failing inactive deployment events",
   );
+});
+
+test("preview smoke waits for the merge-ref database sync check", () => {
+  const waitBlocks = [
+    ...workflow.matchAll(
+      /- name: Wait for preview database sync[\s\S]*?(?=\n      - name:)/gu,
+    ),
+  ].map((match) => match[0]);
+
+  assert.equal(waitBlocks.length, 2);
+  for (const block of waitBlocks) {
+    assert.match(block, /listPullRequestsAssociatedWithCommit/u);
+    assert.match(block, /currentPull\.merge_commit_sha/u);
+    assert.match(block, /checkRefs\.add\(currentPull\.merge_commit_sha\)/u);
+    assert.match(block, /check\.conclusion === "success"/u);
+    assert.doesNotMatch(
+      block,
+      /\["success", "skipped", "neutral"\]/u,
+      "database deployment must succeed before preview smoke runs",
+    );
+  }
 });

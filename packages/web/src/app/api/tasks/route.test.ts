@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
   createTask: vi.fn(),
@@ -18,11 +19,45 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/auth-utils", () => ({
-  hasBearerAuthorization: (request?: Request) =>
-    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? ""),
-  requireAuth: mocks.requireAuth,
-}));
+// Mock requireAuth/getServerSession as the auth seams, but keep the REAL
+// scope→boundary derivation from mcp-scopes so boundary assertions exercise
+// production logic instead of a reimplementation.
+vi.mock("@/lib/auth-utils", async () => {
+  const { TASK_CLIENT_SCOPES, taskBoundaryFromScopes } =
+    await import("@/lib/mcp-scopes");
+  const hasBearerAuthorization = (request?: Request) =>
+    /^Bearer\b/iu.test(request?.headers.get("authorization")?.trim() ?? "");
+  const requireTaskRequestAuth = async (
+    request: Request,
+    requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+  ) => {
+    const auth = await mocks.requireAuth(request, requiredScopes);
+    return "scopes" in auth
+      ? {
+          clientAccessBoundary: taskBoundaryFromScopes(
+            auth.scopes,
+            auth.organizationIds,
+          ),
+          userId: auth.userId,
+        }
+      : { userId: auth.userId };
+  };
+  return {
+    getTaskRequestIdentity: async (
+      request: Request,
+      requiredScopes: readonly unknown[] = TASK_CLIENT_SCOPES,
+    ) => {
+      if (hasBearerAuthorization(request)) {
+        return requireTaskRequestAuth(request, requiredScopes);
+      }
+      const session = await mocks.getServerSession();
+      return { userId: session?.user?.id ?? null };
+    },
+    hasBearerAuthorization,
+    requireAuth: mocks.requireAuth,
+    requireTaskRequestAuth,
+  };
+});
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -75,7 +110,11 @@ describe("tasks route", () => {
   });
 
   it("uses OAuth Bearer identity when listing caller-created tasks", async () => {
-    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.requireAuth.mockResolvedValue({
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      userId: "user_oauth",
+    });
     mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
 
     const request = new Request(
@@ -88,6 +127,10 @@ describe("tasks route", () => {
     expect(response.status).toBe(200);
     expect(mocks.listTasks).toHaveBeenCalledWith(
       expect.objectContaining({
+        clientAccessBoundary: {
+          allowPersonalPrivate: true,
+          organizationIds: [],
+        },
         userId: "user_oauth",
         visibility: "created",
       }),
@@ -95,7 +138,11 @@ describe("tasks route", () => {
   });
 
   it("uses OAuth identity for lowercase bearer schemes", async () => {
-    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.requireAuth.mockResolvedValue({
+      organizationIds: ["org_selected"],
+      scopes: [McpScope.TASKS_ORGANIZATION],
+      userId: "user_oauth",
+    });
     mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
 
     const response = await GET(
@@ -106,8 +153,17 @@ describe("tasks route", () => {
 
     expect(response.status).toBe(200);
     expect(mocks.getServerSession).not.toHaveBeenCalled();
+    expect(mocks.requireAuth).toHaveBeenCalledWith(expect.any(Request), [
+      McpScope.TASKS_PERSONAL,
+      McpScope.TASKS_ORGANIZATION,
+      McpScope.TASKS_ADMIN,
+    ]);
     expect(mocks.listTasks).toHaveBeenCalledWith(
       expect.objectContaining({
+        clientAccessBoundary: {
+          allowPersonalPrivate: false,
+          organizationIds: ["org_selected"],
+        },
         userId: "user_oauth",
         visibility: "created",
       }),
@@ -116,7 +172,11 @@ describe("tasks route", () => {
 
   it("prefers an OAuth Bearer identity over a browser session", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
-    mocks.requireAuth.mockResolvedValue({ userId: "user_oauth" });
+    mocks.requireAuth.mockResolvedValue({
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      userId: "user_oauth",
+    });
     mocks.listTasks.mockResolvedValue([{ id: "task_oauth" }]);
 
     const response = await GET(

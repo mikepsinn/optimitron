@@ -1,79 +1,180 @@
-import { TaskStatus } from "@optimitron/db";
+import {
+  TaskExecutionAttemptStatus,
+  TaskVerificationMethod,
+  TaskVerificationResult,
+} from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-utils";
+import { requireTaskRequestAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
+import {
+  startTaskExecution,
+  submitTaskArtifact,
+  submitTaskForVerification,
+} from "@/lib/tasks/execution-lifecycle.server";
+import {
+  getTaskAccessWhere,
+  isTaskWithinClientAccessBoundary,
+} from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
-const DEFAULT_COMPLETION_EVIDENCE = "completed via extension";
+const DEFAULT_COMPLETION_EVIDENCE = "Completed via the Optimitron extension";
 
-/**
- * POST /api/extension/tasks/[id]/done — mark a personal task VERIFIED with
- * completedAt now and completion evidence, mirroring the MCP `updateTask`
- * status=VERIFIED semantics (which the REST PATCH route does not expose).
- * Creator-scoped; public tasks need the admin verify flow instead.
- */
+/** Submit a private task for verification. This route never verifies a task. */
 export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { userId } = await requireAuth(request, [
-      McpScope.TASKS_PERSONAL,
-      McpScope.TASKS_ADMIN,
-    ]);
+    const { clientAccessBoundary, userId } = await requireTaskRequestAuth(
+      request,
+      [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+    );
     const { id } = await context.params;
+    if (clientAccessBoundary) {
+      const boundaryTask = await prisma.task.findFirst({
+        where: { deletedAt: null, id },
+        select: { isPublic: true, ownerOrganizationId: true },
+      });
+      if (
+        !boundaryTask ||
+        !isTaskWithinClientAccessBoundary(boundaryTask, clientAccessBoundary)
+      ) {
+        return NextResponse.json({ error: "Task not found." }, { status: 404 });
+      }
+    }
     const body = (await request.json().catch(() => null)) as {
+      actualDurationSeconds?: unknown;
       completionEvidence?: unknown;
+      outputSummary?: unknown;
     } | null;
+    const actualDurationSeconds = body?.actualDurationSeconds;
+    if (
+      typeof actualDurationSeconds !== "number" ||
+      !Number.isInteger(actualDurationSeconds) ||
+      actualDurationSeconds <= 0
+    ) {
+      return NextResponse.json(
+        { error: "actualDurationSeconds must be a positive integer." },
+        { status: 400 },
+      );
+    }
+
     const completionEvidence =
       typeof body?.completionEvidence === "string" &&
       body.completionEvidence.trim()
         ? body.completionEvidence.trim()
         : DEFAULT_COMPLETION_EVIDENCE;
-
-    const task = await prisma.task.findFirst({
-      select: { id: true, isPublic: true },
-      where: { createdByUserId: userId, deletedAt: null, id },
+    const outputSummary =
+      typeof body?.outputSummary === "string" && body.outputSummary.trim()
+        ? body.outputSummary.trim()
+        : completionEvidence;
+    const actor = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { personId: true },
     });
-    if (!task) {
+    if (!actor) {
       return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
-    if (task.isPublic) {
-      return NextResponse.json(
-        { error: "Public tasks are verified through the review flow." },
-        { status: 403 },
+
+    const taskAccess = getTaskAccessWhere({
+      action: "EXECUTE",
+      personId: actor.personId,
+      userId,
+    });
+    const existingAttempt = await prisma.taskExecutionAttempt.findFirst({
+      where: {
+        deletedAt: null,
+        executorUserId: userId,
+        status: {
+          in: [
+            TaskExecutionAttemptStatus.RUNNING,
+            TaskExecutionAttemptStatus.COMPLETED,
+          ],
+        },
+        task: { deletedAt: null, id, ...taskAccess },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        artifacts: {
+          where: { deletedAt: null },
+          select: { id: true },
+          take: 1,
+        },
+        id: true,
+        status: true,
+        verifications: {
+          where: {
+            deletedAt: null,
+            result: TaskVerificationResult.PENDING,
+          },
+          select: { id: true, result: true },
+          take: 1,
+        },
+      },
+    });
+
+    if (existingAttempt?.verifications[0]) {
+      return NextResponse.json({
+        data: {
+          taskExecutionAttemptId: existingAttempt.id,
+          verification: existingAttempt.verifications[0],
+        },
+        success: true,
+      });
+    }
+
+    const continuingAttempt =
+      existingAttempt?.status === TaskExecutionAttemptStatus.RUNNING
+        ? existingAttempt
+        : null;
+    const attempt =
+      continuingAttempt ?? (await startTaskExecution({ taskId: id }, userId));
+
+    if (!continuingAttempt || continuingAttempt.artifacts.length === 0) {
+      await submitTaskArtifact(
+        {
+          label: "Extension completion evidence",
+          structuredResult: { completionEvidence },
+          taskExecutionAttemptId: attempt.id,
+        },
+        userId,
       );
     }
 
-    const now = new Date();
-    const updated = await prisma.task.update({
-      data: {
-        completedAt: now,
-        completionEvidence,
-        status: TaskStatus.VERIFIED,
-        verifiedAt: now,
+    const submitted = await submitTaskForVerification(
+      {
+        actualDurationSeconds,
+        method: TaskVerificationMethod.REVIEWER,
+        outputSummary,
+        taskExecutionAttemptId: attempt.id,
       },
-      select: {
-        completedAt: true,
-        completionEvidence: true,
-        id: true,
-        status: true,
-      },
-      where: { id: task.id },
-    });
+      userId,
+    );
 
-    return NextResponse.json({ data: updated, success: true });
+    return NextResponse.json({ data: submitted, success: true }, { status: 202 });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (
+      error instanceof Error &&
+      (error.message === "Task not found" ||
+        error.message === "Task execution attempt not found")
+    ) {
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
+    }
 
-    console.error("[EXTENSION] Failed to complete task:", error);
+    console.error("[EXTENSION] Failed to submit task:", error);
     return NextResponse.json(
-      { error: "Failed to complete task." },
-      { status: 500 },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit task for verification.",
+      },
+      { status: 409 },
     );
   }
 }

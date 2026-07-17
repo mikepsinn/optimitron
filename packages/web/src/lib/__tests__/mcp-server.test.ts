@@ -19,7 +19,6 @@ import {
   TaskEdgeType,
   TaskExecutionAttemptStatus,
   TaskExecutionMode,
-  TaskKind,
   TaskRemotePolicy,
   TaskStatus,
 } from "@optimitron/db/enums";
@@ -99,7 +98,15 @@ const mocks = vi.hoisted(() => ({
   updateOrganizationMemberRole: vi.fn(),
   listOrganizationMembers: vi.fn(),
   canManageOrganization: vi.fn(),
+  canUserCommentOnTask: vi.fn(),
+  canUserManageTask: vi.fn(),
   softDeleteOrganization: vi.fn(),
+  getTaskAccessWhere: vi.fn(),
+  getTaskClientAccessWhere: vi.fn(),
+  isTaskWithinClientAccessBoundary: vi.fn(),
+  ensurePersonForUser: vi.fn(),
+  organizationMemberFindMany: vi.fn(),
+  organizationFindFirst: vi.fn(),
   taskFindUnique: vi.fn(),
   upsertSignerReminderTask: vi.fn(),
   createTaskTrigger: vi.fn(),
@@ -178,9 +185,18 @@ vi.mock("../tasks/task-comments.server", () => ({
 }));
 vi.mock("../tasks/task-visibility.server", () => ({
   TASK_NOT_FOUND_MESSAGE: "Task not found",
+  canUserCommentOnTask: mocks.canUserCommentOnTask,
+  canUserManageTask: mocks.canUserManageTask,
   canUserViewTask: mocks.canUserViewTask,
   assertUserCanViewTask: vi.fn(),
+  getTaskAccessWhere: mocks.getTaskAccessWhere,
+  getTaskClientAccessWhere: mocks.getTaskClientAccessWhere,
   getTaskVisibilityWhere: vi.fn(),
+  isTaskWithinClientAccessBoundary:
+    mocks.isTaskWithinClientAccessBoundary,
+}));
+vi.mock("../person.server", () => ({
+  ensurePersonForUser: mocks.ensurePersonForUser,
 }));
 vi.mock("../tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
@@ -295,6 +311,7 @@ vi.mock("../organization.server", () => ({
   removeOrganizationMember: mocks.removeOrganizationMember,
   updateOrganizationMemberRole: mocks.updateOrganizationMemberRole,
   listOrganizationMembers: mocks.listOrganizationMembers,
+  canContributeToOrganization: mocks.canManageOrganization,
   canManageOrganization: mocks.canManageOrganization,
   softDeleteOrganization: mocks.softDeleteOrganization,
   isOrganizationMemberRole: (value: string) => VALID_MEMBER_ROLES.has(value),
@@ -365,6 +382,12 @@ vi.mock("../prisma", () => ({
       findMany: mocks.userFindMany,
       update: mocks.userUpdate,
     },
+    organizationMember: {
+      findMany: mocks.organizationMemberFindMany,
+    },
+    organization: {
+      findFirst: mocks.organizationFindFirst,
+    },
     sourceArtifact: {
       upsert: mocks.sourceArtifactUpsert,
     },
@@ -411,9 +434,15 @@ interface ToolText {
 async function setup(
   userId: string | undefined,
   scopes: McpScope[] = ALL_SCOPES,
-  options: { isAdmin?: boolean } = {},
+  options: {
+    isAdmin?: boolean;
+    organizationIds?: readonly string[] | null;
+  } = { organizationIds: null },
 ) {
-  const server = createMcpServer(userId, scopes, options);
+  const server = createMcpServer(userId, scopes, {
+    organizationIds: null,
+    ...options,
+  });
   const [clientTransport, serverTransport] =
     InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
@@ -444,7 +473,6 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
     skillTags: [],
     interestTags: [],
     estimatedEffortHours: 1,
-    kind: TaskKind.TASK,
     activeChildTaskCount: 0,
     blockerStatuses: [],
     incomingEdges: [],
@@ -467,8 +495,8 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
 function makeOptimizeEarthRoot() {
   return {
     id: "optimize-earth",
-    kind: TaskKind.TASK,
     parentTaskId: null,
+    taskKey: "program:optimize-earth",
   };
 }
 
@@ -479,7 +507,6 @@ function makePlanningBranch(overrides: Record<string, unknown> = {}) {
     createdByUserId: "user-1",
     id: "personal-project",
     isPublic: false,
-    kind: TaskKind.PROJECT,
     ownerOrganizationId: null,
     parentTaskId: "optimize-earth",
     taskKey: "planner:person:person-1",
@@ -551,6 +578,17 @@ beforeEach(() => {
   for (const fn of Object.values(mocks)) fn.mockReset();
   // Default: the caller can view the task. Visibility-denial cases override.
   mocks.canUserViewTask.mockResolvedValue(true);
+  mocks.canUserCommentOnTask.mockResolvedValue(true);
+  mocks.canUserManageTask.mockResolvedValue(true);
+  mocks.getTaskAccessWhere.mockReturnValue({});
+  mocks.getTaskClientAccessWhere.mockReturnValue({});
+  mocks.isTaskWithinClientAccessBoundary.mockReturnValue(true);
+  mocks.ensurePersonForUser.mockResolvedValue({
+    displayName: "Test User",
+    id: "person-1",
+  });
+  mocks.organizationMemberFindMany.mockResolvedValue([]);
+  mocks.organizationFindFirst.mockResolvedValue(null);
   vi.unstubAllGlobals();
   delete process.env.GITHUB_PAT;
   delete process.env.GITHUB_TOKEN;
@@ -609,20 +647,35 @@ beforeEach(() => {
   );
   mocks.listTasks.mockResolvedValue([]);
   mocks.taskFindFirst.mockImplementation(
-    async (args?: { where?: { id?: string } }) =>
-      args?.where?.id === "personal-project"
-        ? {
-            ...makePlanningBranch(),
-            createdByUserId: "user-1",
-            isPublic: false,
-          }
-        : null,
+    async (args?: { where?: { id?: string; taskKey?: string } }) => {
+      if (args?.where?.id === "optimize-earth") return makeOptimizeEarthRoot();
+      if (args?.where?.id === "personal-project") {
+        return {
+          ...makePlanningBranch(),
+          createdByUserId: "user-1",
+          isPublic: false,
+        };
+      }
+      if (args?.where?.taskKey === "planner:person:person-1") {
+        return makePlanningBranch();
+      }
+      return null;
+    },
   );
   mocks.taskFindMany.mockImplementation(
-    async (args?: { where?: { id?: { in?: string[] } } }) =>
-      args?.where?.id?.in?.includes("optimize-earth")
+    async (args?: {
+      where?: {
+        AND?: Array<{ id?: { in?: string[] } }>;
+        id?: { in?: string[] };
+      };
+    }) => {
+      const ids =
+        args?.where?.id?.in ??
+        args?.where?.AND?.find((clause) => clause.id?.in)?.id?.in;
+      return ids?.includes("optimize-earth")
         ? [makeOptimizeEarthRoot()]
-        : [],
+        : [];
+    },
   );
   mocks.canManageOrganization.mockResolvedValue(false);
   mocks.sourceArtifactUpsert.mockResolvedValue({ id: "source-artifact-1" });
@@ -849,7 +902,7 @@ describe("MCP server tool dispatch", () => {
     expect(nonAdminNames).toContain("promoteTask");
     expect(nonAdminNames).toContain("getExecutionPlan");
     expect(nonAdminNames).not.toContain("setTaskImpact");
-    expect(nonAdminNames).not.toContain("addDependency");
+    expect(nonAdminNames).toContain("addDependency");
     expect(nonAdminNames).not.toContain("acquireLease");
     expect(nonAdminNames).not.toContain("logAgentRun");
     expect(nonAdminNames).not.toContain("listTaskEmails");
@@ -1816,6 +1869,10 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("getBlockers ignores soft-deleted dependency edges so it agrees with getTask visibility", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
       const client = await setup("user-1", ALL_SCOPES);
       await client.callTool({
         name: "getBlockers",
@@ -2564,19 +2621,13 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getExecutionPlan", () => {
-    it("simulates dependencies and excludes parents and application listings", async () => {
+    it("simulates dependencies and excludes container tasks", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
           id: "eos-project",
-          kind: TaskKind.PROJECT,
           activeChildTaskCount: 2,
         }),
         makeCreatedTask({ id: "mercury", estimatedEffortHours: 1 }),
-        makeCreatedTask({
-          id: "role-listing",
-          kind: TaskKind.ROLE_OPENING,
-          estimatedEffortHours: 0.1,
-        }),
         makeCreatedTask({
           id: "bank-dependent",
           estimatedEffortHours: 1,
@@ -2993,7 +3044,7 @@ describe("MCP server tool dispatch", () => {
 
   describe("task writes", () => {
     it("records each personal execution as a durable execution attempt", async () => {
-      mocks.taskFindUnique.mockResolvedValue({
+      mocks.taskFindFirst.mockResolvedValue({
         actualCashCostUsd: null,
         actualEffortSeconds: null,
         assigneeOrganizationId: null,
@@ -3043,7 +3094,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("does not copy previous task actuals into a new execution attempt", async () => {
-      mocks.taskFindUnique.mockResolvedValue({
+      mocks.taskFindFirst.mockResolvedValue({
         actualCashCostUsd: 7,
         actualEffortSeconds: 120,
         assigneeOrganizationId: null,
@@ -3097,7 +3148,10 @@ describe("MCP server tool dispatch", () => {
         (args: { where?: { taskKey?: string } }) =>
           args.where?.taskKey
             ? null
-            : { id: "optimize-earth", kind: TaskKind.PROJECT },
+            : {
+                id: "optimize-earth",
+                taskKey: "program:optimize-earth",
+              },
       );
       mocks.taskCreate
         .mockResolvedValueOnce({
@@ -3411,7 +3465,9 @@ describe("MCP server tool dispatch", () => {
         existingDrafts: [],
       });
       expect(mocks.taskCreate).not.toHaveBeenCalled();
-      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+      expect(mocks.taskUpdate).not.toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "existing-draft" } }),
+      );
       expect(mocks.sourceArtifactUpsert).not.toHaveBeenCalled();
     });
 
@@ -3469,7 +3525,6 @@ describe("MCP server tool dispatch", () => {
           estimatedEffortHours: 1,
           id: "draft-a",
           isPublic: false,
-          kind: TaskKind.TASK,
           ownerOrganizationId: null,
           parentTaskId: "optimize-earth",
           roleTitle: null,
@@ -3487,7 +3542,6 @@ describe("MCP server tool dispatch", () => {
           estimatedEffortHours: 1,
           id: "draft-b",
           isPublic: false,
-          kind: TaskKind.TASK,
           ownerOrganizationId: null,
           parentTaskId: "optimize-earth",
           roleTitle: null,
@@ -3503,8 +3557,8 @@ describe("MCP server tool dispatch", () => {
             return [
               {
                 id: "optimize-earth",
-                kind: TaskKind.PROJECT,
                 parentTaskId: null,
+                taskKey: "program:optimize-earth",
               },
             ];
           }
@@ -3567,7 +3621,10 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("rejects organization-owned tasks from callers who cannot manage the organization", async () => {
+    it("rejects organization-owned tasks from callers without a contributor role", async () => {
+      mocks.taskFindFirst.mockResolvedValue(
+        makePlanningBranch({ ownerOrganizationId: "other-org" }),
+      );
       const client = await setup("user-1", ALL_SCOPES);
 
       const result = await client.callTool({
@@ -3589,7 +3646,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).error).toContain(
-        "requires an owner or admin membership",
+        "requires an OWNER, ADMIN, or MEMBER role",
       );
       expect(mocks.canManageOrganization).toHaveBeenCalledWith(
         "user-1",
@@ -3642,7 +3699,6 @@ describe("MCP server tool dispatch", () => {
           estimatedHoursPerWeekMax: 50,
           estimatedHoursPerWeekMin: 40,
           executionMode: "HUMAN_ONLY",
-          kind: "ROLE_OPENING",
           locationText: "Edwardsville or St. Louis preferred",
           preferredSkillTags: ["campaign-management", "nonprofit-outreach"],
           remotePolicy: "HYBRID",
@@ -3673,7 +3729,6 @@ describe("MCP server tool dispatch", () => {
             estimatedHoursPerWeekMax: 50,
             estimatedHoursPerWeekMin: 40,
             executionMode: TaskExecutionMode.HUMAN_ONLY,
-            kind: TaskKind.ROLE_OPENING,
             locationText: "Edwardsville or St. Louis preferred",
             preferredSkillTags: ["campaign-management", "nonprofit-outreach"],
             remotePolicy: TaskRemotePolicy.HYBRID,
@@ -4011,6 +4066,9 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("defaults organization-assigned tasks to public active visibility", async () => {
+      mocks.taskFindFirst.mockResolvedValue(
+        makePlanningBranch({ isPublic: true }),
+      );
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "created-task",
@@ -4307,27 +4365,8 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
-    it("allows admin-created tasks to depend on private tasks owned by another user", async () => {
-      mocks.taskFindMany.mockResolvedValue([
-        {
-          id: "other-private-blocker",
-          isPublic: false,
-          createdByUserId: "other-user",
-        },
-      ]);
-      mocks.getTaskDetailData.mockResolvedValue({
-        task: makeCreatedTask({
-          id: "created-task",
-          contextJson: { executor_type: "Self", value: 100, p_success: 0.5 },
-          selectedImpactFrame: {
-            expectedEconomicValueUsdBase: 50,
-            estimatedCashCostUsdBase: 0,
-            estimatedEffortHoursBase: 1,
-            successProbabilityBase: 0.5,
-          },
-        }),
-      });
-      mocks.computeTaskPriority.mockReturnValue(makePriority({ priority: 50 }));
+    it("does not let admin status reveal a private dependency task", async () => {
+      mocks.taskFindMany.mockResolvedValue([]);
 
       const client = await setup("admin-1", [McpScope.TASKS_PERSONAL], {
         isAdmin: true,
@@ -4349,17 +4388,11 @@ describe("MCP server tool dispatch", () => {
         },
       });
 
-      expect(result.isError).toBeFalsy();
-      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: [
-            expect.objectContaining({
-              fromTaskId: "other-private-blocker",
-              toTaskId: "created-task",
-            }),
-          ],
-        }),
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain(
+        "not found or are inaccessible",
       );
+      expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
     });
 
     it("createTask copies markdown acceptance criteria into contextJson when the agent puts them in the description", async () => {
@@ -4524,7 +4557,6 @@ describe("MCP server tool dispatch", () => {
         createdByUserId: "user-1",
         id: "parent-1",
         isPublic: false,
-        kind: TaskKind.TASK,
         ownerOrganizationId: null,
         parentTaskId: "optimize-earth",
       });
@@ -4580,7 +4612,7 @@ describe("MCP server tool dispatch", () => {
       expect(data.assigneePersonId).toBe("person-1");
     });
 
-    it("rejects updateTask when a non-admin user does not own the task", async () => {
+    it("rejects updateTask when a non-admin user targets a public task", async () => {
       mocks.getTaskDetailData.mockResolvedValue({
         task: makeCreatedTask({
           id: "other-task",
@@ -4597,7 +4629,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).error).toContain(
-        "Forbidden: Task was not created by current user",
+        "Updating public tasks requires an admin user",
       );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
@@ -4640,23 +4672,9 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
-    it("allows updateTask for admin users with tasks:admin even when the task is private and owned by another user", async () => {
+    it("does not let platform admins update another user's private task", async () => {
       mocks.getTaskDetailData.mockResolvedValue(null);
-      mocks.taskFindFirst.mockResolvedValue({
-        contextJson: { executor_type: "Self" },
-        createdByUserId: "other-user",
-        deadlinePolicy: null,
-        estimatedEffortHours: 1,
-        id: "other-private-task",
-        isPublic: false,
-      });
-      mocks.taskFindMany.mockResolvedValue([
-        {
-          createdByUserId: "other-user",
-          id: "private-blocker",
-          isPublic: false,
-        },
-      ]);
+      mocks.taskFindFirst.mockResolvedValue(null);
 
       const client = await setup("admin-1", [McpScope.TASKS_ADMIN], {
         isAdmin: true,
@@ -4664,118 +4682,18 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "updateTask",
         arguments: {
-          depends_on: ["private-blocker"],
           taskId: "other-private-task",
           title: "Admin updated task",
         },
       });
 
-      expect(result.isError).toBeFalsy();
-      expect(mocks.taskFindFirst).toHaveBeenCalledWith({
-        where: { deletedAt: null, id: "other-private-task" },
-        select: {
-          contextJson: true,
-          createdByUserId: true,
-          currentImpactEstimateSet: {
-            select: {
-              frames: {
-                orderBy: { evaluationHorizonYears: "desc" },
-                select: {
-                  estimatedCashCostUsdBase: true,
-                  estimatedEffortHoursBase: true,
-                  expectedEconomicValueUsdBase: true,
-                  frameKey: true,
-                  timeToImpactStartDays: true,
-                  successProbabilityBase: true,
-                },
-                where: { deletedAt: null },
-              },
-            },
-          },
-          deadlinePolicy: true,
-          estimatedEffortHours: true,
-          id: true,
-          isPublic: true,
-        },
-      });
-      expect(mocks.taskUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({ title: "Admin updated task" }),
-          where: { id: "other-private-task" },
-        }),
-      );
-      expect(mocks.taskEdgeCreateMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: [
-            expect.objectContaining({
-              fromTaskId: "private-blocker",
-              toTaskId: "other-private-task",
-            }),
-          ],
-        }),
-      );
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
-    it("preserves an admin-updated task's current economics frame when only one economic field changes", async () => {
-      mocks.getTaskDetailData
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null);
-      mocks.taskFindFirst.mockResolvedValue({
-        contextJson: { executor_type: "Self" },
-        createdByUserId: "other-user",
-        currentImpactEstimateSet: {
-          frames: [
-            {
-              estimatedCashCostUsdBase: 10,
-              estimatedEffortHoursBase: 8,
-              expectedEconomicValueUsdBase: 1234,
-              frameKey: "TWENTY_YEAR",
-              successProbabilityBase: 0.25,
-              timeToImpactStartDays: 14,
-            },
-          ],
-        },
-        deadlinePolicy: null,
-        estimatedEffortHours: 8,
-        id: "other-private-task",
-        isPublic: false,
-      });
-
-      const client = await setup("admin-1", [McpScope.TASKS_PERSONAL], {
-        isAdmin: true,
-      });
-      const result = await client.callTool({
-        name: "updateTask",
-        arguments: {
-          taskId: "other-private-task",
-          cash_cost: 50,
-        },
-      });
-
-      expect(result.isError).toBeFalsy();
-      expect(mocks.createDirectTaskImpactInTransaction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          frame: expect.objectContaining({
-            estimatedCashCostUsdBase: 50,
-            estimatedEffortHoursBase: 8,
-            expectedEconomicValueUsdBase: 1234,
-            successProbabilityBase: 0.25,
-            timeToImpactStartDays: 14,
-          }),
-        }),
-        expect.objectContaining({ userId: "admin-1" }),
-        { publish: false },
-        expect.anything(),
-      );
-    });
-
-    it("allows deleteTask for admin users without tasks:admin when another user created the task", async () => {
-      // Same ownership regression as the ic2ewd-grant update path, but for
-      // soft deletion through the end-to-end tool handler.
-      mocks.taskFindFirst.mockResolvedValue({
-        createdByUserId: "other-user",
-        isPublic: false,
-      });
+    it("does not let platform admins delete another user's private task", async () => {
+      mocks.taskFindFirst.mockResolvedValue(null);
 
       const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
         isAdmin: true,
@@ -4785,30 +4703,14 @@ describe("MCP server tool dispatch", () => {
         arguments: { taskId: "other-task" },
       });
 
-      expect(result.isError).toBeFalsy();
-      expect(parseToolBody(result)).toMatchObject({
-        deleted: true,
-        taskId: "other-task",
-      });
-      expect(mocks.taskUpdate).toHaveBeenCalledWith({
-        where: { id: "other-task" },
-        data: { deletedAt: expect.any(Date) },
-      });
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
-    it("allows updateTask for admin users without tasks:admin when another user created the private task", async () => {
-      // Regression coverage for Mike's ic2ewd-grant failure: an admin updating
-      // a private seeded task created by another user must not get Forbidden.
-      mocks.getTaskDetailData
-        .mockResolvedValueOnce({
-          task: makeCreatedTask({
-            id: "seeded-private-task",
-            createdByUserId: "someone-else",
-            isPublic: false,
-            contextJson: { executor_type: "Self" },
-          }),
-        })
-        .mockResolvedValueOnce(null);
+    it("does not give admin status an implicit private task detail read", async () => {
+      mocks.getTaskDetailData.mockResolvedValue(null);
+      mocks.taskFindFirst.mockResolvedValue(null);
 
       const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
         isAdmin: true,
@@ -4821,15 +4723,9 @@ describe("MCP server tool dispatch", () => {
         },
       });
 
-      expect(result.isError).toBeFalsy();
-      expect(mocks.taskUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            title: "Admin renamed seeded task",
-          }),
-          where: { id: "seeded-private-task" },
-        }),
-      );
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
     it("updateTask preserves the type of a retained soft-deleted dependency", async () => {
@@ -5050,6 +4946,10 @@ describe("MCP server tool dispatch", () => {
 
   describe("task comments", () => {
     it("postTaskComment creates a comment and triggers comment notifications with the author excluded", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
       mocks.postComment.mockResolvedValueOnce({
         id: "comment-1",
         taskId: "task-1",
@@ -5083,8 +4983,8 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("postTaskComment 404s tasks the caller cannot view without writing", async () => {
-      mocks.canUserViewTask.mockResolvedValue(false);
+    it("postTaskComment 404s tasks the caller cannot comment on without writing", async () => {
+      mocks.taskFindFirst.mockResolvedValue(null);
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
@@ -5673,7 +5573,6 @@ describe("MCP server tool dispatch", () => {
           createdByUserId: userId,
           parentTaskId: "optimize-earth",
           activeChildTaskCount: 4,
-          kind: TaskKind.PROJECT,
         }),
         // Share referral URL (highest among subtasks)
         makeCreatedTask({

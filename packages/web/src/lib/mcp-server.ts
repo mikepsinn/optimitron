@@ -21,6 +21,7 @@ import {
   NotificationStatus,
   OrgStatus,
   OrgType,
+  OrganizationMemberRole,
   ReferendumKind,
   ReferendumStatus,
   SourceArtifactType,
@@ -41,12 +42,15 @@ import {
   TaskImpactFrameKey,
   TaskExecutionAttemptStatus,
   TaskExecutionMode,
-  TaskKind,
   TaskRemotePolicy,
   TaskStatus,
   VotePosition,
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
+import {
+  getOrganizationPlanningRootTaskKey,
+  getPersonPlanningRootTaskKey,
+} from "@optimitron/db/task-keys";
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
 // components (consent UI, dev portal) can pull just the catalog without
@@ -58,6 +62,8 @@ import {
   DEFAULT_CONSENT_SCOPES,
   ALL_SCOPES,
   McpScope,
+  scopeToWire,
+  taskBoundaryFromScopes,
 } from "./mcp-scopes";
 import {
   TASK_TRIGGER_ADMIN_TOOL_NAMES,
@@ -91,13 +97,25 @@ import {
   handleContentToolCall,
   isContentToolName,
 } from "./mcp-tools/content";
+import {
+  PRIVATE_EXECUTION_TOOL_DEFINITIONS,
+  PRIVATE_EXECUTION_TOOL_SCOPES,
+  handlePrivateExecutionToolCall,
+  isPrivateExecutionToolName,
+} from "./mcp-tools/private-execution";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
-import { isExecutableWorkItem } from "./tasks/execution-eligibility";
 import { ensureSubjectForUser } from "./subject.server";
 import type { RankableTask } from "./tasks/rank-tasks";
+import {
+  canUserManageTask,
+  getTaskAccessWhere,
+  getTaskClientAccessWhere,
+  isTaskWithinClientAccessBoundary,
+  type TaskClientAccessBoundary,
+} from "./tasks/task-visibility.server";
 import type { PlanningCommitment } from "./tasks/execution-planner";
 import {
   auditExecutionGraph,
@@ -142,7 +160,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getOrganizationTasks: [],
   listPeople: [],
   getPersonTasks: [],
-  getBlockers: [],
+  getBlockers: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   listReferendums: [],
   listSitePages: [],
   getPageContent: [],
@@ -154,11 +172,31 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
     McpScope.EARTHDATA_WRITE,
     McpScope.TASKS_ADMIN,
   ],
-  createTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  proposeTaskBundle: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  promoteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  deleteTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  updateTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  createTask: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  proposeTaskBundle: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  promoteTask: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  deleteTask: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  updateTask: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
   setTaskImpact: [McpScope.TASKS_ADMIN],
   proposeTaskImpact: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   searchParameters: [McpScope.TASKS_PERSONAL, McpScope.EARTHDATA_WRITE],
@@ -166,8 +204,16 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   proposeParameterBundle: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   reviewParameterRevision: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   getTaskImpactTrace: [McpScope.TASKS_PERSONAL, McpScope.EARTHDATA_WRITE],
-  recordTaskActuals: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  addDependency: [McpScope.TASKS_ADMIN],
+  recordTaskActuals: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  addDependency: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
   createReferendum: [McpScope.TASKS_ADMIN],
   createPerson: [McpScope.TASKS_ADMIN],
   upsertOrganization: [McpScope.EARTHDATA_ADMIN, McpScope.TASKS_ADMIN],
@@ -211,17 +257,17 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   mergeDuplicatePeople: [McpScope.EARTHDATA_ADMIN],
   resolveContentReport: [McpScope.EARTHDATA_ADMIN],
   // tasks:personal
-  claimTask: [McpScope.TASKS_PERSONAL],
+  claimTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   claimSignerReminder: [McpScope.TASKS_PERSONAL],
-  completeTaskClaim: [McpScope.TASKS_PERSONAL],
+  completeTaskClaim: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   logAgentRun: [McpScope.AGENT_RUN],
   acquireLease: [McpScope.AGENT_RUN],
   heartbeatLease: [McpScope.AGENT_RUN],
   releaseLease: [McpScope.AGENT_RUN],
-  postTaskComment: [McpScope.TASKS_PERSONAL],
-  voteTaskComment: [McpScope.TASKS_PERSONAL],
-  deleteTaskComment: [McpScope.TASKS_PERSONAL],
-  getTaskComments: [McpScope.TASKS_PERSONAL],
+  postTaskComment: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  voteTaskComment: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  deleteTaskComment: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getTaskComments: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   listTaskEmails: [McpScope.TASKS_ADMIN],
   listRecipientEmails: [McpScope.TASKS_ADMIN],
   listEmailLogs: [McpScope.TASKS_ADMIN],
@@ -229,10 +275,10 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks they created or are assigned to, so these are NOT admin-only.
   listCommunications: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   getCommunicationLog: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  getMyQueue: [McpScope.TASKS_PERSONAL],
-  getAIQueue: [McpScope.TASKS_PERSONAL],
-  getNextAction: [McpScope.TASKS_PERSONAL],
-  getExecutionPlan: [McpScope.TASKS_PERSONAL],
+  getMyQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getAIQueue: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getNextAction: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getExecutionPlan: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   findTasksForUser: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
   applyToTask: [McpScope.TASKS_PERSONAL],
   listTaskApplications: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
@@ -244,13 +290,13 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   listAgentExecutors: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
-  getQueueAudit: [McpScope.TASKS_PERSONAL],
+  getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
   respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
-  getMe: [McpScope.TASKS_PERSONAL],
+  getMe: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
   searchRepo: [McpScope.GITHUB],
   getFileContent: [McpScope.GITHUB],
@@ -261,11 +307,11 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...COLLECTION_TOOL_SCOPES,
   ...DOCUMENT_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
+  ...PRIVATE_EXECUTION_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
   "setTaskImpact",
-  "addDependency",
   "createReferendum",
   "createPerson",
   "upsertOrganization",
@@ -327,6 +373,23 @@ function hasAdminTaskWriteAccess(
   // gate with: `isAdmin && !!scopes?.includes(McpScope.TASKS_ADMIN)`.
   void scopes;
   return isAdmin;
+}
+
+function requiredPrivateTaskScope(ownerOrganizationId: string | null | undefined) {
+  return ownerOrganizationId
+    ? McpScope.TASKS_ORGANIZATION
+    : McpScope.TASKS_PERSONAL;
+}
+
+const getMcpTaskClientBoundary = taskBoundaryFromScopes;
+
+function getTaskScopeWhere(
+  scopes: McpScope[] | undefined,
+  organizationIds: readonly string[] | null,
+): Prisma.TaskWhereInput {
+  return getTaskClientAccessWhere(
+    getMcpTaskClientBoundary(scopes, organizationIds),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -396,7 +459,7 @@ function getMcpBaseUrl(): string {
   );
 }
 
-const AUDITED_EARTH_DATA_TOOLS = new Set([
+const AUDITED_MCP_TOOLS = new Set([
   "createOrganization",
   UPLOAD_IMAGE_FROM_URL_TOOL_NAME,
   "upsertOrganization",
@@ -431,6 +494,7 @@ const AUDITED_EARTH_DATA_TOOLS = new Set([
   "restoreContent",
   "mergeDuplicatePeople",
   "resolveContentReport",
+  ...Object.keys(PRIVATE_EXECUTION_TOOL_SCOPES),
 ]);
 
 function stableStringify(value: unknown) {
@@ -537,10 +601,10 @@ async function writeMcpToolAudit(input: {
   toolName: string;
   userId?: string | null;
 }) {
-  if (!AUDITED_EARTH_DATA_TOOLS.has(input.toolName)) return;
+  if (!AUDITED_MCP_TOOLS.has(input.toolName)) return;
   try {
     const prisma = await getPrisma();
-    await prisma.mcpToolCallAudit.create({
+    return await prisma.mcpToolCallAudit.create({
       data: {
         agentId: input.agentId ?? null,
         clientId: input.clientId ?? null,
@@ -563,6 +627,12 @@ async function writeMcpToolAudit(input: {
         status: input.status,
         toolName: input.toolName,
         userId: input.userId ?? null,
+      },
+      select: {
+        completedAt: true,
+        id: true,
+        status: true,
+        toolName: true,
       },
     });
   } catch (auditError) {
@@ -875,7 +945,6 @@ function buildTaskRoutingData(input: Record<string, unknown>) {
   }
 
   const enumFields = [
-    ["kind", TaskKind],
     ["engagementKind", TaskEngagementKind],
     ["applicationPolicy", TaskApplicationPolicy],
     ["compensationKind", TaskCompensationKind],
@@ -1555,8 +1624,12 @@ async function attachProposalImpactEstimate(input: {
 function normalizeProposalCandidate(
   candidate: Record<string, unknown>,
 ): Record<string, unknown> {
+  if (Object.hasOwn(candidate, "kind")) {
+    throw new Error(
+      "Task kind is not supported; represent objectives, projects, and workflows through parentTaskRef ancestry.",
+    );
+  }
   const candidateFields = { ...candidate };
-  delete candidateFields.kind;
   const source = asObject(candidate.source);
   const sourceSystem =
     typeof source?.sourceSystem === "string"
@@ -1627,9 +1700,6 @@ async function ensureExecutionPlanningBranch(input: {
   prisma: Awaited<ReturnType<typeof getPrisma>>;
   userId: string;
 }) {
-  const targetKind = input.organizationId ? "organization" : "person";
-  const targetId = input.organizationId ?? input.personId ?? input.userId;
-  const taskKey = `planner:${targetKind}:${targetId}`;
   const root = await input.prisma.task.findFirst({
     where: {
       deletedAt: null,
@@ -1643,6 +1713,62 @@ async function ensureExecutionPlanningBranch(input: {
     );
   }
 
+  const organizationId = input.organizationId;
+  const target = organizationId
+    ? await (async () => {
+        const organization = await input.prisma.organization.findFirst({
+          where: {
+            deletedAt: null,
+            id: organizationId,
+            members: {
+              some: {
+                role: {
+                  in: [
+                    OrganizationMemberRole.OWNER,
+                    OrganizationMemberRole.ADMIN,
+                    OrganizationMemberRole.MEMBER,
+                  ],
+                },
+                userId: input.userId,
+              },
+            },
+          },
+          select: { id: true, name: true },
+        });
+        if (!organization) {
+          throw new Error(
+            "Organization planning requires OWNER, ADMIN, or MEMBER access.",
+          );
+        }
+        return {
+          description: `Private work root for ${organization.name}.`,
+          organizationId: organization.id,
+          personId: null,
+          taskKey: getOrganizationPlanningRootTaskKey(organization.id),
+          title: `Optimize ${organization.name}`,
+        };
+      })()
+    : await (async () => {
+        const { ensurePersonForUser } = await import("./person.server");
+        const person = await ensurePersonForUser(
+          input.userId,
+          {},
+          input.prisma,
+        );
+        if (input.personId && input.personId !== person.id) {
+          throw new Error("Personal planning root must belong to the caller.");
+        }
+        return {
+          description: `Private work root for ${person.displayName}.`,
+          organizationId: null,
+          personId: person.id,
+          taskKey: getPersonPlanningRootTaskKey(person.id),
+          title: `Optimize ${person.displayName}'s life`,
+        };
+      })();
+
+  const taskKey = target.taskKey;
+
   const branchSelect = {
     assigneeOrganizationId: true,
     assigneePersonId: true,
@@ -1653,7 +1779,7 @@ async function ensureExecutionPlanningBranch(input: {
     parentTaskId: true,
     taskKey: true,
   } as const;
-  const validateBranch = (branch: {
+  const validateAndRepairBranch = async (branch: {
     assigneeOrganizationId: string | null;
     assigneePersonId: string | null;
     createdByUserId: string;
@@ -1663,50 +1789,56 @@ async function ensureExecutionPlanningBranch(input: {
     parentTaskId: string | null;
     taskKey: string | null;
   }) => {
-    const matchesTarget = input.organizationId
-      ? branch.assigneeOrganizationId === input.organizationId ||
-        branch.ownerOrganizationId === input.organizationId
-      : input.personId
-        ? branch.assigneePersonId === input.personId
-        : branch.assigneePersonId == null &&
-          branch.assigneeOrganizationId == null &&
-          branch.ownerOrganizationId == null &&
-          branch.createdByUserId === input.userId;
+    const matchesTarget = target.organizationId
+      ? branch.assigneeOrganizationId === target.organizationId ||
+        branch.ownerOrganizationId === target.organizationId
+      : branch.assigneePersonId === target.personId &&
+        branch.createdByUserId === input.userId;
     if (branch.parentTaskId !== root.id || branch.isPublic || !matchesTarget) {
       throw new Error(
         `Reserved execution planning branch ${taskKey} is not private, rooted, and assigned to the expected target.`,
       );
     }
-    return { id: branch.id, taskKey: branch.taskKey };
+    return input.prisma.task.update({
+      where: { id: branch.id },
+      data: {
+        assigneeOrganizationId: null,
+        assigneePersonId: target.personId,
+        claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+        deletedAt: null,
+        description: target.description,
+        isPublic: false,
+        ownerOrganizationId: target.organizationId,
+        parentTaskId: root.id,
+        status: TaskStatus.ACTIVE,
+        title: target.title,
+      },
+      select: { id: true, taskKey: true, title: true },
+    });
   };
   const existing = await input.prisma.task.findFirst({
     where: { deletedAt: null, taskKey },
     select: branchSelect,
   });
-  if (existing) return validateBranch(existing);
+  if (existing) return validateAndRepairBranch(existing);
 
   try {
     return await input.prisma.task.create({
       data: {
-        assigneeOrganizationId: input.organizationId ?? null,
-        assigneePersonId: input.personId ?? null,
+        assigneeOrganizationId: null,
+        assigneePersonId: target.personId,
         category: TaskCategory.OTHER,
         claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
         createdByUserId: input.userId,
-        description:
-          targetKind === "organization"
-            ? "Tasks owned or assigned to this organization."
-            : "Tasks for this person.",
+        description: target.description,
         isPublic: false,
+        ownerOrganizationId: target.organizationId,
         parentTaskId: root.id,
         status: TaskStatus.ACTIVE,
         taskKey,
-        title:
-          targetKind === "organization"
-            ? "Organization tasks"
-            : "Personal tasks",
+        title: target.title,
       },
-      select: { id: true, taskKey: true },
+      select: { id: true, taskKey: true, title: true },
     });
   } catch (error) {
     if (asObject(error)?.code !== "P2002") throw error;
@@ -1714,7 +1846,7 @@ async function ensureExecutionPlanningBranch(input: {
       where: { deletedAt: null, taskKey },
       select: branchSelect,
     });
-    if (racedBranch) return validateBranch(racedBranch);
+    if (racedBranch) return validateAndRepairBranch(racedBranch);
     throw error;
   }
 }
@@ -2036,10 +2168,8 @@ function enrichTaskForMcp(task: unknown) {
 }
 
 async function validateExplicitTaskParent(input: {
-  isAdminWriter: boolean;
   parentTaskId: string;
   prisma: Awaited<ReturnType<typeof getPrisma>>;
-  sessionPersonId: string | null;
   taskId?: string;
   userId: string;
 }) {
@@ -2050,14 +2180,17 @@ async function validateExplicitTaskParent(input: {
   }
 
   const parent = await input.prisma.task.findFirst({
-    where: { deletedAt: null, id: input.parentTaskId },
+    where: {
+      deletedAt: null,
+      id: input.parentTaskId,
+      ...getTaskAccessWhere({ action: "COMMENT", userId: input.userId }),
+    },
     select: {
       assigneeOrganizationId: true,
       assigneePersonId: true,
       createdByUserId: true,
       id: true,
       isPublic: true,
-      kind: true,
       ownerOrganizationId: true,
       parentTaskId: true,
     },
@@ -2066,39 +2199,6 @@ async function validateExplicitTaskParent(input: {
     throw new Error(
       `Parent task ${JSON.stringify(input.parentTaskId)} was not found. Search the existing task tree and choose a valid parent.`,
     );
-  }
-  if (!isExecutableWorkItem(parent)) {
-    throw new Error(
-      "A job, volunteer, or bounty listing cannot be a parent task.",
-    );
-  }
-
-  let canUseParent =
-    input.isAdminWriter ||
-    parent.isPublic ||
-    parent.createdByUserId === input.userId ||
-    (input.sessionPersonId != null &&
-      parent.assigneePersonId === input.sessionPersonId);
-  if (!canUseParent) {
-    const organizationIds = Array.from(
-      new Set(
-        [parent.ownerOrganizationId, parent.assigneeOrganizationId].filter(
-          (id): id is string => Boolean(id),
-        ),
-      ),
-    );
-    if (organizationIds.length > 0) {
-      const { canManageOrganization } = await import("./organization.server");
-      for (const organizationId of organizationIds) {
-        if (await canManageOrganization(input.userId, organizationId)) {
-          canUseParent = true;
-          break;
-        }
-      }
-    }
-  }
-  if (!canUseParent) {
-    throw new Error("The selected parent task is not accessible to this user.");
   }
   if (input.taskId === parent.id) {
     throw new Error("A task cannot be its own parent.");
@@ -3481,6 +3581,10 @@ const TASK_CONTEXT_JSON_SCHEMA = {
       },
       required: ["taskId"],
     },
+    expectedDeliverable: {
+      type: "string",
+      description: "Concrete output the executor must submit",
+    },
     acceptanceCriteria: {
       type: "array" as const,
       description: "Checkbox list of acceptance criteria",
@@ -4164,12 +4268,6 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
 ];
 
 const TASK_ROUTING_INPUT_PROPERTIES = {
-  kind: {
-    type: "string",
-    enum: Object.values(TaskKind),
-    description:
-      "Task shape: TASK, ROLE_OPENING, PROJECT, BOUNTY, or VOLUNTEER_ROLE.",
-  },
   engagementKind: {
     type: "string",
     enum: Object.values(TaskEngagementKind),
@@ -5172,11 +5270,6 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Filter by owner/reviewer organization ID",
         },
-        kind: {
-          type: "string",
-          enum: Object.values(TaskKind),
-          description: "Filter by task kind.",
-        },
         engagementKind: {
           type: "string",
           enum: Object.values(TaskEngagementKind),
@@ -6127,16 +6220,6 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Freeform rationale for the deadline policy, e.g. taxes must be filed by a legal deadline.",
         },
-        completedAt: {
-          type: "string",
-          description:
-            "Completion date (ISO 8601) for tasks that already happened",
-        },
-        verifiedAt: {
-          type: "string",
-          description:
-            "Verification date (ISO 8601) for tasks confirmed as done",
-        },
         claimPolicy: {
           type: "string",
           enum: ["ASSIGNED_ONLY", "OPEN_SINGLE", "OPEN_MANY"],
@@ -6605,14 +6688,14 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update a task's estimates, parent, dependencies, deadline metadata, executor, or status. Non-admin updates are scoped to private tasks created by the authenticated user; admins may update PUBLIC and non-owned tasks. Mark work done with status='VERIFIED'. Passing depends_on replaces the blocker set idempotently, so keep it complete. To reparent, search the task tree and pass an existing parentTaskId; Optimize Earth itself is reserved. To re-assign a task to an organization or person, set assigneeOrganizationId or assigneePersonId. Pass an empty string to clear an assignment.",
+      "Update task metadata, estimates, ancestry, dependencies, deadline, or executor. Completion and verification use the execution tools. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
     inputSchema: {
       type: "object" as const,
       properties: {
         taskId: { type: "string", description: "Task ID" },
         status: {
           type: "string",
-          enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
+          enum: ["DRAFT", "ACTIVE", "STALE"],
         },
         title: { type: "string" },
         description: { type: "string" },
@@ -6620,10 +6703,6 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description:
             "Existing rooted parent task ID. Search first; cannot be Optimize Earth or create a hierarchy cycle.",
-        },
-        completionEvidence: {
-          type: "string",
-          description: "Evidence that the task is done",
         },
         impactStatement: { type: "string" },
         category: {
@@ -6658,15 +6737,6 @@ const TASK_TOOL_DEFINITIONS = [
         sourceUrl: {
           type: "string",
           description: "URL to the source/evidence",
-        },
-        completedAt: {
-          type: "string",
-          description: "Completion date (ISO 8601), use empty string to clear",
-        },
-        verifiedAt: {
-          type: "string",
-          description:
-            "Verification date (ISO 8601), use empty string to clear",
         },
         available_at: {
           type: "string",
@@ -7110,17 +7180,11 @@ const TASK_TOOL_DEFINITIONS = [
   },
   {
     name: "claimTask",
-    description:
-      "Claim a task for a user. The agent declares intent to work on it.",
+    description: "Claim a task as the authenticated user.",
     inputSchema: {
       type: "object" as const,
       properties: {
         taskId: { type: "string", description: "Task ID to claim" },
-        userId: {
-          type: "string",
-          description:
-            "User ID claiming the task (auto-filled for authenticated users)",
-        },
       },
       required: ["taskId"],
     },
@@ -7149,11 +7213,6 @@ const TASK_TOOL_DEFINITIONS = [
       type: "object" as const,
       properties: {
         taskId: { type: "string", description: "Task ID" },
-        userId: {
-          type: "string",
-          description:
-            "User ID who claimed it (auto-filled for authenticated users)",
-        },
         completionEvidence: {
           type: "string",
           description: "What was done and proof it worked",
@@ -7657,6 +7716,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...COLLECTION_TOOL_DEFINITIONS,
   ...DOCUMENT_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
+  ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
 ];
 
 function assertToolRegistrationIntegrity(): void {
@@ -7709,9 +7769,59 @@ export function createMcpServer(
     clientId?: string | null;
     isAdmin?: boolean;
     oauthGrantId?: string | null;
+    organizationIds?: readonly string[] | null;
   } = {},
 ): Server {
   const isAdmin = options.isAdmin === true;
+  const organizationIds =
+    options.organizationIds === null ? null : (options.organizationIds ?? []);
+  const taskClientBoundary = getMcpTaskClientBoundary(scopes, organizationIds);
+  async function canAccessTaskResource(
+    taskId: string,
+    action: Parameters<typeof getTaskAccessWhere>[0]["action"],
+  ) {
+    if (!userId || !taskId) return false;
+    const prisma = await getPrisma();
+    const personId = await loadSessionPersonId(userId);
+    const task = await prisma.task.findFirst({
+      where: {
+        AND: [
+          getTaskAccessWhere({ action, personId, userId }),
+          getTaskClientAccessWhere(taskClientBoundary),
+        ],
+        deletedAt: null,
+        id: taskId,
+      },
+      select: { id: true },
+    });
+    return task != null;
+  }
+
+  async function canAccessTaskCommentResource(commentId: string) {
+    if (!userId || !commentId) return false;
+    const prisma = await getPrisma();
+    const personId = await loadSessionPersonId(userId);
+    const comment = await prisma.taskComment.findFirst({
+      where: {
+        deletedAt: null,
+        id: commentId,
+        task: {
+          AND: [
+            getTaskAccessWhere({
+              action: "COMMENT",
+              personId,
+              userId,
+            }),
+            getTaskClientAccessWhere(taskClientBoundary),
+          ],
+          deletedAt: null,
+        },
+      },
+      select: { id: true },
+    });
+    return comment != null;
+  }
+
   const server = new Server(
     { name: "optimitron-tasks", version: "1.0.0" },
     { capabilities: { tools: {} } },
@@ -7787,6 +7897,36 @@ export function createMcpServer(
             name,
             userId: userId ?? null,
           });
+        }
+        if (isPrivateExecutionToolName(name)) {
+          const response = await handlePrivateExecutionToolCall({
+            args: a,
+            name,
+            organizationIds,
+            scopes,
+            userId: userId ?? null,
+          });
+          const audit = await writeMcpToolAudit({
+            args: a,
+            clientId: options.clientId,
+            error: response.isError
+              ? new Error("Private execution tool returned an error")
+              : undefined,
+            oauthGrantId: options.oauthGrantId,
+            output: response,
+            status: response.isError
+              ? McpToolCallStatus.FAILED
+              : McpToolCallStatus.SUCCEEDED,
+            toolName: name,
+            userId,
+          });
+          if (name === "applyPrivateTaskBundle" && !response.isError && audit) {
+            const body = JSON.parse(
+              response.content[0]?.text ?? "{}",
+            ) as Record<string, unknown>;
+            return ok({ ...body, auditEvent: audit });
+          }
+          return response;
         }
 
         switch (name) {
@@ -8523,6 +8663,7 @@ export function createMcpServer(
             );
             const personId = await loadSessionPersonId(userId);
             const personalTasks = await tasks.listTasks({
+              clientAccessBoundary: taskClientBoundary,
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
@@ -8531,6 +8672,7 @@ export function createMcpServer(
             });
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
+              taskClientBoundary,
             );
             const executorProfiles = await loadHumanPlanningProfiles({
               kind: "self",
@@ -8590,6 +8732,7 @@ export function createMcpServer(
             );
             const personId = await loadSessionPersonId(userId);
             const personalTasks = await tasks.listTasks({
+              clientAccessBoundary: taskClientBoundary,
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
@@ -8598,6 +8741,7 @@ export function createMcpServer(
             });
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
+              taskClientBoundary,
             );
             const executorProfiles = await loadAgentPlanningProfiles();
             const assignedTasks = (personalTasks as unknown[]).filter((task) =>
@@ -8665,8 +8809,8 @@ export function createMcpServer(
                     : null,
                 buybackRate:
                   typeof a.buybackRate === "number" ? a.buybackRate : null,
+                clientAccessBoundary: taskClientBoundary,
                 fixedCommitments: fixedCommitments as PlanningCommitment[],
-                isAdmin,
                 maxResults:
                   typeof a.maxResults === "number" ? a.maxResults : null,
                 planningWindowEnd:
@@ -8701,13 +8845,17 @@ export function createMcpServer(
             );
             const personId = await loadSessionPersonId(userId);
             const personalTasks = (await tasks.listTasks({
+              clientAccessBoundary: taskClientBoundary,
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
               personId,
               visibility: "personal",
             })) as PersonalQueueTaskRecord[];
-            const graph = await loadExecutionGraphContext(personalTasks);
+            const graph = await loadExecutionGraphContext(
+              personalTasks,
+              taskClientBoundary,
+            );
             const executorProfiles = [
               ...(await loadHumanPlanningProfiles({
                 kind: "self",
@@ -8954,6 +9102,7 @@ export function createMcpServer(
             );
             const personId = await loadSessionPersonId(userId);
             const personalTasks = await tasks.listTasks({
+              clientAccessBoundary: taskClientBoundary,
               limit: 5000,
               status: TaskStatus.ACTIVE,
               userId,
@@ -8962,6 +9111,7 @@ export function createMcpServer(
             });
             const graph = await loadExecutionGraphContext(
               personalTasks as PersonalQueueTaskRecord[],
+              taskClientBoundary,
             );
             const executorProfiles = await loadHumanPlanningProfiles({
               kind: "self",
@@ -9086,7 +9236,6 @@ export function createMcpServer(
               compensationKind?: TaskCompensationKind;
               engagementKind?: TaskEngagementKind;
               executionMode?: TaskExecutionMode;
-              kind?: TaskKind;
               ownerOrganizationId?: string | null;
               remotePolicy?: TaskRemotePolicy;
               requiredTags?: string[];
@@ -9113,7 +9262,6 @@ export function createMcpServer(
                   a.executionMode,
                   "executionMode",
                 ),
-                kind: parseEnumInput(TaskKind, a.kind, "kind"),
                 ownerOrganizationId:
                   typeof a.ownerOrganizationId === "string"
                     ? a.ownerOrganizationId
@@ -9141,6 +9289,8 @@ export function createMcpServer(
             const list = await tasks.listTasks({
               status,
               category,
+              clientAccessBoundary:
+                visibility === "accessible" ? taskClientBoundary : undefined,
               assigneePersonId,
               assigneeOrganizationId,
               parentTaskId: parentTaskIdFilter,
@@ -9162,7 +9312,6 @@ export function createMcpServer(
                 "compensationKind",
                 "engagementKind",
                 "executionMode",
-                "kind",
                 "remotePolicy",
               ] as const) {
                 const expected = extendedFilters[fieldName];
@@ -9261,6 +9410,10 @@ export function createMcpServer(
                 if (!includeTasks) return { ...person, tasks: [] };
                 const listed = await tasks.listTasks({
                   assigneePersonId: person.id,
+                  clientAccessBoundary:
+                    taskScope === "accessible"
+                      ? taskClientBoundary
+                      : undefined,
                   limit: taskLimit,
                   status: taskStatus,
                   visibility: taskScope,
@@ -9302,6 +9455,8 @@ export function createMcpServer(
 
             const personTasks = await tasks.listTasks({
               assigneePersonId: person.id,
+              clientAccessBoundary:
+                scope === "accessible" ? taskClientBoundary : undefined,
               status,
               visibility: scope,
               userId: userId ?? null,
@@ -9377,6 +9532,10 @@ export function createMcpServer(
                 if (!includeTasks) return { ...organization, tasks: [] };
                 const listed = await tasks.listTasks({
                   assigneeOrganizationId: organization.id,
+                  clientAccessBoundary:
+                    taskScope === "accessible"
+                      ? taskClientBoundary
+                      : undefined,
                   limit: taskLimit,
                   status: taskStatus,
                   visibility: taskScope,
@@ -9420,6 +9579,8 @@ export function createMcpServer(
 
             const organizationTasks = await tasks.listTasks({
               assigneeOrganizationId: organization.id,
+              clientAccessBoundary:
+                scope === "accessible" ? taskClientBoundary : undefined,
               status,
               visibility: scope,
               userId: userId ?? null,
@@ -9452,6 +9613,8 @@ export function createMcpServer(
             }
 
             const results = await tasks.searchTasks(query, {
+              clientAccessBoundary:
+                scope === "accessible" ? taskClientBoundary : undefined,
               limit,
               userId: scope === "accessible" ? userId : null,
               status,
@@ -9468,6 +9631,7 @@ export function createMcpServer(
             const result = await tasks.getTaskDetailData(
               taskId,
               userId ?? null,
+              { clientAccessBoundary: taskClientBoundary },
             );
             if (!result) return err("Task not found");
             return ok({
@@ -9498,6 +9662,7 @@ export function createMcpServer(
             if (!user) return err("User not found.");
             const limit = parseQueueLimit(a.limit, 20, 50);
             const taskRows = await tasks.listTasks({
+              clientAccessBoundary: taskClientBoundary,
               limit: 5000,
               personId: user.personId,
               status: TaskStatus.ACTIVE,
@@ -9767,6 +9932,7 @@ export function createMcpServer(
             const detail = await tasks.getTaskDetailData(
               taskId,
               userId ?? null,
+              { clientAccessBoundary: taskClientBoundary },
             );
             if (!detail) return err("Task not found.");
             const task = detail.task as Record<string, unknown>;
@@ -10456,12 +10622,13 @@ export function createMcpServer(
             const isAdminTaskWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
             const parentTaskId = requiredString(a.parentTaskId, "parentTaskId");
             if (typeof parentTaskId !== "string") return parentTaskId;
+            let parentTask: Awaited<
+              ReturnType<typeof validateExplicitTaskParent>
+            >;
             try {
-              await validateExplicitTaskParent({
-                isAdminWriter: isAdminTaskWriter,
+              parentTask = await validateExplicitTaskParent({
                 parentTaskId,
                 prisma,
-                sessionPersonId: await loadSessionPersonId(userId),
                 userId,
               });
             } catch (error) {
@@ -10471,8 +10638,20 @@ export function createMcpServer(
             }
 
             if (dependencyTaskIds.length > 0) {
+              const sessionPersonId = await loadSessionPersonId(userId);
               const dependencyTasks = await prisma.task.findMany({
-                where: { deletedAt: null, id: { in: dependencyTaskIds } },
+                where: {
+                  deletedAt: null,
+                  id: { in: dependencyTaskIds },
+                  AND: [
+                    getTaskAccessWhere({
+                      action: "READ",
+                      personId: sessionPersonId,
+                      userId,
+                    }),
+                    getTaskScopeWhere(scopes, organizationIds),
+                  ],
+                },
                 select: {
                   createdByUserId: true,
                   id: true,
@@ -10487,39 +10666,21 @@ export function createMcpServer(
               );
               if (missingDependencyIds.length > 0) {
                 return err(
-                  `Invalid dependency IDs (not found): ${missingDependencyIds.map((id) => JSON.stringify(id)).join(", ")}`,
+                  "One or more dependency tasks were not found or are inaccessible.",
                 );
               }
 
-              const inaccessibleDependencyIds = dependencyTasks
-                .filter(
-                  (task) =>
-                    !task.isPublic &&
-                    task.createdByUserId !== userId &&
-                    !hasAdminTaskWriteAccess(scopes, isAdmin),
-                )
-                .map((task) => task.id);
-              if (inaccessibleDependencyIds.length > 0) {
-                return err(
-                  `Dependency IDs are inaccessible private tasks: ${inaccessibleDependencyIds
-                    .map((id) => JSON.stringify(id))
-                    .join(", ")}`,
-                );
+              const forbiddenBlockedTaskIds: string[] = [];
+              for (const task of dependencyTasks) {
+                if (!blockedTaskIds.includes(task.id)) continue;
+                const canManage = task.isPublic
+                  ? isAdminTaskWriter
+                  : await canUserManageTask(task.id, userId);
+                if (!canManage) forbiddenBlockedTaskIds.push(task.id);
               }
-
-              const forbiddenBlockedTaskIds = dependencyTasks
-                .filter(
-                  (task) =>
-                    blockedTaskIds.includes(task.id) &&
-                    task.createdByUserId !== userId &&
-                    !isAdminTaskWriter,
-                )
-                .map((task) => task.id);
               if (forbiddenBlockedTaskIds.length > 0) {
                 return err(
-                  `Blocked task IDs must be created by the current user: ${forbiddenBlockedTaskIds
-                    .map((id) => JSON.stringify(id))
-                    .join(", ")}`,
+                  "One or more blocked tasks were not found or are inaccessible.",
                 );
               }
             }
@@ -10528,28 +10689,15 @@ export function createMcpServer(
               (a.assigneePersonId as string | undefined) || undefined;
             const assigneeOrganizationId =
               (a.assigneeOrganizationId as string | undefined) || undefined;
-            const ownerOrganizationId =
+            const explicitOwnerOrganizationId =
               typeof a.ownerOrganizationId === "string" &&
               a.ownerOrganizationId.trim()
                 ? a.ownerOrganizationId.trim()
                 : undefined;
-            if (!isAdminTaskWriter) {
-              const organizationIds = dedupeStrings([
-                ...(assigneeOrganizationId ? [assigneeOrganizationId] : []),
-                ...(ownerOrganizationId ? [ownerOrganizationId] : []),
-              ]);
-              if (organizationIds.length > 0) {
-                const { canManageOrganization } =
-                  await import("./organization.server");
-                for (const organizationId of organizationIds) {
-                  if (!(await canManageOrganization(userId, organizationId))) {
-                    return err(
-                      `Organization ${JSON.stringify(organizationId)} requires an owner or admin membership.`,
-                    );
-                  }
-                }
-              }
-            }
+            const ownerOrganizationId =
+              explicitOwnerOrganizationId ??
+              parentTask.ownerOrganizationId ??
+              (parentTask.isPublic ? assigneeOrganizationId : undefined);
             let isPublic: boolean;
             try {
               isPublic = resolveCreateTaskIsPublic(
@@ -10566,6 +10714,56 @@ export function createMcpServer(
             }
             if (isPublic && !hasAdminTaskWriteAccess(scopes, isAdmin)) {
               return err("Creating public tasks requires an admin user.");
+            }
+            if (!parentTask.isPublic && isPublic) {
+              return err("A private parent cannot contain a public task.");
+            }
+            if (
+              !parentTask.isPublic &&
+              (ownerOrganizationId ?? null) !==
+                parentTask.ownerOrganizationId
+            ) {
+              return err(
+                "A private child task must inherit its parent's organization owner.",
+              );
+            }
+            if (!isPublic) {
+              const taskOrganizationIds = dedupeStrings([
+                ...(assigneeOrganizationId ? [assigneeOrganizationId] : []),
+                ...(ownerOrganizationId ? [ownerOrganizationId] : []),
+              ]);
+              if (taskOrganizationIds.length > 0) {
+                const { canContributeToOrganization } =
+                  await import("./organization.server");
+                for (const taskOrganizationId of taskOrganizationIds) {
+                  if (
+                    organizationIds !== null &&
+                    !organizationIds.includes(taskOrganizationId)
+                  ) {
+                    return err(
+                      "The OAuth grant does not include one or more selected organizations.",
+                    );
+                  }
+                  if (
+                    !(await canContributeToOrganization(
+                      userId,
+                      taskOrganizationId,
+                    ))
+                  ) {
+                    return err(
+                      `Organization ${JSON.stringify(taskOrganizationId)} requires an OWNER, ADMIN, or MEMBER role.`,
+                    );
+                  }
+                }
+              }
+              const requiredScope = ownerOrganizationId
+                ? McpScope.TASKS_ORGANIZATION
+                : McpScope.TASKS_PERSONAL;
+              if (!scopes?.includes(requiredScope)) {
+                return err(
+                  `${scopeToWire(requiredScope)} is required for this private task.`,
+                );
+              }
             }
             const availableAt =
               a.available_at !== undefined || a.availableAt !== undefined
@@ -10605,17 +10803,12 @@ export function createMcpServer(
               availableAt,
               dueAt,
               deadlinePolicy: resolveDeadlinePolicyInput(a, dueAt),
-              completedAt: a.completedAt
-                ? new Date(a.completedAt as string)
-                : null,
-              verifiedAt: a.verifiedAt
-                ? new Date(a.verifiedAt as string)
-                : null,
               claimPolicy: a.claimPolicy
                 ? TaskClaimPolicy[a.claimPolicy as keyof typeof TaskClaimPolicy]
                 : TaskClaimPolicy.OPEN_MANY,
               ...(assigneePersonId ? { assigneePersonId } : {}),
               ...(assigneeOrganizationId ? { assigneeOrganizationId } : {}),
+              ...(ownerOrganizationId ? { ownerOrganizationId } : {}),
               roleTitle: (a.roleTitle as string) ?? null,
               // sourceUrl is absorbed into contextJson.sourceUrls by
               // buildPersonalTaskContext — the Task model has no sourceUrl column.
@@ -10623,9 +10816,7 @@ export function createMcpServer(
               isPublic,
               contextJson: buildPersonalTaskContext(contextArgs, economics),
               sortOrder: (a.sortOrder as number) ?? undefined,
-              status: a.status
-                ? TaskStatus[a.status as keyof typeof TaskStatus]
-                : TaskStatus.ACTIVE,
+              status: TaskStatus.ACTIVE,
             };
             data.createdByUserId = userId;
             const task = await prisma.$transaction(
@@ -10702,7 +10893,9 @@ export function createMcpServer(
               }
             }
 
-            const fresh = await tasks.getTaskDetailData(task.id, userId);
+            const fresh = await tasks.getTaskDetailData(task.id, userId, {
+              clientAccessBoundary: taskClientBoundary,
+            });
             const scored = fresh
               ? buildPersonalQueueRows(
                   [fresh.task],
@@ -11160,20 +11353,129 @@ export function createMcpServer(
             const prisma = await getPrisma();
             const { getProfileIdentityData } =
               await import("./profile-identity.server");
-            const [profile, userIdentity] = await Promise.all([
+            const { ensurePersonForUser } = await import("./person.server");
+            const person = await ensurePersonForUser(userId, {}, prisma);
+            const [profile, userIdentity, memberships] = await Promise.all([
               getProfileIdentityData(userId),
               prisma.user.findUnique({
                 where: { id: userId },
                 select: USER_MATCHING_SELECT,
               }),
+              prisma.organizationMember.findMany({
+                where: {
+                  organizationId:
+                    scopes?.includes(McpScope.TASKS_ORGANIZATION) &&
+                    organizationIds === null
+                      ? undefined
+                      : {
+                          in:
+                            scopes?.includes(McpScope.TASKS_ORGANIZATION) &&
+                            organizationIds !== null
+                              ? [...organizationIds]
+                              : [],
+                        },
+                  organization: { deletedAt: null },
+                  userId,
+                },
+                orderBy: { joinedAt: "asc" },
+                select: {
+                  organization: {
+                    select: { id: true, name: true, slug: true },
+                  },
+                  role: true,
+                },
+              }),
             ]);
             if (!profile) return err("User not found");
+
+            const setupGaps: Array<{
+              code: string;
+              message: string;
+              organizationId?: string;
+            }> = [];
+            const hasPersonalScope =
+              scopes?.includes(McpScope.TASKS_PERSONAL) === true;
+            const hasOrganizationScope =
+              scopes?.includes(McpScope.TASKS_ORGANIZATION) === true;
+            const personalRoot = hasPersonalScope
+              ? await ensureExecutionPlanningBranch({
+                  personId: person.id,
+                  prisma,
+                  userId,
+                })
+              : null;
+            if (!hasPersonalScope) {
+              setupGaps.push({
+                code: "tasks_personal_scope_required",
+                message:
+                  "Grant tasks:personal to create and manage the personal planning root.",
+              });
+            }
+            if (memberships.length > 0 && !hasOrganizationScope) {
+              setupGaps.push({
+                code: "tasks_organization_scope_required",
+                message:
+                  "Grant tasks:organization to create and manage organization planning roots.",
+              });
+            }
+
+            const organizationRoots: Array<{
+              organization: { id: string; name: string; slug: string };
+              role: OrganizationMemberRole;
+              root: {
+                id: string;
+                taskKey: string | null;
+                title: string;
+              } | null;
+            }> = [];
+            for (const membership of memberships) {
+              const canContribute =
+                membership.role !== OrganizationMemberRole.VIEWER;
+              const root =
+                hasOrganizationScope && canContribute
+                  ? await ensureExecutionPlanningBranch({
+                      organizationId: membership.organization.id,
+                      prisma,
+                      userId,
+                    })
+                  : await prisma.task.findFirst({
+                      where: {
+                        deletedAt: null,
+                        ownerOrganizationId: membership.organization.id,
+                        taskKey: getOrganizationPlanningRootTaskKey(
+                          membership.organization.id,
+                        ),
+                      },
+                      select: { id: true, taskKey: true, title: true },
+                    });
+              organizationRoots.push({
+                organization: membership.organization,
+                role: membership.role,
+                root,
+              });
+              if (hasOrganizationScope && !canContribute && root == null) {
+                setupGaps.push({
+                  code: "organization_root_requires_contributor",
+                  message:
+                    "A VIEWER can read an existing organization root but cannot create one.",
+                  organizationId: membership.organization.id,
+                });
+              }
+            }
+
             return ok({
-              userId,
-              personId: userIdentity?.personId ?? null,
+              grantedScopes: (scopes ?? []).map(scopeToWire),
+              grantedOrganizationIds: memberships.map(
+                (membership) => membership.organization.id,
+              ),
               matchingPreferences: userIdentity
                 ? summarizeMatchingUser(userIdentity)
                 : null,
+              organizationRoots,
+              personalRoot,
+              personId: person.id,
+              setupGaps,
+              userId,
               ...profile,
             });
           }
@@ -11982,15 +12284,29 @@ export function createMcpServer(
             const rejected: Array<{ ref: string; reason: string }> = [];
             const { reviewTaskProposalBundle } =
               await import("@optimitron/agent");
+            const promotionPersonId = await loadSessionPersonId(userId);
+            const manageableTaskWhere = getTaskAccessWhere({
+              action: "MANAGE",
+              personId: promotionPersonId,
+              userId,
+            });
 
             const draftTasks = await prisma.task.findMany({
               where: {
-                ...(!isAdmin
-                  ? { createdByUserId: userId, isPublic: false }
-                  : {}),
+                AND: [
+                  {
+                    OR: refs.flatMap((ref) => [{ id: ref }, { taskKey: ref }]),
+                  },
+                  {
+                    OR: [
+                      manageableTaskWhere,
+                      ...(isAdmin ? [{ isPublic: true }] : []),
+                    ],
+                  },
+                  getTaskScopeWhere(scopes, organizationIds),
+                ],
                 deletedAt: null,
                 status: TaskStatus.DRAFT,
-                OR: refs.flatMap((ref) => [{ id: ref }, { taskKey: ref }]),
               },
               select: {
                 assigneeOrganizationId: true,
@@ -12047,27 +12363,9 @@ export function createMcpServer(
               });
             }
 
-            if (!isAdmin) {
-              const { canManageOrganization } =
-                await import("./organization.server");
-              for (const task of draftTasks) {
-                const organizationId =
-                  task.ownerOrganizationId ?? task.assigneeOrganizationId;
-                if (
-                  organizationId &&
-                  !(await canManageOrganization(userId, organizationId))
-                ) {
-                  rejected.push({
-                    ref: task.taskKey ?? task.id,
-                    reason:
-                      "Organization promotion requires an owner or admin membership.",
-                  });
-                }
-              }
-            }
-
             const graph = await loadExecutionGraphContext(
               draftTasks as unknown as PersonalQueueTaskRecord[],
+              taskClientBoundary,
             );
             const dependencyEdges = await loadReachableDependencyEdges(
               prisma,
@@ -12098,50 +12396,18 @@ export function createMcpServer(
               });
             }
 
-            const promotionOrganizationIds = Array.from(
-              new Set(
-                draftTasks.flatMap((task) =>
-                  (task.ownerOrganizationId ?? task.assigneeOrganizationId)
-                    ? [
-                        (task.ownerOrganizationId ??
-                          task.assigneeOrganizationId)!,
-                      ]
-                    : [],
-                ),
-              ),
-            );
-            const promotionPersonId = isAdmin
-              ? null
-              : await loadSessionPersonId(userId);
             const existingTasks = await prisma.task.findMany({
               where: {
                 deletedAt: null,
                 id: { notIn: draftTasks.map((task) => task.id) },
-                ...(!isAdmin
-                  ? {
-                      OR: [
-                        { isPublic: true },
-                        { createdByUserId: userId },
-                        ...(promotionPersonId
-                          ? [{ assigneePersonId: promotionPersonId }]
-                          : []),
-                        ...(promotionOrganizationIds.length > 0
-                          ? [
-                              {
-                                assigneeOrganizationId: {
-                                  in: promotionOrganizationIds,
-                                },
-                              },
-                              {
-                                ownerOrganizationId: {
-                                  in: promotionOrganizationIds,
-                                },
-                              },
-                            ]
-                          : []),
-                      ],
-                    }
-                  : {}),
+                AND: [
+                  getTaskAccessWhere({
+                    action: "READ",
+                    personId: promotionPersonId,
+                    userId,
+                  }),
+                  getTaskScopeWhere(scopes, organizationIds),
+                ],
               },
               select: {
                 assigneeOrganizationId: true,
@@ -12243,17 +12509,32 @@ export function createMcpServer(
             const { ranking, tasks } = await getTaskFunctions();
             const prisma = await getPrisma();
             const isAdminWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
+            if (
+              a.status === "VERIFIED" ||
+              a.verifiedAt !== undefined ||
+              a.completedAt !== undefined ||
+              a.completionEvidence !== undefined
+            ) {
+              return err(
+                "Completion and VERIFIED status can only be recorded through execution submission and verification acceptance.",
+              );
+            }
             const updates: Record<string, unknown> = {};
             const existingDetail = await tasks.getTaskDetailData(
               a.taskId as string,
               userId,
+              { clientAccessBoundary: taskClientBoundary },
             );
             let existingTask = existingDetail?.task as
               | PersonalQueueTaskRecord
               | undefined;
             if (!existingTask && isAdminWriter) {
               const adminVisibleTask = await prisma.task.findFirst({
-                where: { deletedAt: null, id: a.taskId as string },
+                where: {
+                  deletedAt: null,
+                  id: a.taskId as string,
+                  isPublic: true,
+                },
                 select: {
                   contextJson: true,
                   createdByUserId: true,
@@ -12277,6 +12558,7 @@ export function createMcpServer(
                   estimatedEffortHours: true,
                   id: true,
                   isPublic: true,
+                  ownerOrganizationId: true,
                 },
               });
               if (adminVisibleTask) {
@@ -12294,13 +12576,25 @@ export function createMcpServer(
               }
             }
             if (!existingTask) return err("Task not found");
-            if (existingTask.createdByUserId !== userId && !isAdminWriter) {
-              return err(
-                "Forbidden: Task was not created by current user. Admin users can edit any task.",
-              );
-            }
             if (existingTask.isPublic && !isAdminWriter) {
               return err("Updating public tasks requires an admin user.");
+            }
+            if (
+              !existingTask.isPublic &&
+              !(await canUserManageTask(existingTask.id, userId))
+            ) {
+              return err("Task not found");
+            }
+            if (
+              !isTaskWithinClientAccessBoundary(
+                {
+                  isPublic: existingTask.isPublic === true,
+                  ownerOrganizationId: existingTask.ownerOrganizationId,
+                },
+                taskClientBoundary,
+              )
+            ) {
+              return err("Task not found");
             }
             if (a.parentTaskId !== undefined) {
               const parentTaskId = requiredString(
@@ -12308,12 +12602,13 @@ export function createMcpServer(
                 "parentTaskId",
               );
               if (typeof parentTaskId !== "string") return parentTaskId;
+              let parentTask: Awaited<
+                ReturnType<typeof validateExplicitTaskParent>
+              >;
               try {
-                await validateExplicitTaskParent({
-                  isAdminWriter,
+                parentTask = await validateExplicitTaskParent({
                   parentTaskId,
                   prisma,
-                  sessionPersonId: await loadSessionPersonId(userId),
                   taskId: existingTask.id,
                   userId,
                 });
@@ -12322,6 +12617,19 @@ export function createMcpServer(
                   error instanceof Error
                     ? error.message
                     : "Invalid parent task.",
+                );
+              }
+              if (!parentTask.isPublic && existingTask.isPublic) {
+                return err("A private parent cannot contain a public task.");
+              }
+              if (
+                !existingTask.isPublic &&
+                !parentTask.isPublic &&
+                (existingTask.ownerOrganizationId ?? null) !==
+                  (parentTask.ownerOrganizationId ?? null)
+              ) {
+                return err(
+                  "A private task cannot be moved across organization ownership boundaries.",
                 );
               }
               updates.parentTaskId = parentTaskId;
@@ -12339,8 +12647,20 @@ export function createMcpServer(
                 ])
               : [];
             if (dependencyPatchProvided && blockerTaskIds.length > 0) {
+              const sessionPersonId = await loadSessionPersonId(userId);
               const dependencyTasks = await prisma.task.findMany({
-                where: { deletedAt: null, id: { in: blockerTaskIds } },
+                where: {
+                  deletedAt: null,
+                  id: { in: blockerTaskIds },
+                  AND: [
+                    getTaskAccessWhere({
+                      action: "READ",
+                      personId: sessionPersonId,
+                      userId,
+                    }),
+                    getTaskScopeWhere(scopes, organizationIds),
+                  ],
+                },
                 select: { createdByUserId: true, id: true, isPublic: true },
               });
               const foundDependencyIds = new Set(
@@ -12351,22 +12671,7 @@ export function createMcpServer(
               );
               if (missingDependencyIds.length > 0) {
                 return err(
-                  `Invalid dependency IDs (not found): ${missingDependencyIds.map((id) => JSON.stringify(id)).join(", ")}`,
-                );
-              }
-              const inaccessibleDependencyIds = dependencyTasks
-                .filter(
-                  (task) =>
-                    !task.isPublic &&
-                    task.createdByUserId !== userId &&
-                    !isAdminWriter,
-                )
-                .map((task) => task.id);
-              if (inaccessibleDependencyIds.length > 0) {
-                return err(
-                  `Dependency IDs are inaccessible private tasks: ${inaccessibleDependencyIds
-                    .map((id) => JSON.stringify(id))
-                    .join(", ")}`,
+                  "One or more dependency tasks were not found or are inaccessible.",
                 );
               }
             }
@@ -12417,8 +12722,6 @@ export function createMcpServer(
               updates.status = TaskStatus[a.status as keyof typeof TaskStatus];
             if (a.title) updates.title = a.title;
             if (a.description) updates.description = a.description;
-            if (a.completionEvidence)
-              updates.completionEvidence = a.completionEvidence;
             if (a.impactStatement) updates.impactStatement = a.impactStatement;
             if (typeof a.category === "string" && a.category in TaskCategory) {
               updates.category =
@@ -12469,20 +12772,6 @@ export function createMcpServer(
             if (a.assigneeOrganizationId !== undefined) {
               updates.assigneeOrganizationId =
                 (a.assigneeOrganizationId as string) || null;
-            }
-            if (a.completedAt !== undefined) {
-              updates.completedAt = (a.completedAt as string)
-                ? new Date(a.completedAt as string)
-                : null;
-            } else if (a.status === "VERIFIED") {
-              updates.completedAt = new Date();
-            }
-            if (a.verifiedAt !== undefined) {
-              updates.verifiedAt = (a.verifiedAt as string)
-                ? new Date(a.verifiedAt as string)
-                : null;
-            } else if (a.status === "VERIFIED") {
-              updates.verifiedAt = new Date();
             }
             if (economicsPatch) {
               updates.estimatedEffortHours = economics.estimatedEffortHours;
@@ -12628,7 +12917,9 @@ export function createMcpServer(
               },
               { maxWait: 10_000, timeout: 60_000 },
             );
-            const fresh = await tasks.getTaskDetailData(task.id, userId);
+            const fresh = await tasks.getTaskDetailData(task.id, userId, {
+              clientAccessBoundary: taskClientBoundary,
+            });
             const scored = fresh
               ? buildPersonalQueueRows(
                   [fresh.task],
@@ -12660,19 +12951,35 @@ export function createMcpServer(
             const taskId = a.taskId as string;
             if (!taskId) return err("taskId is required");
 
+            const personId = await loadSessionPersonId(userId);
             const existing = await prisma.task.findFirst({
-              where: { id: taskId, deletedAt: null },
-              select: { createdByUserId: true, isPublic: true },
+              where: {
+                deletedAt: null,
+                id: taskId,
+                OR: [
+                  { isPublic: true },
+                  getTaskAccessWhere({
+                    action: "MANAGE",
+                    personId,
+                    userId,
+                  }),
+                ],
+              },
+              select: {
+                createdByUserId: true,
+                isPublic: true,
+                ownerOrganizationId: true,
+              },
             });
             if (!existing) return err("Task not found");
             const isAdminDeleter = hasAdminTaskWriteAccess(scopes, isAdmin);
-            if (existing.createdByUserId !== userId && !isAdminDeleter) {
-              return err(
-                "Forbidden: Task was not created by current user. Admin users can delete any task.",
-              );
-            }
             if (existing.isPublic && !isAdminDeleter) {
               return err("Deleting public tasks requires an admin user.");
+            }
+            if (
+              !isTaskWithinClientAccessBoundary(existing, taskClientBoundary)
+            ) {
+              return err("Task not found");
             }
 
             await prisma.task.update({
@@ -12692,8 +12999,20 @@ export function createMcpServer(
               );
             }
             const prisma = await getPrisma();
-            const existing = await prisma.task.findUnique({
-              where: { id: a.taskId as string },
+            const personId = await loadSessionPersonId(userId);
+            const existing = await prisma.task.findFirst({
+              where: {
+                deletedAt: null,
+                id: a.taskId as string,
+                OR: [
+                  getTaskAccessWhere({
+                    action: "EXECUTE",
+                    personId,
+                    userId,
+                  }),
+                  ...(isAdmin ? [{ isPublic: true }] : []),
+                ],
+              },
               select: {
                 actualCashCostUsd: true,
                 actualEffortSeconds: true,
@@ -12708,32 +13027,10 @@ export function createMcpServer(
               },
             });
             if (!existing) return err("Task not found");
-            const personId = await loadSessionPersonId(userId);
-            const organizationId =
-              existing.ownerOrganizationId ??
-              existing.assigneeOrganizationId ??
-              null;
-            let canManageAssignedOrganization = false;
-            if (organizationId && !isAdmin) {
-              const { canManageOrganization } =
-                await import("./organization.server");
-              canManageAssignedOrganization = await canManageOrganization(
-                userId,
-                organizationId,
-              );
-            }
-            const ownsTask = existing.createdByUserId === userId;
-            const isAssignedPerson =
-              Boolean(personId) && existing.assigneePersonId === personId;
             if (
-              !isAdmin &&
-              !ownsTask &&
-              !isAssignedPerson &&
-              !canManageAssignedOrganization
+              !isTaskWithinClientAccessBoundary(existing, taskClientBoundary)
             ) {
-              return err(
-                "Forbidden: execution actuals may only be recorded by the task owner, assignee, or an organization admin.",
-              );
+              return err("Task not found");
             }
 
             const context = asObject(existing.contextJson) ?? {};
@@ -12958,13 +13255,11 @@ export function createMcpServer(
           // ── claimTask ──────────────────────────────────────────
           case "claimTask": {
             const { tasks } = await getTaskFunctions();
-            const claimUserId = (a.userId as string) ?? userId;
-            if (!claimUserId)
-              return err("userId is required (not authenticated)");
-            const claim = await tasks.claimTask(
-              a.taskId as string,
-              claimUserId,
-            );
+            if (!userId) return authRequired(name, "Claiming requires OAuth.");
+            if (!(await canAccessTaskResource(a.taskId as string, "COMMENT"))) {
+              return err("Task not found");
+            }
+            const claim = await tasks.claimTask(a.taskId as string, userId);
             return ok({ claimId: claim.id, status: claim.status });
           }
 
@@ -13051,7 +13346,9 @@ export function createMcpServer(
 
             // 4. Return the freshly-summarized task so the caller has the actionLink etc.
             const { tasks } = await getTaskFunctions();
-            const detail = await tasks.getTaskDetailData(result.taskId, userId);
+            const detail = await tasks.getTaskDetailData(result.taskId, userId, {
+              clientAccessBoundary: taskClientBoundary,
+            });
             if (!detail)
               return err(
                 "Reminder subtask created but could not be loaded for summary.",
@@ -13093,12 +13390,14 @@ export function createMcpServer(
           // ── completeTaskClaim ──────────────────────────────────
           case "completeTaskClaim": {
             const { tasks } = await getTaskFunctions();
-            const claimUserId = (a.userId as string) ?? userId;
-            if (!claimUserId)
-              return err("userId is required (not authenticated)");
+            if (!userId)
+              return authRequired(name, "Completing a claim requires OAuth.");
+            if (!(await canAccessTaskResource(a.taskId as string, "COMMENT"))) {
+              return err("Task not found");
+            }
             const claim = await tasks.completeTaskClaim(
               a.taskId as string,
-              claimUserId,
+              userId,
               a.completionEvidence as string,
             );
             return ok({ claimId: claim.id, status: claim.status });
@@ -13115,12 +13414,26 @@ export function createMcpServer(
             const { TaskEdgeType } = await import("@optimitron/db");
             const blockedTaskId = a.blockedTaskId as string;
             const blockerTaskId = a.blockerTaskId as string;
+            const sessionPersonId = await loadSessionPersonId(userId);
             const dependencyTasks = await prisma.task.findMany({
               where: {
                 deletedAt: null,
                 id: { in: [blockedTaskId, blockerTaskId] },
+                AND: [
+                  getTaskAccessWhere({
+                    action: "READ",
+                    personId: sessionPersonId,
+                    userId,
+                  }),
+                  getTaskScopeWhere(scopes, organizationIds),
+                ],
               },
-              select: { createdByUserId: true, id: true, isPublic: true },
+              select: {
+                createdByUserId: true,
+                id: true,
+                isPublic: true,
+                ownerOrganizationId: true,
+              },
             });
             const blockedTask = dependencyTasks.find(
               (task) => task.id === blockedTaskId,
@@ -13132,18 +13445,11 @@ export function createMcpServer(
             if (blockedTaskId === blockerTaskId) {
               return err("A task cannot depend on itself.");
             }
-            if (blockedTask.createdByUserId !== userId) {
-              return err(
-                "Forbidden: blocked task was not created by current user",
-              );
-            }
-            if (
-              !blockerTask.isPublic &&
-              blockerTask.createdByUserId !== userId
-            ) {
-              return err(
-                "Forbidden: blocker task is not accessible to current user",
-              );
+            const canManageBlockedTask = blockedTask.isPublic
+              ? hasAdminTaskWriteAccess(scopes, isAdmin)
+              : await canUserManageTask(blockedTask.id, userId);
+            if (!canManageBlockedTask) {
+              return err("Task not found");
             }
             const probabilityDeltaBase = parseFiniteNumber(
               a.probabilityDeltaBase ?? a.increases_p_success,
@@ -13234,13 +13540,52 @@ export function createMcpServer(
 
           // ── getBlockers ────────────────────────────────────────
           case "getBlockers": {
+            if (!userId)
+              return authRequired(
+                name,
+                "Reading private blockers requires OAuth.",
+              );
             const prisma = await getPrisma();
             const { TaskEdgeType } = await import("@optimitron/db");
+            const taskId = a.taskId as string;
+            const sessionPersonId = await loadSessionPersonId(userId);
+            const targetTask = await prisma.task.findFirst({
+              where: {
+                deletedAt: null,
+                id: taskId,
+                ...getTaskAccessWhere({
+                  action: "READ",
+                  personId: sessionPersonId,
+                  userId,
+                }),
+              },
+              select: { isPublic: true, ownerOrganizationId: true },
+            });
+            if (
+              !targetTask ||
+              !isTaskWithinClientAccessBoundary(
+                targetTask,
+                taskClientBoundary,
+              )
+            ) {
+              return err("Task not found");
+            }
+            const relatedTaskAccess = {
+              AND: [
+                getTaskAccessWhere({
+                  action: "READ" as const,
+                  personId: sessionPersonId,
+                  userId,
+                }),
+                getTaskScopeWhere(scopes, organizationIds),
+              ],
+            } satisfies Prisma.TaskWhereInput;
             const [blockedBy, blocks] = await Promise.all([
               prisma.taskEdge.findMany({
                 where: {
                   deletedAt: null,
-                  toTaskId: a.taskId as string,
+                  fromTask: relatedTaskAccess,
+                  toTaskId: taskId,
                   edgeType: {
                     in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
                   },
@@ -13252,7 +13597,8 @@ export function createMcpServer(
               prisma.taskEdge.findMany({
                 where: {
                   deletedAt: null,
-                  fromTaskId: a.taskId as string,
+                  fromTaskId: taskId,
+                  toTask: relatedTaskAccess,
                   edgeType: {
                     in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
                   },
@@ -13626,9 +13972,7 @@ export function createMcpServer(
 
             // Same gate as the comment feed: you can only write where you
             // can read. Private tasks look identical to missing ones.
-            const { canUserViewTask } =
-              await import("./tasks/task-visibility.server");
-            if (!(await canUserViewTask(taskId, userId))) {
+            if (!(await canAccessTaskResource(taskId, "COMMENT"))) {
               return err("Task not found");
             }
 
@@ -13684,6 +14028,9 @@ export function createMcpServer(
             if (!commentId || (value !== 1 && value !== -1 && value !== 0)) {
               return err("commentId and value (1 | -1 | 0) are required");
             }
+            if (!(await canAccessTaskCommentResource(commentId))) {
+              return err("Task not found");
+            }
             const result = await voteComment({
               commentId,
               userId,
@@ -13703,6 +14050,9 @@ export function createMcpServer(
               await import("./tasks/task-comments.server");
             const commentId = a.commentId as string;
             if (!commentId) return err("commentId is required");
+            if (!(await canAccessTaskCommentResource(commentId))) {
+              return err("Task not found");
+            }
             await deleteComment({ commentId, userId });
             return ok({ success: true });
           }
@@ -13713,6 +14063,9 @@ export function createMcpServer(
               await import("./tasks/task-comments.server");
             const taskId = a.taskId as string;
             if (!taskId) return err("taskId is required");
+            if (!(await canAccessTaskResource(taskId, "READ"))) {
+              return err("Task not found");
+            }
             const sort = a.sort === "top" ? "top" : "new";
             const cursorRaw = a.cursor as string | undefined;
             const cursor = cursorRaw ? new Date(cursorRaw) : null;

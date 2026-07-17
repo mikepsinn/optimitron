@@ -1,4 +1,5 @@
 import {
+  OrganizationMemberRole,
   TaskCommunicationAudience,
   TaskCommunicationChannel,
   TaskCommunicationPurpose,
@@ -62,7 +63,14 @@ async function resolveAssignmentRecipient(taskId: string): Promise<{
               role: true,
               user: { select: { email: true, id: true } },
             },
-            where: { role: { in: ["owner", "admin"] } },
+            where: {
+              role: {
+                in: [
+                  OrganizationMemberRole.OWNER,
+                  OrganizationMemberRole.ADMIN,
+                ],
+              },
+            },
           },
           name: true,
         },

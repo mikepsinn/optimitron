@@ -81,6 +81,6 @@
 - Founder equity.
 ### TALK TO US
 - Request the data room or book a call. The math is public. The buy-in is not a one-click checkout - the law makes us talk first.
-- [REQUEST THE DATA ROOM](mailto:m@warondisease.org?subject=EOS%20data%20room%20request)
-- [BOOK A CALL](mailto:m@warondisease.org?subject=EOS%20investor%20call)
+- [REQUEST THE DATA ROOM](mailto:wishonia@optimitron.com?subject=EOS%20data%20room%20request)
+- [BOOK A CALL](mailto:wishonia@optimitron.com?subject=EOS%20investor%20call)
 - ACCREDITED-ONLY SECURITIES DISCUSSION. NOT AN OFFER. NOT INVESTMENT ADVICE.

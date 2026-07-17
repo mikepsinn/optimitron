@@ -7,12 +7,13 @@ the same thing, the one listed here owns it — fix the other.
 
 | Doc | Owns |
 |---|---|
+| [SYSTEM_MAP.md](./SYSTEM_MAP.md) | Fast architecture map: context ladder, ownership boundaries, work graph, and private-execution invariants. |
 | [PRD.md](./PRD.md) | Product spec: the target-state vision for the four-layer optimization machine and the Daily Companion Loop. Never asserts current status. |
 | [FEATURES.md](./FEATURES.md) | Feature registry: what exists today, with evidence and acceptance criteria. The ONLY doc allowed to assert maturity status. |
 | [ROADMAP.md](./ROADMAP.md) | Sequencing: Now/Next/Later/Parked/Won't + the code-cleanup backlog (Appendix A). |
 | [../TODO.md](../TODO.md) | Tactical working queue: in-flight, next-up, recently-landed, standing policy. |
 | [../AGENTS.md](../AGENTS.md) | Canonical agent rules for all harnesses, incl. the ONE campaign priority list. |
-| [../CLAUDE.md](../CLAUDE.md) | Claude-harness specifics: hooks, skills, MCP research tools, dev-server ops. |
+| [../CLAUDE.md](../CLAUDE.md) | Imports AGENTS.md and adds only Claude-specific tools and workflow. |
 | [../README.md](../README.md) | Public front door (Wishonia voice): pitch, quick start, package table, papers. |
 
 ## Architecture & models
@@ -35,6 +36,7 @@ the same thing, the one listed here owns it — fix the other.
 | [PREVIEW_DATA_PRIVACY.md](./PREVIEW_DATA_PRIVACY.md) | Preview-DB anonymization mechanism and masked-column table. |
 | [DEVELOPER_API_PLAN.md](./DEVELOPER_API_PLAN.md) | Developer OAuth/OpenAPI surface: shipped/now/next/not-yet. |
 | [OPTIMIZE_EARTH_PROTOCOL.md](./OPTIMIZE_EARTH_PROTOCOL.md) | The protocol agents follow on "optimize earth". |
+| [plans/phased-approach-optimitron.md](./plans/phased-approach-optimitron.md) | Approved private-execution plan: Primary Operator dogfood, Independent Operator isolation acceptance, commercial kernel, and selected conversation ingestion. |
 
 ## Product surfaces & copy
 
@@ -42,8 +44,8 @@ the same thing, the one listed here owns it — fix the other.
 |---|---|
 | [questions.md](./questions.md) | Screen-by-screen spec of the treaty vote/share flow. |
 | [treaty-flow-variants.md](./treaty-flow-variants.md) | Registry of A/B treaty-flow variants. |
-| [h2ewd.md](./h2ewd.md) | Wishonia voice canon for persuasion copy (copy-gated by Mike). |
-| [prize-docs.md](./prize-docs.md) | Long-form /prize page copy source (copy-gated by Mike). |
+| [h2ewd.md](./h2ewd.md) | Wishonia voice canon for persuasion copy (human copy-owner gate). |
+| [prize-docs.md](./prize-docs.md) | Long-form /prize page copy source (human copy-owner gate). |
 | [game-design-guidelines.md](./game-design-guidelines.md) | Pixel/CRT design system — game/demo screens ONLY. |
 
 ## Generated — do not edit by hand
@@ -56,7 +58,7 @@ the same thing, the one listed here owns it — fix the other.
 ## Directories
 
 - `archive/` — historical docs, preserved unedited, excluded from checks.
-- `plans/` — future plan docs (currently empty; agent plans live in `.claude/plans/`).
+- `plans/` — approved or proposed implementation plans; each states its own status.
 
 ## Doc checks
 

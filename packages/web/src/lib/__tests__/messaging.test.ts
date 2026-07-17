@@ -13,7 +13,7 @@ describe("getUserFramingVocabulary", () => {
     expect(vocab.recruit.noun).toBe("humanity manager");
     expect(vocab.recruit.nounPlural).toBe("humanity managers");
     expect(vocab.recruitedActivityVerb).toBe("hired a humanity manager");
-    expect(vocab.org.longName).toBe("Earth Optimization Services LLC");
+    expect(vocab.org.longName).toBe("Earth Optimization Services Inc.");
   });
 
   it("returns the voter-frame block when asked", () => {
@@ -22,7 +22,7 @@ describe("getUserFramingVocabulary", () => {
     expect(vocab.recruit.noun).toBe("voter");
     expect(vocab.recruit.nounPlural).toBe("voters");
     expect(vocab.recruitedActivityVerb).toBe("recruited a voter");
-    expect(vocab.org.longName).toBe("Earth Optimization Services LLC");
+    expect(vocab.org.longName).toBe("Earth Optimization Services Inc.");
   });
 
   it("returns the same legal-entity org name for both framings", () => {

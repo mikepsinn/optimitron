@@ -20,7 +20,8 @@ No evidence on disk → no `implemented`. Update the entry in the same PR that
 changes the behavior. Extract entries mechanically with `grep -A9 "^### OPT-"`.
 
 Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
-(2026-07-11).
+(2026-07-11); private-execution entries (OPT-TASK-08, OPT-EXT-02, OPT-INTG-03)
+verified against `feature/private-execution-system` (2026-07-17).
 
 ---
 
@@ -91,6 +92,15 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Evidence:** `proposeTaskBundle` in packages/web/src/lib/mcp-server.ts; `EXECUTABLE_PARENT` finding in packages/web/src/lib/tasks/execution-planner-audit.ts + test
 - **Acceptance:** Given "apply for an SFF grant," the system proposes atomic subtasks (draft, budget, reference, submit), the user confirms, and the children are created with edges.
 - **Roadmap:** next — companion loop
+
+### OPT-TASK-08 — Private execution kernel and tenant isolation
+
+- **Layer:** personal / organization
+- **Status:** partial
+- **Summary:** The private-execution branch removes task kinds, adds stable private roots, expands task/source authorization, and implements the first MCP/service paths for reviewed imports, execution attempts, artifacts, typed verification, audit export, and exact external-action approval. It is a checkpoint, not a deployable release: the full TypeScript suite, adversarial isolation matrix, extension capture flow, migration preflight, and two-operator pilots remain incomplete.
+- **Evidence:** `docs/plans/phased-approach-optimitron.md`; `packages/db/prisma/migrations/20260715180000_private_execution_system/`; `packages/web/src/lib/mcp-tools/private-execution.ts`; `packages/web/src/lib/tasks/private-task-bundle.server.ts`; `packages/web/src/lib/tasks/execution-lifecycle.server.ts`; `packages/web/src/lib/tasks/external-action.server.ts`; `packages/web/src/lib/tasks/private-work-portability.server.ts`; `packages/web/src/lib/tasks/task-visibility.server.ts`; `packages/web/src/lib/source-artifact-visibility.server.ts`
+- **Acceptance:** The Primary Operator and Independent Operator each import 25-50 private active tasks and close 10 verified cycles; adversarial tests and manual probes reveal no cross-tenant existence, count, source, artifact, execution, verification, or audit data.
+- **Roadmap:** now — private Daily Companion Loop dogfood
 
 ## Expected-value engine
 
@@ -318,11 +328,20 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 
 - **Layer:** personal
 - **Status:** implemented
-- **Summary:** Standalone MV3 tracker: treatment reminders (chrome.alarms), symptom/mood/food logging, JSON/CSV export, and on-device causal analysis via the optimizer in a Web Worker. All data stays local; never touches the server or the Measurement model. Zero tests.
-- **Evidence:** packages/extension/src/workers/analysis.worker.ts (imports `runFullAnalysis` from @optimitron/optimizer); src/background/service-worker.ts; src/lib/storage.ts
-- **Acceptance:** Logging treatments+symptoms for a period yields an on-device analysis report; export produces optimizer-compatible CSV.
-- **Roadmap:** shipped — test coverage queued in ROADMAP.md Appendix A
-- **Notes:** Deliberately disconnected from the web account system (privacy by architecture).
+- **Summary:** MV3 health tracker with local treatment reminders, symptom/mood/food logging, JSON/CSV export, and on-device causal analysis. It also has OAuth and a server-backed Optimitron agenda for the signed-in user's queued tasks. Health records remain local; agenda actions use scoped web APIs.
+- **Evidence:** packages/extension/src/workers/analysis.worker.ts; src/background/service-worker.ts; src/lib/storage.ts; src/lib/auth.ts; src/lib/api.ts; src/popup/agenda.ts; Vitest files under src/lib
+- **Acceptance:** Logging treatments and symptoms yields an on-device analysis/export; OAuth agenda load and task actions use only the granted personal task scope.
+- **Roadmap:** shipped foundation; selected capture/approval is OPT-EXT-02
+- **Notes:** It is not currently a private-message capture tool or browser-control agent.
+
+### OPT-EXT-02 — Selected browser capture, local review, and approvals
+
+- **Layer:** personal / organization
+- **Status:** planned
+- **Summary:** The extension becomes the browser-facing Digital Twin Safe: explicit selected-content or file capture, local OpenAI-compatible extraction, human-reviewed task candidates, and exact immutable outbound-action approvals. No ambient history permission, persistent scraping, or general browser automation.
+- **Evidence:** approved contract in docs/plans/phased-approach-optimitron.md; current manifest lacks `activeTab` and `scripting`, and no capture/review/approval modules exist
+- **Acceptance:** A Chrome integration test proves raw selected text goes only to the configured localhost companion, and only reviewed safe candidates reach Optimitron; payload changes invalidate outbound approval.
+- **Roadmap:** now — after the private import and approval APIs
 
 ### OPT-AGENT-01 — Autonomous policy analyst (agent package)
 
@@ -350,6 +369,15 @@ Statuses verified against `feature/mcp-execution-plan-audit` @ `1dedf0be`
 - **Evidence:** packages/web/src/lib/notion-import.schema.ts; packages/web/src/lib/notion-import.server.ts; packages/web/scripts/import-notion-bundle.ts; packages/web/src/lib/**tests**/fixtures/notion-operational-workspaces.ts; @notionhq/client absent from every package.json
 - **Acceptance:** Connecting a Notion workspace yields deduplicated task-import proposals that update on source edits.
 - **Roadmap:** foundation implemented; live connector later
+
+### OPT-INTG-03 — Reviewed private conversation-to-work ingestion
+
+- **Layer:** personal / organization
+- **Status:** planned
+- **Summary:** A channel-neutral reviewed import path for explicitly selected Discord, Telegram, WhatsApp, email, Slack, meeting-note, Notion-comment, and GitHub-discussion context. Raw private text is local by default; the server retains safe hashes, anchors, approved excerpts, candidates, and provenance.
+- **Evidence:** reusable `SourceArtifact`/`TaskSourceArtifact`, proposal-bundle, and Notion-import foundations; approved contract in docs/plans/phased-approach-optimitron.md; no safe private-source ownership or channel importer currently ships
+- **Acceptance:** Review/apply is hash-sealed, idempotent, atomic, private, source-linked, and creates every grounded nonduplicate action as `ACTIVE`; duplicates gain links, ambiguity gains clarification tasks, and unreviewed text never leaves the device.
+- **Roadmap:** now — after OPT-TASK-08 authorization and roots
 
 ### OPT-CONTENT-01 — Documents and bounded collections
 

@@ -5,10 +5,8 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
-import { hasBearerAuthorization, requireAuth } from "@/lib/auth-utils";
+import { getTaskRequestIdentity, requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
@@ -20,6 +18,8 @@ const TASK_VISIBILITY_FILTER = {
   CREATED: "created",
   PUBLIC: "public",
 } as const;
+
+const MutableTaskStatusSchema = z.enum(["DRAFT", "ACTIVE", "STALE"]);
 
 const CreateTaskBodySchema = z.object({
   assigneeOrganizationId: z.string().nullish(),
@@ -47,7 +47,7 @@ const CreateTaskBodySchema = z.object({
   parentTaskId: z.string().trim().min(1).nullish(),
   roleTitle: z.string().nullish(),
   skillTags: z.array(z.string()).nullish(),
-  status: z.nativeEnum(TaskStatus).nullish(),
+  status: MutableTaskStatusSchema.nullish(),
   title: z.string().min(1),
 });
 
@@ -126,17 +126,8 @@ async function findOrCreateInvitedAssigneePerson({
 
 export async function GET(request: Request) {
   try {
-    let userId: string | null = null;
-    if (hasBearerAuthorization(request)) {
-      const auth = await requireAuth(request, [
-        McpScope.TASKS_PERSONAL,
-        McpScope.TASKS_ADMIN,
-      ]);
-      userId = auth.userId;
-    } else {
-      const session = await getServerSession(authOptions);
-      userId = session?.user.id ?? null;
-    }
+    const { clientAccessBoundary, userId } =
+      await getTaskRequestIdentity(request);
     const { searchParams } = new URL(request.url);
     const assigneeOrganizationId = searchParams.get("assigneeOrganizationId");
     const assigneePersonId = searchParams.get("assigneePersonId");
@@ -160,6 +151,7 @@ export async function GET(request: Request) {
     const tasks = await listTasks({
       assigneeOrganizationId,
       assigneePersonId,
+      ...(clientAccessBoundary ? { clientAccessBoundary } : {}),
       frameKey,
       status,
       userId,

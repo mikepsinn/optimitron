@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { FundingTaskCard } from "@/components/task-funding/FundingTaskCard";
 import { EosInvestmentCalculator } from "@/components/site/EosInvestmentCalculator";
+import { EARTH_OPTIMIZATION_SERVICES } from "@/lib/corporate-identity";
 import { getRouteMetadata } from "@/lib/metadata";
-import { NONPROFIT } from "@/lib/nonprofit-identity";
 import { fundLink, ROUTES } from "@/lib/routes";
 import {
   collectFundableTasks,
@@ -15,10 +15,10 @@ export const metadata = getRouteMetadata(fundLink);
 
 const requestDataRoomSubject = "EOS data room request";
 const bookCallSubject = "EOS investor call";
-const requestDataRoomHref = `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
+const requestDataRoomHref = `mailto:${EARTH_OPTIMIZATION_SERVICES.publicContactEmail}?subject=${encodeURIComponent(
   requestDataRoomSubject,
 )}`;
-const bookCallHref = `mailto:${NONPROFIT.publicContactEmail}?subject=${encodeURIComponent(
+const bookCallHref = `mailto:${EARTH_OPTIMIZATION_SERVICES.publicContactEmail}?subject=${encodeURIComponent(
   bookCallSubject,
 )}`;
 const requestDataRoomLabel = "Request the data room";

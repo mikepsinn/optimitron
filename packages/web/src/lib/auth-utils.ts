@@ -1,8 +1,13 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
-import type { McpScope } from "@/lib/mcp-scopes";
+import {
+  TASK_CLIENT_SCOPES,
+  taskBoundaryFromScopes,
+  type McpScope,
+} from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export function hasBearerAuthorization(request?: Request) {
   const authHeader = request?.headers.get("authorization");
@@ -50,7 +55,7 @@ async function getOAuthIdentity(
         revokedAt: null,
         userId: payload.sub,
       },
-      select: { scopes: true },
+      select: { organizationIds: true, scopes: true },
     }),
   ]);
   if (!user || !grant) {
@@ -63,8 +68,31 @@ async function getOAuthIdentity(
     throw new Error("Unauthorized");
   }
 
+  const tokenOrganizationIds = payload.organizationIds ?? [];
+  const currentMemberships =
+    tokenOrganizationIds.length === 0
+      ? []
+      : await prisma.organizationMember.findMany({
+          where: {
+            organizationId: { in: tokenOrganizationIds },
+            organization: { deletedAt: null },
+            userId: user.id,
+          },
+          select: { organizationId: true },
+        });
+  const grantedOrganizationIds = new Set(grant.organizationIds ?? []);
+  const currentOrganizationIds = new Set(
+    currentMemberships.map((membership) => membership.organizationId),
+  );
+  const organizationIds = tokenOrganizationIds.filter(
+    (organizationId) =>
+      grantedOrganizationIds.has(organizationId) &&
+      currentOrganizationIds.has(organizationId),
+  );
+
   return {
     clientId: payload.clientId,
+    organizationIds,
     scopes: activeScopes,
     userEmail: user.email,
     userId: user.id,
@@ -141,4 +169,45 @@ export async function requireAuth(
   if (!user) throw new Error("Unauthorized");
 
   return { userId: user.id, userEmail: user.email };
+}
+
+/**
+ * Auth for REST routes that read or mutate tasks. Bearer clients resolve to
+ * the user plus the client access boundary from their grant; session users
+ * act as themselves with no boundary.
+ */
+export async function requireTaskRequestAuth(
+  request: Request,
+  requiredScopes: readonly McpScope[] = TASK_CLIENT_SCOPES,
+): Promise<{
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  userId: string;
+}> {
+  const auth = await requireAuth(request, requiredScopes);
+  if (!("scopes" in auth)) {
+    return { userId: auth.userId };
+  }
+  return {
+    clientAccessBoundary: taskBoundaryFromScopes(
+      auth.scopes,
+      auth.organizationIds,
+    ),
+    userId: auth.userId,
+  };
+}
+
+/** Like requireTaskRequestAuth, but anonymous/session-less requests resolve
+ * to a null user instead of throwing — for routes with public GET access. */
+export async function getTaskRequestIdentity(
+  request: Request,
+  requiredScopes: readonly McpScope[] = TASK_CLIENT_SCOPES,
+): Promise<{
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  userId: string | null;
+}> {
+  if (hasBearerAuthorization(request)) {
+    return requireTaskRequestAuth(request, requiredScopes);
+  }
+  const session = await getServerSession(authOptions);
+  return { userId: session?.user?.id ?? null };
 }

@@ -5,8 +5,10 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
+  TaskExecutionAttemptStatus,
   TaskImpactFrameKey,
   TaskStatus,
+  TaskVerificationResult,
   VotePosition,
   type Prisma,
 } from "@optimitron/db";
@@ -22,6 +24,7 @@ import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
+import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import {
   assertUserCanClaimPaidTask,
   queueTaskPayoutForVerifiedClaim,
@@ -44,7 +47,13 @@ import {
   scoreTaskForAccountability,
 } from "@/lib/tasks/rank-tasks";
 import { getExplicitEdgeMarginalFrames } from "@/lib/tasks/marginal-impact";
-import { getTaskVisibilityWhere } from "@/lib/tasks/task-visibility.server";
+import {
+  canUserViewInternalTaskContent,
+  getTaskAccessWhere,
+  getTaskClientAccessWhere,
+  getTaskVisibilityWhere,
+  type TaskClientAccessBoundary,
+} from "@/lib/tasks/task-visibility.server";
 import { grantWishes } from "@/lib/wishes.server";
 
 const log = createLogger("tasks-server");
@@ -255,7 +264,38 @@ const taskListSelect = {
   actualEffortSeconds: true,
   _count: {
     select: {
-      childTasks: true,
+      childTasks: {
+        where: {
+          deletedAt: null,
+          status: {
+            in: [TaskStatus.DRAFT, TaskStatus.ACTIVE],
+          },
+        },
+      },
+      executionAttempts: {
+        where: {
+          deletedAt: null,
+          OR: [
+            {
+              status: {
+                in: [
+                  TaskExecutionAttemptStatus.QUEUED,
+                  TaskExecutionAttemptStatus.RUNNING,
+                ],
+              },
+            },
+            {
+              status: TaskExecutionAttemptStatus.COMPLETED,
+              verifications: {
+                some: {
+                  deletedAt: null,
+                  result: TaskVerificationResult.PENDING,
+                },
+              },
+            },
+          ],
+        },
+      },
     },
   },
   assigneeOrganization: {
@@ -354,7 +394,6 @@ const taskListSelect = {
   impactStatement: true,
   interestTags: true,
   isPublic: true,
-  kind: true,
   locationText: true,
   maxClaims: true,
   createdByUserId: true,
@@ -542,6 +581,154 @@ const taskDetailSelect = {
     },
   },
 } satisfies Prisma.TaskSelect;
+
+function impactEstimateSetSelectForViewer(
+  userId?: string | null,
+  clientAccessBoundary?: TaskClientAccessBoundary,
+) {
+  return {
+    ...impactEstimateSetSelect,
+    sourceArtifacts: {
+      ...impactEstimateSetSelect.sourceArtifacts,
+      where: {
+        AND: [
+          impactEstimateSetSelect.sourceArtifacts.where,
+          {
+            sourceArtifact: getSourceArtifactVisibilityWhere(
+              userId,
+              clientAccessBoundary,
+            ),
+          },
+        ],
+      },
+    },
+  } satisfies Prisma.TaskImpactEstimateSetSelect;
+}
+
+function taskListSelectForViewer(input: {
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  personId?: string | null;
+  userId?: string | null;
+}) {
+  const viewerAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: input.personId,
+    userId: input.userId,
+  });
+  const taskAccess = input.clientAccessBoundary
+    ? {
+        AND: [
+          viewerAccess,
+          getTaskClientAccessWhere(input.clientAccessBoundary),
+        ],
+      }
+    : viewerAccess;
+  const impactSelect = impactEstimateSetSelectForViewer(
+    input.userId,
+    input.clientAccessBoundary,
+  );
+
+  return {
+    ...taskListSelect,
+    _count: {
+      select: {
+        ...taskListSelect._count.select,
+        childTasks: {
+          where: {
+            AND: [taskListSelect._count.select.childTasks.where, taskAccess],
+          },
+        },
+      },
+    },
+    currentImpactEstimateSet: { select: impactSelect },
+    incomingEdges: {
+      ...taskListSelect.incomingEdges,
+      where: {
+        AND: [
+          taskListSelect.incomingEdges.where,
+          { fromTask: taskAccess },
+        ],
+      },
+    },
+    outgoingEdges: {
+      ...taskListSelect.outgoingEdges,
+      where: {
+        AND: [taskListSelect.outgoingEdges.where, { toTask: taskAccess }],
+      },
+      select: {
+        ...taskListSelect.outgoingEdges.select,
+        toTask: {
+          select: {
+            ...taskListSelect.outgoingEdges.select.toTask.select,
+            currentImpactEstimateSet: { select: impactSelect },
+          },
+        },
+      },
+    },
+    parentTask: {
+      select: {
+        ...taskListSelect.parentTask.select,
+        childTasks: {
+          ...taskListSelect.parentTask.select.childTasks,
+          where: {
+            AND: [
+              taskListSelect.parentTask.select.childTasks.where,
+              taskAccess,
+            ],
+          },
+        },
+        currentImpactEstimateSet: { select: impactSelect },
+      },
+    },
+    sourceArtifacts: {
+      ...taskListSelect.sourceArtifacts,
+      where: {
+        AND: [
+          taskListSelect.sourceArtifacts.where,
+          {
+            sourceArtifact: getSourceArtifactVisibilityWhere(
+              input.userId,
+              input.clientAccessBoundary,
+            ),
+          },
+        ],
+      },
+    },
+  } satisfies Prisma.TaskSelect;
+}
+
+function taskDetailSelectForViewer(input: {
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  personId?: string | null;
+  userId?: string | null;
+}) {
+  const listSelect = taskListSelectForViewer(input);
+  const viewerAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: input.personId,
+    userId: input.userId,
+  });
+  const taskAccess = input.clientAccessBoundary
+    ? {
+        AND: [
+          viewerAccess,
+          getTaskClientAccessWhere(input.clientAccessBoundary),
+        ],
+      }
+    : viewerAccess;
+
+  return {
+    ...taskDetailSelect,
+    ...listSelect,
+    childTasks: {
+      ...taskDetailSelect.childTasks,
+      where: {
+        AND: [taskDetailSelect.childTasks.where, taskAccess],
+      },
+      select: listSelect,
+    },
+  } satisfies Prisma.TaskSelect;
+}
 
 type TaskListItem = Prisma.TaskGetPayload<{ select: typeof taskListSelect }>;
 type TaskDetailItem = Prisma.TaskGetPayload<{
@@ -803,6 +990,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
 ): T & {
   activeClaimCount: number;
   activeChildTaskCount: number;
+  activeExecutionAttemptCount: number;
   blockerStatuses: TaskStatus[];
   directImpactFrame: TaskImpactSelection["selectedFrame"];
   marginalImpactFrame: TaskImpactSelection["selectedFrame"];
@@ -965,6 +1153,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     ...task,
     activeClaimCount: countActiveClaims(task),
     activeChildTaskCount: task._count.childTasks,
+    activeExecutionAttemptCount: task._count.executionAttempts,
     blockerStatuses,
     ...(decoratedChildTasks ? { childTasks: decoratedChildTasks } : {}),
     contextJson: normalizeTaskContextJson(task.contextJson),
@@ -995,6 +1184,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
   } as unknown as T & {
     activeClaimCount: number;
     activeChildTaskCount: number;
+    activeExecutionAttemptCount: number;
     blockerStatuses: TaskStatus[];
     directImpactFrame: TaskImpactSelection["selectedFrame"];
     marginalImpactFrame: TaskImpactSelection["selectedFrame"];
@@ -1030,22 +1220,6 @@ async function getTaskViewer(userId: string) {
   });
 }
 
-async function requireTaskReviewer(userId: string) {
-  const reviewer = await prisma.user.findUniqueOrThrow({
-    where: { id: userId },
-    select: {
-      id: true,
-      isAdmin: true,
-    },
-  });
-
-  if (!reviewer.isAdmin) {
-    throw new Error("Forbidden");
-  }
-
-  return reviewer;
-}
-
 // getTaskVisibilityWhere moved to @/lib/tasks/task-visibility.server so the
 // comment/vote/application surfaces can reuse the exact /tasks/[id] predicate.
 
@@ -1072,12 +1246,64 @@ function sortTasksForAccountability<T extends ReturnType<typeof decorateTask>>(
   });
 }
 
+/**
+ * Prisma can't filter a to-one relation, so list selects always return the
+ * parent row even when the viewer has no access to it. Null out inaccessible
+ * parents before decoration so inherited impact frames can't leak a private
+ * parent's title or estimate numbers into list/planning surfaces. The detail
+ * path (getTaskDetailData) does the same check inline.
+ */
+async function nullInaccessibleParentTasks<
+  T extends { parentTask: { id: string } | null },
+>(
+  tasks: T[],
+  viewer: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    personId?: string | null;
+    userId?: string | null;
+  },
+): Promise<T[]> {
+  const parentIds = [
+    ...new Set(
+      tasks.flatMap((task) => (task.parentTask ? [task.parentTask.id] : [])),
+    ),
+  ];
+  if (parentIds.length === 0) return tasks;
+
+  const accessibleParents = await prisma.task.findMany({
+    where: {
+      deletedAt: null,
+      id: { in: parentIds },
+      AND: [
+        getTaskAccessWhere({
+          action: "READ",
+          personId: viewer.personId,
+          userId: viewer.userId,
+        }),
+        ...(viewer.clientAccessBoundary
+          ? [getTaskClientAccessWhere(viewer.clientAccessBoundary)]
+          : []),
+      ],
+    },
+    select: { id: true },
+  });
+  const accessibleParentIds = new Set(
+    accessibleParents.map((parent) => parent.id),
+  );
+  return tasks.map((task) =>
+    task.parentTask && !accessibleParentIds.has(task.parentTask.id)
+      ? { ...task, parentTask: null }
+      : task,
+  );
+}
+
 export async function getTasksPageData(
   userId?: string | null,
   options?: {
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
+  const publicTaskSelect = taskListSelectForViewer({});
   const [viewer, topLevelTasks, allTasks] = await Promise.all([
     userId ? getTaskViewer(userId) : Promise.resolve(null),
     prisma.task.findMany({
@@ -1089,11 +1315,11 @@ export async function getTasksPageData(
       },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       select: {
-        ...taskListSelect,
+        ...publicTaskSelect,
         childTasks: {
           where: { deletedAt: null, isPublic: true },
           orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          select: taskListSelect,
+          select: publicTaskSelect,
         },
       },
       take: 10,
@@ -1102,11 +1328,11 @@ export async function getTasksPageData(
       where: getTaskVisibilityWhere(),
       orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
       take: 500,
-      select: taskListSelect,
+      select: publicTaskSelect,
     }),
   ]);
 
-  const assignedToMeRaw = viewer?.personId
+  const assignedToMeUnscoped = viewer?.personId
     ? await prisma.task.findMany({
         where: {
           deletedAt: null,
@@ -1118,11 +1344,24 @@ export async function getTasksPageData(
           { createdAt: "desc" },
         ],
         take: 25,
-        select: taskListSelect,
+        select: taskListSelectForViewer({
+          personId: viewer.personId,
+          userId: viewer.id,
+        }),
       })
     : [];
+  const viewerScope = {
+    personId: viewer?.personId ?? null,
+    userId: viewer?.id ?? null,
+  };
+  const [allTasksScoped, topLevelTasksScoped, assignedToMeRaw] =
+    await Promise.all([
+      nullInaccessibleParentTasks(allTasks, viewerScope),
+      nullInaccessibleParentTasks(topLevelTasks, viewerScope),
+      nullInaccessibleParentTasks(assignedToMeUnscoped, viewerScope),
+    ]);
 
-  const decoratedTasks = allTasks.map((task) =>
+  const decoratedTasks = allTasksScoped.map((task) =>
     decorateTask(task, {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
@@ -1145,12 +1384,12 @@ export async function getTasksPageData(
           recommendationScore: entry.score,
         }));
 
-  const topLevelTaskIds = new Set(topLevelTasks.map((t) => t.id));
+  const topLevelTaskIds = new Set(topLevelTasksScoped.map((t) => t.id));
   const topLevelChildIds = new Set(
-    topLevelTasks.flatMap((t) => t.childTasks.map((c) => c.id)),
+    topLevelTasksScoped.flatMap((t) => t.childTasks.map((c) => c.id)),
   );
 
-  const decoratedTopLevel = topLevelTasks.map((task) => ({
+  const decoratedTopLevel = topLevelTasksScoped.map((task) => ({
     ...decorateTask(task, {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
@@ -1188,6 +1427,7 @@ export async function getTaskDetailData(
   taskId: string | null | undefined,
   userId?: string | null,
   options?: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
     frameKey?: TaskImpactFrameKey | string | null;
   },
 ) {
@@ -1202,22 +1442,64 @@ export async function getTaskDetailData(
   // system) is invisible on /tasks/[id].
   const viewer = userId ? await getTaskViewer(userId) : null;
 
-  const [task, taskCommunicationCount] = await Promise.all([
-    prisma.task.findFirst({
-      where: getTaskVisibilityWhere({
-        taskId: normalizedTaskId,
-        userId,
-        personId: viewer?.personId ?? null,
-        visibility: "accessible",
-      }),
-      select: taskDetailSelect,
+  const viewerTaskAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: viewer?.personId ?? null,
+    userId,
+  });
+  const taskAccess = options?.clientAccessBoundary
+    ? {
+        AND: [
+          viewerTaskAccess,
+          getTaskClientAccessWhere(options.clientAccessBoundary),
+        ],
+      }
+    : viewerTaskAccess;
+  const task = await prisma.task.findFirst({
+    where: options?.clientAccessBoundary
+      ? {
+          AND: [
+            getTaskVisibilityWhere({
+              taskId: normalizedTaskId,
+              userId,
+              personId: viewer?.personId ?? null,
+              visibility: "accessible",
+            }),
+            getTaskClientAccessWhere(options.clientAccessBoundary),
+          ],
+        }
+      : getTaskVisibilityWhere({
+          taskId: normalizedTaskId,
+          userId,
+          personId: viewer?.personId ?? null,
+          visibility: "accessible",
+        }),
+    select: taskDetailSelectForViewer({
+      clientAccessBoundary: options?.clientAccessBoundary,
+      personId: viewer?.personId ?? null,
+      userId,
     }),
-    countTaskCommunications(normalizedTaskId),
-  ]);
+  });
 
   if (!task) {
     return null;
   }
+
+  const [taskCommunicationCount, canSeeInternal, visibleParent] =
+    await Promise.all([
+      countTaskCommunications(normalizedTaskId),
+      canUserViewInternalTaskContent(normalizedTaskId, userId),
+      task.parentTask
+        ? prisma.task.findFirst({
+            where: {
+              deletedAt: null,
+              id: task.parentTask.id,
+              ...taskAccess,
+            },
+            select: { id: true },
+          })
+        : Promise.resolve(null),
+    ]);
 
   const viewerClaim =
     userId == null
@@ -1244,10 +1526,17 @@ export async function getTaskDetailData(
 
   return {
     taskCommunicationCount,
-    task: decorateTask(task, {
+    task: decorateTask(
+      {
+        ...task,
+        parentTask: visibleParent ? task.parentTask : null,
+        referralInvitations: canSeeInternal ? task.referralInvitations : [],
+      },
+      {
       frameKey: options?.frameKey,
       userId: viewer?.id ?? null,
-    }),
+      },
+    ),
     viewer,
     viewerClaim,
   };
@@ -1260,23 +1549,34 @@ export async function getTaskDetailData(
  */
 export async function getTaskAncestors(
   taskId: string,
+  userId?: string | null,
 ): Promise<Array<{ id: string; title: string }>> {
+  const viewer = userId ? await getTaskViewer(userId) : null;
+  const taskAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: viewer?.personId ?? null,
+    userId,
+  });
   const seen = new Set<string>([taskId]);
   const ancestors: Array<{ id: string; title: string }> = [];
   let currentId: string | null = taskId;
 
   for (let depth = 0; depth < 16; depth += 1) {
     const current: { parentTaskId: string | null } | null =
-      await prisma.task.findUnique({
-        where: { id: currentId },
+      await prisma.task.findFirst({
+        where: { deletedAt: null, id: currentId, ...taskAccess },
         select: { parentTaskId: true },
       });
     if (!current?.parentTaskId || seen.has(current.parentTaskId)) {
       break;
     }
     const parent: { id: string; title: string } | null =
-      await prisma.task.findUnique({
-        where: { id: current.parentTaskId },
+      await prisma.task.findFirst({
+        where: {
+          deletedAt: null,
+          id: current.parentTaskId,
+          ...taskAccess,
+        },
         select: { id: true, title: true },
       });
     if (!parent) {
@@ -1294,6 +1594,7 @@ export async function listTasks(options?: {
   assigneeOrganizationId?: string | null;
   assigneePersonId?: string | null;
   category?: TaskCategory | null;
+  clientAccessBoundary?: TaskClientAccessBoundary;
   frameKey?: TaskImpactFrameKey | string | null;
   limit?: number | null;
   parentTaskId?: string | null;
@@ -1314,20 +1615,38 @@ export async function listTasks(options?: {
   });
   // parentTaskId must filter in the query itself — post-filtering a limited
   // page silently returns [] for parents whose children fall outside it.
-  const where: Prisma.TaskWhereInput = {
-    ...visibilityWhere,
-    ...(options?.category ? { category: options.category } : {}),
-    ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
-  };
+  const where: Prisma.TaskWhereInput = options?.clientAccessBoundary
+    ? {
+        AND: [
+          visibilityWhere,
+          getTaskClientAccessWhere(options.clientAccessBoundary),
+        ],
+        ...(options?.category ? { category: options.category } : {}),
+        ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
+      }
+    : {
+        ...visibilityWhere,
+        ...(options?.category ? { category: options.category } : {}),
+        ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
+      };
   const tasks = await prisma.task.findMany({
     where,
     orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-    select: taskListSelect,
+    select: taskListSelectForViewer({
+      clientAccessBoundary: options?.clientAccessBoundary,
+      personId: options?.personId,
+      userId: options?.userId,
+    }),
     ...(options?.limit == null ? {} : { take: options.limit }),
+  });
+  const scopedTasks = await nullInaccessibleParentTasks(tasks, {
+    clientAccessBoundary: options?.clientAccessBoundary,
+    personId: options?.personId,
+    userId: options?.userId,
   });
 
   return sortTasksForAccountability(
-    tasks.map((task) =>
+    scopedTasks.map((task) =>
       decorateTask(task, {
         frameKey: options?.frameKey,
         userId: options?.userId ?? null,
@@ -1339,6 +1658,7 @@ export async function listTasks(options?: {
 export async function searchTasks(
   query: string,
   options?: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
     limit?: number | null;
     userId?: string | null;
     status?: "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE" | null;
@@ -1362,6 +1682,9 @@ export async function searchTasks(
           userId: options?.userId,
           visibility: options?.userId ? "accessible" : "public",
         }),
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
         ...(options?.status ? [{ status: options.status }] : []),
         {
           OR: searchPhrases.flatMap((term) => [
@@ -1588,6 +1911,9 @@ export async function createTask(
   if (!title) {
     throw new Error("Title is required.");
   }
+  if (input.status === TaskStatus.VERIFIED) {
+    throw new Error("Task verification must use the verification flow.");
+  }
 
   if (
     resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY &&
@@ -1664,12 +1990,32 @@ export async function updateTaskCreatedByUser(
     status?: TaskStatus | null;
     title?: string | null;
   },
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
+  if (input.status === TaskStatus.VERIFIED) {
+    throw new Error("Task verification must use the verification flow.");
+  }
+  const actor = await prisma.user.findUnique({
+    where: { id: creatorUserId },
+    select: { personId: true },
+  });
+  if (!actor) throw new Error("Task not found.");
   const existingTask = await prisma.task.findFirst({
     where: {
       deletedAt: null,
-      createdByUserId: creatorUserId,
       id: taskId,
+      AND: [
+        getTaskAccessWhere({
+          action: "MANAGE",
+          personId: actor.personId,
+          userId: creatorUserId,
+        }),
+        // Delegated clients only reach tasks inside their grant boundary,
+        // matching the MCP updateTask handler.
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
+      ],
     },
     select: {
       claimPolicy: true,
@@ -1738,7 +2084,10 @@ export async function updateTaskCreatedByUser(
 
     return tx.task.findUniqueOrThrow({
       where: { id: taskId },
-      select: taskDetailSelect,
+      select: taskDetailSelectForViewer({
+        personId: actor.personId,
+        userId: creatorUserId,
+      }),
     });
   });
 }
@@ -1748,9 +2097,28 @@ export async function updateTaskCreatedByUser(
 export async function deleteTaskCreatedByUser(
   taskId: string,
   creatorUserId: string,
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
+  const actor = await prisma.user.findUnique({
+    where: { id: creatorUserId },
+    select: { personId: true },
+  });
+  if (!actor) throw new Error("Task not found.");
   const existing = await prisma.task.findFirst({
-    where: { createdByUserId: creatorUserId, deletedAt: null, id: taskId },
+    where: {
+      deletedAt: null,
+      id: taskId,
+      AND: [
+        getTaskAccessWhere({
+          action: "MANAGE",
+          personId: actor.personId,
+          userId: creatorUserId,
+        }),
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
+      ],
+    },
     select: { id: true, isPublic: true },
   });
 
@@ -1772,8 +2140,21 @@ export async function deleteTaskCreatedByUser(
 
 export async function claimTask(taskId: string, userId: string) {
   return prisma.$transaction(async (tx) => {
-    const task = await tx.task.findUniqueOrThrow({
-      where: { id: taskId },
+    const actor = await tx.user.findUnique({
+      where: { id: userId },
+      select: { personId: true },
+    });
+    if (!actor) throw new Error("Task not found");
+    const task = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        ...getTaskAccessWhere({
+          action: "COMMENT",
+          personId: actor.personId,
+          userId,
+        }),
+      },
       select: {
         claimPolicy: true,
         compensationCadence: true,
@@ -1786,6 +2167,7 @@ export async function claimTask(taskId: string, userId: string) {
         status: true,
       },
     });
+    if (!task) throw new Error("Task not found");
 
     if (task.status !== TaskStatus.ACTIVE) {
       throw new Error("Task is not active.");
@@ -1931,17 +2313,34 @@ export async function verifyTask(
     verificationNote?: string | null;
   },
 ) {
-  await requireTaskReviewer(reviewerUserId);
+  const reviewer = await prisma.user.findUnique({
+    where: { id: reviewerUserId },
+    select: { id: true, isAdmin: true, personId: true },
+  });
+  if (!reviewer) throw new Error("Task not found");
 
   const result = await prisma.$transaction(async (tx) => {
-    const task = await tx.task.findUniqueOrThrow({
-      where: { id: taskId },
+    const privateTaskAccess = getTaskAccessWhere({
+      action: "VERIFY",
+      personId: reviewer.personId,
+      userId: reviewerUserId,
+    });
+    const task = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        OR: [
+          { isPublic: false, ...privateTaskAccess },
+          ...(reviewer.isAdmin ? [{ isPublic: true }] : []),
+        ],
+      },
       select: {
         claimPolicy: true,
         id: true,
         status: true,
       },
     });
+    if (!task) throw new Error("Task not found");
 
     if (input.claimId) {
       const claim = await tx.taskClaim.findUniqueOrThrow({
@@ -2067,7 +2466,28 @@ export async function reassignTask(
     roleTitle?: string | null;
   },
 ) {
-  await requireTaskReviewer(reviewerUserId);
+  const reviewer = await prisma.user.findUnique({
+    where: { id: reviewerUserId },
+    select: { id: true, isAdmin: true, personId: true },
+  });
+  if (!reviewer) throw new Error("Task not found");
+  const privateTaskAccess = getTaskAccessWhere({
+    action: "MANAGE",
+    personId: reviewer.personId,
+    userId: reviewerUserId,
+  });
+  const task = await prisma.task.findFirst({
+    where: {
+      deletedAt: null,
+      id: taskId,
+      OR: [
+        { isPublic: false, ...privateTaskAccess },
+        ...(reviewer.isAdmin ? [{ isPublic: true }] : []),
+      ],
+    },
+    select: { id: true },
+  });
+  if (!task) throw new Error("Task not found");
 
   const assigneeOrganization = input.organizationId?.trim()
     ? await prisma.organization.findUniqueOrThrow({

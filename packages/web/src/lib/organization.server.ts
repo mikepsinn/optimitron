@@ -7,6 +7,7 @@ import {
 import {
   OrgStatus,
   OrgType,
+  OrganizationMemberRole as DbOrganizationMemberRole,
   TaskCategory,
   TaskClaimPolicy,
   TaskStatus,
@@ -420,7 +421,7 @@ export async function createOrganizationWithOwner(
       data: {
         organizationId: organization.id,
         userId: creatorUserId,
-        role: "owner",
+        role: DbOrganizationMemberRole.OWNER,
       },
     });
 
@@ -428,7 +429,16 @@ export async function createOrganizationWithOwner(
   });
 }
 
-const MANAGE_ROLES = new Set(["owner", "admin"]);
+const MANAGE_ROLES = new Set<DbOrganizationMemberRole>([
+  DbOrganizationMemberRole.OWNER,
+  DbOrganizationMemberRole.ADMIN,
+]);
+
+const CONTRIBUTE_ROLES = [
+  DbOrganizationMemberRole.OWNER,
+  DbOrganizationMemberRole.ADMIN,
+  DbOrganizationMemberRole.MEMBER,
+] as const;
 
 export async function canManageOrganization(
   userId: string,
@@ -449,6 +459,23 @@ export async function canManageOrganization(
   }
 
   return false;
+}
+
+export async function canContributeToOrganization(
+  userId: string,
+  organizationId: string,
+  db: Pick<DbClient, "organizationMember"> = prisma,
+): Promise<boolean> {
+  const membership = await db.organizationMember.findFirst({
+    where: {
+      organization: { deletedAt: null },
+      organizationId,
+      role: { in: [...CONTRIBUTE_ROLES] },
+      userId,
+    },
+    select: { id: true },
+  });
+  return membership != null;
 }
 
 export async function canUserViewOrganization(
@@ -545,12 +572,16 @@ export class LastOwnerError extends Error {
 
 export type OrganizationMemberRole = "owner" | "admin" | "member" | "viewer";
 
-const ORGANIZATION_MEMBER_ROLES: ReadonlySet<OrganizationMemberRole> = new Set([
-  "owner",
-  "admin",
-  "member",
-  "viewer",
-]);
+const ORGANIZATION_MEMBER_ROLE_TO_DB = {
+  owner: DbOrganizationMemberRole.OWNER,
+  admin: DbOrganizationMemberRole.ADMIN,
+  member: DbOrganizationMemberRole.MEMBER,
+  viewer: DbOrganizationMemberRole.VIEWER,
+} as const satisfies Record<OrganizationMemberRole, DbOrganizationMemberRole>;
+
+const ORGANIZATION_MEMBER_ROLES = new Set<OrganizationMemberRole>(
+  Object.keys(ORGANIZATION_MEMBER_ROLE_TO_DB) as OrganizationMemberRole[],
+);
 
 export function isOrganizationMemberRole(
   value: string,
@@ -566,7 +597,7 @@ async function isOrgOwner(
     where: { organizationId_userId: { organizationId, userId } },
     select: { role: true },
   });
-  return membership?.role === "owner";
+  return membership?.role === DbOrganizationMemberRole.OWNER;
 }
 
 async function assertNotLastOwner(
@@ -575,7 +606,7 @@ async function assertNotLastOwner(
   userIdBeingChanged: string,
 ) {
   const ownerCount = await tx.organizationMember.count({
-    where: { organizationId, role: "owner" },
+    where: { organizationId, role: DbOrganizationMemberRole.OWNER },
   });
   if (ownerCount <= 1) {
     const targetMembership = await tx.organizationMember.findUnique({
@@ -584,7 +615,7 @@ async function assertNotLastOwner(
       },
       select: { role: true },
     });
-    if (targetMembership?.role === "owner") {
+    if (targetMembership?.role === DbOrganizationMemberRole.OWNER) {
       throw new LastOwnerError();
     }
   }
@@ -720,8 +751,12 @@ export async function addOrganizationMember(
       where: {
         organizationId_userId: { organizationId, userId: targetUserId },
       },
-      update: { role },
-      create: { organizationId, userId: targetUserId, role },
+      update: { role: ORGANIZATION_MEMBER_ROLE_TO_DB[role] },
+      create: {
+        organizationId,
+        userId: targetUserId,
+        role: ORGANIZATION_MEMBER_ROLE_TO_DB[role],
+      },
     });
   });
 }
@@ -774,7 +809,7 @@ export async function updateOrganizationMemberRole(
       where: {
         organizationId_userId: { organizationId, userId: targetUserId },
       },
-      data: { role },
+      data: { role: ORGANIZATION_MEMBER_ROLE_TO_DB[role] },
     });
   });
 }

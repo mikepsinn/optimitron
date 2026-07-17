@@ -6,12 +6,142 @@
  * write a second predicate; extend this one.
  */
 
-import type { Prisma, TaskStatus } from "@optimitron/db";
+import {
+  ActivityType,
+  OrganizationMemberRole,
+  type Prisma,
+  type TaskStatus,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
 /** Error message API routes map to HTTP 404. Private tasks throw the same
  * message as missing ones so they stay indistinguishable. */
 export const TASK_NOT_FOUND_MESSAGE = "Task not found";
+
+export type TaskAccessAction =
+  | "READ"
+  | "READ_INTERNAL"
+  | "COMMENT"
+  | "EXECUTE"
+  | "MANAGE"
+  | "VERIFY";
+
+export interface TaskClientAccessBoundary {
+  allowPersonalPrivate: boolean;
+  /** null is reserved for trusted local clients; remote OAuth grants use IDs. */
+  organizationIds: readonly string[] | null;
+}
+
+export function isTaskWithinClientAccessBoundary(
+  task: { isPublic: boolean; ownerOrganizationId?: string | null },
+  boundary: TaskClientAccessBoundary,
+) {
+  if (task.isPublic) return true;
+  if (!task.ownerOrganizationId) return boundary.allowPersonalPrivate;
+  return (
+    boundary.organizationIds === null ||
+    boundary.organizationIds.includes(task.ownerOrganizationId)
+  );
+}
+
+export function getTaskClientAccessWhere(
+  boundary: TaskClientAccessBoundary,
+): Prisma.TaskWhereInput {
+  const allowed: Prisma.TaskWhereInput[] = [{ isPublic: true }];
+  if (boundary.allowPersonalPrivate) {
+    allowed.push({ isPublic: false, ownerOrganizationId: null });
+  }
+  if (boundary.organizationIds === null) {
+    allowed.push({ isPublic: false, ownerOrganizationId: { not: null } });
+  } else if (boundary.organizationIds.length > 0) {
+    allowed.push({
+      isPublic: false,
+      ownerOrganizationId: { in: [...boundary.organizationIds] },
+    });
+  }
+  return { OR: allowed };
+}
+
+const CONTRIBUTOR_ORGANIZATION_ROLES = [
+  OrganizationMemberRole.OWNER,
+  OrganizationMemberRole.ADMIN,
+  OrganizationMemberRole.MEMBER,
+] as const;
+
+const MANAGER_ORGANIZATION_ROLES = [
+  OrganizationMemberRole.OWNER,
+  OrganizationMemberRole.ADMIN,
+] as const;
+
+function organizationAccessWhere(
+  userId: string,
+  roles?: readonly OrganizationMemberRole[],
+): Prisma.TaskWhereInput[] {
+  const membership = {
+    some: {
+      ...(roles ? { role: { in: [...roles] } } : {}),
+      userId,
+    },
+  };
+
+  return [
+    { ownerOrganization: { members: membership } },
+    { assigneeOrganization: { members: membership } },
+  ];
+}
+
+export function getTaskAccessWhere(input: {
+  action: TaskAccessAction;
+  personId?: string | null;
+  userId?: string | null;
+}): Prisma.TaskWhereInput {
+  const userId = input.userId?.trim();
+  if (!userId) {
+    return input.action === "READ"
+      ? { isPublic: true }
+      : { id: "__unreachable__" };
+  }
+
+  const principalWhere: Prisma.TaskWhereInput[] = [
+    { createdByUserId: userId },
+    {
+      managers: {
+        some: { deletedAt: null, userId },
+      },
+    },
+  ];
+  if (input.personId) {
+    principalWhere.push({ assigneePersonId: input.personId });
+  }
+
+  if (input.action === "READ" || input.action === "READ_INTERNAL") {
+    principalWhere.push(...organizationAccessWhere(userId));
+    return input.action === "READ"
+      ? { OR: [{ isPublic: true }, ...principalWhere] }
+      : { OR: principalWhere };
+  }
+
+  if (input.action === "COMMENT" || input.action === "EXECUTE") {
+    principalWhere.push(
+      ...organizationAccessWhere(userId, CONTRIBUTOR_ORGANIZATION_ROLES),
+    );
+    return input.action === "COMMENT"
+      ? { OR: [{ isPublic: true }, ...principalWhere] }
+      : { OR: principalWhere };
+  }
+
+  return {
+    OR: [
+      { createdByUserId: userId },
+      {
+        managers: {
+          some: { deletedAt: null, userId },
+        },
+      },
+      ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+    ],
+  };
+}
 
 export function getTaskVisibilityWhere(input?: {
   assigneeOrganizationId?: string | null;
@@ -29,32 +159,39 @@ export function getTaskVisibilityWhere(input?: {
     deletedAt: null,
     id: input?.taskId ?? undefined,
     status: input?.status ?? undefined,
-    ...(input?.targetOrganizationId
-      ? {
-          OR: [
-            { assigneeOrganizationId: input.targetOrganizationId },
-            { ownerOrganizationId: input.targetOrganizationId },
-          ],
-        }
-      : {}),
+  };
+  const targetWhere: Prisma.TaskWhereInput | null = input?.targetOrganizationId
+    ? {
+        OR: [
+          { assigneeOrganizationId: input.targetOrganizationId },
+          { ownerOrganizationId: input.targetOrganizationId },
+        ],
+      }
+    : null;
+
+  const withTarget = (
+    accessWhere?: Prisma.TaskWhereInput,
+  ): Prisma.TaskWhereInput => {
+    if (targetWhere && accessWhere) {
+      return { AND: [baseWhere, targetWhere, accessWhere] };
+    }
+    return {
+      ...baseWhere,
+      ...(targetWhere ?? {}),
+      ...(accessWhere ?? {}),
+    };
   };
 
   const visibility = input?.visibility ?? "public";
   if (visibility === "target") {
-    return baseWhere;
+    return withTarget();
   }
   if (visibility === "created") {
     if (!input?.userId) {
-      return {
-        ...baseWhere,
-        createdByUserId: "__unreachable__",
-      };
+      return withTarget({ createdByUserId: "__unreachable__" });
     }
 
-    return {
-      ...baseWhere,
-      createdByUserId: input.userId,
-    };
+    return withTarget({ createdByUserId: input.userId });
   }
 
   // "personal" = anything I created OR anything assigned to my Person.
@@ -63,41 +200,35 @@ export function getTaskVisibilityWhere(input?: {
   // alongside tasks I authored myself.
   if (visibility === "personal") {
     if (!input?.userId) {
-      return { ...baseWhere, createdByUserId: "__unreachable__" };
+      return withTarget({ createdByUserId: "__unreachable__" });
     }
     const ors: Prisma.TaskWhereInput[] = [{ createdByUserId: input.userId }];
     if (input.personId) {
       ors.push({ assigneePersonId: input.personId });
     }
-    return { ...baseWhere, OR: ors };
+    return withTarget({ OR: ors });
   }
 
   if (visibility === "accessible" && input?.userId) {
-    // A task is "accessible" to a signed-in viewer if it is public, the
-    // viewer created it, OR it is assigned to the viewer's Person. The last
-    // clause matters for private trigger-spawned tasks (assignee = me,
-    // creator = system) so they don't 404 when their assignee clicks them
+    // Accessible tasks include public work and private work connected to the
+    // viewer by creation, assignment, management, or organization membership.
     // from /tasks "Your Tasks" → /tasks/[id].
-    const ors: Prisma.TaskWhereInput[] = [
-      { isPublic: true },
-      { createdByUserId: input.userId },
-    ];
-    if (input.personId) {
-      ors.push({ assigneePersonId: input.personId });
-    }
-    return { ...baseWhere, OR: ors };
+    return withTarget(
+      getTaskAccessWhere({
+        action: "READ",
+        personId: input.personId,
+        userId: input.userId,
+      }),
+    );
   }
 
-  return {
-    ...baseWhere,
-    isPublic: true,
-  };
+  return withTarget({ isPublic: true });
 }
 
 /**
  * True when the viewer can see the task — the same "accessible" predicate
- * /tasks/[id] uses (public, creator, or assignee Person), plus an admin
- * override. Missing/deleted tasks return false so callers 404 uniformly.
+ * /tasks/[id] uses. Platform administrators have no implicit private-work
+ * access; break-glass access is separate and audited.
  */
 export async function canUserViewTask(
   taskId: string,
@@ -111,17 +242,9 @@ export async function canUserViewTask(
   const viewer = userId
     ? await prisma.user.findUnique({
         where: { id: userId },
-        select: { isAdmin: true, personId: true },
+        select: { personId: true },
       })
     : null;
-
-  if (viewer?.isAdmin) {
-    const existing = await prisma.task.findFirst({
-      where: { id: normalizedTaskId, deletedAt: null },
-      select: { id: true },
-    });
-    return existing != null;
-  }
 
   const task = await prisma.task.findFirst({
     where: getTaskVisibilityWhere({
@@ -137,8 +260,8 @@ export async function canUserViewTask(
 
 /**
  * Internal task-thread items are narrower than public task access. They are
- * visible to admins, the task creator or assignee, direct task managers, and
- * owner/admin members of an owning or assigned organization.
+ * visible to the task creator or assignee, direct task managers, and members
+ * of an owning or assigned organization.
  */
 export async function canUserViewInternalTaskContent(
   taskId: string,
@@ -149,41 +272,19 @@ export async function canUserViewInternalTaskContent(
 
   const viewer = await prisma.user.findUnique({
     where: { id: userId },
-    select: { isAdmin: true, personId: true },
+    select: { personId: true },
   });
   if (!viewer) return false;
-
-  const internalAccess: Prisma.TaskWhereInput[] = [
-    { createdByUserId: userId },
-    {
-      managers: {
-        some: { deletedAt: null, userId },
-      },
-    },
-    {
-      ownerOrganization: {
-        members: {
-          some: { role: { in: ["owner", "admin"] }, userId },
-        },
-      },
-    },
-    {
-      assigneeOrganization: {
-        members: {
-          some: { role: { in: ["owner", "admin"] }, userId },
-        },
-      },
-    },
-  ];
-  if (viewer.personId) {
-    internalAccess.push({ assigneePersonId: viewer.personId });
-  }
 
   const task = await prisma.task.findFirst({
     where: {
       deletedAt: null,
       id: normalizedTaskId,
-      ...(viewer.isAdmin ? {} : { OR: internalAccess }),
+      ...getTaskAccessWhere({
+        action: "READ_INTERNAL",
+        personId: viewer.personId,
+        userId,
+      }),
     },
     select: { id: true },
   });
@@ -198,4 +299,95 @@ export async function assertUserCanViewTask(
   if (!(await canUserViewTask(taskId, userId))) {
     throw new Error(TASK_NOT_FOUND_MESSAGE);
   }
+}
+
+async function canUserAccessTask(
+  taskId: string,
+  userId: string | null | undefined,
+  action: Exclude<TaskAccessAction, "READ" | "READ_INTERNAL">,
+): Promise<boolean> {
+  const normalizedTaskId = typeof taskId === "string" ? taskId.trim() : "";
+  if (!normalizedTaskId || !userId) return false;
+
+  const viewer = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  if (!viewer) return false;
+
+  const task = await prisma.task.findFirst({
+    where: {
+      deletedAt: null,
+      id: normalizedTaskId,
+      ...getTaskAccessWhere({ action, personId: viewer.personId, userId }),
+    },
+    select: { id: true },
+  });
+  return task != null;
+}
+
+export function canUserCommentOnTask(
+  taskId: string,
+  userId: string | null | undefined,
+) {
+  return canUserAccessTask(taskId, userId, "COMMENT");
+}
+
+export function canUserExecuteTask(
+  taskId: string,
+  userId: string | null | undefined,
+) {
+  return canUserAccessTask(taskId, userId, "EXECUTE");
+}
+
+export function canUserManageTask(
+  taskId: string,
+  userId: string | null | undefined,
+) {
+  return canUserAccessTask(taskId, userId, "MANAGE");
+}
+
+export function canUserVerifyTask(
+  taskId: string,
+  userId: string | null | undefined,
+) {
+  return canUserAccessTask(taskId, userId, "VERIFY");
+}
+
+export async function authorizeTaskBreakGlassAccess(input: {
+  adminUserId: string;
+  reason: string;
+  taskId: string;
+}): Promise<void> {
+  const reason = input.reason.trim();
+  if (reason.length < 10) {
+    throw new Error("Break-glass access requires a specific reason");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const [admin, task] = await Promise.all([
+      tx.user.findFirst({
+        where: { deletedAt: null, id: input.adminUserId, isAdmin: true },
+        select: { id: true },
+      }),
+      tx.task.findFirst({
+        where: { deletedAt: null, id: input.taskId },
+        select: { id: true, isPublic: true },
+      }),
+    ]);
+
+    if (!admin) throw new Error("Platform administrator required");
+    if (!task) throw new Error(TASK_NOT_FOUND_MESSAGE);
+
+    await tx.activity.create({
+      data: {
+        description: "Private task break-glass access authorized",
+        entityId: task.id,
+        entityType: "Task",
+        metadata: JSON.stringify({ isPublic: task.isPublic, reason }),
+        type: ActivityType.CONTENT_ACCESS_CHANGED,
+        userId: admin.id,
+      },
+    });
+  });
 }

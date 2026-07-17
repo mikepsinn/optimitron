@@ -5,6 +5,7 @@ import {
   GLOBAL_POPULATION_2024,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
 } from "@optimitron/data/parameters";
+import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "@optimitron/db/system-identities";
 import type { ParameterValueProps } from "@/components/shared/ParameterValue.core";
 import {
   FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
@@ -37,7 +38,9 @@ export function createHumanityManagerPromotion({
         <PromoEyebrow>Humanity Manager · Assignment 1</PromoEyebrow>
         <PromoBody>
           <PromoText>
-            🥳Congratulations! You&apos;ve been promoted to Humanity Manager at Earth Optimization Services, LLC. You are responsible for getting{" "}
+            🥳Congratulations! You&apos;ve been promoted to Humanity Manager at{" "}
+            {EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}. You are responsible for
+            getting{" "}
             <ParameterValue
               className="font-black"
               figures={1}
@@ -55,7 +58,8 @@ export function createHumanityManagerPromotion({
               figures={3}
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
             />
-            × more clinical trials, compressing the disease eradication timeline from{" "}
+            × more clinical trials, compressing the disease eradication timeline
+            from{" "}
             <ParameterValue
               className="font-black"
               figures={3}
@@ -66,7 +70,8 @@ export function createHumanityManagerPromotion({
               className="font-black"
               figures={2}
               param={DFDA_QUEUE_CLEARANCE_YEARS}
-            />.
+            />
+            .
           </PromoText>
           <PromoText>
             Hire 2 subordinates by sending this message to{" "}
@@ -81,7 +86,8 @@ export function createHumanityManagerPromotion({
               presentation="inline"
               valueOverride="two"
             />{" "}
-            more and after 32 of these doublings, the majority of humanity has agreed to transcend war and disease!
+            more and after 32 of these doublings, the majority of humanity has
+            agreed to transcend war and disease!
           </PromoText>
         </PromoBody>
       </>

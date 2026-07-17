@@ -3,7 +3,12 @@ import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getSiteVariantUiConfig } from "@/config/site-variant-ui";
 import { ROUTES } from "@/lib/routes";
-import { getSiteConfig, type SiteFooterColumn, type SiteKey } from "@/lib/site";
+import {
+  formatSiteMailingAddress,
+  getSiteConfig,
+  type SiteFooterColumn,
+  type SiteKey,
+} from "@/lib/site";
 import {
   DFDA_QUEUE_CLEARANCE_YEARS,
   NUCLEAR_WINTER_OVERKILL_FACTOR,
@@ -121,6 +126,14 @@ export default function Footer({ siteKey = "optimitron" }: FooterProps) {
 
         <div className="mt-10 border-t border-border pt-6 text-center text-sm font-bold text-muted-foreground">
           <p>{bottomText}</p>
+          {site.footerComplianceNotice ? (
+            <p className="mx-auto mt-2 max-w-3xl text-xs leading-relaxed">
+              {site.footerComplianceNotice}
+            </p>
+          ) : null}
+          <address className="mt-2 text-xs not-italic">
+            Mailing address: {formatSiteMailingAddress(site.mailingAddress)}
+          </address>
           <p className="mt-2 text-xs">
             Contact{" "}
             <a

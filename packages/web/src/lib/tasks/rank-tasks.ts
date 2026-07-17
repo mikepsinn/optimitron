@@ -1,5 +1,4 @@
 import { TaskClaimPolicy, TaskStatus } from "@optimitron/db";
-import type { TaskKind } from "@optimitron/db";
 import {
   assessTaskCapability,
   type TaskCapabilityAssessment,
@@ -15,6 +14,7 @@ export interface RankableTask {
   id: string;
   activeClaimCount?: number;
   activeChildTaskCount?: number;
+  activeExecutionAttemptCount?: number;
   blockerStatuses?: TaskStatus[];
   claimPolicy: TaskClaimPolicy;
   estimatedEffortHours: number | null;
@@ -22,7 +22,6 @@ export interface RankableTask {
   estimatedHoursPerWeekMin?: number | null;
   interestTags: string[];
   executionMode?: string | null;
-  kind?: TaskKind | string | null;
   maxClaims?: number | null;
   marginalImpactFrame?: TaskImpactFrameSummary | null;
   compensationPaymentRails?: string[] | null;
@@ -39,6 +38,7 @@ export interface RankableTask {
   selectedImpactFrame?: TaskImpactFrameSummary | null;
   skillTags: string[];
   status: TaskStatus;
+  taskKey?: string | null;
   workLocationCity?: string | null;
   workLocationCountryCode?: string | null;
   workLocationRegionCode?: string | null;
@@ -446,9 +446,12 @@ export function hasActiveChildTasks(
 }
 
 export function isAtomicExecutionTask(
-  task: Pick<RankableTask, "activeChildTaskCount" | "kind">,
+  task: Pick<
+    RankableTask,
+    "activeChildTaskCount" | "activeExecutionAttemptCount" | "id" | "taskKey"
+  >,
 ) {
-  return isExecutableWorkItem(task) && !hasActiveChildTasks(task);
+  return isExecutableWorkItem(task);
 }
 
 function getExecutionImpactFrame(task: RankableTask) {

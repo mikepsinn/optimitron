@@ -132,6 +132,7 @@ export const TaskContextJsonSchema = z
     reminder: ReminderSchema.optional(),
     contextComparisons: z.array(ContextComparisonSchema).optional(),
     blockedBy: BlockedBySchema.optional(),
+    expectedDeliverable: z.string().min(1).optional(),
     acceptanceCriteria: z.array(z.string()).optional(),
     currentActivities: z.array(CurrentActivitySchema).optional(),
   })

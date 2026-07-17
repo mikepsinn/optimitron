@@ -12,6 +12,7 @@
  * Spec: docs/questions.md → Add Wishonia email signature task.
  */
 
+import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "@optimitron/db/system-identities";
 import { getBaseUrl } from "@/lib/url";
 
 export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/happy-smile.png";
@@ -74,7 +75,7 @@ export function selectWishoniaSignature(): WishoniaSignatureSelection {
  *
  *   🛸 Wishonia
  *   Chief Optimization Officer
- *   Earth Optimization Services LLC
+ *   Earth Optimization Services Inc.
  *   Maximizing median income and health-adjusted life years since 2026
  */
 export function buildWishoniaSignatureText(
@@ -88,7 +89,7 @@ export function buildWishoniaSignatureText(
     "",
     "🛸 Wishonia",
     selection.title,
-    "Earth Optimization Services LLC",
+    EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
     selection.tagline,
   ].join("\n");
 }
@@ -117,7 +118,7 @@ export function buildWishoniaSignatureHtml(
       <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</p>
       <p style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">🛸 Wishonia</p>
       <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(selection.title)}</p>
-      <p style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">Earth Optimization Services LLC</p>
+      <p style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}</p>
       <p style="font-size:12px;line-height:1.4;font-style:italic;color:#71717a;margin:2px 0 0 0;">${escapeHtml(selection.tagline)}</p>
     </td>
   </tr>
@@ -159,12 +160,12 @@ export interface SenderSignature {
   name: string;
   /** "Recently promoted to Humanity Manager" — defaults to that exact line. */
   role?: string;
-  /** "Earth Optimization Services LLC" — defaults to that exact org. */
+  /** "Earth Optimization Services Inc." — defaults to that exact org. */
   org?: string;
 }
 
 const DEFAULT_SENDER_ROLE = "Recently promoted to Humanity Manager";
-const DEFAULT_SENDER_ORG = "Earth Optimization Services LLC";
+const DEFAULT_SENDER_ORG = EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME;
 
 /**
  * Build the share-email sender sign-off. Used when a real human (not
