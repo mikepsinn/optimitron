@@ -133,7 +133,21 @@ const routeOrder = [
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",
+  "variant-optimitron-home",
+  "variant-optimitron-tasks",
+  "variant-dfda-home",
+  "variant-dfda-conditions",
+  "variant-dih-home",
+  "variant-dih-fund-a-disease",
 ];
+
+// Non-default site variants captured by the variant-delta routes in
+// e2e/utils/visual-routes.ts. Keys match SiteKey in src/lib/site.ts.
+const VARIANT_DOMAIN_LABELS = {
+  optimitron: "optimitron.com",
+  dfda: "dfda.earth",
+  dih: "dih.earth",
+};
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.stack ?? error.message : error);
@@ -284,8 +298,16 @@ function renderHtml(groups) {
 function buildReviewPageInput(groups) {
   const reviewBase = getPublishedReviewBase();
   const routes = groups.map((group) => buildReviewPageRoute(group));
+  // Changed variant routes rank 0 with everything else (they must surface);
+  // unchanged variant routes park below Unchanged in their own rail group.
   const rank = (route) =>
-    route.changed || route.errored ? 0 : route.copyChanged ? 1 : 2;
+    route.changed || route.errored
+      ? 0
+      : route.copyChanged
+        ? 1
+        : route.siteVariant
+          ? 3
+          : 2;
   routes.sort((a, b) => rank(a) - rank(b));
   return {
     meta: {
@@ -296,7 +318,7 @@ function buildReviewPageInput(groups) {
       generatedAt: reviewGeneratedAt.toISOString(),
       generatedAtCentral: formatCentralTime(reviewGeneratedAt),
       previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
-      productionBaseUrl: "https://optimitron.com",
+      productionBaseUrl: "https://warondisease.org",
       reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
       repo: repoSlug,
       baselineDescription: buildBaselineDescription(),
@@ -305,6 +327,7 @@ function buildReviewPageInput(groups) {
       changedRoutes: routes.filter((route) => route.changed).length,
       copyOnlyRoutes: routes.filter((route) => rank(route) === 1).length,
       unchangedRoutes: routes.filter((route) => rank(route) === 2).length,
+      variantRoutes: routes.filter((route) => route.siteVariant).length,
       erroredRoutes: routes.filter((route) => route.errored).length,
       totalRoutes: routes.length,
     },
@@ -328,12 +351,18 @@ function buildBaselineDescription() {
 function buildReviewPageRoute(group) {
   const markdownDiff = buildMarkdownDiff(group.routeName);
   const routePath = routePaths.get(group.routeName) ?? null;
+  const siteVariant = getRouteSiteVariant(group.routeName);
   return {
     routeName: group.routeName,
-    routeLabel: labelRoute(group.routeName),
+    routeLabel: siteVariant
+      ? labelVariantRoute(group.routeName, siteVariant)
+      : labelRoute(group.routeName),
     routePath,
     routeUrl: getRouteUrl(group.routeName),
+    productionUrl: getProductionRouteUrl(routePath, siteVariant),
     authState: getRouteAuthState(group.routeName),
+    siteVariant,
+    variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
     changed: group.changed,
     copyChanged: Boolean(markdownDiff),
     errored: group.errored,
@@ -1174,12 +1203,16 @@ function buildReviewManifest(groups) {
     routes: groups.map((group) => {
       const markdownDiff = buildMarkdownDiff(group.routeName);
       const copyChanged = Boolean(markdownDiff);
+      const siteVariant = getRouteSiteVariant(group.routeName);
       return {
         routeName: group.routeName,
-        routeLabel: labelRoute(group.routeName),
+        routeLabel: siteVariant
+          ? labelVariantRoute(group.routeName, siteVariant)
+          : labelRoute(group.routeName),
         routePath: routePaths.get(group.routeName) ?? null,
         routeUrl: getRouteUrl(group.routeName),
         authState: getRouteAuthState(group.routeName),
+        siteVariant,
         changed: group.changed,
         copyChanged,
         errored: group.errored,
@@ -1365,6 +1398,8 @@ function loadRouteSpecs() {
           {
             path: entry.path,
             authenticated: entry.authenticated === true,
+            siteVariant:
+              typeof entry.siteVariant === "string" ? entry.siteVariant : null,
           },
         ]),
     );
@@ -1389,6 +1424,34 @@ function getRouteAuthState(routeName) {
   return "logged-out";
 }
 
+// Manifest first; filename-prefix fallback covers baseline screenshots
+// captured before the manifest carried siteVariant.
+function getRouteSiteVariant(routeName) {
+  const fromManifest = routeSpecs.get(routeName)?.siteVariant;
+  if (fromManifest) {
+    return fromManifest;
+  }
+  const match = /^variant-([a-z0-9]+)-/i.exec(routeName);
+  return match && VARIANT_DOMAIN_LABELS[match[1]] ? match[1] : null;
+}
+
+function getVariantDomainLabel(siteVariant) {
+  return VARIANT_DOMAIN_LABELS[siteVariant] ?? siteVariant;
+}
+
+function labelVariantRoute(routeName, siteVariant) {
+  const rest = routeName.replace(`variant-${siteVariant}-`, "");
+  return `${getVariantDomainLabel(siteVariant)} · ${labelRoute(rest)}`;
+}
+
+function getProductionRouteUrl(routePath, siteVariant) {
+  if (!routePath) return null;
+  const origin = siteVariant
+    ? `https://${getVariantDomainLabel(siteVariant)}`
+    : "https://warondisease.org";
+  return new URL(routePath, origin).toString();
+}
+
 function getRouteUrl(routeName) {
   if (!pageLinkBaseUrl) {
     return null;
@@ -1408,6 +1471,10 @@ function getRouteUrl(routeName) {
     url.searchParams.set("logout", "1");
     url.searchParams.delete("login");
   }
+  const siteVariant = getRouteSiteVariant(routeName);
+  // Clear a previously selected variant when a reviewer returns to a default
+  // route. Production custom domains ignore this review-only override.
+  url.searchParams.set("site", siteVariant ?? "reset");
   return url.toString();
 }
 

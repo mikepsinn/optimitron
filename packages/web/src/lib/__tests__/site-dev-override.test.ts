@@ -1,13 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   SITE_VARIANT_OVERRIDE_QUERY_PARAM,
-  resolveLocalSiteVariantOverride,
+  resolveReviewSiteVariantOverride,
 } from "@/lib/site-dev-override";
 
-describe("local site variant override", () => {
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+describe("review site variant override", () => {
   it("uses a valid local query override and persists it", () => {
     expect(
-      resolveLocalSiteVariantOverride({
+      resolveReviewSiteVariantOverride({
         cookieSiteKey: null,
         host: "localhost:3001",
         querySiteKey: "warOnDisease",
@@ -23,7 +27,7 @@ describe("local site variant override", () => {
 
   it("uses a valid local cookie override when no query override is present", () => {
     expect(
-      resolveLocalSiteVariantOverride({
+      resolveReviewSiteVariantOverride({
         cookieSiteKey: "dfda",
         host: "127.0.0.1:3001",
         querySiteKey: null,
@@ -36,9 +40,40 @@ describe("local site variant override", () => {
     });
   });
 
+  it("uses a query override on Vercel review deployments", () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    expect(
+      resolveReviewSiteVariantOverride({
+        cookieSiteKey: null,
+        host: "optimitron-example-mike-p-sinns-projects.vercel.app",
+        querySiteKey: "dfda",
+      }),
+    ).toMatchObject({
+      enabled: true,
+      persistSiteKey: "dfda",
+      siteKey: "dfda",
+      stripQueryParam: true,
+    });
+  });
+
+  it("ignores query overrides on production Vercel deployments", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    expect(
+      resolveReviewSiteVariantOverride({
+        cookieSiteKey: null,
+        host: "optimitron-production.vercel.app",
+        querySiteKey: "dfda",
+      }),
+    ).toMatchObject({
+      enabled: false,
+      siteKey: null,
+      stripQueryParam: false,
+    });
+  });
+
   it("clears the local cookie when the query override asks for the host default", () => {
     expect(
-      resolveLocalSiteVariantOverride({
+      resolveReviewSiteVariantOverride({
         cookieSiteKey: "warOnDisease",
         host: "localhost:3001",
         querySiteKey: "reset",
@@ -52,9 +87,9 @@ describe("local site variant override", () => {
     });
   });
 
-  it("ignores overrides outside local requests", () => {
+  it("ignores overrides on production custom domains", () => {
     expect(
-      resolveLocalSiteVariantOverride({
+      resolveReviewSiteVariantOverride({
         cookieSiteKey: "dfda",
         host: "warondisease.org",
         querySiteKey: "dfda",

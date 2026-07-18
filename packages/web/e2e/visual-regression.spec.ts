@@ -9,6 +9,10 @@ import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import { getRouteReviewSpecs } from "@/lib/routes";
+import {
+  SITE_VARIANT_OVERRIDE_COOKIE,
+  SITE_VARIANT_OVERRIDE_QUERY_PARAM,
+} from "@/lib/site";
 import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
 import { signInDemoUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
@@ -81,6 +85,7 @@ function buildRouteReviewManifest() {
     name: route.name,
     path: route.path,
     authenticated: route.authenticated === true,
+    ...(route.siteVariant ? { siteVariant: route.siteVariant } : {}),
   }));
   const representedStates = new Set(
     entries.map((entry) => `${entry.path}\u0000${entry.authenticated}`),
@@ -137,7 +142,11 @@ test.describe("route visual regression", () => {
         ).toBe(true);
       }
 
-      const response = await openVisualRoute(page, route.path);
+      const response = await openVisualRoute(
+        page,
+        route.path,
+        route.siteVariant,
+      );
       const status = response?.status() ?? 0;
 
       if (!route.required && OPTIONAL_ROUTE_SKIP_STATUSES.has(status)) {
@@ -206,7 +215,11 @@ test.describe("route visual regression", () => {
   }
 });
 
-async function openVisualRoute(page: Page, routePath: string) {
+async function openVisualRoute(
+  page: Page,
+  routePath: string,
+  siteVariant?: string,
+) {
   const errors: string[] = [];
   await page.addInitScript(() => {
     Object.defineProperty(window, "__OPTIMITRON_VISUAL_REVIEW__", {
@@ -221,7 +234,12 @@ async function openVisualRoute(page: Page, routePath: string) {
     }
   });
 
-  const response = await page.goto(routePath, {
+  const routeUrl = new URL(routePath, "http://visual-review.local");
+  if (siteVariant) {
+    routeUrl.searchParams.set(SITE_VARIANT_OVERRIDE_QUERY_PARAM, siteVariant);
+  }
+  const targetPath = `${routeUrl.pathname}${routeUrl.search}${routeUrl.hash}`;
+  const response = await page.goto(targetPath, {
     waitUntil: "domcontentloaded",
     timeout: 90_000,
   });
@@ -231,7 +249,17 @@ async function openVisualRoute(page: Page, routePath: string) {
   });
   await forceAnimationsComplete(page);
 
-  expect(errors, `${routePath} should not throw client-side errors`).toEqual(
+  if (siteVariant) {
+    const selectedVariant = (await page.context().cookies()).find(
+      (cookie) => cookie.name === SITE_VARIANT_OVERRIDE_COOKIE,
+    );
+    expect(
+      selectedVariant?.value,
+      `${targetPath} should select ${siteVariant} before capture`,
+    ).toBe(siteVariant);
+  }
+
+  expect(errors, `${targetPath} should not throw client-side errors`).toEqual(
     [],
   );
   return response;

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import * as siteRegistry from "@/lib/site";
 import {
   SITE_VARIANT_OVERRIDE_COOKIE,
@@ -21,6 +21,10 @@ import { ROUTES } from "@/lib/routes";
 const INTERNATIONAL_CAMPAIGN_NAME =
   "International Campaign to End War and Disease";
 const INTERNATIONAL_CAMPAIGN_SHORT_NAME = "IC2EWD";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe("site variant registry", () => {
   it("uses local http origins for .local hosts", () => {
@@ -59,7 +63,8 @@ describe("site variant registry", () => {
     expect(getSiteFromHost("unknown.example").key).toBe("warOnDisease");
   });
 
-  it("supports local-only middleware site override plumbing without DNS-specific hosts", () => {
+  it("supports middleware site overrides only on local and Vercel review hosts", () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
     const localSite = getSiteFromHeaders(
       new Headers({
         host: "127.0.0.1:3001",
@@ -85,6 +90,14 @@ describe("site variant registry", () => {
     expect(
       getSiteFromHeaders(
         new Headers({
+          host: "optimitron-example-mike-p-sinns-projects.vercel.app",
+          "x-optimitron-site-key": "dfda",
+        }),
+      ).key,
+    ).toBe("dfda");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
           host: "warondisease.org",
           "x-optimitron-site-key": "dfda",
         }),
@@ -103,6 +116,15 @@ describe("site variant registry", () => {
         new Headers({
           host: "warondisease.org",
           cookie: `${SITE_VARIANT_OVERRIDE_COOKIE}=dfda`,
+        }),
+      ).key,
+    ).toBe("warOnDisease");
+    vi.stubEnv("VERCEL_ENV", "production");
+    expect(
+      getSiteFromHeaders(
+        new Headers({
+          host: "optimitron-production.vercel.app",
+          "x-optimitron-site-key": "dfda",
         }),
       ).key,
     ).toBe("warOnDisease");
