@@ -9277,13 +9277,23 @@ export function createMcpServer(
             if (!resolvedVisibility.ok) return err(resolvedVisibility.error);
             let visibility: "public" | "accessible" | "private" =
               resolvedVisibility.visibility;
-            if (a.assignedToMe === true && userId) {
+            // The accessible/private predicates only include tasks assigned
+            // to the caller's Person when personId is supplied — without it,
+            // trigger-spawned tasks assigned to you would vanish from "all".
+            let viewerPersonId: string | null = null;
+            if (
+              userId &&
+              (visibility !== "public" || a.assignedToMe === true)
+            ) {
               const prisma = await getPrisma();
               const user = await prisma.user.findUnique({
                 where: { id: userId },
                 select: { personId: true },
               });
-              assigneePersonId = user?.personId ?? "__unreachable__";
+              viewerPersonId = user?.personId ?? null;
+            }
+            if (a.assignedToMe === true && userId) {
+              assigneePersonId = viewerPersonId ?? "__unreachable__";
               if (visibility === "public") visibility = "accessible";
             }
             let extendedFilters: {
@@ -9350,6 +9360,7 @@ export function createMcpServer(
               assigneeOrganizationId,
               parentTaskId: parentTaskIdFilter,
               limit: needsExtendedFiltering ? 5000 : limit,
+              personId: visibility === "public" ? null : viewerPersonId,
               userId: visibility === "public" ? null : userId,
               visibility,
             });

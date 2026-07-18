@@ -1780,6 +1780,9 @@ describe("MCP server tool dispatch", () => {
           status: TaskStatus.ACTIVE,
           // Authenticated callers default to visibility "all" (accessible
           // predicate) so private branches list without extra parameters.
+          // personId must ride along or tasks assigned to the caller's
+          // Person (e.g. trigger-spawned) drop out of the results.
+          personId: "person-1",
           userId: "user-1",
           visibility: "accessible",
         }),
