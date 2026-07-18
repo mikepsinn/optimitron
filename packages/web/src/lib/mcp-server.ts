@@ -109,6 +109,7 @@ import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { ensureSubjectForUser } from "./subject.server";
 import type { RankableTask } from "./tasks/rank-tasks";
+import { resolveTaskVisibilityParam } from "./tasks/task-visibility-param";
 import {
   canUserManageTask,
   getTaskAccessWhere,
@@ -5232,10 +5233,20 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "listTasks",
     description:
-      "List tasks with optional filters. Returns up to 50 tasks sorted by accountability score.",
+      "List tasks with optional filters. Returns up to 50 tasks sorted by accountability score. " +
+      "Signed-in callers see public tasks plus their own private work by default (visibility 'all'); " +
+      "pass visibility 'public' or 'private' to narrow.",
     inputSchema: {
       type: "object" as const,
       properties: {
+        visibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to include: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), " +
+            "'private' = only your non-public tasks.",
+        },
         status: {
           type: "string",
           enum: ["DRAFT", "ACTIVE", "VERIFIED", "STALE"],
@@ -5772,11 +5783,18 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Max tasks per organization when includeTasks=true (default 3, max 50).",
         },
+        taskVisibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to include in the summary: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), 'private' = only your non-public tasks.",
+        },
         taskScope: {
           type: "string",
           enum: ["public", "accessible"],
           description:
-            "Task scope for returned summary. `public` is default and safe for shared data.",
+            "Deprecated alias of taskVisibility ('accessible' = 'all'). Prefer taskVisibility.",
         },
         taskStatus: {
           type: "string",
@@ -5798,11 +5816,19 @@ const TASK_TOOL_DEFINITIONS = [
           type: "number",
           description: "Max tasks to return (default 50, max 200).",
         },
+        visibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to include: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), " +
+            "'private' = only your non-public tasks.",
+        },
         scope: {
           type: "string",
           enum: ["public", "accessible"],
           description:
-            "Use `public` unless you are explicitly authenticated and want your private assigned tasks.",
+            "Deprecated alias of visibility ('accessible' = 'all'). Prefer visibility.",
         },
         status: {
           type: "string",
@@ -5844,11 +5870,18 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Max tasks per person when includeTasks=true (default 3, max 50).",
         },
+        taskVisibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to include in the summary: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), 'private' = only your non-public tasks.",
+        },
         taskScope: {
           type: "string",
           enum: ["public", "accessible"],
           description:
-            "Task scope for returned summary. `public` is default and safe for shared data.",
+            "Deprecated alias of taskVisibility ('accessible' = 'all'). Prefer taskVisibility.",
         },
         taskStatus: {
           type: "string",
@@ -5870,11 +5903,19 @@ const TASK_TOOL_DEFINITIONS = [
           type: "number",
           description: "Max tasks to return (default 50, max 200).",
         },
+        visibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to include: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), " +
+            "'private' = only your non-public tasks.",
+        },
         scope: {
           type: "string",
           enum: ["public", "accessible"],
           description:
-            "Use `public` unless you are explicitly authenticated and want your private assigned tasks.",
+            "Deprecated alias of visibility ('accessible' = 'all'). Prefer visibility.",
         },
         status: {
           type: "string",
@@ -7613,11 +7654,19 @@ const TASK_TOOL_DEFINITIONS = [
           type: "number",
           description: "Max results to return (default 20, max 100)",
         },
+        visibility: {
+          type: "string",
+          enum: ["all", "public", "private"],
+          description:
+            "Which tasks to search: 'all' = public + your private work (default when signed in), " +
+            "'public' = public only (default for anonymous callers), " +
+            "'private' = only your non-public tasks.",
+        },
         scope: {
           type: "string",
           enum: ["public", "accessible"],
           description:
-            "What visibility to search. Use public for public tasks only, accessible for your private + public tasks.",
+            "Deprecated alias of visibility ('accessible' = 'all'). Prefer visibility.",
         },
         status: {
           type: "string",
@@ -9221,7 +9270,13 @@ export function createMcpServer(
             let assigneePersonId = (a.assigneePersonId as string) ?? null;
             const assigneeOrganizationId =
               (a.assigneeOrganizationId as string) ?? null;
-            let visibility: "public" | "accessible" = "public";
+            const resolvedVisibility = resolveTaskVisibilityParam({
+              visibility: a.visibility,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedVisibility.ok) return err(resolvedVisibility.error);
+            let visibility: "public" | "accessible" | "private" =
+              resolvedVisibility.visibility;
             if (a.assignedToMe === true && userId) {
               const prisma = await getPrisma();
               const user = await prisma.user.findUnique({
@@ -9229,7 +9284,7 @@ export function createMcpServer(
                 select: { personId: true },
               });
               assigneePersonId = user?.personId ?? "__unreachable__";
-              visibility = "accessible";
+              if (visibility === "public") visibility = "accessible";
             }
             let extendedFilters: {
               applicationPolicy?: TaskApplicationPolicy;
@@ -9290,12 +9345,12 @@ export function createMcpServer(
               status,
               category,
               clientAccessBoundary:
-                visibility === "accessible" ? taskClientBoundary : undefined,
+                visibility === "public" ? undefined : taskClientBoundary,
               assigneePersonId,
               assigneeOrganizationId,
               parentTaskId: parentTaskIdFilter,
               limit: needsExtendedFiltering ? 5000 : limit,
-              userId: visibility === "accessible" ? userId : null,
+              userId: visibility === "public" ? null : userId,
               visibility,
             });
             // parentTaskId is filtered in the Prisma query above; no in-memory pass.
@@ -9353,17 +9408,17 @@ export function createMcpServer(
             const publicProfilesOnly = a.publicProfilesOnly !== false;
             const limit = parseQueueLimit(a.limit, 100, 500);
             const taskLimit = parseQueueLimit(a.taskLimit, 3, 50);
-            const taskScope =
-              a.taskScope === "accessible" ? "accessible" : "public";
+            const resolvedTaskVisibility = resolveTaskVisibilityParam({
+              visibility: a.taskVisibility,
+              scope: a.taskScope,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedTaskVisibility.ok)
+              return err(resolvedTaskVisibility.error);
+            const taskScope = resolvedTaskVisibility.visibility;
             const taskStatus = a.taskStatus
               ? (TaskStatus[a.taskStatus as keyof typeof TaskStatus] ?? null)
               : TaskStatus.ACTIVE;
-            const includePrivateTaskScope =
-              taskScope === "accessible" && !userId;
-
-            if (includePrivateTaskScope) {
-              return err("Authentication required for taskScope=accessible.");
-            }
 
             const people = await prisma.person.findMany({
               where: {
@@ -9411,9 +9466,7 @@ export function createMcpServer(
                 const listed = await tasks.listTasks({
                   assigneePersonId: person.id,
                   clientAccessBoundary:
-                    taskScope === "accessible"
-                      ? taskClientBoundary
-                      : undefined,
+                    taskScope === "public" ? undefined : taskClientBoundary,
                   limit: taskLimit,
                   status: taskStatus,
                   visibility: taskScope,
@@ -9432,7 +9485,13 @@ export function createMcpServer(
             const { tasks } = await getTaskFunctions();
             const personId = (a.personId as string) ?? "";
             if (!personId) return err("personId is required");
-            const scope = a.scope === "accessible" ? "accessible" : "public";
+            const resolvedScope = resolveTaskVisibilityParam({
+              visibility: a.visibility,
+              scope: a.scope,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedScope.ok) return err(resolvedScope.error);
+            const scope = resolvedScope.visibility;
             const person = await prisma.person.findFirst({
               where: { deletedAt: null, id: personId },
               select: {
@@ -9445,8 +9504,6 @@ export function createMcpServer(
               },
             });
             if (!person) return err("Person not found");
-            if (scope === "accessible" && !userId)
-              return err("Authentication required for accessible scope.");
 
             const status = a.status
               ? (TaskStatus[a.status as keyof typeof TaskStatus] ?? null)
@@ -9456,7 +9513,7 @@ export function createMcpServer(
             const personTasks = await tasks.listTasks({
               assigneePersonId: person.id,
               clientAccessBoundary:
-                scope === "accessible" ? taskClientBoundary : undefined,
+                scope === "public" ? undefined : taskClientBoundary,
               status,
               visibility: scope,
               userId: userId ?? null,
@@ -9480,15 +9537,18 @@ export function createMcpServer(
             const includeTasks = a.includeTasks === true;
             const limit = parseQueueLimit(a.limit, 100, 500);
             const taskLimit = parseQueueLimit(a.taskLimit, 3, 50);
-            const taskScope =
-              a.taskScope === "accessible" ? "accessible" : "public";
+            const resolvedTaskVisibility = resolveTaskVisibilityParam({
+              visibility: a.taskVisibility,
+              scope: a.taskScope,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedTaskVisibility.ok)
+              return err(resolvedTaskVisibility.error);
+            const taskScope = resolvedTaskVisibility.visibility;
             const taskStatus = a.taskStatus
               ? (TaskStatus[a.taskStatus as keyof typeof TaskStatus] ??
                 TaskStatus.ACTIVE)
               : TaskStatus.ACTIVE;
-            if (taskScope === "accessible" && !userId) {
-              return err("Authentication required for taskScope=accessible.");
-            }
             const organizationWhere = {
               deletedAt: null,
               ...(a.status
@@ -9533,9 +9593,7 @@ export function createMcpServer(
                 const listed = await tasks.listTasks({
                   assigneeOrganizationId: organization.id,
                   clientAccessBoundary:
-                    taskScope === "accessible"
-                      ? taskClientBoundary
-                      : undefined,
+                    taskScope === "public" ? undefined : taskClientBoundary,
                   limit: taskLimit,
                   status: taskStatus,
                   visibility: taskScope,
@@ -9557,7 +9615,13 @@ export function createMcpServer(
             const { tasks } = await getTaskFunctions();
             const organizationId = (a.organizationId as string) ?? "";
             if (!organizationId) return err("organizationId is required");
-            const scope = a.scope === "accessible" ? "accessible" : "public";
+            const resolvedScope = resolveTaskVisibilityParam({
+              visibility: a.visibility,
+              scope: a.scope,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedScope.ok) return err(resolvedScope.error);
+            const scope = resolvedScope.visibility;
             const organization = await prisma.organization.findFirst({
               where: { deletedAt: null, id: organizationId },
               select: {
@@ -9569,8 +9633,6 @@ export function createMcpServer(
               },
             });
             if (!organization) return err("Organization not found");
-            if (scope === "accessible" && !userId)
-              return err("Authentication required for accessible scope.");
 
             const status = a.status
               ? (TaskStatus[a.status as keyof typeof TaskStatus] ?? null)
@@ -9580,7 +9642,7 @@ export function createMcpServer(
             const organizationTasks = await tasks.listTasks({
               assigneeOrganizationId: organization.id,
               clientAccessBoundary:
-                scope === "accessible" ? taskClientBoundary : undefined,
+                scope === "public" ? undefined : taskClientBoundary,
               status,
               visibility: scope,
               userId: userId ?? null,
@@ -9604,20 +9666,24 @@ export function createMcpServer(
             }
 
             const limit = parseQueueLimit(a.limit, 20, 100);
-            const scope = a.scope === "public" ? "public" : "accessible";
+            const resolvedScope = resolveTaskVisibilityParam({
+              visibility: a.visibility,
+              scope: a.scope,
+              isAuthenticated: Boolean(userId),
+            });
+            if (!resolvedScope.ok) return err(resolvedScope.error);
+            const scope = resolvedScope.visibility;
             const status = a.status
               ? (a.status as "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE")
               : undefined;
-            if (scope === "accessible" && !userId) {
-              return err("Authentication required for accessible scope.");
-            }
 
             const results = await tasks.searchTasks(query, {
               clientAccessBoundary:
-                scope === "accessible" ? taskClientBoundary : undefined,
+                scope === "public" ? undefined : taskClientBoundary,
               limit,
-              userId: scope === "accessible" ? userId : null,
+              userId: scope === "public" ? null : userId,
               status,
+              visibility: scope,
             });
 
             return ok(results);

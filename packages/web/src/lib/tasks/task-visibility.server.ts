@@ -151,7 +151,13 @@ export function getTaskVisibilityWhere(input?: {
   targetOrganizationId?: string | null;
   taskId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible" | "personal" | "target";
+  visibility?:
+    | "public"
+    | "created"
+    | "accessible"
+    | "personal"
+    | "target"
+    | "private";
 }): Prisma.TaskWhereInput {
   const baseWhere: Prisma.TaskWhereInput = {
     assigneeOrganizationId: input?.assigneeOrganizationId ?? undefined,
@@ -209,17 +215,27 @@ export function getTaskVisibilityWhere(input?: {
     return withTarget({ OR: ors });
   }
 
-  if (visibility === "accessible" && input?.userId) {
+  if (
+    (visibility === "accessible" || visibility === "private") &&
+    input?.userId
+  ) {
     // Accessible tasks include public work and private work connected to the
     // viewer by creation, assignment, management, or organization membership.
-    // from /tasks "Your Tasks" → /tasks/[id].
-    return withTarget(
-      getTaskAccessWhere({
-        action: "READ",
-        personId: input.personId,
-        userId: input.userId,
-      }),
-    );
+    // from /tasks "Your Tasks" → /tasks/[id]. "private" narrows the same
+    // access predicate to non-public rows only.
+    const accessWhere = getTaskAccessWhere({
+      action: "READ",
+      personId: input.personId,
+      userId: input.userId,
+    });
+    if (visibility === "private") {
+      return withTarget({ AND: [accessWhere, { isPublic: false }] });
+    }
+    return withTarget(accessWhere);
+  }
+  if (visibility === "private") {
+    // Anonymous callers have no private tasks by definition.
+    return withTarget({ createdByUserId: "__unreachable__" });
   }
 
   return withTarget({ isPublic: true });
