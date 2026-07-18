@@ -40,6 +40,15 @@ const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
 ]);
 
+// The calendar server-renders the requested date, and freezeClock only
+// reaches the browser — so an unpinned capture drifts every calendar day
+// (baseline "Friday, Jul 17" vs PR "Saturday, Jul 18" flagged 0.32%).
+// Past dates clamp to today (calendar/page.tsx), so pin far-future; the
+// fixed date also takes the deterministic dayStart planning branch.
+const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
+  [ROUTES.calendar, `${ROUTES.calendar}?date=2036-01-01`],
+]);
+
 const SPECIAL_STATE_ROUTES: VisualRoute[] = [
   {
     name: "side-menu",
@@ -163,7 +172,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
   .filter(({ path }) => PUBLIC_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
     name,
-    path,
+    path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
@@ -176,7 +185,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
   .filter(({ path }) => ALL_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
     name: publicRouteHasScreenshot(path) ? `${name}-auth` : name,
-    path,
+    path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
     authenticated: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
