@@ -72,8 +72,8 @@ test("deploy smoke can recover the Vercel preview URL from the PR comment", () =
   );
   assert.match(
     workflow,
-    /comment\.user\?\.login !== "vercel\[bot\]"[\s\S]*\\\[Preview\\\]/u,
-    "smoke jobs should recover the preview alias from the Vercel bot Preview link",
+    /comment\.user\?\.login !== "vercel\[bot\]"[\s\S]*\\\[\(\?:Visit \)\?Preview\\\]/u,
+    "smoke jobs should recover the preview alias from both Vercel bot link formats ([Preview] and [Visit Preview])",
   );
 });
 
@@ -87,6 +87,19 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
     workflow,
     /state === "inactive"[\s\S]*resolveVercelStatusPreviewUrl/u,
     "smoke jobs should recover the active Vercel preview URL before failing inactive deployment events",
+  );
+});
+
+test("preview smoke skips instead of failing when the deployment is an ignored build", () => {
+  assert.match(
+    workflow,
+    /consecutiveInactive[\s\S]*setOutput\("state", "skipped"\)/u,
+    "persistently inactive deployments with no recoverable URL must skip, not burn the timeout",
+  );
+  assert.match(
+    workflow,
+    /steps\.deployment_status\.outputs\.state != 'skipped'/u,
+    "downstream preview smoke steps must gate on the skipped state",
   );
 });
 
