@@ -12,9 +12,9 @@ import {
   getSiteRouteDisposition,
   isSiteRouteAllowed,
 } from "@/lib/site";
-import { resolveLocalSiteVariantOverride } from "@/lib/site-dev-override";
+import { resolveReviewSiteVariantOverride } from "@/lib/site-dev-override";
 
-const LOCAL_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+const REVIEW_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 const AI_CRAWLER_LOG_PRIVATE_PREFIXES = [
   "/admin",
   "/auth",
@@ -28,16 +28,16 @@ export function isMicrositeAllowed(pathname: string): boolean {
   return isSiteRouteAllowed(getSiteFromHost("warondisease.org"), pathname);
 }
 
-function syncLocalSiteVariantCookie(
+function syncReviewSiteVariantCookie(
   response: NextResponse,
-  resolution: ReturnType<typeof resolveLocalSiteVariantOverride>,
+  resolution: ReturnType<typeof resolveReviewSiteVariantOverride>,
 ) {
   if (resolution.persistSiteKey) {
     response.cookies.set(
       SITE_VARIANT_OVERRIDE_COOKIE,
       resolution.persistSiteKey,
       {
-        maxAge: LOCAL_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS,
+        maxAge: REVIEW_SITE_VARIANT_COOKIE_MAX_AGE_SECONDS,
         path: "/",
         sameSite: "lax",
       },
@@ -49,9 +49,9 @@ function syncLocalSiteVariantCookie(
   return response;
 }
 
-function getHeadersWithLocalSiteVariantOverride(
+function getHeadersWithReviewSiteVariantOverride(
   headers: Headers,
-  resolution: ReturnType<typeof resolveLocalSiteVariantOverride>,
+  resolution: ReturnType<typeof resolveReviewSiteVariantOverride>,
 ) {
   const requestHeaders = new Headers(headers);
 
@@ -178,14 +178,16 @@ export default withAuth(
     const devAuthRedirect = handleDevAuthQueryParams(req);
     if (devAuthRedirect) return devAuthRedirect;
 
-    const overrideResolution = resolveLocalSiteVariantOverride({
+    const overrideResolution = resolveReviewSiteVariantOverride({
       cookieSiteKey: req.cookies.get(SITE_VARIANT_OVERRIDE_COOKIE)?.value,
       host: req.headers.get("host"),
-      querySiteKey: req.nextUrl.searchParams.has(SITE_VARIANT_OVERRIDE_QUERY_PARAM)
+      querySiteKey: req.nextUrl.searchParams.has(
+        SITE_VARIANT_OVERRIDE_QUERY_PARAM,
+      )
         ? req.nextUrl.searchParams.get(SITE_VARIANT_OVERRIDE_QUERY_PARAM)
         : null,
     });
-    const requestHeaders = getHeadersWithLocalSiteVariantOverride(
+    const requestHeaders = getHeadersWithReviewSiteVariantOverride(
       req.headers,
       overrideResolution,
     );
@@ -195,7 +197,7 @@ export default withAuth(
     if (overrideResolution.stripQueryParam) {
       const url = req.nextUrl.clone();
       url.searchParams.delete(SITE_VARIANT_OVERRIDE_QUERY_PARAM);
-      return syncLocalSiteVariantCookie(
+      return syncReviewSiteVariantCookie(
         NextResponse.redirect(url, 307),
         overrideResolution,
       );
@@ -210,7 +212,7 @@ export default withAuth(
       const [pathname, search = ""] = assetRedirectPath.split("?");
       url.pathname = pathname;
       url.search = search ? `?${search}` : "";
-      return syncLocalSiteVariantCookie(
+      return syncReviewSiteVariantCookie(
         NextResponse.redirect(url, 308),
         overrideResolution,
       );
@@ -223,7 +225,7 @@ export default withAuth(
         url.search = req.nextUrl.search;
         // 307 keeps method semantics and avoids long-lived browser/CDN caching of
         // host-routing rules that may flip when site config changes.
-        return syncLocalSiteVariantCookie(
+        return syncReviewSiteVariantCookie(
           NextResponse.redirect(url, 307),
           overrideResolution,
         );
@@ -232,12 +234,12 @@ export default withAuth(
       const url = req.nextUrl.clone();
       url.pathname = "/_site-not-found";
       url.search = "";
-      return syncLocalSiteVariantCookie(
+      return syncReviewSiteVariantCookie(
         NextResponse.rewrite(url, { request: { headers: requestHeaders } }),
         overrideResolution,
       );
     }
-    return syncLocalSiteVariantCookie(
+    return syncReviewSiteVariantCookie(
       NextResponse.next({ request: { headers: requestHeaders } }),
       overrideResolution,
     );

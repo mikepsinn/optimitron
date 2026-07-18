@@ -9,6 +9,11 @@ const WORKFLOW = fileURLToPath(
 
 test("verifies preview masking after preview managed-data sync", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
+  const previewJobStart = workflow.indexOf("  sync-preview-managed-data:");
+  const previewJobEnd = workflow.indexOf("  deploy-production:");
+  assert.notEqual(previewJobStart, -1, "preview database job is missing");
+  assert.notEqual(previewJobEnd, -1, "production job boundary is missing");
+  const previewJob = workflow.slice(previewJobStart, previewJobEnd);
 
   const anonymizeIndex = workflow.indexOf(
     "- name: Apply preview database anonymization",
@@ -41,6 +46,57 @@ test("verifies preview masking after preview managed-data sync", () => {
   assert.ok(
     reapplyIndex < verifyIndex,
     "preview masking verification must run after the post-sync anonymization pass",
+  );
+
+  assert.match(
+    previewJob,
+    /repository: \$\{\{ github\.event\.pull_request\.head\.repo\.full_name \}\}[\s\S]*?ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}[\s\S]*?persist-credentials: false/u,
+  );
+  assert.doesNotMatch(
+    previewJob,
+    /NEON_BRANCH_ID: \$\{\{ vars\.NEON_BRANCH_ID \}\}/u,
+  );
+  assert.match(
+    previewJob,
+    /const filenames = files\.map\(\(file\) => file\.filename\);/u,
+  );
+  assert.match(
+    previewJob,
+    /const shouldSync = shouldPrepare && matches\.length > 0;/u,
+  );
+  const configStep = previewJob.slice(
+    previewJob.indexOf("- name: Check Preview database sync configuration"),
+    previewJob.indexOf("- name: Enable Corepack"),
+  );
+  assert.match(configStep, /if: .*should_prepare == 'true'/u);
+  assert.match(configStep, /IS_FORK: .*head\.repo\.full_name != github\.repository/u);
+  assert.match(configStep, /if \[ "\$IS_FORK" = "true" \]; then[\s\S]*?exit 0/u);
+  assert.match(configStep, /missing NEON_API_KEY[\s\S]*?exit 1/u);
+  assert.match(
+    previewJob,
+    /- name: Apply preview database migrations[\s\S]*?DATABASE_URL="\$DATABASE_URL_UNPOOLED" pnpm db:deploy/u,
+  );
+  assert.doesNotMatch(previewJob, /PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK/u);
+
+  const initialMaskStep = previewJob.slice(
+    previewJob.indexOf("- name: Apply preview database anonymization"),
+    previewJob.indexOf("- name: Sync preview managed data"),
+  );
+  const verifyStep = previewJob.slice(
+    previewJob.indexOf("- name: Verify preview masking applied to rows"),
+    previewJob.indexOf("- name: Summarize preview database sync"),
+  );
+  assert.match(initialMaskStep, /should_prepare[\s\S]*?configured/u);
+  assert.doesNotMatch(initialMaskStep, /should_sync/u);
+  assert.match(verifyStep, /should_prepare[\s\S]*?configured/u);
+  assert.doesNotMatch(verifyStep, /should_sync/u);
+  assert.match(
+    previewJob,
+    /- name: Sync preview managed data\s+if: steps\.preview_data_changes\.outputs\.should_sync == 'true'/u,
+  );
+  assert.match(
+    previewJob,
+    /- name: Re-apply preview database anonymization after managed data\s+if: steps\.preview_data_changes\.outputs\.should_sync == 'true'/u,
   );
 });
 

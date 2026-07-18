@@ -138,7 +138,7 @@ const routeOrder = [
   "variant-dfda-home",
   "variant-dfda-conditions",
   "variant-dih-home",
-  "variant-dih-institutes",
+  "variant-dih-fund-a-disease",
 ];
 
 // Non-default site variants captured by the variant-delta routes in
@@ -318,7 +318,7 @@ function buildReviewPageInput(groups) {
       generatedAt: reviewGeneratedAt.toISOString(),
       generatedAtCentral: formatCentralTime(reviewGeneratedAt),
       previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
-      productionBaseUrl: "https://optimitron.com",
+      productionBaseUrl: "https://warondisease.org",
       reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
       repo: repoSlug,
       baselineDescription: buildBaselineDescription(),
@@ -359,6 +359,7 @@ function buildReviewPageRoute(group) {
       : labelRoute(group.routeName),
     routePath,
     routeUrl: getRouteUrl(group.routeName),
+    productionUrl: getProductionRouteUrl(routePath, siteVariant),
     authState: getRouteAuthState(group.routeName),
     siteVariant,
     variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
@@ -1443,6 +1444,14 @@ function labelVariantRoute(routeName, siteVariant) {
   return `${getVariantDomainLabel(siteVariant)} · ${labelRoute(rest)}`;
 }
 
+function getProductionRouteUrl(routePath, siteVariant) {
+  if (!routePath) return null;
+  const origin = siteVariant
+    ? `https://${getVariantDomainLabel(siteVariant)}`
+    : "https://warondisease.org";
+  return new URL(routePath, origin).toString();
+}
+
 function getRouteUrl(routeName) {
   if (!pageLinkBaseUrl) {
     return null;
@@ -1463,11 +1472,9 @@ function getRouteUrl(routeName) {
     url.searchParams.delete("login");
   }
   const siteVariant = getRouteSiteVariant(routeName);
-  if (siteVariant) {
-    // Honored on local hosts only (middleware ?site= override); harmless
-    // elsewhere.
-    url.searchParams.set("site", siteVariant);
-  }
+  // Clear a previously selected variant when a reviewer returns to a default
+  // route. Production custom domains ignore this review-only override.
+  url.searchParams.set("site", siteVariant ?? "reset");
   return url.toString();
 }
 

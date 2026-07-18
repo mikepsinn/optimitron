@@ -1,19 +1,20 @@
 import {
   isLocalHost,
   isSiteKey,
+  isSiteVariantOverrideHost,
   type SiteKey,
 } from "@/lib/site";
 export { SITE_VARIANT_OVERRIDE_QUERY_PARAM } from "@/lib/site";
 
 const RESET_OVERRIDE_VALUES = new Set(["", "default", "host", "reset"]);
 
-interface ResolveLocalSiteVariantOverrideInput {
+interface ResolveReviewSiteVariantOverrideInput {
   cookieSiteKey?: string | null;
   host: string | null | undefined;
   querySiteKey?: string | null;
 }
 
-export interface LocalSiteVariantOverrideResolution {
+export interface ReviewSiteVariantOverrideResolution {
   clearCookie: boolean;
   enabled: boolean;
   persistSiteKey: SiteKey | null;
@@ -27,12 +28,12 @@ export function isLocalSiteVariantOverrideEnabled(
   return !!host && isLocalHost(host);
 }
 
-export function resolveLocalSiteVariantOverride({
+export function resolveReviewSiteVariantOverride({
   cookieSiteKey,
   host,
   querySiteKey,
-}: ResolveLocalSiteVariantOverrideInput): LocalSiteVariantOverrideResolution {
-  const enabled = isLocalSiteVariantOverrideEnabled(host);
+}: ResolveReviewSiteVariantOverrideInput): ReviewSiteVariantOverrideResolution {
+  const enabled = isSiteVariantOverrideHost(host);
   const hasQuery = querySiteKey !== null && querySiteKey !== undefined;
 
   if (!enabled) {

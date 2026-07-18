@@ -20,7 +20,7 @@
  *           reviewUrl, baselineDescription },
  *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, variantRoutes, erroredRoutes, totalRoutes },
  *   routes: [{
- *     routeName, routeLabel, routePath, routeUrl, authState,
+ *     routeName, routeLabel, routePath, routeUrl, productionUrl, authState,
  *     siteVariant,     // null for the default surface; site key for variant-delta shots
  *     variantLabel,    // display domain, e.g. "optimitron.com"; null when siteVariant is null
  *     changed, copyChanged, errored, statusLabel,
@@ -721,6 +721,7 @@ const CLIENT_JS = `
   /* ---------------- rail ---------------- */
   var coldOpen = false;
   var variantsOpen = false;
+  var routeFilter = "";
   function renderRail() {
     var rail = document.getElementById("rail");
     rail.innerHTML = "";
@@ -728,9 +729,12 @@ const CLIENT_JS = `
     var filterWrap = el("div", { class: "rail-filter" });
     var input = el("input", {
       type: "search", id: "route-filter", placeholder: "Filter routes\\u2026",
-      "aria-label": "Filter routes", autocomplete: "off"
+      "aria-label": "Filter routes", autocomplete: "off", value: routeFilter
     });
-    input.addEventListener("input", applyFilter);
+    input.addEventListener("input", function () {
+      routeFilter = input.value;
+      applyFilter();
+    });
     filterWrap.appendChild(input);
     rail.appendChild(filterWrap);
 
@@ -858,7 +862,9 @@ const CLIENT_JS = `
       if (h && h.tagName !== "BUTTON") {
         h.textContent = group.getAttribute("data-title") + " (" + (visible < total ? visible + "/" + total : String(total)) + ")";
       }
-      if (group.getAttribute("data-key") !== "cold") group.style.display = visible ? "" : "none";
+      if (!h || h.tagName !== "BUTTON") {
+        group.style.display = visible ? "" : "none";
+      }
     });
   }
 
@@ -1723,7 +1729,7 @@ const CLIENT_JS = `
   /* ---------------- live compare ---------------- */
   function buildLiveCompare(r) {
     var card = el("section", { class: "card" }, [el("h3", { text: "Live compare" })]);
-    var prodUrl = joinRouteUrl(meta.productionBaseUrl, r.routePath);
+    var prodUrl = r.productionUrl || joinRouteUrl(meta.productionBaseUrl, r.routePath);
     var prevUrl = r.routeUrl || joinRouteUrl(meta.previewBaseUrl, r.routePath);
     if (!prodUrl && !prevUrl) {
       card.appendChild(el("p", {

@@ -191,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -867,7 +867,6 @@ jobs:
       CI: true
       PREVIEW_GIT_BRANCH: ${{ github.head_ref }}
       NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
-      NEON_BRANCH_ID: ${{ vars.NEON_BRANCH_ID }}
       NEON_DATABASE_NAME: ${{ vars.NEON_DATABASE_NAME }}
       NEON_ROLE_NAME: ${{ vars.NEON_ROLE_NAME }}
 
@@ -875,6 +874,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
           submodules: recursive
 
       - name: Detect preview database sync changes
@@ -886,108 +888,114 @@ jobs:
             const filter = await import(
               pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/preview-managed-data-filter.mjs`).href
             );
+            const previewScope = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/preview-smoke-scope.mjs`).href
+            );
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
               per_page: 100,
             });
-            const filenames = files
-              .filter((file) => file.status !== 'removed')
-              .map((file) => file.filename);
+            const filenames = files.map((file) => file.filename);
             const matches = filter.getPreviewManagedDataSyncMatches(filenames);
             const medicalMatches = filter.getPreviewMedicalReferenceSyncMatches(filenames);
-            const shouldSync = matches.length > 0;
+            const previewBuildMatches = previewScope.getVercelPreviewBuildMatches(filenames);
+            const shouldPrepare = previewBuildMatches.length > 0;
+            const shouldSync = shouldPrepare && matches.length > 0;
             const skipMedicalReference = shouldSync && medicalMatches.length === 0;
             core.setOutput('should_sync', shouldSync ? 'true' : 'false');
+            core.setOutput('should_prepare', shouldPrepare ? 'true' : 'false');
             core.setOutput('matched_files', matches.join('\n'));
             core.setOutput('medical_reference_files', medicalMatches.join('\n'));
+            core.setOutput('preview_build_files', previewBuildMatches.join('\n'));
             core.setOutput('skip_medical_reference', skipMedicalReference ? '1' : '0');
             core.setOutput('changed_file_count', String(filenames.length));
-            if (!shouldSync) {
+            if (!shouldPrepare) {
               await core.summary
                 .addHeading('Preview database sync')
-                .addRaw(`Data sync skipped: ${filenames.length} changed file(s), none touch managed-data, schema, masking, or preview seed inputs. Prisma migrations still apply so the branch preview database always matches the PR schema.`)
+                .addRaw(`Database preparation skipped: none of the ${filenames.length} changed file(s) are in the Vercel preview build scope.`)
                 .write();
             }
 
-      # Migrations always apply (idempotent, seconds) so the branch preview
-      # database matches the PR's Prisma schema even when the PR itself
-      # changes no schema/data files — otherwise a PR branched after a merged
-      # schema change deploys code that queries tables its preview DB lacks,
-      # and preview smoke fails on an error boundary (P2021).
+      # Every Vercel preview gets the branch-head schema before masking.
+      # Managed-data sync remains conditional.
       - name: Check Preview database sync configuration
+        if: steps.preview_data_changes.outputs.should_prepare == 'true'
         id: preview_secrets
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
-          SHOULD_SYNC: ${{ steps.preview_data_changes.outputs.should_sync }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
         shell: bash
         run: |
-          missing=()
-          if [ -z "$NEON_API_KEY" ]; then
-            missing+=("NEON_API_KEY")
-          fi
-
-          if [ "${#missing[@]}" -eq 0 ]; then
+          if [ -n "$NEON_API_KEY" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           echo "configured=false" >> "$GITHUB_OUTPUT"
-          if [ "$SHOULD_SYNC" != "true" ]; then
-            echo "::warning::Skipping preview database migrations: the GitHub Preview environment is missing ${missing[*]}."
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::warning::Preview database preparation is unavailable to fork pull requests because repository secrets are not exposed."
+            {
+              echo "## Preview database sync"
+              echo
+              echo "Skipped for a fork pull request because repository secrets are not exposed. Do not treat a fork preview database as anonymized or schema-ready."
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          echo "::error::Preview database sync is blocked: the GitHub Preview environment is missing ${missing[*]}. Add the secret or variable in repo Settings before retrying."
+          echo "::error::Preview database preparation is blocked: the GitHub Preview environment is missing NEON_API_KEY."
           {
             echo "## Preview database sync"
             echo
             echo "Blocked: GitHub Preview environment is missing required configuration."
-            for name in "${missing[@]}"; do
-              echo "- Missing \`$name\`."
-            done
+            echo "- Missing \`NEON_API_KEY\`."
           } >> "$GITHUB_STEP_SUMMARY"
           exit 1
 
       - name: Enable Corepack
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Resolve preview Neon database env
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
         run: node .github/scripts/resolve-preview-neon-env.mjs
 
       - name: Install dependencies
-        if: steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Apply preview database migrations
-        if: steps.preview_secrets.outputs.configured == 'true'
-        env:
-          PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: "1"
-        run: pnpm db:deploy
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABASE_URL_UNPOOLED:-}" ]; then
+            echo "::error::DATABASE_URL_UNPOOLED is missing from the resolved Neon preview database env."
+            exit 1
+          fi
+          DATABASE_URL="$DATABASE_URL_UNPOOLED" pnpm db:deploy
 
       - name: Apply preview database anonymization
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
 
-          database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
+          database_url="${DATABASE_URL_UNPOOLED:-}"
           if [ -z "$database_url" ]; then
-            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the resolved Neon preview database env."
+            echo "::error::DATABASE_URL_UNPOOLED is missing from the resolved Neon preview database env."
             exit 1
           fi
 
@@ -1015,9 +1023,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          database_url="${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-}}"
+          database_url="${DATABASE_URL_UNPOOLED:-}"
           if [ -z "$database_url" ]; then
-            echo "::error::DATABASE_URL_UNPOOLED and DATABASE_URL are both missing from the resolved Neon preview database env."
+            echo "::error::DATABASE_URL_UNPOOLED is missing from the resolved Neon preview database env."
             exit 1
           fi
 
@@ -1032,14 +1040,15 @@ jobs:
           psql "$database_url" --set ON_ERROR_STOP=1 --file packages/db/prisma/anonymization-updates.sql
 
       - name: Verify preview masking applied to rows
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         shell: bash
         run: node packages/web/scripts/verify-preview-masking.mjs
 
       - name: Summarize preview database sync
-        if: steps.preview_data_changes.outputs.should_sync == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         env:
           MANAGED_DATA_SKIP_MEDICAL_REFERENCE: ${{ steps.preview_data_changes.outputs.skip_medical_reference }}
+          SHOULD_SYNC: ${{ steps.preview_data_changes.outputs.should_sync }}
         shell: bash
         run: |
           {
@@ -1048,12 +1057,16 @@ jobs:
             echo "- Resolved Neon preview database env for \`$PREVIEW_GIT_BRANCH\`."
             echo "- Applied Prisma migrations to the branch preview database."
             echo "- Applied preview anonymization setup and direct SQL masking updates."
-            echo "- Synced managed data with idempotent upserts."
-            echo "- Re-applied preview anonymization after managed-data sync."
-            echo "- Verified sampled masked row shapes after the final update pass."
-            if [ "$MANAGED_DATA_SKIP_MEDICAL_REFERENCE" = "1" ]; then
-              echo "- Skipped medical reference rows because no medical dataset or seed-data files changed; disposable CI still runs the full local sync."
+            if [ "$SHOULD_SYNC" = "true" ]; then
+              echo "- Synced managed data with idempotent upserts."
+              echo "- Re-applied preview anonymization after managed-data sync."
+              if [ "$MANAGED_DATA_SKIP_MEDICAL_REFERENCE" = "1" ]; then
+                echo "- Skipped medical reference rows because no medical dataset or seed-data files changed; disposable CI still runs the full local sync."
+              fi
+            else
+              echo "- Managed-data sync was unnecessary for this pull request."
             fi
+            echo "- Verified sampled masked row shapes after the final update pass."
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy-production:

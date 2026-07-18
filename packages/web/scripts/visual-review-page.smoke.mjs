@@ -28,17 +28,17 @@ const input = {
     generatedAt: "2026-07-05T12:00:00Z",
     generatedAtCentral: "Jul 5, 2026 7:00 AM Central",
     previewBaseUrl: "https://optimitron-git-feature-preview.vercel.app",
-    productionBaseUrl: "https://optimitron.com",
+    productionBaseUrl: "https://warondisease.org",
     reviewUrl: "https://mikepsinn.github.io/optimitron/pr-123/abc1234/",
     baselineDescription: "screenshots vs main @ 871661d, copy vs pre-merge snapshots",
   },
-  summary: { changedRoutes: 2, copyOnlyRoutes: 1, unchangedRoutes: 0, erroredRoutes: 0, totalRoutes: 3 },
+  summary: { changedRoutes: 2, copyOnlyRoutes: 1, unchangedRoutes: 0, variantRoutes: 1, erroredRoutes: 0, totalRoutes: 4 },
   routes: [
     {
       routeName: "home",
       routeLabel: XSS,
       routePath: "/",
-      routeUrl: "https://optimitron-git-feature-preview.vercel.app/",
+      routeUrl: "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=reset",
       authState: "logged-out",
       changed: true,
       copyChanged: true,
@@ -109,7 +109,7 @@ const input = {
       routeName: "calendar",
       routeLabel: "Calendar",
       routePath: "/calendar",
-      routeUrl: "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo",
+      routeUrl: "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo&site=reset",
       authState: "demo-logged-in",
       changed: true,
       copyChanged: false,
@@ -158,6 +158,22 @@ const input = {
       },
       pairs: [],
     },
+    {
+      routeName: "variant-dfda-home",
+      routeLabel: "dfda.earth · Home",
+      routePath: "/",
+      routeUrl: "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=dfda",
+      productionUrl: "https://dfda.earth/",
+      authState: "logged-out",
+      siteVariant: "dfda",
+      variantLabel: "dfda.earth",
+      changed: false,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "unchanged",
+      markdownDiff: null,
+      pairs: [],
+    },
   ],
 };
 
@@ -188,7 +204,7 @@ assert(!/<script>alert\(1\)<\/script>/.test(html), "copy-diff XSS not raw in HTM
 assert(html.includes("\\u003c"), "JSON island escapes < sequences");
 assert(html.includes("2 changed"), "summary chip: changed");
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
-assert(html.includes("3 routes"), "summary chip: total");
+assert(html.includes("4 routes"), "summary chip: total");
 
 // ---------- extract inline JS and node --check it ----------
 const scripts = [];
@@ -207,7 +223,7 @@ assert(check.status === 0, "node --check on extracted client JS: " + (check.stde
 try {
   const island = /<script type="application\/json" id="review-data">([\s\S]*?)<\/script>/.exec(html);
   const parsed = JSON.parse(island[1]);
-  assert(parsed.routes.length === 3, "JSON island round-trips (routes)");
+  assert(parsed.routes.length === 4, "JSON island round-trips (routes)");
   assert(parsed.routes[0].pairs[0].hunks.length === 3, "JSON island round-trips (hunks)");
   assert(parsed.routes[0].routeLabel === XSS, "JSON island preserves raw strings");
 } catch (err) {

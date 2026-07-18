@@ -22,7 +22,7 @@ export type VisualRoute = {
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
-  /** Capture under a non-default site variant (x-optimitron-site-key). */
+  /** Capture under a non-default site variant via the review-only query override. */
   siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
@@ -184,20 +184,8 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
-/**
- * Variant-delta coverage: the non-default site variants share almost all
- * route code with the default warOnDisease surface, so the review captures
- * only what actually differs per variant — the homepage component, the
- * chrome (nav/footer/branding) on one representative shared route, and for
- * the allowlisted microsites one on-list route. Full-matrix capture would
- * multiply review load for near-identical images; see AGENTS.md
- * ("keep secondary variant screenshots/links available for regression
- * checks ... so PR review load stays low").
- *
- * Deliberately NO disallowed-route probe: middleware redirects
- * canonically-owned paths to the owning production domain, which would make
- * the capture depend on an external site.
- */
+// Cover each variant's home and one real owned route without multiplying the
+// review matrix. Disallowed routes redirect to production, so exclude them.
 const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   {
     name: "variant-optimitron-home",
@@ -219,8 +207,8 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   },
   {
     name: "variant-dfda-conditions",
-    path: "/conditions",
-    required: false,
+    path: ROUTES.conditions,
+    required: true,
     siteVariant: "dfda",
   },
   {
@@ -230,9 +218,9 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     siteVariant: "dih",
   },
   {
-    name: "variant-dih-institutes",
-    path: "/institutes",
-    required: false,
+    name: "variant-dih-fund-a-disease",
+    path: ROUTES.dih,
+    required: true,
     siteVariant: "dih",
   },
 ];

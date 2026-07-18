@@ -1144,7 +1144,7 @@ export function getSiteFromHost(host: string | null | undefined): SiteConfig {
 export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
   const host = headers.get("host");
   const override = headers.get(SITE_VARIANT_OVERRIDE_HEADER);
-  if (host && isLocalHost(host) && isSiteKey(override)) {
+  if (isSiteVariantOverrideHost(host) && isSiteKey(override)) {
     return SITE_CONFIGS[override];
   }
 
@@ -1152,7 +1152,7 @@ export function getSiteFromHeaders(headers: Pick<Headers, "get">): SiteConfig {
     headers.get("cookie"),
     SITE_VARIANT_OVERRIDE_COOKIE,
   );
-  if (host && isLocalHost(host) && isSiteKey(cookieOverride)) {
+  if (isSiteVariantOverrideHost(host) && isSiteKey(cookieOverride)) {
     return SITE_CONFIGS[cookieOverride];
   }
 
@@ -1385,6 +1385,17 @@ export function isLocalHost(host: string) {
     hostname === "127.0.0.1" ||
     hostname === "::1" ||
     hostname === "0.0.0.0"
+  );
+}
+
+export function isSiteVariantOverrideHost(host: string | null | undefined) {
+  if (!host) return false;
+
+  const hostname = normalizeHost(host).replace(/\.$/u, "");
+  return (
+    isLocalHost(host) ||
+    (process.env.VERCEL_ENV === "preview" &&
+      (hostname === "vercel.app" || hostname.endsWith(".vercel.app")))
   );
 }
 
