@@ -90,16 +90,25 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
   );
 });
 
-test("preview smoke skips instead of failing when the deployment is an ignored build", () => {
-  assert.match(
-    workflow,
-    /consecutiveInactive[\s\S]*setOutput\("state", "skipped"\)/u,
-    "persistently inactive deployments with no recoverable URL must skip, not burn the timeout",
+test("both smoke waiters skip instead of failing when the deployment is an ignored build", () => {
+  const skipEmits = [
+    ...workflow.matchAll(/setOutput\("state", "skipped"\)/gu),
+  ];
+  assert.equal(
+    skipEmits.length,
+    2,
+    "both waiters (Smoke deployed URL and Playwright preview smoke) must emit the skipped state for persistently inactive deployments",
+  );
+  const inactiveCounters = [...workflow.matchAll(/consecutiveInactive \+= 1/gu)];
+  assert.equal(
+    inactiveCounters.length,
+    2,
+    "both waiters must confirm persistent inactivity before skipping",
   );
   assert.match(
     workflow,
     /steps\.deployment_status\.outputs\.state != 'skipped'/u,
-    "downstream preview smoke steps must gate on the skipped state",
+    "downstream smoke steps must gate on the skipped state",
   );
 });
 

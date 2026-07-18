@@ -78,6 +78,7 @@ jobs:
             const deadline = Date.now() + timeoutMs;
             const terminalFailures = new Set(["failure", "error"]);
             let lastStatus = "not found";
+            let consecutiveInactive = 0;
 
             function isHttpUrl(value) {
               return /^https?:\/\//u.test(String(value || "").trim());
@@ -238,6 +239,22 @@ jobs:
                   core.setOutput("state", "success");
                   return;
                 }
+                // An inactive deployment never becomes active again. With no
+                // recoverable URL this event is a Vercel ignored-build or a
+                // superseded deployment — nothing to smoke; skip instead of
+                // burning the timeout and failing the check.
+                consecutiveInactive += 1;
+                if (consecutiveInactive >= 3) {
+                  core.notice(
+                    `Deployment is inactive with no recoverable URL (likely an ignored build); skipping smoke for this event.`,
+                  );
+                  core.setOutput("environment", environment || "Preview");
+                  core.setOutput("environment_url", "");
+                  core.setOutput("state", "skipped");
+                  return;
+                }
+              } else {
+                consecutiveInactive = 0;
               }
 
               if (terminalFailures.has(state)) {
@@ -252,6 +269,7 @@ jobs:
 
       - name: Resolve smoke target
         id: target
+        if: steps.deployment_status.outputs.state != 'skipped'
         env:
           DEPLOYMENT_JSON: ${{ toJSON(github.event.deployment) }}
           DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
@@ -493,6 +511,7 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
+        if: steps.deployment_status.outputs.state != 'skipped'
         env:
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
