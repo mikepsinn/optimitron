@@ -140,9 +140,9 @@ describe("compileGeneratedParameterCatalog", () => {
       .sort();
 
     expect(catalog.counts).toEqual({
-      total: 872,
-      calculated: 445,
-      withCalculationCode: 436,
+      total: 874,
+      calculated: 447,
+      withCalculationCode: 438,
       snapshotCalculated: 9,
       withDistribution: 312,
     });
