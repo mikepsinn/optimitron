@@ -6,6 +6,11 @@ import { authOptions } from "@/lib/auth";
 import { backfillUserLocationFromHeaders } from "@/lib/geo/backfill-location.server";
 import { getDashboardData, getTopReferrers } from "@/lib/dashboard.server";
 import { getTasksPageData } from "@/lib/tasks.server";
+import {
+  loadPersonalQueue,
+  loadPersonalQueueAudit,
+} from "@/lib/tasks/personal-planning.server";
+import { toPersonalQueueDisplayData } from "@/components/dashboard/personal-queue-display";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationDashboardClient } from "@/components/dashboard/EarthOptimizationDashboardClient";
 import { TreatyTaskDashboardClient } from "@/components/site/TreatyTaskDashboardClient";
@@ -100,11 +105,14 @@ export default async function DashboardPage({
     );
   }
 
-  const [initialData, leaderboard, taskData] = await Promise.all([
-    getDashboardData(userId),
-    getTopReferrers(),
-    getTasksPageData(userId),
-  ]);
+  const [initialData, leaderboard, taskData, personalQueue, queueAudit] =
+    await Promise.all([
+      getDashboardData(userId),
+      getTopReferrers(),
+      getTasksPageData(userId),
+      loadPersonalQueue({ maxResults: 10, userId }),
+      loadPersonalQueueAudit({ userId }),
+    ]);
 
   // Top recommended tasks for the player. Use the same TaskCardTask shape
   // the rest of the site uses so we can render them through SortableTaskList.
@@ -114,6 +122,7 @@ export default async function DashboardPage({
     <EarthOptimizationDashboardClient
       initialData={initialData}
       leaderboard={leaderboard}
+      personalQueue={toPersonalQueueDisplayData(personalQueue, queueAudit)}
       topTasks={topTasks}
     />
   );

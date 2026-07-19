@@ -38,6 +38,14 @@ describe("getActivityDescription", () => {
     expect(desc).toContain("$50");
   });
 
+  it("survives malformed string metadata instead of throwing", () => {
+    const desc = getActivityDescription(
+      ActivityType.DEPOSITED_PRIZE,
+      "preview redacted",
+    );
+    expect(desc).toContain("Earth Optimization Prize");
+  });
+
   it("returns fallback for unknown type", () => {
     const desc = getActivityDescription("UNKNOWN_TYPE");
     expect(desc).toBe("Performed an action");

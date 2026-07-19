@@ -21,6 +21,8 @@ import { SortableTaskList } from "@/components/tasks/task-list-controls"
 import type { TaskCardTask } from "@/components/tasks/task-card"
 import { QuestChecklistCard } from "@/components/dashboard/QuestChecklistCard"
 import { ImpactReceiptsCard } from "@/components/dashboard/ImpactReceiptsCard"
+import { PersonalQueueSection } from "@/components/dashboard/PersonalQueueSection"
+import type { PersonalQueueDisplayData } from "@/components/dashboard/personal-queue-display"
 import { useRequestSiteOrigin } from "@/lib/request-site-origin"
 import {
   DASHBOARD_INVITE_SECTION_ID,
@@ -31,10 +33,12 @@ import type { DashboardData, LeaderboardEntry } from "@/types/dashboard"
 export function EarthOptimizationDashboardClient({
   initialData,
   leaderboard,
+  personalQueue,
   topTasks,
 }: {
   initialData: DashboardData
   leaderboard: LeaderboardEntry[]
+  personalQueue: PersonalQueueDisplayData
   topTasks: TaskCardTask[]
 }) {
   const router = useRouter()
@@ -56,6 +60,8 @@ export function EarthOptimizationDashboardClient({
             EARTH OPTIMIZATION
           </h1>
         </header>
+
+        <PersonalQueueSection queue={personalQueue} />
 
         <section className="mx-auto mb-10 max-w-2xl space-y-4" id={DASHBOARD_INVITE_SECTION_ID}>
           <TreatyReminderComposer

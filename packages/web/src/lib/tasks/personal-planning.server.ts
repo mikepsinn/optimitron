@@ -20,8 +20,10 @@ import {
   type PlanningCommitment,
 } from "./execution-planner";
 import {
+  auditExecutionGraph,
   getRootedTaskIds,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
+  type ExecutionGraphEdge,
   type ExecutionGraphTask,
 } from "./execution-planner-audit";
 import {
@@ -1271,4 +1273,312 @@ export async function getAuthorizedExecutionPlan(
   });
 
   return { ...plan, buybackRate, target };
+}
+
+export interface PersonalQueueRequest {
+  buybackRate?: number | null;
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  maxResults?: number | null;
+  userId: string;
+}
+
+export type PersonalQueueResult = Awaited<ReturnType<typeof loadPersonalQueue>>;
+
+async function loadPersonId(userId: string): Promise<string | null> {
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  return user?.personId ?? null;
+}
+
+// The personal queue served by the MCP getMyQueue tool. The dashboard renders
+// the rows this returns, so web ordering cannot drift from MCP ordering.
+export async function loadPersonalQueue(request: PersonalQueueRequest) {
+  const { tasks, ranking } = await getTaskFunctions();
+  const buybackRate = parsePositiveNumber(
+    request.buybackRate,
+    DEFAULT_PERSONAL_BUYBACK_RATE,
+  );
+  const maxResults = parseQueueLimit(request.maxResults, 20, 100);
+  const personId = await loadPersonId(request.userId);
+  const personalTasks = (await tasks.listTasks({
+    clientAccessBoundary: request.clientAccessBoundary,
+    limit: 5000,
+    personId,
+    status: TaskStatus.ACTIVE,
+    userId: request.userId,
+    visibility: "personal",
+  })) as PersonalQueueTaskRecord[];
+  const graph = await loadExecutionGraphContext(
+    personalTasks,
+    request.clientAccessBoundary,
+  );
+  const executorProfiles = await loadHumanPlanningProfiles({
+    kind: "self",
+    personId,
+    userId: request.userId,
+  });
+  const selfTasks = personalTasks.filter((task) => isSelfExecutableTask(task));
+  const planningTasks = await attachPlanningEffortEvidence(
+    selfTasks,
+    executorProfiles,
+  );
+  const allRows = buildPersonalQueueRows(planningTasks, ranking, buybackRate, {
+    executorProfiles,
+    limit: selfTasks.length,
+    rootedTaskIds: graph.rootedTaskIds,
+  });
+  const queue = buildPersonalQueueRows(planningTasks, ranking, buybackRate, {
+    executorProfiles,
+    limit: maxResults,
+    requireExecutable: true,
+    requireUnblocked: true,
+    rootedTaskIds: graph.rootedTaskIds,
+  });
+
+  return { buybackRate, queue, ...summarizeCapabilityWork(allRows) };
+}
+
+export interface PersonalQueueAuditIssue {
+  code: string;
+  message: string;
+  severity: "high" | "medium" | "low";
+  taskId?: string;
+}
+
+export type PersonalQueueAuditResult = Awaited<
+  ReturnType<typeof loadPersonalQueueAudit>
+>;
+
+// The data-quality audit served by the MCP getQueueAudit tool; shared with the
+// dashboard audit banner for the same no-drift reason as loadPersonalQueue.
+export async function loadPersonalQueueAudit(request: {
+  buybackRate?: number | null;
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  userId: string;
+}) {
+  const prisma = await getPrisma();
+  const { tasks, ranking } = await getTaskFunctions();
+  const buybackRate = parsePositiveNumber(
+    request.buybackRate,
+    DEFAULT_PERSONAL_BUYBACK_RATE,
+  );
+  const personId = await loadPersonId(request.userId);
+  const personalTasks = (await tasks.listTasks({
+    clientAccessBoundary: request.clientAccessBoundary,
+    limit: 5000,
+    personId,
+    status: TaskStatus.ACTIVE,
+    userId: request.userId,
+    visibility: "personal",
+  })) as PersonalQueueTaskRecord[];
+  const graph = await loadExecutionGraphContext(
+    personalTasks,
+    request.clientAccessBoundary,
+  );
+  const executorProfiles = [
+    ...(await loadHumanPlanningProfiles({
+      kind: "self",
+      personId,
+      userId: request.userId,
+    })),
+    ...(await loadAgentPlanningProfiles()),
+  ];
+  const planningTasks = await attachPlanningEffortEvidence(
+    personalTasks,
+    executorProfiles,
+  );
+  const activeCreatedTasks = personalTasks.filter(
+    (task) => task.createdByUserId === request.userId,
+  ).length;
+  const rankedRows = buildPersonalQueueRows(
+    planningTasks,
+    ranking,
+    buybackRate,
+    {
+      executorProfiles,
+      limit: personalTasks.length,
+      rootedTaskIds: graph.rootedTaskIds,
+    },
+  );
+  const executableRows = buildPersonalQueueRows(
+    planningTasks,
+    ranking,
+    buybackRate,
+    {
+      executorProfiles,
+      limit: personalTasks.length,
+      requireExecutable: true,
+      requireUnblocked: true,
+      rootedTaskIds: graph.rootedTaskIds,
+    },
+  );
+  const unblockedCount = executableRows.length;
+
+  const rowById = new Map(rankedRows.map((row) => [row.id, row]));
+  const issues: PersonalQueueAuditIssue[] = [];
+
+  const taskIds = personalTasks.map((task) => task.id);
+  const dependencyEdges = await prisma.taskEdge.findMany({
+    where: {
+      OR: [{ toTaskId: { in: taskIds } }, { fromTaskId: { in: taskIds } }],
+      deletedAt: null,
+    },
+    select: {
+      edgeType: true,
+      fromTaskId: true,
+      probabilityDeltaBase: true,
+      timeDeltaDaysBase: true,
+      toTaskId: true,
+      fromTask: {
+        select: { id: true, deletedAt: true, status: true },
+      },
+    },
+  });
+  const orphanedDependencyTaskIds = new Set<string>();
+  for (const edge of dependencyEdges) {
+    if (!edge.fromTask || edge.fromTask.deletedAt != null) {
+      orphanedDependencyTaskIds.add(edge.toTaskId);
+    }
+  }
+
+  const queueEligibleIds = new Set(executableRows.map((row) => row.id));
+  const rowByGraphTaskId = new Map(rankedRows.map((row) => [row.id, row]));
+  const graphFindings = auditExecutionGraph({
+    edges: dependencyEdges.map(
+      (edge) =>
+        ({
+          edgeType: edge.edgeType,
+          fromTaskId: edge.fromTaskId,
+          probabilityDeltaBase: edge.probabilityDeltaBase,
+          timeDeltaDaysBase: edge.timeDeltaDaysBase,
+          toTaskId: edge.toTaskId,
+        }) satisfies ExecutionGraphEdge,
+    ),
+    tasks: graph.graphTasks.map((task) => {
+      const row = rowByGraphTaskId.get(task.id);
+      return {
+        ...task,
+        hasMarginalEstimate: task.hasMarginalEstimate,
+        estimateInputsStale: row?.estimateInputsStale ?? false,
+        estimatePublicationEligible:
+          row?.estimatePublicationEligible ?? false,
+        priority: row?.priority ?? null,
+        queueEligible: queueEligibleIds.has(task.id),
+      } satisfies ExecutionGraphTask;
+    }),
+  }).filter((finding) => !finding.taskId || taskIds.includes(finding.taskId));
+  issues.push(...graphFindings);
+
+  for (const task of personalTasks) {
+    const row = rowById.get(task.id);
+    if (!row) continue;
+    const needsExecutionEstimate = isAtomicExecutionRecord(task);
+
+    if (needsExecutionEstimate && row.capabilityStatus === "unknown") {
+      issues.push({
+        code: "CAPABILITY_UNKNOWN",
+        message: `Task ${task.id} has required capabilities that are not recorded for its target executor.`,
+        severity: "medium",
+        taskId: task.id,
+      });
+    }
+
+    if (needsExecutionEstimate && row.capabilityStatus === "ineligible") {
+      issues.push({
+        code: "CAPABILITY_MISMATCH",
+        message: `Task ${task.id} requires capabilities its target executor does not have.`,
+        severity: "medium",
+        taskId: task.id,
+      });
+    }
+
+    if (
+      needsExecutionEstimate &&
+      row.validationNotes.some((note) => note.toLowerCase().includes("missing"))
+    ) {
+      issues.push({
+        code: "MISSING_ESTIMATES",
+        message: `Task ${task.id} is missing required estimate inputs for scoring.`,
+        severity: "medium",
+        taskId: task.id,
+      });
+    }
+
+    if (needsExecutionEstimate && !row.valid) {
+      issues.push({
+        code: "INVALID_SCORE",
+        message: `Task ${task.id} has invalid priority inputs.`,
+        severity: "high",
+        taskId: task.id,
+      });
+    }
+
+    if (row.deadlinePolicy === "REQUIRED" || row.deadlinePolicy === "EXPIRES") {
+      if (row.hours == null || row.hours <= 0) {
+        issues.push({
+          code: "DEADLINE_MISSING_HOURS",
+          message: `Task ${task.id} has a deadline policy but no usable hour estimate for latest-start scheduling.`,
+          severity: "high",
+          taskId: task.id,
+        });
+      }
+      if (row.deadlineStatus === "start_now") {
+        issues.push({
+          code: "DEADLINE_START_NOW",
+          message: `Task ${task.id} must start now to finish before its deadline.`,
+          severity: "high",
+          taskId: task.id,
+        });
+      }
+      if (row.deadlineStatus === "missed") {
+        issues.push({
+          code: "REQUIRED_DEADLINE_MISSED",
+          message: `Task ${task.id} is past its required deadline.`,
+          severity: "high",
+          taskId: task.id,
+        });
+      }
+      if (row.deadlineStatus === "expired") {
+        issues.push({
+          code: "EXPIRING_TASK_EXPIRED",
+          message: `Task ${task.id} is past its expiring opportunity deadline.`,
+          severity: "medium",
+          taskId: task.id,
+        });
+      }
+    }
+
+    const blockerStatuses = task.blockerStatuses ?? [];
+    if (blockerStatuses.some((status) => status !== TaskStatus.VERIFIED)) {
+      issues.push({
+        code: "BLOCKED_DEPENDENCY",
+        message: `Task ${task.id} has unresolved blockers and is currently blocked.`,
+        severity: "low",
+        taskId: task.id,
+      });
+      continue;
+    }
+
+    if (orphanedDependencyTaskIds.has(task.id)) {
+      issues.push({
+        code: "ORPHAN_DEPENDENCY",
+        message: `Task ${task.id} is blocked by a deleted or missing dependency.`,
+        severity: "medium",
+        taskId: task.id,
+      });
+    }
+  }
+
+  return {
+    summary: {
+      activeCreatedTasks,
+      activePersonalTasks: personalTasks.length,
+      unblockedTasks: unblockedCount,
+      issueCount: issues.length,
+    },
+    issues,
+  };
 }

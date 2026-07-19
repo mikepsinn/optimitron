@@ -121,7 +121,6 @@ import {
   auditExecutionGraph,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   type ExecutionGraphEdge,
-  type ExecutionGraphTask,
 } from "./tasks/execution-planner-audit";
 import {
   attachPlanningEffortEvidence,
@@ -129,11 +128,12 @@ import {
   DEFAULT_PERSONAL_BUYBACK_RATE,
   getAuthorizedExecutionPlan,
   isAIExecutableTask,
-  isAtomicExecutionRecord,
   isSelfExecutableTask,
   loadAgentPlanningProfiles,
   loadExecutionGraphContext,
   loadHumanPlanningProfiles,
+  loadPersonalQueue,
+  loadPersonalQueueAudit,
   summarizeCapabilityWork,
   summarizeTask,
   type AuthorizedExecutionPlanRequest,
@@ -8572,65 +8572,17 @@ export function createMcpServer(
                 "It returns your personal queue — tasks you created plus tasks assigned to you — ranked by priority.",
               );
 
-            const { tasks, ranking } = await getTaskFunctions();
-            const maxResults = parseQueueLimit(a.maxResults, 20, 100);
-            const buybackRate = parsePositiveNumber(
-              a.buybackRate,
-              DEFAULT_PERSONAL_BUYBACK_RATE,
+            return ok(
+              await loadPersonalQueue({
+                buybackRate: parsePositiveNumber(
+                  a.buybackRate,
+                  DEFAULT_PERSONAL_BUYBACK_RATE,
+                ),
+                clientAccessBoundary: taskClientBoundary,
+                maxResults: parseQueueLimit(a.maxResults, 20, 100),
+                userId,
+              }),
             );
-            const personId = await loadSessionPersonId(userId);
-            const personalTasks = await tasks.listTasks({
-              clientAccessBoundary: taskClientBoundary,
-              limit: 5000,
-              status: TaskStatus.ACTIVE,
-              userId,
-              personId,
-              visibility: "personal",
-            });
-            const graph = await loadExecutionGraphContext(
-              personalTasks as PersonalQueueTaskRecord[],
-              taskClientBoundary,
-            );
-            const executorProfiles = await loadHumanPlanningProfiles({
-              kind: "self",
-              personId,
-              userId,
-            });
-            const selfTasks = (personalTasks as unknown[]).filter((task) =>
-              isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            ) as PersonalQueueTaskRecord[];
-            const planningTasks = await attachPlanningEffortEvidence(
-              selfTasks,
-              executorProfiles,
-            );
-            const allRows = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: selfTasks.length,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-            const queue = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: maxResults,
-                requireExecutable: true,
-                requireUnblocked: true,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-
-            return ok({
-              buybackRate,
-              queue,
-              ...summarizeCapabilityWork(allRows),
-            });
           }
 
           // ── getAIQueue ────────────────────────────────────────
@@ -8754,255 +8706,16 @@ export function createMcpServer(
                 "It audits the validity of your personal queue and needs to know which user's queue to inspect.",
               );
 
-            const prisma = await getPrisma();
-            const { tasks, ranking } = await getTaskFunctions();
-            const buybackRate = parsePositiveNumber(
-              a.buybackRate,
-              DEFAULT_PERSONAL_BUYBACK_RATE,
-            );
-            const personId = await loadSessionPersonId(userId);
-            const personalTasks = (await tasks.listTasks({
-              clientAccessBoundary: taskClientBoundary,
-              limit: 5000,
-              status: TaskStatus.ACTIVE,
-              userId,
-              personId,
-              visibility: "personal",
-            })) as PersonalQueueTaskRecord[];
-            const graph = await loadExecutionGraphContext(
-              personalTasks,
-              taskClientBoundary,
-            );
-            const executorProfiles = [
-              ...(await loadHumanPlanningProfiles({
-                kind: "self",
-                personId,
+            return ok(
+              await loadPersonalQueueAudit({
+                buybackRate: parsePositiveNumber(
+                  a.buybackRate,
+                  DEFAULT_PERSONAL_BUYBACK_RATE,
+                ),
+                clientAccessBoundary: taskClientBoundary,
                 userId,
-              })),
-              ...(await loadAgentPlanningProfiles()),
-            ];
-            const planningTasks = await attachPlanningEffortEvidence(
-              personalTasks,
-              executorProfiles,
-            );
-            const activeCreatedTasks = personalTasks.filter(
-              (task) => task.createdByUserId === userId,
-            ).length;
-            const rankedRows = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: personalTasks.length,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-            const executableRows = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: personalTasks.length,
-                requireExecutable: true,
-                requireUnblocked: true,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-            const unblockedCount = executableRows.length;
-
-            const rowById = new Map(rankedRows.map((row) => [row.id, row]));
-            const issues: Array<{
-              code: string;
-              message: string;
-              severity: "high" | "medium" | "low";
-              taskId?: string;
-            }> = [];
-
-            const taskIds = personalTasks.map((task) => task.id);
-            const dependencyEdges = await prisma.taskEdge.findMany({
-              where: {
-                OR: [
-                  { toTaskId: { in: taskIds } },
-                  { fromTaskId: { in: taskIds } },
-                ],
-                deletedAt: null,
-              },
-              select: {
-                edgeType: true,
-                fromTaskId: true,
-                probabilityDeltaBase: true,
-                timeDeltaDaysBase: true,
-                toTaskId: true,
-                fromTask: {
-                  select: { id: true, deletedAt: true, status: true },
-                },
-              },
-            });
-            const orphanedDependencyTaskIds = new Set<string>();
-            for (const edge of dependencyEdges) {
-              if (!edge.fromTask || edge.fromTask.deletedAt != null) {
-                orphanedDependencyTaskIds.add(edge.toTaskId);
-              }
-            }
-
-            const queueEligibleIds = new Set(
-              executableRows.map((row) => row.id),
-            );
-            const rowByGraphTaskId = new Map(
-              rankedRows.map((row) => [row.id, row]),
-            );
-            const graphFindings = auditExecutionGraph({
-              edges: dependencyEdges.map(
-                (edge) =>
-                  ({
-                    edgeType: edge.edgeType,
-                    fromTaskId: edge.fromTaskId,
-                    probabilityDeltaBase: edge.probabilityDeltaBase,
-                    timeDeltaDaysBase: edge.timeDeltaDaysBase,
-                    toTaskId: edge.toTaskId,
-                  }) satisfies ExecutionGraphEdge,
-              ),
-              tasks: graph.graphTasks.map((task) => {
-                const row = rowByGraphTaskId.get(task.id);
-                return {
-                  ...task,
-                  hasMarginalEstimate: task.hasMarginalEstimate,
-                  estimateInputsStale: row?.estimateInputsStale ?? false,
-                  estimatePublicationEligible:
-                    row?.estimatePublicationEligible ?? false,
-                  priority: row?.priority ?? null,
-                  queueEligible: queueEligibleIds.has(task.id),
-                } satisfies ExecutionGraphTask;
               }),
-            }).filter(
-              (finding) => !finding.taskId || taskIds.includes(finding.taskId),
             );
-            issues.push(...graphFindings);
-
-            for (const task of personalTasks) {
-              const row = rowById.get(task.id);
-              if (!row) continue;
-              const needsExecutionEstimate = isAtomicExecutionRecord(task);
-
-              if (
-                needsExecutionEstimate &&
-                row.capabilityStatus === "unknown"
-              ) {
-                issues.push({
-                  code: "CAPABILITY_UNKNOWN",
-                  message: `Task ${task.id} has required capabilities that are not recorded for its target executor.`,
-                  severity: "medium",
-                  taskId: task.id,
-                });
-              }
-
-              if (
-                needsExecutionEstimate &&
-                row.capabilityStatus === "ineligible"
-              ) {
-                issues.push({
-                  code: "CAPABILITY_MISMATCH",
-                  message: `Task ${task.id} requires capabilities its target executor does not have.`,
-                  severity: "medium",
-                  taskId: task.id,
-                });
-              }
-
-              if (
-                needsExecutionEstimate &&
-                row.validationNotes.some((note) =>
-                  note.toLowerCase().includes("missing"),
-                )
-              ) {
-                issues.push({
-                  code: "MISSING_ESTIMATES",
-                  message: `Task ${task.id} is missing required estimate inputs for scoring.`,
-                  severity: "medium",
-                  taskId: task.id,
-                });
-              }
-
-              if (needsExecutionEstimate && !row.valid) {
-                issues.push({
-                  code: "INVALID_SCORE",
-                  message: `Task ${task.id} has invalid priority inputs.`,
-                  severity: "high",
-                  taskId: task.id,
-                });
-              }
-
-              if (
-                row.deadlinePolicy === "REQUIRED" ||
-                row.deadlinePolicy === "EXPIRES"
-              ) {
-                if (row.hours == null || row.hours <= 0) {
-                  issues.push({
-                    code: "DEADLINE_MISSING_HOURS",
-                    message: `Task ${task.id} has a deadline policy but no usable hour estimate for latest-start scheduling.`,
-                    severity: "high",
-                    taskId: task.id,
-                  });
-                }
-                if (row.deadlineStatus === "start_now") {
-                  issues.push({
-                    code: "DEADLINE_START_NOW",
-                    message: `Task ${task.id} must start now to finish before its deadline.`,
-                    severity: "high",
-                    taskId: task.id,
-                  });
-                }
-                if (row.deadlineStatus === "missed") {
-                  issues.push({
-                    code: "REQUIRED_DEADLINE_MISSED",
-                    message: `Task ${task.id} is past its required deadline.`,
-                    severity: "high",
-                    taskId: task.id,
-                  });
-                }
-                if (row.deadlineStatus === "expired") {
-                  issues.push({
-                    code: "EXPIRING_TASK_EXPIRED",
-                    message: `Task ${task.id} is past its expiring opportunity deadline.`,
-                    severity: "medium",
-                    taskId: task.id,
-                  });
-                }
-              }
-
-              const blockerStatuses = task.blockerStatuses ?? [];
-              if (
-                blockerStatuses.some((status) => status !== TaskStatus.VERIFIED)
-              ) {
-                issues.push({
-                  code: "BLOCKED_DEPENDENCY",
-                  message: `Task ${task.id} has unresolved blockers and is currently blocked.`,
-                  severity: "low",
-                  taskId: task.id,
-                });
-                continue;
-              }
-
-              if (orphanedDependencyTaskIds.has(task.id)) {
-                issues.push({
-                  code: "ORPHAN_DEPENDENCY",
-                  message: `Task ${task.id} is blocked by a deleted or missing dependency.`,
-                  severity: "medium",
-                  taskId: task.id,
-                });
-              }
-            }
-
-            return ok({
-              summary: {
-                activeCreatedTasks,
-                activePersonalTasks: personalTasks.length,
-                unblockedTasks: unblockedCount,
-                issueCount: issues.length,
-              },
-              issues,
-            });
           }
 
           // ── getNextAction ──────────────────────────────────────
