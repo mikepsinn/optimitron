@@ -36,7 +36,14 @@ function parseArgs(argv) {
   const opts = { routes: [], viewports: ["desktop", "mobile"], login: null, share: null, site: "optimitron", out: "preview", origin: null };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    const next = () => argv[++i];
+    const next = () => {
+      const value = argv[++i];
+      if (value === undefined) {
+        console.error(`missing value for ${arg}`);
+        process.exit(1);
+      }
+      return value;
+    };
     if (arg === "--origin") opts.origin = next();
     else if (arg === "--route") opts.routes.push(next());
     else if (arg === "--share") opts.share = next();
@@ -59,14 +66,17 @@ const outDir = path.resolve(scriptDir, "..", "output", "playwright", "review", o
 fs.mkdirSync(outDir, { recursive: true });
 
 function routeSlug(route) {
-  return route.replace(/^\/+|\/+$/g, "").replace(/[^\w.-]+/g, "-") || "home";
+  // Slug from the path only, so query/hash don't leak into filenames.
+  const pathname = new URL(route, opts.origin).pathname;
+  return pathname.replace(/^\/+|\/+$/g, "").replace(/[^\w.-]+/g, "-") || "home";
 }
 
-function withParams(route) {
-  const params = [];
-  if (opts.login) params.push(`login=${encodeURIComponent(opts.login)}`);
-  const sep = route.includes("?") ? "&" : "?";
-  return params.length ? `${route}${sep}${params.join("&")}` : route;
+// Build the target URL with the URL API so a route with/without a leading
+// slash, an existing query, or a hash all resolve correctly against origin.
+function targetUrl(route) {
+  const url = new URL(route, opts.origin);
+  if (opts.login) url.searchParams.set("login", opts.login);
+  return url.toString();
 }
 
 (async () => {
@@ -88,10 +98,12 @@ function withParams(route) {
       const page = await context.newPage();
       // Visiting with the share token sets the deployment-protection cookie.
       if (opts.share) {
-        await page.goto(`${opts.origin}/?_vercel_share=${opts.share}`, { timeout: 90000, waitUntil: "domcontentloaded" });
+        const shareUrl = new URL("/", opts.origin);
+        shareUrl.searchParams.set("_vercel_share", opts.share);
+        await page.goto(shareUrl.toString(), { timeout: 90000, waitUntil: "domcontentloaded" });
       }
       for (const route of opts.routes) {
-        const url = `${opts.origin}${withParams(route)}`;
+        const url = targetUrl(route);
         console.log(`[${vpName}] ${url}`);
         await page.goto(url, { timeout: 90000, waitUntil: "networkidle" });
         await page.waitForTimeout(1200);
