@@ -17,7 +17,7 @@ export function PersonalQueueSection({
 
   return (
     <section className="mb-10">
-      <div className="flex items-baseline justify-between gap-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <h2 className="text-xl font-black uppercase tracking-tight">
           What next
         </h2>
@@ -74,7 +74,7 @@ export function PersonalQueueSection({
                 key={row.id}
                 className="border-b border-[var(--treaty-ink)]/20 py-2.5"
               >
-                <div className="flex items-baseline gap-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span className="w-6 shrink-0 text-right font-black tabular-nums">
                     {index + 1}.
                   </span>
