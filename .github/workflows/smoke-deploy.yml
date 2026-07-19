@@ -78,6 +78,7 @@ jobs:
             const deadline = Date.now() + timeoutMs;
             const terminalFailures = new Set(["failure", "error"]);
             let lastStatus = "not found";
+            let consecutiveInactive = 0;
 
             function isHttpUrl(value) {
               return /^https?:\/\//u.test(String(value || "").trim());
@@ -128,7 +129,7 @@ jobs:
               for (const comment of [...comments].reverse()) {
                 if (comment.user?.login !== "vercel[bot]") continue;
                 const previewMatch = String(comment.body || "").match(
-                  /\[Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
+                  /\[(?:Visit )?Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
                 );
                 if (previewMatch?.[1]) return previewMatch[1];
               }
@@ -238,6 +239,22 @@ jobs:
                   core.setOutput("state", "success");
                   return;
                 }
+                // An inactive deployment never becomes active again. With no
+                // recoverable URL this event is a Vercel ignored-build or a
+                // superseded deployment — nothing to smoke; skip instead of
+                // burning the timeout and failing the check.
+                consecutiveInactive += 1;
+                if (consecutiveInactive >= 3) {
+                  core.notice(
+                    `Deployment is inactive with no recoverable URL (likely an ignored build); skipping smoke for this event.`,
+                  );
+                  core.setOutput("environment", environment || "Preview");
+                  core.setOutput("environment_url", "");
+                  core.setOutput("state", "skipped");
+                  return;
+                }
+              } else {
+                consecutiveInactive = 0;
               }
 
               if (terminalFailures.has(state)) {
@@ -252,6 +269,7 @@ jobs:
 
       - name: Resolve smoke target
         id: target
+        if: steps.deployment_status.outputs.state != 'skipped'
         env:
           DEPLOYMENT_JSON: ${{ toJSON(github.event.deployment) }}
           DEPLOYMENT_STATUS_JSON: ${{ toJSON(github.event.deployment_status) }}
@@ -493,6 +511,7 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
+        if: steps.deployment_status.outputs.state != 'skipped'
         env:
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
@@ -786,6 +805,7 @@ jobs:
             const deadline = Date.now() + timeoutMs;
             const terminalFailures = new Set(["failure", "error"]);
             let lastStatus = "not found";
+            let consecutiveInactive = 0;
 
             function isHttpUrl(value) {
               return /^https?:\/\//u.test(String(value || "").trim());
@@ -811,7 +831,7 @@ jobs:
               for (const comment of [...comments].reverse()) {
                 if (comment.user?.login !== "vercel[bot]") continue;
                 const previewMatch = String(comment.body || "").match(
-                  /\[Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
+                  /\[(?:Visit )?Preview\]\((https:\/\/[^)\s]+\.vercel\.app[^)]*)\)/u,
                 );
                 if (previewMatch?.[1]) return previewMatch[1];
               }
@@ -910,6 +930,22 @@ jobs:
                   core.setOutput("state", "success");
                   return;
                 }
+                // An inactive deployment never becomes active again. With no
+                // recoverable preview URL this event is a Vercel ignored-build
+                // (e.g. a commit with no build-scope changes) or a superseded
+                // deployment — there is nothing to smoke; skip instead of
+                // burning the 20-minute timeout and failing the check.
+                consecutiveInactive += 1;
+                if (consecutiveInactive >= 3) {
+                  core.notice(
+                    `Deployment is inactive with no recoverable preview URL (likely an ignored build); skipping preview smoke for this event.`,
+                  );
+                  core.setOutput("environment_url", "");
+                  core.setOutput("state", "skipped");
+                  return;
+                }
+              } else {
+                consecutiveInactive = 0;
               }
 
               if (terminalFailures.has(state)) {
@@ -923,7 +959,7 @@ jobs:
             core.setFailed(`Deployment did not reach success with an environment URL before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Wait for preview database sync
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         uses: actions/github-script@v8
         with:
           script: |
@@ -1018,39 +1054,39 @@ jobs:
             core.setFailed(`${checkName} did not complete before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Enable Corepack
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         run: pnpm install --frozen-lockfile
 
       - name: Build web workspace dependencies
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         # Without this, Playwright fails at import time on @optimitron/db,
         # @optimitron/data, etc. (transitive imports from e2e/utils/*).
         # Same step as web-validate (ci.yml line 152).
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
       - name: Verify system Chrome
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         run: google-chrome --version
 
       - name: Install Playwright system deps
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Run Playwright smoke against preview
-        if: steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
         env:
           BASE_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
