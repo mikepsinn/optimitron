@@ -1,18 +1,10 @@
 -- Preview database anonymization SETUP.
 --
--- Runs via `psql --file` BEFORE the Neon /anonymize API call. Sets up
--- the anon extension and any helper functions that the masking rules
--- reference. Must be idempotent — every preview branch re-runs it.
+-- Runs via `psql --file` before the direct masking updates. Sets up the
+-- anon extension and helper functions they reference. Must be idempotent.
 --
--- This file does NOT contain SECURITY LABEL statements. Those live in
--- `anonymization-rules.sql` and are sent to Neon via the masking_rules
--- API (see .github/workflows/ci.yml "Apply preview database
--- anonymization" step). Reason: Postgres requires the anon security
--- label provider to be preloaded into the session (via
--- shared_preload_libraries or session_preload_libraries), which we
--- cannot set as a tenant on Neon. Neon's API path handles the preload
--- internally; running SECURITY LABEL directly via psql in a fresh
--- session fails with `security label provider "anon" is not loaded`.
+-- Column updates live in anonymization-updates.sql. Direct updates avoid
+-- SECURITY LABEL session-preload requirements on managed Neon branches.
 
 -- Neon ships `anon` (postgresql_anonymizer) as a beta/unstable extension
 -- and refuses to install it unless the session opts in. Acknowledge that
@@ -23,9 +15,7 @@ SELECT anon.init();
 
 -- Neon-managed `anon` extension does not grant CREATE on its schema to the
 -- database role, so we install our placeholder helper in `public` (which we
--- own) and reference it as `public.dummy_safe_text()` from every SECURITY
--- LABEL in `anonymization-rules.sql`. The anon DSL accepts any
--- schema-qualified function in MASKED WITH FUNCTION.
+-- own) and use it from anonymization-updates.sql.
 DO $$
 BEGIN
   IF NOT EXISTS (

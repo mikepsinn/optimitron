@@ -4,8 +4,8 @@
 -- and the dummy_safe_text() helper setup. See
 -- .github/workflows/ci.yml "Apply preview database anonymization".
 --
--- This file is HAND-MAINTAINED. Each UPDATE masks one column. The
--- WHERE col IS NOT NULL guard avoids rewriting NULL rows.
+-- This file is HAND-MAINTAINED. Most UPDATEs mask one column. Constrained
+-- tables may use one atomic UPDATE to preserve their checks.
 --
 -- Wrapped in BEGIN/COMMIT so partial failures roll back.
 --
@@ -276,6 +276,31 @@ UPDATE public."Task" SET "contextJson" = pg_catalog.jsonb_build_object() WHERE "
 UPDATE public."Task" SET "completionEvidence" = public.dummy_safe_text() WHERE "completionEvidence" IS NOT NULL;
 UPDATE public."TaskClaim" SET "completionEvidence" = public.dummy_safe_text() WHERE "completionEvidence" IS NOT NULL;
 UPDATE public."TaskClaim" SET "verificationNote" = public.dummy_safe_text() WHERE "verificationNote" IS NOT NULL;
+UPDATE public."TaskExecutionArtifact" SET "externalUrl" = pg_catalog.concat('https://preview.invalid/artifact/', md5("id"::text)) WHERE "externalUrl" IS NOT NULL;
+UPDATE public."TaskExecutionArtifact" SET "structuredResultJson" = pg_catalog.jsonb_build_object() WHERE "structuredResultJson" IS NOT NULL;
+UPDATE public."TaskExecutionArtifact" SET "label" = public.dummy_safe_text() WHERE "label" IS NOT NULL;
+UPDATE public."TaskExecutionArtifact" SET "contentHash" = pg_catalog.concat('artifact-content-', md5("id"::text));
+UPDATE public."TaskExecutionArtifact" SET "metadataJson" = pg_catalog.jsonb_build_object() WHERE "metadataJson" IS NOT NULL;
+ALTER TABLE public."TaskVerification" DISABLE TRIGGER "TaskVerification_protect_evidence";
+UPDATE public."TaskVerification"
+SET
+  "acceptanceCriteriaSnapshotJson" = pg_catalog.jsonb_build_object(),
+  "criterionResultsJson" = CASE WHEN "criterionResultsJson" IS NULL THEN NULL ELSE pg_catalog.jsonb_build_object() END,
+  "evidenceJson" = CASE WHEN "evidenceJson" IS NULL THEN NULL ELSE pg_catalog.jsonb_build_object() END,
+  "note" = CASE WHEN "note" IS NULL THEN NULL ELSE public.dummy_safe_text() END;
+ALTER TABLE public."TaskVerification" ENABLE TRIGGER "TaskVerification_protect_evidence";
+ALTER TABLE public."ExternalActionRequest" DISABLE TRIGGER "ExternalActionRequest_immutable_payload";
+UPDATE public."ExternalActionRequest"
+SET
+  "operation" = public.dummy_safe_text(),
+  "destination" = public.dummy_safe_text(),
+  "payloadJson" = pg_catalog.jsonb_build_object(),
+  "payloadHash" = pg_catalog.concat('external-action-payload-', md5("id"::text)),
+  "approvedPayloadHash" = CASE WHEN "approvedPayloadHash" IS NULL THEN NULL ELSE pg_catalog.concat('external-action-payload-', md5("id"::text)) END,
+  "executionReceiptJson" = CASE WHEN "executionReceiptJson" IS NULL THEN NULL ELSE pg_catalog.jsonb_build_object() END,
+  "failureMessage" = CASE WHEN "failureMessage" IS NULL THEN NULL ELSE public.dummy_safe_text() END,
+  "idempotencyKey" = pg_catalog.concat('external-action-', md5("id"::text));
+ALTER TABLE public."ExternalActionRequest" ENABLE TRIGGER "ExternalActionRequest_immutable_payload";
 UPDATE public."SourceArtifact" SET "externalKey" = pg_catalog.concat('artifact-external-', md5("id"::text)) WHERE "externalKey" IS NOT NULL;
 UPDATE public."SourceArtifact" SET "versionKey" = pg_catalog.concat('artifact-version-', md5("id"::text)) WHERE "versionKey" IS NOT NULL;
 UPDATE public."SourceArtifact" SET "title" = public.dummy_safe_text() WHERE "title" IS NOT NULL;

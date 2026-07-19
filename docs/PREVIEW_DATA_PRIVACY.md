@@ -18,14 +18,13 @@ and row-shape verification completed.
 2. It applies Prisma migrations to the preview database branch.
 3. It runs `packages/db/prisma/anonymization-setup.sql` with `psql` to install
    `postgresql_anonymizer` and the local `public.dummy_safe_text()` helper.
-4. It runs `packages/db/prisma/anonymization-updates.sql` with `psql`. This file
-   is generated from `packages/db/prisma/anonymization-rules.sql` by
-   `packages/db/scripts/generate-anonymization-updates.mjs`.
-5. It runs `packages/web/scripts/verify-preview-masking.mjs`, which samples
+4. It runs the hand-maintained
+   `packages/db/prisma/anonymization-updates.sql` with `psql`.
+5. When managed-data inputs changed, it syncs them and re-applies masking.
+   Managed data must remain public, synthetic, or campaign-system data only.
+6. It runs `packages/web/scripts/verify-preview-masking.mjs`, which samples
    high-risk columns and asserts masked value shapes without logging sampled
    values.
-6. It runs managed-data sync after masking. Managed data must remain public,
-   synthetic, or campaign-system data only.
 
 Do not weaken the failure behavior to best-effort masking.
 
@@ -34,14 +33,14 @@ Do not weaken the failure behavior to best-effort masking.
 - Keep `NEON_API_KEY` configured in the GitHub `Preview` environment so CI can
   resolve branch-specific preview database connections from Neon.
 - If Neon branch discovery is ambiguous, set `NEON_PROJECT_ID`,
-  `NEON_BRANCH_ID`, `NEON_DATABASE_NAME`, or `NEON_ROLE_NAME` as GitHub
-  variables.
+  `NEON_DATABASE_NAME`, or `NEON_ROLE_NAME` as GitHub variables. The branch
+  must be the exact child branch `preview/<pull-request-branch>`.
 - If preview masking fails, recreate or re-mask the preview branch before
   inspecting, screenshotting, or sharing preview-derived artifacts.
 
 ## Masked Columns
 
-The source of truth is `packages/db/prisma/anonymization-rules.sql`. It masks
+The source of truth is `packages/db/prisma/anonymization-updates.sql`. It masks
 the columns below.
 
 | Table | Columns | Rationale |
@@ -59,6 +58,7 @@ the columns below.
 | `CourtCaseParty` | `partyKey`, `displayNameSnapshot`, `standingTheory`, `metadataJson` | Plaintiff/respondent snapshots and standing theories. |
 | `CourtCaseRemedy` | `remedyKey`, `remedyType`, `title`, `bodyMarkdown`, `metadataJson` | Remedy text and metadata. |
 | `EmailLog` | `toAddress`, `subject`, `providerMessageId`, `subjectTemplate`, `sendContext`, `errorMessage`, `dedupeKey` | Email recipient, provider, and render forensics. |
+| `ExternalActionRequest` | `operation`, `destination`, `payloadJson`, `payloadHash`, `approvedPayloadHash`, `executionReceiptJson`, `failureMessage`, `idempotencyKey` | Exact external operation, target, payload, receipts, errors, and replay protection. |
 | `IntegrationConnection` | `accessToken`, `refreshToken`, `tokenExpiresAt`, `lastSyncAt`, `nextSyncAt`, `lastSyncError` | External integration secrets and sync diagnostics. |
 | `IntegrationSyncLog` | `errorMessage` | Sync errors can contain raw provider context. |
 | `InterventionExperience` | `status`, `startedAt`, `endedAt`, `doseValue`, `frequencyText`, `notes` | Personal health/intervention report data. |
@@ -121,12 +121,14 @@ the columns below.
 | `TaskCommunicationTemplate` | `label` | Admin/debug communication label. |
 | `TaskCommunicationVariant` | `subject`, `htmlBody`, `textBody`, `senderIdentity`, `signature`, `footer` | Rendered outbound communication content. |
 | `TaskEdge` | `assumptionsJson`, `notes` | User-authored assumptions and notes. |
+| `TaskExecutionArtifact` | `externalUrl`, `structuredResultJson`, `label`, `contentHash`, `metadataJson` | Submitted output, links, labels, and provider metadata. |
 | `TaskImpactEstimateSet` | `assumptionsJson` | Impact assumptions payload. |
 | `TaskImpactFrameEstimate` | `customFrameLabel`, `summaryStatsJson` | Custom labels and summary payloads. |
 | `TaskImpactMetric` | `valueJson`, `summaryStatsJson`, `metadataJson` | Metric payloads. |
 | `TaskSpawnSpec` | `titleTemplate`, `descriptionTemplate`, `impactStatementTemplate`, `roleTitleTemplate`, `skillTagTemplates`, `interestTagTemplates`, `actionLinkUrlTemplate`, `actionLinkLabelTemplate`, `actionLinkInstructionsTemplate`, `metadata` | Generated task templates and metadata. |
 | `TaskTrigger` | `eventFilter`, `disabledReason`, `idempotencyKeyTemplate`, `completionGate`, `notes`, `metadata` | Trigger filters, notes, and payloads. |
 | `TaskTriggerFire` | `idempotencyKey`, `context`, `error`, `spawnedTaskKeys`, `spawnedTaskIds` | Fire-time event context and produced identifiers. |
+| `TaskVerification` | `acceptanceCriteriaSnapshotJson`, `criterionResultsJson`, `evidenceJson`, `note` | Acceptance criteria, evidence, and reviewer notes. |
 | `TrackingReminder` | `defaultValue`, `reminderStartTime`, `reminderEndTime`, `reminderFrequency`, `instructions`, `lastTracked`, `startTrackingDate`, `stopTrackingDate` | Personal health/reminder schedule. |
 | `TrackingReminderNotification` | `notifyAt`, `notifiedAt`, `receivedAt`, `trackedValue`, `status` | Reminder delivery and response data. |
 | `User` | `email`, `password`, `referralCode`, `signupLandingUrl`, `unsubscribedScopes`, `timeZone`, `countryCode`, `regionCode`, `city`, `postalCode`, `latitude`, `longitude`, `annualHouseholdIncomeUsd`, `annualPersonalIncomeUsd`, `householdSize`, `birthYear`, `educationLevel`, `employmentStatus`, `genderIdentity`, `censusNotes`, `biologicalSex`, `ethnicityOrRace`, `maritalStatus`, `numberOfDependents`, `primaryLanguage`, `healthInsuranceType`, `chronicConditionCount`, `disabilityStatus`, `smokingStatus`, `alcoholFrequency`, `heightCm`, `annualTaxesPaidUsd`, `monthlyHousingCostUsd`, `housingStatus`, `hoursWorkedPerWeek`, `industryOrSector`, `citizenshipStatus`, `internetAccessType`, `skillTags`, `interestTags`, `availableHoursPerWeek`, `phoneNumber` | Auth, contact, location, census, income, health, and capability data. |
@@ -141,9 +143,7 @@ the columns below.
 
 - Unique identifiers that must remain unique use deterministic synthetic values,
   usually with a `preview.invalid` email domain or a table-specific prefix. The
-  rules file may express these as `anon.hash(...)`; the generated update SQL
-  rewrites that to Postgres `md5(...)` because Neon's managed anonymizer build
-  does not expose the `anon.salt` session setting required by `anon.hash()`.
+  update SQL derives them from the row ID with Postgres `md5(...)`.
 - Names use `anon.fake_first_name()` / `anon.fake_last_name()`.
 - Non-unique email/contact surfaces use `anon.fake_email()`.
 - Free text uses `anon.dummy_safe_text()`, defined in the SQL file if the Neon
@@ -162,4 +162,5 @@ the columns below.
   as unsafe until recreated or masked successfully.
 - If a Prisma model adds a new user-authored, contact, auth, health, location,
   legal, survey, share, email, JSON, provider, wallet, or raw-payload column,
-  add a rule to `packages/db/prisma/anonymization-rules.sql` in the same PR.
+  add an update to `packages/db/prisma/anonymization-updates.sql` in the same
+  PR.

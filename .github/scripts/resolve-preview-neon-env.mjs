@@ -1,16 +1,20 @@
 import { appendFileSync } from "node:fs";
+import {
+  assertDirectNeonConnectionUri,
+  expectedPreviewBranchName,
+  selectExactPreviewBranch,
+} from "./preview-neon-branch.mjs";
 
 const API_BASE = "https://console.neon.tech/api/v2";
 const apiKey = requiredEnv("NEON_API_KEY");
 const previewGitBranch = requiredEnv("PREVIEW_GIT_BRANCH");
+const expectedBranchName = expectedPreviewBranchName(previewGitBranch);
 
 const configuredProjectId = optionalEnv("NEON_PROJECT_ID");
-const configuredBranchId = optionalEnv("NEON_BRANCH_ID");
 const configuredDatabaseName = optionalEnv("NEON_DATABASE_NAME");
 const configuredRoleName = optionalEnv("NEON_ROLE_NAME");
 
-const project = await resolveProject();
-const branch = await resolveBranch(project);
+const { project, branch } = await resolveProjectAndBranch();
 const database = await resolveDatabase(project.id, branch.id);
 const role = await resolveRole(project.id, branch.id, database.name);
 const pooledUri = await getConnectionUri(
@@ -20,12 +24,14 @@ const pooledUri = await getConnectionUri(
   role.name,
   true,
 );
-const directUri = await getConnectionUri(
-  project.id,
-  branch.id,
-  database.name,
-  role.name,
-  false,
+const directUri = assertDirectNeonConnectionUri(
+  await getConnectionUri(
+    project.id,
+    branch.id,
+    database.name,
+    role.name,
+    false,
+  ),
 );
 
 writeGitHubEnv("DATABASE_URL", pooledUri);
@@ -49,85 +55,25 @@ console.log(
   `Resolved Neon preview database for ${previewGitBranch}: project ${project.name || project.id}, branch ${branch.name || branch.id}, database ${database.name}, role ${role.name}.`,
 );
 
-async function resolveProject() {
-  if (configuredProjectId) {
-    const data = await neon(`/projects/${configuredProjectId}`);
-    return data.project || data;
-  }
+async function resolveProjectAndBranch() {
+  const projects = configuredProjectId
+    ? [await getProject(configuredProjectId)]
+    : await listProjects();
+  const candidates = [];
 
-  const projects = await listProjects();
-  const matches = [];
-  for (const candidateProject of projects) {
-    const branches = await listBranches(candidateProject.id);
-    const bestBranch = bestBranchMatch(branches);
-    if (bestBranch) {
-      matches.push({
-        project: candidateProject,
-        branch: bestBranch.branch,
-        score: bestBranch.score,
-      });
+  for (const project of projects) {
+    const branches = await listBranches(project.id, expectedBranchName);
+    for (const branch of branches) {
+      candidates.push({ project, branch });
     }
   }
 
-  const bestScore = Math.max(...matches.map((match) => match.score), 0);
-  const bestMatches = matches.filter((match) => match.score === bestScore);
-  if (bestMatches.length === 1) {
-    return bestMatches[0].project;
-  }
-
-  if (bestMatches.length > 1) {
-    throw new Error(
-      [
-        `Neon branch discovery is ambiguous for ${previewGitBranch}.`,
-        "Set NEON_PROJECT_ID in GitHub variables to choose the project.",
-        ...bestMatches.map(
-          (match) =>
-            `- ${match.project.name || match.project.id}: ${match.branch.name || match.branch.id}`,
-        ),
-      ].join("\n"),
-    );
-  }
-
-  throw new Error(
-    `No Neon project has a branch matching ${previewGitBranch}. Set NEON_PROJECT_ID and NEON_BRANCH_ID in GitHub variables if this preview branch uses a custom Neon branch name.`,
-  );
+  return selectExactPreviewBranch(candidates, previewGitBranch);
 }
 
-async function resolveBranch(project) {
-  const branches = await listBranches(project.id);
-  if (configuredBranchId) {
-    const branch = branches.find(
-      (candidate) => candidate.id === configuredBranchId,
-    );
-    if (!branch) {
-      throw new Error(
-        `NEON_BRANCH_ID ${configuredBranchId} was not found in Neon project ${project.name || project.id}.`,
-      );
-    }
-    return branch;
-  }
-
-  const bestMatch = bestBranchMatch(branches);
-  if (!bestMatch) {
-    throw new Error(
-      `No Neon branch in project ${project.name || project.id} matches ${previewGitBranch}. Set NEON_BRANCH_ID in GitHub variables if the preview database uses a custom branch name.`,
-    );
-  }
-
-  const ties = branches
-    .map((branch) => ({ branch, score: scoreBranch(branch) }))
-    .filter((match) => match.score === bestMatch.score);
-  if (ties.length > 1) {
-    throw new Error(
-      [
-        `Neon branch discovery is ambiguous for ${previewGitBranch} in project ${project.name || project.id}.`,
-        "Set NEON_BRANCH_ID in GitHub variables to choose the branch.",
-        ...ties.map((match) => `- ${match.branch.name || match.branch.id}`),
-      ].join("\n"),
-    );
-  }
-
-  return bestMatch.branch;
+async function getProject(projectId) {
+  const data = await neon(`/projects/${projectId}`);
+  return data.project || data;
 }
 
 async function resolveDatabase(projectId, branchId) {
@@ -199,7 +145,7 @@ async function getConnectionUri(
 }
 
 async function listProjects() {
-  const data = await neon("/projects", { limit: "100" });
+  const data = await neon("/projects", { limit: "400" });
   const projects = data.projects || [];
   if (projects.length === 0) {
     throw new Error("NEON_API_KEY can access zero Neon projects.");
@@ -207,29 +153,12 @@ async function listProjects() {
   return projects;
 }
 
-async function listBranches(projectId) {
-  const data = await neon(`/projects/${projectId}/branches`, { limit: "100" });
+async function listBranches(projectId, search) {
+  const data = await neon(`/projects/${projectId}/branches`, {
+    limit: "10000",
+    search,
+  });
   return data.branches || [];
-}
-
-function bestBranchMatch(branches) {
-  const matches = branches
-    .map((branch) => ({ branch, score: scoreBranch(branch) }))
-    .filter((match) => match.score > 0)
-    .sort((left, right) => right.score - left.score);
-  return matches[0];
-}
-
-function scoreBranch(branch) {
-  const name = String(branch.name || "");
-  const normalizedName = normalizeBranchName(name);
-  const normalizedPreview = normalizeBranchName(previewGitBranch);
-
-  if (name === previewGitBranch) return 100;
-  if (normalizedName === normalizedPreview) return 90;
-  if (name.endsWith(`/${previewGitBranch}`)) return 85;
-  if (normalizedName.endsWith(`-${normalizedPreview}`)) return 80;
-  return 0;
 }
 
 async function neon(path, query = {}) {
@@ -271,11 +200,4 @@ function requiredEnv(name) {
 
 function optionalEnv(name) {
   return String(process.env[name] || "").trim();
-}
-
-function normalizeBranchName(value) {
-  return String(value)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "");
 }
