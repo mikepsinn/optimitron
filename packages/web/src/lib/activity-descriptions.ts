@@ -36,10 +36,18 @@ export function getActivityDescription(
   type: string,
   metadata?: ActivityMetadata | string,
 ): string {
-  const meta: ActivityMetadata =
-    typeof metadata === "string"
-      ? JSON.parse(metadata || "{}")
-      : metadata || {};
+  // Metadata strings can be malformed (e.g. preview-DB masking replaces the
+  // JSON with a redaction marker); a bad row must not take down the page.
+  let meta: ActivityMetadata = {};
+  if (typeof metadata === "string") {
+    try {
+      meta = JSON.parse(metadata || "{}");
+    } catch {
+      meta = {};
+    }
+  } else {
+    meta = metadata || {};
+  }
 
   switch (type) {
     case ActivityType.VOTED_REFERENDUM:
