@@ -11,9 +11,27 @@ import {
   type ICellRendererParams,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { Check, Columns3, Pencil, Plus, Save, Search } from "lucide-react";
+import {
+  Check,
+  Columns3,
+  Download,
+  Pencil,
+  Plus,
+  Save,
+  Search,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CollectionColumnHeader,
+  type CollectionGridContext,
+} from "@/components/collections/collection-column-header";
+import {
+  type ColumnSettingsMap,
+  formatCellValue,
+  loadColumnSettings,
+  saveColumnSettings,
+} from "@/components/collections/collection-column-settings";
 import { Button } from "@/components/retroui/Button";
 import { Checkbox } from "@/components/retroui/Checkbox";
 import { Input } from "@/components/retroui/Input";
@@ -352,6 +370,7 @@ export function CollectionRecordsGrid({
   canEdit,
   canSaveView,
   collectionId,
+  collectionName,
   fields,
   focusedRecordId,
   initialNextCursor,
@@ -366,6 +385,7 @@ export function CollectionRecordsGrid({
   canEdit: boolean;
   canSaveView: boolean;
   collectionId: string;
+  collectionName?: string;
   fields: CollectionField[];
   focusedRecordId: string | null;
   initialNextCursor: string | null;
@@ -400,6 +420,7 @@ export function CollectionRecordsGrid({
   const queryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
+  const [isExportingCsv, setIsExportingCsv] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSavingView, setIsSavingView] = useState(false);
   const [newViewName, setNewViewName] = useState("");
@@ -414,6 +435,35 @@ export function CollectionRecordsGrid({
     initialView?.visibleFieldIds.length
       ? initialView.visibleFieldIds
       : fields.map((field) => field.id),
+  );
+  const persistenceViewId = initialView?.id ?? null;
+  const [columnSettings, setColumnSettings] = useState<ColumnSettingsMap>(() =>
+    loadColumnSettings(collectionId, persistenceViewId),
+  );
+  const columnSettingsRef = useRef(columnSettings);
+  columnSettingsRef.current = columnSettings;
+  const applyColumnSetting = useCallback<CollectionGridContext["onColumnSetting"]>(
+    (colId, patch) => {
+      setColumnSettings((current) => {
+        const next: ColumnSettingsMap = { ...current };
+        if (patch === null) {
+          delete next[colId];
+        } else {
+          next[colId] = { ...current[colId], ...patch };
+        }
+        columnSettingsRef.current = next;
+        saveColumnSettings(collectionId, persistenceViewId, next);
+        return next;
+      });
+    },
+    [collectionId, persistenceViewId],
+  );
+  const gridContext = useMemo<CollectionGridContext>(
+    () => ({
+      getColumnSetting: (colId) => columnSettingsRef.current[colId],
+      onColumnSetting: applyColumnSetting,
+    }),
+    [applyColumnSetting],
   );
   const orderedFields = useMemo(
     () => [...fields].sort((left, right) => left.position - right.position),
@@ -440,12 +490,19 @@ export function CollectionRecordsGrid({
     [],
   );
 
+  // Wrap-text toggles switch autoHeight on/off; recompute row heights so rows
+  // grow or snap back to the fixed height. No-op before the grid is ready.
+  useEffect(() => {
+    gridApi.current?.resetRowHeights();
+  }, [columnSettings]);
+
   const columnDefs = useMemo<ColDef<CollectionRecord>[]>(() => {
     const columns = orderedFields.map((field) => {
       const options = optionValues(field.options);
       const type = filterType(field);
       const expression = formulaText(field.options);
       const editable = canEdit && EDITABLE_TYPES.has(field.type);
+      const setting = columnSettings[field.id] ?? {};
       const column: ColDef<CollectionRecord> = {
         cellDataType:
           field.type === "BOOLEAN"
@@ -480,18 +537,27 @@ export function CollectionRecordsGrid({
           }
           return gridValue(value, field);
         },
+        headerComponent: CollectionColumnHeader,
+        headerComponentParams: { fieldType: field.type },
         headerName: field.name,
         headerTooltip: expression ? `${field.name}: ${expression}` : field.name,
         minWidth: field.type === "RICH_TEXT" ? 260 : 160,
+        suppressHeaderMenuButton: true,
         tooltipValueGetter: ({ value }) => (value == null ? "" : String(value)),
         valueFormatter: ({ value }) =>
-          value == null
-            ? ""
-            : Array.isArray(value)
-              ? value.join(", ")
-              : String(value),
+          formatCellValue(field.type, setting.format, value),
         valueGetter: ({ data }) => gridValue(data?.values[field.key], field),
       };
+      if (setting.wrapText) {
+        column.wrapText = true;
+        column.autoHeight = true;
+      }
+      if (setting.align) {
+        column.cellStyle = {
+          ...(typeof column.cellStyle === "object" ? column.cellStyle : {}),
+          textAlign: setting.align,
+        };
+      }
       if (field.type === "BOOLEAN") {
         column.cellEditor = "agCheckboxCellEditor";
         column.cellRenderer = ({
@@ -567,7 +633,7 @@ export function CollectionRecordsGrid({
       });
     }
     return columns;
-  }, [canEdit, onEditRecord, orderedFields]);
+  }, [canEdit, columnSettings, onEditRecord, orderedFields]);
 
   async function saveCell(event: CellEditRequestEvent<CollectionRecord>) {
     const field = fieldsById.get(event.column.getColId());
@@ -636,7 +702,7 @@ export function CollectionRecordsGrid({
       nextCursor?: unknown;
       records?: unknown;
     } | null;
-    if (sequence !== requestSequence.current) return;
+    if (sequence !== requestSequence.current) return null;
     if (!response.ok || !Array.isArray(payload?.records)) {
       throw new Error(
         typeof payload?.error === "string"
@@ -647,10 +713,11 @@ export function CollectionRecordsGrid({
     const loaded = payload.records as CollectionRecord[];
     if (input.append) onRecordsAdded(loaded);
     else onRecordsReplaced(loaded);
-    setNextCursor(
-      typeof payload.nextCursor === "string" ? payload.nextCursor : null,
-    );
+    const cursor =
+      typeof payload.nextCursor === "string" ? payload.nextCursor : null;
+    setNextCursor(cursor);
     lastLoadedQuery.current = querySignature(input.query);
+    return cursor;
   }
 
   function scheduleQueryReload(query: RecordQuery) {
@@ -757,6 +824,42 @@ export function CollectionRecordsGrid({
     }
   }
 
+  async function exportCsv() {
+    const api = gridApi.current;
+    if (!api || isExportingCsv) return;
+    setError(null);
+    setIsExportingCsv(true);
+    try {
+      // The grid holds only the loaded pages; pull every remaining page first
+      // so the CSV covers the whole (filtered) result set, not just the rows
+      // scrolled into view.
+      let cursor = nextCursor;
+      while (cursor) {
+        cursor = await fetchRows({
+          append: true,
+          cursor,
+          query: activeQuery.current,
+        });
+      }
+      const base = (collectionName ?? collectionId)
+        .replace(/[^\w.-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+      api.exportDataAsCsv({
+        columnKeys: visibleFieldIds,
+        fileName: `${base || collectionId}.csv`,
+      });
+    } catch (exportError) {
+      setError(
+        exportError instanceof Error
+          ? exportError.message
+          : "Could not export the rows.",
+      );
+    } finally {
+      setIsExportingCsv(false);
+    }
+  }
+
   async function loadMore() {
     if (!nextCursor || isLoadingMore) return;
     setError(null);
@@ -781,7 +884,7 @@ export function CollectionRecordsGrid({
   return (
     <>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <label className="relative min-w-52 flex-1 sm:max-w-sm">
+        <label className="relative w-full sm:max-w-sm sm:flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <span className="sr-only">Search rows</span>
           <Input
@@ -856,6 +959,17 @@ export function CollectionRecordsGrid({
             </div>
           </Popover.Content>
         </Popover>
+        <Button
+          className="gap-2 shadow-none"
+          disabled={isExportingCsv}
+          onClick={() => void exportCsv()}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          <Download className="h-4 w-4" />
+          {isExportingCsv ? "Exporting" : "Export CSV"}
+        </Button>
         {canSaveView ? (
           <>
             <Button
@@ -929,10 +1043,13 @@ export function CollectionRecordsGrid({
         <AgGridReact<CollectionRecord>
           animateRows={false}
           columnDefs={columnDefs}
+          context={gridContext}
           defaultColDef={GRID_DEFAULT_COLUMN}
           enableCellTextSelection
           getRowId={({ data }) => data.id}
+          headerHeight={40}
           initialState={initialState}
+          maintainColumnOrder
           onCellEditRequest={(event) => void saveCell(event)}
           onColumnMoved={({ api, finished }) => {
             if (finished) {
