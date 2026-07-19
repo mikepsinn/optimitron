@@ -4,14 +4,14 @@ import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
 import { POINT } from "@/lib/messaging";
 import {
-  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH,
   TREATY_HALE_GAIN_YEAR_15,
   EARTH_OPTIMIZATION_POINT_VALUE,
 } from "@optimitron/data/parameters";
 import { formatCurrency } from "@/lib/demo/formatters";
 import { useEffect, useState } from "react";
 
-const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value / 100_000) * 100_000;
+const personalLifetimeLoss = Math.round(TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH.value / 100_000) * 100_000;
 const haleGain = TREATY_HALE_GAIN_YEAR_15.value;
 const pointValue = Math.round(EARTH_OPTIMIZATION_POINT_VALUE.value);
 

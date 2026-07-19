@@ -319,7 +319,7 @@ export function createOnePercentTreatyCompileConfig(input: {
           numericMetricBinding(
             "treaty_personal_upside_blend",
             "Personal upside blend",
-            "TREATY_PERSONAL_UPSIDE_BLEND",
+            "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH",
             "personal",
           ),
           numericMetricBinding(
@@ -385,7 +385,7 @@ export function createOnePercentTreatyCompileConfig(input: {
       "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
       "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
       "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
-      "TREATY_PERSONAL_UPSIDE_BLEND",
+      "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH",
       "TREATY_QALYS_GAINED_ANNUAL_GLOBAL",
       "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20",
       "TREATY_TOTAL_ANNUAL_COSTS",

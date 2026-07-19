@@ -146,7 +146,7 @@ describe("buildOnePercentTreatyPolicyModelRun", () => {
             unit: "rate",
             value: 0.0628351848,
           },
-          TREATY_PERSONAL_UPSIDE_BLEND: {
+          TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH: {
             chapterUrl:
               "https://manual.warondisease.org/knowledge/call-to-action/your-personal-benefits.html",
             description: "Blended personal upside.",
