@@ -184,6 +184,7 @@ export function CollectionRecordsClient({
   canEdit,
   canSaveView,
   collectionId,
+  collectionName,
   fields,
   focusedRecordId,
   initialNextCursor,
@@ -194,6 +195,7 @@ export function CollectionRecordsClient({
   canEdit: boolean;
   canSaveView: boolean;
   collectionId: string;
+  collectionName?: string;
   fields: CollectionField[];
   focusedRecordId: string | null;
   initialNextCursor: string | null;
@@ -351,6 +353,7 @@ export function CollectionRecordsClient({
         canEdit={canEdit}
         canSaveView={canSaveView}
         collectionId={collectionId}
+        collectionName={collectionName}
         fields={orderedFields}
         focusedRecordId={focusedRecordId}
         initialNextCursor={initialNextCursor}

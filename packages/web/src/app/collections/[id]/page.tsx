@@ -115,6 +115,7 @@ export default async function CollectionPage({
         canEdit={result.viewerCanEditContent}
         canSaveView={result.viewerCanEditSchema}
         collectionId={id}
+        collectionName={dto.name}
         fields={dto.fields}
         initialNextCursor={records.nextCursor}
         initialRecords={initialRecords}
