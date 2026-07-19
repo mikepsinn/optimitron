@@ -110,6 +110,7 @@ import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { ensureSubjectForUser } from "./subject.server";
 import type { RankableTask } from "./tasks/rank-tasks";
 import { resolveTaskVisibilityParam } from "./tasks/task-visibility-param";
+import { MCP_SERVER_INSTRUCTIONS } from "./mcp-instructions";
 import {
   canUserManageTask,
   getTaskAccessWhere,
@@ -7873,7 +7874,10 @@ export function createMcpServer(
 
   const server = new Server(
     { name: "optimitron-tasks", version: "1.0.0" },
-    { capabilities: { tools: {} } },
+    {
+      capabilities: { tools: {} },
+      instructions: MCP_SERVER_INSTRUCTIONS,
+    },
   );
 
   // -- Tool listing (filtered by granted scopes) --
@@ -14226,4 +14230,22 @@ export function createMcpServer(
  */
 export function getToolDefinitions() {
   return TASK_TOOL_DEFINITIONS;
+}
+
+/**
+ * Full tool catalog with access metadata, for the generated developer
+ * reference (/developers/tools). Single source of truth: the same
+ * definitions, scope map, and admin set the live server enforces — a tool
+ * cannot appear here in a state the server would not honor.
+ */
+export function getToolCatalog() {
+  return TASK_TOOL_DEFINITIONS.filter(
+    (tool) => !DISABLED_TOOLS.has(tool.name),
+  ).map((tool) => ({
+    name: tool.name,
+    description: tool.description,
+    inputSchema: tool.inputSchema,
+    scopes: TOOL_SCOPES[tool.name] ?? null,
+    adminOnly: ADMIN_ONLY_TOOLS.has(tool.name),
+  }));
 }

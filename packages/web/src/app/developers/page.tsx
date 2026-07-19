@@ -213,6 +213,9 @@ export default function DevelopersPage() {
             <Link className={primaryButtonClassName} href="/openapi.json">
               Open OpenAPI
             </Link>
+            <Link className={defaultButtonClassName} href="/developers/tools">
+              MCP Tool Reference
+            </Link>
             <Link className={defaultButtonClassName} href={mcpLink.href}>
               Install MCP
             </Link>

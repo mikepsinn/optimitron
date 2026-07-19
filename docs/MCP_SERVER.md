@@ -79,9 +79,22 @@ Recommended OAuth scope for a personal life-planning AI:
 tasks:personal
 ```
 
-Do not request `tasks:admin` for personal planning. `tasks:admin` is reserved for admin users managing public Earth-level tasks. Public manual search and public task reads do not require OAuth permissions.
+The full scope vocabulary (live-rendered on `/developers` and in `/api/mcp/tools`):
 
-Add `tasks:organization` only for work in organizations where the user is an explicit member. Human approval clients may receive `actions:approve`; agent tokens may not.
+| Scope | Grants |
+| --- | --- |
+| `tasks:personal` | Create, update, prioritize, and comment on the user's private tasks; personal planning roots. |
+| `tasks:organization` | The same for organizations where the user is an explicit member; org planning roots. |
+| `tasks:admin` | Public Earth-level task management. Admin users only. |
+| `actions:approve` | Approve proposed external actions. Human approval clients only; agent tokens may not hold it. |
+| `earthdata:write` | Public Earth-data writes — court cases, memorials, evidence, corrections, measurements/tracking. Gates roughly a third of all tools. |
+| `earthdata:admin` | Administrative Earth-data operations. |
+| `agent:run` | Agent run logging and lease coordination. |
+| `github` | Repo search/read and GitHub API passthrough. |
+
+Do not request `tasks:admin` for personal planning. Public manual search and public task reads do not require OAuth permissions. Add `tasks:organization` only for work in organizations where the user is an explicit member.
+
+Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work). On the tools that previously exposed `scope`/`taskScope`, `"accessible"` survives as a deprecated alias for `"all"`; `listTasks` never had the alias and takes only `visibility`.
 
 Example private task:
 
@@ -166,21 +179,31 @@ are specified in [TASK_COMMUNICATION_MODEL.md](./TASK_COMMUNICATION_MODEL.md)
 
 ## Tool Groups
 
-- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
-- Personal task management: `createTask`, `updateTask`, `deleteTask`.
-- Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection` (target contract; see OPT-INTG-03 status).
-- Private execution: `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail` (target contract; see OPT-TASK-08 status).
-- External approval: `proposeExternalAction`, `recordExternalActionResult`; human approval is performed only by an `actions:approve` client (target contract; see OPT-AGENT-02 status).
-- Portability: `exportPrivateWork` (target contract; see OPT-TASK-08 status).
-- Public Earth task management, admin-only: `proposeTaskBundle`, `setTaskImpact`, `addDependency`, `promoteTask`, `updateMilestone`, `recordTaskActuals`.
-- Referendums: `listReferendums` for public active referendum inventory; `createReferendum` for admin-created draft referendum rows.
-- Agent coordination: `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`.
-- Comments and comment notifications: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
-- Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
-- Claims and actuals: `claimTask`, `completeTaskClaim`, `recordTaskActuals`.
-- Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
+This is an orientation map, not an inventory. The complete, generated,
+cannot-drift reference — every tool with parameters, required scopes, and
+admin gating — is the **[MCP Tool Reference](https://optimitron.com/developers/tools)**
+(human) and `/api/mcp/tools` (machine). When this section and those sources
+disagree, those sources win.
 
-Detailed tool schemas are exposed at `/api/mcp/tools`.
+- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
+- Personal task management: `createTask`, `updateTask`, `deleteTask`, `proposeTaskBundle` (multi-task drafts with duplicate review), `promoteTask` (DRAFT → ACTIVE after review).
+- Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection`.
+- Private execution (admin/agent-gated; not exposed to ordinary third-party tokens): `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail`.
+- External approval: `proposeExternalAction`, `recordExternalActionResult`; human approval is performed only by an `actions:approve` client.
+- Portability: `exportPrivateWork`.
+- Admin-only public task management: `setTaskImpact`, `createReferendum` (the complete admin set is labeled on the generated reference).
+- Dependencies and actuals (personal/org callers): `addDependency`, `recordTaskActuals`.
+- Referendums: `listReferendums`, `castReferendumVote`, `signReferendumAsOrganization`.
+- Agent coordination (`agent:run`): `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`, `getNextTask`.
+- Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
+- Documents (versioned markdown): `createDocument`, `updateDocument`, `getDocument`, `listDocuments`.
+- Collections (structured records): `createCollection`, `updateCollection`, `getCollection`, `listCollections`, `createCollectionRecord`, `updateCollectionRecord`, `queryCollectionRecords`, `upsertCollectionRecordsBatch`, `saveCollectionView`.
+- Content: `searchContent`, `exportContent`, `manageContentAccess`, `manageContentFiles`, `reportContent`.
+- Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
+- Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
+- Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
+- Claims: `claimTask`, `completeTaskClaim`.
+- Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
 
 ## Task Trigger Framework
 
