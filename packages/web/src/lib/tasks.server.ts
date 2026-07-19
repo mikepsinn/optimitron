@@ -24,6 +24,10 @@ import { getTaskPath } from "@/lib/routes";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
+import {
+  ensureExecutionPlanningBranch,
+  MissingOptimizeEarthRootError,
+} from "@/lib/tasks/planning-branch.server";
 import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import {
   assertUserCanClaimPaidTask,
@@ -1876,6 +1880,30 @@ export async function getPersonTaskProfileData(
   };
 }
 
+// Resolve the private planning branch a parentless private task belongs under.
+// Prefers the assigned org's branch, but only when the creator may plan for it
+// (ensureExecutionPlanningBranch enforces membership); a non-member creator, or
+// an unseeded Optimize Earth root, falls back to the creator's personal branch.
+async function resolveDefaultPrivateParent(
+  creatorUserId: string,
+  assigneeOrganizationId: string | null,
+): Promise<{ id: string }> {
+  if (assigneeOrganizationId) {
+    try {
+      return await ensureExecutionPlanningBranch({
+        organizationId: assigneeOrganizationId,
+        prisma,
+        userId: creatorUserId,
+      });
+    } catch (error) {
+      // Missing seed root can't be repaired here either — rethrow so the
+      // caller surfaces it; membership/other errors fall back to personal.
+      if (error instanceof MissingOptimizeEarthRootError) throw error;
+    }
+  }
+  return ensureExecutionPlanningBranch({ prisma, userId: creatorUserId });
+}
+
 export async function createTask(
   creatorUserId: string,
   input: {
@@ -1912,6 +1940,9 @@ export async function createTask(
   const requestedIsPublic =
     input.isPublic ??
     (resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY || isAssignedTask);
+  // An explicit parent makes this a subtask (always private); otherwise honor
+  // the requested visibility — public "ask for help" and invited-assignee
+  // tasks must stay publicly visible and claimable.
   const isPublic = input.parentTaskId ? false : requestedIsPublic;
   const endpointData = input.primaryEndpoint
     ? buildPrimaryTaskCommunicationEndpointCreateData(input.primaryEndpoint)
@@ -1931,6 +1962,24 @@ export async function createTask(
   ) {
     throw new Error("maxClaims must be at least 1 for OPEN_MANY tasks.");
   }
+
+  // Parent resolution (OPT-TASK-06): an explicit parent wins. A private
+  // parentless task lands in the owner's private planning branch — the org's
+  // when it's org-assigned and the creator can plan for that org, otherwise
+  // the creator's personal branch — so private work never pollutes the public
+  // Optimize Earth root. Public parentless tasks still root there until the
+  // ranked parent-suggestion matcher ships (the deferred half of OPT-TASK-06);
+  // there is no public per-person branch to hold them yet.
+  const parentTaskId =
+    input.parentTaskId ??
+    (isPublic
+      ? OPTIMIZE_EARTH_ROOT_TASK_ID
+      : (
+          await resolveDefaultPrivateParent(
+            creatorUserId,
+            assigneeOrganizationId,
+          )
+        ).id);
 
   const task = await prisma.task.create({
     data: {
@@ -1954,7 +2003,7 @@ export async function createTask(
         resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
           ? (input.maxClaims ?? null)
           : null,
-      parentTaskId: input.parentTaskId ?? OPTIMIZE_EARTH_ROOT_TASK_ID,
+      parentTaskId,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
       skillTags: input.skillTags?.filter(Boolean) ?? [],

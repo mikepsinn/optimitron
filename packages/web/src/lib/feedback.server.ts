@@ -1,4 +1,5 @@
 import { TaskCategory, type Prisma } from "@optimitron/db";
+import { OPTIMITRON_DEV_TASK_ID } from "@optimitron/db/task-keys";
 import { prisma } from "@/lib/prisma";
 import { createTask } from "@/lib/tasks.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
@@ -187,6 +188,9 @@ export async function createFeedbackTask(input: CreateFeedbackTaskInput) {
     estimatedEffortHours: 0.25,
     interestTags: ["feedback", "site improvement", "war and disease"],
     isPublic: false,
+    // Product feedback belongs in the engineering branch, not the Optimize
+    // Earth root and not the feedback owner's personal queue (OPT-TASK-06).
+    parentTaskId: OPTIMITRON_DEV_TASK_ID,
     roleTitle: owner.assigneePersonId ? "Feedback triage" : null,
     skillTags: ["triage", "copy", "product"],
     title: makeTitle(message),

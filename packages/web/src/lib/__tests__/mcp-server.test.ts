@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => ({
   scoreTaskForUser: vi.fn(),
   isTaskBlocked: vi.fn(),
   isTaskLeased: vi.fn(),
+  mergeTask: vi.fn(),
   taskCreate: vi.fn(),
   taskUpdate: vi.fn(),
   taskFindFirst: vi.fn(),
@@ -159,6 +160,10 @@ vi.mock("../tasks/rank-tasks", () => ({
   rankTasksForUser: mocks.rankTasksForUser,
   scoreTaskForUser: mocks.scoreTaskForUser,
   isTaskBlocked: mocks.isTaskBlocked,
+}));
+
+vi.mock("../tasks/task-merge.server", () => ({
+  mergeTask: mocks.mergeTask,
 }));
 
 vi.mock("../tasks/agent-lease.server", () => ({
@@ -4711,6 +4716,109 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).error).toBe("Task not found");
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
+    it("rejects mergeTask for a non-admin caller", async () => {
+      const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
+        isAdmin: false,
+      });
+      const result = await client.callTool({
+        name: "mergeTask",
+        arguments: { canonicalTaskId: "keep", duplicateTaskId: "fold" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.mergeTask).not.toHaveBeenCalled();
+    });
+
+    it("refuses mergeTask when a task is outside the caller's access", async () => {
+      // First loaded task resolves; the boundary predicate denies it.
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "someone-else",
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
+      mocks.isTaskWithinClientAccessBoundary.mockReturnValue(false);
+
+      const client = await setup("mike", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "mergeTask",
+        arguments: { canonicalTaskId: "keep", duplicateTaskId: "fold" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.mergeTask).not.toHaveBeenCalled();
+    });
+
+    it("returns Task not found when an admin cannot MANAGE a private task", async () => {
+      mocks.taskFindFirst.mockResolvedValue(null);
+
+      const client = await setup("mike", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "mergeTask",
+        arguments: { canonicalTaskId: "keep", duplicateTaskId: "fold" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(mocks.mergeTask).not.toHaveBeenCalled();
+    });
+
+    it("maps a mergeTask refusal to a tool error", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "mike",
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
+      mocks.mergeTask.mockResolvedValue({
+        refused: "Both tasks have a TaskFundingTarget; resolve funding manually.",
+      });
+
+      const client = await setup("mike", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "mergeTask",
+        arguments: { canonicalTaskId: "keep", duplicateTaskId: "fold" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toContain("TaskFundingTarget");
+    });
+
+    it("merges accessible tasks and returns the report", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "mike",
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
+      mocks.mergeTask.mockResolvedValue({
+        canonicalTaskId: "keep",
+        duplicateTaskId: "fold",
+        droppedSelfEdges: 0,
+        movedCounts: { claims: 2 },
+        skippedCollisions: {},
+      });
+
+      const client = await setup("mike", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "mergeTask",
+        arguments: { canonicalTaskId: "keep", duplicateTaskId: "fold" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.mergeTask).toHaveBeenCalledWith({
+        canonicalTaskId: "keep",
+        duplicateTaskId: "fold",
+      });
+      expect(parseToolBody(result).movedCounts).toEqual({ claims: 2 });
     });
 
     it("does not give admin status an implicit private task detail read", async () => {

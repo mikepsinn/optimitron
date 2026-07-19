@@ -320,6 +320,148 @@ describe("triggers/fire integration", () => {
       expect(task!.deletedAt).toBeNull();
       expect(task!.status).toBe(TaskStatus.ACTIVE);
     });
+
+    // Spec metadata drives the hygiene-sweep pattern: a single stable-key
+    // task that carries agent-queue contextJson and reopens after completion.
+    const createSweepTrigger = (metadata: unknown) =>
+      createTaskTrigger(
+        {
+          triggerKey: "hygiene:test-sweep",
+          eventName: "schedule",
+          enabled: true,
+          idempotencyKeyTemplate: "hygiene:test-sweep",
+          spawnSpecs: [
+            {
+              kind: "sweep",
+              isParent: true,
+              titleTemplate: "Standing sweep",
+              descriptionTemplate: "Standing sweep work order",
+              creatorResolver: "system",
+              parentResolver: "none",
+              metadata,
+            },
+          ],
+        },
+        { actorUserId: "u_admin" },
+      );
+
+    it("stamps spec metadata.taskContextJson on creation without overwriting later edits", async () => {
+      await createSweepTrigger({
+        taskContextJson: { executor_type: "AI Agent", value: 100 },
+      });
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+      const task = store.tasks.find((t) => t.taskKey === "hygiene:test-sweep");
+      expect(task?.contextJson).toEqual({
+        executor_type: "AI Agent",
+        value: 100,
+      });
+
+      // Runtime edits win: a later scheduled fire must not clobber them.
+      task!.contextJson = { executor_type: "AI Agent", value: 999 };
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+      expect(task?.contextJson).toEqual({
+        executor_type: "AI Agent",
+        value: 999,
+      });
+    });
+
+    it("reactivateOnFire reopens a completed stable-key task on the next fire", async () => {
+      await createSweepTrigger({ reactivateOnFire: true });
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+      const task = store.tasks.find((t) => t.taskKey === "hygiene:test-sweep");
+      task!.status = TaskStatus.VERIFIED;
+      task!.verifiedAt = new Date();
+      task!.completedAt = new Date();
+      task!.completionEvidence = "swept";
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+
+      expect(task!.status).toBe(TaskStatus.ACTIVE);
+      expect(task!.verifiedAt).toBeNull();
+      expect(task!.completedAt).toBeNull();
+      expect(task!.completionEvidence).toBeNull();
+    });
+
+    it("leaves completed tasks closed when reactivateOnFire is absent", async () => {
+      await createSweepTrigger(undefined);
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+      const task = store.tasks.find((t) => t.taskKey === "hygiene:test-sweep");
+      task!.status = TaskStatus.VERIFIED;
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+
+      expect(task!.status).toBe(TaskStatus.VERIFIED);
+    });
+
+    it("does not reactivate a deliberately-staled task even with the flag", async () => {
+      await createSweepTrigger({ reactivateOnFire: true });
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+      const task = store.tasks.find((t) => t.taskKey === "hygiene:test-sweep");
+      // A STALE task is a deliberate pause, not a completion.
+      task!.status = TaskStatus.STALE;
+
+      await fireTaskTrigger("hygiene:test-sweep", {}, {});
+
+      expect(task!.status).toBe(TaskStatus.STALE);
+    });
+
+    const createFixedPersonSweep = (personId: string) =>
+      createTaskTrigger(
+        {
+          triggerKey: `hygiene:assigned-sweep:${personId}`,
+          eventName: "schedule",
+          enabled: true,
+          idempotencyKeyTemplate: `hygiene:assigned-sweep:${personId}`,
+          spawnSpecs: [
+            {
+              kind: "sweep",
+              isParent: true,
+              titleTemplate: "Assigned sweep",
+              descriptionTemplate: "...",
+              creatorResolver: "system",
+              assigneePersonResolver: `fixed-person:${personId}`,
+              parentResolver: "none",
+            },
+          ],
+        },
+        { actorUserId: "u_admin" },
+      );
+
+    it("assigns a fixed-person sweep to the live operator person", async () => {
+      store.persons.push({
+        id: "person_operator",
+        handle: "operator",
+        displayName: "Operator",
+        email: null,
+        deletedAt: null,
+      });
+      await createFixedPersonSweep("person_operator");
+
+      await fireTaskTrigger("hygiene:assigned-sweep:person_operator", {}, {});
+      const task = store.tasks.find(
+        (t) => t.taskKey === "hygiene:assigned-sweep:person_operator",
+      );
+      expect(task?.assigneePersonId).toBe("person_operator");
+    });
+
+    it("degrades to unassigned (no throw) when the fixed person does not exist", async () => {
+      await createFixedPersonSweep("person_missing");
+
+      const result = await fireTaskTrigger(
+        "hygiene:assigned-sweep:person_missing",
+        {},
+        {},
+      );
+      expect(result.result).toBe("spawned");
+      const task = store.tasks.find(
+        (t) => t.taskKey === "hygiene:assigned-sweep:person_missing",
+      );
+      expect(task?.assigneePersonId ?? null).toBeNull();
+    });
   });
 
   describe("verifyTask sibling-scope", () => {

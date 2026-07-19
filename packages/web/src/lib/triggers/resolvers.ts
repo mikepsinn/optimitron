@@ -75,6 +75,17 @@ export async function resolveAssigneePersonId(
   ctx: ResolveContext,
 ): Promise<string | null> {
   if (resolver === "none") return null;
+  // "fixed-person:<personId>" pins the assignee to a specific Person —
+  // scheduled triggers have no actor or event context to resolve from.
+  if (resolver.startsWith("fixed-person:")) {
+    const personId = resolver.slice("fixed-person:".length);
+    if (!personId) return null;
+    const person = await ctx.db.person.findFirst({
+      where: { deletedAt: null, id: personId },
+      select: { id: true },
+    });
+    return person?.id ?? null;
+  }
   if (resolver === "actor") {
     if (!ctx.actorUserId) return null;
     const personId =
@@ -243,7 +254,11 @@ export function validateCreatorResolver(key: string): boolean {
   return CREATOR_RESOLVERS.has(key) || key.startsWith("context.");
 }
 export function validateAssigneePersonResolver(key: string): boolean {
-  return ASSIGNEE_PERSON_RESOLVERS.has(key) || key.startsWith("context.");
+  return (
+    ASSIGNEE_PERSON_RESOLVERS.has(key) ||
+    key.startsWith("context.") ||
+    key.startsWith("fixed-person:")
+  );
 }
 export function validateAssigneeOrganizationResolver(key: string): boolean {
   return ASSIGNEE_ORG_RESOLVERS.has(key) || key.startsWith("context.");

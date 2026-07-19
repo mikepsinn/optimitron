@@ -65,9 +65,29 @@ export async function fireSpawnTasks(
 
     const preExisting = await tx.task.findUnique({
       where: { taskKey },
-      select: { deletedAt: true, id: true },
+      select: { deletedAt: true, id: true, status: true },
     });
     const wasCreated = !preExisting;
+
+    // Spec metadata drives two behaviors the spec columns don't cover:
+    // - taskContextJson: contextJson stamped on the task at creation (e.g.
+    //   executor_type "AI Agent" so the task is getAIQueue-eligible). Never
+    //   overwritten on later fires — runtime edits win.
+    // - reactivateOnFire: scheduled recurring work re-opens its single
+    //   stable-key task after completion instead of spawning dated
+    //   instances (which pile up as zombies). Only a VERIFIED (completed)
+    //   task reopens — a DRAFT or STALE task is a deliberate hold and is
+    //   left alone.
+    const specMetadata =
+      spec.metadata && typeof spec.metadata === "object"
+        ? (spec.metadata as Record<string, unknown>)
+        : null;
+    const taskContextJson =
+      specMetadata?.taskContextJson &&
+      typeof specMetadata.taskContextJson === "object"
+        ? (specMetadata.taskContextJson as Prisma.InputJsonObject)
+        : null;
+    const reactivateOnFire = specMetadata?.reactivateOnFire === true;
 
     const createdByUserId = await resolveTaskCreatorUserId(
       spec.creatorResolver,
@@ -163,13 +183,19 @@ export async function fireSpawnTasks(
 
     const baseCreate = {
       ...baseUpdate,
+      ...(taskContextJson ? { contextJson: taskContextJson } : {}),
       createdByUserId,
       taskKey,
       status: TaskStatus.ACTIVE,
     };
+    const shouldReactivate =
+      reactivateOnFire &&
+      preExisting != null &&
+      !preExisting.deletedAt &&
+      preExisting.status === TaskStatus.VERIFIED;
     const updateData = {
       ...pruneNulls(baseUpdate),
-      ...(preExisting?.deletedAt
+      ...(preExisting?.deletedAt || shouldReactivate
         ? {
             completedAt: null,
             completionEvidence: null,
