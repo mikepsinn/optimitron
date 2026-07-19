@@ -72,8 +72,8 @@ test("deploy smoke can recover the Vercel preview URL from the PR comment", () =
   );
   assert.match(
     workflow,
-    /comment\.user\?\.login !== "vercel\[bot\]"[\s\S]*\\\[Preview\\\]/u,
-    "smoke jobs should recover the preview alias from the Vercel bot Preview link",
+    /comment\.user\?\.login !== "vercel\[bot\]"[\s\S]*\\\[\(\?:Visit \)\?Preview\\\]/u,
+    "smoke jobs should recover the preview alias from both Vercel bot link formats ([Preview] and [Visit Preview])",
   );
 });
 
@@ -87,6 +87,28 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
     workflow,
     /state === "inactive"[\s\S]*resolveVercelStatusPreviewUrl/u,
     "smoke jobs should recover the active Vercel preview URL before failing inactive deployment events",
+  );
+});
+
+test("both smoke waiters skip instead of failing when the deployment is an ignored build", () => {
+  const skipEmits = [
+    ...workflow.matchAll(/setOutput\("state", "skipped"\)/gu),
+  ];
+  assert.equal(
+    skipEmits.length,
+    2,
+    "both waiters (Smoke deployed URL and Playwright preview smoke) must emit the skipped state for persistently inactive deployments",
+  );
+  const inactiveCounters = [...workflow.matchAll(/consecutiveInactive \+= 1/gu)];
+  assert.equal(
+    inactiveCounters.length,
+    2,
+    "both waiters must confirm persistent inactivity before skipping",
+  );
+  assert.match(
+    workflow,
+    /steps\.deployment_status\.outputs\.state != 'skipped'/u,
+    "downstream smoke steps must gate on the skipped state",
   );
 });
 
