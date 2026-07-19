@@ -3,6 +3,7 @@ import {
   OrganizationMemberRole,
   OrgStatus,
   OrgType,
+  TaskClaimPolicy,
 } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
@@ -15,6 +16,8 @@ const mocks = vi.hoisted(() => ({
   txOrganizationFindFirst: vi.fn(),
   txOrganizationFindUnique: vi.fn(),
   txOrganizationMemberCreate: vi.fn(),
+  txTaskCreate: vi.fn(),
+  txTaskFindFirst: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -39,34 +42,69 @@ import {
 } from "@/lib/organization.server";
 
 describe("organization.server", () => {
+  const makeTx = () => ({
+    organization: {
+      create: mocks.txOrganizationCreate,
+      findFirst: mocks.txOrganizationFindFirst,
+      findUnique: mocks.txOrganizationFindUnique,
+    },
+    organizationMember: {
+      create: mocks.txOrganizationMemberCreate,
+    },
+    task: {
+      create: mocks.txTaskCreate,
+      findFirst: mocks.txTaskFindFirst,
+    },
+  });
+
+  // The planning-branch ensure and the duplicate-name guard both go through
+  // tx.organization.findFirst; the membership lookup is the one with a
+  // `members` filter.
+  const routeOrganizationFindFirst = (organization: {
+    id: string;
+    name: string;
+  }) => {
+    mocks.txOrganizationFindFirst.mockImplementation(
+      async (args: { where?: { members?: unknown } }) =>
+        args?.where?.members ? organization : null,
+    );
+  };
+
+  const routeTaskFindFirst = () => {
+    mocks.txTaskFindFirst.mockImplementation(
+      async (args: { where?: { id?: string } }) =>
+        args?.where?.id === "optimize-earth" ? { id: "optimize-earth" } : null,
+    );
+  };
+
   beforeEach(() => {
     mocks.transaction.mockReset();
     mocks.txOrganizationCreate.mockReset();
     mocks.txOrganizationFindFirst.mockReset();
     mocks.txOrganizationFindUnique.mockReset();
     mocks.txOrganizationMemberCreate.mockReset();
+    mocks.txTaskCreate.mockReset();
+    mocks.txTaskFindFirst.mockReset();
     mocks.organizationFindUnique.mockReset();
     mocks.organizationFindFirst.mockReset();
     mocks.organizationMemberFindFirst.mockReset();
     mocks.organizationMemberUpsert.mockReset();
   });
 
-  it("creates approved orgs with an owner membership for public creation", async () => {
+  it("creates approved orgs with an owner membership and planning root for public creation", async () => {
     mocks.transaction.mockImplementation(async (callback) =>
-      callback({
-        organization: {
-          create: mocks.txOrganizationCreate,
-          findFirst: mocks.txOrganizationFindFirst,
-          findUnique: mocks.txOrganizationFindUnique,
-        },
-        organizationMember: {
-          create: mocks.txOrganizationMemberCreate,
-        },
-      }),
+      callback(makeTx()),
     );
+    routeOrganizationFindFirst({ id: "org_1", name: "Test Org" });
+    routeTaskFindFirst();
     mocks.txOrganizationFindUnique.mockResolvedValue(null);
     mocks.txOrganizationCreate.mockResolvedValue({ id: "org_1" });
     mocks.txOrganizationMemberCreate.mockResolvedValue({ id: "membership_1" });
+    mocks.txTaskCreate.mockResolvedValue({
+      id: "task_1",
+      taskKey: "planner:organization:org_1",
+      title: "Optimize Test Org",
+    });
 
     await createOrganizationWithOwner({ name: "Test Org" }, "user_1");
 
@@ -86,25 +124,79 @@ describe("organization.server", () => {
         userId: "user_1",
       },
     });
+    // The planning root is created in the same transaction with the exact
+    // shape the lazy ensure validates: rooted, private, org-owned.
+    expect(mocks.txTaskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          createdByUserId: "user_1",
+          isPublic: false,
+          ownerOrganizationId: "org_1",
+          parentTaskId: "optimize-earth",
+          taskKey: "planner:organization:org_1",
+          title: "Optimize Test Org",
+        }),
+      }),
+    );
+  });
+
+  it("fails org creation when the planning-root ensure fails for any other reason", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback(makeTx()),
+    );
+    // Membership lookup comes back empty → the ensure throws its access
+    // error, which must NOT be swallowed like the missing-root case.
+    mocks.txOrganizationFindFirst.mockResolvedValue(null);
+    routeTaskFindFirst();
+    mocks.txOrganizationFindUnique.mockResolvedValue(null);
+    mocks.txOrganizationCreate.mockResolvedValue({ id: "org_1" });
+    mocks.txOrganizationMemberCreate.mockResolvedValue({ id: "membership_1" });
+
+    await expect(
+      createOrganizationWithOwner({ name: "Test Org" }, "user_1"),
+    ).rejects.toThrow(
+      "Organization planning requires OWNER, ADMIN, or MEMBER access.",
+    );
+    expect(mocks.txTaskCreate).not.toHaveBeenCalled();
+  });
+
+  it("still creates the org when the optimize-earth root is not seeded", async () => {
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback(makeTx()),
+    );
+    routeOrganizationFindFirst({ id: "org_1", name: "Test Org" });
+    mocks.txTaskFindFirst.mockResolvedValue(null);
+    mocks.txOrganizationFindUnique.mockResolvedValue(null);
+    mocks.txOrganizationCreate.mockResolvedValue({ id: "org_1" });
+    mocks.txOrganizationMemberCreate.mockResolvedValue({ id: "membership_1" });
+
+    const organization = await createOrganizationWithOwner(
+      { name: "Test Org" },
+      "user_1",
+    );
+
+    expect(organization).toEqual({ id: "org_1" });
+    expect(mocks.txTaskCreate).not.toHaveBeenCalled();
   });
 
   it("creates approved MCP organizations with generated slugs and strict uniqueness", async () => {
     mocks.transaction.mockImplementation(async (callback) =>
-      callback({
-        organization: {
-          create: mocks.txOrganizationCreate,
-          findFirst: mocks.txOrganizationFindFirst,
-          findUnique: mocks.txOrganizationFindUnique,
-        },
-        organizationMember: {
-          create: mocks.txOrganizationMemberCreate,
-        },
-      }),
+      callback(makeTx()),
     );
-    mocks.txOrganizationFindFirst.mockResolvedValue(null);
+    routeOrganizationFindFirst({
+      id: "org_foundation",
+      name: "Survival and Flourishing Fund",
+    });
+    routeTaskFindFirst();
     mocks.txOrganizationFindUnique.mockResolvedValue(null);
     mocks.txOrganizationCreate.mockResolvedValue({ id: "org_foundation" });
     mocks.txOrganizationMemberCreate.mockResolvedValue({ id: "membership_1" });
+    mocks.txTaskCreate.mockResolvedValue({
+      id: "task_1",
+      taskKey: "planner:organization:org_foundation",
+      title: "Optimize Survival and Flourishing Fund",
+    });
 
     await createOrganizationWithOwner(
       {
