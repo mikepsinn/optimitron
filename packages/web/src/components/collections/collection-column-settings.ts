@@ -100,22 +100,34 @@ export function formatCellValue(
 
   if (fieldType === "DATE" && format) {
     const raw = String(value);
-    const parsed = new Date(raw);
-    const valid = !Number.isNaN(parsed.getTime());
+    // Date-only values (the editor/filters store YYYY-MM-DD) must parse in
+    // LOCAL time: new Date("2026-07-19") is UTC midnight, which renders as the
+    // previous calendar day west of UTC. Full timestamps parse as-is.
+    const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(raw);
+    const parsed = dateOnly
+      ? new Date(
+          Number(raw.slice(0, 4)),
+          Number(raw.slice(5, 7)) - 1,
+          Number(raw.slice(8, 10)),
+        )
+      : new Date(raw);
+    if (Number.isNaN(parsed.getTime())) return raw;
     try {
       switch (format) {
-        case "iso":
-          return valid ? parsed.toISOString().slice(0, 10) : raw.slice(0, 10);
+        case "iso": {
+          const y = parsed.getFullYear();
+          const m = String(parsed.getMonth() + 1).padStart(2, "0");
+          const d = String(parsed.getDate()).padStart(2, "0");
+          return `${y}-${m}-${d}`;
+        }
         case "local":
-          return valid ? parsed.toLocaleDateString() : raw;
+          return parsed.toLocaleDateString();
         case "medium":
-          return valid
-            ? parsed.toLocaleDateString("en-US", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-            : raw;
+          return parsed.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
         default:
           return raw;
       }

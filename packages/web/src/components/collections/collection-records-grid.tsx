@@ -420,6 +420,7 @@ export function CollectionRecordsGrid({
   const queryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestSequence = useRef(0);
   const [error, setError] = useState<string | null>(null);
+  const [isExportingCsv, setIsExportingCsv] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSavingView, setIsSavingView] = useState(false);
   const [newViewName, setNewViewName] = useState("");
@@ -701,7 +702,7 @@ export function CollectionRecordsGrid({
       nextCursor?: unknown;
       records?: unknown;
     } | null;
-    if (sequence !== requestSequence.current) return;
+    if (sequence !== requestSequence.current) return null;
     if (!response.ok || !Array.isArray(payload?.records)) {
       throw new Error(
         typeof payload?.error === "string"
@@ -712,10 +713,11 @@ export function CollectionRecordsGrid({
     const loaded = payload.records as CollectionRecord[];
     if (input.append) onRecordsAdded(loaded);
     else onRecordsReplaced(loaded);
-    setNextCursor(
-      typeof payload.nextCursor === "string" ? payload.nextCursor : null,
-    );
+    const cursor =
+      typeof payload.nextCursor === "string" ? payload.nextCursor : null;
+    setNextCursor(cursor);
     lastLoadedQuery.current = querySignature(input.query);
+    return cursor;
   }
 
   function scheduleQueryReload(query: RecordQuery) {
@@ -822,17 +824,40 @@ export function CollectionRecordsGrid({
     }
   }
 
-  function exportCsv() {
+  async function exportCsv() {
     const api = gridApi.current;
-    if (!api) return;
-    const base = (collectionName ?? collectionId)
-      .replace(/[^\w.-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 80);
-    api.exportDataAsCsv({
-      columnKeys: visibleFieldIds,
-      fileName: `${base || collectionId}.csv`,
-    });
+    if (!api || isExportingCsv) return;
+    setError(null);
+    setIsExportingCsv(true);
+    try {
+      // The grid holds only the loaded pages; pull every remaining page first
+      // so the CSV covers the whole (filtered) result set, not just the rows
+      // scrolled into view.
+      let cursor = nextCursor;
+      while (cursor) {
+        cursor = await fetchRows({
+          append: true,
+          cursor,
+          query: activeQuery.current,
+        });
+      }
+      const base = (collectionName ?? collectionId)
+        .replace(/[^\w.-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+      api.exportDataAsCsv({
+        columnKeys: visibleFieldIds,
+        fileName: `${base || collectionId}.csv`,
+      });
+    } catch (exportError) {
+      setError(
+        exportError instanceof Error
+          ? exportError.message
+          : "Could not export the rows.",
+      );
+    } finally {
+      setIsExportingCsv(false);
+    }
   }
 
   async function loadMore() {
@@ -936,13 +961,14 @@ export function CollectionRecordsGrid({
         </Popover>
         <Button
           className="gap-2 shadow-none"
-          onClick={exportCsv}
+          disabled={isExportingCsv}
+          onClick={() => void exportCsv()}
           size="sm"
           type="button"
           variant="outline"
         >
           <Download className="h-4 w-4" />
-          Export CSV
+          {isExportingCsv ? "Exporting" : "Export CSV"}
         </Button>
         {canSaveView ? (
           <>
