@@ -10,6 +10,7 @@ import {
   type PrismaClient,
 } from "../generated/prisma/client.js";
 import {
+  OPTIMITRON_DEV_TASK_KEY,
   REFERRAL_INVITATION_TASK_KEY_PREFIX,
   SIGNER_REMINDER_TASK_KEY_PREFIX,
   TREATY_PARENT_TASK_KEY,
@@ -456,6 +457,150 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Tree-hygiene sweeps — scheduled agent tasks under the optimitron:dev branch
+// ---------------------------------------------------------------------------
+// Each sweep is ONE persistent agent task with a stable taskKey: the schedule
+// re-activates it (spec metadata.reactivateOnFire) instead of spawning dated
+// instances, which previously piled up as zombies. contextJson.executor_type
+// "AI Agent" (spec metadata.taskContextJson) makes the task getAIQueue-
+// eligible. The description is the agent's standing work order; the sweeps
+// spawn tasks only, no email — see the Wishonia-nudges note below.
+
+// The operator's Person id — scheduled fires have no actor to resolve an
+// assignee from, and the sweeps must land in the operator's AI queue.
+const OPERATOR_PERSON_ID = "cmoi5ad7v000004jvp8vozoki";
+
+const HYGIENE_SWEEP_SPEC_BASE = {
+  isParent: true,
+  kind: "sweep",
+  category: "ENGINEERING",
+  claimPolicy: "ASSIGNED_ONLY",
+  isPublic: false,
+  creatorResolver: "system",
+  assigneePersonResolver: `fixed-person:${OPERATOR_PERSON_ID}`,
+  parentResolver: `fixed:${OPTIMITRON_DEV_TASK_KEY}`,
+} satisfies Partial<ManagedTaskSpawnSpecInput>;
+
+const hygieneDuplicateSweep: ManagedTaskTriggerInput = {
+  triggerKey: "hygiene:duplicate-sweep",
+  eventName: "schedule",
+  triggerKind: "spawnTasks",
+  idempotencyKeyTemplate: "optimitron:dev:hygiene:duplicate-sweep",
+  schedule: "0 9 * * *",
+  iterationSource: "none",
+  enabled: true,
+  notes:
+    "Daily duplicate/misparent sweep. Re-activates the standing sweep task each morning.",
+  spawnSpecs: [
+    {
+      ...HYGIENE_SWEEP_SPEC_BASE,
+      titleTemplate: "Daily sweep: duplicate and misparented tasks",
+      descriptionTemplate: [
+        "Scan the active task tree for duplicates and misparented tasks, then submit fixes as approval-gated proposals — never mutate directly.",
+        "",
+        "1. Pull candidates: searchTasks/listTasks over active tasks; compare normalized title + assignee fingerprints (the task-governance duplicate fingerprint) and taskKey collisions.",
+        "2. For each duplicate pair, decide the canonical task (older, richer history, referenced by edges) and propose folding the other into it via the admin mergeTask tool — post the pair and rationale as a task comment on the canonical task for approval first.",
+        "3. For each misparented task (wrong branch, personal task under a public program, program task under a personal branch), post a re-parent proposal comment naming the target parent.",
+        "4. Record what was swept and proposed in a completion comment, then mark this task VERIFIED. The schedule reopens it tomorrow.",
+      ].join("\n"),
+      impactStatementTemplate:
+        "Duplicates split effort and corrupt EV roll-ups; every merged pair makes the queue ranking more truthful.",
+      estimatedEffortHours: 1,
+      metadata: {
+        reactivateOnFire: true,
+        taskContextJson: {
+          executor_type: "AI Agent",
+          value: 20000,
+          p_success: 0.9,
+          cash_cost: 0,
+          ev_math:
+            "placeholder container estimate; hygiene value accrues to ranking integrity",
+        },
+      },
+    },
+  ],
+};
+
+const hygieneRootOrphanSweep: ManagedTaskTriggerInput = {
+  triggerKey: "hygiene:root-orphan-sweep",
+  eventName: "schedule",
+  triggerKind: "spawnTasks",
+  idempotencyKeyTemplate: "optimitron:dev:hygiene:root-orphan-sweep",
+  schedule: "30 9 * * *",
+  iterationSource: "none",
+  enabled: true,
+  notes:
+    "Daily sweep for tasks parented directly under the optimize-earth root or detached from it.",
+  spawnSpecs: [
+    {
+      ...HYGIENE_SWEEP_SPEC_BASE,
+      titleTemplate: "Daily sweep: root orphans and unrooted tasks",
+      descriptionTemplate: [
+        "Find tasks that sit directly under the Optimize Earth root without being a managed program branch, plus tasks detached from the rooted tree entirely.",
+        "",
+        "1. listTasks(parentTaskId: optimize-earth) and flag anything that is not a managed branch or reserved planner root.",
+        "2. getQueueAudit for unrooted/orphaned findings.",
+        "3. For each orphan, post a re-parent proposal comment on the task naming the correct branch (personal planner root, org branch, or program). Do not re-parent directly.",
+        "4. Summarize findings in a completion comment and mark this task VERIFIED. The schedule reopens it tomorrow.",
+      ].join("\n"),
+      impactStatementTemplate:
+        "Root orphans bypass EV attribution and clutter the public tree the campaign links to.",
+      estimatedEffortHours: 0.5,
+      metadata: {
+        reactivateOnFire: true,
+        taskContextJson: {
+          executor_type: "AI Agent",
+          value: 15000,
+          p_success: 0.9,
+          cash_cost: 0,
+          ev_math:
+            "placeholder container estimate; hygiene value accrues to ranking integrity",
+        },
+      },
+    },
+  ],
+};
+
+const hygieneEstimateStalenessSweep: ManagedTaskTriggerInput = {
+  triggerKey: "hygiene:estimate-staleness-sweep",
+  eventName: "schedule",
+  triggerKind: "spawnTasks",
+  idempotencyKeyTemplate: "optimitron:dev:hygiene:estimate-staleness-sweep",
+  schedule: "0 10 * * 1",
+  iterationSource: "none",
+  enabled: true,
+  notes:
+    "Weekly sweep for stale parameter-derived estimates and missing impact frames.",
+  spawnSpecs: [
+    {
+      ...HYGIENE_SWEEP_SPEC_BASE,
+      titleTemplate: "Weekly sweep: stale estimates and missing impact frames",
+      descriptionTemplate: [
+        "Audit impact estimates across the active tree: parameterInputsStale sets, tasks missing impact frames, and hand-entered estimates that now have parameter-catalog equivalents.",
+        "",
+        "1. getQueueAudit for MISSING_ESTIMATES / stale-input findings; searchParameters for catalog coverage.",
+        "2. For each stale or missing estimate, submit a refreshed estimate through proposeParameterBundle / proposeTaskImpact so it lands in the review queue — never edit estimates directly.",
+        "3. Summarize what was refreshed and what needs a human decision in a completion comment, then mark this task VERIFIED. The schedule reopens it next Monday.",
+      ].join("\n"),
+      impactStatementTemplate:
+        "Stale estimates rank the wrong work first; the queue is only as honest as its inputs.",
+      estimatedEffortHours: 1,
+      metadata: {
+        reactivateOnFire: true,
+        taskContextJson: {
+          executor_type: "AI Agent",
+          value: 10000,
+          p_success: 0.85,
+          cash_cost: 0,
+          ev_math:
+            "placeholder container estimate; hygiene value accrues to ranking integrity",
+        },
+      },
+    },
+  ],
+};
+
 // Note on Wishonia nudges: the framework now supports per-trigger schedules,
 // iterationSource queries, and per-spec sendCount-range escalation — see the
 // run-due-triggers route plus minSendCount/maxSendCount on
@@ -464,6 +609,7 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
 // cost probably exceeds the completion uplift on passive signups. The HMT root
 // task description is the welcome and the nag; if a user comes back, they see
 // the task. Email stays reserved for transactional + asked-for signals.
+// The hygiene sweeps above honor this: they spawn agent tasks, never email.
 export const ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS: ManagedTaskTriggerInput[] =
   [
     userOnboardingTreaty,
@@ -472,6 +618,9 @@ export const ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS: ManagedTaskTriggerInput[] =
     treatyRatify,
     hmtVerifyGate,
     treatySignerPerSlot,
+    hygieneDuplicateSweep,
+    hygieneRootOrphanSweep,
+    hygieneEstimateStalenessSweep,
   ];
 
 export interface SyncManagedTaskTriggersOptions {

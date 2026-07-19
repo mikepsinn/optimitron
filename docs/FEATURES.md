@@ -78,11 +78,11 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** partial
-- **Summary:** The MCP createTask tool requires an explicit parentTaskId and rejects direct attachment to the optimize-earth root; agents are instructed to searchTasks first. No automated best-parent matching exists, and the non-MCP path still defaults to root.
-- **Evidence:** `validateExplicitTaskParent` in packages/web/src/lib/mcp-server.ts (throws on root); packages/web/src/lib/tasks.server.ts `createTask` (`parentTaskId: input.parentTaskId ?? OPTIMIZE_EARTH_ROOT_TASK_ID`)
-- **Acceptance:** No user-created task attaches to the root by default on any path, and new tasks receive a ranked parent suggestion from tree search.
-- **Roadmap:** next — companion loop; root-default inconsistency is cleanup item #4 in ROADMAP.md Appendix A
-- **Notes:** Gap is path-specific: MCP enforces, REST/feedback (`feedback.server.ts`) silently roots.
+- **Summary:** The MCP createTask tool requires an explicit parentTaskId and rejects direct attachment to the optimize-earth root; agents are instructed to searchTasks first. Parentless *private* tasks on the lib path now land in the creator's (or the assigned org's) private planning branch instead of root, and feedback tasks parent under `optimitron:dev`. Parentless *public* tasks (e.g. "ask for help") still root at optimize-earth because there is no public per-person branch to hold them — that case waits on the ranked parent-suggestion matcher.
+- **Evidence:** `validateExplicitTaskParent` in packages/web/src/lib/mcp-server.ts (throws on root); packages/web/src/lib/tasks.server.ts `createTask` / `resolveDefaultPrivateParent` (private parentless → `ensureExecutionPlanningBranch`); packages/web/src/lib/feedback.server.ts (`parentTaskId: OPTIMITRON_DEV_TASK_ID`)
+- **Acceptance (target):** No user-created task attaches to the root by default on any path, and new tasks receive a ranked parent suggestion from tree search. (Met for private tasks; public parentless tasks + ranked matching are the remaining gap — see Status: partial.)
+- **Roadmap:** next — companion loop; remaining gap is public parentless tasks + the ranked parent suggestion (both need the matcher)
+- **Notes:** Private root-default fixed on all paths (MCP + lib + feedback). Public parentless root-default and ranked best-parent matching remain open, coupled to the matcher.
 
 ### OPT-TASK-07 — AI decomposition into atomic subtasks
 

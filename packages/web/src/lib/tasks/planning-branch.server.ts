@@ -28,6 +28,16 @@ export class MissingOptimizeEarthRootError extends Error {
   }
 }
 
+// Thrown when the caller may not plan for the requested organization (not an
+// OWNER/ADMIN/MEMBER). Callers that can fall back to a personal branch catch
+// this specifically rather than swallowing every error.
+export class OrganizationPlanningAccessError extends Error {
+  constructor() {
+    super("Organization planning requires OWNER, ADMIN, or MEMBER access.");
+    this.name = "OrganizationPlanningAccessError";
+  }
+}
+
 function asObject(value: unknown) {
   return value !== null && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -74,9 +84,7 @@ export async function ensureExecutionPlanningBranch(input: {
           select: { id: true, name: true },
         });
         if (!organization) {
-          throw new Error(
-            "Organization planning requires OWNER, ADMIN, or MEMBER access.",
-          );
+          throw new OrganizationPlanningAccessError();
         }
         return {
           description: `Private work root for ${organization.name}.`,

@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   countTaskCommunications: vi.fn(),
+  ensureExecutionPlanningBranch: vi.fn(),
   grantWishes: vi.fn(),
   notifyTaskAssigneeOfAssignment: vi.fn(),
   prisma: {
@@ -71,6 +72,13 @@ vi.mock("@/lib/tasks/task-communications.server", () => ({
   countTaskCommunications: mocks.countTaskCommunications,
 }));
 
+vi.mock("@/lib/tasks/planning-branch.server", async (importActual) => ({
+  ...(await importActual<
+    typeof import("@/lib/tasks/planning-branch.server")
+  >()),
+  ensureExecutionPlanningBranch: mocks.ensureExecutionPlanningBranch,
+}));
+
 import {
   completeTaskClaim,
   createTask,
@@ -99,6 +107,7 @@ function createTransactionClient() {
 
 function resetAllMocks() {
   mocks.countTaskCommunications.mockReset();
+  mocks.ensureExecutionPlanningBranch.mockReset();
   mocks.grantWishes.mockReset();
   mocks.notifyTaskAssigneeOfAssignment.mockReset();
 
@@ -171,6 +180,9 @@ const adaAssignee = {
 describe("tasks server", () => {
   beforeEach(() => {
     resetAllMocks();
+    mocks.ensureExecutionPlanningBranch.mockResolvedValue({
+      id: "planner-branch-1",
+    });
     mocks.prisma.taskFindMany.mockResolvedValue([]);
     mocks.prisma.userFindUnique.mockResolvedValue({
       isAdmin: true,
@@ -581,22 +593,145 @@ describe("tasks server", () => {
         data: expect.objectContaining({
           assigneePersonId: "person_target",
           claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          // Invited-assignee tasks stay public so the assignee can see and
+          // the assignment email links to a reachable page.
           isPublic: true,
           maxClaims: null,
         }),
       }),
     );
+    // Public → roots at Optimize Earth, no private planning branch consulted.
+    expect(mocks.ensureExecutionPlanningBranch).not.toHaveBeenCalled();
     expect(mocks.notifyTaskAssigneeOfAssignment).toHaveBeenCalledWith({
       senderUserId: "user_creator",
       taskId: "task_3",
     });
   });
 
-  it("defaults unassigned tasks to public open-single tasks", async () => {
+  // OPT-TASK-06 regression: a parentless PRIVATE task lands in the creator's
+  // private planning branch, never the root.
+  it("defaults a parentless private task into the creator's planning branch", async () => {
+    mocks.ensureExecutionPlanningBranch.mockResolvedValue({
+      id: "planner-branch-1",
+    });
+    mocks.prisma.taskCreate.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_4",
+      isPublic: false,
+      title: "Private note",
+    });
+
+    await createTask("user_creator", {
+      isPublic: false,
+      title: "Private note",
+    });
+
+    expect(mocks.ensureExecutionPlanningBranch).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: "user_creator" }),
+    );
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          isPublic: false,
+          parentTaskId: "planner-branch-1",
+        }),
+      }),
+    );
+  });
+
+  // A parentless private task assigned to an org lands in the org's branch.
+  it("routes a parentless private org-assigned task to the org planning branch", async () => {
+    mocks.ensureExecutionPlanningBranch.mockResolvedValue({
+      id: "org-branch-1",
+    });
+    mocks.prisma.taskCreate.mockResolvedValue({
+      assigneeOrganizationId: "org_1",
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_org",
+      isPublic: false,
+      title: "Org planning note",
+    });
+
+    await createTask("user_creator", {
+      assigneeOrganizationId: "org_1",
+      isPublic: false,
+      title: "Org planning note",
+    });
+
+    expect(mocks.ensureExecutionPlanningBranch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organizationId: "org_1",
+        userId: "user_creator",
+      }),
+    );
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ parentTaskId: "org-branch-1" }),
+      }),
+    );
+  });
+
+  // A creator who cannot plan for the assigned org falls back to their own
+  // branch instead of failing task creation.
+  it("falls back to the personal branch when org planning access is denied", async () => {
+    const { OrganizationPlanningAccessError } = await import(
+      "@/lib/tasks/planning-branch.server"
+    );
+    mocks.ensureExecutionPlanningBranch.mockImplementation(
+      async (args: { organizationId?: string }) => {
+        if (args.organizationId) throw new OrganizationPlanningAccessError();
+        return { id: "personal-branch-1" };
+      },
+    );
+    mocks.prisma.taskCreate.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_fb",
+      isPublic: false,
+      title: "Org note",
+    });
+
+    await createTask("user_creator", {
+      assigneeOrganizationId: "org_x",
+      isPublic: false,
+      title: "Org note",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ parentTaskId: "personal-branch-1" }),
+      }),
+    );
+  });
+
+  // An unexpected branch error must NOT silently mis-parent the task.
+  it("propagates an unexpected planning-branch error instead of falling back", async () => {
+    mocks.ensureExecutionPlanningBranch.mockImplementation(
+      async (args: { organizationId?: string }) => {
+        if (args.organizationId) throw new Error("db exploded");
+        return { id: "personal-branch-1" };
+      },
+    );
+
+    await expect(
+      createTask("user_creator", {
+        assigneeOrganizationId: "org_x",
+        isPublic: false,
+        title: "Org note",
+      }),
+    ).rejects.toThrow("db exploded");
+    expect(mocks.prisma.taskCreate).not.toHaveBeenCalled();
+  });
+
+  // Public parentless tasks (e.g. "ask for help") still root at Optimize Earth
+  // until the ranked parent-suggestion matcher ships.
+  it("roots a parentless public task at Optimize Earth without a planning branch", async () => {
     mocks.prisma.taskCreate.mockResolvedValue({
       claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
       createdByUserId: "user_creator",
-      id: "task_4",
+      id: "task_pub",
       isPublic: true,
       title: "Claimable work",
     });
@@ -605,16 +740,40 @@ describe("tasks server", () => {
       title: "Claimable work",
     });
 
+    expect(mocks.ensureExecutionPlanningBranch).not.toHaveBeenCalled();
     expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
           isPublic: true,
           parentTaskId: "optimize-earth",
         }),
       }),
     );
-    expect(mocks.notifyTaskAssigneeOfAssignment).not.toHaveBeenCalled();
+  });
+
+  it("keeps an explicit parent without consulting the planning branch", async () => {
+    mocks.prisma.taskCreate.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_5",
+      isPublic: false,
+      title: "Subtask",
+    });
+
+    await createTask("user_creator", {
+      parentTaskId: "task_parent",
+      title: "Subtask",
+    });
+
+    expect(mocks.ensureExecutionPlanningBranch).not.toHaveBeenCalled();
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          isPublic: false,
+          parentTaskId: "task_parent",
+        }),
+      }),
+    );
   });
 
   it("blocks creators from unpublishing public tasks", async () => {

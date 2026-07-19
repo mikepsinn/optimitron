@@ -60,6 +60,9 @@ describe("createFeedbackTask", () => {
         assigneePersonId: "person-admin-1",
         category: TaskCategory.OTHER,
         isPublic: false,
+        // OPT-TASK-06: feedback parents under the engineering branch, not
+        // the root and not the owner's personal queue.
+        parentTaskId: "cmrh79s7h000604jtqfckws4t",
         title: "Review site feedback: The organization email is confusing.",
       }),
     );

@@ -192,6 +192,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
     McpScope.TASKS_ORGANIZATION,
     McpScope.TASKS_ADMIN,
   ],
+  mergeTask: [McpScope.TASKS_ADMIN],
   updateTask: [
     McpScope.TASKS_PERSONAL,
     McpScope.TASKS_ORGANIZATION,
@@ -312,6 +313,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
 
 const ADMIN_ONLY_TOOLS = new Set([
   "setTaskImpact",
+  "mergeTask",
   "createReferendum",
   "createPerson",
   "upsertOrganization",
@@ -6190,6 +6192,27 @@ const TASK_TOOL_DEFINITIONS = [
         taskId: { type: "string", description: "Task ID to delete" },
       },
       required: ["taskId"],
+    },
+  },
+  {
+    name: "mergeTask",
+    description:
+      "Admin-only: fold a duplicate task into a canonical task. Re-points every live relation (children, claims, applications, comments, edges, communications, funding, documents, etc.) to the canonical task, records merge provenance in both tasks' contextJson, then soft-deletes the duplicate. Refuses a duplicate that carries a taskKey (managed or trigger-owned tasks) — pick the keyed task as the canonical instead. Unique-constraint collisions are skipped and left on the duplicate; the canonical task's status, completion, and actuals are never changed. Effectively irreversible — review both tasks first. Returns per-relation moved/skipped counts.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        duplicateTaskId: {
+          type: "string",
+          description:
+            "Task ID to fold into the canonical task and soft-delete",
+        },
+        canonicalTaskId: {
+          type: "string",
+          description:
+            "Task ID that survives and receives the duplicate's relations",
+        },
+      },
+      required: ["duplicateTaskId", "canonicalTaskId"],
     },
   },
   {
@@ -12623,6 +12646,65 @@ export function createMcpServer(
             });
 
             return ok({ taskId, deleted: true });
+          }
+
+          case "mergeTask": {
+            // ADMIN_ONLY_TOOLS already gated on isAdmin above.
+            if (!userId)
+              return authRequired(
+                name,
+                "Task merges must be attributed to an authenticated admin user.",
+              );
+
+            const duplicateTaskId = requiredString(
+              a.duplicateTaskId,
+              "duplicateTaskId",
+            );
+            if (typeof duplicateTaskId !== "string") return duplicateTaskId;
+            const canonicalTaskId = requiredString(
+              a.canonicalTaskId,
+              "canonicalTaskId",
+            );
+            if (typeof canonicalTaskId !== "string") return canonicalTaskId;
+
+            const prisma = await getPrisma();
+            const personId = await loadSessionPersonId(userId);
+            // Same access model as deleteTask: the caller must have MANAGE
+            // access to each task (or it's public), and admin is required to
+            // merge a public task. Admin status alone does NOT grant implicit
+            // access to another user's private task (task-visibility.server.ts).
+            const isAdminMerger = hasAdminTaskWriteAccess(scopes, isAdmin);
+            for (const id of [duplicateTaskId, canonicalTaskId]) {
+              const existing = await prisma.task.findFirst({
+                where: {
+                  deletedAt: null,
+                  id,
+                  OR: [
+                    { isPublic: true },
+                    getTaskAccessWhere({ action: "MANAGE", personId, userId }),
+                  ],
+                },
+                select: {
+                  createdByUserId: true,
+                  isPublic: true,
+                  ownerOrganizationId: true,
+                },
+              });
+              if (!existing) return err("Task not found");
+              if (existing.isPublic && !isAdminMerger) {
+                return err("Merging public tasks requires an admin user.");
+              }
+              if (
+                !isTaskWithinClientAccessBoundary(existing, taskClientBoundary)
+              ) {
+                return err("Task not found");
+              }
+            }
+
+            const { mergeTask } = await import("./tasks/task-merge.server");
+            const report = await mergeTask({ canonicalTaskId, duplicateTaskId });
+            if (report.refused) return err(report.refused);
+            return ok(report);
           }
 
           // ── recordTaskActuals ──────────────────────────────────
