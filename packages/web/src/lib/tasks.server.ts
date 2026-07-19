@@ -1602,7 +1602,13 @@ export async function listTasks(options?: {
   status?: TaskStatus | null;
   targetOrganizationId?: string | null;
   userId?: string | null;
-  visibility?: "public" | "created" | "accessible" | "personal" | "target";
+  visibility?:
+    | "public"
+    | "created"
+    | "accessible"
+    | "personal"
+    | "target"
+    | "private";
 }) {
   const visibilityWhere = getTaskVisibilityWhere({
     assigneeOrganizationId: options?.assigneeOrganizationId,
@@ -1662,6 +1668,7 @@ export async function searchTasks(
     limit?: number | null;
     userId?: string | null;
     status?: "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE" | null;
+    visibility?: "public" | "accessible" | "private";
   },
 ): Promise<TaskSearchResult[]> {
   const searchTerms = getSearchTerms(query);
@@ -1680,7 +1687,9 @@ export async function searchTasks(
       AND: [
         getTaskVisibilityWhere({
           userId: options?.userId,
-          visibility: options?.userId ? "accessible" : "public",
+          visibility:
+            options?.visibility ??
+            (options?.userId ? "accessible" : "public"),
         }),
         ...(options?.clientAccessBoundary
           ? [getTaskClientAccessWhere(options.clientAccessBoundary)]

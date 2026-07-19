@@ -1778,8 +1778,13 @@ describe("MCP server tool dispatch", () => {
           limit: 5,
           parentTaskId: "parent-1",
           status: TaskStatus.ACTIVE,
-          userId: null,
-          visibility: "public",
+          // Authenticated callers default to visibility "all" (accessible
+          // predicate) so private branches list without extra parameters.
+          // personId must ride along or tasks assigned to the caller's
+          // Person (e.g. trigger-spawned) drop out of the results.
+          personId: "person-1",
+          userId: "user-1",
+          visibility: "accessible",
         }),
       );
       const body = parseToolBody(result) as unknown as Array<

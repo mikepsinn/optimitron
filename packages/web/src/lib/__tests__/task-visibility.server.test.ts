@@ -65,6 +65,25 @@ describe("getTaskVisibilityWhere", () => {
     expect(where.OR).toBeUndefined();
   });
 
+  it("narrows 'private' to the viewer's non-public tasks", () => {
+    const where = getTaskVisibilityWhere({
+      userId: "user_1",
+      visibility: "private",
+    });
+
+    expect(where.AND).toEqual([
+      expect.objectContaining({ OR: expect.any(Array) }),
+      { isPublic: false },
+    ]);
+  });
+
+  it("returns an unreachable predicate for anonymous 'private' requests", () => {
+    const where = getTaskVisibilityWhere({ visibility: "private" });
+
+    expect(where).toMatchObject({ createdByUserId: "__unreachable__" });
+    expect(where.isPublic).toBeUndefined();
+  });
+
   it("lets signed-in viewers reach public, own, and assigned tasks", () => {
     const where = getTaskVisibilityWhere({
       taskId: "task_1",
