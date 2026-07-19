@@ -17,6 +17,10 @@ import { prisma } from "@/lib/prisma";
 import { NONPROFIT_COALITION_STRATEGY_URL } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import {
+  ensureExecutionPlanningBranch,
+  MissingOptimizeEarthRootError,
+} from "@/lib/tasks/planning-branch.server";
 import { getBaseUrl } from "@/lib/url";
 
 type DbClient = Pick<
@@ -424,6 +428,21 @@ export async function createOrganizationWithOwner(
         role: DbOrganizationMemberRole.OWNER,
       },
     });
+
+    // Every organization lands with its "Optimize <org>" planning root ready
+    // instead of waiting for a member's first scoped getMe. Runs after the
+    // owner-membership insert because the ensure re-checks membership.
+    try {
+      await ensureExecutionPlanningBranch({
+        organizationId: organization.id,
+        prisma: tx,
+        userId: creatorUserId,
+      });
+    } catch (error) {
+      // An unseeded database (no optimize-earth root yet) must not block org
+      // creation — the lazy ensure path creates the branch once seeded.
+      if (!(error instanceof MissingOptimizeEarthRootError)) throw error;
+    }
 
     return organization;
   });

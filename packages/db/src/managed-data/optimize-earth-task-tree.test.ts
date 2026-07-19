@@ -73,4 +73,23 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     const seed = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "shirt-seed");
     expect(seed?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
   });
+
+  // Regression guard: the optimitron:dev entry adopted a runtime-created row,
+  // so its managed id must stay the original cuid. "Fixing" it to a slug makes
+  // the sync throw (same taskKey, different id) against every database that
+  // contains the runtime row — including the prod-fork preview DBs in CI.
+  it("optimitron:dev keeps the adopted runtime cuid as its id", () => {
+    const dev = OPTIMIZE_EARTH_TASK_TREE.find(
+      (t) => t.taskKey === "optimitron:dev",
+    );
+    expect(dev).toBeDefined();
+    expect(dev?.id).toBe("cmrh79s7h000604jtqfckws4t");
+    expect(dev?.parentTaskId).toBe(OPTIMIZE_EARTH_ROOT_TASK_ID);
+    expect(dev?.isPublic).toBe(false);
+    // The other half of the adoption invariant: no economics scalars, so the
+    // sync skips impact writes and the row's runtime estimate set
+    // (mcp-direct-v1) stays current. Adding a value here would demote it.
+    expect(dev?.expectedEconomicValueUsdBase).toBeUndefined();
+    expect(dev?.successProbabilityBase).toBeUndefined();
+  });
 });

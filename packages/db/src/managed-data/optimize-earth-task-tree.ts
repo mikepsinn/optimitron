@@ -45,6 +45,8 @@ import {
   ONE_PERCENT_TREATY_HEADS_OF_GOVERNMENT_TASK_KEY,
   ONE_PERCENT_TREATY_MAJORITY_VOTE_TASK_ID,
   ONE_PERCENT_TREATY_MAJORITY_VOTE_TASK_KEY,
+  OPTIMITRON_DEV_TASK_ID,
+  OPTIMITRON_DEV_TASK_KEY,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   OPTIMIZE_EARTH_ROOT_TASK_KEY,
   PUBLISH_EVIDENCE_AND_DAMAGES_TASK_ID,
@@ -493,6 +495,42 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Open the fund",
       url: "/fund",
       instructions: "Read the terms, then invest or book a call.",
+    },
+  },
+  {
+    // Adopted runtime branch: this row was first created via MCP, so its id is
+    // the original cuid rather than a slug (the sync rejects a same-key row
+    // under a different id). Fields mirror the adopted row — no
+    // defaultTaskFields spread: the branch is private, ENGINEERING, untagged.
+    // Its children stay runtime-created.
+    category: TaskCategory.ENGINEERING,
+    claimPolicy: TaskClaimPolicy.OPEN_MANY,
+    isPublic: false,
+    id: OPTIMITRON_DEV_TASK_ID,
+    taskKey: OPTIMITRON_DEV_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "Optimize Optimitron: engineering program",
+    description: [
+      "Container for Optimitron self-improvement dev tasks (webhook agent-PR pipeline, PWA notifications, task donations, chat UI, comms audit, rendering fixes).",
+      "",
+      "Children are agent-executable and runtime-created; the optimitron-worker daily routine pulls actionable AI Agent tasks from this branch.",
+    ].join("\n"),
+    impactStatement:
+      "Every improvement to the coordination engine compounds across all programs; this is the machine improving the machine.",
+    estimatedEffortHours: 200,
+    // TODO(param): add an Optimitron-engineering EV parameter before claiming a
+    // value here. Without economics scalars the sync skips impact writes, so
+    // the adopted row's runtime estimate set (mcp-direct-v1) stays current.
+    contextJson: {
+      value: 2000000,
+      ev_math: "container placeholder estimates; refine per-child",
+      cash_cost: 0,
+      p_success: 0.7,
+      executor_type: "Self",
+      acceptanceCriteria: [
+        "All Optimitron self-improvement dev child tasks are reparented under this branch",
+        "optimitron-worker daily routine can pull actionable AI Agent tasks from this branch",
+      ],
     },
   },
   {
