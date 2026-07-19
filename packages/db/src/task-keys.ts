@@ -140,6 +140,15 @@ export const SHIRT_SEED_TASK_KEY = "program:shirt-seed";
 export const EOS_CAPITALIZE_TASK_ID = "eos-capitalize";
 export const EOS_CAPITALIZE_TASK_KEY = "program:eos:capitalize";
 
+// Optimize Optimitron engineering program (the dev branch of the task tree).
+//
+// The ID is the cuid of the runtime-created row this managed entry adopted:
+// the sync matches by id and throws on a same-taskKey/different-id row, so
+// the managed id must equal the existing row's id. Do not "fix" it to a slug
+// — that crashes the preview sync against the prod-fork database.
+export const OPTIMITRON_DEV_TASK_ID = "cmrh79s7h000604jtqfckws4t";
+export const OPTIMITRON_DEV_TASK_KEY = "optimitron:dev";
+
 // 1% Treaty parent + signer subtree
 
 export const TREATY_PARENT_TASK_ID = "1-pct-treaty";
