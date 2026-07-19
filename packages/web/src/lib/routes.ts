@@ -156,6 +156,7 @@ export const ROUTES = {
   declaration: "/declaration",
   mcp: "/mcp",
   developers: "/developers",
+  developersTools: "/developers/tools",
   demo: "/demo",
   search: "/search",
   video: "/video",
@@ -702,6 +703,16 @@ export const developersLink: NavItem = {
   copyPreview: true,
   screenshot: true,
   cta: "Read API Docs",
+};
+
+export const developersToolsLink: NavItem = {
+  href: ROUTES.developersTools,
+  label: "MCP Tool Reference",
+  emoji: "{}",
+  description:
+    "Every tool the Optimitron MCP server exposes — parameters, required scopes, and admin gating — generated from the live registry so it cannot drift.",
+  tagline: "The complete MCP tool reference",
+  cta: "Browse the tools",
 };
 
 export const efficiencyLink: NavItem = {

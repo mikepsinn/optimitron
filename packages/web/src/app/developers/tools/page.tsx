@@ -6,13 +6,10 @@ import {
   scopeToWire,
   type McpScope,
 } from "@/lib/mcp-scopes";
-import { ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { developersToolsLink, ROUTES } from "@/lib/routes";
 
-export const metadata = {
-  title: "MCP Tool Reference | Optimitron Developers",
-  description:
-    "Every tool the Optimitron MCP server exposes — parameters, required scopes, and admin gating — generated from the live registry.",
-};
+export const metadata = getRouteMetadata(developersToolsLink);
 
 type CatalogTool = ReturnType<typeof getToolCatalog>[number];
 
@@ -84,6 +81,11 @@ export default function McpToolReferencePage() {
             /mcp
           </Link>
           .
+        </p>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Each tool is listed once, under its primary scope; many accept more
+          than one scope, so the badges on a tool name every scope that can
+          call it.
         </p>
 
         <section className="mt-8 border-2 border-foreground p-4">

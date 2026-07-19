@@ -94,7 +94,7 @@ The full scope vocabulary (live-rendered on `/developers` and in `/api/mcp/tools
 
 Do not request `tasks:admin` for personal planning. Public manual search and public task reads do not require OAuth permissions. Add `tasks:organization` only for work in organizations where the user is an explicit member.
 
-Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work); `scope: "accessible"` survives as a deprecated alias.
+Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work). On the tools that previously exposed `scope`/`taskScope`, `"accessible"` survives as a deprecated alias for `"all"`; `listTasks` never had the alias and takes only `visibility`.
 
 Example private task:
 
@@ -191,7 +191,8 @@ disagree, those sources win.
 - Private execution (admin/agent-gated; not exposed to ordinary third-party tokens): `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail`.
 - External approval: `proposeExternalAction`, `recordExternalActionResult`; human approval is performed only by an `actions:approve` client.
 - Portability: `exportPrivateWork`.
-- Admin-only public task management: `setTaskImpact`, `addDependency`, `recordTaskActuals`, `createReferendum`.
+- Admin-only public task management: `setTaskImpact`, `createReferendum` (the complete admin set is labeled on the generated reference).
+- Dependencies and actuals (personal/org callers): `addDependency`, `recordTaskActuals`.
 - Referendums: `listReferendums`, `castReferendumVote`, `signReferendumAsOrganization`.
 - Agent coordination (`agent:run`): `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`, `getNextTask`.
 - Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
