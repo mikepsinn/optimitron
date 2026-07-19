@@ -32,7 +32,7 @@ import {
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
   TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA,
-  TREATY_PERSONAL_UPSIDE_BLEND,
+  TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
   TREATY_HALE_GAIN_YEAR_15,
@@ -102,7 +102,7 @@ const oldQueue = fmtSpeech(STATUS_QUO_QUEUE_CLEARANCE_YEARS, 2);           // "4
 const newQueue = fmtSpeech(DFDA_QUEUE_CLEARANCE_YEARS, 2);                 // "36"
 const drugWarCost = fmtSpeech(US_GOV_WASTE_DRUG_WAR, 2);                   // "90 billion"
 const treatyGain = fmtSpeech(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA, 2); // "15 million"
-const personalUpside = fmtSpeech(TREATY_PERSONAL_UPSIDE_BLEND, 2);         // "16 million"
+const personalUpside = fmtSpeech(TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH, 2);         // "16 million"
 const totalLivesSaved = fmtSpeech(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED, 2); // "11 billion"
 const totalSuffering = fmtSpeech(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS, 2); // "1.9 quadrillion"
 const treatyHaleGain = fmtSpeech(TREATY_HALE_GAIN_YEAR_15, 2);             // "6.5"

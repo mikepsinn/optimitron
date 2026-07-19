@@ -2,7 +2,7 @@
 
 import { SierraSlideWrapper } from "./SierraSlideWrapper";
 import { GAME_PARAMS } from "@/lib/demo/parameters";
-import { TREATY_PERSONAL_UPSIDE_BLEND } from "@optimitron/data/parameters";
+import { TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH } from "@optimitron/data/parameters";
 import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/demo/formatters";
 
@@ -158,7 +158,7 @@ export function SlideInflationWageTheft() {
                   ⚰️ LIFETIME LOSS
                 </span>
                 <span className="font-pixel text-xl md:text-2xl text-red-500 animate-pulse">
-                  −{formatCurrency(Math.round(TREATY_PERSONAL_UPSIDE_BLEND.value))}
+                  −{formatCurrency(Math.round(TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH.value))}
                 </span>
               </div>
             </div>
