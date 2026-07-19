@@ -3,6 +3,7 @@ import {
   MANAGED_DEMO_COLLECTION_ID,
   MANAGED_DEMO_DOCUMENT_ID,
 } from "@optimitron/db/constants";
+import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
   isRedirectOnlyRoutePath,
@@ -21,6 +22,8 @@ export type VisualRoute = {
   required: boolean;
   requiredSelector?: string;
   requiredText?: RegExp;
+  /** Capture under a non-default site variant via the review-only query override. */
+  siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
 
@@ -35,6 +38,15 @@ const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.employees]);
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
+]);
+
+// The calendar server-renders the requested date, and freezeClock only
+// reaches the browser — so an unpinned capture drifts every calendar day
+// (baseline "Friday, Jul 17" vs PR "Saturday, Jul 18" flagged 0.32%).
+// Past dates clamp to today (calendar/page.tsx), so pin far-future; the
+// fixed date also takes the deterministic dayStart planning branch.
+const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
+  [ROUTES.calendar, `${ROUTES.calendar}?date=2036-01-01`],
 ]);
 
 const SPECIAL_STATE_ROUTES: VisualRoute[] = [
@@ -160,7 +172,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
   .filter(({ path }) => PUBLIC_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
     name,
-    path,
+    path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
     requiredText: REQUIRED_TEXT_BY_PATH.get(path),
@@ -173,7 +185,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
   .filter(({ path }) => ALL_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
     name: publicRouteHasScreenshot(path) ? `${name}-auth` : name,
-    path,
+    path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
     authenticated: true,
     requiredSelector: REQUIRED_SELECTOR_BY_PATH.get(path),
@@ -181,11 +193,53 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
     waitForImages: IMAGE_STABLE_ROUTE_PATHS.has(path),
   }));
 
+// Cover each variant's home and one real owned route without multiplying the
+// review matrix. Disallowed routes redirect to production, so exclude them.
+const VARIANT_DELTA_ROUTES: VisualRoute[] = [
+  {
+    name: "variant-optimitron-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    name: "variant-optimitron-tasks",
+    path: ROUTES.tasks,
+    required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    name: "variant-dfda-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "dfda",
+  },
+  {
+    name: "variant-dfda-conditions",
+    path: ROUTES.conditions,
+    required: true,
+    siteVariant: "dfda",
+  },
+  {
+    name: "variant-dih-home",
+    path: ROUTES.home,
+    required: true,
+    siteVariant: "dih",
+  },
+  {
+    name: "variant-dih-fund-a-disease",
+    path: ROUTES.dih,
+    required: true,
+    siteVariant: "dih",
+  },
+];
+
 export const VISUAL_ROUTES: VisualRoute[] = dedupeRoutes([
   ...PUBLIC_SCREENSHOT_ROUTES,
   ...AUTHENTICATED_SCREENSHOT_ROUTES,
   ...SPECIAL_STATE_ROUTES,
   ...SEEDED_DYNAMIC_ROUTES,
+  ...VARIANT_DELTA_ROUTES,
 ]);
 
 function publicRouteHasScreenshot(path: string): boolean {

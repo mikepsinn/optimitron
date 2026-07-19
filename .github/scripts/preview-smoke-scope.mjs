@@ -9,10 +9,24 @@ const PREVIEW_SMOKE_PATTERN_SOURCES = [
   "^vitest(?:\\.[^/]+)?\\.[cm]?[jt]s$",
   "^playwright(?:\\.[^/]+)?\\.[cm]?[jt]s$",
 ];
+const VERCEL_PREVIEW_BUILD_PATTERN_SOURCES = [
+  "^packages/",
+  "^content/",
+  "^scripts/",
+  "^package\\.json$",
+  "^pnpm-lock\\.yaml$",
+  "^pnpm-workspace\\.yaml$",
+  "^tsconfig\\.base\\.json$",
+  "^eslint\\.config\\.mjs$",
+  "^\\.npmrc$",
+  "^\\.env\\.example$",
+];
 
 export const PREVIEW_SMOKE_PATTERNS = PREVIEW_SMOKE_PATTERN_SOURCES.map(
   (source) => new RegExp(source),
 );
+export const VERCEL_PREVIEW_BUILD_PATTERNS =
+  VERCEL_PREVIEW_BUILD_PATTERN_SOURCES.map((source) => new RegExp(source));
 
 export function getPreviewSmokeMatches(files) {
   return files
@@ -23,6 +37,20 @@ export function getPreviewSmokeMatches(files) {
 
 export function shouldRunPreviewSmoke(files) {
   return getPreviewSmokeMatches(files).length > 0;
+}
+
+// Mirrors packages/web/vercel.json. Unlike smoke scope, test-only changes
+// still count because Vercel builds them.
+export function getVercelPreviewBuildMatches(files) {
+  return files
+    .filter((file) =>
+      VERCEL_PREVIEW_BUILD_PATTERNS.some((pattern) => pattern.test(file)),
+    )
+    .sort();
+}
+
+export function shouldPreparePreviewDatabase(files) {
+  return getVercelPreviewBuildMatches(files).length > 0;
 }
 
 function isTestOnlyFile(file) {

@@ -17,7 +17,11 @@ import {
 import * as fs from "fs";
 import path from "path";
 import { buildMagicLinkHtml } from "@/lib/email/magic-link-render";
-import { SITE_VARIANT_OVERRIDE_HEADER, type SiteKey } from "@/lib/site";
+import {
+  SITE_VARIANT_OVERRIDE_COOKIE,
+  SITE_VARIANT_OVERRIDE_QUERY_PARAM,
+  type SiteKey,
+} from "@/lib/site";
 import { freezeClock } from "./helpers/freeze-clock";
 import { DEMO_PASSWORD } from "./utils/auth";
 
@@ -49,6 +53,13 @@ const VARIANTS: readonly VariantConfig[] = [
     label: "dfda.earth",
     host: "dfda.earth",
     siteKey: "dfda",
+    treatyFlow: false,
+  },
+  {
+    slug: "dih",
+    label: "dih.earth",
+    host: "dih.earth",
+    siteKey: "dih",
     treatyFlow: false,
   },
 ];
@@ -478,15 +489,25 @@ async function captureVariant(
   await page.setViewportSize(viewport.viewport);
 
   try {
-    const landingResponse = await page.goto("/", {
-      timeout: 30_000,
-      waitUntil: "domcontentloaded",
-    });
+    const landingResponse = await page.goto(
+      `/?${SITE_VARIANT_OVERRIDE_QUERY_PARAM}=${encodeURIComponent(variant.siteKey)}`,
+      {
+        timeout: 30_000,
+        waitUntil: "domcontentloaded",
+      },
+    );
     const landingStatus = landingResponse?.status() ?? 0;
     if (landingStatus >= 500) {
       outcome.error = `Landing returned ${landingStatus}`;
       return outcome;
     }
+    const siteOverrideCookie = (await page.context().cookies()).find(
+      (cookie) => cookie.name === SITE_VARIANT_OVERRIDE_COOKIE,
+    );
+    expect(
+      siteOverrideCookie?.value,
+      `${variant.slug} should persist its site variant before capture`,
+    ).toBe(variant.siteKey);
     await stabilizeVisuals(page);
     await page.waitForTimeout(300);
     await captureStep(outcome, dir, stepState, "landing", (filePath) =>
@@ -614,9 +635,6 @@ test.describe("new-user funnel screenshot audit", () => {
       test(`${variant.slug} (${viewport.slug})`, async ({ baseURL, browser }) => {
         const context = await browser.newContext({
           baseURL,
-          extraHTTPHeaders: {
-            [SITE_VARIANT_OVERRIDE_HEADER]: variant.siteKey,
-          },
           viewport: viewport.viewport,
         });
         const page = await context.newPage();
