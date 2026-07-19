@@ -72,7 +72,10 @@ vi.mock("@/lib/tasks/task-communications.server", () => ({
   countTaskCommunications: mocks.countTaskCommunications,
 }));
 
-vi.mock("@/lib/tasks/planning-branch.server", () => ({
+vi.mock("@/lib/tasks/planning-branch.server", async (importActual) => ({
+  ...(await importActual<
+    typeof import("@/lib/tasks/planning-branch.server")
+  >()),
   ensureExecutionPlanningBranch: mocks.ensureExecutionPlanningBranch,
 }));
 
@@ -668,6 +671,58 @@ describe("tasks server", () => {
         data: expect.objectContaining({ parentTaskId: "org-branch-1" }),
       }),
     );
+  });
+
+  // A creator who cannot plan for the assigned org falls back to their own
+  // branch instead of failing task creation.
+  it("falls back to the personal branch when org planning access is denied", async () => {
+    const { OrganizationPlanningAccessError } = await import(
+      "@/lib/tasks/planning-branch.server"
+    );
+    mocks.ensureExecutionPlanningBranch.mockImplementation(
+      async (args: { organizationId?: string }) => {
+        if (args.organizationId) throw new OrganizationPlanningAccessError();
+        return { id: "personal-branch-1" };
+      },
+    );
+    mocks.prisma.taskCreate.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: "user_creator",
+      id: "task_fb",
+      isPublic: false,
+      title: "Org note",
+    });
+
+    await createTask("user_creator", {
+      assigneeOrganizationId: "org_x",
+      isPublic: false,
+      title: "Org note",
+    });
+
+    expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ parentTaskId: "personal-branch-1" }),
+      }),
+    );
+  });
+
+  // An unexpected branch error must NOT silently mis-parent the task.
+  it("propagates an unexpected planning-branch error instead of falling back", async () => {
+    mocks.ensureExecutionPlanningBranch.mockImplementation(
+      async (args: { organizationId?: string }) => {
+        if (args.organizationId) throw new Error("db exploded");
+        return { id: "personal-branch-1" };
+      },
+    );
+
+    await expect(
+      createTask("user_creator", {
+        assigneeOrganizationId: "org_x",
+        isPublic: false,
+        title: "Org note",
+      }),
+    ).rejects.toThrow("db exploded");
+    expect(mocks.prisma.taskCreate).not.toHaveBeenCalled();
   });
 
   // Public parentless tasks (e.g. "ask for help") still root at Optimize Earth

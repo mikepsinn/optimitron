@@ -272,7 +272,9 @@ async function mergeTaskInClient(
 
   // ── Unique-constrained relations (skip on collision) ──────────────────
 
-  // claims — @@unique(taskId, userId)
+  // claims — @@unique(taskId, userId). Track which claims stayed behind so a
+  // TaskPayout referencing a left-behind claim stays with it (below).
+  const collidedClaimIds: string[] = [];
   {
     const canonicalRows = await tx.taskClaim.findMany({
       where: { taskId: canonical.id },
@@ -294,6 +296,7 @@ async function mergeTaskInClient(
         data: { taskId: canonical.id },
       });
     }
+    collidedClaimIds.push(...collidingIds);
     movedCounts.claims = movableIds.length;
     skippedCollisions.claims = collidingIds.length;
   }
@@ -720,12 +723,35 @@ async function mergeTaskInClient(
     })
   ).count;
 
-  movedCounts.payouts = (
-    await tx.taskPayout.updateMany({
-      where: { deletedAt: null, taskId: duplicate.id },
-      data: { taskId: canonical.id },
-    })
-  ).count;
+  // payouts — a payout references a TaskClaim. A payout whose claim collided
+  // and stayed on the duplicate must stay too, or it would point at a claim on
+  // a different task. Move only payouts with a moved claim (or no claim).
+  {
+    const stayWhere =
+      collidedClaimIds.length > 0
+        ? {
+            deletedAt: null,
+            taskId: duplicate.id,
+            taskClaimId: { in: collidedClaimIds },
+          }
+        : null;
+    const moveWhere: Prisma.TaskPayoutWhereInput = {
+      deletedAt: null,
+      taskId: duplicate.id,
+      ...(collidedClaimIds.length > 0
+        ? { NOT: { taskClaimId: { in: collidedClaimIds } } }
+        : {}),
+    };
+    movedCounts.payouts = (
+      await tx.taskPayout.updateMany({
+        where: moveWhere,
+        data: { taskId: canonical.id },
+      })
+    ).count;
+    skippedCollisions.payouts = stayWhere
+      ? await tx.taskPayout.count({ where: stayWhere })
+      : 0;
+  }
 
   movedCounts.documents = (
     await tx.document.updateMany({

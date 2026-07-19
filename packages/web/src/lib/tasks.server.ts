@@ -26,7 +26,7 @@ import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-noti
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
 import {
   ensureExecutionPlanningBranch,
-  MissingOptimizeEarthRootError,
+  OrganizationPlanningAccessError,
 } from "@/lib/tasks/planning-branch.server";
 import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import {
@@ -1896,9 +1896,15 @@ async function resolveDefaultPrivateParent(
         userId: creatorUserId,
       });
     } catch (error) {
-      // Missing seed root can't be repaired here either — rethrow so the
-      // caller surfaces it; membership/other errors fall back to personal.
-      if (error instanceof MissingOptimizeEarthRootError) throw error;
+      // Only a genuine access denial falls back to the personal branch — a
+      // creator assigning to an org they cannot plan for. Everything else
+      // (missing seed root, Prisma/infra errors) propagates so a transient
+      // failure never silently mis-parents the task.
+      if (!(error instanceof OrganizationPlanningAccessError)) throw error;
+      log.warn(
+        "Falling back to personal planning branch for org-assigned task",
+        { assigneeOrganizationId, creatorUserId },
+      );
     }
   }
   return ensureExecutionPlanningBranch({ prisma, userId: creatorUserId });

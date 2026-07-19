@@ -6197,7 +6197,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "mergeTask",
     description:
-      "Admin-only: fold a duplicate task into a canonical task. Re-points every live relation (children, claims, applications, comments, edges, communications, funding, documents, etc.) to the canonical task, transfers the taskKey when the canonical has none, records merge provenance in both tasks' contextJson, then soft-deletes the duplicate. Unique-constraint collisions are skipped and left on the duplicate; the canonical task's status, completion, and actuals are never changed. Effectively irreversible — review both tasks first. Returns per-relation moved/skipped counts.",
+      "Admin-only: fold a duplicate task into a canonical task. Re-points every live relation (children, claims, applications, comments, edges, communications, funding, documents, etc.) to the canonical task, records merge provenance in both tasks' contextJson, then soft-deletes the duplicate. Refuses a duplicate that carries a taskKey (managed or trigger-owned tasks) — pick the keyed task as the canonical instead. Unique-constraint collisions are skipped and left on the duplicate; the canonical task's status, completion, and actuals are never changed. Effectively irreversible — review both tasks first. Returns per-relation moved/skipped counts.",
     inputSchema: {
       type: "object" as const,
       properties: {

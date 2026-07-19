@@ -493,6 +493,46 @@ describe("mergeTask", () => {
     expect(report.skippedCollisions.comments).toBe(2);
   });
 
+  it("leaves a payout behind when its claim collided and stayed on the duplicate", async () => {
+    seedTasks({ can: {}, dup: {} });
+    h.state.tx.taskClaim.findMany.mockImplementation(
+      async (args: { where: Record<string, unknown> }) =>
+        args.where.taskId === "can"
+          ? [{ userId: "u1" }]
+          : [{ id: "claim_collide", userId: "u1" }],
+    );
+
+    await mergeTask({ canonicalTaskId: "can", duplicateTaskId: "dup" });
+
+    // The collided claim's payout must not move to the canonical.
+    expect(h.state.tx.taskPayout.updateMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        taskId: "dup",
+        NOT: { taskClaimId: { in: ["claim_collide"] } },
+      },
+      data: { taskId: "can" },
+    });
+    expect(h.state.tx.taskPayout.count).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        taskId: "dup",
+        taskClaimId: { in: ["claim_collide"] },
+      },
+    });
+  });
+
+  it("moves all payouts unconstrained when no claim collided", async () => {
+    seedTasks({ can: {}, dup: {} });
+
+    await mergeTask({ canonicalTaskId: "can", duplicateTaskId: "dup" });
+
+    expect(h.state.tx.taskPayout.updateMany).toHaveBeenCalledWith({
+      where: { deletedAt: null, taskId: "dup" },
+      data: { taskId: "can" },
+    });
+  });
+
   it("canonical adopts the duplicate's current impact estimate set only when it has none", async () => {
     seedTasks({
       can: { currentImpactEstimateSetId: null },
