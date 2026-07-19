@@ -318,7 +318,7 @@ export function createOnePercentTreatyCompileConfig(input: {
           ),
           numericMetricBinding(
             "treaty_personal_upside_blend",
-            "Personal upside blend",
+            "Personal upside (income + health)",
             "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH",
             "personal",
           ),
