@@ -82,27 +82,25 @@ Build in this order:
 
 ### Product constitution and schema gate
 
-Complete and approve the bounded
+The bounded
 [`optimitron:dev:product-constitution`](https://optimitron.com/tasks/cmrshxxqj000204jm3efmvf4o)
-pass before new knowledge, verification, reasoning, or agent schema work.
-This pass defines OPT-KNOW-01, OPT-EPI-01, OPT-LOOP-01, and OPT-BIZ-01,
-migrates the tactical queue into production tasks, and changes no product
-runtime. It does not block unrelated treaty-conversion work.
+pass is complete and its schema gate is approved. It defined OPT-KNOW-01,
+OPT-EPI-01, OPT-LOOP-01, and OPT-BIZ-01, migrated the tactical queue into
+production tasks, and changed no product runtime.
 
 ## Next
 
-For reusable knowledge and self-improvement, let the production queue rank
-work while preserving this dependency order:
+The unused campaign-specific reasoning subsystem has been removed. For
+reusable knowledge and self-improvement, let the production queue rank the
+remaining work while preserving this dependency order:
 
-1. Delete the unused campaign reasoning subsystem in an isolated PR and
-   migration (OPT-LOOP-01).
-2. Pilot reusable question tasks and verified answer artifacts with the
+1. Pilot reusable question tasks and verified answer artifacts with the
    longevity-fellowship application (OPT-KNOW-01, OPT-EPI-01).
-3. Add generic artifact lineage only if the pilot demonstrates a need for
+2. Add generic artifact lineage only if the pilot demonstrates a need for
    exact answer-version-to-submission relations (OPT-KNOW-01).
-4. Add MCP blocker surfacing and notifications after the underlying human
+3. Add MCP blocker surfacing and notifications after the underlying human
    review workflow is reliable (OPT-TASK-02, OPT-KNOW-01).
-5. Design public reputation or consensus weighting only after private
+4. Design public reputation or consensus weighting only after private
    owner-authorized verification works (OPT-EPI-01).
 
 - Automated parent-task matching and reviewed decomposition into child tasks

@@ -1,7 +1,7 @@
 {
   "schemaPath": "packages/db/prisma/schema.prisma",
-  "modelCount": 185,
-  "enumCount": 145,
+  "modelCount": 160,
+  "enumCount": 138,
   "models": [
     {
       "name": "Account",
@@ -56,8 +56,8 @@
           "matches": 1
         },
         "other": {
-          "files": 32,
-          "matches": 71
+          "files": 24,
+          "matches": 63
         }
       },
       "keyFiles": [
@@ -312,12 +312,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 8
+          "files": 2,
+          "matches": 11
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 8
+          "files": 2,
+          "matches": 11
         },
         "api-routes": {
           "files": 0,
@@ -354,6 +354,10 @@
           "matches": 16
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -376,15 +380,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 23
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 8,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 11,
       "classification": "runtime-live"
     },
     {
@@ -1082,12 +1082,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 20
-        },
-        "runtime-libraries": {
           "files": 5,
           "matches": 21
+        },
+        "runtime-libraries": {
+          "files": 6,
+          "matches": 22
         },
         "api-routes": {
           "files": 0,
@@ -1136,6 +1136,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/web/src/components/collections/collection-records-grid.tsx",
           "matches": 20
         },
@@ -1146,15 +1150,11 @@
         {
           "path": "packages/web/src/lib/content-search.server.ts",
           "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 11
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 20,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 21,
       "classification": "runtime-live"
     },
     {
@@ -1178,12 +1178,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 7
+          "files": 2,
+          "matches": 8
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 10
+          "files": 3,
+          "matches": 11
         },
         "api-routes": {
           "files": 0,
@@ -1220,6 +1220,10 @@
           "matches": 14
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/web/src/lib/developer-openapi.ts",
           "matches": 3
         },
@@ -1242,15 +1246,11 @@
         {
           "path": "packages/db/src/generated/prisma/models/CollectionRecord.ts",
           "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 7,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 8,
       "classification": "runtime-live"
     },
     {
@@ -1290,8 +1290,8 @@
           "matches": 0
         },
         "components": {
-          "files": 2,
-          "matches": 8
+          "files": 3,
+          "matches": 9
         },
         "scripts": {
           "files": 0,
@@ -1328,6 +1328,10 @@
           "matches": 3
         },
         {
+          "path": "packages/web/src/components/collections/collection-column-settings.ts",
+          "matches": 1
+        },
+        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 3
         },
@@ -1338,10 +1342,6 @@
         {
           "path": "packages/db/src/generated/prisma/models/CollectionView.ts",
           "matches": 151
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 23
         }
       ],
       "notes": [],
@@ -2430,12 +2430,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 11
+          "files": 5,
+          "matches": 14
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 11
+          "files": 5,
+          "matches": 16
         },
         "api-routes": {
           "files": 0,
@@ -2472,6 +2472,10 @@
           "matches": 12
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 8
+        },
+        {
           "path": "packages/db/src/managed-data/managed-humanity-v-government.ts",
           "matches": 4
         },
@@ -2494,15 +2498,11 @@
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 12
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 11,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 14,
       "classification": "runtime-live"
     },
     {
@@ -2910,12 +2910,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         },
         "api-routes": {
           "files": 0,
@@ -2952,6 +2952,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -2974,15 +2978,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 29
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 2,
       "classification": "runtime-live"
     },
     {
@@ -3198,12 +3198,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 2
+          "files": 2,
+          "matches": 3
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 2
+          "files": 2,
+          "matches": 3
         },
         "api-routes": {
           "files": 0,
@@ -3240,6 +3240,10 @@
           "matches": 4
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "docs/archive/TODO-history-2026-07.md",
           "matches": 1
         },
@@ -3262,15 +3266,11 @@
         {
           "path": "packages/db/src/generated/prisma/models/DatingProfile.ts",
           "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 3,
       "classification": "runtime-live"
     },
     {
@@ -4452,12 +4452,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 15
+          "files": 5,
+          "matches": 16
         },
         "runtime-libraries": {
-          "files": 9,
-          "matches": 29
+          "files": 10,
+          "matches": 30
         },
         "api-routes": {
           "files": 0,
@@ -4484,8 +4484,8 @@
           "matches": 2
         },
         "other": {
-          "files": 7,
-          "matches": 14
+          "files": 6,
+          "matches": 9
         }
       },
       "keyFiles": [
@@ -4506,6 +4506,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/web/src/app/documents/[id]/page.tsx",
           "matches": 1
         },
@@ -4516,15 +4520,11 @@
         {
           "path": "packages/web/src/components/documents/task-documents-list.tsx",
           "matches": 1
-        },
-        {
-          "path": "packages/web/src/components/people/ManageRepresentedPeopleClient.tsx",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 15,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 16,
       "classification": "runtime-live"
     },
     {
@@ -4577,7 +4577,7 @@
         },
         "docs": {
           "files": 1,
-          "matches": 1
+          "matches": 2
         },
         "other": {
           "files": 0,
@@ -4607,7 +4607,7 @@
         },
         {
           "path": "docs/FEATURES.md",
-          "matches": 1
+          "matches": 2
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -4676,8 +4676,8 @@
           "matches": 9
         },
         "other": {
-          "files": 4,
-          "matches": 19
+          "files": 3,
+          "matches": 18
         }
       },
       "keyFiles": [
@@ -4740,12 +4740,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 11
+          "files": 3,
+          "matches": 12
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 11
+          "files": 3,
+          "matches": 12
         },
         "api-routes": {
           "files": 0,
@@ -4760,20 +4760,20 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 2
         },
         "tests": {
           "files": 0,
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 2
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 5
         }
       },
       "keyFiles": [
@@ -4786,7 +4786,19 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "matches": 2
+        },
+        {
           "path": "docs/plans/phased-approach-optimitron.md",
+          "matches": 1
+        },
+        {
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
@@ -4796,23 +4808,11 @@
         {
           "path": "packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql",
           "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ExternalActionRequest.ts",
-          "matches": 265
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 33
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/User.ts",
-          "matches": 6
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 11,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 12,
       "classification": "runtime-live"
     },
     {
@@ -5834,8 +5834,8 @@
           "matches": 1
         },
         "other": {
-          "files": 5,
-          "matches": 13
+          "files": 4,
+          "matches": 4
         }
       },
       "keyFiles": [
@@ -6314,8 +6314,8 @@
           "matches": 2
         },
         "other": {
-          "files": 5,
-          "matches": 10
+          "files": 4,
+          "matches": 9
         }
       },
       "keyFiles": [
@@ -6469,7 +6469,7 @@
         },
         "generated": {
           "files": 9,
-          "matches": 177
+          "matches": 182
         },
         "zod": {
           "files": 0,
@@ -6572,8 +6572,8 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 3
+          "files": 4,
+          "matches": 4
         },
         "runtime-libraries": {
           "files": 1,
@@ -6584,8 +6584,8 @@
           "matches": 3
         },
         "pages": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "components": {
           "files": 0,
@@ -6622,6 +6622,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/app/mcp/authorize/page.tsx",
+          "matches": 2
+        },
+        {
           "path": "packages/web/src/lib/developer-openapi.ts",
           "matches": 2
         },
@@ -6636,15 +6640,11 @@
         {
           "path": "packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql",
           "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 3,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -6661,7 +6661,7 @@
         },
         "generated": {
           "files": 10,
-          "matches": 182
+          "matches": 187
         },
         "zod": {
           "files": 0,
@@ -6765,10 +6765,10 @@
         },
         "runtime-prisma": {
           "files": 23,
-          "matches": 56
+          "matches": 55
         },
         "runtime-libraries": {
-          "files": 27,
+          "files": 28,
           "matches": 112
         },
         "api-routes": {
@@ -6776,8 +6776,8 @@
           "matches": 20
         },
         "pages": {
-          "files": 8,
-          "matches": 11
+          "files": 6,
+          "matches": 9
         },
         "components": {
           "files": 7,
@@ -6788,16 +6788,16 @@
           "matches": 3
         },
         "tests": {
-          "files": 7,
-          "matches": 15
+          "files": 10,
+          "matches": 19
         },
         "docs": {
           "files": 8,
-          "matches": 12
+          "matches": 13
         },
         "other": {
-          "files": 10,
-          "matches": 58
+          "files": 9,
+          "matches": 57
         }
       },
       "keyFiles": [
@@ -6807,7 +6807,7 @@
         },
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 33
+          "matches": 30
         },
         {
           "path": "packages/web/src/lib/notion-import.server.ts",
@@ -6836,7 +6836,7 @@
       ],
       "notes": [],
       "directPrismaFiles": 23,
-      "directPrismaMatches": 56,
+      "directPrismaMatches": 55,
       "classification": "core"
     },
     {
@@ -6864,16 +6864,16 @@
           "matches": 20
         },
         "runtime-libraries": {
-          "files": 7,
-          "matches": 18
+          "files": 8,
+          "matches": 19
         },
         "api-routes": {
           "files": 2,
           "matches": 2
         },
         "pages": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "components": {
           "files": 0,
@@ -6922,7 +6922,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/orgs/[slug]/admin/reasoning/page.tsx",
+          "path": "packages/web/src/lib/auth-utils.ts",
           "matches": 2
         },
         {
@@ -7437,11 +7437,11 @@
         },
         "runtime-prisma": {
           "files": 31,
-          "matches": 71
+          "matches": 72
         },
         "runtime-libraries": {
-          "files": 47,
-          "matches": 177
+          "files": 48,
+          "matches": 181
         },
         "api-routes": {
           "files": 9,
@@ -7460,12 +7460,12 @@
           "matches": 19
         },
         "tests": {
-          "files": 16,
-          "matches": 43
+          "files": 17,
+          "matches": 45
         },
         "docs": {
           "files": 10,
-          "matches": 24
+          "matches": 25
         },
         "other": {
           "files": 7,
@@ -7479,7 +7479,7 @@
         },
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 30
+          "matches": 31
         },
         {
           "path": "packages/web/src/lib/earth-data.server.ts",
@@ -7508,7 +7508,7 @@
       ],
       "notes": [],
       "directPrismaFiles": 31,
-      "directPrismaMatches": 71,
+      "directPrismaMatches": 72,
       "classification": "core"
     },
     {
@@ -8428,8 +8428,8 @@
           "matches": 3
         },
         "other": {
-          "files": 8,
-          "matches": 64
+          "files": 7,
+          "matches": 14
         }
       },
       "keyFiles": [
@@ -9052,2410 +9052,6 @@
       "classification": "runtime-live"
     },
     {
-      "name": "ReasoningAssignmentRule",
-      "schemaLine": 10855,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 4
-        },
-        "generated": {
-          "files": 8,
-          "matches": 204
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 3,
-          "matches": 5
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 4
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 1
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 13
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 6
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/pin/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/resolve-variant.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningAssignmentRule.ts",
-          "matches": 171
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 5,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningBanditPolicyState",
-      "schemaLine": 10878,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 152
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 5
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 5
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 0,
-          "matches": 0
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/evaluator.server.ts",
-          "matches": 6
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/allocator.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningBanditPolicyState.ts",
-          "matches": 123
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 5,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningBlacklistRule",
-      "schemaLine": 11058,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 152
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 2
-        },
-        "runtime-libraries": {
-          "files": 0,
-          "matches": 0
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 2
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 5
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/blacklist/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningBlacklistRule.ts",
-          "matches": 123
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningBundleVariant",
-      "schemaLine": 11237,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 171
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 3
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 3
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 4
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/bundle-variants.server.ts",
-          "matches": 6
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningBundleVariant.ts",
-          "matches": 142
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 3,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningChainValueGuardSnapshot",
-      "schemaLine": 11092,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 144
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 2
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 1
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 1,
-          "matches": 1
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 0,
-          "matches": 0
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/admin/reasoning/r-guard/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/r-guard.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningChainValueGuardSnapshot.ts",
-          "matches": 115
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningDistributionPolicyState",
-      "schemaLine": 11166,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 172
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 3
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 2
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 1,
-          "matches": 1
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 3
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/distribution-optimizer.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/distribution/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningDistributionPolicyState.ts",
-          "matches": 143
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 3,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningDistributionSliceSnapshot",
-      "schemaLine": 11185,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 160
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-libraries": {
-          "files": 0,
-          "matches": 0
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 1,
-          "matches": 1
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningDistributionSliceSnapshot.ts",
-          "matches": 131
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/client.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "suspicious"
-    },
-    {
-      "name": "ReasoningDistributionTarget",
-      "schemaLine": 11219,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 168
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 4,
-          "matches": 8
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 3
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 4
-        },
-        "pages": {
-          "files": 1,
-          "matches": 1
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 4
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/distribution-targets/route.ts",
-          "matches": 8
-        },
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/distribution/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/distribution-optimizer.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningDistributionTarget.ts",
-          "matches": 139
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 8,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningDiversitySnapshot",
-      "schemaLine": 11136,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 152
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 1
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 1
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 0,
-          "matches": 0
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/diversity-guard.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningDiversitySnapshot.ts",
-          "matches": 123
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/client.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningFraudFinding",
-      "schemaLine": 10996,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 5
-        },
-        "generated": {
-          "files": 8,
-          "matches": 179
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 1
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 1
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 5
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/fraud.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 5
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningFraudFinding.ts",
-          "matches": 146
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningFraudPattern",
-      "schemaLine": 10982,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 8,
-          "matches": 162
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 3
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 3
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 3
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/fraud.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningFraudPattern.ts",
-          "matches": 129
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 3,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningGenerationRequest",
-      "schemaLine": 11023,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 8,
-          "matches": 178
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 2
-        },
-        "runtime-libraries": {
-          "files": 0,
-          "matches": 0
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 2
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 4
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/generate/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningGenerationRequest.ts",
-          "matches": 145
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningHoldoutComparison",
-      "schemaLine": 10960,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 3
-        },
-        "generated": {
-          "files": 7,
-          "matches": 184
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 3
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 3
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 0,
-          "matches": 0
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/winners.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningHoldoutComparison.ts",
-          "matches": 155
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 3,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningLocaleConfig",
-      "schemaLine": 11150,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 171
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 5,
-          "matches": 7
-        },
-        "runtime-libraries": {
-          "files": 4,
-          "matches": 5
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 2
-        },
-        "pages": {
-          "files": 1,
-          "matches": 1
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 6
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/locales/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/locale.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/locales/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/resolve-variant.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/validator.ts",
-          "matches": 1
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 7,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningOrganizationDomain",
-      "schemaLine": 11200,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 4
-        },
-        "generated": {
-          "files": 7,
-          "matches": 171
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 3,
-          "matches": 4
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 2
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 2
-        },
-        "pages": {
-          "files": 1,
-          "matches": 1
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 1,
-          "matches": 5
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/organization-domains/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/host-resolution.server.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/orgs/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningOrganizationDomain.ts",
-          "matches": 142
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 4,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningOrgFork",
-      "schemaLine": 11013,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 4
-        },
-        "generated": {
-          "files": 8,
-          "matches": 146
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 2,
-          "matches": 2
-        },
-        "runtime-libraries": {
-          "files": 0,
-          "matches": 0
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 2,
-          "matches": 2
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 0,
-          "matches": 0
-        },
-        "other": {
-          "files": 1,
-          "matches": 2
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/admin/reasoning/orgs/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/orgs/[slug]/admin/reasoning/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningOrgFork.ts",
-          "matches": 113
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 2,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningOutcomeRecord",
-      "schemaLine": 10926,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 7
-        },
-        "generated": {
-          "files": 7,
-          "matches": 216
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 8,
-          "matches": 18
-        },
-        "runtime-libraries": {
-          "files": 6,
-          "matches": 15
-        },
-        "api-routes": {
-          "files": 2,
-          "matches": 3
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 10
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/r-guard.server.ts",
-          "matches": 14
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/fraud.server.ts",
-          "matches": 6
-        },
-        {
-          "path": "packages/web/src/app/api/cron/reasoning/evaluator/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/shadow-evaluator.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/api/reasoning/outcomes/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/distribution-optimizer.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/evaluator.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/session.server.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 8,
-      "directPrismaMatches": 18,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningPromotionDecision",
-      "schemaLine": 11039,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 176
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 3,
-          "matches": 4
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 2
-        },
-        "api-routes": {
-          "files": 2,
-          "matches": 2
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 11
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/promote/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/retire/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningPromotionDecision.ts",
-          "matches": 147
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 4,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningRGuardSnapshot",
-      "schemaLine": 11082,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 140
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 4,
-          "matches": 5
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 3
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 2,
-          "matches": 2
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 1,
-          "matches": 1
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/r-guard/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/r-guard.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningRGuardSnapshot.ts",
-          "matches": 111
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 5,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningShadowEvaluation",
-      "schemaLine": 11115,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 2
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 4
-        },
-        "generated": {
-          "files": 8,
-          "matches": 194
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 1,
-          "matches": 1
-        },
-        "runtime-libraries": {
-          "files": 1,
-          "matches": 1
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 1,
-          "matches": 1
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/shadow-evaluator.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningShadowEvaluation.ts",
-          "matches": 161
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 21
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningSystemState",
-      "schemaLine": 11103,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 1
-        },
-        "generated": {
-          "files": 7,
-          "matches": 156
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 7,
-          "matches": 11
-        },
-        "runtime-libraries": {
-          "files": 5,
-          "matches": 9
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 2,
-          "matches": 2
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 1,
-          "matches": 1
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 8
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/r-guard.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/r-guard/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/allocator.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/bundle-variants.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 11,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningTopologyVariant",
-      "schemaLine": 11071,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 2
-        },
-        "generated": {
-          "files": 7,
-          "matches": 151
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-libraries": {
-          "files": 0,
-          "matches": 0
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 1,
-          "matches": 2
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningTopologyVariant.ts",
-          "matches": 122
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 19
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/client.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "suspicious"
-    },
-    {
-      "name": "ReasoningVariantArm",
-      "schemaLine": 10818,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 6
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 11
-        },
-        "generated": {
-          "files": 9,
-          "matches": 285
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 10,
-          "matches": 22
-        },
-        "runtime-libraries": {
-          "files": 6,
-          "matches": 16
-        },
-        "api-routes": {
-          "files": 4,
-          "matches": 6
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 4
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 10
-        },
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 8
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/promote/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/retire/route.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/generator.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/resolve-variant.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/shadow-evaluator.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/api/admin/reasoning/freeze/route.ts",
-          "matches": 2
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 10,
-      "directPrismaMatches": 22,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningVariantExposure",
-      "schemaLine": 10892,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 1
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 9
-        },
-        "generated": {
-          "files": 7,
-          "matches": 208
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 5,
-          "matches": 5
-        },
-        "runtime-libraries": {
-          "files": 4,
-          "matches": 4
-        },
-        "api-routes": {
-          "files": 1,
-          "matches": 1
-        },
-        "pages": {
-          "files": 0,
-          "matches": 0
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 15
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/web/src/app/api/cron/reasoning/evaluator/route.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/distribution-optimizer.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/diversity-guard.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/promoter.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/session.server.ts",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 9
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 5,
-      "classification": "runtime-live"
-    },
-    {
-      "name": "ReasoningVariantSet",
-      "schemaLine": 10796,
-      "buckets": {
-        "schema": {
-          "files": 1,
-          "matches": 6
-        },
-        "migrations": {
-          "files": 1,
-          "matches": 9
-        },
-        "generated": {
-          "files": 7,
-          "matches": 222
-        },
-        "zod": {
-          "files": 0,
-          "matches": 0
-        },
-        "runtime-prisma": {
-          "files": 4,
-          "matches": 10
-        },
-        "runtime-libraries": {
-          "files": 2,
-          "matches": 8
-        },
-        "api-routes": {
-          "files": 0,
-          "matches": 0
-        },
-        "pages": {
-          "files": 2,
-          "matches": 2
-        },
-        "components": {
-          "files": 0,
-          "matches": 0
-        },
-        "scripts": {
-          "files": 0,
-          "matches": 0
-        },
-        "tests": {
-          "files": 0,
-          "matches": 0
-        },
-        "docs": {
-          "files": 1,
-          "matches": 1
-        },
-        "other": {
-          "files": 2,
-          "matches": 3
-        }
-      },
-      "keyFiles": [
-        {
-          "path": "packages/db/src/managed-data/managed-reasoning-data.ts",
-          "matches": 12
-        },
-        {
-          "path": "packages/web/src/lib/reasoning/resolve-variant.server.ts",
-          "matches": 4
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/[setId]/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "packages/web/src/app/admin/reasoning/page.tsx",
-          "matches": 2
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
-        },
-        {
-          "path": "packages/db/prisma/schema.prisma",
-          "matches": 6
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260420_reasoning_base/migration.sql",
-          "matches": 9
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/ReasoningVariantSet.ts",
-          "matches": 183
-        }
-      ],
-      "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 10,
-      "classification": "runtime-live"
-    },
-    {
       "name": "Referendum",
       "schemaLine": 4658,
       "buckets": {
@@ -11604,8 +9200,8 @@
           "matches": 2
         },
         "other": {
-          "files": 7,
-          "matches": 45
+          "files": 6,
+          "matches": 44
         }
       },
       "keyFiles": [
@@ -11674,8 +9270,8 @@
           "matches": 7
         },
         "runtime-libraries": {
-          "files": 12,
-          "matches": 16
+          "files": 11,
+          "matches": 15
         },
         "api-routes": {
           "files": 4,
@@ -11702,8 +9298,8 @@
           "matches": 8
         },
         "other": {
-          "files": 8,
-          "matches": 20
+          "files": 5,
+          "matches": 13
         }
       },
       "keyFiles": [
@@ -11862,12 +9458,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 6,
-          "matches": 26
+          "files": 7,
+          "matches": 27
         },
         "runtime-libraries": {
-          "files": 7,
-          "matches": 24
+          "files": 8,
+          "matches": 25
         },
         "api-routes": {
           "files": 1,
@@ -11894,8 +9490,8 @@
           "matches": 8
         },
         "other": {
-          "files": 6,
-          "matches": 43
+          "files": 5,
+          "matches": 42
         }
       },
       "keyFiles": [
@@ -11924,17 +9520,17 @@
           "matches": 2
         },
         {
-          "path": "packages/db/src/cleanup-test-data.ts",
-          "matches": 1
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
         },
         {
-          "path": "packages/web/src/lib/jobs/refresh-user-downstream-cache.server.ts",
+          "path": "packages/db/src/cleanup-test-data.ts",
           "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 6,
-      "directPrismaMatches": 26,
+      "directPrismaFiles": 7,
+      "directPrismaMatches": 27,
       "classification": "runtime-live"
     },
     {
@@ -11962,8 +9558,8 @@
           "matches": 0
         },
         "runtime-libraries": {
-          "files": 11,
-          "matches": 25
+          "files": 10,
+          "matches": 24
         },
         "api-routes": {
           "files": 1,
@@ -11982,8 +9578,8 @@
           "matches": 0
         },
         "tests": {
-          "files": 2,
-          "matches": 5
+          "files": 3,
+          "matches": 7
         },
         "docs": {
           "files": 1,
@@ -12054,12 +9650,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 4
-        },
-        "runtime-libraries": {
           "files": 5,
           "matches": 5
+        },
+        "runtime-libraries": {
+          "files": 6,
+          "matches": 6
         },
         "api-routes": {
           "files": 1,
@@ -12086,8 +9682,8 @@
           "matches": 11
         },
         "other": {
-          "files": 5,
-          "matches": 23
+          "files": 4,
+          "matches": 22
         }
       },
       "keyFiles": [
@@ -12108,6 +9704,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/web/src/app/r/[code]/page.tsx",
           "matches": 1
         },
@@ -12118,15 +9718,11 @@
         {
           "path": "packages/web/src/lib/share-channels.ts",
           "matches": 1
-        },
-        {
-          "path": "docs/TREATY_REFERRAL_MODEL_AUDIT.md",
-          "matches": 6
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 4,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
@@ -12275,7 +9871,7 @@
         },
         "docs": {
           "files": 5,
-          "matches": 8
+          "matches": 9
         },
         "other": {
           "files": 2,
@@ -12924,16 +10520,16 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 54,
-          "matches": 165
+          "files": 58,
+          "matches": 178
         },
         "runtime-libraries": {
-          "files": 73,
-          "matches": 346
+          "files": 75,
+          "matches": 366
         },
         "api-routes": {
           "files": 14,
-          "matches": 34
+          "matches": 39
         },
         "pages": {
           "files": 6,
@@ -12948,38 +10544,42 @@
           "matches": 24
         },
         "tests": {
-          "files": 26,
-          "matches": 59
+          "files": 29,
+          "matches": 76
         },
         "docs": {
           "files": 20,
-          "matches": 102
+          "matches": 111
         },
         "other": {
           "files": 20,
-          "matches": 70
+          "matches": 66
         }
       },
       "keyFiles": [
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 138
+          "matches": 123
         },
         {
           "path": "packages/web/src/lib/tasks.server.ts",
-          "matches": 57
+          "matches": 59
+        },
+        {
+          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "matches": 28
         },
         {
           "path": "packages/web/src/lib/notion-import.server.ts",
           "matches": 27
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
-          "matches": 22
-        },
-        {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 19
+        },
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 18
         },
         {
           "path": "packages/web/src/lib/tasks/private-task-bundle.server.ts",
@@ -12988,15 +10588,11 @@
         {
           "path": "packages/web/src/lib/triggers/fire-handlers.ts",
           "matches": 16
-        },
-        {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
-          "matches": 11
         }
       ],
       "notes": [],
-      "directPrismaFiles": 54,
-      "directPrismaMatches": 165,
+      "directPrismaFiles": 58,
+      "directPrismaMatches": 178,
       "classification": "core"
     },
     {
@@ -13020,12 +10616,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 9
+          "files": 4,
+          "matches": 12
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 8
+          "files": 3,
+          "matches": 12
         },
         "api-routes": {
           "files": 1,
@@ -13066,6 +10662,10 @@
           "matches": 8
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 7
+        },
+        {
           "path": "packages/web/src/app/api/tasks/[id]/applications/[applicationId]/route.ts",
           "matches": 2
         },
@@ -13084,15 +10684,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 39
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/User.ts",
-          "matches": 4
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 9,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 12,
       "classification": "runtime-live"
     },
     {
@@ -13212,12 +10808,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 4
+          "files": 3,
+          "matches": 7
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 4
+          "files": 3,
+          "matches": 7
         },
         "api-routes": {
           "files": 0,
@@ -13254,6 +10850,10 @@
           "matches": 6
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
+        },
+        {
           "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
           "matches": 2
         },
@@ -13276,15 +10876,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 4,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 7,
       "classification": "runtime-live"
     },
     {
@@ -13308,12 +10904,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 10
+          "files": 3,
+          "matches": 13
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 14
+          "files": 5,
+          "matches": 18
         },
         "api-routes": {
           "files": 0,
@@ -13350,6 +10946,10 @@
           "matches": 18
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 7
+        },
+        {
           "path": "packages/web/src/lib/task-payouts.server.ts",
           "matches": 2
         },
@@ -13372,15 +10972,11 @@
         {
           "path": "packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql",
           "matches": 9
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260509173000_rename_optimize_earth_root_task/migration.sql",
-          "matches": 3
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 10,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 13,
       "classification": "core"
     },
     {
@@ -13404,12 +11000,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 9,
-          "matches": 29
+          "files": 10,
+          "matches": 34
         },
         "runtime-libraries": {
-          "files": 11,
-          "matches": 37
+          "files": 12,
+          "matches": 43
         },
         "api-routes": {
           "files": 0,
@@ -13432,18 +11028,22 @@
           "matches": 0
         },
         "docs": {
-          "files": 5,
-          "matches": 13
+          "files": 7,
+          "matches": 15
         },
         "other": {
-          "files": 3,
-          "matches": 24
+          "files": 2,
+          "matches": 23
         }
       },
       "keyFiles": [
         {
           "path": "packages/web/src/lib/tasks/task-comments.server.ts",
           "matches": 28
+        },
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 11
         },
         {
           "path": "packages/web/src/lib/tasks/user-treaty-task-progress.server.ts",
@@ -13468,15 +11068,11 @@
         {
           "path": "packages/web/src/lib/tasks/task-notifications.server.ts",
           "matches": 3
-        },
-        {
-          "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 9,
-      "directPrismaMatches": 29,
+      "directPrismaFiles": 10,
+      "directPrismaMatches": 34,
       "classification": "runtime-live"
     },
     {
@@ -13500,12 +11096,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 3,
-          "matches": 17
+          "files": 4,
+          "matches": 18
         },
         "runtime-libraries": {
-          "files": 3,
-          "matches": 17
+          "files": 4,
+          "matches": 18
         },
         "api-routes": {
           "files": 0,
@@ -13550,6 +11146,10 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 5
         },
@@ -13564,15 +11164,11 @@
         {
           "path": "packages/db/src/generated/prisma/models/TaskCommentAttachment.ts",
           "matches": 186
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 27
         }
       ],
       "notes": [],
-      "directPrismaFiles": 3,
-      "directPrismaMatches": 17,
+      "directPrismaFiles": 4,
+      "directPrismaMatches": 18,
       "classification": "runtime-live"
     },
     {
@@ -13692,12 +11288,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 9,
-          "matches": 34
+          "files": 10,
+          "matches": 35
         },
         "runtime-libraries": {
-          "files": 13,
-          "matches": 45
+          "files": 14,
+          "matches": 46
         },
         "api-routes": {
           "files": 0,
@@ -13724,8 +11320,8 @@
           "matches": 21
         },
         "other": {
-          "files": 3,
-          "matches": 25
+          "files": 2,
+          "matches": 24
         }
       },
       "keyFiles": [
@@ -13763,8 +11359,8 @@
         }
       ],
       "notes": [],
-      "directPrismaFiles": 9,
-      "directPrismaMatches": 34,
+      "directPrismaFiles": 10,
+      "directPrismaMatches": 35,
       "classification": "runtime-live"
     },
     {
@@ -13788,12 +11384,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 5
+          "files": 3,
+          "matches": 8
         },
         "runtime-libraries": {
-          "files": 2,
-          "matches": 7
+          "files": 3,
+          "matches": 10
         },
         "api-routes": {
           "files": 0,
@@ -13820,14 +11416,18 @@
           "matches": 5
         },
         "other": {
-          "files": 3,
-          "matches": 14
+          "files": 2,
+          "matches": 13
         }
       },
       "keyFiles": [
         {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 8
+        },
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
         },
         {
           "path": "packages/web/src/lib/triggers/fire-handlers.ts",
@@ -13852,15 +11452,11 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 3
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260425220000_task_communication_system/migration.sql",
-          "matches": 9
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 5,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 8,
       "classification": "runtime-live"
     },
     {
@@ -13980,12 +11576,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 3
         },
         "runtime-libraries": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 3
         },
         "api-routes": {
           "files": 0,
@@ -14018,6 +11614,10 @@
       },
       "keyFiles": [
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
+        },
+        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -14044,18 +11644,12 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 26
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 3
         }
       ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "suspicious"
+      "notes": [],
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 3,
+      "classification": "runtime-live"
     },
     {
       "name": "TaskCommunicationVariant",
@@ -14176,12 +11770,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "runtime-libraries": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "api-routes": {
           "files": 0,
@@ -14214,6 +11808,10 @@
       },
       "keyFiles": [
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 8
         },
@@ -14240,18 +11838,12 @@
         {
           "path": "packages/db/src/generated/prisma/browser.ts",
           "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/client.ts",
-          "matches": 2
         }
       ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "generated-only"
+      "notes": [],
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 1,
+      "classification": "runtime-live"
     },
     {
       "name": "TaskDistributionTarget",
@@ -14372,12 +11964,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 23
+          "files": 6,
+          "matches": 31
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 23
+          "files": 6,
+          "matches": 31
         },
         "api-routes": {
           "files": 0,
@@ -14400,22 +11992,30 @@
           "matches": 0
         },
         "docs": {
-          "files": 4,
-          "matches": 6
+          "files": 5,
+          "matches": 7
         },
         "other": {
-          "files": 3,
-          "matches": 7
+          "files": 4,
+          "matches": 8
         }
       },
       "keyFiles": [
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 28
+          "matches": 26
+        },
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 16
         },
         {
           "path": "packages/web/src/lib/notion-import.server.ts",
           "matches": 14
+        },
+        {
+          "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
+          "matches": 2
         },
         {
           "path": "packages/web/src/lib/tasks/private-task-bundle.server.ts",
@@ -14432,19 +12032,11 @@
         {
           "path": "docs/FEATURES.md",
           "matches": 2
-        },
-        {
-          "path": "docs/plans/phased-approach-optimitron.md",
-          "matches": 1
-        },
-        {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 23,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 31,
       "classification": "core"
     },
     {
@@ -14488,20 +12080,20 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 2
         },
         "tests": {
           "files": 0,
           "matches": 0
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 3,
+          "matches": 3
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 8
         }
       },
       "keyFiles": [
@@ -14510,7 +12102,15 @@
           "matches": 4
         },
         {
+          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "matches": 2
+        },
+        {
           "path": "docs/plans/phased-approach-optimitron.md",
+          "matches": 1
+        },
+        {
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
@@ -14528,14 +12128,6 @@
         {
           "path": "packages/db/src/generated/prisma/models/TaskExecutionArtifact.ts",
           "matches": 216
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 31
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
-          "matches": 3
         }
       ],
       "notes": [],
@@ -14564,12 +12156,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 6,
-          "matches": 10
+          "files": 7,
+          "matches": 12
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 9
+          "files": 6,
+          "matches": 11
         },
         "api-routes": {
           "files": 1,
@@ -14603,7 +12195,7 @@
       "keyFiles": [
         {
           "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
-          "matches": 8
+          "matches": 10
         },
         {
           "path": "packages/web/src/lib/mcp-server.ts",
@@ -14626,17 +12218,17 @@
           "matches": 2
         },
         {
-          "path": "docs/plans/phased-approach-optimitron.md",
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "docs/SYSTEM_MAP.md",
-          "matches": 1
+          "path": "docs/plans/phased-approach-optimitron.md",
+          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 6,
-      "directPrismaMatches": 10,
+      "directPrismaFiles": 7,
+      "directPrismaMatches": 12,
       "classification": "runtime-live"
     },
     {
@@ -14756,12 +12348,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 5,
-          "matches": 28
+          "files": 6,
+          "matches": 29
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 29
+          "files": 5,
+          "matches": 30
         },
         "api-routes": {
           "files": 0,
@@ -14814,21 +12406,21 @@
           "matches": 2
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
+        {
           "path": "docs/archive/TODO-history-2026-07.md",
           "matches": 2
         },
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 7
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql",
-          "matches": 16
         }
       ],
       "notes": [],
-      "directPrismaFiles": 5,
-      "directPrismaMatches": 28,
+      "directPrismaFiles": 6,
+      "directPrismaMatches": 29,
       "classification": "runtime-live"
     },
     {
@@ -14948,12 +12540,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 7,
-          "matches": 17
+          "files": 8,
+          "matches": 20
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 16
+          "files": 6,
+          "matches": 20
         },
         "api-routes": {
           "files": 1,
@@ -14972,8 +12564,8 @@
           "matches": 0
         },
         "tests": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 3
         },
         "docs": {
           "files": 1,
@@ -14994,6 +12586,10 @@
           "matches": 8
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 7
+        },
+        {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 5
         },
@@ -15012,15 +12608,11 @@
         {
           "path": "packages/web/src/lib/task-funding/status.server.ts",
           "matches": 2
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 7,
-      "directPrismaMatches": 17,
+      "directPrismaFiles": 8,
+      "directPrismaMatches": 20,
       "classification": "runtime-live"
     },
     {
@@ -15140,12 +12732,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 4,
-          "matches": 13
+          "files": 5,
+          "matches": 17
         },
         "runtime-libraries": {
-          "files": 4,
-          "matches": 13
+          "files": 5,
+          "matches": 17
         },
         "api-routes": {
           "files": 0,
@@ -15186,6 +12778,10 @@
           "matches": 8
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 8
+        },
+        {
           "path": "packages/db/src/managed-data/managed-seed-data.ts",
           "matches": 4
         },
@@ -15204,15 +12800,11 @@
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
-        },
-        {
-          "path": "docs/TASK_MODEL.md",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 4,
-      "directPrismaMatches": 13,
+      "directPrismaFiles": 5,
+      "directPrismaMatches": 17,
       "classification": "core"
     },
     {
@@ -15524,12 +13116,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 4
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 1
+          "files": 2,
+          "matches": 4
         },
         "api-routes": {
           "files": 0,
@@ -15561,6 +13153,10 @@
         }
       },
       "keyFiles": [
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
+        },
         {
           "path": "packages/web/src/lib/task-applications.server.ts",
           "matches": 2
@@ -15588,15 +13184,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
-        },
-        {
-          "path": "packages/db/src/generated/prisma/browser.ts",
-          "matches": 2
         }
       ],
       "notes": [],
-      "directPrismaFiles": 1,
-      "directPrismaMatches": 1,
+      "directPrismaFiles": 2,
+      "directPrismaMatches": 4,
       "classification": "runtime-live"
     },
     {
@@ -15620,12 +13212,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "runtime-libraries": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 1
         },
         "api-routes": {
           "files": 0,
@@ -15657,6 +13249,10 @@
         }
       },
       "keyFiles": [
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 2
+        },
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 6
@@ -15684,18 +13280,12 @@
         {
           "path": "packages/db/src/generated/prisma/client.ts",
           "matches": 2
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts",
-          "matches": 2
         }
       ],
-      "notes": [
-        "No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity."
-      ],
-      "directPrismaFiles": 0,
-      "directPrismaMatches": 0,
-      "classification": "generated-only"
+      "notes": [],
+      "directPrismaFiles": 1,
+      "directPrismaMatches": 1,
+      "classification": "runtime-live"
     },
     {
       "name": "TaskPayout",
@@ -15718,12 +13308,12 @@
           "matches": 0
         },
         "runtime-prisma": {
-          "files": 2,
-          "matches": 17
+          "files": 3,
+          "matches": 19
         },
         "runtime-libraries": {
-          "files": 1,
-          "matches": 16
+          "files": 2,
+          "matches": 19
         },
         "api-routes": {
           "files": 0,
@@ -15750,14 +13340,18 @@
           "matches": 3
         },
         "other": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         }
       },
       "keyFiles": [
         {
           "path": "packages/web/src/lib/task-payouts.server.ts",
           "matches": 32
+        },
+        {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 5
         },
         {
           "path": "packages/web/src/app/admin/task-payouts/page.tsx",
@@ -15782,15 +13376,11 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 31
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/User.ts",
-          "matches": 4
         }
       ],
       "notes": [],
-      "directPrismaFiles": 2,
-      "directPrismaMatches": 17,
+      "directPrismaFiles": 3,
+      "directPrismaMatches": 19,
       "classification": "runtime-live"
     },
     {
@@ -15814,12 +13404,12 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 6,
-          "matches": 11
+          "files": 7,
+          "matches": 14
         },
         "runtime-libraries": {
-          "files": 5,
-          "matches": 9
+          "files": 6,
+          "matches": 12
         },
         "api-routes": {
           "files": 0,
@@ -15856,6 +13446,10 @@
           "matches": 6
         },
         {
+          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "matches": 6
+        },
+        {
           "path": "packages/web/scripts/extract-tasks-from-manual.ts",
           "matches": 4
         },
@@ -15878,15 +13472,11 @@
         {
           "path": "docs/plans/phased-approach-optimitron.md",
           "matches": 2
-        },
-        {
-          "path": "docs/FEATURES.md",
-          "matches": 1
         }
       ],
       "notes": [],
-      "directPrismaFiles": 6,
-      "directPrismaMatches": 11,
+      "directPrismaFiles": 7,
+      "directPrismaMatches": 14,
       "classification": "core"
     },
     {
@@ -16199,11 +13789,11 @@
         },
         "runtime-prisma": {
           "files": 2,
-          "matches": 4
+          "matches": 5
         },
         "runtime-libraries": {
           "files": 2,
-          "matches": 4
+          "matches": 5
         },
         "api-routes": {
           "files": 0,
@@ -16218,33 +13808,45 @@
           "matches": 0
         },
         "scripts": {
-          "files": 0,
-          "matches": 0
+          "files": 1,
+          "matches": 2
         },
         "tests": {
           "files": 0,
           "matches": 0
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 4,
+          "matches": 4
         },
         "other": {
-          "files": 0,
-          "matches": 0
+          "files": 2,
+          "matches": 5
         }
       },
       "keyFiles": [
         {
           "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
-          "matches": 6
+          "matches": 8
         },
         {
           "path": "packages/web/src/lib/mcp-tools/private-execution.ts",
           "matches": 2
         },
         {
+          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "matches": 2
+        },
+        {
+          "path": "docs/FEATURES.md",
+          "matches": 1
+        },
+        {
           "path": "docs/plans/phased-approach-optimitron.md",
+          "matches": 1
+        },
+        {
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
@@ -16254,23 +13856,11 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 4
-        },
-        {
-          "path": "packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql",
-          "matches": 11
-        },
-        {
-          "path": "packages/db/src/generated/prisma/models/TaskVerification.ts",
-          "matches": 196
-        },
-        {
-          "path": "packages/db/src/generated/prisma/internal/class.ts",
-          "matches": 25
         }
       ],
       "notes": [],
       "directPrismaFiles": 2,
-      "directPrismaMatches": 4,
+      "directPrismaMatches": 5,
       "classification": "runtime-live"
     },
     {
@@ -16490,8 +14080,8 @@
           "matches": 7
         },
         "runtime-libraries": {
-          "files": 24,
-          "matches": 36
+          "files": 22,
+          "matches": 34
         },
         "api-routes": {
           "files": 1,
@@ -16583,11 +14173,11 @@
         },
         "runtime-prisma": {
           "files": 81,
-          "matches": 138
+          "matches": 139
         },
         "runtime-libraries": {
           "files": 85,
-          "matches": 190
+          "matches": 191
         },
         "api-routes": {
           "files": 16,
@@ -16611,7 +14201,7 @@
         },
         "docs": {
           "files": 12,
-          "matches": 31
+          "matches": 32
         },
         "other": {
           "files": 23,
@@ -16654,7 +14244,7 @@
       ],
       "notes": [],
       "directPrismaFiles": 81,
-      "directPrismaMatches": 138,
+      "directPrismaMatches": 139,
       "classification": "core"
     },
     {
@@ -17821,13 +15411,13 @@
       "name": "ActivityType",
       "schemaLine": 309,
       "referenceFiles": 27,
-      "references": 127
+      "references": 128
     },
     {
       "name": "AgentExecutorStatus",
       "schemaLine": 561,
-      "referenceFiles": 12,
-      "references": 102
+      "referenceFiles": 13,
+      "references": 104
     },
     {
       "name": "AnalysisStatus",
@@ -18060,8 +15650,8 @@
     {
       "name": "ExternalActionRequestStatus",
       "schemaLine": 550,
-      "referenceFiles": 10,
-      "references": 115
+      "referenceFiles": 12,
+      "references": 131
     },
     {
       "name": "FillingType",
@@ -18102,8 +15692,8 @@
     {
       "name": "McpScope",
       "schemaLine": 1042,
-      "referenceFiles": 62,
-      "references": 608
+      "referenceFiles": 63,
+      "references": 624
     },
     {
       "name": "McpToolCallStatus",
@@ -18144,8 +15734,8 @@
     {
       "name": "OrganizationMemberRole",
       "schemaLine": 648,
-      "referenceFiles": 19,
-      "references": 109
+      "referenceFiles": 24,
+      "references": 125
     },
     {
       "name": "OrganizationReferendumPositionStatus",
@@ -18156,14 +15746,14 @@
     {
       "name": "OrgStatus",
       "schemaLine": 399,
-      "referenceFiles": 39,
-      "references": 254
+      "referenceFiles": 42,
+      "references": 260
     },
     {
       "name": "OrgType",
       "schemaLine": 380,
-      "referenceFiles": 39,
-      "references": 245
+      "referenceFiles": 42,
+      "references": 251
     },
     {
       "name": "ParameterDistributionType",
@@ -18232,48 +15822,6 @@
       "references": 60
     },
     {
-      "name": "ReasoningBanditLevel",
-      "schemaLine": 10754,
-      "referenceFiles": 8,
-      "references": 85
-    },
-    {
-      "name": "ReasoningGeneratorKind",
-      "schemaLine": 10763,
-      "referenceFiles": 9,
-      "references": 117
-    },
-    {
-      "name": "ReasoningOutcomeKind",
-      "schemaLine": 10769,
-      "referenceFiles": 7,
-      "references": 48
-    },
-    {
-      "name": "ReasoningRiskTier",
-      "schemaLine": 10748,
-      "referenceFiles": 10,
-      "references": 132
-    },
-    {
-      "name": "ReasoningVariantFamily",
-      "schemaLine": 10785,
-      "referenceFiles": 7,
-      "references": 75
-    },
-    {
-      "name": "ReasoningVariantSlot",
-      "schemaLine": 10738,
-      "referenceFiles": 17,
-      "references": 322
-    },
-    {
-      "name": "ReasoningVariantStatus",
-      "schemaLine": 10730,
-      "referenceFiles": 11,
-      "references": 193
-    },
-    {
       "name": "ReferendumKind",
       "schemaLine": 4611,
       "referenceFiles": 17,
@@ -18336,14 +15884,14 @@
     {
       "name": "SourceArtifactType",
       "schemaLine": 844,
-      "referenceFiles": 26,
-      "references": 201
+      "referenceFiles": 27,
+      "references": 203
     },
     {
       "name": "SourceSystem",
       "schemaLine": 832,
-      "referenceFiles": 24,
-      "references": 222
+      "referenceFiles": 26,
+      "references": 226
     },
     {
       "name": "StrengthLevel",
@@ -18402,20 +15950,20 @@
     {
       "name": "TaskCategory",
       "schemaLine": 449,
-      "referenceFiles": 39,
-      "references": 368
+      "referenceFiles": 40,
+      "references": 370
     },
     {
       "name": "TaskClaimPolicy",
       "schemaLine": 630,
-      "referenceFiles": 48,
-      "references": 390
+      "referenceFiles": 50,
+      "references": 397
     },
     {
       "name": "TaskClaimStatus",
       "schemaLine": 701,
-      "referenceFiles": 15,
-      "references": 116
+      "referenceFiles": 17,
+      "references": 123
     },
     {
       "name": "TaskCommentKind",
@@ -18528,8 +16076,8 @@
     {
       "name": "TaskEdgeType",
       "schemaLine": 711,
-      "referenceFiles": 16,
-      "references": 112
+      "referenceFiles": 17,
+      "references": 114
     },
     {
       "name": "TaskEngagementKind",
@@ -18540,8 +16088,8 @@
     {
       "name": "TaskExecutionAttemptStatus",
       "schemaLine": 524,
-      "referenceFiles": 15,
-      "references": 154
+      "referenceFiles": 17,
+      "references": 163
     },
     {
       "name": "TaskExecutionMode",
@@ -18588,14 +16136,14 @@
     {
       "name": "TaskImpactEstimateKind",
       "schemaLine": 890,
-      "referenceFiles": 14,
-      "references": 89
+      "referenceFiles": 15,
+      "references": 91
     },
     {
       "name": "TaskImpactFrameKey",
       "schemaLine": 905,
-      "referenceFiles": 32,
-      "references": 146
+      "referenceFiles": 33,
+      "references": 148
     },
     {
       "name": "TaskImpactPublicationStatus",
@@ -18636,20 +16184,20 @@
     {
       "name": "TaskStatus",
       "schemaLine": 640,
-      "referenceFiles": 75,
-      "references": 564
+      "referenceFiles": 79,
+      "references": 580
     },
     {
       "name": "TaskVerificationMethod",
       "schemaLine": 534,
-      "referenceFiles": 10,
-      "references": 73
+      "referenceFiles": 11,
+      "references": 79
     },
     {
       "name": "TaskVerificationResult",
       "schemaLine": 542,
-      "referenceFiles": 11,
-      "references": 78
+      "referenceFiles": 12,
+      "references": 86
     },
     {
       "name": "UnitCodeSystem",

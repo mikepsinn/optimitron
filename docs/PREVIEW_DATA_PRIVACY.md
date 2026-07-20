@@ -85,24 +85,6 @@ the columns below.
 | `PrizeTreasuryDeposit` | `depositorAddress`, `txHash` | Donor wallet and transaction identifiers. |
 | `PublicGoodsRecipient` | `walletAddress` | Recipient wallet identifier. |
 | `QuestionResponse` | `answer` | Survey answers can contain free-text PII or sensitive views. |
-| `ReasoningAssignmentRule` | `relationshipBucket`, `audienceTag`, `referralSource`, `device` | Segmentation fields can identify cohorts. |
-| `ReasoningBlacklistRule` | `pattern`, `reason` | Moderation/fraud rules may contain identifying patterns. |
-| `ReasoningBundleVariant` | `description`, `armBindings` | Generated/published reasoning payloads. |
-| `ReasoningDistributionPolicyState` | `effortSpent` | Operational payload. |
-| `ReasoningDistributionTarget` | `notes` | Operator notes. |
-| `ReasoningFraudFinding` | `sessionId`, `details` | Fraud session and details. |
-| `ReasoningFraudPattern` | `pattern`, `reason` | Fraud pattern payload. |
-| `ReasoningGenerationRequest` | `toneProfile`, `aiPrompt` | Human/AI prompt context. |
-| `ReasoningLocaleConfig` | `reviewerUserIds` | Reviewer identifiers. |
-| `ReasoningOutcomeRecord` | `sessionId`, `channel`, `audienceTag`, `relationshipBucket` | Visitor/session analytics. |
-| `ReasoningPromotionDecision` | `chainValueEvidence`, `fraudEvidence`, `rGuardSnapshot`, `chainValueGuardSnapshot`, `rationale` | Decision evidence and rationale payloads. |
-| `ReasoningRGuardSnapshot` | `components` | Guard payload. |
-| `ReasoningShadowEvaluation` | `rationale` | Evaluation rationale. |
-| `ReasoningSystemState` | `lastFreezeReason` | Operator reason text. |
-| `ReasoningTopologyVariant` | `description`, `grammarPatch` | Generated topology payload. |
-| `ReasoningVariantArm` | `content`, `validatorViolations` | Generated/human-edited variant content. |
-| `ReasoningVariantExposure` | `sessionId`, `relationshipBucket`, `referralSource`, `device`, `returningVsFirst` | Visitor/session analytics. |
-| `ReasoningVariantSet` | `description` | Human-authored set description. |
 | `ReferendumVote` | `publicComment`, `originUrl` | Voter comment and attribution URL. |
 | `ReferralClick` | `code`, `refererUrl`, `userAgent`, `countryCode` | Referral click forensics. |
 | `ReferralInvitation` | `inviteToken`, `recipientName`, `recipientEmail`, `messageText`, `originUrl` | Named-invite recipient and message data. |

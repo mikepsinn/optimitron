@@ -42,7 +42,6 @@ import {
 } from "./optimize-earth-task-tree.js";
 import {
   setManagedSeedDataClient,
-  syncManagedBootstrapData,
   syncManagedReferenceData,
   syncManagedTreatyAccountabilityData,
 } from "./managed-seed-data.js";
@@ -75,7 +74,6 @@ export interface SyncManagedDataOptions {
 
 export interface SyncManagedDataResult {
   referenceData: { synced: boolean; dryRun: boolean };
-  bootstrapData: { synced: boolean; dryRun: boolean };
   treatyAccountabilityData: { synced: boolean; dryRun: boolean };
   tasks: SyncManagedTasksResult;
   taskTriggers: SyncManagedTaskTriggersResult;
@@ -108,15 +106,11 @@ export async function syncManagedData(
   setManagedSeedDataClient(prisma);
 
   const referenceData = { synced: false, dryRun: !options.apply };
-  const bootstrapData = { synced: false, dryRun: !options.apply };
   const treatyAccountabilityData = { synced: false, dryRun: !options.apply };
 
   if (options.apply) {
     await timeStep("reference-data", () => syncManagedReferenceData());
     referenceData.synced = true;
-
-    await timeStep("bootstrap-data", () => syncManagedBootstrapData());
-    bootstrapData.synced = true;
   }
 
   let createdByUserId = options.createdByUserId;
@@ -202,7 +196,6 @@ export async function syncManagedData(
 
   return {
     referenceData,
-    bootstrapData,
     treatyAccountabilityData,
     tasks,
     taskTriggers,
@@ -220,7 +213,6 @@ export async function syncManagedData(
 export function formatManagedDataResult(result: SyncManagedDataResult) {
   return [
     formatSimpleManagedDataResult("Reference data", result.referenceData),
-    formatSimpleManagedDataResult("Bootstrap data", result.bootstrapData),
     formatManagedReferendumsResult(result.referendums),
     formatManagedHumanityVGovernmentCaseResult(result.humanityVGovernmentCase),
     formatManagedTasksResult(result.tasks),
@@ -267,7 +259,6 @@ export {
   syncManagedDatingCatalog,
   syncManagedHumanityVGovernmentCase,
   syncManagedIamOrganization,
-  syncManagedBootstrapData,
   syncManagedReferenceData,
   syncManagedReferendums,
   syncManagedTaskTriggers,

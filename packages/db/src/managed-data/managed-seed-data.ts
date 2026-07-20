@@ -87,7 +87,6 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
-import { syncManagedReasoningData } from "./managed-reasoning-data.js";
 import {
   weightSeedImpactFrame,
   type SeedTaskImpactInput,
@@ -1239,10 +1238,6 @@ export async function syncManagedReferenceData() {
   await seedConflicts();
   await seedDrugApprovalTimelines();
   await seedWishocraticItems();
-}
-
-export async function syncManagedBootstrapData() {
-  await syncManagedReasoningData(prisma);
 }
 
 // ---------------------------------------------------------------------------

@@ -40,7 +40,6 @@ describe("site sitemap routing", () => {
         "/api/agent/parameters",
       ]),
     );
-    expect(paths).not.toContain(ROUTES.reasoning);
     expect(paths).not.toContain(ROUTES.scoreboard);
   });
 

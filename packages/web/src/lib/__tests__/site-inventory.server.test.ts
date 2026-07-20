@@ -37,11 +37,6 @@ describe("site inventory", () => {
         (page) => page.url === "https://warondisease.org/impact",
       ),
     ).toBe(false);
-    expect(
-      result.pages.some(
-        (page) => page.url === "https://warondisease.org/reasoning",
-      ),
-    ).toBe(false);
   });
 
   it("does not list referendum-content pages on contentless hosts", async () => {
