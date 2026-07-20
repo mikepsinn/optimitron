@@ -63,6 +63,7 @@ Use these fields when creating personal tasks:
 - `available_at`: earliest ISO time the task should appear in active queues.
 - `due_at`: due date or expiry date.
 - `deadline_policy`: `NONE`, `SOFT`, `EXPIRES`, or `REQUIRED`.
+- `claimPolicy`: assigned tasks use `ASSIGNED_ONLY`; unassigned tasks default to `OPEN_SINGLE`. Set `OPEN_MANY` explicitly only when accepting one contribution should leave the task open for others. `updateTask` can correct this field on existing tasks.
 
 Deadline policy rules:
 

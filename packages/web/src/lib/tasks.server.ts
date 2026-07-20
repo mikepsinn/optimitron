@@ -28,6 +28,10 @@ import {
   ensureExecutionPlanningBranch,
   OrganizationPlanningAccessError,
 } from "@/lib/tasks/planning-branch.server";
+import {
+  resolveTaskClaimSettings,
+  verifiedClaimClosesTask,
+} from "@/lib/tasks/task-claim-policy";
 import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
 import {
   assertUserCanClaimPaidTask,
@@ -1936,13 +1940,16 @@ export async function createTask(
   const assigneeOrganizationId = input.assigneeOrganizationId?.trim() || null;
   const assigneePersonId = input.assigneePersonId?.trim() || null;
   const isAssignedTask = Boolean(assigneeOrganizationId || assigneePersonId);
-  const defaultClaimPolicy =
-    input.isPublic === false
-      ? TaskClaimPolicy.ASSIGNED_ONLY
-      : TaskClaimPolicy.OPEN_SINGLE;
-  const resolvedClaimPolicy = isAssignedTask
-    ? TaskClaimPolicy.ASSIGNED_ONLY
-    : (input.claimPolicy ?? defaultClaimPolicy);
+  const claimSettings = resolveTaskClaimSettings({
+    assigneeOrganizationId,
+    assigneePersonId,
+    requestedClaimPolicy:
+      input.isPublic === false && input.claimPolicy == null
+        ? TaskClaimPolicy.ASSIGNED_ONLY
+        : input.claimPolicy,
+    requestedMaxClaims: input.maxClaims,
+  });
+  const resolvedClaimPolicy = claimSettings.claimPolicy;
   const requestedIsPublic =
     input.isPublic ??
     (resolvedClaimPolicy !== TaskClaimPolicy.ASSIGNED_ONLY || isAssignedTask);
@@ -1959,14 +1966,6 @@ export async function createTask(
   }
   if (input.status === TaskStatus.VERIFIED) {
     throw new Error("Task verification must use the verification flow.");
-  }
-
-  if (
-    resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY &&
-    input.maxClaims != null &&
-    input.maxClaims < 1
-  ) {
-    throw new Error("maxClaims must be at least 1 for OPEN_MANY tasks.");
   }
 
   // Parent resolution (OPT-TASK-06): an explicit parent wins. A private
@@ -2005,10 +2004,7 @@ export async function createTask(
       estimatedEffortHours: input.estimatedEffortHours ?? null,
       interestTags: input.interestTags?.filter(Boolean) ?? [],
       isPublic,
-      maxClaims:
-        resolvedClaimPolicy === TaskClaimPolicy.OPEN_MANY
-          ? (input.maxClaims ?? null)
-          : null,
+      maxClaims: claimSettings.maxClaims,
       parentTaskId,
       createdByUserId: creatorUserId,
       roleTitle: input.roleTitle?.trim() || null,
@@ -2082,9 +2078,12 @@ export async function updateTaskCreatedByUser(
       ],
     },
     select: {
+      assigneeOrganizationId: true,
+      assigneePersonId: true,
       claimPolicy: true,
       id: true,
       isPublic: true,
+      maxClaims: true,
     },
   });
 
@@ -2096,14 +2095,16 @@ export async function updateTaskCreatedByUser(
     throw new Error("Public tasks can't be unpublished. Ask an admin.");
   }
 
-  const nextClaimPolicy = input.claimPolicy ?? existingTask.claimPolicy;
-  if (
-    nextClaimPolicy === TaskClaimPolicy.OPEN_MANY &&
-    input.maxClaims != null &&
-    input.maxClaims < 1
-  ) {
-    throw new Error("maxClaims must be at least 1 for OPEN_MANY tasks.");
-  }
+  const shouldUpdateClaimSettings =
+    input.claimPolicy !== undefined || input.maxClaims !== undefined;
+  const claimSettings = resolveTaskClaimSettings({
+    assigneeOrganizationId: existingTask.assigneeOrganizationId,
+    assigneePersonId: existingTask.assigneePersonId,
+    currentClaimPolicy: existingTask.claimPolicy,
+    currentMaxClaims: existingTask.maxClaims,
+    requestedClaimPolicy: input.claimPolicy,
+    requestedMaxClaims: input.maxClaims,
+  });
 
   const title = input.title == null ? undefined : input.title.trim();
   if (title !== undefined && !title) {
@@ -2117,19 +2118,18 @@ export async function updateTaskCreatedByUser(
       where: { id: taskId },
       data: {
         category: input.category ?? undefined,
-        claimPolicy: input.claimPolicy ?? undefined,
+        claimPolicy: shouldUpdateClaimSettings
+          ? claimSettings.claimPolicy
+          : undefined,
         description:
           input.description == null ? undefined : input.description.trim(),
         dueAt: input.dueAt ?? undefined,
         estimatedEffortHours: input.estimatedEffortHours ?? undefined,
         interestTags: input.interestTags?.filter(Boolean) ?? undefined,
         isPublic: input.isPublic ?? undefined,
-        maxClaims:
-          nextClaimPolicy === TaskClaimPolicy.OPEN_MANY
-            ? (input.maxClaims ?? undefined)
-            : input.claimPolicy
-              ? null
-              : undefined,
+        maxClaims: shouldUpdateClaimSettings
+          ? claimSettings.maxClaims
+          : undefined,
         roleTitle:
           input.roleTitle == null ? undefined : input.roleTitle.trim() || null,
         skillTags: input.skillTags?.filter(Boolean) ?? undefined,
@@ -2444,7 +2444,7 @@ export async function verifyTask(
         },
       });
 
-      if (task.claimPolicy !== TaskClaimPolicy.OPEN_MANY) {
+      if (verifiedClaimClosesTask(task.claimPolicy)) {
         await tx.task.update({
           where: { id: task.id },
           data: {
