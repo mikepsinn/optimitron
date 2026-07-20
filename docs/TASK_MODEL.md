@@ -71,6 +71,8 @@ Claims coordinate public or multi-claimant work. `TaskExecutionAttempt` is the c
 
 Acceptance verifies the task and releases dependents. Rejection preserves the attempt, artifacts, criteria snapshot, and verdict, then requeues the task for a new attempt. `ABANDONED` and `REJECTED` claim states remain useful for claim coordination without deleting history.
 
+For `OPEN_SINGLE`, accepting the completed claim also verifies the task in the same transaction and releases its dependents. `OPEN_MANY` represents independent contributions, so accepting one claim does not close the shared task. `maxClaims` limits simultaneous claims; it is not a completion target. Use `ASSIGNED_ONLY` for work addressed to a named person or organization, `OPEN_SINGLE` for ordinary one-off claimable work, and `OPEN_MANY` only when more accepted contributions should remain possible.
+
 ## Provenance
 
 - `TaskSourceArtifact` describes where the task came from.

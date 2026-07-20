@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   ensureExecutionPlanningBranch: vi.fn(),
   grantWishes: vi.fn(),
   notifyTaskAssigneeOfAssignment: vi.fn(),
+  queueTaskPayoutForVerifiedClaim: vi.fn(),
   prisma: {
     taskCreate: vi.fn(),
     taskFindFirst: vi.fn(),
@@ -68,6 +69,11 @@ vi.mock("@/lib/tasks/task-assignment-notifications.server", () => ({
   notifyTaskAssigneeOfAssignment: mocks.notifyTaskAssigneeOfAssignment,
 }));
 
+vi.mock("@/lib/task-payouts.server", () => ({
+  assertUserCanClaimPaidTask: vi.fn(),
+  queueTaskPayoutForVerifiedClaim: mocks.queueTaskPayoutForVerifiedClaim,
+}));
+
 vi.mock("@/lib/tasks/task-communications.server", () => ({
   countTaskCommunications: mocks.countTaskCommunications,
 }));
@@ -110,6 +116,7 @@ function resetAllMocks() {
   mocks.ensureExecutionPlanningBranch.mockReset();
   mocks.grantWishes.mockReset();
   mocks.notifyTaskAssigneeOfAssignment.mockReset();
+  mocks.queueTaskPayoutForVerifiedClaim.mockReset();
 
   for (const group of [mocks.prisma, mocks.tx]) {
     for (const mockFn of Object.values(group)) {
@@ -252,6 +259,72 @@ describe("tasks server", () => {
     expect(mocks.tx.taskClaimUpdate).not.toHaveBeenCalled();
     expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
     expect(mocks.grantWishes).not.toHaveBeenCalled();
+  });
+
+  it("closes one-off claimable tasks when their completed claim is verified", async () => {
+    mocks.tx.taskFindFirst.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      id: "task_1",
+      status: TaskStatus.ACTIVE,
+    });
+    mocks.tx.taskClaimFindUniqueOrThrow.mockResolvedValue({
+      completionEvidence: "Merged pull request 132",
+      id: "claim_1",
+      status: TaskClaimStatus.COMPLETED,
+      taskId: "task_1",
+      userId: "user_1",
+    });
+    mocks.tx.taskClaimUpdate.mockResolvedValue({
+      id: "claim_1",
+      status: TaskClaimStatus.VERIFIED,
+    });
+    mocks.tx.taskUpdate.mockResolvedValue({
+      id: "task_1",
+      status: TaskStatus.VERIFIED,
+    });
+
+    await verifyTask("task_1", "admin_1", { claimId: "claim_1" });
+
+    expect(mocks.tx.taskClaimUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: TaskClaimStatus.VERIFIED }),
+        where: { id: "claim_1" },
+      }),
+    );
+    expect(mocks.tx.taskUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: TaskStatus.VERIFIED }),
+        where: { id: "task_1" },
+      }),
+    );
+  });
+
+  it("keeps multi-contributor tasks open after one claim is verified", async () => {
+    mocks.tx.taskFindFirst.mockResolvedValue({
+      claimPolicy: TaskClaimPolicy.OPEN_MANY,
+      id: "task_1",
+      status: TaskStatus.ACTIVE,
+    });
+    mocks.tx.taskClaimFindUniqueOrThrow.mockResolvedValue({
+      completionEvidence: "Translated one page",
+      id: "claim_1",
+      status: TaskClaimStatus.COMPLETED,
+      taskId: "task_1",
+      userId: "user_1",
+    });
+    mocks.tx.taskClaimUpdate.mockResolvedValue({
+      id: "claim_1",
+      status: TaskClaimStatus.VERIFIED,
+    });
+
+    await verifyTask("task_1", "admin_1", { claimId: "claim_1" });
+
+    expect(mocks.tx.taskClaimUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: TaskClaimStatus.VERIFIED }),
+      }),
+    );
+    expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
   });
 
   it("listTasks defaults to public-only visibility", async () => {

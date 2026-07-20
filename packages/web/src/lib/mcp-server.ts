@@ -116,6 +116,7 @@ import {
   isTaskWithinClientAccessBoundary,
   type TaskClientAccessBoundary,
 } from "./tasks/task-visibility.server";
+import { resolveTaskClaimSettings } from "./tasks/task-claim-policy";
 import type { PlanningCommitment } from "./tasks/execution-planner";
 import {
   auditExecutionGraph,
@@ -6108,7 +6109,8 @@ const TASK_TOOL_DEFINITIONS = [
         claimPolicy: {
           type: "string",
           enum: ["ASSIGNED_ONLY", "OPEN_SINGLE", "OPEN_MANY"],
-          description: "Who can claim this task",
+          description:
+            "How work is claimed. Assigned tasks always use ASSIGNED_ONLY. Unassigned tasks default to OPEN_SINGLE; use OPEN_MANY only for ongoing independent contributions.",
         },
         assigneePersonId: {
           type: "string",
@@ -6602,6 +6604,12 @@ const TASK_TOOL_DEFINITIONS = [
         status: {
           type: "string",
           enum: ["DRAFT", "ACTIVE", "STALE"],
+        },
+        claimPolicy: {
+          type: "string",
+          enum: ["ASSIGNED_ONLY", "OPEN_SINGLE", "OPEN_MANY"],
+          description:
+            "How work is claimed. Use ASSIGNED_ONLY for a named person or organization, OPEN_SINGLE for one claim that completes the task, and OPEN_MANY only for ongoing independent contributions.",
         },
         title: { type: "string" },
         description: { type: "string" },
@@ -10432,8 +10440,22 @@ export function createMcpServer(
                 ? parseTaskDate(a.due_at ?? a.dueAt)
                 : null;
             let routingData: Record<string, unknown>;
+            let claimSettings: ReturnType<typeof resolveTaskClaimSettings>;
             try {
               routingData = buildTaskRoutingData(a);
+              claimSettings = resolveTaskClaimSettings({
+                assigneeOrganizationId,
+                assigneePersonId,
+                requestedClaimPolicy: parseEnumInput(
+                  TaskClaimPolicy,
+                  a.claimPolicy,
+                  "claimPolicy",
+                ),
+                requestedMaxClaims: routingData.maxClaims as
+                  | number
+                  | null
+                  | undefined,
+              });
             } catch (error) {
               return err(
                 error instanceof Error
@@ -10461,9 +10483,8 @@ export function createMcpServer(
               availableAt,
               dueAt,
               deadlinePolicy: resolveDeadlinePolicyInput(a, dueAt),
-              claimPolicy: a.claimPolicy
-                ? TaskClaimPolicy[a.claimPolicy as keyof typeof TaskClaimPolicy]
-                : TaskClaimPolicy.OPEN_MANY,
+              claimPolicy: claimSettings.claimPolicy,
+              maxClaims: claimSettings.maxClaims,
               ...(assigneePersonId ? { assigneePersonId } : {}),
               ...(assigneeOrganizationId ? { assigneeOrganizationId } : {}),
               ...(ownerOrganizationId ? { ownerOrganizationId } : {}),
@@ -12194,6 +12215,9 @@ export function createMcpServer(
                   isPublic: true,
                 },
                 select: {
+                  assigneeOrganizationId: true,
+                  assigneePersonId: true,
+                  claimPolicy: true,
                   contextJson: true,
                   createdByUserId: true,
                   currentImpactEstimateSet: {
@@ -12216,6 +12240,7 @@ export function createMcpServer(
                   estimatedEffortHours: true,
                   id: true,
                   isPublic: true,
+                  maxClaims: true,
                   ownerOrganizationId: true,
                 },
               });
@@ -12367,8 +12392,63 @@ export function createMcpServer(
             }
             const economicsPatch = hasEconomicsPatch(a);
             const economics = resolveTaskEconomics(a, existingTask);
+            let routingData: Record<string, unknown>;
             try {
-              Object.assign(updates, buildTaskRoutingData(a));
+              routingData = buildTaskRoutingData(a);
+              Object.assign(updates, routingData);
+
+              const shouldUpdateClaimSettings =
+                a.claimPolicy !== undefined ||
+                a.maxClaims !== undefined ||
+                a.assigneePersonId !== undefined ||
+                a.assigneeOrganizationId !== undefined;
+              if (shouldUpdateClaimSettings) {
+                const currentClaimPolicy = parseEnumInput(
+                  TaskClaimPolicy,
+                  existingTask.claimPolicy,
+                  "existing claimPolicy",
+                );
+                const claimSettings = resolveTaskClaimSettings({
+                  assigneeOrganizationId:
+                    a.assigneeOrganizationId !== undefined
+                      ? (a.assigneeOrganizationId as string) || null
+                      : (existingTask.assigneeOrganizationId ??
+                        (
+                          existingTask.assigneeOrganization as
+                            | { id?: string }
+                            | null
+                            | undefined
+                        )?.id ??
+                        null),
+                  assigneePersonId:
+                    a.assigneePersonId !== undefined
+                      ? (a.assigneePersonId as string) || null
+                      : (existingTask.assigneePersonId ??
+                        (
+                          existingTask.assigneePerson as
+                            | { id?: string }
+                            | null
+                            | undefined
+                        )?.id ??
+                        null),
+                  currentClaimPolicy,
+                  currentMaxClaims: existingTask.maxClaims as
+                    | number
+                    | null
+                    | undefined,
+                  requestedClaimPolicy: parseEnumInput(
+                    TaskClaimPolicy,
+                    a.claimPolicy,
+                    "claimPolicy",
+                  ),
+                  requestedMaxClaims:
+                    a.maxClaims !== undefined
+                      ? (routingData.maxClaims as number | null)
+                      : undefined,
+                });
+                updates.claimPolicy = claimSettings.claimPolicy;
+                updates.maxClaims = claimSettings.maxClaims;
+              }
             } catch (error) {
               return err(
                 error instanceof Error

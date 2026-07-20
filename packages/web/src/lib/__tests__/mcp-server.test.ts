@@ -3616,17 +3616,29 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
-    it("createTask schema exposes an explicit visibility override", async () => {
+    it("task write schemas expose visibility and claim-policy controls", async () => {
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
       const result = await client.listTools();
       const createTask = result.tools.find(
         (tool) => tool.name === "createTask",
+      );
+      const updateTask = result.tools.find(
+        (tool) => tool.name === "updateTask",
       );
 
       expect(createTask?.inputSchema.properties).toMatchObject({
         visibility: {
           type: "string",
           enum: ["PUBLIC", "PRIVATE"],
+        },
+      });
+      expect(updateTask?.inputSchema.properties).toMatchObject({
+        claimPolicy: {
+          type: "string",
+          enum: ["ASSIGNED_ONLY", "OPEN_SINGLE", "OPEN_MANY"],
+        },
+        maxClaims: {
+          type: ["integer", "null"],
         },
       });
     });
@@ -4551,6 +4563,8 @@ describe("MCP server tool dispatch", () => {
         mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
       ).data;
       expect(data.parentTaskId).toBe("personal-project");
+      expect(data.claimPolicy).toBe(TaskClaimPolicy.OPEN_SINGLE);
+      expect(data.maxClaims).toBeNull();
       expect(data).not.toHaveProperty("assigneePersonId");
       expect(data).not.toHaveProperty("assigneeOrganizationId");
       expect(data).not.toHaveProperty("sourceUrl");
@@ -4558,6 +4572,47 @@ describe("MCP server tool dispatch", () => {
       expect(data.contextJson).toMatchObject({
         sourceUrls: expect.arrayContaining(["https://example.com/source"]),
       });
+    });
+
+    it("keeps OPEN_MANY only when a multi-contributor task requests it explicitly", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          claimPolicy: TaskClaimPolicy.OPEN_MANY,
+          contextJson: {
+            executor_type: "Self",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          parentTaskId: "personal-project",
+          title: "Translate campaign pages",
+          description: "Accept independent translations from several people.",
+          category: "COMMUNICATION",
+          acceptanceCriteria: ["Each accepted claim contains one translation"],
+          impactStatement: "More translations expand campaign reach.",
+          hours: 1,
+          value: 100,
+          p_success: 0.5,
+          claimPolicy: "OPEN_MANY",
+          maxClaims: 3,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
+      expect(data.claimPolicy).toBe(TaskClaimPolicy.OPEN_MANY);
+      expect(data.maxClaims).toBe(3);
     });
 
     it("createTask passes parentTaskId / assigneePersonId when supplied (the spread is conditional, not always-omit)", async () => {
@@ -4620,6 +4675,8 @@ describe("MCP server tool dispatch", () => {
       ).data;
       expect(data.parentTaskId).toBe("parent-1");
       expect(data.assigneePersonId).toBe("person-1");
+      expect(data.claimPolicy).toBe(TaskClaimPolicy.ASSIGNED_ONLY);
+      expect(data.maxClaims).toBeNull();
     });
 
     it("rejects updateTask when a non-admin user targets a public task", async () => {
@@ -4678,6 +4735,168 @@ describe("MCP server tool dispatch", () => {
         expect.objectContaining({
           data: expect.objectContaining({ title: "Updated private task" }),
           where: { id: "own-private-task" },
+        }),
+      );
+    });
+
+    it("lets an owner repair a one-off task that was incorrectly left OPEN_MANY", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "stuck-task",
+            claimPolicy: TaskClaimPolicy.OPEN_MANY,
+            maxClaims: 4,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "stuck-task",
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            maxClaims: null,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "stuck-task",
+          claimPolicy: "OPEN_SINGLE",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            maxClaims: null,
+          }),
+          where: { id: "stuck-task" },
+        }),
+      );
+    });
+
+    it("rejects invalid maxClaims during a claim-policy update", async () => {
+      mocks.getTaskDetailData.mockResolvedValueOnce({
+        task: makeCreatedTask({
+          id: "one-off-task",
+          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+          createdByUserId: "user-1",
+          isPublic: false,
+        }),
+      });
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "one-off-task",
+          claimPolicy: "OPEN_MANY",
+          maxClaims: 0,
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe(
+        "maxClaims must be at least 1 for OPEN_MANY tasks.",
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
+    it("keeps relation-shaped assigned tasks assigned during claim-policy updates", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: { id: "person-1" },
+            assigneePersonId: undefined,
+            claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: { id: "person-1" },
+            assigneePersonId: undefined,
+            claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "assigned-task",
+          claimPolicy: "OPEN_MANY",
+          maxClaims: 4,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+            maxClaims: null,
+          }),
+          where: { id: "assigned-task" },
+        }),
+      );
+    });
+
+    it("makes a task claimable when its assignee is cleared", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: { id: "person-1" },
+            assigneePersonId: "person-1",
+            claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: null,
+            assigneePersonId: null,
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "assigned-task",
+          assigneePersonId: "",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            assigneePersonId: null,
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            maxClaims: null,
+          }),
+          where: { id: "assigned-task" },
         }),
       );
     });
