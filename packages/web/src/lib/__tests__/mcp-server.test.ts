@@ -4828,6 +4828,52 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("makes a task claimable when its assignee is cleared", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: { id: "person-1" },
+            assigneePersonId: "person-1",
+            claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "assigned-task",
+            assigneePerson: null,
+            assigneePersonId: null,
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            createdByUserId: "user-1",
+            isPublic: false,
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "assigned-task",
+          assigneePersonId: "",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            assigneePersonId: null,
+            claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+            maxClaims: null,
+          }),
+          where: { id: "assigned-task" },
+        }),
+      );
+    });
+
     it("does not let platform admins update another user's private task", async () => {
       mocks.getTaskDetailData.mockResolvedValue(null);
       mocks.taskFindFirst.mockResolvedValue(null);

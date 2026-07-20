@@ -18,10 +18,14 @@ export function resolveTaskClaimSettings({
   requestedMaxClaims,
 }: ResolveTaskClaimSettingsInput) {
   const isAssigned = Boolean(assigneeOrganizationId || assigneePersonId);
+  const unassignedCurrentPolicy =
+    currentClaimPolicy === TaskClaimPolicy.ASSIGNED_ONLY
+      ? null
+      : currentClaimPolicy;
   const claimPolicy = isAssigned
     ? TaskClaimPolicy.ASSIGNED_ONLY
     : (requestedClaimPolicy ??
-      currentClaimPolicy ??
+      unassignedCurrentPolicy ??
       TaskClaimPolicy.OPEN_SINGLE);
   const maxClaims =
     claimPolicy === TaskClaimPolicy.OPEN_MANY
