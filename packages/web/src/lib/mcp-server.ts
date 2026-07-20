@@ -12412,11 +12412,25 @@ export function createMcpServer(
                   assigneeOrganizationId:
                     a.assigneeOrganizationId !== undefined
                       ? (a.assigneeOrganizationId as string) || null
-                      : existingTask.assigneeOrganizationId,
+                      : (existingTask.assigneeOrganizationId ??
+                        (
+                          existingTask.assigneeOrganization as
+                            | { id?: string }
+                            | null
+                            | undefined
+                        )?.id ??
+                        null),
                   assigneePersonId:
                     a.assigneePersonId !== undefined
                       ? (a.assigneePersonId as string) || null
-                      : existingTask.assigneePersonId,
+                      : (existingTask.assigneePersonId ??
+                        (
+                          existingTask.assigneePerson as
+                            | { id?: string }
+                            | null
+                            | undefined
+                        )?.id ??
+                        null),
                   currentClaimPolicy,
                   currentMaxClaims: existingTask.maxClaims as
                     | number
