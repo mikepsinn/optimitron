@@ -61,6 +61,10 @@ authorization boundary, or preserve the evidence needed to audit it.
 | GOVERNMENT-PLAN   | As a citizen or government, I want preferences, evidence, policies, and budgets converted into ranked programs so that public resources maximize welfare rather than political intuition.               | Wishocracy, OPG, or OBG outputs can become sourced task bundles that compete under the same EV rules as other programs.                                                                                                                                |
 | CAMPAIGN-ACT      | As a human or organization, I want to vote, recruit others, endorse, register a plaintiff, or remind a leader so that the current highest-EV campaign gains measurable support.                         | Each action has a direct completion path and its referral, endorsement, case, or reminder outcome is recorded.                                                                                                                                         |
 | OPERATOR-INGEST   | As a user leaving other productivity tools, I want existing tasks and calendar commitments deduplicated into Optimitron so that I can use one canonical ranked system.                                  | Explicitly selected imports use stable private source identities and atomic review/apply; every grounded action becomes active, duplicates gain source links, meetings constrain capacity, and raw private transcripts are not retained.                                                                               |
+| KNOWLEDGE-REUSE   | As a person or organization owner, I want verified information about us reused across forms and tasks so that we answer once without losing context, ownership, or control.                              | Reusable questions are tasks; approved answers are versioned artifacts or assertions with provenance, sensitivity, validity, approval, and supersession; every application pins the exact version it used.                                               |
+| COLLECTIVE-VERIFY | As a decision-maker, I want evidence evaluated by the right authorities so that popularity, confidence, and truth are not confused.                                                                       | Helpful comment votes affect discussion ordering only; operational acceptance depends on authorization, provenance, freshness, corroboration, conflicts, and task-specific verification.                                                                |
+| SYSTEM-IMPROVE    | As an operator, I want outcomes to generate ranked, testable improvements so that Optimitron becomes more useful rather than merely accumulating plans.                                                    | Telemetry produces a proposed improvement, a ranked task, execution evidence, a verified outcome, and recalibration under one auditable loop.                                                                                                           |
+| BUSINESS-SUSTAIN  | As an operator, I want bounded paid workflows to fund the optimization machine so that it can keep operating without compromising mission ranking or nonprofit funds.                                     | Verified-work pilots demonstrate gross margin sufficient to cover EOS operating costs, while commercial revenue and nonprofit campaign donations remain legally and operationally separate.                                                             |
 
 ---
 
@@ -345,6 +349,66 @@ parameter constants from
 `packages/data/src/parameters/parameters-calculations-citations.ts` via
 `<ParameterValue>`; docs cite constants by name. Numbers without provenance
 do not ship.
+
+### 9.5 Reusable person and organization knowledge (OPT-KNOW-01)
+
+Reusable knowledge belongs to a stable `Person`, `User`, or `Organization`,
+not to one application or program. The target contract is:
+
+- A question, missing-fact request, or requested review is a `Task`, so it can
+  block one or more application or execution tasks and receive comments,
+  assignment, deadlines, and verification.
+- An approved answer is a versioned artifact or normalized assertion linked
+  to its subject, source provenance, sensitivity, validity window, approving
+  authority, and any superseded version. The pilot should use existing task
+  and artifact primitives before adding a new knowledge model.
+- One answer may serve many tasks. Each use records the exact question,
+  answer version, application context, actor, approval, destination, and
+  resulting receipt or outcome; applications do not copy the answer into a
+  program-owned canonical row.
+- Collections may provide bounded import, review, and table views, but they
+  are not a parallel truth store. A `program` column is not ownership or
+  lineage; task and artifact relations carry reuse.
+- Agents retrieve only knowledge the current actor may access. Ambiguous,
+  stale, conflicting, or missing answers create small human tasks instead of
+  confident guesses.
+
+### 9.6 Authority-aware collective verification (OPT-EPI-01)
+
+Optimitron separates attention from truth. Likes or votes on a `TaskComment`
+may rank helpfulness, relevance, or review priority; they never make the
+comment true. Operational acceptance combines the subject owner's authority,
+the verifier's authority for the claim type, primary-source provenance,
+freshness, independent corroboration, disclosed conflicts, and the consuming
+task's acceptance criteria. Verification and supersession are append-only
+evidence. Private owner-authorized verification must work before public
+reputation or consensus weighting is designed.
+
+### 9.7 Auditable self-improvement loop (OPT-LOOP-01)
+
+The product improvement loop is:
+
+```text
+telemetry -> proposed improvement -> ranked task -> execution
+-> verified outcome -> recalibration
+```
+
+This is the general form of campaign, personal, organization, and platform
+learning. A proposal cannot approve its own external action or outcome. The
+unused campaign-specific reasoning subsystem should be removed rather than
+preserved as a second planning or truth system; future reasoning products
+must emit evidence and tasks into this loop.
+
+### 9.8 Financial sustainability (OPT-BIZ-01)
+
+Optimitron may sell bounded organization workflows and verified-work pilots
+whose measured gross margin can cover Earth Optimization Services operating
+costs. Customers may buy execution capacity and workflow outcomes, but not
+truth, verification results, public queue priority, or mission ranking.
+Commercial EOS revenue, contracts, expenses, and liabilities remain legally
+and operationally separate from Accelerated Medicine Foundation and its DBA
+campaign donations. A pilot advances only with a named payer, deliverable,
+cost, receipt, verification method, and margin calculation.
 
 ---
 

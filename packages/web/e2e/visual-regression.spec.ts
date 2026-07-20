@@ -66,6 +66,19 @@ const VISUAL_REVIEW_CSS = `
   [data-nav-tooltip] {
     display: none !important;
   }
+
+  /* Person/leader avatar photos load non-deterministically between runs — a
+     real photo in one run, the initials fallback in another — so they were the
+     dominant residual pixel-diff noise (e.g. the treaty signer list). The box
+     is fixed-size, so flatten every avatar to a solid placeholder: identical
+     run-to-run, no layout shift. data-visual-avatar is set on the RetroUI
+     Avatar root. */
+  [data-visual-avatar] {
+    background-color: var(--muted, #d4d4d8) !important;
+  }
+  [data-visual-avatar] > * {
+    visibility: hidden !important;
+  }
 `;
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
