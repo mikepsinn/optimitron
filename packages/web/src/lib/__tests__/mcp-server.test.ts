@@ -4782,6 +4782,33 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("rejects invalid maxClaims during a claim-policy update", async () => {
+      mocks.getTaskDetailData.mockResolvedValueOnce({
+        task: makeCreatedTask({
+          id: "one-off-task",
+          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+          createdByUserId: "user-1",
+          isPublic: false,
+        }),
+      });
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "one-off-task",
+          claimPolicy: "OPEN_MANY",
+          maxClaims: 0,
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).error).toBe(
+        "maxClaims must be at least 1 for OPEN_MANY tasks.",
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
     it("keeps relation-shaped assigned tasks assigned during claim-policy updates", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({
