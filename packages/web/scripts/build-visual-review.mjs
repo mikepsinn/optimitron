@@ -15,6 +15,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { extractHunksAndAlignment } from "./visual-review-hunks.mjs";
+import { isSignificantDimensionChange } from "./visual-review-diff.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +60,18 @@ const diffPixelRatioThreshold = parseNumberEnv(
   0.002,
 );
 const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
+// Full-page height deltas below this are treated as rendering drift, not a
+// change, so a sub-pixel reflow in shared chrome stops force-flagging every
+// route with "0% overlap". See isSignificantDimensionChange in
+// visual-review-diff.mjs. Width stays exact (fixed viewport).
+const dimensionTolerancePx = parseNumberEnv(
+  "VISUAL_REVIEW_DIMENSION_TOLERANCE_PX",
+  12,
+);
+const dimensionToleranceRatio = parseNumberEnv(
+  "VISUAL_REVIEW_DIMENSION_TOLERANCE_RATIO",
+  0.004,
+);
 const allowIncompleteReview =
   process.env.VISUAL_REVIEW_ALLOW_INCOMPLETE === "1";
 const reviewCommitSha =
@@ -484,8 +497,10 @@ async function comparePair(pair) {
     const { PNG, pixelmatch } = await loadImageDiffDependencies();
     const before = PNG.sync.read(readFileSync(pair.before.assetPath));
     const after = PNG.sync.read(readFileSync(pair.after.assetPath));
-    const dimensionChanged =
-      before.width !== after.width || before.height !== after.height;
+    const dimensionChanged = isSignificantDimensionChange(before, after, {
+      tolerancePx: dimensionTolerancePx,
+      toleranceRatio: dimensionToleranceRatio,
+    });
     const compareWidth = Math.min(before.width, after.width);
     const compareHeight = Math.min(before.height, after.height);
     const beforeData = getComparableImageData(before, compareWidth, compareHeight);
