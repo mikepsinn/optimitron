@@ -11,7 +11,8 @@ the same thing, the one listed here owns it — fix the other.
 | [PRD.md](./PRD.md) | Product spec: the target-state vision for the four-layer optimization machine and the Daily Companion Loop. Never asserts current status. |
 | [FEATURES.md](./FEATURES.md) | Feature registry: what exists today, with evidence and acceptance criteria. The ONLY doc allowed to assert maturity status. |
 | [ROADMAP.md](./ROADMAP.md) | Sequencing: Now/Next/Later/Parked/Won't + the code-cleanup backlog (Appendix A). |
-| [../TODO.md](../TODO.md) | Tactical working queue: in-flight, next-up, recently-landed, standing policy. |
+| [Production development queue](https://optimitron.com/tasks/cmrh79s7h000604jtqfckws4t) | Operational source of truth: runtime task status, dependencies, decisions, and linked implementation evidence. Query through the production MCP server. |
+| [../TODO.md](../TODO.md) | Stable pointer to the production development queue and its MCP lookup commands. Contains no checklist or status. |
 | [../AGENTS.md](../AGENTS.md) | Canonical agent rules for all harnesses, incl. the ONE campaign priority list. |
 | [../CLAUDE.md](../CLAUDE.md) | Imports AGENTS.md and adds only Claude-specific tools and workflow. |
 | [../README.md](../README.md) | Public front door (Wishonia voice): pitch, quick start, package table, papers. |
@@ -77,4 +78,7 @@ for id in $(grep -o "OPT-[A-Z]*-[0-9]*" docs/ROADMAP.md | sort -u); do grep -q "
 
 # single ownership of the campaign priority list (AGENTS.md only)
 grep -rln "Increase treaty vote [c]onversion" *.md docs/*.md | grep -v archive
+
+# retired Markdown queue conventions — zero hits outside docs/archive
+grep -rinE "todo-[t]ouched|todo-[s]kipped|TODO\.md.*tactical|tactical.*TODO\.md" --include="*.md" . --exclude-dir=node_modules | grep -v docs/archive
 ```

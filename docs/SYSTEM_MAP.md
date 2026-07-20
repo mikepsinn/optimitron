@@ -12,6 +12,9 @@ Use this page to orient before loading package-level details. It describes owner
 
 For private execution work, also read `docs/plans/phased-approach-optimitron.md`, `docs/TASK_MODEL.md`, and `docs/MCP_SERVER.md`.
 
+For active development work, inspect the production `optimitron:dev` task
+tree through the production MCP server before creating or changing a task.
+
 ## Product Boundary
 
 Optimitron is durable optimization and execution state. It owns:
@@ -52,6 +55,24 @@ reviewed source -> ACTIVE task -> execution attempt -> artifact submission
 ```
 
 `DRAFT` is for public/governance proposals. Reviewed private actions become private `ACTIVE` tasks. Negative-EV actions remain stored but are not recommended unless they are genuine obligations or safety guardrails.
+
+## Planning Source Of Truth
+
+| Surface | Owns |
+|---|---|
+| `docs/PRD.md` | Target-state product contracts and acceptance stories. |
+| `docs/FEATURES.md` | Current capability maturity and implementation evidence. |
+| `docs/ROADMAP.md` | Strategic sequence, gates, and deliberately parked work. |
+| Production [`optimitron:dev`](https://optimitron.com/tasks/cmrh79s7h000604jtqfckws4t) Task rows | Operational work, status, assignees, estimates, dependencies, and human decisions. |
+| Task comments, documents, artifacts, commits, pull requests, and issues | Dated context, plans, execution evidence, review, and receipts linked to the owning task. |
+
+Managed synchronization retains stable system roots and fixtures that must be
+reproducible from code. Ordinary development children are runtime-created;
+their status, comments, estimates, and edges are database-owned and must not
+be reset by synchronization. Search by stable task key and title before
+creating work, merge duplicates into the best existing task, and represent
+dependencies with `TaskEdge`. Markdown files do not duplicate the tactical
+queue.
 
 ## Runtime Ownership
 
@@ -97,13 +118,15 @@ External actions use an immutable payload hash. Agents may propose and execute a
 
 Before changing behavior:
 
-1. Find the canonical model/service and relevant tests.
-2. Confirm feature maturity in `FEATURES.md`.
-3. Check authorization before query, count, pagination, and child lookup.
-4. Keep task and source provenance intact.
-5. Add tests at the real policy or state-machine boundary.
-6. Update `FEATURES.md` only after behavior ships; update the roadmap when sequencing changes.
-7. For UI changes, follow the screenshot review gate in `AGENTS.md`.
+1. Find or create the canonical production development task and search for duplicates.
+2. Find the canonical model/service and relevant tests.
+3. Confirm feature maturity in `FEATURES.md`.
+4. Check authorization before query, count, pagination, and child lookup.
+5. Keep task and source provenance intact.
+6. Add tests at the real policy or state-machine boundary.
+7. Link the implementation and evidence from the production task.
+8. Update `FEATURES.md` only after behavior ships; update the roadmap when sequencing changes.
+9. For UI changes, follow the screenshot review gate in `AGENTS.md`.
 
 ## Canonical Documents
 
@@ -112,6 +135,7 @@ Before changing behavior:
 | What is the product? | `docs/PRD.md` |
 | What ships? | `docs/FEATURES.md` |
 | What happens next? | `docs/ROADMAP.md` |
+| What operational work is active now? | Production `optimitron:dev` task tree through the MCP server |
 | How is private execution being built? | `docs/plans/phased-approach-optimitron.md` |
 | What is the task lifecycle? | `docs/TASK_MODEL.md` |
 | How do agents use the task server? | `docs/MCP_SERVER.md` |

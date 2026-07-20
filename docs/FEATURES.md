@@ -282,7 +282,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Summary:** Structured accountability cases: parties, claims, harms, evidence, remedies, jury votes.
 - **Evidence:** `upsertCourtCase`, `addCourtCaseClaim`, `getCourtCase`, `openCourtCaseJuryVote` in packages/web/src/lib/mcp-server.ts; packages/web/src/app/court/page.tsx
 - **Acceptance:** A case built via MCP renders complete on /court with its parties, claims, and evidence.
-- **Roadmap:** now — campaign track (operational-surface rework queued in TODO.md)
+- **Roadmap:** now — campaign track (operational-surface rework is production task `optimitron:dev:court-operational-surface`)
 
 ### OPT-EARTH-05 — Leader/signer reminders
 
@@ -387,6 +387,44 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Evidence:** packages/db/prisma/schema.prisma (`Document`, `DocumentRevision`, `Collection*`, `ContentAccessGrant`, `ContentAttachment`); packages/web/src/lib/documents.server.ts; packages/web/src/lib/collections.server.ts; packages/web/src/components/collections/collection-records-grid.tsx; packages/web/src/lib/content-access.server.ts; packages/web/src/lib/content-search.server.ts; REST/OpenAPI/MCP tests
 - **Acceptance:** A user can create and share a document or collection, edit and query table records without conflicts or authorization leaks, and retrieve a private file only through an authorized short-lived URL.
 - **Roadmap:** shipped foundation — expand only for migrated workflows
+
+## Knowledge, verification, improvement, and sustainability
+
+### OPT-KNOW-01 — Reusable entity knowledge
+
+- **Layer:** personal / organization
+- **Status:** planned
+- **Summary:** Reusable questions are tasks; approved person and organization answers become versioned, provenance-bearing artifacts or assertions that many consuming tasks can use without copying ownership into an application or collection row.
+- **Evidence:** target contract in PRD §9.5; production task `optimitron:dev:entity-knowledge-profiles`; existing Task, SourceArtifact, DocumentRevision, execution-artifact, and verification foundations; no canonical knowledge contract ships yet
+- **Acceptance:** A longevity-fellowship application reuses an owner-approved answer, records the exact version and destination used, creates a small blocking human task for an unknown answer, and later reuses the same answer in another application without duplication.
+- **Roadmap:** next — pilot with existing task and artifact primitives before considering schema
+
+### OPT-EPI-01 — Authority-aware collective verification
+
+- **Layer:** cross-cutting
+- **Status:** planned
+- **Summary:** Comment reactions may rank helpfulness or attention, while operational truth and acceptance remain a separate authority-, provenance-, freshness-, conflict-, and evidence-aware verification decision.
+- **Evidence:** target contract in PRD §9.6; TaskComment and typed TaskVerification foundations; production task `optimitron:dev:product-constitution:approve-schema-work`; no public reputation or consensus weighting ships
+- **Acceptance:** A popular but unauthorized or stale comment cannot verify an answer or task; an authorized verifier can accept or supersede a sourced answer with an auditable reason.
+- **Roadmap:** next — private owner-authorized verification first; public consensus later
+
+### OPT-LOOP-01 — Auditable product self-improvement loop
+
+- **Layer:** cross-cutting
+- **Status:** planned
+- **Summary:** Telemetry produces a proposed improvement, a ranked task, execution evidence, a verified outcome, and recalibration through the ordinary task lifecycle instead of a campaign-specific parallel reasoning system.
+- **Evidence:** target contract in PRD §9.7; task, impact, attempt, artifact, and verification foundations; production task `optimitron:dev:remove-reasoning-subsystem`; the end-to-end recalibration loop does not ship
+- **Acceptance:** A measured workflow failure creates a sourced improvement task, the implementation records an artifact and outcome, and the verified result updates the relevant estimate without self-approval.
+- **Roadmap:** next — remove the unused reasoning subsystem, then close one measured loop
+
+### OPT-BIZ-01 — Financially sustainable verified-work pilots
+
+- **Layer:** organization
+- **Status:** planned
+- **Summary:** Bounded paid organization workflows fund EOS operations through measured verified-work gross margin without selling truth, public priority, or nonprofit campaign influence.
+- **Evidence:** target contract in PRD §9.8; existing task listings, compensation, applications, artifacts, and verification foundations; no qualifying paid pilot or operating-margin proof ships
+- **Acceptance:** A named customer pays for a bounded workflow whose costs, receipts, verified deliverable, and gross margin are recorded, with commercial funds kept separate from Accelerated Medicine Foundation campaign donations.
+- **Roadmap:** later — one design-partner workflow, then a small paid pilot
 
 ### OPT-INTG-02 — Google Calendar import
 

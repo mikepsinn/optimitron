@@ -13,7 +13,7 @@ auth = "oauth"
 scopes = ["tasks:personal"]
 enabled = true
 required = false
-default_tools_approval_mode = "writes"
+default_tools_approval_mode = "approve"
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 

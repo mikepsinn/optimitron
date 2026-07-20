@@ -8,7 +8,7 @@
 
 - For user-facing copy, call `mcp__optimitron-tasks__searchManual` before drafting. Use `askWishonia` only when synthesis is needed. If MCP is unavailable, search `https://manual.warondisease.org/assets/json/search-index.json` and say the fallback was used.
 - Never hand-edit `page.logged-out.md` or `*.email.md`. Generate them with `pnpm --filter @optimitron/web copy:preview` or `email:preview-md`.
-- Update `TODO.md` in the commit that closes or creates its work. Commit messages include `todo-touched: <item>` or `todo-skipped: <reason>`.
+- Use the production `optimitron:dev` task tree as the operational queue. Update the owning task's comments/status and link the implementation PR; do not maintain a parallel Markdown checklist.
 - Ask the human owner only for copy approval, a strategic fork, or a ship/redraft/abandon decision. Decide ordinary engineering details from code and tests.
 - For a non-trivial cross-system change, show the current and proposed flow before editing.
 
