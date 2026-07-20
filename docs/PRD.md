@@ -395,9 +395,9 @@ telemetry -> proposed improvement -> ranked task -> execution
 
 This is the general form of campaign, personal, organization, and platform
 learning. A proposal cannot approve its own external action or outcome. The
-unused campaign-specific reasoning subsystem should be removed rather than
-preserved as a second planning or truth system; future reasoning products
-must emit evidence and tasks into this loop.
+former campaign-specific reasoning subsystem was removed rather than preserved
+as a second planning or truth system. Future reasoning products must emit
+evidence and tasks into this loop.
 
 ### 9.8 Financial sustainability (OPT-BIZ-01)
 

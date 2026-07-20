@@ -1,5 +1,5 @@
 /**
- * Lite-mode route guards: demo/embed surfaces must not mount the full treaty
+ * Lite-mode route guard: the demo surface must not mount the full treaty
  * post-vote referral send loop.
  *
  * Run:
@@ -37,21 +37,6 @@ test.describe("lite-mode route guards", () => {
     await expect(page.locator('[data-testid^="slide-"]').first()).toBeVisible({
       timeout: 60_000,
     });
-    await expectNoFullPostVoteSendLoop(page);
-  });
-
-  test("/reasoning/embed denies missing org tokens without the full post-vote send loop", async ({
-    page,
-  }) => {
-    const response = await page.goto("/reasoning/embed", {
-      waitUntil: "domcontentloaded",
-    });
-    if ((response?.status() ?? 0) >= 500) {
-      test.skip(true, "Embed route dependencies not available");
-      return;
-    }
-
-    await expect(page.getByText(/^Embed denied:/)).toBeVisible();
     await expectNoFullPostVoteSendLoop(page);
   });
 });

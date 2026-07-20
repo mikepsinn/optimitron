@@ -413,9 +413,9 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Layer:** cross-cutting
 - **Status:** planned
 - **Summary:** Telemetry produces a proposed improvement, a ranked task, execution evidence, a verified outcome, and recalibration through the ordinary task lifecycle instead of a campaign-specific parallel reasoning system.
-- **Evidence:** target contract in PRD §9.7; task, impact, attempt, artifact, and verification foundations; production task `optimitron:dev:remove-reasoning-subsystem`; the end-to-end recalibration loop does not ship
+- **Evidence:** target contract in PRD §9.7; task, impact, attempt, artifact, and verification foundations; the legacy campaign-specific reasoning subsystem and its schema were removed; the end-to-end recalibration loop does not ship
 - **Acceptance:** A measured workflow failure creates a sourced improvement task, the implementation records an artifact and outcome, and the verified result updates the relevant estimate without self-approval.
-- **Roadmap:** next — remove the unused reasoning subsystem, then close one measured loop
+- **Roadmap:** next — close one measured loop through the ordinary task lifecycle
 
 ### OPT-BIZ-01 — Financially sustainable verified-work pilots
 

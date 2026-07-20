@@ -293,7 +293,6 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(treatySite, ROUTES.dashboard)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.tasks)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.signatories)).toBe(true);
-    expect(isSiteRouteAllowed(treatySite, ROUTES.reasoning)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.scoreboard)).toBe(true);
     expect(isSiteRouteAllowed(treatySite, ROUTES.search)).toBe(true);
   });
@@ -308,7 +307,6 @@ describe("site variant registry", () => {
     expect(isSiteRouteAllowed(warSite, ROUTES.join)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.privacy)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.terms)).toBe(true);
-    expect(isSiteRouteAllowed(warSite, ROUTES.reasoning)).toBe(true);
     expect(isSiteRouteAllowed(warSite, ROUTES.search)).toBe(true);
   });
 

@@ -24,7 +24,6 @@ const STORAGE_KEYS = {
   declarationSigned: "declaration_signed",
   pendingDeclarationVote: "pending_declaration_vote",
   pendingCourtOfHumanityVote: "pending_court_of_humanity_vote",
-  reasoningState: "reasoning_state",
   treatyFlowVariant: "treaty_flow_variant",
 } as const;
 
@@ -387,55 +386,4 @@ export const storage = {
     setStringItem(STORAGE_KEYS.treatyFlowVariant, variant),
   clearTreatyFlowVariant: () =>
     removeStorageItem(STORAGE_KEYS.treatyFlowVariant),
-
-  getReasoningState: () =>
-    getStorageItem<ReasoningPersistedState>(STORAGE_KEYS.reasoningState),
-  setReasoningState: (data: ReasoningPersistedState) =>
-    setStorageItem(STORAGE_KEYS.reasoningState, data),
-  clearReasoningState: () => removeStorageItem(STORAGE_KEYS.reasoningState),
-};
-
-/**
- * Persisted shape for /reasoning flow state. Mirrors URL params where
- * resumable; URL wins on conflict.
- */
-export type ReasoningPersistedState = {
-  sessionId: string;
-  currentNodeId: string;
-  chainDepth: "90s" | "deep";
-  answers: Record<string, "yes" | "no">;
-  claimProbabilities: Record<string, number>;
-  conversionP: number;
-  firstSendConfirmed: boolean;
-  sendCount: number;
-  startedAt: string;
-  policyDecisionId: string;
-  variantSetId: string;
-  variantArmIds: Record<string, string>;
-  organizationId: string | null;
-  organizationResolved: boolean;
-  surface: "hosted" | "embed" | "direct-share" | "system-generated-share";
-  localeKey: string;
-  hostKey: string;
-  device: string | null;
-  returningVsFirst: "returning" | "first";
-  relationshipBucket:
-    | "family-partner"
-    | "close-friend"
-    | "professional"
-    | "weak-tie"
-    | null;
-  referralSource: string | null;
-  referredByUserId: string | null;
-  shareAttemptId: string | null;
-  isControlHoldout: boolean;
-  holdoutResolutionLevel:
-    | "GLOBAL"
-    | "LOCALE"
-    | "HOST"
-    | "ORG"
-    | "BUCKET"
-    | "SEGMENT"
-    | null;
-  audienceTag: string | null;
 };

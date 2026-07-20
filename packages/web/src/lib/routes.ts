@@ -166,8 +166,6 @@ export const ROUTES = {
   fund: "/fund",
   donate: "/donate",
   signIn: "/auth/signin",
-  // Autonomous persuasion optimizer
-  reasoning: "/reasoning",
 } as const;
 
 /** Where users land after signing in (unless a specific callbackUrl overrides it) */
