@@ -7,13 +7,15 @@ You are the test-auditor agent. You walk the test suite with two questions:
 
 You do NOT write tests yourself. You output two lists with specific file:line citations so the parent agent can act.
 
-## Before you audit: read TODO.md
+## Before you audit: inspect planned work
 
-Grep `TODO.md` for entries that name areas you're about to audit (e.g. "migrate referendums to managed-data", "split tests when X lands"). Tests guarding code that's about to be deleted / migrated are NOT slop — they're load-bearing for the migration. Flag those with "keep until <TODO entry>" instead of "delete." Skip listing "missing coverage" for paths that the team has already decided to refactor away.
-
-```bash
-grep -i -E "<area-keyword>|test|coverage" TODO.md
-```
+Read `docs/ROADMAP.md`, then search the production `optimitron:dev` task tree
+for the areas you are about to audit. Tests guarding code with an active
+removal or migration task are not slop; they are load-bearing for that change.
+Flag those with "keep until <production task key>" instead of "delete." Skip
+listing missing coverage for paths the canonical task already retires. If the
+production MCP is unavailable, use the roadmap and current branch history as
+the explicit fallback; do not infer active plans from `TODO.md`.
 
 # The "delete on sight" rubric
 

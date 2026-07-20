@@ -1,8 +1,11 @@
 # Product Roadmap
 
 Sequencing only. What exists is [FEATURES.md](./FEATURES.md) (cited here by
-`OPT-*` ID); what we're building toward is [PRD.md](./PRD.md); the tactical
-queue is [../TODO.md](../TODO.md).
+`OPT-*` ID); what we're building toward is [PRD.md](./PRD.md). The operational
+development queue is the production [`optimitron:dev` task
+tree](https://optimitron.com/tasks/cmrh79s7h000604jtqfckws4t), queried and
+updated through the production MCP server. Pull requests, issues, plans, and
+documents are linked implementation evidence, not parallel queues.
 
 ## North Star
 
@@ -29,6 +32,9 @@ as a parallel Now track, dogfooded by the operator as user #1.
   leader reminders, discoverability/trust — or a Daily Companion Loop stage.
 - One task model. Personal, org, treaty-invite, and agent-proposed work are
   all `Task` rows with scoped ownership and visibility (OPT-TASK-01).
+- Production Task rows own operational development status, dependencies, and
+  human decisions. Managed synchronization owns only stable system roots and
+  fixtures; it must not overwrite ordinary development children.
 - Black-and-white treaty style stays the default on public campaign surfaces.
 - Roadmap lines cite feature IDs so status claims live in one place.
 
@@ -74,7 +80,30 @@ Build in this order:
    (OPT-HEALTH-02), interleave recurring health tasks (OPT-HEALTH-06,
    OPT-EV-04), then report change-from-baseline outcomes (OPT-HEALTH-07).
 
+### Product constitution and schema gate
+
+Complete and approve the bounded
+[`optimitron:dev:product-constitution`](https://optimitron.com/tasks/cmrshxxqj000204jm3efmvf4o)
+pass before new knowledge, verification, reasoning, or agent schema work.
+This pass defines OPT-KNOW-01, OPT-EPI-01, OPT-LOOP-01, and OPT-BIZ-01,
+migrates the tactical queue into production tasks, and changes no product
+runtime. It does not block unrelated treaty-conversion work.
+
 ## Next
+
+For reusable knowledge and self-improvement, let the production queue rank
+work while preserving this dependency order:
+
+1. Delete the unused campaign reasoning subsystem in an isolated PR and
+   migration (OPT-LOOP-01).
+2. Pilot reusable question tasks and verified answer artifacts with the
+   longevity-fellowship application (OPT-KNOW-01, OPT-EPI-01).
+3. Add generic artifact lineage only if the pilot demonstrates a need for
+   exact answer-version-to-submission relations (OPT-KNOW-01).
+4. Add MCP blocker surfacing and notifications after the underlying human
+   review workflow is reliable (OPT-TASK-02, OPT-KNOW-01).
+5. Design public reputation or consensus weighting only after private
+   owner-authorized verification works (OPT-EPI-01).
 
 - Automated parent-task matching and reviewed decomposition into child tasks
   (OPT-TASK-06, OPT-TASK-07) after the private bundle path proves the contract.
@@ -111,7 +140,10 @@ Build in this order:
   measurable momentum.
 - Design-partner access to one bounded workflow, then a small paid
   verified-work pilot using existing listings, compensation, and application
-  fields. No company-wide migration or open marketplace.
+  fields (OPT-BIZ-01). Record verified deliverables, receipts, costs, and gross
+  margin; keep EOS commercial activity legally and operationally separate
+  from nonprofit campaign donations. No company-wide migration or open
+  marketplace.
 
 ## Parked
 
@@ -131,7 +163,8 @@ Do not pick these up unless they directly unblock a Now track:
 - Board/kanban parody, timeline/Gantt views, burndown/sprint parody chrome,
   generic gamified civics surfaces. The joke isn't worth the surface area.
 - A second task model, a separate personal-tracking app, or a bespoke
-  outreach model — covered by standing policy in TODO.md.
+  outreach model. The canonical Task graph, artifacts, and verification
+  lifecycle cover those workflows.
 - A custom chat client, coding agent, connector suite, model gateway, terminal,
   general browser controller, ambient private-message scraper, or credential
   sharing/resale system.
@@ -140,7 +173,9 @@ Do not pick these up unless they directly unblock a Now track:
 
 Shipped capability claims live exclusively in [FEATURES.md](./FEATURES.md)
 (the former "Done / Landed Foundations" list is superseded by `implemented`
-entries there). GitHub issues/projects mirror Now/Next/Later.
+entries there). Production Task rows under `optimitron:dev` are the canonical
+operational queue; GitHub pull requests and issues link implementation and
+review evidence back to those tasks.
 
 ---
 
