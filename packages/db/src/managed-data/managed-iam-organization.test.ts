@@ -3,6 +3,7 @@ import {
   OrgStatus,
   OrgType,
   OrganizationReferendumPositionStatus,
+  OrganizationNameKind,
   PersonLifeStatus,
   TaskClaimPolicy,
   TaskStatus,
@@ -10,7 +11,11 @@ import {
   type PrismaClient,
 } from "../generated/prisma/client.js";
 import {
+  AMF_LEGAL_NAME,
+  IC2EWD_ORGANIZATION_NAME,
   IAM_ORGANIZATION_NAME,
+  IAM_ORGANIZATION_NAMES,
+  IAM_ORGANIZATION_NAMES_VERIFIED_AT_ISO,
   IAM_ORGANIZATION_SLUG,
   IAM_ORGANIZATION_SOURCE_REF,
   MIKE_SINN_EMAIL,
@@ -65,8 +70,8 @@ class FakeIamClient {
   organizations: Row[] = [
     {
       id: "org-iam",
-      name: IAM_ORGANIZATION_NAME,
-      slug: IAM_ORGANIZATION_SLUG,
+      name: AMF_LEGAL_NAME,
+      slug: "accelerated-medicine-foundation",
       sourceRef: null,
       status: OrgStatus.PENDING,
     },
@@ -89,6 +94,8 @@ class FakeIamClient {
   ];
 
   organizationReferendumPositions: Row[] = [];
+
+  organizationNames: Row[] = [];
 
   tasks: Row[] = [
     {
@@ -128,16 +135,25 @@ class FakeIamClient {
   };
 
   organization = {
-    findFirst: async () =>
+    findUnique: async (args: {
+      where: { slug?: string; sourceRef?: string };
+    }) =>
       this.organizations.find(
         (row) =>
-          row["sourceRef"] === IAM_ORGANIZATION_SOURCE_REF ||
-          row["slug"] === IAM_ORGANIZATION_SLUG ||
-          String(row["name"]).toLowerCase() ===
-            IAM_ORGANIZATION_NAME.toLowerCase(),
+          (args.where.sourceRef !== undefined &&
+            row["sourceRef"] === args.where.sourceRef) ||
+          (args.where.slug !== undefined && row["slug"] === args.where.slug),
+      ) ?? null,
+    findFirst: async () =>
+      this.organizations.find((row) =>
+        [AMF_LEGAL_NAME, IAM_ORGANIZATION_NAME, IC2EWD_ORGANIZATION_NAME].some(
+          (name) => String(row["name"]).toLowerCase() === name.toLowerCase(),
+        ),
       ) ?? null,
     update: async (args: { data: Row; where: { id: string } }) => {
-      const row = this.organizations.find((item) => item["id"] === args.where.id);
+      const row = this.organizations.find(
+        (item) => item["id"] === args.where.id,
+      );
       if (!row) throw new Error("missing organization");
       Object.assign(row, args.data);
       return row;
@@ -153,7 +169,9 @@ class FakeIamClient {
     upsert: async (args: {
       create: Row;
       update: Row;
-      where: { organizationId_userId: { organizationId: string; userId: string } };
+      where: {
+        organizationId_userId: { organizationId: string; userId: string };
+      };
     }) =>
       upsertBy(
         this.organizationMembers,
@@ -164,6 +182,36 @@ class FakeIamClient {
         { id: "membership-created", ...args.create },
         args.update,
       ),
+  };
+
+  organizationName = {
+    findFirst: async (args: { where: { OR: Row[] }; select: { id: true } }) =>
+      this.organizationNames.find((row) =>
+        args.where.OR.some(
+          (condition) =>
+            (condition["sourceRef"] &&
+              row["sourceRef"] === condition["sourceRef"]) ||
+            (row["organizationId"] === condition["organizationId"] &&
+              row["kind"] === condition["kind"] &&
+              row["normalizedName"] === condition["normalizedName"]),
+        ),
+      ) ?? null,
+    update: async (args: { data: Row; where: { id: string } }) => {
+      const row = this.organizationNames.find(
+        (item) => item["id"] === args.where.id,
+      );
+      if (!row) throw new Error("missing organization name");
+      Object.assign(row, args.data);
+      return row;
+    },
+    create: async (args: { data: Row }) => {
+      const row = {
+        id: `organization-name-${this.organizationNames.length + 1}`,
+        ...args.data,
+      };
+      this.organizationNames.push(row);
+      return row;
+    },
   };
 
   organizationReferendumPosition = {
@@ -214,11 +262,14 @@ describe("syncManagedIamOrganization", () => {
       }),
     ).resolves.toEqual({ dryRun: true, upserted: false });
 
-    expect(client.organizations.find((row) => row["id"] === "org-iam")).toMatchObject({
+    expect(
+      client.organizations.find((row) => row["id"] === "org-iam"),
+    ).toMatchObject({
       sourceRef: null,
       status: OrgStatus.PENDING,
     });
     expect(client.tasks).toHaveLength(1);
+    expect(client.organizationNames).toHaveLength(0);
   });
 
   it("upserts IAM, Mike, the official treaty position, and the activation task without touching unrelated rows", async () => {
@@ -230,7 +281,9 @@ describe("syncManagedIamOrganization", () => {
       }),
     ).resolves.toEqual({ dryRun: false, upserted: true });
 
-    expect(client.people.find((row) => row["email"] === MIKE_SINN_EMAIL)).toMatchObject({
+    expect(
+      client.people.find((row) => row["email"] === MIKE_SINN_EMAIL),
+    ).toMatchObject({
       currentAffiliation: IAM_ORGANIZATION_NAME,
       displayName: "Mike Sinn",
       handle: "mike",
@@ -238,12 +291,16 @@ describe("syncManagedIamOrganization", () => {
       lifeStatus: PersonLifeStatus.LIVING,
       sourceRef: MIKE_SINN_PERSON_SOURCE_REF,
     });
-    expect(client.users.find((row) => row["email"] === MIKE_SINN_EMAIL)).toMatchObject({
+    expect(
+      client.users.find((row) => row["email"] === MIKE_SINN_EMAIL),
+    ).toMatchObject({
       isAdmin: true,
       personId: "person-mike",
       referralCode: "KEEP-ME",
     });
-    expect(client.organizations.find((row) => row["id"] === "org-iam")).toMatchObject({
+    expect(
+      client.organizations.find((row) => row["id"] === "org-iam"),
+    ).toMatchObject({
       contactEmail: MIKE_SINN_EMAIL,
       name: IAM_ORGANIZATION_NAME,
       slug: IAM_ORGANIZATION_SLUG,
@@ -262,6 +319,37 @@ describe("syncManagedIamOrganization", () => {
           organizationId: "org-user-created",
           role: "OWNER",
           userId: "user-other",
+        }),
+      ]),
+    );
+    expect(client.organizationNames).toHaveLength(
+      IAM_ORGANIZATION_NAMES.length,
+    );
+    expect(client.organizationNames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: OrganizationNameKind.LEGAL,
+          name: AMF_LEGAL_NAME,
+          normalizedName: "accelerated medicine foundation inc",
+          organizationId: "org-iam",
+          verifiedAt: new Date(IAM_ORGANIZATION_NAMES_VERIFIED_AT_ISO),
+          verifiedByUserId: "user-mike",
+        }),
+        expect.objectContaining({
+          kind: OrganizationNameKind.DBA,
+          name: IAM_ORGANIZATION_NAME,
+          organizationId: "org-iam",
+        }),
+        expect.objectContaining({
+          kind: OrganizationNameKind.DBA,
+          name: IC2EWD_ORGANIZATION_NAME,
+          organizationId: "org-iam",
+        }),
+        expect.objectContaining({
+          kind: OrganizationNameKind.ACRONYM,
+          name: "IC2EWD",
+          normalizedName: "ic2ewd",
+          organizationId: "org-iam",
         }),
       ]),
     );
@@ -289,5 +377,65 @@ describe("syncManagedIamOrganization", () => {
         }),
       ]),
     );
+
+    const verifiedAtBeforeRepeat = client.organizationNames.map(
+      (row) => row["verifiedAt"],
+    );
+
+    await syncManagedIamOrganization(client as unknown as PrismaClient, {
+      apply: true,
+    });
+
+    expect(client.organizations).toHaveLength(2);
+    expect(client.organizationNames).toHaveLength(
+      IAM_ORGANIZATION_NAMES.length,
+    );
+    expect(client.organizationNames.map((row) => row["verifiedAt"])).toEqual(
+      verifiedAtBeforeRepeat,
+    );
+  });
+
+  it("prefers the canonical IAM source reference over an alias-named organization", async () => {
+    const client = new FakeIamClient();
+    const canonical = client.organizations.find(
+      (row) => row["id"] === "org-iam",
+    );
+    if (!canonical) throw new Error("missing canonical IAM fixture");
+    canonical["sourceRef"] = IAM_ORGANIZATION_SOURCE_REF;
+    client.organizations.unshift({
+      id: "org-alias-duplicate",
+      name: AMF_LEGAL_NAME,
+      slug: "accelerated-medicine-foundation-duplicate",
+      sourceRef: null,
+      status: OrgStatus.APPROVED,
+    });
+
+    await syncManagedIamOrganization(client as unknown as PrismaClient, {
+      apply: true,
+    });
+
+    expect(canonical).toMatchObject({
+      id: "org-iam",
+      name: IAM_ORGANIZATION_NAME,
+      slug: IAM_ORGANIZATION_SLUG,
+      sourceRef: IAM_ORGANIZATION_SOURCE_REF,
+    });
+    expect(
+      client.organizations.find((row) => row["id"] === "org-alias-duplicate"),
+    ).toMatchObject({
+      name: AMF_LEGAL_NAME,
+      slug: "accelerated-medicine-foundation-duplicate",
+      sourceRef: null,
+    });
+    expect(client.organizationNames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ organizationId: "org-iam" }),
+      ]),
+    );
+    expect(
+      client.organizationNames.every(
+        (row) => row["organizationId"] === "org-iam",
+      ),
+    ).toBe(true);
   });
 });

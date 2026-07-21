@@ -1,6 +1,5 @@
 import {
   buildOrganizationActivationTaskDescription,
-  CAMPAIGN_NAME,
   getOrganizationActivationTaskKey,
   GLOBAL_SURVEY_NAME,
   ORGANIZATION_ACTIVATION_TASK_TITLE,
@@ -10,6 +9,7 @@ import {
   OrgStatus,
   OrgType,
   OrganizationMemberRole,
+  OrganizationNameKind,
   OrganizationReferendumPositionStatus,
   PersonLifeStatus,
   TaskCategory,
@@ -19,18 +19,68 @@ import {
   type Prisma,
   type PrismaClient,
 } from "../generated/prisma/client.js";
+import { normalizeOrganizationName } from "../organization-name.js";
 
 export const IAM_ORGANIZATION_SOURCE_REF =
   "managed-organization:institute-for-accelerated-medicine";
 export const IAM_ORGANIZATION_SLUG = "institute-for-accelerated-medicine";
 export const IAM_ORGANIZATION_NAME = "Institute for Accelerated Medicine";
+export const AMF_LEGAL_NAME = "Accelerated Medicine Foundation Inc";
+export const IC2EWD_ORGANIZATION_NAME =
+  "International Campaign to End War and Disease";
+export const IAM_ORGANIZATION_NAMES_VERIFIED_AT_ISO =
+  "2026-07-20T16:56:30.688Z";
 export const MIKE_SINN_EMAIL = "m@thinkbynumbers.org";
 export const MIKE_SINN_PERSON_SOURCE_REF = "managed-person:mike-sinn";
 
 const CAMPAIGN_BASE_URL = "https://warondisease.org";
 const IAM_WEBSITE_URL = "https://acceleratedmedicine.org";
+const NONPROFIT_IDENTITY_SOURCE_URL = `${CAMPAIGN_BASE_URL}/terms`;
 const NONPROFIT_COALITION_STRATEGY_URL =
   "https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy";
+
+export const IAM_ORGANIZATION_NAMES = [
+  {
+    kind: OrganizationNameKind.LEGAL,
+    name: AMF_LEGAL_NAME,
+    sourceRef:
+      "managed-organization-name:accelerated-medicine-foundation:legal",
+    sourceUrl: NONPROFIT_IDENTITY_SOURCE_URL,
+  },
+  {
+    kind: OrganizationNameKind.DBA,
+    name: IAM_ORGANIZATION_NAME,
+    sourceRef:
+      "managed-organization-name:institute-for-accelerated-medicine:dba",
+    sourceUrl: IAM_WEBSITE_URL,
+  },
+  {
+    kind: OrganizationNameKind.DBA,
+    name: IC2EWD_ORGANIZATION_NAME,
+    sourceRef:
+      "managed-organization-name:international-campaign-end-war-disease:dba",
+    sourceUrl: NONPROFIT_IDENTITY_SOURCE_URL,
+  },
+  {
+    kind: OrganizationNameKind.ACRONYM,
+    name: "AMF",
+    sourceRef: "managed-organization-name:accelerated-medicine-foundation:amf",
+    sourceUrl: IAM_WEBSITE_URL,
+  },
+  {
+    kind: OrganizationNameKind.ACRONYM,
+    name: "IAM",
+    sourceRef: "managed-organization-name:accelerated-medicine-foundation:iam",
+    sourceUrl: IAM_WEBSITE_URL,
+  },
+  {
+    kind: OrganizationNameKind.ACRONYM,
+    name: "IC2EWD",
+    sourceRef:
+      "managed-organization-name:accelerated-medicine-foundation:ic2ewd",
+    sourceUrl: CAMPAIGN_BASE_URL,
+  },
+] as const;
 
 export async function syncManagedIamOrganization(
   prisma: PrismaClient,
@@ -106,21 +156,36 @@ export async function syncManagedIamOrganization(
     wordmarkLogoUrl: null,
   } satisfies Prisma.OrganizationUncheckedCreateInput;
 
-  const existingOrganization = await prisma.organization.findFirst({
-    where: {
-      OR: [
-        { sourceRef: IAM_ORGANIZATION_SOURCE_REF },
-        { slug: IAM_ORGANIZATION_SLUG },
-        {
-          name: {
-            equals: IAM_ORGANIZATION_NAME,
-            mode: "insensitive",
-          },
-        },
-      ],
-    },
+  const existingBySourceRef = await prisma.organization.findUnique({
+    where: { sourceRef: IAM_ORGANIZATION_SOURCE_REF },
     select: { id: true },
   });
+  const existingBySlug = existingBySourceRef
+    ? null
+    : await prisma.organization.findUnique({
+        where: { slug: IAM_ORGANIZATION_SLUG },
+        select: { id: true },
+      });
+  const existingByName =
+    existingBySourceRef || existingBySlug
+      ? null
+      : await prisma.organization.findFirst({
+          where: {
+            OR: [
+              ...IAM_ORGANIZATION_NAMES.filter(
+                ({ kind }) => kind !== OrganizationNameKind.ACRONYM,
+              ).map(({ name }) => ({
+                name: {
+                  equals: name,
+                  mode: "insensitive" as const,
+                },
+              })),
+            ],
+          },
+          select: { id: true },
+        });
+  const existingOrganization =
+    existingBySourceRef ?? existingBySlug ?? existingByName;
 
   const organization = existingOrganization
     ? await prisma.organization.update({
@@ -128,6 +193,45 @@ export async function syncManagedIamOrganization(
         data: organizationSeed,
       })
     : await prisma.organization.create({ data: organizationSeed });
+
+  for (const organizationName of IAM_ORGANIZATION_NAMES) {
+    const organizationNameSeed = {
+      createdByUserId: user.id,
+      deletedAt: null,
+      kind: organizationName.kind,
+      languageCode: "en",
+      name: organizationName.name,
+      normalizedName: normalizeOrganizationName(organizationName.name),
+      organizationId: organization.id,
+      sourceRef: organizationName.sourceRef,
+      sourceUrl: organizationName.sourceUrl,
+      verifiedAt: new Date(IAM_ORGANIZATION_NAMES_VERIFIED_AT_ISO),
+      verifiedByUserId: user.id,
+    } satisfies Prisma.OrganizationNameUncheckedCreateInput;
+
+    const existingOrganizationName = await prisma.organizationName.findFirst({
+      where: {
+        OR: [
+          { sourceRef: organizationName.sourceRef },
+          {
+            kind: organizationName.kind,
+            normalizedName: organizationNameSeed.normalizedName,
+            organizationId: organization.id,
+          },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (existingOrganizationName) {
+      await prisma.organizationName.update({
+        where: { id: existingOrganizationName.id },
+        data: organizationNameSeed,
+      });
+    } else {
+      await prisma.organizationName.create({ data: organizationNameSeed });
+    }
+  }
 
   await prisma.organizationMember.upsert({
     where: {
@@ -224,9 +328,10 @@ export async function syncManagedIamOrganization(
   return { upserted: true, dryRun: false };
 }
 
-export function formatManagedIamOrganizationResult(
-  result: { upserted: boolean; dryRun: boolean },
-): string {
+export function formatManagedIamOrganizationResult(result: {
+  upserted: boolean;
+  dryRun: boolean;
+}): string {
   if (result.dryRun) return `${IAM_ORGANIZATION_NAME}: would sync (dry-run)`;
   return result.upserted
     ? `${IAM_ORGANIZATION_NAME}: synced`
