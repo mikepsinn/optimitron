@@ -402,6 +402,16 @@ enum OrgStatus {
   REJECTED
 }
 
+/// The role an alternate name plays for one canonical organization.
+enum OrganizationNameKind {
+  LEGAL
+  DBA
+  ACRONYM
+  FORMER
+  TRANSLATION
+  OTHER
+}
+
 /// Approval status of an organization's official position on a referendum
 enum OrganizationReferendumPositionStatus {
   PENDING
@@ -1938,6 +1948,8 @@ model User {
   pointMints                         PointMint[]                      @relation("UserPointMints")
   activities                         Activity[]                       @relation("UserActivities")
   createdOrganizations               Organization[]                   @relation("OrgCreator")
+  createdOrganizationNames           OrganizationName[]               @relation("UserCreatedOrganizationNames")
+  verifiedOrganizationNames          OrganizationName[]               @relation("UserVerifiedOrganizationNames")
   organizationMemberships            OrganizationMember[]             @relation("UserOrgMemberships")
   submittedOrgPositions              OrganizationReferendumPosition[] @relation("OrgPositionSubmitter")
   approvedOrgPositions               OrganizationReferendumPosition[] @relation("OrgPositionApprover")
@@ -3858,6 +3870,7 @@ model Jurisdiction {
   aggregationRuns               AggregationRun[]
   referendums                   Referendum[]
   organizations                 Organization[]
+  organizationNames             OrganizationName[]               @relation("JurisdictionOrganizationNames")
   surveys                       Survey[]
   tasks                         Task[]
   taskApplications              TaskApplication[]                @relation("JurisdictionTaskApplications")
@@ -5595,6 +5608,7 @@ model Organization {
   // -- Relations --
   jurisdiction                Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
   creator                     User?                            @relation("OrgCreator", fields: [creatorId], references: [id])
+  names                       OrganizationName[]
   members                     OrganizationMember[]
   assignedTasks               Task[]                           @relation("TaskAssigneeOrganization")
   ownedTasks                  Task[]                           @relation("TaskOwnerOrganization")
@@ -5622,6 +5636,76 @@ model Organization {
   @@index([status])
   @@index([jurisdictionId])
   @@index([creatorId])
+  @@index([deletedAt])
+}
+
+/// A legal name, DBA, acronym, former name, translation, or other searchable
+/// label for one canonical organization. Organization.name remains the
+/// preferred display label for compatibility.
+model OrganizationName {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Canonical organization this name resolves to
+  organizationId String
+
+  /// Name as written by its source
+  name String
+
+  /// Deterministic search key produced by normalizeOrganizationName
+  normalizedName String
+
+  /// Semantic role of this name
+  kind OrganizationNameKind
+
+  /// Jurisdiction in which this name applies, when scoped
+  jurisdictionId String?
+
+  /// BCP 47 language tag for translated or localized names
+  languageCode String?
+
+  /// Beginning of the name's known validity period
+  validFrom DateTime?
+
+  /// End of the name's known validity period
+  validUntil DateTime?
+
+  /// Source URL supporting this name
+  sourceUrl String?
+
+  /// Stable provenance key for imports and managed synchronization
+  sourceRef String? @unique
+
+  /// User who added or imported this name
+  createdByUserId String?
+
+  /// User who most recently verified this name
+  verifiedByUserId String?
+
+  /// When this name was most recently verified
+  verifiedAt DateTime?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp
+  deletedAt DateTime?
+
+  // -- Relations --
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  jurisdiction   Jurisdiction? @relation("JurisdictionOrganizationNames", fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  createdByUser  User?         @relation("UserCreatedOrganizationNames", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  verifiedByUser User?         @relation("UserVerifiedOrganizationNames", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, kind, normalizedName])
+  @@index([normalizedName, deletedAt])
+  @@index([organizationId, kind, deletedAt])
+  @@index([jurisdictionId])
+  @@index([createdByUserId])
+  @@index([verifiedByUserId])
   @@index([deletedAt])
 }
 

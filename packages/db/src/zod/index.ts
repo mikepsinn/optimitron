@@ -361,6 +361,16 @@ export type OrgType = z.infer<typeof OrgTypeSchema>;
 export const OrgStatusSchema = z.enum(["PENDING", "APPROVED", "REJECTED"]);
 export type OrgStatus = z.infer<typeof OrgStatusSchema>;
 
+export const OrganizationNameKindSchema = z.enum([
+  "LEGAL",
+  "DBA",
+  "ACRONYM",
+  "FORMER",
+  "TRANSLATION",
+  "OTHER",
+]);
+export type OrganizationNameKind = z.infer<typeof OrganizationNameKindSchema>;
+
 export const SocialPlatformSchema = z.enum([
   "TWITTER",
   "GITHUB",
@@ -2604,6 +2614,37 @@ export const OrganizationSchema = z.object({
   deletedAt: nullableDateSchema,
 });
 export type OrganizationType = z.infer<typeof OrganizationSchema>;
+
+/** Zod schema for the OrganizationName model */
+export const OrganizationNameSchema = z
+  .object({
+    id: z.string(),
+    organizationId: z.string(),
+    name: z.string(),
+    normalizedName: z.string().min(1),
+    kind: OrganizationNameKindSchema,
+    jurisdictionId: z.string().nullable().optional(),
+    languageCode: z.string().nullable().optional(),
+    validFrom: nullableDateSchema,
+    validUntil: nullableDateSchema,
+    sourceUrl: z.string().nullable().optional(),
+    sourceRef: z.string().nullable().optional(),
+    createdByUserId: z.string().nullable().optional(),
+    verifiedByUserId: z.string().nullable().optional(),
+    verifiedAt: nullableDateSchema,
+    createdAt: dateSchema,
+    updatedAt: dateSchema,
+    deletedAt: nullableDateSchema,
+  })
+  .refine(
+    ({ validFrom, validUntil }) =>
+      !validFrom || !validUntil || validUntil > validFrom,
+    {
+      message: "validUntil must be later than validFrom",
+      path: ["validUntil"],
+    },
+  );
+export type OrganizationNameType = z.infer<typeof OrganizationNameSchema>;
 
 /** Zod schema for the OrganizationMember model */
 export const OrganizationMemberSchema = z.object({
