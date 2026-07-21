@@ -156,23 +156,36 @@ export async function syncManagedIamOrganization(
     wordmarkLogoUrl: null,
   } satisfies Prisma.OrganizationUncheckedCreateInput;
 
-  const existingOrganization = await prisma.organization.findFirst({
-    where: {
-      OR: [
-        { sourceRef: IAM_ORGANIZATION_SOURCE_REF },
-        { slug: IAM_ORGANIZATION_SLUG },
-        ...IAM_ORGANIZATION_NAMES.filter(
-          ({ kind }) => kind !== OrganizationNameKind.ACRONYM,
-        ).map(({ name }) => ({
-          name: {
-            equals: name,
-            mode: "insensitive" as const,
-          },
-        })),
-      ],
-    },
+  const existingBySourceRef = await prisma.organization.findUnique({
+    where: { sourceRef: IAM_ORGANIZATION_SOURCE_REF },
     select: { id: true },
   });
+  const existingBySlug = existingBySourceRef
+    ? null
+    : await prisma.organization.findUnique({
+        where: { slug: IAM_ORGANIZATION_SLUG },
+        select: { id: true },
+      });
+  const existingByName =
+    existingBySourceRef || existingBySlug
+      ? null
+      : await prisma.organization.findFirst({
+          where: {
+            OR: [
+              ...IAM_ORGANIZATION_NAMES.filter(
+                ({ kind }) => kind !== OrganizationNameKind.ACRONYM,
+              ).map(({ name }) => ({
+                name: {
+                  equals: name,
+                  mode: "insensitive" as const,
+                },
+              })),
+            ],
+          },
+          select: { id: true },
+        });
+  const existingOrganization =
+    existingBySourceRef ?? existingBySlug ?? existingByName;
 
   const organization = existingOrganization
     ? await prisma.organization.update({

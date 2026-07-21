@@ -68,6 +68,18 @@ ALTER TABLE "OrganizationName" ADD CONSTRAINT "OrganizationName_verifiedByUserId
 -- Every existing organization starts with its current display label. Known
 -- managed identities receive stable source refs so future syncs update rather
 -- than duplicate these rows.
+WITH canonical_iam_organization AS (
+  SELECT organization."id"
+  FROM "Organization" organization
+  WHERE organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
+    OR organization."slug" = 'institute-for-accelerated-medicine'
+  ORDER BY CASE
+    WHEN organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
+      THEN 0
+    ELSE 1
+  END
+  LIMIT 1
+)
 INSERT INTO "OrganizationName" (
   "id",
   "organizationId",
@@ -93,7 +105,7 @@ SELECT
     lower(
       regexp_replace(
         regexp_replace(
-          normalize(organization."name", NFKC),
+          normalize(organization."name", NFKC) COLLATE "unicode",
           '[''’]',
           '',
           'g'
@@ -105,23 +117,20 @@ SELECT
     )
   ),
   CASE
-    WHEN organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
-      OR organization."slug" = 'institute-for-accelerated-medicine'
+    WHEN organization."id" = (SELECT "id" FROM canonical_iam_organization)
       THEN 'DBA'::"OrganizationNameKind"
     ELSE 'OTHER'::"OrganizationNameKind"
   END,
   organization."jurisdictionId",
   CASE
-    WHEN organization."slug" IN (
-      'institute-for-accelerated-medicine',
-      'longevity-biotech-fellowship'
-    ) THEN 'en'
+    WHEN organization."id" = (SELECT "id" FROM canonical_iam_organization)
+      OR organization."slug" = 'longevity-biotech-fellowship'
+      THEN 'en'
     ELSE NULL
   END,
   COALESCE(organization."sourceUrl", organization."website"),
   CASE
-    WHEN organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
-      OR organization."slug" = 'institute-for-accelerated-medicine'
+    WHEN organization."id" = (SELECT "id" FROM canonical_iam_organization)
       THEN 'managed-organization-name:institute-for-accelerated-medicine:dba'
     WHEN organization."slug" = 'longevity-biotech-fellowship'
       THEN 'managed-organization-name:longevity-biotech-fellowship:public-name'
@@ -129,14 +138,12 @@ SELECT
   END,
   organization."creatorId",
   CASE
-    WHEN organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
-      OR organization."slug" = 'institute-for-accelerated-medicine'
+    WHEN organization."id" = (SELECT "id" FROM canonical_iam_organization)
       THEN organization."creatorId"
     ELSE NULL
   END,
   CASE
-    WHEN organization."sourceRef" = 'managed-organization:institute-for-accelerated-medicine'
-      OR organization."slug" = 'institute-for-accelerated-medicine'
+    WHEN organization."id" = (SELECT "id" FROM canonical_iam_organization)
       THEN TIMESTAMP '2026-07-20 16:56:30.688'
     ELSE NULL
   END,
