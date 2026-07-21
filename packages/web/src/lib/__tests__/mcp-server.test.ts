@@ -6668,6 +6668,23 @@ describe("MCP server tool dispatch", () => {
           stopTrackingDate: null,
           userId: "user-1",
         },
+        {
+          active: true,
+          createdAt: new Date("2026-07-20T09:30:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "malformed-reminder",
+          instructions: "Invalid legacy interval",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: -1,
+          reminderStartTime: "09:30",
+          startTrackingDate: new Date("2026-07-20T09:30:00.000Z"),
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
       ]);
       mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
 

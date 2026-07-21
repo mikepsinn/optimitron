@@ -2549,6 +2549,7 @@ function reminderOccursWithinRange(
     reminder.reminderStartTime,
   );
   if (range.end <= anchor) return false;
+  if (reminder.reminderFrequency <= 0) return false;
 
   const frequencyMilliseconds = reminder.reminderFrequency * 1_000;
   const firstOccurrenceIndex = Math.max(
