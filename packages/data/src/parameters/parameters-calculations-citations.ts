@@ -135,12 +135,13 @@ export const AMR_DEATHS_ATTRIBUTABLE_2019: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-amr_deaths_attributable_2019",
   unit: "deaths",
   displayName: "Deaths Directly Attributable to AMR (2019)",
-  description: "Deaths directly attributable to bacterial antimicrobial resistance in 2019, ~1.27 million (95% UI 0.91-1.71 million); ~4.95 million deaths were associated with it (Murray et al., The Lancet 2022). Attributable and associated are not additive. Animal agriculture consumes a large majority of medically important antibiotics, driving resistance.",
+  description: "Deaths directly attributable to bacterial antimicrobial resistance in 2019, ~1.27 million (95% UI 0.91-1.71 million); ~4.95 million deaths were associated with it (Murray et al., The Lancet 2022). Attributable and associated are not additive.",
   sourceType: "external",
   sourceRef: "murray-2022-amr",
   sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/35065702/",
   confidence: "high",
-  distribution: "fixed",
+  confidenceInterval: [911000.0, 1710000.0],
+  distribution: "lognormal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/optimized-food-system.html",
   manualPageTitle: "The Slaughterhouse Was a Workaround",
 };
@@ -182,7 +183,7 @@ export const AQUATIC_ANIMALS_KILLED_ANNUAL: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-aquatic_animals_killed_annual",
   unit: "animals",
   displayName: "Wild Aquatic Animals Killed for Food per Year (low estimate)",
-  description: "Wild-caught fish killed globally per year, estimated at 1.1-2.2 trillion (average 2000-2019, fishcount.org.uk, derived from FAO capture tonnage and mean body weights). Value shown is the conservative low end; the range is wide because these animals are counted by weight, not headcount. Farmed finfish add ~120 billion more. Aquatic deaths exceed land-animal deaths by roughly an order of magnitude.",
+  description: "Wild-caught fish killed globally per year, estimated at 1.1-2.2 trillion (average 2000-2019, fishcount.org.uk, derived from FAO capture tonnage and mean body weights). Value shown is the conservative low end; the range is wide because these animals are counted by weight, not headcount.",
   sourceType: "external",
   sourceRef: "fishcount-wild-fish",
   sourceUrl: "https://fishcount.org.uk/fish-count-estimates-2",
@@ -772,7 +773,8 @@ export const DIETARY_RISK_DEATHS_ANNUAL: Parameter = {
   sourceRef: "gbd-2017-diet",
   sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/30954305/",
   confidence: "high",
-  distribution: "fixed",
+  confidenceInterval: [10000000.0, 12000000.0],
+  distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/optimized-food-system.html",
   manualPageTitle: "The Slaughterhouse Was a Workaround",
 };
@@ -1115,7 +1117,7 @@ export const FOOD_SYSTEM_HIDDEN_COST_ANNUAL: Parameter = {
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-food_system_hidden_cost_annual",
   unit: "USD",
   displayName: "Global Food System Hidden Costs per Year",
-  description: "Hidden (external) costs of the global food and land-use system, ~$12 trillion/year, against a market value of ~$10 trillion (FOLU 'Growing Better' 2019; modeled by an advocacy coalition, widely cited). Comprises environmental, public-health, and poverty costs; projected to rise to $16.1 trillion by 2050 under current trends. US-only true-cost accounting (Rockefeller 2021) finds ~$2.1 trillion/year in hidden costs on top of ~$1.1 trillion paid.",
+  description: "Hidden (external) costs of the global food and land-use system, ~$12 trillion/year, against a market value of ~$10 trillion (FOLU 'Growing Better' 2019; modeled by an advocacy coalition, widely cited). Comprises environmental, public-health, and poverty costs; projected to rise to $16.1 trillion by 2050 under current trends.",
   sourceType: "external",
   sourceRef: "folu-growing-better-2019",
   sourceUrl: "https://www.foodandlandusecoalition.org/wp-content/uploads/2019/09/FOLU-GrowingBetter-GlobalReport-SummaryReport.pdf",
@@ -16105,8 +16107,7 @@ export const citations: Record<string, Citation> = {
         title: "Environmental Costs of War",
         author: [
           {
-            family: "Watson Institute",
-            given: "Brown University"
+            literal: "Watson Institute, Brown University"
           },
         ],
         issued: { 'date-parts': [[2023]] },
@@ -16119,7 +16120,19 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Cassidy",
-            given: "Emily S. and West, Paul C. and Gerber, James S. and Foley, Jonathan A."
+            given: "Emily S."
+          },
+          {
+            family: "West",
+            given: "Paul C."
+          },
+          {
+            family: "Gerber",
+            given: "James S."
+          },
+          {
+            family: "Foley",
+            given: "Jonathan A."
           },
         ],
         issued: { 'date-parts': [[2013]] },
@@ -16257,7 +16270,19 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Williams",
-            given: "Rebecca J and Tse, Tony and DiPiazza, Katelyn and Zarin, Deborah A"
+            given: "Rebecca J"
+          },
+          {
+            family: "Tse",
+            given: "Tony"
+          },
+          {
+            family: "DiPiazza",
+            given: "Katelyn"
+          },
+          {
+            family: "Zarin",
+            given: "Deborah A"
           },
         ],
         issued: { 'date-parts': [[2015]] },
@@ -16338,7 +16363,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Barrios",
-            given: "Dagoberto and Sanz-Gracia, Fernando"
+            given: "Dagoberto"
+          },
+          {
+            family: "Sanz-Gracia",
+            given: "Fernando"
           },
         ],
         issued: { 'date-parts': [[2024]] },
@@ -16476,7 +16505,23 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Cook",
-            given: "Christopher and Cole, Graham and Asaria, Perviz and Jabbour, Richard and Francis, Darrel P."
+            given: "Christopher"
+          },
+          {
+            family: "Cole",
+            given: "Graham"
+          },
+          {
+            family: "Asaria",
+            given: "Perviz"
+          },
+          {
+            family: "Jabbour",
+            given: "Richard"
+          },
+          {
+            family: "Francis",
+            given: "Darrel P."
           },
         ],
         issued: { 'date-parts': [[2014]] },
@@ -16660,8 +16705,7 @@ export const citations: Record<string, Citation> = {
         title: "Environmental cost of war (\\$100B annually)",
         author: [
           {
-            family: "Costs of War Project",
-            given: "Brown University Watson Institute"
+            literal: "Costs of War Project, Brown University Watson Institute"
           },
         ],
         'container-title': "Brown Watson Costs of War: Environmental Cost",
@@ -16873,8 +16917,7 @@ export const citations: Record<string, Citation> = {
         title: "World Population Prospects 2024: Summary of Results",
         author: [
           {
-            family: "United Nations Department of Economic and Social Affairs",
-            given: "Population Division"
+            literal: "United Nations Department of Economic and Social Affairs, Population Division"
           },
         ],
         issued: { 'date-parts': [[2024]] },
@@ -17025,7 +17068,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Hsieh",
-            given: "Chang-Tai and Moretti, Enrico"
+            given: "Chang-Tai"
+          },
+          {
+            family: "Moretti",
+            given: "Enrico"
           },
         ],
         issued: { 'date-parts': [[2019]] },
@@ -17188,7 +17235,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Jones",
-            given: "Garett and Schneider, W. Joel"
+            given: "Garett"
+          },
+          {
+            family: "Schneider",
+            given: "W. Joel"
           },
         ],
         issued: { 'date-parts': [[2006]] },
@@ -17326,7 +17377,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Bolt",
-            given: "Jutta and van Zanden, Jan Luiten"
+            given: "Jutta"
+          },
+          {
+            family: "van Zanden",
+            given: "Jan Luiten"
           },
         ],
         issued: { 'date-parts': [[2020]] },
@@ -17339,7 +17394,15 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "McFarland",
-            given: "Michael J. and Hauer, Matt E. and Reuben, Aaron"
+            given: "Michael J."
+          },
+          {
+            family: "Hauer",
+            given: "Matt E."
+          },
+          {
+            family: "Reuben",
+            given: "Aaron"
           },
         ],
         issued: { 'date-parts': [[2022]] },
@@ -17543,8 +17606,7 @@ export const citations: Record<string, Citation> = {
         title: "Nuclear Winter Famine",
         author: [
           {
-            family: "Xia et al.",
-            given: "Nature Food"
+            literal: "Xia et al., Nature Food"
           },
         ],
         issued: { 'date-parts': [[2022]] },
@@ -17652,7 +17714,15 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Ritchie",
-            given: "Hannah and Rosado, Pablo and Roser, Max"
+            given: "Hannah"
+          },
+          {
+            family: "Rosado",
+            given: "Pablo"
+          },
+          {
+            family: "Roser",
+            given: "Max"
           },
         ],
         issued: { 'date-parts': [[2022]] },
@@ -17680,7 +17750,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Ritchie",
-            given: "Hannah and Roser, Max"
+            given: "Hannah"
+          },
+          {
+            family: "Roser",
+            given: "Max"
           },
         ],
         issued: { 'date-parts': [[2019]] },
@@ -17694,7 +17768,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Ritchie",
-            given: "Hannah and Roser, Max"
+            given: "Hannah"
+          },
+          {
+            family: "Roser",
+            given: "Max"
           },
         ],
         issued: { 'date-parts': [[2018]] },
@@ -17707,8 +17785,7 @@ export const citations: Record<string, Citation> = {
         title: "Reducing food's environmental impacts",
         author: [
           {
-            family: "University of Oxford",
-            given: "LEAP"
+            literal: "University of Oxford, LEAP"
           },
         ],
         issued: { 'date-parts': [[2018]] },
@@ -17721,8 +17798,7 @@ export const citations: Record<string, Citation> = {
         title: "Health Care Spending in the United States and Other High-Income Countries",
         author: [
           {
-            family: "Papanicolas",
-            given: "Irene et al."
+            literal: "Papanicolas, Irene et al."
           },
         ],
         issued: { 'date-parts': [[2018]] },
@@ -17817,7 +17893,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Ramsberg",
-            given: "J. and Platt, R."
+            given: "J."
+          },
+          {
+            family: "Platt",
+            given: "R."
           },
         ],
         issued: { 'date-parts': [[2018]] },
@@ -17861,7 +17941,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Poore",
-            given: "Joseph and Nemecek, Thomas"
+            given: "Joseph"
+          },
+          {
+            family: "Nemecek",
+            given: "Thomas"
           },
         ],
         issued: { 'date-parts': [[2018]] },
@@ -17876,7 +17960,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Kinch",
-            given: "Michael S. and Griesenauer, Robert H."
+            given: "Michael S."
+          },
+          {
+            family: "Griesenauer",
+            given: "Robert H."
           },
         ],
         issued: { 'date-parts': [[2019]] },
@@ -18015,8 +18103,7 @@ export const citations: Record<string, Citation> = {
         title: "RECOVERY Trial Cost per Patient",
         author: [
           {
-            family: "Oren Cass",
-            given: "Manhattan Institute"
+            literal: "Oren Cass, Manhattan Institute"
           },
         ],
         issued: { 'date-parts': [[2023]] },
@@ -18058,7 +18145,23 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Roozenbeek",
-            given: "Jon and van der Linden, Sander and Goldberg, Beth and Rathje, Steve and Lewandowsky, Stephan"
+            given: "Jon"
+          },
+          {
+            family: "van der Linden",
+            given: "Sander"
+          },
+          {
+            family: "Goldberg",
+            given: "Beth"
+          },
+          {
+            family: "Rathje",
+            given: "Steve"
+          },
+          {
+            family: "Lewandowsky",
+            given: "Stephan"
           },
         ],
         issued: { 'date-parts': [[2022]] },
@@ -18550,7 +18653,11 @@ export const citations: Record<string, Citation> = {
         author: [
           {
             family: "Wood",
-            given: "Thomas and Porter, Ethan"
+            given: "Thomas"
+          },
+          {
+            family: "Porter",
+            given: "Ethan"
           },
         ],
         issued: { 'date-parts': [[2019]] },
@@ -18630,8 +18737,7 @@ export const citations: Record<string, Citation> = {
         title: "US GDP 2024 (\\$28.78 trillion)",
         author: [
           {
-            family: "World Bank",
-            given: "Bureau of Economic Analysis"
+            literal: "World Bank, Bureau of Economic Analysis"
           },
         ],
         issued: { 'date-parts': [[2024]] },
