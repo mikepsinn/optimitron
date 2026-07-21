@@ -2534,6 +2534,35 @@ function reminderNotifyAt(dateKey: string, reminderStartTime: string) {
   return new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
 }
 
+function reminderOccursWithinRange(
+  reminder: {
+    createdAt: Date;
+    reminderFrequency: number;
+    reminderStartTime: string;
+    startTrackingDate: Date | null;
+  },
+  range: { end: Date; start: Date },
+) {
+  const anchorDate = reminder.startTrackingDate ?? reminder.createdAt;
+  const anchor = reminderNotifyAt(
+    dateKeyFromDate(anchorDate),
+    reminder.reminderStartTime,
+  );
+  if (range.end <= anchor) return false;
+
+  const frequencyMilliseconds = reminder.reminderFrequency * 1_000;
+  const firstOccurrenceIndex = Math.max(
+    0,
+    Math.ceil(
+      (range.start.getTime() - anchor.getTime()) / frequencyMilliseconds,
+    ),
+  );
+  const firstOccurrence = new Date(
+    anchor.getTime() + firstOccurrenceIndex * frequencyMilliseconds,
+  );
+  return firstOccurrence < range.end;
+}
+
 function cleanNumber(value: number | null | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
@@ -2935,14 +2964,19 @@ async function listDueTrackingRemindersForUser(
       ],
     },
   });
-  if (reminders.length === 0) return { dateKey, reminders: [] };
+  const dueReminders = reminders.filter((reminder) =>
+    reminderOccursWithinRange(reminder, { end, start }),
+  );
+  if (dueReminders.length === 0) return { dateKey, reminders: [] };
 
   const notifications = await prisma.trackingReminderNotification.findMany({
     orderBy: [{ notifyAt: "asc" }],
     where: {
       deletedAt: null,
       notifyAt: { gte: start, lt: end },
-      trackingReminderId: { in: reminders.map((reminder) => reminder.id) },
+      trackingReminderId: {
+        in: dueReminders.map((reminder) => reminder.id),
+      },
       userId,
     },
   });
@@ -2952,7 +2986,7 @@ async function listDueTrackingRemindersForUser(
       notification,
     ]),
   );
-  const remindersWithStatus = reminders
+  const remindersWithStatus = dueReminders
     .map((reminder) => {
       // null = no notification recorded yet for this dateKey (reminder still pending), not an error.
       const existingNotification = byReminderId.get(reminder.id);
