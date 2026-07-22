@@ -7,6 +7,9 @@ import { ROUTES } from "@/lib/routes";
 import { getTaskTreePageData } from "@/lib/tasks/task-tree.server";
 import { TaskTreeView } from "@/components/tasks/TaskTreeView";
 
+// Not registered in routeReviewNavItems — this metadata source doesn't opt
+// the route into the automated screenshot/copy-preview sweep. Screenshots
+// for this page were captured ad hoc (see output/playwright/review).
 const taskTreeNavItem: NavItem = {
   href: ROUTES.tasksTree,
   label: "Earth Optimization Task Tree",
@@ -14,8 +17,6 @@ const taskTreeNavItem: NavItem = {
   description:
     "Every task under Optimize Earth, nested by parent task and annotated with its own expected-value math. Click any task to open its page.",
   cta: "Open the tree",
-  reviewName: "tasks-tree",
-  screenshot: true,
 };
 
 export async function generateMetadata(): Promise<Metadata> {
