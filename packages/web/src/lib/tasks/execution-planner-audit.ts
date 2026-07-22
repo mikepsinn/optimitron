@@ -2,6 +2,7 @@ export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 
 export interface ExecutionGraphTask {
   activeChildTaskCount: number;
+  executionEligible?: boolean;
   estimatePublicationEligible?: boolean;
   estimateInputsStale?: boolean;
   hasMarginalEstimate: boolean;
@@ -161,7 +162,11 @@ export function auditExecutionGraph(input: {
         taskId: task.id,
       });
     }
-    if (task.activeChildTaskCount === 0 && !task.hasMarginalEstimate) {
+    if (
+      task.executionEligible !== false &&
+      task.activeChildTaskCount === 0 &&
+      !task.hasMarginalEstimate
+    ) {
       findings.push({
         code: "MISSING_MARGINAL_ESTIMATE",
         message: `Atomic task ${task.id} has no direct or explicitly edge-derived marginal estimate.`,
@@ -170,6 +175,7 @@ export function auditExecutionGraph(input: {
       });
     }
     if (
+      task.executionEligible !== false &&
       task.activeChildTaskCount === 0 &&
       task.hasMarginalEstimate &&
       task.estimatePublicationEligible === false

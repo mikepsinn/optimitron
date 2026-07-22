@@ -739,6 +739,7 @@ export async function loadExecutionGraphContext(
     graphTaskById.set(task.id, {
       activeChildTaskCount:
         task.activeChildTaskCount ?? task.childTasks?.length ?? 0,
+      executionEligible: isExecutableWorkItem(task),
       hasMarginalEstimate: hasRecordedMarginalEstimate(task),
       id: task.id,
       parentTaskId: task.parentTaskId ?? null,
@@ -769,6 +770,7 @@ export async function loadExecutionGraphContext(
     for (const parent of storedParents) {
       graphTaskById.set(parent.id, {
         activeChildTaskCount: 0,
+        executionEligible: false,
         hasMarginalEstimate: false,
         id: parent.id,
         parentTaskId: parent.parentTaskId ?? null,

@@ -70,6 +70,25 @@ describe("auditExecutionGraph", () => {
     );
   });
 
+  it("does not demand estimates for non-executable planning containers", () => {
+    const findings = auditExecutionGraph({
+      edges: [],
+      tasks: [
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
+        graphTask("planning-root", OPTIMIZE_EARTH_ROOT_TASK_ID, {
+          executionEligible: false,
+          hasMarginalEstimate: false,
+        }),
+      ],
+    });
+
+    expect(
+      findings.filter(
+        (finding) => finding.code === "MISSING_MARGINAL_ESTIMATE",
+      ),
+    ).toEqual([]);
+  });
+
   it("gives unannotated value edges no inherited value and reports them", () => {
     const findings = auditExecutionGraph({
       edges: [

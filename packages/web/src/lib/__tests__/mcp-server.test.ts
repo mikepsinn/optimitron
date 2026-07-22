@@ -6708,6 +6708,45 @@ describe("MCP server tool dispatch", () => {
       ).toHaveLength(1);
     });
 
+    it("listDueTrackingReminders keeps local reminder time across DST", async () => {
+      mocks.userFindUnique.mockResolvedValue({
+        timeZone: "America/Chicago",
+      });
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        {
+          active: true,
+          createdAt: new Date("2026-10-20T14:30:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "reminder-1",
+          instructions: "Every four weeks",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: 28 * 24 * 60 * 60,
+          reminderStartTime: "09:30",
+          startTrackingDate: new Date("2026-10-20T14:30:00.000Z"),
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+      ]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-11-17" },
+      });
+      const body = parseToolBody(result) as {
+        reminders: Array<{ notifyAt: string }>;
+      };
+
+      expect(result.isError).toBeFalsy();
+      expect(body.reminders).toHaveLength(1);
+      expect(body.reminders[0]?.notifyAt).toBe("2026-11-17T15:30:00.000Z");
+    });
+
     it("listDueTrackingReminders keeps daily reminders due", async () => {
       mocks.trackingReminderFindMany.mockResolvedValue([
         {

@@ -106,6 +106,13 @@ import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { ensureSubjectForUser } from "./subject.server";
+import {
+  getStartOfZonedDayUtc,
+  getZonedDateKey,
+  getZonedDateTimeUtc,
+  parseDateKey as parseZonedDateKey,
+  shiftDateKey,
+} from "./time-zone";
 import type { RankableTask } from "./tasks/rank-tasks";
 import { resolveTaskVisibilityParam } from "./tasks/task-visibility-param";
 import { MCP_SERVER_INSTRUCTIONS } from "./mcp-instructions";
@@ -2508,30 +2515,40 @@ function parseOptionalTimeOfDay(value: unknown, fieldName: string) {
   return parseTimeOfDay(value, fieldName);
 }
 
-function parseDateKey(value: unknown, fallback = dateKeyFromDate(new Date())) {
+function parseDateKey(
+  value: unknown,
+  fallback = getZonedDateKey(new Date(), "UTC"),
+) {
   if (value == null || value === "") return fallback;
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+  if (typeof value !== "string" || !parseZonedDateKey(value.trim())) {
     throw new Error("dateKey must use YYYY-MM-DD.");
   }
   return value.trim();
 }
 
-function dateKeyFromDate(date: Date) {
-  return date.toISOString().slice(0, 10);
-}
-
-function dayRange(dateKey: string) {
-  const [year, month, day] = dateKey.split("-").map(Number);
+function dayRange(dateKey: string, timeZone: string) {
+  const startParts = parseZonedDateKey(dateKey);
+  const nextDateKey = shiftDateKey(dateKey, 1);
+  const endParts = nextDateKey ? parseZonedDateKey(nextDateKey) : null;
+  if (!startParts || !endParts) throw new Error("Invalid tracking date.");
   return {
-    end: new Date(Date.UTC(year, month - 1, day + 1, 0, 0, 0, 0)),
-    start: new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)),
+    end: getStartOfZonedDayUtc(endParts, timeZone),
+    start: getStartOfZonedDayUtc(startParts, timeZone),
   };
 }
 
-function reminderNotifyAt(dateKey: string, reminderStartTime: string) {
-  const [year, month, day] = dateKey.split("-").map(Number);
+function reminderNotifyAt(
+  dateKey: string,
+  reminderStartTime: string,
+  timeZone: string,
+) {
+  const dateParts = parseZonedDateKey(dateKey);
+  if (!dateParts) throw new Error("Invalid tracking date.");
   const [hours, minutes] = reminderStartTime.split(":").map(Number);
-  return new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
+  return getZonedDateTimeUtc(
+    { ...dateParts, hour: hours, minute: minutes, second: 0 },
+    timeZone,
+  );
 }
 
 function reminderOccursWithinRange(
@@ -2541,15 +2558,30 @@ function reminderOccursWithinRange(
     reminderStartTime: string;
     startTrackingDate: Date | null;
   },
-  range: { end: Date; start: Date },
+  range: { dateKey: string; end: Date; start: Date; timeZone: string },
 ) {
   const anchorDate = reminder.startTrackingDate ?? reminder.createdAt;
+  const anchorDateKey = getZonedDateKey(anchorDate, range.timeZone);
+  if (reminder.reminderFrequency <= 0) return false;
+
+  const frequencyDays = reminder.reminderFrequency / 86_400;
+  if (Number.isInteger(frequencyDays)) {
+    const anchorParts = parseZonedDateKey(anchorDateKey);
+    const targetParts = parseZonedDateKey(range.dateKey);
+    if (!anchorParts || !targetParts) return false;
+    const daysSinceAnchor =
+      (Date.UTC(targetParts.year, targetParts.month - 1, targetParts.day) -
+        Date.UTC(anchorParts.year, anchorParts.month - 1, anchorParts.day)) /
+      86_400_000;
+    return daysSinceAnchor >= 0 && daysSinceAnchor % frequencyDays === 0;
+  }
+
   const anchor = reminderNotifyAt(
-    dateKeyFromDate(anchorDate),
+    anchorDateKey,
     reminder.reminderStartTime,
+    range.timeZone,
   );
   if (range.end <= anchor) return false;
-  if (reminder.reminderFrequency <= 0) return false;
 
   const frequencyMilliseconds = reminder.reminderFrequency * 1_000;
   const firstOccurrenceIndex = Math.max(
@@ -2939,9 +2971,17 @@ async function listDueTrackingRemindersForUser(
   input: Record<string, unknown>,
   userId: string,
 ) {
-  const dateKey = parseDateKey(input.dateKey);
-  const { end, start } = dayRange(dateKey);
   const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    select: { timeZone: true },
+    where: { id: userId },
+  });
+  const timeZone = user?.timeZone ?? "UTC";
+  const dateKey = parseDateKey(
+    input.dateKey,
+    getZonedDateKey(new Date(), timeZone),
+  );
+  const { end, start } = dayRange(dateKey, timeZone);
   const reminders = await prisma.trackingReminder.findMany({
     include: TRACKING_REMINDER_INCLUDE,
     orderBy: [{ reminderStartTime: "asc" }],
@@ -2966,7 +3006,7 @@ async function listDueTrackingRemindersForUser(
     },
   });
   const dueReminders = reminders.filter((reminder) =>
-    reminderOccursWithinRange(reminder, { end, start }),
+    reminderOccursWithinRange(reminder, { dateKey, end, start, timeZone }),
   );
   if (dueReminders.length === 0) return { dateKey, reminders: [] };
 
@@ -3001,7 +3041,7 @@ async function listDueTrackingRemindersForUser(
         notification,
         notifyAt:
           notification?.notifyAt ??
-          reminderNotifyAt(dateKey, reminder.reminderStartTime),
+          reminderNotifyAt(dateKey, reminder.reminderStartTime, timeZone),
         reminderEndTime: reminder.reminderEndTime,
         reminderFrequency: reminder.reminderFrequency,
         reminderId: reminder.id,
@@ -3075,11 +3115,16 @@ async function respondToTrackingReminderForUser(
   const trackingReminderId = optionalString(input.trackingReminderId);
   if (!trackingReminderId) throw new Error("trackingReminderId is required.");
   const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    select: { timeZone: true },
+    where: { id: userId },
+  });
+  const timeZone = user?.timeZone ?? "UTC";
   const dateKey = parseDateKey(
     input.dateKey,
-    dateKeyFromDate(trackedAt ?? new Date()),
+    getZonedDateKey(trackedAt ?? new Date(), timeZone),
   );
-  const prisma = await getPrisma();
   return prisma.$transaction(async (tx) => {
     const reminder = await tx.trackingReminder.findFirst({
       include: TRACKING_REMINDER_INCLUDE,
@@ -3102,7 +3147,11 @@ async function respondToTrackingReminderForUser(
         "Provide value or configure defaultValue before marking this reminder TRACKED.",
       );
     }
-    const notifyAt = reminderNotifyAt(dateKey, reminder.reminderStartTime);
+    const notifyAt = reminderNotifyAt(
+      dateKey,
+      reminder.reminderStartTime,
+      timeZone,
+    );
     const notification = await findOrCreateTrackingNotification(tx, {
       notifyAt,
       status,
