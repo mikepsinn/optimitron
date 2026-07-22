@@ -7,16 +7,6 @@ sandbox_mode = "workspace-write"
 [features]
 goals = true
 
-[mcp_servers.optimitron-production]
-url = "https://optimitron.com/api/mcp"
-auth = "oauth"
-scopes = ["tasks:personal"]
-enabled = true
-required = false
-default_tools_approval_mode = "approve"
-startup_timeout_sec = 20
-tool_timeout_sec = 120
-
 # MCP server entries removed 2026-05-14: when the local dev server on 3001 or
 # the spawned pnpm MCP subprocess is unreachable / wedged, Codex hangs on the
 # handshake at startup ("thinking forever" in the VS Code extension). Re-add

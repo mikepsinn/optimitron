@@ -6,6 +6,7 @@ import {
   TaskImpactPublicationStatus,
   TaskStatus,
 } from "@optimitron/db/enums";
+import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 import {
   assessTaskCapability,
   type TaskCapabilityAssessment,
@@ -742,6 +743,7 @@ export async function loadExecutionGraphContext(
       hasMarginalEstimate: hasRecordedMarginalEstimate(task),
       id: task.id,
       parentTaskId: task.parentTaskId ?? null,
+      requiresMarginalEstimate: !isReservedPlanningRootTask(task),
     });
   }
 
@@ -772,6 +774,7 @@ export async function loadExecutionGraphContext(
         hasMarginalEstimate: false,
         id: parent.id,
         parentTaskId: parent.parentTaskId ?? null,
+        requiresMarginalEstimate: false,
       });
     }
     pendingParentIds = Array.from(

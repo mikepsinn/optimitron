@@ -6649,6 +6649,138 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.trackingReminderUpsert).not.toHaveBeenCalled();
     });
 
+    it("listDueTrackingReminders honors a 28-day reminder frequency", async () => {
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        {
+          active: true,
+          createdAt: new Date("2026-07-20T09:30:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "reminder-1",
+          instructions: "Every four weeks",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: 28 * 24 * 60 * 60,
+          reminderStartTime: "09:30",
+          startTrackingDate: new Date("2026-07-20T09:30:00.000Z"),
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+        {
+          active: true,
+          createdAt: new Date("2026-07-20T09:30:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "malformed-reminder",
+          instructions: "Invalid legacy interval",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: -1,
+          reminderStartTime: "09:30",
+          startTrackingDate: new Date("2026-07-20T09:30:00.000Z"),
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+      ]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const offDayResult = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-08-16" },
+      });
+      const dueDayResult = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-08-17" },
+      });
+
+      expect(offDayResult.isError).toBeFalsy();
+      expect(dueDayResult.isError).toBeFalsy();
+      expect(
+        (parseToolBody(offDayResult) as { reminders: unknown[] }).reminders,
+      ).toEqual([]);
+      expect(
+        (parseToolBody(dueDayResult) as { reminders: unknown[] }).reminders,
+      ).toHaveLength(1);
+    });
+
+    it("listDueTrackingReminders keeps local reminder time across DST", async () => {
+      mocks.userFindUnique.mockResolvedValue({
+        timeZone: "America/Chicago",
+      });
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        {
+          active: true,
+          createdAt: new Date("2026-10-20T14:30:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "reminder-1",
+          instructions: "Every four weeks",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: 28 * 24 * 60 * 60,
+          reminderStartTime: "09:30",
+          startTrackingDate: new Date("2026-10-20T14:30:00.000Z"),
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+      ]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-11-17" },
+      });
+      const body = parseToolBody(result) as {
+        reminders: Array<{ notifyAt: string }>;
+      };
+
+      expect(result.isError).toBeFalsy();
+      expect(body.reminders).toHaveLength(1);
+      expect(body.reminders[0]?.notifyAt).toBe("2026-11-17T15:30:00.000Z");
+    });
+
+    it("listDueTrackingReminders keeps daily reminders due", async () => {
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        {
+          active: true,
+          createdAt: new Date("2026-07-20T09:00:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "reminder-1",
+          instructions: "Daily",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: 24 * 60 * 60,
+          reminderStartTime: "09:00",
+          startTrackingDate: null,
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+      ]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-08-17" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(
+        (parseToolBody(result) as { reminders: unknown[] }).reminders,
+      ).toHaveLength(1);
+    });
+
     it("respondToTrackingReminder TRACKED records the notification and a Measurement via the same write path", async () => {
       mocks.trackingReminderFindFirst.mockResolvedValue({
         defaultValue: 3,

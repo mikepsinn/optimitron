@@ -125,7 +125,7 @@ describe("compileGeneratedParameterCatalog", () => {
     expect(first.catalogContentHash).toBe(second.catalogContentHash);
   });
 
-  it("compiles the complete copied manual catalog", async () => {
+  it("compiles the complete copied manual catalog without dropping entries", async () => {
     const catalog = await compileGeneratedParameterCatalog(
       parameters,
       citations,
@@ -139,14 +139,12 @@ describe("compileGeneratedParameterCatalog", () => {
       .map((parameter) => parameter.key)
       .sort();
 
-    expect(catalog.counts).toEqual({
-      total: 874,
-      calculated: 447,
-      withCalculationCode: 438,
-      snapshotCalculated: 9,
-      withDistribution: 312,
-    });
-    expect(Object.keys(catalog.citations)).toHaveLength(184);
+    expect(catalog.parameters.map(({ key }) => key).sort()).toEqual(
+      Object.keys(parameters).sort(),
+    );
+    expect(Object.keys(catalog.citations).sort()).toEqual(
+      Object.keys(citations).sort(),
+    );
     expect(snapshots).toEqual([
       "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
       "DESTRUCTIVE_ECONOMY_25PCT_YEAR",

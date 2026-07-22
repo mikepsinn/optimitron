@@ -9,6 +9,7 @@ export interface ExecutionGraphTask {
   parentTaskId: string | null;
   priority?: number | null;
   queueEligible?: boolean;
+  requiresMarginalEstimate?: boolean;
 }
 
 export interface ExecutionGraphEdge {
@@ -161,7 +162,11 @@ export function auditExecutionGraph(input: {
         taskId: task.id,
       });
     }
-    if (task.activeChildTaskCount === 0 && !task.hasMarginalEstimate) {
+    if (
+      task.requiresMarginalEstimate !== false &&
+      task.activeChildTaskCount === 0 &&
+      !task.hasMarginalEstimate
+    ) {
       findings.push({
         code: "MISSING_MARGINAL_ESTIMATE",
         message: `Atomic task ${task.id} has no direct or explicitly edge-derived marginal estimate.`,
@@ -170,6 +175,7 @@ export function auditExecutionGraph(input: {
       });
     }
     if (
+      task.requiresMarginalEstimate !== false &&
       task.activeChildTaskCount === 0 &&
       task.hasMarginalEstimate &&
       task.estimatePublicationEligible === false
