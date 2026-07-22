@@ -528,6 +528,18 @@ export const tasksLink: NavItem = {
   cta: "Open the list",
 };
 
+// Deliberately no screenshot/copyPreview flags: this opts the route into
+// getInternalNavItemForPath (so its OG social image resolves) without
+// opting it into the automated screenshot/copy-preview review sweep.
+export const taskTreeLink: NavItem = {
+  href: ROUTES.tasksTree,
+  label: "Earth Optimization Task Tree",
+  emoji: "🌳",
+  description:
+    "Every task under Optimize Earth, nested by parent task and annotated with its own expected-value math. Click any task to open its page.",
+  cta: "Open the tree",
+};
+
 export const calendarLink: NavItem = {
   href: ROUTES.calendar,
   label: "Calendar",
@@ -1854,6 +1866,7 @@ export const routeReviewNavItems = [
   dashboardLink,
   editProfileLink,
   tasksLink,
+  taskTreeLink,
   calendarLink,
   documentsLink,
   collectionsLink,

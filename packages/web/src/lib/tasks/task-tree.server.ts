@@ -1,4 +1,5 @@
 import type { Prisma } from "@optimitron/db";
+import { TaskEdgeType } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { impactEstimateSetSelect } from "@/lib/tasks.server";
 import { selectImpactFrame } from "@/lib/tasks/impact";
@@ -24,7 +25,7 @@ const taskTreeSelect = {
   incomingEdges: {
     where: {
       deletedAt: null,
-      edgeType: { in: ["BLOCKS", "DEPENDS_ON"] },
+      edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
     },
     select: {
       fromTask: {

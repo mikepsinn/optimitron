@@ -22,6 +22,7 @@ function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
       <Link
         className="font-bold text-foreground underline-offset-4 hover:underline"
         href={getTaskPath(node.id)}
+        onClick={(event) => event.stopPropagation()}
       >
         {node.title}
       </Link>

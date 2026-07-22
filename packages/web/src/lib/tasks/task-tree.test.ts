@@ -177,6 +177,26 @@ describe("buildTaskTree", () => {
     expect(unestimated?.evValid).toBe(false);
     expect(unestimated?.realEv).toBe(0);
   });
+
+  it("marks evValid false for a task with real effort hours but no EV estimate, instead of rendering a measured zero", () => {
+    // Positive effort hours alone make the priority formula's denominator
+    // usable (valid=true upstream), but with no expectedEconomicValueUsdBase
+    // there is no actual EV number — evValid must still be false so the UI
+    // shows "no direct estimate" rather than "EV $0".
+    const tree = buildTaskTree(
+      [
+        flatTask("root", null),
+        flatTask("effort-only", "root", { estimatedEffortHours: 5 }),
+      ],
+      "root",
+    );
+
+    const effortOnly = tree?.children.find(
+      (child) => child.id === "effort-only",
+    );
+    expect(effortOnly?.evValid).toBe(false);
+    expect(effortOnly?.realEv).toBe(0);
+  });
 });
 
 describe("countTaskTreeNodes", () => {

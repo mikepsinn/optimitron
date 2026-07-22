@@ -92,6 +92,12 @@ export function buildTaskTree(
       estimatedEffortHours: task.estimatedEffortHours,
       selectedImpactFrame: task.selectedImpactFrame,
     });
+    // `valid` only means the priority formula's denominator was usable — it
+    // stays true even when there's no direct EV estimate at all (realEv then
+    // defaults to 0). Require the estimate to actually be present so a
+    // missing number isn't rendered as a measured zero.
+    const hasDirectEvEstimate =
+      task.selectedImpactFrame?.expectedEconomicValueUsdBase != null;
     const children = (childrenByParentId.get(task.id) ?? [])
       .slice()
       .sort(sortSiblings)
@@ -100,7 +106,7 @@ export function buildTaskTree(
     return {
       ...task,
       children,
-      evValid: valid,
+      evValid: valid && hasDirectEvEstimate,
       priority,
       realEv,
     };
