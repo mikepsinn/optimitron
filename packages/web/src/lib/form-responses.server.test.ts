@@ -381,6 +381,38 @@ describe.sequential("reviewed form response loop", () => {
     ).resolves.toBe(0);
   });
 
+  it("does not persist form responses on public tasks", async () => {
+    const fixture = await createFixture();
+    await prisma.task.update({
+      where: { id: fixture.applicationTask.id },
+      data: { isPublic: true },
+    });
+
+    await expect(
+      prepareFormResponses(
+        {
+          formTaskId: fixture.applicationTask.id,
+          idempotencyKey: `${TEST_PREFIX}public-form`,
+          questions: [
+            {
+              fieldKey: "mission",
+              prompt: "What is your mission?",
+              proposedAnswer: "A reviewed answer must remain private.",
+            },
+          ],
+          subject: { organizationId: fixture.organization.id },
+        },
+        fixture.user.id,
+      ),
+    ).rejects.toThrow("Form task not found");
+
+    const task = await prisma.task.findUniqueOrThrow({
+      where: { id: fixture.applicationTask.id },
+      select: { contextJson: true },
+    });
+    expect(task.contextJson).toBeNull();
+  });
+
   it("does not reuse an approval that ambiguously covers multiple answer revisions", async () => {
     const fixture = await createFixture();
     const subject = { organizationId: fixture.organization.id };

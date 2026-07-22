@@ -235,6 +235,7 @@ async function loadFormTask(input: {
       ],
       deletedAt: null,
       id: input.formTaskId,
+      isPublic: false,
     },
     select: {
       contextJson: true,
@@ -502,6 +503,7 @@ async function saveFormResponseSet(input: {
         ],
         deletedAt: null,
         id: input.formTaskId,
+        isPublic: false,
       },
       select: { contextJson: true, id: true, ownerOrganizationId: true },
     });
