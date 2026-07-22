@@ -76,8 +76,8 @@ describe("auditExecutionGraph", () => {
       tasks: [
         graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
         graphTask("planning-root", OPTIMIZE_EARTH_ROOT_TASK_ID, {
-          executionEligible: false,
           hasMarginalEstimate: false,
+          requiresMarginalEstimate: false,
         }),
       ],
     });

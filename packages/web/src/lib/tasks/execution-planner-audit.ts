@@ -2,7 +2,6 @@ export const OPTIMIZE_EARTH_ROOT_TASK_ID = "optimize-earth";
 
 export interface ExecutionGraphTask {
   activeChildTaskCount: number;
-  executionEligible?: boolean;
   estimatePublicationEligible?: boolean;
   estimateInputsStale?: boolean;
   hasMarginalEstimate: boolean;
@@ -10,6 +9,7 @@ export interface ExecutionGraphTask {
   parentTaskId: string | null;
   priority?: number | null;
   queueEligible?: boolean;
+  requiresMarginalEstimate?: boolean;
 }
 
 export interface ExecutionGraphEdge {
@@ -163,7 +163,7 @@ export function auditExecutionGraph(input: {
       });
     }
     if (
-      task.executionEligible !== false &&
+      task.requiresMarginalEstimate !== false &&
       task.activeChildTaskCount === 0 &&
       !task.hasMarginalEstimate
     ) {
@@ -175,7 +175,7 @@ export function auditExecutionGraph(input: {
       });
     }
     if (
-      task.executionEligible !== false &&
+      task.requiresMarginalEstimate !== false &&
       task.activeChildTaskCount === 0 &&
       task.hasMarginalEstimate &&
       task.estimatePublicationEligible === false
