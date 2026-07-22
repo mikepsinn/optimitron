@@ -141,9 +141,9 @@ const mocks = vi.hoisted(() => ({
   trackingReminderNotificationFindFirst: vi.fn(),
   trackingReminderNotificationCreate: vi.fn(),
   trackingReminderNotificationUpdate: vi.fn(),
-  findReusableAnswers: vi.fn(),
-  prepareApplicationQuestions: vi.fn(),
-  proposeApplicationSubmission: vi.fn(),
+  findReviewedAnswers: vi.fn(),
+  prepareFormResponses: vi.fn(),
+  proposeFormSubmission: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -228,10 +228,10 @@ vi.mock("../task-applications.server", () => ({
   updateTaskApplication: mocks.updateTaskApplication,
 }));
 
-vi.mock("../application-knowledge.server", () => ({
-  findReusableAnswers: mocks.findReusableAnswers,
-  prepareApplicationQuestions: mocks.prepareApplicationQuestions,
-  proposeApplicationSubmission: mocks.proposeApplicationSubmission,
+vi.mock("../form-responses.server", () => ({
+  findReviewedAnswers: mocks.findReviewedAnswers,
+  prepareFormResponses: mocks.prepareFormResponses,
+  proposeFormSubmission: mocks.proposeFormSubmission,
 }));
 
 class ProfileValidationError extends Error {
@@ -901,14 +901,14 @@ describe("MCP server tool dispatch", () => {
     );
   });
 
-  it("forwards the OAuth organization boundary to application knowledge tools", async () => {
-    mocks.findReusableAnswers.mockResolvedValue({ answers: [] });
+  it("forwards the OAuth organization boundary to form response tools", async () => {
+    mocks.findReviewedAnswers.mockResolvedValue({ answers: [] });
     const client = await setup("user-1", [McpScope.TASKS_ORGANIZATION], {
       organizationIds: ["organization-1"],
     });
 
     const result = await client.callTool({
-      name: "findReusableAnswers",
+      name: "findReviewedAnswers",
       arguments: {
         question: "What is your annual budget?",
         subject: { organizationId: "organization-1" },
@@ -916,7 +916,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     expect(parseToolBody(result)).toEqual({ answers: [] });
-    expect(mocks.findReusableAnswers).toHaveBeenCalledWith(
+    expect(mocks.findReviewedAnswers).toHaveBeenCalledWith(
       {
         question: "What is your annual budget?",
         subject: { organizationId: "organization-1" },

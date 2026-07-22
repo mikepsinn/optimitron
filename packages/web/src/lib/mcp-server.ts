@@ -102,11 +102,11 @@ import {
   isPrivateExecutionToolName,
 } from "./mcp-tools/private-execution";
 import {
-  APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS,
-  APPLICATION_KNOWLEDGE_TOOL_SCOPES,
-  handleApplicationKnowledgeToolCall,
-  isApplicationKnowledgeToolName,
-} from "./mcp-tools/application-knowledge";
+  FORM_RESPONSE_TOOL_DEFINITIONS,
+  FORM_RESPONSE_TOOL_SCOPES,
+  handleFormResponseToolCall,
+  isFormResponseToolName,
+} from "./mcp-tools/form-responses";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
@@ -323,7 +323,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...DOCUMENT_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
   ...PRIVATE_EXECUTION_TOOL_SCOPES,
-  ...APPLICATION_KNOWLEDGE_TOOL_SCOPES,
+  ...FORM_RESPONSE_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -7730,7 +7730,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...DOCUMENT_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
   ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
-  ...APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS,
+  ...FORM_RESPONSE_TOOL_DEFINITIONS,
 ];
 
 function assertToolRegistrationIntegrity(): void {
@@ -7915,8 +7915,8 @@ export function createMcpServer(
             userId: userId ?? null,
           });
         }
-        if (isApplicationKnowledgeToolName(name)) {
-          return handleApplicationKnowledgeToolCall({
+        if (isFormResponseToolName(name)) {
+          return handleFormResponseToolCall({
             args: a,
             clientAccessBoundary: taskClientBoundary,
             name,

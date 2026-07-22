@@ -9,10 +9,10 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { createDocument } from "./documents.server";
 import {
-  findReusableAnswers,
-  prepareApplicationQuestions,
-  proposeApplicationSubmission,
-} from "./application-knowledge.server";
+  findReviewedAnswers,
+  prepareFormResponses,
+  proposeFormSubmission,
+} from "./form-responses.server";
 import {
   startTaskExecution,
   submitTaskArtifact,
@@ -20,7 +20,7 @@ import {
   verifyTaskExecution,
 } from "./tasks/execution-lifecycle.server";
 
-const TEST_PREFIX = "application_knowledge_";
+const TEST_PREFIX = "form_responses_";
 
 async function cleanup() {
   await prisma.externalActionRequest.deleteMany({
@@ -91,7 +91,7 @@ async function cleanup() {
 async function createFixture() {
   const person = await prisma.person.create({
     data: {
-      displayName: "Application Knowledge Owner",
+      displayName: "Form Response Owner",
       id: `${TEST_PREFIX}person`,
     },
   });
@@ -106,7 +106,7 @@ async function createFixture() {
     data: {
       creatorId: user.id,
       id: `${TEST_PREFIX}organization`,
-      name: "Application Knowledge Organization",
+      name: "Form Response Organization",
       slug: `${TEST_PREFIX}organization`,
       status: OrgStatus.APPROVED,
       type: OrgType.OTHER,
@@ -133,21 +133,22 @@ async function createFixture() {
   return { applicationTask, organization, person, user };
 }
 
-describe.sequential("reviewed application knowledge loop", () => {
+describe.sequential("reviewed form response loop", () => {
   beforeEach(cleanup);
   afterAll(cleanup);
 
   it("turns one unresolved question into one approved reusable revision and one pending exact submission", async () => {
     const fixture = await createFixture();
     const subject = { organizationId: fixture.organization.id };
-    const prepared = await prepareApplicationQuestions(
+    const prepared = await prepareFormResponses(
       {
-        applicationTaskId: fixture.applicationTask.id,
+        formTaskId: fixture.applicationTask.id,
         idempotencyKey: `${TEST_PREFIX}prepare`,
         questions: [
           {
             contextTags: ["grant"],
-            key: "mission",
+            fieldKey: "mission",
+            knowledgeKey: "organization.mission",
             prompt: "What is your organization's mission?",
             proposedAnswer:
               "We identify and execute the highest-value ways to reduce suffering.",
@@ -170,7 +171,7 @@ describe.sequential("reviewed application knowledge loop", () => {
     await submitTaskArtifact(
       {
         documentRevisionId: unresolved.draftDocument!.revisionId,
-        label: "Reusable application answer",
+        label: "Reusable reviewed answer",
         taskExecutionAttemptId: attempt.id,
       },
       fixture.user.id,
@@ -204,9 +205,10 @@ describe.sequential("reviewed application knowledge loop", () => {
       fixture.user.id,
     );
 
-    const found = await findReusableAnswers(
+    const found = await findReviewedAnswers(
       {
         contextTags: ["grant"],
+        knowledgeKey: "organization.mission",
         question: "Please describe the mission of your organization.",
         subject,
       },
@@ -217,7 +219,7 @@ describe.sequential("reviewed application knowledge loop", () => {
       answer:
         "We identify and execute the highest-value ways to reduce suffering.",
       answerRevisionId: unresolved.draftDocument!.revisionId,
-      questionTaskId: unresolved.task.id,
+      reviewTaskId: unresolved.task.id,
     });
 
     const secondApplication = await prisma.task.create({
@@ -231,15 +233,16 @@ describe.sequential("reviewed application knowledge loop", () => {
         title: "Apply for a second example grant",
       },
     });
-    const mismatched = await prepareApplicationQuestions(
+    const mismatched = await prepareFormResponses(
       {
-        applicationTaskId: secondApplication.id,
+        formTaskId: secondApplication.id,
         idempotencyKey: `${TEST_PREFIX}mismatched-answer`,
         questions: [
           {
             answerRevisionId: unresolved.draftDocument!.revisionId,
             contextTags: ["grant"],
-            key: "budget",
+            fieldKey: "budget",
+            knowledgeKey: "organization.annual-budget",
             prompt: "What is your annual budget?",
           },
         ],
@@ -252,22 +255,34 @@ describe.sequential("reviewed application knowledge loop", () => {
       resolved: [],
       unresolved: [
         {
-          key: "budget",
+          fieldKey: "budget",
           reason:
             "The supplied answer revision is not an approved answer for this question and subject.",
         },
       ],
     });
 
-    const reused = await prepareApplicationQuestions(
+    const reuseApplication = await prisma.task.create({
+      data: {
+        createdByUserId: fixture.user.id,
+        description: "Reuse reviewed answers in a differently worded form.",
+        id: `${TEST_PREFIX}reuse_task`,
+        isPublic: false,
+        ownerOrganizationId: fixture.organization.id,
+        status: TaskStatus.ACTIVE,
+        title: "Complete another grant form",
+      },
+    });
+    const reused = await prepareFormResponses(
       {
-        applicationTaskId: fixture.applicationTask.id,
+        formTaskId: reuseApplication.id,
         idempotencyKey: `${TEST_PREFIX}prepare-retry`,
         questions: [
           {
             contextTags: ["grant"],
-            key: "mission",
-            prompt: "What is your organization's mission?",
+            fieldKey: "mission",
+            knowledgeKey: "organization.mission",
+            prompt: "Please describe the mission of your organization.",
           },
         ],
         subject,
@@ -279,41 +294,47 @@ describe.sequential("reviewed application knowledge loop", () => {
       resolved: [
         {
           answerRevisionId: unresolved.draftDocument!.revisionId,
-          key: "mission",
+          fieldKey: "mission",
         },
       ],
       unresolved: [],
     });
+    const formAttempt = await startTaskExecution(
+      { taskId: reuseApplication.id },
+      fixture.user.id,
+    );
     await expect(
-      proposeApplicationSubmission(
+      proposeFormSubmission(
         {
-          answers: [
+          responses: [
             {
               answerRevisionId: "unrelated_revision",
-              key: "mission",
-              prompt: "What is your organization's mission?",
+              fieldKey: "mission",
+              prompt: "Please describe the mission of your organization.",
             },
           ],
-          applicationTaskId: fixture.applicationTask.id,
           destination: "https://example.test/apply",
+          formTaskId: reuseApplication.id,
           idempotencyKey: `${TEST_PREFIX}wrong-answer`,
+          taskExecutionAttemptId: formAttempt.id,
         },
         fixture.user.id,
       ),
-    ).rejects.toThrow("does not match the prepared application");
+    ).rejects.toThrow("does not match the prepared form");
 
-    const proposal = await proposeApplicationSubmission(
+    const proposal = await proposeFormSubmission(
       {
-        answers: [
+        responses: [
           {
             answerRevisionId: unresolved.draftDocument!.revisionId,
-            key: "mission",
-            prompt: "What is your organization's mission?",
+            fieldKey: "mission",
+            prompt: "Please describe the mission of your organization.",
           },
         ],
-        applicationTaskId: fixture.applicationTask.id,
         destination: "https://example.test/apply",
+        formTaskId: reuseApplication.id,
         idempotencyKey: `${TEST_PREFIX}submit`,
+        taskExecutionAttemptId: formAttempt.id,
       },
       fixture.user.id,
     );
@@ -322,22 +343,28 @@ describe.sequential("reviewed application knowledge loop", () => {
     expect(proposal.externalActionRequest.status).toBe(
       ExternalActionRequestStatus.PENDING,
     );
-    expect(proposal.payload.answers[0]).toMatchObject({
+    expect(proposal.payload.responses[0]).toMatchObject({
       answerRevisionId: unresolved.draftDocument!.revisionId,
-      key: "mission",
+      approvalId: expect.any(String),
+      fieldKey: "mission",
+      knowledgeKey: "organization.mission",
     });
+    expect(proposal.payload.formHash).toEqual(expect.any(String));
+    expect(proposal.externalActionRequest.taskExecutionAttemptId).toBe(
+      formAttempt.id,
+    );
   });
 
   it("refuses placeholder drafts before they enter the review queue", async () => {
     const fixture = await createFixture();
     await expect(
-      prepareApplicationQuestions(
+      prepareFormResponses(
         {
-          applicationTaskId: fixture.applicationTask.id,
+          formTaskId: fixture.applicationTask.id,
           idempotencyKey: `${TEST_PREFIX}placeholder`,
           questions: [
             {
-              key: "budget",
+              fieldKey: "budget",
               prompt: "What is your annual budget?",
               proposedAnswer: "TODO: insert the annual budget",
             },
@@ -357,13 +384,13 @@ describe.sequential("reviewed application knowledge loop", () => {
   it("does not reuse an approval that ambiguously covers multiple answer revisions", async () => {
     const fixture = await createFixture();
     const subject = { organizationId: fixture.organization.id };
-    const prepared = await prepareApplicationQuestions(
+    const prepared = await prepareFormResponses(
       {
-        applicationTaskId: fixture.applicationTask.id,
+        formTaskId: fixture.applicationTask.id,
         idempotencyKey: `${TEST_PREFIX}ambiguous-prepare`,
         questions: [
           {
-            key: "mission",
+            fieldKey: "mission",
             prompt: "What is your organization's mission?",
             proposedAnswer: "First candidate answer.",
           },
@@ -416,7 +443,7 @@ describe.sequential("reviewed application knowledge loop", () => {
       fixture.user.id,
     );
 
-    const found = await findReusableAnswers(
+    const found = await findReviewedAnswers(
       {
         question: "What is your organization's mission?",
         subject,
@@ -427,26 +454,136 @@ describe.sequential("reviewed application knowledge loop", () => {
     expect(found.answers).toEqual([]);
   });
 
+  it("requires an exact revision when multiple approved answers match", async () => {
+    const fixture = await createFixture();
+    const subject = { organizationId: fixture.organization.id };
+
+    for (const [index, answer] of [
+      "First approved mission answer.",
+      "Second approved mission answer.",
+    ].entries()) {
+      const reviewTask = await prisma.task.create({
+        data: {
+          createdByUserId: fixture.user.id,
+          description: "Review one reusable mission answer.",
+          contextJson: {
+            reviewedAnswer: {
+              canonicalQuestion: "What is your organization's mission?",
+              contextTags: [],
+              knowledgeKey: "organization.mission",
+              originTaskId: null,
+              sensitivity: "INTERNAL",
+              sourceArtifactIds: [],
+              subject,
+              type: "REVIEWED_ANSWER",
+              validUntil: null,
+            },
+          },
+          id: `${TEST_PREFIX}answer_${index}`,
+          isPublic: false,
+          ownerOrganizationId: fixture.organization.id,
+          status: TaskStatus.ACTIVE,
+          title: `Review mission answer ${index}`,
+        },
+      });
+      const document = await createDocument({
+        body: answer,
+        createdByUserId: fixture.user.id,
+        idempotencyKey: `${TEST_PREFIX}answer_document_${index}`,
+        organizationId: fixture.organization.id,
+        taskId: reviewTask.id,
+        title: `Mission answer ${index}`,
+      });
+      const attempt = await startTaskExecution(
+        { taskId: reviewTask.id },
+        fixture.user.id,
+      );
+      await submitTaskArtifact(
+        {
+          documentRevisionId: document.revision.id,
+          label: "Reusable reviewed answer",
+          taskExecutionAttemptId: attempt.id,
+        },
+        fixture.user.id,
+      );
+      const submitted = await submitTaskForVerification(
+        {
+          actualDurationSeconds: 60,
+          method: "REVIEWER",
+          outputSummary: "Approved for reuse.",
+          taskExecutionAttemptId: attempt.id,
+        },
+        fixture.user.id,
+      );
+      await verifyTaskExecution(
+        {
+          criterionResults: [],
+          result: "ACCEPTED",
+          taskVerificationId: submitted.verification.id,
+        },
+        fixture.user.id,
+      );
+    }
+
+    const targetForm = await prisma.task.create({
+      data: {
+        createdByUserId: fixture.user.id,
+        description: "Prepare a form with an ambiguous reviewed answer.",
+        id: `${TEST_PREFIX}ambiguous_target`,
+        isPublic: false,
+        ownerOrganizationId: fixture.organization.id,
+        status: TaskStatus.ACTIVE,
+        title: "Target form",
+      },
+    });
+    const result = await prepareFormResponses(
+      {
+        formTaskId: targetForm.id,
+        idempotencyKey: `${TEST_PREFIX}ambiguous_target_prepare`,
+        questions: [
+          {
+            fieldKey: "mission",
+            knowledgeKey: "organization.mission",
+            prompt: "Describe your mission.",
+          },
+        ],
+        subject,
+      },
+      fixture.user.id,
+    );
+
+    expect(result).toMatchObject({
+      readyForSubmission: false,
+      unresolved: [
+        {
+          fieldKey: "mission",
+          reason:
+            "Multiple approved answers match this field; choose the exact revision to use.",
+        },
+      ],
+    });
+  });
+
   it("enforces delegated OAuth and subject ownership boundaries", async () => {
     const fixture = await createFixture();
     const request = {
-      applicationTaskId: fixture.applicationTask.id,
+      formTaskId: fixture.applicationTask.id,
       idempotencyKey: `${TEST_PREFIX}boundary`,
-      questions: [{ key: "mission", prompt: "What is your mission?" }],
+      questions: [{ fieldKey: "mission", prompt: "What is your mission?" }],
       subject: { organizationId: fixture.organization.id },
     };
 
     await expect(
-      prepareApplicationQuestions(request, fixture.user.id, {
+      prepareFormResponses(request, fixture.user.id, {
         clientAccessBoundary: {
           allowPersonalPrivate: true,
           organizationIds: [],
         },
       }),
-    ).rejects.toThrow("Application task not found");
+    ).rejects.toThrow("Form task not found");
 
     await expect(
-      prepareApplicationQuestions(
+      prepareFormResponses(
         {
           ...request,
           subject: { personId: fixture.person.id },
@@ -458,19 +595,24 @@ describe.sequential("reviewed application knowledge loop", () => {
 
   it("does not propose a submission before the exact question set is prepared", async () => {
     const fixture = await createFixture();
+    const attempt = await startTaskExecution(
+      { taskId: fixture.applicationTask.id },
+      fixture.user.id,
+    );
     await expect(
-      proposeApplicationSubmission(
+      proposeFormSubmission(
         {
-          answers: [
+          responses: [
             {
               answerRevisionId: "revision_1",
-              key: "mission",
+              fieldKey: "mission",
               prompt: "What is your mission?",
             },
           ],
-          applicationTaskId: fixture.applicationTask.id,
           destination: "https://example.test/apply",
+          formTaskId: fixture.applicationTask.id,
           idempotencyKey: `${TEST_PREFIX}unprepared`,
+          taskExecutionAttemptId: attempt.id,
         },
         fixture.user.id,
       ),

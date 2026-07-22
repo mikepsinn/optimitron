@@ -18,19 +18,18 @@ function err(message: string): ToolResponse {
   };
 }
 
-const APPLICATION_KNOWLEDGE_SCOPES = [
+const FORM_RESPONSE_SCOPES = [
   McpScope.TASKS_PERSONAL,
   McpScope.TASKS_ORGANIZATION,
 ];
 
-export const APPLICATION_KNOWLEDGE_TOOL_SCOPES = {
-  findReusableAnswers: APPLICATION_KNOWLEDGE_SCOPES,
-  prepareApplicationQuestions: APPLICATION_KNOWLEDGE_SCOPES,
-  proposeApplicationSubmission: APPLICATION_KNOWLEDGE_SCOPES,
+export const FORM_RESPONSE_TOOL_SCOPES = {
+  findReviewedAnswers: FORM_RESPONSE_SCOPES,
+  prepareFormResponses: FORM_RESPONSE_SCOPES,
+  proposeFormSubmission: FORM_RESPONSE_SCOPES,
 } satisfies Record<string, McpScope[]>;
 
-export type ApplicationKnowledgeToolName =
-  keyof typeof APPLICATION_KNOWLEDGE_TOOL_SCOPES;
+export type FormResponseToolName = keyof typeof FORM_RESPONSE_TOOL_SCOPES;
 
 const SUBJECT_SCHEMA = {
   type: "object",
@@ -45,7 +44,8 @@ const SUBJECT_SCHEMA = {
 const QUESTION_SCHEMA = {
   type: "object",
   properties: {
-    key: { type: "string" },
+    fieldKey: { type: "string" },
+    knowledgeKey: { type: "string" },
     prompt: { type: "string" },
     contextTags: { type: "array", items: { type: "string" } },
     answerRevisionId: { type: "string" },
@@ -57,19 +57,20 @@ const QUESTION_SCHEMA = {
     sourceArtifactIds: { type: "array", items: { type: "string" } },
     validUntil: { type: ["string", "null"], format: "date-time" },
   },
-  required: ["key", "prompt"],
+  required: ["fieldKey", "prompt"],
 } as const;
 
-export const APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS = [
+export const FORM_RESPONSE_TOOL_DEFINITIONS = [
   {
-    name: "findReusableAnswers",
+    name: "findReviewedAnswers",
     description:
-      "Find reusable reviewed answers for one person or organization.",
+      "Find reusable reviewed text answers for one person or organization.",
     inputSchema: {
       type: "object" as const,
       properties: {
         subject: SUBJECT_SCHEMA,
         question: { type: "string" },
+        knowledgeKey: { type: "string" },
         contextTags: { type: "array", items: { type: "string" } },
         asOf: { type: "string", format: "date-time" },
         limit: { type: "number" },
@@ -78,13 +79,13 @@ export const APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "prepareApplicationQuestions",
+    name: "prepareFormResponses",
     description:
-      "Prepare application questions and proposed answers for human review.",
+      "Prepare narrative form responses and create review tasks for unresolved answers.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        applicationTaskId: { type: "string" },
+        formTaskId: { type: "string" },
         subject: SUBJECT_SCHEMA,
         questions: {
           type: "array",
@@ -94,59 +95,61 @@ export const APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS = [
         },
         idempotencyKey: { type: "string" },
       },
-      required: ["applicationTaskId", "subject", "questions", "idempotencyKey"],
+      required: ["formTaskId", "subject", "questions", "idempotencyKey"],
     },
   },
   {
-    name: "proposeApplicationSubmission",
+    name: "proposeFormSubmission",
     description:
-      "Propose an application submission for human approval without executing it.",
+      "Propose an exact reviewed text-response payload for human approval without executing it.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        applicationTaskId: { type: "string" },
+        formTaskId: { type: "string" },
+        taskExecutionAttemptId: { type: "string" },
         destination: { type: "string" },
-        answers: {
+        responses: {
           type: "array",
           minItems: 1,
           maxItems: 200,
           items: {
             type: "object",
             properties: {
-              key: { type: "string" },
+              fieldKey: { type: "string" },
               prompt: { type: "string" },
               answerRevisionId: { type: "string" },
             },
-            required: ["key", "prompt", "answerRevisionId"],
+            required: ["fieldKey", "prompt", "answerRevisionId"],
           },
         },
         idempotencyKey: { type: "string" },
         expiresAt: { type: "string", format: "date-time" },
       },
       required: [
-        "applicationTaskId",
+        "formTaskId",
+        "taskExecutionAttemptId",
         "destination",
-        "answers",
+        "responses",
         "idempotencyKey",
       ],
     },
   },
 ] as const;
 
-const APPLICATION_KNOWLEDGE_TOOL_NAMES = new Set<string>(
-  Object.keys(APPLICATION_KNOWLEDGE_TOOL_SCOPES),
+const FORM_RESPONSE_TOOL_NAMES = new Set<string>(
+  Object.keys(FORM_RESPONSE_TOOL_SCOPES),
 );
 
-export function isApplicationKnowledgeToolName(
+export function isFormResponseToolName(
   name: string,
-): name is ApplicationKnowledgeToolName {
-  return APPLICATION_KNOWLEDGE_TOOL_NAMES.has(name);
+): name is FormResponseToolName {
+  return FORM_RESPONSE_TOOL_NAMES.has(name);
 }
 
-export async function handleApplicationKnowledgeToolCall(input: {
+export async function handleFormResponseToolCall(input: {
   args: Record<string, unknown>;
   clientAccessBoundary: TaskClientAccessBoundary;
-  name: ApplicationKnowledgeToolName;
+  name: FormResponseToolName;
   userId: string | null | undefined;
 }): Promise<ToolResponse> {
   if (!input.userId) {
@@ -154,32 +157,26 @@ export async function handleApplicationKnowledgeToolCall(input: {
   }
 
   try {
-    const knowledge = await import("../application-knowledge.server");
+    const formResponses = await import("../form-responses.server");
 
     switch (input.name) {
-      case "findReusableAnswers":
+      case "findReviewedAnswers":
         return ok(
-          await knowledge.findReusableAnswers(input.args, input.userId, {
+          await formResponses.findReviewedAnswers(input.args, input.userId, {
             clientAccessBoundary: input.clientAccessBoundary,
           }),
         );
-      case "prepareApplicationQuestions":
+      case "prepareFormResponses":
         return ok(
-          await knowledge.prepareApplicationQuestions(
-            input.args,
-            input.userId,
-            {
-              clientAccessBoundary: input.clientAccessBoundary,
-            },
-          ),
+          await formResponses.prepareFormResponses(input.args, input.userId, {
+            clientAccessBoundary: input.clientAccessBoundary,
+          }),
         );
-      case "proposeApplicationSubmission":
+      case "proposeFormSubmission":
         return ok(
-          await knowledge.proposeApplicationSubmission(
-            input.args,
-            input.userId,
-            { clientAccessBoundary: input.clientAccessBoundary },
-          ),
+          await formResponses.proposeFormSubmission(input.args, input.userId, {
+            clientAccessBoundary: input.clientAccessBoundary,
+          }),
         );
     }
   } catch (error) {
@@ -187,6 +184,6 @@ export async function handleApplicationKnowledgeToolCall(input: {
       return err(error.message);
     }
     console.error(`[mcp] ${input.name} failed:`, error);
-    return err("Application knowledge operation failed");
+    return err("Form response operation failed");
   }
 }

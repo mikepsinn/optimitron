@@ -394,10 +394,10 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / organization
 - **Status:** partial
-- **Summary:** Reusable questions are private tasks; accepted immutable document-revision artifacts are discoverable for a person or organization, exact matches are reused, unresolved questions become atomic verification tasks, and complete applications become exact pending external-action payloads. Destination execution and receipts reuse the existing human-approval lifecycle.
-- **Evidence:** packages/web/src/lib/application-knowledge.server.ts; packages/web/src/lib/mcp-tools/application-knowledge.ts; packages/web/src/lib/application-knowledge.server.test.ts; Task, DocumentRevision, TaskExecutionArtifact, TaskVerification, and ExternalActionRequest models
-- **Acceptance:** A longevity-fellowship application reuses an owner-approved answer, records the exact version and destination used, creates a small blocking human task for an unknown answer, and later reuses the same answer in another application without duplication.
-- **Roadmap:** pilot the MCP loop with real EOS applications; add richer validity, supersession, provenance, and receipt-driven completion only where the pilot exposes a concrete gap
+- **Summary:** Reviewed text and narrative answers belong to a person or organization and are reusable across applications, surveys, RFPs, intake forms, and questionnaires. Stable knowledge keys safely bridge differently worded prompts; exact prompt matching remains the fallback. Unresolved answers become atomic verification tasks, and prepared answer sets become exact pending external-action payloads tied to a form execution attempt. Signatures, uploads, and one-time typed controls remain outside this workflow.
+- **Evidence:** packages/web/src/lib/form-responses.server.ts; packages/web/src/lib/mcp-tools/form-responses.ts; packages/web/src/lib/form-responses.server.test.ts; Task, DocumentRevision, TaskExecutionArtifact, TaskVerification, and ExternalActionRequest models
+- **Acceptance:** A longevity-fellowship application reuses an accepted answer, records its exact revision, approval, form hash, execution attempt, and destination, creates a small blocking review task for an unknown answer, and later reuses the same answer in another application without duplication.
+- **Roadmap:** pilot the MCP loop with real EOS applications and another form type; add richer validity, supersession, provenance, and receipt-driven completion only where a pilot exposes a concrete gap
 
 ### OPT-EPI-01 — Authority-aware collective verification
 

@@ -22,8 +22,8 @@ import {
 } from "@/lib/tasks/task-visibility.server";
 import {
   readTaskContext,
-  type TaskContextApplicationKnowledge,
-  type TaskContextApplicationPreparation,
+  type TaskContextFormResponseSet,
+  type TaskContextReviewedAnswer,
 } from "@/lib/tasks/task-context";
 
 const MAX_QUESTIONS = 200;
@@ -49,7 +49,8 @@ const QuestionSchema = z
   .object({
     answerRevisionId: z.string().trim().min(1).optional(),
     contextTags: z.array(z.string().trim().min(1)).max(30).default([]),
-    key: z.string().trim().min(1).max(200),
+    fieldKey: z.string().trim().min(1).max(200),
+    knowledgeKey: z.string().trim().min(1).max(200).optional(),
     prompt: z.string().trim().min(1).max(20_000),
     proposedAnswer: z.string().trim().min(1).max(500_000).optional(),
     sensitivity: z
@@ -60,48 +61,50 @@ const QuestionSchema = z
   })
   .strict();
 
-export const FindReusableAnswersSchema = z
+export const FindReviewedAnswersSchema = z
   .object({
     asOf: z.string().datetime().optional(),
     contextTags: z.array(z.string().trim().min(1)).max(30).default([]),
+    knowledgeKey: z.string().trim().min(1).max(200).optional(),
     limit: z.number().int().min(1).max(100).default(10),
     question: z.string().trim().min(1).max(20_000),
     subject: SubjectSchema,
   })
   .strict();
 
-export const PrepareApplicationQuestionsSchema = z
+export const PrepareFormResponsesSchema = z
   .object({
-    applicationTaskId: z.string().trim().min(1),
+    formTaskId: z.string().trim().min(1),
     idempotencyKey: z.string().trim().min(8).max(500),
     questions: z.array(QuestionSchema).min(1).max(MAX_QUESTIONS),
     subject: SubjectSchema,
   })
   .strict();
 
-export const ProposeApplicationSubmissionSchema = z
+export const ProposeFormSubmissionSchema = z
   .object({
-    answers: z
+    responses: z
       .array(
         z
           .object({
             answerRevisionId: z.string().trim().min(1),
-            key: z.string().trim().min(1).max(200),
+            fieldKey: z.string().trim().min(1).max(200),
             prompt: z.string().trim().min(1).max(20_000),
           })
           .strict(),
       )
       .min(1)
       .max(MAX_QUESTIONS),
-    applicationTaskId: z.string().trim().min(1),
     destination: z.string().trim().min(1).max(2_000),
     expiresAt: z.string().datetime().optional(),
+    formTaskId: z.string().trim().min(1),
     idempotencyKey: z.string().trim().min(8).max(500),
+    taskExecutionAttemptId: z.string().trim().min(1),
   })
   .strict();
 
 type Subject = z.infer<typeof SubjectSchema>;
-type ApplicationKnowledgeOptions = {
+type FormResponseOptions = {
   clientAccessBoundary?: TaskClientAccessBoundary;
 };
 
@@ -119,6 +122,10 @@ function normalizeTokens(value: string): Set<string> {
   );
 }
 
+function normalizeIdentity(value: string): string {
+  return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+}
+
 function overlapScore(left: string, right: string): number {
   const leftTokens = normalizeTokens(left);
   const rightTokens = normalizeTokens(right);
@@ -134,20 +141,25 @@ function answerMatchesQuestion(
   answer: Awaited<ReturnType<typeof listApprovedAnswers>>[number],
   question: z.infer<typeof QuestionSchema>,
 ): boolean {
+  const identityMatches = question.knowledgeKey
+    ? answer.reviewedAnswer.knowledgeKey !== null &&
+      normalizeIdentity(answer.reviewedAnswer.knowledgeKey) ===
+        normalizeIdentity(question.knowledgeKey)
+    : normalizeIdentity(answer.reviewedAnswer.canonicalQuestion) ===
+      normalizeIdentity(question.prompt);
   return (
-    answer.applicationKnowledge.question.trim().toLocaleLowerCase() ===
-      question.prompt.trim().toLocaleLowerCase() &&
+    identityMatches &&
     question.contextTags.every((requestedTag) =>
-      answer.applicationKnowledge.contextTags.some(
+      answer.reviewedAnswer.contextTags.some(
         (answerTag) =>
-          answerTag.toLocaleLowerCase() === requestedTag.toLocaleLowerCase(),
+          normalizeIdentity(answerTag) === normalizeIdentity(requestedTag),
       ),
     )
   );
 }
 
 function sameSubject(
-  left: TaskContextApplicationKnowledge["subject"],
+  left: TaskContextReviewedAnswer["subject"],
   right: Subject,
 ): boolean {
   return (
@@ -161,7 +173,7 @@ async function loadActor(actorUserId: string) {
     where: { id: actorUserId },
     select: { personId: true },
   });
-  if (!actor?.personId) throw new Error("Application task not found");
+  if (!actor?.personId) throw new Error("Form task not found");
   return { personId: actor.personId };
 }
 
@@ -171,40 +183,40 @@ function assertSubjectClientBoundary(
 ) {
   if (!boundary) return;
   if (subject.personId && !boundary.allowPersonalPrivate) {
-    throw new Error("Application task not found");
+    throw new Error("Form task not found");
   }
   if (
     subject.organizationId &&
     boundary.organizationIds !== null &&
     !boundary.organizationIds.includes(subject.organizationId)
   ) {
-    throw new Error("Application task not found");
+    throw new Error("Form task not found");
   }
 }
 
 async function assertSubjectAccess(
   subject: Subject,
   actorUserId: string,
-  options?: ApplicationKnowledgeOptions,
+  options?: FormResponseOptions,
 ) {
   assertSubjectClientBoundary(subject, options?.clientAccessBoundary);
   const actor = await loadActor(actorUserId);
   if (subject.personId && subject.personId !== actor.personId) {
-    throw new Error("Application task not found");
+    throw new Error("Form task not found");
   }
   if (
     subject.organizationId &&
     !(await canManageOrganization(actorUserId, subject.organizationId))
   ) {
-    throw new Error("Application task not found");
+    throw new Error("Form task not found");
   }
   return actor;
 }
 
-async function loadApplicationTask(input: {
+async function loadFormTask(input: {
   action: TaskAccessAction;
   actorUserId: string;
-  applicationTaskId: string;
+  formTaskId: string;
   clientAccessBoundary?: TaskClientAccessBoundary;
   subject?: Subject;
 }) {
@@ -222,7 +234,7 @@ async function loadApplicationTask(input: {
           : []),
       ],
       deletedAt: null,
-      id: input.applicationTaskId,
+      id: input.formTaskId,
     },
     select: {
       contextJson: true,
@@ -233,13 +245,13 @@ async function loadApplicationTask(input: {
       title: true,
     },
   });
-  if (!task) throw new Error("Application task not found");
+  if (!task) throw new Error("Form task not found");
   if (
     input.subject &&
     (task.ownerOrganizationId ?? null) !==
       (input.subject.organizationId ?? null)
   ) {
-    throw new Error("Application task does not belong to the supplied subject");
+    throw new Error("Form task does not belong to the supplied subject");
   }
   return { actor, task };
 }
@@ -296,11 +308,24 @@ async function listApprovedAnswers(input: {
         ...(input.clientAccessBoundary
           ? [getTaskClientAccessWhere(input.clientAccessBoundary)]
           : []),
+        {
+          contextJson: {
+            path: [
+              "reviewedAnswer",
+              "subject",
+              input.subject.organizationId ? "organizationId" : "personId",
+            ],
+            equals:
+              input.subject.organizationId ?? input.subject.personId ?? "",
+          },
+        },
+        {
+          contextJson: {
+            path: ["reviewedAnswer", "type"],
+            equals: "REVIEWED_ANSWER",
+          },
+        },
       ],
-      contextJson: {
-        path: ["applicationKnowledge", "schemaVersion"],
-        equals: 1,
-      },
     },
     orderBy: [{ verifiedAt: "desc" }, { id: "asc" }],
     select: {
@@ -326,9 +351,17 @@ async function listApprovedAnswers(input: {
   });
 
   return tasks.flatMap((task) => {
-    const knowledge = readTaskContext(task.contextJson).applicationKnowledge;
-    if (!knowledge || !sameSubject(knowledge.subject, input.subject)) return [];
-    if (knowledge.validUntil && new Date(knowledge.validUntil) < input.asOf) {
+    const reviewedAnswer = readTaskContext(task.contextJson).reviewedAnswer;
+    if (
+      !reviewedAnswer ||
+      !sameSubject(reviewedAnswer.subject, input.subject)
+    ) {
+      return [];
+    }
+    if (
+      reviewedAnswer.validUntil &&
+      new Date(reviewedAnswer.validUntil) < input.asOf
+    ) {
       return [];
     }
     const attempt = task.executionAttempts.find(
@@ -343,7 +376,7 @@ async function listApprovedAnswers(input: {
         answerDocumentId: artifact.documentRevision.documentId,
         answerRevisionId: artifact.documentRevision.id,
         answerVersion: artifact.documentRevision.version,
-        applicationKnowledge: knowledge,
+        reviewedAnswer,
         approvedAt:
           attempt.verifications[0]?.completedAt?.toISOString() ??
           task.verifiedAt?.toISOString() ??
@@ -351,19 +384,19 @@ async function listApprovedAnswers(input: {
         approvalId: attempt.verifications[0]?.id ?? null,
         contentHash:
           artifact.documentRevision.contentHash ?? artifact.contentHash,
-        questionTaskId: task.id,
+        reviewTaskId: task.id,
         title: task.title,
       },
     ];
   });
 }
 
-export async function findReusableAnswers(
+export async function findReviewedAnswers(
   rawInput: unknown,
   actorUserId: string,
-  options?: ApplicationKnowledgeOptions,
+  options?: FormResponseOptions,
 ) {
-  const input = FindReusableAnswersSchema.parse(rawInput);
+  const input = FindReviewedAnswersSchema.parse(rawInput);
   const asOf = input.asOf ? new Date(input.asOf) : new Date();
   const answers = await listApprovedAnswers({
     actorUserId,
@@ -377,15 +410,24 @@ export async function findReusableAnswers(
   return {
     answers: answers
       .map((answer) => {
-        const matchingContextTags =
-          answer.applicationKnowledge.contextTags.filter((tag) =>
-            requestedTags.has(tag.toLowerCase()),
-          );
+        const matchingContextTags = answer.reviewedAnswer.contextTags.filter(
+          (tag) => requestedTags.has(tag.toLowerCase()),
+        );
+        const knowledgeKeyMatches =
+          Boolean(input.knowledgeKey) &&
+          Boolean(answer.reviewedAnswer.knowledgeKey) &&
+          normalizeIdentity(input.knowledgeKey ?? "") ===
+            normalizeIdentity(answer.reviewedAnswer.knowledgeKey ?? "");
         return {
           ...answer,
+          knowledgeKeyMatches,
           matchingContextTags,
           score:
-            overlapScore(input.question, answer.applicationKnowledge.question) +
+            (knowledgeKeyMatches ? 2 : 0) +
+            overlapScore(
+              input.question,
+              answer.reviewedAnswer.canonicalQuestion,
+            ) +
             matchingContextTags.length * 0.1,
         };
       })
@@ -398,7 +440,7 @@ export async function findReusableAnswers(
       )
       .slice(0, input.limit),
     asOf: asOf.toISOString(),
-    exactMatchRequiredForAutomaticReuse: true,
+    automaticReuseRequiresStableKnowledgeKeyOrExactPrompt: true,
   };
 }
 
@@ -427,15 +469,16 @@ function asJsonObject(value: unknown): Record<string, unknown> {
     : {};
 }
 
-async function saveApplicationPreparation(input: {
+async function saveFormResponseSet(input: {
   actorPersonId: string;
   actorUserId: string;
-  applicationTaskId: string;
+  formHash: string;
+  formTaskId: string;
   clientAccessBoundary?: TaskClientAccessBoundary;
-  questionSetHash: string;
-  questions: Array<{
+  items: Array<{
     contextTags: string[];
-    key: string;
+    fieldKey: string;
+    knowledgeKey: string | null;
     prompt: string;
   }>;
   resolvedAnswers?: Map<string, string>;
@@ -443,7 +486,7 @@ async function saveApplicationPreparation(input: {
 }) {
   return prisma.$transaction(async (tx) => {
     await tx.$queryRaw<Array<{ id: string }>>`
-      SELECT "id" FROM "Task" WHERE "id" = ${input.applicationTaskId} FOR UPDATE
+      SELECT "id" FROM "Task" WHERE "id" = ${input.formTaskId} FOR UPDATE
     `;
     const task = await tx.task.findFirst({
       where: {
@@ -458,7 +501,7 @@ async function saveApplicationPreparation(input: {
             : []),
         ],
         deletedAt: null,
-        id: input.applicationTaskId,
+        id: input.formTaskId,
       },
       select: { contextJson: true, id: true, ownerOrganizationId: true },
     });
@@ -467,36 +510,35 @@ async function saveApplicationPreparation(input: {
       (task.ownerOrganizationId ?? null) !==
         (input.subject.organizationId ?? null)
     ) {
-      throw new Error("Application task not found");
+      throw new Error("Form task not found");
     }
 
-    const existing = readTaskContext(task.contextJson).applicationPreparation;
+    const existing = readTaskContext(task.contextJson).formResponseSet;
     if (
       existing &&
-      (existing.questionSetHash !== input.questionSetHash ||
+      (existing.formHash !== input.formHash ||
         !sameSubject(existing.subject, input.subject))
     ) {
       throw new Error(
-        "Application question set changed after preparation; create a new application task",
+        "Form fields changed after preparation; create a new form task",
       );
     }
     const existingAnswers = new Map(
-      existing?.questions.flatMap((question) =>
-        question.answerRevisionId
-          ? [[question.key, question.answerRevisionId] as const]
+      existing?.items.flatMap((item) =>
+        item.answerRevisionId
+          ? [[item.fieldKey, item.answerRevisionId] as const]
           : [],
       ) ?? [],
     );
-    const preparation: TaskContextApplicationPreparation = {
-      questionSetHash: input.questionSetHash,
-      questions: input.questions.map((question) => ({
-        ...question,
+    const responseSet: TaskContextFormResponseSet = {
+      formHash: input.formHash,
+      items: input.items.map((item) => ({
+        ...item,
         answerRevisionId:
-          input.resolvedAnswers?.get(question.key) ??
-          existingAnswers.get(question.key) ??
+          input.resolvedAnswers?.get(item.fieldKey) ??
+          existingAnswers.get(item.fieldKey) ??
           null,
       })),
-      schemaVersion: 1,
       subject: input.subject,
     };
     await tx.task.update({
@@ -504,23 +546,25 @@ async function saveApplicationPreparation(input: {
       data: {
         contextJson: jsonValue({
           ...asJsonObject(task.contextJson),
-          applicationPreparation: preparation,
+          formResponseSet: responseSet,
         }),
       },
     });
-    return preparation;
+    return responseSet;
   });
 }
 
-export async function prepareApplicationQuestions(
+export async function prepareFormResponses(
   rawInput: unknown,
   actorUserId: string,
-  options?: ApplicationKnowledgeOptions,
+  options?: FormResponseOptions,
 ) {
-  const input = PrepareApplicationQuestionsSchema.parse(rawInput);
-  const uniqueKeys = new Set(input.questions.map((question) => question.key));
+  const input = PrepareFormResponsesSchema.parse(rawInput);
+  const uniqueKeys = new Set(
+    input.questions.map((question) => question.fieldKey),
+  );
   if (uniqueKeys.size !== input.questions.length) {
-    throw new Error("Application question keys must be unique");
+    throw new Error("Form field keys must be unique");
   }
   for (const question of input.questions) {
     if (
@@ -528,7 +572,7 @@ export async function prepareApplicationQuestions(
       PLACEHOLDER_PATTERN.test(question.proposedAnswer)
     ) {
       throw new Error(
-        `Proposed answer for ${question.key} contains unresolved placeholder text`,
+        `Proposed answer for ${question.fieldKey} contains unresolved placeholder text`,
       );
     }
   }
@@ -553,29 +597,30 @@ export async function prepareApplicationQuestions(
       throw new Error("Source artifact not found");
     }
   }
-  const { actor, task: applicationTask } = await loadApplicationTask({
+  const { actor, task: formTask } = await loadFormTask({
     action: "MANAGE",
     actorUserId,
-    applicationTaskId: input.applicationTaskId,
+    formTaskId: input.formTaskId,
     clientAccessBoundary: options?.clientAccessBoundary,
     subject: input.subject,
   });
-  const preparedQuestions = input.questions.map((question) => ({
+  const preparedItems = input.questions.map((question) => ({
     contextTags: question.contextTags,
-    key: question.key,
+    fieldKey: question.fieldKey,
+    knowledgeKey: question.knowledgeKey ?? null,
     prompt: question.prompt,
   }));
-  const questionSetHash = await sha256CanonicalJson({
-    questions: preparedQuestions,
+  const formHash = await sha256CanonicalJson({
+    items: preparedItems,
     subject: input.subject,
   });
-  await saveApplicationPreparation({
+  await saveFormResponseSet({
     actorPersonId: actor.personId,
     actorUserId,
-    applicationTaskId: applicationTask.id,
     clientAccessBoundary: options?.clientAccessBoundary,
-    questionSetHash,
-    questions: preparedQuestions,
+    formHash,
+    formTaskId: formTask.id,
+    items: preparedItems,
     subject: input.subject,
   });
   const existingAnswers = await listApprovedAnswers({
@@ -588,44 +633,46 @@ export async function prepareApplicationQuestions(
   const resolved = [];
   const unresolved = [];
   for (const question of input.questions) {
+    const matchingAnswers = existingAnswers.filter((answer) =>
+      answerMatchesQuestion(answer, question),
+    );
+    const automaticCandidates = matchingAnswers.filter(
+      (answer) =>
+        !["CONFIDENTIAL", "RESTRICTED"].includes(
+          answer.reviewedAnswer.sensitivity,
+        ),
+    );
     const approvedAnswer = question.answerRevisionId
-      ? (existingAnswers.find(
-          (answer) =>
-            answer.answerRevisionId === question.answerRevisionId &&
-            answerMatchesQuestion(answer, question),
+      ? (matchingAnswers.find(
+          (answer) => answer.answerRevisionId === question.answerRevisionId,
         ) ?? null)
-      : (existingAnswers.find(
-          (answer) =>
-            answerMatchesQuestion(answer, question) &&
-            !["CONFIDENTIAL", "RESTRICTED"].includes(
-              answer.applicationKnowledge.sensitivity,
-            ),
-        ) ?? null);
+      : automaticCandidates.length === 1
+        ? automaticCandidates[0]!
+        : null;
     if (approvedAnswer) {
       resolved.push({
         answerRevisionId: approvedAnswer.answerRevisionId,
-        key: question.key,
-        questionTaskId: approvedAnswer.questionTaskId,
+        fieldKey: question.fieldKey,
+        reviewTaskId: approvedAnswer.reviewTaskId,
       });
       continue;
     }
 
     const questionHash = await sha256CanonicalJson({
-      applicationTaskId: input.applicationTaskId,
-      key: question.key,
+      fieldKey: question.fieldKey,
+      formTaskId: input.formTaskId,
       subject: input.subject,
     });
-    const taskKey = `application-question:${questionHash}`;
-    const context: TaskContextApplicationKnowledge = {
-      applicationTaskId: input.applicationTaskId,
+    const taskKey = `reviewed-answer:${questionHash}`;
+    const context: TaskContextReviewedAnswer = {
+      canonicalQuestion: question.prompt,
       contextTags: question.contextTags,
-      question: question.prompt,
-      questionKey: question.key,
-      schemaVersion: 1,
+      knowledgeKey: question.knowledgeKey ?? null,
+      originTaskId: input.formTaskId,
       sensitivity: question.sensitivity,
       sourceArtifactIds: question.sourceArtifactIds,
       subject: input.subject,
-      type: "REUSABLE_ANSWER",
+      type: "REVIEWED_ANSWER",
       validUntil: question.validUntil,
     };
     const questionTask = await prisma.task.upsert({
@@ -639,25 +686,25 @@ export async function prepareApplicationQuestions(
             "The answer is factually accurate and appropriate for reuse in this context.",
             "An immutable answer document revision is attached and accepted by a human reviewer.",
           ],
-          applicationKnowledge: context,
+          reviewedAnswer: context,
           expectedDeliverable: "An approved reusable answer revision",
         }),
         createdByUserId: actorUserId,
         deadlinePolicy:
-          applicationTask.deadlinePolicy === TaskDeadlinePolicy.NONE
+          formTask.deadlinePolicy === TaskDeadlinePolicy.NONE
             ? TaskDeadlinePolicy.SOFT
-            : applicationTask.deadlinePolicy,
+            : formTask.deadlinePolicy,
         description: [
           question.prompt,
           "",
           "Review the proposed answer and correct any unsupported, stale, private, or awkward claims. Accept only the exact document revision that should be reused.",
         ].join("\n"),
-        dueAt: applicationTask.dueAt,
+        dueAt: formTask.dueAt,
         estimatedEffortHours: 0.05,
         executionMode: TaskExecutionMode.HUMAN_OR_AGENT,
         isPublic: false,
         ownerOrganizationId: input.subject.organizationId ?? null,
-        parentTaskId: input.applicationTaskId,
+        parentTaskId: input.formTaskId,
         status: TaskStatus.ACTIVE,
         taskKey,
         title: `Verify answer: ${question.prompt.slice(0, 140)}`,
@@ -671,15 +718,15 @@ export async function prepareApplicationQuestions(
         title: true,
       },
     });
-    const storedKnowledge = readTaskContext(
+    const storedAnswer = readTaskContext(
       questionTask.contextJson,
-    ).applicationKnowledge;
+    ).reviewedAnswer;
     if (
-      !storedKnowledge ||
-      JSON.stringify(storedKnowledge) !== JSON.stringify(context)
+      !storedAnswer ||
+      JSON.stringify(storedAnswer) !== JSON.stringify(context)
     ) {
       throw new Error(
-        `Application question ${question.key} conflicts with an existing question`,
+        `Form field ${question.fieldKey} conflicts with an existing reviewed-answer task`,
       );
     }
     for (const [
@@ -707,7 +754,7 @@ export async function prepareApplicationQuestions(
       const document = await createDocument({
         body: question.proposedAnswer,
         createdByUserId: actorUserId,
-        idempotencyKey: `${input.idempotencyKey}:answer:${question.key}`,
+        idempotencyKey: `${input.idempotencyKey}:answer:${question.fieldKey}`,
         organizationId: input.subject.organizationId ?? null,
         sourceArtifactId: question.sourceArtifactIds[0] ?? null,
         taskId: questionTask.id,
@@ -718,10 +765,12 @@ export async function prepareApplicationQuestions(
     }
     unresolved.push({
       draftDocument,
-      key: question.key,
+      fieldKey: question.fieldKey,
       reason: question.answerRevisionId
         ? "The supplied answer revision is not an approved answer for this question and subject."
-        : "No approved answer revision was supplied.",
+        : automaticCandidates.length > 1
+          ? "Multiple approved answers match this field; choose the exact revision to use."
+          : "No approved answer revision was supplied.",
       task: {
         id: questionTask.id,
         status: questionTask.status,
@@ -731,133 +780,138 @@ export async function prepareApplicationQuestions(
     });
   }
 
-  await saveApplicationPreparation({
+  await saveFormResponseSet({
     actorPersonId: actor.personId,
     actorUserId,
-    applicationTaskId: applicationTask.id,
     clientAccessBoundary: options?.clientAccessBoundary,
-    questionSetHash,
-    questions: preparedQuestions,
+    formHash,
+    formTaskId: formTask.id,
+    items: preparedItems,
     resolvedAnswers: new Map(
-      resolved.map((answer) => [answer.key, answer.answerRevisionId]),
+      resolved.map((answer) => [answer.fieldKey, answer.answerRevisionId]),
     ),
     subject: input.subject,
   });
 
   return {
-    applicationTaskId: applicationTask.id,
+    formTaskId: formTask.id,
     readyForSubmission: unresolved.length === 0,
     resolved,
     unresolved,
   };
 }
 
-export async function proposeApplicationSubmission(
+export async function proposeFormSubmission(
   rawInput: unknown,
   actorUserId: string,
-  options?: ApplicationKnowledgeOptions,
+  options?: FormResponseOptions,
 ) {
-  const input = ProposeApplicationSubmissionSchema.parse(rawInput);
-  const uniqueKeys = new Set(input.answers.map((answer) => answer.key));
-  if (uniqueKeys.size !== input.answers.length) {
-    throw new Error("Application answer keys must be unique");
+  const input = ProposeFormSubmissionSchema.parse(rawInput);
+  const uniqueKeys = new Set(
+    input.responses.map((response) => response.fieldKey),
+  );
+  if (uniqueKeys.size !== input.responses.length) {
+    throw new Error("Form field keys must be unique");
   }
-  const { task } = await loadApplicationTask({
+  const { task } = await loadFormTask({
     action: "EXECUTE",
     actorUserId,
-    applicationTaskId: input.applicationTaskId,
+    formTaskId: input.formTaskId,
     clientAccessBoundary: options?.clientAccessBoundary,
   });
   const activeQuestionCount = await prisma.task.count({
     where: {
       deletedAt: null,
-      parentTaskId: input.applicationTaskId,
+      parentTaskId: input.formTaskId,
       status: { in: [TaskStatus.ACTIVE, TaskStatus.DRAFT] },
       contextJson: {
-        path: ["applicationKnowledge", "schemaVersion"],
-        equals: 1,
+        path: ["reviewedAnswer", "type"],
+        equals: "REVIEWED_ANSWER",
       },
     },
   });
   if (activeQuestionCount > 0) {
     throw new Error(
-      `Application has ${activeQuestionCount} unresolved answer verification task(s)`,
+      `Form has ${activeQuestionCount} unresolved answer verification task(s)`,
     );
   }
 
   const subject: Subject = task.ownerOrganizationId
     ? { organizationId: task.ownerOrganizationId }
     : { personId: (await loadActor(actorUserId)).personId };
-  const preparation = readTaskContext(task.contextJson).applicationPreparation;
-  if (!preparation || !sameSubject(preparation.subject, subject)) {
-    throw new Error("Application must be prepared before submission");
+  const responseSet = readTaskContext(task.contextJson).formResponseSet;
+  if (!responseSet || !sameSubject(responseSet.subject, subject)) {
+    throw new Error("Form responses must be prepared before submission");
   }
-  if (input.answers.length !== preparation.questions.length) {
-    throw new Error(
-      "Application submission does not include every prepared question",
-    );
+  if (input.responses.length !== responseSet.items.length) {
+    throw new Error("Form submission does not include every prepared field");
   }
   const approvedAnswers = [];
-  for (const preparedQuestion of preparation.questions) {
-    const answer = input.answers.find(
-      (candidate) => candidate.key === preparedQuestion.key,
+  for (const preparedItem of responseSet.items) {
+    const response = input.responses.find(
+      (candidate) => candidate.fieldKey === preparedItem.fieldKey,
     );
     if (
-      !answer ||
-      answer.prompt !== preparedQuestion.prompt ||
-      !preparedQuestion.answerRevisionId ||
-      answer.answerRevisionId !== preparedQuestion.answerRevisionId
+      !response ||
+      response.prompt !== preparedItem.prompt ||
+      !preparedItem.answerRevisionId ||
+      response.answerRevisionId !== preparedItem.answerRevisionId
     ) {
       throw new Error(
-        `Answer ${preparedQuestion.key} does not match the prepared application`,
+        `Response ${preparedItem.fieldKey} does not match the prepared form`,
       );
     }
     const approved = await approvedAnswerByRevision({
       actorUserId,
-      answerRevisionId: answer.answerRevisionId,
+      answerRevisionId: response.answerRevisionId,
       clientAccessBoundary: options?.clientAccessBoundary,
       subject,
     });
     if (!approved) {
       throw new Error(
-        `Answer ${answer.key} is not an approved reusable answer`,
+        `Response ${response.fieldKey} is not an approved reusable answer`,
       );
     }
     if (PLACEHOLDER_PATTERN.test(approved.answer)) {
       throw new Error(
-        `Answer ${answer.key} contains unresolved placeholder text`,
+        `Response ${response.fieldKey} contains unresolved placeholder text`,
       );
     }
     approvedAnswers.push({
       answer: approved.answer,
       answerContentHash: approved.contentHash,
       answerRevisionId: approved.answerRevisionId,
-      answerTaskId: approved.questionTaskId,
-      key: answer.key,
-      prompt: answer.prompt,
+      approvalId: approved.approvalId,
+      approvedAt: approved.approvedAt,
+      reviewTaskId: approved.reviewTaskId,
+      fieldKey: response.fieldKey,
+      knowledgeKey: preparedItem.knowledgeKey,
+      prompt: response.prompt,
     });
   }
 
   const payload = {
-    answers: approvedAnswers,
-    applicationTaskId: input.applicationTaskId,
-    schemaVersion: "application-submission.v1",
+    formHash: responseSet.formHash,
+    formTaskId: input.formTaskId,
+    responses: approvedAnswers,
+    schemaVersion: "form-submission.v1",
   };
   const request = await proposeExternalAction(
     {
       destination: input.destination,
       expiresAt: input.expiresAt,
       idempotencyKey: input.idempotencyKey,
-      operation: "SUBMIT_APPLICATION",
+      operation: "SUBMIT_FORM",
       payload,
-      taskId: input.applicationTaskId,
+      taskExecutionAttemptId: input.taskExecutionAttemptId,
+      taskId: input.formTaskId,
     },
     actorUserId,
     { clientAccessBoundary: options?.clientAccessBoundary },
   );
   return {
     approvalRequired: true,
-    applicationTaskId: input.applicationTaskId,
+    formTaskId: input.formTaskId,
     externalActionRequest: request,
     payload,
   };

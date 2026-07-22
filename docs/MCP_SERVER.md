@@ -199,7 +199,7 @@ disagree, those sources win.
 - Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 - Documents (versioned markdown): `createDocument`, `updateDocument`, `getDocument`, `listDocuments`.
 - Collections (structured records): `createCollection`, `updateCollection`, `getCollection`, `listCollections`, `createCollectionRecord`, `updateCollectionRecord`, `queryCollectionRecords`, `upsertCollectionRecordsBatch`, `saveCollectionView`.
-- Reviewed applications: `findReusableAnswers`, `prepareApplicationQuestions`, `proposeApplicationSubmission`. Approved answers are accepted immutable document-revision artifacts; unresolved questions become private atomic child tasks; submission remains a pending exact-payload external action until human approval.
+- Reviewed form responses: `findReviewedAnswers`, `prepareFormResponses`, `proposeFormSubmission`. Applications, surveys, RFPs, intake forms, and questionnaires can reuse person- or organization-owned text and narrative answers. Accepted answers are immutable document-revision artifacts; unresolved questions become private atomic tasks; the prepared text-response payload remains a pending external action until human approval. Signatures, file uploads, and one-time typed controls are outside these tools.
 - Content: `searchContent`, `exportContent`, `manageContentAccess`, `manageContentFiles`, `reportContent`.
 - Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
