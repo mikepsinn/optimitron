@@ -141,6 +141,9 @@ const mocks = vi.hoisted(() => ({
   trackingReminderNotificationFindFirst: vi.fn(),
   trackingReminderNotificationCreate: vi.fn(),
   trackingReminderNotificationUpdate: vi.fn(),
+  findReusableAnswers: vi.fn(),
+  prepareApplicationQuestions: vi.fn(),
+  proposeApplicationSubmission: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -223,6 +226,12 @@ vi.mock("../task-applications.server", () => ({
   assertCanReviewTaskApplications: mocks.assertCanReviewTaskApplications,
   getTaskApplications: mocks.getTaskApplications,
   updateTaskApplication: mocks.updateTaskApplication,
+}));
+
+vi.mock("../application-knowledge.server", () => ({
+  findReusableAnswers: mocks.findReusableAnswers,
+  prepareApplicationQuestions: mocks.prepareApplicationQuestions,
+  proposeApplicationSubmission: mocks.proposeApplicationSubmission,
 }));
 
 class ProfileValidationError extends Error {
@@ -889,6 +898,36 @@ describe("MCP server tool dispatch", () => {
         "manageContentFiles",
         "exportContent",
       ]),
+    );
+  });
+
+  it("forwards the OAuth organization boundary to application knowledge tools", async () => {
+    mocks.findReusableAnswers.mockResolvedValue({ answers: [] });
+    const client = await setup("user-1", [McpScope.TASKS_ORGANIZATION], {
+      organizationIds: ["organization-1"],
+    });
+
+    const result = await client.callTool({
+      name: "findReusableAnswers",
+      arguments: {
+        question: "What is your annual budget?",
+        subject: { organizationId: "organization-1" },
+      },
+    });
+
+    expect(parseToolBody(result)).toEqual({ answers: [] });
+    expect(mocks.findReusableAnswers).toHaveBeenCalledWith(
+      {
+        question: "What is your annual budget?",
+        subject: { organizationId: "organization-1" },
+      },
+      "user-1",
+      {
+        clientAccessBoundary: {
+          allowPersonalPrivate: false,
+          organizationIds: ["organization-1"],
+        },
+      },
     );
   });
 

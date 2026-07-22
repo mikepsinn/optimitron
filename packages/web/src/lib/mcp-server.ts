@@ -101,6 +101,12 @@ import {
   handlePrivateExecutionToolCall,
   isPrivateExecutionToolName,
 } from "./mcp-tools/private-execution";
+import {
+  APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS,
+  APPLICATION_KNOWLEDGE_TOOL_SCOPES,
+  handleApplicationKnowledgeToolCall,
+  isApplicationKnowledgeToolName,
+} from "./mcp-tools/application-knowledge";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
@@ -317,6 +323,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...DOCUMENT_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
   ...PRIVATE_EXECUTION_TOOL_SCOPES,
+  ...APPLICATION_KNOWLEDGE_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -7723,6 +7730,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...DOCUMENT_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
   ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
+  ...APPLICATION_KNOWLEDGE_TOOL_DEFINITIONS,
 ];
 
 function assertToolRegistrationIntegrity(): void {
@@ -7903,6 +7911,14 @@ export function createMcpServer(
         if (isContentToolName(name)) {
           return handleContentToolCall({
             args: a,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isApplicationKnowledgeToolName(name)) {
+          return handleApplicationKnowledgeToolCall({
+            args: a,
+            clientAccessBoundary: taskClientBoundary,
             name,
             userId: userId ?? null,
           });

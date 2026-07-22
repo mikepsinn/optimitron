@@ -199,6 +199,7 @@ disagree, those sources win.
 - Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 - Documents (versioned markdown): `createDocument`, `updateDocument`, `getDocument`, `listDocuments`.
 - Collections (structured records): `createCollection`, `updateCollection`, `getCollection`, `listCollections`, `createCollectionRecord`, `updateCollectionRecord`, `queryCollectionRecords`, `upsertCollectionRecordsBatch`, `saveCollectionView`.
+- Reviewed applications: `findReusableAnswers`, `prepareApplicationQuestions`, `proposeApplicationSubmission`. Approved answers are accepted immutable document-revision artifacts; unresolved questions become private atomic child tasks; submission remains a pending exact-payload external action until human approval.
 - Content: `searchContent`, `exportContent`, `manageContentAccess`, `manageContentFiles`, `reportContent`.
 - Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.

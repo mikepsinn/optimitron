@@ -393,11 +393,11 @@ verified against `feature/private-execution-system` (2026-07-17).
 ### OPT-KNOW-01 — Reusable entity knowledge
 
 - **Layer:** personal / organization
-- **Status:** planned
-- **Summary:** Reusable questions are tasks; approved person and organization answers become versioned, provenance-bearing artifacts or assertions that many consuming tasks can use without copying ownership into an application or collection row.
-- **Evidence:** target contract in PRD §9.5; production task `optimitron:dev:entity-knowledge-profiles`; existing Task, SourceArtifact, DocumentRevision, execution-artifact, and verification foundations; no canonical knowledge contract ships yet
+- **Status:** partial
+- **Summary:** Reusable questions are private tasks; accepted immutable document-revision artifacts are discoverable for a person or organization, exact matches are reused, unresolved questions become atomic verification tasks, and complete applications become exact pending external-action payloads. Destination execution and receipts reuse the existing human-approval lifecycle.
+- **Evidence:** packages/web/src/lib/application-knowledge.server.ts; packages/web/src/lib/mcp-tools/application-knowledge.ts; packages/web/src/lib/application-knowledge.server.test.ts; Task, DocumentRevision, TaskExecutionArtifact, TaskVerification, and ExternalActionRequest models
 - **Acceptance:** A longevity-fellowship application reuses an owner-approved answer, records the exact version and destination used, creates a small blocking human task for an unknown answer, and later reuses the same answer in another application without duplication.
-- **Roadmap:** next — pilot with existing task and artifact primitives before considering schema
+- **Roadmap:** pilot the MCP loop with real EOS applications; add richer validity, supersession, provenance, and receipt-driven completion only where the pilot exposes a concrete gap
 
 ### OPT-EPI-01 — Authority-aware collective verification
 

@@ -116,6 +116,7 @@ function approvalExpiry(input: string | undefined, now: Date) {
 export async function proposeExternalAction(
   rawInput: unknown,
   actorUserId: string,
+  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
 ) {
   const input = ProposeExternalActionSchema.parse(rawInput);
   const payloadHash = await sha256CanonicalJson({
@@ -132,6 +133,11 @@ export async function proposeExternalAction(
 
     const task = await tx.task.findFirst({
       where: {
+        AND: [
+          ...(options?.clientAccessBoundary
+            ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+            : []),
+        ],
         deletedAt: null,
         id: input.taskId,
         OR: [
