@@ -142,6 +142,7 @@ export const ROUTES = {
   dashboard: "/dashboard",
   calendar: "/calendar",
   tasks: "/tasks",
+  tasksTree: "/tasks/tree",
   documents: "/documents",
   collections: "/collections",
   employees: "/employees",
