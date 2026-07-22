@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { formatCompactCurrency } from "@/lib/tasks/accountability";
 import { getTaskPath } from "@/lib/routes";
+import { TaskTreeTitleLink } from "@/components/tasks/TaskTreeTitleLink";
 import type { TaskTreeNode } from "@/lib/tasks/task-tree";
 
 /** Root + its direct children start open so a visitor immediately sees the
@@ -19,13 +19,11 @@ function formatEvLabel(node: TaskTreeNode): string {
 function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
   return (
     <span className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-      <Link
+      <TaskTreeTitleLink
         className="font-bold text-foreground underline-offset-4 hover:underline"
         href={getTaskPath(node.id)}
-        onClick={(event) => event.stopPropagation()}
-      >
-        {node.title}
-      </Link>
+        title={node.title}
+      />
       <span className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
         {node.status.toLowerCase()}
       </span>
