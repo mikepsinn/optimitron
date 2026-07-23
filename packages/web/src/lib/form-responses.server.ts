@@ -108,7 +108,7 @@ function jsonValue(value: unknown): Prisma.InputJsonValue {
 }
 
 function normalizeIdentity(value: string): string {
-  return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function normalizeTags(tags: string[]): string[] {
