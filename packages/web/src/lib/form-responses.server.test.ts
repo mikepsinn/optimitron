@@ -1,18 +1,24 @@
 import {
   ExternalActionRequestStatus,
+  FormSubmissionStatus,
+  KnowledgeSensitivity,
   OrganizationMemberRole,
   OrgStatus,
   OrgType,
+  TaskEdgeType,
   TaskStatus,
 } from "@optimitron/db";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { createDocument } from "./documents.server";
 import {
   findReviewedAnswers,
   prepareFormResponses,
   proposeFormSubmission,
 } from "./form-responses.server";
+import {
+  decideExternalActionRequest,
+  recordExternalActionResult,
+} from "./tasks/external-action.server";
 import {
   startTaskExecution,
   submitTaskArtifact,
@@ -25,6 +31,36 @@ const TEST_PREFIX = "form_responses_";
 async function cleanup() {
   await prisma.externalActionRequest.deleteMany({
     where: { taskId: { startsWith: TEST_PREFIX } },
+  });
+  await prisma.formResponse.deleteMany({
+    where: {
+      submission: {
+        OR: [
+          { taskId: { startsWith: TEST_PREFIX } },
+          {
+            formRevision: {
+              form: { createdByUserId: { startsWith: TEST_PREFIX } },
+            },
+          },
+        ],
+      },
+    },
+  });
+  await prisma.formSubmission.deleteMany({
+    where: {
+      OR: [
+        { taskId: { startsWith: TEST_PREFIX } },
+        { idempotencyKey: { startsWith: TEST_PREFIX } },
+        {
+          formRevision: {
+            form: { createdByUserId: { startsWith: TEST_PREFIX } },
+          },
+        },
+      ],
+    },
+  });
+  await prisma.form.deleteMany({
+    where: { createdByUserId: { startsWith: TEST_PREFIX } },
   });
   await prisma.taskVerification.deleteMany({
     where: {
@@ -69,6 +105,14 @@ async function cleanup() {
   await prisma.task.deleteMany({
     where: { id: { startsWith: TEST_PREFIX } },
   });
+  await prisma.subject.deleteMany({
+    where: {
+      OR: [
+        { personId: { startsWith: TEST_PREFIX } },
+        { organizationId: { startsWith: TEST_PREFIX } },
+      ],
+    },
+  });
   await prisma.organizationMember.deleteMany({
     where: {
       OR: [
@@ -90,10 +134,7 @@ async function cleanup() {
 
 async function createFixture() {
   const person = await prisma.person.create({
-    data: {
-      displayName: "Form Response Owner",
-      id: `${TEST_PREFIX}person`,
-    },
+    data: { displayName: "Form Response Owner", id: `${TEST_PREFIX}person` },
   });
   const user = await prisma.user.create({
     data: {
@@ -133,23 +174,62 @@ async function createFixture() {
   return { applicationTask, organization, person, user };
 }
 
+async function approvePreparedAnswer(input: {
+  answerRevisionId: string;
+  reviewTaskId: string;
+  userId: string;
+}) {
+  const attempt = await startTaskExecution(
+    { taskId: input.reviewTaskId },
+    input.userId,
+  );
+  await submitTaskArtifact(
+    {
+      documentRevisionId: input.answerRevisionId,
+      label: "Reusable reviewed answer",
+      taskExecutionAttemptId: attempt.id,
+    },
+    input.userId,
+  );
+  const submitted = await submitTaskForVerification(
+    {
+      actualDurationSeconds: 60,
+      method: "REVIEWER",
+      outputSummary: "Checked the answer for accuracy and tone.",
+      taskExecutionAttemptId: attempt.id,
+    },
+    input.userId,
+  );
+  await verifyTaskExecution(
+    {
+      criterionResults: [],
+      result: "ACCEPTED",
+      taskVerificationId: submitted.verification.id,
+    },
+    input.userId,
+  );
+}
+
 describe.sequential("reviewed form response loop", () => {
   beforeEach(cleanup);
   afterAll(cleanup);
 
-  it("turns one unresolved question into one approved reusable revision and one pending exact submission", async () => {
+  it("reuses one approved knowledge answer across forms and proposes the stored submission", async () => {
     const fixture = await createFixture();
     const subject = { organizationId: fixture.organization.id };
-    const prepared = await prepareFormResponses(
+    const question = {
+      contextTags: ["grant"],
+      fieldKey: "mission",
+      knowledgeKey: "organization.mission",
+      prompt: "What is your organization's mission?",
+    };
+    const first = await prepareFormResponses(
       {
         formTaskId: fixture.applicationTask.id,
-        idempotencyKey: `${TEST_PREFIX}prepare`,
+        idempotencyKey: `${TEST_PREFIX}prepare_first`,
         questions: [
           {
-            contextTags: ["grant"],
-            fieldKey: "mission",
-            knowledgeKey: "organization.mission",
-            prompt: "What is your organization's mission?",
+            ...question,
             proposedAnswer:
               "We identify and execute the highest-value ways to reduce suffering.",
           },
@@ -158,53 +238,29 @@ describe.sequential("reviewed form response loop", () => {
       },
       fixture.user.id,
     );
-
-    expect(prepared.readyForSubmission).toBe(false);
-    expect(prepared.unresolved).toHaveLength(1);
-    const unresolved = prepared.unresolved[0]!;
+    expect(first.readyForSubmission).toBe(false);
+    const unresolved = first.unresolved[0]!;
     expect(unresolved.draftDocument?.revisionId).toBeTruthy();
+    await approvePreparedAnswer({
+      answerRevisionId: unresolved.draftDocument!.revisionId,
+      reviewTaskId: unresolved.task.id,
+      userId: fixture.user.id,
+    });
 
-    const attempt = await startTaskExecution(
-      { taskId: unresolved.task.id },
-      fixture.user.id,
-    );
-    await submitTaskArtifact(
+    const prepared = await prepareFormResponses(
       {
-        documentRevisionId: unresolved.draftDocument!.revisionId,
-        label: "Reusable reviewed answer",
-        taskExecutionAttemptId: attempt.id,
+        formTaskId: fixture.applicationTask.id,
+        idempotencyKey: `${TEST_PREFIX}prepare_first`,
+        questions: [question],
+        subject,
       },
       fixture.user.id,
     );
-    const submitted = await submitTaskForVerification(
-      {
-        actualDurationSeconds: 60,
-        method: "REVIEWER",
-        outputSummary: "Checked the answer for factual accuracy and tone.",
-        taskExecutionAttemptId: attempt.id,
-      },
-      fixture.user.id,
-    );
-    await verifyTaskExecution(
-      {
-        criterionResults: [
-          {
-            criterion:
-              "The answer is factually accurate and appropriate for reuse in this context.",
-            passed: true,
-          },
-          {
-            criterion:
-              "An immutable answer document revision is attached and accepted by a human reviewer.",
-            passed: true,
-          },
-        ],
-        result: "ACCEPTED",
-        taskVerificationId: submitted.verification.id,
-      },
-      fixture.user.id,
-    );
-
+    expect(prepared).toMatchObject({
+      formSubmissionId: first.formSubmissionId,
+      readyForSubmission: true,
+      unresolved: [],
+    });
     const found = await findReviewedAnswers(
       {
         contextTags: ["grant"],
@@ -222,140 +278,311 @@ describe.sequential("reviewed form response loop", () => {
       reviewTaskId: unresolved.task.id,
     });
 
-    const secondApplication = await prisma.task.create({
+    const secondTask = await prisma.task.create({
       data: {
         createdByUserId: fixture.user.id,
-        description: "Submit a second example grant application.",
+        description: "Submit another application.",
         id: `${TEST_PREFIX}second_task`,
         isPublic: false,
         ownerOrganizationId: fixture.organization.id,
         status: TaskStatus.ACTIVE,
-        title: "Apply for a second example grant",
+        title: "Apply for another grant",
       },
     });
-    const mismatched = await prepareFormResponses(
-      {
-        formTaskId: secondApplication.id,
-        idempotencyKey: `${TEST_PREFIX}mismatched-answer`,
-        questions: [
-          {
-            answerRevisionId: unresolved.draftDocument!.revisionId,
-            contextTags: ["grant"],
-            fieldKey: "budget",
-            knowledgeKey: "organization.annual-budget",
-            prompt: "What is your annual budget?",
-          },
-        ],
-        subject,
-      },
-      fixture.user.id,
-    );
-    expect(mismatched).toMatchObject({
-      readyForSubmission: false,
-      resolved: [],
-      unresolved: [
-        {
-          fieldKey: "budget",
-          reason:
-            "The supplied answer revision is not an approved answer for this question and subject.",
-        },
-      ],
-    });
-
-    const reuseApplication = await prisma.task.create({
-      data: {
-        createdByUserId: fixture.user.id,
-        description: "Reuse reviewed answers in a differently worded form.",
-        id: `${TEST_PREFIX}reuse_task`,
-        isPublic: false,
-        ownerOrganizationId: fixture.organization.id,
-        status: TaskStatus.ACTIVE,
-        title: "Complete another grant form",
-      },
-    });
+    const secondQuestion = {
+      contextTags: ["application"],
+      fieldKey: "mission_statement",
+      knowledgeKey: "organization.mission",
+      prompt: "Please describe your organization's mission.",
+      sensitivity: KnowledgeSensitivity.RESTRICTED,
+      validUntil: "2030-01-01T00:00:00.000Z",
+    };
     const reused = await prepareFormResponses(
       {
-        formTaskId: reuseApplication.id,
-        idempotencyKey: `${TEST_PREFIX}prepare-retry`,
-        questions: [
-          {
-            contextTags: ["grant"],
-            fieldKey: "mission",
-            knowledgeKey: "organization.mission",
-            prompt: "Please describe the mission of your organization.",
-          },
-        ],
+        formTaskId: secondTask.id,
+        idempotencyKey: `${TEST_PREFIX}prepare_second`,
+        questions: [secondQuestion],
         subject,
       },
       fixture.user.id,
     );
     expect(reused).toMatchObject({
-      readyForSubmission: true,
-      resolved: [
+      readyForSubmission: false,
+      resolved: [],
+      unresolved: [
         {
-          answerRevisionId: unresolved.draftDocument!.revisionId,
-          fieldKey: "mission",
+          reason:
+            "This answer is sensitive; choose its exact approved revision before reuse.",
         },
       ],
-      unresolved: [],
     });
-    const formAttempt = await startTaskExecution(
-      { taskId: reuseApplication.id },
-      fixture.user.id,
-    );
     await expect(
-      proposeFormSubmission(
-        {
-          responses: [
-            {
-              answerRevisionId: "unrelated_revision",
-              fieldKey: "mission",
-              prompt: "Please describe the mission of your organization.",
-            },
-          ],
-          destination: "https://example.test/apply",
-          formTaskId: reuseApplication.id,
-          idempotencyKey: `${TEST_PREFIX}wrong-answer`,
-          taskExecutionAttemptId: formAttempt.id,
-        },
-        fixture.user.id,
-      ),
-    ).rejects.toThrow("does not match the prepared form");
-
-    const proposal = await proposeFormSubmission(
+      prisma.knowledgeAnswer.findFirstOrThrow({
+        where: { subject: { organizationId: fixture.organization.id } },
+        select: { contextTags: true, sensitivity: true, validUntil: true },
+      }),
+    ).resolves.toMatchObject({
+      contextTags: ["application", "grant"],
+      sensitivity: KnowledgeSensitivity.RESTRICTED,
+      validUntil: new Date("2030-01-01T00:00:00.000Z"),
+    });
+    const explicitlyApproved = await prepareFormResponses(
       {
-        responses: [
+        formTaskId: secondTask.id,
+        idempotencyKey: `${TEST_PREFIX}prepare_second`,
+        questions: [
           {
+            ...secondQuestion,
             answerRevisionId: unresolved.draftDocument!.revisionId,
-            fieldKey: "mission",
-            prompt: "Please describe the mission of your organization.",
           },
         ],
-        destination: "https://example.test/apply",
-        formTaskId: reuseApplication.id,
-        idempotencyKey: `${TEST_PREFIX}submit`,
-        taskExecutionAttemptId: formAttempt.id,
+        subject,
       },
       fixture.user.id,
     );
+    expect(explicitlyApproved.readyForSubmission).toBe(true);
+    await expect(
+      prisma.knowledgeAnswer.count({
+        where: { subject: { organizationId: fixture.organization.id } },
+      }),
+    ).resolves.toBe(1);
+    await expect(
+      prisma.taskEdge.count({
+        where: {
+          edgeType: TaskEdgeType.BLOCKS,
+          fromTaskId: unresolved.task.id,
+          toTaskId: { in: [fixture.applicationTask.id, secondTask.id] },
+        },
+      }),
+    ).resolves.toBe(2);
 
-    expect(proposal.approvalRequired).toBe(true);
+    const execution = await startTaskExecution(
+      { taskId: secondTask.id },
+      fixture.user.id,
+    );
+    const proposal = await proposeFormSubmission(
+      {
+        destination: "https://example.test/apply",
+        formSubmissionId: explicitlyApproved.formSubmissionId,
+        taskExecutionAttemptId: execution.id,
+      },
+      fixture.user.id,
+    );
     expect(proposal.externalActionRequest.status).toBe(
       ExternalActionRequestStatus.PENDING,
     );
     expect(proposal.payload.responses[0]).toMatchObject({
       answerRevisionId: unresolved.draftDocument!.revisionId,
-      approvalId: expect.any(String),
-      fieldKey: "mission",
+      fieldKey: "mission_statement",
       knowledgeKey: "organization.mission",
     });
-    expect(proposal.payload.formHash).toEqual(expect.any(String));
-    expect(proposal.externalActionRequest.taskExecutionAttemptId).toBe(
-      formAttempt.id,
+    await expect(
+      proposeFormSubmission(
+        {
+          destination: "https://example.test/apply",
+          formSubmissionId: explicitlyApproved.formSubmissionId,
+          taskExecutionAttemptId: execution.id,
+        },
+        fixture.user.id,
+      ),
+    ).rejects.toThrow("Form submission has already been proposed");
+    await expect(
+      prisma.formSubmission.findUniqueOrThrow({
+        where: { id: reused.formSubmissionId },
+        select: {
+          externalActionRequestId: true,
+          responses: { select: { valueJson: true } },
+          status: true,
+        },
+      }),
+    ).resolves.toMatchObject({
+      externalActionRequestId: proposal.externalActionRequest.id,
+      responses: [{ valueJson: null }],
+      status: FormSubmissionStatus.DRAFT,
+    });
+    await decideExternalActionRequest(
+      {
+        decision: "APPROVE",
+        externalActionRequestId: proposal.externalActionRequest.id,
+      },
+      fixture.user.id,
     );
+    await recordExternalActionResult(
+      {
+        externalActionRequestId: proposal.externalActionRequest.id,
+        receipt: { confirmation: "submitted" },
+        result: "EXECUTED",
+      },
+      fixture.user.id,
+    );
+    await expect(
+      prisma.formSubmission.findUniqueOrThrow({
+        where: { id: reused.formSubmissionId },
+        select: { status: true, submittedAt: true },
+      }),
+    ).resolves.toMatchObject({
+      status: FormSubmissionStatus.SUBMITTED,
+      submittedAt: expect.any(Date),
+    });
   });
 
-  it("refuses placeholder drafts before they enter the review queue", async () => {
+  it("deduplicates the same unresolved answer before either form is completed", async () => {
+    const fixture = await createFixture();
+    const secondTask = await prisma.task.create({
+      data: {
+        createdByUserId: fixture.user.id,
+        description: "Submit another application in parallel.",
+        id: `${TEST_PREFIX}parallel_task`,
+        isPublic: false,
+        ownerOrganizationId: fixture.organization.id,
+        status: TaskStatus.ACTIVE,
+        title: "Parallel application",
+      },
+    });
+    const request = {
+      questions: [
+        {
+          contextTags: ["grant"],
+          fieldKey: "mission",
+          knowledgeKey: "organization.mission",
+          prompt: "What is your mission?",
+        },
+      ],
+      subject: { organizationId: fixture.organization.id },
+    };
+    const first = await prepareFormResponses(
+      {
+        ...request,
+        formTaskId: fixture.applicationTask.id,
+        idempotencyKey: `${TEST_PREFIX}parallel_first`,
+      },
+      fixture.user.id,
+    );
+    const second = await prepareFormResponses(
+      {
+        ...request,
+        formTaskId: secondTask.id,
+        idempotencyKey: `${TEST_PREFIX}parallel_second`,
+      },
+      fixture.user.id,
+    );
+    expect(second.unresolved[0]!.task.id).toBe(first.unresolved[0]!.task.id);
+    await expect(
+      prepareFormResponses(
+        {
+          ...request,
+          formTaskId: fixture.applicationTask.id,
+          idempotencyKey: `${TEST_PREFIX}parallel_first`,
+          questions: [
+            {
+              fieldKey: "different",
+              knowledgeKey: "organization.different",
+              prompt: "What is something else?",
+            },
+          ],
+        },
+        fixture.user.id,
+      ),
+    ).rejects.toThrow(
+      "Form preparation idempotency key was reused with different fields",
+    );
+    await expect(
+      prisma.knowledgeAnswer.count({
+        where: { subject: { organizationId: fixture.organization.id } },
+      }),
+    ).resolves.toBe(1);
+  });
+
+  it("lets another organization admin revise an organization-owned form", async () => {
+    const fixture = await createFixture();
+    const first = await prepareFormResponses(
+      {
+        formKey: "shared-funder-form",
+        formTaskId: fixture.applicationTask.id,
+        formTitle: "Shared funder form",
+        idempotencyKey: `${TEST_PREFIX}shared_first`,
+        questions: [
+          {
+            fieldKey: "mission",
+            knowledgeKey: "organization.mission",
+            prompt: "What is your mission?",
+          },
+        ],
+        subject: { organizationId: fixture.organization.id },
+      },
+      fixture.user.id,
+    );
+    const adminPerson = await prisma.person.create({
+      data: {
+        displayName: "Second Form Admin",
+        id: `${TEST_PREFIX}admin_person`,
+      },
+    });
+    const adminUser = await prisma.user.create({
+      data: {
+        email: `${TEST_PREFIX}admin@example.test`,
+        id: `${TEST_PREFIX}admin_user`,
+        personId: adminPerson.id,
+      },
+    });
+    await prisma.organizationMember.create({
+      data: {
+        organizationId: fixture.organization.id,
+        role: OrganizationMemberRole.ADMIN,
+        userId: adminUser.id,
+      },
+    });
+    const adminTask = await prisma.task.create({
+      data: {
+        createdByUserId: adminUser.id,
+        description: "Revise the shared funder form for the organization.",
+        id: `${TEST_PREFIX}admin_task`,
+        isPublic: false,
+        ownerOrganizationId: fixture.organization.id,
+        status: TaskStatus.ACTIVE,
+        title: "Update the shared funder form",
+      },
+    });
+
+    const revised = await prepareFormResponses(
+      {
+        formKey: "shared-funder-form",
+        formTaskId: adminTask.id,
+        formTitle: "Updated shared funder form",
+        idempotencyKey: `${TEST_PREFIX}shared_second`,
+        questions: [
+          {
+            fieldKey: "mission",
+            knowledgeKey: "organization.mission",
+            prompt: "Describe the organization's mission.",
+          },
+        ],
+        subject: { organizationId: fixture.organization.id },
+      },
+      adminUser.id,
+    );
+
+    expect(revised.formId).toBe(first.formId);
+    expect(revised.formRevisionId).not.toBe(first.formRevisionId);
+    await expect(
+      prisma.form.findUniqueOrThrow({
+        where: { id: first.formId },
+        select: {
+          currentRevisionId: true,
+          revisions: { select: { createdByUserId: true } },
+          title: true,
+        },
+      }),
+    ).resolves.toMatchObject({
+      currentRevisionId: revised.formRevisionId,
+      revisions: expect.arrayContaining([
+        expect.objectContaining({ createdByUserId: adminUser.id }),
+      ]),
+      title: "Updated shared funder form",
+    });
+  });
+
+  it("rejects placeholder drafts and public task storage", async () => {
     const fixture = await createFixture();
     await expect(
       prepareFormResponses(
@@ -374,229 +601,24 @@ describe.sequential("reviewed form response loop", () => {
         fixture.user.id,
       ),
     ).rejects.toThrow("contains unresolved placeholder text");
-    await expect(
-      prisma.task.count({
-        where: { parentTaskId: fixture.applicationTask.id },
-      }),
-    ).resolves.toBe(0);
-  });
-
-  it("does not persist form responses on public tasks", async () => {
-    const fixture = await createFixture();
     await prisma.task.update({
       where: { id: fixture.applicationTask.id },
       data: { isPublic: true },
     });
-
     await expect(
       prepareFormResponses(
         {
           formTaskId: fixture.applicationTask.id,
-          idempotencyKey: `${TEST_PREFIX}public-form`,
-          questions: [
-            {
-              fieldKey: "mission",
-              prompt: "What is your mission?",
-              proposedAnswer: "A reviewed answer must remain private.",
-            },
-          ],
+          idempotencyKey: `${TEST_PREFIX}public`,
+          questions: [{ fieldKey: "mission", prompt: "What is your mission?" }],
           subject: { organizationId: fixture.organization.id },
         },
         fixture.user.id,
       ),
     ).rejects.toThrow("Form task not found");
-
-    const task = await prisma.task.findUniqueOrThrow({
-      where: { id: fixture.applicationTask.id },
-      select: { contextJson: true },
-    });
-    expect(task.contextJson).toBeNull();
   });
 
-  it("does not reuse an approval that ambiguously covers multiple answer revisions", async () => {
-    const fixture = await createFixture();
-    const subject = { organizationId: fixture.organization.id };
-    const prepared = await prepareFormResponses(
-      {
-        formTaskId: fixture.applicationTask.id,
-        idempotencyKey: `${TEST_PREFIX}ambiguous-prepare`,
-        questions: [
-          {
-            fieldKey: "mission",
-            prompt: "What is your organization's mission?",
-            proposedAnswer: "First candidate answer.",
-          },
-        ],
-        subject,
-      },
-      fixture.user.id,
-    );
-    const unresolved = prepared.unresolved[0]!;
-    const secondDocument = await createDocument({
-      body: "Second candidate answer.",
-      createdByUserId: fixture.user.id,
-      idempotencyKey: `${TEST_PREFIX}ambiguous-second-answer`,
-      organizationId: fixture.organization.id,
-      taskId: unresolved.task.id,
-      title: "Second candidate answer",
-    });
-    const attempt = await startTaskExecution(
-      { taskId: unresolved.task.id },
-      fixture.user.id,
-    );
-    for (const revisionId of [
-      unresolved.draftDocument!.revisionId,
-      secondDocument.revision.id,
-    ]) {
-      await submitTaskArtifact(
-        {
-          documentRevisionId: revisionId,
-          label: "Candidate reusable answer",
-          taskExecutionAttemptId: attempt.id,
-        },
-        fixture.user.id,
-      );
-    }
-    const submitted = await submitTaskForVerification(
-      {
-        actualDurationSeconds: 60,
-        method: "REVIEWER",
-        outputSummary: "Reviewed both candidates.",
-        taskExecutionAttemptId: attempt.id,
-      },
-      fixture.user.id,
-    );
-    await verifyTaskExecution(
-      {
-        criterionResults: [],
-        result: "ACCEPTED",
-        taskVerificationId: submitted.verification.id,
-      },
-      fixture.user.id,
-    );
-
-    const found = await findReviewedAnswers(
-      {
-        question: "What is your organization's mission?",
-        subject,
-      },
-      fixture.user.id,
-    );
-
-    expect(found.answers).toEqual([]);
-  });
-
-  it("requires an exact revision when multiple approved answers match", async () => {
-    const fixture = await createFixture();
-    const subject = { organizationId: fixture.organization.id };
-
-    for (const [index, answer] of [
-      "First approved mission answer.",
-      "Second approved mission answer.",
-    ].entries()) {
-      const reviewTask = await prisma.task.create({
-        data: {
-          createdByUserId: fixture.user.id,
-          description: "Review one reusable mission answer.",
-          contextJson: {
-            reviewedAnswer: {
-              canonicalQuestion: "What is your organization's mission?",
-              contextTags: [],
-              knowledgeKey: "organization.mission",
-              originTaskId: null,
-              sensitivity: "INTERNAL",
-              sourceArtifactIds: [],
-              subject,
-              type: "REVIEWED_ANSWER",
-              validUntil: null,
-            },
-          },
-          id: `${TEST_PREFIX}answer_${index}`,
-          isPublic: false,
-          ownerOrganizationId: fixture.organization.id,
-          status: TaskStatus.ACTIVE,
-          title: `Review mission answer ${index}`,
-        },
-      });
-      const document = await createDocument({
-        body: answer,
-        createdByUserId: fixture.user.id,
-        idempotencyKey: `${TEST_PREFIX}answer_document_${index}`,
-        organizationId: fixture.organization.id,
-        taskId: reviewTask.id,
-        title: `Mission answer ${index}`,
-      });
-      const attempt = await startTaskExecution(
-        { taskId: reviewTask.id },
-        fixture.user.id,
-      );
-      await submitTaskArtifact(
-        {
-          documentRevisionId: document.revision.id,
-          label: "Reusable reviewed answer",
-          taskExecutionAttemptId: attempt.id,
-        },
-        fixture.user.id,
-      );
-      const submitted = await submitTaskForVerification(
-        {
-          actualDurationSeconds: 60,
-          method: "REVIEWER",
-          outputSummary: "Approved for reuse.",
-          taskExecutionAttemptId: attempt.id,
-        },
-        fixture.user.id,
-      );
-      await verifyTaskExecution(
-        {
-          criterionResults: [],
-          result: "ACCEPTED",
-          taskVerificationId: submitted.verification.id,
-        },
-        fixture.user.id,
-      );
-    }
-
-    const targetForm = await prisma.task.create({
-      data: {
-        createdByUserId: fixture.user.id,
-        description: "Prepare a form with an ambiguous reviewed answer.",
-        id: `${TEST_PREFIX}ambiguous_target`,
-        isPublic: false,
-        ownerOrganizationId: fixture.organization.id,
-        status: TaskStatus.ACTIVE,
-        title: "Target form",
-      },
-    });
-    const result = await prepareFormResponses(
-      {
-        formTaskId: targetForm.id,
-        idempotencyKey: `${TEST_PREFIX}ambiguous_target_prepare`,
-        questions: [
-          {
-            fieldKey: "mission",
-            knowledgeKey: "organization.mission",
-            prompt: "Describe your mission.",
-          },
-        ],
-        subject,
-      },
-      fixture.user.id,
-    );
-
-    expect(result).toMatchObject({
-      readyForSubmission: false,
-      unresolved: [
-        {
-          fieldKey: "mission",
-          reason:
-            "Multiple approved answers match this field; choose the exact revision to use.",
-        },
-      ],
-    });
-  });
-
-  it("enforces delegated OAuth and subject ownership boundaries", async () => {
+  it("enforces delegated OAuth, subject ownership, and prepared-submission boundaries", async () => {
     const fixture = await createFixture();
     const request = {
       formTaskId: fixture.applicationTask.id,
@@ -604,7 +626,6 @@ describe.sequential("reviewed form response loop", () => {
       questions: [{ fieldKey: "mission", prompt: "What is your mission?" }],
       subject: { organizationId: fixture.organization.id },
     };
-
     await expect(
       prepareFormResponses(request, fixture.user.id, {
         clientAccessBoundary: {
@@ -613,41 +634,21 @@ describe.sequential("reviewed form response loop", () => {
         },
       }),
     ).rejects.toThrow("Form task not found");
-
     await expect(
       prepareFormResponses(
-        {
-          ...request,
-          subject: { personId: fixture.person.id },
-        },
+        { ...request, subject: { personId: fixture.person.id } },
         fixture.user.id,
       ),
     ).rejects.toThrow("does not belong to the supplied subject");
-  });
-
-  it("does not propose a submission before the exact question set is prepared", async () => {
-    const fixture = await createFixture();
-    const attempt = await startTaskExecution(
-      { taskId: fixture.applicationTask.id },
-      fixture.user.id,
-    );
     await expect(
       proposeFormSubmission(
         {
-          responses: [
-            {
-              answerRevisionId: "revision_1",
-              fieldKey: "mission",
-              prompt: "What is your mission?",
-            },
-          ],
           destination: "https://example.test/apply",
-          formTaskId: fixture.applicationTask.id,
-          idempotencyKey: `${TEST_PREFIX}unprepared`,
-          taskExecutionAttemptId: attempt.id,
+          formSubmissionId: `${TEST_PREFIX}missing_submission`,
+          taskExecutionAttemptId: `${TEST_PREFIX}missing_attempt`,
         },
         fixture.user.id,
       ),
-    ).rejects.toThrow("must be prepared before submission");
+    ).rejects.toThrow("Prepared form submission not found");
   });
 });

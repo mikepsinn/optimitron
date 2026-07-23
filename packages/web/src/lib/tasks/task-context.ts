@@ -123,47 +123,6 @@ const CurrentActivitySchema = z.object({
   updated: z.string().optional(),
 });
 
-const ReviewedAnswerSubjectSchema = z
-  .object({
-    organizationId: z.string().min(1).optional(),
-    personId: z.string().min(1).optional(),
-  })
-  .refine(
-    (subject) =>
-      Number(Boolean(subject.organizationId)) +
-        Number(Boolean(subject.personId)) ===
-      1,
-    "Reviewed answers must belong to exactly one organization or person",
-  );
-
-const ReviewedAnswerSchema = z.object({
-  canonicalQuestion: z.string().min(1),
-  contextTags: z.array(z.string().min(1)).default([]),
-  knowledgeKey: z.string().min(1).nullable().default(null),
-  originTaskId: z.string().min(1).nullable().default(null),
-  sensitivity: z
-    .enum(["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"])
-    .default("INTERNAL"),
-  sourceArtifactIds: z.array(z.string().min(1)).default([]),
-  subject: ReviewedAnswerSubjectSchema,
-  type: z.literal("REVIEWED_ANSWER"),
-  validUntil: z.string().datetime().nullable().default(null),
-});
-
-const FormResponseSetSchema = z.object({
-  formHash: z.string().min(1),
-  items: z.array(
-    z.object({
-      answerRevisionId: z.string().min(1).nullable(),
-      contextTags: z.array(z.string().min(1)),
-      fieldKey: z.string().min(1),
-      knowledgeKey: z.string().min(1).nullable(),
-      prompt: z.string().min(1),
-    }),
-  ),
-  subject: ReviewedAnswerSubjectSchema,
-});
-
 export const TaskContextJsonSchema = z
   .object({
     assigneeProfile: AssigneeProfileSchema.optional(),
@@ -175,8 +134,6 @@ export const TaskContextJsonSchema = z
     blockedBy: BlockedBySchema.optional(),
     expectedDeliverable: z.string().min(1).optional(),
     acceptanceCriteria: z.array(z.string()).optional(),
-    reviewedAnswer: ReviewedAnswerSchema.optional(),
-    formResponseSet: FormResponseSetSchema.optional(),
     currentActivities: z.array(CurrentActivitySchema).optional(),
   })
   .passthrough();
@@ -190,8 +147,6 @@ export type TaskContextComparison = z.infer<typeof ContextComparisonSchema>;
 export type TaskContextBlockedBy = z.infer<typeof BlockedBySchema>;
 export type TaskContextCurrentActivity = z.infer<typeof CurrentActivitySchema>;
 export type TaskContextContactChannel = z.infer<typeof ContactChannelSchema>;
-export type TaskContextReviewedAnswer = z.infer<typeof ReviewedAnswerSchema>;
-export type TaskContextFormResponseSet = z.infer<typeof FormResponseSetSchema>;
 
 const EMPTY_CONTEXT: TaskContext = {};
 

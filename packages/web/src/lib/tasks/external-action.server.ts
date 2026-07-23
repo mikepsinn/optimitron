@@ -1,5 +1,6 @@
 import {
   ExternalActionRequestStatus,
+  FormSubmissionStatus,
   TaskClaimStatus,
   TaskExecutionAttemptStatus,
   type Prisma,
@@ -277,14 +278,31 @@ export async function listExternalActionRequestsForHuman(input: {
     input.actorUserId,
     input.clientAccessBoundary,
   );
-  await prisma.externalActionRequest.updateMany({
-    where: {
-      deletedAt: null,
-      expiresAt: { lte: new Date() },
-      status: ExternalActionRequestStatus.PENDING,
-      task: taskWhere,
-    },
-    data: { status: ExternalActionRequestStatus.EXPIRED },
+  const now = new Date();
+  await prisma.$transaction(async (tx) => {
+    await tx.externalActionRequest.updateMany({
+      where: {
+        deletedAt: null,
+        expiresAt: { lte: now },
+        status: ExternalActionRequestStatus.PENDING,
+        task: taskWhere,
+      },
+      data: { status: ExternalActionRequestStatus.EXPIRED },
+    });
+    await tx.formSubmission.updateMany({
+      where: {
+        status: FormSubmissionStatus.DRAFT,
+        externalActionRequest: {
+          is: {
+            deletedAt: null,
+            expiresAt: { lte: now },
+            status: ExternalActionRequestStatus.EXPIRED,
+            task: taskWhere,
+          },
+        },
+      },
+      data: { status: FormSubmissionStatus.CANCELLED },
+    });
   });
   return prisma.externalActionRequest.findMany({
     where: {
@@ -359,6 +377,12 @@ export async function decideExternalActionRequest(
     if (decided.count === 0) {
       throw new Error("External action request is no longer pending");
     }
+    if (request.expiresAt <= now || input.decision === "REJECT") {
+      await tx.formSubmission.updateMany({
+        where: { externalActionRequestId: request.id },
+        data: { status: FormSubmissionStatus.CANCELLED },
+      });
+    }
 
     return tx.externalActionRequest.findUniqueOrThrow({
       where: { id: request.id },
@@ -420,11 +444,16 @@ export async function recordExternalActionResult(
 
     const now = new Date();
     if (request.expiresAt <= now) {
-      return tx.externalActionRequest.update({
+      const expired = await tx.externalActionRequest.update({
         where: { id: request.id },
         data: { status: ExternalActionRequestStatus.EXPIRED },
         select: externalActionSelect(),
       });
+      await tx.formSubmission.updateMany({
+        where: { externalActionRequestId: request.id },
+        data: { status: FormSubmissionStatus.CANCELLED },
+      });
+      return expired;
     }
 
     const agentExecutorId =
@@ -465,6 +494,16 @@ export async function recordExternalActionResult(
     ) {
       throw new Error("External action request is no longer executable");
     }
+    await tx.formSubmission.updateMany({
+      where: { externalActionRequestId: request.id },
+      data:
+        terminal.status === ExternalActionRequestStatus.EXECUTED
+          ? {
+              status: FormSubmissionStatus.SUBMITTED,
+              submittedAt: terminal.executedAt,
+            }
+          : { status: FormSubmissionStatus.FAILED },
+    });
     return terminal;
   });
 }

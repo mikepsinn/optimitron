@@ -66,16 +66,8 @@ describe("MCP form response tools", () => {
     [
       "proposeFormSubmission",
       {
-        formTaskId: "task_1",
         destination: "https://example.org/apply",
-        responses: [
-          {
-            fieldKey: "budget",
-            prompt: "Annual budget?",
-            answerRevisionId: "revision_1",
-          },
-        ],
-        idempotencyKey: "submit_1",
+        formSubmissionId: "submission_1",
         taskExecutionAttemptId: "attempt_1",
       },
     ],

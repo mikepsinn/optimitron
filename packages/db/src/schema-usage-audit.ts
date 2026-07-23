@@ -110,8 +110,17 @@ interface AuditedFile {
 const CURRENT_FILE = fileURLToPath(import.meta.url);
 const CURRENT_DIR = path.dirname(CURRENT_FILE);
 const DEFAULT_REPO_ROOT = path.resolve(CURRENT_DIR, "..", "..", "..");
-const DEFAULT_MARKDOWN_OUTPUT = path.join(DEFAULT_REPO_ROOT, "docs", "SCHEMA_USAGE_AUDIT.md");
-const DEFAULT_JSON_OUTPUT = path.join(DEFAULT_REPO_ROOT, "docs", "generated", "schema-usage-audit.json");
+const DEFAULT_MARKDOWN_OUTPUT = path.join(
+  DEFAULT_REPO_ROOT,
+  "docs",
+  "SCHEMA_USAGE_AUDIT.md",
+);
+const DEFAULT_JSON_OUTPUT = path.join(
+  DEFAULT_REPO_ROOT,
+  "docs",
+  "generated",
+  "schema-usage-audit.json",
+);
 
 const TEXT_EXTENSIONS = new Set([
   ".ts",
@@ -139,6 +148,8 @@ const EXCLUDED_DIRECTORIES = new Set([
   "node_modules",
   "output",
 ]);
+
+const EXCLUDED_RELATIVE_DIRECTORIES = new Set(["reports", "screenshots"]);
 
 const EXCLUDED_RELATIVE_PATHS = new Set([
   "docs/SCHEMA_USAGE_AUDIT.md",
@@ -220,7 +231,10 @@ const MISSING_CONCEPT_RULES: MissingConceptRule[] = [
     patterns: [
       { label: "External bill fetchers", regex: /\bfetchBills(?:ByType)?\b/g },
       { label: "Runtime bill DTO", regex: /\bClassifiedBill\b/g },
-      { label: "Bill UI surface", regex: /\b(?:BillCard|BillVoteCard|BillListCard)\b/g },
+      {
+        label: "Bill UI surface",
+        regex: /\b(?:BillCard|BillVoteCard|BillListCard)\b/g,
+      },
       { label: "Civic bills API", regex: /\bcivic\/bills\b/g },
       { label: "Stored bill identifiers", regex: /\bbillId\b/g },
     ],
@@ -285,7 +299,10 @@ function bucketForRelativePath(relativePath: string): UsageBucket {
   if (relativePath.startsWith("packages/web/src/app/api/")) {
     return "api-routes";
   }
-  if (relativePath.startsWith("packages/web/src/app/") && /\/page\.(ts|tsx)$/.test(relativePath)) {
+  if (
+    relativePath.startsWith("packages/web/src/app/") &&
+    /\/page\.(ts|tsx)$/.test(relativePath)
+  ) {
     return "pages";
   }
   if (relativePath.startsWith("packages/web/src/components/")) {
@@ -327,7 +344,10 @@ function countMatches(text: string, regex: RegExp): number {
 }
 
 function shouldSkipDirectory(name: string): boolean {
-  return EXCLUDED_DIRECTORIES.has(name) || name.startsWith(".tmp-");
+  return (
+    EXCLUDED_DIRECTORIES.has(name) ||
+    (name.startsWith(".") && name !== ".github")
+  );
 }
 
 async function collectTextFiles(root: string): Promise<string[]> {
@@ -338,13 +358,19 @@ async function collectTextFiles(root: string): Promise<string[]> {
     entries.sort((left, right) => left.name.localeCompare(right.name));
 
     for (const entry of entries) {
-      if (entry.isDirectory() && shouldSkipDirectory(entry.name)) {
-        continue;
-      }
-
       const absolutePath = path.join(currentPath, entry.name);
       const relativePath = toPosixPath(path.relative(root, absolutePath));
 
+      if (
+        entry.isDirectory() &&
+        (shouldSkipDirectory(entry.name) ||
+          EXCLUDED_RELATIVE_DIRECTORIES.has(relativePath))
+      ) {
+        continue;
+      }
+      if (!entry.isDirectory() && entry.name.startsWith(".")) {
+        continue;
+      }
       if (EXCLUDED_RELATIVE_PATHS.has(relativePath)) {
         continue;
       }
@@ -423,7 +449,9 @@ async function readSchemaItems(schemaPath: string): Promise<SchemaItem[]> {
   return items;
 }
 
-function classifyModel(entry: Omit<ModelAuditEntry, "classification">): Classification {
+function classifyModel(
+  entry: Omit<ModelAuditEntry, "classification">,
+): Classification {
   if (CORE_MODELS.has(entry.name)) {
     return "core";
   }
@@ -444,7 +472,8 @@ function classifyModel(entry: Omit<ModelAuditEntry, "classification">): Classifi
     return "tests-only";
   }
 
-  const generatedLikeFiles = entry.buckets.generated.files + entry.buckets.zod.files;
+  const generatedLikeFiles =
+    entry.buckets.generated.files + entry.buckets.zod.files;
   const nonBaselineFiles =
     entry.buckets.docs.files +
     entry.buckets.other.files +
@@ -467,10 +496,15 @@ function classifyModel(entry: Omit<ModelAuditEntry, "classification">): Classifi
 }
 
 function buildNamingConcerns(models: readonly SchemaItem[]): NamingConcern[] {
-  const modelNames = new Set(models.filter((item) => item.kind === "model").map((item) => item.name));
+  const modelNames = new Set(
+    models.filter((item) => item.kind === "model").map((item) => item.name),
+  );
   const concerns: NamingConcern[] = [];
 
-  if (modelNames.has("UserPreference") && modelNames.has("NotificationPreference")) {
+  if (
+    modelNames.has("UserPreference") &&
+    modelNames.has("NotificationPreference")
+  ) {
     concerns.push({
       models: ["UserPreference", "NotificationPreference"],
       severity: "high",
@@ -486,7 +520,9 @@ function buildMissingModelCandidates(
   models: readonly SchemaItem[],
   files: readonly AuditedFile[],
 ): MissingModelCandidate[] {
-  const modelNames = new Set(models.filter((item) => item.kind === "model").map((item) => item.name));
+  const modelNames = new Set(
+    models.filter((item) => item.kind === "model").map((item) => item.name),
+  );
   const results: MissingModelCandidate[] = [];
 
   for (const rule of MISSING_CONCEPT_RULES) {
@@ -499,7 +535,15 @@ function buildMissingModelCandidates(
 
     for (const file of files) {
       const { relativePath, bucket, text } = file;
-      if (!["runtime-libraries", "api-routes", "pages", "components", "scripts"].includes(bucket)) {
+      if (
+        ![
+          "runtime-libraries",
+          "api-routes",
+          "pages",
+          "components",
+          "scripts",
+        ].includes(bucket)
+      ) {
         continue;
       }
       let fileMatches = 0;
@@ -517,7 +561,10 @@ function buildMissingModelCandidates(
       }
     }
 
-    if (filesByPath.size < rule.thresholdFiles || matchedPatternLabels.size < rule.thresholdPatterns) {
+    if (
+      filesByPath.size < rule.thresholdFiles ||
+      matchedPatternLabels.size < rule.thresholdPatterns
+    ) {
       continue;
     }
 
@@ -564,7 +611,11 @@ function topFiles(filesByBucket: Map<UsageBucket, FileMatch[]>): FileMatch[] {
   }
 
   return [...combined.entries()]
-    .map(([filePath, value]) => ({ path: filePath, matches: value.matches, bucketRank: value.bucketRank }))
+    .map(([filePath, value]) => ({
+      path: filePath,
+      matches: value.matches,
+      bucketRank: value.bucketRank,
+    }))
     .sort((left, right) => {
       const bucketOrder = left.bucketRank - right.bucketRank;
       if (bucketOrder !== 0) {
@@ -593,8 +644,16 @@ function formatBucketStat(stat: BucketStat): string {
 export async function generateSchemaUsageAudit(
   options: AuditOptions = {},
 ): Promise<SchemaUsageAuditReport> {
-  const repoRoot = options.repoRoot ? path.resolve(options.repoRoot) : DEFAULT_REPO_ROOT;
-  const schemaPath = path.join(repoRoot, "packages", "db", "prisma", "schema.prisma");
+  const repoRoot = options.repoRoot
+    ? path.resolve(options.repoRoot)
+    : DEFAULT_REPO_ROOT;
+  const schemaPath = path.join(
+    repoRoot,
+    "packages",
+    "db",
+    "prisma",
+    "schema.prisma",
+  );
   const schemaItems = await readSchemaItems(schemaPath);
   const models = schemaItems.filter((item) => item.kind === "model");
   const enums = schemaItems.filter((item) => item.kind === "enum");
@@ -617,7 +676,9 @@ export async function generateSchemaUsageAudit(
     for (const file of files) {
       const { text, relativePath, bucket } = file;
       const symbolMatches = countMatches(text, modelRegex);
-      const prismaMatches = DIRECT_PRISMA_BUCKETS.has(bucket) ? countMatches(text, delegateRegex) : 0;
+      const prismaMatches = DIRECT_PRISMA_BUCKETS.has(bucket)
+        ? countMatches(text, delegateRegex)
+        : 0;
       const bucketMatches = symbolMatches + prismaMatches;
 
       if (bucketMatches === 0) {
@@ -638,7 +699,10 @@ export async function generateSchemaUsageAudit(
         directPrismaMatches += prismaMatches;
 
         const runtimePrismaEntries = filesByBucket.get("runtime-prisma") ?? [];
-        runtimePrismaEntries.push({ path: relativePath, matches: prismaMatches });
+        runtimePrismaEntries.push({
+          path: relativePath,
+          matches: prismaMatches,
+        });
         filesByBucket.set("runtime-prisma", runtimePrismaEntries);
       }
     }
@@ -710,21 +774,32 @@ export async function generateSchemaUsageAudit(
   }
 
   const namingConcerns = buildNamingConcerns(schemaItems);
-  const missingModelCandidates = buildMissingModelCandidates(schemaItems, files);
+  const missingModelCandidates = buildMissingModelCandidates(
+    schemaItems,
+    files,
+  );
 
   return {
     schemaPath: toPosixPath(path.relative(repoRoot, schemaPath)),
     modelCount: modelEntries.length,
     enumCount: enumEntries.length,
-    models: modelEntries.sort((left, right) => left.name.localeCompare(right.name)),
-    enums: enumEntries.sort((left, right) => left.name.localeCompare(right.name)),
+    models: modelEntries.sort((left, right) =>
+      left.name.localeCompare(right.name),
+    ),
+    enums: enumEntries.sort((left, right) =>
+      left.name.localeCompare(right.name),
+    ),
     namingConcerns,
     missingModelCandidates,
   };
 }
 
-export function renderSchemaUsageAuditMarkdown(report: SchemaUsageAuditReport): string {
-  const classificationCounts = report.models.reduce<Record<Classification, number>>(
+export function renderSchemaUsageAuditMarkdown(
+  report: SchemaUsageAuditReport,
+): string {
+  const classificationCounts = report.models.reduce<
+    Record<Classification, number>
+  >(
     (counts, model) => {
       counts[model.classification] += 1;
       return counts;
@@ -781,14 +856,18 @@ export function renderSchemaUsageAuditMarkdown(report: SchemaUsageAuditReport): 
         "- Key files:",
       );
       for (const evidence of candidate.evidence) {
-        summaryLines.push(`  - ${relativeLinkFromDocs(evidence.path)} (${evidence.matches} matches)`);
+        summaryLines.push(
+          `  - ${relativeLinkFromDocs(evidence.path)} (${evidence.matches} matches)`,
+        );
       }
       summaryLines.push("");
     }
   }
 
   summaryLines.push("## Model Inventory", "");
-  summaryLines.push("| Model | Classification | Runtime Prisma | Runtime Surface | Tests | Generated/Zod | Docs |");
+  summaryLines.push(
+    "| Model | Classification | Runtime Prisma | Runtime Surface | Tests | Generated/Zod | Docs |",
+  );
   summaryLines.push("| --- | --- | ---: | ---: | ---: | ---: | ---: |");
 
   for (const model of report.models) {
@@ -798,7 +877,8 @@ export function renderSchemaUsageAuditMarkdown(report: SchemaUsageAuditReport): 
       model.buckets.components.files +
       model.buckets["runtime-libraries"].files +
       model.buckets.scripts.files;
-    const generatedAndZodFiles = model.buckets.generated.files + model.buckets.zod.files;
+    const generatedAndZodFiles =
+      model.buckets.generated.files + model.buckets.zod.files;
     summaryLines.push(
       `| ${model.name} | \`${model.classification}\` | ${model.directPrismaFiles} | ${runtimeSurfaceFiles} | ${model.buckets.tests.files} | ${generatedAndZodFiles} | ${model.buckets.docs.files} |`,
     );
@@ -826,7 +906,9 @@ export function renderSchemaUsageAuditMarkdown(report: SchemaUsageAuditReport): 
       summaryLines.push("  - none");
     } else {
       for (const file of model.keyFiles) {
-        summaryLines.push(`  - ${relativeLinkFromDocs(file.path)} (${file.matches} matches)`);
+        summaryLines.push(
+          `  - ${relativeLinkFromDocs(file.path)} (${file.matches} matches)`,
+        );
       }
     }
 
@@ -853,7 +935,9 @@ export function renderSchemaUsageAuditMarkdown(report: SchemaUsageAuditReport): 
   return summaryLines.join("\n");
 }
 
-export async function writeSchemaUsageAudit(report: SchemaUsageAuditReport): Promise<void> {
+export async function writeSchemaUsageAudit(
+  report: SchemaUsageAuditReport,
+): Promise<void> {
   const markdown = renderSchemaUsageAuditMarkdown(report);
   const json = JSON.stringify(report, null, 2);
 

@@ -81,10 +81,23 @@ export const FORM_RESPONSE_TOOL_DEFINITIONS = [
   {
     name: "prepareFormResponses",
     description:
-      "Prepare narrative form responses and create review tasks for unresolved answers.",
+      "Capture a form's narrative fields, prepare reusable responses, and create one shared review task for each unresolved answer.",
     inputSchema: {
       type: "object" as const,
       properties: {
+        formKey: { type: "string" },
+        formTitle: { type: "string" },
+        formSourceUrl: { type: "string", format: "uri" },
+        formPurpose: {
+          type: "string",
+          enum: [
+            "SURVEY",
+            "APPLICATION",
+            "INTAKE",
+            "ASSESSMENT",
+            "QUESTIONNAIRE",
+          ],
+        },
         formTaskId: { type: "string" },
         subject: SUBJECT_SCHEMA,
         questions: {
@@ -101,37 +114,16 @@ export const FORM_RESPONSE_TOOL_DEFINITIONS = [
   {
     name: "proposeFormSubmission",
     description:
-      "Propose an exact reviewed text-response payload for human approval without executing it.",
+      "Propose the exact prepared form submission for human approval without executing it.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        formTaskId: { type: "string" },
+        formSubmissionId: { type: "string" },
         taskExecutionAttemptId: { type: "string" },
         destination: { type: "string" },
-        responses: {
-          type: "array",
-          minItems: 1,
-          maxItems: 200,
-          items: {
-            type: "object",
-            properties: {
-              fieldKey: { type: "string" },
-              prompt: { type: "string" },
-              answerRevisionId: { type: "string" },
-            },
-            required: ["fieldKey", "prompt", "answerRevisionId"],
-          },
-        },
-        idempotencyKey: { type: "string" },
         expiresAt: { type: "string", format: "date-time" },
       },
-      required: [
-        "formTaskId",
-        "taskExecutionAttemptId",
-        "destination",
-        "responses",
-        "idempotencyKey",
-      ],
+      required: ["formSubmissionId", "taskExecutionAttemptId", "destination"],
     },
   },
 ] as const;

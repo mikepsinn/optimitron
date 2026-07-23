@@ -15,8 +15,11 @@ import {
 import {
   CombinationOperation,
   ContentReportStatus,
+  ContentVisibility,
   AgentExecutorStatus,
   FillingType,
+  FormPurpose,
+  FormStatus,
   McpToolCallStatus,
   NotificationStatus,
   OrgStatus,
@@ -2305,7 +2308,15 @@ const REFERENDUM_SELECT = {
   _count: {
     select: {
       organizationPositions: true,
-      surveys: true,
+      forms: {
+        where: {
+          currentRevisionId: { not: null },
+          deletedAt: null,
+          purpose: FormPurpose.SURVEY,
+          status: FormStatus.OPEN,
+          visibility: ContentVisibility.PUBLIC,
+        },
+      },
       votes: true,
     },
   },
@@ -2379,7 +2390,7 @@ function summarizeReferendum(referendum: ReferendumToolRecord) {
     question: referendum.question,
     slug: referendum.slug,
     status: referendum.status,
-    surveyCount: referendum._count.surveys,
+    surveyCount: referendum._count.forms,
     title: referendum.title,
     updatedAt: referendum.updatedAt.toISOString(),
     voteCount: referendum._count.votes,
