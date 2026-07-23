@@ -1078,13 +1078,54 @@ enum ContentReportStatus {
   DISMISSED
 }
 
-/// Type of survey question
-enum QuestionType {
-  MULTIPLE_CHOICE
-  FREE_TEXT
-  RATING
+/// Why a form exists. Surveys remain a first-class use case alongside
+/// applications, intake forms, assessments, and general questionnaires.
+enum FormPurpose {
+  SURVEY
+  APPLICATION
+  INTAKE
+  ASSESSMENT
+  QUESTIONNAIRE
+}
+
+/// Availability of a stable form definition.
+enum FormStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+/// Input controls supported by versioned forms.
+enum FormFieldType {
+  SHORT_TEXT
+  LONG_TEXT
+  RICH_TEXT
+  NUMBER
   BOOLEAN
-  NUMERIC
+  DATE
+  DATETIME
+  SINGLE_SELECT
+  MULTI_SELECT
+  RATING
+  URL
+  EMAIL
+}
+
+/// Lifecycle of one response set pinned to an immutable form revision.
+enum FormSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  FAILED
+  CANCELLED
+}
+
+/// Sensitivity determines whether reuse requires choosing an exact revision.
+enum KnowledgeSensitivity {
+  PUBLIC
+  INTERNAL
+  CONFIDENTIAL
+  RESTRICTED
 }
 
 /// Delivery status for email log
@@ -1962,7 +2003,11 @@ model User {
   emailLogs                          EmailLog[]                       @relation("UserEmailLogs")
   shareAttempts                      ShareAttempt[]                   @relation("UserShareAttempts")
   sentReferralInvitations            ReferralInvitation[]             @relation("ReferralInvitationReferrer")
-  surveyResponses                    SurveyResponse[]                 @relation("UserSurveyResponses")
+  createdForms                       Form[]                           @relation("FormCreator")
+  createdFormRevisions               FormRevision[]                   @relation("FormRevisionCreator")
+  formSubmissions                    FormSubmission[]                 @relation("FormSubmissionCreator")
+  respondedFormSubmissions           FormSubmission[]                 @relation("FormSubmissionRespondent")
+  createdKnowledgeAnswers            KnowledgeAnswer[]                @relation("KnowledgeAnswerCreator")
   taskClaims                         TaskClaim[]                      @relation("UserTaskClaims")
   taskApplications                   TaskApplication[]                @relation("UserTaskApplications")
   reviewedTaskApplications           TaskApplication[]                @relation("UserReviewedTaskApplications")
@@ -2603,6 +2648,8 @@ model Subject {
   courtCasesAsBeneficiary         CourtCase[]                @relation("CourtCaseBeneficiarySubject")
   courtCaseParties                CourtCaseParty[]           @relation("CourtCasePartySubject")
   courtCaseHarmsAsAffectedSubject CourtCaseHarm[]            @relation("CourtCaseHarmAffectedSubject")
+  knowledgeAnswers                KnowledgeAnswer[]          @relation("SubjectKnowledgeAnswers")
+  formSubmissions                 FormSubmission[]           @relation("SubjectFormSubmissions")
 
   @@unique([subjectType, externalId])
   @@index([subjectType])
@@ -3871,7 +3918,7 @@ model Jurisdiction {
   referendums                   Referendum[]
   organizations                 Organization[]
   organizationNames             OrganizationName[]               @relation("JurisdictionOrganizationNames")
-  surveys                       Survey[]
+  forms                         Form[]
   tasks                         Task[]
   taskApplications              TaskApplication[]                @relation("JurisdictionTaskApplications")
   taskApplicationEvents         TaskApplicationEvent[]           @relation("JurisdictionTaskApplicationEvents")
@@ -4722,7 +4769,7 @@ model Referendum {
   jurisdiction                    Jurisdiction?                    @relation(fields: [jurisdictionId], references: [id])
   votes                           ReferendumVote[]
   pointMints                      PointMint[]
-  surveys                         Survey[]
+  forms                           Form[]
   organizationPositions           OrganizationReferendumPosition[]
   referralInvitations             ReferralInvitation[]
   courtCasesAsJuryReferendum      CourtCase[]                      @relation("CourtCaseJuryReferendum")
@@ -5620,7 +5667,7 @@ model Organization {
   subjects                    Subject[]                        @relation("OrganizationSubject")
   referendumPositions         OrganizationReferendumPosition[]
   referendumVotes             ReferendumVote[]                 @relation("OrganizationReferendumVotes")
-  surveyResponses             SurveyResponse[]                 @relation("OrganizationSurveyResponses")
+  ownedForms                  Form[]                           @relation("OrganizationForms")
   memorialResponsibleParties  PersonMemorialResponsibleParty[] @relation("OrganizationPersonMemorialResponsibleParties")
   taskFundingPledges          TaskFundingPledge[]              @relation("OrganizationTaskFundingPledges")
   taskFundingPayments         TaskFundingPayment[]             @relation("OrganizationTaskFundingPayments")
@@ -6033,6 +6080,8 @@ model Task {
   linkedCollectionRecords     CollectionRecord[]          @relation("CollectionRecordTask")
   targetedCollectionRelations CollectionRelation[]        @relation("CollectionRelationTaskTarget")
   externalActionRequests      ExternalActionRequest[]     @relation("TaskExternalActionRequests")
+  knowledgeAnswer             KnowledgeAnswer?            @relation("KnowledgeAnswerReviewTask")
+  formSubmissions             FormSubmission[]            @relation("TaskFormSubmissions")
 
   @@index([jurisdictionId, status])
   @@index([parentTaskId])
@@ -6223,6 +6272,7 @@ model DocumentRevision {
   createdByUser      User                    @relation("DocumentRevisionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
   sourceArtifact     SourceArtifact?         @relation("DocumentRevisionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
   executionArtifacts TaskExecutionArtifact[] @relation("TaskExecutionArtifactDocumentRevision")
+  formResponses      FormResponse[]          @relation("FormResponseAnswerRevision")
 
   @@unique([documentId, version])
   @@unique([id, documentId])
@@ -6760,6 +6810,7 @@ model TaskExecutionAttempt {
   artifacts              TaskExecutionArtifact[] @relation("TaskExecutionAttemptArtifacts")
   verifications          TaskVerification[]      @relation("TaskExecutionAttemptVerifications")
   externalActionRequests ExternalActionRequest[] @relation("TaskExecutionAttemptExternalActions")
+  formSubmissions        FormSubmission[]        @relation("TaskExecutionAttemptFormSubmissions")
 
   @@index([jurisdictionId, status])
   @@index([taskId, status])
@@ -6846,6 +6897,7 @@ model TaskVerification {
   taskExecutionAttempt TaskExecutionAttempt @relation("TaskExecutionAttemptVerifications", fields: [taskExecutionAttemptId], references: [id], onDelete: Cascade)
   reviewerUser         User?                @relation("TaskVerificationReviewerUser", fields: [reviewerUserId], references: [id], onDelete: Restrict)
   reviewerAgent        AgentExecutor?       @relation("TaskVerificationReviewerAgent", fields: [reviewerAgentExecutorId], references: [id], onDelete: Restrict)
+  formResponses        FormResponse[]       @relation("FormResponseApproval")
 
   @@index([taskExecutionAttemptId, createdAt])
   @@index([taskExecutionAttemptId, result])
@@ -6895,6 +6947,7 @@ model ExternalActionRequest {
   approvedByUser       User?                 @relation("ExternalActionApproverUser", fields: [approvedByUserId], references: [id], onDelete: Restrict)
   executedByUser       User?                 @relation("ExternalActionExecutorUser", fields: [executedByUserId], references: [id], onDelete: Restrict)
   executedByAgent      AgentExecutor?        @relation("ExternalActionExecutorAgent", fields: [executedByAgentExecutorId], references: [id], onDelete: Restrict)
+  formSubmission       FormSubmission?       @relation("FormSubmissionExternalAction")
 
   @@index([taskId, status, createdAt])
   @@index([taskExecutionAttemptId, status])
@@ -7698,6 +7751,7 @@ model SourceArtifact {
   documentRevisions                     DocumentRevision[]                     @relation("DocumentRevisionSourceArtifact")
   collections                           Collection[]                           @relation("CollectionSourceArtifact")
   collectionRecords                     CollectionRecord[]                     @relation("CollectionRecordSourceArtifact")
+  formRevisions                         FormRevision[]                         @relation("FormRevisionSourceArtifact")
   contentAttachments                    ContentAttachment[]                    @relation("ContentAttachmentSourceArtifact")
   ownerUser                             User?                                  @relation("SourceArtifactOwnerUser", fields: [ownerUserId], references: [id], onDelete: Restrict)
   ownerOrganization                     Organization?                          @relation("SourceArtifactOwnerOrganization", fields: [ownerOrganizationId], references: [id], onDelete: Restrict)
@@ -9096,209 +9150,244 @@ model TaskTriggerFire {
 }
 
 // ============================================================================
-// SURVEY SYSTEM
+// FORMS AND REUSABLE KNOWLEDGE
 // ============================================================================
 
-/// A survey for collecting structured feedback, outcome data, or knowledge assessments
-model Survey {
-  /// Unique identifier
+/// Stable form identity. Immutable revisions preserve the exact questions
+/// used by surveys, applications, intake forms, and assessments.
+model Form {
   id String @id @default(cuid())
 
-  /// Survey title
-  title String
-
-  /// URL-safe slug
-  slug String @unique
-
-  /// Description of the survey's purpose
+  title       String
   description String?
+  purpose     FormPurpose       @default(SURVEY)
+  status      FormStatus        @default(DRAFT)
+  slug        String?           @unique
+  visibility  ContentVisibility @default(PRIVATE)
 
-  /// Optional jurisdiction scope
-  jurisdictionId String?
+  jurisdictionId    String?
+  referendumId      String?
+  organizationId    String?
+  createdByUserId   String
+  currentRevisionId String? @unique
 
-  /// Optional link to a referendum
-  referendumId String?
+  sourceKey String? @unique
+  sourceUrl String?
 
-  /// Whether the survey is currently accepting responses
-  active Boolean @default(true)
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  // -- Relations --
-  jurisdiction Jurisdiction?    @relation(fields: [jurisdictionId], references: [id])
-  referendum   Referendum?      @relation(fields: [referendumId], references: [id])
-  sections     SurveySection[]
-  responses    SurveyResponse[]
+  jurisdiction    Jurisdiction?  @relation(fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  referendum      Referendum?    @relation(fields: [referendumId], references: [id], onDelete: SetNull)
+  organization    Organization?  @relation("OrganizationForms", fields: [organizationId], references: [id], onDelete: SetNull)
+  createdByUser   User           @relation("FormCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  currentRevision FormRevision?  @relation("CurrentFormRevision", fields: [currentRevisionId, id], references: [id, formId], onDelete: Restrict)
+  revisions       FormRevision[] @relation("FormRevisions")
 
-  @@index([slug])
+  @@unique([currentRevisionId, id])
   @@index([jurisdictionId])
   @@index([referendumId])
-  @@index([active])
-}
-
-/// A section within a survey (groups related questions)
-model SurveySection {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Parent survey
-  surveyId String
-
-  /// Section title
-  title String
-
-  /// Optional description
-  description String?
-
-  /// Display order within the survey
-  sortOrder Int @default(0)
-
-  /// JSON-encoded conditional display rules (e.g. show only if Q1 = "yes")
-  conditionalLogic String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp; non-null means this record is logically deleted
-  deletedAt DateTime?
-
-  // -- Relations --
-  survey    Survey           @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  questions SurveyQuestion[]
-
-  @@unique([surveyId, sortOrder])
-  @@index([surveyId])
-  @@index([deletedAt])
-}
-
-/// A single question within a survey section
-model SurveyQuestion {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Parent section
-  sectionId String
-
-  /// Question text
-  text String
-
-  /// Type of question
-  type QuestionType
-
-  /// Whether this question must be answered
-  required Boolean @default(false)
-
-  /// JSON-encoded options for MULTIPLE_CHOICE (e.g. ["A","B","C"])
-  options String?
-
-  /// Display order within the section
-  sortOrder Int @default(0)
-
-  /// Points awarded for correct answer (for knowledge-gated voting)
-  score Float?
-
-  /// JSON-encoded conditional display rules
-  conditionalLogic String?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp; non-null means this record is logically deleted
-  deletedAt DateTime?
-
-  // -- Relations --
-  section   SurveySection      @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  responses QuestionResponse[]
-
-  @@unique([sectionId, sortOrder])
-  @@index([sectionId])
-  @@index([deletedAt])
-}
-
-/// A user's overall response to a survey
-model SurveyResponse {
-  /// Unique identifier
-  id String @id @default(cuid())
-
-  /// Which survey this response is for
-  surveyId String
-
-  /// The user who submitted the response
-  userId String
-
-  /// Organization context for partner-hosted survey or embed attribution
-  organizationId String?
-
-  /// Total score (for knowledge assessments)
-  totalScore Float?
-
-  /// When this response was submitted
-  completedAt DateTime?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  // -- Relations --
-  survey       Survey             @relation(fields: [surveyId], references: [id])
-  user         User               @relation("UserSurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
-  organization Organization?      @relation("OrganizationSurveyResponses", fields: [organizationId], references: [id])
-  answers      QuestionResponse[]
-
-  @@unique([surveyId, userId])
-  @@index([surveyId])
-  @@index([userId])
   @@index([organizationId])
+  @@index([createdByUserId])
+  @@index([purpose, status])
+  @@index([visibility])
+  @@index([deletedAt])
 }
 
-/// A single question answer within a survey response
-model QuestionResponse {
-  /// Unique identifier
+/// Immutable form schema revision.
+model FormRevision {
   id String @id @default(cuid())
 
-  /// Parent survey response
-  surveyResponseId String
+  formId           String
+  version          Int
+  status           ModelRevisionStatus @default(DRAFT)
+  title            String
+  description      String?
+  contentHash      String
+  sourceArtifactId String?
+  createdByUserId  String
+  publishedAt      DateTime?
 
-  /// The question being answered
-  questionId String
-
-  /// The answer value (text for free-text, selected option for MC, number as string for numeric/rating)
-  answer String
-
-  /// Score awarded for this answer
-  score Float?
-
-  /// When this record was created
-  createdAt DateTime @default(now())
-
-  /// When this record was last updated
-  updatedAt DateTime @updatedAt
-
-  /// Soft-delete timestamp; non-null means this record is logically deleted
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  // -- Relations --
-  surveyResponse SurveyResponse @relation(fields: [surveyResponseId], references: [id], onDelete: Cascade)
-  question       SurveyQuestion @relation(fields: [questionId], references: [id])
+  form           Form             @relation("FormRevisions", fields: [formId], references: [id], onDelete: Cascade)
+  currentFor     Form?            @relation("CurrentFormRevision")
+  sourceArtifact SourceArtifact?  @relation("FormRevisionSourceArtifact", fields: [sourceArtifactId], references: [id], onDelete: SetNull)
+  createdByUser  User             @relation("FormRevisionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  sections       FormSection[]    @relation("FormRevisionSections")
+  fields         FormField[]      @relation("FormRevisionFields")
+  submissions    FormSubmission[] @relation("FormRevisionSubmissions")
 
-  @@unique([surveyResponseId, questionId])
-  @@index([surveyResponseId])
-  @@index([questionId])
+  @@unique([formId, version])
+  @@unique([formId, contentHash])
+  @@unique([id, formId])
+  @@index([formId, status])
+  @@index([sourceArtifactId])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+/// Ordered section within one immutable form revision.
+model FormSection {
+  id String @id @default(cuid())
+
+  formRevisionId String
+  key            String
+  title          String?
+  description    String?
+  position       Int     @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  formRevision FormRevision @relation("FormRevisionSections", fields: [formRevisionId], references: [id], onDelete: Cascade)
+  fields       FormField[]  @relation("FormSectionFields")
+
+  @@unique([formRevisionId, key])
+  @@unique([id, formRevisionId])
+  @@index([formRevisionId, position])
+  @@index([deletedAt])
+}
+
+/// One typed question or input in a form revision. The stable key survives
+/// display-name and wording changes across revisions.
+model FormField {
+  id String @id @default(cuid())
+
+  formRevisionId String
+  sectionId      String?
+  key            String
+  prompt         String
+  description    String?
+  type           FormFieldType
+  required       Boolean       @default(false)
+  position       Int           @default(0)
+  knowledgeKey   String?
+  optionsJson    Json?
+  validationJson Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  formRevision FormRevision   @relation("FormRevisionFields", fields: [formRevisionId], references: [id], onDelete: Cascade)
+  section      FormSection?   @relation("FormSectionFields", fields: [sectionId, formRevisionId], references: [id, formRevisionId], onDelete: Cascade)
+  responses    FormResponse[] @relation("FormFieldResponses")
+
+  @@unique([formRevisionId, key])
+  @@unique([id, formRevisionId])
+  @@index([formRevisionId, position])
+  @@index([sectionId, position])
+  @@index([knowledgeKey])
+  @@index([deletedAt])
+}
+
+/// Stable, subject-owned reusable answer identity. The review task supplies
+/// immutable document revisions and accepted verification evidence.
+model KnowledgeAnswer {
+  id String @id @default(cuid())
+
+  subjectId         String
+  identityKey       String
+  knowledgeKey      String?
+  canonicalQuestion String
+  contextTags       String[]             @default([])
+  sensitivity       KnowledgeSensitivity @default(INTERNAL)
+  validUntil        DateTime?
+  reviewTaskId      String               @unique
+  createdByUserId   String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  subject       Subject        @relation("SubjectKnowledgeAnswers", fields: [subjectId], references: [id], onDelete: Cascade)
+  reviewTask    Task           @relation("KnowledgeAnswerReviewTask", fields: [reviewTaskId], references: [id], onDelete: Cascade)
+  createdByUser User           @relation("KnowledgeAnswerCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  formResponses FormResponse[] @relation("FormResponseKnowledgeAnswer")
+
+  @@unique([subjectId, identityKey])
+  @@index([subjectId, knowledgeKey])
+  @@index([subjectId, validUntil])
+  @@index([createdByUserId])
+  @@index([deletedAt])
+}
+
+/// One response set pinned to an exact form revision. It may represent an
+/// anonymous survey response or a task-backed application/intake submission.
+model FormSubmission {
+  id String @id @default(cuid())
+
+  formRevisionId          String
+  taskId                  String?
+  taskExecutionAttemptId  String?
+  subjectId               String?
+  createdByUserId         String?
+  respondentUserId        String?
+  externalActionRequestId String? @unique
+
+  status         FormSubmissionStatus @default(DRAFT)
+  idempotencyKey String?
+  requestHash    String?
+  submittedAt    DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  formRevision          FormRevision           @relation("FormRevisionSubmissions", fields: [formRevisionId], references: [id], onDelete: Restrict)
+  task                  Task?                  @relation("TaskFormSubmissions", fields: [taskId], references: [id], onDelete: SetNull)
+  taskExecutionAttempt  TaskExecutionAttempt?  @relation("TaskExecutionAttemptFormSubmissions", fields: [taskExecutionAttemptId], references: [id], onDelete: SetNull)
+  subject               Subject?               @relation("SubjectFormSubmissions", fields: [subjectId], references: [id], onDelete: SetNull)
+  createdByUser         User?                  @relation("FormSubmissionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  respondentUser        User?                  @relation("FormSubmissionRespondent", fields: [respondentUserId], references: [id], onDelete: SetNull)
+  externalActionRequest ExternalActionRequest? @relation("FormSubmissionExternalAction", fields: [externalActionRequestId], references: [id], onDelete: SetNull)
+  responses             FormResponse[]         @relation("FormSubmissionResponses")
+
+  @@unique([createdByUserId, idempotencyKey])
+  @@unique([id, formRevisionId])
+  @@index([formRevisionId, status])
+  @@index([taskId, status])
+  @@index([taskExecutionAttemptId])
+  @@index([subjectId, status])
+  @@index([respondentUserId, status])
+  @@index([createdByUserId])
+  @@index([submittedAt])
+  @@index([deletedAt])
+}
+
+/// Typed answer value plus optional link to the exact approved reusable answer
+/// revision and verification used for this submission.
+model FormResponse {
+  id String @id @default(cuid())
+
+  submissionId             String
+  formRevisionId           String
+  fieldId                  String
+  valueJson                Json?
+  knowledgeAnswerId        String?
+  answerDocumentRevisionId String?
+  approvalVerificationId   String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  submission             FormSubmission    @relation("FormSubmissionResponses", fields: [submissionId, formRevisionId], references: [id, formRevisionId], onDelete: Cascade)
+  field                  FormField         @relation("FormFieldResponses", fields: [fieldId, formRevisionId], references: [id, formRevisionId], onDelete: Restrict)
+  knowledgeAnswer        KnowledgeAnswer?  @relation("FormResponseKnowledgeAnswer", fields: [knowledgeAnswerId], references: [id], onDelete: SetNull)
+  answerDocumentRevision DocumentRevision? @relation("FormResponseAnswerRevision", fields: [answerDocumentRevisionId], references: [id], onDelete: Restrict)
+  approvalVerification   TaskVerification? @relation("FormResponseApproval", fields: [approvalVerificationId], references: [id], onDelete: Restrict)
+
+  @@unique([submissionId, fieldId])
+  @@index([formRevisionId, fieldId])
+  @@index([knowledgeAnswerId])
+  @@index([answerDocumentRevisionId])
+  @@index([approvalVerificationId])
   @@index([deletedAt])
 }
 

@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ContentAccessLevel } from "@optimitron/db/enums";
+import {
+  ContentAccessLevel,
+  OrganizationMemberRole,
+} from "@optimitron/db/enums";
 
 const mocks = vi.hoisted(() => ({
   collectionFindFirst: vi.fn(),
@@ -76,7 +79,10 @@ describe("document access", () => {
 
   it("gives current organization owners and admins full access", async () => {
     mocks.organizationMemberFindMany.mockResolvedValue([
-      { organizationId: "organization_1", role: "admin" },
+      {
+        organizationId: "organization_1",
+        role: OrganizationMemberRole.ADMIN,
+      },
     ]);
     mocks.documentFindFirst.mockResolvedValue(
       resource({ organizationId: "organization_1" }),

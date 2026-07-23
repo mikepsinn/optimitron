@@ -84,7 +84,9 @@ the columns below.
 | `PersonRelationship` | `relationshipType` | Human relationship labels. |
 | `PrizeTreasuryDeposit` | `depositorAddress`, `txHash` | Donor wallet and transaction identifiers. |
 | `PublicGoodsRecipient` | `walletAddress` | Recipient wallet identifier. |
-| `QuestionResponse` | `answer` | Survey answers can contain free-text PII or sensitive views. |
+| `Form`, `FormRevision`, `FormSection`, `FormField` | Titles, descriptions, prompts, options, validation, source URLs | User-authored forms can reveal private plans or intake context. |
+| `KnowledgeAnswer` | `canonicalQuestion`, `knowledgeKey`, `contextTags` | Reusable person and organization knowledge can reveal private facts. |
+| `FormResponse` | `valueJson` | Form and survey answers can contain free-text PII or sensitive views. |
 | `ReferendumVote` | `publicComment`, `originUrl` | Voter comment and attribution URL. |
 | `ReferralClick` | `code`, `refererUrl`, `userAgent`, `countryCode` | Referral click forensics. |
 | `ReferralInvitation` | `inviteToken`, `recipientName`, `recipientEmail`, `messageText`, `originUrl` | Named-invite recipient and message data. |

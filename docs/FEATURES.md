@@ -78,7 +78,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** partial
-- **Summary:** The MCP createTask tool requires an explicit parentTaskId and rejects direct attachment to the optimize-earth root; agents are instructed to searchTasks first. Parentless *private* tasks on the lib path now land in the creator's (or the assigned org's) private planning branch instead of root, and feedback tasks parent under `optimitron:dev`. Parentless *public* tasks (e.g. "ask for help") still root at optimize-earth because there is no public per-person branch to hold them — that case waits on the ranked parent-suggestion matcher.
+- **Summary:** The MCP createTask tool requires an explicit parentTaskId and rejects direct attachment to the optimize-earth root; agents are instructed to searchTasks first. Parentless _private_ tasks on the lib path now land in the creator's (or the assigned org's) private planning branch instead of root, and feedback tasks parent under `optimitron:dev`. Parentless _public_ tasks (e.g. "ask for help") still root at optimize-earth because there is no public per-person branch to hold them — that case waits on the ranked parent-suggestion matcher.
 - **Evidence:** `validateExplicitTaskParent` in packages/web/src/lib/mcp-server.ts (throws on root); packages/web/src/lib/tasks.server.ts `createTask` / `resolveDefaultPrivateParent` (private parentless → `ensureExecutionPlanningBranch`); packages/web/src/lib/feedback.server.ts (`parentTaskId: OPTIMITRON_DEV_TASK_ID`)
 - **Acceptance (target):** No user-created task attaches to the root by default on any path, and new tasks receive a ranked parent suggestion from tree search. (Met for private tasks; public parentless tasks + ranked matching are the remaining gap — see Status: partial.)
 - **Roadmap:** next — companion loop; remaining gap is public parentless tasks + the ranked parent suggestion (both need the matcher)
@@ -393,11 +393,11 @@ verified against `feature/private-execution-system` (2026-07-17).
 ### OPT-KNOW-01 — Reusable entity knowledge
 
 - **Layer:** personal / organization
-- **Status:** planned
-- **Summary:** Reusable questions are tasks; approved person and organization answers become versioned, provenance-bearing artifacts or assertions that many consuming tasks can use without copying ownership into an application or collection row.
-- **Evidence:** target contract in PRD §9.5; production task `optimitron:dev:entity-knowledge-profiles`; existing Task, SourceArtifact, DocumentRevision, execution-artifact, and verification foundations; no canonical knowledge contract ships yet
-- **Acceptance:** A longevity-fellowship application reuses an owner-approved answer, records the exact version and destination used, creates a small blocking human task for an unknown answer, and later reuses the same answer in another application without duplication.
-- **Roadmap:** next — pilot with existing task and artifact primitives before considering schema
+- **Status:** partial
+- **Summary:** Reviewed text and narrative answers belong to a person or organization and are reusable across applications, surveys, RFPs, intake forms, and questionnaires. Stable knowledge keys safely bridge differently worded prompts; exact prompt matching remains the fallback. The generic versioned form schema preserves free-form surveys, typed fields, sections, options, validation, anonymous responses, and exact submissions without duplicating reviewed answers. The current service prepares reviewed narrative answers; a generic form builder and create/publish/respond API do not yet ship. Signatures, uploads, conditional behavior, and scoring remain outside it.
+- **Evidence:** packages/db/prisma/schema.prisma (`Form*`, `KnowledgeAnswer`); packages/web/src/lib/form-responses.server.ts; packages/web/src/lib/mcp-tools/form-responses.ts; packages/web/src/lib/form-responses.server.test.ts; Task, DocumentRevision, TaskExecutionArtifact, TaskVerification, and ExternalActionRequest models
+- **Acceptance:** A longevity-fellowship application reuses an accepted answer, records its exact revision, approval, form hash, execution attempt, and destination, creates a small blocking review task for an unknown answer, and later reuses the same answer in another application without duplication.
+- **Roadmap:** pilot the MCP loop with real EOS applications and another form type; add richer validity, supersession, provenance, and receipt-driven completion only where a pilot exposes a concrete gap
 
 ### OPT-EPI-01 — Authority-aware collective verification
 

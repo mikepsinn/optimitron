@@ -3,6 +3,7 @@ import {
   ActivityType,
   ContentAccessLevel,
   ContentVisibility,
+  OrganizationMemberRole,
 } from "@optimitron/db/enums";
 import { prisma } from "@/lib/prisma";
 
@@ -16,7 +17,10 @@ const ACCESS_RANK: Record<ContentAccessLevel, number> = {
   [ContentAccessLevel.FULL_ACCESS]: 5,
 };
 
-const MANAGE_ORGANIZATION_ROLES = new Set(["owner", "admin"]);
+const MANAGE_ORGANIZATION_ROLES = new Set<OrganizationMemberRole>([
+  OrganizationMemberRole.OWNER,
+  OrganizationMemberRole.ADMIN,
+]);
 const MAX_DOCUMENT_ANCESTORS = 64;
 
 export type ContentResource =
