@@ -1,9 +1,9 @@
 # Schema Usage Audit
 
 - Schema: [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma)
-- Models scanned: 160
-- Enums scanned: 138
-- Classification summary: core 13, runtime-live 132, tests-only 3, schema-only 0, generated-only 8, suspicious 4
+- Models scanned: 163
+- Enums scanned: 143
+- Classification summary: core 13, runtime-live 138, tests-only 3, schema-only 0, generated-only 6, suspicious 3
 
 ## Vote Model Clarification
 
@@ -83,9 +83,15 @@
 | DatingQuestionAnswer | `runtime-live` | 1 | 1 | 0 | 9 | 0 |
 | DatingSafetyReport | `runtime-live` | 1 | 1 | 0 | 11 | 0 |
 | Document | `runtime-live` | 5 | 16 | 3 | 16 | 2 |
-| DocumentRevision | `runtime-live` | 3 | 4 | 1 | 11 | 1 |
+| DocumentRevision | `runtime-live` | 3 | 4 | 1 | 12 | 2 |
 | EmailLog | `runtime-live` | 4 | 14 | 0 | 11 | 6 |
-| ExternalActionRequest | `runtime-live` | 3 | 4 | 0 | 11 | 2 |
+| ExternalActionRequest | `runtime-live` | 3 | 5 | 0 | 12 | 3 |
+| Form | `runtime-live` | 1 | 14 | 1 | 13 | 5 |
+| FormField | `runtime-live` | 1 | 5 | 0 | 10 | 1 |
+| FormResponse | `runtime-live` | 1 | 2 | 0 | 13 | 1 |
+| FormRevision | `runtime-live` | 1 | 1 | 0 | 11 | 2 |
+| FormSection | `suspicious` | 0 | 0 | 0 | 10 | 1 |
+| FormSubmission | `runtime-live` | 2 | 2 | 0 | 14 | 0 |
 | GlobalVariable | `runtime-live` | 7 | 11 | 1 | 22 | 2 |
 | GlobalVariableExternalCode | `runtime-live` | 2 | 2 | 1 | 10 | 0 |
 | IntegrationConnection | `tests-only` | 0 | 0 | 1 | 12 | 1 |
@@ -96,7 +102,8 @@
 | InterventionExperienceOutcome | `runtime-live` | 1 | 1 | 0 | 12 | 1 |
 | InterventionExperienceSideEffect | `runtime-live` | 1 | 1 | 0 | 10 | 1 |
 | InterventionRankingRun | `runtime-live` | 1 | 1 | 0 | 11 | 0 |
-| Jurisdiction | `runtime-live` | 7 | 23 | 5 | 30 | 1 |
+| Jurisdiction | `runtime-live` | 7 | 23 | 5 | 31 | 1 |
+| KnowledgeAnswer | `runtime-live` | 1 | 2 | 0 | 12 | 3 |
 | McpToolCallAudit | `runtime-live` | 1 | 1 | 0 | 11 | 1 |
 | Measurement | `runtime-live` | 3 | 15 | 7 | 16 | 7 |
 | NOf1Variable | `runtime-live` | 2 | 3 | 1 | 13 | 2 |
@@ -106,8 +113,9 @@
 | OAuthAuthCode | `runtime-live` | 2 | 2 | 0 | 9 | 1 |
 | OAuthClient | `runtime-live` | 4 | 5 | 0 | 8 | 1 |
 | OAuthGrant | `runtime-live` | 5 | 5 | 0 | 10 | 1 |
-| Organization | `core` | 23 | 50 | 10 | 30 | 8 |
+| Organization | `core` | 23 | 50 | 11 | 31 | 8 |
 | OrganizationMember | `core` | 10 | 11 | 0 | 10 | 2 |
+| OrganizationName | `runtime-live` | 1 | 2 | 0 | 11 | 0 |
 | OrganizationReferendumPosition | `runtime-live` | 9 | 9 | 0 | 10 | 1 |
 | ParameterDefinition | `runtime-live` | 3 | 3 | 0 | 10 | 0 |
 | ParameterRevision | `runtime-live` | 3 | 3 | 0 | 10 | 0 |
@@ -128,7 +136,6 @@
 | PreferenceWeight | `runtime-live` | 1 | 3 | 2 | 10 | 1 |
 | PrizeTreasuryDeposit | `runtime-live` | 2 | 2 | 0 | 9 | 1 |
 | PublicGoodsRecipient | `suspicious` | 0 | 0 | 0 | 9 | 1 |
-| QuestionResponse | `suspicious` | 0 | 0 | 0 | 10 | 1 |
 | RankedIntervention | `runtime-live` | 1 | 1 | 0 | 11 | 0 |
 | Referendum | `runtime-live` | 21 | 31 | 7 | 15 | 1 |
 | ReferendumVote | `runtime-live` | 19 | 23 | 0 | 14 | 2 |
@@ -138,14 +145,10 @@
 | Session | `runtime-live` | 0 | 12 | 3 | 9 | 1 |
 | ShareAttempt | `runtime-live` | 5 | 8 | 0 | 16 | 5 |
 | SocialAccount | `runtime-live` | 3 | 3 | 0 | 9 | 1 |
-| SourceArtifact | `core` | 12 | 12 | 0 | 23 | 5 |
+| SourceArtifact | `core` | 13 | 13 | 0 | 24 | 5 |
 | StripeConnectedAccount | `runtime-live` | 2 | 2 | 0 | 10 | 0 |
-| Subject | `runtime-live` | 2 | 23 | 5 | 20 | 2 |
-| Survey | `runtime-live` | 0 | 27 | 2 | 10 | 2 |
-| SurveyQuestion | `generated-only` | 0 | 0 | 0 | 9 | 0 |
-| SurveyResponse | `suspicious` | 0 | 0 | 0 | 11 | 0 |
-| SurveySection | `generated-only` | 0 | 0 | 0 | 9 | 0 |
-| Task | `core` | 58 | 119 | 29 | 36 | 20 |
+| Subject | `runtime-live` | 3 | 24 | 5 | 21 | 2 |
+| Task | `core` | 59 | 120 | 29 | 37 | 20 |
 | TaskApplication | `runtime-live` | 4 | 4 | 0 | 16 | 0 |
 | TaskApplicationEvent | `runtime-live` | 2 | 2 | 0 | 11 | 0 |
 | TaskCandidateMatch | `runtime-live` | 3 | 3 | 0 | 15 | 0 |
@@ -160,9 +163,9 @@
 | TaskCommunicationVariant | `suspicious` | 0 | 0 | 0 | 10 | 1 |
 | TaskDistributionAttempt | `runtime-live` | 1 | 1 | 0 | 14 | 0 |
 | TaskDistributionTarget | `generated-only` | 0 | 0 | 0 | 10 | 0 |
-| TaskEdge | `core` | 6 | 6 | 0 | 9 | 5 |
-| TaskExecutionArtifact | `runtime-live` | 1 | 2 | 0 | 13 | 3 |
-| TaskExecutionAttempt | `runtime-live` | 7 | 7 | 0 | 19 | 3 |
+| TaskEdge | `core` | 7 | 7 | 0 | 9 | 5 |
+| TaskExecutionArtifact | `runtime-live` | 1 | 2 | 0 | 13 | 4 |
+| TaskExecutionAttempt | `runtime-live` | 7 | 7 | 0 | 20 | 3 |
 | TaskFundingEvent | `runtime-live` | 1 | 1 | 0 | 11 | 1 |
 | TaskFundingPayment | `runtime-live` | 6 | 6 | 0 | 13 | 1 |
 | TaskFundingPledge | `runtime-live` | 5 | 5 | 0 | 16 | 1 |
@@ -175,15 +178,15 @@
 | TaskManager | `runtime-live` | 2 | 2 | 0 | 10 | 0 |
 | TaskMarketplaceListing | `runtime-live` | 1 | 1 | 0 | 13 | 0 |
 | TaskPayout | `runtime-live` | 3 | 3 | 0 | 12 | 1 |
-| TaskSourceArtifact | `core` | 7 | 7 | 0 | 10 | 4 |
+| TaskSourceArtifact | `core` | 8 | 8 | 0 | 10 | 4 |
 | TaskSpawnSpec | `runtime-live` | 2 | 7 | 0 | 8 | 2 |
 | TaskTrigger | `runtime-live` | 3 | 16 | 1 | 11 | 7 |
 | TaskTriggerFire | `runtime-live` | 2 | 2 | 0 | 8 | 2 |
-| TaskVerification | `runtime-live` | 2 | 3 | 0 | 10 | 4 |
+| TaskVerification | `runtime-live` | 2 | 3 | 0 | 11 | 5 |
 | TrackingReminder | `runtime-live` | 1 | 1 | 1 | 11 | 7 |
 | TrackingReminderNotification | `runtime-live` | 1 | 1 | 1 | 9 | 3 |
 | Unit | `runtime-live` | 4 | 25 | 4 | 18 | 7 |
-| User | `core` | 81 | 116 | 22 | 68 | 12 |
+| User | `core` | 82 | 117 | 22 | 70 | 12 |
 | UserPreference | `runtime-live` | 4 | 4 | 0 | 9 | 1 |
 | VariableCategory | `runtime-live` | 5 | 7 | 1 | 10 | 1 |
 | VariableRelationshipEvidenceEstimate | `runtime-live` | 2 | 2 | 0 | 12 | 0 |
@@ -199,7 +202,7 @@
 
 ### Account
 
-- Schema: [packages/db/prisma/schema.prisma#L2038](../packages/db/prisma/schema.prisma#L2038)
+- Schema: [packages/db/prisma/schema.prisma#L2095](../packages/db/prisma/schema.prisma#L2095)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -214,7 +217,7 @@
   - `migrations`: 1 files / 6 matches
   - `generated`: 8 files / 209 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 24 files / 63 matches
+  - `other`: 21 files / 28 matches
 - Key files:
   - [packages/web/src/app/api/social-accounts/disconnect/route.ts](../packages/web/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
   - [packages/web/src/app/privacy/page.tsx](../packages/web/src/app/privacy/page.tsx) (1 matches)
@@ -229,7 +232,7 @@
 
 ### Activity
 
-- Schema: [packages/db/prisma/schema.prisma#L5439](../packages/db/prisma/schema.prisma#L5439)
+- Schema: [packages/db/prisma/schema.prisma#L5499](../packages/db/prisma/schema.prisma#L5499)
 - Classification: `runtime-live`
 - Direct Prisma usage: 14 files / 17 matches
 - Usage counts by bucket:
@@ -243,7 +246,7 @@
   - `migrations`: 2 files / 7 matches
   - `generated`: 11 files / 184 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 5 files / 21 matches
+  - `other`: 4 files / 23 matches
 - Key files:
   - [packages/web/src/app/api/admin/organizations/[id]/route.ts](../packages/web/src/app/api/admin/organizations/[id]/route.ts) (4 matches)
   - [packages/web/src/lib/content-access.server.ts](../packages/web/src/lib/content-access.server.ts) (4 matches)
@@ -258,7 +261,7 @@
 
 ### AgentExecutor
 
-- Schema: [packages/db/prisma/schema.prisma#L6421](../packages/db/prisma/schema.prisma#L6421)
+- Schema: [packages/db/prisma/schema.prisma#L6555](../packages/db/prisma/schema.prisma#L6555)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 6 matches
 - Usage counts by bucket:
@@ -283,7 +286,7 @@
 
 ### AgentTaskLease
 
-- Schema: [packages/db/prisma/schema.prisma#L10435](../packages/db/prisma/schema.prisma#L10435)
+- Schema: [packages/db/prisma/schema.prisma#L10608](../packages/db/prisma/schema.prisma#L10608)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 11 matches
 - Usage counts by bucket:
@@ -293,7 +296,7 @@
   - `schema`: 1 files / 3 matches
   - `migrations`: 2 files / 10 matches
   - `generated`: 9 files / 174 matches
-  - `other`: 2 files / 2 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/tasks/agent-lease.server.ts](../packages/web/src/lib/tasks/agent-lease.server.ts) (16 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
@@ -308,7 +311,7 @@
 
 ### AggregateVariableRelationship
 
-- Schema: [packages/db/prisma/schema.prisma#L3276](../packages/db/prisma/schema.prisma#L3276)
+- Schema: [packages/db/prisma/schema.prisma#L3335](../packages/db/prisma/schema.prisma#L3335)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -334,7 +337,7 @@
 
 ### AggregationRun
 
-- Schema: [packages/db/prisma/schema.prisma#L4226](../packages/db/prisma/schema.prisma#L4226)
+- Schema: [packages/db/prisma/schema.prisma#L4286](../packages/db/prisma/schema.prisma#L4286)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 4 matches
 - Usage counts by bucket:
@@ -359,7 +362,7 @@
 
 ### AlignmentScore
 
-- Schema: [packages/db/prisma/schema.prisma#L4355](../packages/db/prisma/schema.prisma#L4355)
+- Schema: [packages/db/prisma/schema.prisma#L4415](../packages/db/prisma/schema.prisma#L4415)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -386,7 +389,7 @@
 
 ### Badge
 
-- Schema: [packages/db/prisma/schema.prisma#L9226](../packages/db/prisma/schema.prisma#L9226)
+- Schema: [packages/db/prisma/schema.prisma#L9399](../packages/db/prisma/schema.prisma#L9399)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -398,7 +401,7 @@
   - `migrations`: 1 files / 5 matches
   - `generated`: 8 files / 151 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 4 files / 16 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/badges.server.ts](../packages/web/src/lib/badges.server.ts) (2 matches)
   - [packages/web/src/components/shared/TrialCard.tsx](../packages/web/src/components/shared/TrialCard.tsx) (21 matches)
@@ -413,7 +416,7 @@
 
 ### CitizenBillVote
 
-- Schema: [packages/db/prisma/schema.prisma#L4444](../packages/db/prisma/schema.prisma#L4444)
+- Schema: [packages/db/prisma/schema.prisma#L4504](../packages/db/prisma/schema.prisma#L4504)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -425,7 +428,7 @@
   - `migrations`: 1 files / 8 matches
   - `generated`: 8 files / 178 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 9 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/civic/votes/route.ts](../packages/web/src/app/api/civic/votes/route.ts) (4 matches)
   - [packages/web/src/app/civic/votes/[identifier]/page.tsx](../packages/web/src/app/civic/votes/[identifier]/page.tsx) (4 matches)
@@ -440,7 +443,7 @@
 
 ### Collection
 
-- Schema: [packages/db/prisma/schema.prisma#L6154](../packages/db/prisma/schema.prisma#L6154)
+- Schema: [packages/db/prisma/schema.prisma#L6288](../packages/db/prisma/schema.prisma#L6288)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 14 matches
 - Usage counts by bucket:
@@ -453,7 +456,6 @@
   - `schema`: 1 files / 10 matches
   - `migrations`: 1 files / 18 matches
   - `generated`: 13 files / 289 matches
-  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (25 matches)
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (9 matches)
@@ -468,7 +470,7 @@
 
 ### CollectionField
 
-- Schema: [packages/db/prisma/schema.prisma#L6198](../packages/db/prisma/schema.prisma#L6198)
+- Schema: [packages/db/prisma/schema.prisma#L6332](../packages/db/prisma/schema.prisma#L6332)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -492,7 +494,7 @@
 
 ### CollectionRecord
 
-- Schema: [packages/db/prisma/schema.prisma#L6231](../packages/db/prisma/schema.prisma#L6231)
+- Schema: [packages/db/prisma/schema.prisma#L6365](../packages/db/prisma/schema.prisma#L6365)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 21 matches
 - Usage counts by bucket:
@@ -516,7 +518,7 @@
 
 ### CollectionRelation
 
-- Schema: [packages/db/prisma/schema.prisma#L6286](../packages/db/prisma/schema.prisma#L6286)
+- Schema: [packages/db/prisma/schema.prisma#L6420](../packages/db/prisma/schema.prisma#L6420)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 8 matches
 - Usage counts by bucket:
@@ -539,7 +541,7 @@
 
 ### CollectionView
 
-- Schema: [packages/db/prisma/schema.prisma#L6326](../packages/db/prisma/schema.prisma#L6326)
+- Schema: [packages/db/prisma/schema.prisma#L6460](../packages/db/prisma/schema.prisma#L6460)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 5 matches
 - Usage counts by bucket:
@@ -563,7 +565,7 @@
 
 ### CommerceEntitlement
 
-- Schema: [packages/db/prisma/schema.prisma#L10392](../packages/db/prisma/schema.prisma#L10392)
+- Schema: [packages/db/prisma/schema.prisma#L10565](../packages/db/prisma/schema.prisma#L10565)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -584,7 +586,7 @@
 
 ### CommerceFulfillment
 
-- Schema: [packages/db/prisma/schema.prisma#L10349](../packages/db/prisma/schema.prisma#L10349)
+- Schema: [packages/db/prisma/schema.prisma#L10522](../packages/db/prisma/schema.prisma#L10522)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 7 matches
 - Usage counts by bucket:
@@ -608,7 +610,7 @@
 
 ### CommerceFulfillmentMapping
 
-- Schema: [packages/db/prisma/schema.prisma#L10211](../packages/db/prisma/schema.prisma#L10211)
+- Schema: [packages/db/prisma/schema.prisma#L10384](../packages/db/prisma/schema.prisma#L10384)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -631,7 +633,7 @@
 
 ### CommerceOffer
 
-- Schema: [packages/db/prisma/schema.prisma#L10116](../packages/db/prisma/schema.prisma#L10116)
+- Schema: [packages/db/prisma/schema.prisma#L10289](../packages/db/prisma/schema.prisma#L10289)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 6 matches
 - Usage counts by bucket:
@@ -655,7 +657,7 @@
 
 ### CommerceOfferVariant
 
-- Schema: [packages/db/prisma/schema.prisma#L10162](../packages/db/prisma/schema.prisma#L10162)
+- Schema: [packages/db/prisma/schema.prisma#L10335](../packages/db/prisma/schema.prisma#L10335)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -678,7 +680,7 @@
 
 ### CommerceOrder
 
-- Schema: [packages/db/prisma/schema.prisma#L10237](../packages/db/prisma/schema.prisma#L10237)
+- Schema: [packages/db/prisma/schema.prisma#L10410](../packages/db/prisma/schema.prisma#L10410)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 23 matches
 - Usage counts by bucket:
@@ -689,7 +691,6 @@
   - `schema`: 1 files / 6 matches
   - `migrations`: 2 files / 13 matches
   - `generated`: 9 files / 307 matches
-  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (14 matches)
   - [packages/web/src/app/api/stripe/create-checkout/route.ts](../packages/web/src/app/api/stripe/create-checkout/route.ts) (12 matches)
@@ -704,7 +705,7 @@
 
 ### CommerceOrderItem
 
-- Schema: [packages/db/prisma/schema.prisma#L10302](../packages/db/prisma/schema.prisma#L10302)
+- Schema: [packages/db/prisma/schema.prisma#L10475](../packages/db/prisma/schema.prisma#L10475)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -725,7 +726,7 @@
 
 ### Conflict
 
-- Schema: [packages/db/prisma/schema.prisma#L1306](../packages/db/prisma/schema.prisma#L1306)
+- Schema: [packages/db/prisma/schema.prisma#L1357](../packages/db/prisma/schema.prisma#L1357)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 5 matches
 - Usage counts by bucket:
@@ -756,7 +757,7 @@
 
 ### ContentAccessGrant
 
-- Schema: [packages/db/prisma/schema.prisma#L6354](../packages/db/prisma/schema.prisma#L6354)
+- Schema: [packages/db/prisma/schema.prisma#L6488](../packages/db/prisma/schema.prisma#L6488)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 6 matches
 - Usage counts by bucket:
@@ -780,7 +781,7 @@
 
 ### ContentAttachment
 
-- Schema: [packages/db/prisma/schema.prisma#L6386](../packages/db/prisma/schema.prisma#L6386)
+- Schema: [packages/db/prisma/schema.prisma#L6520](../packages/db/prisma/schema.prisma#L6520)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 20 matches
 - Usage counts by bucket:
@@ -804,7 +805,7 @@
 
 ### ContentReport
 
-- Schema: [packages/db/prisma/schema.prisma#L10667](../packages/db/prisma/schema.prisma#L10667)
+- Schema: [packages/db/prisma/schema.prisma#L10840](../packages/db/prisma/schema.prisma#L10840)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -815,7 +816,7 @@
   - `migrations`: 1 files / 8 matches
   - `generated`: 8 files / 223 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 12 matches
+  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -830,7 +831,7 @@
 
 ### CourtCase
 
-- Schema: [packages/db/prisma/schema.prisma#L4795](../packages/db/prisma/schema.prisma#L4795)
+- Schema: [packages/db/prisma/schema.prisma#L4855](../packages/db/prisma/schema.prisma#L4855)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 14 matches
 - Usage counts by bucket:
@@ -842,7 +843,7 @@
   - `migrations`: 2 files / 25 matches
   - `generated`: 11 files / 321 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 12 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (12 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (8 matches)
@@ -857,7 +858,7 @@
 
 ### CourtCaseClaim
 
-- Schema: [packages/db/prisma/schema.prisma#L4938](../packages/db/prisma/schema.prisma#L4938)
+- Schema: [packages/db/prisma/schema.prisma#L4998](../packages/db/prisma/schema.prisma#L4998)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -868,7 +869,7 @@
   - `migrations`: 1 files / 13 matches
   - `generated`: 13 files / 261 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 11 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -883,7 +884,7 @@
 
 ### CourtCaseEvidence
 
-- Schema: [packages/db/prisma/schema.prisma#L5094](../packages/db/prisma/schema.prisma#L5094)
+- Schema: [packages/db/prisma/schema.prisma#L5154](../packages/db/prisma/schema.prisma#L5154)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -894,7 +895,7 @@
   - `migrations`: 1 files / 21 matches
   - `generated`: 14 files / 332 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 17 matches
+  - `other`: 1 files / 7 matches
 - Key files:
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -909,7 +910,7 @@
 
 ### CourtCaseHarm
 
-- Schema: [packages/db/prisma/schema.prisma#L5003](../packages/db/prisma/schema.prisma#L5003)
+- Schema: [packages/db/prisma/schema.prisma#L5063](../packages/db/prisma/schema.prisma#L5063)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -920,7 +921,7 @@
   - `migrations`: 1 files / 17 matches
   - `generated`: 13 files / 305 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 11 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -935,7 +936,7 @@
 
 ### CourtCaseParty
 
-- Schema: [packages/db/prisma/schema.prisma#L4867](../packages/db/prisma/schema.prisma#L4867)
+- Schema: [packages/db/prisma/schema.prisma#L4927](../packages/db/prisma/schema.prisma#L4927)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 9 matches
 - Usage counts by bucket:
@@ -947,7 +948,7 @@
   - `migrations`: 1 files / 12 matches
   - `generated`: 11 files / 242 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 12 matches
+  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/lib/represented-people.server.ts](../packages/web/src/lib/represented-people.server.ts) (8 matches)
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (4 matches)
@@ -962,7 +963,7 @@
 
 ### CourtCaseRemedy
 
-- Schema: [packages/db/prisma/schema.prisma#L5192](../packages/db/prisma/schema.prisma#L5192)
+- Schema: [packages/db/prisma/schema.prisma#L5252](../packages/db/prisma/schema.prisma#L5252)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 2 matches
 - Usage counts by bucket:
@@ -973,7 +974,7 @@
   - `migrations`: 2 files / 16 matches
   - `generated`: 12 files / 285 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 10 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
@@ -988,7 +989,7 @@
 
 ### DatingBlock
 
-- Schema: [packages/db/prisma/schema.prisma#L9992](../packages/db/prisma/schema.prisma#L9992)
+- Schema: [packages/db/prisma/schema.prisma#L10165](../packages/db/prisma/schema.prisma#L10165)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1011,7 +1012,7 @@
 
 ### DatingConversation
 
-- Schema: [packages/db/prisma/schema.prisma#L9898](../packages/db/prisma/schema.prisma#L9898)
+- Schema: [packages/db/prisma/schema.prisma#L10071](../packages/db/prisma/schema.prisma#L10071)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 4 matches
 - Usage counts by bucket:
@@ -1034,7 +1035,7 @@
 
 ### DatingDatePlan
 
-- Schema: [packages/db/prisma/schema.prisma#L9945](../packages/db/prisma/schema.prisma#L9945)
+- Schema: [packages/db/prisma/schema.prisma#L10118](../packages/db/prisma/schema.prisma#L10118)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -1058,7 +1059,7 @@
 
 ### DatingInteraction
 
-- Schema: [packages/db/prisma/schema.prisma#L9846](../packages/db/prisma/schema.prisma#L9846)
+- Schema: [packages/db/prisma/schema.prisma#L10019](../packages/db/prisma/schema.prisma#L10019)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1081,7 +1082,7 @@
 
 ### DatingMatch
 
-- Schema: [packages/db/prisma/schema.prisma#L9870](../packages/db/prisma/schema.prisma#L9870)
+- Schema: [packages/db/prisma/schema.prisma#L10043](../packages/db/prisma/schema.prisma#L10043)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 5 matches
 - Usage counts by bucket:
@@ -1105,7 +1106,7 @@
 
 ### DatingMatchScore
 
-- Schema: [packages/db/prisma/schema.prisma#L9813](../packages/db/prisma/schema.prisma#L9813)
+- Schema: [packages/db/prisma/schema.prisma#L9986](../packages/db/prisma/schema.prisma#L9986)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1126,7 +1127,7 @@
 
 ### DatingMessage
 
-- Schema: [packages/db/prisma/schema.prisma#L9917](../packages/db/prisma/schema.prisma#L9917)
+- Schema: [packages/db/prisma/schema.prisma#L10090](../packages/db/prisma/schema.prisma#L10090)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1149,7 +1150,7 @@
 
 ### DatingPreference
 
-- Schema: [packages/db/prisma/schema.prisma#L9790](../packages/db/prisma/schema.prisma#L9790)
+- Schema: [packages/db/prisma/schema.prisma#L9963](../packages/db/prisma/schema.prisma#L9963)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1170,7 +1171,7 @@
 
 ### DatingProfile
 
-- Schema: [packages/db/prisma/schema.prisma#L9594](../packages/db/prisma/schema.prisma#L9594)
+- Schema: [packages/db/prisma/schema.prisma#L9767](../packages/db/prisma/schema.prisma#L9767)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 8 matches
 - Usage counts by bucket:
@@ -1194,7 +1195,7 @@
 
 ### DatingProfilePhoto
 
-- Schema: [packages/db/prisma/schema.prisma#L9657](../packages/db/prisma/schema.prisma#L9657)
+- Schema: [packages/db/prisma/schema.prisma#L9830](../packages/db/prisma/schema.prisma#L9830)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1217,7 +1218,7 @@
 
 ### DatingPrompt
 
-- Schema: [packages/db/prisma/schema.prisma#L9688](../packages/db/prisma/schema.prisma#L9688)
+- Schema: [packages/db/prisma/schema.prisma#L9861](../packages/db/prisma/schema.prisma#L9861)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1240,7 +1241,7 @@
 
 ### DatingPromptAnswer
 
-- Schema: [packages/db/prisma/schema.prisma#L9709](../packages/db/prisma/schema.prisma#L9709)
+- Schema: [packages/db/prisma/schema.prisma#L9882](../packages/db/prisma/schema.prisma#L9882)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1261,7 +1262,7 @@
 
 ### DatingQuestion
 
-- Schema: [packages/db/prisma/schema.prisma#L9734](../packages/db/prisma/schema.prisma#L9734)
+- Schema: [packages/db/prisma/schema.prisma#L9907](../packages/db/prisma/schema.prisma#L9907)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 2 matches
 - Usage counts by bucket:
@@ -1284,7 +1285,7 @@
 
 ### DatingQuestionAnswer
 
-- Schema: [packages/db/prisma/schema.prisma#L9761](../packages/db/prisma/schema.prisma#L9761)
+- Schema: [packages/db/prisma/schema.prisma#L9934](../packages/db/prisma/schema.prisma#L9934)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1307,7 +1308,7 @@
 
 ### DatingSafetyReport
 
-- Schema: [packages/db/prisma/schema.prisma#L10012](../packages/db/prisma/schema.prisma#L10012)
+- Schema: [packages/db/prisma/schema.prisma#L10185](../packages/db/prisma/schema.prisma#L10185)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1330,7 +1331,7 @@
 
 ### Document
 
-- Schema: [packages/db/prisma/schema.prisma#L6031](../packages/db/prisma/schema.prisma#L6031)
+- Schema: [packages/db/prisma/schema.prisma#L6164](../packages/db/prisma/schema.prisma#L6164)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 16 matches
 - Usage counts by bucket:
@@ -1343,7 +1344,6 @@
   - `schema`: 1 files / 14 matches
   - `migrations`: 3 files / 43 matches
   - `generated`: 16 files / 341 matches
-  - `other`: 6 files / 9 matches
 - Key files:
   - [packages/web/src/lib/documents.server.ts](../packages/web/src/lib/documents.server.ts) (21 matches)
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (8 matches)
@@ -1358,17 +1358,17 @@
 
 ### DocumentRevision
 
-- Schema: [packages/db/prisma/schema.prisma#L6113](../packages/db/prisma/schema.prisma#L6113)
+- Schema: [packages/db/prisma/schema.prisma#L6246](../packages/db/prisma/schema.prisma#L6246)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 6 matches
 - Usage counts by bucket:
   - `runtime-prisma`: 3 files / 6 matches
   - `runtime-libraries`: 4 files / 7 matches
   - `tests`: 1 files / 1 matches
-  - `docs`: 1 files / 2 matches
-  - `schema`: 1 files / 7 matches
-  - `migrations`: 2 files / 16 matches
-  - `generated`: 11 files / 221 matches
+  - `docs`: 2 files / 3 matches
+  - `schema`: 1 files / 8 matches
+  - `migrations`: 3 files / 17 matches
+  - `generated`: 12 files / 231 matches
 - Key files:
   - [packages/web/src/lib/documents.server.ts](../packages/web/src/lib/documents.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
@@ -1376,14 +1376,14 @@
   - [packages/web/src/lib/content-search.server.ts](../packages/web/src/lib/content-search.server.ts) (1 matches)
   - [packages/web/src/lib/__tests__/content-search.server.test.ts](../packages/web/src/lib/__tests__/content-search.server.test.ts) (1 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
-  - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (15 matches)
+  - [docs/PRD.md](../docs/PRD.md) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
 - Notes:
   - none
 
 ### EmailLog
 
-- Schema: [packages/db/prisma/schema.prisma#L9329](../packages/db/prisma/schema.prisma#L9329)
+- Schema: [packages/db/prisma/schema.prisma#L9502](../packages/db/prisma/schema.prisma#L9502)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 12 matches
 - Usage counts by bucket:
@@ -1395,7 +1395,7 @@
   - `migrations`: 6 files / 22 matches
   - `generated`: 10 files / 246 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 18 matches
+  - `other`: 1 files / 7 matches
 - Key files:
   - [packages/web/src/lib/email/resend-webhook.ts](../packages/web/src/lib/email/resend-webhook.ts) (16 matches)
   - [packages/web/src/lib/admin-communications.server.ts](../packages/web/src/lib/admin-communications.server.ts) (4 matches)
@@ -1410,33 +1410,191 @@
 
 ### ExternalActionRequest
 
-- Schema: [packages/db/prisma/schema.prisma#L6775](../packages/db/prisma/schema.prisma#L6775)
+- Schema: [packages/db/prisma/schema.prisma#L6911](../packages/db/prisma/schema.prisma#L6911)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 12 matches
 - Usage counts by bucket:
   - `runtime-prisma`: 3 files / 12 matches
-  - `runtime-libraries`: 3 files / 12 matches
+  - `runtime-libraries`: 4 files / 13 matches
   - `scripts`: 1 files / 2 matches
-  - `docs`: 2 files / 2 matches
-  - `schema`: 1 files / 8 matches
-  - `migrations`: 1 files / 19 matches
-  - `generated`: 11 files / 322 matches
+  - `docs`: 3 files / 3 matches
+  - `schema`: 1 files / 9 matches
+  - `migrations`: 2 files / 20 matches
+  - `generated`: 12 files / 332 matches
   - `other`: 2 files / 5 matches
 - Key files:
   - [packages/web/src/lib/tasks/external-action.server.ts](../packages/web/src/lib/tasks/external-action.server.ts) (20 matches)
   - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [packages/web/src/lib/mcp-instructions.ts](../packages/web/src/lib/mcp-instructions.ts) (1 matches)
   - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
+- Notes:
+  - none
+
+### Form
+
+- Schema: [packages/db/prisma/schema.prisma#L9158](../packages/db/prisma/schema.prisma#L9158)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 2 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 2 matches
+  - `components`: 3 files / 5 matches
+  - `runtime-libraries`: 10 files / 39 matches
+  - `scripts`: 1 files / 2 matches
+  - `tests`: 1 files / 7 matches
+  - `docs`: 5 files / 6 matches
+  - `schema`: 1 files / 7 matches
+  - `migrations`: 1 files / 18 matches
+  - `generated`: 12 files / 270 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 6 files / 12 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (21 matches)
+  - [packages/web/src/components/donate/WaysToGiveCard.tsx](../packages/web/src/components/donate/WaysToGiveCard.tsx) (3 matches)
+  - [packages/web/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx](../packages/web/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx) (1 matches)
+  - [packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx](../packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx) (1 matches)
+  - [packages/data/src/datasets/medical-data/references.json](../packages/data/src/datasets/medical-data/references.json) (11 matches)
+  - [packages/data/src/datasets/medical-data/treatments/irritable-bowel-syndrome.json](../packages/data/src/datasets/medical-data/treatments/irritable-bowel-syndrome.json) (2 matches)
+  - [packages/data/src/datasets/medical-data/treatments/anxiety-disorder.json](../packages/data/src/datasets/medical-data/treatments/anxiety-disorder.json) (1 matches)
+  - [packages/data/src/datasets/medical-data/treatments/genital-prolapse.json](../packages/data/src/datasets/medical-data/treatments/genital-prolapse.json) (1 matches)
+- Notes:
+  - none
+
+### FormField
+
+- Schema: [packages/db/prisma/schema.prisma#L9258](../packages/db/prisma/schema.prisma#L9258)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 2 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 2 matches
+  - `components`: 3 files / 55 matches
+  - `runtime-libraries`: 1 files / 2 matches
+  - `scripts`: 1 files / 2 matches
+  - `docs`: 1 files / 1 matches
+  - `schema`: 1 files / 4 matches
+  - `migrations`: 1 files / 10 matches
+  - `generated`: 9 files / 221 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 1 files / 4 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (4 matches)
+  - [packages/web/src/components/profile/ProfileSnapshotForm.tsx](../packages/web/src/components/profile/ProfileSnapshotForm.tsx) (51 matches)
+  - [packages/web/src/components/profile/DailyCheckInCard.tsx](../packages/web/src/components/profile/DailyCheckInCard.tsx) (3 matches)
+  - [packages/web/src/components/ui/form-field.tsx](../packages/web/src/components/ui/form-field.tsx) (1 matches)
+  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (10 matches)
+- Notes:
+  - none
+
+### FormResponse
+
+- Schema: [packages/db/prisma/schema.prisma#L9365](../packages/db/prisma/schema.prisma#L9365)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 1 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 1 matches
+  - `runtime-libraries`: 1 files / 1 matches
+  - `scripts`: 1 files / 2 matches
+  - `docs`: 1 files / 1 matches
+  - `schema`: 1 files / 6 matches
+  - `migrations`: 1 files / 12 matches
+  - `generated`: 12 files / 225 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 1 files / 1 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
+  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (12 matches)
+  - [packages/db/src/generated/prisma/models/FormResponse.ts](../packages/db/src/generated/prisma/models/FormResponse.ts) (176 matches)
+  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (29 matches)
+  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
+- Notes:
+  - none
+
+### FormRevision
+
+- Schema: [packages/db/prisma/schema.prisma#L9199](../packages/db/prisma/schema.prisma#L9199)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 3 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 3 matches
+  - `runtime-libraries`: 1 files / 3 matches
+  - `docs`: 2 files / 2 matches
+  - `schema`: 1 files / 8 matches
+  - `migrations`: 1 files / 15 matches
+  - `generated`: 10 files / 241 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 1 files / 2 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (6 matches)
+  - [docs/PRD.md](../docs/PRD.md) (1 matches)
+  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
-  - [packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql](../packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql) (19 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (15 matches)
+  - [packages/db/src/generated/prisma/models/FormRevision.ts](../packages/db/src/generated/prisma/models/FormRevision.ts) (190 matches)
+  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (33 matches)
+  - [packages/db/src/generated/prisma/models/Form.ts](../packages/db/src/generated/prisma/models/Form.ts) (4 matches)
+- Notes:
+  - none
+
+### FormSection
+
+- Schema: [packages/db/prisma/schema.prisma#L9234](../packages/db/prisma/schema.prisma#L9234)
+- Classification: `suspicious`
+- Direct Prisma usage: 0 files / 0 matches
+- Usage counts by bucket:
+  - `docs`: 1 files / 1 matches
+  - `schema`: 1 files / 3 matches
+  - `migrations`: 1 files / 7 matches
+  - `generated`: 9 files / 179 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 1 files / 2 matches
+- Key files:
+  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (7 matches)
+  - [packages/db/src/generated/prisma/models/FormSection.ts](../packages/db/src/generated/prisma/models/FormSection.ts) (142 matches)
+  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (23 matches)
+  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
+  - [packages/db/src/generated/prisma/browser.ts](../packages/db/src/generated/prisma/browser.ts) (2 matches)
+  - [packages/db/src/generated/prisma/client.ts](../packages/db/src/generated/prisma/client.ts) (2 matches)
+- Notes:
+  - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
+
+### FormSubmission
+
+- Schema: [packages/db/prisma/schema.prisma#L9322](../packages/db/prisma/schema.prisma#L9322)
+- Classification: `runtime-live`
+- Direct Prisma usage: 2 files / 9 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 2 files / 9 matches
+  - `runtime-libraries`: 2 files / 9 matches
+  - `schema`: 1 files / 9 matches
+  - `migrations`: 1 files / 20 matches
+  - `generated`: 13 files / 290 matches
+  - `zod`: 1 files / 1 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (10 matches)
+  - [packages/web/src/lib/tasks/external-action.server.ts](../packages/web/src/lib/tasks/external-action.server.ts) (8 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (9 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (20 matches)
+  - [packages/db/src/generated/prisma/models/FormSubmission.ts](../packages/db/src/generated/prisma/models/FormSubmission.ts) (231 matches)
+  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (35 matches)
+  - [packages/db/src/generated/prisma/models/User.ts](../packages/db/src/generated/prisma/models/User.ts) (4 matches)
+  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
 - Notes:
   - none
 
 ### GlobalVariable
 
-- Schema: [packages/db/prisma/schema.prisma#L2343](../packages/db/prisma/schema.prisma#L2343)
+- Schema: [packages/db/prisma/schema.prisma#L2400](../packages/db/prisma/schema.prisma#L2400)
 - Classification: `runtime-live`
 - Direct Prisma usage: 7 files / 15 matches
 - Usage counts by bucket:
@@ -1465,7 +1623,7 @@
 
 ### GlobalVariableExternalCode
 
-- Schema: [packages/db/prisma/schema.prisma#L2501](../packages/db/prisma/schema.prisma#L2501)
+- Schema: [packages/db/prisma/schema.prisma#L2558](../packages/db/prisma/schema.prisma#L2558)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -1490,7 +1648,7 @@
 
 ### IntegrationConnection
 
-- Schema: [packages/db/prisma/schema.prisma#L3715](../packages/db/prisma/schema.prisma#L3715)
+- Schema: [packages/db/prisma/schema.prisma#L3774](../packages/db/prisma/schema.prisma#L3774)
 - Classification: `tests-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1500,7 +1658,7 @@
   - `migrations`: 2 files / 9 matches
   - `generated`: 11 files / 226 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 11 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1515,7 +1673,7 @@
 
 ### IntegrationProvider
 
-- Schema: [packages/db/prisma/schema.prisma#L3653](../packages/db/prisma/schema.prisma#L3653)
+- Schema: [packages/db/prisma/schema.prisma#L3712](../packages/db/prisma/schema.prisma#L3712)
 - Classification: `tests-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1538,7 +1696,7 @@
 
 ### IntegrationSyncLog
 
-- Schema: [packages/db/prisma/schema.prisma#L3774](../packages/db/prisma/schema.prisma#L3774)
+- Schema: [packages/db/prisma/schema.prisma#L3833](../packages/db/prisma/schema.prisma#L3833)
 - Classification: `tests-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1548,7 +1706,7 @@
   - `migrations`: 1 files / 4 matches
   - `generated`: 8 files / 174 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 3 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1563,7 +1721,7 @@
 
 ### InterventionApprovalTimeline
 
-- Schema: [packages/db/prisma/schema.prisma#L1581](../packages/db/prisma/schema.prisma#L1581)
+- Schema: [packages/db/prisma/schema.prisma#L1632](../packages/db/prisma/schema.prisma#L1632)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 6 matches
 - Usage counts by bucket:
@@ -1588,7 +1746,7 @@
 
 ### InterventionExperience
 
-- Schema: [packages/db/prisma/schema.prisma#L2810](../packages/db/prisma/schema.prisma#L2810)
+- Schema: [packages/db/prisma/schema.prisma#L2869](../packages/db/prisma/schema.prisma#L2869)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1599,7 +1757,7 @@
   - `migrations`: 1 files / 9 matches
   - `generated`: 12 files / 285 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 7 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (5 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
@@ -1614,7 +1772,7 @@
 
 ### InterventionExperienceOutcome
 
-- Schema: [packages/db/prisma/schema.prisma#L2874](../packages/db/prisma/schema.prisma#L2874)
+- Schema: [packages/db/prisma/schema.prisma#L2933](../packages/db/prisma/schema.prisma#L2933)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1640,7 +1798,7 @@
 
 ### InterventionExperienceSideEffect
 
-- Schema: [packages/db/prisma/schema.prisma#L2923](../packages/db/prisma/schema.prisma#L2923)
+- Schema: [packages/db/prisma/schema.prisma#L2982](../packages/db/prisma/schema.prisma#L2982)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1666,7 +1824,7 @@
 
 ### InterventionRankingRun
 
-- Schema: [packages/db/prisma/schema.prisma#L3544](../packages/db/prisma/schema.prisma#L3544)
+- Schema: [packages/db/prisma/schema.prisma#L3603](../packages/db/prisma/schema.prisma#L3603)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1690,7 +1848,7 @@
 
 ### Jurisdiction
 
-- Schema: [packages/db/prisma/schema.prisma#L3817](../packages/db/prisma/schema.prisma#L3817)
+- Schema: [packages/db/prisma/schema.prisma#L3876](../packages/db/prisma/schema.prisma#L3876)
 - Classification: `runtime-live`
 - Direct Prisma usage: 7 files / 11 matches
 - Usage counts by bucket:
@@ -1701,11 +1859,11 @@
   - `scripts`: 2 files / 2 matches
   - `tests`: 5 files / 8 matches
   - `docs`: 1 files / 1 matches
-  - `schema`: 1 files / 33 matches
-  - `migrations`: 8 files / 29 matches
-  - `generated`: 29 files / 414 matches
+  - `schema`: 1 files / 35 matches
+  - `migrations`: 10 files / 31 matches
+  - `generated`: 30 files / 426 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 4 files / 4 matches
+  - `other`: 5 files / 13 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (8 matches)
   - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (5 matches)
@@ -1718,9 +1876,36 @@
 - Notes:
   - none
 
+### KnowledgeAnswer
+
+- Schema: [packages/db/prisma/schema.prisma#L9291](../packages/db/prisma/schema.prisma#L9291)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 5 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 5 matches
+  - `runtime-libraries`: 1 files / 6 matches
+  - `scripts`: 1 files / 2 matches
+  - `docs`: 3 files / 3 matches
+  - `schema`: 1 files / 5 matches
+  - `migrations`: 1 files / 11 matches
+  - `generated`: 11 files / 206 matches
+  - `zod`: 1 files / 1 matches
+  - `other`: 1 files / 3 matches
+- Key files:
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (11 matches)
+  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
+  - [docs/PRD.md](../docs/PRD.md) (1 matches)
+  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
+  - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (11 matches)
+  - [packages/db/src/generated/prisma/models/KnowledgeAnswer.ts](../packages/db/src/generated/prisma/models/KnowledgeAnswer.ts) (161 matches)
+- Notes:
+  - none
+
 ### McpToolCallAudit
 
-- Schema: [packages/db/prisma/schema.prisma#L10602](../packages/db/prisma/schema.prisma#L10602)
+- Schema: [packages/db/prisma/schema.prisma#L10775](../packages/db/prisma/schema.prisma#L10775)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -1731,7 +1916,7 @@
   - `migrations`: 1 files / 12 matches
   - `generated`: 10 files / 242 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 13 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1746,7 +1931,7 @@
 
 ### Measurement
 
-- Schema: [packages/db/prisma/schema.prisma#L2714](../packages/db/prisma/schema.prisma#L2714)
+- Schema: [packages/db/prisma/schema.prisma#L2773](../packages/db/prisma/schema.prisma#L2773)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 9 matches
 - Usage counts by bucket:
@@ -1759,7 +1944,7 @@
   - `migrations`: 3 files / 30 matches
   - `generated`: 15 files / 301 matches
   - `zod`: 1 files / 2 matches
-  - `other`: 6 files / 30 matches
+  - `other`: 3 files / 14 matches
 - Key files:
   - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (14 matches)
   - [packages/web/src/lib/census-aggregation.server.ts](../packages/web/src/lib/census-aggregation.server.ts) (2 matches)
@@ -1774,7 +1959,7 @@
 
 ### NOf1Variable
 
-- Schema: [packages/db/prisma/schema.prisma#L2607](../packages/db/prisma/schema.prisma#L2607)
+- Schema: [packages/db/prisma/schema.prisma#L2666](../packages/db/prisma/schema.prisma#L2666)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -1786,7 +1971,7 @@
   - `migrations`: 2 files / 17 matches
   - `generated`: 12 files / 298 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 27 matches
+  - `other`: 2 files / 15 matches
 - Key files:
   - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (6 matches)
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
@@ -1801,7 +1986,7 @@
 
 ### NOf1VariableRelationship
 
-- Schema: [packages/db/prisma/schema.prisma#L3086](../packages/db/prisma/schema.prisma#L3086)
+- Schema: [packages/db/prisma/schema.prisma#L3145](../packages/db/prisma/schema.prisma#L3145)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -1814,7 +1999,7 @@
   - `migrations`: 1 files / 9 matches
   - `generated`: 9 files / 394 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 8 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/aggregate-relationships.server.ts](../packages/web/src/lib/aggregate-relationships.server.ts) (9 matches)
   - [packages/web/src/app/api/health-analysis/submit/route.ts](../packages/web/src/app/api/health-analysis/submit/route.ts) (3 matches)
@@ -1829,7 +2014,7 @@
 
 ### Notification
 
-- Schema: [packages/db/prisma/schema.prisma#L5475](../packages/db/prisma/schema.prisma#L5475)
+- Schema: [packages/db/prisma/schema.prisma#L5535](../packages/db/prisma/schema.prisma#L5535)
 - Classification: `runtime-live`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -1855,7 +2040,7 @@
 
 ### NotificationPreference
 
-- Schema: [packages/db/prisma/schema.prisma#L5512](../packages/db/prisma/schema.prisma#L5512)
+- Schema: [packages/db/prisma/schema.prisma#L5572](../packages/db/prisma/schema.prisma#L5572)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -1865,7 +2050,6 @@
   - `migrations`: 1 files / 4 matches
   - `generated`: 9 files / 153 matches
   - `zod`: 1 files / 2 matches
-  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/app/api/dashboard/notification-preferences/route.ts](../packages/web/src/app/api/dashboard/notification-preferences/route.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
@@ -1880,7 +2064,7 @@
 
 ### OAuthAuthCode
 
-- Schema: [packages/db/prisma/schema.prisma#L10513](../packages/db/prisma/schema.prisma#L10513)
+- Schema: [packages/db/prisma/schema.prisma#L10686](../packages/db/prisma/schema.prisma#L10686)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -1890,7 +2074,7 @@
   - `schema`: 1 files / 3 matches
   - `migrations`: 4 files / 15 matches
   - `generated`: 9 files / 182 matches
-  - `other`: 2 files / 8 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/mcp/oauth/token/route.ts](../packages/web/src/app/api/mcp/oauth/token/route.ts) (4 matches)
   - [packages/web/src/app/api/mcp/oauth/consent/route.ts](../packages/web/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
@@ -1905,7 +2089,7 @@
 
 ### OAuthClient
 
-- Schema: [packages/db/prisma/schema.prisma#L10477](../packages/db/prisma/schema.prisma#L10477)
+- Schema: [packages/db/prisma/schema.prisma#L10650](../packages/db/prisma/schema.prisma#L10650)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 4 matches
 - Usage counts by bucket:
@@ -1917,7 +2101,7 @@
   - `schema`: 1 files / 4 matches
   - `migrations`: 2 files / 5 matches
   - `generated`: 8 files / 181 matches
-  - `other`: 2 files / 9 matches
+  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/app/api/mcp/oauth/authorize/route.ts](../packages/web/src/app/api/mcp/oauth/authorize/route.ts) (2 matches)
   - [packages/web/src/app/api/mcp/oauth/consent/route.ts](../packages/web/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
@@ -1932,7 +2116,7 @@
 
 ### OAuthGrant
 
-- Schema: [packages/db/prisma/schema.prisma#L10558](../packages/db/prisma/schema.prisma#L10558)
+- Schema: [packages/db/prisma/schema.prisma#L10731](../packages/db/prisma/schema.prisma#L10731)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 7 matches
 - Usage counts by bucket:
@@ -1944,7 +2128,7 @@
   - `schema`: 1 files / 4 matches
   - `migrations`: 5 files / 17 matches
   - `generated`: 10 files / 187 matches
-  - `other`: 2 files / 4 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/app/api/mcp/oauth/revoke/route.ts](../packages/web/src/app/api/mcp/oauth/revoke/route.ts) (4 matches)
   - [packages/web/src/app/api/mcp/oauth/token/route.ts](../packages/web/src/app/api/mcp/oauth/token/route.ts) (4 matches)
@@ -1959,29 +2143,29 @@
 
 ### Organization
 
-- Schema: [packages/db/prisma/schema.prisma#L5540](../packages/db/prisma/schema.prisma#L5540)
+- Schema: [packages/db/prisma/schema.prisma#L5600](../packages/db/prisma/schema.prisma#L5600)
 - Classification: `core`
-- Direct Prisma usage: 23 files / 55 matches
+- Direct Prisma usage: 23 files / 57 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 23 files / 55 matches
+  - `runtime-prisma`: 23 files / 57 matches
   - `api-routes`: 7 files / 20 matches
   - `pages`: 6 files / 9 matches
   - `components`: 7 files / 15 matches
-  - `runtime-libraries`: 28 files / 112 matches
+  - `runtime-libraries`: 28 files / 114 matches
   - `scripts`: 2 files / 3 matches
-  - `tests`: 10 files / 19 matches
+  - `tests`: 11 files / 20 matches
   - `docs`: 8 files / 13 matches
-  - `schema`: 1 files / 37 matches
-  - `migrations`: 12 files / 36 matches
-  - `generated`: 29 files / 469 matches
+  - `schema`: 1 files / 38 matches
+  - `migrations`: 14 files / 45 matches
+  - `generated`: 30 files / 479 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 9 files / 57 matches
+  - `other`: 8 files / 31 matches
 - Key files:
   - [packages/web/src/lib/organization.server.ts](../packages/web/src/lib/organization.server.ts) (40 matches)
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (30 matches)
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (14 matches)
+  - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (11 matches)
   - [packages/web/src/app/api/admin/organizations/[id]/route.ts](../packages/web/src/app/api/admin/organizations/[id]/route.ts) (11 matches)
-  - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (7 matches)
   - [packages/db/src/managed-data/managed-demo-user.ts](../packages/db/src/managed-data/managed-demo-user.ts) (6 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (6 matches)
   - [packages/web/src/app/api/organizations/[id]/route.ts](../packages/web/src/app/api/organizations/[id]/route.ts) (6 matches)
@@ -1990,7 +2174,7 @@
 
 ### OrganizationMember
 
-- Schema: [packages/db/prisma/schema.prisma#L5629](../packages/db/prisma/schema.prisma#L5629)
+- Schema: [packages/db/prisma/schema.prisma#L5760](../packages/db/prisma/schema.prisma#L5760)
 - Classification: `core`
 - Direct Prisma usage: 10 files / 20 matches
 - Usage counts by bucket:
@@ -2003,7 +2187,6 @@
   - `migrations`: 2 files / 9 matches
   - `generated`: 9 files / 153 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/organization.server.ts](../packages/web/src/lib/organization.server.ts) (23 matches)
   - [packages/db/src/managed-data/managed-demo-user.ts](../packages/db/src/managed-data/managed-demo-user.ts) (2 matches)
@@ -2016,9 +2199,33 @@
 - Notes:
   - none
 
+### OrganizationName
+
+- Schema: [packages/db/prisma/schema.prisma#L5692](../packages/db/prisma/schema.prisma#L5692)
+- Classification: `runtime-live`
+- Direct Prisma usage: 1 files / 3 matches
+- Usage counts by bucket:
+  - `runtime-prisma`: 1 files / 3 matches
+  - `runtime-libraries`: 2 files / 4 matches
+  - `schema`: 1 files / 5 matches
+  - `migrations`: 1 files / 16 matches
+  - `generated`: 10 files / 250 matches
+  - `zod`: 1 files / 1 matches
+- Key files:
+  - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (6 matches)
+  - [packages/db/src/organization-name.ts](../packages/db/src/organization-name.ts) (1 matches)
+  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
+  - [packages/db/prisma/migrations/20260720170000_add_organization_names/migration.sql](../packages/db/prisma/migrations/20260720170000_add_organization_names/migration.sql) (16 matches)
+  - [packages/db/src/generated/prisma/models/OrganizationName.ts](../packages/db/src/generated/prisma/models/OrganizationName.ts) (205 matches)
+  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (27 matches)
+  - [packages/db/src/generated/prisma/models/User.ts](../packages/db/src/generated/prisma/models/User.ts) (4 matches)
+  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
+- Notes:
+  - none
+
 ### OrganizationReferendumPosition
 
-- Schema: [packages/db/prisma/schema.prisma#L5657](../packages/db/prisma/schema.prisma#L5657)
+- Schema: [packages/db/prisma/schema.prisma#L5788](../packages/db/prisma/schema.prisma#L5788)
 - Classification: `runtime-live`
 - Direct Prisma usage: 9 files / 16 matches
 - Usage counts by bucket:
@@ -2030,7 +2237,7 @@
   - `schema`: 1 files / 5 matches
   - `migrations`: 1 files / 12 matches
   - `generated`: 10 files / 211 matches
-  - `other`: 3 files / 10 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (7 matches)
   - [packages/web/src/lib/referendum-site.server.ts](../packages/web/src/lib/referendum-site.server.ts) (6 matches)
@@ -2045,7 +2252,7 @@
 
 ### ParameterDefinition
 
-- Schema: [packages/db/prisma/schema.prisma#L7633](../packages/db/prisma/schema.prisma#L7633)
+- Schema: [packages/db/prisma/schema.prisma#L7771](../packages/db/prisma/schema.prisma#L7771)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 11 matches
 - Usage counts by bucket:
@@ -2055,7 +2262,6 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 189 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (19 matches)
   - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
@@ -2070,7 +2276,7 @@
 
 ### ParameterRevision
 
-- Schema: [packages/db/prisma/schema.prisma#L7651](../packages/db/prisma/schema.prisma#L7651)
+- Schema: [packages/db/prisma/schema.prisma#L7789](../packages/db/prisma/schema.prisma#L7789)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 11 matches
 - Usage counts by bucket:
@@ -2094,7 +2300,7 @@
 
 ### ParameterRevisionInput
 
-- Schema: [packages/db/prisma/schema.prisma#L7711](../packages/db/prisma/schema.prisma#L7711)
+- Schema: [packages/db/prisma/schema.prisma#L7849](../packages/db/prisma/schema.prisma#L7849)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 3 matches
 - Usage counts by bucket:
@@ -2118,7 +2324,7 @@
 
 ### ParameterRevisionSourceArtifact
 
-- Schema: [packages/db/prisma/schema.prisma#L7731](../packages/db/prisma/schema.prisma#L7731)
+- Schema: [packages/db/prisma/schema.prisma#L7869](../packages/db/prisma/schema.prisma#L7869)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -2142,7 +2348,7 @@
 
 ### Person
 
-- Schema: [packages/db/prisma/schema.prisma#L1095](../packages/db/prisma/schema.prisma#L1095)
+- Schema: [packages/db/prisma/schema.prisma#L1146](../packages/db/prisma/schema.prisma#L1146)
 - Classification: `core`
 - Direct Prisma usage: 31 files / 72 matches
 - Usage counts by bucket:
@@ -2158,7 +2364,7 @@
   - `migrations`: 15 files / 80 matches
   - `generated`: 27 files / 487 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 7 files / 64 matches
+  - `other`: 5 files / 24 matches
 - Key files:
   - [packages/web/src/lib/person.server.ts](../packages/web/src/lib/person.server.ts) (43 matches)
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (31 matches)
@@ -2173,7 +2379,7 @@
 
 ### PersonCondition
 
-- Schema: [packages/db/prisma/schema.prisma#L1251](../packages/db/prisma/schema.prisma#L1251)
+- Schema: [packages/db/prisma/schema.prisma#L1302](../packages/db/prisma/schema.prisma#L1302)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 10 matches
 - Usage counts by bucket:
@@ -2185,7 +2391,7 @@
   - `migrations`: 1 files / 13 matches
   - `generated`: 12 files / 237 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 13 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
@@ -2200,7 +2406,7 @@
 
 ### PersonEfficacyLagEvidence
 
-- Schema: [packages/db/prisma/schema.prisma#L1659](../packages/db/prisma/schema.prisma#L1659)
+- Schema: [packages/db/prisma/schema.prisma#L1710](../packages/db/prisma/schema.prisma#L1710)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 2 matches
 - Usage counts by bucket:
@@ -2212,7 +2418,7 @@
   - `migrations`: 1 files / 8 matches
   - `generated`: 11 files / 226 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 5 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/efficacy-lag-matcher.server.ts](../packages/web/src/lib/efficacy-lag-matcher.server.ts) (3 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (2 matches)
@@ -2227,7 +2433,7 @@
 
 ### PersonhoodVerification
 
-- Schema: [packages/db/prisma/schema.prisma#L2156](../packages/db/prisma/schema.prisma#L2156)
+- Schema: [packages/db/prisma/schema.prisma#L2213](../packages/db/prisma/schema.prisma#L2213)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 6 matches
 - Usage counts by bucket:
@@ -2255,7 +2461,7 @@
 
 ### PersonMemorial
 
-- Schema: [packages/db/prisma/schema.prisma#L1352](../packages/db/prisma/schema.prisma#L1352)
+- Schema: [packages/db/prisma/schema.prisma#L1403](../packages/db/prisma/schema.prisma#L1403)
 - Classification: `runtime-live`
 - Direct Prisma usage: 7 files / 15 matches
 - Usage counts by bucket:
@@ -2268,7 +2474,7 @@
   - `migrations`: 2 files / 20 matches
   - `generated`: 11 files / 263 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 17 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (9 matches)
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (8 matches)
@@ -2283,7 +2489,7 @@
 
 ### PersonMemorialEvidence
 
-- Schema: [packages/db/prisma/schema.prisma#L1523](../packages/db/prisma/schema.prisma#L1523)
+- Schema: [packages/db/prisma/schema.prisma#L1574](../packages/db/prisma/schema.prisma#L1574)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 14 matches
 - Usage counts by bucket:
@@ -2295,7 +2501,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 11 files / 240 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 14 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (16 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (11 matches)
@@ -2310,7 +2516,7 @@
 
 ### PersonMemorialResponsibleParty
 
-- Schema: [packages/db/prisma/schema.prisma#L1463](../packages/db/prisma/schema.prisma#L1463)
+- Schema: [packages/db/prisma/schema.prisma#L1514](../packages/db/prisma/schema.prisma#L1514)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 8 matches
 - Usage counts by bucket:
@@ -2322,7 +2528,7 @@
   - `migrations`: 1 files / 10 matches
   - `generated`: 11 files / 241 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 9 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (11 matches)
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (4 matches)
@@ -2337,7 +2543,7 @@
 
 ### PersonMemorialSubmission
 
-- Schema: [packages/db/prisma/schema.prisma#L1414](../packages/db/prisma/schema.prisma#L1414)
+- Schema: [packages/db/prisma/schema.prisma#L1465](../packages/db/prisma/schema.prisma#L1465)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 9 matches
 - Usage counts by bucket:
@@ -2349,7 +2555,7 @@
   - `migrations`: 1 files / 9 matches
   - `generated`: 10 files / 208 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 10 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
@@ -2364,7 +2570,7 @@
 
 ### PersonRelationship
 
-- Schema: [packages/db/prisma/schema.prisma#L1212](../packages/db/prisma/schema.prisma#L1212)
+- Schema: [packages/db/prisma/schema.prisma#L1263](../packages/db/prisma/schema.prisma#L1263)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 9 matches
 - Usage counts by bucket:
@@ -2376,7 +2582,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 187 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 5 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
@@ -2391,7 +2597,7 @@
 
 ### PointMint
 
-- Schema: [packages/db/prisma/schema.prisma#L5288](../packages/db/prisma/schema.prisma#L5288)
+- Schema: [packages/db/prisma/schema.prisma#L5348](../packages/db/prisma/schema.prisma#L5348)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 10 matches
 - Usage counts by bucket:
@@ -2403,7 +2609,7 @@
   - `migrations`: 1 files / 4 matches
   - `generated`: 9 files / 188 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 6 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/cron/point-mint/route.ts](../packages/web/src/app/api/cron/point-mint/route.ts) (8 matches)
   - [packages/web/src/lib/referral-point-mint.server.ts](../packages/web/src/lib/referral-point-mint.server.ts) (6 matches)
@@ -2418,7 +2624,7 @@
 
 ### Politician
 
-- Schema: [packages/db/prisma/schema.prisma#L4268](../packages/db/prisma/schema.prisma#L4268)
+- Schema: [packages/db/prisma/schema.prisma#L4328](../packages/db/prisma/schema.prisma#L4328)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -2433,7 +2639,7 @@
   - `migrations`: 2 files / 8 matches
   - `generated`: 10 files / 204 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 7 files / 14 matches
+  - `other`: 10 files / 71 matches
 - Key files:
   - [packages/web/src/lib/alignment-politicians.server.ts](../packages/web/src/lib/alignment-politicians.server.ts) (4 matches)
   - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (2 matches)
@@ -2448,7 +2654,7 @@
 
 ### PoliticianVote
 
-- Schema: [packages/db/prisma/schema.prisma#L4315](../packages/db/prisma/schema.prisma#L4315)
+- Schema: [packages/db/prisma/schema.prisma#L4375](../packages/db/prisma/schema.prisma#L4375)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -2474,7 +2680,7 @@
 
 ### PreferenceWeight
 
-- Schema: [packages/db/prisma/schema.prisma#L4184](../packages/db/prisma/schema.prisma#L4184)
+- Schema: [packages/db/prisma/schema.prisma#L4244](../packages/db/prisma/schema.prisma#L4244)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -2501,7 +2707,7 @@
 
 ### PrizeTreasuryDeposit
 
-- Schema: [packages/db/prisma/schema.prisma#L5337](../packages/db/prisma/schema.prisma#L5337)
+- Schema: [packages/db/prisma/schema.prisma#L5397](../packages/db/prisma/schema.prisma#L5397)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 2 matches
 - Usage counts by bucket:
@@ -2513,7 +2719,7 @@
   - `migrations`: 1 files / 4 matches
   - `generated`: 8 files / 158 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 4 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/app/api/prize-treasury/status/route.ts](../packages/web/src/app/api/prize-treasury/status/route.ts) (2 matches)
   - [packages/web/src/app/prize/page.tsx](../packages/web/src/app/prize/page.tsx) (2 matches)
@@ -2528,7 +2734,7 @@
 
 ### PublicGoodsRecipient
 
-- Schema: [packages/db/prisma/schema.prisma#L5376](../packages/db/prisma/schema.prisma#L5376)
+- Schema: [packages/db/prisma/schema.prisma#L5436](../packages/db/prisma/schema.prisma#L5436)
 - Classification: `suspicious`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -2537,7 +2743,7 @@
   - `migrations`: 1 files / 3 matches
   - `generated`: 8 files / 163 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 3 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
@@ -2550,33 +2756,9 @@
 - Notes:
   - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
 
-### QuestionResponse
-
-- Schema: [packages/db/prisma/schema.prisma#L9186](../packages/db/prisma/schema.prisma#L9186)
-- Classification: `suspicious`
-- Direct Prisma usage: 0 files / 0 matches
-- Usage counts by bucket:
-  - `docs`: 1 files / 1 matches
-  - `schema`: 1 files / 3 matches
-  - `migrations`: 1 files / 7 matches
-  - `generated`: 9 files / 168 matches
-  - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 3 matches
-- Key files:
-  - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
-  - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (7 matches)
-  - [packages/db/src/generated/prisma/models/QuestionResponse.ts](../packages/db/src/generated/prisma/models/QuestionResponse.ts) (131 matches)
-  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (23 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
-  - [packages/db/src/generated/prisma/browser.ts](../packages/db/src/generated/prisma/browser.ts) (2 matches)
-  - [packages/db/src/generated/prisma/client.ts](../packages/db/src/generated/prisma/client.ts) (2 matches)
-- Notes:
-  - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
-
 ### RankedIntervention
 
-- Schema: [packages/db/prisma/schema.prisma#L3589](../packages/db/prisma/schema.prisma#L3589)
+- Schema: [packages/db/prisma/schema.prisma#L3648](../packages/db/prisma/schema.prisma#L3648)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -2600,7 +2782,7 @@
 
 ### Referendum
 
-- Schema: [packages/db/prisma/schema.prisma#L4658](../packages/db/prisma/schema.prisma#L4658)
+- Schema: [packages/db/prisma/schema.prisma#L4718](../packages/db/prisma/schema.prisma#L4718)
 - Classification: `runtime-live`
 - Direct Prisma usage: 21 files / 32 matches
 - Usage counts by bucket:
@@ -2613,10 +2795,10 @@
   - `tests`: 7 files / 16 matches
   - `docs`: 1 files / 1 matches
   - `schema`: 1 files / 12 matches
-  - `migrations`: 5 files / 21 matches
+  - `migrations`: 6 files / 22 matches
   - `generated`: 14 files / 297 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 4 files / 5 matches
+  - `other`: 5 files / 5 matches
 - Key files:
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (14 matches)
   - [packages/web/src/app/api/referendums/[slug]/vote/route.ts](../packages/web/src/app/api/referendums/[slug]/vote/route.ts) (7 matches)
@@ -2631,7 +2813,7 @@
 
 ### ReferendumVote
 
-- Schema: [packages/db/prisma/schema.prisma#L4727](../packages/db/prisma/schema.prisma#L4727)
+- Schema: [packages/db/prisma/schema.prisma#L4787](../packages/db/prisma/schema.prisma#L4787)
 - Classification: `runtime-live`
 - Direct Prisma usage: 19 files / 45 matches
 - Usage counts by bucket:
@@ -2645,7 +2827,7 @@
   - `migrations`: 5 files / 29 matches
   - `generated`: 13 files / 246 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 6 files / 44 matches
+  - `other`: 2 files / 4 matches
 - Key files:
   - [packages/web/src/lib/verified-votes.server.ts](../packages/web/src/lib/verified-votes.server.ts) (16 matches)
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (13 matches)
@@ -2660,7 +2842,7 @@
 
 ### Referral
 
-- Schema: [packages/db/prisma/schema.prisma#L3935](../packages/db/prisma/schema.prisma#L3935)
+- Schema: [packages/db/prisma/schema.prisma#L3995](../packages/db/prisma/schema.prisma#L3995)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 7 matches
 - Usage counts by bucket:
@@ -2675,7 +2857,7 @@
   - `migrations`: 3 files / 10 matches
   - `generated`: 9 files / 196 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 5 files / 13 matches
+  - `other`: 5 files / 11 matches
 - Key files:
   - [packages/web/src/lib/referral.server.ts](../packages/web/src/lib/referral.server.ts) (8 matches)
   - [packages/web/src/app/api/game-stats/route.ts](../packages/web/src/app/api/game-stats/route.ts) (2 matches)
@@ -2690,7 +2872,7 @@
 
 ### ReferralClick
 
-- Schema: [packages/db/prisma/schema.prisma#L3974](../packages/db/prisma/schema.prisma#L3974)
+- Schema: [packages/db/prisma/schema.prisma#L4034](../packages/db/prisma/schema.prisma#L4034)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -2701,7 +2883,7 @@
   - `schema`: 1 files / 2 matches
   - `migrations`: 1 files / 9 matches
   - `generated`: 8 files / 179 matches
-  - `other`: 5 files / 23 matches
+  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/lib/referral-redirect.server.ts](../packages/web/src/lib/referral-redirect.server.ts) (2 matches)
   - [packages/web/src/app/r/[code]/page.tsx](../packages/web/src/app/r/[code]/page.tsx) (1 matches)
@@ -2716,7 +2898,7 @@
 
 ### ReferralInvitation
 
-- Schema: [packages/db/prisma/schema.prisma#L4016](../packages/db/prisma/schema.prisma#L4016)
+- Schema: [packages/db/prisma/schema.prisma#L4076](../packages/db/prisma/schema.prisma#L4076)
 - Classification: `runtime-live`
 - Direct Prisma usage: 7 files / 27 matches
 - Usage counts by bucket:
@@ -2728,7 +2910,7 @@
   - `schema`: 1 files / 12 matches
   - `migrations`: 8 files / 32 matches
   - `generated`: 15 files / 325 matches
-  - `other`: 5 files / 42 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/referral-invitations.server.ts](../packages/web/src/lib/referral-invitations.server.ts) (23 matches)
   - [packages/web/src/lib/humanity-manager-status.server.ts](../packages/web/src/lib/humanity-manager-status.server.ts) (11 matches)
@@ -2743,7 +2925,7 @@
 
 ### Session
 
-- Schema: [packages/db/prisma/schema.prisma#L2100](../packages/db/prisma/schema.prisma#L2100)
+- Schema: [packages/db/prisma/schema.prisma#L2157](../packages/db/prisma/schema.prisma#L2157)
 - Classification: `runtime-live`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -2756,7 +2938,7 @@
   - `migrations`: 1 files / 6 matches
   - `generated`: 8 files / 158 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 7 files / 14 matches
+  - `other`: 4 files / 7 matches
 - Key files:
   - [packages/web/src/app/api/stripe/webhook/route.ts](../packages/web/src/app/api/stripe/webhook/route.ts) (7 matches)
   - [packages/web/src/components/treaty/TreatyNameSignatureBox.tsx](../packages/web/src/components/treaty/TreatyNameSignatureBox.tsx) (1 matches)
@@ -2771,7 +2953,7 @@
 
 ### ShareAttempt
 
-- Schema: [packages/db/prisma/schema.prisma#L9408](../packages/db/prisma/schema.prisma#L9408)
+- Schema: [packages/db/prisma/schema.prisma#L9581](../packages/db/prisma/schema.prisma#L9581)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 5 matches
 - Usage counts by bucket:
@@ -2783,7 +2965,7 @@
   - `schema`: 1 files / 14 matches
   - `migrations`: 6 files / 25 matches
   - `generated`: 16 files / 295 matches
-  - `other`: 4 files / 22 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/app/api/share-attempts/route.ts](../packages/web/src/app/api/share-attempts/route.ts) (2 matches)
   - [packages/web/src/lib/referral-redirect.server.ts](../packages/web/src/lib/referral-redirect.server.ts) (2 matches)
@@ -2798,7 +2980,7 @@
 
 ### SocialAccount
 
-- Schema: [packages/db/prisma/schema.prisma#L9284](../packages/db/prisma/schema.prisma#L9284)
+- Schema: [packages/db/prisma/schema.prisma#L9457](../packages/db/prisma/schema.prisma#L9457)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 3 matches
 - Usage counts by bucket:
@@ -2810,7 +2992,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 8 files / 179 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 8 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/app/api/social-accounts/connect-wallet/route.ts](../packages/web/src/app/api/social-accounts/connect-wallet/route.ts) (2 matches)
   - [packages/web/src/app/api/social-accounts/disconnect/route.ts](../packages/web/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
@@ -2825,19 +3007,19 @@
 
 ### SourceArtifact
 
-- Schema: [packages/db/prisma/schema.prisma#L7550](../packages/db/prisma/schema.prisma#L7550)
+- Schema: [packages/db/prisma/schema.prisma#L7687](../packages/db/prisma/schema.prisma#L7687)
 - Classification: `core`
-- Direct Prisma usage: 12 files / 25 matches
+- Direct Prisma usage: 13 files / 26 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 12 files / 25 matches
-  - `runtime-libraries`: 11 files / 23 matches
+  - `runtime-prisma`: 13 files / 26 matches
+  - `runtime-libraries`: 12 files / 24 matches
   - `scripts`: 1 files / 2 matches
-  - `docs`: 5 files / 9 matches
-  - `schema`: 1 files / 20 matches
-  - `migrations`: 6 files / 30 matches
-  - `generated`: 22 files / 382 matches
+  - `docs`: 5 files / 8 matches
+  - `schema`: 1 files / 21 matches
+  - `migrations`: 7 files / 31 matches
+  - `generated`: 23 files / 392 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 15 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (16 matches)
   - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (6 matches)
@@ -2845,14 +3027,14 @@
   - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
   - [packages/web/src/lib/source-artifact-visibility.server.ts](../packages/web/src/lib/source-artifact-visibility.server.ts) (4 matches)
   - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (4 matches)
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
 - Notes:
   - none
 
 ### StripeConnectedAccount
 
-- Schema: [packages/db/prisma/schema.prisma#L7239](../packages/db/prisma/schema.prisma#L7239)
+- Schema: [packages/db/prisma/schema.prisma#L7376](../packages/db/prisma/schema.prisma#L7376)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 12 matches
 - Usage counts by bucket:
@@ -2875,147 +3057,52 @@
 
 ### Subject
 
-- Schema: [packages/db/prisma/schema.prisma#L2546](../packages/db/prisma/schema.prisma#L2546)
+- Schema: [packages/db/prisma/schema.prisma#L2603](../packages/db/prisma/schema.prisma#L2603)
 - Classification: `runtime-live`
-- Direct Prisma usage: 2 files / 4 matches
+- Direct Prisma usage: 3 files / 6 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 2 files / 4 matches
+  - `runtime-prisma`: 3 files / 6 matches
   - `pages`: 2 files / 5 matches
-  - `runtime-libraries`: 20 files / 25 matches
+  - `runtime-libraries`: 21 files / 27 matches
   - `scripts`: 1 files / 2 matches
   - `tests`: 5 files / 10 matches
   - `docs`: 2 files / 9 matches
-  - `schema`: 1 files / 29 matches
-  - `migrations`: 3 files / 30 matches
-  - `generated`: 19 files / 340 matches
+  - `schema`: 1 files / 31 matches
+  - `migrations`: 4 files / 32 matches
+  - `generated`: 20 files / 358 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 6 matches
+  - `other`: 2 files / 3 matches
 - Key files:
   - [packages/web/src/lib/subject.server.ts](../packages/web/src/lib/subject.server.ts) (6 matches)
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (4 matches)
   - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
   - [packages/web/src/app/admin/communications/page.tsx](../packages/web/src/app/admin/communications/page.tsx) (3 matches)
   - [packages/web/src/app/organizations/[id]/page.tsx](../packages/web/src/app/organizations/[id]/page.tsx) (2 matches)
   - [packages/data/src/datasets/medical-data/treatments/hemophilia.json](../packages/data/src/datasets/medical-data/treatments/hemophilia.json) (2 matches)
   - [packages/web/src/lib/email/preview-envelope.ts](../packages/web/src/lib/email/preview-envelope.ts) (2 matches)
   - [packages/web/src/lib/tasks/task-comment-notification.email.md](../packages/web/src/lib/tasks/task-comment-notification.email.md) (2 matches)
-  - [packages/data/src/datasets/medical-data/treatments/rosacea.json](../packages/data/src/datasets/medical-data/treatments/rosacea.json) (1 matches)
 - Notes:
   - none
-
-### Survey
-
-- Schema: [packages/db/prisma/schema.prisma#L9019](../packages/db/prisma/schema.prisma#L9019)
-- Classification: `runtime-live`
-- Direct Prisma usage: 0 files / 0 matches
-- Usage counts by bucket:
-  - `pages`: 4 files / 5 matches
-  - `components`: 3 files / 4 matches
-  - `runtime-libraries`: 20 files / 52 matches
-  - `tests`: 2 files / 2 matches
-  - `docs`: 2 files / 2 matches
-  - `schema`: 1 files / 6 matches
-  - `migrations`: 1 files / 10 matches
-  - `generated`: 9 files / 215 matches
-  - `zod`: 1 files / 1 matches
-  - `other`: 9 files / 14 matches
-- Key files:
-  - [packages/web/src/app/organizations/[id]/page.tsx](../packages/web/src/app/organizations/[id]/page.tsx) (2 matches)
-  - [packages/web/src/app/compute/page.tsx](../packages/web/src/app/compute/page.tsx) (1 matches)
-  - [packages/web/src/app/developers/page.tsx](../packages/web/src/app/developers/page.tsx) (1 matches)
-  - [packages/web/src/app/join/page.tsx](../packages/web/src/app/join/page.tsx) (1 matches)
-  - [packages/web/src/components/organizations/OrganizationGrantCalculator.tsx](../packages/web/src/components/organizations/OrganizationGrantCalculator.tsx) (2 matches)
-  - [packages/web/src/components/dashboard/NotificationPreferencesCard.tsx](../packages/web/src/components/dashboard/NotificationPreferencesCard.tsx) (1 matches)
-  - [packages/web/src/components/dashboard/OrganizationEmailSignatureCard.tsx](../packages/web/src/components/dashboard/OrganizationEmailSignatureCard.tsx) (1 matches)
-  - [packages/data/src/datasets/medical-data/references.json](../packages/data/src/datasets/medical-data/references.json) (13 matches)
-- Notes:
-  - none
-
-### SurveyQuestion
-
-- Schema: [packages/db/prisma/schema.prisma#L9101](../packages/db/prisma/schema.prisma#L9101)
-- Classification: `generated-only`
-- Direct Prisma usage: 0 files / 0 matches
-- Usage counts by bucket:
-  - `schema`: 1 files / 3 matches
-  - `migrations`: 1 files / 6 matches
-  - `generated`: 8 files / 192 matches
-  - `zod`: 1 files / 1 matches
-- Key files:
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
-  - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (6 matches)
-  - [packages/db/src/generated/prisma/models/SurveyQuestion.ts](../packages/db/src/generated/prisma/models/SurveyQuestion.ts) (157 matches)
-  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (23 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
-  - [packages/db/src/generated/prisma/browser.ts](../packages/db/src/generated/prisma/browser.ts) (2 matches)
-  - [packages/db/src/generated/prisma/client.ts](../packages/db/src/generated/prisma/client.ts) (2 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts](../packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts) (2 matches)
-- Notes:
-  - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
-
-### SurveyResponse
-
-- Schema: [packages/db/prisma/schema.prisma#L9148](../packages/db/prisma/schema.prisma#L9148)
-- Classification: `suspicious`
-- Direct Prisma usage: 0 files / 0 matches
-- Usage counts by bucket:
-  - `schema`: 1 files / 5 matches
-  - `migrations`: 2 files / 10 matches
-  - `generated`: 10 files / 190 matches
-  - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 3 matches
-- Key files:
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
-  - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (7 matches)
-  - [packages/db/prisma/migrations/20260429120000_add_org_vote_survey_attribution/migration.sql](../packages/db/prisma/migrations/20260429120000_add_org_vote_survey_attribution/migration.sql) (3 matches)
-  - [packages/db/src/generated/prisma/models/SurveyResponse.ts](../packages/db/src/generated/prisma/models/SurveyResponse.ts) (147 matches)
-  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (27 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
-  - [packages/db/src/generated/prisma/browser.ts](../packages/db/src/generated/prisma/browser.ts) (2 matches)
-  - [packages/db/src/generated/prisma/client.ts](../packages/db/src/generated/prisma/client.ts) (2 matches)
-- Notes:
-  - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
-
-### SurveySection
-
-- Schema: [packages/db/prisma/schema.prisma#L9063](../packages/db/prisma/schema.prisma#L9063)
-- Classification: `generated-only`
-- Direct Prisma usage: 0 files / 0 matches
-- Usage counts by bucket:
-  - `schema`: 1 files / 3 matches
-  - `migrations`: 1 files / 6 matches
-  - `generated`: 8 files / 177 matches
-  - `zod`: 1 files / 1 matches
-- Key files:
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
-  - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (6 matches)
-  - [packages/db/src/generated/prisma/models/SurveySection.ts](../packages/db/src/generated/prisma/models/SurveySection.ts) (142 matches)
-  - [packages/db/src/generated/prisma/internal/class.ts](../packages/db/src/generated/prisma/internal/class.ts) (23 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespace.ts](../packages/db/src/generated/prisma/internal/prismaNamespace.ts) (3 matches)
-  - [packages/db/src/generated/prisma/browser.ts](../packages/db/src/generated/prisma/browser.ts) (2 matches)
-  - [packages/db/src/generated/prisma/client.ts](../packages/db/src/generated/prisma/client.ts) (2 matches)
-  - [packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts](../packages/db/src/generated/prisma/internal/prismaNamespaceBrowser.ts) (2 matches)
-- Notes:
-  - No direct runtime evidence found beyond schema/generated/test support. Review whether this model is intentionally dormant or carrying unnecessary complexity.
 
 ### Task
 
-- Schema: [packages/db/prisma/schema.prisma#L5711](../packages/db/prisma/schema.prisma#L5711)
+- Schema: [packages/db/prisma/schema.prisma#L5842](../packages/db/prisma/schema.prisma#L5842)
 - Classification: `core`
-- Direct Prisma usage: 58 files / 178 matches
+- Direct Prisma usage: 59 files / 180 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 58 files / 178 matches
+  - `runtime-prisma`: 59 files / 180 matches
   - `api-routes`: 14 files / 39 matches
   - `pages`: 6 files / 19 matches
   - `components`: 12 files / 16 matches
-  - `runtime-libraries`: 75 files / 366 matches
+  - `runtime-libraries`: 76 files / 368 matches
   - `scripts`: 12 files / 24 matches
   - `tests`: 29 files / 76 matches
   - `docs`: 20 files / 111 matches
-  - `schema`: 1 files / 62 matches
-  - `migrations`: 24 files / 130 matches
-  - `generated`: 35 files / 862 matches
+  - `schema`: 1 files / 64 matches
+  - `migrations`: 25 files / 132 matches
+  - `generated`: 36 files / 880 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 20 files / 66 matches
+  - `other`: 13 files / 39 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (123 matches)
   - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (59 matches)
@@ -3030,7 +3117,7 @@
 
 ### TaskApplication
 
-- Schema: [packages/db/prisma/schema.prisma#L7328](../packages/db/prisma/schema.prisma#L7328)
+- Schema: [packages/db/prisma/schema.prisma#L7465](../packages/db/prisma/schema.prisma#L7465)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 12 matches
 - Usage counts by bucket:
@@ -3055,7 +3142,7 @@
 
 ### TaskApplicationEvent
 
-- Schema: [packages/db/prisma/schema.prisma#L7436](../packages/db/prisma/schema.prisma#L7436)
+- Schema: [packages/db/prisma/schema.prisma#L7573](../packages/db/prisma/schema.prisma#L7573)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -3079,7 +3166,7 @@
 
 ### TaskCandidateMatch
 
-- Schema: [packages/db/prisma/schema.prisma#L6492](../packages/db/prisma/schema.prisma#L6492)
+- Schema: [packages/db/prisma/schema.prisma#L6626](../packages/db/prisma/schema.prisma#L6626)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 7 matches
 - Usage counts by bucket:
@@ -3103,7 +3190,7 @@
 
 ### TaskClaim
 
-- Schema: [packages/db/prisma/schema.prisma#L7489](../packages/db/prisma/schema.prisma#L7489)
+- Schema: [packages/db/prisma/schema.prisma#L7626](../packages/db/prisma/schema.prisma#L7626)
 - Classification: `core`
 - Direct Prisma usage: 3 files / 13 matches
 - Usage counts by bucket:
@@ -3114,7 +3201,7 @@
   - `migrations`: 4 files / 14 matches
   - `generated`: 12 files / 241 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 8 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (18 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (7 matches)
@@ -3129,7 +3216,7 @@
 
 ### TaskComment
 
-- Schema: [packages/db/prisma/schema.prisma#L7750](../packages/db/prisma/schema.prisma#L7750)
+- Schema: [packages/db/prisma/schema.prisma#L7888](../packages/db/prisma/schema.prisma#L7888)
 - Classification: `runtime-live`
 - Direct Prisma usage: 10 files / 34 matches
 - Usage counts by bucket:
@@ -3140,7 +3227,7 @@
   - `schema`: 1 files / 21 matches
   - `migrations`: 6 files / 38 matches
   - `generated`: 17 files / 411 matches
-  - `other`: 2 files / 23 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (28 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (11 matches)
@@ -3155,7 +3242,7 @@
 
 ### TaskCommentAttachment
 
-- Schema: [packages/db/prisma/schema.prisma#L7871](../packages/db/prisma/schema.prisma#L7871)
+- Schema: [packages/db/prisma/schema.prisma#L8009](../packages/db/prisma/schema.prisma#L8009)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 18 matches
 - Usage counts by bucket:
@@ -3179,7 +3266,7 @@
 
 ### TaskCommentVote
 
-- Schema: [packages/db/prisma/schema.prisma#L7920](../packages/db/prisma/schema.prisma#L7920)
+- Schema: [packages/db/prisma/schema.prisma#L8058](../packages/db/prisma/schema.prisma#L8058)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 9 matches
 - Usage counts by bucket:
@@ -3189,7 +3276,7 @@
   - `schema`: 1 files / 3 matches
   - `migrations`: 1 files / 9 matches
   - `generated`: 9 files / 168 matches
-  - `other`: 2 files / 5 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (18 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -3204,7 +3291,7 @@
 
 ### TaskCommunication
 
-- Schema: [packages/db/prisma/schema.prisma#L8530](../packages/db/prisma/schema.prisma#L8530)
+- Schema: [packages/db/prisma/schema.prisma#L8668](../packages/db/prisma/schema.prisma#L8668)
 - Classification: `runtime-live`
 - Direct Prisma usage: 10 files / 35 matches
 - Usage counts by bucket:
@@ -3215,7 +3302,7 @@
   - `schema`: 1 files / 20 matches
   - `migrations`: 4 files / 48 matches
   - `generated`: 21 files / 487 matches
-  - `other`: 2 files / 24 matches
+  - `other`: 1 files / 8 matches
 - Key files:
   - [packages/web/src/lib/tasks/task-notifications.server.ts](../packages/web/src/lib/tasks/task-notifications.server.ts) (29 matches)
   - [packages/web/src/lib/triggers/fire-handlers.ts](../packages/web/src/lib/triggers/fire-handlers.ts) (11 matches)
@@ -3230,7 +3317,7 @@
 
 ### TaskCommunicationEndpoint
 
-- Schema: [packages/db/prisma/schema.prisma#L8361](../packages/db/prisma/schema.prisma#L8361)
+- Schema: [packages/db/prisma/schema.prisma#L8499](../packages/db/prisma/schema.prisma#L8499)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 8 matches
 - Usage counts by bucket:
@@ -3240,7 +3327,7 @@
   - `schema`: 1 files / 3 matches
   - `migrations`: 2 files / 10 matches
   - `generated`: 9 files / 209 matches
-  - `other`: 2 files / 13 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (8 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
@@ -3255,7 +3342,7 @@
 
 ### TaskCommunicationSpawnSpec
 
-- Schema: [packages/db/prisma/schema.prisma#L8892](../packages/db/prisma/schema.prisma#L8892)
+- Schema: [packages/db/prisma/schema.prisma#L9030](../packages/db/prisma/schema.prisma#L9030)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -3265,7 +3352,7 @@
   - `schema`: 1 files / 2 matches
   - `migrations`: 3 files / 8 matches
   - `generated`: 8 files / 214 matches
-  - `other`: 2 files / 14 matches
+  - `other`: 1 files / 7 matches
 - Key files:
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (5 matches)
   - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (4 matches)
@@ -3280,7 +3367,7 @@
 
 ### TaskCommunicationTemplate
 
-- Schema: [packages/db/prisma/schema.prisma#L8420](../packages/db/prisma/schema.prisma#L8420)
+- Schema: [packages/db/prisma/schema.prisma#L8558](../packages/db/prisma/schema.prisma#L8558)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 3 matches
 - Usage counts by bucket:
@@ -3305,7 +3392,7 @@
 
 ### TaskCommunicationVariant
 
-- Schema: [packages/db/prisma/schema.prisma#L8463](../packages/db/prisma/schema.prisma#L8463)
+- Schema: [packages/db/prisma/schema.prisma#L8601](../packages/db/prisma/schema.prisma#L8601)
 - Classification: `suspicious`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -3313,7 +3400,7 @@
   - `schema`: 1 files / 5 matches
   - `migrations`: 2 files / 9 matches
   - `generated`: 10 files / 231 matches
-  - `other`: 2 files / 14 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
@@ -3328,7 +3415,7 @@
 
 ### TaskDistributionAttempt
 
-- Schema: [packages/db/prisma/schema.prisma#L6954](../packages/db/prisma/schema.prisma#L6954)
+- Schema: [packages/db/prisma/schema.prisma#L7091](../packages/db/prisma/schema.prisma#L7091)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -3352,7 +3439,7 @@
 
 ### TaskDistributionTarget
 
-- Schema: [packages/db/prisma/schema.prisma#L6900](../packages/db/prisma/schema.prisma#L6900)
+- Schema: [packages/db/prisma/schema.prisma#L7037](../packages/db/prisma/schema.prisma#L7037)
 - Classification: `generated-only`
 - Direct Prisma usage: 0 files / 0 matches
 - Usage counts by bucket:
@@ -3374,40 +3461,40 @@
 
 ### TaskEdge
 
-- Schema: [packages/db/prisma/schema.prisma#L7985](../packages/db/prisma/schema.prisma#L7985)
+- Schema: [packages/db/prisma/schema.prisma#L8123](../packages/db/prisma/schema.prisma#L8123)
 - Classification: `core`
-- Direct Prisma usage: 6 files / 31 matches
+- Direct Prisma usage: 7 files / 32 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 6 files / 31 matches
-  - `runtime-libraries`: 6 files / 31 matches
+  - `runtime-prisma`: 7 files / 32 matches
+  - `runtime-libraries`: 7 files / 32 matches
   - `docs`: 5 files / 7 matches
   - `schema`: 1 files / 3 matches
   - `migrations`: 2 files / 12 matches
   - `generated`: 8 files / 208 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 4 files / 8 matches
+  - `other`: 2 files / 3 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (26 matches)
   - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (16 matches)
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (14 matches)
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
   - [packages/web/src/lib/tasks/personal-planning.server.ts](../packages/web/src/lib/tasks/personal-planning.server.ts) (2 matches)
   - [packages/web/src/lib/tasks/private-task-bundle.server.ts](../packages/web/src/lib/tasks/private-task-bundle.server.ts) (2 matches)
   - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (2 matches)
   - [docs/archive/TODO-history-2026-07.md](../docs/archive/TODO-history-2026-07.md) (2 matches)
-  - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
 - Notes:
   - none
 
 ### TaskExecutionArtifact
 
-- Schema: [packages/db/prisma/schema.prisma#L6698](../packages/db/prisma/schema.prisma#L6698)
+- Schema: [packages/db/prisma/schema.prisma#L6833](../packages/db/prisma/schema.prisma#L6833)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
   - `runtime-prisma`: 1 files / 2 matches
   - `runtime-libraries`: 1 files / 2 matches
   - `scripts`: 1 files / 2 matches
-  - `docs`: 3 files / 3 matches
+  - `docs`: 4 files / 4 matches
   - `schema`: 1 files / 7 matches
   - `migrations`: 1 files / 15 matches
   - `generated`: 13 files / 269 matches
@@ -3415,18 +3502,18 @@
 - Key files:
   - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (4 matches)
   - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [docs/TASK_MODEL.md](../docs/TASK_MODEL.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql](../packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql) (15 matches)
-  - [packages/db/src/generated/prisma/models/TaskExecutionArtifact.ts](../packages/db/src/generated/prisma/models/TaskExecutionArtifact.ts) (216 matches)
 - Notes:
   - none
 
 ### TaskExecutionAttempt
 
-- Schema: [packages/db/prisma/schema.prisma#L6574](../packages/db/prisma/schema.prisma#L6574)
+- Schema: [packages/db/prisma/schema.prisma#L6708](../packages/db/prisma/schema.prisma#L6708)
 - Classification: `runtime-live`
 - Direct Prisma usage: 7 files / 12 matches
 - Usage counts by bucket:
@@ -3434,9 +3521,9 @@
   - `api-routes`: 1 files / 1 matches
   - `runtime-libraries`: 6 files / 11 matches
   - `docs`: 3 files / 4 matches
-  - `schema`: 1 files / 14 matches
-  - `migrations`: 2 files / 30 matches
-  - `generated`: 18 files / 426 matches
+  - `schema`: 1 files / 15 matches
+  - `migrations`: 3 files / 31 matches
+  - `generated`: 19 files / 436 matches
   - `zod`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (10 matches)
@@ -3452,7 +3539,7 @@
 
 ### TaskFundingEvent
 
-- Schema: [packages/db/prisma/schema.prisma#L7159](../packages/db/prisma/schema.prisma#L7159)
+- Schema: [packages/db/prisma/schema.prisma#L7296](../packages/db/prisma/schema.prisma#L7296)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -3477,7 +3564,7 @@
 
 ### TaskFundingPayment
 
-- Schema: [packages/db/prisma/schema.prisma#L7183](../packages/db/prisma/schema.prisma#L7183)
+- Schema: [packages/db/prisma/schema.prisma#L7320](../packages/db/prisma/schema.prisma#L7320)
 - Classification: `runtime-live`
 - Direct Prisma usage: 6 files / 29 matches
 - Usage counts by bucket:
@@ -3488,7 +3575,6 @@
   - `schema`: 1 files / 7 matches
   - `migrations`: 2 files / 19 matches
   - `generated`: 13 files / 311 matches
-  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (24 matches)
   - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (22 matches)
@@ -3503,7 +3589,7 @@
 
 ### TaskFundingPledge
 
-- Schema: [packages/db/prisma/schema.prisma#L7099](../packages/db/prisma/schema.prisma#L7099)
+- Schema: [packages/db/prisma/schema.prisma#L7236](../packages/db/prisma/schema.prisma#L7236)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 25 matches
 - Usage counts by bucket:
@@ -3515,7 +3601,6 @@
   - `migrations`: 2 files / 18 matches
   - `generated`: 15 files / 401 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (30 matches)
   - [packages/web/src/lib/task-funding/pledges.server.ts](../packages/web/src/lib/task-funding/pledges.server.ts) (11 matches)
@@ -3530,7 +3615,7 @@
 
 ### TaskFundingTarget
 
-- Schema: [packages/db/prisma/schema.prisma#L7070](../packages/db/prisma/schema.prisma#L7070)
+- Schema: [packages/db/prisma/schema.prisma#L7207](../packages/db/prisma/schema.prisma#L7207)
 - Classification: `runtime-live`
 - Direct Prisma usage: 8 files / 20 matches
 - Usage counts by bucket:
@@ -3544,7 +3629,6 @@
   - `migrations`: 2 files / 7 matches
   - `generated`: 9 files / 246 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (12 matches)
   - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (8 matches)
@@ -3559,7 +3643,7 @@
 
 ### TaskImpactEstimateInput
 
-- Schema: [packages/db/prisma/schema.prisma#L8115](../packages/db/prisma/schema.prisma#L8115)
+- Schema: [packages/db/prisma/schema.prisma#L8253](../packages/db/prisma/schema.prisma#L8253)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -3582,7 +3666,7 @@
 
 ### TaskImpactEstimateSet
 
-- Schema: [packages/db/prisma/schema.prisma#L8045](../packages/db/prisma/schema.prisma#L8045)
+- Schema: [packages/db/prisma/schema.prisma#L8183](../packages/db/prisma/schema.prisma#L8183)
 - Classification: `core`
 - Direct Prisma usage: 5 files / 17 matches
 - Usage counts by bucket:
@@ -3593,7 +3677,7 @@
   - `migrations`: 3 files / 15 matches
   - `generated`: 8 files / 248 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 4 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (10 matches)
   - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (8 matches)
@@ -3608,7 +3692,7 @@
 
 ### TaskImpactFrameEstimate
 
-- Schema: [packages/db/prisma/schema.prisma#L8135](../packages/db/prisma/schema.prisma#L8135)
+- Schema: [packages/db/prisma/schema.prisma#L8273](../packages/db/prisma/schema.prisma#L8273)
 - Classification: `core`
 - Direct Prisma usage: 5 files / 5 matches
 - Usage counts by bucket:
@@ -3619,7 +3703,7 @@
   - `migrations`: 1 files / 6 matches
   - `generated`: 8 files / 337 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 4 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
   - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
@@ -3634,7 +3718,7 @@
 
 ### TaskImpactMetric
 
-- Schema: [packages/db/prisma/schema.prisma#L8269](../packages/db/prisma/schema.prisma#L8269)
+- Schema: [packages/db/prisma/schema.prisma#L8407](../packages/db/prisma/schema.prisma#L8407)
 - Classification: `core`
 - Direct Prisma usage: 4 files / 6 matches
 - Usage counts by bucket:
@@ -3645,7 +3729,7 @@
   - `migrations`: 1 files / 6 matches
   - `generated`: 8 files / 194 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 6 matches
+  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (4 matches)
   - [packages/web/src/lib/tasks/per-verified-voter-impact.server.ts](../packages/web/src/lib/tasks/per-verified-voter-impact.server.ts) (4 matches)
@@ -3660,7 +3744,7 @@
 
 ### TaskImpactSourceArtifact
 
-- Schema: [packages/db/prisma/schema.prisma#L8322](../packages/db/prisma/schema.prisma#L8322)
+- Schema: [packages/db/prisma/schema.prisma#L8460](../packages/db/prisma/schema.prisma#L8460)
 - Classification: `core`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -3685,7 +3769,7 @@
 
 ### TaskManager
 
-- Schema: [packages/db/prisma/schema.prisma#L5989](../packages/db/prisma/schema.prisma#L5989)
+- Schema: [packages/db/prisma/schema.prisma#L6122](../packages/db/prisma/schema.prisma#L6122)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -3709,7 +3793,7 @@
 
 ### TaskMarketplaceListing
 
-- Schema: [packages/db/prisma/schema.prisma#L6826](../packages/db/prisma/schema.prisma#L6826)
+- Schema: [packages/db/prisma/schema.prisma#L6963](../packages/db/prisma/schema.prisma#L6963)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -3733,7 +3817,7 @@
 
 ### TaskPayout
 
-- Schema: [packages/db/prisma/schema.prisma#L7279](../packages/db/prisma/schema.prisma#L7279)
+- Schema: [packages/db/prisma/schema.prisma#L7416](../packages/db/prisma/schema.prisma#L7416)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 19 matches
 - Usage counts by bucket:
@@ -3758,12 +3842,12 @@
 
 ### TaskSourceArtifact
 
-- Schema: [packages/db/prisma/schema.prisma#L7955](../packages/db/prisma/schema.prisma#L7955)
+- Schema: [packages/db/prisma/schema.prisma#L8093](../packages/db/prisma/schema.prisma#L8093)
 - Classification: `core`
-- Direct Prisma usage: 7 files / 14 matches
+- Direct Prisma usage: 8 files / 15 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 7 files / 14 matches
-  - `runtime-libraries`: 6 files / 12 matches
+  - `runtime-prisma`: 8 files / 15 matches
+  - `runtime-libraries`: 7 files / 13 matches
   - `scripts`: 1 files / 2 matches
   - `docs`: 4 files / 5 matches
   - `schema`: 1 files / 3 matches
@@ -3776,15 +3860,15 @@
   - [packages/web/scripts/extract-tasks-from-manual.ts](../packages/web/scripts/extract-tasks-from-manual.ts) (4 matches)
   - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (4 matches)
   - [packages/web/src/lib/tasks/private-task-bundle.server.ts](../packages/web/src/lib/tasks/private-task-bundle.server.ts) (4 matches)
+  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
   - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (2 matches)
-  - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (2 matches)
 - Notes:
   - none
 
 ### TaskSpawnSpec
 
-- Schema: [packages/db/prisma/schema.prisma#L8797](../packages/db/prisma/schema.prisma#L8797)
+- Schema: [packages/db/prisma/schema.prisma#L8935](../packages/db/prisma/schema.prisma#L8935)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 4 matches
 - Usage counts by bucket:
@@ -3795,7 +3879,7 @@
   - `schema`: 1 files / 2 matches
   - `migrations`: 3 files / 6 matches
   - `generated`: 8 files / 259 matches
-  - `other`: 3 files / 19 matches
+  - `other`: 2 files / 12 matches
 - Key files:
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (4 matches)
   - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (4 matches)
@@ -3810,7 +3894,7 @@
 
 ### TaskTrigger
 
-- Schema: [packages/db/prisma/schema.prisma#L8693](../packages/db/prisma/schema.prisma#L8693)
+- Schema: [packages/db/prisma/schema.prisma#L8831](../packages/db/prisma/schema.prisma#L8831)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 11 matches
 - Usage counts by bucket:
@@ -3823,7 +3907,7 @@
   - `schema`: 1 files / 9 matches
   - `migrations`: 3 files / 14 matches
   - `generated`: 11 files / 265 matches
-  - `other`: 3 files / 30 matches
+  - `other`: 2 files / 26 matches
 - Key files:
   - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (13 matches)
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (8 matches)
@@ -3838,7 +3922,7 @@
 
 ### TaskTriggerFire
 
-- Schema: [packages/db/prisma/schema.prisma#L8969](../packages/db/prisma/schema.prisma#L8969)
+- Schema: [packages/db/prisma/schema.prisma#L9107](../packages/db/prisma/schema.prisma#L9107)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 3 matches
 - Usage counts by bucket:
@@ -3849,7 +3933,7 @@
   - `schema`: 1 files / 4 matches
   - `migrations`: 2 files / 7 matches
   - `generated`: 8 files / 180 matches
-  - `other`: 2 files / 10 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/triggers/fire.ts](../packages/web/src/lib/triggers/fire.ts) (4 matches)
   - [packages/web/src/app/api/cron/run-due-triggers/route.ts](../packages/web/src/app/api/cron/run-due-triggers/route.ts) (2 matches)
@@ -3864,33 +3948,33 @@
 
 ### TaskVerification
 
-- Schema: [packages/db/prisma/schema.prisma#L6739](../packages/db/prisma/schema.prisma#L6739)
+- Schema: [packages/db/prisma/schema.prisma#L6874](../packages/db/prisma/schema.prisma#L6874)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 5 matches
 - Usage counts by bucket:
   - `runtime-prisma`: 2 files / 5 matches
   - `runtime-libraries`: 2 files / 5 matches
   - `scripts`: 1 files / 2 matches
-  - `docs`: 4 files / 4 matches
-  - `schema`: 1 files / 4 matches
-  - `migrations`: 1 files / 11 matches
-  - `generated`: 10 files / 237 matches
+  - `docs`: 5 files / 6 matches
+  - `schema`: 1 files / 5 matches
+  - `migrations`: 2 files / 12 matches
+  - `generated`: 11 files / 247 matches
   - `other`: 2 files / 5 matches
 - Key files:
   - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (8 matches)
   - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
   - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
-  - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
+  - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
+  - [docs/PRD.md](../docs/PRD.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [docs/TASK_MODEL.md](../docs/TASK_MODEL.md) (1 matches)
-  - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
 - Notes:
   - none
 
 ### TrackingReminder
 
-- Schema: [packages/db/prisma/schema.prisma#L2971](../packages/db/prisma/schema.prisma#L2971)
+- Schema: [packages/db/prisma/schema.prisma#L3030](../packages/db/prisma/schema.prisma#L3030)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 5 matches
 - Usage counts by bucket:
@@ -3902,7 +3986,7 @@
   - `migrations`: 2 files / 9 matches
   - `generated`: 10 files / 223 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 13 matches
+  - `other`: 1 files / 6 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (11 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
@@ -3917,7 +4001,7 @@
 
 ### TrackingReminderNotification
 
-- Schema: [packages/db/prisma/schema.prisma#L3039](../packages/db/prisma/schema.prisma#L3039)
+- Schema: [packages/db/prisma/schema.prisma#L3098](../packages/db/prisma/schema.prisma#L3098)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 4 matches
 - Usage counts by bucket:
@@ -3929,7 +4013,7 @@
   - `migrations`: 1 files / 5 matches
   - `generated`: 8 files / 184 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 10 matches
+  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (8 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (2 matches)
@@ -3944,7 +4028,7 @@
 
 ### Unit
 
-- Schema: [packages/db/prisma/schema.prisma#L2221](../packages/db/prisma/schema.prisma#L2221)
+- Schema: [packages/db/prisma/schema.prisma#L2278](../packages/db/prisma/schema.prisma#L2278)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 7 matches
 - Usage counts by bucket:
@@ -3958,7 +4042,7 @@
   - `migrations`: 2 files / 13 matches
   - `generated`: 17 files / 288 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 4 files / 9 matches
+  - `other`: 2 files / 7 matches
 - Key files:
   - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (8 matches)
   - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (4 matches)
@@ -3973,25 +4057,25 @@
 
 ### User
 
-- Schema: [packages/db/prisma/schema.prisma#L1712](../packages/db/prisma/schema.prisma#L1712)
+- Schema: [packages/db/prisma/schema.prisma#L1763](../packages/db/prisma/schema.prisma#L1763)
 - Classification: `core`
-- Direct Prisma usage: 81 files / 139 matches
+- Direct Prisma usage: 82 files / 142 matches
 - Usage counts by bucket:
-  - `runtime-prisma`: 81 files / 139 matches
+  - `runtime-prisma`: 82 files / 142 matches
   - `api-routes`: 16 files / 22 matches
   - `pages`: 5 files / 7 matches
   - `components`: 5 files / 6 matches
-  - `runtime-libraries`: 85 files / 191 matches
+  - `runtime-libraries`: 86 files / 194 matches
   - `scripts`: 5 files / 26 matches
   - `tests`: 22 files / 50 matches
-  - `docs`: 12 files / 32 matches
-  - `schema`: 1 files / 152 matches
-  - `migrations`: 36 files / 210 matches
-  - `generated`: 67 files / 1421 matches
+  - `docs`: 12 files / 33 matches
+  - `schema`: 1 files / 160 matches
+  - `migrations`: 38 files / 217 matches
+  - `generated`: 69 files / 1481 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 23 files / 146 matches
+  - `other`: 10 files / 62 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (26 matches)
+  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (30 matches)
   - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (20 matches)
   - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (12 matches)
   - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (12 matches)
@@ -4004,7 +4088,7 @@
 
 ### UserPreference
 
-- Schema: [packages/db/prisma/schema.prisma#L4529](../packages/db/prisma/schema.prisma#L4529)
+- Schema: [packages/db/prisma/schema.prisma#L4589](../packages/db/prisma/schema.prisma#L4589)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 6 matches
 - Usage counts by bucket:
@@ -4031,7 +4115,7 @@
 
 ### VariableCategory
 
-- Schema: [packages/db/prisma/schema.prisma#L2289](../packages/db/prisma/schema.prisma#L2289)
+- Schema: [packages/db/prisma/schema.prisma#L2346](../packages/db/prisma/schema.prisma#L2346)
 - Classification: `runtime-live`
 - Direct Prisma usage: 5 files / 7 matches
 - Usage counts by bucket:
@@ -4059,7 +4143,7 @@
 
 ### VariableRelationshipEvidenceEstimate
 
-- Schema: [packages/db/prisma/schema.prisma#L3470](../packages/db/prisma/schema.prisma#L3470)
+- Schema: [packages/db/prisma/schema.prisma#L3529](../packages/db/prisma/schema.prisma#L3529)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 5 matches
 - Usage counts by bucket:
@@ -4083,7 +4167,7 @@
 
 ### VerificationToken
 
-- Schema: [packages/db/prisma/schema.prisma#L2131](../packages/db/prisma/schema.prisma#L2131)
+- Schema: [packages/db/prisma/schema.prisma#L2188](../packages/db/prisma/schema.prisma#L2188)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -4095,7 +4179,7 @@
   - `migrations`: 1 files / 5 matches
   - `generated`: 7 files / 144 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 3 files / 13 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/lib/auth-spam-guard.server.ts](../packages/web/src/lib/auth-spam-guard.server.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
@@ -4110,7 +4194,7 @@
 
 ### WebPushSubscription
 
-- Schema: [packages/db/prisma/schema.prisma#L4489](../packages/db/prisma/schema.prisma#L4489)
+- Schema: [packages/db/prisma/schema.prisma#L4549](../packages/db/prisma/schema.prisma#L4549)
 - Classification: `runtime-live`
 - Direct Prisma usage: 3 files / 6 matches
 - Usage counts by bucket:
@@ -4122,7 +4206,7 @@
   - `migrations`: 1 files / 5 matches
   - `generated`: 8 files / 173 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 10 matches
+  - `other`: 1 files / 4 matches
 - Key files:
   - [packages/web/src/lib/push-sender.server.ts](../packages/web/src/lib/push-sender.server.ts) (8 matches)
   - [packages/web/src/app/api/push/subscribe/route.ts](../packages/web/src/app/api/push/subscribe/route.ts) (2 matches)
@@ -4137,7 +4221,7 @@
 
 ### WishocraticAllocation
 
-- Schema: [packages/db/prisma/schema.prisma#L4105](../packages/db/prisma/schema.prisma#L4105)
+- Schema: [packages/db/prisma/schema.prisma#L4165](../packages/db/prisma/schema.prisma#L4165)
 - Classification: `runtime-live`
 - Direct Prisma usage: 8 files / 22 matches
 - Usage counts by bucket:
@@ -4150,7 +4234,6 @@
   - `migrations`: 2 files / 14 matches
   - `generated`: 9 files / 177 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 5 matches
 - Key files:
   - [packages/web/src/app/api/wishocracy/allocations/route.ts](../packages/web/src/app/api/wishocracy/allocations/route.ts) (18 matches)
   - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (12 matches)
@@ -4165,7 +4248,7 @@
 
 ### WishocraticDistribution
 
-- Schema: [packages/db/prisma/schema.prisma#L5406](../packages/db/prisma/schema.prisma#L5406)
+- Schema: [packages/db/prisma/schema.prisma#L5466](../packages/db/prisma/schema.prisma#L5466)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 2 matches
 - Usage counts by bucket:
@@ -4189,7 +4272,7 @@
 
 ### WishocraticEncryptedAllocation
 
-- Schema: [packages/db/prisma/schema.prisma#L4570](../packages/db/prisma/schema.prisma#L4570)
+- Schema: [packages/db/prisma/schema.prisma#L4630](../packages/db/prisma/schema.prisma#L4630)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 2 matches
 - Usage counts by bucket:
@@ -4200,7 +4283,7 @@
   - `migrations`: 1 files / 3 matches
   - `generated`: 8 files / 155 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 2 files / 5 matches
+  - `other`: 1 files / 2 matches
 - Key files:
   - [packages/web/src/app/api/wishocracy/allocations/route.ts](../packages/web/src/app/api/wishocracy/allocations/route.ts) (2 matches)
   - [packages/web/src/app/api/wishocracy/sync/route.ts](../packages/web/src/app/api/wishocracy/sync/route.ts) (2 matches)
@@ -4215,7 +4298,7 @@
 
 ### WishocraticItem
 
-- Schema: [packages/db/prisma/schema.prisma#L3882](../packages/db/prisma/schema.prisma#L3882)
+- Schema: [packages/db/prisma/schema.prisma#L3942](../packages/db/prisma/schema.prisma#L3942)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 4 matches
 - Usage counts by bucket:
@@ -4241,7 +4324,7 @@
 
 ### WishocraticItemAlignmentScore
 
-- Schema: [packages/db/prisma/schema.prisma#L4402](../packages/db/prisma/schema.prisma#L4402)
+- Schema: [packages/db/prisma/schema.prisma#L4462](../packages/db/prisma/schema.prisma#L4462)
 - Classification: `runtime-live`
 - Direct Prisma usage: 1 files / 1 matches
 - Usage counts by bucket:
@@ -4265,7 +4348,7 @@
 
 ### WishocraticItemInclusion
 
-- Schema: [packages/db/prisma/schema.prisma#L4149](../packages/db/prisma/schema.prisma#L4149)
+- Schema: [packages/db/prisma/schema.prisma#L4209](../packages/db/prisma/schema.prisma#L4209)
 - Classification: `runtime-live`
 - Direct Prisma usage: 4 files / 9 matches
 - Usage counts by bucket:
@@ -4278,7 +4361,6 @@
   - `migrations`: 1 files / 9 matches
   - `generated`: 9 files / 163 matches
   - `zod`: 1 files / 1 matches
-  - `other`: 1 files / 3 matches
 - Key files:
   - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (6 matches)
   - [packages/web/src/app/api/wishocracy/item-inclusions/route.ts](../packages/web/src/app/api/wishocracy/item-inclusions/route.ts) (6 matches)
@@ -4293,7 +4375,7 @@
 
 ### WishPoint
 
-- Schema: [packages/db/prisma/schema.prisma#L9252](../packages/db/prisma/schema.prisma#L9252)
+- Schema: [packages/db/prisma/schema.prisma#L9425](../packages/db/prisma/schema.prisma#L9425)
 - Classification: `runtime-live`
 - Direct Prisma usage: 2 files / 6 matches
 - Usage counts by bucket:
@@ -4303,7 +4385,7 @@
   - `schema`: 1 files / 3 matches
   - `migrations`: 1 files / 6 matches
   - `generated`: 9 files / 173 matches
-  - `other`: 2 files / 3 matches
+  - `other`: 1 files / 1 matches
 - Key files:
   - [packages/web/src/lib/wishes.server.ts](../packages/web/src/lib/wishes.server.ts) (11 matches)
   - [packages/web/src/lib/dashboard.server.ts](../packages/web/src/lib/dashboard.server.ts) (4 matches)
@@ -4321,65 +4403,71 @@
 | Enum | Schema | Reference Files | Total References |
 | --- | --- | ---: | ---: |
 | ActivityType | [packages/db/prisma/schema.prisma#L309](../packages/db/prisma/schema.prisma#L309) | 27 | 128 |
-| AgentExecutorStatus | [packages/db/prisma/schema.prisma#L561](../packages/db/prisma/schema.prisma#L561) | 13 | 104 |
+| AgentExecutorStatus | [packages/db/prisma/schema.prisma#L571](../packages/db/prisma/schema.prisma#L571) | 13 | 104 |
 | AnalysisStatus | [packages/db/prisma/schema.prisma#L100](../packages/db/prisma/schema.prisma#L100) | 10 | 197 |
-| BadgeType | [packages/db/prisma/schema.prisma#L423](../packages/db/prisma/schema.prisma#L423) | 11 | 78 |
-| CollectionFieldType | [packages/db/prisma/schema.prisma#L811](../packages/db/prisma/schema.prisma#L811) | 11 | 111 |
+| BadgeType | [packages/db/prisma/schema.prisma#L433](../packages/db/prisma/schema.prisma#L433) | 11 | 78 |
+| CollectionFieldType | [packages/db/prisma/schema.prisma#L821](../packages/db/prisma/schema.prisma#L821) | 11 | 111 |
 | CombinationOperation | [packages/db/prisma/schema.prisma#L54](../packages/db/prisma/schema.prisma#L54) | 21 | 371 |
-| CommerceEntitlementStatus | [packages/db/prisma/schema.prisma#L10106](../packages/db/prisma/schema.prisma#L10106) | 8 | 78 |
-| CommerceFulfillmentKind | [packages/db/prisma/schema.prisma#L10067](../packages/db/prisma/schema.prisma#L10067) | 17 | 194 |
-| CommerceFulfillmentProvider | [packages/db/prisma/schema.prisma#L10079](../packages/db/prisma/schema.prisma#L10079) | 13 | 101 |
-| CommerceFulfillmentStatus | [packages/db/prisma/schema.prisma#L10097](../packages/db/prisma/schema.prisma#L10097) | 10 | 72 |
-| CommerceOfferKind | [packages/db/prisma/schema.prisma#L10052](../packages/db/prisma/schema.prisma#L10052) | 14 | 87 |
-| CommerceOfferStatus | [packages/db/prisma/schema.prisma#L10061](../packages/db/prisma/schema.prisma#L10061) | 15 | 86 |
-| CommerceOrderStatus | [packages/db/prisma/schema.prisma#L10086](../packages/db/prisma/schema.prisma#L10086) | 16 | 100 |
-| CommercePaymentProvider | [packages/db/prisma/schema.prisma#L10074](../packages/db/prisma/schema.prisma#L10074) | 9 | 68 |
+| CommerceEntitlementStatus | [packages/db/prisma/schema.prisma#L10279](../packages/db/prisma/schema.prisma#L10279) | 8 | 78 |
+| CommerceFulfillmentKind | [packages/db/prisma/schema.prisma#L10240](../packages/db/prisma/schema.prisma#L10240) | 17 | 194 |
+| CommerceFulfillmentProvider | [packages/db/prisma/schema.prisma#L10252](../packages/db/prisma/schema.prisma#L10252) | 13 | 101 |
+| CommerceFulfillmentStatus | [packages/db/prisma/schema.prisma#L10270](../packages/db/prisma/schema.prisma#L10270) | 10 | 72 |
+| CommerceOfferKind | [packages/db/prisma/schema.prisma#L10225](../packages/db/prisma/schema.prisma#L10225) | 14 | 87 |
+| CommerceOfferStatus | [packages/db/prisma/schema.prisma#L10234](../packages/db/prisma/schema.prisma#L10234) | 15 | 86 |
+| CommerceOrderStatus | [packages/db/prisma/schema.prisma#L10259](../packages/db/prisma/schema.prisma#L10259) | 16 | 100 |
+| CommercePaymentProvider | [packages/db/prisma/schema.prisma#L10247](../packages/db/prisma/schema.prisma#L10247) | 9 | 68 |
 | ConfidenceLevel | [packages/db/prisma/schema.prisma#L121](../packages/db/prisma/schema.prisma#L121) | 10 | 101 |
-| ContentAccessLevel | [packages/db/prisma/schema.prisma#L801](../packages/db/prisma/schema.prisma#L801) | 18 | 208 |
-| ContentReportStatus | [packages/db/prisma/schema.prisma#L1065](../packages/db/prisma/schema.prisma#L1065) | 10 | 68 |
-| ContentVisibility | [packages/db/prisma/schema.prisma#L794](../packages/db/prisma/schema.prisma#L794) | 17 | 217 |
-| CourtCaseItemStatus | [packages/db/prisma/schema.prisma#L4650](../packages/db/prisma/schema.prisma#L4650) | 13 | 258 |
-| CourtCasePartyCapacity | [packages/db/prisma/schema.prisma#L4641](../packages/db/prisma/schema.prisma#L4641) | 10 | 76 |
-| CourtCasePartyRole | [packages/db/prisma/schema.prisma#L4631](../packages/db/prisma/schema.prisma#L4631) | 15 | 97 |
-| CourtCaseStatus | [packages/db/prisma/schema.prisma#L4622](../packages/db/prisma/schema.prisma#L4622) | 12 | 116 |
-| DatingBlockScope | [packages/db/prisma/schema.prisma#L9578](../packages/db/prisma/schema.prisma#L9578) | 10 | 82 |
-| DatingConversationStatus | [packages/db/prisma/schema.prisma#L9556](../packages/db/prisma/schema.prisma#L9556) | 9 | 65 |
-| DatingDatePlanStatus | [packages/db/prisma/schema.prisma#L9569](../packages/db/prisma/schema.prisma#L9569) | 8 | 84 |
-| DatingInteractionKind | [packages/db/prisma/schema.prisma#L9537](../packages/db/prisma/schema.prisma#L9537) | 11 | 73 |
-| DatingInteractionStatus | [packages/db/prisma/schema.prisma#L9544](../packages/db/prisma/schema.prisma#L9544) | 9 | 65 |
-| DatingMatchStatus | [packages/db/prisma/schema.prisma#L9550](../packages/db/prisma/schema.prisma#L9550) | 9 | 77 |
-| DatingMessageStatus | [packages/db/prisma/schema.prisma#L9562](../packages/db/prisma/schema.prisma#L9562) | 8 | 66 |
-| DatingPreferenceImportance | [packages/db/prisma/schema.prisma#L9532](../packages/db/prisma/schema.prisma#L9532) | 8 | 56 |
-| DatingProfilePhotoStatus | [packages/db/prisma/schema.prisma#L9506](../packages/db/prisma/schema.prisma#L9506) | 10 | 68 |
-| DatingProfileStatus | [packages/db/prisma/schema.prisma#L9487](../packages/db/prisma/schema.prisma#L9487) | 11 | 134 |
-| DatingQuestionAnswerVisibility | [packages/db/prisma/schema.prisma#L9519](../packages/db/prisma/schema.prisma#L9519) | 9 | 65 |
-| DatingQuestionImportance | [packages/db/prisma/schema.prisma#L9524](../packages/db/prisma/schema.prisma#L9524) | 10 | 68 |
-| DatingQuestionStatus | [packages/db/prisma/schema.prisma#L9513](../packages/db/prisma/schema.prisma#L9513) | 10 | 58 |
-| DatingRelationshipIntent | [packages/db/prisma/schema.prisma#L9496](../packages/db/prisma/schema.prisma#L9496) | 11 | 134 |
-| DatingSafetyReportStatus | [packages/db/prisma/schema.prisma#L9584](../packages/db/prisma/schema.prisma#L9584) | 8 | 80 |
+| ContentAccessLevel | [packages/db/prisma/schema.prisma#L811](../packages/db/prisma/schema.prisma#L811) | 18 | 208 |
+| ContentReportStatus | [packages/db/prisma/schema.prisma#L1075](../packages/db/prisma/schema.prisma#L1075) | 10 | 68 |
+| ContentVisibility | [packages/db/prisma/schema.prisma#L804](../packages/db/prisma/schema.prisma#L804) | 22 | 274 |
+| CourtCaseItemStatus | [packages/db/prisma/schema.prisma#L4710](../packages/db/prisma/schema.prisma#L4710) | 13 | 258 |
+| CourtCasePartyCapacity | [packages/db/prisma/schema.prisma#L4701](../packages/db/prisma/schema.prisma#L4701) | 10 | 76 |
+| CourtCasePartyRole | [packages/db/prisma/schema.prisma#L4691](../packages/db/prisma/schema.prisma#L4691) | 15 | 97 |
+| CourtCaseStatus | [packages/db/prisma/schema.prisma#L4682](../packages/db/prisma/schema.prisma#L4682) | 12 | 116 |
+| DatingBlockScope | [packages/db/prisma/schema.prisma#L9751](../packages/db/prisma/schema.prisma#L9751) | 10 | 82 |
+| DatingConversationStatus | [packages/db/prisma/schema.prisma#L9729](../packages/db/prisma/schema.prisma#L9729) | 9 | 65 |
+| DatingDatePlanStatus | [packages/db/prisma/schema.prisma#L9742](../packages/db/prisma/schema.prisma#L9742) | 8 | 84 |
+| DatingInteractionKind | [packages/db/prisma/schema.prisma#L9710](../packages/db/prisma/schema.prisma#L9710) | 11 | 73 |
+| DatingInteractionStatus | [packages/db/prisma/schema.prisma#L9717](../packages/db/prisma/schema.prisma#L9717) | 9 | 65 |
+| DatingMatchStatus | [packages/db/prisma/schema.prisma#L9723](../packages/db/prisma/schema.prisma#L9723) | 9 | 77 |
+| DatingMessageStatus | [packages/db/prisma/schema.prisma#L9735](../packages/db/prisma/schema.prisma#L9735) | 8 | 66 |
+| DatingPreferenceImportance | [packages/db/prisma/schema.prisma#L9705](../packages/db/prisma/schema.prisma#L9705) | 8 | 56 |
+| DatingProfilePhotoStatus | [packages/db/prisma/schema.prisma#L9679](../packages/db/prisma/schema.prisma#L9679) | 10 | 68 |
+| DatingProfileStatus | [packages/db/prisma/schema.prisma#L9660](../packages/db/prisma/schema.prisma#L9660) | 11 | 134 |
+| DatingQuestionAnswerVisibility | [packages/db/prisma/schema.prisma#L9692](../packages/db/prisma/schema.prisma#L9692) | 9 | 65 |
+| DatingQuestionImportance | [packages/db/prisma/schema.prisma#L9697](../packages/db/prisma/schema.prisma#L9697) | 10 | 68 |
+| DatingQuestionStatus | [packages/db/prisma/schema.prisma#L9686](../packages/db/prisma/schema.prisma#L9686) | 10 | 58 |
+| DatingRelationshipIntent | [packages/db/prisma/schema.prisma#L9669](../packages/db/prisma/schema.prisma#L9669) | 11 | 134 |
+| DatingSafetyReportStatus | [packages/db/prisma/schema.prisma#L9757](../packages/db/prisma/schema.prisma#L9757) | 8 | 80 |
 | EfficacyLagEvidenceStatus | [packages/db/prisma/schema.prisma#L238](../packages/db/prisma/schema.prisma#L238) | 10 | 80 |
-| EmailLogStatus | [packages/db/prisma/schema.prisma#L1081](../packages/db/prisma/schema.prisma#L1081) | 15 | 99 |
+| EmailLogStatus | [packages/db/prisma/schema.prisma#L1132](../packages/db/prisma/schema.prisma#L1132) | 15 | 99 |
 | EvidenceGrade | [packages/db/prisma/schema.prisma#L135](../packages/db/prisma/schema.prisma#L135) | 22 | 189 |
-| ExternalActionRequestStatus | [packages/db/prisma/schema.prisma#L550](../packages/db/prisma/schema.prisma#L550) | 12 | 131 |
+| ExternalActionRequestStatus | [packages/db/prisma/schema.prisma#L560](../packages/db/prisma/schema.prisma#L560) | 13 | 139 |
 | FillingType | [packages/db/prisma/schema.prisma#L60](../packages/db/prisma/schema.prisma#L60) | 22 | 450 |
+| FormFieldType | [packages/db/prisma/schema.prisma#L1100](../packages/db/prisma/schema.prisma#L1100) | 9 | 68 |
+| FormPurpose | [packages/db/prisma/schema.prisma#L1083](../packages/db/prisma/schema.prisma#L1083) | 11 | 90 |
+| FormStatus | [packages/db/prisma/schema.prisma#L1092](../packages/db/prisma/schema.prisma#L1092) | 11 | 90 |
+| FormSubmissionStatus | [packages/db/prisma/schema.prisma#L1116](../packages/db/prisma/schema.prisma#L1116) | 11 | 108 |
 | InterventionExperienceStatus | [packages/db/prisma/schema.prisma#L245](../packages/db/prisma/schema.prisma#L245) | 9 | 97 |
 | InterventionOutcomeRating | [packages/db/prisma/schema.prisma#L254](../packages/db/prisma/schema.prisma#L254) | 9 | 83 |
 | InterventionRankingRunStatus | [packages/db/prisma/schema.prisma#L303](../packages/db/prisma/schema.prisma#L303) | 9 | 69 |
 | InterventionSideEffectSeverity | [packages/db/prisma/schema.prisma#L264](../packages/db/prisma/schema.prisma#L264) | 9 | 65 |
-| JurisdictionType | [packages/db/prisma/schema.prisma#L153](../packages/db/prisma/schema.prisma#L153) | 16 | 168 |
-| McpScope | [packages/db/prisma/schema.prisma#L1042](../packages/db/prisma/schema.prisma#L1042) | 63 | 624 |
-| McpToolCallStatus | [packages/db/prisma/schema.prisma#L1059](../packages/db/prisma/schema.prisma#L1059) | 9 | 75 |
+| JurisdictionType | [packages/db/prisma/schema.prisma#L153](../packages/db/prisma/schema.prisma#L153) | 16 | 172 |
+| KnowledgeSensitivity | [packages/db/prisma/schema.prisma#L1124](../packages/db/prisma/schema.prisma#L1124) | 10 | 83 |
+| McpScope | [packages/db/prisma/schema.prisma#L1052](../packages/db/prisma/schema.prisma#L1052) | 64 | 633 |
+| McpToolCallStatus | [packages/db/prisma/schema.prisma#L1069](../packages/db/prisma/schema.prisma#L1069) | 9 | 75 |
 | MeasurementScale | [packages/db/prisma/schema.prisma#L82](../packages/db/prisma/schema.prisma#L82) | 11 | 128 |
-| ModelRevisionStatus | [packages/db/prisma/schema.prisma#L882](../packages/db/prisma/schema.prisma#L882) | 11 | 108 |
+| ModelRevisionStatus | [packages/db/prisma/schema.prisma#L892](../packages/db/prisma/schema.prisma#L892) | 14 | 164 |
 | NotificationChannel | [packages/db/prisma/schema.prisma#L372](../packages/db/prisma/schema.prisma#L372) | 8 | 57 |
 | NotificationStatus | [packages/db/prisma/schema.prisma#L144](../packages/db/prisma/schema.prisma#L144) | 11 | 76 |
 | NotificationType | [packages/db/prisma/schema.prisma#L359](../packages/db/prisma/schema.prisma#L359) | 10 | 87 |
-| OrganizationMemberRole | [packages/db/prisma/schema.prisma#L648](../packages/db/prisma/schema.prisma#L648) | 24 | 125 |
-| OrganizationReferendumPositionStatus | [packages/db/prisma/schema.prisma#L406](../packages/db/prisma/schema.prisma#L406) | 21 | 124 |
-| OrgStatus | [packages/db/prisma/schema.prisma#L399](../packages/db/prisma/schema.prisma#L399) | 42 | 260 |
-| OrgType | [packages/db/prisma/schema.prisma#L380](../packages/db/prisma/schema.prisma#L380) | 42 | 251 |
-| ParameterDistributionType | [packages/db/prisma/schema.prisma#L871](../packages/db/prisma/schema.prisma#L871) | 9 | 90 |
-| ParameterSourceType | [packages/db/prisma/schema.prisma#L862](../packages/db/prisma/schema.prisma#L862) | 8 | 88 |
+| OrganizationMemberRole | [packages/db/prisma/schema.prisma#L658](../packages/db/prisma/schema.prisma#L658) | 27 | 134 |
+| OrganizationNameKind | [packages/db/prisma/schema.prisma#L406](../packages/db/prisma/schema.prisma#L406) | 10 | 97 |
+| OrganizationReferendumPositionStatus | [packages/db/prisma/schema.prisma#L416](../packages/db/prisma/schema.prisma#L416) | 20 | 123 |
+| OrgStatus | [packages/db/prisma/schema.prisma#L399](../packages/db/prisma/schema.prisma#L399) | 42 | 265 |
+| OrgType | [packages/db/prisma/schema.prisma#L380](../packages/db/prisma/schema.prisma#L380) | 43 | 257 |
+| ParameterDistributionType | [packages/db/prisma/schema.prisma#L881](../packages/db/prisma/schema.prisma#L881) | 9 | 90 |
+| ParameterSourceType | [packages/db/prisma/schema.prisma#L872](../packages/db/prisma/schema.prisma#L872) | 8 | 88 |
 | PersonCivilianStatus | [packages/db/prisma/schema.prisma#L220](../packages/db/prisma/schema.prisma#L220) | 13 | 106 |
 | PersonConditionStatus | [packages/db/prisma/schema.prisma#L201](../packages/db/prisma/schema.prisma#L201) | 18 | 106 |
 | PersonDeathCauseCategory | [packages/db/prisma/schema.prisma#L209](../packages/db/prisma/schema.prisma#L209) | 18 | 149 |
@@ -4387,74 +4475,73 @@
 | PersonhoodVerificationStatus | [packages/db/prisma/schema.prisma#L187](../packages/db/prisma/schema.prisma#L187) | 16 | 86 |
 | PersonLifeStatus | [packages/db/prisma/schema.prisma#L194](../packages/db/prisma/schema.prisma#L194) | 34 | 256 |
 | PersonMemorialEvidenceKind | [packages/db/prisma/schema.prisma#L227](../packages/db/prisma/schema.prisma#L227) | 15 | 112 |
-| PointMintStatus | [packages/db/prisma/schema.prisma#L5278](../packages/db/prisma/schema.prisma#L5278) | 10 | 67 |
-| QuestionType | [packages/db/prisma/schema.prisma#L1072](../packages/db/prisma/schema.prisma#L1072) | 8 | 60 |
-| ReferendumKind | [packages/db/prisma/schema.prisma#L4611](../packages/db/prisma/schema.prisma#L4611) | 17 | 124 |
-| ReferendumStatus | [packages/db/prisma/schema.prisma#L4603](../packages/db/prisma/schema.prisma#L4603) | 22 | 137 |
-| ReferendumVoteSource | [packages/db/prisma/schema.prisma#L4438](../packages/db/prisma/schema.prisma#L4438) | 16 | 121 |
-| ReferralAnswer | [packages/db/prisma/schema.prisma#L175](../packages/db/prisma/schema.prisma#L175) | 11 | 64 |
+| PointMintStatus | [packages/db/prisma/schema.prisma#L5338](../packages/db/prisma/schema.prisma#L5338) | 9 | 65 |
+| ReferendumKind | [packages/db/prisma/schema.prisma#L4671](../packages/db/prisma/schema.prisma#L4671) | 17 | 124 |
+| ReferendumStatus | [packages/db/prisma/schema.prisma#L4663](../packages/db/prisma/schema.prisma#L4663) | 22 | 137 |
+| ReferendumVoteSource | [packages/db/prisma/schema.prisma#L4498](../packages/db/prisma/schema.prisma#L4498) | 16 | 121 |
+| ReferralAnswer | [packages/db/prisma/schema.prisma#L175](../packages/db/prisma/schema.prisma#L175) | 10 | 63 |
 | ReferralInvitationContactMethod | [packages/db/prisma/schema.prisma#L351](../packages/db/prisma/schema.prisma#L351) | 12 | 120 |
 | ReferralInvitationMessageFormat | [packages/db/prisma/schema.prisma#L345](../packages/db/prisma/schema.prisma#L345) | 14 | 116 |
 | ReferralInvitationStatus | [packages/db/prisma/schema.prisma#L335](../packages/db/prisma/schema.prisma#L335) | 15 | 122 |
 | RelationshipDirection | [packages/db/prisma/schema.prisma#L128](../packages/db/prisma/schema.prisma#L128) | 10 | 101 |
 | ShareSource | [packages/db/prisma/schema.prisma#L329](../packages/db/prisma/schema.prisma#L329) | 10 | 92 |
-| SocialPlatform | [packages/db/prisma/schema.prisma#L413](../packages/db/prisma/schema.prisma#L413) | 11 | 68 |
-| SourceArtifactType | [packages/db/prisma/schema.prisma#L844](../packages/db/prisma/schema.prisma#L844) | 27 | 203 |
-| SourceSystem | [packages/db/prisma/schema.prisma#L832](../packages/db/prisma/schema.prisma#L832) | 26 | 226 |
+| SocialPlatform | [packages/db/prisma/schema.prisma#L423](../packages/db/prisma/schema.prisma#L423) | 11 | 68 |
+| SourceArtifactType | [packages/db/prisma/schema.prisma#L854](../packages/db/prisma/schema.prisma#L854) | 27 | 207 |
+| SourceSystem | [packages/db/prisma/schema.prisma#L842](../packages/db/prisma/schema.prisma#L842) | 26 | 230 |
 | StrengthLevel | [packages/db/prisma/schema.prisma#L112](../packages/db/prisma/schema.prisma#L112) | 10 | 101 |
-| StripeConnectedAccountStatus | [packages/db/prisma/schema.prisma#L764](../packages/db/prisma/schema.prisma#L764) | 10 | 80 |
-| StripeTransferCapabilityStatus | [packages/db/prisma/schema.prisma#L773](../packages/db/prisma/schema.prisma#L773) | 10 | 83 |
-| SubjectType | [packages/db/prisma/schema.prisma#L161](../packages/db/prisma/schema.prisma#L161) | 14 | 128 |
-| TaskApplicationEventType | [packages/db/prisma/schema.prisma#L689](../packages/db/prisma/schema.prisma#L689) | 12 | 79 |
-| TaskApplicationPolicy | [packages/db/prisma/schema.prisma#L668](../packages/db/prisma/schema.prisma#L668) | 10 | 226 |
-| TaskApplicationStatus | [packages/db/prisma/schema.prisma#L675](../packages/db/prisma/schema.prisma#L675) | 15 | 247 |
-| TaskCandidateKind | [packages/db/prisma/schema.prisma#L507](../packages/db/prisma/schema.prisma#L507) | 12 | 198 |
-| TaskCandidateMatchStatus | [packages/db/prisma/schema.prisma#L516](../packages/db/prisma/schema.prisma#L516) | 11 | 111 |
-| TaskCategory | [packages/db/prisma/schema.prisma#L449](../packages/db/prisma/schema.prisma#L449) | 40 | 370 |
-| TaskClaimPolicy | [packages/db/prisma/schema.prisma#L630](../packages/db/prisma/schema.prisma#L630) | 50 | 397 |
-| TaskClaimStatus | [packages/db/prisma/schema.prisma#L701](../packages/db/prisma/schema.prisma#L701) | 17 | 123 |
-| TaskCommentKind | [packages/db/prisma/schema.prisma#L1016](../packages/db/prisma/schema.prisma#L1016) | 22 | 144 |
-| TaskCommentSource | [packages/db/prisma/schema.prisma#L1031](../packages/db/prisma/schema.prisma#L1031) | 21 | 143 |
-| TaskCommentVisibility | [packages/db/prisma/schema.prisma#L1025](../packages/db/prisma/schema.prisma#L1025) | 9 | 110 |
-| TaskCommunicationAudience | [packages/db/prisma/schema.prisma#L917](../packages/db/prisma/schema.prisma#L917) | 14 | 176 |
-| TaskCommunicationChannel | [packages/db/prisma/schema.prisma#L972](../packages/db/prisma/schema.prisma#L972) | 17 | 156 |
-| TaskCommunicationDirection | [packages/db/prisma/schema.prisma#L966](../packages/db/prisma/schema.prisma#L966) | 11 | 136 |
-| TaskCommunicationEndpointKind | [packages/db/prisma/schema.prisma#L997](../packages/db/prisma/schema.prisma#L997) | 13 | 88 |
-| TaskCommunicationEndpointVerificationStatus | [packages/db/prisma/schema.prisma#L1008](../packages/db/prisma/schema.prisma#L1008) | 12 | 74 |
-| TaskCommunicationFormat | [packages/db/prisma/schema.prisma#L959](../packages/db/prisma/schema.prisma#L959) | 10 | 164 |
-| TaskCommunicationPurpose | [packages/db/prisma/schema.prisma#L929](../packages/db/prisma/schema.prisma#L929) | 14 | 182 |
-| TaskCommunicationStatus | [packages/db/prisma/schema.prisma#L983](../packages/db/prisma/schema.prisma#L983) | 18 | 171 |
-| TaskCompensationCadence | [packages/db/prisma/schema.prisma#L483](../packages/db/prisma/schema.prisma#L483) | 14 | 233 |
-| TaskCompensationKind | [packages/db/prisma/schema.prisma#L473](../packages/db/prisma/schema.prisma#L473) | 14 | 239 |
-| TaskDeadlinePolicy | [packages/db/prisma/schema.prisma#L656](../packages/db/prisma/schema.prisma#L656) | 12 | 237 |
-| TaskDistributionAttemptStatus | [packages/db/prisma/schema.prisma#L619](../packages/db/prisma/schema.prisma#L619) | 8 | 92 |
-| TaskDistributionChannel | [packages/db/prisma/schema.prisma#L591](../packages/db/prisma/schema.prisma#L591) | 9 | 122 |
-| TaskDistributionOperation | [packages/db/prisma/schema.prisma#L604](../packages/db/prisma/schema.prisma#L604) | 8 | 92 |
-| TaskDistributionTargetStatus | [packages/db/prisma/schema.prisma#L612](../packages/db/prisma/schema.prisma#L612) | 8 | 60 |
-| TaskEdgeType | [packages/db/prisma/schema.prisma#L711](../packages/db/prisma/schema.prisma#L711) | 17 | 114 |
-| TaskEngagementKind | [packages/db/prisma/schema.prisma#L464](../packages/db/prisma/schema.prisma#L464) | 11 | 225 |
-| TaskExecutionAttemptStatus | [packages/db/prisma/schema.prisma#L524](../packages/db/prisma/schema.prisma#L524) | 17 | 163 |
-| TaskExecutionMode | [packages/db/prisma/schema.prisma#L500](../packages/db/prisma/schema.prisma#L500) | 13 | 234 |
-| TaskFundingEventType | [packages/db/prisma/schema.prisma#L746](../packages/db/prisma/schema.prisma#L746) | 10 | 77 |
-| TaskFundingPaymentSource | [packages/db/prisma/schema.prisma#L741](../packages/db/prisma/schema.prisma#L741) | 11 | 94 |
-| TaskFundingPaymentStatus | [packages/db/prisma/schema.prisma#L755](../packages/db/prisma/schema.prisma#L755) | 16 | 148 |
-| TaskFundingPledgerKind | [packages/db/prisma/schema.prisma#L725](../packages/db/prisma/schema.prisma#L725) | 16 | 138 |
-| TaskFundingPledgeStatus | [packages/db/prisma/schema.prisma#L730](../packages/db/prisma/schema.prisma#L730) | 22 | 169 |
-| TaskFundingTargetStatus | [packages/db/prisma/schema.prisma#L718](../packages/db/prisma/schema.prisma#L718) | 26 | 140 |
-| TaskImpactEstimateKind | [packages/db/prisma/schema.prisma#L890](../packages/db/prisma/schema.prisma#L890) | 15 | 91 |
-| TaskImpactFrameKey | [packages/db/prisma/schema.prisma#L905](../packages/db/prisma/schema.prisma#L905) | 33 | 148 |
-| TaskImpactPublicationStatus | [packages/db/prisma/schema.prisma#L897](../packages/db/prisma/schema.prisma#L897) | 16 | 97 |
-| TaskMarketplaceFeePolicy | [packages/db/prisma/schema.prisma#L574](../packages/db/prisma/schema.prisma#L574) | 8 | 80 |
-| TaskMarketplaceListingKind | [packages/db/prisma/schema.prisma#L568](../packages/db/prisma/schema.prisma#L568) | 8 | 80 |
-| TaskMarketplaceListingStatus | [packages/db/prisma/schema.prisma#L581](../packages/db/prisma/schema.prisma#L581) | 8 | 80 |
-| TaskPayoutStatus | [packages/db/prisma/schema.prisma#L782](../packages/db/prisma/schema.prisma#L782) | 10 | 133 |
-| TaskRemotePolicy | [packages/db/prisma/schema.prisma#L492](../packages/db/prisma/schema.prisma#L492) | 11 | 227 |
-| TaskStatus | [packages/db/prisma/schema.prisma#L640](../packages/db/prisma/schema.prisma#L640) | 79 | 580 |
-| TaskVerificationMethod | [packages/db/prisma/schema.prisma#L534](../packages/db/prisma/schema.prisma#L534) | 11 | 79 |
-| TaskVerificationResult | [packages/db/prisma/schema.prisma#L542](../packages/db/prisma/schema.prisma#L542) | 12 | 86 |
+| StripeConnectedAccountStatus | [packages/db/prisma/schema.prisma#L774](../packages/db/prisma/schema.prisma#L774) | 10 | 80 |
+| StripeTransferCapabilityStatus | [packages/db/prisma/schema.prisma#L783](../packages/db/prisma/schema.prisma#L783) | 10 | 83 |
+| SubjectType | [packages/db/prisma/schema.prisma#L161](../packages/db/prisma/schema.prisma#L161) | 15 | 141 |
+| TaskApplicationEventType | [packages/db/prisma/schema.prisma#L699](../packages/db/prisma/schema.prisma#L699) | 12 | 79 |
+| TaskApplicationPolicy | [packages/db/prisma/schema.prisma#L678](../packages/db/prisma/schema.prisma#L678) | 10 | 234 |
+| TaskApplicationStatus | [packages/db/prisma/schema.prisma#L685](../packages/db/prisma/schema.prisma#L685) | 15 | 247 |
+| TaskCandidateKind | [packages/db/prisma/schema.prisma#L517](../packages/db/prisma/schema.prisma#L517) | 12 | 202 |
+| TaskCandidateMatchStatus | [packages/db/prisma/schema.prisma#L526](../packages/db/prisma/schema.prisma#L526) | 11 | 111 |
+| TaskCategory | [packages/db/prisma/schema.prisma#L459](../packages/db/prisma/schema.prisma#L459) | 41 | 380 |
+| TaskClaimPolicy | [packages/db/prisma/schema.prisma#L640](../packages/db/prisma/schema.prisma#L640) | 52 | 426 |
+| TaskClaimStatus | [packages/db/prisma/schema.prisma#L711](../packages/db/prisma/schema.prisma#L711) | 17 | 129 |
+| TaskCommentKind | [packages/db/prisma/schema.prisma#L1026](../packages/db/prisma/schema.prisma#L1026) | 22 | 144 |
+| TaskCommentSource | [packages/db/prisma/schema.prisma#L1041](../packages/db/prisma/schema.prisma#L1041) | 21 | 143 |
+| TaskCommentVisibility | [packages/db/prisma/schema.prisma#L1035](../packages/db/prisma/schema.prisma#L1035) | 9 | 110 |
+| TaskCommunicationAudience | [packages/db/prisma/schema.prisma#L927](../packages/db/prisma/schema.prisma#L927) | 14 | 176 |
+| TaskCommunicationChannel | [packages/db/prisma/schema.prisma#L982](../packages/db/prisma/schema.prisma#L982) | 17 | 156 |
+| TaskCommunicationDirection | [packages/db/prisma/schema.prisma#L976](../packages/db/prisma/schema.prisma#L976) | 11 | 136 |
+| TaskCommunicationEndpointKind | [packages/db/prisma/schema.prisma#L1007](../packages/db/prisma/schema.prisma#L1007) | 13 | 88 |
+| TaskCommunicationEndpointVerificationStatus | [packages/db/prisma/schema.prisma#L1018](../packages/db/prisma/schema.prisma#L1018) | 12 | 74 |
+| TaskCommunicationFormat | [packages/db/prisma/schema.prisma#L969](../packages/db/prisma/schema.prisma#L969) | 10 | 164 |
+| TaskCommunicationPurpose | [packages/db/prisma/schema.prisma#L939](../packages/db/prisma/schema.prisma#L939) | 14 | 182 |
+| TaskCommunicationStatus | [packages/db/prisma/schema.prisma#L993](../packages/db/prisma/schema.prisma#L993) | 18 | 171 |
+| TaskCompensationCadence | [packages/db/prisma/schema.prisma#L493](../packages/db/prisma/schema.prisma#L493) | 14 | 241 |
+| TaskCompensationKind | [packages/db/prisma/schema.prisma#L483](../packages/db/prisma/schema.prisma#L483) | 14 | 247 |
+| TaskDeadlinePolicy | [packages/db/prisma/schema.prisma#L666](../packages/db/prisma/schema.prisma#L666) | 13 | 249 |
+| TaskDistributionAttemptStatus | [packages/db/prisma/schema.prisma#L629](../packages/db/prisma/schema.prisma#L629) | 8 | 92 |
+| TaskDistributionChannel | [packages/db/prisma/schema.prisma#L601](../packages/db/prisma/schema.prisma#L601) | 9 | 122 |
+| TaskDistributionOperation | [packages/db/prisma/schema.prisma#L614](../packages/db/prisma/schema.prisma#L614) | 8 | 92 |
+| TaskDistributionTargetStatus | [packages/db/prisma/schema.prisma#L622](../packages/db/prisma/schema.prisma#L622) | 8 | 60 |
+| TaskEdgeType | [packages/db/prisma/schema.prisma#L721](../packages/db/prisma/schema.prisma#L721) | 19 | 119 |
+| TaskEngagementKind | [packages/db/prisma/schema.prisma#L474](../packages/db/prisma/schema.prisma#L474) | 11 | 233 |
+| TaskExecutionAttemptStatus | [packages/db/prisma/schema.prisma#L534](../packages/db/prisma/schema.prisma#L534) | 17 | 167 |
+| TaskExecutionMode | [packages/db/prisma/schema.prisma#L510](../packages/db/prisma/schema.prisma#L510) | 14 | 244 |
+| TaskFundingEventType | [packages/db/prisma/schema.prisma#L756](../packages/db/prisma/schema.prisma#L756) | 10 | 77 |
+| TaskFundingPaymentSource | [packages/db/prisma/schema.prisma#L751](../packages/db/prisma/schema.prisma#L751) | 10 | 93 |
+| TaskFundingPaymentStatus | [packages/db/prisma/schema.prisma#L765](../packages/db/prisma/schema.prisma#L765) | 16 | 148 |
+| TaskFundingPledgerKind | [packages/db/prisma/schema.prisma#L735](../packages/db/prisma/schema.prisma#L735) | 16 | 138 |
+| TaskFundingPledgeStatus | [packages/db/prisma/schema.prisma#L740](../packages/db/prisma/schema.prisma#L740) | 21 | 168 |
+| TaskFundingTargetStatus | [packages/db/prisma/schema.prisma#L728](../packages/db/prisma/schema.prisma#L728) | 26 | 140 |
+| TaskImpactEstimateKind | [packages/db/prisma/schema.prisma#L900](../packages/db/prisma/schema.prisma#L900) | 15 | 91 |
+| TaskImpactFrameKey | [packages/db/prisma/schema.prisma#L915](../packages/db/prisma/schema.prisma#L915) | 33 | 148 |
+| TaskImpactPublicationStatus | [packages/db/prisma/schema.prisma#L907](../packages/db/prisma/schema.prisma#L907) | 16 | 97 |
+| TaskMarketplaceFeePolicy | [packages/db/prisma/schema.prisma#L584](../packages/db/prisma/schema.prisma#L584) | 8 | 80 |
+| TaskMarketplaceListingKind | [packages/db/prisma/schema.prisma#L578](../packages/db/prisma/schema.prisma#L578) | 8 | 80 |
+| TaskMarketplaceListingStatus | [packages/db/prisma/schema.prisma#L591](../packages/db/prisma/schema.prisma#L591) | 8 | 80 |
+| TaskPayoutStatus | [packages/db/prisma/schema.prisma#L792](../packages/db/prisma/schema.prisma#L792) | 10 | 133 |
+| TaskRemotePolicy | [packages/db/prisma/schema.prisma#L502](../packages/db/prisma/schema.prisma#L502) | 11 | 235 |
+| TaskStatus | [packages/db/prisma/schema.prisma#L650](../packages/db/prisma/schema.prisma#L650) | 81 | 601 |
+| TaskVerificationMethod | [packages/db/prisma/schema.prisma#L544](../packages/db/prisma/schema.prisma#L544) | 11 | 83 |
+| TaskVerificationResult | [packages/db/prisma/schema.prisma#L552](../packages/db/prisma/schema.prisma#L552) | 13 | 93 |
 | UnitCodeSystem | [packages/db/prisma/schema.prisma#L94](../packages/db/prisma/schema.prisma#L94) | 9 | 82 |
 | Valence | [packages/db/prisma/schema.prisma#L72](../packages/db/prisma/schema.prisma#L72) | 13 | 286 |
 | VariableEvidenceMetricKind | [packages/db/prisma/schema.prisma#L275](../packages/db/prisma/schema.prisma#L275) | 10 | 92 |
 | VariableRelationshipEvidenceSourceType | [packages/db/prisma/schema.prisma#L292](../packages/db/prisma/schema.prisma#L292) | 10 | 92 |
-| VotePosition | [packages/db/prisma/schema.prisma#L4431](../packages/db/prisma/schema.prisma#L4431) | 38 | 264 |
-| WishReason | [packages/db/prisma/schema.prisma#L434](../packages/db/prisma/schema.prisma#L434) | 10 | 71 |
+| VotePosition | [packages/db/prisma/schema.prisma#L4491](../packages/db/prisma/schema.prisma#L4491) | 36 | 258 |
+| WishReason | [packages/db/prisma/schema.prisma#L444](../packages/db/prisma/schema.prisma#L444) | 10 | 71 |

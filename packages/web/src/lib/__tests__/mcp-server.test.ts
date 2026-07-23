@@ -2,6 +2,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
   AgentExecutorStatus,
+  ContentVisibility,
+  FormPurpose,
+  FormStatus,
   NotificationStatus,
   OrgStatus,
   OrgType,
@@ -141,6 +144,9 @@ const mocks = vi.hoisted(() => ({
   trackingReminderNotificationFindFirst: vi.fn(),
   trackingReminderNotificationCreate: vi.fn(),
   trackingReminderNotificationUpdate: vi.fn(),
+  findReviewedAnswers: vi.fn(),
+  prepareFormResponses: vi.fn(),
+  proposeFormSubmission: vi.fn(),
 }));
 
 vi.mock("../triggers", () => ({
@@ -197,8 +203,7 @@ vi.mock("../tasks/task-visibility.server", () => ({
   getTaskAccessWhere: mocks.getTaskAccessWhere,
   getTaskClientAccessWhere: mocks.getTaskClientAccessWhere,
   getTaskVisibilityWhere: vi.fn(),
-  isTaskWithinClientAccessBoundary:
-    mocks.isTaskWithinClientAccessBoundary,
+  isTaskWithinClientAccessBoundary: mocks.isTaskWithinClientAccessBoundary,
 }));
 vi.mock("../person.server", () => ({
   ensurePersonForUser: mocks.ensurePersonForUser,
@@ -223,6 +228,12 @@ vi.mock("../task-applications.server", () => ({
   assertCanReviewTaskApplications: mocks.assertCanReviewTaskApplications,
   getTaskApplications: mocks.getTaskApplications,
   updateTaskApplication: mocks.updateTaskApplication,
+}));
+
+vi.mock("../form-responses.server", () => ({
+  findReviewedAnswers: mocks.findReviewedAnswers,
+  prepareFormResponses: mocks.prepareFormResponses,
+  proposeFormSubmission: mocks.proposeFormSubmission,
 }));
 
 class ProfileValidationError extends Error {
@@ -677,9 +688,7 @@ beforeEach(() => {
       const ids =
         args?.where?.id?.in ??
         args?.where?.AND?.find((clause) => clause.id?.in)?.id?.in;
-      return ids?.includes("optimize-earth")
-        ? [makeOptimizeEarthRoot()]
-        : [];
+      return ids?.includes("optimize-earth") ? [makeOptimizeEarthRoot()] : [];
     },
   );
   mocks.canManageOrganization.mockResolvedValue(false);
@@ -754,7 +763,7 @@ beforeEach(() => {
     createdByUserId: "user-1",
     createdAt: new Date("2026-04-29T12:00:00.000Z"),
     updatedAt: new Date("2026-04-29T12:00:00.000Z"),
-    _count: { votes: 0, surveys: 0, organizationPositions: 0 },
+    _count: { votes: 0, forms: 0, organizationPositions: 0 },
   });
   mocks.referendumFindMany.mockResolvedValue([]);
   mocks.mcpToolCallAuditCreate.mockResolvedValue({ id: "audit-1" });
@@ -889,6 +898,36 @@ describe("MCP server tool dispatch", () => {
         "manageContentFiles",
         "exportContent",
       ]),
+    );
+  });
+
+  it("forwards the OAuth organization boundary to form response tools", async () => {
+    mocks.findReviewedAnswers.mockResolvedValue({ answers: [] });
+    const client = await setup("user-1", [McpScope.TASKS_ORGANIZATION], {
+      organizationIds: ["organization-1"],
+    });
+
+    const result = await client.callTool({
+      name: "findReviewedAnswers",
+      arguments: {
+        question: "What is your annual budget?",
+        subject: { organizationId: "organization-1" },
+      },
+    });
+
+    expect(parseToolBody(result)).toEqual({ answers: [] });
+    expect(mocks.findReviewedAnswers).toHaveBeenCalledWith(
+      {
+        question: "What is your annual budget?",
+        subject: { organizationId: "organization-1" },
+      },
+      "user-1",
+      {
+        clientAccessBoundary: {
+          allowPersonalPrivate: false,
+          organizationIds: ["organization-1"],
+        },
+      },
     );
   });
 
@@ -2225,7 +2264,7 @@ describe("MCP server tool dispatch", () => {
           createdByUserId: "seed",
           createdAt: new Date("2026-04-20T12:00:00.000Z"),
           updatedAt: new Date("2026-04-21T12:00:00.000Z"),
-          _count: { votes: 42, surveys: 3, organizationPositions: 2 },
+          _count: { votes: 42, forms: 3, organizationPositions: 2 },
         },
       ]);
 
@@ -2238,6 +2277,21 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBeFalsy();
       expect(mocks.referendumFindMany).toHaveBeenCalledWith(
         expect.objectContaining({
+          select: expect.objectContaining({
+            _count: {
+              select: expect.objectContaining({
+                forms: {
+                  where: {
+                    currentRevisionId: { not: null },
+                    deletedAt: null,
+                    purpose: FormPurpose.SURVEY,
+                    status: FormStatus.OPEN,
+                    visibility: ContentVisibility.PUBLIC,
+                  },
+                },
+              }),
+            },
+          }),
           where: { deletedAt: null, status: ReferendumStatus.ACTIVE },
           take: 5,
         }),
@@ -2248,6 +2302,7 @@ describe("MCP server tool dispatch", () => {
           id: "ref-1",
           slug: "one-percent-treaty",
           status: ReferendumStatus.ACTIVE,
+          surveyCount: 3,
           voteCount: 42,
           path: "/agencies/dcongress/referendums/one-percent-treaty",
         }),
@@ -4995,7 +5050,8 @@ describe("MCP server tool dispatch", () => {
         ownerOrganizationId: null,
       });
       mocks.mergeTask.mockResolvedValue({
-        refused: "Both tasks have a TaskFundingTarget; resolve funding manually.",
+        refused:
+          "Both tasks have a TaskFundingTarget; resolve funding manually.",
       });
 
       const client = await setup("mike", [McpScope.TASKS_ADMIN], {

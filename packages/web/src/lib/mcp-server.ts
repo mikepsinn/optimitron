@@ -15,8 +15,11 @@ import {
 import {
   CombinationOperation,
   ContentReportStatus,
+  ContentVisibility,
   AgentExecutorStatus,
   FillingType,
+  FormPurpose,
+  FormStatus,
   McpToolCallStatus,
   NotificationStatus,
   OrgStatus,
@@ -101,6 +104,12 @@ import {
   handlePrivateExecutionToolCall,
   isPrivateExecutionToolName,
 } from "./mcp-tools/private-execution";
+import {
+  FORM_RESPONSE_TOOL_DEFINITIONS,
+  FORM_RESPONSE_TOOL_SCOPES,
+  handleFormResponseToolCall,
+  isFormResponseToolName,
+} from "./mcp-tools/form-responses";
 import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
@@ -317,6 +326,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...DOCUMENT_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
   ...PRIVATE_EXECUTION_TOOL_SCOPES,
+  ...FORM_RESPONSE_TOOL_SCOPES,
 };
 
 const ADMIN_ONLY_TOOLS = new Set([
@@ -2298,7 +2308,15 @@ const REFERENDUM_SELECT = {
   _count: {
     select: {
       organizationPositions: true,
-      surveys: true,
+      forms: {
+        where: {
+          currentRevisionId: { not: null },
+          deletedAt: null,
+          purpose: FormPurpose.SURVEY,
+          status: FormStatus.OPEN,
+          visibility: ContentVisibility.PUBLIC,
+        },
+      },
       votes: true,
     },
   },
@@ -2372,7 +2390,7 @@ function summarizeReferendum(referendum: ReferendumToolRecord) {
     question: referendum.question,
     slug: referendum.slug,
     status: referendum.status,
-    surveyCount: referendum._count.surveys,
+    surveyCount: referendum._count.forms,
     title: referendum.title,
     updatedAt: referendum.updatedAt.toISOString(),
     voteCount: referendum._count.votes,
@@ -7723,6 +7741,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...DOCUMENT_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
   ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
+  ...FORM_RESPONSE_TOOL_DEFINITIONS,
 ];
 
 function assertToolRegistrationIntegrity(): void {
@@ -7903,6 +7922,14 @@ export function createMcpServer(
         if (isContentToolName(name)) {
           return handleContentToolCall({
             args: a,
+            name,
+            userId: userId ?? null,
+          });
+        }
+        if (isFormResponseToolName(name)) {
+          return handleFormResponseToolCall({
+            args: a,
+            clientAccessBoundary: taskClientBoundary,
             name,
             userId: userId ?? null,
           });

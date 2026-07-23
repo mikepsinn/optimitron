@@ -950,14 +950,52 @@ export const ContentReportStatusSchema = z.enum([
 ]);
 export type ContentReportStatus = z.infer<typeof ContentReportStatusSchema>;
 
-export const QuestionTypeSchema = z.enum([
-  "MULTIPLE_CHOICE",
-  "FREE_TEXT",
-  "RATING",
-  "BOOLEAN",
-  "NUMERIC",
+export const ContentVisibilitySchema = z.enum(["PUBLIC", "PRIVATE"]);
+export type ContentVisibility = z.infer<typeof ContentVisibilitySchema>;
+
+export const FormPurposeSchema = z.enum([
+  "SURVEY",
+  "APPLICATION",
+  "INTAKE",
+  "ASSESSMENT",
+  "QUESTIONNAIRE",
 ]);
-export type QuestionType = z.infer<typeof QuestionTypeSchema>;
+export type FormPurpose = z.infer<typeof FormPurposeSchema>;
+
+export const FormStatusSchema = z.enum(["DRAFT", "OPEN", "CLOSED", "ARCHIVED"]);
+export type FormStatus = z.infer<typeof FormStatusSchema>;
+
+export const FormFieldTypeSchema = z.enum([
+  "SHORT_TEXT",
+  "LONG_TEXT",
+  "RICH_TEXT",
+  "NUMBER",
+  "BOOLEAN",
+  "DATE",
+  "DATETIME",
+  "SINGLE_SELECT",
+  "MULTI_SELECT",
+  "RATING",
+  "URL",
+  "EMAIL",
+]);
+export type FormFieldTypeValue = z.infer<typeof FormFieldTypeSchema>;
+
+export const FormSubmissionStatusSchema = z.enum([
+  "DRAFT",
+  "SUBMITTED",
+  "FAILED",
+  "CANCELLED",
+]);
+export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
+
+export const KnowledgeSensitivitySchema = z.enum([
+  "PUBLIC",
+  "INTERNAL",
+  "CONFIDENTIAL",
+  "RESTRICTED",
+]);
+export type KnowledgeSensitivity = z.infer<typeof KnowledgeSensitivitySchema>;
 
 export const EmailLogStatusSchema = z.enum([
   "QUEUED",
@@ -3453,79 +3491,136 @@ export type TaskImpactSourceArtifactType = z.infer<
 >;
 
 // ============================================================================
-// SURVEY SYSTEM
+// FORMS AND REUSABLE KNOWLEDGE
 // ============================================================================
 
-/** Zod schema for the Survey model */
-export const SurveySchema = z.object({
+/** Zod schema for the Form model */
+export const FormSchema = z.object({
   id: z.string(),
   title: z.string(),
-  slug: z.string(),
   description: z.string().nullable().optional(),
+  purpose: FormPurposeSchema.default("SURVEY"),
+  status: FormStatusSchema.default("DRAFT"),
+  slug: z.string().nullable().optional(),
+  visibility: ContentVisibilitySchema.default("PRIVATE"),
   jurisdictionId: z.string().nullable().optional(),
   referendumId: z.string().nullable().optional(),
-  active: z.boolean().default(true),
+  organizationId: z.string().nullable().optional(),
+  createdByUserId: z.string(),
+  currentRevisionId: z.string().nullable().optional(),
+  sourceKey: z.string().nullable().optional(),
+  sourceUrl: z.string().nullable().optional(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type SurveyType = z.infer<typeof SurveySchema>;
+export type FormType = z.infer<typeof FormSchema>;
 
-/** Zod schema for the SurveySection model */
-export const SurveySectionSchema = z.object({
+/** Zod schema for the FormRevision model */
+export const FormRevisionSchema = z.object({
   id: z.string(),
-  surveyId: z.string(),
+  formId: z.string(),
+  version: z.number().int(),
+  status: ModelRevisionStatusSchema.default("DRAFT"),
   title: z.string(),
   description: z.string().nullable().optional(),
-  sortOrder: z.number().int().default(0),
-  conditionalLogic: z.string().nullable().optional(),
+  contentHash: z.string(),
+  sourceArtifactId: z.string().nullable().optional(),
+  createdByUserId: z.string(),
+  publishedAt: nullableDateSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type SurveySectionType = z.infer<typeof SurveySectionSchema>;
+export type FormRevisionType = z.infer<typeof FormRevisionSchema>;
 
-/** Zod schema for the SurveyQuestion model */
-export const SurveyQuestionSchema = z.object({
+/** Zod schema for the FormSection model */
+export const FormSectionSchema = z.object({
   id: z.string(),
-  sectionId: z.string(),
-  text: z.string(),
-  type: QuestionTypeSchema,
+  formRevisionId: z.string(),
+  key: z.string(),
+  title: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  position: z.number().int().default(0),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type FormSectionType = z.infer<typeof FormSectionSchema>;
+
+/** Zod schema for the FormField model */
+export const FormFieldSchema = z.object({
+  id: z.string(),
+  formRevisionId: z.string(),
+  sectionId: z.string().nullable().optional(),
+  key: z.string(),
+  prompt: z.string(),
+  description: z.string().nullable().optional(),
+  type: FormFieldTypeSchema,
   required: z.boolean().default(false),
-  options: z.string().nullable().optional(),
-  sortOrder: z.number().int().default(0),
-  score: z.number().nullable().optional(),
-  conditionalLogic: z.string().nullable().optional(),
+  position: z.number().int().default(0),
+  knowledgeKey: z.string().nullable().optional(),
+  optionsJson: nullableJsonSchema,
+  validationJson: nullableJsonSchema,
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type SurveyQuestionType = z.infer<typeof SurveyQuestionSchema>;
+export type FormFieldType = z.infer<typeof FormFieldSchema>;
 
-/** Zod schema for the SurveyResponse model */
-export const SurveyResponseSchema = z.object({
+/** Zod schema for the KnowledgeAnswer model */
+export const KnowledgeAnswerSchema = z.object({
   id: z.string(),
-  surveyId: z.string(),
-  userId: z.string(),
-  totalScore: z.number().nullable().optional(),
-  completedAt: nullableDateSchema,
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
-});
-export type SurveyResponseType = z.infer<typeof SurveyResponseSchema>;
-
-/** Zod schema for the QuestionResponse model */
-export const QuestionResponseSchema = z.object({
-  id: z.string(),
-  surveyResponseId: z.string(),
-  questionId: z.string(),
-  answer: z.string(),
-  score: z.number().nullable().optional(),
+  subjectId: z.string(),
+  identityKey: z.string(),
+  knowledgeKey: z.string().nullable().optional(),
+  canonicalQuestion: z.string(),
+  contextTags: z.array(z.string()).default([]),
+  sensitivity: KnowledgeSensitivitySchema.default("INTERNAL"),
+  validUntil: nullableDateSchema,
+  reviewTaskId: z.string(),
+  createdByUserId: z.string(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
   deletedAt: nullableDateSchema,
 });
-export type QuestionResponseType = z.infer<typeof QuestionResponseSchema>;
+export type KnowledgeAnswerType = z.infer<typeof KnowledgeAnswerSchema>;
+
+/** Zod schema for the FormSubmission model */
+export const FormSubmissionSchema = z.object({
+  id: z.string(),
+  formRevisionId: z.string(),
+  taskId: z.string().nullable().optional(),
+  taskExecutionAttemptId: z.string().nullable().optional(),
+  subjectId: z.string().nullable().optional(),
+  createdByUserId: z.string().nullable().optional(),
+  respondentUserId: z.string().nullable().optional(),
+  externalActionRequestId: z.string().nullable().optional(),
+  status: FormSubmissionStatusSchema.default("DRAFT"),
+  idempotencyKey: z.string().nullable().optional(),
+  requestHash: z.string().nullable().optional(),
+  submittedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type FormSubmissionType = z.infer<typeof FormSubmissionSchema>;
+
+/** Zod schema for the FormResponse model */
+export const FormResponseSchema = z.object({
+  id: z.string(),
+  submissionId: z.string(),
+  formRevisionId: z.string(),
+  fieldId: z.string(),
+  valueJson: nullableJsonSchema,
+  knowledgeAnswerId: z.string().nullable().optional(),
+  answerDocumentRevisionId: z.string().nullable().optional(),
+  approvalVerificationId: z.string().nullable().optional(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+  deletedAt: nullableDateSchema,
+});
+export type FormResponseType = z.infer<typeof FormResponseSchema>;
 
 // ============================================================================
 // GAMIFICATION & SOCIAL

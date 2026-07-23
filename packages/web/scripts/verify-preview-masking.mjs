@@ -19,9 +19,12 @@
 
 import pg from "pg";
 
-const databaseUrl = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
+const databaseUrl =
+  process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
 if (!databaseUrl) {
-  console.error("::error::DATABASE_URL[_UNPOOLED] is required to verify preview masking.");
+  console.error(
+    "::error::DATABASE_URL[_UNPOOLED] is required to verify preview masking.",
+  );
   process.exit(2);
 }
 
@@ -35,7 +38,10 @@ const checks = [
     sql: `SELECT handle FROM "Person" WHERE handle IS NOT NULL AND email IS DISTINCT FROM '${DEMO_EMAIL}' LIMIT 25`,
     column: "handle",
     expected: "starts with 'person-' followed by hex hash",
-    test: (value) => typeof value === "string" && value.startsWith("person-") && HASH_HEX.test(value.slice("person-".length)),
+    test: (value) =>
+      typeof value === "string" &&
+      value.startsWith("person-") &&
+      HASH_HEX.test(value.slice("person-".length)),
     requireRows: true,
   },
   {
@@ -43,7 +49,9 @@ const checks = [
     sql: `SELECT email FROM "Person" WHERE email IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "email",
     expected: "person-<hex>@preview.invalid",
-    test: (value) => typeof value === "string" && /^person-[a-f0-9]+@preview\.invalid$/.test(value),
+    test: (value) =>
+      typeof value === "string" &&
+      /^person-[a-f0-9]+@preview\.invalid$/.test(value),
     requireRows: false,
   },
   {
@@ -59,7 +67,9 @@ const checks = [
     sql: `SELECT email FROM "User" WHERE email IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "email",
     expected: "user-<hex>@preview.invalid",
-    test: (value) => typeof value === "string" && /^user-[a-f0-9]+@preview\.invalid$/.test(value),
+    test: (value) =>
+      typeof value === "string" &&
+      /^user-[a-f0-9]+@preview\.invalid$/.test(value),
     requireRows: true,
   },
   {
@@ -75,7 +85,10 @@ const checks = [
     sql: `SELECT "referralCode" FROM "User" WHERE "referralCode" IS NOT NULL AND email <> '${DEMO_EMAIL}' LIMIT 25`,
     column: "referralCode",
     expected: "ref-<hex>",
-    test: (value) => typeof value === "string" && value.startsWith("ref-") && HASH_HEX.test(value.slice("ref-".length)),
+    test: (value) =>
+      typeof value === "string" &&
+      value.startsWith("ref-") &&
+      HASH_HEX.test(value.slice("ref-".length)),
     requireRows: false,
   },
   {
@@ -90,7 +103,8 @@ const checks = [
     name: "TaskTrigger.userOnboardingTreaty",
     sql: `SELECT CASE WHEN enabled = true AND "idempotencyKeyTemplate" = 'program:one-percent-treaty:user:{{user.id}}' AND ("eventFilter" IS NULL OR "eventFilter" = 'null'::jsonb) THEN 'ok' ELSE 'bad' END AS status FROM "TaskTrigger" WHERE "triggerKey" = '${USER_ONBOARDING_TREATY_TRIGGER}' AND "deletedAt" IS NULL LIMIT 1`,
     column: "status",
-    expected: "managed onboarding trigger present with intact idempotency template and empty event filter",
+    expected:
+      "managed onboarding trigger present with intact idempotency template and empty event filter",
     test: (value) => value === "ok",
     requireRows: true,
   },
@@ -108,6 +122,38 @@ const checks = [
     column: "message",
     expected: "exactly '[preview redacted]'",
     test: (value) => value === "[preview redacted]",
+    requireRows: false,
+  },
+  {
+    name: "Form.privateContent",
+    sql: `SELECT CASE WHEN "title" = '[preview redacted]' AND ("description" IS NULL OR "description" = '[preview redacted]') AND "sourceUrl" IS NULL THEN 'ok' ELSE 'bad' END AS status FROM "Form" LIMIT 25`,
+    column: "status",
+    expected: "titles and descriptions redacted and source URLs removed",
+    test: (value) => value === "ok",
+    requireRows: false,
+  },
+  {
+    name: "FormField.privateContent",
+    sql: `SELECT CASE WHEN "prompt" = '[preview redacted]' AND ("description" IS NULL OR "description" = '[preview redacted]') AND ("optionsJson" IS NULL OR "optionsJson" = '{}'::jsonb) AND ("validationJson" IS NULL OR "validationJson" = '{}'::jsonb) THEN 'ok' ELSE 'bad' END AS status FROM "FormField" LIMIT 25`,
+    column: "status",
+    expected: "prompts, descriptions, options, and validation masked",
+    test: (value) => value === "ok",
+    requireRows: false,
+  },
+  {
+    name: "KnowledgeAnswer.privateContent",
+    sql: `SELECT CASE WHEN "canonicalQuestion" = '[preview redacted]' AND "knowledgeKey" IS NULL AND "contextTags" = ARRAY[]::text[] THEN 'ok' ELSE 'bad' END AS status FROM "KnowledgeAnswer" LIMIT 25`,
+    column: "status",
+    expected: "questions, knowledge keys, and context tags masked",
+    test: (value) => value === "ok",
+    requireRows: false,
+  },
+  {
+    name: "FormResponse.valueJson",
+    sql: 'SELECT "valueJson" FROM "FormResponse" LIMIT 25',
+    column: "valueJson",
+    expected: "NULL",
+    test: (value) => value === null,
     requireRows: false,
   },
   {
@@ -130,7 +176,8 @@ const checks = [
     name: "ExternalActionRequest.privatePayload",
     sql: `SELECT CASE WHEN "operation" = '[preview redacted]' AND "destination" = '[preview redacted]' AND "payloadJson" = '{}'::jsonb AND "payloadHash" = pg_catalog.concat('external-action-payload-', md5("id"::text)) AND ("approvedPayloadHash" IS NULL OR "approvedPayloadHash" = "payloadHash") AND ("executionReceiptJson" IS NULL OR "executionReceiptJson" = '{}'::jsonb) AND ("failureMessage" IS NULL OR "failureMessage" = '[preview redacted]') AND "idempotencyKey" = pg_catalog.concat('external-action-', md5("id"::text)) THEN 'ok' ELSE 'bad' END AS status FROM "ExternalActionRequest" LIMIT 25`,
     column: "status",
-    expected: "operation, destination, payload, receipt, errors, hashes, and idempotency key masked",
+    expected:
+      "operation, destination, payload, receipt, errors, hashes, and idempotency key masked",
     test: (value) => value === "ok",
     requireRows: false,
   },
@@ -164,7 +211,9 @@ try {
         );
         failed = true;
       } else {
-        console.log(`${check.name}: 0 rows (column is optional on a fresh prod-fork — skipped).`);
+        console.log(
+          `${check.name}: 0 rows (column is optional on a fresh prod-fork — skipped).`,
+        );
       }
       continue;
     }
@@ -176,7 +225,9 @@ try {
       );
       failed = true;
     } else {
-      console.log(`${check.name}: ${rows.length}/${rows.length} rows match (${check.expected}).`);
+      console.log(
+        `${check.name}: ${rows.length}/${rows.length} rows match (${check.expected}).`,
+      );
     }
   }
 } catch (error) {
@@ -193,4 +244,6 @@ if (failed) {
   process.exit(1);
 }
 
-console.log("Preview masking smoke check: all sampled PII columns are correctly masked.");
+console.log(
+  "Preview masking smoke check: all sampled PII columns are correctly masked.",
+);
