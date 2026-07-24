@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import {
   ActivityType,
+  ContentVisibility,
   HUMANITY_V_GOVERNMENT_VERDICT_REFERENDUM_SLUG,
   OrgStatus,
   ReferendumStatus,
@@ -107,12 +108,18 @@ export async function POST(
     const verifiedOrganization = publicOrganizationSlug
       ? await prisma.organization.findUnique({
           where: { slug: publicOrganizationSlug },
-          select: { id: true, status: true, deletedAt: true },
+          select: {
+            id: true,
+            status: true,
+            deletedAt: true,
+            visibility: true,
+          },
         })
       : null;
     const organizationId =
       verifiedOrganization &&
       verifiedOrganization.status === OrgStatus.APPROVED &&
+      verifiedOrganization.visibility === ContentVisibility.PUBLIC &&
       !verifiedOrganization.deletedAt
         ? verifiedOrganization.id
         : null;

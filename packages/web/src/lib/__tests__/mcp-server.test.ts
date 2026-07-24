@@ -94,7 +94,9 @@ const mocks = vi.hoisted(() => ({
   generateAndPostWishoniaReply: vi.fn(),
   getProfileIdentityData: vi.fn(),
   updateUserProfile: vi.fn(),
+  assertOrganizationCanBePubliclyReferenced: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
+  getOrganizationAccessWhere: vi.fn(),
   uploadImageFromUrl: vi.fn(),
   updateOrganizationServer: vi.fn(),
   addOrganizationMember: vi.fn(),
@@ -111,6 +113,9 @@ const mocks = vi.hoisted(() => ({
   ensurePersonForUser: vi.fn(),
   organizationMemberFindMany: vi.fn(),
   organizationFindFirst: vi.fn(),
+  organizationFindMany: vi.fn(),
+  personFindMany: vi.fn(),
+  searchOrganizations: vi.fn(),
   taskFindUnique: vi.fn(),
   upsertSignerReminderTask: vi.fn(),
   createTaskTrigger: vi.fn(),
@@ -286,6 +291,7 @@ vi.mock("../earth-data.server", () => ({
   getPerson: mocks.getPerson,
   recordRepresentedReferendumVote: mocks.recordRepresentedReferendumVote,
   searchPeople: mocks.searchPeople,
+  searchOrganizations: mocks.searchOrganizations,
   upsertOrganization: mocks.upsertOrganization,
   upsertMemorialPerson: mocks.upsertMemorialPerson,
   reportContent: mocks.reportContent,
@@ -321,7 +327,10 @@ class LastOwnerError extends Error {
 const VALID_MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
 
 vi.mock("../organization.server", () => ({
+  assertOrganizationCanBePubliclyReferenced:
+    mocks.assertOrganizationCanBePubliclyReferenced,
   createOrganizationWithOwner: mocks.createOrganizationWithOwner,
+  getOrganizationAccessWhere: mocks.getOrganizationAccessWhere,
   updateOrganization: mocks.updateOrganizationServer,
   addOrganizationMember: mocks.addOrganizationMember,
   removeOrganizationMember: mocks.removeOrganizationMember,
@@ -403,6 +412,10 @@ vi.mock("../prisma", () => ({
     },
     organization: {
       findFirst: mocks.organizationFindFirst,
+      findMany: mocks.organizationFindMany,
+    },
+    person: {
+      findMany: mocks.personFindMany,
     },
     sourceArtifact: {
       upsert: mocks.sourceArtifactUpsert,
@@ -605,6 +618,11 @@ beforeEach(() => {
   });
   mocks.organizationMemberFindMany.mockResolvedValue([]);
   mocks.organizationFindFirst.mockResolvedValue(null);
+  mocks.organizationFindMany.mockResolvedValue([]);
+  mocks.personFindMany.mockResolvedValue([]);
+  mocks.searchOrganizations.mockResolvedValue([]);
+  mocks.getOrganizationAccessWhere.mockReturnValue({});
+  mocks.assertOrganizationCanBePubliclyReferenced.mockResolvedValue(undefined);
   vi.unstubAllGlobals();
   delete process.env.GITHUB_PAT;
   delete process.env.GITHUB_TOKEN;
@@ -801,6 +819,7 @@ beforeEach(() => {
     slug: "survival-and-flourishing-fund",
     status: OrgStatus.APPROVED,
     type: OrgType.FOUNDATION,
+    visibility: ContentVisibility.PUBLIC,
     website: "https://survivalandflourishing.fund",
   });
   mocks.taskUpdate.mockImplementation(
@@ -1257,6 +1276,101 @@ describe("MCP server tool dispatch", () => {
     });
   });
 
+  it("does not expose private people without the personal task scope", async () => {
+    const publicClient = await setup("user-1", [], {
+      organizationIds: [],
+    });
+
+    await publicClient.callTool({
+      name: "listPeople",
+      arguments: { publicProfilesOnly: false },
+    });
+
+    expect(mocks.personFindMany).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: [
+            {
+              OR: [{ isPublic: true }, { isPublicFigure: true }],
+            },
+          ],
+        }),
+      }),
+    );
+
+    const personalClient = await setup("user-1", [McpScope.TASKS_PERSONAL], {
+      organizationIds: [],
+    });
+    await personalClient.callTool({
+      name: "listPeople",
+      arguments: { publicProfilesOnly: false },
+    });
+
+    expect(mocks.personFindMany).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: [
+            {
+              OR: expect.arrayContaining([{ createdByUserId: "user-1" }]),
+            },
+          ],
+        }),
+      }),
+    );
+  });
+
+  it("passes only OAuth-authorized organizations into private organization reads", async () => {
+    const publicClient = await setup("user-1", [], {
+      organizationIds: ["org_not_granted_without_scope"],
+    });
+    await publicClient.callTool({
+      name: "listOrganizations",
+      arguments: {},
+    });
+    expect(mocks.getOrganizationAccessWhere).toHaveBeenNthCalledWith(
+      1,
+      "user-1",
+      [],
+    );
+
+    const organizationClient = await setup(
+      "user-1",
+      [McpScope.TASKS_ORGANIZATION],
+      { organizationIds: ["org_allowed"] },
+    );
+    await organizationClient.callTool({
+      name: "listOrganizations",
+      arguments: {},
+    });
+    expect(mocks.getOrganizationAccessWhere).toHaveBeenNthCalledWith(
+      2,
+      "user-1",
+      ["org_allowed"],
+    );
+  });
+
+  it("passes the organization allowlist through Earth-data search", async () => {
+    const client = await setup(
+      "user-1",
+      [McpScope.EARTHDATA_WRITE, McpScope.TASKS_ORGANIZATION],
+      { organizationIds: ["org_allowed"] },
+    );
+
+    await client.callTool({
+      name: "searchOrganizations",
+      arguments: { query: "private" },
+    });
+
+    expect(mocks.searchOrganizations).toHaveBeenCalledWith({
+      allowedOrganizationIds: ["org_allowed"],
+      limit: undefined,
+      query: "private",
+      userId: "user-1",
+    });
+  });
+
   it("createOrganization creates approved task-assignee organizations with strict duplicate errors", async () => {
     const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
@@ -1281,6 +1395,7 @@ describe("MCP server tool dispatch", () => {
         squareLogoUrl: null,
         status: OrgStatus.APPROVED,
         type: OrgType.FOUNDATION,
+        visibility: ContentVisibility.PUBLIC,
         website: "https://survivalandflourishing.fund",
         wordmarkLogoUrl: null,
       },
@@ -1298,6 +1413,7 @@ describe("MCP server tool dispatch", () => {
       slug: "survival-and-flourishing-fund",
       status: "APPROVED",
       type: "FOUNDATION",
+      visibility: "PUBLIC",
       website: "https://survivalandflourishing.fund",
     });
   });
@@ -4202,6 +4318,44 @@ describe("MCP server tool dispatch", () => {
         isPublic: true,
         visibility: "PUBLIC",
       });
+    });
+
+    it("rejects public tasks that identify a private organization", async () => {
+      mocks.taskFindFirst.mockResolvedValue(
+        makePlanningBranch({ isPublic: true }),
+      );
+      mocks.assertOrganizationCanBePubliclyReferenced.mockRejectedValue(
+        new Error(
+          "Public tasks cannot reference a private or unpublished organization.",
+        ),
+      );
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: {
+          parentTaskId: "personal-project",
+          title: "Publish private organization work",
+          description: "This should not identify a private organization.",
+          category: "GOVERNANCE",
+          acceptanceCriteria: ["The task is rejected"],
+          impactStatement: "Prevents a private organization identity leak.",
+          hours: 0.5,
+          value: 5000,
+          p_success: 0.05,
+          assigneeOrganizationId: "org_private",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toEqual({
+        error:
+          "Public tasks cannot reference a private or unpublished organization.",
+      });
+      expect(
+        mocks.assertOrganizationCanBePubliclyReferenced,
+      ).toHaveBeenCalledWith("org_private");
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
     it("allows organization managers to create explicitly private assigned tasks", async () => {

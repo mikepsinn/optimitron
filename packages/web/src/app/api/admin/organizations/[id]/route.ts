@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { ActivityType, OrgStatus } from "@optimitron/db";
+import { ActivityType, ContentVisibility, OrgStatus } from "@optimitron/db";
 import {
   normalizeOrganizationHttpUrl,
   normalizeOrganizationImageUrl,
@@ -32,7 +32,7 @@ export async function PATCH(
       where: { id },
     });
 
-    if (!organization) {
+    if (!organization || organization.visibility === ContentVisibility.PRIVATE) {
       return NextResponse.json(
         { error: "Organization not found" },
         { status: 404 },
@@ -141,7 +141,7 @@ export async function DELETE(
       where: { id },
     });
 
-    if (!organization) {
+    if (!organization || organization.visibility === ContentVisibility.PRIVATE) {
       return NextResponse.json(
         { error: "Organization not found" },
         { status: 404 },

@@ -5,6 +5,7 @@ import {
   ORGANIZATION_ACTIVATION_TASK_TITLE,
 } from "@optimitron/data/campaign";
 import {
+  ContentVisibility,
   OrgStatus,
   OrgType,
   OrganizationMemberRole as DbOrganizationMemberRole,
@@ -37,6 +38,8 @@ export async function ensureOrganizationTreatyActivationTask(
   creatorUserId: string,
   db: DbClient = prisma,
 ) {
+  await assertOrganizationCanBePubliclyReferenced(input.organizationId, db);
+
   const organization = await db.organization.findUnique({
     where: { id: input.organizationId },
     select: { name: true, slug: true },
@@ -157,6 +160,7 @@ interface OrganizationDraftInput {
   sourceUrl?: string | null;
   squareLogoUrl?: string | null;
   type?: OrgType | null;
+  visibility?: ContentVisibility | null;
   website?: string | null;
   wordmarkLogoUrl?: string | null;
 }
@@ -246,6 +250,7 @@ export async function findOrCreateOrganization(
             normalizedSquareLogo ?? existingBySourceRef.squareLogoUrl,
           status: OrgStatus.APPROVED,
           type: desiredType,
+          ...(input.visibility == null ? {} : { visibility: input.visibility }),
           website: normalizedWebsite ?? existingBySourceRef.website,
           wordmarkLogoUrl:
             normalizedWordmarkLogo ?? existingBySourceRef.wordmarkLogoUrl,
@@ -282,6 +287,7 @@ export async function findOrCreateOrganization(
         squareLogoUrl: normalizedSquareLogo ?? existingByName.squareLogoUrl,
         status: OrgStatus.APPROVED,
         type: input.type ?? existingByName.type,
+        ...(input.visibility == null ? {} : { visibility: input.visibility }),
         website: normalizedWebsite ?? existingByName.website,
         wordmarkLogoUrl:
           normalizedWordmarkLogo ?? existingByName.wordmarkLogoUrl,
@@ -303,6 +309,7 @@ export async function findOrCreateOrganization(
       squareLogoUrl: normalizedSquareLogo ?? null,
       status: OrgStatus.APPROVED,
       type: desiredType,
+      visibility: input.visibility ?? ContentVisibility.PUBLIC,
       website: normalizedWebsite ?? null,
       wordmarkLogoUrl: normalizedWordmarkLogo ?? null,
     },
@@ -333,6 +340,7 @@ interface CreateOrganizationInput {
   wordmarkLogoUrl?: string | null;
   contactEmail?: string | null;
   jurisdictionId?: string | null;
+  visibility?: ContentVisibility | null;
 }
 
 interface CreateOrganizationOptions {
@@ -410,6 +418,7 @@ export async function createOrganizationWithOwner(
         slug: nextSlug,
         type: input.type ?? OrgType.OTHER,
         status: input.status ?? OrgStatus.APPROVED,
+        visibility: input.visibility ?? ContentVisibility.PUBLIC,
         creatorId: creatorUserId,
         website,
         description: input.description ?? null,
@@ -502,32 +511,122 @@ export async function canUserViewOrganization(
   userId?: string | null,
   db: Pick<DbClient, "organization"> = prisma,
 ): Promise<boolean> {
-  const normalizedUserId = userId?.trim() || null;
   const organization = await db.organization.findFirst({
     where: {
       id: organizationId.trim(),
-      deletedAt: null,
-      OR: [
-        { status: OrgStatus.APPROVED },
-        ...(normalizedUserId
-          ? [
-              { creatorId: normalizedUserId },
-              { members: { some: { userId: normalizedUserId } } },
-            ]
-          : []),
-      ],
+      ...getOrganizationAccessWhere(userId),
     },
     select: { id: true },
   });
   return organization != null;
 }
 
-export async function getManageableOrganizationsForUser(userId: string) {
+/**
+ * Public approved organizations plus the viewer's organizations. OAuth callers
+ * pass their organization allowlist so membership alone cannot widen a token.
+ */
+export function getOrganizationAccessWhere(
+  userId?: string | null,
+  allowedOrganizationIds: readonly string[] | null = null,
+): Prisma.OrganizationWhereInput {
+  const normalizedUserId = userId?.trim() || null;
+  const normalizedOrganizationIds =
+    allowedOrganizationIds === null
+      ? null
+      : [
+          ...new Set(
+            allowedOrganizationIds.map((id) => id.trim()).filter(Boolean),
+          ),
+        ];
+  const canAccessPrivateOrganizations =
+    normalizedUserId &&
+    (normalizedOrganizationIds === null ||
+      normalizedOrganizationIds.length > 0);
+
+  return {
+    deletedAt: null,
+    OR: [
+      {
+        status: OrgStatus.APPROVED,
+        visibility: ContentVisibility.PUBLIC,
+      },
+      ...(canAccessPrivateOrganizations
+        ? [
+            {
+              ...(normalizedOrganizationIds === null
+                ? {}
+                : { id: { in: normalizedOrganizationIds } }),
+              OR: [
+                { creatorId: normalizedUserId },
+                { members: { some: { userId: normalizedUserId } } },
+              ],
+            },
+          ]
+        : []),
+    ],
+  };
+}
+
+export async function assertOrganizationCanBePubliclyReferenced(
+  organizationId: string,
+  db: Pick<DbClient, "organization"> = prisma,
+) {
+  const organization = await db.organization.findFirst({
+    where: {
+      deletedAt: null,
+      id: organizationId.trim(),
+      status: OrgStatus.APPROVED,
+      visibility: ContentVisibility.PUBLIC,
+    },
+    select: { id: true },
+  });
+  if (!organization) {
+    throw new Error(
+      "Public tasks cannot reference a private or unpublished organization.",
+    );
+  }
+}
+
+export const PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR =
+  "An organization with public tasks cannot be made private.";
+
+export async function assertOrganizationCanBePrivate(
+  organizationId: string,
+  db: Pick<DbClient, "task"> = prisma,
+) {
+  const publicTask = await db.task.findFirst({
+    where: {
+      deletedAt: null,
+      isPublic: true,
+      OR: [
+        { assigneeOrganizationId: organizationId.trim() },
+        { ownerOrganizationId: organizationId.trim() },
+      ],
+    },
+    select: { id: true },
+  });
+  if (publicTask) {
+    throw new Error(PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR);
+  }
+}
+
+export async function getManageableOrganizationsForUser(
+  userId: string,
+  options: { publiclyReferenceableOnly?: boolean } = {},
+) {
   const memberships = await prisma.organizationMember.findMany({
     where: {
       userId,
       role: { in: Array.from(MANAGE_ROLES) },
-      organization: { deletedAt: null },
+      organization: {
+        deletedAt: null,
+        ...(options.publiclyReferenceableOnly
+          ? {
+              status: OrgStatus.APPROVED,
+              visibility: ContentVisibility.PUBLIC,
+            }
+          : {}),
+      },
     },
     include: {
       organization: {
@@ -553,6 +652,7 @@ export async function getApprovedOrganizationForSurveySlug(slug: string) {
       name: true,
       slug: true,
       status: true,
+      visibility: true,
       deletedAt: true,
       squareLogoUrl: true,
       wordmarkLogoUrl: true,
@@ -565,7 +665,8 @@ export async function getApprovedOrganizationForSurveySlug(slug: string) {
   if (
     !organization ||
     organization.deletedAt ||
-    organization.status !== OrgStatus.APPROVED
+    organization.status !== OrgStatus.APPROVED ||
+    organization.visibility !== ContentVisibility.PUBLIC
   ) {
     return null;
   }
@@ -652,6 +753,7 @@ interface UpdateOrganizationInput {
   wordmarkLogoUrl?: string | null;
   contactEmail?: string | null;
   jurisdictionId?: string | null;
+  visibility?: ContentVisibility;
 }
 
 interface UpdateOrganizationOptions {
@@ -710,6 +812,12 @@ export async function updateOrganization(
 
   if (patch.type !== undefined) data.type = patch.type;
   if (patch.status !== undefined) data.status = patch.status;
+  if (patch.visibility !== undefined) {
+    if (patch.visibility === ContentVisibility.PRIVATE) {
+      await assertOrganizationCanBePrivate(organizationId);
+    }
+    data.visibility = patch.visibility;
+  }
   if (patch.website !== undefined) {
     data.website = assertValidOrganizationWebsiteUrl(patch.website);
   }

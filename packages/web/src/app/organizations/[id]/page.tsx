@@ -12,7 +12,10 @@ import { OrganizationProfileEditor } from "@/components/organizations/Organizati
 import { OrganizationSurveyFrame } from "@/components/organizations/OrganizationSurveyFrame";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
-import { canManageOrganization } from "@/lib/organization.server";
+import {
+  canManageOrganization,
+  getOrganizationAccessWhere,
+} from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import {
   PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL,
@@ -43,8 +46,10 @@ export default async function OrganizationPage({
 
   const org = await prisma.organization.findFirst({
     where: {
-      deletedAt: null,
-      OR: [{ id }, { slug: id }],
+      AND: [
+        getOrganizationAccessWhere(user?.id),
+        { OR: [{ id }, { slug: id }] },
+      ],
     },
     include: {
       members: {

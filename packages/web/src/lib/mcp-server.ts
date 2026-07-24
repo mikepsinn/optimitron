@@ -6043,6 +6043,12 @@ const TASK_TOOL_DEFINITIONS = [
           enum: ["PENDING", "APPROVED", "REJECTED"],
           description: "Organization status. Defaults to APPROVED.",
         },
+        visibility: {
+          type: "string",
+          enum: ["PUBLIC", "PRIVATE"],
+          description:
+            "Discoverability. PRIVATE organizations are visible only to their members. Defaults to PUBLIC.",
+        },
         donationUrl: {
           type: "string",
           description: "Direct support or donation page URL",
@@ -6421,6 +6427,11 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["PENDING", "APPROVED", "REJECTED"],
           description: "Approval status. Platform-admin only.",
+        },
+        visibility: {
+          type: "string",
+          enum: ["PUBLIC", "PRIVATE"],
+          description: "Organization discoverability.",
         },
         website: {
           type: "string",
@@ -8048,8 +8059,10 @@ export function createMcpServer(
           case "searchOrganizations": {
             const earthData = await import("./earth-data.server");
             const organizations = await earthData.searchOrganizations({
+              allowedOrganizationIds: taskClientBoundary.organizationIds,
               limit: typeof a.limit === "number" ? a.limit : undefined,
               query: (a.query as string) ?? null,
+              userId: userId ?? null,
             });
             return ok({ organizations });
           }
@@ -9131,10 +9144,27 @@ export function createMcpServer(
               ? (TaskStatus[a.taskStatus as keyof typeof TaskStatus] ?? null)
               : TaskStatus.ACTIVE;
 
+            const publicPersonWhere: Prisma.PersonWhereInput = {
+              OR: [{ isPublic: true }, { isPublicFigure: true }],
+            };
+            const allowPrivatePersonalProfiles = Boolean(
+              userId && taskClientBoundary.allowPersonalPrivate,
+            );
+            const personAccessWhere: Prisma.PersonWhereInput =
+              publicProfilesOnly || !allowPrivatePersonalProfiles
+                ? publicPersonWhere
+                : {
+                    OR: [
+                      { isPublic: true },
+                      { isPublicFigure: true },
+                      { createdByUserId: userId },
+                      { user: { is: { id: userId } } },
+                    ],
+                  };
             const people = await prisma.person.findMany({
               where: {
                 deletedAt: null,
-                ...(publicProfilesOnly ? { isPublicFigure: true } : {}),
+                AND: [personAccessWhere],
                 ...(query
                   ? {
                       OR: [
@@ -9148,7 +9178,16 @@ export function createMcpServer(
                           },
                         },
                         { handle: { contains: query, mode: "insensitive" } },
-                        { email: { contains: query, mode: "insensitive" } },
+                        ...(allowPrivatePersonalProfiles && !publicProfilesOnly
+                          ? [
+                              {
+                                email: {
+                                  contains: query,
+                                  mode: "insensitive" as const,
+                                },
+                              },
+                            ]
+                          : []),
                         { sourceRef: { contains: query, mode: "insensitive" } },
                       ],
                     }
@@ -9168,12 +9207,28 @@ export function createMcpServer(
                 isPublicFigure: true,
                 sourceRef: true,
                 sourceUrl: true,
+                createdByUserId: true,
+                user: { select: { id: true } },
               },
             });
 
+            const formatPerson = (person: (typeof people)[number]) => {
+              const { createdByUserId, user, ...visible } = person;
+              const ownsPrivateRecord = Boolean(
+                allowPrivatePersonalProfiles &&
+                  userId &&
+                  (createdByUserId === userId || user?.id === userId),
+              );
+              return {
+                ...visible,
+                email: ownsPrivateRecord ? visible.email : null,
+              };
+            };
+
             const rows = await Promise.all(
               people.map(async (person) => {
-                if (!includeTasks) return { ...person, tasks: [] };
+                const visiblePerson = formatPerson(person);
+                if (!includeTasks) return { ...visiblePerson, tasks: [] };
                 const listed = await tasks.listTasks({
                   assigneePersonId: person.id,
                   clientAccessBoundary:
@@ -9183,7 +9238,10 @@ export function createMcpServer(
                   visibility: taskScope,
                   userId: userId ?? null,
                 });
-                return { ...person, tasks: listed.map(summarizeTask) };
+                return {
+                  ...visiblePerson,
+                  tasks: listed.map(summarizeTask),
+                };
               }),
             );
 
@@ -9203,8 +9261,23 @@ export function createMcpServer(
             });
             if (!resolvedScope.ok) return err(resolvedScope.error);
             const scope = resolvedScope.visibility;
+            const personAccessWhere: Prisma.PersonWhereInput =
+              userId && taskClientBoundary.allowPersonalPrivate
+                ? {
+                    OR: [
+                      { isPublic: true },
+                      { isPublicFigure: true },
+                      { createdByUserId: userId },
+                      { user: { is: { id: userId } } },
+                    ],
+                  }
+                : { OR: [{ isPublic: true }, { isPublicFigure: true }] };
             const person = await prisma.person.findFirst({
-              where: { deletedAt: null, id: personId },
+              where: {
+                AND: [personAccessWhere],
+                deletedAt: null,
+                id: personId,
+              },
               select: {
                 id: true,
                 displayName: true,
@@ -9243,6 +9316,9 @@ export function createMcpServer(
           case "listOrganizations": {
             const prisma = await getPrisma();
             const { tasks } = await getTaskFunctions();
+            const { getOrganizationAccessWhere } = await import(
+              "./organization.server"
+            );
             const query = typeof a.query === "string" ? a.query.trim() : "";
             const queryMode: Prisma.QueryMode = "insensitive";
             const includeTasks = a.includeTasks === true;
@@ -9260,26 +9336,43 @@ export function createMcpServer(
               ? (TaskStatus[a.taskStatus as keyof typeof TaskStatus] ??
                 TaskStatus.ACTIVE)
               : TaskStatus.ACTIVE;
-            const organizationWhere = {
-              deletedAt: null,
-              ...(a.status
-                ? { status: enumValue(OrgStatus, a.status, OrgStatus.APPROVED) }
-                : {}),
-              ...(a.type
-                ? { type: enumValue(OrgType, a.type, OrgType.OTHER) }
-                : {}),
-              ...(query
-                ? {
-                    OR: [
-                      { name: { contains: query, mode: queryMode } },
-                      { slug: { contains: query, mode: queryMode } },
-                      { description: { contains: query, mode: queryMode } },
-                      { website: { contains: query, mode: queryMode } },
-                      { contactEmail: { contains: query, mode: queryMode } },
-                      { sourceUrl: { contains: query, mode: queryMode } },
-                    ],
-                  }
-                : {}),
+            const organizationWhere: Prisma.OrganizationWhereInput = {
+              AND: [
+                getOrganizationAccessWhere(
+                  userId,
+                  taskClientBoundary.organizationIds,
+                ),
+                {
+                  ...(a.status
+                    ? {
+                        status: enumValue(
+                          OrgStatus,
+                          a.status,
+                          OrgStatus.APPROVED,
+                        ),
+                      }
+                    : {}),
+                  ...(a.type
+                    ? { type: enumValue(OrgType, a.type, OrgType.OTHER) }
+                    : {}),
+                  ...(query
+                    ? {
+                        OR: [
+                          { name: { contains: query, mode: queryMode } },
+                          { slug: { contains: query, mode: queryMode } },
+                          {
+                            description: { contains: query, mode: queryMode },
+                          },
+                          { website: { contains: query, mode: queryMode } },
+                          {
+                            contactEmail: { contains: query, mode: queryMode },
+                          },
+                          { sourceUrl: { contains: query, mode: queryMode } },
+                        ],
+                      }
+                    : {}),
+                },
+              ],
             };
             const organizations = await prisma.organization.findMany({
               where: organizationWhere,
@@ -9294,6 +9387,7 @@ export function createMcpServer(
                 slug: true,
                 status: true,
                 type: true,
+                visibility: true,
                 website: true,
               },
             });
@@ -9324,6 +9418,9 @@ export function createMcpServer(
           case "getOrganizationTasks": {
             const prisma = await getPrisma();
             const { tasks } = await getTaskFunctions();
+            const { getOrganizationAccessWhere } = await import(
+              "./organization.server"
+            );
             const organizationId = (a.organizationId as string) ?? "";
             if (!organizationId) return err("organizationId is required");
             const resolvedScope = resolveTaskVisibilityParam({
@@ -9334,13 +9431,20 @@ export function createMcpServer(
             if (!resolvedScope.ok) return err(resolvedScope.error);
             const scope = resolvedScope.visibility;
             const organization = await prisma.organization.findFirst({
-              where: { deletedAt: null, id: organizationId },
+              where: {
+                id: organizationId,
+                ...getOrganizationAccessWhere(
+                  userId,
+                  taskClientBoundary.organizationIds,
+                ),
+              },
               select: {
                 id: true,
                 name: true,
                 slug: true,
                 type: true,
                 status: true,
+                visibility: true,
               },
             });
             if (!organization) return err("Organization not found");
@@ -10495,6 +10599,26 @@ export function createMcpServer(
             if (!parentTask.isPublic && isPublic) {
               return err("A private parent cannot contain a public task.");
             }
+            if (isPublic) {
+              const { assertOrganizationCanBePubliclyReferenced } =
+                await import("./organization.server");
+              try {
+                for (const organizationId of dedupeStrings([
+                  ...(assigneeOrganizationId ? [assigneeOrganizationId] : []),
+                  ...(ownerOrganizationId ? [ownerOrganizationId] : []),
+                ])) {
+                  await assertOrganizationCanBePubliclyReferenced(
+                    organizationId,
+                  );
+                }
+              } catch (error) {
+                return err(
+                  error instanceof Error
+                    ? error.message
+                    : "Organization cannot be referenced publicly.",
+                );
+              }
+            }
             if (
               !parentTask.isPublic &&
               (ownerOrganizationId ?? null) !==
@@ -10827,6 +10951,24 @@ export function createMcpServer(
                 );
               patch.status = orgStatus;
             }
+            if (
+              a.visibility !== undefined &&
+              typeof a.visibility !== "string"
+            ) {
+              return err("visibility must be a string");
+            }
+            if (typeof a.visibility === "string" && a.visibility !== "") {
+              const visibility =
+                ContentVisibility[
+                  a.visibility as keyof typeof ContentVisibility
+                ];
+              if (!visibility) {
+                return err(
+                  `visibility must be one of: ${Object.keys(ContentVisibility).join(", ")}`,
+                );
+              }
+              patch.visibility = visibility;
+            }
             for (const fieldName of [
               "slug",
               "website",
@@ -10877,6 +11019,7 @@ export function createMcpServer(
                       squareLogoUrl: organization.squareLogoUrl,
                       status: organization.status,
                       type: organization.type,
+                      visibility: organization.visibility,
                       website: organization.website,
                       wordmarkLogoUrl: organization.wordmarkLogoUrl,
                     },
@@ -11409,6 +11552,19 @@ export function createMcpServer(
                 `status must be one of: ${Object.keys(OrgStatus).join(", ")}`,
               );
             }
+            const visibility =
+              a.visibility == null || a.visibility === ""
+                ? ContentVisibility.PUBLIC
+                : typeof a.visibility === "string"
+                  ? ContentVisibility[
+                      a.visibility as keyof typeof ContentVisibility
+                    ]
+                  : null;
+            if (!visibility) {
+              return err(
+                `visibility must be one of: ${Object.keys(ContentVisibility).join(", ")}`,
+              );
+            }
 
             try {
               return await runAuditedEarthDataTool(
@@ -11430,6 +11586,7 @@ export function createMcpServer(
                       slug: (a.slug as string) ?? null,
                       squareLogoUrl: (a.squareLogoUrl as string) ?? null,
                       status,
+                      visibility,
                       website: (a.website as string) ?? null,
                       wordmarkLogoUrl: (a.wordmarkLogoUrl as string) ?? null,
                       type: orgType,
@@ -11450,6 +11607,7 @@ export function createMcpServer(
                       squareLogoUrl: organization.squareLogoUrl,
                       status: organization.status,
                       type: organization.type,
+                      visibility: organization.visibility,
                       website: organization.website,
                       wordmarkLogoUrl: organization.wordmarkLogoUrl,
                     },

@@ -2,19 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import {
+  assertOrganizationCanBePrivate,
   canManageOrganization,
   normalizeOrganizationHttpUrl,
   normalizeOrganizationImageUrl,
+  PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR,
 } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { ContentVisibility } from "@optimitron/db";
 
-async function requireManagerOrAdmin(userId: string, organizationId: string) {
+async function requireManager(userId: string, organizationId: string) {
   if (await canManageOrganization(userId, organizationId)) return;
-  const u = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true },
-  });
-  if (u?.isAdmin) return;
   throw new Error("Forbidden");
 }
 
@@ -28,7 +26,7 @@ export async function GET(
       McpScope.TASKS_ADMIN,
     ]);
     const { id } = await params;
-    await requireManagerOrAdmin(userId, id);
+    await requireManager(userId, id);
 
     const org = await prisma.organization.findUnique({
       where: { id },
@@ -84,7 +82,7 @@ export async function PATCH(
       McpScope.TASKS_ADMIN,
     ]);
     const { id } = await params;
-    await requireManagerOrAdmin(userId, id);
+    await requireManager(userId, id);
 
     const body = (await request.json()) as {
       name?: string;
@@ -94,6 +92,7 @@ export async function PATCH(
       squareLogoUrl?: string | null;
       wordmarkLogoUrl?: string | null;
       contactEmail?: string | null;
+      visibility?: string;
     };
     const squareLogoUrl =
       body.squareLogoUrl === undefined
@@ -136,6 +135,19 @@ export async function PATCH(
         { status: 400 },
       );
     }
+    const visibility =
+      body.visibility === undefined
+        ? undefined
+        : ContentVisibility[body.visibility as keyof typeof ContentVisibility];
+    if (body.visibility !== undefined && !visibility) {
+      return NextResponse.json(
+        { error: "Invalid organization visibility" },
+        { status: 400 },
+      );
+    }
+    if (visibility === ContentVisibility.PRIVATE) {
+      await assertOrganizationCanBePrivate(id);
+    }
 
     const updated = await prisma.organization.update({
       where: { id },
@@ -149,6 +161,7 @@ export async function PATCH(
         wordmarkLogoUrl,
         contactEmail:
           body.contactEmail === undefined ? undefined : body.contactEmail,
+        visibility,
       },
     });
 
@@ -159,6 +172,12 @@ export async function PATCH(
     }
     if (error instanceof Error && error.message === "Forbidden") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (
+      error instanceof Error &&
+      error.message === PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
     }
     console.error("Organization PATCH error:", error);
     return NextResponse.json(

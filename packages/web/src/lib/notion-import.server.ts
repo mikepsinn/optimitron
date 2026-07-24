@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { Prisma } from "@optimitron/db";
 import {
   ContentAccessLevel,
+  ContentVisibility,
   OrgStatus,
   OrganizationMemberRole,
   SourceArtifactType,
@@ -1627,6 +1628,7 @@ export async function importNotionBundle(input: {
               name: organization.name,
               sourceUrl: organization.url ?? null,
               type: organization.type,
+              visibility: ContentVisibility.PRIVATE,
               website: organization.website ?? null,
             },
           });
@@ -1653,6 +1655,7 @@ export async function importNotionBundle(input: {
             sourceUrl: organization.url ?? null,
             status: OrgStatus.PENDING,
             type: organization.type,
+            visibility: ContentVisibility.PRIVATE,
             website: organization.website ?? null,
             members: {
               create: {

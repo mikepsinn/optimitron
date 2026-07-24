@@ -8,6 +8,7 @@ import {
 } from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
 import {
+  assertOrganizationCanBePubliclyReferenced,
   canManageOrganization,
   createOrganizationWithOwner,
   ensureOrganizationTreatyActivationTask,
@@ -189,6 +190,18 @@ export async function POST(
     } else {
       return NextResponse.json(
         { error: "Provide organizationId or newOrganization" },
+        { status: 400 },
+      );
+    }
+
+    try {
+      await assertOrganizationCanBePubliclyReferenced(organizationId);
+    } catch {
+      return NextResponse.json(
+        {
+          error:
+            "Organization must be approved and public before signing a public referendum",
+        },
         { status: 400 },
       );
     }

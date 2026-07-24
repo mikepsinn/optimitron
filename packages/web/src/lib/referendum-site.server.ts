@@ -1,4 +1,5 @@
 import {
+  ContentVisibility,
   OrganizationReferendumPositionStatus,
   OrgStatus,
   type Prisma,
@@ -194,6 +195,7 @@ export function buildApprovedOrganizationPositionWhere(
     organization: {
       status: OrgStatus.APPROVED,
       deletedAt: null,
+      visibility: ContentVisibility.PUBLIC,
     },
   };
 }

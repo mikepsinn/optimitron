@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  ContentVisibility,
   OrganizationMemberRole,
   OrgStatus,
   OrgType,
@@ -11,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   organizationFindUnique: vi.fn(),
   organizationMemberFindFirst: vi.fn(),
   organizationMemberUpsert: vi.fn(),
+  taskFindFirst: vi.fn(),
   transaction: vi.fn(),
   txOrganizationCreate: vi.fn(),
   txOrganizationFindFirst: vi.fn(),
@@ -31,13 +33,20 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.organizationMemberFindFirst,
       upsert: mocks.organizationMemberUpsert,
     },
+    task: {
+      findFirst: mocks.taskFindFirst,
+    },
   },
 }));
 
 import {
+  assertOrganizationCanBePrivate,
+  assertOrganizationCanBePubliclyReferenced,
   canManageOrganization,
   canUserViewOrganization,
   createOrganizationWithOwner,
+  getOrganizationAccessWhere,
+  PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR,
   upsertTrustedOrganization,
 } from "@/lib/organization.server";
 
@@ -89,6 +98,7 @@ describe("organization.server", () => {
     mocks.organizationFindFirst.mockReset();
     mocks.organizationMemberFindFirst.mockReset();
     mocks.organizationMemberUpsert.mockReset();
+    mocks.taskFindFirst.mockReset();
   });
 
   it("creates approved orgs with an owner membership and planning root for public creation", async () => {
@@ -114,6 +124,7 @@ describe("organization.server", () => {
           creatorId: "user_1",
           name: "Test Org",
           status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
         }),
       }),
     );
@@ -380,9 +391,14 @@ describe("organization.server", () => {
 
     expect(mocks.organizationFindFirst).toHaveBeenCalledWith({
       where: {
-        id: "org_1",
+        OR: [
+          {
+            status: OrgStatus.APPROVED,
+            visibility: ContentVisibility.PUBLIC,
+          },
+        ],
         deletedAt: null,
-        OR: [{ status: OrgStatus.APPROVED }],
+        id: "org_1",
       },
       select: { id: true },
     });
@@ -405,9 +421,84 @@ describe("organization.server", () => {
         id: "org_1",
         deletedAt: null,
         OR: [
-          { status: OrgStatus.APPROVED },
-          { creatorId: "user_1" },
-          { members: { some: { userId: "user_1" } } },
+          {
+            status: OrgStatus.APPROVED,
+            visibility: ContentVisibility.PUBLIC,
+          },
+          {
+            OR: [
+              { creatorId: "user_1" },
+              { members: { some: { userId: "user_1" } } },
+            ],
+          },
+        ],
+      },
+      select: { id: true },
+    });
+  });
+
+  it("limits private organization reads to the OAuth organization allowlist", () => {
+    expect(
+      getOrganizationAccessWhere("user_1", ["org_1", "org_1", " "]),
+    ).toEqual({
+      deletedAt: null,
+      OR: [
+        {
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
+        {
+          id: { in: ["org_1"] },
+          OR: [
+            { creatorId: "user_1" },
+            { members: { some: { userId: "user_1" } } },
+          ],
+        },
+      ],
+    });
+    expect(getOrganizationAccessWhere("user_1", [])).toEqual({
+      deletedAt: null,
+      OR: [
+        {
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
+      ],
+    });
+  });
+
+  it("rejects private organizations at public-reference boundaries", async () => {
+    mocks.organizationFindFirst.mockResolvedValue(null);
+
+    await expect(
+      assertOrganizationCanBePubliclyReferenced("org_private"),
+    ).rejects.toThrow(
+      "Public tasks cannot reference a private or unpublished organization.",
+    );
+    expect(mocks.organizationFindFirst).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        id: "org_private",
+        status: OrgStatus.APPROVED,
+        visibility: ContentVisibility.PUBLIC,
+      },
+      select: { id: true },
+    });
+  });
+
+  it("prevents hiding an organization while a public task identifies it", async () => {
+    mocks.taskFindFirst.mockResolvedValue({ id: "task_public" });
+
+    await expect(assertOrganizationCanBePrivate("org_1")).rejects.toThrow(
+      PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR,
+    );
+    expect(mocks.taskFindFirst).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        isPublic: true,
+        OR: [
+          { assigneeOrganizationId: "org_1" },
+          { ownerOrganizationId: "org_1" },
         ],
       },
       select: { id: true },

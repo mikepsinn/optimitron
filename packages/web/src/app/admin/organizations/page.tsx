@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { OrgStatus } from "@optimitron/db";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { AdminOrgRow } from "./AdminOrgRow";
@@ -29,7 +29,11 @@ export default async function AdminOrganizationsPage({
       : OrgStatus.PENDING;
 
   const orgs = await prisma.organization.findMany({
-    where: { status: statusFilter, deletedAt: null },
+    where: {
+      status: statusFilter,
+      deletedAt: null,
+      visibility: ContentVisibility.PUBLIC,
+    },
     orderBy: { createdAt: "desc" },
     take: 200,
   });

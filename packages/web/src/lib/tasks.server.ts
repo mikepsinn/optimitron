@@ -12,7 +12,10 @@ import {
   VotePosition,
   type Prisma,
 } from "@optimitron/db";
-import { upsertTrustedOrganization } from "@/lib/organization.server";
+import {
+  assertOrganizationCanBePubliclyReferenced,
+  upsertTrustedOrganization,
+} from "@/lib/organization.server";
 import { findOrCreatePerson } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { createLogger } from "@/lib/logger";
@@ -1967,6 +1970,9 @@ export async function createTask(
   if (input.status === TaskStatus.VERIFIED) {
     throw new Error("Task verification must use the verification flow.");
   }
+  if (isPublic && assigneeOrganizationId) {
+    await assertOrganizationCanBePubliclyReferenced(assigneeOrganizationId);
+  }
 
   // Parent resolution (OPT-TASK-06): an explicit parent wins. A private
   // parentless task lands in the owner's private planning branch — the org's
@@ -2549,7 +2555,7 @@ export async function reassignTask(
         ...(reviewer.isAdmin ? [{ isPublic: true }] : []),
       ],
     },
-    select: { id: true },
+    select: { id: true, isPublic: true },
   });
   if (!task) throw new Error("Task not found");
 
@@ -2563,6 +2569,10 @@ export async function reassignTask(
           type: input.organizationType ?? undefined,
         })
       : null;
+
+  if (task.isPublic && assigneeOrganization) {
+    await assertOrganizationCanBePubliclyReferenced(assigneeOrganization.id);
+  }
 
   const shouldResolvePerson =
     Boolean(input.personId?.trim()) ||

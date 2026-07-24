@@ -2638,6 +2638,7 @@ export const OrganizationSchema = z.object({
   description: z.string().nullable().optional(),
   type: OrgTypeSchema,
   status: OrgStatusSchema.default("PENDING"),
+  visibility: ContentVisibilitySchema.default("PUBLIC"),
   jurisdictionId: z.string().nullable().optional(),
   creatorId: z.string().nullable().optional(),
   website: z.string().nullable().optional(),
