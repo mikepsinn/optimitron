@@ -6,7 +6,7 @@ import {
   normalizeOrganizationHttpUrl,
 } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
-import { OrgStatus, OrgType } from "@optimitron/db";
+import { ContentVisibility, OrgStatus, OrgType } from "@optimitron/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
       where: {
         name: { contains: q, mode: "insensitive" },
         status: OrgStatus.APPROVED,
+        visibility: ContentVisibility.PUBLIC,
         deletedAt: null,
       },
       select: {
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
       website?: string;
       description?: string;
       jurisdictionId?: string;
+      visibility?: string;
     };
     const name = body.name?.trim();
     const website = normalizeOrganizationHttpUrl(body.website);
@@ -72,15 +74,30 @@ export async function POST(req: NextRequest) {
     }
 
     const type =
-      body.type && body.type in OrgType
+      body.type && Object.values(OrgType).includes(body.type as OrgType)
         ? (body.type as OrgType)
         : OrgType.NONPROFIT;
+    if (
+      body.visibility !== undefined &&
+      !Object.values(ContentVisibility).includes(
+        body.visibility as ContentVisibility,
+      )
+    ) {
+      return NextResponse.json(
+        { error: "Invalid organization visibility" },
+        { status: 400 },
+      );
+    }
+    const visibility = body.visibility
+      ? (body.visibility as ContentVisibility)
+      : ContentVisibility.PUBLIC;
 
     const organization = await createOrganizationWithOwner(
       {
         name,
         type,
         status: OrgStatus.APPROVED,
+        visibility,
         website,
         description: body.description ?? null,
         contactEmail: userEmail ?? null,

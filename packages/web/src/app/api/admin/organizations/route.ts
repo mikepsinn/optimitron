@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { OrgStatus } from "@optimitron/db";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "50");
     const offset = parseInt(searchParams.get("offset") || "0");
 
-    const where: Record<string, unknown> = { deletedAt: null };
+    const where: Record<string, unknown> = {
+      deletedAt: null,
+      visibility: ContentVisibility.PUBLIC,
+    };
 
     if (status) {
       where.status = status;

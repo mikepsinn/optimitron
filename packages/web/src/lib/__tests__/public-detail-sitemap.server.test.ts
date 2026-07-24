@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { OrgStatus } from "@optimitron/db";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 import { getSiteConfig } from "@/lib/site";
 
 const mocks = vi.hoisted(() => ({
@@ -46,7 +46,11 @@ describe("getPublicDetailSitemapEntries", () => {
 
     expect(mocks.organizationFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { deletedAt: null, status: OrgStatus.APPROVED },
+        where: {
+          deletedAt: null,
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
         select: { slug: true, updatedAt: true },
         take: 500,
       }),

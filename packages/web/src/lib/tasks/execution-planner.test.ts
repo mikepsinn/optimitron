@@ -185,6 +185,20 @@ describe("buildExecutionPlan", () => {
     expect(result.nextAction?.id).toBe("file-taxes");
   });
 
+  it("does not let an indefinitely overdue required task override current value", () => {
+    const result = plan([
+      task("old-required", {
+        deadlineOverrideEligible: false,
+        deadlinePolicy: "REQUIRED",
+        deadlineStatus: "missed",
+        priority: 1,
+      }),
+      task("current-high-value", { priority: 1_000_000 }),
+    ]);
+
+    expect(result.nextAction?.id).toBe("current-high-value");
+  });
+
   it("schedules required health guardrails even while their EV needs review", () => {
     const result = plan([
       task("take-medication", {

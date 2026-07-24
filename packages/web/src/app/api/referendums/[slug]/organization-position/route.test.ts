@@ -8,6 +8,7 @@ import {
 } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
+  assertOrganizationCanBePubliclyReferenced: vi.fn(),
   canManageOrganization: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
   ensureOrganizationTreatyActivationTask: vi.fn(),
@@ -28,6 +29,8 @@ vi.mock("@/lib/organization.server", async () => {
   >("@/lib/organization.server");
   return {
     ...actual,
+    assertOrganizationCanBePubliclyReferenced:
+      mocks.assertOrganizationCanBePubliclyReferenced,
     canManageOrganization: mocks.canManageOrganization,
     createOrganizationWithOwner: mocks.createOrganizationWithOwner,
     ensureOrganizationTreatyActivationTask:
@@ -80,6 +83,9 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.referendumFindUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.assertOrganizationCanBePubliclyReferenced.mockResolvedValue(
+      undefined,
+    );
     mocks.canManageOrganization.mockResolvedValue(true);
     mocks.organizationFindFirst.mockResolvedValue(null);
     mocks.createOrganizationWithOwner.mockResolvedValue({
@@ -445,6 +451,28 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
       taskId: null,
       success: true,
     });
+    expect(mocks.ensureOrganizationTreatyActivationTask).not.toHaveBeenCalled();
+  });
+
+  it("rejects a public referendum signature from a private organization", async () => {
+    mocks.assertOrganizationCanBePubliclyReferenced.mockRejectedValue(
+      new Error("Organization is private"),
+    );
+
+    const res = await POST(
+      makeRequest({ position: "YES", organizationId: "org_private" }),
+      makeParams(),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      error:
+        "Organization must be approved and public before signing a public referendum",
+    });
+    expect(
+      mocks.assertOrganizationCanBePubliclyReferenced,
+    ).toHaveBeenCalledWith("org_private");
+    expect(mocks.positionUpsert).not.toHaveBeenCalled();
     expect(mocks.ensureOrganizationTreatyActivationTask).not.toHaveBeenCalled();
   });
 

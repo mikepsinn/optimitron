@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   referendumVoteUpsert: vi.fn(),
   organizationPositionFindUnique: vi.fn(),
   organizationPositionUpsert: vi.fn(),
+  organizationFindMany: vi.fn(),
+  getOrganizationAccessWhere: vi.fn(),
   canManageOrganization: vi.fn(),
   createOrganizationWithOwner: vi.fn(),
   findOrCreateOrganization: vi.fn(),
@@ -27,6 +29,7 @@ vi.mock("../organization.server", () => ({
   canManageOrganization: mocks.canManageOrganization,
   createOrganizationWithOwner: mocks.createOrganizationWithOwner,
   findOrCreateOrganization: mocks.findOrCreateOrganization,
+  getOrganizationAccessWhere: mocks.getOrganizationAccessWhere,
 }));
 
 vi.mock("../person.server", () => ({
@@ -37,6 +40,9 @@ vi.mock("../person.server", () => ({
 
 vi.mock("../prisma", () => ({
   prisma: {
+    organization: {
+      findMany: mocks.organizationFindMany,
+    },
     organizationReferendumPosition: {
       findUnique: mocks.organizationPositionFindUnique,
       upsert: mocks.organizationPositionUpsert,
@@ -61,6 +67,7 @@ import {
   castReferendumVote,
   getPerson,
   recordRepresentedReferendumVote,
+  searchOrganizations,
   signReferendumAsOrganization,
   upsertOrganizationInputSchema,
   upsertMemorialPersonInputSchema,
@@ -93,6 +100,38 @@ describe("earth-data server", () => {
     mocks.canManageOrganization.mockResolvedValue(true);
     mocks.ensurePersonForUser.mockResolvedValue({ id: "person-self" });
     mocks.personFindFirst.mockResolvedValue(null);
+    mocks.getOrganizationAccessWhere.mockReturnValue({
+      OR: [{ visibility: "PUBLIC" }],
+    });
+  });
+
+  it("keeps organization access restrictions when applying a search query", async () => {
+    await searchOrganizations({
+      allowedOrganizationIds: ["organization-1"],
+      query: "clinic",
+      userId: "user-1",
+    });
+
+    expect(mocks.getOrganizationAccessWhere).toHaveBeenCalledWith("user-1", [
+      "organization-1",
+    ]);
+    expect(mocks.organizationFindMany).toHaveBeenCalledWith({
+      where: {
+        AND: [
+          { OR: [{ visibility: "PUBLIC" }] },
+          {
+            OR: [
+              { name: { contains: "clinic", mode: "insensitive" } },
+              { slug: { contains: "clinic", mode: "insensitive" } },
+              { sourceRef: { contains: "clinic", mode: "insensitive" } },
+              { website: { contains: "clinic", mode: "insensitive" } },
+            ],
+          },
+        ],
+      },
+      orderBy: { name: "asc" },
+      take: 20,
+    });
   });
 
   it("refuses to overwrite a self vote when recording a represented vote", async () => {

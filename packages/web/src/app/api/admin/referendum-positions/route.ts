@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OrganizationReferendumPositionStatus } from "@optimitron/db";
+import {
+  ContentVisibility,
+  OrganizationReferendumPositionStatus,
+} from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 
@@ -28,7 +31,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "50", 10);
     const offset = parseInt(searchParams.get("offset") || "0", 10);
 
-    const where: Record<string, unknown> = { deletedAt: null };
+    const where: Record<string, unknown> = {
+      deletedAt: null,
+      organization: { visibility: ContentVisibility.PUBLIC },
+    };
     if (status) where.status = status;
     if (organizationId) where.organizationId = organizationId;
     if (referendumSlug) {

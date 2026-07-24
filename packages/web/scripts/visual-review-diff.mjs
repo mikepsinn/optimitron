@@ -40,3 +40,37 @@ export function isSignificantDimensionChange(
   const tolerance = Math.max(tolerancePx, maxHeight * toleranceRatio);
   return heightDelta > tolerance;
 }
+
+const GENERATED_CUID = /(?<![a-z0-9])c[a-z0-9]{24}(?![a-z0-9])/gi;
+const ENCODED_GENERATED_CUID = /(%2f)c[a-z0-9]{24}(?![a-z0-9])/gi;
+const CALENDAR_DATE = new RegExp(
+  String.raw`\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+` +
+    String.raw`(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+` +
+    String.raw`\d{1,2}(?:,\s+\d{4})?\b`,
+  "g",
+);
+
+/**
+ * Remove values that identify a seeded row or the instant a review ran.
+ * The copy report should flag language changes, not recreated preview records.
+ *
+ * @param {string} markdown
+ * @param {string} repoRelativePath
+ * @returns {string}
+ */
+export function normalizeVisualReviewMarkdown(markdown, repoRelativePath) {
+  let normalized = markdown
+    .replace(ENCODED_GENERATED_CUID, "$1generated-id")
+    .replace(GENERATED_CUID, "generated-id")
+    .replace(/(\bawaiting input)\s+_(?=\s|$)/gi, "$1");
+
+  if (repoRelativePath.replaceAll("\\", "/").endsWith("/calendar/page.logged-in.md")) {
+    normalized = normalized
+      .replace(CALENDAR_DATE, "[calendar date]")
+      .replace(/([?&]date=)\d{4}-\d{2}-\d{2}\b/g, "$1calendar-date")
+      .replace(/\[\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\s+/g, "[SCHEDULED TIME ")
+      .replace(/\[\d{1,2}:\d{2}\s+(?:AM|PM)\s+/gi, "[SCHEDULED TIME ");
+  }
+
+  return normalized;
+}

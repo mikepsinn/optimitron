@@ -12,7 +12,10 @@ import { OrganizationProfileEditor } from "@/components/organizations/Organizati
 import { OrganizationSurveyFrame } from "@/components/organizations/OrganizationSurveyFrame";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { GLOBAL_SURVEY_NAME } from "@/lib/messaging";
-import { canManageOrganization } from "@/lib/organization.server";
+import {
+  canManageOrganization,
+  getOrganizationAccessWhere,
+} from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
 import {
   PRAGMATIC_CLINICAL_TRIALS_MANUAL_URL,
@@ -27,6 +30,7 @@ import {
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 
 export const dynamic = "force-dynamic";
 
@@ -43,8 +47,10 @@ export default async function OrganizationPage({
 
   const org = await prisma.organization.findFirst({
     where: {
-      deletedAt: null,
-      OR: [{ id }, { slug: id }],
+      AND: [
+        getOrganizationAccessWhere(user?.id),
+        { OR: [{ id }, { slug: id }] },
+      ],
     },
     include: {
       members: {
@@ -60,6 +66,10 @@ export default async function OrganizationPage({
 
   const canManage = user ? await canManageOrganization(user.id, org.id) : false;
   const isManager = Boolean(user && (canManage || user.isAdmin));
+  const hasPublicSurvey =
+    org.status === OrgStatus.APPROVED &&
+    org.visibility === ContentVisibility.PUBLIC;
+  const isPublicOrganization = org.visibility === ContentVisibility.PUBLIC;
   const joinedFlag = resolvedSearchParams.joined === "1";
   const referralIdentifier = user
     ? getHandleOrReferralCode({
@@ -191,15 +201,16 @@ ${organizationSurveyUrl}`;
         ) : null}
       </header>
 
-      {joinedFlag && (
+      {joinedFlag && hasPublicSurvey && (
         <p className="mb-6 border-y border-foreground py-3 text-sm font-bold uppercase tracking-wider text-foreground">
-          You&apos;re in. Copy your survey link below and send it to your people.
+          You&apos;re in. Copy your survey link below and send it to your
+          people.
         </p>
       )}
 
       <div className="space-y-10">
-        {org.status === "APPROVED" ? (
-          <>
+        {isPublicOrganization ? (
+          hasPublicSurvey ? (
             <section>
               <h2 className="mb-3 text-lg font-black uppercase text-foreground">
                 Share this organization&apos;s survey
@@ -249,22 +260,22 @@ ${organizationSurveyUrl}`;
                 </details>
               </div>
             </section>
-          </>
-        ) : (
-          <section className="border border-foreground bg-background p-5">
-            <h2 className="mb-3 text-lg font-black uppercase text-foreground">
-              Public survey not active yet
-            </h2>
-            <p className="text-sm font-bold leading-7 text-muted-foreground">
-              This organization exists, but its public survey link and embed are
-              available after campaign approval.
-            </p>
-          </section>
-        )}
+          ) : (
+            <section className="border border-foreground bg-background p-5">
+              <h2 className="mb-3 text-lg font-black uppercase text-foreground">
+                Public survey not active yet
+              </h2>
+              <p className="text-sm font-bold leading-7 text-muted-foreground">
+                This organization exists, but its public survey link and embed
+                are available after campaign approval.
+              </p>
+            </section>
+          )
+        ) : null}
 
         {isManager ? (
           <>
-            {org.status === "APPROVED" && memberSurveyUrl ? (
+            {hasPublicSurvey && memberSurveyUrl ? (
               <section>
                 <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Manager referral link
@@ -281,7 +292,7 @@ ${organizationSurveyUrl}`;
               </section>
             ) : null}
 
-            {org.status === "APPROVED" ? (
+            {org.status === OrgStatus.APPROVED ? (
               <OrganizationGrantCalculator organizationName={org.name} />
             ) : null}
 

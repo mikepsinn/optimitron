@@ -1,4 +1,5 @@
 import {
+  ContentVisibility,
   TaskCommunicationChannel,
   type EmailLogStatus,
   type TaskCommunicationStatus,
@@ -455,6 +456,7 @@ export async function listAdminCommunicationDirectory(
     prisma.organization.findMany({
       where: {
         deletedAt: null,
+        visibility: ContentVisibility.PUBLIC,
         ...(q
           ? {
               OR: [

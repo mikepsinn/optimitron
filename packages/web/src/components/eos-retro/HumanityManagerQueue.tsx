@@ -61,7 +61,14 @@ export function HumanityManagerQueue() {
         <div className="er-terminal-row">
           <span className="er-terminal-pri">&gt;</span>
           <span className="er-terminal-task" style={{ gridColumn: "2 / -1" }}>
-            awaiting input<span className="er-blink">_</span>
+            {"awaiting input"}
+            <span
+              aria-hidden="true"
+              className="er-blink"
+              data-copy-preview-ignore="true"
+            >
+              _
+            </span>
           </span>
         </div>
       </div>
