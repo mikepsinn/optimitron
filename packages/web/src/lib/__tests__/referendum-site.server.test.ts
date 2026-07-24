@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  ContentVisibility,
   OrganizationReferendumPositionStatus,
   OrgStatus,
   VotePosition,
@@ -79,6 +80,7 @@ describe("referendum-site.server", () => {
       organization: {
         status: OrgStatus.APPROVED,
         deletedAt: null,
+        visibility: ContentVisibility.PUBLIC,
       },
     });
   });
