@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { ContentVisibility, Prisma } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   activityCreate: vi.fn(),
@@ -56,6 +57,7 @@ describe("PATCH /api/admin/organizations/[id]", () => {
     mocks.organizationFindUnique.mockResolvedValue({
       id: "org_1",
       name: "Test Org",
+      visibility: ContentVisibility.PUBLIC,
     });
     mocks.organizationUpdate.mockResolvedValue({ id: "org_1" });
     mocks.activityCreate.mockResolvedValue({ id: "activity_1" });
@@ -92,7 +94,7 @@ describe("PATCH /api/admin/organizations/[id]", () => {
 
     expect(response.status).toBe(200);
     expect(mocks.organizationUpdate).toHaveBeenCalledWith({
-      where: { id: "org_1" },
+      where: { id: "org_1", visibility: ContentVisibility.PUBLIC },
       data: expect.objectContaining({
         donationUrl: "https://example.org/donate",
         squareLogoUrl: "https://static.warondisease.org/logo.webp",
@@ -100,5 +102,22 @@ describe("PATCH /api/admin/organizations/[id]", () => {
         wordmarkLogoUrl: "https://static.warondisease.org/wordmark.webp",
       }),
     });
+  });
+
+  it("does not mutate an organization that becomes private after lookup", async () => {
+    mocks.organizationUpdate.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError("Record not found", {
+        code: "P2025",
+        clientVersion: "test",
+      }),
+    );
+
+    const response = await PATCH(makeRequest({ name: "Updated" }), params());
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({
+      error: "Organization not found",
+    });
+    expect(mocks.activityCreate).not.toHaveBeenCalled();
   });
 });

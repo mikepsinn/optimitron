@@ -20,6 +20,7 @@ import {
   type PlanningBlocker,
   type PlanningCommitment,
 } from "./execution-planner";
+import { getSupersededDatedTaskIds } from "./dated-task-series";
 import {
   auditExecutionGraph,
   getRootedTaskIds,
@@ -41,6 +42,7 @@ export const DEFAULT_PERSONAL_BUYBACK_RATE = 1000;
 
 const AI_EXECUTOR_TYPE = "AI Agent";
 const MS_PER_HOUR = 60 * 60 * 1000;
+export const REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS = 24;
 
 type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
 type DeadlineStatus =
@@ -176,6 +178,7 @@ export type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   cashCost: number;
   deadlinePolicy: DeadlinePolicy;
   deadlineRationale: string | null;
+  deadlineOverrideEligible: boolean;
   deadlineStatus: DeadlineStatus;
   executionEligible: boolean;
   effortEstimateSource: EffortEstimateSource;
@@ -872,10 +875,30 @@ function computeDeadlineSummary(
 function isRequiredPersonalGuardrail(task: PersonalQueueRow) {
   return (
     task.deadlinePolicy === "REQUIRED" &&
-    (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") &&
+    task.deadlineOverrideEligible &&
     task.hours != null &&
     task.hours > 0
   );
+}
+
+function isRequiredDeadlineOverrideEligible(
+  deadline: ReturnType<typeof computeDeadlineSummary>,
+) {
+  return (
+    deadline.deadlinePolicy === "REQUIRED" &&
+    (deadline.deadlineStatus === "start_now" ||
+      (deadline.deadlineStatus === "missed" &&
+        deadline.timeUntilDueHours != null &&
+        deadline.timeUntilDueHours >= -REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS))
+  );
+}
+
+function filterCurrentPersonalTasks(
+  tasks: PersonalQueueTaskRecord[],
+  now: Date,
+) {
+  const supersededTaskIds = getSupersededDatedTaskIds(tasks, now);
+  return tasks.filter((task) => !supersededTaskIds.has(task.id));
 }
 
 export function buildPersonalQueueRows(
@@ -897,18 +920,22 @@ export function buildPersonalQueueRows(
     rootedTaskIds?: ReadonlySet<string>;
   },
 ) {
+  const now = options?.now ?? new Date();
+  const currentTasks = filterCurrentPersonalTasks(
+    tasks as PersonalQueueTaskRecord[],
+    now,
+  );
   const limit = parseQueueLimit(
     options?.limit,
     50,
-    Math.min(5000, tasks.length),
+    Math.min(5000, currentTasks.length),
   );
   const parsedBuybackRate = parsePositiveNumber(
     buybackRate,
     DEFAULT_PERSONAL_BUYBACK_RATE,
   );
-  const now = options?.now ?? new Date();
   const filtered = options?.requireUnblocked
-    ? tasks.filter((task) => {
+    ? currentTasks.filter((task) => {
         const sourceTask = task as PersonalQueueTaskRecord;
         if (!isTaskTimeAvailable(sourceTask, now)) return false;
         if (
@@ -925,7 +952,7 @@ export function buildPersonalQueueRows(
           deadline.deadlineStatus === "expired"
         );
       })
-    : tasks;
+    : currentTasks;
 
   const ranked = filtered
     .map((task) => {
@@ -992,6 +1019,7 @@ export function buildPersonalQueueRows(
         cashCost,
         deadlinePolicy: deadline.deadlinePolicy,
         deadlineRationale: deadline.deadlineRationale,
+        deadlineOverrideEligible: isRequiredDeadlineOverrideEligible(deadline),
         deadlineStatus: deadline.deadlineStatus,
         dueAt: deadline.dueAt,
         evMath: score.evMath,
@@ -1047,6 +1075,7 @@ function toExecutionPlanningTask(row: PersonalQueueRow): ExecutionPlanningTask {
     completionMilestone: isCompletionMilestone(
       row as unknown as PersonalQueueTaskRecord,
     ),
+    deadlineOverrideEligible: row.deadlineOverrideEligible,
     deadlinePolicy: row.deadlinePolicy,
     deadlineStatus: row.deadlineStatus,
     dueAt: row.dueAt ?? null,
@@ -1189,7 +1218,9 @@ async function resolveAuthorizedPlanningTarget(input: {
     input.clientAccessBoundary.organizationIds !== null &&
     !input.clientAccessBoundary.organizationIds.includes(targetId)
   ) {
-    throw new Error("Forbidden: this client has no access to that organization.");
+    throw new Error(
+      "Forbidden: this client has no access to that organization.",
+    );
   }
   const { canManageOrganization } = await import("../organization.server");
   if (!(await canManageOrganization(input.userId, targetId))) {
@@ -1237,13 +1268,17 @@ export async function getAuthorizedExecutionPlan(
           userId: input.userId,
           visibility: "accessible",
         }))) as PersonalQueueTaskRecord[];
-  const planningTasksWithStaleness =
-    await attachTransitiveEstimateStaleness(targetTasks);
   const planningWindowStart =
     parseTaskDate(input.planningWindowStart) ?? new Date();
   const planningWindowEnd =
     parseTaskDate(input.planningWindowEnd) ??
     new Date(planningWindowStart.getTime() + 24 * MS_PER_HOUR);
+  const currentTargetTasks = filterCurrentPersonalTasks(
+    targetTasks,
+    planningWindowStart,
+  );
+  const planningTasksWithStaleness =
+    await attachTransitiveEstimateStaleness(currentTargetTasks);
   const graph = await loadExecutionGraphContext(
     planningTasksWithStaleness,
     input.clientAccessBoundary,
@@ -1258,7 +1293,7 @@ export async function getAuthorizedExecutionPlan(
   );
   const rows = buildPersonalQueueRows(planningTasks, ranking, buybackRate, {
     executorProfiles,
-    limit: targetTasks.length,
+    limit: currentTargetTasks.length,
     now: planningWindowStart,
     rootedTaskIds: graph.rootedTaskIds,
   });
@@ -1314,8 +1349,12 @@ export async function loadPersonalQueue(request: PersonalQueueRequest) {
     userId: request.userId,
     visibility: "personal",
   })) as PersonalQueueTaskRecord[];
-  const graph = await loadExecutionGraphContext(
+  const currentPersonalTasks = filterCurrentPersonalTasks(
     personalTasks,
+    new Date(),
+  );
+  const graph = await loadExecutionGraphContext(
+    currentPersonalTasks,
     request.clientAccessBoundary,
   );
   const executorProfiles = await loadHumanPlanningProfiles({
@@ -1323,7 +1362,9 @@ export async function loadPersonalQueue(request: PersonalQueueRequest) {
     personId,
     userId: request.userId,
   });
-  const selfTasks = personalTasks.filter((task) => isSelfExecutableTask(task));
+  const selfTasks = currentPersonalTasks.filter((task) =>
+    isSelfExecutableTask(task),
+  );
   const planningTasks = await attachPlanningEffortEvidence(
     selfTasks,
     executorProfiles,
@@ -1377,8 +1418,12 @@ export async function loadPersonalQueueAudit(request: {
     userId: request.userId,
     visibility: "personal",
   })) as PersonalQueueTaskRecord[];
-  const graph = await loadExecutionGraphContext(
+  const currentPersonalTasks = filterCurrentPersonalTasks(
     personalTasks,
+    new Date(),
+  );
+  const graph = await loadExecutionGraphContext(
+    currentPersonalTasks,
     request.clientAccessBoundary,
   );
   const executorProfiles = [
@@ -1390,10 +1435,10 @@ export async function loadPersonalQueueAudit(request: {
     ...(await loadAgentPlanningProfiles()),
   ];
   const planningTasks = await attachPlanningEffortEvidence(
-    personalTasks,
+    currentPersonalTasks,
     executorProfiles,
   );
-  const activeCreatedTasks = personalTasks.filter(
+  const activeCreatedTasks = currentPersonalTasks.filter(
     (task) => task.createdByUserId === request.userId,
   ).length;
   const rankedRows = buildPersonalQueueRows(
@@ -1402,7 +1447,7 @@ export async function loadPersonalQueueAudit(request: {
     buybackRate,
     {
       executorProfiles,
-      limit: personalTasks.length,
+      limit: currentPersonalTasks.length,
       rootedTaskIds: graph.rootedTaskIds,
     },
   );
@@ -1412,7 +1457,7 @@ export async function loadPersonalQueueAudit(request: {
     buybackRate,
     {
       executorProfiles,
-      limit: personalTasks.length,
+      limit: currentPersonalTasks.length,
       requireExecutable: true,
       requireUnblocked: true,
       rootedTaskIds: graph.rootedTaskIds,
@@ -1423,7 +1468,7 @@ export async function loadPersonalQueueAudit(request: {
   const rowById = new Map(rankedRows.map((row) => [row.id, row]));
   const issues: PersonalQueueAuditIssue[] = [];
 
-  const taskIds = personalTasks.map((task) => task.id);
+  const taskIds = currentPersonalTasks.map((task) => task.id);
   const dependencyEdges = await prisma.taskEdge.findMany({
     where: {
       OR: [{ toTaskId: { in: taskIds } }, { fromTaskId: { in: taskIds } }],
@@ -1466,8 +1511,7 @@ export async function loadPersonalQueueAudit(request: {
         ...task,
         hasMarginalEstimate: task.hasMarginalEstimate,
         estimateInputsStale: row?.estimateInputsStale ?? false,
-        estimatePublicationEligible:
-          row?.estimatePublicationEligible ?? false,
+        estimatePublicationEligible: row?.estimatePublicationEligible ?? false,
         priority: row?.priority ?? null,
         queueEligible: queueEligibleIds.has(task.id),
       } satisfies ExecutionGraphTask;
@@ -1475,7 +1519,7 @@ export async function loadPersonalQueueAudit(request: {
   }).filter((finding) => !finding.taskId || taskIds.includes(finding.taskId));
   issues.push(...graphFindings);
 
-  for (const task of personalTasks) {
+  for (const task of currentPersonalTasks) {
     const row = rowById.get(task.id);
     if (!row) continue;
     const needsExecutionEstimate = isAtomicExecutionRecord(task);
@@ -1538,9 +1582,13 @@ export async function loadPersonalQueueAudit(request: {
       }
       if (row.deadlineStatus === "missed") {
         issues.push({
-          code: "REQUIRED_DEADLINE_MISSED",
-          message: `Task ${task.id} is past its required deadline.`,
-          severity: "high",
+          code: row.deadlineOverrideEligible
+            ? "REQUIRED_DEADLINE_MISSED"
+            : "REQUIRED_DEADLINE_OVERDUE",
+          message: row.deadlineOverrideEligible
+            ? `Task ${task.id} is past its required deadline and inside the ${REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS}-hour remediation window.`
+            : `Task ${task.id} is past its required deadline; it remains ranked by expected value but no longer overrides the queue.`,
+          severity: row.deadlineOverrideEligible ? "high" : "medium",
           taskId: task.id,
         });
       }
@@ -1578,7 +1626,7 @@ export async function loadPersonalQueueAudit(request: {
   return {
     summary: {
       activeCreatedTasks,
-      activePersonalTasks: personalTasks.length,
+      activePersonalTasks: currentPersonalTasks.length,
       unblockedTasks: unblockedCount,
       issueCount: issues.length,
     },

@@ -31,6 +31,7 @@ import {
   canManageOrganization,
   createOrganizationWithOwner,
   findOrCreateOrganization,
+  getOrganizationAccessWhere,
 } from "./organization.server";
 import {
   ensurePersonForUser,
@@ -1716,23 +1717,32 @@ export async function getPerson(input: {
 }
 
 export async function searchOrganizations(input: {
+  allowedOrganizationIds?: readonly string[] | null;
   limit?: number;
   query?: string | null;
+  userId?: string | null;
 }) {
   const query = input.query?.trim();
   return prisma.organization.findMany({
     where: {
-      deletedAt: null,
-      ...(query
-        ? {
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { slug: { contains: query, mode: "insensitive" } },
-              { sourceRef: { contains: query, mode: "insensitive" } },
-              { website: { contains: query, mode: "insensitive" } },
-            ],
-          }
-        : {}),
+      AND: [
+        getOrganizationAccessWhere(
+          input.userId,
+          input.allowedOrganizationIds ?? null,
+        ),
+        ...(query
+          ? [
+              {
+                OR: [
+                  { name: { contains: query, mode: "insensitive" as const } },
+                  { slug: { contains: query, mode: "insensitive" as const } },
+                  { sourceRef: { contains: query, mode: "insensitive" as const } },
+                  { website: { contains: query, mode: "insensitive" as const } },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     orderBy: { name: "asc" },
     take: Math.min(Math.max(input.limit ?? 20, 1), 100),

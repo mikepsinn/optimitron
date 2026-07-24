@@ -9,12 +9,17 @@ import type { McpScope } from "@/lib/mcp-scopes";
 function redactAuthorizationHeader(authHeader: string | null) {
   if (!authHeader) return null;
   const schemeEnd = authHeader.indexOf(" ");
-  const scheme = schemeEnd >= 0 ? authHeader.slice(0, schemeEnd + 1) : "Bearer ";
+  const scheme =
+    schemeEnd >= 0 ? authHeader.slice(0, schemeEnd + 1) : "Bearer ";
   return `${scheme}[redacted:length=${authHeader.length}]`;
 }
 
 async function logMcpRequest(req: Request) {
-  if (process.env.NODE_ENV === "production" || process.env.MCP_DEBUG_REQUESTS !== "1") return;
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.MCP_DEBUG_REQUESTS !== "1"
+  )
+    return;
 
   const authHeader = req.headers.get("authorization");
   const entry = {
@@ -45,9 +50,11 @@ async function logMcpRequest(req: Request) {
 
   const line = `${JSON.stringify(entry)}\n`;
   console.log(`[mcp-debug] ${line.trim()}`);
-  await appendFile(join(process.cwd(), ".next", "mcp-debug.log"), line, "utf8").catch(
-    () => {},
-  );
+  await appendFile(
+    join(process.cwd(), ".next", "mcp-debug.log"),
+    line,
+    "utf8",
+  ).catch(() => {});
 }
 
 function getResourceMetadataUrl(req: Request): string {
@@ -64,14 +71,21 @@ function getResourceMetadataUrl(req: Request): string {
 // points the client at the protected-resource metadata document. That header
 // is what makes Claude.ai (and any spec-compliant MCP client) auto-discover
 // the OAuth endpoints and run the authorization-code + PKCE flow.
-function unauthorized(req: Request, error: "missing_token" | "invalid_token"): Response {
+function unauthorized(
+  req: Request,
+  error: "missing_token" | "invalid_token",
+): Response {
   const resourceMetadata = getResourceMetadataUrl(req);
   const description =
     error === "missing_token"
       ? "Authorization required. Complete the OAuth flow advertised at the resource_metadata URL."
       : "The provided access token is invalid or expired. Re-run the OAuth flow.";
   return new Response(
-    JSON.stringify({ error, error_description: description, resource_metadata: resourceMetadata }),
+    JSON.stringify({
+      error,
+      error_description: description,
+      resource_metadata: resourceMetadata,
+    }),
     {
       status: 401,
       headers: {
@@ -91,7 +105,11 @@ function unauthorized(req: Request, error: "missing_token" | "invalid_token"): R
 /// dev or test runs.
 function captureMcpError(
   error: unknown,
-  ctx: { surface: string; userId?: string | null; details?: Record<string, unknown> },
+  ctx: {
+    surface: string;
+    userId?: string | null;
+    details?: Record<string, unknown>;
+  },
 ) {
   void import("@sentry/nextjs")
     .then((Sentry) => {
@@ -174,6 +192,7 @@ async function handleMcpRequest(req: Request): Promise<Response> {
     const transport = new WebStandardStreamableHTTPServerTransport();
     const server = createMcpServer(userId, scopes, {
       clientId,
+      exposeToolErrorsAsResults: true,
       isAdmin: user.isAdmin === true,
       oauthGrantId: oauthGrant.id,
       organizationIds,
@@ -226,7 +245,8 @@ export async function OPTIONS() {
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
       "Access-Control-Allow-Headers":
         "Content-Type, Authorization, mcp-session-id, Last-Event-ID, mcp-protocol-version",
-      "Access-Control-Expose-Headers": "mcp-session-id, mcp-protocol-version, WWW-Authenticate",
+      "Access-Control-Expose-Headers":
+        "mcp-session-id, mcp-protocol-version, WWW-Authenticate",
     },
   });
 }

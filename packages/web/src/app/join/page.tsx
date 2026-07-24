@@ -174,7 +174,9 @@ export default async function EndorsePage() {
   }
 
   const manageableOrgs = user
-    ? await getManageableOrganizationsForUser(user.id)
+    ? await getManageableOrganizationsForUser(user.id, {
+        publiclyReferenceableOnly: true,
+      })
     : [];
 
   return (

@@ -24,6 +24,7 @@ export interface ExecutionPlanningTask {
   capabilityReasons: string[];
   capabilityStatus: "eligible" | "unknown" | "ineligible";
   completionMilestone?: boolean;
+  deadlineOverrideEligible?: boolean;
   deadlinePolicy: "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
   deadlineStatus:
     | "none"
@@ -306,6 +307,7 @@ function isRequiredGuardrail(task: ExecutionPlanningTask) {
   return (
     task.deadlinePolicy === "REQUIRED" &&
     (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") &&
+    task.deadlineOverrideEligible !== false &&
     taskMinutes(task) != null
   );
 }
@@ -318,7 +320,11 @@ function isRequiredInWindow(
   if (task.deadlinePolicy !== "REQUIRED" || taskMinutes(task) == null) {
     return false;
   }
-  if (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") {
+  if (
+    task.deadlineStatus === "start_now" ||
+    (task.deadlineStatus === "missed" &&
+      task.deadlineOverrideEligible !== false)
+  ) {
     return true;
   }
   const dueAt = asDate(task.dueAt);
@@ -344,7 +350,11 @@ function unresolvedBlockers(
 
 function deadlineRank(task: ExecutionPlanningTask) {
   if (task.deadlinePolicy === "REQUIRED") {
-    if (task.deadlineStatus === "missed") return 0;
+    if (
+      task.deadlineStatus === "missed" &&
+      task.deadlineOverrideEligible !== false
+    )
+      return 0;
     if (task.deadlineStatus === "start_now") return 1;
   }
   if (

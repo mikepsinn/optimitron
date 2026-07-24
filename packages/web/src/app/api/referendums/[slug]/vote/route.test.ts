@@ -811,6 +811,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       id: "org_1",
       status: "APPROVED",
       deletedAt: null,
+      visibility: "PUBLIC",
     });
     mocks.upsert.mockResolvedValue({
       id: "vote_1",
@@ -832,7 +833,12 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
     expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
       where: { slug: "trial-partner" },
-      select: { id: true, status: true, deletedAt: true },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+        visibility: true,
+      },
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -855,6 +861,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       id: "org_b",
       status: "APPROVED",
       deletedAt: null,
+      visibility: "PUBLIC",
     });
     mocks.upsert.mockResolvedValue({
       id: "vote_1",
@@ -903,7 +910,12 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
     expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
       where: { slug: "unknown-org" },
-      select: { id: true, status: true, deletedAt: true },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+        visibility: true,
+      },
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -924,6 +936,7 @@ describe("POST /api/referendums/[slug]/vote", () => {
       id: "org_1",
       status: "REJECTED",
       deletedAt: null,
+      visibility: "PUBLIC",
     });
     mocks.upsert.mockResolvedValue({
       id: "vote_1",
@@ -942,12 +955,53 @@ describe("POST /api/referendums/[slug]/vote", () => {
 
     expect(mocks.organizationFindUnique).toHaveBeenCalledWith({
       where: { slug: "rejected-org" },
-      select: { id: true, status: true, deletedAt: true },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+        visibility: true,
+      },
     });
     expect(mocks.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         update: expect.not.objectContaining({ organizationId: "org_1" }),
         create: expect.not.objectContaining({ organizationId: "org_1" }),
+      }),
+    );
+  });
+
+  it("does not attribute a private organization through a public survey slug", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.findUnique.mockResolvedValue(ACTIVE_REFERENDUM);
+    mocks.organizationFindUnique.mockResolvedValue({
+      id: "org_private",
+      status: "APPROVED",
+      deletedAt: null,
+      visibility: "PRIVATE",
+    });
+    mocks.upsert.mockResolvedValue({
+      id: "vote_1",
+      answer: "YES",
+      userId: "user_1",
+      referendumId: "ref_1",
+    });
+
+    await POST(
+      makeRequest("test-ref", {
+        answer: "YES",
+        organizationSlug: "private-org",
+      }),
+      makeParams("test-ref"),
+    );
+
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
+        create: expect.not.objectContaining({
+          organizationId: expect.anything(),
+        }),
       }),
     );
   });

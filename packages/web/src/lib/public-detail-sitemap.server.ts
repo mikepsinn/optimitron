@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
-import { OrgStatus } from "@optimitron/db";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { getPersonHref } from "@/lib/person-href";
 import { getOrganizationSurveyPath, getTaskPath, ROUTES } from "@/lib/routes";
@@ -30,7 +30,11 @@ const getCachedPublicDetailSitemapRows = unstable_cache(
   async () => {
     const [organizations, people, tasks] = await Promise.all([
       prisma.organization.findMany({
-        where: { deletedAt: null, status: OrgStatus.APPROVED },
+        where: {
+          deletedAt: null,
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
         orderBy: [{ updatedAt: "desc" }],
         select: { slug: true, updatedAt: true },
         take: PUBLIC_DETAIL_SITEMAP_LIMIT,

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { Prisma } from "@optimitron/db";
 import {
   ContentAccessLevel,
+  ContentVisibility,
   OrgStatus,
   OrganizationMemberRole,
   SourceArtifactType,
@@ -183,7 +184,9 @@ async function ensureArtifact(
     select: { isPublic: true, ownerUserId: true },
   });
   if (existing && !existing.isPublic && existing.ownerUserId !== actorUserId) {
-    throw new Error("A private source artifact with this key is owned elsewhere.");
+    throw new Error(
+      "A private source artifact with this key is owned elsewhere.",
+    );
   }
   return tx.sourceArtifact.upsert({
     where: { sourceKey: artifact.sourceKey },
@@ -1653,6 +1656,7 @@ export async function importNotionBundle(input: {
             sourceUrl: organization.url ?? null,
             status: OrgStatus.PENDING,
             type: organization.type,
+            visibility: ContentVisibility.PRIVATE,
             website: organization.website ?? null,
             members: {
               create: {

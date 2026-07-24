@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ContentVisibility } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
+  assertOrganizationCanBePrivate: vi.fn(),
   canManageOrganization: vi.fn(),
   organizationUpdate: vi.fn(),
   requireAuth: vi.fn(),
-  userFindUnique: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
@@ -17,6 +18,7 @@ vi.mock("@/lib/organization.server", async () => {
   >("@/lib/organization.server");
   return {
     ...actual,
+    assertOrganizationCanBePrivate: mocks.assertOrganizationCanBePrivate,
     canManageOrganization: mocks.canManageOrganization,
   };
 });
@@ -25,9 +27,6 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     organization: {
       update: mocks.organizationUpdate,
-    },
-    user: {
-      findUnique: mocks.userFindUnique,
     },
   },
 }));
@@ -48,6 +47,7 @@ describe("PATCH /api/organizations/[id]", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.canManageOrganization.mockResolvedValue(true);
+    mocks.assertOrganizationCanBePrivate.mockResolvedValue(undefined);
     mocks.organizationUpdate.mockResolvedValue({ id: "org_1" });
   });
 
@@ -72,7 +72,9 @@ describe("PATCH /api/organizations/[id]", () => {
 
   it("rejects unsafe wordmark logo URLs before updating records", async () => {
     const response = await PATCH(
-      makeRequest({ wordmarkLogoUrl: "data:image/svg+xml,<svg></svg>" }) as never,
+      makeRequest({
+        wordmarkLogoUrl: "data:image/svg+xml,<svg></svg>",
+      }) as never,
       {
         params: Promise.resolve({ id: "org_1" }),
       },
@@ -97,6 +99,18 @@ describe("PATCH /api/organizations/[id]", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Invalid website URL",
     });
+    expect(mocks.organizationUpdate).not.toHaveBeenCalled();
+  });
+
+  it("rejects inherited object keys as organization visibility", async () => {
+    const response = await PATCH(
+      makeRequest({ visibility: "toString" }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(400);
     expect(mocks.organizationUpdate).not.toHaveBeenCalled();
   });
 
@@ -125,5 +139,40 @@ describe("PATCH /api/organizations/[id]", () => {
           "https://static.warondisease.org/organizations/wordmarks/2026-05-07/wordmark.webp",
       }),
     });
+  });
+
+  it("lets a manager make an organization private when no public task identifies it", async () => {
+    const response = await PATCH(
+      makeRequest({ visibility: ContentVisibility.PRIVATE }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.assertOrganizationCanBePrivate).toHaveBeenCalledWith("org_1");
+    expect(mocks.organizationUpdate).toHaveBeenCalledWith({
+      where: { id: "org_1" },
+      data: expect.objectContaining({ visibility: ContentVisibility.PRIVATE }),
+    });
+  });
+
+  it("keeps an organization public while public tasks identify it", async () => {
+    mocks.assertOrganizationCanBePrivate.mockRejectedValue(
+      new Error("An organization with public tasks cannot be made private."),
+    );
+
+    const response = await PATCH(
+      makeRequest({ visibility: ContentVisibility.PRIVATE }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: "An organization with public tasks cannot be made private.",
+    });
+    expect(mocks.organizationUpdate).not.toHaveBeenCalled();
   });
 });

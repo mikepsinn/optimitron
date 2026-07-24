@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { OrgStatus } from "@optimitron/db";
+import { ContentVisibility, OrgStatus } from "@optimitron/db";
 
 const mocks = vi.hoisted(() => ({
   createOrganizationWithOwner: vi.fn(),
@@ -52,6 +52,7 @@ describe("organizations route", () => {
       id: "org_1",
       name: "Test Org",
       status: OrgStatus.APPROVED,
+      visibility: ContentVisibility.PUBLIC,
     });
 
     const response = await POST(
@@ -71,6 +72,7 @@ describe("organizations route", () => {
         contactEmail: "owner@example.com",
         name: "Test Org",
         status: OrgStatus.APPROVED,
+        visibility: ContentVisibility.PUBLIC,
         website: "https://example.org/",
       }),
       "user_1",
@@ -78,6 +80,61 @@ describe("organizations route", () => {
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
+
+  it("creates a private organization when requested", async () => {
+    mocks.requireAuth.mockResolvedValue({
+      userId: "user_1",
+      userEmail: "owner@example.com",
+    });
+    mocks.createOrganizationWithOwner.mockResolvedValue({
+      id: "org_private",
+      name: "Private Org",
+      status: OrgStatus.APPROVED,
+      visibility: ContentVisibility.PRIVATE,
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/organizations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Private Org",
+          visibility: ContentVisibility.PRIVATE,
+        }),
+      }) as never,
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Private Org",
+        visibility: ContentVisibility.PRIVATE,
+      }),
+      "user_1",
+      { rejectDuplicates: false },
+    );
+  });
+
+  it.each(["SECRET", "toString"])(
+    "rejects invalid organization visibility %s",
+    async (visibility) => {
+      mocks.requireAuth.mockResolvedValue({
+        userId: "user_1",
+        userEmail: "owner@example.com",
+      });
+
+      const response = await POST(
+        new Request("http://localhost/api/organizations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: "Test Org", visibility }),
+        }) as never,
+      );
+
+      expect(response.status).toBe(400);
+      expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects unsafe organization website URLs before creating records", async () => {
     mocks.requireAuth.mockResolvedValue({

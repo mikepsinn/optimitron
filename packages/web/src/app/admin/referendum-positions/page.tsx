@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { OrganizationReferendumPositionStatus } from "@optimitron/db";
+import {
+  ContentVisibility,
+  OrganizationReferendumPositionStatus,
+} from "@optimitron/db";
 import { getCurrentUser } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { AdminPositionRow } from "./AdminPositionRow";
@@ -31,6 +34,7 @@ export default async function AdminReferendumPositionsPage({
   const where: Record<string, unknown> = {
     status: statusFilter,
     deletedAt: null,
+    organization: { visibility: ContentVisibility.PUBLIC },
   };
   if (params.referendumSlug) {
     where.referendum = { slug: params.referendumSlug };

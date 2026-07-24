@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  ContentVisibility,
   OrganizationMemberRole,
   OrgStatus,
   OrgType,
@@ -11,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   organizationFindUnique: vi.fn(),
   organizationMemberFindFirst: vi.fn(),
   organizationMemberUpsert: vi.fn(),
+  taskFindFirst: vi.fn(),
   transaction: vi.fn(),
   txOrganizationCreate: vi.fn(),
   txOrganizationFindFirst: vi.fn(),
@@ -31,13 +33,20 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.organizationMemberFindFirst,
       upsert: mocks.organizationMemberUpsert,
     },
+    task: {
+      findFirst: mocks.taskFindFirst,
+    },
   },
 }));
 
 import {
+  assertOrganizationCanBePrivate,
+  assertOrganizationCanBePubliclyReferenced,
   canManageOrganization,
   canUserViewOrganization,
   createOrganizationWithOwner,
+  getOrganizationAccessWhere,
+  PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR,
   upsertTrustedOrganization,
 } from "@/lib/organization.server";
 
@@ -89,6 +98,7 @@ describe("organization.server", () => {
     mocks.organizationFindFirst.mockReset();
     mocks.organizationMemberFindFirst.mockReset();
     mocks.organizationMemberUpsert.mockReset();
+    mocks.taskFindFirst.mockReset();
   });
 
   it("creates approved orgs with an owner membership and planning root for public creation", async () => {
@@ -114,6 +124,7 @@ describe("organization.server", () => {
           creatorId: "user_1",
           name: "Test Org",
           status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
         }),
       }),
     );
@@ -363,6 +374,53 @@ describe("organization.server", () => {
     );
   });
 
+  it("guards trusted updates before making an existing organization private", async () => {
+    for (const sourceRef of ["notion:organization:1", undefined]) {
+      const existing = {
+        contactEmail: null,
+        deletedAt: null,
+        description: null,
+        donationUrl: null,
+        id: "org_existing",
+        name: "Imported Org",
+        sourceRef: sourceRef ?? null,
+        sourceUrl: null,
+        squareLogoUrl: null,
+        type: OrgType.OTHER,
+        website: null,
+        wordmarkLogoUrl: null,
+      };
+      const update = vi.fn();
+      const db = {
+        organization: {
+          create: vi.fn(),
+          findFirst: vi.fn().mockResolvedValue(sourceRef ? null : existing),
+          findUnique: vi
+            .fn()
+            .mockImplementation(async ({ where }) =>
+              sourceRef && where.sourceRef === sourceRef ? existing : null,
+            ),
+          update,
+        },
+        task: {
+          findFirst: vi.fn().mockResolvedValue({ id: "task_public" }),
+        },
+      };
+
+      await expect(
+        upsertTrustedOrganization(
+          {
+            name: "Imported Org",
+            sourceRef,
+            visibility: ContentVisibility.PRIVATE,
+          },
+          db as never,
+        ),
+      ).rejects.toThrow(PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR);
+      expect(update).not.toHaveBeenCalled();
+    }
+  });
+
   it("does not treat creatorId as organization management permission without a membership row", async () => {
     mocks.organizationMemberFindFirst.mockResolvedValue(null);
     mocks.organizationFindUnique.mockResolvedValue({ creatorId: "user_1" });
@@ -380,9 +438,14 @@ describe("organization.server", () => {
 
     expect(mocks.organizationFindFirst).toHaveBeenCalledWith({
       where: {
-        id: "org_1",
+        OR: [
+          {
+            status: OrgStatus.APPROVED,
+            visibility: ContentVisibility.PUBLIC,
+          },
+        ],
         deletedAt: null,
-        OR: [{ status: OrgStatus.APPROVED }],
+        id: "org_1",
       },
       select: { id: true },
     });
@@ -405,9 +468,84 @@ describe("organization.server", () => {
         id: "org_1",
         deletedAt: null,
         OR: [
-          { status: OrgStatus.APPROVED },
-          { creatorId: "user_1" },
-          { members: { some: { userId: "user_1" } } },
+          {
+            status: OrgStatus.APPROVED,
+            visibility: ContentVisibility.PUBLIC,
+          },
+          {
+            OR: [
+              { creatorId: "user_1" },
+              { members: { some: { userId: "user_1" } } },
+            ],
+          },
+        ],
+      },
+      select: { id: true },
+    });
+  });
+
+  it("limits private organization reads to the OAuth organization allowlist", () => {
+    expect(
+      getOrganizationAccessWhere("user_1", ["org_1", "org_1", " "]),
+    ).toEqual({
+      deletedAt: null,
+      OR: [
+        {
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
+        {
+          id: { in: ["org_1"] },
+          OR: [
+            { creatorId: "user_1" },
+            { members: { some: { userId: "user_1" } } },
+          ],
+        },
+      ],
+    });
+    expect(getOrganizationAccessWhere("user_1", [])).toEqual({
+      deletedAt: null,
+      OR: [
+        {
+          status: OrgStatus.APPROVED,
+          visibility: ContentVisibility.PUBLIC,
+        },
+      ],
+    });
+  });
+
+  it("rejects private organizations at public-reference boundaries", async () => {
+    mocks.organizationFindFirst.mockResolvedValue(null);
+
+    await expect(
+      assertOrganizationCanBePubliclyReferenced("org_private"),
+    ).rejects.toThrow(
+      "Public tasks cannot reference a private or unpublished organization.",
+    );
+    expect(mocks.organizationFindFirst).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        id: "org_private",
+        status: OrgStatus.APPROVED,
+        visibility: ContentVisibility.PUBLIC,
+      },
+      select: { id: true },
+    });
+  });
+
+  it("prevents hiding an organization while a public task identifies it", async () => {
+    mocks.taskFindFirst.mockResolvedValue({ id: "task_public" });
+
+    await expect(assertOrganizationCanBePrivate("org_1")).rejects.toThrow(
+      PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR,
+    );
+    expect(mocks.taskFindFirst).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        isPublic: true,
+        OR: [
+          { assigneeOrganizationId: "org_1" },
+          { ownerOrganizationId: "org_1" },
         ],
       },
       select: { id: true },

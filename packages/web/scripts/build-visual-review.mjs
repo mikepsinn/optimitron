@@ -15,7 +15,10 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { extractHunksAndAlignment } from "./visual-review-hunks.mjs";
-import { isSignificantDimensionChange } from "./visual-review-diff.mjs";
+import {
+  isSignificantDimensionChange,
+  normalizeVisualReviewMarkdown,
+} from "./visual-review-diff.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -866,9 +869,17 @@ function buildMarkdownDiff(routeName) {
   }
 
   const after = generatedAfter ?? readFileSync(workingPath, "utf8");
-  const lines = buildUnifiedMarkdownDiffLines(
+  const normalizedBefore = normalizeVisualReviewMarkdown(
     before ?? "",
+    snapshot.repoRelativePath,
+  );
+  const normalizedAfter = normalizeVisualReviewMarkdown(
     after,
+    snapshot.repoRelativePath,
+  );
+  const lines = buildUnifiedMarkdownDiffLines(
+    normalizedBefore,
+    normalizedAfter,
     snapshot.repoRelativePath,
   );
   const addedLines = lines.filter((line) => line.kind === "add").length;

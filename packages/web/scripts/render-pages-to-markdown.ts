@@ -66,6 +66,9 @@ const GLOBAL_LOADING_TEXT = [
   "Booting Earth Optimization System",
   "Your civilization is very important to us.",
 ];
+const COPY_CAPTURE_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
+  ["/calendar", "/calendar?date=2036-01-01"],
+]);
 
 function dedupeRoutes(routes: string[]) {
   return [...new Set(routes)];
@@ -327,6 +330,7 @@ async function extractPage(
     // Snapshot must respect the visual layer or the .md doubles every label.
     const SR_ONLY_PATTERN = /(?:^|\s)(?:sm:|md:|lg:|xl:|2xl:)?sr-only(?:\s|$)/;
     const isHiddenForRender = (el: Element): boolean => {
+      if (el.hasAttribute("data-copy-preview-ignore")) return true;
       const style = getComputedStyle(el);
       if (style.display === "none" || style.visibility === "hidden") return true;
       if (typeof el.className === "string" && SR_ONLY_PATTERN.test(el.className)) {
@@ -386,6 +390,7 @@ async function extractPage(
           buf += applyTransform(node.textContent ?? "", el);
         } else if (node.nodeType === 1 /* ELEMENT_NODE */) {
           const child = node as Element;
+          if (child.hasAttribute("data-copy-preview-ignore")) continue;
           if (!allowHidden && isHiddenForRender(child)) continue;
           if (child.tagName === "A" || child.hasAttribute("data-copy-preview-href")) {
             let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
@@ -586,7 +591,8 @@ async function capturePass(
       const dir = routeToDirPath(route);
       const outPath = path.join(dir, filename);
       try {
-        const extracted = await extractPage(page, route);
+        const captureRoute = COPY_CAPTURE_PATH_OVERRIDE_BY_PATH.get(route) ?? route;
+        const extracted = await extractPage(page, captureRoute);
         await mkdir(dir, { recursive: true });
         // When the route returned 3xx (typically auth-required pages
         // redirecting logged-out users to /signin or the campaign root),

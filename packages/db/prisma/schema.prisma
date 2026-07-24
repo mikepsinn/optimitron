@@ -799,8 +799,8 @@ enum TaskPayoutStatus {
   CANCELED
 }
 
-/// Public/private discoverability for documents and collections. Explicit
-/// grants provide the finer-grained signed-in access levels.
+/// Public/private discoverability for user- and organization-owned records.
+/// Explicit grants provide finer-grained access where the model supports them.
 enum ContentVisibility {
   PUBLIC
   PRIVATE
@@ -5616,6 +5616,9 @@ model Organization {
   /// Approval status
   status OrgStatus @default(PENDING)
 
+  /// Whether the organization may be discovered outside its members
+  visibility ContentVisibility @default(PUBLIC)
+
   /// Optional jurisdiction scope
   jurisdictionId String?
 
@@ -5681,6 +5684,7 @@ model Organization {
   @@index([slug])
   @@index([type])
   @@index([status])
+  @@index([visibility, status, deletedAt])
   @@index([jurisdictionId])
   @@index([creatorId])
   @@index([deletedAt])
