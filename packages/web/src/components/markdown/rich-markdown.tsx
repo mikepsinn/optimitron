@@ -30,7 +30,7 @@ interface RichMarkdownProps {
  */
 export function RichMarkdown({ markdown, className }: RichMarkdownProps) {
   return (
-    <div className={`task-markdown space-y-3 text-sm font-bold leading-7 text-muted-foreground ${className ?? ""}`}>
+    <div className={`task-markdown space-y-3 text-[15px] leading-[1.6] text-foreground ${className ?? ""}`}>
       <ReactMarkdown
         remarkPlugins={[
           remarkGfm,
@@ -50,42 +50,42 @@ export function RichMarkdown({ markdown, className }: RichMarkdownProps) {
 function getRichMarkdownComponents(): Components {
   return {
     h1: ({ children }) => (
-      <h1 className="mt-4 text-2xl font-black uppercase tracking-tight text-foreground">
+      <h1 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="mt-6 text-xl font-black uppercase tracking-tight text-foreground">
+      <h2 className="mt-6 text-base font-semibold tracking-tight text-foreground">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mt-4 text-base font-black uppercase tracking-tight text-foreground">
+      <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-foreground">
         {children}
       </h3>
     ),
     p: ({ children }) => (
-      <p className="text-sm font-bold leading-7 text-muted-foreground">{children}</p>
+      <p className="text-[15px] leading-[1.6] text-foreground">{children}</p>
     ),
     strong: ({ children }) => (
-      <strong className="font-black text-foreground">{children}</strong>
+      <strong className="font-semibold text-foreground">{children}</strong>
     ),
     em: ({ children }) => <em className="italic">{children}</em>,
     ul: ({ children }) => (
-      <ul className="list-disc space-y-1 pl-6 text-sm font-bold text-muted-foreground">
+      <ul className="list-disc space-y-1 pl-6 text-[15px] text-foreground">
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className="list-decimal space-y-1 pl-6 text-sm font-bold text-muted-foreground">
+      <ol className="list-decimal space-y-1 pl-6 text-[15px] text-foreground">
         {children}
       </ol>
     ),
-    li: ({ children }) => <li className="leading-7">{children}</li>,
+    li: ({ children }) => <li className="leading-[1.6]">{children}</li>,
     a: ({ href, children }) => (
       <a
         href={href}
-        className="font-black text-foreground underline underline-offset-4 hover:text-foreground"
+        className="font-medium text-foreground underline underline-offset-4 hover:text-foreground"
         target={href?.startsWith("http") ? "_blank" : undefined}
         rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
       >

@@ -274,10 +274,10 @@ function TaskAccessGate({
         <section className="w-full space-y-4 border-2 border-foreground p-6 sm:p-8">
           {signedIn ? (
             <>
-              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+              <h1 className="text-xl font-semibold leading-snug sm:text-2xl">
                 You don&apos;t have access to this task
               </h1>
-              <p className="text-base font-bold leading-relaxed">
+              <p className="text-[15px] leading-[1.6]">
                 It&apos;s private, or it doesn&apos;t exist. If someone sent you
                 this link, ask them to make the task public or assign it to you
                 {viewerEmail ? (
@@ -298,10 +298,10 @@ function TaskAccessGate({
             </>
           ) : (
             <>
-              <h1 className="text-3xl font-black uppercase leading-tight sm:text-4xl">
+              <h1 className="text-xl font-semibold leading-snug sm:text-2xl">
                 Sign in to see this task
               </h1>
-              <p className="text-base font-bold leading-relaxed">
+              <p className="text-[15px] leading-[1.6]">
                 This task is private, or it doesn&apos;t exist. If it&apos;s
                 yours or assigned to you, sign in and you&apos;ll land right
                 back here.
@@ -492,7 +492,7 @@ export default async function TaskDetailPage({
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <nav className="mb-8 flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
+        <nav className="mb-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <Link
             className="text-foreground underline underline-offset-4"
             href={ROUTES.tasks}
@@ -516,14 +516,14 @@ export default async function TaskDetailPage({
 
         <header className="border-b border-foreground pb-6">
           <div className="space-y-3">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               {delayStats.isOverdue ? "Overdue task" : "Task"}
               {task.isPublic ? "" : " · Private"}
             </p>
-            <h1 className="max-w-4xl text-3xl font-black leading-tight sm:text-5xl">
+            <h1 className="max-w-4xl text-xl font-semibold leading-snug sm:text-2xl">
               {task.title}
             </h1>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm font-bold text-muted-foreground">
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
               {assigneeLabel ? (
                 <span>
                   Assigned to{" "}
@@ -656,8 +656,8 @@ export default async function TaskDetailPage({
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-xl font-black">Fund this task</h2>
-                  <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
+                  <h2 className="text-base font-semibold">Fund this task</h2>
+                  <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
                     Your money stays pinned to this exact work and pays the
                     worker the second a claim is verified. Nothing proven,
                     nothing paid.
@@ -762,7 +762,7 @@ export default async function TaskDetailPage({
 
         {task.childTasks.length > 0 ? (
           <section id="subtasks" className="border-b border-foreground py-8">
-            <h2 className="mb-4 text-xl font-black">
+            <h2 className="mb-4 text-base font-semibold">
               Steps ({task.childTasks.length})
             </h2>
             <SortableTaskList

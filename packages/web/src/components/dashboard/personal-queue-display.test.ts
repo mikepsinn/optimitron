@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { deadlineChip, formatDuration } from "./personal-queue-display";
+import {
+  deadlineChip,
+  formatDuration,
+  summarizeIssueSeverities,
+} from "./personal-queue-display";
 
 describe("deadlineChip", () => {
   it("marks missed, overdue, and start-now deadlines urgent", () => {
@@ -39,5 +43,21 @@ describe("formatDuration", () => {
     expect(formatDuration(47)).toBe("47h");
     expect(formatDuration(48)).toBe("2d");
     expect(formatDuration(240)).toBe("10d");
+  });
+});
+
+describe("summarizeIssueSeverities", () => {
+  it("counts severities in high/medium/low order and skips absent ones", () => {
+    expect(
+      summarizeIssueSeverities([
+        { code: "a", message: "", severity: "low" },
+        { code: "b", message: "", severity: "high" },
+        { code: "c", message: "", severity: "low" },
+      ]),
+    ).toBe("1 high · 2 low");
+  });
+
+  it("returns null for no issues", () => {
+    expect(summarizeIssueSeverities([])).toBeNull();
   });
 });

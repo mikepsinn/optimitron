@@ -294,7 +294,7 @@ export function TaskCard({
             </Link>
           ) : null}
           <Link href={getTaskPath(task.id)} className="block">
-            <h3 className="text-2xl font-black uppercase leading-tight underline-offset-4 hover:underline">
+            <h3 className="text-base font-semibold leading-snug underline-offset-4 hover:underline">
               {task.title}
               {task.isPublic ? null : (
                 <span
@@ -307,7 +307,7 @@ export function TaskCard({
               )}
             </h3>
           </Link>
-          <p className="text-sm font-bold leading-6">
+          <p className="text-sm leading-[1.6] text-muted-foreground">
             {getTaskDescriptionSummary(task.description, 220)}
           </p>
         </div>
