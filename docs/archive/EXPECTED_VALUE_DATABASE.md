@@ -14,13 +14,13 @@ The system is centered on the `Expected Value EV Ranked Tasks` database and is s
 
 | Source | Role | URL |
 |---|---|---|
-| Expected Value EV Ranked Tasks | Main task queue and ranking table | https://www.notion.so/76affc223ee1445692faf03661d321d6 |
-| Revenue Paths | Revenue opportunities and probability-gated path EV | https://www.notion.so/720d3b9951cb4cd5a9e4026b7eada038 |
-| Execution Options | Alternative execution routes for tasks | https://www.notion.so/b396a068af53419fb7858212e90153cd |
-| People & Vendors | Reusable actors, vendors, allies, and AI resources | https://www.notion.so/7f82bfad48714910b503695eac282584 |
-| WIG Tracker | Weekly annual revenue run-rate tracker | https://www.notion.so/d22c98efad834061ae1aee41423d1b73 |
-| Revenue-path architecture note | Design note for Revenue Paths, WIG, and task-priority wiring | https://www.notion.so/34e63f8d1d3b81b58bb6fc2b662f8eb2 |
-| Optimization-rate note | Design note for dependency-weighted EV scheduling | https://www.notion.so/34c63f8d1d3b819f84c2efcebb99d84f |
+| Expected Value EV Ranked Tasks | Main task queue and ranking table | (private Notion page — see internal directory) |
+| Revenue Paths | Revenue opportunities and probability-gated path EV | (private Notion page — see internal directory) |
+| Execution Options | Alternative execution routes for tasks | (private Notion page — see internal directory) |
+| People & Vendors | Reusable actors, vendors, allies, and AI resources | (private Notion page — see internal directory) |
+| WIG Tracker | Weekly annual revenue run-rate tracker | (private Notion page — see internal directory) |
+| Revenue-path architecture note | Design note for Revenue Paths, WIG, and task-priority wiring | (private Notion page — see internal directory) |
+| Optimization-rate note | Design note for dependency-weighted EV scheduling | (private Notion page — see internal directory) |
 
 ## System Purpose
 
@@ -51,7 +51,7 @@ erDiagram
 
 ## Expected Value EV Ranked Tasks
 
-Source: https://www.notion.so/76affc223ee1445692faf03661d321d6
+Source: (private Notion page — see internal directory)
 
 This is the main work queue. Each row is a task with value assumptions, execution estimates, ownership, risk metadata, and ranking formulas.
 
@@ -74,7 +74,7 @@ This is the main work queue. Each row is a task with value assumptions, executio
 
 | Field | Type | Meaning |
 |---|---|---|
-| `Owner` | Select | Responsible actor: `Mike`, `Claude`, `AI Agent`, `Andreas`, `External`, or `Mike+AI`. |
+| `Owner` | Select | Responsible actor: `Mike`, `Claude`, `AI Agent`, a named collaborator, `External`, or `Mike+AI`. |
 | `Best Route` | Select | Preferred execution route: `Self`, `AI-assisted`, `Contractor`, `Vendor`, `Ally`, `Automation`, or `Kill`. |
 | `Can Delegate` | Checkbox | Whether this task can be delegated. |
 | `Execution Options` | Relation | Links to alternate execution approaches in the `Execution Options` database. |
@@ -136,7 +136,7 @@ The exact Notion formula source was not available through the connector in this 
 
 ## Revenue Paths
 
-Source: https://www.notion.so/720d3b9951cb4cd5a9e4026b7eada038
+Source: (private Notion page — see internal directory)
 
 `Revenue Paths` models concrete ways money can arrive. A path can be a grant, deposit, partnership, donation, or salary. Tasks can link to revenue paths so task priority reflects the value of advancing a real pipeline instead of a standalone guess.
 
@@ -181,7 +181,7 @@ Exact Notion formula bodies were not available through the connector. Semantics 
 
 ## Execution Options
 
-Source: https://www.notion.so/b396a068af53419fb7858212e90153cd
+Source: (private Notion page — see internal directory)
 
 `Execution Options` compares ways to complete a task. It separates the question "what should be done?" from "who or what route should do it?"
 
@@ -214,7 +214,7 @@ Exact formula bodies were not available through the connector.
 
 ## People & Vendors
 
-Source: https://www.notion.so/7f82bfad48714910b503695eac282584
+Source: (private Notion page — see internal directory)
 
 `People & Vendors` is the reusable actor table for execution options. It stores who can do work, what they are good at, what they cost, and what trust boundary applies.
 
@@ -232,7 +232,7 @@ Source: https://www.notion.so/7f82bfad48714910b503695eac282584
 
 ## WIG Tracker
 
-Source: https://www.notion.so/d22c98efad834061ae1aee41423d1b73
+Source: (private Notion page — see internal directory)
 
 `WIG Tracker` tracks the "wildly important goal" of annual revenue run rate. The revenue-path architecture note defines the WIG as:
 

@@ -77,6 +77,22 @@ jobs:
               - 'packages/web/src/**'
               - 'packages/web/public/**'
 
+  leak-scan:
+    name: leak-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Scan tracked files for private-information leaks
+        run: node scripts/leak-scan.mjs
+
   core-validate:
     name: core-validate
     if: github.event_name != 'push'
