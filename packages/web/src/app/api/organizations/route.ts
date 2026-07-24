@@ -74,10 +74,15 @@ export async function POST(req: NextRequest) {
     }
 
     const type =
-      body.type && body.type in OrgType
+      body.type && Object.values(OrgType).includes(body.type as OrgType)
         ? (body.type as OrgType)
         : OrgType.NONPROFIT;
-    if (body.visibility && !(body.visibility in ContentVisibility)) {
+    if (
+      body.visibility !== undefined &&
+      !Object.values(ContentVisibility).includes(
+        body.visibility as ContentVisibility,
+      )
+    ) {
       return NextResponse.json(
         { error: "Invalid organization visibility" },
         { status: 400 },

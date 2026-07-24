@@ -374,6 +374,53 @@ describe("organization.server", () => {
     );
   });
 
+  it("guards trusted updates before making an existing organization private", async () => {
+    for (const sourceRef of ["notion:organization:1", undefined]) {
+      const existing = {
+        contactEmail: null,
+        deletedAt: null,
+        description: null,
+        donationUrl: null,
+        id: "org_existing",
+        name: "Imported Org",
+        sourceRef: sourceRef ?? null,
+        sourceUrl: null,
+        squareLogoUrl: null,
+        type: OrgType.OTHER,
+        website: null,
+        wordmarkLogoUrl: null,
+      };
+      const update = vi.fn();
+      const db = {
+        organization: {
+          create: vi.fn(),
+          findFirst: vi.fn().mockResolvedValue(sourceRef ? null : existing),
+          findUnique: vi
+            .fn()
+            .mockImplementation(async ({ where }) =>
+              sourceRef && where.sourceRef === sourceRef ? existing : null,
+            ),
+          update,
+        },
+        task: {
+          findFirst: vi.fn().mockResolvedValue({ id: "task_public" }),
+        },
+      };
+
+      await expect(
+        upsertTrustedOrganization(
+          {
+            name: "Imported Org",
+            sourceRef,
+            visibility: ContentVisibility.PRIVATE,
+          },
+          db as never,
+        ),
+      ).rejects.toThrow(PRIVATE_ORGANIZATION_PUBLIC_TASK_ERROR);
+      expect(update).not.toHaveBeenCalled();
+    }
+  });
+
   it("does not treat creatorId as organization management permission without a membership row", async () => {
     mocks.organizationMemberFindFirst.mockResolvedValue(null);
     mocks.organizationFindUnique.mockResolvedValue({ creatorId: "user_1" });

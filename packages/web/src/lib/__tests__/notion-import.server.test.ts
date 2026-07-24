@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CollectionFieldType } from "@optimitron/db/enums";
+import { CollectionFieldType, ContentVisibility } from "@optimitron/db/enums";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 
 const mocks = vi.hoisted(() => ({
@@ -533,7 +533,9 @@ describe("Notion import review", () => {
       expect(result).toMatchObject({ hasErrors: false });
     }
 
-    const writes = mocks.sourceArtifactUpsert.mock.calls.map(([input]) => input);
+    const writes = mocks.sourceArtifactUpsert.mock.calls.map(
+      ([input]) => input,
+    );
     expect(writes).toHaveLength(2);
     expect(writes.map((input) => input.where.sourceKey)).not.toContain(
       legacySourceKey,
@@ -544,6 +546,50 @@ describe("Notion import review", () => {
       "user_2",
     ]);
     expect(writes.every((input) => input.create.isPublic === false)).toBe(true);
+  });
+
+  it("preserves an existing organization's visibility when refreshing Notion data", async () => {
+    const sourceRef = stableSourceKey("organization", "organization-1");
+    const existing = {
+      creatorId: "user_1",
+      id: "organization_db_1",
+      sourceRef,
+      visibility: ContentVisibility.PUBLIC,
+    };
+    const organizationUpdate = vi.fn().mockResolvedValue({ id: existing.id });
+    mocks.organizationFindMany.mockResolvedValue([existing]);
+    mocks.transaction.mockImplementation(async (callback) =>
+      callback({
+        organization: {
+          findUnique: vi.fn().mockResolvedValue(existing),
+          update: organizationUpdate,
+        },
+        sourceArtifact: {
+          findUnique: mocks.sourceArtifactFindUnique,
+          upsert: mocks.sourceArtifactUpsert,
+        },
+      }),
+    );
+
+    const result = await importNotionBundle({
+      actorUserId: "user_1",
+      bundle: {
+        organizations: [
+          {
+            name: "Updated organization",
+            sourceId: "organization-1",
+          },
+        ],
+        workspaceId: "workspace-1",
+      },
+      dryRun: false,
+    });
+
+    expect(result).toMatchObject({ hasErrors: false });
+    expect(organizationUpdate).toHaveBeenCalledWith({
+      where: { id: existing.id },
+      data: expect.not.objectContaining({ visibility: expect.anything() }),
+    });
   });
 
   it("keeps identical source IDs from different workspaces independent", async () => {

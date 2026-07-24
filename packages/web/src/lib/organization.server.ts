@@ -234,6 +234,9 @@ export async function findOrCreateOrganization(
         slugify(name),
         existingBySourceRef.id,
       );
+      if (input.visibility === ContentVisibility.PRIVATE) {
+        await assertOrganizationCanBePrivate(existingBySourceRef.id, db);
+      }
 
       return db.organization.update({
         where: { id: existingBySourceRef.id },
@@ -273,6 +276,9 @@ export async function findOrCreateOrganization(
       slugify(name),
       existingByName.id,
     );
+    if (input.visibility === ContentVisibility.PRIVATE) {
+      await assertOrganizationCanBePrivate(existingByName.id, db);
+    }
 
     return db.organization.update({
       where: { id: existingByName.id },

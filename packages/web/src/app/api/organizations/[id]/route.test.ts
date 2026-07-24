@@ -72,7 +72,9 @@ describe("PATCH /api/organizations/[id]", () => {
 
   it("rejects unsafe wordmark logo URLs before updating records", async () => {
     const response = await PATCH(
-      makeRequest({ wordmarkLogoUrl: "data:image/svg+xml,<svg></svg>" }) as never,
+      makeRequest({
+        wordmarkLogoUrl: "data:image/svg+xml,<svg></svg>",
+      }) as never,
       {
         params: Promise.resolve({ id: "org_1" }),
       },
@@ -97,6 +99,18 @@ describe("PATCH /api/organizations/[id]", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Invalid website URL",
     });
+    expect(mocks.organizationUpdate).not.toHaveBeenCalled();
+  });
+
+  it("rejects inherited object keys as organization visibility", async () => {
+    const response = await PATCH(
+      makeRequest({ visibility: "toString" }) as never,
+      {
+        params: Promise.resolve({ id: "org_1" }),
+      },
+    );
+
+    expect(response.status).toBe(400);
     expect(mocks.organizationUpdate).not.toHaveBeenCalled();
   });
 

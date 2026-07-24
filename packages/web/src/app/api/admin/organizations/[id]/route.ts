@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-utils";
-import { ActivityType, ContentVisibility, OrgStatus } from "@optimitron/db";
+import {
+  ActivityType,
+  ContentVisibility,
+  OrgStatus,
+  Prisma,
+} from "@optimitron/db";
 import {
   normalizeOrganizationHttpUrl,
   normalizeOrganizationImageUrl,
@@ -19,6 +24,13 @@ async function requireAdmin() {
   return { id: userId, email: userEmail };
 }
 
+function isRecordNotFound(error: unknown) {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2025"
+  );
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -32,7 +44,10 @@ export async function PATCH(
       where: { id },
     });
 
-    if (!organization || organization.visibility === ContentVisibility.PRIVATE) {
+    if (
+      !organization ||
+      organization.visibility === ContentVisibility.PRIVATE
+    ) {
       return NextResponse.json(
         { error: "Organization not found" },
         { status: 404 },
@@ -95,7 +110,7 @@ export async function PATCH(
     if (body.description) updateData.description = body.description;
 
     const updated = await prisma.organization.update({
-      where: { id },
+      where: { id, visibility: ContentVisibility.PUBLIC },
       data: updateData,
     });
 
@@ -121,6 +136,12 @@ export async function PATCH(
         { status: 401 },
       );
     }
+    if (isRecordNotFound(error)) {
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 },
+      );
+    }
     console.error("Error updating organization:", error);
     return NextResponse.json(
       { error: "Failed to update organization" },
@@ -141,7 +162,10 @@ export async function DELETE(
       where: { id },
     });
 
-    if (!organization || organization.visibility === ContentVisibility.PRIVATE) {
+    if (
+      !organization ||
+      organization.visibility === ContentVisibility.PRIVATE
+    ) {
       return NextResponse.json(
         { error: "Organization not found" },
         { status: 404 },
@@ -149,7 +173,7 @@ export async function DELETE(
     }
 
     await prisma.organization.update({
-      where: { id },
+      where: { id, visibility: ContentVisibility.PUBLIC },
       data: { deletedAt: new Date() },
     });
 
@@ -175,6 +199,12 @@ export async function DELETE(
       return NextResponse.json(
         { error: "Unauthorized — admin access required" },
         { status: 401 },
+      );
+    }
+    if (isRecordNotFound(error)) {
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 },
       );
     }
     console.error("Error deleting organization:", error);

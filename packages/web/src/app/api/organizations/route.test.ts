@@ -115,23 +115,26 @@ describe("organizations route", () => {
     );
   });
 
-  it("rejects an invalid organization visibility", async () => {
-    mocks.requireAuth.mockResolvedValue({
-      userId: "user_1",
-      userEmail: "owner@example.com",
-    });
+  it.each(["SECRET", "toString"])(
+    "rejects invalid organization visibility %s",
+    async (visibility) => {
+      mocks.requireAuth.mockResolvedValue({
+        userId: "user_1",
+        userEmail: "owner@example.com",
+      });
 
-    const response = await POST(
-      new Request("http://localhost/api/organizations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Test Org", visibility: "SECRET" }),
-      }) as never,
-    );
+      const response = await POST(
+        new Request("http://localhost/api/organizations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: "Test Org", visibility }),
+        }) as never,
+      );
 
-    expect(response.status).toBe(400);
-    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
-  });
+      expect(response.status).toBe(400);
+      expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects unsafe organization website URLs before creating records", async () => {
     mocks.requireAuth.mockResolvedValue({

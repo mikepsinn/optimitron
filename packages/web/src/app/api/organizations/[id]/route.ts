@@ -138,7 +138,11 @@ export async function PATCH(
     const visibility =
       body.visibility === undefined
         ? undefined
-        : ContentVisibility[body.visibility as keyof typeof ContentVisibility];
+        : Object.values(ContentVisibility).includes(
+              body.visibility as ContentVisibility,
+            )
+          ? (body.visibility as ContentVisibility)
+          : undefined;
     if (body.visibility !== undefined && !visibility) {
       return NextResponse.json(
         { error: "Invalid organization visibility" },

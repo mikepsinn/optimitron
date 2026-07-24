@@ -184,7 +184,9 @@ async function ensureArtifact(
     select: { isPublic: true, ownerUserId: true },
   });
   if (existing && !existing.isPublic && existing.ownerUserId !== actorUserId) {
-    throw new Error("A private source artifact with this key is owned elsewhere.");
+    throw new Error(
+      "A private source artifact with this key is owned elsewhere.",
+    );
   }
   return tx.sourceArtifact.upsert({
     where: { sourceKey: artifact.sourceKey },
@@ -1628,7 +1630,6 @@ export async function importNotionBundle(input: {
               name: organization.name,
               sourceUrl: organization.url ?? null,
               type: organization.type,
-              visibility: ContentVisibility.PRIVATE,
               website: organization.website ?? null,
             },
           });
