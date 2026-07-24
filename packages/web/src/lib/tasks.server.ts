@@ -655,10 +655,7 @@ function taskListSelectForViewer(input: {
     incomingEdges: {
       ...taskListSelect.incomingEdges,
       where: {
-        AND: [
-          taskListSelect.incomingEdges.where,
-          { fromTask: taskAccess },
-        ],
+        AND: [taskListSelect.incomingEdges.where, { fromTask: taskAccess }],
       },
     },
     outgoingEdges: {
@@ -1544,8 +1541,8 @@ export async function getTaskDetailData(
         referralInvitations: canSeeInternal ? task.referralInvitations : [],
       },
       {
-      frameKey: options?.frameKey,
-      userId: viewer?.id ?? null,
+        frameKey: options?.frameKey,
+        userId: viewer?.id ?? null,
       },
     ),
     viewer,
@@ -1639,12 +1636,16 @@ export async function listTasks(options?: {
           getTaskClientAccessWhere(options.clientAccessBoundary),
         ],
         ...(options?.category ? { category: options.category } : {}),
-        ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
+        ...(options?.parentTaskId
+          ? { parentTaskId: options.parentTaskId }
+          : {}),
       }
     : {
         ...visibilityWhere,
         ...(options?.category ? { category: options.category } : {}),
-        ...(options?.parentTaskId ? { parentTaskId: options.parentTaskId } : {}),
+        ...(options?.parentTaskId
+          ? { parentTaskId: options.parentTaskId }
+          : {}),
       };
   const tasks = await prisma.task.findMany({
     where,
@@ -1689,9 +1690,10 @@ export async function searchTasks(
     return [];
   }
 
-  const searchPhrases = Array.from(
-    new Set([searchTerms.normalizedQuery, ...searchTerms.terms]),
-  );
+  const requiredTerms =
+    searchTerms.terms.length > 0
+      ? searchTerms.terms
+      : [searchTerms.normalizedQuery];
 
   const tasks = await prisma.task.findMany({
     where: {
@@ -1699,46 +1701,24 @@ export async function searchTasks(
         getTaskVisibilityWhere({
           userId: options?.userId,
           visibility:
-            options?.visibility ??
-            (options?.userId ? "accessible" : "public"),
+            options?.visibility ?? (options?.userId ? "accessible" : "public"),
         }),
         ...(options?.clientAccessBoundary
           ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
           : []),
         ...(options?.status ? [{ status: options.status }] : []),
-        {
-          OR: searchPhrases.flatMap((term) => [
+        ...requiredTerms.map((term) => ({
+          OR: [
+            { title: { contains: term, mode: "insensitive" as const } },
             {
-              title: {
-                contains: term,
-                mode: "insensitive",
-              },
+              description: { contains: term, mode: "insensitive" as const },
             },
-            {
-              description: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              taskKey: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-            {
-              roleTitle: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
+            { taskKey: { contains: term, mode: "insensitive" as const } },
+            { roleTitle: { contains: term, mode: "insensitive" as const } },
             {
               assigneeOrganization: {
                 is: {
-                  name: {
-                    contains: term,
-                    mode: "insensitive",
-                  },
+                  name: { contains: term, mode: "insensitive" as const },
                 },
               },
             },
@@ -1747,7 +1727,7 @@ export async function searchTasks(
                 is: {
                   displayName: {
                     contains: term,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -1757,13 +1737,13 @@ export async function searchTasks(
                 is: {
                   currentAffiliation: {
                     contains: term,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
             },
-          ]),
-        },
+          ],
+        })),
       ],
     },
     orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
@@ -2239,16 +2219,6 @@ export async function claimTask(taskId: string, userId: string) {
     });
     if (!task) throw new Error("Task not found");
 
-    if (task.status !== TaskStatus.ACTIVE) {
-      throw new Error("Task is not active.");
-    }
-
-    if (task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) {
-      throw new Error("This task is assigned directly and cannot be claimed.");
-    }
-
-    await assertUserCanClaimPaidTask(task, userId, tx);
-
     const existingClaim = await tx.taskClaim.findUnique({
       where: {
         taskId_userId: {
@@ -2266,6 +2236,16 @@ export async function claimTask(taskId: string, userId: string) {
     ) {
       return existingClaim;
     }
+
+    if (task.status !== TaskStatus.ACTIVE) {
+      throw new Error("Task is not active.");
+    }
+
+    if (task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) {
+      throw new Error("This task is assigned directly and cannot be claimed.");
+    }
+
+    await assertUserCanClaimPaidTask(task, userId, tx);
 
     const activeClaimCount = await tx.taskClaim.count({
       where: {
@@ -2337,7 +2317,7 @@ export async function completeTaskClaim(
     throw new Error("Completion evidence is required.");
   }
 
-  const claim = await prisma.taskClaim.findUniqueOrThrow({
+  const claim = await prisma.taskClaim.findUnique({
     where: {
       taskId_userId: {
         taskId,
@@ -2351,6 +2331,17 @@ export async function completeTaskClaim(
       status: true,
     },
   });
+
+  if (!claim) {
+    throw new Error("No claim exists for this task and user.");
+  }
+
+  if (
+    claim.status === TaskClaimStatus.COMPLETED ||
+    claim.status === TaskClaimStatus.VERIFIED
+  ) {
+    return claim;
+  }
 
   if (
     claim.status !== TaskClaimStatus.CLAIMED &&

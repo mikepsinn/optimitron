@@ -209,7 +209,7 @@ describe("tasks server", () => {
 
   it("completes active claims without overwriting their original start time", async () => {
     const claimedAt = new Date("2026-04-09T18:00:00.000Z");
-    mocks.prisma.taskClaimFindUniqueOrThrow.mockResolvedValue({
+    mocks.prisma.taskClaimFindUnique.mockResolvedValue({
       claimedAt,
       id: "claim_1",
       startedAt: null,
@@ -230,6 +230,21 @@ describe("tasks server", () => {
       }),
       where: { id: "claim_1" },
     });
+  });
+
+  it("treats completion retries as idempotent", async () => {
+    const completedClaim = {
+      claimedAt: new Date("2026-04-09T18:00:00.000Z"),
+      id: "claim_1",
+      startedAt: new Date("2026-04-09T18:05:00.000Z"),
+      status: TaskClaimStatus.COMPLETED,
+    };
+    mocks.prisma.taskClaimFindUnique.mockResolvedValue(completedClaim);
+
+    await expect(
+      completeTaskClaim("task_1", "user_1", "same evidence"),
+    ).resolves.toEqual(completedClaim);
+    expect(mocks.prisma.taskClaimUpdate).not.toHaveBeenCalled();
   });
 
   it("rejects claim verification before completion evidence has been submitted", async () => {
@@ -537,15 +552,20 @@ describe("tasks server", () => {
     await searchTasks("secret grant memo", { userId: null });
 
     const args = lastTaskFindManyArgs();
-    expect(args.where).toMatchObject({
-      AND: [
+    const filters = (args.where as { AND: unknown[] }).AND;
+    expect(filters[0]).toEqual(
+      expect.objectContaining({ deletedAt: null, isPublic: true }),
+    );
+    expect(filters.slice(1)).toHaveLength(3);
+    for (const term of ["secret", "grant", "memo"]) {
+      expect(filters.slice(1)).toContainEqual(
         expect.objectContaining({
-          deletedAt: null,
-          isPublic: true,
+          OR: expect.arrayContaining([
+            { title: { contains: term, mode: "insensitive" } },
+          ]),
         }),
-        expect.any(Object),
-      ],
-    });
+      );
+    }
   });
 
   it("searchTasks with a user searches public tasks plus that user's created private tasks", async () => {
@@ -749,9 +769,8 @@ describe("tasks server", () => {
   // A creator who cannot plan for the assigned org falls back to their own
   // branch instead of failing task creation.
   it("falls back to the personal branch when org planning access is denied", async () => {
-    const { OrganizationPlanningAccessError } = await import(
-      "@/lib/tasks/planning-branch.server"
-    );
+    const { OrganizationPlanningAccessError } =
+      await import("@/lib/tasks/planning-branch.server");
     mocks.ensureExecutionPlanningBranch.mockImplementation(
       async (args: { organizationId?: string }) => {
         if (args.organizationId) throw new OrganizationPlanningAccessError();

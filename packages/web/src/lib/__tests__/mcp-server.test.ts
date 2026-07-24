@@ -15,6 +15,7 @@ import {
   TaskApplicationStatus,
   TaskCandidateKind,
   TaskCandidateMatchStatus,
+  TaskClaimStatus,
   TaskClaimPolicy,
   TaskCompensationCadence,
   TaskCompensationKind,
@@ -30,6 +31,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   listTasks: vi.fn(),
   getTaskDetailData: vi.fn(),
+  claimTask: vi.fn(),
+  completeTaskClaim: vi.fn(),
   computeTaskPriority: vi.fn(),
   rankTasksForUser: vi.fn(),
   scoreTaskForUser: vi.fn(),
@@ -38,6 +41,7 @@ const mocks = vi.hoisted(() => ({
   mergeTask: vi.fn(),
   taskCreate: vi.fn(),
   taskUpdate: vi.fn(),
+  taskUpdateMany: vi.fn(),
   taskFindFirst: vi.fn(),
   taskFindMany: vi.fn(),
   taskEdgeCreateMany: vi.fn(),
@@ -162,6 +166,8 @@ vi.mock("../triggers", () => ({
 }));
 
 vi.mock("../tasks.server", () => ({
+  claimTask: mocks.claimTask,
+  completeTaskClaim: mocks.completeTaskClaim,
   listTasks: mocks.listTasks,
   getTaskDetailData: mocks.getTaskDetailData,
 }));
@@ -363,6 +369,7 @@ vi.mock("../prisma", () => ({
       findMany: mocks.taskFindMany,
       findUnique: mocks.taskFindUnique,
       update: mocks.taskUpdate,
+      updateMany: mocks.taskUpdateMany,
     },
     taskEdge: {
       create: mocks.taskEdgeCreate,
@@ -454,7 +461,12 @@ vi.mock("../prisma", () => ({
   },
 }));
 
-import { ALL_SCOPES, McpScope, createMcpServer } from "../mcp-server";
+import {
+  ALL_SCOPES,
+  McpScope,
+  createMcpServer,
+  getToolDefinitions,
+} from "../mcp-server";
 
 interface ToolText {
   text: string;
@@ -464,6 +476,7 @@ async function setup(
   userId: string | undefined,
   scopes: McpScope[] = ALL_SCOPES,
   options: {
+    exposeToolErrorsAsResults?: boolean;
     isAdmin?: boolean;
     organizationIds?: readonly string[] | null;
   } = { organizationIds: null },
@@ -517,6 +530,22 @@ function makeCreatedTask(overrides: Record<string, unknown> = {}) {
     assigneePersonId: null,
     assigneeOrganizationId: null,
     createdByUserId: "user-1",
+    ...overrides,
+  };
+}
+
+function makeCreateTaskArguments(overrides: Record<string, unknown> = {}) {
+  return {
+    acceptanceCriteria: ["The requested work is complete."],
+    category: "ENGINEERING",
+    description: "Complete a concrete piece of work.",
+    hours: 1,
+    impactStatement: "Completing this advances the selected objective.",
+    p_success: 0.8,
+    parentTaskId: "personal-project",
+    taskKey: "test:create-task",
+    title: "Complete concrete work",
+    value: 100,
     ...overrides,
   };
 }
@@ -633,7 +662,9 @@ beforeEach(() => {
       callback({
         task: {
           create: mocks.taskCreate,
+          findMany: mocks.taskFindMany,
           update: mocks.taskUpdate,
+          updateMany: mocks.taskUpdateMany,
         },
         taskEdge: {
           createMany: mocks.taskEdgeCreateMany,
@@ -680,6 +711,14 @@ beforeEach(() => {
       }),
   );
   mocks.listTasks.mockResolvedValue([]);
+  mocks.claimTask.mockResolvedValue({
+    id: "claim-1",
+    status: TaskClaimStatus.CLAIMED,
+  });
+  mocks.completeTaskClaim.mockResolvedValue({
+    id: "claim-1",
+    status: TaskClaimStatus.COMPLETED,
+  });
   mocks.taskFindFirst.mockImplementation(
     async (args?: { where?: { id?: string; taskKey?: string } }) => {
       if (args?.where?.id === "optimize-earth") return makeOptimizeEarthRoot();
@@ -888,6 +927,18 @@ function jsonResponse(
 }
 
 describe("MCP server tool dispatch", () => {
+  it("keeps createTask validation in the handler instead of the client schema", () => {
+    const createTask = getToolDefinitions().find(
+      (definition) => definition.name === "createTask",
+    );
+
+    expect(createTask).toBeDefined();
+    expect(createTask?.inputSchema).not.toHaveProperty("required");
+    expect(JSON.stringify(createTask)).not.toContain("impactAssumptions");
+    expect(Buffer.byteLength(JSON.stringify(createTask), "utf8")).toBeLessThan(
+      12_000,
+    );
+  });
   it("does not expose manual notification envelope tools", async () => {
     const client = await setup("user-1", ALL_SCOPES);
 
@@ -1049,7 +1100,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     const body = parseToolBody(result);
-    expect(body.error).toContain("Pass at least one recipient filter");
+    expect(body.message).toContain("Pass at least one recipient filter");
     expect(mocks.listAdminTaskEmailCommunications).not.toHaveBeenCalled();
   });
 
@@ -1121,7 +1172,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       const body = parseToolBody(result);
-      expect(body.error).toBe("authentication_required");
+      expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
       expect(mocks.listCommunicationsForViewer).not.toHaveBeenCalled();
     });
 
@@ -1134,7 +1185,7 @@ describe("MCP server tool dispatch", () => {
           arguments: { channel: "CARRIER_PIGEON" },
         }),
       );
-      expect(badChannel.error).toContain("channel must be one of");
+      expect(badChannel.message).toContain("channel must be one of");
 
       const badDate = parseToolBody(
         await client.callTool({
@@ -1142,7 +1193,7 @@ describe("MCP server tool dispatch", () => {
           arguments: { sinceIso: "not-a-date" },
         }),
       );
-      expect(badDate.error).toContain("sinceIso");
+      expect(badDate.message).toContain("sinceIso");
       expect(mocks.listCommunicationsForViewer).not.toHaveBeenCalled();
     });
 
@@ -1173,7 +1224,7 @@ describe("MCP server tool dispatch", () => {
           arguments: { id: "comm-404" },
         }),
       );
-      expect(missing.error).toContain("not found");
+      expect(missing.message).toContain("not found");
     });
   });
 
@@ -1433,8 +1484,8 @@ describe("MCP server tool dispatch", () => {
     });
 
     expect(result.isError).toBe(true);
-    expect(parseToolBody(result)).toEqual({
-      error: "Organization name already exists: Open Philanthropy",
+    expect(parseToolBody(result)).toMatchObject({
+      message: "Organization name already exists: Open Philanthropy",
     });
   });
 
@@ -1658,8 +1709,8 @@ describe("MCP server tool dispatch", () => {
         });
 
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result)).toEqual({
-          error: `${field} must be a string`,
+        expect(parseToolBody(result)).toMatchObject({
+          message: `${field} must be a string`,
         });
         expect(mocks.updateOrganizationServer).not.toHaveBeenCalled();
       },
@@ -1679,8 +1730,8 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toEqual({
-        error: "You do not have permission to manage this organization",
+      expect(parseToolBody(result)).toMatchObject({
+        message: "You do not have permission to manage this organization",
       });
     });
 
@@ -1737,8 +1788,8 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toEqual({
-        error: "Cannot remove or demote the last owner of the organization",
+      expect(parseToolBody(result)).toMatchObject({
+        message: "Cannot remove or demote the last owner of the organization",
       });
     });
 
@@ -1847,8 +1898,8 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toEqual({
-        error: "Only an organization owner can delete it",
+      expect(parseToolBody(result)).toMatchObject({
+        message: "Only an organization owner can delete it",
       });
     });
 
@@ -1862,7 +1913,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("authentication_required");
+      expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
       expect(mocks.addOrganizationMember).not.toHaveBeenCalled();
     });
   });
@@ -2019,6 +2070,46 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("returns one canonical impact frame", async () => {
+      const selectedFrame = {
+        frameKey: "marginal",
+        frameSlug: "marginal",
+        expectedEconomicValueUsdBase: 200,
+      };
+      mocks.getTaskDetailData.mockResolvedValue({
+        taskCommunicationCount: 0,
+        task: makeCreatedTask({
+          currentImpactEstimateSet: { id: "estimate-1" },
+          directImpactFrame: { ...selectedFrame, frameKey: "direct" },
+          impact: {
+            availableFrames: [selectedFrame],
+            selectedFrame,
+          },
+          marginalImpactFrame: selectedFrame,
+          selectedImpactFrame: selectedFrame,
+        }),
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const compactResult = await client.callTool({
+        name: "getTask",
+        arguments: { taskId: "task-1" },
+      });
+      const compactTask = parseToolBody(compactResult).task as Record<
+        string,
+        unknown
+      >;
+      expect(compactTask).not.toHaveProperty("currentImpactEstimateSet");
+      expect(compactTask).not.toHaveProperty("directImpactFrame");
+      expect(compactTask).not.toHaveProperty("marginalImpactFrame");
+      expect(compactTask).not.toHaveProperty("selectedImpactFrame");
+      expect(compactTask.impact).toMatchObject({
+        availableFrameKeys: [{ frameKey: "marginal", frameSlug: "marginal" }],
+        selectedFrame,
+      });
+      expect(compactTask.impact).not.toHaveProperty("availableFrames");
+    });
+
     it("returns a clean getTask error when taskId is missing", async () => {
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
@@ -2028,7 +2119,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result)).toMatchObject({
-        error: expect.stringContaining("taskId is required"),
+        message: expect.stringContaining("taskId is required"),
       });
       expect(mocks.getTaskDetailData).not.toHaveBeenCalled();
     });
@@ -2475,7 +2566,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeTruthy();
-      expect(parseToolBody(result).error).toBe("question is required");
+      expect(parseToolBody(result).message).toBe("question is required");
       expect(mocks.referendumCreate).not.toHaveBeenCalled();
     });
   });
@@ -2581,9 +2672,10 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("authentication_required");
-      expect(body.tool).toBe("getNextAction");
-      expect(body.remediation).toMatchObject({
+      const details = body.details as Record<string, unknown>;
+      expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
+      expect(details.tool).toBe("getNextAction");
+      expect(details.remediation).toMatchObject({
         remote_http: expect.objectContaining({
           authorizeEndpoint: expect.stringMatching(/oauth\/authorize$/),
           resourceMetadata: expect.stringContaining(
@@ -2604,8 +2696,8 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({ name: tool, arguments: {} });
         expect(result.isError, `${tool} should error`).toBe(true);
         const body = parseToolBody(result);
-        expect(body.error, `${tool} error code`).toBe(
-          "authentication_required",
+        expect(body.errorCode, `${tool} error code`).toBe(
+          "AUTHENTICATION_REQUIRED",
         );
       }
     });
@@ -2620,8 +2712,8 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toContain("Insufficient scope");
-      expect(body.error).toContain("getNextAction");
+      expect(body.message).toContain("Insufficient scope");
+      expect(body.message).toContain("getNextAction");
     });
   });
 
@@ -2639,13 +2731,38 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("tool_execution_failed");
-      expect(body.tool).toBe("getNextAction");
+      expect(body.errorCode).toBe("TOOL_EXECUTION_FAILED");
+      expect(body.details).toMatchObject({ tool: "getNextAction" });
       expect(body.message).toBe(
         "Simulated DB failure: relation does not exist",
       );
       expect(body).not.toHaveProperty("stack");
       expect(body).not.toHaveProperty("userId");
+    });
+
+    it("returns unexpected remote failures as readable tool results", async () => {
+      mocks.listTasks.mockRejectedValue(
+        new Error("Database temporarily unavailable"),
+      );
+      const client = await setup("user-1", ALL_SCOPES, {
+        exposeToolErrorsAsResults: true,
+      });
+
+      const result = await client.callTool({
+        name: "getNextAction",
+        arguments: {},
+      });
+      const body = parseToolBody(result);
+
+      expect(result.isError).toBeFalsy();
+      expect(body).toMatchObject({
+        details: { tool: "getNextAction" },
+        errorCode: "TOOL_EXECUTION_FAILED",
+        message: "Database temporarily unavailable",
+        ok: false,
+        requestId: expect.any(String),
+        retryable: false,
+      });
     });
 
     it("does not replay private arguments in an error payload", async () => {
@@ -3519,7 +3636,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "reserved execution-planning branch namespace",
       );
       expect(mocks.taskFindFirst).not.toHaveBeenCalled();
@@ -3688,7 +3805,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "Invalid or unauthorized parentTaskRef",
       );
       expect(mocks.taskCreate).not.toHaveBeenCalled();
@@ -3823,6 +3940,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           acceptanceCriteria: ["The task is complete."],
           category: "ENGINEERING",
           description: "Complete work for an organization.",
@@ -3838,7 +3956,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "requires an OWNER, ADMIN, or MEMBER role",
       );
       expect(mocks.canManageOrganization).toHaveBeenCalledWith(
@@ -3871,6 +3989,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Campaign manager",
           description: "Coordinate nonprofit endorsements.",
@@ -3942,6 +4061,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "no description",
             category: "ENGINEERING",
@@ -3953,9 +4073,7 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain(
-          "description is required",
-        );
+        expect(parseToolBody(result).message).toContain("description");
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -3964,6 +4082,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "no category",
             description: "x",
@@ -3975,7 +4094,7 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain("category is required");
+        expect(parseToolBody(result).message).toContain("category");
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -3984,6 +4103,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "no impact",
             description: "x",
@@ -3995,9 +4115,52 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain(
-          "impactStatement is required",
-        );
+        expect(parseToolBody(result).message).toContain("impactStatement");
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("returns a compact structured validation result on the remote transport", async () => {
+        const client = await setup("user-1", ALL_SCOPES, {
+          exposeToolErrorsAsResults: true,
+        });
+        const { impactStatement: _impactStatement, ...argumentsWithoutImpact } =
+          makeCreateTaskArguments();
+
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: argumentsWithoutImpact,
+        });
+        const body = parseToolBody(result);
+
+        expect(result.isError).toBeFalsy();
+        expect(body).toMatchObject({
+          details: { invalidFields: [], missingFields: ["impactStatement"] },
+          errorCode: "INVALID_ARGUMENT",
+          message: expect.stringContaining("impactStatement"),
+          ok: false,
+          requestId: expect.any(String),
+          retryable: false,
+        });
+        expect(JSON.stringify(body).length).toBeLessThan(500);
+      });
+
+      it("requires a taskKey so create retries are idempotent", async () => {
+        const client = await setup("user-1", ALL_SCOPES, {
+          exposeToolErrorsAsResults: true,
+        });
+        const { taskKey: _taskKey, ...argumentsWithoutTaskKey } =
+          makeCreateTaskArguments();
+
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: argumentsWithoutTaskKey,
+        });
+
+        expect(parseToolBody(result)).toMatchObject({
+          details: { missingFields: ["taskKey"] },
+          errorCode: "INVALID_ARGUMENT",
+          ok: false,
+        });
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -4006,6 +4169,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "no acceptance",
             description: "Plain prose with no checklist bullets at all.",
@@ -4017,9 +4181,7 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain(
-          "acceptanceCriteria is required",
-        );
+        expect(parseToolBody(result).message).toContain("acceptanceCriteria");
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -4028,6 +4190,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "no economics",
             description: "x",
@@ -4037,8 +4200,8 @@ describe("MCP server tool dispatch", () => {
           },
         });
         expect(result.isError).toBe(true);
-        const errMsg = parseToolBody(result).error;
-        expect(errMsg).toContain("Missing ranking-critical fields");
+        const errMsg = parseToolBody(result).message;
+        expect(errMsg).toContain("Missing required fields");
         expect(errMsg).toContain("hours");
         expect(errMsg).toContain("value");
         expect(errMsg).toContain("p_success");
@@ -4050,6 +4213,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             title: "unclassified task",
             description: "This task has no selected objective.",
             category: "ENGINEERING",
@@ -4062,9 +4226,7 @@ describe("MCP server tool dispatch", () => {
         });
 
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain(
-          "parentTaskId is required",
-        );
+        expect(parseToolBody(result).message).toContain("parentTaskId");
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -4073,6 +4235,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "optimize-earth",
             title: "junk drawer task",
             description: "This task should have a more specific objective.",
@@ -4086,7 +4249,7 @@ describe("MCP server tool dispatch", () => {
         });
 
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).error).toContain(
+        expect(parseToolBody(result).message).toContain(
           "Optimize Earth is reserved",
         );
         expect(mocks.taskCreate).not.toHaveBeenCalled();
@@ -4117,6 +4280,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "minimal-but-valid",
             description: "x",
@@ -4126,7 +4290,7 @@ describe("MCP server tool dispatch", () => {
             hours: 1,
             value: 100,
             p_success: 0.5,
-            // Skipped: cash_cost, executor_type, timeToImpactStartDays, taskKey
+            // Skipped: cash_cost, executor_type, timeToImpactStartDays
           },
         });
         const body = parseToolBody(result);
@@ -4135,7 +4299,6 @@ describe("MCP server tool dispatch", () => {
             "cash_cost",
             "executor_type",
             "timeToImpactStartDays",
-            expect.stringContaining("taskKey"),
           ]),
         );
         expect(body.recommendation).toContain("updateTask");
@@ -4165,6 +4328,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "markdown-only criteria",
             description:
@@ -4207,6 +4371,7 @@ describe("MCP server tool dispatch", () => {
         await client.callTool({
           name: "createTask",
           arguments: {
+            taskKey: "test:inline-create",
             parentTaskId: "personal-project",
             title: "explicit p_success",
             description: "x",
@@ -4227,6 +4392,180 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("returns the original write receipt when createTask retries a taskKey", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        async (args?: { where?: { id?: string; taskKey?: string } }) => {
+          if (args?.where?.id === "personal-project") {
+            return makePlanningBranch();
+          }
+          if (args?.where?.taskKey === "agent:create:grant-draft") {
+            return makeCreatedTask({
+              id: "existing-task",
+              isPublic: false,
+              parentTaskId: "personal-project",
+              status: TaskStatus.ACTIVE,
+              taskKey: "agent:create:grant-draft",
+              title: "Complete concrete work",
+            });
+          }
+          return null;
+        },
+      );
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: makeCreateTaskArguments({
+          taskKey: "agent:create:grant-draft",
+        }),
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        idempotentReplay: true,
+        taskId: "existing-task",
+        writeReceipt: {
+          idempotencyKey: "agent:create:grant-draft",
+          operation: "createTask",
+          outcome: "already_exists",
+          requestId: expect.any(String),
+          taskId: "existing-task",
+        },
+      });
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("returns the winning write receipt when concurrent creates race", async () => {
+      let taskKeyLookups = 0;
+      mocks.taskFindFirst.mockImplementation(
+        async (args?: { where?: { id?: string; taskKey?: string } }) => {
+          if (args?.where?.id === "personal-project") {
+            return makePlanningBranch();
+          }
+          if (args?.where?.taskKey === "agent:create:concurrent") {
+            taskKeyLookups += 1;
+            return taskKeyLookups === 1
+              ? null
+              : makeCreatedTask({
+                  id: "winning-task",
+                  isPublic: false,
+                  parentTaskId: "personal-project",
+                  status: TaskStatus.ACTIVE,
+                  taskKey: "agent:create:concurrent",
+                  title: "Complete concrete work",
+                });
+          }
+          return null;
+        },
+      );
+      mocks.taskCreate.mockRejectedValue(
+        Object.assign(new Error("Unique constraint failed"), { code: "P2002" }),
+      );
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: makeCreateTaskArguments({
+          taskKey: "agent:create:concurrent",
+        }),
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        idempotentReplay: true,
+        taskId: "winning-task",
+        writeReceipt: {
+          idempotencyKey: "agent:create:concurrent",
+          outcome: "already_exists",
+          taskId: "winning-task",
+        },
+      });
+      expect(taskKeyLookups).toBe(2);
+    });
+
+    it("stales older active rows in the same dated recurrence series", async () => {
+      mocks.taskCreate.mockResolvedValue(
+        makeCreatedTask({
+          id: "sleep-24",
+          parentTaskId: "personal-project",
+          taskKey: "personal:health:sleep-window-2026-07-24",
+          title: "Sleep 8 hours",
+        }),
+      );
+      mocks.taskFindMany.mockResolvedValue([
+        {
+          dueAt: new Date("2026-07-22T14:00:00.000Z"),
+          id: "sleep-22",
+          taskKey: "personal:health:sleep-window-2026-07-22",
+        },
+        {
+          dueAt: new Date("2026-07-23T14:00:00.000Z"),
+          id: "sleep-23",
+          taskKey: "personal:health:sleep-window-2026-07-23",
+        },
+        {
+          dueAt: new Date("2026-07-25T14:00:00.000Z"),
+          id: "sleep-25",
+          taskKey: "personal:health:sleep-window-2026-07-25",
+        },
+      ]);
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: makeCreateTaskArguments({
+          taskKey: "personal:health:sleep-window-2026-07-24",
+          title: "Sleep 8 hours",
+        }),
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdateMany).toHaveBeenCalledWith({
+        data: { status: TaskStatus.STALE },
+        where: { id: { in: ["sleep-22", "sleep-23"] } },
+      });
+      expect(parseToolBody(result)).toMatchObject({
+        supersededTaskIds: ["sleep-22", "sleep-23"],
+        writeReceipt: {
+          operation: "createTask",
+          outcome: "created",
+          taskId: "sleep-24",
+        },
+      });
+    });
+
+    it("completeTaskClaim claims the task before completing it", async () => {
+      mocks.taskFindFirst.mockResolvedValue({ id: "task-1" });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "completeTaskClaim",
+        arguments: {
+          completionEvidence: "Submitted and received confirmation.",
+          taskId: "task-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.claimTask).toHaveBeenCalledWith("task-1", "user-1");
+      expect(mocks.completeTaskClaim).toHaveBeenCalledWith(
+        "task-1",
+        "user-1",
+        "Submitted and received confirmation.",
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        alreadyCompleted: false,
+        claimId: "claim-1",
+        status: TaskClaimStatus.COMPLETED,
+        writeReceipt: {
+          operation: "completeTaskClaim",
+          outcome: "completed",
+          requestId: expect.any(String),
+          taskId: "task-1",
+        },
+      });
+    });
+
     it("rejects public task creation for non-admin users even with tasks:admin", async () => {
       const client = await setup("user-1", [
         McpScope.TASKS_PERSONAL,
@@ -4236,6 +4575,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Public Earth task",
           description:
@@ -4254,7 +4594,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toContain("admin user");
+      expect(body.message).toContain("admin user");
       expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
@@ -4290,6 +4630,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Fund the campaign",
           description:
@@ -4334,6 +4675,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Publish private organization work",
           description: "This should not identify a private organization.",
@@ -4348,8 +4690,8 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toEqual({
-        error:
+      expect(parseToolBody(result)).toMatchObject({
+        message:
           "Public tasks cannot reference a private or unpublished organization.",
       });
       expect(
@@ -4386,6 +4728,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Internal org task",
           description:
@@ -4444,6 +4787,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Outreach to Test Foundation",
           description:
@@ -4481,6 +4825,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Public Earth task",
           description:
@@ -4499,7 +4844,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toContain("admin user");
+      expect(body.message).toContain("admin user");
       expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
@@ -4538,6 +4883,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Build product demo",
           description: "Record a 5-minute walkthrough of the new dashboard.",
@@ -4605,6 +4951,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Create prerequisite chain",
           description:
@@ -4620,7 +4967,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "not found or are inaccessible",
       );
       expect(mocks.taskEdgeCreateMany).not.toHaveBeenCalled();
@@ -4648,6 +4995,7 @@ describe("MCP server tool dispatch", () => {
       await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Add site inventory tools",
           category: "ENGINEERING",
@@ -4703,6 +5051,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Add escaped inventory tools",
           category: "ENGINEERING",
@@ -4750,6 +5099,7 @@ describe("MCP server tool dispatch", () => {
       await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Without assignee or sourceUrl column",
           description:
@@ -4802,6 +5152,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           parentTaskId: "personal-project",
           title: "Translate campaign pages",
           description: "Accept independent translations from several people.",
@@ -4861,6 +5212,7 @@ describe("MCP server tool dispatch", () => {
       await client.callTool({
         name: "createTask",
         arguments: {
+          taskKey: "test:inline-create",
           title: "Subtask with parent + assignee",
           description:
             "A subtask attached to parent-1 and assigned to person-1.",
@@ -4904,7 +5256,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "Updating public tasks requires an admin user",
       );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
@@ -5012,7 +5364,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe(
+      expect(parseToolBody(result).message).toBe(
         "maxClaims must be at least 1 for OPEN_MANY tasks.",
       );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
@@ -5126,7 +5478,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
@@ -5142,7 +5494,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
@@ -5177,7 +5529,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.mergeTask).not.toHaveBeenCalled();
     });
 
@@ -5193,7 +5545,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.mergeTask).not.toHaveBeenCalled();
     });
 
@@ -5217,7 +5569,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain("TaskFundingTarget");
+      expect(parseToolBody(result).message).toContain("TaskFundingTarget");
     });
 
     it("merges accessible tasks and returns the report", async () => {
@@ -5266,7 +5618,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
@@ -5357,7 +5709,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "Dependency update rejected",
       );
       expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
@@ -5471,7 +5823,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toContain(
+      expect(parseToolBody(result).message).toContain(
         "Dependency update rejected",
       );
       expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
@@ -5538,7 +5890,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).error).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe("Task not found");
       expect(mocks.postComment).not.toHaveBeenCalled();
     });
   });
@@ -5600,8 +5952,8 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("authentication_required");
-      expect(body.tool).toBe("getMe");
+      expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
+      expect(body.details).toMatchObject({ tool: "getMe" });
     });
 
     it("updateMyProfile forwards only the supplied fields and returns the fresh profile", async () => {
@@ -5708,7 +6060,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toContain("already taken");
+      expect(body.message).toContain("already taken");
     });
 
     it("updateMyProfile rethrows non-validation errors so the catch block can capture the stack", async () => {
@@ -5722,7 +6074,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("tool_execution_failed");
+      expect(body.errorCode).toBe("TOOL_EXECUTION_FAILED");
       expect(body.message).toBe("DB unreachable");
     });
   });
@@ -5940,8 +6292,8 @@ describe("MCP server tool dispatch", () => {
       });
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toBe("authentication_required");
-      expect(body.tool).toBe("claimSignerReminder");
+      expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
+      expect(body.details).toMatchObject({ tool: "claimSignerReminder" });
     });
 
     it("rejects non-signer task IDs (taskKey doesn't match the signer pattern)", async () => {
@@ -5962,7 +6314,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("not a 1% Treaty signer task");
+      expect(String(body.message)).toContain("not a 1% Treaty signer task");
     });
 
     it("rejects when caller is missing a referralCode", async () => {
@@ -5981,7 +6333,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("referralCode");
+      expect(String(body.message)).toContain("referralCode");
     });
 
     it("happy path: passes signer + caller info to upsertSignerReminderTask, returns the new subtask", async () => {
@@ -6072,7 +6424,7 @@ describe("MCP server tool dispatch", () => {
       });
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("signerTaskId is required");
+      expect(String(body.message)).toContain("signerTaskId is required");
     });
 
     it("non-existent signer task returns a not-found error", async () => {
@@ -6087,7 +6439,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("Signer task not found");
+      expect(String(body.message)).toContain("Signer task not found");
     });
   });
 
@@ -6510,7 +6862,7 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("ambiguous target");
+      expect(String(body.message)).toContain("ambiguous target");
     });
 
     it("assignTaskTemplate commits writes for admins with target organization context", async () => {
@@ -6559,7 +6911,7 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("ambiguous target");
+      expect(String(body.message)).toContain("ambiguous target");
     });
 
     it("assignTaskTemplate requires an explicit target or context", async () => {
@@ -6572,7 +6924,7 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain(
+      expect(String(body.message)).toContain(
         "requires targetPersonId, targetOrganizationId, targetUserId, or context",
       );
     });
@@ -6680,7 +7032,7 @@ describe("MCP server tool dispatch", () => {
       expect(result.isError).toBe(true);
       expect(mocks.fireTaskTrigger).not.toHaveBeenCalled();
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain(
+      expect(String(body.message)).toContain(
         "non-admin callers may only use dryRun:true",
       );
     });
@@ -6693,7 +7045,7 @@ describe("MCP server tool dispatch", () => {
       });
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("triggerKey is required");
+      expect(String(body.message)).toContain("triggerKey is required");
     });
 
     it("getTaskTrigger surfaces a clean not-found error", async () => {
@@ -6706,7 +7058,7 @@ describe("MCP server tool dispatch", () => {
       });
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(String(body.error)).toContain("TaskTrigger not found: nope");
+      expect(String(body.message)).toContain("TaskTrigger not found: nope");
     });
   });
 
@@ -7111,8 +7463,8 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       const body = parseToolBody(result);
-      expect(body.error).toContain("Insufficient scope");
-      expect(body.error).toContain("recordMeasurement");
+      expect(body.message).toContain("Insufficient scope");
+      expect(body.message).toContain("recordMeasurement");
       expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
   });

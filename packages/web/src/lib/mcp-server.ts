@@ -6,7 +6,7 @@
  * - app/api/mcp/route.ts (HTTP transport for Claude Desktop / remote clients)
  */
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
@@ -35,6 +35,7 @@ import {
   TaskApplicationStatus,
   TaskCandidateKind,
   TaskCandidateMatchStatus,
+  TaskClaimStatus,
   TaskClaimPolicy,
   TaskCompensationCadence,
   TaskCompensationKind,
@@ -52,6 +53,7 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { getOrganizationPlanningRootTaskKey } from "@optimitron/db/task-keys";
 import { ensureExecutionPlanningBranch } from "./tasks/planning-branch.server";
+import { parseDatedTaskKey } from "./tasks/dated-task-series";
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
 // components (consent UI, dev portal) can pull just the catalog without
@@ -395,7 +397,9 @@ function hasAdminTaskWriteAccess(
   return isAdmin;
 }
 
-function requiredPrivateTaskScope(ownerOrganizationId: string | null | undefined) {
+function requiredPrivateTaskScope(
+  ownerOrganizationId: string | null | undefined,
+) {
   return ownerOrganizationId
     ? McpScope.TASKS_ORGANIZATION
     : McpScope.TASKS_PERSONAL;
@@ -461,13 +465,65 @@ function ok(data: unknown) {
   };
 }
 
-function err(message: string) {
-  return {
-    content: [
-      { type: "text" as const, text: JSON.stringify({ error: message }) },
-    ],
-    isError: true,
+interface ToolErrorOptions {
+  code?: string;
+  details?: Record<string, unknown>;
+  exposeAsResult?: boolean;
+  requestId?: string;
+  retryable?: boolean;
+}
+
+function toolError(message: string, options: ToolErrorOptions = {}) {
+  const payload = {
+    ok: false,
+    errorCode: options.code ?? "INVALID_ARGUMENT",
+    message,
+    requestId: options.requestId ?? randomUUID(),
+    retryable: options.retryable ?? false,
+    ...(options.details ? { details: options.details } : {}),
   };
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(payload) }],
+    structuredContent: payload,
+    ...(options.exposeAsResult ? {} : { isError: true }),
+  };
+}
+
+interface DelegatedToolResponse {
+  content: Array<{ text?: string; type: string }>;
+  isError?: boolean;
+  structuredContent?: Record<string, unknown>;
+}
+
+function normalizeDelegatedToolResponse<T extends DelegatedToolResponse>(
+  response: T,
+  makeError: (
+    message: string,
+    options?: ToolErrorOptions,
+  ) => ReturnType<typeof toolError>,
+) {
+  if (!response.isError) return response;
+
+  let payload: Record<string, unknown> = {};
+  const text = response.content.find((item) => item.type === "text")?.text;
+  if (text) {
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      if (asObject(parsed)) payload = asObject(parsed)!;
+    } catch {
+      // A delegated handler should return JSON, but retain its text if it does not.
+    }
+  }
+  const message =
+    optionalString(payload.message) ??
+    optionalString(payload.error) ??
+    optionalString(text) ??
+    "Tool execution failed.";
+  return makeError(message, {
+    code: optionalString(payload.errorCode) ?? "INVALID_ARGUMENT",
+    details: asObject(payload.details) ?? undefined,
+    retryable: payload.retryable === true,
+  });
 }
 
 function getMcpBaseUrl(): string {
@@ -709,41 +765,39 @@ async function runAuditedEarthDataTool(
 // anonymously. Instead of a bare "Authentication required" string, emit a
 // structured error the calling LLM can act on: OAuth discovery URL for remote
 // HTTP clients, env-var fallback for local stdio.
-function authRequired(toolName: string, reason: string) {
+function authenticationRequired(
+  toolName: string,
+  reason: string,
+  options: Pick<ToolErrorOptions, "exposeAsResult" | "requestId"> = {},
+) {
   const base = getMcpBaseUrl();
-  return {
-    content: [
-      {
-        type: "text" as const,
-        text: JSON.stringify(
-          {
-            error: "authentication_required",
-            tool: toolName,
-            message: `Tool "${toolName}" needs an authenticated user. ${reason}`,
-            remediation: {
-              remote_http: {
-                description:
-                  "If you're connecting over HTTP (e.g. the Claude.ai connector), the server advertises OAuth via the standard well-known endpoint. Have the client fetch this URL and complete the OAuth 2.1 + PKCE flow, then retry the tool with the resulting Bearer token.",
-                resourceMetadata: `${base}/.well-known/oauth-protected-resource/mcp`,
-                authorizationServerMetadata: `${base}/.well-known/oauth-authorization-server`,
-                authorizeEndpoint: `${base}/api/mcp/oauth/authorize`,
-                tokenEndpoint: `${base}/api/mcp/oauth/token`,
-                registrationEndpoint: `${base}/api/mcp/oauth/register`,
-              },
-              local_stdio: {
-                description:
-                  "If you're running the local stdio server (Claude Code via .mcp.json), set MCP_USER_EMAIL or MCP_USER_ID in your environment and restart the server. The stdio transport has no OAuth — it identifies you by env var.",
-                envVars: ["MCP_USER_EMAIL", "MCP_USER_ID"],
-              },
-            },
+  return toolError(
+    `Tool "${toolName}" needs an authenticated user. ${reason}`,
+    {
+      code: "AUTHENTICATION_REQUIRED",
+      details: {
+        tool: toolName,
+        remediation: {
+          remote_http: {
+            description:
+              "If you're connecting over HTTP (e.g. the Claude.ai connector), the server advertises OAuth via the standard well-known endpoint. Have the client fetch this URL and complete the OAuth 2.1 + PKCE flow, then retry the tool with the resulting Bearer token.",
+            resourceMetadata: `${base}/.well-known/oauth-protected-resource/mcp`,
+            authorizationServerMetadata: `${base}/.well-known/oauth-authorization-server`,
+            authorizeEndpoint: `${base}/api/mcp/oauth/authorize`,
+            tokenEndpoint: `${base}/api/mcp/oauth/token`,
+            registrationEndpoint: `${base}/api/mcp/oauth/register`,
           },
-          null,
-          2,
-        ),
+          local_stdio: {
+            description:
+              "If you're running the local stdio server (Claude Code via .mcp.json), set MCP_USER_EMAIL or MCP_USER_ID in your environment and restart the server. The stdio transport has no OAuth — it identifies you by env var.",
+            envVars: ["MCP_USER_EMAIL", "MCP_USER_ID"],
+          },
+        },
       },
-    ],
-    isError: true,
-  };
+      exposeAsResult: options.exposeAsResult,
+      requestId: options.requestId,
+    },
+  );
 }
 
 function enumValue<T extends Record<string, string>>(
@@ -815,9 +869,18 @@ function optionalStringInput(
 function requiredString(value: unknown, fieldName: string) {
   return (
     optionalString(value) ??
-    err(
+    toolError(
       `${fieldName} is required. Use searchTasks, listTasks, getMyQueue, or getNextAction to find a task id, then call this tool with {"${fieldName}":"<task-id>"}.`,
     )
+  );
+}
+
+function isPrismaUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error != null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
   );
 }
 
@@ -1845,6 +1908,33 @@ function formatTaskVisibility(isPublic: unknown) {
   return undefined;
 }
 
+function createTaskReplayResult(
+  task: {
+    id: string;
+    isPublic: boolean;
+    status: unknown;
+    title: string;
+  },
+  taskKey: string,
+  requestId: string,
+) {
+  return {
+    idempotentReplay: true,
+    isPublic: task.isPublic,
+    status: task.status,
+    taskId: task.id,
+    title: task.title,
+    visibility: formatTaskVisibility(task.isPublic),
+    writeReceipt: {
+      idempotencyKey: taskKey,
+      operation: "createTask",
+      outcome: "already_exists",
+      requestId,
+      taskId: task.id,
+    },
+  };
+}
+
 function parseTaskVisibility(value: unknown) {
   if (value == null || value === "") return undefined;
   if (typeof value !== "string") {
@@ -2017,17 +2107,59 @@ function mergeAcceptanceCriteriaIntoContext(
     : context;
 }
 
+function compactTaskImpactForMcp(
+  task: Record<string, unknown>,
+): Record<string, unknown> {
+  const {
+    currentImpactEstimateSet: _currentImpactEstimateSet,
+    directImpactFrame: _directImpactFrame,
+    marginalImpactFrame: _marginalImpactFrame,
+    selectedImpactFrame: _selectedImpactFrame,
+    ...rest
+  } = task;
+  const impact = asObject(task.impact);
+  const availableFrames = Array.isArray(impact?.availableFrames)
+    ? impact.availableFrames
+    : [];
+  const compactImpact: Record<string, unknown> | null = impact
+    ? {
+        ...impact,
+        availableFrameKeys: availableFrames
+          .map((frame) => asObject(frame))
+          .filter((frame): frame is Record<string, unknown> => frame != null)
+          .map((frame) => ({
+            frameKey: frame.frameKey ?? null,
+            frameSlug: frame.frameSlug ?? null,
+          })),
+      }
+    : null;
+  if (compactImpact) delete compactImpact.availableFrames;
+
+  return {
+    ...rest,
+    ...(Array.isArray(task.childTasks)
+      ? {
+          childTasks: task.childTasks.map((child) =>
+            asObject(child) ? compactTaskImpactForMcp(asObject(child)!) : child,
+          ),
+        }
+      : {}),
+    impact: compactImpact,
+  };
+}
+
 function enrichTaskForMcp(task: unknown) {
   const record = { ...(task as Record<string, unknown>) };
   const context = mergeAcceptanceCriteriaIntoContext(
     { ...getTaskContext(record) },
     record.description,
   );
-  return {
+  const enriched = {
     ...record,
     contextJson: context,
     executorType: getTaskExecutorType({ ...record, contextJson: context }),
   };
+  return compactTaskImpactForMcp(enriched);
 }
 
 async function validateExplicitTaskParent(input: {
@@ -3264,7 +3396,8 @@ function selectPersonalNextAction(queue: PersonalQueueRow[]) {
     (task) =>
       (task.deadlinePolicy === "REQUIRED" &&
         (task.deadlineStatus === "start_now" ||
-          task.deadlineStatus === "missed")) ||
+          (task.deadlineStatus === "missed" &&
+            task.deadlineOverrideEligible))) ||
       (task.deadlinePolicy === "EXPIRES" &&
         task.deadlineStatus === "start_now"),
   );
@@ -3556,6 +3689,16 @@ const TASK_CONTEXT_JSON_SCHEMA = {
       },
     },
   },
+};
+
+// Keep the MCP catalog compact. Typed top-level task fields cover normal
+// writes; advanced metadata remains accepted without making every client load
+// the full page-dossier shape twice (createTask + updateTask).
+const MCP_TASK_CONTEXT_INPUT_SCHEMA = {
+  type: TASK_CONTEXT_JSON_SCHEMA.type,
+  description:
+    "Optional advanced task metadata. Prefer the typed top-level task fields.",
+  additionalProperties: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -5278,7 +5421,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getTask",
     description:
-      "Get full details for one task by taskId. If you do not have a taskId yet, call searchTasks, listTasks, getMyQueue, or getNextAction first.",
+      "Get task details by taskId with one canonical impact frame. Call getTaskImpactTrace for formulas and provenance. If you do not have a taskId yet, call searchTasks, listTasks, getMyQueue, or getNextAction first.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6075,10 +6218,10 @@ const TASK_TOOL_DEFINITIONS = [
     name: "createTask",
     description:
       "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
-      "Required: title, description, parentTaskId, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
+      "Required: title, description, parentTaskId, taskKey, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
-      "The response includes a missingFields[] array — any soft-recommended fields (cash_cost, executor_type, timeToImpactStartDays, taskKey) you skipped will be listed there so you can fill them in via updateTask.",
+      "taskKey is the idempotency key: retrying the same create returns the existing task instead of creating a duplicate. The response includes a writeReceipt and a missingFields[] array for soft-recommended metadata.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6275,20 +6418,15 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Legacy boolean visibility alias. Prefer visibility='PUBLIC' or 'PRIVATE'. Ignored when visibility is supplied.",
         },
-        contextJson: TASK_CONTEXT_JSON_SCHEMA,
+        contextJson: MCP_TASK_CONTEXT_INPUT_SCHEMA,
         sortOrder: {
           type: "number",
           description:
             "Manual display order for public/task-tree views (lower = earlier). Not the computed personal priority score.",
         },
       },
-      required: [
-        "title",
-        "description",
-        "parentTaskId",
-        "category",
-        "impactStatement",
-      ],
+      // Deliberately validated in the handler so remote clients receive a
+      // concise missing/invalid-field diff instead of dumping this schema.
     },
   },
 
@@ -6789,9 +6927,9 @@ const TASK_TOOL_DEFINITIONS = [
           description: "Freeform rationale for the deadline policy.",
         },
         contextJson: {
-          ...TASK_CONTEXT_JSON_SCHEMA,
+          ...MCP_TASK_CONTEXT_INPUT_SCHEMA,
           description:
-            "Rich task dossier slots — merged with existing contextJson. Mirror of TaskContextJsonSchema. See createTask for the full slot list.",
+            "Optional advanced task metadata merged with existing contextJson.",
         },
         depends_on: {
           type: "array",
@@ -7235,7 +7373,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "completeTaskClaim",
     description:
-      "Mark a claimed task as completed with evidence of what was done.",
+      "Claim an open task if needed, then mark the authenticated user's claim completed. Safe to retry after completion. Requires completionEvidence describing what was done.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7245,7 +7383,7 @@ const TASK_TOOL_DEFINITIONS = [
           description: "What was done and proof it worked",
         },
       },
-      required: ["taskId", "completionEvidence"],
+      // Handler validation keeps errors concise for remote clients.
     },
   },
   {
@@ -7803,6 +7941,7 @@ export function createMcpServer(
   scopes?: McpScope[],
   options: {
     clientId?: string | null;
+    exposeToolErrorsAsResults?: boolean;
     isAdmin?: boolean;
     oauthGrantId?: string | null;
     organizationIds?: readonly string[] | null;
@@ -7882,6 +8021,18 @@ export function createMcpServer(
     async (request: { params: { arguments?: unknown; name: string } }) => {
       const { name, arguments: args } = request.params;
       const a = (args ?? {}) as Record<string, unknown>;
+      const requestId = randomUUID();
+      const err = (message: string, errorOptions: ToolErrorOptions = {}) =>
+        toolError(message, {
+          ...errorOptions,
+          exposeAsResult: options.exposeToolErrorsAsResults === true,
+          requestId,
+        });
+      const authRequired = (toolName: string, reason: string) =>
+        authenticationRequired(toolName, reason, {
+          exposeAsResult: options.exposeToolErrorsAsResults === true,
+          requestId,
+        });
 
       // Scope check
       if (!hasScope(scopes, name)) {
@@ -7902,48 +8053,66 @@ export function createMcpServer(
 
       try {
         if (isTaskTriggerToolName(name)) {
-          return handleTaskTriggerToolCall({
-            args: a,
-            isAdmin,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleTaskTriggerToolCall({
+              args: a,
+              isAdmin,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isTaskTemplateToolName(name)) {
-          return handleTaskTemplateToolCall({
-            args: a,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleTaskTemplateToolCall({
+              args: a,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isDocumentToolName(name)) {
-          return handleDocumentToolCall({
-            args: a,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleDocumentToolCall({
+              args: a,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isCollectionToolName(name)) {
-          return handleCollectionToolCall({
-            args: a,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleCollectionToolCall({
+              args: a,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isContentToolName(name)) {
-          return handleContentToolCall({
-            args: a,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleContentToolCall({
+              args: a,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isFormResponseToolName(name)) {
-          return handleFormResponseToolCall({
-            args: a,
-            clientAccessBoundary: taskClientBoundary,
-            name,
-            userId: userId ?? null,
-          });
+          return normalizeDelegatedToolResponse(
+            await handleFormResponseToolCall({
+              args: a,
+              clientAccessBoundary: taskClientBoundary,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
         }
         if (isPrivateExecutionToolName(name)) {
           const response = await handlePrivateExecutionToolCall({
@@ -7973,7 +8142,7 @@ export function createMcpServer(
             ) as Record<string, unknown>;
             return ok({ ...body, auditEvent: audit });
           }
-          return response;
+          return normalizeDelegatedToolResponse(response, err);
         }
 
         switch (name) {
@@ -9216,8 +9385,8 @@ export function createMcpServer(
               const { createdByUserId, user, ...visible } = person;
               const ownsPrivateRecord = Boolean(
                 allowPrivatePersonalProfiles &&
-                  userId &&
-                  (createdByUserId === userId || user?.id === userId),
+                userId &&
+                (createdByUserId === userId || user?.id === userId),
               );
               return {
                 ...visible,
@@ -9316,9 +9485,8 @@ export function createMcpServer(
           case "listOrganizations": {
             const prisma = await getPrisma();
             const { tasks } = await getTaskFunctions();
-            const { getOrganizationAccessWhere } = await import(
-              "./organization.server"
-            );
+            const { getOrganizationAccessWhere } =
+              await import("./organization.server");
             const query = typeof a.query === "string" ? a.query.trim() : "";
             const queryMode: Prisma.QueryMode = "insensitive";
             const includeTasks = a.includeTasks === true;
@@ -9418,9 +9586,8 @@ export function createMcpServer(
           case "getOrganizationTasks": {
             const prisma = await getPrisma();
             const { tasks } = await getTaskFunctions();
-            const { getOrganizationAccessWhere } = await import(
-              "./organization.server"
-            );
+            const { getOrganizationAccessWhere } =
+              await import("./organization.server");
             const organizationId = (a.organizationId as string) ?? "";
             if (!organizationId) return err("organizationId is required");
             const resolvedScope = resolveTaskVisibilityParam({
@@ -10408,30 +10575,11 @@ export function createMcpServer(
               ...blockedTaskIds,
             ]);
 
-            if (!a.title || typeof a.title !== "string" || !a.title.trim()) {
-              return err("title is required.");
-            }
-            if (
-              !a.description ||
-              typeof a.description !== "string" ||
-              !a.description.trim()
-            ) {
-              return err(
-                "description is required. State what the task is and what 'done' looks like.",
-              );
-            }
-            if (
-              !a.category ||
-              typeof a.category !== "string" ||
-              !(a.category in TaskCategory)
-            ) {
-              return err(
-                "category is required. Pick one of: ADVOCACY, RESEARCH, COMMUNICATION, ENGINEERING, ORGANIZING, OUTREACH, GOVERNANCE, SCIENCE, LEGAL, CREATIVE, OTHER.",
-              );
-            }
             // Accept either an explicit array, or a markdown 'Acceptance
             // criteria' section in the description. Missing both = error.
-            const description = a.description as string;
+            const title = optionalString(a.title);
+            const description =
+              typeof a.description === "string" ? a.description : "";
             const descriptionForParsing =
               normalizeTaskTextLineBreaks(description);
             const explicitCriteria = normalizeAcceptanceCriteria(
@@ -10443,32 +10591,26 @@ export function createMcpServer(
                 : extractAcceptanceCriteriaFromDescription(
                     descriptionForParsing,
                   );
-            if (extractedCriteria.length === 0) {
-              return err(
-                "acceptanceCriteria is required: pass a non-empty string array of testable 'done' conditions, " +
-                  "or include a markdown '## Acceptance criteria' section with checklist bullets in the description.",
-              );
-            }
+            const invalidFields: string[] = [];
             if (
               Array.isArray(a.acceptanceCriteria) &&
               a.acceptanceCriteria.some(
                 (c) => typeof c !== "string" || !c.trim(),
               )
             ) {
-              return err(
-                "acceptanceCriteria entries must all be non-empty strings.",
+              invalidFields.push(
+                "acceptanceCriteria (entries must be non-empty strings)",
               );
             }
             if (
-              !a.impactStatement ||
-              typeof a.impactStatement !== "string" ||
-              !a.impactStatement.trim()
+              typeof a.category === "string" &&
+              !(a.category in TaskCategory)
             ) {
-              return err(
-                "impactStatement is required. One sentence: why does completing this task matter? " +
-                  "If you can't articulate the impact, the task should not exist.",
+              invalidFields.push(
+                "category (use ADVOCACY, RESEARCH, COMMUNICATION, ENGINEERING, ORGANIZING, OUTREACH, GOVERNANCE, SCIENCE, LEGAL, CREATIVE, or OTHER)",
               );
             }
+
             // Ranking-critical numeric fields. Each accepts aliases — see
             // resolveTaskEconomics — but at least one of each group must be a
             // finite number, otherwise the task scores 0 and never surfaces.
@@ -10483,32 +10625,50 @@ export function createMcpServer(
               parseFiniteNumber(a.p_success) != null ||
               parseFiniteNumber(a.pSuccess) != null ||
               parseFiniteNumber(a.successProbabilityBase) != null;
-            const missingRanking: string[] = [];
-            if (!hoursProvided)
-              missingRanking.push("hours (estimated effort hours)");
-            if (!valueProvided)
-              missingRanking.push(
-                "value (gross USD welfare value if successful)",
-              );
-            if (!pSuccessProvided)
-              missingRanking.push("p_success (success probability 0–1)");
-            if (missingRanking.length > 0) {
-              return err(
-                `Missing ranking-critical fields: ${missingRanking.join(", ")}. ` +
-                  `Estimate them — a calibrated guess beats no number. ` +
-                  `Tasks without these score 0 and will not surface in any queue.`,
-              );
+            const parentTaskId = optionalString(a.parentTaskId);
+            const taskKey = optionalString(a.taskKey);
+            const validationMissingFields: string[] = [];
+            if (!title) validationMissingFields.push("title");
+            if (!description.trim())
+              validationMissingFields.push("description");
+            if (!parentTaskId) validationMissingFields.push("parentTaskId");
+            if (!taskKey) validationMissingFields.push("taskKey");
+            if (!a.category) validationMissingFields.push("category");
+            if (extractedCriteria.length === 0)
+              validationMissingFields.push("acceptanceCriteria");
+            if (!optionalString(a.impactStatement))
+              validationMissingFields.push("impactStatement");
+            if (!hoursProvided) validationMissingFields.push("hours");
+            if (!valueProvided) validationMissingFields.push("value");
+            if (!pSuccessProvided) validationMissingFields.push("p_success");
+            if (
+              validationMissingFields.length > 0 ||
+              invalidFields.length > 0
+            ) {
+              const parts = [
+                validationMissingFields.length > 0
+                  ? `Missing required fields: ${validationMissingFields.join(", ")}.`
+                  : null,
+                invalidFields.length > 0
+                  ? `Invalid fields: ${invalidFields.join(", ")}.`
+                  : null,
+              ].filter((part): part is string => part != null);
+              return err(parts.join(" "), {
+                code: "INVALID_ARGUMENT",
+                details: {
+                  invalidFields,
+                  missingFields: validationMissingFields,
+                },
+              });
             }
 
             const isAdminTaskWriter = hasAdminTaskWriteAccess(scopes, isAdmin);
-            const parentTaskId = requiredString(a.parentTaskId, "parentTaskId");
-            if (typeof parentTaskId !== "string") return parentTaskId;
             let parentTask: Awaited<
               ReturnType<typeof validateExplicitTaskParent>
             >;
             try {
               parentTask = await validateExplicitTaskParent({
-                parentTaskId,
+                parentTaskId: parentTaskId!,
                 prisma,
                 userId,
               });
@@ -10516,6 +10676,47 @@ export function createMcpServer(
               return err(
                 error instanceof Error ? error.message : "Invalid parent task.",
               );
+            }
+
+            if (taskKey) {
+              const existingTask = await prisma.task.findFirst({
+                where: {
+                  deletedAt: null,
+                  taskKey,
+                  AND: [
+                    getTaskAccessWhere({ action: "MANAGE", userId }),
+                    getTaskClientAccessWhere(taskClientBoundary),
+                  ],
+                },
+                select: {
+                  id: true,
+                  isPublic: true,
+                  parentTaskId: true,
+                  status: true,
+                  taskKey: true,
+                  title: true,
+                },
+              });
+              if (existingTask?.taskKey === taskKey) {
+                const conflictingFields = [
+                  ...(existingTask.title === title ? [] : ["title"]),
+                  ...(existingTask.parentTaskId === parentTaskId
+                    ? []
+                    : ["parentTaskId"]),
+                ];
+                if (conflictingFields.length > 0) {
+                  return err(
+                    `taskKey ${JSON.stringify(taskKey)} already belongs to a different task.`,
+                    {
+                      code: "IDEMPOTENCY_CONFLICT",
+                      details: { conflictingFields, taskId: existingTask.id },
+                    },
+                  );
+                }
+                return ok(
+                  createTaskReplayResult(existingTask, taskKey, requestId),
+                );
+              }
             }
 
             if (dependencyTaskIds.length > 0) {
@@ -10621,8 +10822,7 @@ export function createMcpServer(
             }
             if (
               !parentTask.isPublic &&
-              (ownerOrganizationId ?? null) !==
-                parentTask.ownerOrganizationId
+              (ownerOrganizationId ?? null) !== parentTask.ownerOrganizationId
             ) {
               return err(
                 "A private child task must inherit its parent's organization owner.",
@@ -10704,10 +10904,10 @@ export function createMcpServer(
               description: descriptionForParsing,
             };
             const data: Record<string, unknown> = {
-              title: a.title as string,
+              title: title!,
               description,
-              parentTaskId,
-              taskKey: (a.taskKey as string) ?? null,
+              parentTaskId: parentTaskId!,
+              taskKey,
               category: a.category
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
                 : TaskCategory.OTHER,
@@ -10733,6 +10933,7 @@ export function createMcpServer(
               status: TaskStatus.ACTIVE,
             };
             data.createdByUserId = userId;
+            const supersededTaskIds: string[] = [];
             const task = await prisma.$transaction(
               async (tx) => {
                 const created = await tx.task.create({ data: data as any });
@@ -10784,6 +10985,43 @@ export function createMcpServer(
                   successProbabilityBase: economics.pSuccess,
                   timeToImpactStartDays: economics.timeToImpactStartDays,
                 });
+
+                const datedTaskKey = parseDatedTaskKey(taskKey);
+                if (datedTaskKey) {
+                  const possiblePredecessors = await tx.task.findMany({
+                    where: {
+                      assigneeOrganizationId: assigneeOrganizationId ?? null,
+                      assigneePersonId: assigneePersonId ?? null,
+                      createdByUserId: userId,
+                      deletedAt: null,
+                      id: { not: created.id },
+                      isPublic,
+                      ownerOrganizationId: ownerOrganizationId ?? null,
+                      status: TaskStatus.ACTIVE,
+                      taskKey: { startsWith: `${datedTaskKey.seriesPrefix}-` },
+                    },
+                    select: { dueAt: true, id: true, taskKey: true },
+                  });
+                  supersededTaskIds.push(
+                    ...possiblePredecessors
+                      .filter((candidate) => {
+                        const parsed = parseDatedTaskKey(candidate.taskKey);
+                        return (
+                          parsed?.seriesPrefix === datedTaskKey.seriesPrefix &&
+                          parsed.dateKey < datedTaskKey.dateKey &&
+                          candidate.dueAt != null &&
+                          candidate.dueAt.getTime() <= Date.now()
+                        );
+                      })
+                      .map((candidate) => candidate.id),
+                  );
+                  if (supersededTaskIds.length > 0) {
+                    await tx.task.updateMany({
+                      where: { id: { in: supersededTaskIds } },
+                      data: { status: TaskStatus.STALE },
+                    });
+                  }
+                }
                 return created;
               },
               { maxWait: 10_000, timeout: 60_000 },
@@ -10854,13 +11092,22 @@ export function createMcpServer(
             };
             return ok({
               ...baseResult,
+              idempotentReplay: false,
               isPublic,
-              visibility: formatTaskVisibility(isPublic),
               missingFields,
               recommendation:
                 missingFields.length === 0
                   ? "Task created with full metadata."
                   : `Task created. Consider an updateTask call to fill in: ${missingFields.join(", ")}.`,
+              supersededTaskIds,
+              visibility: formatTaskVisibility(isPublic),
+              writeReceipt: {
+                idempotencyKey: taskKey,
+                operation: "createTask",
+                outcome: "created",
+                requestId,
+                taskId: task.id,
+              },
             });
           }
 
@@ -13051,7 +13298,10 @@ export function createMcpServer(
             }
 
             const { mergeTask } = await import("./tasks/task-merge.server");
-            const report = await mergeTask({ canonicalTaskId, duplicateTaskId });
+            const report = await mergeTask({
+              canonicalTaskId,
+              duplicateTaskId,
+            });
             if (report.refused) return err(report.refused);
             return ok(report);
           }
@@ -13412,9 +13662,13 @@ export function createMcpServer(
 
             // 4. Return the freshly-summarized task so the caller has the actionLink etc.
             const { tasks } = await getTaskFunctions();
-            const detail = await tasks.getTaskDetailData(result.taskId, userId, {
-              clientAccessBoundary: taskClientBoundary,
-            });
+            const detail = await tasks.getTaskDetailData(
+              result.taskId,
+              userId,
+              {
+                clientAccessBoundary: taskClientBoundary,
+              },
+            );
             if (!detail)
               return err(
                 "Reminder subtask created but could not be loaded for summary.",
@@ -13458,15 +13712,56 @@ export function createMcpServer(
             const { tasks } = await getTaskFunctions();
             if (!userId)
               return authRequired(name, "Completing a claim requires OAuth.");
-            if (!(await canAccessTaskResource(a.taskId as string, "COMMENT"))) {
+            const taskId = optionalString(a.taskId);
+            const completionEvidence = optionalString(a.completionEvidence);
+            const missingFields = [
+              ...(taskId ? [] : ["taskId"]),
+              ...(completionEvidence ? [] : ["completionEvidence"]),
+            ];
+            if (missingFields.length > 0) {
+              return err(
+                `Missing required fields: ${missingFields.join(", ")}.`,
+                {
+                  code: "INVALID_ARGUMENT",
+                  details: { missingFields },
+                },
+              );
+            }
+            if (!(await canAccessTaskResource(taskId!, "COMMENT"))) {
               return err("Task not found");
             }
+
+            let existingClaim;
+            try {
+              existingClaim = await tasks.claimTask(taskId!, userId);
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Task claim failed.",
+                { code: "CLAIM_FAILED" },
+              );
+            }
             const claim = await tasks.completeTaskClaim(
-              a.taskId as string,
+              taskId!,
               userId,
-              a.completionEvidence as string,
+              completionEvidence!,
             );
-            return ok({ claimId: claim.id, status: claim.status });
+            return ok({
+              alreadyCompleted:
+                existingClaim.status === TaskClaimStatus.COMPLETED ||
+                existingClaim.status === TaskClaimStatus.VERIFIED,
+              claimId: claim.id,
+              status: claim.status,
+              writeReceipt: {
+                operation: "completeTaskClaim",
+                outcome:
+                  existingClaim.status === TaskClaimStatus.COMPLETED ||
+                  existingClaim.status === TaskClaimStatus.VERIFIED
+                    ? "already_completed"
+                    : "completed",
+                requestId,
+                taskId: taskId!,
+              },
+            });
           }
 
           // ── addDependency ──────────────────────────────────────
@@ -13629,10 +13924,7 @@ export function createMcpServer(
             });
             if (
               !targetTask ||
-              !isTaskWithinClientAccessBoundary(
-                targetTask,
-                taskClientBoundary,
-              )
+              !isTaskWithinClientAccessBoundary(targetTask, taskClientBoundary)
             ) {
               return err("Task not found");
             }
@@ -14165,8 +14457,46 @@ export function createMcpServer(
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
+        const writeConflict = isPrismaUniqueConstraintError(error);
+        if (writeConflict && name === "createTask" && userId) {
+          const taskKey = optionalString(a.taskKey);
+          if (taskKey) {
+            try {
+              const prisma = await getPrisma();
+              const existingTask = await prisma.task.findFirst({
+                where: {
+                  deletedAt: null,
+                  taskKey,
+                  AND: [
+                    getTaskAccessWhere({ action: "MANAGE", userId }),
+                    getTaskClientAccessWhere(taskClientBoundary),
+                  ],
+                },
+                select: {
+                  id: true,
+                  isPublic: true,
+                  parentTaskId: true,
+                  status: true,
+                  taskKey: true,
+                  title: true,
+                },
+              });
+              if (
+                existingTask?.taskKey === taskKey &&
+                existingTask.title === optionalString(a.title) &&
+                existingTask.parentTaskId === optionalString(a.parentTaskId)
+              ) {
+                return ok(
+                  createTaskReplayResult(existingTask, taskKey, requestId),
+                );
+              }
+            } catch {
+              // Fall through to the structured conflict when recovery fails.
+            }
+          }
+        }
         // Server-side: full stack ends up in Vercel/runtime logs.
-        console.error(`[mcp] tool "${name}" threw:`, error);
+        console.error(`[mcp] tool "${name}" threw [${requestId}]:`, error);
         // Sentry: send-fire-and-forget so we don't block the response. The
         // outer try/catch already returned the JSON-RPC error to the client.
         // We tag with the tool name + userId so the alert/filter UX is sane.
@@ -14178,7 +14508,10 @@ export function createMcpServer(
               scope.setTag("mcp.tool", name);
               scope.setTag("mcp.surface", "tool_dispatch");
               if (userId) scope.setUser({ id: userId });
-              scope.setContext("mcpToolInput", mcpToolInputSummary(a));
+              scope.setContext("mcpToolInput", {
+                ...mcpToolInputSummary(a),
+                requestId,
+              });
               Sentry.captureException(error);
             });
           })
@@ -14186,23 +14519,16 @@ export function createMcpServer(
             // Sentry unavailable (CI / unit tests / startup race) — already logged above.
           });
         // Wire responses never replay private arguments, actor IDs, or stacks.
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify(
-                {
-                  error: "tool_execution_failed",
-                  tool: name,
-                  message,
-                },
-                null,
-                2,
-              ),
-            },
-          ],
-          isError: true,
-        };
+        return err(
+          writeConflict
+            ? "The write conflicts with an existing unique value. Retry with the same idempotency key to read the existing result."
+            : message,
+          {
+            code: writeConflict ? "WRITE_CONFLICT" : "TOOL_EXECUTION_FAILED",
+            details: { tool: name },
+            retryable: writeConflict,
+          },
+        );
       }
     },
   );
