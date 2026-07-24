@@ -224,7 +224,7 @@ const impactFrameSelect = {
   timeToImpactStartDays: true,
 } satisfies Prisma.TaskImpactFrameEstimateSelect;
 
-const impactEstimateSetSelect = {
+export const impactEstimateSetSelect = {
   assumptionsJson: true,
   inputs: {
     where: { deletedAt: null },
