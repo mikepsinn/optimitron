@@ -6144,7 +6144,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createOrganization",
     description:
-      "Create an approved organization for task assignment. Uses post-moderation: create now, reject later if needed.",
+      "Create an approved organization for task assignment. Uses post-moderation: create now, reject later if needed. Visibility defaults to PRIVATE (visible only to members) unless visibility='PUBLIC' is passed explicitly — only make an organization PUBLIC when it needs to be publicly discoverable or assigned public tasks.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6190,7 +6190,7 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["PUBLIC", "PRIVATE"],
           description:
-            "Discoverability. PRIVATE organizations are visible only to their members. Defaults to PUBLIC.",
+            "Discoverability. PRIVATE organizations are visible only to their members. MCP-created organizations default to PRIVATE — pass visibility='PUBLIC' explicitly to make it publicly discoverable and referenceable by public tasks.",
         },
         donationUrl: {
           type: "string",
@@ -6569,7 +6569,8 @@ const TASK_TOOL_DEFINITIONS = [
         visibility: {
           type: "string",
           enum: ["PUBLIC", "PRIVATE"],
-          description: "Organization discoverability.",
+          description:
+            "Organization discoverability. Owner/admin members may flip either direction; no extra platform-admin gate. Switching to PRIVATE is rejected if the organization owns any PUBLIC task.",
         },
         website: {
           type: "string",
@@ -11799,9 +11800,13 @@ export function createMcpServer(
                 `status must be one of: ${Object.keys(OrgStatus).join(", ")}`,
               );
             }
+            // MCP-created organizations default to PRIVATE — agents creating
+            // orgs on a caller's behalf should not silently make them
+            // publicly discoverable. Pass visibility='PUBLIC' explicitly to
+            // opt in (mirrors the public web /join creation flow's default).
             const visibility =
               a.visibility == null || a.visibility === ""
-                ? ContentVisibility.PUBLIC
+                ? ContentVisibility.PRIVATE
                 : typeof a.visibility === "string"
                   ? ContentVisibility[
                       a.visibility as keyof typeof ContentVisibility
