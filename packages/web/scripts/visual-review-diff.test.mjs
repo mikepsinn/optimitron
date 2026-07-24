@@ -4,7 +4,10 @@
  */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isSignificantDimensionChange } from "./visual-review-diff.mjs";
+import {
+  isSignificantDimensionChange,
+  normalizeVisualReviewMarkdown,
+} from "./visual-review-diff.mjs";
 
 test("identical dimensions are not a change", () => {
   assert.equal(
@@ -70,5 +73,57 @@ test("options override the defaults", () => {
       { tolerancePx: 2, toleranceRatio: 0 },
     ),
     true,
+  );
+});
+
+test("copy diffs ignore recreated preview record ids", () => {
+  const before =
+    "[Task](/tasks/cmrxvo33400eqwx4s1d6wbbja) " +
+    "https%3A%2F%2Fexample.org%2Ftasks%2Fcmrxvo33400eqwx4s1d6wbbja%3Fref%3Dmike";
+  const after =
+    "[Task](/tasks/cmrya66ud00fc0i1mh34labjl) " +
+    "https%3A%2F%2Fexample.org%2Ftasks%2Fcmrya66ud00fc0i1mh34labjl%3Fref%3Dmike";
+
+  assert.equal(
+    normalizeVisualReviewMarkdown(before, "packages/web/src/app/tasks/page.logged-in.md"),
+    normalizeVisualReviewMarkdown(after, "packages/web/src/app/tasks/page.logged-in.md"),
+  );
+  assert.equal(
+    normalizeVisualReviewMarkdown("intramuscular-cobalamin", "page.logged-out.md"),
+    "intramuscular-cobalamin",
+  );
+});
+
+test("calendar copy diffs ignore the capture date and generated schedule time", () => {
+  const before = [
+    "- Thursday, July 23, 2026 · America/Chicago",
+    "- [TODAY](/calendar?date=2026-07-23)",
+    "|   | Thursday, Jul 23 |",
+    "- [7:02 - 7:03 Sign the treaty](/tasks/cmrxvo33400eqwx4s1d6wbbja)",
+    "- [7:02 PM Sign the treaty](/tasks/cmrxvo33400eqwx4s1d6wbbja)",
+  ].join("\n");
+  const after = [
+    "- Thursday, January 1, 2036 · America/Chicago",
+    "- [TODAY](/calendar?date=2026-07-24)",
+    "|   | Thursday, Jan 1 |",
+    "- [8:00 - 8:01 Sign the treaty](/tasks/cmrya66ud00fc0i1mh34labjl)",
+    "- [8:00 AM Sign the treaty](/tasks/cmrya66ud00fc0i1mh34labjl)",
+  ].join("\n");
+  const snapshotPath = "packages/web/src/app/calendar/page.logged-in.md";
+
+  assert.equal(
+    normalizeVisualReviewMarkdown(before, snapshotPath),
+    normalizeVisualReviewMarkdown(after, snapshotPath),
+  );
+});
+
+test("copy diffs ignore the decorative terminal cursor but preserve wording", () => {
+  assert.equal(
+    normalizeVisualReviewMarkdown("- awaiting input _", "page.logged-out.md"),
+    "- awaiting input",
+  );
+  assert.notEqual(
+    normalizeVisualReviewMarkdown("- awaiting input", "page.logged-out.md"),
+    normalizeVisualReviewMarkdown("- awaiting approval", "page.logged-out.md"),
   );
 });

@@ -154,7 +154,7 @@
 - QUEUED
 - Apply for the Survival and Flourishing Fund grant
 - 2.5 h, EV $70,000
-- awaiting input _
+- awaiting input
 - Every human on Earth is a president of Earth Optimization Services. The machine computes your highest-value next action, from taking your medication to redirecting [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), with the same arithmetic. It is running today. Connect any AI assistant to the MCP server and ask it what you should do next.
 - The health engine already generated outcome labels from 12 million datapoints contributed by 10,000 people. The rankings are public at [studies.dfda.earth](https://studies.dfda.earth).
 - [ASK THE MACHINE WHAT TO DO NEXT](/mcp)
