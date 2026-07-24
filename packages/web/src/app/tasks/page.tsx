@@ -66,11 +66,11 @@ export default async function TasksPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-8">
-        <header className="space-y-3 text-center">
-          <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
+        <header className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
             Earth Optimization Tasks
           </h1>
-          <p className="mx-auto max-w-3xl text-base font-bold text-muted-foreground sm:text-lg">
+          <p className="mx-auto max-w-3xl text-[15px] leading-[1.6] text-muted-foreground">
             A public to-do list for optimizing Earth. Each task names the human
             or organization, gives them a specific job, and shows the cost of
             waiting.
@@ -79,7 +79,7 @@ export default async function TasksPage() {
 
         {root ? (
           <section className="space-y-3">
-            <h2 className="text-lg font-black uppercase tracking-tight sm:text-2xl">
+            <h2 className="text-base font-semibold uppercase tracking-wide">
               Humanity&apos;s Tasks
             </h2>
             <SortableTaskList
@@ -93,7 +93,7 @@ export default async function TasksPage() {
 
         {recommendedTasks.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="text-lg font-black uppercase tracking-tight sm:text-2xl">
+            <h2 className="text-base font-semibold uppercase tracking-wide">
               Highest-value tasks you can do now
             </h2>
             <SortableTaskList
@@ -106,7 +106,7 @@ export default async function TasksPage() {
         ) : null}
 
         <section className="space-y-3">
-          <h2 className="text-lg font-black uppercase tracking-tight sm:text-2xl">
+          <h2 className="text-base font-semibold uppercase tracking-wide">
             Your Tasks
           </h2>
           {yourTasks.length > 0 ? (
