@@ -10,9 +10,13 @@ const HALE = GLOBAL_HALE_CURRENT.value;
 const INCOME = GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value;
 const DURATION_MS = 1500;
 
-/** Sweep of the dial face, in degrees, from rest to full. */
-const SWEEP = 220;
-const START_ANGLE = -110;
+/**
+ * The face spans -90deg (needle left, "low") to +90deg (needle right,
+ * "high"). The needle rests at low and sweeps to a reading well inside the
+ * face, so it never buries itself in the end labels.
+ */
+const SWEEP = 150;
+const START_ANGLE = -90;
 
 function useSweep(active: boolean): number {
   const [progress, setProgress] = useState(0);

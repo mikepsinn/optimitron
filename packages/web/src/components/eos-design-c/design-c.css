@@ -263,7 +263,7 @@
     conic-gradient(
       from 160deg at 50% -18%,
       transparent 0deg,
-      rgba(237, 175, 34, 0.26) 14deg,
+      rgba(237, 175, 34, 0.34) 15deg,
       rgba(255, 255, 255, 0) 40deg
     ),
     linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(247, 239, 218, 0));
@@ -1102,7 +1102,7 @@
 }
 
 @media (min-width: 900px) {
-  .dc-conn svg {
+  .dc-flow .dc-conn svg {
     transform: none;
   }
 }
@@ -1129,17 +1129,23 @@
   align-items: center;
 }
 
-@media (min-width: 560px) {
+@media (min-width: 720px) {
   .dc-side {
-    grid-template-columns: minmax(120px, 190px) 1fr;
+    grid-template-columns: minmax(160px, 250px) 1fr;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
   }
 }
 
 .dc-side-fig {
   width: 100%;
   height: auto;
-  max-width: 200px;
+  max-width: 250px;
   justify-self: center;
+}
+
+/* The vertical hop between the flow row and its two outputs. */
+.dc-conn-down svg {
+  transform: rotate(90deg);
 }
 
 .dc-cols {

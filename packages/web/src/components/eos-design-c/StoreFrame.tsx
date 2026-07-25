@@ -39,11 +39,7 @@ export function StoreFrame() {
             <div className="dc-node">The policies that maximize two numbers</div>
           </div>
 
-          <div className="dc-conn" aria-hidden="true">
-            <svg viewBox="0 0 34 16" role="presentation">
-              <path className="dc-draw" d="M1 8 H25" markerEnd="url(#dc-head)" />
-            </svg>
-          </div>
+          <DcArrow className="dc-conn dc-conn-down" />
 
           <div className="dc-outs">
             <div className="dc-node dc-node-out">
@@ -55,7 +51,7 @@ export function StoreFrame() {
           </div>
         </div>
 
-        <div className="dc-cols">
+        <div>
           <div className="dc-plate">
             <span className="dc-slate dc-plate-cap">
               <b>Fig. 2</b> — The installed base
@@ -105,21 +101,23 @@ export function StoreFrame() {
                 aria-hidden="true"
                 className="dc-side-fig"
                 role="presentation"
-                viewBox="0 0 200 140"
+                viewBox="0 0 230 140"
               >
                 <g className="dc-draw">
-                  <circle cx="86" cy="70" r="52" />
-                  <circle cx="86" cy="70" r="16" />
-                  <path d="M86 18 V54" />
-                  <path d="M41 96 L72 78" />
-                  <path d="M131 96 L100 78" />
-                  <path d="M138 44 L176 22" />
-                  <path d="M176 22 L192 34 L158 56 Z" />
+                  <circle cx="66" cy="70" r="46" />
+                  <circle cx="66" cy="70" r="14" />
+                  <path d="M66 24 V56" />
+                  <path d="M28 92 L54 78" />
+                  <path d="M104 92 L78 78" />
+                  {/* the tag on its string */}
+                  <path d="M108 46 C122 36 130 34 142 32" />
+                  <path d="M142 20 H222 V96 H142 L124 58 Z" />
+                  <circle cx="140" cy="49" r="4" />
                 </g>
-                <text className="dc-lab" x="150" y="86" textAnchor="middle">
+                <text className="dc-lab" x="184" y="52" textAnchor="middle">
                   Not
                 </text>
-                <text className="dc-lab" x="150" y="100" textAnchor="middle">
+                <text className="dc-lab" x="184" y="70" textAnchor="middle">
                   for sale
                 </text>
               </svg>

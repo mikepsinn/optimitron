@@ -1,7 +1,9 @@
 /**
  * One hidden SVG carrying the defs every drawing on the page reuses:
- * the pencil-wobble displacement filter and the arrowhead marker. Rendered
- * once at the top of the page so each figure stays markup-only.
+ * the pencil-wobble displacement filter. Rendered once at the top of the page
+ * so each figure stays markup-only. Arrowheads are drawn into their own
+ * paths rather than referenced as markers, because markers do not survive
+ * the filter.
  */
 export function DcDefs() {
   return (
@@ -28,16 +30,6 @@ export function DcDefs() {
             yChannelSelector="G"
           />
         </filter>
-        <marker
-          id="dc-head"
-          markerWidth="9"
-          markerHeight="9"
-          refX="7"
-          refY="4.5"
-          orient="auto"
-        >
-          <path d="M0.5 0.8 L8 4.5 L0.5 8.2" fill="none" stroke="#1d1a14" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </marker>
       </defs>
     </svg>
   );

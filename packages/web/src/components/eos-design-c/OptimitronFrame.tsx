@@ -86,7 +86,7 @@ export function OptimitronFrame() {
                 })}
                 {/* the funnel: counting, not arguing */}
                 <path d="M40 108 L300 108 L206 158 L134 158 Z" />
-                <path d="M170 158 V186" markerEnd="url(#dc-head)" />
+                <path d="M170 158 V184 M164 178 L170 186 L176 178" />
               </g>
               <text className="dc-lab" x="40" y="18">
                 10,000 jurisdictions
@@ -137,7 +137,7 @@ export function OptimitronFrame() {
               <rect x="20" y="34" width="14" height="46" fill="#e0523a" />
               <g className="dc-draw">
                 <rect x="20" y="34" width="290" height="46" />
-                <path d="M27 92 C40 140 120 150 150 168" markerEnd="url(#dc-head)" />
+                <path d="M27 92 C40 140 120 150 152 168 M139 158 L154 169 L136 172" />
               </g>
               <text className="dc-lab" x="20" y="26">
                 Every nation&apos;s weapons budget
@@ -145,18 +145,15 @@ export function OptimitronFrame() {
               <text className="dc-lab-sm" x="20" y="98">
                 1%
               </text>
-              {/* the beaker it lands in */}
+              {/* the beaker it lands in, with the one percent settled in it */}
+              <rect x="150" y="206" width="104" height="19" fill="#0e9aa0" />
               <g className="dc-draw">
                 <path d="M168 158 H236 L236 176 L268 226 H136 L168 176 Z" />
-              </g>
-              <rect x="150" y="206" width="104" height="20" fill="#0e9aa0" />
-              <g className="dc-draw">
-                <path d="M136 226 H268" />
               </g>
               <text className="dc-lab" x="202" y="150" textAnchor="middle">
                 Clinical trials
               </text>
-              <text className="dc-lab-big" x="202" y="196" textAnchor="middle">
+              <text className="dc-lab-big" x="202" y="200" textAnchor="middle">
                 1%
               </text>
             </svg>
@@ -379,7 +376,10 @@ function ComparatorRow({
           role="presentation"
           viewBox="0 0 34 12"
         >
-          <path className="dc-draw" d="M1 6 H25" markerEnd="url(#dc-head)" />
+          <path
+            className="dc-draw"
+            d="M2 7.6 C9 4.8 16 8.6 25.5 6 M20 1.8 L26.5 6 L20 10.2"
+          />
         </svg>
         <span className="dc-after">{after}</span>
       </div>
