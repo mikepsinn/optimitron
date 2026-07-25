@@ -58,7 +58,6 @@ the same thing, the one listed here owns it — fix the other.
 
 ## Directories
 
-- `archive/` — historical docs, preserved unedited, excluded from checks.
 - `plans/` — approved or proposed implementation plans; each states its own status.
 
 ## Doc checks
