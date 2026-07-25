@@ -998,9 +998,15 @@ jobs:
             sudo apt-get install -y postgresql-client
           fi
 
+          # Bound every attempt: libpq waits indefinitely by default, so a host
+          # that stalls mid-TLS would consume the whole step timeout and this
+          # loop would never retry or reach its deadline. PGCONNECT_TIMEOUT
+          # covers the connect phase; `timeout` is the hard ceiling for a probe
+          # that stalls after connecting.
+          export PGCONNECT_TIMEOUT=10
           deadline=$(( SECONDS + 300 ))
           attempt=0
-          until psql "$database_url" --set ON_ERROR_STOP=1 -qtAc 'select 1' >/dev/null 2>&1; do
+          until timeout 15 psql "$database_url" --set ON_ERROR_STOP=1 -qtAc 'select 1' >/dev/null 2>&1; do
             attempt=$(( attempt + 1 ))
             if [ "$SECONDS" -ge "$deadline" ]; then
               echo "::error::Preview database did not accept a connection within 300s (${attempt} attempts). The Neon endpoint may be failing to start."
