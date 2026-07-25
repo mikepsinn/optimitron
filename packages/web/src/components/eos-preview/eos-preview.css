@@ -1,0 +1,450 @@
+/*
+ * EOS landing page (v2) design system — /eos-preview.
+ *
+ * SANCTIONED DARK EXCEPTION, same basis as eos-retro.css (Mike 2026-07-11):
+ * the treaty black-on-white rule governs every other public surface. Every
+ * rule here is scoped under .eos-preview and must not leak onto treaty pages.
+ *
+ * Two visual registers, one token set:
+ *   Register 1 "The Bill"  — dark, dense, clinical. White ink, one hot accent
+ *                            on the numbers, no ornament. (.eos-r1)
+ *   Register 2 "Catalog"   — 1950s retro-futurist product brochure. Confident
+ *                            display type, pastel accents on dark. (.eos-r2)
+ * Later sections (Store, Products, agencies, chart, reviews, CTA) reuse these
+ * same tokens and primitives.
+ */
+
+.eos-preview {
+  /* ---- base surface ---- */
+  --eos-bg: #08090c;
+  --eos-bg-raised: #0e1016;
+  --eos-panel: #12141c;
+  --eos-panel-soft: #171a24;
+  --eos-ink: #f3f1ec;
+  --eos-ink-soft: #c9c7c0;
+  --eos-ink-muted: #8b8981;
+  --eos-line: rgba(243, 241, 236, 0.14);
+  --eos-line-strong: rgba(243, 241, 236, 0.38);
+
+  /* ---- Register 1: The Bill ---- */
+  /* One hot signal color. Numbers are deaths and dollars; they run hot. */
+  --eos-bill-bg: #050608;
+  --eos-bill-accent: #ff5c50;
+  --eos-bill-ink-muted: #7c7a74;
+
+  /* ---- Register 2: the catalog pastels ---- */
+  --eos-gold: #f2c14e;
+  --eos-cyan: #6fd3d0;
+  --eos-mint: #86d9a4;
+  --eos-rose: #e79a9a;
+  --eos-cream: #f2e8d2;
+
+  /* semantic column accents for the comparison matrix */
+  --eos-bad: #ff7a70;
+  --eos-good: #86d9a4;
+
+  --eos-font-display: var(--font-eos-display), "Righteous", system-ui, sans-serif;
+  --eos-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --eos-font-mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo",
+    "Consolas", monospace;
+
+  background-color: var(--eos-bg);
+  color: var(--eos-ink);
+  font-family: var(--eos-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Kill the dotted underline / help cursor that ParameterValue ships with:
+   on this page the accent color already signals "sourced, click for math". */
+.eos-preview :where(.eos-num, .eos-mnum) {
+  color: var(--eos-bill-accent);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.eos-preview .eos-mnum {
+  font-family: var(--eos-font-mono);
+}
+
+/* ---- layout primitives ---- */
+.eos-container {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+.eos-section {
+  padding: clamp(4rem, 9vw, 8rem) 0;
+}
+
+.eos-eyebrow {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+}
+
+/* =========================================================================
+   REGISTER 1 — THE BILL
+   ========================================================================= */
+.eos-r1 {
+  background-color: var(--eos-bill-bg);
+  --eos-num-color: var(--eos-bill-accent);
+}
+.eos-r1 .eos-num,
+.eos-r1 .eos-mnum {
+  color: var(--eos-bill-accent);
+}
+
+.eos-bill-head {
+  max-width: 70ch;
+  margin: 0 auto 2.5rem;
+  border-bottom: 1px solid var(--eos-line);
+  padding-bottom: 1.5rem;
+}
+.eos-bill-title {
+  font-family: var(--eos-font-mono);
+  font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+}
+
+/* Live death counter — top-right corner, small, ticking. Kept in flow (not
+   sticky) so it never collides with the site's sticky navbar (z-50). */
+.eos-bill-counter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.eos-bill-counter aside {
+  max-width: 20rem;
+  text-align: right;
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--eos-bill-ink-muted);
+}
+.eos-bill-counter .eos-death-n {
+  color: var(--eos-bill-accent);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Charge-sheet block: a heading + dense stacked counts. No breathing room.
+   Centered reading column keeps the desktop layout from going lopsided. */
+.eos-charge {
+  max-width: 70ch;
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+}
+.eos-charge-h {
+  font-family: var(--eos-font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+  margin-bottom: 1.25rem;
+}
+.eos-charge p {
+  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--eos-ink-soft);
+}
+.eos-charge p + p {
+  margin-top: 1.15rem;
+}
+.eos-charge p strong {
+  color: var(--eos-ink);
+  font-weight: 600;
+}
+
+/* The number — large, centered, unmissable. */
+.eos-giant {
+  text-align: center;
+  margin: clamp(3.5rem, 8vw, 6.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+.eos-giant-value {
+  font-family: var(--eos-font-mono);
+  font-weight: 700;
+  font-size: clamp(3rem, 11vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--eos-bill-accent);
+}
+.eos-giant-value .eos-per {
+  font-size: 0.3em;
+  color: var(--eos-ink-muted);
+  letter-spacing: 0;
+}
+/* Neutralize ParameterValue's button chrome inside the giant number. */
+.eos-giant-value button {
+  color: var(--eos-bill-accent);
+  text-decoration: none;
+  font-weight: 700;
+}
+.eos-giant-caption {
+  margin: 1.75rem auto 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--eos-ink-soft);
+}
+.eos-giant-caption .eos-label {
+  color: var(--eos-ink);
+  font-weight: 600;
+}
+
+.eos-billlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--eos-ink-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--eos-line-strong);
+  padding-bottom: 2px;
+}
+.eos-billlink:hover {
+  color: var(--eos-ink);
+}
+
+/* The love line — quiet, human, the one warm beat in the charge sheet. */
+.eos-love {
+  margin: clamp(3rem, 6vw, 5rem) auto 0;
+  max-width: 60ch;
+}
+.eos-love p {
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--eos-ink);
+}
+.eos-love p + p {
+  margin-top: 1rem;
+  color: var(--eos-ink-soft);
+}
+
+/* =========================================================================
+   THE PIVOT — bridge from Register 1 into Register 2
+   ========================================================================= */
+.eos-pivot {
+  background: linear-gradient(180deg, var(--eos-bill-bg) 0%, var(--eos-bg-raised) 100%);
+  text-align: center;
+  padding: clamp(4.5rem, 10vw, 8rem) 0;
+  border-top: 1px solid var(--eos-line);
+}
+.eos-pivot-eyebrow {
+  font-family: var(--eos-font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--eos-gold);
+  font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+}
+.eos-pivot-q {
+  margin: 1.75rem auto 0;
+  max-width: 40ch;
+  font-family: var(--eos-font-display);
+  font-size: clamp(1.7rem, 4.5vw, 3.2rem);
+  line-height: 1.12;
+  color: var(--eos-cream);
+}
+.eos-pivot-a {
+  margin-top: 1.75rem;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  color: var(--eos-cyan);
+  font-family: var(--eos-font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* =========================================================================
+   REGISTER 2 — THE CATALOG
+   ========================================================================= */
+.eos-r2 {
+  background-color: var(--eos-bg-raised);
+  --eos-num-color: var(--eos-gold);
+}
+.eos-r2 .eos-num,
+.eos-r2 .eos-mnum {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.eos-catalog-head {
+  text-align: center;
+  max-width: 44ch;
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+}
+.eos-catalog-title {
+  font-family: var(--eos-font-display);
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  line-height: 1.05;
+  color: var(--eos-cream);
+}
+.eos-catalog-deck {
+  margin-top: 1.25rem;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--eos-ink-soft);
+}
+
+/* ---- the comparison matrix ---- */
+.eos-matrix {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+}
+.eos-matrix-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1.05fr) 1.5fr 1.5fr;
+  border-top: 1px solid var(--eos-line);
+}
+.eos-matrix-row:first-child {
+  border-top: none;
+}
+.eos-matrix-head {
+  background: var(--eos-bg);
+}
+.eos-matrix-head .eos-cell {
+  padding-top: 1.4rem;
+  padding-bottom: 1.4rem;
+}
+.eos-cell {
+  padding: 1.15rem clamp(0.9rem, 1.8vw, 1.6rem);
+  font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+  line-height: 1.45;
+}
+.eos-cell-label {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+  align-self: center;
+}
+.eos-col-gov {
+  color: var(--eos-ink-soft);
+  border-left: 1px solid var(--eos-line);
+}
+.eos-col-eos {
+  color: var(--eos-ink);
+  border-left: 1px solid var(--eos-line);
+  background: rgba(134, 217, 164, 0.04);
+}
+.eos-matrix-head .eos-col-gov {
+  color: var(--eos-bad);
+  font-family: var(--eos-font-display);
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  letter-spacing: 0.02em;
+}
+.eos-matrix-head .eos-col-eos {
+  color: var(--eos-good);
+  font-family: var(--eos-font-display);
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  letter-spacing: 0.02em;
+}
+.eos-col-gov .eos-num,
+.eos-col-gov .eos-mnum {
+  color: var(--eos-bad);
+}
+.eos-col-eos .eos-num,
+.eos-col-eos .eos-mnum {
+  color: var(--eos-good);
+}
+.eos-col-eos-zero {
+  color: var(--eos-good);
+  font-weight: 700;
+  font-family: var(--eos-font-mono);
+}
+.eos-cell-mobilehead {
+  display: none;
+}
+
+/* mobile: stack each matrix row into a labeled card */
+@media (max-width: 720px) {
+  .eos-matrix-row {
+    grid-template-columns: 1fr;
+  }
+  .eos-matrix-head {
+    display: none;
+  }
+  .eos-cell-label {
+    padding-bottom: 0.35rem;
+    color: var(--eos-cream);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid var(--eos-line);
+  }
+  .eos-col-gov,
+  .eos-col-eos {
+    border-left: none;
+  }
+  .eos-cell-mobilehead {
+    display: block;
+    font-family: var(--eos-font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .eos-col-gov .eos-cell-mobilehead {
+    color: var(--eos-bad);
+  }
+  .eos-col-eos .eos-cell-mobilehead {
+    color: var(--eos-good);
+  }
+}
+
+/* =========================================================================
+   SECTION STUBS (out of scope for this slice)
+   ========================================================================= */
+.eos-stub {
+  border-top: 1px dashed var(--eos-line-strong);
+  background: var(--eos-bg);
+}
+.eos-stub-inner {
+  padding: clamp(2.5rem, 6vw, 4rem) 0;
+  color: var(--eos-ink-muted);
+}
+.eos-stub-tag {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--eos-gold);
+}
+.eos-stub-title {
+  margin-top: 0.6rem;
+  font-family: var(--eos-font-display);
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  color: var(--eos-ink-soft);
+}
+.eos-stub-note {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  max-width: 60ch;
+}
+
+/* reveal-on-scroll: opt-in, respects reduced motion */
+.eos-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.eos-reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .eos-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
