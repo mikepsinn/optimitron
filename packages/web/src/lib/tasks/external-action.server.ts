@@ -6,6 +6,8 @@ import {
   type Prisma,
 } from "@optimitron/db";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
+import { upsertWishoniaUser } from "@optimitron/db";
+import { WISHONIA_EMAIL } from "@optimitron/db/system-identities";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getStartedByUserId } from "@/lib/tasks/execution-lifecycle.server";
@@ -34,10 +36,27 @@ export type ExternalActionDb = Pick<
   Prisma.TransactionClient,
   | "externalActionRequest"
   | "formSubmission"
+  | "person"
   | "task"
   | "taskExecutionAttempt"
   | "user"
 >;
+
+/**
+ * `ExternalActionRequest_requester_check` demands exactly one requester, and
+ * some system proposals have no actor at all — an inbound email reply arrives
+ * from a Person with no session, a scheduled trigger fires with no user. Those
+ * are attributed to the Wishonia system user, which is who is really asking.
+ */
+async function resolveSystemRequesterUserId(tx: ExternalActionDb) {
+  const existing = await tx.user.findFirst({
+    where: { email: WISHONIA_EMAIL },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+  const created = await upsertWishoniaUser(tx);
+  return created.user.id;
+}
 
 export const ProposeExternalActionSchema = z
   .object({
@@ -262,7 +281,9 @@ export async function proposeExternalAction(
         payloadHash,
         payloadJson: jsonValue(input.payload),
         requestedByAgentExecutorId: attempt?.agentExecutorId ?? null,
-        requestedByUserId: attempt?.agentExecutorId ? null : actorUserId,
+        requestedByUserId: attempt?.agentExecutorId
+          ? null
+          : (actorUserId ?? (await resolveSystemRequesterUserId(tx))),
         status: ExternalActionRequestStatus.PENDING,
         taskExecutionAttemptId: attempt?.id ?? null,
         taskId: task.id,
@@ -319,6 +340,8 @@ export async function listExternalActionRequestsForHuman(input: {
   actorUserId: string;
   clientAccessBoundary?: TaskClientAccessBoundary;
   limit?: number | null;
+  /** Narrow to one operation in the query, so the limit cannot crowd it out. */
+  operation?: string | null;
   status?: ExternalActionRequestStatus | null;
   taskId?: string | null;
 }) {
@@ -358,6 +381,7 @@ export async function listExternalActionRequestsForHuman(input: {
   return prisma.externalActionRequest.findMany({
     where: {
       deletedAt: null,
+      operation: input.operation ?? undefined,
       status: input.status ?? undefined,
       taskId: input.taskId ?? undefined,
       task: taskWhere,

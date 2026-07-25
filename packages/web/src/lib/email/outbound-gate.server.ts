@@ -25,13 +25,44 @@ export async function readOutboundMessageGate(): Promise<OutboundGateState | nul
   try {
     const row = await prisma.outboundMessageGate.findUnique({
       where: { id: OUTBOUND_MESSAGE_GATE_ID },
-      select: { allowlist: true, stopAllOutbound: true },
+      select: { allowlist: true, deletedAt: true, stopAllOutbound: true },
     });
+    // A soft-deleted gate is unreadable, not open. Deleting the row must never
+    // be a way to re-enable outbound mail.
+    if (row?.deletedAt) return null;
     return row ?? OPEN_GATE;
   } catch (error) {
     log.error("Failed to read the outbound message gate", { error });
     return null;
   }
+}
+
+export interface OutboundGateAdminView extends OutboundGateState {
+  reason: string | null;
+  updatedAt: Date | null;
+  updatedByUserId: string | null;
+}
+
+/** Everything the admin control needs to render its current position. */
+export async function getOutboundMessageGateForAdmin(): Promise<OutboundGateAdminView> {
+  const row = await prisma.outboundMessageGate.findUnique({
+    where: { id: OUTBOUND_MESSAGE_GATE_ID },
+    select: {
+      allowlist: true,
+      reason: true,
+      stopAllOutbound: true,
+      updatedAt: true,
+      updatedByUserId: true,
+    },
+  });
+  return (
+    row ?? {
+      ...OPEN_GATE,
+      reason: null,
+      updatedAt: null,
+      updatedByUserId: null,
+    }
+  );
 }
 
 export async function setOutboundMessageGate(input: {
@@ -44,6 +75,7 @@ export async function setOutboundMessageGate(input: {
     where: { id: OUTBOUND_MESSAGE_GATE_ID },
     create: {
       allowlist: input.allowlist ?? [],
+      deletedAt: null,
       id: OUTBOUND_MESSAGE_GATE_ID,
       reason: input.reason ?? null,
       stopAllOutbound: input.stopAllOutbound,
@@ -51,6 +83,7 @@ export async function setOutboundMessageGate(input: {
     },
     update: {
       ...(input.allowlist ? { allowlist: input.allowlist } : {}),
+      deletedAt: null,
       reason: input.reason ?? null,
       stopAllOutbound: input.stopAllOutbound,
       updatedByUserId: input.updatedByUserId,

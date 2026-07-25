@@ -532,14 +532,12 @@ export async function listPendingOutboundApprovals(input: {
   actorUserId: string;
   limit?: number | null;
 }): Promise<PendingOutboundApproval[]> {
-  const requests = await listExternalActionRequestsForHuman({
+  const outbound = await listExternalActionRequestsForHuman({
     actorUserId: input.actorUserId,
     limit: clampAdminLimit(input.limit, 50, 200),
+    operation: OUTBOUND_MESSAGE_OPERATION,
     status: ExternalActionRequestStatus.PENDING,
   });
-  const outbound = requests.filter(
-    (request) => request.operation === OUTBOUND_MESSAGE_OPERATION,
-  );
   if (outbound.length === 0) return [];
 
   const tasks = await prisma.task.findMany({

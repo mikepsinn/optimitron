@@ -10925,4 +10925,8 @@ model OutboundMessageGate {
 
   /// When this record was last updated
   updatedAt DateTime @updatedAt
+
+  /// Soft-delete timestamp. A soft-deleted gate reads as UNREADABLE, never as
+  /// open — deleting the row must not be a way to re-enable outbound mail.
+  deletedAt DateTime?
 }

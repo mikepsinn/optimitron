@@ -6,6 +6,7 @@ CREATE TABLE "OutboundMessageGate" (
     "updatedByUserId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "OutboundMessageGate_pkey" PRIMARY KEY ("id")
 );

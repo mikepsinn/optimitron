@@ -11,7 +11,11 @@ import {
   type PendingOutboundApproval,
 } from "@/lib/admin-communications.server";
 import { getCurrentUser } from "@/lib/auth-utils";
-import { decideOutboundMessage } from "./actions";
+import {
+  getOutboundMessageGateForAdmin,
+  type OutboundGateAdminView,
+} from "@/lib/email/outbound-gate.server";
+import { decideOutboundMessage, setOutboundEmergencyStop } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +119,65 @@ function EmptyRow({
   );
 }
 
+function EmergencyStopPanel({ gate }: { gate: OutboundGateAdminView }) {
+  return (
+    <section className="border-2 border-foreground p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-xl font-black uppercase">Outbound mail</h2>
+        <span className="text-xs font-black uppercase">
+          {gate.stopAllOutbound ? "Stopped" : "Sending"}
+        </span>
+      </div>
+      <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
+        {gate.stopAllOutbound
+          ? "Every outbound message is suppressed, including sign-in links. Nobody can log in by email until you release it."
+          : "Messages send normally once approved. Stopping suppresses everything, including sign-in links."}
+      </p>
+      {gate.reason ? (
+        <p className="mt-2 text-sm font-bold">Reason: {gate.reason}</p>
+      ) : null}
+
+      <form action={setOutboundEmergencyStop} className="mt-4 grid gap-3">
+        <input
+          type="hidden"
+          name="stopAllOutbound"
+          value={gate.stopAllOutbound ? "0" : "1"}
+        />
+        <label className="text-sm font-bold">
+          <span className="mb-1 block text-xs font-black uppercase">
+            Only send to (comma-separated addresses or @domains)
+          </span>
+          <input
+            className="w-full border-2 border-foreground bg-background px-3 py-2"
+            defaultValue={gate.allowlist.join(", ")}
+            name="allowlist"
+            placeholder="Leave empty to allow every recipient"
+          />
+        </label>
+        <label className="text-sm font-bold">
+          <span className="mb-1 block text-xs font-black uppercase">
+            Reason
+          </span>
+          <input
+            className="w-full border-2 border-foreground bg-background px-3 py-2"
+            defaultValue={gate.reason ?? ""}
+            name="reason"
+            placeholder="Why you are stopping or releasing"
+          />
+        </label>
+        <button
+          type="submit"
+          className={`border-2 border-foreground px-4 py-3 text-xs font-black uppercase ${
+            gate.stopAllOutbound ? "" : "bg-foreground text-background"
+          }`}
+        >
+          {gate.stopAllOutbound ? "Release and resume sending" : "Stop all outbound mail"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
 function PendingApprovalCard({
   approval,
 }: {
@@ -215,6 +278,7 @@ export default async function AdminCommunicationsPage({
       }),
       listPendingOutboundApprovals({ actorUserId: user.id }),
     ]);
+  const gate = await getOutboundMessageGateForAdmin();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
@@ -357,6 +421,8 @@ export default async function AdminCommunicationsPage({
       </form>
 
       <div className="space-y-12">
+        <EmergencyStopPanel gate={gate} />
+
         <section>
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
             <h2 className="text-xl font-black uppercase">Pending approval</h2>

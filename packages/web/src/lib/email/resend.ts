@@ -125,7 +125,7 @@ async function checkOutboundGate(
   to: string,
 ): Promise<SendResult | null> {
   const decision = evaluateOutboundGate({
-    authorizationKind: authorization.kind,
+    authorization,
     gate: await readOutboundMessageGate(),
     to,
   });

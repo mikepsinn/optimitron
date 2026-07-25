@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { transactionalSend, ownerSend } from "@/lib/email/outbound-authorization.server";
 import {
   evaluateOutboundGate,
   isEmailAllowlisted,
@@ -10,10 +11,15 @@ const OPEN = { allowlist: [], stopAllOutbound: false };
 describe("evaluateOutboundGate", () => {
   it("suppresses every authorization kind when the emergency stop is pulled", () => {
     const gate = { allowlist: [], stopAllOutbound: true };
-    for (const kind of ["transactional", "owner", "approved"] as const) {
+    const authorizations = [
+      transactionalSend("magic_link"),
+      ownerSend("user_owner"),
+      { approvedPayloadHash: "hash", kind: "approved", requestId: "ear_1" },
+    ] as const;
+    for (const authorization of authorizations) {
       expect(
         evaluateOutboundGate({
-          authorizationKind: kind,
+          authorization,
           gate,
           to: "citizen@example.org",
         }),
@@ -24,34 +30,49 @@ describe("evaluateOutboundGate", () => {
   it("fails closed for non-transactional mail when the gate cannot be read", () => {
     expect(
       evaluateOutboundGate({
-        authorizationKind: "approved",
+        authorization: {
+          approvedPayloadHash: "hash",
+          kind: "approved",
+          requestId: "ear_1",
+        },
         gate: null,
         to: "citizen@example.org",
       }),
     ).toEqual({ allowed: false, reason: "gate_unreadable" });
     expect(
       evaluateOutboundGate({
-        authorizationKind: "owner",
+        authorization: ownerSend("user_owner"),
         gate: null,
         to: "citizen@example.org",
       }),
     ).toEqual({ allowed: false, reason: "gate_unreadable" });
   });
 
-  it("still delivers recipient-initiated mail when the gate cannot be read", () => {
+  it("still delivers sign-in mail when the gate cannot be read", () => {
     expect(
       evaluateOutboundGate({
-        authorizationKind: "transactional",
+        authorization: transactionalSend("magic_link"),
         gate: null,
         to: "citizen@example.org",
       }),
     ).toEqual({ allowed: true });
   });
 
+  // A cron digest is not a lockout risk, so it waits like everything else.
+  it("holds non-sign-in transactional mail when the gate cannot be read", () => {
+    expect(
+      evaluateOutboundGate({
+        authorization: transactionalSend("monthly_chain_digest"),
+        gate: null,
+        to: "citizen@example.org",
+      }),
+    ).toEqual({ allowed: false, reason: "gate_unreadable" });
+  });
+
   it("allows any recipient when the allowlist is empty", () => {
     expect(
       evaluateOutboundGate({
-        authorizationKind: "owner",
+        authorization: ownerSend("user_owner"),
         gate: OPEN,
         to: "stranger@anywhere.test",
       }),
@@ -65,21 +86,21 @@ describe("evaluateOutboundGate", () => {
     };
     expect(
       evaluateOutboundGate({
-        authorizationKind: "owner",
+        authorization: ownerSend("user_owner"),
         gate,
         to: "m@thinkbynumbers.org",
       }),
     ).toEqual({ allowed: true });
     expect(
       evaluateOutboundGate({
-        authorizationKind: "owner",
+        authorization: ownerSend("user_owner"),
         gate,
         to: "anyone@example.org",
       }),
     ).toEqual({ allowed: true });
     expect(
       evaluateOutboundGate({
-        authorizationKind: "owner",
+        authorization: ownerSend("user_owner"),
         gate,
         to: "stranger@other.org",
       }),
