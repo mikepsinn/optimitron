@@ -6570,7 +6570,7 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["PUBLIC", "PRIVATE"],
           description:
-            "Organization discoverability. Owner/admin members may flip either direction; no extra platform-admin gate. Switching to PRIVATE is rejected if the organization owns any PUBLIC task.",
+            "Organization discoverability. Owner/admin members may flip either direction; no extra platform-admin gate. Switching to PRIVATE is rejected if the organization owns or is assigned any PUBLIC task.",
         },
         website: {
           type: "string",

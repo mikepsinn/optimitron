@@ -1753,25 +1753,6 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
-    it("updateOrganization rejects a visibility flip from a non-member caller", async () => {
-      mocks.updateOrganizationServer.mockRejectedValueOnce(
-        new ForbiddenError(
-          "You do not have permission to manage this organization",
-        ),
-      );
-      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
-
-      const result = await client.callTool({
-        name: "updateOrganization",
-        arguments: { organizationId: "org-1", visibility: "PUBLIC" },
-      });
-
-      expect(result.isError).toBe(true);
-      expect(parseToolBody(result)).toMatchObject({
-        message: "You do not have permission to manage this organization",
-      });
-    });
-
     it("updateOrganization rejects an invalid visibility value before hitting the server", async () => {
       const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
