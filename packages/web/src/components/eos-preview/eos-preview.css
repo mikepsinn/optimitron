@@ -401,6 +401,33 @@
   }
 }
 
+/* ---- Section 2: The Store ---- */
+.eos-store {
+  background: var(--eos-bg-raised);
+}
+.eos-store-body {
+  max-width: 66ch;
+  margin: 0 auto;
+}
+.eos-store-body p {
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--eos-ink-soft);
+}
+.eos-store-body p + p {
+  margin-top: 1.4rem;
+}
+.eos-store-lede {
+  color: var(--eos-cream) !important;
+  font-size: clamp(1.15rem, 2vw, 1.45rem) !important;
+  line-height: 1.55 !important;
+}
+.eos-store-keys {
+  border-left: 3px solid var(--eos-gold);
+  padding-left: clamp(1rem, 2vw, 1.5rem);
+  color: var(--eos-ink) !important;
+}
+
 /* =========================================================================
    SECTION STUBS (out of scope for this slice)
    ========================================================================= */
