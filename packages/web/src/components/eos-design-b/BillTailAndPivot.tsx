@@ -9,6 +9,7 @@ import {
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_COUNTERFACTUAL_INCOME_MULTIPLE,
 } from "@optimitron/data/parameters";
+import Link from "next/link";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 
 const N = "pk-n";
@@ -105,9 +106,9 @@ export function BillTailAndPivot() {
               />{" "}
               per household of four.
             </p>
-            <a className="pkb-billlink" href={AUDIT_URL}>
+            <Link className="pkb-billlink" href={AUDIT_URL}>
               Read the full forensic audit →
-            </a>
+            </Link>
           </div>
 
           <div className="pkb-love">
