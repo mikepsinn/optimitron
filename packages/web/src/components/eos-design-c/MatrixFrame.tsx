@@ -125,6 +125,7 @@ const ROWS: Row[] = [
         <ParameterValue
           className={P}
           display="withUnit"
+          figures={2}
           param={DFDA_QUEUE_CLEARANCE_YEARS}
         />{" "}
         with 1% moved to clinical trials
@@ -274,7 +275,12 @@ function BurstGlyph() {
       role="presentation"
       viewBox="0 0 32 32"
     >
-      <g fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      >
         {Array.from({ length: 8 }, (_, i) => {
           const a = (i * Math.PI * 2) / 8;
           return (

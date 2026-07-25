@@ -36,7 +36,9 @@ export function StoreFrame() {
             <DcArrow />
             <div className="dc-node">Their lobbyists</div>
             <DcArrow />
-            <div className="dc-node">The policies that maximize two numbers</div>
+            <div className="dc-node">
+              The policies that maximize two numbers
+            </div>
           </div>
 
           <DcArrow className="dc-conn dc-conn-down" />
@@ -122,12 +124,12 @@ export function StoreFrame() {
                 </text>
               </svg>
               <p className="dc-say">
-                You are the President of Earth Optimization Services. One Class A
-                share per human, one civic vote, free. If you want returns, buy
-                Class B shares. Money buys a share of the profit, not extra votes
-                or governance. One cannot buy the steering wheel, no matter how
-                many shares you own, because selling the steering wheel is the
-                problem we are solving.
+                You are the President of Earth Optimization Services. One Class
+                A share per human, one civic vote, free. If you want returns,
+                buy Class B shares. Money buys a share of the profit, not extra
+                votes or governance. One cannot buy the steering wheel, no
+                matter how many shares you own, because selling the steering
+                wheel is the problem we are solving.
               </p>
             </div>
           </div>

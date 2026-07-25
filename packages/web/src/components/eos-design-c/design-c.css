@@ -89,7 +89,8 @@
 .dc-bill {
   background: var(--dc-dark);
   color: #f2f2ef;
-  padding: clamp(3rem, 7vw, 5.5rem) clamp(1.1rem, 5vw, 3rem) clamp(3rem, 6vw, 4.5rem);
+  padding: clamp(3rem, 7vw, 5.5rem) clamp(1.1rem, 5vw, 3rem)
+    clamp(3rem, 6vw, 4.5rem);
   position: relative;
 }
 
@@ -211,7 +212,8 @@
 
 .dc-pivot-dark {
   background: var(--dc-dark);
-  padding: clamp(2rem, 6vw, 4rem) clamp(1.1rem, 5vw, 3rem) clamp(3rem, 7vw, 4.5rem);
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.1rem, 5vw, 3rem)
+    clamp(3rem, 7vw, 4.5rem);
   display: grid;
   gap: clamp(1.5rem, 4vw, 2.5rem);
   justify-items: center;
@@ -250,7 +252,8 @@
 .dc-pivot-light {
   position: relative;
   background: var(--dc-paper-lit);
-  padding: clamp(3.5rem, 9vw, 7rem) clamp(1.1rem, 5vw, 3rem) clamp(3rem, 7vw, 5rem);
+  padding: clamp(3.5rem, 9vw, 7rem) clamp(1.1rem, 5vw, 3rem)
+    clamp(3rem, 7vw, 5rem);
   overflow: hidden;
   text-align: center;
 }
@@ -1157,5 +1160,13 @@
 @media (min-width: 960px) {
   .dc-cols {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* The queue-drop connector sits outside .dc-flow, so it needs its own
+   un-rotation once the three cells sit side by side. */
+@media (min-width: 760px) {
+  .dc-drop .dc-conn svg {
+    transform: none;
   }
 }

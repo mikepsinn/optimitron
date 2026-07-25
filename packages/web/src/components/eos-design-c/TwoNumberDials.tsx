@@ -127,9 +127,7 @@ function Dial({
             const y1 = 112 - Math.sin(a) * 72;
             const x2 = 100 + Math.cos(a) * 60;
             const y2 = 112 - Math.sin(a) * 60;
-            return (
-              <line key={t} x1={x1} y1={y1} x2={x2} y2={y2} />
-            );
+            return <line key={t} x1={x1} y1={y1} x2={x2} y2={y2} />;
           })}
           <circle cx="100" cy="112" r="6" />
         </g>

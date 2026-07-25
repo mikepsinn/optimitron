@@ -11,6 +11,10 @@ import {
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { DeathTicker } from "@/components/eos-design-c/DeathTicker";
 
+// Several money parameters carry a "USD/year" or "USD/person" unit, which the
+// formatter appends as "/year" or "/person". Where the spec's own sentence
+// already says "per person per year", the unit is narrowed to plain USD so the
+// page does not read "$12,600/year per person per year".
 const N = "dc-num";
 
 /** The Singapore gap, derived rather than typed. */
@@ -49,11 +53,11 @@ export function BillFinale() {
             wealth since 1900, the average human would earn{" "}
             <ParameterValue
               className={N}
-              param={WAR_COUNTERFACTUAL_GDP_PER_CAPITA}
+              param={{ ...WAR_COUNTERFACTUAL_GDP_PER_CAPITA, unit: "USD" }}
             />{" "}
             a year instead of{" "}
-            <ParameterValue className={N} param={GLOBAL_AVG_INCOME_2025} />. That
-            is{" "}
+            <ParameterValue className={N} param={GLOBAL_AVG_INCOME_2025} />.
+            That is{" "}
             <ParameterValue
               className={N}
               param={WAR_COUNTERFACTUAL_INCOME_MULTIPLE}
@@ -75,12 +79,18 @@ export function BillFinale() {
             checking.{" "}
             <ParameterValue
               className={N}
-              param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL}
+              param={{
+                ...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+                unit: "USD",
+              }}
             />{" "}
             per person per year.{" "}
             <ParameterValue
               className={N}
-              param={POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL}
+              param={{
+                ...POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL,
+                unit: "USD",
+              }}
             />{" "}
             per household of four.
           </p>

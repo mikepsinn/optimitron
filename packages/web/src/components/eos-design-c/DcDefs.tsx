@@ -25,7 +25,7 @@ export function DcDefs() {
           <feDisplacementMap
             in="SourceGraphic"
             in2="dc-noise"
-            scale="1.8"
+            scale="1.25"
             xChannelSelector="R"
             yChannelSelector="G"
           />

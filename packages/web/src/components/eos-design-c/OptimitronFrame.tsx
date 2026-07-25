@@ -137,12 +137,12 @@ export function OptimitronFrame() {
               <rect x="20" y="34" width="14" height="46" fill="#e0523a" />
               <g className="dc-draw">
                 <rect x="20" y="34" width="290" height="46" />
-                <path d="M27 92 C40 140 120 150 152 168 M139 158 L154 169 L136 172" />
+                <path d="M27 112 C44 148 120 152 152 168 M139 158 L154 169 L136 172" />
               </g>
               <text className="dc-lab" x="20" y="26">
                 Every nation&apos;s weapons budget
               </text>
-              <text className="dc-lab-sm" x="20" y="98">
+              <text className="dc-lab" x="20" y="104">
                 1%
               </text>
               {/* the beaker it lands in, with the one percent settled in it */}
@@ -160,7 +160,10 @@ export function OptimitronFrame() {
             <p className="dc-narr">
               Everyone cuts equally. Nobody is easier to invade. That one
               percent is{" "}
-              <ParameterValue className={P} param={TREATY_ANNUAL_FUNDING} />
+              <ParameterValue
+                className={P}
+                param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }}
+              />
               /year in trials.
             </p>
           </div>
@@ -217,7 +220,10 @@ export function OptimitronFrame() {
               after={
                 <>
                   1% Treaty funds{" "}
-                  <ParameterValue className={P} param={TREATY_ANNUAL_FUNDING} />
+                  <ParameterValue
+                    className={P}
+                    param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }}
+                  />
                   /year in trials.
                 </>
               }
@@ -226,7 +232,9 @@ export function OptimitronFrame() {
                   <ParameterValue
                     className={P}
                     display="withUnit"
-                    param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
+                    param={
+                      MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO
+                    }
                   />{" "}
                   kill:cure ratio.
                 </>
@@ -260,6 +268,7 @@ export function OptimitronFrame() {
               <ParameterValue
                 className={P}
                 display="withUnit"
+                figures={2}
                 param={DFDA_QUEUE_CLEARANCE_YEARS}
                 presentation="inline"
               />
@@ -311,6 +320,7 @@ export function OptimitronFrame() {
             <ParameterValue
               className={P}
               display="withUnit"
+              figures={2}
               param={DFDA_QUEUE_CLEARANCE_YEARS}
             />
             . The average treatment arrives{" "}
@@ -337,8 +347,8 @@ export function OptimitronFrame() {
             />{" "}
             lower than today, inflation-adjusted. They still won World War II.
             Then they cut spending{" "}
-            <ParameterValue className={P} param={POST_WW2_MILITARY_CUT_PCT} /> in
-            two years and walked into the greatest economic expansion in
+            <ParameterValue className={P} param={POST_WW2_MILITARY_CUT_PCT} />{" "}
+            in two years and walked into the greatest economic expansion in
             history. One percent should be manageable.
           </p>
         </ReadTheMath>
