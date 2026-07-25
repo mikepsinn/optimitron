@@ -12,11 +12,11 @@ on:
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # Skip synchronize events pushed by update-pr-branches.yml: a merge from
+    # main leaves the PR diff unchanged (nothing new to review), and
+    # claude-code-action hard-fails for non-human actors, painting every
+    # auto-updated PR red.
+    if: github.actor != 'github-actions[bot]'
 
     runs-on: ubuntu-latest
     permissions:
