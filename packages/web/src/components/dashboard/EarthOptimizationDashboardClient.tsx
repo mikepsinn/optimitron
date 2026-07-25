@@ -55,8 +55,8 @@ export function EarthOptimizationDashboardClient({
   return (
     <div className="min-h-screen bg-[var(--treaty-paper)] pb-20 text-[var(--treaty-ink)] [font-family:var(--v0-font-libre-baskerville)]">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
-        <header className="mb-10 border-b border-[var(--treaty-ink)]/30 pb-4">
-          <h1 className="text-2xl font-black uppercase tracking-tight sm:text-4xl">
+        <header className="mb-8 border-b border-[var(--treaty-ink)]/30 pb-3">
+          <h1 className="text-lg font-semibold uppercase tracking-wide sm:text-xl">
             EARTH OPTIMIZATION
           </h1>
         </header>

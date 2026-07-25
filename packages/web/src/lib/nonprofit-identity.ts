@@ -96,8 +96,7 @@ export const NONPROFIT: NonprofitIdentity = {
   // Public Endaoment page (auto-imported from IRS data; claim flow submitted
   // 2026-05-03, awaiting approval). Donors can give cash/stock/crypto/DAF here
   // immediately — funds accrue in Endaoment escrow until the claim is approved
-  // and disbursements to Mercury checking 5090 are unlocked. TGB rejected IAM
-  // for being under their $250K/yr revenue floor; Endaoment has no minimum.
+  // and disbursements are unlocked.
   endaomentOrgUrl: "https://app.endaoment.org/orgs/41-2555651",
   // Registered at https://www.dafdirect.org/ on 2026-05-03.
   // Settings string format: `EIN_sizecode_uuid` — the JS reads it into

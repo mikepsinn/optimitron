@@ -197,7 +197,7 @@
     },
     {
       "name": "AgentExecutor",
-      "schemaLine": 6555,
+      "schemaLine": 6559,
       "buckets": {
         "schema": {
           "files": 1,
@@ -293,7 +293,7 @@
     },
     {
       "name": "AgentTaskLease",
-      "schemaLine": 10608,
+      "schemaLine": 10612,
       "buckets": {
         "schema": {
           "files": 1,
@@ -436,8 +436,8 @@
           "matches": 5
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -677,7 +677,7 @@
     },
     {
       "name": "Badge",
-      "schemaLine": 9399,
+      "schemaLine": 9403,
       "buckets": {
         "schema": {
           "files": 1,
@@ -871,7 +871,7 @@
     },
     {
       "name": "Collection",
-      "schemaLine": 6288,
+      "schemaLine": 6292,
       "buckets": {
         "schema": {
           "files": 1,
@@ -967,7 +967,7 @@
     },
     {
       "name": "CollectionField",
-      "schemaLine": 6332,
+      "schemaLine": 6336,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1063,7 +1063,7 @@
     },
     {
       "name": "CollectionRecord",
-      "schemaLine": 6365,
+      "schemaLine": 6369,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1159,7 +1159,7 @@
     },
     {
       "name": "CollectionRelation",
-      "schemaLine": 6420,
+      "schemaLine": 6424,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1255,7 +1255,7 @@
     },
     {
       "name": "CollectionView",
-      "schemaLine": 6460,
+      "schemaLine": 6464,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1351,7 +1351,7 @@
     },
     {
       "name": "CommerceEntitlement",
-      "schemaLine": 10565,
+      "schemaLine": 10569,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1449,7 +1449,7 @@
     },
     {
       "name": "CommerceFulfillment",
-      "schemaLine": 10522,
+      "schemaLine": 10526,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1545,7 +1545,7 @@
     },
     {
       "name": "CommerceFulfillmentMapping",
-      "schemaLine": 10384,
+      "schemaLine": 10388,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1641,7 +1641,7 @@
     },
     {
       "name": "CommerceOffer",
-      "schemaLine": 10289,
+      "schemaLine": 10293,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1688,8 +1688,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -1714,10 +1714,6 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 2
-        },
-        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 5
         },
@@ -1728,6 +1724,10 @@
         {
           "path": "packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql",
           "matches": 1
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/CommerceOffer.ts",
+          "matches": 198
         }
       ],
       "notes": [],
@@ -1737,7 +1737,7 @@
     },
     {
       "name": "CommerceOfferVariant",
-      "schemaLine": 10335,
+      "schemaLine": 10339,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1833,7 +1833,7 @@
     },
     {
       "name": "CommerceOrder",
-      "schemaLine": 10410,
+      "schemaLine": 10414,
       "buckets": {
         "schema": {
           "files": 1,
@@ -1880,8 +1880,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -1910,16 +1910,16 @@
           "matches": 4
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 2
-        },
-        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 6
         },
         {
           "path": "packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql",
           "matches": 12
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql",
+          "matches": 1
         }
       ],
       "notes": [],
@@ -1929,7 +1929,7 @@
     },
     {
       "name": "CommerceOrderItem",
-      "schemaLine": 10475,
+      "schemaLine": 10479,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2074,8 +2074,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 1,
@@ -2123,7 +2123,7 @@
     },
     {
       "name": "ContentAccessGrant",
-      "schemaLine": 6488,
+      "schemaLine": 6492,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2219,7 +2219,7 @@
     },
     {
       "name": "ContentAttachment",
-      "schemaLine": 6520,
+      "schemaLine": 6524,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2315,7 +2315,7 @@
     },
     {
       "name": "ContentReport",
-      "schemaLine": 10840,
+      "schemaLine": 10844,
       "buckets": {
         "schema": {
           "files": 1,
@@ -2458,8 +2458,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 1,
@@ -2492,12 +2492,12 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
+          "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
-          "path": "docs/PREVIEW_DATA_PRIVACY.md",
-          "matches": 1
+          "path": "packages/db/prisma/schema.prisma",
+          "matches": 12
         }
       ],
       "notes": [],
@@ -2842,8 +2842,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 1,
@@ -2872,16 +2872,16 @@
           "matches": 1
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
-        },
-        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 5
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql",
+          "matches": 12
         }
       ],
       "notes": [],
@@ -2987,7 +2987,7 @@
     },
     {
       "name": "DatingBlock",
-      "schemaLine": 10165,
+      "schemaLine": 10169,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3083,7 +3083,7 @@
     },
     {
       "name": "DatingConversation",
-      "schemaLine": 10071,
+      "schemaLine": 10075,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3179,7 +3179,7 @@
     },
     {
       "name": "DatingDatePlan",
-      "schemaLine": 10118,
+      "schemaLine": 10122,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3226,8 +3226,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -3242,10 +3242,6 @@
         {
           "path": "packages/web/src/lib/tasks/task-merge.server.ts",
           "matches": 2
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -3266,6 +3262,10 @@
         {
           "path": "packages/db/src/generated/prisma/models/DatingProfile.ts",
           "matches": 4
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
+          "matches": 3
         }
       ],
       "notes": [],
@@ -3275,7 +3275,7 @@
     },
     {
       "name": "DatingInteraction",
-      "schemaLine": 10019,
+      "schemaLine": 10023,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3371,7 +3371,7 @@
     },
     {
       "name": "DatingMatch",
-      "schemaLine": 10043,
+      "schemaLine": 10047,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3418,8 +3418,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -3430,10 +3430,6 @@
         {
           "path": "packages/web/src/lib/dating.server.ts",
           "matches": 10
-        },
-        {
-          "path": "docs/archive/earth-optimization-date-2026-05-20.md",
-          "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -3458,6 +3454,10 @@
         {
           "path": "packages/db/src/generated/prisma/browser.ts",
           "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 3
         }
       ],
       "notes": [],
@@ -3467,7 +3467,7 @@
     },
     {
       "name": "DatingMatchScore",
-      "schemaLine": 9986,
+      "schemaLine": 9990,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3565,7 +3565,7 @@
     },
     {
       "name": "DatingMessage",
-      "schemaLine": 10090,
+      "schemaLine": 10094,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3661,7 +3661,7 @@
     },
     {
       "name": "DatingPreference",
-      "schemaLine": 9963,
+      "schemaLine": 9967,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3759,7 +3759,7 @@
     },
     {
       "name": "DatingProfile",
-      "schemaLine": 9767,
+      "schemaLine": 9771,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3806,8 +3806,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 2,
-          "matches": 3
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -3818,14 +3818,6 @@
         {
           "path": "packages/web/src/lib/dating.server.ts",
           "matches": 16
-        },
-        {
-          "path": "docs/archive/earth-optimization-date-2026-05-20.md",
-          "matches": 2
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -3846,6 +3838,14 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/browser.ts",
+          "matches": 2
+        },
+        {
+          "path": "packages/db/src/generated/prisma/client.ts",
+          "matches": 2
         }
       ],
       "notes": [],
@@ -3855,7 +3855,7 @@
     },
     {
       "name": "DatingProfilePhoto",
-      "schemaLine": 9830,
+      "schemaLine": 9834,
       "buckets": {
         "schema": {
           "files": 1,
@@ -3951,7 +3951,7 @@
     },
     {
       "name": "DatingPrompt",
-      "schemaLine": 9861,
+      "schemaLine": 9865,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4047,7 +4047,7 @@
     },
     {
       "name": "DatingPromptAnswer",
-      "schemaLine": 9882,
+      "schemaLine": 9886,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4145,7 +4145,7 @@
     },
     {
       "name": "DatingQuestion",
-      "schemaLine": 9907,
+      "schemaLine": 9911,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4241,7 +4241,7 @@
     },
     {
       "name": "DatingQuestionAnswer",
-      "schemaLine": 9934,
+      "schemaLine": 9938,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4337,7 +4337,7 @@
     },
     {
       "name": "DatingSafetyReport",
-      "schemaLine": 10185,
+      "schemaLine": 10189,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4433,7 +4433,7 @@
     },
     {
       "name": "Document",
-      "schemaLine": 6164,
+      "schemaLine": 6168,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4529,7 +4529,7 @@
     },
     {
       "name": "DocumentRevision",
-      "schemaLine": 6246,
+      "schemaLine": 6250,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4625,7 +4625,7 @@
     },
     {
       "name": "EmailLog",
-      "schemaLine": 9502,
+      "schemaLine": 9506,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4672,8 +4672,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 6,
-          "matches": 9
+          "files": 5,
+          "matches": 8
         },
         "other": {
           "files": 1,
@@ -4721,7 +4721,7 @@
     },
     {
       "name": "ExternalActionRequest",
-      "schemaLine": 6911,
+      "schemaLine": 6915,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4817,7 +4817,7 @@
     },
     {
       "name": "Form",
-      "schemaLine": 9158,
+      "schemaLine": 9162,
       "buckets": {
         "schema": {
           "files": 1,
@@ -4864,8 +4864,8 @@
           "matches": 7
         },
         "docs": {
-          "files": 5,
-          "matches": 6
+          "files": 3,
+          "matches": 4
         },
         "other": {
           "files": 6,
@@ -4913,7 +4913,7 @@
     },
     {
       "name": "FormField",
-      "schemaLine": 9258,
+      "schemaLine": 9262,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5009,7 +5009,7 @@
     },
     {
       "name": "FormResponse",
-      "schemaLine": 9365,
+      "schemaLine": 9369,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5105,7 +5105,7 @@
     },
     {
       "name": "FormRevision",
-      "schemaLine": 9199,
+      "schemaLine": 9203,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5201,7 +5201,7 @@
     },
     {
       "name": "FormSection",
-      "schemaLine": 9234,
+      "schemaLine": 9238,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5299,7 +5299,7 @@
     },
     {
       "name": "FormSubmission",
-      "schemaLine": 9322,
+      "schemaLine": 9326,
       "buckets": {
         "schema": {
           "files": 1,
@@ -5442,8 +5442,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 1,
@@ -6457,7 +6457,7 @@
     },
     {
       "name": "KnowledgeAnswer",
-      "schemaLine": 9291,
+      "schemaLine": 9295,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6553,7 +6553,7 @@
     },
     {
       "name": "McpToolCallAudit",
-      "schemaLine": 10775,
+      "schemaLine": 10779,
       "buckets": {
         "schema": {
           "files": 1,
@@ -6696,8 +6696,8 @@
           "matches": 27
         },
         "docs": {
-          "files": 7,
-          "matches": 20
+          "files": 5,
+          "matches": 16
         },
         "other": {
           "files": 3,
@@ -6792,8 +6792,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 2,
@@ -6818,10 +6818,6 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/REFERENCES.md",
-          "matches": 1
-        },
-        {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
         },
@@ -6832,6 +6828,10 @@
         {
           "path": "packages/db/prisma/migrations/20260311211431_init/migration.sql",
           "matches": 10
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql",
+          "matches": 7
         }
       ],
       "notes": [],
@@ -6888,8 +6888,8 @@
           "matches": 7
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 1,
@@ -7131,7 +7131,7 @@
     },
     {
       "name": "OAuthAuthCode",
-      "schemaLine": 10686,
+      "schemaLine": 10690,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7227,7 +7227,7 @@
     },
     {
       "name": "OAuthClient",
-      "schemaLine": 10650,
+      "schemaLine": 10654,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7323,7 +7323,7 @@
     },
     {
       "name": "OAuthGrant",
-      "schemaLine": 10731,
+      "schemaLine": 10735,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7426,12 +7426,12 @@
           "matches": 38
         },
         "migrations": {
-          "files": 14,
-          "matches": 45
+          "files": 15,
+          "matches": 49
         },
         "generated": {
           "files": 30,
-          "matches": 479
+          "matches": 484
         },
         "zod": {
           "files": 1,
@@ -7439,15 +7439,15 @@
         },
         "runtime-prisma": {
           "files": 23,
-          "matches": 57
+          "matches": 58
         },
         "runtime-libraries": {
           "files": 28,
-          "matches": 114
+          "matches": 117
         },
         "api-routes": {
           "files": 7,
-          "matches": 20
+          "matches": 23
         },
         "pages": {
           "files": 6,
@@ -7462,12 +7462,12 @@
           "matches": 3
         },
         "tests": {
-          "files": 11,
-          "matches": 20
+          "files": 12,
+          "matches": 23
         },
         "docs": {
-          "files": 8,
-          "matches": 13
+          "files": 7,
+          "matches": 12
         },
         "other": {
           "files": 8,
@@ -7477,22 +7477,22 @@
       "keyFiles": [
         {
           "path": "packages/web/src/lib/organization.server.ts",
-          "matches": 40
+          "matches": 42
         },
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 30
+          "matches": 32
         },
         {
           "path": "packages/web/src/lib/notion-import.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/db/src/managed-data/managed-iam-organization.ts",
-          "matches": 11
+          "path": "packages/web/src/app/api/admin/organizations/[id]/route.ts",
+          "matches": 13
         },
         {
-          "path": "packages/web/src/app/api/admin/organizations/[id]/route.ts",
+          "path": "packages/db/src/managed-data/managed-iam-organization.ts",
           "matches": 11
         },
         {
@@ -7510,12 +7510,12 @@
       ],
       "notes": [],
       "directPrismaFiles": 23,
-      "directPrismaMatches": 57,
+      "directPrismaMatches": 58,
       "classification": "core"
     },
     {
       "name": "OrganizationMember",
-      "schemaLine": 5760,
+      "schemaLine": 5764,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7611,7 +7611,7 @@
     },
     {
       "name": "OrganizationName",
-      "schemaLine": 5692,
+      "schemaLine": 5696,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7707,7 +7707,7 @@
     },
     {
       "name": "OrganizationReferendumPosition",
-      "schemaLine": 5788,
+      "schemaLine": 5792,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7803,7 +7803,7 @@
     },
     {
       "name": "ParameterDefinition",
-      "schemaLine": 7771,
+      "schemaLine": 7775,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7899,7 +7899,7 @@
     },
     {
       "name": "ParameterRevision",
-      "schemaLine": 7789,
+      "schemaLine": 7793,
       "buckets": {
         "schema": {
           "files": 1,
@@ -7995,7 +7995,7 @@
     },
     {
       "name": "ParameterRevisionInput",
-      "schemaLine": 7849,
+      "schemaLine": 7853,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8091,7 +8091,7 @@
     },
     {
       "name": "ParameterRevisionSourceArtifact",
-      "schemaLine": 7869,
+      "schemaLine": 7873,
       "buckets": {
         "schema": {
           "files": 1,
@@ -8234,8 +8234,8 @@
           "matches": 45
         },
         "docs": {
-          "files": 10,
-          "matches": 25
+          "files": 8,
+          "matches": 17
         },
         "other": {
           "files": 5,
@@ -9868,8 +9868,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 2,
-          "matches": 2
+          "files": 1,
+          "matches": 1
         },
         "other": {
           "files": 2,
@@ -9966,8 +9966,8 @@
           "matches": 7
         },
         "docs": {
-          "files": 7,
-          "matches": 8
+          "files": 6,
+          "matches": 7
         },
         "other": {
           "files": 5,
@@ -10158,8 +10158,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 5,
-          "matches": 8
+          "files": 4,
+          "matches": 7
         },
         "other": {
           "files": 1,
@@ -10303,7 +10303,7 @@
     },
     {
       "name": "ShareAttempt",
-      "schemaLine": 9581,
+      "schemaLine": 9585,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10350,8 +10350,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 5,
-          "matches": 11
+          "files": 4,
+          "matches": 10
         },
         "other": {
           "files": 1,
@@ -10399,7 +10399,7 @@
     },
     {
       "name": "SocialAccount",
-      "schemaLine": 9457,
+      "schemaLine": 9461,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10495,7 +10495,7 @@
     },
     {
       "name": "SourceArtifact",
-      "schemaLine": 7687,
+      "schemaLine": 7691,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10591,7 +10591,7 @@
     },
     {
       "name": "StripeConnectedAccount",
-      "schemaLine": 7376,
+      "schemaLine": 7380,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10783,15 +10783,15 @@
     },
     {
       "name": "Task",
-      "schemaLine": 5842,
+      "schemaLine": 5846,
       "buckets": {
         "schema": {
           "files": 1,
           "matches": 64
         },
         "migrations": {
-          "files": 25,
-          "matches": 132
+          "files": 26,
+          "matches": 134
         },
         "generated": {
           "files": 36,
@@ -10802,36 +10802,36 @@
           "matches": 1
         },
         "runtime-prisma": {
-          "files": 59,
-          "matches": 180
+          "files": 60,
+          "matches": 186
         },
         "runtime-libraries": {
-          "files": 76,
-          "matches": 368
+          "files": 77,
+          "matches": 377
         },
         "api-routes": {
           "files": 14,
           "matches": 39
         },
         "pages": {
-          "files": 6,
-          "matches": 19
+          "files": 7,
+          "matches": 21
         },
         "components": {
           "files": 12,
           "matches": 16
         },
         "scripts": {
-          "files": 12,
-          "matches": 24
+          "files": 13,
+          "matches": 26
         },
         "tests": {
           "files": 29,
           "matches": 76
         },
         "docs": {
-          "files": 20,
-          "matches": 111
+          "files": 14,
+          "matches": 60
         },
         "other": {
           "files": 13,
@@ -10841,7 +10841,7 @@
       "keyFiles": [
         {
           "path": "packages/web/src/lib/mcp-server.ts",
-          "matches": 123
+          "matches": 132
         },
         {
           "path": "packages/web/src/lib/tasks.server.ts",
@@ -10873,13 +10873,13 @@
         }
       ],
       "notes": [],
-      "directPrismaFiles": 59,
-      "directPrismaMatches": 180,
+      "directPrismaFiles": 60,
+      "directPrismaMatches": 186,
       "classification": "core"
     },
     {
       "name": "TaskApplication",
-      "schemaLine": 7465,
+      "schemaLine": 7469,
       "buckets": {
         "schema": {
           "files": 1,
@@ -10975,7 +10975,7 @@
     },
     {
       "name": "TaskApplicationEvent",
-      "schemaLine": 7573,
+      "schemaLine": 7577,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11071,7 +11071,7 @@
     },
     {
       "name": "TaskCandidateMatch",
-      "schemaLine": 6626,
+      "schemaLine": 6630,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11167,7 +11167,7 @@
     },
     {
       "name": "TaskClaim",
-      "schemaLine": 7626,
+      "schemaLine": 7630,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11263,7 +11263,7 @@
     },
     {
       "name": "TaskComment",
-      "schemaLine": 7888,
+      "schemaLine": 7892,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11310,8 +11310,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 7,
-          "matches": 15
+          "files": 6,
+          "matches": 13
         },
         "other": {
           "files": 1,
@@ -11359,7 +11359,7 @@
     },
     {
       "name": "TaskCommentAttachment",
-      "schemaLine": 8009,
+      "schemaLine": 8013,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11455,7 +11455,7 @@
     },
     {
       "name": "TaskCommentVote",
-      "schemaLine": 8058,
+      "schemaLine": 8062,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11551,7 +11551,7 @@
     },
     {
       "name": "TaskCommunication",
-      "schemaLine": 8668,
+      "schemaLine": 8672,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11598,8 +11598,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 5,
-          "matches": 21
+          "files": 4,
+          "matches": 20
         },
         "other": {
           "files": 1,
@@ -11647,7 +11647,7 @@
     },
     {
       "name": "TaskCommunicationEndpoint",
-      "schemaLine": 8499,
+      "schemaLine": 8503,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11694,8 +11694,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 4,
-          "matches": 5
+          "files": 3,
+          "matches": 4
         },
         "other": {
           "files": 1,
@@ -11720,10 +11720,6 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
-        },
-        {
           "path": "docs/MCP_SERVER.md",
           "matches": 1
         },
@@ -11734,6 +11730,10 @@
         {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 3
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260425220000_task_communication_system/migration.sql",
+          "matches": 9
         }
       ],
       "notes": [],
@@ -11743,7 +11743,7 @@
     },
     {
       "name": "TaskCommunicationSpawnSpec",
-      "schemaLine": 9030,
+      "schemaLine": 9034,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11839,7 +11839,7 @@
     },
     {
       "name": "TaskCommunicationTemplate",
-      "schemaLine": 8558,
+      "schemaLine": 8562,
       "buckets": {
         "schema": {
           "files": 1,
@@ -11935,7 +11935,7 @@
     },
     {
       "name": "TaskCommunicationVariant",
-      "schemaLine": 8601,
+      "schemaLine": 8605,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12033,7 +12033,7 @@
     },
     {
       "name": "TaskDistributionAttempt",
-      "schemaLine": 7091,
+      "schemaLine": 7095,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12129,7 +12129,7 @@
     },
     {
       "name": "TaskDistributionTarget",
-      "schemaLine": 7037,
+      "schemaLine": 7041,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12227,7 +12227,7 @@
     },
     {
       "name": "TaskEdge",
-      "schemaLine": 8123,
+      "schemaLine": 8127,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12274,8 +12274,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 5,
-          "matches": 7
+          "files": 4,
+          "matches": 5
         },
         "other": {
           "files": 2,
@@ -12312,7 +12312,7 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
+          "path": "docs/FEATURES.md",
           "matches": 2
         }
       ],
@@ -12323,7 +12323,7 @@
     },
     {
       "name": "TaskExecutionArtifact",
-      "schemaLine": 6833,
+      "schemaLine": 6837,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12419,7 +12419,7 @@
     },
     {
       "name": "TaskExecutionAttempt",
-      "schemaLine": 6708,
+      "schemaLine": 6712,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12515,7 +12515,7 @@
     },
     {
       "name": "TaskFundingEvent",
-      "schemaLine": 7296,
+      "schemaLine": 7300,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12562,8 +12562,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -12574,10 +12574,6 @@
         {
           "path": "packages/web/src/lib/task-funding/pledges.server.ts",
           "matches": 4
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
         },
         {
           "path": "packages/db/prisma/schema.prisma",
@@ -12602,6 +12598,10 @@
         {
           "path": "packages/db/src/generated/prisma/internal/prismaNamespace.ts",
           "matches": 3
+        },
+        {
+          "path": "packages/db/src/generated/prisma/browser.ts",
+          "matches": 2
         }
       ],
       "notes": [],
@@ -12611,7 +12611,7 @@
     },
     {
       "name": "TaskFundingPayment",
-      "schemaLine": 7320,
+      "schemaLine": 7324,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12658,8 +12658,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -12692,12 +12692,12 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 2
-        },
-        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 7
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql",
+          "matches": 16
         }
       ],
       "notes": [],
@@ -12707,7 +12707,7 @@
     },
     {
       "name": "TaskFundingPledge",
-      "schemaLine": 7236,
+      "schemaLine": 7240,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12754,8 +12754,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 2
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -12784,16 +12784,16 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 2
-        },
-        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 10
         },
         {
           "path": "packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql",
           "matches": 15
+        },
+        {
+          "path": "packages/db/prisma/migrations/20260703050000_add_assurance_escrow_pledges/migration.sql",
+          "matches": 3
         }
       ],
       "notes": [],
@@ -12803,7 +12803,7 @@
     },
     {
       "name": "TaskFundingTarget",
-      "schemaLine": 7207,
+      "schemaLine": 7211,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12850,8 +12850,8 @@
           "matches": 3
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -12899,7 +12899,7 @@
     },
     {
       "name": "TaskImpactEstimateInput",
-      "schemaLine": 8253,
+      "schemaLine": 8257,
       "buckets": {
         "schema": {
           "files": 1,
@@ -12995,7 +12995,7 @@
     },
     {
       "name": "TaskImpactEstimateSet",
-      "schemaLine": 8183,
+      "schemaLine": 8187,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13042,8 +13042,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 4,
-          "matches": 4
+          "files": 3,
+          "matches": 3
         },
         "other": {
           "files": 1,
@@ -13072,15 +13072,15 @@
           "matches": 4
         },
         {
-          "path": "docs/archive/shirt-distribution-thesis-2026-05-20.md",
-          "matches": 1
-        },
-        {
           "path": "docs/FEATURES.md",
           "matches": 1
         },
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
+          "matches": 1
+        },
+        {
+          "path": "docs/TASK_MODEL.md",
           "matches": 1
         }
       ],
@@ -13091,7 +13091,7 @@
     },
     {
       "name": "TaskImpactFrameEstimate",
-      "schemaLine": 8273,
+      "schemaLine": 8277,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13187,7 +13187,7 @@
     },
     {
       "name": "TaskImpactMetric",
-      "schemaLine": 8407,
+      "schemaLine": 8411,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13283,7 +13283,7 @@
     },
     {
       "name": "TaskImpactSourceArtifact",
-      "schemaLine": 8460,
+      "schemaLine": 8464,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13379,7 +13379,7 @@
     },
     {
       "name": "TaskManager",
-      "schemaLine": 6122,
+      "schemaLine": 6126,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13475,7 +13475,7 @@
     },
     {
       "name": "TaskMarketplaceListing",
-      "schemaLine": 6963,
+      "schemaLine": 6967,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13571,7 +13571,7 @@
     },
     {
       "name": "TaskPayout",
-      "schemaLine": 7416,
+      "schemaLine": 7420,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13618,8 +13618,8 @@
           "matches": 0
         },
         "docs": {
-          "files": 1,
-          "matches": 3
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 0,
@@ -13640,10 +13640,6 @@
           "matches": 2
         },
         {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 3
-        },
-        {
           "path": "packages/db/prisma/schema.prisma",
           "matches": 7
         },
@@ -13658,6 +13654,10 @@
         {
           "path": "packages/db/src/generated/prisma/internal/class.ts",
           "matches": 31
+        },
+        {
+          "path": "packages/db/src/generated/prisma/models/User.ts",
+          "matches": 4
         }
       ],
       "notes": [],
@@ -13667,7 +13667,7 @@
     },
     {
       "name": "TaskSourceArtifact",
-      "schemaLine": 8093,
+      "schemaLine": 8097,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13763,7 +13763,7 @@
     },
     {
       "name": "TaskSpawnSpec",
-      "schemaLine": 8935,
+      "schemaLine": 8939,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13859,7 +13859,7 @@
     },
     {
       "name": "TaskTrigger",
-      "schemaLine": 8831,
+      "schemaLine": 8835,
       "buckets": {
         "schema": {
           "files": 1,
@@ -13906,8 +13906,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 7,
-          "matches": 12
+          "files": 6,
+          "matches": 11
         },
         "other": {
           "files": 2,
@@ -13955,7 +13955,7 @@
     },
     {
       "name": "TaskTriggerFire",
-      "schemaLine": 9107,
+      "schemaLine": 9111,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14051,7 +14051,7 @@
     },
     {
       "name": "TaskVerification",
-      "schemaLine": 6874,
+      "schemaLine": 6878,
       "buckets": {
         "schema": {
           "files": 1,
@@ -14194,8 +14194,8 @@
           "matches": 1
         },
         "docs": {
-          "files": 7,
-          "matches": 9
+          "files": 5,
+          "matches": 7
         },
         "other": {
           "files": 1,
@@ -14216,14 +14216,6 @@
           "matches": 3
         },
         {
-          "path": "docs/archive/REFERENCES.md",
-          "matches": 1
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
-        },
-        {
           "path": "docs/MCP_SERVER.md",
           "matches": 1
         },
@@ -14234,6 +14226,14 @@
         {
           "path": "docs/PREVIEW_DATA_PRIVACY.md",
           "matches": 1
+        },
+        {
+          "path": "docs/ROADMAP.md",
+          "matches": 1
+        },
+        {
+          "path": "packages/db/prisma/schema.prisma",
+          "matches": 7
         }
       ],
       "notes": [],
@@ -14290,8 +14290,8 @@
           "matches": 2
         },
         "docs": {
-          "files": 3,
-          "matches": 3
+          "files": 2,
+          "matches": 2
         },
         "other": {
           "files": 1,
@@ -14306,10 +14306,6 @@
         {
           "path": "packages/db/src/__tests__/zod-validators.test.ts",
           "matches": 2
-        },
-        {
-          "path": "docs/archive/TODO-history-2026-07.md",
-          "matches": 1
         },
         {
           "path": "docs/FEATURES.md",
@@ -14330,6 +14326,10 @@
         {
           "path": "packages/db/src/generated/prisma/models/TrackingReminderNotification.ts",
           "matches": 147
+        },
+        {
+          "path": "packages/db/src/generated/prisma/internal/class.ts",
+          "matches": 23
         }
       ],
       "notes": [],
@@ -14386,8 +14386,8 @@
           "matches": 6
         },
         "docs": {
-          "files": 7,
-          "matches": 8
+          "files": 6,
+          "matches": 6
         },
         "other": {
           "files": 2,
@@ -14458,12 +14458,12 @@
           "matches": 142
         },
         "runtime-libraries": {
-          "files": 86,
-          "matches": 194
+          "files": 87,
+          "matches": 195
         },
         "api-routes": {
-          "files": 16,
-          "matches": 22
+          "files": 15,
+          "matches": 21
         },
         "pages": {
           "files": 5,
@@ -14482,8 +14482,8 @@
           "matches": 50
         },
         "docs": {
-          "files": 12,
-          "matches": 33
+          "files": 9,
+          "matches": 29
         },
         "other": {
           "files": 10,
@@ -14676,8 +14676,8 @@
           "matches": 1
         },
         "docs": {
-          "files": 1,
-          "matches": 1
+          "files": 0,
+          "matches": 0
         },
         "other": {
           "files": 1,
@@ -15593,7 +15593,7 @@
     },
     {
       "name": "WishPoint",
-      "schemaLine": 9425,
+      "schemaLine": 9429,
       "buckets": {
         "schema": {
           "files": 1,
@@ -15727,49 +15727,49 @@
     },
     {
       "name": "CommerceEntitlementStatus",
-      "schemaLine": 10279,
+      "schemaLine": 10283,
       "referenceFiles": 8,
       "references": 78
     },
     {
       "name": "CommerceFulfillmentKind",
-      "schemaLine": 10240,
+      "schemaLine": 10244,
       "referenceFiles": 17,
       "references": 194
     },
     {
       "name": "CommerceFulfillmentProvider",
-      "schemaLine": 10252,
+      "schemaLine": 10256,
       "referenceFiles": 13,
       "references": 101
     },
     {
       "name": "CommerceFulfillmentStatus",
-      "schemaLine": 10270,
+      "schemaLine": 10274,
       "referenceFiles": 10,
       "references": 72
     },
     {
       "name": "CommerceOfferKind",
-      "schemaLine": 10225,
+      "schemaLine": 10229,
       "referenceFiles": 14,
       "references": 87
     },
     {
       "name": "CommerceOfferStatus",
-      "schemaLine": 10234,
+      "schemaLine": 10238,
       "referenceFiles": 15,
       "references": 86
     },
     {
       "name": "CommerceOrderStatus",
-      "schemaLine": 10259,
+      "schemaLine": 10263,
       "referenceFiles": 16,
       "references": 100
     },
     {
       "name": "CommercePaymentProvider",
-      "schemaLine": 10247,
+      "schemaLine": 10251,
       "referenceFiles": 9,
       "references": 68
     },
@@ -15794,8 +15794,8 @@
     {
       "name": "ContentVisibility",
       "schemaLine": 804,
-      "referenceFiles": 22,
-      "references": 274
+      "referenceFiles": 46,
+      "references": 488
     },
     {
       "name": "CourtCaseItemStatus",
@@ -15823,91 +15823,91 @@
     },
     {
       "name": "DatingBlockScope",
-      "schemaLine": 9751,
+      "schemaLine": 9755,
       "referenceFiles": 10,
       "references": 82
     },
     {
       "name": "DatingConversationStatus",
-      "schemaLine": 9729,
+      "schemaLine": 9733,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingDatePlanStatus",
-      "schemaLine": 9742,
+      "schemaLine": 9746,
       "referenceFiles": 8,
       "references": 84
     },
     {
       "name": "DatingInteractionKind",
-      "schemaLine": 9710,
+      "schemaLine": 9714,
       "referenceFiles": 11,
       "references": 73
     },
     {
       "name": "DatingInteractionStatus",
-      "schemaLine": 9717,
+      "schemaLine": 9721,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingMatchStatus",
-      "schemaLine": 9723,
+      "schemaLine": 9727,
       "referenceFiles": 9,
       "references": 77
     },
     {
       "name": "DatingMessageStatus",
-      "schemaLine": 9735,
+      "schemaLine": 9739,
       "referenceFiles": 8,
       "references": 66
     },
     {
       "name": "DatingPreferenceImportance",
-      "schemaLine": 9705,
+      "schemaLine": 9709,
       "referenceFiles": 8,
       "references": 56
     },
     {
       "name": "DatingProfilePhotoStatus",
-      "schemaLine": 9679,
+      "schemaLine": 9683,
       "referenceFiles": 10,
       "references": 68
     },
     {
       "name": "DatingProfileStatus",
-      "schemaLine": 9660,
+      "schemaLine": 9664,
       "referenceFiles": 11,
       "references": 134
     },
     {
       "name": "DatingQuestionAnswerVisibility",
-      "schemaLine": 9692,
+      "schemaLine": 9696,
       "referenceFiles": 9,
       "references": 65
     },
     {
       "name": "DatingQuestionImportance",
-      "schemaLine": 9697,
+      "schemaLine": 9701,
       "referenceFiles": 10,
       "references": 68
     },
     {
       "name": "DatingQuestionStatus",
-      "schemaLine": 9686,
+      "schemaLine": 9690,
       "referenceFiles": 10,
       "references": 58
     },
     {
       "name": "DatingRelationshipIntent",
-      "schemaLine": 9669,
+      "schemaLine": 9673,
       "referenceFiles": 11,
       "references": 134
     },
     {
       "name": "DatingSafetyReportStatus",
-      "schemaLine": 9757,
+      "schemaLine": 9761,
       "referenceFiles": 8,
       "references": 80
     },
@@ -16005,7 +16005,7 @@
       "name": "McpScope",
       "schemaLine": 1052,
       "referenceFiles": 64,
-      "references": 633
+      "references": 641
     },
     {
       "name": "McpToolCallStatus",
@@ -16064,14 +16064,14 @@
     {
       "name": "OrgStatus",
       "schemaLine": 399,
-      "referenceFiles": 42,
-      "references": 265
+      "referenceFiles": 43,
+      "references": 276
     },
     {
       "name": "OrgType",
       "schemaLine": 380,
       "referenceFiles": 43,
-      "references": 257
+      "references": 260
     },
     {
       "name": "ParameterDistributionType",
@@ -16274,8 +16274,8 @@
     {
       "name": "TaskClaimStatus",
       "schemaLine": 711,
-      "referenceFiles": 17,
-      "references": 129
+      "referenceFiles": 19,
+      "references": 141
     },
     {
       "name": "TaskCommentKind",
@@ -16388,8 +16388,8 @@
     {
       "name": "TaskEdgeType",
       "schemaLine": 721,
-      "referenceFiles": 19,
-      "references": 119
+      "referenceFiles": 20,
+      "references": 122
     },
     {
       "name": "TaskEngagementKind",
@@ -16454,8 +16454,8 @@
     {
       "name": "TaskImpactFrameKey",
       "schemaLine": 915,
-      "referenceFiles": 33,
-      "references": 148
+      "referenceFiles": 34,
+      "references": 150
     },
     {
       "name": "TaskImpactPublicationStatus",
@@ -16496,8 +16496,8 @@
     {
       "name": "TaskStatus",
       "schemaLine": 650,
-      "referenceFiles": 81,
-      "references": 601
+      "referenceFiles": 82,
+      "references": 610
     },
     {
       "name": "TaskVerificationMethod",
