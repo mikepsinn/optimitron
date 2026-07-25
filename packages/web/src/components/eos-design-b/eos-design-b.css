@@ -1,22 +1,884 @@
-/* Version B — "The Press Kit". Scaffold; full design system lands next commit. */
-.dsb {
-  background: #ffffff;
-  color: #12161d;
+/*
+ * EOS landing — VERSION B, "THE PRESS KIT" (/design-b).
+ *
+ * A 1962 NASA press kit: white and pale-sky grounds, engineering-drawing
+ * hairlines, figure numbers, technical callouts, NASA blue with one hot
+ * accent. Data-journalism scale: one enormous number per screen, the demo
+ * IS the section, prose demoted to captions and "read the math" disclosure.
+ *
+ * SANCTIONED DARK EXCEPTION, same basis as eos-retro.css (Mike 2026-07-11):
+ * Section 1 (The Bill) is the only dark register on this page, per the
+ * landing spec. Everything from the pivot onward is bright and must stay
+ * bright. Every rule is scoped under .pkb and must not leak onto treaty
+ * pages.
+ */
+
+.pkb {
+  /* ---- grounds ---- */
+  --pk-paper: #ffffff;
+  --pk-sky: #dce8f4;
+  --pk-sky-deep: #c2d6e9;
+  --pk-chrome: #e6ebf0;
+
+  /* ---- ink ---- */
+  --pk-ink: #0d141c;
+  --pk-ink-soft: #4a5765;
+  --pk-ink-faint: #7d8b99;
+
+  /* ---- linework ---- */
+  --pk-line: #9db0c2;
+  --pk-line-soft: #c8d5e1;
+  --pk-line-hard: #0d141c;
+
+  /* ---- signal ---- */
+  --pk-blue: #0b3d91;
+  --pk-blue-mid: #2f6fbd;
+  --pk-hot: #e0301b;
+
+  /* ---- the bill (dark register, section 1 only) ---- */
+  --pk-bill-bg: #05070a;
+  --pk-bill-ink: #f2f1ec;
+  --pk-bill-ink-soft: #8d8b85;
+  --pk-bill-hot: #ff5c50;
+
+  --pk-display: var(--v0-font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --pk-mono: var(--v0-font-space-mono), ui-monospace, "Consolas", monospace;
+
+  background: var(--pk-paper);
+  color: var(--pk-ink);
+  font-family: var(--pk-display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
-.dsb-wrap {
+
+/* ==========================================================================
+   PRIMITIVES
+   ========================================================================== */
+
+.pkb-wrap {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 clamp(1.25rem, 4vw, 3rem);
+  padding: 0 clamp(1rem, 4vw, 3.5rem);
 }
-.dsb-bill {
-  background: #05070a;
-  color: #f4f2ed;
-  padding: 4rem 0;
+
+.pkb-sec {
+  padding: clamp(3.5rem, 8vw, 7rem) 0;
+  position: relative;
 }
-.dsb-eyebrow {
-  font-family: var(--v0-font-space-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
+
+/* Blueprint hairline grid, used on pale-sky grounds only. */
+.pkb-grid {
+  background-color: var(--pk-sky);
+  background-image:
+    linear-gradient(to right, rgba(11, 61, 145, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 61, 145, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Mono technical label. The press kit's connective tissue. */
+.pkb-tag {
+  font-family: var(--pk-mono);
+  font-size: clamp(0.6rem, 1.4vw, 0.7rem);
+  letter-spacing: 0.24em;
   text-transform: uppercase;
+  color: var(--pk-ink-faint);
+  line-height: 1.6;
+}
+.pkb-tag--blue {
+  color: var(--pk-blue);
+}
+.pkb-tag--hot {
+  color: var(--pk-hot);
+}
+
+/* Sheet: the white document card with registration ticks at the corners. */
+.pkb-sheet {
+  position: relative;
+  background: var(--pk-paper);
+  border: 1px solid var(--pk-line);
+  padding: clamp(1.25rem, 3.5vw, 2.75rem);
+}
+.pkb-sheet::before,
+.pkb-sheet::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+.pkb-sheet::before {
+  top: 7px;
+  left: 7px;
+  border-top: 1px solid var(--pk-line-hard);
+  border-left: 1px solid var(--pk-line-hard);
+}
+.pkb-sheet::after {
+  bottom: 7px;
+  right: 7px;
+  border-bottom: 1px solid var(--pk-line-hard);
+  border-right: 1px solid var(--pk-line-hard);
+}
+
+/* Sheet header rule: FIG. number left, sheet id right. */
+.pkb-sheethead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--pk-line-hard);
+  padding-bottom: 0.6rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.75rem);
+}
+.pkb-sheethead h2 {
+  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/* The enormous number. One per screen. */
+.pkb-huge {
+  font-family: var(--pk-display);
+  font-weight: 900;
+  font-size: clamp(3.4rem, 15vw, 13.5rem);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--pk-blue);
+  display: block;
+  overflow-wrap: anywhere;
+}
+.pkb-huge--hot {
+  color: var(--pk-hot);
+}
+.pkb-huge .pkb-huge-unit {
+  font-family: var(--pk-mono);
+  font-weight: 400;
+  font-size: clamp(0.75rem, 1.8vw, 1.1rem);
+  letter-spacing: 0.2em;
+  vertical-align: super;
+  color: var(--pk-ink-faint);
+}
+
+/* Figure legend: the caption doing the work prose used to do. */
+.pkb-legend {
+  font-size: clamp(0.9rem, 1.7vw, 1.02rem);
+  line-height: 1.55;
+  color: var(--pk-ink-soft);
+  max-width: 62ch;
+}
+.pkb-legend strong {
+  color: var(--pk-ink);
+  font-weight: 700;
+}
+
+/* Dimension line, engineering-drawing style: |<----- label ----->| */
+.pkb-dim {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 1.1rem 0 0;
+}
+.pkb-dim-rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--pk-line);
+  position: relative;
+  min-width: 1.5rem;
+}
+.pkb-dim-rule::before,
+.pkb-dim-rule::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: var(--pk-line-hard);
+}
+.pkb-dim-rule::before {
+  left: 0;
+}
+.pkb-dim-rule::after {
+  right: 0;
+}
+.pkb-dim .pkb-tag {
+  flex: 0 0 auto;
+}
+
+/* Callout stack: mono annotations hung off a hairline, like a drawing key. */
+.pkb-callouts {
+  border-left: 1px solid var(--pk-line);
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+.pkb-callout {
+  position: relative;
+}
+.pkb-callout::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 0.5rem;
+  width: 0.6rem;
+  height: 1px;
+  background: var(--pk-line-hard);
+}
+.pkb-callout-k {
+  font-family: var(--pk-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pk-ink-faint);
+  display: block;
+}
+.pkb-callout-v {
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--pk-ink);
+  letter-spacing: -0.01em;
+}
+
+/* Numbers inside prose: blue, tabular, no dotted-underline chrome. */
+.pkb :where(.pk-n) {
+  color: var(--pk-blue);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  cursor: pointer;
+}
+.pkb :where(.pk-n):hover {
+  color: var(--pk-hot);
+}
+
+/* "Read the math" disclosure: prose lives behind this, never in front. */
+.pkb-math {
+  border-top: 1px solid var(--pk-line-soft);
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+.pkb-math > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.85rem 0;
+  font-family: var(--pk-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--pk-blue);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.pkb-math > summary::-webkit-details-marker {
+  display: none;
+}
+.pkb-math > summary::before {
+  content: "+";
+  font-size: 0.95rem;
+  line-height: 1;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid currentColor;
+  display: grid;
+  place-items: center;
+}
+.pkb-math[open] > summary::before {
+  content: "\2212";
+}
+.pkb-math > summary:hover {
+  color: var(--pk-hot);
+}
+.pkb-mathbody {
+  columns: 2;
+  column-gap: 2.5rem;
+  padding-bottom: 1.25rem;
+}
+.pkb-mathbody p {
+  font-size: 0.88rem;
+  line-height: 1.62;
+  color: var(--pk-ink-soft);
+  margin: 0 0 0.9rem;
+  break-inside: avoid;
+}
+@media (max-width: 780px) {
+  .pkb-mathbody {
+    columns: 1;
+  }
+}
+
+/* Press quote / testimonial */
+.pkb-quote {
+  border-top: 2px solid var(--pk-line-hard);
+  border-bottom: 1px solid var(--pk-line);
+  padding: 1.1rem 0;
+  margin-top: clamp(1.75rem, 4vw, 2.75rem);
+  display: grid;
+  gap: 0.5rem;
+}
+.pkb-quote p {
+  font-size: clamp(1rem, 2.1vw, 1.22rem);
+  line-height: 1.45;
+  font-style: italic;
+  max-width: 68ch;
+}
+.pkb-quote cite {
+  font-family: var(--pk-mono);
+  font-style: normal;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pk-ink-faint);
+}
+
+/* ==========================================================================
+   SECTION 1 — THE BILL (dark; the only dark register on this page)
+   ========================================================================== */
+
+.pkb-bill {
+  background: var(--pk-bill-bg);
+  color: var(--pk-bill-ink);
+  padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3.5rem, 8vw, 6rem);
+}
+.pkb-bill .pkb-tag {
+  color: var(--pk-bill-ink-soft);
+}
+.pkb-bill :where(.pk-n) {
+  color: var(--pk-bill-hot);
+}
+.pkb-bill :where(.pk-n):hover {
+  color: #fff;
+}
+.pkb-billhead {
+  border-bottom: 1px solid rgba(242, 241, 236, 0.16);
+  padding-bottom: 1rem;
+  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.pkb-charge {
+  max-width: 68ch;
+  display: grid;
+  gap: 1.1rem;
+}
+.pkb-charge p {
+  font-size: clamp(0.95rem, 1.9vw, 1.05rem);
+  line-height: 1.55;
+  color: rgba(242, 241, 236, 0.86);
+}
+.pkb-billnum {
+  margin: clamp(2.5rem, 6vw, 4.5rem) 0 0;
+  border-top: 1px solid rgba(242, 241, 236, 0.16);
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+.pkb-billnum .pkb-huge {
+  color: var(--pk-bill-hot);
+}
+.pkb-billnum .pkb-legend {
+  color: rgba(242, 241, 236, 0.72);
+  margin-top: 1.25rem;
+}
+.pkb-billnum .pkb-legend strong {
+  color: var(--pk-bill-ink);
+}
+.pkb-billlink {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-family: var(--pk-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pk-bill-ink-soft);
+  border-bottom: 1px solid rgba(242, 241, 236, 0.3);
+  padding-bottom: 2px;
+}
+.pkb-billlink:hover {
+  color: var(--pk-bill-ink);
+}
+.pkb-love {
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+  max-width: 46ch;
+  display: grid;
+  gap: 0.8rem;
+}
+.pkb-love p {
+  font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+  line-height: 1.35;
+  color: var(--pk-bill-ink);
+}
+
+/* ==========================================================================
+   THE PIVOT — courtroom to 1962
+   ========================================================================== */
+
+/* Chrome changeover strip: the dark ends, metal, then daylight. */
+.pkb-changeover {
+  height: clamp(10px, 2vw, 16px);
+  background: linear-gradient(
+    to bottom,
+    #05070a 0%,
+    #3d444c 18%,
+    #cfd6dc 42%,
+    #ffffff 58%,
+    #9fb0c0 74%,
+    var(--pk-sky) 100%
+  );
+}
+
+.pkb-pivot {
+  position: relative;
+  padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(3.5rem, 8vw, 6rem);
+}
+/* Sunburst: light flooding in, kept to a single soft radial. */
+.pkb-pivot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 90% at 50% -10%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.55) 34%,
+    rgba(255, 255, 255, 0) 68%
+  );
+  pointer-events: none;
+}
+.pkb-pivot > * {
+  position: relative;
+}
+.pkb-release {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  border-top: 2px solid var(--pk-line-hard);
+  border-bottom: 1px solid var(--pk-line-hard);
+  padding: 0.55rem 0;
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
+}
+.pkb-masthead {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  max-width: 22ch;
+}
+.pkb-marque {
+  font-size: clamp(1.6rem, 5.2vw, 3.4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--pk-blue);
+  max-width: 16ch;
+}
+.pkb-pivotgrid {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .pkb-pivotgrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+  }
+}
+.pkb-pivot-q {
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--pk-ink);
+  max-width: 30ch;
+}
+.pkb-pivot-a {
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(2.1rem, 7.4vw, 5.6rem);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.038em;
+  text-transform: uppercase;
+  color: var(--pk-ink);
+}
+.pkb-pivot-a em {
+  font-style: normal;
+  color: var(--pk-hot);
+}
+
+/* Roundel: the technical badge in place of a logo. */
+.pkb-roundel {
+  width: clamp(84px, 13vw, 132px);
+  height: clamp(84px, 13vw, 132px);
+  border-radius: 50%;
+  border: 1px solid var(--pk-line-hard);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 38%, rgba(11, 61, 145, 0.08) 38% 39%, transparent 39%),
+    var(--pk-paper);
+  flex: 0 0 auto;
+}
+.pkb-roundel span {
+  font-family: var(--pk-mono);
+  font-size: clamp(0.5rem, 1.1vw, 0.6rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--pk-blue);
+}
+
+/* ==========================================================================
+   SECTION 2 — THE STORE
+   ========================================================================== */
+
+.pkb-storegrid {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .pkb-storegrid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+}
+.pkb-lede {
+  font-size: clamp(1.05rem, 2.3vw, 1.35rem);
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--pk-ink);
+  max-width: 34ch;
+}
+
+/* Spec table: the "retail price / currently paying" ledger. */
+.pkb-spec {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.82rem, 1.7vw, 0.95rem);
+}
+.pkb-spec th,
+.pkb-spec td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.6rem 0.75rem 0.6rem 0;
+  border-bottom: 1px solid var(--pk-line-soft);
+}
+.pkb-spec th {
+  font-family: var(--pk-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pk-ink-faint);
+  font-weight: 400;
+  width: 40%;
+}
+.pkb-spec td {
+  font-weight: 600;
+  color: var(--pk-ink);
+}
+
+/* ==========================================================================
+   PRODUCT SHEET — THE OPTIMITRON
+   ========================================================================== */
+
+.pkb-prodhead {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+.pkb-prodname {
+  font-size: clamp(1.9rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.pkb-prodtag {
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  color: var(--pk-blue);
+  font-weight: 500;
+  max-width: 40ch;
+}
+
+/* Two-number dashboard: the section's enormous pair. */
+.pkb-dash {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) {
+  .pkb-dash {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+}
+.pkb-gauge {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.pkb-gauge-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--pk-line-hard);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.pkb-gauge .pkb-huge {
+  font-size: clamp(3.2rem, 12vw, 9.5rem);
+}
+.pkb-gauge-sub {
+  font-family: var(--pk-mono);
+  font-size: clamp(0.65rem, 1.5vw, 0.76rem);
+  letter-spacing: 0.06em;
+  color: var(--pk-ink-soft);
+  line-height: 1.6;
+}
+.pkb-gauge-sub b {
+  color: var(--pk-blue);
+}
+
+/* Track: current -> target, drawn as an engineering scale. */
+.pkb-track {
+  margin-top: 0.9rem;
+  height: 26px;
+  position: relative;
+  border-left: 1px solid var(--pk-line-hard);
+  border-right: 1px solid var(--pk-line-hard);
+}
+.pkb-track-base {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--pk-line);
+}
+.pkb-track-fill {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  height: 5px;
+  background: var(--pk-blue);
+  transition: width 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pkb-track-tick {
+  position: absolute;
+  top: 4px;
+  width: 1px;
+  height: 17px;
+  background: var(--pk-hot);
+}
+
+.pkb-policygrid {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--pk-line-hard);
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+}
+.pkb-policy {
+  border-bottom: 1px solid var(--pk-line-soft);
+}
+.pkb-policy > button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 1rem 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.pkb-policy > button:hover .pkb-policy-name {
+  color: var(--pk-hot);
+}
+.pkb-policy-no {
+  font-family: var(--pk-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: var(--pk-ink-faint);
+}
+.pkb-policy-name {
+  font-size: clamp(1rem, 2.2vw, 1.28rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.pkb-policy-sign {
+  font-family: var(--pk-mono);
+  font-size: 1rem;
+  color: var(--pk-blue);
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid var(--pk-line);
+  display: grid;
+  place-items: center;
+}
+.pkb-policy-body {
+  padding: 0 0 1.4rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .pkb-policy-body {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}
+.pkb-ba {
+  border-top: 1px solid var(--pk-line);
+  padding-top: 0.6rem;
+  min-width: 0;
+}
+.pkb-ba--after {
+  border-top-color: var(--pk-blue);
+}
+.pkb-ba-k {
+  font-family: var(--pk-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pk-ink-faint);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.pkb-ba-v {
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.pkb-ba--after .pkb-ba-v {
+  color: var(--pk-blue);
+}
+.pkb-arrow {
+  font-family: var(--pk-mono);
+  color: var(--pk-hot);
+  font-size: 1.1rem;
+  justify-self: center;
+}
+
+/* ==========================================================================
+   SECTION 3 — THE COMPARISON MATRIX
+   ========================================================================== */
+
+.pkb-verdict {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  grid-template-columns: 1fr;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+@media (min-width: 780px) {
+  .pkb-verdict {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+}
+.pkb-verdict-col {
+  border-top: 2px solid var(--pk-line-hard);
+  padding-top: 0.85rem;
+  min-width: 0;
+}
+.pkb-verdict-col--eos {
+  border-top-color: var(--pk-blue);
+}
+
+.pkb-matrixscroll {
+  overflow-x: auto;
+  border-top: 2px solid var(--pk-line-hard);
+  border-bottom: 2px solid var(--pk-line-hard);
+}
+.pkb-matrix {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.6vw, 0.94rem);
+}
+.pkb-matrix thead th {
+  position: sticky;
+  top: 0;
+  background: var(--pk-paper);
+  text-align: left;
+  padding: 0.85rem 1rem 0.85rem 0;
+  border-bottom: 1px solid var(--pk-line-hard);
+  font-family: var(--pk-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--pk-ink-faint);
+  z-index: 1;
+}
+.pkb-matrix thead th.pkb-col-eos {
+  color: var(--pk-blue);
+}
+.pkb-matrix tbody th {
+  text-align: left;
+  font-family: var(--pk-mono);
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pk-ink-faint);
+  padding: 0.85rem 1.25rem 0.85rem 0;
+  vertical-align: top;
+  width: 22%;
+  border-bottom: 1px solid var(--pk-line-soft);
+}
+.pkb-matrix td {
+  padding: 0.85rem 1.25rem 0.85rem 0;
+  vertical-align: top;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--pk-line-soft);
+  width: 39%;
+}
+.pkb-matrix td:last-child {
+  padding-right: 0;
+}
+.pkb-matrix tbody tr:hover td,
+.pkb-matrix tbody tr:hover th {
+  background: rgba(11, 61, 145, 0.04);
+}
+.pkb-col-gov {
+  color: var(--pk-ink-soft);
+}
+.pkb-col-eos {
+  color: var(--pk-ink);
+  font-weight: 600;
+  box-shadow: inset 1px 0 0 var(--pk-line-soft);
+  padding-left: 1.25rem !important;
+}
+.pkb-matrix .pkb-col-eos .pk-n {
+  color: var(--pk-blue);
+}
+.pkb-matrix .pkb-col-gov .pk-n {
+  color: var(--pk-hot);
+}
+
+/* Footer note strip */
+.pkb-colophon {
+  border-top: 1px solid var(--pk-line-hard);
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  padding-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  justify-content: space-between;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pkb-track-fill {
+    transition: none;
+  }
 }
