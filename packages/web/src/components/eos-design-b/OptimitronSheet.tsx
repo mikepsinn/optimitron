@@ -133,13 +133,13 @@ export function OptimitronSheet() {
                 invade. Disease eradication goes from{" "}
                 <ParameterValue
                   className={N}
-                  display="integer"
+                  display="withUnit"
                   param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
                 />{" "}
                 to{" "}
                 <ParameterValue
                   className={N}
-                  display="integer"
+                  display="withUnit"
                   param={DFDA_QUEUE_CLEARANCE_YEARS}
                 />
                 . The average treatment arrives{" "}

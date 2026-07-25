@@ -844,6 +844,10 @@
   border-top: 2px solid var(--pk-line-hard);
   border-bottom: 2px solid var(--pk-line-hard);
 }
+.pkb-matrixscroll:focus-visible {
+  outline: 2px solid var(--pk-blue);
+  outline-offset: 3px;
+}
 .pkb-matrix {
   width: 100%;
   min-width: 620px;

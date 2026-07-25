@@ -67,7 +67,14 @@ export function ComparisonSheet() {
           <p className="pkb-tag pkb-tag--blue pkb-scrollhint">
             Scroll the sheet sideways for the EOS column →
           </p>
-          <div className="pkb-matrixscroll">
+          {/* Focusable so keyboard users can reach the EOS column the scroll
+              hint points them at. */}
+          <div
+            className="pkb-matrixscroll"
+            role="region"
+            aria-label="Vendor comparison: your government versus Earth Optimization Services"
+            tabIndex={0}
+          >
             <table className="pkb-matrix">
               <caption className="sr-only">
                 Vendor comparison: your government versus Earth Optimization
@@ -266,7 +273,7 @@ export function ComparisonSheet() {
               Universe Optimization Services · Earth Regional Branch
             </p>
             <p className="pkb-tag pkb-tag--blue">
-              Every figure sourced. Select any number for its derivation.
+              Select any highlighted figure for its derivation.
             </p>
           </div>
         </div>
