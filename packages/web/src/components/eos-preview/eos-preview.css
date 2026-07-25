@@ -463,3 +463,905 @@
     transition: none;
   }
 }
+
+/* =========================================================================
+   SHARED REGISTER-2 PRIMITIVES (Sections 2-11)
+   ========================================================================= */
+
+/* Body prose inside catalog sections. */
+.eos-prose p {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.62;
+  color: var(--eos-ink-soft);
+  max-width: 68ch;
+}
+.eos-prose p + p {
+  margin-top: 1.1rem;
+}
+.eos-prose strong {
+  color: var(--eos-ink);
+  font-weight: 600;
+}
+.eos-prose .eos-num {
+  color: var(--eos-gold);
+}
+
+/* Buttons. Primary = gold outline fill on hover; ghost = thin line. */
+.eos-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--eos-gold);
+  color: var(--eos-gold);
+  background: transparent;
+  padding: 0.65rem 1.3rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.eos-btn:hover {
+  background: var(--eos-gold);
+  color: var(--eos-bg);
+}
+.eos-btn-solid {
+  background: var(--eos-gold);
+  color: var(--eos-bg);
+}
+.eos-btn-solid:hover {
+  background: transparent;
+  color: var(--eos-gold);
+}
+.eos-btn-ghost {
+  border-color: var(--eos-line-strong);
+  color: var(--eos-ink-soft);
+}
+.eos-btn-ghost:hover {
+  background: transparent;
+  border-color: var(--eos-ink);
+  color: var(--eos-ink);
+}
+
+/* Panels. */
+.eos-panel {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+.eos-panel-soft {
+  border: 1px solid var(--eos-line);
+  background: var(--eos-panel-soft);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* ---- Section 4: product cards ---- */
+.eos-product {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+  padding: clamp(1.5rem, 3.5vw, 3rem);
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.eos-product-kicker {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--eos-gold);
+}
+.eos-product-name {
+  margin-top: 0.6rem;
+  font-family: var(--eos-font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+  line-height: 1.08;
+  color: var(--eos-cream);
+}
+.eos-product-tagline {
+  margin-top: 0.75rem;
+  font-size: clamp(1.02rem, 1.7vw, 1.2rem);
+  color: var(--eos-cyan);
+}
+.eos-pricegrid {
+  display: grid;
+  gap: 1px;
+  background: var(--eos-line);
+  border: 1px solid var(--eos-line);
+  margin-top: 1.5rem;
+}
+@media (min-width: 720px) {
+  .eos-pricegrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .eos-pricegrid[data-cols="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.eos-pricechip {
+  background: var(--eos-bg-raised);
+  padding: 0.85rem 1rem;
+}
+.eos-pricechip dt {
+  font-family: var(--eos-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+}
+.eos-pricechip dd {
+  margin: 0.35rem 0 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--eos-ink);
+}
+.eos-pricechip[data-tone="good"] dd {
+  color: var(--eos-mint);
+}
+.eos-pricechip[data-tone="bad"] dd {
+  color: var(--eos-rose);
+}
+
+/* Testimonials: planet reviews attached to products. */
+.eos-testimonial {
+  margin-top: 2rem;
+  border-left: 2px solid var(--eos-gold);
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  max-width: 60ch;
+}
+.eos-testimonial p {
+  font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--eos-cream);
+}
+.eos-testimonial cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-family: var(--eos-font-mono);
+  font-size: 0.78rem;
+  color: var(--eos-ink-muted);
+}
+
+/* Data/stat cards (OBG key numbers, ROI table). */
+.eos-datacards {
+  display: grid;
+  gap: 1px;
+  background: var(--eos-line);
+  border: 1px solid var(--eos-line);
+}
+@media (min-width: 640px) {
+  .eos-datacards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .eos-datacards[data-cols="5"] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .eos-datacards[data-cols="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.eos-datacard {
+  background: var(--eos-bg-raised);
+  padding: 1.1rem 1.2rem;
+}
+.eos-datacard .eos-datacard-value {
+  font-family: var(--eos-font-mono);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+  color: var(--eos-gold);
+}
+.eos-datacard .eos-datacard-label {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--eos-ink-muted);
+}
+
+/* Two-number dashboard counters. */
+.eos-twonum {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+@media (min-width: 720px) {
+  .eos-twonum {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.eos-twonum-card {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-bg-raised);
+  padding: 1.5rem;
+  text-align: center;
+}
+.eos-twonum-value {
+  font-family: var(--eos-font-mono);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  color: var(--eos-cyan);
+  font-variant-numeric: tabular-nums;
+}
+.eos-twonum-label {
+  margin-top: 0.6rem;
+  font-family: var(--eos-font-display);
+  font-size: 1.05rem;
+  color: var(--eos-cream);
+}
+.eos-twonum-note {
+  margin-top: 0.4rem;
+  font-size: 0.86rem;
+  color: var(--eos-ink-muted);
+}
+
+/* Expanders (policy comparator, agency cards). */
+.eos-expander {
+  border: 1px solid var(--eos-line);
+  background: var(--eos-bg-raised);
+}
+.eos-expander + .eos-expander {
+  border-top: none;
+}
+.eos-expander summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.15rem;
+}
+.eos-expander summary::-webkit-details-marker {
+  display: none;
+}
+.eos-expander summary::after {
+  content: "+";
+  font-family: var(--eos-font-mono);
+  color: var(--eos-gold);
+  flex-shrink: 0;
+}
+.eos-expander[open] summary::after {
+  content: "\2212";
+}
+.eos-expander-title {
+  font-family: var(--eos-font-display);
+  font-size: 1rem;
+  color: var(--eos-cream);
+}
+.eos-expander-sub {
+  font-size: 0.85rem;
+  color: var(--eos-ink-muted);
+}
+.eos-expander-body {
+  padding: 0 1.15rem 1.15rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--eos-ink-soft);
+}
+
+/* Terminal readout (TODO list). */
+.eos-terminal {
+  border: 1px solid var(--eos-line-strong);
+  background: #05070c;
+  padding: 1.25rem 1.4rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.eos-terminal-title {
+  color: var(--eos-ink-muted);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  margin-bottom: 0.9rem;
+}
+.eos-term-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  color: var(--eos-ink-soft);
+}
+.eos-term-row + .eos-term-row {
+  margin-top: 0.45rem;
+}
+.eos-term-rank {
+  color: var(--eos-ink-muted);
+}
+.eos-term-task {
+  color: var(--eos-cream);
+  font-weight: 700;
+}
+.eos-term-time {
+  color: var(--eos-cyan);
+}
+.eos-term-ev {
+  color: var(--eos-mint);
+  margin-left: auto;
+}
+
+/* Corporate transformation cards: before/after crossfade. */
+.eos-transform-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 720px) {
+  .eos-transform-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .eos-transform-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.eos-transform-card {
+  position: relative;
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-bg-raised);
+  padding: 1.1rem 1.2rem;
+  min-height: 7.5rem;
+  overflow: hidden;
+}
+.eos-transform-before,
+.eos-transform-after {
+  display: block;
+  font-family: var(--eos-font-display);
+  font-size: 1.02rem;
+  line-height: 1.3;
+}
+.eos-transform-before {
+  color: var(--eos-rose);
+}
+.eos-transform-after {
+  color: var(--eos-mint);
+}
+.eos-transform-arrow {
+  display: block;
+  margin: 0.4rem 0;
+  color: var(--eos-ink-muted);
+  font-family: var(--eos-font-mono);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .eos-transform-before {
+    animation: eos-dim 6s ease-in-out infinite;
+  }
+  .eos-transform-after {
+    animation: eos-glow 6s ease-in-out infinite;
+  }
+}
+@keyframes eos-dim {
+  0%, 40% { opacity: 1; }
+  60%, 90% { opacity: 0.35; }
+  100% { opacity: 1; }
+}
+@keyframes eos-glow {
+  0%, 40% { opacity: 0.45; }
+  60%, 90% { opacity: 1; }
+  100% { opacity: 0.45; }
+}
+
+/* Range slider (Wishocracy). */
+.eos-range {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+  outline: none;
+  cursor: ew-resize;
+}
+.eos-range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 26px;
+  background: var(--eos-cream);
+  border: 1px solid var(--eos-bg);
+  cursor: ew-resize;
+}
+.eos-range::-moz-range-thumb {
+  width: 22px;
+  height: 26px;
+  background: var(--eos-cream);
+  border: 1px solid var(--eos-bg);
+  cursor: ew-resize;
+  border-radius: 0;
+}
+.eos-split-value {
+  font-family: var(--eos-font-mono);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Code blocks (hand-tokenized Solidity). */
+.eos-code {
+  border: 1px solid var(--eos-line-strong);
+  background: #05070c;
+  padding: 1.2rem 1.4rem;
+  overflow-x: auto;
+  font-family: var(--eos-font-mono);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--eos-ink-soft);
+}
+.eos-code .tok-k { color: var(--eos-rose); }
+.eos-code .tok-f { color: var(--eos-gold); }
+.eos-code .tok-t { color: var(--eos-cyan); }
+.eos-code .tok-n { color: var(--eos-mint); }
+.eos-code .tok-c { color: var(--eos-ink-muted); font-style: italic; }
+
+/* Simple two-column feature tables (ARS / USA before-after). */
+.eos-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--eos-line-strong);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.eos-table th,
+.eos-table td {
+  border: 1px solid var(--eos-line);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+.eos-table th {
+  font-family: var(--eos-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+  background: var(--eos-bg);
+}
+.eos-table td:nth-child(2) {
+  color: var(--eos-rose);
+}
+.eos-table td:last-child {
+  color: var(--eos-mint);
+}
+.eos-table td:first-child {
+  color: var(--eos-ink-soft);
+}
+.eos-table-scroll {
+  overflow-x: auto;
+}
+
+/* Suite agency grid. */
+.eos-agency-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 720px) {
+  .eos-agency-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1100px) {
+  .eos-agency-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.eos-agency-grid .eos-expander + .eos-expander {
+  border-top: 1px solid var(--eos-line);
+}
+
+/* Cost comparison bar. */
+.eos-costbar {
+  margin-top: 2.5rem;
+}
+.eos-costbar-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 14rem) 1fr;
+  align-items: center;
+  gap: 0.9rem;
+}
+.eos-costbar-row + .eos-costbar-row {
+  margin-top: 0.8rem;
+}
+.eos-costbar-label {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+  text-align: right;
+}
+.eos-costbar-track {
+  height: 26px;
+  background: var(--eos-panel);
+  border: 1px solid var(--eos-line);
+  position: relative;
+}
+.eos-costbar-fill {
+  height: 100%;
+}
+/* Value sits over the track (not inside the fill) so a tiny fill or a narrow
+   viewport can never clip it. */
+.eos-costbar-value {
+  position: absolute;
+  inset: 0 auto 0 0.5rem;
+  display: flex;
+  align-items: center;
+  font-family: var(--eos-font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .eos-costbar-row {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .eos-costbar-label {
+    text-align: left;
+  }
+  .eos-costbar-value {
+    font-size: 0.7rem;
+  }
+}
+
+/* ---- Section 6: control-loop diagrams ---- */
+.eos-loop {
+  border: 1px solid var(--eos-line-strong);
+  background: #05070c;
+  padding: 1.4rem;
+  overflow-x: auto;
+}
+.eos-loop-title {
+  font-family: var(--eos-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.eos-loop-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0;
+  font-family: var(--eos-font-mono);
+  font-size: 0.82rem;
+}
+.eos-loop-node {
+  border: 1px solid var(--eos-line-strong);
+  padding: 0.45rem 0.8rem;
+  color: var(--eos-cream);
+  white-space: nowrap;
+  background: var(--eos-bg-raised);
+}
+.eos-loop-arrow {
+  padding: 0 0.55rem;
+  color: var(--eos-ink-muted);
+}
+.eos-loop-dead {
+  color: var(--eos-rose);
+  font-weight: 700;
+}
+.eos-loop-return {
+  margin-top: 0.9rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.78rem;
+  color: var(--eos-cyan);
+}
+.eos-loop-stats {
+  margin-top: 1rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: var(--eos-ink-soft);
+}
+.eos-loop-stats .eos-num {
+  color: var(--eos-rose);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .eos-loop[data-animated] .eos-loop-node {
+    animation: eos-node-pulse 6s ease-in-out infinite;
+    animation-delay: calc(var(--eos-node-i, 0) * 0.7s);
+  }
+}
+@keyframes eos-node-pulse {
+  0%, 100% { border-color: var(--eos-line-strong); }
+  8% { border-color: var(--eos-gold); box-shadow: 0 0 0 1px var(--eos-gold); }
+  16% { border-color: var(--eos-line-strong); box-shadow: none; }
+}
+
+/* ---- Section 7: chart chrome ---- */
+.eos-input {
+  background: var(--eos-bg);
+  border: 1px solid var(--eos-line-strong);
+  color: var(--eos-cream);
+  font-family: var(--eos-font-mono);
+  font-size: 1.15rem;
+  padding: 0.6rem 0.9rem;
+  width: 12rem;
+}
+.eos-input:focus {
+  outline: 1px solid var(--eos-gold);
+  border-color: var(--eos-gold);
+}
+.eos-toggle {
+  border: 1px solid var(--eos-line-strong);
+  background: transparent;
+  color: var(--eos-ink-muted);
+  font-family: var(--eos-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+.eos-toggle[data-active="true"] {
+  background: var(--eos-cream);
+  color: var(--eos-bg);
+  border-color: var(--eos-cream);
+}
+.eos-chart-annotation {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--eos-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--eos-ink-muted);
+  background: rgba(8, 9, 12, 0.82);
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--eos-line);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ---- Section 8: the sunrise interlude ---- */
+.eos-day {
+  background: var(--eos-cream);
+  color: #17130a;
+}
+.eos-day .eos-catalog-title {
+  color: #17130a;
+}
+.eos-day .eos-catalog-deck {
+  color: rgba(23, 19, 10, 0.72);
+}
+.eos-day-entry {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 7rem) 1fr;
+  gap: 1.25rem;
+  padding: 1.4rem 0;
+  border-top: 1px solid rgba(23, 19, 10, 0.16);
+  max-width: 76ch;
+  margin: 0 auto;
+}
+.eos-day-time {
+  font-family: var(--eos-font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: rgba(23, 19, 10, 0.6);
+}
+.eos-day-text {
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.6;
+  color: #221c0f;
+}
+.eos-day .eos-transform-card {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(23, 19, 10, 0.25);
+}
+.eos-day .eos-transform-before {
+  color: #a8362e;
+}
+.eos-day .eos-transform-after {
+  color: #1f6b3d;
+}
+.eos-day .eos-transform-arrow {
+  color: rgba(23, 19, 10, 0.5);
+}
+.eos-day .eos-prose p {
+  color: rgba(23, 19, 10, 0.8);
+}
+
+/* ---- Section 9: reviews ---- */
+.eos-review-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 900px) {
+  .eos-review-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .eos-review-grid[data-cols="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.eos-review-card {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+  padding: 1.4rem;
+}
+.eos-review-name {
+  font-family: var(--eos-font-display);
+  font-size: 1.05rem;
+  color: var(--eos-cream);
+}
+.eos-stars {
+  font-family: var(--eos-font-mono);
+  letter-spacing: 0.2em;
+  color: var(--eos-gold);
+  margin-top: 0.35rem;
+}
+.eos-review-body {
+  margin-top: 0.8rem;
+  font-size: 0.96rem;
+  line-height: 1.55;
+  color: var(--eos-ink-soft);
+}
+.eos-review-card[data-tone="hostile"] {
+  background: var(--eos-bg-raised);
+}
+.eos-review-card[data-tone="hostile"] .eos-stars {
+  color: var(--eos-rose);
+}
+.eos-review-card[data-tone="hostile"] .eos-review-name {
+  color: var(--eos-rose);
+}
+
+/* ---- Section 5: dFDA ranking table ---- */
+.eos-rank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.eos-rank-table th {
+  font-family: var(--eos-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eos-ink-muted);
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--eos-line-strong);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.eos-rank-table th[data-sorted="true"] {
+  color: var(--eos-gold);
+}
+.eos-rank-table td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--eos-line);
+  color: var(--eos-ink-soft);
+  vertical-align: top;
+}
+.eos-rank-table td:first-child {
+  color: var(--eos-cream);
+  font-weight: 600;
+}
+.eos-condition-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- Section 10/11 ---- */
+.eos-disclosure {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-bg-raised);
+  padding: 1.25rem 1.4rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--eos-ink-soft);
+  max-width: 76ch;
+}
+.eos-paths {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 900px) {
+  .eos-paths {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.eos-path-card {
+  border: 1px solid var(--eos-line-strong);
+  background: var(--eos-panel);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.eos-path-card .eos-prose {
+  flex: 1;
+}
+.eos-path-num {
+  font-family: var(--eos-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--eos-gold);
+}
+.eos-path-title {
+  margin-top: 0.5rem;
+  font-family: var(--eos-font-display);
+  font-size: 1.25rem;
+  color: var(--eos-cream);
+}
+.eos-footer {
+  border-top: 1px solid var(--eos-line);
+  background: var(--eos-bill-bg);
+  text-align: center;
+  padding: clamp(3.5rem, 8vw, 6rem) 0;
+}
+.eos-footer p {
+  margin: 0 auto;
+  max-width: 60ch;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--eos-ink-soft);
+}
+.eos-footer p + p {
+  margin-top: 1.1rem;
+}
+.eos-footer .eos-footer-love {
+  color: var(--eos-ink);
+  font-size: 1.08rem;
+}
+.eos-footer-links {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  font-family: var(--eos-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.eos-footer-links a {
+  color: var(--eos-ink-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--eos-line);
+  padding-bottom: 2px;
+}
+.eos-footer-links a:hover {
+  color: var(--eos-cream);
+}
+
+/* Ballot (Decentralized Congress sample question). */
+.eos-ballot-btn {
+  border: 1px solid var(--eos-line-strong);
+  background: transparent;
+  color: var(--eos-cream);
+  font-family: var(--eos-font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  padding: 0.7rem 2rem;
+  cursor: pointer;
+}
+.eos-ballot-btn[data-picked="true"] {
+  background: var(--eos-mint);
+  border-color: var(--eos-mint);
+  color: var(--eos-bg);
+}
+.eos-ballot-btn:hover {
+  border-color: var(--eos-cream);
+}
+
+/* Spec-level placeholder values ([X], [Y], [calculated]): visibly provisional. */
+.eos-placeholder {
+  font-family: var(--eos-font-mono);
+  color: var(--eos-ink-muted);
+  border-bottom: 1px dashed var(--eos-line-strong);
+}
+
+/* Section spacing variant for stacked catalog sections. */
+.eos-section-tight {
+  padding-top: clamp(3rem, 6vw, 5rem);
+}
