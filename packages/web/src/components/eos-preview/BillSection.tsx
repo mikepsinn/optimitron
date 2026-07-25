@@ -12,7 +12,9 @@ import {
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL,
   POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+  SINGAPORE_LIFE_EXPECTANCY,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
+  US_LIFE_EXPECTANCY_2023,
   WAR_CHILDREN_KILLED_SINCE_1900,
   WAR_COUNTERFACTUAL_GDP_PER_CAPITA,
   WAR_COUNTERFACTUAL_INCOME_MULTIPLE,
@@ -25,6 +27,10 @@ const N = "eos-num";
 
 // Links to the full forensic audit of the Political Dysfunction Tax.
 const AUDIT_URL = "/dysfunction-tax";
+
+const SINGAPORE_US_LIFE_EXPECTANCY_GAP_YEARS = Math.round(
+  SINGAPORE_LIFE_EXPECTANCY.value - US_LIFE_EXPECTANCY_2023.value,
+); // 7
 
 export function BillSection() {
   return (
@@ -162,9 +168,14 @@ export function BillSection() {
             </p>
             <p>
               Singapore spends roughly a quarter of what the US spends per capita
-              on healthcare. Singaporeans live about ten years longer. 193
-              countries, hundreds of years of policy data. The experiments
-              already ran. Nobody checked the results.
+              on healthcare. Singaporeans live about{" "}
+              <ParameterValue
+                className={N}
+                param={SINGAPORE_LIFE_EXPECTANCY}
+                valueOverride={`${SINGAPORE_US_LIFE_EXPECTANCY_GAP_YEARS} years`}
+              />{" "}
+              longer. 193 countries, hundreds of years of policy data. The
+              experiments already ran. Nobody checked the results.
             </p>
             <p>
               Had these governments been properly aligned to maximize health and
