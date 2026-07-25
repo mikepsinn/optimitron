@@ -63,6 +63,23 @@ export function toPersonalQueueDisplayData(
   };
 }
 
+// Collapsed-state summary for the data-issues disclosure, e.g. "1 high · 2 low".
+// Severity counts are already in memory, so this costs nothing extra.
+export function summarizeIssueSeverities(
+  issues: PersonalQueueDisplayIssue[],
+): string | null {
+  if (issues.length === 0) return null;
+  const order = ["high", "medium", "low"] as const;
+  const counts = new Map<string, number>();
+  for (const issue of issues) {
+    counts.set(issue.severity, (counts.get(issue.severity) ?? 0) + 1);
+  }
+  return order
+    .filter((severity) => counts.has(severity))
+    .map((severity) => `${counts.get(severity)} ${severity}`)
+    .join(" · ");
+}
+
 export interface DeadlineChip {
   label: string;
   urgent: boolean;
