@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
   resolveTaskRecipients: vi.fn(),
   recipientWithinRateLimits: vi.fn(),
   resolveTaskRecipient: vi.fn(),
-  sendDraftTaskNotification: vi.fn(),
+  proposeOutboundMessage: vi.fn(),
   taskCommentCreate: vi.fn(),
   taskCommunicationUpdate: vi.fn(),
   taskFindUnique: vi.fn(),
@@ -33,7 +33,10 @@ vi.mock("@/lib/tasks/task-communications.server", () => ({
 
 vi.mock("@/lib/tasks/task-notifications.server", () => ({
   draftTaskNotification: mocks.draftTaskNotification,
-  sendDraftTaskNotification: mocks.sendDraftTaskNotification,
+}));
+
+vi.mock("@/lib/email/outbound-message-approval.server", () => ({
+  proposeOutboundMessage: mocks.proposeOutboundMessage,
 }));
 
 vi.mock("@/lib/email/task-notification", () => ({
@@ -93,10 +96,7 @@ describe("postTaskCommentAndNotify", () => {
       id: "comm_1",
       metadataJson: { unsubscribeUrl: "https://warondisease.org/unsub" },
     });
-    mocks.sendDraftTaskNotification.mockResolvedValue({
-      communication: { id: "comm_1" },
-      status: "sent",
-    });
+    mocks.proposeOutboundMessage.mockResolvedValue({ id: "ear_1" });
   });
 
   it("creates the comment and sends the notification on the happy path", async () => {
@@ -106,7 +106,8 @@ describe("postTaskCommentAndNotify", () => {
       taskId: "task_1",
     });
 
-    expect(result.status).toBe("sent");
+    // The comment is created; the email waits for approval.
+    expect(result.status).toBe("pending_approval");
     expect(mocks.taskCommentCreate).toHaveBeenCalledWith({
       data: expect.objectContaining({
         authorUserId: "user_alice",
@@ -127,7 +128,7 @@ describe("postTaskCommentAndNotify", () => {
         ),
       }),
     );
-    expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
+    expect(mocks.proposeOutboundMessage).toHaveBeenCalled();
   });
 
   it("sends admin monitoring copies as separate reason-labeled emails", async () => {
@@ -166,7 +167,7 @@ describe("postTaskCommentAndNotify", () => {
       taskId: "task_1",
     });
 
-    expect(result.status).toBe("sent");
+    expect(result.status).toBe("pending_approval");
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         recipientEmail: "joe@example.com",
@@ -298,8 +299,8 @@ describe("postTaskCommentAndNotify", () => {
     );
   });
 
-  it("returns failed status when the send throws", async () => {
-    mocks.sendDraftTaskNotification.mockRejectedValue(new Error("boom"));
+  it("returns failed status when queuing the approval throws", async () => {
+    mocks.proposeOutboundMessage.mockRejectedValue(new Error("boom"));
 
     const result = await postTaskCommentAndNotify({
       authorUserId: "user_alice",

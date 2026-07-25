@@ -16,6 +16,7 @@ import {
   claimEmailLog,
   markEmailLogStatus,
 } from "@/lib/email/email-log.server";
+import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
 import {
   sendReactEmail,
   sendResendEmail,
@@ -23,6 +24,8 @@ import {
 } from "@/lib/email/resend";
 
 interface SendDedupedEmailBaseInput {
+  /** Who said to send this — see `@/lib/email/outbound-authorization.server`. */
+  authorization: SendAuthorization;
   /** Dedupe scope. Two calls with the same `dedupeKey` will only send once. */
   dedupeKey: string;
   /** Stable template id stored on the EmailLog row, also used in logs. */
@@ -91,6 +94,7 @@ export async function sendDedupedEmail(
     const result =
       hasReactEmailContent(input)
         ? await sendReactEmail({
+            authorization: input.authorization,
             emailLogId: claimed.emailLogId,
             react: input.react,
             scope: input.scope,
@@ -100,6 +104,7 @@ export async function sendDedupedEmail(
             userId: input.userId,
           })
         : await sendResendEmail({
+            authorization: input.authorization,
             emailLogId: claimed.emailLogId,
             html: input.html,
             scope: input.scope,

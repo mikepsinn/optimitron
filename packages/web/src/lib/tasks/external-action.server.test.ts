@@ -226,10 +226,13 @@ describe.sequential("external action request boundaries", () => {
     expect(decided.approvedPayloadHash).toBeNull();
   });
 
-  it("lets only the requester decide, even among users with manage access", async () => {
+  // An agent proposes and a human decides, so approval cannot be limited to
+  // the requester. It is limited to MANAGE access on the task (plus admins).
+  it("lets manage-access holders decide, but not users without task access", async () => {
     const owner = await createUser("org_owner");
     const member = await createUser("org_member");
     const admin = await createUser("org_admin");
+    const outsider = await createUser("outsider");
     const organization = await createOrganization(owner.user.id, [
       { role: OrganizationMemberRole.OWNER, userId: owner.user.id },
       { role: OrganizationMemberRole.MEMBER, userId: member.user.id },
@@ -237,27 +240,53 @@ describe.sequential("external action request boundaries", () => {
     ]);
     const task = await createTask({
       creatorUserId: member.user.id,
-      id: "requester_only_task",
+      id: "manage_access_task",
       ownerOrganizationId: organization.id,
     });
     const request = await proposeRequest(
       task.id,
       member.user.id,
-      "requester_only",
+      "manage_access",
     );
 
     await expect(
       decideExternalActionRequest(
         { decision: "APPROVE", externalActionRequestId: request.id },
-        admin.user.id,
+        outsider.user.id,
       ),
     ).rejects.toThrow("External action request not found");
 
     const decided = await decideExternalActionRequest(
       { decision: "APPROVE", externalActionRequestId: request.id },
-      member.user.id,
+      admin.user.id,
     );
     expect(decided.status).toBe(ExternalActionRequestStatus.APPROVED);
+    expect(decided.approvedByUserId).toBe(admin.user.id);
+  });
+
+  it("lets a platform admin decide a request on a task they do not manage", async () => {
+    const requester = await createUser("admin_case_requester");
+    const platformAdmin = await createUser("platform_admin");
+    await prisma.user.update({
+      where: { id: platformAdmin.user.id },
+      data: { isAdmin: true },
+    });
+    const task = await createTask({
+      creatorUserId: requester.user.id,
+      id: "platform_admin_task",
+    });
+    const request = await proposeRequest(
+      task.id,
+      requester.user.id,
+      "platform_admin",
+    );
+
+    const decided = await decideExternalActionRequest(
+      { decision: "APPROVE", externalActionRequestId: request.id },
+      platformAdmin.user.id,
+    );
+    expect(decided.status).toBe(ExternalActionRequestStatus.APPROVED);
+    expect(decided.approvedByUserId).toBe(platformAdmin.user.id);
   });
 
   it("hides org-owned requests from delegated clients unless the organization is granted", async () => {

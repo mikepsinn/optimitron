@@ -21,6 +21,7 @@ import {
 } from "@/lib/email/email-log.server";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { isEmailScope, type EmailScope } from "@/lib/email/scopes";
+import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { sendExternalResendEmail, sendResendEmail } from "@/lib/email/resend";
 import { getConfiguredTaskReplyAddress } from "@/lib/email/task-notification";
 import { prisma } from "@/lib/prisma";
@@ -69,11 +70,15 @@ export interface DraftTaskNotificationInput extends TaskNotificationMessage {
 }
 
 export interface SendTaskNotificationInput extends DraftTaskNotificationInput {
+  /** Who said to send this — see `@/lib/email/outbound-authorization.server`. */
+  authorization: SendAuthorization;
   from?: string | null;
   now?: Date;
 }
 
 export interface SendDraftTaskNotificationInput {
+  /** Who said to send this — see `@/lib/email/outbound-authorization.server`. */
+  authorization: SendAuthorization;
   communicationId: string;
   from?: string | null;
   now?: Date;
@@ -178,7 +183,10 @@ function replaceDraftUnsubscribeUrl(
   } satisfies Prisma.InputJsonObject;
 }
 
-function getStoredMessage(metadata: unknown): TaskNotificationMessage | null {
+/** Exported so the approval dispatcher can rebuild the exact approved bytes. */
+export function getStoredMessage(
+  metadata: unknown,
+): TaskNotificationMessage | null {
   if (
     metadata === null ||
     typeof metadata !== "object" ||
@@ -586,6 +594,7 @@ export async function sendDraftTaskNotification(
     const headers = buildThreadHeaders({ messageId, priorMessageId });
     const result = communication.recipientUserId
       ? await sendResendEmail({
+          authorization: input.authorization,
           emailLogId: claimed.emailLogId,
           from: input.from ?? undefined,
           html,
@@ -601,6 +610,7 @@ export async function sendDraftTaskNotification(
           userId: communication.recipientUserId,
         })
       : await sendExternalResendEmail({
+          authorization: input.authorization,
           from: input.from ?? undefined,
           html,
           bcc: bccEmails,
@@ -707,6 +717,7 @@ export async function sendDraftTaskNotification(
 export async function sendTaskNotification(input: SendTaskNotificationInput) {
   const draft = await draftTaskNotification(input);
   return sendDraftTaskNotification({
+    authorization: input.authorization,
     communicationId: draft.id,
     from: input.from ?? null,
     now: input.now,

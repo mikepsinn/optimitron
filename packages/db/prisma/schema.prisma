@@ -10897,3 +10897,32 @@ model ContentReport {
   @@index([status, createdAt])
   @@index([deletedAt])
 }
+
+/// Operator emergency stop for outbound messages. One row, read at the send
+/// boundary on every send, so pulling the stop takes effect without a redeploy.
+/// Replaces the OUTBOUND_EMAIL_MODE env var, which could only change on deploy.
+model OutboundMessageGate {
+  /// Always OUTBOUND_MESSAGE_GATE_ID ("global") — this table holds one row
+  id String @id
+
+  /// When true, every outbound message is suppressed at the send boundary,
+  /// including sign-in links. This is the stop-the-world switch.
+  stopAllOutbound Boolean @default(false)
+
+  /// When non-empty, only these addresses ("a@b.org") and domains ("@b.org")
+  /// may receive mail. Empty means no recipient restriction.
+  allowlist String[] @default([])
+
+  /// Operator note explaining why the stop was pulled, shown in the admin UI
+  reason String?
+
+  /// Admin who last changed the gate. Plain scalar — this table is read on
+  /// every send and must not drag a join in.
+  updatedByUserId String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  /// When this record was last updated
+  updatedAt DateTime @updatedAt
+}

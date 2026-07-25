@@ -7,9 +7,14 @@ import {
   formatDefaultSystemEmailFromHeader,
 } from "@/lib/email/from-address";
 import {
-  evaluateOutboundEmailPolicy,
+  evaluateOutboundGate,
   type OutboundSuppressionReason,
-} from "@/lib/email/outbound-mode";
+} from "@/lib/email/outbound-gate";
+import { readOutboundMessageGate } from "@/lib/email/outbound-gate.server";
+import {
+  assertGenuineSendAuthorization,
+  type SendAuthorization,
+} from "@/lib/email/outbound-authorization.server";
 import { composeOutboundEmailBody } from "@/lib/email/preview-envelope";
 import { renderReactEmailBody } from "@/lib/email/render-react-email";
 import { isTransactionalScope } from "@/lib/email/scopes";
@@ -17,6 +22,13 @@ import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import type { EmailScope } from "@/lib/email/scopes";
 
 interface BaseMessage {
+  /**
+   * Who said to send this. Required on every path: recipient-initiated
+   * (`transactional`), a signed-in human pressing send (`owner`), or a
+   * human-approved ExternalActionRequest (`approved`). See
+   * `@/lib/email/outbound-authorization.server`.
+   */
+  authorization: SendAuthorization;
   /** The recipient's `User.id` — required so we can check suppression + build the unsubscribe URL. */
   userId: string;
   /** Category of email, drives suppression + the `List-Unsubscribe` URL scope. */
@@ -53,6 +65,8 @@ interface ResendReactMessage extends BaseMessage {
 }
 
 interface ExternalResendMessage {
+  /** See {@link BaseMessage.authorization}. */
+  authorization: SendAuthorization;
   from?: string;
   /// Optional RFC-5322 headers such as Message-ID / In-Reply-To for mail
   /// threading. Unsubscribe headers are still owned by this helper.
@@ -102,18 +116,22 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
   };
 }
 
-// Env-level outbound kill switch (OUTBOUND_EMAIL_MODE / OUTBOUND_EMAIL_ALLOWLIST).
-// Lives at the lowest-level send paths — including mock sends — so no call
-// site can forget it. Returns null when the send may proceed.
-function checkOutboundKillSwitch(to: string): SendResult | null {
-  const decision = evaluateOutboundEmailPolicy({
-    allowlist: serverEnv.OUTBOUND_EMAIL_ALLOWLIST,
-    mode: serverEnv.OUTBOUND_EMAIL_MODE,
+// DB-backed outbound emergency stop (`OutboundMessageGate`). Lives at the
+// lowest-level send paths — including mock sends — so no call site can forget
+// it, and reads the row per send so pulling the stop needs no redeploy.
+// Returns null when the send may proceed.
+async function checkOutboundGate(
+  authorization: SendAuthorization,
+  to: string,
+): Promise<SendResult | null> {
+  const decision = evaluateOutboundGate({
+    authorizationKind: authorization.kind,
+    gate: await readOutboundMessageGate(),
     to,
   });
   if (decision.allowed) return null;
   console.warn(
-    `[OUTBOUND-EMAIL] Suppressed send to ${to}: ${decision.reason} (OUTBOUND_EMAIL_MODE=${serverEnv.OUTBOUND_EMAIL_MODE ?? "on"})`,
+    `[OUTBOUND-EMAIL] Suppressed ${authorization.kind} send to ${to}: ${decision.reason}`,
   );
   return { status: "suppressed", reason: decision.reason };
 }
@@ -291,12 +309,13 @@ export function getEmailMonitorAddress() {
 export async function sendResendEmail(
   message: ResendMessage,
 ): Promise<SendResult> {
+  assertGenuineSendAuthorization(message.authorization);
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
 
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
+  const gate = await checkOutboundGate(message.authorization, message.to);
+  if (gate) return gate;
 
   if (!message.skipSuppressionCheck) {
     const allowed = await canSendEmailToUser(message.userId, message.scope);
@@ -350,12 +369,13 @@ export async function sendResendEmail(
 export async function sendReactEmail(
   message: ResendReactMessage,
 ): Promise<SendResult> {
+  assertGenuineSendAuthorization(message.authorization);
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
 
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
+  const gate = await checkOutboundGate(message.authorization, message.to);
+  if (gate) return gate;
 
   if (!message.skipSuppressionCheck) {
     const allowed = await canSendEmailToUser(message.userId, message.scope);
@@ -407,14 +427,15 @@ export async function sendReactEmail(
 export async function sendExternalResendEmail(
   message: ExternalResendMessage,
 ): Promise<SendResult> {
+  assertGenuineSendAuthorization(message.authorization);
   if (!isResendConfigured()) {
     return { status: "disabled" };
   }
 
-  // External recipients have no per-user suppression check, so the env-level
-  // kill switch is the only gate on this path.
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
+  // External recipients have no per-user suppression check, so the emergency
+  // stop is the only gate on this path.
+  const gate = await checkOutboundGate(message.authorization, message.to);
+  if (gate) return gate;
 
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);

@@ -9,6 +9,7 @@
  * source of truth on the address shape — change the encoding here and the
  * inbound webhook automatically picks up the new format on the next decode.
  */
+import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
 import { serverEnv } from "@/lib/env";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@/lib/domains";
@@ -83,6 +84,8 @@ export function parseReplyAddress(
 }
 
 export interface SendTaskNotificationEmailInput {
+  /** Who said to send this — see `@/lib/email/outbound-authorization.server`. */
+  authorization: SendAuthorization;
   taskId: string;
   recipientEmail: string;
   subject: string;
@@ -108,6 +111,7 @@ export async function sendTaskNotificationEmail(
   const replyTo = getReplyAddress(input.taskId);
   try {
     const result: SendResult = await sendExternalResendEmail({
+      authorization: input.authorization,
       to: input.recipientEmail,
       subject: input.subject,
       text: input.text,
@@ -121,9 +125,9 @@ export async function sendTaskNotificationEmail(
       return { status: "disabled", replyTo };
     }
     if (result.status === "suppressed") {
-      // Reached when the env-level outbound kill switch (OUTBOUND_EMAIL_MODE)
-      // blocks the send. Carry the concrete reason so the TaskCommunication
-      // row's errorMessage explains the suppression in audit reads.
+      // Reached when the outbound emergency stop blocks the send. Carry the
+      // concrete reason so the TaskCommunication row's errorMessage explains
+      // the suppression in audit reads.
       return {
         status: "failed",
         replyTo,

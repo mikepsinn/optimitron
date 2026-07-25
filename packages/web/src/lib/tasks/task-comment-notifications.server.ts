@@ -8,6 +8,7 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
 import type { SenderSignature } from "@/lib/email/wishonia-signature";
 import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
@@ -16,10 +17,7 @@ import {
   COMMENT_NOTIFICATION_PLACEHOLDER,
   type CommentNotificationCta,
 } from "@/lib/tasks/task-comment-notification-email.server";
-import {
-  draftTaskNotification,
-  sendDraftTaskNotification,
-} from "@/lib/tasks/task-notifications.server";
+import { draftTaskNotification } from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
 import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
@@ -50,6 +48,7 @@ export interface PostTaskCommentInput {
 
 export type PostTaskCommentResult =
   | { commentId: string; status: "sent" }
+  | { commentId: string; status: "pending_approval"; pendingCount: number }
   | { commentId: string; status: "skipped"; reason: string }
   | { commentId: string; status: "failed"; reason: string };
 
@@ -184,7 +183,7 @@ export async function notifyTaskCommentRecipients(input: {
   });
 
   try {
-    let sentCount = 0;
+    let pendingCount = 0;
     let skippedReason: string | null = null;
 
     for (const recipient of filteredRecipients) {
@@ -253,43 +252,52 @@ export async function notifyTaskCommentRecipients(input: {
       });
 
       const unsubscribeUrl = getStoredUnsubscribeUrl(draft.metadataJson);
+      let storedHtml = email.html;
+      let storedText = email.text;
       if (
         unsubscribeUrl &&
         email.html.includes(COMMENT_NOTIFICATION_PLACEHOLDER)
       ) {
+        storedHtml = email.html.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
+          unsubscribeUrl,
+        );
+        storedText = email.text.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
+          unsubscribeUrl,
+        );
         await prisma.taskCommunication.update({
           where: { id: draft.id },
           data: {
             metadataJson: {
               ...asMetadataObject(draft.metadataJson),
-              html: email.html.replaceAll(
-                COMMENT_NOTIFICATION_PLACEHOLDER,
-                unsubscribeUrl,
-              ),
-              text: email.text.replaceAll(
-                COMMENT_NOTIFICATION_PLACEHOLDER,
-                unsubscribeUrl,
-              ),
+              html: storedHtml,
+              text: storedText,
             } as Prisma.InputJsonObject,
           },
         });
       }
 
-      const sendResult = await sendDraftTaskNotification({
-        communicationId: draft.id,
-        from: input.from ?? null,
+      // Approval is proposed against the final stored body, so the hash the
+      // human approves is the hash of what the recipient would read.
+      await proposeOutboundMessage({
+        actorUserId: input.authorUserId ?? null,
+        content: {
+          communicationId: draft.id,
+          from: input.from ?? null,
+          html: storedHtml,
+          recipientEmail: recipient.email,
+          subject: email.subject,
+          text: storedText,
+        },
         now,
+        taskId,
       });
-
-      if (sendResult.status === "sent") {
-        sentCount += 1;
-      } else if (!skippedReason) {
-        skippedReason = sendResult.status;
-      }
+      pendingCount += 1;
     }
 
-    if (sentCount > 0) {
-      return { commentId, status: "sent" };
+    if (pendingCount > 0) {
+      return { commentId, pendingCount, status: "pending_approval" };
     }
     return { commentId, status: "skipped", reason: skippedReason ?? "skipped" };
   } catch (error) {

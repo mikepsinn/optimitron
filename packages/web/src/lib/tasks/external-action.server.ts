@@ -25,6 +25,20 @@ const ACTIVE_CLAIM_STATUSES = [
 
 const JsonObjectSchema = z.record(z.unknown());
 
+/**
+ * Structural client so callers can run inside their own transaction. Comparing
+ * the whole `PrismaClient` and `TransactionClient` types makes TypeScript
+ * expand the entire generated schema at every call site.
+ */
+export type ExternalActionDb = Pick<
+  Prisma.TransactionClient,
+  | "externalActionRequest"
+  | "formSubmission"
+  | "task"
+  | "taskExecutionAttempt"
+  | "user"
+>;
+
 export const ProposeExternalActionSchema = z
   .object({
     destination: z.string().trim().min(1).max(2_000),
@@ -91,12 +105,12 @@ function externalActionSelect() {
 }
 
 async function loadActor(
-  tx: Prisma.TransactionClient | typeof prisma,
+  tx: Pick<Prisma.TransactionClient, "user">,
   actorUserId: string,
 ) {
   return tx.user.findUnique({
     where: { id: actorUserId },
-    select: { personId: true },
+    select: { isAdmin: true, personId: true },
   });
 }
 
@@ -114,10 +128,26 @@ function approvalExpiry(input: string | undefined, now: Date) {
   return expiresAt;
 }
 
+export interface ProposeExternalActionOptions {
+  clientAccessBoundary?: TaskClientAccessBoundary;
+  /** Run inside a caller's already-open transaction instead of a new one. */
+  db?: ExternalActionDb;
+  /**
+   * For internal server paths that have already decided the side effect should
+   * exist — the outbound-message gate, which queues every agent-initiated email
+   * here instead of sending it. Skips the actor's EXECUTE check because there
+   * may be no actor at all (an inbound email reply has no signed-in user).
+   *
+   * This is not a bypass: the request still lands PENDING, so it grants the
+   * ability to ASK a human, never the ability to act.
+   */
+  systemProposal?: boolean;
+}
+
 export async function proposeExternalAction(
   rawInput: unknown,
-  actorUserId: string,
-  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
+  actorUserId: string | null,
+  options?: ProposeExternalActionOptions,
 ) {
   const input = ProposeExternalActionSchema.parse(rawInput);
   const payloadHash = await sha256CanonicalJson({
@@ -128,9 +158,15 @@ export async function proposeExternalAction(
   const now = new Date();
   const expiresAt = approvalExpiry(input.expiresAt, now);
 
-  return prisma.$transaction(async (tx) => {
-    const actor = await loadActor(tx, actorUserId);
-    if (!actor) throw new Error("Task not found");
+  const run = async (tx: ExternalActionDb) => {
+    // System proposals have no actor to check — an inbound email reply has no
+    // signed-in user. Everything else keeps the original EXECUTE gate.
+    const actorId = options?.systemProposal ? null : actorUserId;
+    if (!options?.systemProposal && !actorId) {
+      throw new Error("Task not found");
+    }
+    const actor = actorId ? await loadActor(tx, actorId) : null;
+    if (actorId && !actor) throw new Error("Task not found");
 
     const task = await tx.task.findFirst({
       where: {
@@ -141,32 +177,36 @@ export async function proposeExternalAction(
         ],
         deletedAt: null,
         id: input.taskId,
-        OR: [
-          getTaskAccessWhere({
-            action: "EXECUTE",
-            personId: actor.personId,
-            userId: actorUserId,
-          }),
-          ...(input.taskExecutionAttemptId
-            ? [
-                {
-                  claims: {
-                    some: {
-                      deletedAt: null,
-                      executionAttempts: {
-                        some: {
-                          deletedAt: null,
-                          id: input.taskExecutionAttemptId,
+        ...(actorId
+          ? {
+              OR: [
+                getTaskAccessWhere({
+                  action: "EXECUTE",
+                  personId: actor?.personId ?? null,
+                  userId: actorId,
+                }),
+                ...(input.taskExecutionAttemptId
+                  ? [
+                      {
+                        claims: {
+                          some: {
+                            deletedAt: null,
+                            executionAttempts: {
+                              some: {
+                                deletedAt: null,
+                                id: input.taskExecutionAttemptId,
+                              },
+                            },
+                            status: { in: [...ACTIVE_CLAIM_STATUSES] },
+                            userId: actorId,
+                          },
                         },
-                      },
-                      status: { in: [...ACTIVE_CLAIM_STATUSES] },
-                      userId: actorUserId,
-                    },
-                  },
-                } satisfies Prisma.TaskWhereInput,
-              ]
-            : []),
-        ],
+                      } satisfies Prisma.TaskWhereInput,
+                    ]
+                  : []),
+              ],
+            }
+          : {}),
       },
       select: { id: true },
     });
@@ -177,22 +217,26 @@ export async function proposeExternalAction(
           where: {
             deletedAt: null,
             id: input.taskExecutionAttemptId,
-            OR: [
-              { executorUserId: actorUserId },
-              {
-                metadata: {
-                  equals: actorUserId,
-                  path: ["startedByUserId"],
-                },
-              },
-              {
-                taskClaim: {
-                  deletedAt: null,
-                  status: { in: [...ACTIVE_CLAIM_STATUSES] },
-                  userId: actorUserId,
-                },
-              },
-            ],
+            ...(actorId
+              ? {
+                  OR: [
+                    { executorUserId: actorId },
+                    {
+                      metadata: {
+                        equals: actorId,
+                        path: ["startedByUserId"],
+                      },
+                    },
+                    {
+                      taskClaim: {
+                        deletedAt: null,
+                        status: { in: [...ACTIVE_CLAIM_STATUSES] },
+                        userId: actorId,
+                      },
+                    },
+                  ],
+                }
+              : {}),
             status: {
               in: [
                 TaskExecutionAttemptStatus.RUNNING,
@@ -238,13 +282,20 @@ export async function proposeExternalAction(
       );
     }
     return request;
-  });
+  };
+
+  return options?.db ? run(options.db) : prisma.$transaction(run);
 }
 
 /** MANAGE access for the actor, intersected with the delegated client's
- * grant boundary when the call arrives via an OAuth token. */
+ * grant boundary when the call arrives via an OAuth token.
+ *
+ * Platform admins reach every task: they are the humans on the hook for what
+ * this app mails out, and an approval queue only one person can clear is an
+ * approval queue nobody clears. The delegated client's grant boundary still
+ * applies to them — being an admin does not widen a token someone issued. */
 function actionTaskWhere(
-  actor: { personId: string | null },
+  actor: { isAdmin: boolean; personId: string | null },
   actorUserId: string,
   clientAccessBoundary?: TaskClientAccessBoundary,
 ): Prisma.TaskWhereInput {
@@ -256,7 +307,7 @@ function actionTaskWhere(
   return {
     deletedAt: null,
     AND: [
-      manageWhere,
+      ...(actor.isAdmin ? [] : [manageWhere]),
       ...(clientAccessBoundary
         ? [getTaskClientAccessWhere(clientAccessBoundary)]
         : []),
@@ -331,22 +382,15 @@ export async function decideExternalActionRequest(
         deletedAt: null,
         id: input.externalActionRequestId,
         status: ExternalActionRequestStatus.PENDING,
+        // Anyone with MANAGE access on the task can decide, plus admins.
+        // Restricting approval to the original requester made the queue
+        // unusable for the exact case it exists for: an agent proposes, a
+        // human decides.
         task: actionTaskWhere(
           actor,
           actorUserId,
           options?.clientAccessBoundary,
         ),
-        OR: [
-          { requestedByUserId: actorUserId },
-          {
-            taskExecutionAttempt: {
-              metadata: {
-                equals: actorUserId,
-                path: ["startedByUserId"],
-              },
-            },
-          },
-        ],
       },
       select: externalActionSelect(),
     });
@@ -462,10 +506,44 @@ export async function recordExternalActionResult(
       getStartedByUserId(request.taskExecutionAttempt?.metadata) === actorUserId
         ? request.requestedByAgentExecutorId
         : null;
-    const update = {
+    return writeTerminalExternalActionResult(tx, request, {
       executedAt: now,
       executedByAgentExecutorId: agentExecutorId,
       executedByUserId: agentExecutorId ? null : actorUserId,
+      failureMessage: input.failureMessage ?? null,
+      receipt: input.receipt ?? null,
+      result: input.result,
+    });
+  });
+}
+
+/**
+ * The one PENDING→terminal execution write. Conditional on the request still
+ * being APPROVED with its approval pinned to the current payload hash, so a
+ * retry or a concurrent dispatcher cannot execute the same request twice.
+ */
+async function writeTerminalExternalActionResult(
+  tx: ExternalActionDb,
+  request: { id: string; payloadHash: string },
+  input: {
+    executedAt: Date;
+    executedByAgentExecutorId?: string | null;
+    executedByUserId?: string | null;
+    failureMessage?: string | null;
+    receipt?: Record<string, unknown> | null;
+    result: "EXECUTED" | "FAILED";
+  },
+) {
+  const claimed = await tx.externalActionRequest.updateMany({
+    where: {
+      approvedPayloadHash: request.payloadHash,
+      id: request.id,
+      status: ExternalActionRequestStatus.APPROVED,
+    },
+    data: {
+      executedAt: input.executedAt,
+      executedByAgentExecutorId: input.executedByAgentExecutorId ?? null,
+      executedByUserId: input.executedByUserId ?? null,
       executionReceiptJson:
         input.receipt == null ? undefined : jsonValue(input.receipt),
       failureMessage: input.result === "FAILED" ? input.failureMessage : null,
@@ -473,37 +551,93 @@ export async function recordExternalActionResult(
         input.result === "EXECUTED"
           ? ExternalActionRequestStatus.EXECUTED
           : ExternalActionRequestStatus.FAILED,
-    } satisfies Prisma.ExternalActionRequestUncheckedUpdateManyInput;
-    const claimed = await tx.externalActionRequest.updateMany({
-      where: {
-        approvedPayloadHash: request.payloadHash,
-        id: request.id,
-        status: ExternalActionRequestStatus.APPROVED,
-      },
-      data: update,
-    });
-    const terminal = await tx.externalActionRequest.findUnique({
-      where: { id: request.id },
+    } satisfies Prisma.ExternalActionRequestUncheckedUpdateManyInput,
+  });
+  const terminal = await tx.externalActionRequest.findUnique({
+    where: { id: request.id },
+    select: externalActionSelect(),
+  });
+  if (!terminal) throw new Error("External action request not found");
+  if (
+    claimed.count === 0 &&
+    terminal.status !== ExternalActionRequestStatus.EXECUTED &&
+    terminal.status !== ExternalActionRequestStatus.FAILED
+  ) {
+    throw new Error("External action request is no longer executable");
+  }
+  await tx.formSubmission.updateMany({
+    where: { externalActionRequestId: request.id },
+    data:
+      terminal.status === ExternalActionRequestStatus.EXECUTED
+        ? {
+            status: FormSubmissionStatus.SUBMITTED,
+            submittedAt: terminal.executedAt,
+          }
+        : { status: FormSubmissionStatus.FAILED },
+  });
+  return terminal;
+}
+
+/**
+ * Terminal write for a server-side dispatcher that just performed (or failed
+ * to perform) an approved side effect. Unlike `recordExternalActionResult`
+ * there is no untrusted actor to authorize: the dispatcher runs in-process,
+ * only after `authorizeApprovedSend` re-verified the payload hash.
+ */
+export async function finalizeApprovedExternalAction(input: {
+  executedByUserId?: string | null;
+  externalActionRequestId: string;
+  failureMessage?: string | null;
+  now?: Date;
+  receipt?: Record<string, unknown> | null;
+  result: "EXECUTED" | "FAILED";
+}) {
+  return prisma.$transaction(async (tx) => {
+    const request = await tx.externalActionRequest.findFirst({
+      where: { deletedAt: null, id: input.externalActionRequestId },
       select: externalActionSelect(),
     });
-    if (!terminal) throw new Error("External action request not found");
+    if (!request) throw new Error("External action request not found");
     if (
-      claimed.count === 0 &&
-      terminal.status !== ExternalActionRequestStatus.EXECUTED &&
-      terminal.status !== ExternalActionRequestStatus.FAILED
+      request.status === ExternalActionRequestStatus.EXECUTED ||
+      request.status === ExternalActionRequestStatus.FAILED
     ) {
-      throw new Error("External action request is no longer executable");
+      return request;
     }
-    await tx.formSubmission.updateMany({
-      where: { externalActionRequestId: request.id },
-      data:
-        terminal.status === ExternalActionRequestStatus.EXECUTED
-          ? {
-              status: FormSubmissionStatus.SUBMITTED,
-              submittedAt: terminal.executedAt,
-            }
-          : { status: FormSubmissionStatus.FAILED },
+    return writeTerminalExternalActionResult(tx, request, {
+      executedAt: input.now ?? new Date(),
+      executedByUserId: input.executedByUserId ?? null,
+      failureMessage: input.failureMessage ?? null,
+      receipt: input.receipt ?? null,
+      result: input.result,
     });
-    return terminal;
+  });
+}
+
+/** Mark an approval that outlived its window, cancelling any linked draft. */
+export async function expireExternalActionRequest(
+  externalActionRequestId: string,
+) {
+  return prisma.$transaction(async (tx) => {
+    await tx.externalActionRequest.updateMany({
+      where: {
+        id: externalActionRequestId,
+        status: {
+          in: [
+            ExternalActionRequestStatus.APPROVED,
+            ExternalActionRequestStatus.PENDING,
+          ],
+        },
+      },
+      data: { status: ExternalActionRequestStatus.EXPIRED },
+    });
+    await tx.formSubmission.updateMany({
+      where: { externalActionRequestId },
+      data: { status: FormSubmissionStatus.CANCELLED },
+    });
+    return tx.externalActionRequest.findUniqueOrThrow({
+      where: { id: externalActionRequestId },
+      select: externalActionSelect(),
+    });
   });
 }

@@ -6,10 +6,8 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
-import {
-  getReplyAddress,
-  sendTaskNotificationEmail,
-} from "@/lib/email/task-notification";
+import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
+import { getReplyAddress } from "@/lib/email/task-notification";
 import { upsertPrimaryTaskCommunicationEndpoint } from "@/lib/tasks/task-communication-endpoints.server";
 import {
   gateEvidenceTemplate,
@@ -512,6 +510,11 @@ export async function fireSpawnCommunication(
           subject,
           bodyText,
           bodyHtml,
+          // `text`/`html` are the keys the shared draft reader uses, so an
+          // approved trigger email dispatches through the same path as every
+          // other task notification.
+          text: bodyText,
+          html: bodyHtml,
           dedupeKey,
           replyTo,
         } as Prisma.InputJsonValue,
@@ -527,41 +530,37 @@ export async function fireSpawnCommunication(
     }
     const recipient = resolved.email;
 
-    const sendResult = await sendTaskNotificationEmail({
-      taskId,
-      recipientEmail: recipient,
-      subject,
-      text: bodyText,
-      html: bodyHtml ?? undefined,
-    });
-
-    const sentAt = sendResult.status === "sent" ? new Date() : null;
-    const failedAt = sendResult.status === "failed" ? new Date() : null;
-    const status =
-      sendResult.status === "sent"
-        ? TaskCommunicationStatus.SENT
-        : sendResult.status === "failed"
-          ? TaskCommunicationStatus.FAILED
-          : TaskCommunicationStatus.DRAFT; // disabled (no email infra) -> leave DRAFT
-
-    await tx.taskCommunication.update({
-      where: { id: communication.id },
-      data: {
-        sentAt,
-        failedAt,
-        status,
-        errorMessage: sendResult.errorMessage ?? null,
-        providerMessageId: sendResult.providerMessageId ?? null,
-      },
-    });
-
-    if (sendResult.status === "sent") {
+    // Reminder triggers no longer mail anyone directly. The draft is queued
+    // for approval and stays DRAFT until a human clears it.
+    try {
+      const request = await proposeOutboundMessage({
+        actorUserId,
+        content: {
+          communicationId: communication.id,
+          from: null,
+          html: bodyHtml,
+          recipientEmail: recipient,
+          subject,
+          text: bodyText,
+        },
+        db: tx,
+        taskId,
+      });
+      await tx.taskCommunication.update({
+        where: { id: communication.id },
+        data: {
+          metadataJson: {
+            ...(communication.metadataJson as Prisma.JsonObject),
+            externalActionRequestId: request.id,
+          } as Prisma.InputJsonValue,
+        },
+      });
       sentCount++;
-    } else {
+    } catch (error) {
       unsentReasons.push(
-        `${spec.kind}: ${sendResult.status}${
-          sendResult.errorMessage ? ` (${sendResult.errorMessage})` : ""
-        }`,
+        `${spec.kind}: approval_request_failed (${
+          error instanceof Error ? error.message : String(error)
+        })`,
       );
     }
   }

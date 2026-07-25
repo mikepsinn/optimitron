@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   notifyTaskCommentRecipients: vi.fn(),
+  proposeOutboundMessage: vi.fn(),
   sendExternalResendEmail: vi.fn(),
   sendResendEmail: vi.fn(),
 }));
@@ -184,6 +185,10 @@ vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
 }));
 
+vi.mock("@/lib/email/outbound-message-approval.server", () => ({
+  proposeOutboundMessage: mocks.proposeOutboundMessage,
+}));
+
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: async (
@@ -225,7 +230,9 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import { processInboundReply } from "@/lib/email/inbound-reply";
+import { ownerSend } from "@/lib/email/outbound-authorization.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
 
 describe("MCP task assignment email round trip", () => {
   beforeEach(() => {
@@ -247,12 +254,30 @@ describe("MCP task assignment email round trip", () => {
       unsubscribeUrl: null,
     });
     mocks.notifyTaskCommentRecipients.mockResolvedValue({ sentCount: 1 });
+    mocks.proposeOutboundMessage.mockImplementation(
+      async (input: { content: { communicationId: string } }) => ({
+        id: `ear_${input.content.communicationId}`,
+      }),
+    );
   });
 
-  it("sends an assignee email with Reply-To, then stores an authorized reply as a task comment", async () => {
-    const sendResult = await notifyTaskAssigneeOfAssignment({
+  it("queues the assignee email for approval, then sends it and threads the reply", async () => {
+    const proposal = await notifyTaskAssigneeOfAssignment({
       senderUserId: "user_creator",
       taskId: db.task.id,
+    });
+
+    // Assignment drafts and queues; nothing has reached the foundation yet.
+    expect(proposal.status).toBe("pending_approval");
+    expect(mocks.sendExternalResendEmail).not.toHaveBeenCalled();
+    expect(db.communications[0]?.status).toBe(TaskCommunicationStatus.DRAFT);
+
+    // Stand in for the approval dispatcher: the same draft, now authorized.
+    const sendResult = await sendDraftTaskNotification({
+      authorization: ownerSend("user_creator"),
+      communicationId: db.communications[0]!.id,
+      from: "Mike via International Campaign to End War and Disease <hello@updates.warondisease.org>",
+      senderUserId: "user_creator",
     });
 
     expect(sendResult.status).toBe("sent");

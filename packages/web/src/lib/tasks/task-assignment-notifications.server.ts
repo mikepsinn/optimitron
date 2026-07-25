@@ -9,12 +9,10 @@ import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { formatShareEmailFromHeader } from "@/lib/email/from-address";
+import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
 import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
 import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
-import {
-  draftTaskNotification,
-  sendDraftTaskNotification,
-} from "@/lib/tasks/task-notifications.server";
+import { draftTaskNotification } from "@/lib/tasks/task-notifications.server";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
 
@@ -226,11 +224,25 @@ export async function notifyTaskAssigneeOfAssignment(input: {
       text: email.text,
     });
 
-    return sendDraftTaskNotification({
-      communicationId: draft.id,
-      from: senderName ? formatShareEmailFromHeader(senderName) : null,
-      senderUserId: input.senderUserId ?? null,
+    // Creating a task with an assignee no longer emails that human. The draft
+    // waits at /admin/communications until someone approves it.
+    const request = await proposeOutboundMessage({
+      actorUserId: input.senderUserId ?? null,
+      content: {
+        communicationId: draft.id,
+        from: senderName ? formatShareEmailFromHeader(senderName) : null,
+        html: email.html ?? null,
+        recipientEmail: recipient.email,
+        subject: email.subject,
+        text: email.text,
+      },
+      taskId: task.id,
     });
+
+    return {
+      externalActionRequestId: request.id,
+      status: "pending_approval" as const,
+    };
   } catch (error) {
     log.error("Failed to send task assignment notification", {
       error,
