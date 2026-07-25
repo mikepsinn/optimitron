@@ -29,9 +29,21 @@ jobs:
         run: |
           set -u
           updated=""; skipped=""; failed=""
-          for num in $(gh pr list --repo "$REPO" --state open --base main --json number --jq '.[].number'); do
-            state=$(gh pr view "$num" --repo "$REPO" --json mergeStateStatus --jq .mergeStateStatus)
-            if [ "$state" = "BEHIND" ]; then
+          # Compute behind-ness directly instead of trusting mergeStateStatus.
+          # GitHub only reports mergeStateStatus=BEHIND when a PR is behind AND
+          # otherwise mergeable; a behind PR with pending checks reports as
+          # UNSTABLE/BLOCKED, which masks the behind-ness. Keying off the compare
+          # API's behind_by catches every behind PR regardless of check/review
+          # state — which is exactly the case a human ends up clicking by hand.
+          for row in $(gh pr list --repo "$REPO" --state open --base main \
+              --json number,headRefName,isDraft \
+              --jq '.[] | select(.isDraft | not) | "\(.number):\(.headRefName)"'); do
+            num="${row%%:*}"; head="${row#*:}"
+            behind=$(gh api "repos/$REPO/compare/main...$head" --jq '.behind_by' 2>/dev/null || echo "")
+            if [ -z "$behind" ]; then
+              echo "::warning::PR #$num compare failed (head $head)"; failed="$failed #$num"; continue
+            fi
+            if [ "$behind" -gt 0 ]; then
               if out=$(gh pr update-branch "$num" --repo "$REPO" 2>&1); then
                 updated="$updated #$num"
               else
@@ -40,7 +52,7 @@ jobs:
                 failed="$failed #$num"
               fi
             else
-              skipped="$skipped #$num($state)"
+              skipped="$skipped #$num(up-to-date)"
             fi
           done
           {
