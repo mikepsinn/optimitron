@@ -1,0 +1,22 @@
+/* Version B — "The Press Kit". Scaffold; full design system lands next commit. */
+.dsb {
+  background: #ffffff;
+  color: #12161d;
+}
+.dsb-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+.dsb-bill {
+  background: #05070a;
+  color: #f4f2ed;
+  padding: 4rem 0;
+}
+.dsb-eyebrow {
+  font-family: var(--v0-font-space-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
