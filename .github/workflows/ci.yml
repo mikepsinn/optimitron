@@ -975,6 +975,42 @@ jobs:
         if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         run: pnpm install --frozen-lockfile
 
+      # Neon computes scale to zero, and a preview branch created moments ago
+      # can still be booting its endpoint. Resolving the branch succeeds while
+      # the first real connection fails with P1001, which fails this job and
+      # cascades into every downstream preview smoke check. Poll until the
+      # endpoint answers a query before touching it.
+      - name: Wait for preview database to accept connections
+        if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
+        timeout-minutes: 6
+        shell: bash
+        run: |
+          set -uo pipefail
+          database_url="${DATABASE_URL_UNPOOLED:-}"
+          if [ -z "$database_url" ]; then
+            echo "::error::DATABASE_URL_UNPOOLED is missing from the resolved Neon preview database env."
+            exit 1
+          fi
+          echo "::add-mask::$database_url"
+
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+
+          deadline=$(( SECONDS + 300 ))
+          attempt=0
+          until psql "$database_url" --set ON_ERROR_STOP=1 -qtAc 'select 1' >/dev/null 2>&1; do
+            attempt=$(( attempt + 1 ))
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::Preview database did not accept a connection within 300s (${attempt} attempts). The Neon endpoint may be failing to start."
+              exit 1
+            fi
+            echo "Preview database not ready yet (attempt ${attempt}); retrying in 5s."
+            sleep 5
+          done
+          echo "Preview database accepted a connection after ${attempt} retry attempt(s)."
+
       - name: Apply preview database migrations
         if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         shell: bash
