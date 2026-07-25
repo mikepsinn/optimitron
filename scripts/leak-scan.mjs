@@ -30,7 +30,7 @@ const RULES = [
   },
   {
     id: "bank-account-ref",
-    re: /\b(checking|savings|account)\s+#?\d{4,}\b|\baccount\s*(?:number|no\.?|#)\s*:?\s*\d{4,}\b/i,
+    re: /\b(checking|savings|account)\s+#?\d{4,}\b|\baccount[_\s]*(?:number|no\.?|#)\s*[:=]?\s*["']?\d{4,}\b/i,
     msg: "Bank/account number reference in a committed file.",
   },
   {
