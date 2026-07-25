@@ -71,6 +71,7 @@ const warOnDiseaseDefaultSocialImage = {
 export const ROUTES = {
   home: "/",
   eos: "/eos",
+  designB: "/design-b",
   // Optimized Governance
   agencies: "/agencies",
   dfda: "/agencies/dfda",
@@ -1117,6 +1118,19 @@ export const eosLink: NavItem = {
   reviewName: "eos",
   screenshot: true,
   // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
+  cta: "View",
+};
+
+/**
+ * Unlisted preview route for a bake-off visual direction. Not part of any
+ * nav section or STATIC_SITEMAP_ROUTES — metadata only, noindex.
+ */
+export const designBLink: NavItem = {
+  href: ROUTES.designB,
+  label: "EOS Landing — Version B (The Press Kit)",
+  emoji: "🚀",
+  description:
+    "Competing visual direction B for the Earth Optimization Services landing page: a 1962 NASA press kit.",
   cta: "View",
 };
 

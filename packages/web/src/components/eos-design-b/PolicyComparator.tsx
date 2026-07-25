@@ -2,7 +2,10 @@
 
 import { useState, type ReactNode } from "react";
 import {
+  CURRENT_DRUG_APPROVALS_PER_YEAR,
+  DRUG_DISCOVERY_TO_APPROVAL_YEARS,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
+  PHARMA_DRUG_DEVELOPMENT_COST_CURRENT,
   TREATY_ANNUAL_FUNDING,
 } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
@@ -23,7 +26,20 @@ const ROWS: Row[] = [
   },
   {
     name: "Drug approval",
-    before: "14 years, $2.6 billion per drug. 50 approvals/year.",
+    before: (
+      <>
+        <ParameterValue className={N} param={DRUG_DISCOVERY_TO_APPROVAL_YEARS} />{" "}
+        years,{" "}
+        <ParameterValue
+          className={N}
+          display="withUnit"
+          param={PHARMA_DRUG_DEVELOPMENT_COST_CURRENT}
+        />{" "}
+        per drug.{" "}
+        <ParameterValue className={N} param={CURRENT_DRUG_APPROVALS_PER_YEAR} />{" "}
+        approvals/year.
+      </>
+    ),
     after: "Pragmatic trials, 90% cost reduction. 200+ approvals/year.",
   },
   {
