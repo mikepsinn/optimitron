@@ -29,9 +29,33 @@ jobs:
         run: |
           set -u
           updated=""; skipped=""; failed=""
-          for num in $(gh pr list --repo "$REPO" --state open --base main --json number --jq '.[].number'); do
-            state=$(gh pr view "$num" --repo "$REPO" --json mergeStateStatus --jq .mergeStateStatus)
-            if [ "$state" = "BEHIND" ]; then
+          # Compute behind-ness directly instead of trusting mergeStateStatus.
+          # GitHub only reports mergeStateStatus=BEHIND when a PR is behind AND
+          # otherwise mergeable; a behind PR with pending checks reports as
+          # UNSTABLE/BLOCKED, which masks the behind-ness. Keying off the compare
+          # API's behind_by catches every behind PR regardless of check/review
+          # state — which is exactly the case a human ends up clicking by hand.
+          repo_owner="${REPO%%/*}"
+          if ! rows=$(gh pr list --repo "$REPO" --state open --base main \
+              --json number,headRefName,isDraft,headRepositoryOwner \
+              --jq '.[] | select(.isDraft | not) | "\(.number):\(.headRepositoryOwner.login):\(.headRefName)"'); then
+            echo "::error::gh pr list failed; aborting instead of silently treating a discovery outage as \"no PRs to update\""
+            exit 1
+          fi
+          for row in $rows; do
+            num="${row%%:*}"; rest="${row#*:}"; owner="${rest%%:*}"; head="${rest#*:}"
+            # Fork PR heads must be owner-qualified for the compare API; same-repo
+            # heads compare fine as bare branch names.
+            if [ "$owner" = "$repo_owner" ]; then
+              compare_head="$head"
+            else
+              compare_head="$owner:$head"
+            fi
+            behind=$(gh api "repos/$REPO/compare/main...$compare_head" --jq '.behind_by' 2>/dev/null || echo "")
+            if [ -z "$behind" ]; then
+              echo "::warning::PR #$num compare failed (head $compare_head)"; failed="$failed #$num"; continue
+            fi
+            if [ "$behind" -gt 0 ]; then
               if out=$(gh pr update-branch "$num" --repo "$REPO" 2>&1); then
                 updated="$updated #$num"
               else
@@ -40,7 +64,7 @@ jobs:
                 failed="$failed #$num"
               fi
             else
-              skipped="$skipped #$num($state)"
+              skipped="$skipped #$num(up-to-date)"
             fi
           done
           {
