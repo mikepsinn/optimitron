@@ -268,7 +268,7 @@ export default async function AdminCommunicationsPage({
 
   const params = await searchParams;
   const filters = getFilters(params);
-  const [communications, emailLogs, directory, pendingApprovals] =
+  const [communications, emailLogs, directory, pendingApprovals, gate] =
     await Promise.all([
       listAdminTaskEmailCommunications(filters),
       listAdminEmailLogs(filters),
@@ -277,8 +277,8 @@ export default async function AdminCommunicationsPage({
         q: filters.q,
       }),
       listPendingOutboundApprovals({ actorUserId: user.id }),
+      getOutboundMessageGateForAdmin(),
     ]);
-  const gate = await getOutboundMessageGateForAdmin();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
