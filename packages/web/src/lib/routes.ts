@@ -1549,6 +1549,20 @@ export const dysfunctionTaxLink: NavItem = {
   cta: "See the Breakdown",
 };
 
+// Metadata-only NavItem (like dysfunctionTaxLink): drives getRouteMetadata for
+// the competing EOS landing-page design at /design-c so shared links get a
+// self-canonical URL and a route-specific social card instead of inheriting the
+// site root. Deliberately absent from every nav array and the sitemap; the page
+// itself is noindex. This is a design bake-off surface, not a nav destination.
+export const eosDesignCLink: NavItem = {
+  label: "Earth Optimization Services (design C)",
+  href: "/design-c",
+  emoji: "🎞️",
+  description:
+    "The Earth Optimization Services catalog drawn as a 1950s classroom filmstrip: the bill against your government, then the store that replaces it.",
+  cta: "Watch the Filmstrip",
+};
+
 export const incentiveAlignmentBondsPaperLink: NavItem = {
   label: "Incentive Alignment Bonds",
   href: "https://iab.warondisease.org",

@@ -1,0 +1,12 @@
+/* Version C — THE EDUCATIONAL FILM. Scaffold; full reel lands next commit. */
+.dc-root {
+  min-height: 100vh;
+  background: #f6efdc;
+  color: #1b1a17;
+}
+
+.dc-scaffold {
+  padding: 4rem 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
