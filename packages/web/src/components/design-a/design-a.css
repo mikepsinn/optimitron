@@ -1,0 +1,11 @@
+/* Design A: the sincere 1950s mail-order catalog. Scaffold. */
+.dsa-root {
+  min-height: 100vh;
+  background: #f7f0e0;
+  color: #1c1815;
+}
+
+.dsa-scaffold {
+  padding: 4rem 1.5rem;
+  font-weight: 700;
+}
