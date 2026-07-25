@@ -49,6 +49,8 @@ function readPayloadString(payload: unknown, key: string): string | null {
 }
 
 export async function dispatchApprovedOutboundMessage(input: {
+  /** The approver — recorded as the executor on the terminal request row. */
+  approverUserId: string;
   externalActionRequestId: string;
   now?: Date;
 }): Promise<DispatchOutboundMessageResult> {
@@ -134,6 +136,7 @@ export async function dispatchApprovedOutboundMessage(input: {
         return { status: "expired" };
       }
       await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
         externalActionRequestId: request.id,
         failureMessage: error.message,
         now,
@@ -155,6 +158,7 @@ export async function dispatchApprovedOutboundMessage(input: {
 
     if (result.status === "sent") {
       await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
         externalActionRequestId: request.id,
         now,
         receipt: {
@@ -178,6 +182,7 @@ export async function dispatchApprovedOutboundMessage(input: {
         ? `suppressed:${result.reason}`
         : result.status;
     await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
       externalActionRequestId: request.id,
       failureMessage: reason,
       now,
@@ -191,6 +196,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       externalActionRequestId: request.id,
     });
     await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
       externalActionRequestId: request.id,
       failureMessage: reason,
       now,

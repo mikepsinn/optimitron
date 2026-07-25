@@ -1,3 +1,7 @@
+import { ownerSend } from "@/lib/email/outbound-authorization.server";
+
+const OWNER = ownerSend("user_owner");
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -134,6 +138,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -182,6 +187,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -223,6 +229,7 @@ describe("task notifications", () => {
     ]);
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -246,6 +253,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -264,6 +272,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -282,6 +291,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -311,6 +321,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -352,6 +363,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -378,6 +390,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
     });
 
@@ -410,6 +423,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: OWNER,
       communicationId: "comm_1",
     });
 

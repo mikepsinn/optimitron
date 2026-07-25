@@ -35,6 +35,7 @@ export async function POST(
       result.status === ExternalActionRequestStatus.APPROVED &&
       result.operation === OUTBOUND_MESSAGE_OPERATION
         ? await dispatchApprovedOutboundMessage({
+            approverUserId: userId,
             externalActionRequestId: result.id,
           })
         : null;

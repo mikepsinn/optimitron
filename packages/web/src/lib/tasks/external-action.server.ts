@@ -585,7 +585,12 @@ async function writeTerminalExternalActionResult(
  * only after `authorizeApprovedSend` re-verified the payload hash.
  */
 export async function finalizeApprovedExternalAction(input: {
-  executedByUserId?: string | null;
+  /**
+   * Who is on the hook for this side effect — the approver. Required: the
+   * `ExternalActionRequest_execution_check` constraint refuses a terminal row
+   * with no executor, and an audit trail that cannot name one is worthless.
+   */
+  executedByUserId: string;
   externalActionRequestId: string;
   failureMessage?: string | null;
   now?: Date;
@@ -606,7 +611,7 @@ export async function finalizeApprovedExternalAction(input: {
     }
     return writeTerminalExternalActionResult(tx, request, {
       executedAt: input.now ?? new Date(),
-      executedByUserId: input.executedByUserId ?? null,
+      executedByUserId: input.executedByUserId,
       failureMessage: input.failureMessage ?? null,
       receipt: input.receipt ?? null,
       result: input.result,

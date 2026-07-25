@@ -135,6 +135,7 @@ describe("dispatchApprovedOutboundMessage", () => {
     mockDraft();
 
     const result = await dispatchApprovedOutboundMessage({
+      approverUserId: "user_admin",
       externalActionRequestId: "ear_1",
     });
 
@@ -168,13 +169,17 @@ describe("dispatchApprovedOutboundMessage", () => {
     });
 
     const result = await dispatchApprovedOutboundMessage({
+      approverUserId: "user_admin",
       externalActionRequestId: "ear_1",
     });
 
     expect(result).toEqual({ status: "failed", reason: "payload_mismatch" });
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
     expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
-      expect.objectContaining({ result: "FAILED" }),
+      expect.objectContaining({
+        executedByUserId: "user_admin",
+        result: "FAILED",
+      }),
     );
   });
 
@@ -182,7 +187,10 @@ describe("dispatchApprovedOutboundMessage", () => {
     mockRequest({ status: ExternalActionRequestStatus.EXECUTED });
 
     await expect(
-      dispatchApprovedOutboundMessage({ externalActionRequestId: "ear_1" }),
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
     ).resolves.toEqual({ status: "already_dispatched" });
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
   });
@@ -191,7 +199,10 @@ describe("dispatchApprovedOutboundMessage", () => {
     mockRequest({ status: ExternalActionRequestStatus.PENDING });
 
     await expect(
-      dispatchApprovedOutboundMessage({ externalActionRequestId: "ear_1" }),
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
     ).resolves.toEqual({ status: "not_approved" });
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
   });
@@ -218,6 +229,7 @@ describe("dispatchApprovedOutboundMessage", () => {
     mockDraft();
 
     const result = await dispatchApprovedOutboundMessage({
+      approverUserId: "user_admin",
       externalActionRequestId: "ear_1",
     });
 
@@ -229,7 +241,10 @@ describe("dispatchApprovedOutboundMessage", () => {
       }),
     );
     expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
-      expect.objectContaining({ result: "EXECUTED" }),
+      expect.objectContaining({
+        executedByUserId: "user_admin",
+        result: "EXECUTED",
+      }),
     );
   });
 });

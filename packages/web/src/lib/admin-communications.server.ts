@@ -1,11 +1,14 @@
 import {
   ContentVisibility,
+  ExternalActionRequestStatus,
   TaskCommunicationChannel,
   type EmailLogStatus,
   type TaskCommunicationStatus,
 } from "@optimitron/db";
 import type { Prisma } from "@optimitron/db";
+import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { prisma } from "@/lib/prisma";
+import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 
 export interface AdminCommunicationFilters {
   email?: string | null;
@@ -13,6 +16,8 @@ export interface AdminCommunicationFilters {
   organizationId?: string | null;
   personId?: string | null;
   q?: string | null;
+  /** Narrow the task-email list to one delivery state. */
+  status?: TaskCommunicationStatus | null;
   taskId?: string | null;
   userId?: string | null;
 }
@@ -174,6 +179,7 @@ function buildCommunicationWhere(
   const and: Prisma.TaskCommunicationWhereInput[] = [];
   const where: Prisma.TaskCommunicationWhereInput = {
     channel: TaskCommunicationChannel.EMAIL,
+    ...(filters.status ? { status: filters.status } : {}),
     ...(taskId ? { taskId } : {}),
     ...(userId ? { recipientUserId: userId } : {}),
     ...(personId ? { recipientPersonId: personId } : {}),
@@ -503,4 +509,58 @@ export async function listAdminCommunicationDirectory(
       createdAt: user.createdAt.toISOString(),
     })),
   };
+}
+
+export interface PendingOutboundApproval {
+  createdAt: string;
+  expiresAt: string;
+  id: string;
+  recipientEmail: string;
+  subject: string | null;
+  taskId: string;
+  taskKey: string | null;
+  taskTitle: string;
+  text: string | null;
+}
+
+/**
+ * Messages an agent drafted that nobody has approved yet — the queue the
+ * "Pending approval" section renders. Scoped by the same MANAGE/admin rule the
+ * approve action uses, so nothing appears here that the viewer cannot decide.
+ */
+export async function listPendingOutboundApprovals(input: {
+  actorUserId: string;
+  limit?: number | null;
+}): Promise<PendingOutboundApproval[]> {
+  const requests = await listExternalActionRequestsForHuman({
+    actorUserId: input.actorUserId,
+    limit: clampAdminLimit(input.limit, 50, 200),
+    status: ExternalActionRequestStatus.PENDING,
+  });
+  const outbound = requests.filter(
+    (request) => request.operation === OUTBOUND_MESSAGE_OPERATION,
+  );
+  if (outbound.length === 0) return [];
+
+  const tasks = await prisma.task.findMany({
+    where: { id: { in: [...new Set(outbound.map((r) => r.taskId))] } },
+    select: { id: true, taskKey: true, title: true },
+  });
+  const taskById = new Map(tasks.map((task) => [task.id, task]));
+
+  return outbound.map((request) => {
+    const payload = asRecord(request.payloadJson);
+    const task = taskById.get(request.taskId);
+    return {
+      createdAt: request.createdAt.toISOString(),
+      expiresAt: request.expiresAt.toISOString(),
+      id: request.id,
+      recipientEmail: request.destination,
+      subject: typeof payload.subject === "string" ? payload.subject : null,
+      taskId: request.taskId,
+      taskKey: task?.taskKey ?? null,
+      taskTitle: task?.title ?? "(task unavailable)",
+      text: typeof payload.text === "string" ? payload.text : null,
+    };
+  });
 }

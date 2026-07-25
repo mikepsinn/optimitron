@@ -114,7 +114,6 @@ describe("sendResendEmail", () => {
   it("adds one-click unsubscribe headers for non-transactional email", async () => {
     const result = await sendResendEmail({
       authorization: OWNER,
-      authorization: OWNER,
       html: "<p>Hello</p>",
       scope: "task_notifications",
       subject: "Hello",
@@ -185,7 +184,6 @@ describe("sendResendEmail", () => {
 
   it("omits one-click unsubscribe headers for transactional email", async () => {
     const result = await sendResendEmail({
-      authorization: OWNER,
       authorization: OWNER,
       html: "<p>Hello</p>",
       scope: "magic_link",
@@ -450,7 +448,6 @@ describe("sendResendEmail", () => {
     mocks.serverEnv.RESEND_MOCK_SEND = "1";
 
     const result = await sendResendEmail({
-      authorization: OWNER,
       authorization: OWNER,
       html: "<p>Hello</p>",
       scope: "magic_link",

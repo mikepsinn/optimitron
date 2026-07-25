@@ -1,3 +1,4 @@
+import { TaskCommunicationStatus } from "@optimitron/db/enums";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -5,9 +6,12 @@ import {
   listAdminCommunicationDirectory,
   listAdminEmailLogs,
   listAdminTaskEmailCommunications,
+  listPendingOutboundApprovals,
   type AdminCommunicationFilters,
+  type PendingOutboundApproval,
 } from "@/lib/admin-communications.server";
 import { getCurrentUser } from "@/lib/auth-utils";
+import { decideOutboundMessage } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +21,23 @@ interface AdminCommunicationsSearchParams {
   organizationId?: string;
   personId?: string;
   q?: string;
+  status?: string;
   taskId?: string;
   userId?: string;
+}
+
+const FILTERABLE_STATUSES = [
+  TaskCommunicationStatus.DRAFT,
+  TaskCommunicationStatus.FAILED,
+  TaskCommunicationStatus.CANCELLED,
+  TaskCommunicationStatus.SENT,
+] as const;
+
+function parseStatus(value?: string): TaskCommunicationStatus | null {
+  const candidate = value?.trim().toUpperCase();
+  return (
+    FILTERABLE_STATUSES.find((status) => status === candidate) ?? null
+  );
 }
 
 function clean(value?: string | null) {
@@ -49,6 +68,7 @@ function getFilters(
     organizationId: clean(params.organizationId) || null,
     personId: clean(params.personId) || null,
     q: clean(params.q) || null,
+    status: parseStatus(params.status),
     taskId: clean(params.taskId) || null,
     userId: clean(params.userId) || null,
   };
@@ -95,6 +115,79 @@ function EmptyRow({
   );
 }
 
+function PendingApprovalCard({
+  approval,
+}: {
+  approval: PendingOutboundApproval;
+}) {
+  return (
+    <article className="border-2 border-foreground p-4 text-sm font-bold">
+      <div className="text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground">
+        To
+      </div>
+      <div className="break-all text-base">{approval.recipientEmail}</div>
+
+      <div className="mt-3 text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground">
+        Subject
+      </div>
+      <div className="text-base">{approval.subject ?? "(no subject)"}</div>
+
+      <div className="mt-3 text-xs text-muted-foreground">
+        <Link href={`/tasks/${approval.taskId}`} className="underline">
+          {approval.taskTitle}
+        </Link>
+        {approval.taskKey ? ` / ${approval.taskKey}` : null}
+      </div>
+      <div className="mt-1 text-xs text-muted-foreground">
+        Drafted {formatDate(approval.createdAt)} / expires{" "}
+        {formatDate(approval.expiresAt)}
+      </div>
+
+      {approval.text ? (
+        <details className="mt-3 text-xs">
+          <summary className="cursor-pointer font-black uppercase underline">
+            Full message
+          </summary>
+          <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap border border-foreground bg-background p-3 font-mono text-[11px] font-bold">
+            {approval.text}
+          </pre>
+        </details>
+      ) : null}
+
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <form action={decideOutboundMessage} className="sm:flex-1">
+          <input
+            type="hidden"
+            name="externalActionRequestId"
+            value={approval.id}
+          />
+          <input type="hidden" name="decision" value="APPROVE" />
+          <button
+            type="submit"
+            className="w-full border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase text-background"
+          >
+            Approve and send
+          </button>
+        </form>
+        <form action={decideOutboundMessage} className="sm:flex-1">
+          <input
+            type="hidden"
+            name="externalActionRequestId"
+            value={approval.id}
+          />
+          <input type="hidden" name="decision" value="REJECT" />
+          <button
+            type="submit"
+            className="w-full border-2 border-foreground px-4 py-3 text-xs font-black uppercase"
+          >
+            Reject
+          </button>
+        </form>
+      </div>
+    </article>
+  );
+}
+
 export default async function AdminCommunicationsPage({
   searchParams,
 }: {
@@ -112,14 +205,16 @@ export default async function AdminCommunicationsPage({
 
   const params = await searchParams;
   const filters = getFilters(params);
-  const [communications, emailLogs, directory] = await Promise.all([
-    listAdminTaskEmailCommunications(filters),
-    listAdminEmailLogs(filters),
-    listAdminCommunicationDirectory({
-      limit: filters.limit,
-      q: filters.q,
-    }),
-  ]);
+  const [communications, emailLogs, directory, pendingApprovals] =
+    await Promise.all([
+      listAdminTaskEmailCommunications(filters),
+      listAdminEmailLogs(filters),
+      listAdminCommunicationDirectory({
+        limit: filters.limit,
+        q: filters.q,
+      }),
+      listPendingOutboundApprovals({ actorUserId: user.id }),
+    ]);
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
@@ -184,6 +279,23 @@ export default async function AdminCommunicationsPage({
           />
         </label>
         <label>
+          <span className="mb-1 block text-xs font-black uppercase">
+            Status
+          </span>
+          <select
+            className="w-full border-2 border-foreground bg-background px-3 py-2"
+            defaultValue={filters.status ?? ""}
+            name="status"
+          >
+            <option value="">Any</option>
+            {FILTERABLE_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {status.toLowerCase()}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           <span className="mb-1 block text-xs font-black uppercase">Limit</span>
           <input
             className="w-full border-2 border-foreground bg-background px-3 py-2"
@@ -245,6 +357,27 @@ export default async function AdminCommunicationsPage({
       </form>
 
       <div className="space-y-12">
+        <section>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+            <h2 className="text-xl font-black uppercase">Pending approval</h2>
+            <p className="text-xs font-bold uppercase text-muted-foreground">
+              {pendingApprovals.length} waiting
+            </p>
+          </div>
+          {pendingApprovals.length === 0 ? (
+            <div className="border-2 border-foreground p-4 text-sm font-bold text-muted-foreground">
+              No messages are waiting. Anything an agent drafts lands here
+              before it reaches a human.
+            </div>
+          ) : (
+            <div className="grid gap-3 lg:grid-cols-2">
+              {pendingApprovals.map((approval) => (
+                <PendingApprovalCard approval={approval} key={approval.id} />
+              ))}
+            </div>
+          )}
+        </section>
+
         <section>
           <div className="mb-3 flex items-end justify-between gap-4">
             <h2 className="text-xl font-black uppercase">Task emails</h2>

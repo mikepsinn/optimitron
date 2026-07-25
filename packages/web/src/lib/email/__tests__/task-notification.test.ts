@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ownerSend } from "@/lib/email/outbound-authorization.server";
 import {
   getReplyAddress,
   getReplyEmailDomain,
@@ -216,6 +217,7 @@ describe("sendTaskNotificationEmail", () => {
     // Re-import to pick up the env change since serverEnv may be cached.
     const mod = await import("../task-notification");
     const result = await mod.sendTaskNotificationEmail({
+      authorization: ownerSend("user_owner"),
       taskId: "abc",
       recipientEmail: "test@example.com",
       subject: "test",
