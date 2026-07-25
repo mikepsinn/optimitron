@@ -3,6 +3,7 @@ import { getTaskPath } from "@/lib/routes";
 import {
   deadlineChip,
   formatPriority,
+  summarizeIssueSeverities,
   type PersonalQueueDisplayData,
 } from "./personal-queue-display";
 
@@ -14,11 +15,12 @@ export function PersonalQueueSection({
   queue: PersonalQueueDisplayData;
 }) {
   const { buybackRate, issues, rows } = queue;
+  const severitySummary = summarizeIssueSeverities(issues);
 
   return (
     <section className="mb-10">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-        <h2 className="text-xl font-black uppercase tracking-tight">
+        <h2 className="text-base font-semibold uppercase tracking-wide">
           What next
         </h2>
         <p className="text-xs text-[var(--treaty-ink-muted)]">
@@ -28,10 +30,15 @@ export function PersonalQueueSection({
       </div>
 
       {issues.length > 0 ? (
-        <details className="mt-3 border border-[var(--treaty-ink)] px-3 py-2">
-          <summary className="cursor-pointer text-sm font-bold">
+        <details className="mt-3 border border-[var(--treaty-ink)]/40 px-3 py-2">
+          <summary className="cursor-pointer text-[13px] font-semibold">
             {issues.length} data issue{issues.length === 1 ? "" : "s"} affect
             this ranking
+            {severitySummary ? (
+              <span className="ml-2 font-normal text-[var(--treaty-ink-muted)]">
+                {severitySummary}
+              </span>
+            ) : null}
           </summary>
           <ul className="mt-2 space-y-1.5">
             {issues.map((issue, index) => (
@@ -39,7 +46,7 @@ export function PersonalQueueSection({
                 key={`${issue.code}-${issue.taskId ?? index}`}
                 className="text-xs leading-snug"
               >
-                <span className="font-mono font-bold uppercase">
+                <span className="font-mono font-semibold uppercase">
                   {issue.severity}
                 </span>{" "}
                 {issue.message}
@@ -66,58 +73,60 @@ export function PersonalQueueSection({
           missing the estimates ranking needs.
         </p>
       ) : (
-        <ol className="mt-4">
+        <ol className="mt-3">
           {rows.map((row, index) => {
             const chip = deadlineChip(row);
             return (
               <li
                 key={row.id}
-                className="border-b border-[var(--treaty-ink)]/20 py-2.5"
+                className="border-b border-[var(--treaty-ink)]/15 py-2"
               >
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="w-6 shrink-0 text-right font-black tabular-nums">
+                <div className="flex items-baseline gap-2">
+                  <span className="w-5 shrink-0 text-right text-[13px] font-semibold tabular-nums text-[var(--treaty-ink-muted)]">
                     {index + 1}.
                   </span>
                   <Link
-                    className="min-w-0 flex-1 font-bold underline-offset-4 hover:underline"
+                    className="min-w-0 flex-1 text-[15px] font-medium leading-snug underline-offset-4 hover:underline"
                     href={getTaskPath(row.id)}
                   >
                     {row.title}
                   </Link>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pl-7">
+                  <span className="text-xs font-semibold tabular-nums">
+                    {formatPriority(row.priority)}
+                  </span>
                   {chip ? (
                     <span
                       className={
                         chip.urgent
-                          ? "shrink-0 bg-[var(--treaty-ink)] px-1.5 py-0.5 text-[10px] font-black uppercase text-[var(--treaty-paper)]"
-                          : "shrink-0 border border-[var(--treaty-ink)] px-1.5 py-0.5 text-[10px] font-black uppercase"
+                          ? "bg-[var(--treaty-ink)] px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-[var(--treaty-paper)]"
+                          : "border border-[var(--treaty-ink)]/50 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide"
                       }
                     >
                       {chip.label}
                     </span>
                   ) : null}
-                  <span className="shrink-0 text-sm font-bold tabular-nums">
-                    {formatPriority(row.priority)}
-                  </span>
+                  <details className="min-w-0">
+                    <summary className="cursor-pointer text-[11px] uppercase tracking-[0.1em] text-[var(--treaty-ink-muted)]">
+                      Why this rank
+                    </summary>
+                    <p className="mt-1 break-words font-mono text-xs leading-relaxed">
+                      {row.evMath}
+                    </p>
+                    {row.blockersCount > 0 ? (
+                      <p className="mt-1 text-xs text-[var(--treaty-ink-muted)]">
+                        Blockers resolved: {row.blockersResolved}/
+                        {row.blockersCount}
+                      </p>
+                    ) : null}
+                  </details>
                 </div>
                 {chip?.urgent && row.deadlineRationale ? (
-                  <p className="mt-1 pl-9 text-xs text-[var(--treaty-ink-muted)]">
+                  <p className="mt-1 pl-7 text-xs text-[var(--treaty-ink-muted)]">
                     {row.deadlineRationale}
                   </p>
                 ) : null}
-                <details className="mt-1 pl-9">
-                  <summary className="cursor-pointer text-[11px] uppercase tracking-[0.14em] text-[var(--treaty-ink-muted)]">
-                    Why this rank
-                  </summary>
-                  <p className="mt-1 break-words font-mono text-xs leading-relaxed">
-                    {row.evMath}
-                  </p>
-                  {row.blockersCount > 0 ? (
-                    <p className="mt-1 text-xs text-[var(--treaty-ink-muted)]">
-                      Blockers resolved: {row.blockersResolved}/
-                      {row.blockersCount}
-                    </p>
-                  ) : null}
-                </details>
               </li>
             );
           })}
