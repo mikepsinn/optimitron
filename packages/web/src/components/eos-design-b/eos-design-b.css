@@ -430,6 +430,22 @@
   );
 }
 
+/* Measured ruler, drawn straight under the changeover: the first thing the
+   bright register does is start counting. */
+.pkb-ruler {
+  height: 14px;
+  background-color: var(--pk-sky);
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--pk-line-hard) 0 1px,
+    transparent 1px 16px
+  );
+  background-position: bottom;
+  background-size: 100% 7px;
+  background-repeat: repeat-x;
+  border-bottom: 1px solid var(--pk-line);
+}
+
 .pkb-pivot {
   position: relative;
   padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(3.5rem, 8vw, 6rem);
@@ -547,6 +563,12 @@
     gap: clamp(2rem, 5vw, 4rem);
   }
 }
+/* The share register number carries a word suffix ("billion"), so it runs a
+   size down from the full-bleed enormous numbers and is allowed to wrap. */
+.pkb-storegrid .pkb-huge {
+  font-size: clamp(2.8rem, 9vw, 7.5rem);
+}
+
 .pkb-lede {
   font-size: clamp(1.05rem, 2.3vw, 1.35rem);
   line-height: 1.4;
@@ -773,25 +795,27 @@
    SECTION 3 — THE COMPARISON MATRIX
    ========================================================================== */
 
+/* The head-to-head: one enormous price, one very small one. The size
+   difference is the argument. */
 .pkb-verdict {
-  display: grid;
-  gap: clamp(1.25rem, 3vw, 2rem);
-  grid-template-columns: 1fr;
-  margin-bottom: clamp(2rem, 5vw, 3.5rem);
-}
-@media (min-width: 780px) {
-  .pkb-verdict {
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(1.5rem, 4vw, 3rem);
-  }
-}
-.pkb-verdict-col {
+  margin: clamp(1.75rem, 4vw, 2.75rem) 0 clamp(2rem, 5vw, 3.5rem);
   border-top: 2px solid var(--pk-line-hard);
   padding-top: 0.85rem;
-  min-width: 0;
 }
-.pkb-verdict-col--eos {
-  border-top-color: var(--pk-blue);
+.pkb-counterbid {
+  margin-top: 0.9rem;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  color: var(--pk-ink-soft);
+  max-width: 46ch;
+}
+.pkb-counterbid-v {
+  font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--pk-blue);
+}
+.pkb-counterbid-v .pk-n {
+  color: var(--pk-blue);
 }
 
 .pkb-matrixscroll {
@@ -806,8 +830,6 @@
   font-size: clamp(0.8rem, 1.6vw, 0.94rem);
 }
 .pkb-matrix thead th {
-  position: sticky;
-  top: 0;
   background: var(--pk-paper);
   text-align: left;
   padding: 0.85rem 1rem 0.85rem 0;

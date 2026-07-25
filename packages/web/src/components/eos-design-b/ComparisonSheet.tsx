@@ -37,34 +37,31 @@ export function ComparisonSheet() {
             review.
           </p>
 
-          <div className="pkb-verdict" style={{ marginTop: "2rem" }}>
-            <div className="pkb-verdict-col">
-              <p className="pkb-tag pkb-tag--hot">
-                Your government · sticker price
-              </p>
-              <span className="pkb-huge pkb-huge--hot">
-                <ParameterValue
-                  param={US_GOV_WASTE_PER_CAPITA_ANNUAL}
-                  presentation="inline"
-                />
-                <span className="pkb-huge-unit">per American / year</span>
-              </span>
+          <div className="pkb-verdict">
+            <p className="pkb-tag pkb-tag--hot">
+              Sticker price · your government
+            </p>
+            <span className="pkb-huge pkb-huge--hot">
+              <ParameterValue
+                param={US_GOV_WASTE_PER_CAPITA_ANNUAL}
+                presentation="inline"
+              />
+              <span className="pkb-huge-unit">per American / year</span>
+            </span>
+            <div className="pkb-dim">
+              <span className="pkb-tag pkb-tag--hot">Their bid</span>
+              <span className="pkb-dim-rule" />
+              <span className="pkb-tag pkb-tag--blue">Ours</span>
             </div>
-            <div className="pkb-verdict-col pkb-verdict-col--eos">
-              <p className="pkb-tag pkb-tag--blue">
-                Earth Optimization Services · sticker price
-              </p>
-              <span className="pkb-huge">
+            <p className="pkb-counterbid">
+              <span className="pkb-counterbid-v">
                 <ParameterValue
+                  className={N}
                   param={GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL}
-                  presentation="inline"
                 />
-                <span className="pkb-huge-unit">per citizen / year</span>
-              </span>
-              <p className="pkb-legend" style={{ marginTop: "0.9rem" }}>
-                Plus dividends.
-              </p>
-            </div>
+              </span>{" "}
+              per citizen per year, plus dividends.
+            </p>
           </div>
 
           <div className="pkb-matrixscroll">

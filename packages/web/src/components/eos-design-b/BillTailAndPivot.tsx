@@ -123,6 +123,7 @@ export function BillTailAndPivot() {
 
       {/* The changeover: dark, chrome, daylight. */}
       <div className="pkb-changeover" aria-hidden="true" />
+      <div className="pkb-ruler" aria-hidden="true" />
 
       <section className="pkb-pivot pkb-grid" id="the-pivot">
         <div className="pkb-wrap">
