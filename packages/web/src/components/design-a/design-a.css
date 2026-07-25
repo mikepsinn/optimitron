@@ -1093,9 +1093,6 @@
   grid-template-columns: minmax(7rem, 0.7fr) 1fr 1fr;
   background: var(--dsa-ink);
   color: var(--dsa-cream);
-  position: sticky;
-  top: 0;
-  z-index: 2;
 }
 
 .dsa-matrix-col {

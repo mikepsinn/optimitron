@@ -164,9 +164,7 @@ export function OptimitronProduct() {
                   presentation="inline"
                 />
               </p>
-              <p className="dsa-stat-label">
-                Years to eradicate the disease queue
-              </p>
+              <p className="dsa-stat-label">Disease eradication</p>
             </div>
             <div className="dsa-stat">
               <p className="dsa-stat-value">
@@ -176,7 +174,7 @@ export function OptimitronProduct() {
                 />
               </p>
               <p className="dsa-stat-label">
-                Sooner the average treatment arrives
+                The average treatment arrives sooner
               </p>
             </div>
             <div className="dsa-stat">
@@ -197,7 +195,9 @@ export function OptimitronProduct() {
                   presentation="inline"
                 />
               </p>
-              <p className="dsa-stat-label">Per year into clinical trials</p>
+              <p className="dsa-stat-label">
+                1% Treaty funds, per year, in trials
+              </p>
             </div>
           </div>
         </div>

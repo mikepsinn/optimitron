@@ -10,12 +10,12 @@ export function StoreSection() {
       <div className="dsa-wrap">
         <div className="dsa-page-head">
           <p className="dsa-eyebrow">Section 2 / The Store</p>
-          <p className="dsa-folio">Catalog No. 301 &middot; Earth Edition</p>
+          <p className="dsa-folio">Earth Edition</p>
         </div>
 
         <header className="dsa-masthead">
           <p className="dsa-eyebrow dsa-masthead-sup">
-            A regional branch of Universe Optimization Services
+            Universe Optimization Services
           </p>
           <h2 className="dsa-display dsa-masthead-name">
             <span>Earth</span>
@@ -47,9 +47,8 @@ export function StoreSection() {
           <div className="dsa-claim">
             <p className="dsa-claim-n dsa-claim-n--turq">2</p>
             <p>
-              Two numbers: median health-adjusted life expectancy and median
-              after-tax inflation-adjusted income. Everything in this catalog is
-              scored on those two numbers.
+              Median health-adjusted life expectancy and median after-tax
+              inflation-adjusted income.
             </p>
           </div>
         </div>
@@ -67,7 +66,7 @@ export function StoreSection() {
             </div>
             <div className="dsa-share">
               <p className="dsa-share-class">Class B</p>
-              <p className="dsa-share-price">Priced</p>
+              <p className="dsa-share-price">Returns</p>
               <p>
                 If you want returns, buy Class B shares. Money buys a share of
                 the profit, not extra votes or governance.

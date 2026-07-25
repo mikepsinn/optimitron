@@ -98,7 +98,7 @@ export function TwoNumberDashboard() {
   return (
     <div className="dsa-dash" ref={ref}>
       <div className="dsa-dash-head">
-        <p className="dsa-eyebrow">Centre display / The two numbers</p>
+        <p className="dsa-eyebrow">Center Display / The Two Numbers</p>
         <p className="dsa-dash-hint">Today &rarr; settlement target, year 15</p>
       </div>
       <div className="dsa-dash-grid">

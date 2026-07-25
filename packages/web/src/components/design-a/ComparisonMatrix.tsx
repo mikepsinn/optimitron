@@ -224,7 +224,7 @@ export function ComparisonMatrix() {
           <p className="dsa-eyebrow">
             Universe Optimization Services &middot; Earth Branch
           </p>
-          <p className="dsa-eyebrow">Catalog No. 301</p>
+          <p className="dsa-eyebrow">Earth Edition</p>
         </div>
       </div>
     </section>

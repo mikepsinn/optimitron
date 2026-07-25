@@ -57,7 +57,8 @@ export function DeathTicker() {
       {awayCount > 0 ? (
         <>
           {" "}
-          <b>{awayCount.toLocaleString()}</b> more died while you were away.
+          <b>{awayCount.toLocaleString()}</b> more people died while you were
+          away.
         </>
       ) : null}
     </p>
