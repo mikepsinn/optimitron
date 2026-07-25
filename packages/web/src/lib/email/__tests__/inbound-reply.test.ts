@@ -297,13 +297,13 @@ describe("processInboundReply", () => {
   it("credits the assignee organization when the contactEmail replies", async () => {
     const db = makeInboundDb();
     db.task.findUnique.mockResolvedValue({
-      id: "task_iam",
+      id: "task_meridian",
       title: "Join the International Campaign to End War and Disease",
       createdByUserId: "user_creator",
       createdByUser: { id: "user_creator", email: "creator@example.org" },
       assigneePerson: null,
       assigneeOrganization: {
-        id: "org_iam",
+        id: "org_meridian",
         contactEmail: "test@thinkbynumbers.org",
       },
       communicationEndpoints: [],
@@ -313,10 +313,10 @@ describe("processInboundReply", () => {
 
     const result = await processInboundReply(
       inboundEvent({
-        from: "Institute for Accelerated Medicine <test@thinkbynumbers.org>",
-        to: `reply+task_iam@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
+        from: "Meridian Research Foundation <test@thinkbynumbers.org>",
+        to: `reply+task_meridian@${WAR_ON_DISEASE_REPLY_DOMAIN}`,
         text: "We posted the survey link to our member newsletter.",
-        providerMessageId: "provider_msg_iam_reply",
+        providerMessageId: "provider_msg_meridian_reply",
       }),
       db as never,
     );
@@ -328,24 +328,24 @@ describe("processInboundReply", () => {
     });
     expect(db.taskComment.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        authorOrganizationId: "org_iam",
+        authorOrganizationId: "org_meridian",
         authorUserId: null,
         authorPersonId: null,
         kind: TaskCommentKind.INBOUND_MESSAGE,
         source: TaskCommentSource.EMAIL_REPLY,
         message: "We posted the survey link to our member newsletter.",
-        taskId: "task_iam",
+        taskId: "task_meridian",
       }),
     });
     // Author org is filtered out of fan-out so it doesn't email itself back.
     expect(notificationMocks.notifyTaskCommentRecipients).toHaveBeenCalledWith(
       expect.objectContaining({
-        authorOrganizationId: "org_iam",
+        authorOrganizationId: "org_meridian",
         authorUserId: null,
         authorPersonId: null,
         commentId: "comment_1",
         message: "We posted the survey link to our member newsletter.",
-        taskId: "task_iam",
+        taskId: "task_meridian",
       }),
     );
   });
