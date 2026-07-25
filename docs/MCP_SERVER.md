@@ -49,8 +49,7 @@ priority = (P(success) * value - cash_cost) / (hours + cash_cost / buybackRate)
 
 The default `buybackRate` is `$1000/hr`. Dependencies decide what is available; `priority` ranks available tasks.
 
-This is the canonical, live EV formula. The Notion prototype it replaced is
-archived at [archive/EXPECTED_VALUE_DATABASE.md](./archive/EXPECTED_VALUE_DATABASE.md).
+This is the canonical, live EV formula, replacing an earlier Notion prototype.
 
 Use these fields when creating personal tasks:
 
