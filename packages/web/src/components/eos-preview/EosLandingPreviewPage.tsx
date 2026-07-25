@@ -1,6 +1,7 @@
 import { Righteous } from "next/font/google";
 import { BillSection } from "@/components/eos-preview/BillSection";
 import { ComparisonMatrix } from "@/components/eos-preview/ComparisonMatrix";
+import { StoreSection } from "@/components/eos-preview/StoreSection";
 import "./eos-preview.css";
 
 const righteous = Righteous({
@@ -48,12 +49,8 @@ export function EosLandingPreviewPage() {
       {/* Section 1 — built */}
       <BillSection />
 
-      {/* Section 2 — stub */}
-      <SectionStub
-        n="2"
-        note="The cheerful pitchman arrives. EOS as a product for the first time: buys the companies that control your government, hands their lobbyists the optimal budget. One Class A share per human, free; Class B shares for returns."
-        title="The Store"
-      />
+      {/* Section 2 — built */}
+      <StoreSection />
 
       {/* Section 3 — built */}
       <ComparisonMatrix />
