@@ -1120,6 +1120,21 @@ export const eosLink: NavItem = {
   cta: "View",
 };
 
+// Unlisted preview route for the EOS landing page bake-off (design-a of
+// three). Intentionally absent from nav sections + STATIC_SITEMAP_ROUTES —
+// this is a comparison draft, not a nav destination. Metadata is derived from
+// this entry via getRouteMetadata() in app/design-a/page.tsx, then forced
+// noindex, so shared links still get a canonical URL + route-specific social
+// card instead of the generic site-root preview.
+export const designACatalogLink: NavItem = {
+  label: "EOS Catalog — Design A",
+  href: "/design-a",
+  emoji: "🗂️",
+  description:
+    "Version A of the Earth Optimization Services landing page: the mail-order catalog.",
+  cta: "See the Preview",
+};
+
 export const earthOptimizationPrizePaperLink: NavItem = {
   label: "Prize Rulebook",
   href: "https://prize.warondisease.org",
