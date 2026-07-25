@@ -1552,14 +1552,20 @@ export const dysfunctionTaxLink: NavItem = {
 // Metadata-only NavItem (like dysfunctionTaxLink): drives getRouteMetadata for
 // the competing EOS landing-page design at /design-c so shared links get a
 // self-canonical URL and a route-specific social card instead of inheriting the
-// site root. Deliberately absent from every nav array and the sitemap; the page
-// itself is noindex. This is a design bake-off surface, not a nav destination.
+// site root. Deliberately absent from every PUBLIC nav array (navSections,
+// exploreLinks, footerAppLinks) and the sitemap; the page itself is noindex.
+// This is a design bake-off surface, not a nav destination. It is included in
+// routeReviewNavItems below (like taskTreeLink) so getInternalNavItemForPath
+// can resolve its OG image and so it participates in the screenshot/copy
+// review sweep — that array is internal tooling, not public navigation.
 export const eosDesignCLink: NavItem = {
   label: "Earth Optimization Services (design C)",
   href: "/design-c",
   emoji: "🎞️",
   description:
     "The Earth Optimization Services catalog drawn as a 1950s classroom filmstrip: the bill against your government, then the store that replaces it.",
+  copyPreview: true,
+  screenshot: true,
   cta: "Watch the Filmstrip",
 };
 
@@ -1873,6 +1879,7 @@ export const routeReviewNavItems = [
   courtLink,
   donateLink,
   eosLink,
+  eosDesignCLink,
   joinLink,
   foundationsLink,
   signatoriesLink,
