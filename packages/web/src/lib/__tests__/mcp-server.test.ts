@@ -1422,7 +1422,7 @@ describe("MCP server tool dispatch", () => {
     });
   });
 
-  it("createOrganization creates approved task-assignee organizations with strict duplicate errors", async () => {
+  it("createOrganization defaults to PRIVATE visibility when not specified", async () => {
     const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
 
     const result = await client.callTool({
@@ -1446,7 +1446,7 @@ describe("MCP server tool dispatch", () => {
         squareLogoUrl: null,
         status: OrgStatus.APPROVED,
         type: OrgType.FOUNDATION,
-        visibility: ContentVisibility.PUBLIC,
+        visibility: ContentVisibility.PRIVATE,
         website: "https://survivalandflourishing.fund",
         wordmarkLogoUrl: null,
       },
@@ -1467,6 +1467,42 @@ describe("MCP server tool dispatch", () => {
       visibility: "PUBLIC",
       website: "https://survivalandflourishing.fund",
     });
+  });
+
+  it("createOrganization honors an explicit PUBLIC visibility request", async () => {
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    const result = await client.callTool({
+      name: "createOrganization",
+      arguments: {
+        name: "Survival and Flourishing Fund",
+        type: "FOUNDATION",
+        visibility: "PUBLIC",
+      },
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
+      expect.objectContaining({ visibility: ContentVisibility.PUBLIC }),
+      "user-1",
+      { rejectDuplicates: true },
+    );
+  });
+
+  it("createOrganization rejects an invalid visibility value", async () => {
+    const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+    const result = await client.callTool({
+      name: "createOrganization",
+      arguments: {
+        name: "Survival and Flourishing Fund",
+        type: "FOUNDATION",
+        visibility: "SECRET",
+      },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(mocks.createOrganizationWithOwner).not.toHaveBeenCalled();
   });
 
   it("createOrganization returns a clear duplicate error instead of a tool crash", async () => {
@@ -1685,11 +1721,56 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("updateOrganization flips visibility to PRIVATE for an owner/admin caller", async () => {
+      mocks.updateOrganizationServer.mockResolvedValueOnce({
+        contactEmail: null,
+        description: null,
+        donationUrl: null,
+        id: "org-1",
+        jurisdictionId: null,
+        name: "Org",
+        slug: "org",
+        squareLogoUrl: null,
+        status: OrgStatus.APPROVED,
+        type: OrgType.NONPROFIT,
+        visibility: ContentVisibility.PRIVATE,
+        website: null,
+        wordmarkLogoUrl: null,
+      });
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganization",
+        arguments: { organizationId: "org-1", visibility: "PRIVATE" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.updateOrganizationServer).toHaveBeenCalledWith(
+        "org-1",
+        "user-1",
+        expect.objectContaining({ visibility: ContentVisibility.PRIVATE }),
+        { allowStatusChange: false },
+      );
+    });
+
+    it("updateOrganization rejects an invalid visibility value before hitting the server", async () => {
+      const client = await setup("user-1", [McpScope.EARTHDATA_WRITE]);
+
+      const result = await client.callTool({
+        name: "updateOrganization",
+        arguments: { organizationId: "org-1", visibility: "SECRET" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mocks.updateOrganizationServer).not.toHaveBeenCalled();
+    });
+
     it.each([
       ["organizationId", 123],
       ["name", { value: "Renamed Org" }],
       ["type", 7],
       ["status", ["APPROVED"]],
+      ["visibility", ["PRIVATE"]],
       ["slug", { value: "renamed-org" }],
       ["website", 42],
       ["description", false],
