@@ -1,11 +1,1211 @@
-/* Design A: the sincere 1950s mail-order catalog. Scaffold. */
+/* ==========================================================================
+   Design A: THE CATALOG
+   A sincere 1950s mail-order catalog played completely straight. Warm cream
+   stock, atomic-era ink, chrome, starbursts and boomerangs where they earn
+   their place. Section 1 stays dark; everything after the pivot is bright.
+   ========================================================================== */
+
 .dsa-root {
-  min-height: 100vh;
-  background: #f7f0e0;
-  color: #1c1815;
+  --dsa-cream: #f7f0dd;
+  --dsa-cream-deep: #efe2c0;
+  --dsa-cream-edge: #e2d3aa;
+  --dsa-ink: #1e1a14;
+  --dsa-ink-soft: #5c5340;
+  --dsa-turq: #0d8b86;
+  --dsa-turq-deep: #076661;
+  --dsa-coral: #d8452a;
+  --dsa-mustard: #e0a012;
+  --dsa-sky: #a6d7e3;
+  --dsa-dark: #0b0a09;
+  --dsa-dark-line: #33302b;
+
+  --dsa-display: var(--font-playfair-display, var(--v0-font-playfair-display)),
+    "Playfair Display", Georgia, serif;
+  --dsa-body: var(--font-libre-baskerville, var(--v0-font-libre-baskerville)),
+    "Libre Baskerville", Georgia, serif;
+  --dsa-mono: var(--font-mono, var(--v0-font-space-mono)), "Space Mono",
+    ui-monospace, monospace;
+
+  --dsa-chrome: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e6e8e5 30%,
+    #a8ada9 50%,
+    #cfd3cf 58%,
+    #f6f7f4 100%
+  );
+
+  background: var(--dsa-cream);
+  color: var(--dsa-ink);
+  font-family: var(--dsa-body);
+  overflow-x: clip;
 }
 
-.dsa-scaffold {
-  padding: 4rem 1.5rem;
+.dsa-root *,
+.dsa-root *::before,
+.dsa-root *::after {
+  box-sizing: border-box;
+}
+
+.dsa-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+.dsa-narrow {
+  max-width: 780px;
+}
+
+/* --- shared type ---------------------------------------------------------- */
+
+.dsa-eyebrow {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem);
   font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.dsa-display {
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.dsa-num {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   SECTION 1 TAIL: THE BILL (dark, clinical, airless)
+   ========================================================================== */
+
+.dsa-bill {
+  position: relative;
+  background: var(--dsa-dark);
+  color: #f2f0ec;
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 7vw, 5rem);
+  font-family: var(--dsa-mono);
+}
+
+.dsa-bill-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--dsa-dark-line);
+  padding-bottom: 0.75rem;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+}
+
+.dsa-bill-head .dsa-eyebrow {
+  color: #8b8577;
+}
+
+.dsa-ticker {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.62rem, 1.6vw, 0.72rem);
+  letter-spacing: 0.08em;
+  color: #8b8577;
+  margin: 0;
+}
+
+.dsa-ticker b {
+  color: var(--dsa-coral);
+  font-variant-numeric: tabular-nums;
+}
+
+.dsa-charge {
+  max-width: 62ch;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.dsa-charge p {
+  margin: 0;
+  font-size: clamp(0.9rem, 2.1vw, 1.02rem);
+  line-height: 1.55;
+  color: #d8d4cb;
+}
+
+.dsa-charge .dsa-hot,
+.dsa-charge .dsa-hot-coral {
+  color: var(--dsa-coral);
+  font-weight: 700;
+  text-decoration-color: rgba(216, 69, 42, 0.5);
+}
+
+.dsa-giant-caption .dsa-hot {
+  color: #fffdf6;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+}
+
+/* the number */
+.dsa-giant {
+  margin-top: clamp(2.5rem, 7vw, 4.5rem);
+  border-top: 1px solid var(--dsa-dark-line);
+  border-bottom: 1px solid var(--dsa-dark-line);
+  padding-block: clamp(2rem, 6vw, 3.5rem);
+  text-align: center;
+}
+
+.dsa-giant-value {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-size: clamp(2.9rem, 13vw, 8.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--dsa-coral);
+  word-break: break-word;
+}
+
+.dsa-giant-value .dsa-per {
+  color: #6d6759;
+  font-size: 0.34em;
+  letter-spacing: 0;
+}
+
+.dsa-giant-caption {
+  margin: 1.25rem auto 0;
+  max-width: 58ch;
+  font-size: clamp(0.8rem, 1.9vw, 0.92rem);
+  line-height: 1.6;
+  color: #a5a093;
+}
+
+.dsa-giant-caption b {
+  color: #fff;
+  font-weight: 700;
+}
+
+.dsa-billlink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8b8577;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.dsa-billlink:hover {
+  color: #fff;
+}
+
+.dsa-love {
+  margin: clamp(2.25rem, 6vw, 3.5rem) auto 0;
+  max-width: 46ch;
+  text-align: center;
+  font-family: var(--dsa-body);
+}
+
+.dsa-love p {
+  margin: 0 0 0.9rem;
+  font-size: clamp(1rem, 2.6vw, 1.28rem);
+  line-height: 1.5;
+  color: #f2f0ec;
+}
+
+.dsa-love p:last-child {
+  margin-bottom: 0;
+  color: #8b8577;
+  font-size: clamp(0.85rem, 2vw, 0.98rem);
+}
+
+/* ==========================================================================
+   THE PIVOT: courtroom out, 1962 in
+   ========================================================================== */
+
+.dsa-pivot {
+  position: relative;
+  isolation: isolate;
+  background: var(--dsa-dark);
+  overflow: hidden;
+  padding-block: clamp(4.5rem, 14vw, 9rem) clamp(3rem, 8vw, 5rem);
+}
+
+/* the sun: a hard die-cut cream arc rising through the black. No gradient
+   mush. The edge is crisp so the register change is a cut, not a fade. */
+.dsa-pivot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(
+    135% 108% at 50% 132%,
+    var(--dsa-cream) 0 55.6%,
+    var(--dsa-mustard) 55.6% 56.6%,
+    transparent 56.7%
+  );
+  transform: translateY(26%);
+  transition: transform 1.5s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+/* atomic rays, only inside the sun */
+.dsa-pivot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 132%,
+    rgba(224, 160, 18, 0.16) 0deg 2.4deg,
+    transparent 2.4deg 9deg
+  );
+  -webkit-mask-image: radial-gradient(
+    135% 108% at 50% 132%,
+    #000 0 55.6%,
+    transparent 55.7%
+  );
+  mask-image: radial-gradient(
+    135% 108% at 50% 132%,
+    #000 0 55.6%,
+    transparent 55.7%
+  );
+  transform: translateY(26%);
+  opacity: 0;
+  transition:
+    transform 1.5s cubic-bezier(0.2, 0.75, 0.25, 1),
+    opacity 1.2s ease 0.35s;
+}
+
+.dsa-pivot.is-open::before,
+.dsa-pivot.is-open::after {
+  transform: translateY(0);
+}
+
+.dsa-pivot.is-open::after {
+  opacity: 1;
+}
+
+.dsa-pivot-inner {
+  position: relative;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1rem, 3vw, 1.6rem);
+}
+
+.dsa-pivot-q {
+  max-width: 30ch;
+  margin: 0;
+  font-family: var(--dsa-body);
+  font-size: clamp(1rem, 2.9vw, 1.45rem);
+  line-height: 1.4;
+  color: #f2f0ec;
+  transition: color 0.8s ease 0.5s;
+}
+
+.dsa-pivot.is-open .dsa-pivot-q {
+  color: var(--dsa-ink);
+}
+
+.dsa-pivot-a {
+  position: relative;
+  margin: 0;
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 8.4vw, 5.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  color: var(--dsa-coral);
+  text-wrap: balance;
+  max-width: 16ch;
+}
+
+.dsa-pivot-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(6.5rem, 17vw, 9.5rem);
+  aspect-ratio: 1;
+  color: var(--dsa-ink);
+  background: var(--dsa-mustard);
+  clip-path: polygon(
+    50% 0%,
+    59% 20%,
+    79% 12%,
+    76% 33%,
+    97% 34%,
+    83% 50%,
+    97% 66%,
+    76% 67%,
+    79% 88%,
+    59% 80%,
+    50% 100%,
+    41% 80%,
+    21% 88%,
+    24% 67%,
+    3% 66%,
+    17% 50%,
+    3% 34%,
+    24% 33%,
+    21% 12%,
+    41% 20%
+  );
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-size: clamp(0.55rem, 1.5vw, 0.68rem);
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 1.5rem;
+  opacity: 0;
+  transform: scale(0.6) rotate(-25deg);
+  transition:
+    opacity 0.5s ease 0.7s,
+    transform 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) 0.7s;
+}
+
+.dsa-pivot.is-open .dsa-pivot-badge {
+  opacity: 1;
+  transform: scale(1) rotate(-9deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsa-pivot::before,
+  .dsa-pivot::after,
+  .dsa-pivot-badge,
+  .dsa-pivot-q {
+    transition-duration: 1ms;
+  }
+}
+
+/* ==========================================================================
+   CATALOG PAGE FURNITURE (bright, everything below the pivot)
+   ========================================================================== */
+
+.dsa-page {
+  position: relative;
+  background: var(--dsa-cream);
+  padding-block: clamp(2.5rem, 7vw, 4.5rem);
+}
+
+.dsa-page--deep {
+  background: var(--dsa-cream-deep);
+}
+
+.dsa-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  border-bottom: 4px double var(--dsa-ink);
+  padding-bottom: 0.5rem;
+}
+
+.dsa-page-head .dsa-eyebrow {
+  color: var(--dsa-ink-soft);
+}
+
+.dsa-folio {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dsa-turq-deep);
+}
+
+/* --- read the math disclosure --------------------------------------------- */
+
+.dsa-math {
+  margin-top: clamp(1.5rem, 4vw, 2.25rem);
+  border: 1px solid var(--dsa-cream-edge);
+  border-left: 4px solid var(--dsa-turq);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.dsa-math > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.7rem 1rem;
+  font-family: var(--dsa-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dsa-turq-deep);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dsa-math > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dsa-math > summary::before {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid currentColor;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.dsa-math[open] > summary::before {
+  content: "\2212";
+}
+
+.dsa-math-body {
+  padding: 0 1rem 1.1rem;
+  display: grid;
+  gap: 0.9rem;
+  max-width: 70ch;
+}
+
+.dsa-math-body p {
+  margin: 0;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  line-height: 1.65;
+  color: #33301f;
+}
+
+/* --- inline parameter numbers on cream ------------------------------------ */
+
+.dsa-hot {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  color: var(--dsa-turq-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.dsa-hot-coral {
+  color: var(--dsa-coral);
+}
+
+/* ==========================================================================
+   SECTION 2: THE STORE (catalog front matter)
+   ========================================================================== */
+
+.dsa-store {
+  padding-block: clamp(2rem, 6vw, 3.5rem) clamp(3rem, 9vw, 5.5rem);
+}
+
+.dsa-masthead {
+  text-align: center;
+  border-block: 1px solid var(--dsa-ink);
+  padding-block: clamp(1.5rem, 5vw, 2.75rem);
+  position: relative;
+}
+
+.dsa-masthead-sup {
+  color: var(--dsa-ink-soft);
+  margin-bottom: 0.85rem;
+}
+
+.dsa-masthead-name {
+  font-size: clamp(2.1rem, 10.5vw, 6.4rem);
+  color: var(--dsa-ink);
+}
+
+.dsa-masthead-name span {
+  display: block;
+}
+
+.dsa-masthead-rule {
+  width: min(100%, 32rem);
+  height: 6px;
+  margin: clamp(0.9rem, 3vw, 1.4rem) auto 0;
+  background: var(--dsa-chrome);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+.dsa-masthead-sub {
+  margin: 1rem auto 0;
+  max-width: 42ch;
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.65rem, 1.8vw, 0.78rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dsa-turq-deep);
+}
+
+/* three chrome claim chips */
+.dsa-claims {
+  margin-top: clamp(1.75rem, 5vw, 2.75rem);
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1.1rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.dsa-claim {
+  border: 1px solid var(--dsa-ink);
+  background: #fffdf6;
+  padding: clamp(1rem, 2.6vw, 1.4rem);
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+}
+
+.dsa-claim-n {
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 6.5vw, 3.1rem);
+  line-height: 0.9;
+  color: var(--dsa-coral);
+}
+
+.dsa-claim-n--turq {
+  color: var(--dsa-turq);
+}
+
+.dsa-claim p {
+  margin: 0;
+  font-size: clamp(0.82rem, 2vw, 0.92rem);
+  line-height: 1.5;
+  color: #332f21;
+}
+
+/* the two share classes, as a catalog order form */
+.dsa-shares {
+  margin-top: clamp(1.75rem, 5vw, 2.75rem);
+  border: 3px solid var(--dsa-ink);
+  background: #fffdf6;
+}
+
+.dsa-shares-head {
+  background: var(--dsa-ink);
+  color: var(--dsa-cream);
+  padding: 0.7rem clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.dsa-shares-head .dsa-eyebrow {
+  color: var(--dsa-mustard);
+}
+
+.dsa-shares-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.dsa-share {
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  border-top: 1px solid var(--dsa-cream-edge);
+}
+
+.dsa-share + .dsa-share {
+  border-left: 1px solid var(--dsa-cream-edge);
+}
+
+@media (max-width: 47.99rem) {
+  .dsa-share + .dsa-share {
+    border-left: 0;
+  }
+}
+
+.dsa-share-class {
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  line-height: 1;
+}
+
+.dsa-share-price {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--dsa-turq-deep);
+  line-height: 1;
+}
+
+.dsa-share p {
+  margin: 0;
+  font-size: clamp(0.82rem, 2vw, 0.92rem);
+  line-height: 1.55;
+  color: #332f21;
+}
+
+.dsa-share-note {
+  padding: 0.85rem clamp(1rem, 3vw, 1.5rem);
+  border-top: 1px solid var(--dsa-ink);
+  background: var(--dsa-sky);
+  font-size: clamp(0.82rem, 2vw, 0.94rem);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ==========================================================================
+   SECTION 4 PRODUCT 1: THE OPTIMITRON (full catalog page)
+   ========================================================================== */
+
+.dsa-product {
+  background: var(--dsa-cream);
+  border-top: 6px double var(--dsa-ink);
+  padding-block: clamp(2.25rem, 6vw, 3.5rem) clamp(3rem, 9vw, 5.5rem);
+}
+
+.dsa-product-name {
+  margin-top: clamp(1.1rem, 3.5vw, 2rem);
+  font-size: clamp(2.6rem, 15.5vw, 9.5rem);
+  color: var(--dsa-ink);
+}
+
+.dsa-product-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.1rem;
+  margin-top: 0.7rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--dsa-ink);
+}
+
+.dsa-product-kicker {
+  font-family: var(--dsa-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(1rem, 3.2vw, 1.55rem);
+  color: var(--dsa-turq-deep);
+}
+
+.dsa-product-tag {
+  font-family: var(--dsa-body);
+  font-size: clamp(0.85rem, 2.1vw, 1rem);
+  color: var(--dsa-ink-soft);
+}
+
+/* the hero: retail price vs currently paying */
+.dsa-pricebox {
+  margin-top: clamp(1.5rem, 4vw, 2.25rem);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  border: 3px solid var(--dsa-ink);
+  background: #fffdf6;
+}
+
+.dsa-price {
+  padding: clamp(1.1rem, 3.2vw, 1.9rem);
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.dsa-price + .dsa-price {
+  border-left: 1px solid var(--dsa-ink);
+}
+
+@media (max-width: 53.99rem) {
+  .dsa-price + .dsa-price {
+    border-left: 0;
+    border-top: 1px solid var(--dsa-ink);
+  }
+}
+
+.dsa-price-label {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dsa-ink-soft);
+}
+
+.dsa-price-value {
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  font-size: clamp(1.6rem, 5.2vw, 2.6rem);
+  line-height: 1;
+  color: var(--dsa-turq);
+  text-wrap: balance;
+}
+
+.dsa-price--paying {
+  background: #fdf3ea;
+}
+
+.dsa-price--paying .dsa-price-value {
+  color: var(--dsa-coral);
+  font-size: clamp(1.15rem, 3.4vw, 1.75rem);
+  line-height: 1.15;
+}
+
+.dsa-price--replaces .dsa-price-value {
+  color: var(--dsa-ink);
+  font-size: clamp(1.15rem, 3.4vw, 1.75rem);
+  line-height: 1.15;
+}
+
+.dsa-price-fine {
+  margin: 0;
+  font-size: clamp(0.78rem, 1.9vw, 0.88rem);
+  line-height: 1.5;
+  color: var(--dsa-ink-soft);
+}
+
+/* three lines of copy. Not a paragraph. */
+.dsa-threelines {
+  margin-top: clamp(1.35rem, 4vw, 2rem);
+  display: grid;
+  gap: 0.5rem;
+  max-width: 52ch;
+  list-style: none;
+  padding: 0;
+}
+
+.dsa-threelines li {
+  font-family: var(--dsa-body);
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  line-height: 1.45;
+  padding-left: 1.6rem;
+  position: relative;
+}
+
+.dsa-threelines li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--dsa-mustard);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+/* --- the two-number dashboard --------------------------------------------- */
+
+.dsa-dash {
+  margin-top: clamp(2rem, 6vw, 3.25rem);
+  border: 3px solid var(--dsa-ink);
+  background: var(--dsa-ink);
+  color: var(--dsa-cream);
+}
+
+.dsa-dash-head {
+  padding: 0.65rem clamp(0.9rem, 3vw, 1.4rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #3a362e;
+}
+
+.dsa-dash-head .dsa-eyebrow {
+  color: var(--dsa-mustard);
+}
+
+.dsa-dash-hint {
+  font-family: var(--dsa-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8b8577;
+}
+
+.dsa-dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.dsa-meter {
+  padding: clamp(1.1rem, 3.4vw, 1.9rem);
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+}
+
+.dsa-meter + .dsa-meter {
+  border-left: 1px solid #3a362e;
+}
+
+@media (max-width: 47.99rem) {
+  .dsa-meter + .dsa-meter {
+    border-left: 0;
+    border-top: 1px solid #3a362e;
+  }
+}
+
+.dsa-meter-label {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.62rem, 1.7vw, 0.74rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dsa-sky);
+}
+
+.dsa-meter-value {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 9vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #fffdf6;
+  font-variant-numeric: tabular-nums;
+}
+
+.dsa-meter-from {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.66rem, 1.8vw, 0.78rem);
+  color: #8b8577;
+  letter-spacing: 0.04em;
+}
+
+.dsa-meter-src {
+  color: var(--dsa-mustard);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration-color: rgba(224, 160, 18, 0.5);
+}
+
+.dsa-meter p {
+  margin: 0;
+  font-family: var(--dsa-body);
+  font-size: clamp(0.8rem, 1.9vw, 0.9rem);
+  line-height: 1.5;
+  color: #cfcabd;
+}
+
+.dsa-meter-bar {
+  height: 6px;
+  background: #3a362e;
+  position: relative;
+  overflow: hidden;
+}
+
+.dsa-meter-bar i {
+  position: absolute;
+  inset: 0 100% 0 0;
+  background: var(--dsa-turq);
+  transition: right 1.6s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+/* --- specification table --------------------------------------------------- */
+
+.dsa-specs {
+  margin-top: clamp(2rem, 6vw, 3.25rem);
+}
+
+.dsa-specs-title {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.66rem, 1.8vw, 0.78rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 3px solid var(--dsa-ink);
+  padding-bottom: 0.4rem;
+  margin: 0 0 0.9rem;
+}
+
+.dsa-spec-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.8fr) 1fr auto 1fr;
+  gap: 0.5rem clamp(0.6rem, 2vw, 1.25rem);
+  align-items: baseline;
+  padding-block: clamp(0.7rem, 2vw, 1rem);
+  border-bottom: 1px solid var(--dsa-cream-edge);
+}
+
+.dsa-spec-name {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.68rem, 1.8vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dsa-spec-before,
+.dsa-spec-after {
+  font-size: clamp(0.85rem, 2.1vw, 0.98rem);
+  line-height: 1.45;
+}
+
+.dsa-spec-before {
+  color: var(--dsa-coral);
+}
+
+.dsa-spec-after {
+  color: var(--dsa-turq-deep);
+  font-weight: 700;
+}
+
+.dsa-spec-arrow {
+  font-family: var(--dsa-mono);
+  color: var(--dsa-ink-soft);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 47.99rem) {
+  .dsa-spec-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .dsa-spec-arrow {
+    display: none;
+  }
+
+  .dsa-spec-before::after {
+    content: " \2193";
+    color: var(--dsa-ink-soft);
+  }
+}
+
+/* --- included-with panel (1% treaty) --------------------------------------- */
+
+.dsa-included {
+  margin-top: clamp(2rem, 6vw, 3.25rem);
+  border: 1px solid var(--dsa-ink);
+  background: var(--dsa-sky);
+}
+
+.dsa-included-head {
+  padding: 0.65rem clamp(0.9rem, 3vw, 1.4rem);
+  border-bottom: 1px solid var(--dsa-ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.dsa-included-title {
+  font-family: var(--dsa-display);
+  font-weight: 900;
+  font-size: clamp(1.05rem, 3.2vw, 1.5rem);
+  line-height: 1;
+}
+
+.dsa-included-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+
+.dsa-stat {
+  padding: clamp(0.9rem, 2.6vw, 1.35rem);
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+  border-top: 1px solid rgba(30, 26, 20, 0.25);
+}
+
+.dsa-stat + .dsa-stat {
+  border-left: 1px solid rgba(30, 26, 20, 0.25);
+}
+
+.dsa-stat-value {
+  font-family: var(--dsa-mono);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 3.6vw, 1.75rem);
+  line-height: 1.05;
+  color: var(--dsa-ink);
+  word-break: break-word;
+}
+
+.dsa-stat-label {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.6rem, 1.6vw, 0.7rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2c4a52;
+  line-height: 1.35;
+}
+
+/* --- testimonial ----------------------------------------------------------- */
+
+.dsa-testimonial {
+  margin-top: clamp(2rem, 6vw, 3.25rem);
+  border: 1px solid var(--dsa-ink);
+  background: #fffdf6;
+  padding: clamp(1.1rem, 3.2vw, 1.8rem);
+  display: grid;
+  gap: 0.75rem;
+  max-width: 62ch;
+}
+
+.dsa-stars {
+  color: var(--dsa-mustard);
+  letter-spacing: 0.25em;
+  font-size: 1rem;
+}
+
+.dsa-testimonial blockquote {
+  margin: 0;
+  font-family: var(--dsa-body);
+  font-style: italic;
+  font-size: clamp(0.95rem, 2.4vw, 1.12rem);
+  line-height: 1.5;
+}
+
+.dsa-testimonial figcaption {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.62rem, 1.7vw, 0.72rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dsa-ink-soft);
+}
+
+/* ==========================================================================
+   SECTION 3: THE COMPARISON MATRIX
+   ========================================================================== */
+
+.dsa-matrix-head {
+  text-align: center;
+  padding-block: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 4vw, 2rem);
+}
+
+.dsa-matrix-title {
+  font-size: clamp(2.1rem, 9vw, 4.6rem);
+}
+
+.dsa-matrix-dek {
+  margin: 0.9rem auto 0;
+  max-width: 34ch;
+  font-family: var(--dsa-body);
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  line-height: 1.45;
+  color: var(--dsa-ink-soft);
+}
+
+.dsa-matrix {
+  border: 3px solid var(--dsa-ink);
+  background: #fffdf6;
+}
+
+.dsa-matrix-cols {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.7fr) 1fr 1fr;
+  background: var(--dsa-ink);
+  color: var(--dsa-cream);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.dsa-matrix-col {
+  padding: 0.7rem clamp(0.6rem, 2vw, 1.1rem);
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.6rem, 1.7vw, 0.74rem);
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.dsa-matrix-col--them {
+  color: #ef7e66;
+}
+
+.dsa-matrix-col--us {
+  color: var(--dsa-sky);
+}
+
+.dsa-matrix-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.7fr) 1fr 1fr;
+  border-top: 1px solid var(--dsa-cream-edge);
+}
+
+.dsa-matrix-body > .dsa-matrix-row:nth-child(odd) {
+  background: rgba(239, 226, 192, 0.4);
+}
+
+.dsa-matrix-cell {
+  padding: clamp(0.7rem, 2.2vw, 1.05rem) clamp(0.6rem, 2vw, 1.1rem);
+  font-size: clamp(0.82rem, 2vw, 0.95rem);
+  line-height: 1.45;
+}
+
+.dsa-matrix-cell--label {
+  font-family: var(--dsa-mono);
+  font-size: clamp(0.66rem, 1.8vw, 0.76rem);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dsa-ink);
+}
+
+.dsa-matrix-cell--them {
+  color: #8e3520;
+  border-left: 1px solid var(--dsa-cream-edge);
+}
+
+.dsa-matrix-cell--us {
+  color: var(--dsa-turq-deep);
+  font-weight: 700;
+  border-left: 1px solid var(--dsa-cream-edge);
+  background: rgba(13, 139, 134, 0.06);
+}
+
+@media (max-width: 47.99rem) {
+  .dsa-matrix-cols {
+    display: none;
+  }
+
+  .dsa-matrix-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dsa-matrix-cell--label {
+    background: var(--dsa-ink);
+    color: var(--dsa-mustard);
+  }
+
+  .dsa-matrix-cell--them,
+  .dsa-matrix-cell--us {
+    border-left: 0;
+    padding-top: 0.35rem;
+  }
+
+  .dsa-matrix-cell--them::before,
+  .dsa-matrix-cell--us::before {
+    display: block;
+    font-family: var(--dsa-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dsa-ink-soft);
+    margin-bottom: 0.15rem;
+  }
+
+  .dsa-matrix-cell--them::before {
+    content: "Your government";
+  }
+
+  .dsa-matrix-cell--us::before {
+    content: "Earth Optimization Services";
+  }
+}
+
+/* ==========================================================================
+   FOOT
+   ========================================================================== */
+
+.dsa-foot {
+  border-top: 1px solid var(--dsa-ink);
+  margin-top: clamp(2.5rem, 7vw, 4rem);
+  padding-block: clamp(1.5rem, 4vw, 2.25rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: space-between;
+  align-items: baseline;
+  color: var(--dsa-ink-soft);
 }
