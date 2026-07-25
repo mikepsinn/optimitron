@@ -24,8 +24,10 @@ const RULES = [
     id: "notion-private-link",
     // Private Notion workspace pages are 32-hex ids, usually reached via a
     // notion.so/<workspace>/<Title-slug>-<hex> share link or a *.notion.site
-    // host — not just a bare hex segment right after notion.so/.
-    re: /notion\.(?:so|site)\/\S*[0-9a-f]{20,}\b/i,
+    // host — not just a bare hex segment right after notion.so/. The id is
+    // written either compact (32 hex) or as a hyphenated UUID, whose longest
+    // contiguous hex run is only 12, so both spellings need matching.
+    re: /notion\.(?:so|site)\/\S*(?:[0-9a-f]{20,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/i,
     msg: "Private Notion workspace link — keep Notion the single index; do not copy page links into the repo.",
   },
   {
