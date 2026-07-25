@@ -1146,22 +1146,19 @@
   justify-self: center;
 }
 
-/* The vertical hop between the flow row and its two outputs. */
+/* The hop from the whole flow down to its two outputs. The rule above the
+   arrow makes it read as a bus off the entire chain rather than a branch off
+   whichever node happens to sit at the centre of the plate. */
+.dc-conn-down {
+  border-top: 2.5px solid var(--dc-ink);
+  margin-top: 0.55rem;
+  padding-top: 0.35rem;
+}
+
 .dc-conn-down svg {
   transform: rotate(90deg);
 }
 
-.dc-cols {
-  display: grid;
-  gap: clamp(1.1rem, 2.6vw, 1.75rem);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 960px) {
-  .dc-cols {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 
 /* The queue-drop connector sits outside .dc-flow, so it needs its own
    un-rotation once the three cells sit side by side. */
