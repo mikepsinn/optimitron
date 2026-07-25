@@ -40,6 +40,7 @@ export function Pivot() {
   return (
     <section
       ref={ref}
+      id="the-pivot"
       className={`dsa-pivot${open ? " is-open" : ""}`}
       aria-label="Earth Optimization Services"
     >

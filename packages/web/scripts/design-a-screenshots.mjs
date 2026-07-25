@@ -24,6 +24,7 @@ const VIEWPORTS = [
 
 const SECTIONS = [
   { id: "the-bill", label: "Section 1 tail: The Bill" },
+  { id: "the-pivot", label: "The pivot: courtroom out, 1962 in" },
   { id: "the-store", label: "Section 2: The Store" },
   { id: "the-optimitron", label: "Section 4: The Optimitron" },
   { id: "the-competing-bid", label: "Section 3: The Competing Bid" },

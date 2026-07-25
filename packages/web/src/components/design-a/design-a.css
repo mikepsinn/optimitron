@@ -234,7 +234,7 @@
   min-height: min(78vh, 44rem);
   display: grid;
   align-content: center;
-  padding-block: clamp(5rem, 16vw, 10rem) clamp(3rem, 8vw, 5rem);
+  padding-block: clamp(7.5rem, 22vw, 13rem) clamp(3rem, 8vw, 5rem);
 }
 
 /* the sun: a hard die-cut cream arc rising through the black. No gradient
@@ -245,10 +245,10 @@
   inset: 0;
   z-index: -2;
   background: radial-gradient(
-    150% 120% at 50% 108%,
-    var(--dsa-cream) 0 70%,
-    var(--dsa-mustard) 70% 70.9%,
-    transparent 71%
+    162% 122% at 50% 106%,
+    var(--dsa-cream) 0 76%,
+    var(--dsa-mustard) 76% 76.8%,
+    transparent 76.9%
   );
   transform: translateY(80%);
   transition: transform 1.6s cubic-bezier(0.2, 0.75, 0.25, 1);
@@ -261,19 +261,19 @@
   inset: 0;
   z-index: -1;
   background: repeating-conic-gradient(
-    from 0deg at 50% 108%,
+    from 0deg at 50% 106%,
     rgba(216, 69, 42, 0.13) 0deg 2.2deg,
     transparent 2.2deg 9deg
   );
   -webkit-mask-image: radial-gradient(
-    150% 120% at 50% 108%,
-    #000 0 70%,
-    transparent 70.1%
+    162% 122% at 50% 106%,
+    #000 0 76%,
+    transparent 76.1%
   );
   mask-image: radial-gradient(
-    150% 120% at 50% 108%,
-    #000 0 70%,
-    transparent 70.1%
+    162% 122% at 50% 106%,
+    #000 0 76%,
+    transparent 76.1%
   );
   transform: translateY(80%);
   opacity: 0;
@@ -557,7 +557,7 @@
   align-content: start;
 }
 
-.dsa-claim-n {
+.dsa-claim .dsa-claim-n {
   font-family: var(--dsa-display);
   font-weight: 900;
   font-size: clamp(2rem, 6.5vw, 3.1rem);
@@ -565,7 +565,7 @@
   color: var(--dsa-coral);
 }
 
-.dsa-claim-n--turq {
+.dsa-claim .dsa-claim-n--turq {
   color: var(--dsa-turq);
 }
 
@@ -621,14 +621,14 @@
   }
 }
 
-.dsa-share-class {
+.dsa-share .dsa-share-class {
   font-family: var(--dsa-display);
   font-weight: 900;
   font-size: clamp(1.5rem, 4.5vw, 2.1rem);
   line-height: 1;
 }
 
-.dsa-share-price {
+.dsa-share .dsa-share-price {
   font-family: var(--dsa-mono);
   font-weight: 700;
   font-size: clamp(1.6rem, 5vw, 2.4rem);
@@ -844,7 +844,7 @@
   }
 }
 
-.dsa-meter-label {
+.dsa-meter .dsa-meter-label {
   font-family: var(--dsa-mono);
   font-size: clamp(0.62rem, 1.7vw, 0.74rem);
   font-weight: 700;
@@ -853,7 +853,7 @@
   color: var(--dsa-sky);
 }
 
-.dsa-meter-value {
+.dsa-meter .dsa-meter-value {
   font-family: var(--dsa-mono);
   font-weight: 700;
   font-size: clamp(2.4rem, 9vw, 4.4rem);
@@ -863,7 +863,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.dsa-meter-from {
+.dsa-meter .dsa-meter-from {
   font-family: var(--dsa-mono);
   font-size: clamp(0.66rem, 1.8vw, 0.78rem);
   color: #8b8577;

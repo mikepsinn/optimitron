@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  fmtParamValueOnly,
   GLOBAL_HALE_CURRENT,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
   type Parameter,
@@ -105,10 +106,14 @@ export function TwoNumberDashboard() {
         {METERS.map((meter) => {
           const value =
             meter.from.value + (meter.to.value - meter.from.value) * progress;
+          // Land on exactly the string the provenance chip shows, so the
+          // readout and the parameter it cites never disagree by a rounding.
+          const text =
+            progress >= 1 ? fmtParamValueOnly(meter.to, 3) : meter.format(value);
           return (
             <div className="dsa-meter" key={meter.key}>
               <p className="dsa-meter-label">{meter.label}</p>
-              <p className="dsa-meter-value">{meter.format(value)}</p>
+              <p className="dsa-meter-value">{text}</p>
               <div className="dsa-meter-bar" aria-hidden="true">
                 <i style={{ right: `${(1 - progress) * 100}%` }} />
               </div>
