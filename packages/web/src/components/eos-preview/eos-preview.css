@@ -409,7 +409,11 @@
   background: var(--eos-bg);
 }
 .eos-stub-inner {
-  padding: clamp(2.5rem, 6vw, 4rem) 0;
+  /* Vertical padding only — a `padding` shorthand here would zero out
+     .eos-container's horizontal clamp() gutters, pushing stub content flush to
+     both viewport edges on mobile. */
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4rem);
   color: var(--eos-ink-muted);
 }
 .eos-stub-tag {
@@ -442,6 +446,17 @@
   transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
+  .eos-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+/* No JavaScript: the IntersectionObserver that flips data-shown never runs, so
+   the initial opacity:0 would hide the comparison heading and matrix for good.
+   Show everything when scripting is unavailable. (Reveal.tsx also force-shows
+   when IntersectionObserver is missing at runtime.) */
+@media (scripting: none) {
   .eos-reveal {
     opacity: 1;
     transform: none;

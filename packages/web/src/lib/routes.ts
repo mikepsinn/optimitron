@@ -1549,6 +1549,19 @@ export const dysfunctionTaxLink: NavItem = {
   cta: "See the Breakdown",
 };
 
+// Metadata-only NavItem (like dysfunctionTaxLink): drives getRouteMetadata for
+// the WIP /eos-preview slice so shared links get a self-canonical URL and a
+// route-specific OG/Twitter card instead of inheriting the site root. Kept out
+// of every nav array and STATIC_SITEMAP_ROUTES; the page itself is noindex.
+export const eosPreviewLink: NavItem = {
+  label: "Earth Optimization Services (preview)",
+  href: "/eos-preview",
+  emoji: "🛰️",
+  description:
+    "Work-in-progress rebuild of the Earth Optimization Services landing page: the charge sheet against your government, and the side-by-side bid to replace it.",
+  cta: "See the Preview",
+};
+
 export const incentiveAlignmentBondsPaperLink: NavItem = {
   label: "Incentive Alignment Bonds",
   href: "https://iab.warondisease.org",

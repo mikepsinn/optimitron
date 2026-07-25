@@ -22,6 +22,12 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // No IntersectionObserver (old webview, disabled JS shim): reveal
+    // immediately rather than leaving content stuck at opacity:0.
+    if (typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

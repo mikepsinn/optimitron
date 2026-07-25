@@ -1,7 +1,8 @@
 // Ad-hoc screenshot capture for /eos-preview (Section 1 The Bill + Section 3
 // Comparison Matrix). Desktop 1440px and mobile 390px. Run from packages/web
-// against a dev server on port 3006. Output under output/playwright/review/
-// eos-landing/. Screenshots are treated as sensitive and never committed.
+// against the canonical dev server on port 3001 (override with BASE_URL).
+// Output under output/playwright/review/eos-landing/. Screenshots are treated
+// as sensitive and never committed.
 import { chromium } from "playwright-core";
 import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -11,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "../output/playwright/review/eos-landing");
 mkdirSync(OUT, { recursive: true });
 
-const BASE = process.env.BASE_URL ?? "http://127.0.0.1:3006";
+const BASE = process.env.BASE_URL ?? "http://127.0.0.1:3001";
 const URL = `${BASE}/eos-preview`;
 
 const viewports = [
