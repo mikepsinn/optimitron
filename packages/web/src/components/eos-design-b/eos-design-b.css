@@ -150,16 +150,24 @@
   color: var(--pk-blue);
   display: block;
   overflow-wrap: anywhere;
+  /* line-height below 1 pulls the box up into the eyebrow above it */
+  margin-top: 0.12em;
 }
 .pkb-huge--hot {
   color: var(--pk-hot);
 }
+/* The unit sits on its own line beneath the number, the way a drawing
+   annotates a dimension. Superscripting it wrecks the line box at this
+   type size. */
 .pkb-huge .pkb-huge-unit {
+  display: block;
+  margin-top: 0.7rem;
   font-family: var(--pk-mono);
   font-weight: 400;
-  font-size: clamp(0.75rem, 1.8vw, 1.1rem);
-  letter-spacing: 0.2em;
-  vertical-align: super;
+  font-size: clamp(0.62rem, 1.4vw, 0.78rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  line-height: 1.4;
   color: var(--pk-ink-faint);
 }
 
@@ -580,6 +588,7 @@
 /* Spec table: the "retail price / currently paying" ledger. */
 .pkb-spec {
   width: 100%;
+  max-width: 46rem;
   border-collapse: collapse;
   font-size: clamp(0.82rem, 1.7vw, 0.95rem);
 }
@@ -597,7 +606,7 @@
   text-transform: uppercase;
   color: var(--pk-ink-faint);
   font-weight: 400;
-  width: 40%;
+  width: 30%;
 }
 .pkb-spec td {
   font-weight: 600;
@@ -654,7 +663,7 @@
   margin-bottom: 0.75rem;
 }
 .pkb-gauge .pkb-huge {
-  font-size: clamp(3.2rem, 12vw, 9.5rem);
+  font-size: clamp(3rem, 10.5vw, 8.25rem);
 }
 .pkb-gauge-sub {
   font-family: var(--pk-mono);
@@ -816,6 +825,18 @@
 }
 .pkb-counterbid-v .pk-n {
   color: var(--pk-blue);
+}
+
+/* The matrix is wider than a phone. Say so rather than letting the EOS
+   column hide off-screen. */
+.pkb-scrollhint {
+  display: none;
+  margin-bottom: 0.5rem;
+}
+@media (max-width: 780px) {
+  .pkb-scrollhint {
+    display: block;
+  }
 }
 
 .pkb-matrixscroll {

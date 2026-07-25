@@ -89,7 +89,7 @@ export function BillTailAndPivot() {
                 param={POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL}
                 presentation="inline"
               />
-              <span className="pkb-huge-unit">/year</span>
+              <span className="pkb-huge-unit">per year</span>
             </span>
             <p className="pkb-legend">
               <strong>The Political Dysfunction Tax.</strong> The annual cost of

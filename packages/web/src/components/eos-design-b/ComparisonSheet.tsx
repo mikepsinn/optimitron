@@ -46,7 +46,7 @@ export function ComparisonSheet() {
                 param={US_GOV_WASTE_PER_CAPITA_ANNUAL}
                 presentation="inline"
               />
-              <span className="pkb-huge-unit">per American / year</span>
+              <span className="pkb-huge-unit">per American per year</span>
             </span>
             <div className="pkb-dim">
               <span className="pkb-tag pkb-tag--hot">Their bid</span>
@@ -64,6 +64,9 @@ export function ComparisonSheet() {
             </p>
           </div>
 
+          <p className="pkb-tag pkb-tag--blue pkb-scrollhint">
+            Scroll the sheet sideways for the EOS column →
+          </p>
           <div className="pkb-matrixscroll">
             <table className="pkb-matrix">
               <caption className="sr-only">
