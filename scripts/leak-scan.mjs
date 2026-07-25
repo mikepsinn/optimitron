@@ -22,14 +22,15 @@ import { readFileSync, existsSync, statSync } from "node:fs";
 const RULES = [
   {
     id: "notion-private-link",
-    // Private Notion workspace pages are 32-hex ids. Repo policy forbids
-    // copying Notion per-page links into the repo (see root CLAUDE.md).
-    re: /notion\.so\/[0-9a-f]{20,}/i,
+    // Private Notion workspace pages are 32-hex ids, usually reached via a
+    // notion.so/<workspace>/<Title-slug>-<hex> share link or a *.notion.site
+    // host — not just a bare hex segment right after notion.so/.
+    re: /notion\.(?:so|site)\/\S*[0-9a-f]{20,}\b/i,
     msg: "Private Notion workspace link — keep Notion the single index; do not copy page links into the repo.",
   },
   {
     id: "bank-account-ref",
-    re: /\b(checking|savings|account)\s+#?\d{4,}\b/i,
+    re: /\b(checking|savings|account)\s+#?\d{4,}\b|\baccount\s*(?:number|no\.?|#)\s*:?\s*\d{4,}\b/i,
     msg: "Bank/account number reference in a committed file.",
   },
   {
@@ -46,8 +47,8 @@ const PATH_ALLOW = [/^scripts\/leak-scan\.mjs$/];
 const NULL_CHAR = String.fromCharCode(0);
 
 function tracked() {
-  return execSync("git ls-files", { encoding: "utf8" })
-    .split("\n")
+  return execSync("git ls-files -z", { encoding: "utf8" })
+    .split(NULL_CHAR)
     .filter(Boolean);
 }
 
