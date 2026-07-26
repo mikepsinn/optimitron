@@ -50,15 +50,15 @@ function mockAssignedOrganizationTask(overrides?: {
         overrides && "contactEmail" in overrides
           ? (overrides.contactEmail ?? null)
           : "demo@thinkbynumbers.org",
-      id: "org_iam",
+      id: "org_meridian",
       members: overrides?.members ?? [],
-      name: "Institute for Accelerated Medicine",
+      name: "Meridian Research Foundation",
     },
     assigneePerson: null,
     deletedAt: null,
     description:
       "Put the survey link on your site and share it once with your members.",
-    id: "task_iam",
+    id: "task_meridian",
     isPublic: overrides?.isPublic ?? true,
     status: overrides?.status ?? "ACTIVE",
     title: ORGANIZATION_ACTIVATION_TASK_TITLE,
@@ -87,21 +87,21 @@ describe("notifyTaskAssigneeOfAssignment", () => {
 
     const result = await notifyTaskAssigneeOfAssignment({
       senderUserId: "demo-user-id",
-      taskId: "task_iam",
+      taskId: "task_meridian",
     });
 
     expect(result).toEqual({ status: "sent" });
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        dedupeKey: "task-assignment:task_iam:demo@thinkbynumbers.org",
+        dedupeKey: "task-assignment:task_meridian:demo@thinkbynumbers.org",
         purpose: "ASSIGNMENT",
         recipientEmail: "demo@thinkbynumbers.org",
-        recipientName: "Institute for Accelerated Medicine",
-        recipientOrganizationId: "org_iam",
+        recipientName: "Meridian Research Foundation",
+        recipientOrganizationId: "org_meridian",
         recipientUserId: null,
         senderUserId: "demo-user-id",
         subject: `New task: ${ORGANIZATION_ACTIVATION_TASK_TITLE}`,
-        taskId: "task_iam",
+        taskId: "task_meridian",
       }),
     );
     expect(mocks.draftTaskNotification.mock.calls[0]?.[0].text).toContain(
@@ -132,14 +132,14 @@ describe("notifyTaskAssigneeOfAssignment", () => {
 
     await notifyTaskAssigneeOfAssignment({
       senderUserId: "demo-user-id",
-      taskId: "task_iam",
+      taskId: "task_meridian",
     });
 
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        dedupeKey: "task-assignment:task_iam:owner@example.org",
+        dedupeKey: "task-assignment:task_meridian:owner@example.org",
         recipientEmail: "owner@example.org",
-        recipientOrganizationId: "org_iam",
+        recipientOrganizationId: "org_meridian",
         recipientUserId: "user_owner",
       }),
     );
@@ -149,7 +149,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     mockAssignedOrganizationTask({ contactEmail: null, members: [] });
 
     await expect(
-      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+      notifyTaskAssigneeOfAssignment({ taskId: "task_meridian" }),
     ).resolves.toEqual({
       reason: "no_assignee_email",
       status: "skipped",
@@ -163,7 +163,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     mockAssignedOrganizationTask({ isPublic: false });
 
     await expect(
-      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+      notifyTaskAssigneeOfAssignment({ taskId: "task_meridian" }),
     ).resolves.toEqual({
       reason: "private_task_external_recipient",
       status: "skipped",
@@ -176,7 +176,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     mockAssignedOrganizationTask({ status: "DRAFT" });
 
     await expect(
-      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+      notifyTaskAssigneeOfAssignment({ taskId: "task_meridian" }),
     ).resolves.toEqual({
       reason: "private_task_external_recipient",
       status: "skipped",
@@ -198,7 +198,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
 
     const result = await notifyTaskAssigneeOfAssignment({
       senderUserId: "demo-user-id",
-      taskId: "task_iam",
+      taskId: "task_meridian",
     });
 
     expect(result).toEqual({ status: "sent" });
@@ -211,7 +211,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     mocks.taskFindUnique.mockRejectedValue(new Error("database paused"));
 
     await expect(
-      notifyTaskAssigneeOfAssignment({ taskId: "task_iam" }),
+      notifyTaskAssigneeOfAssignment({ taskId: "task_meridian" }),
     ).resolves.toEqual({
       reason: "database paused",
       status: "failed",
