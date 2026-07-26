@@ -38,6 +38,12 @@ export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
     description: "Assignments, reminders, and task updates.",
     transactional: false,
   },
+  outreach: {
+    label: "Campaign outreach",
+    description:
+      "First-contact messages asking you or your organization to take an action.",
+    transactional: false,
+  },
   magic_link: {
     label: "Sign-in links",
     transactional: true,
@@ -52,6 +58,7 @@ export type EmailScope =
   | "all"
   | "onboarding"
   | "task_notifications"
+  | "outreach"
   | "magic_link"
   | "account_security";
 
@@ -60,6 +67,7 @@ export const ALL_EMAIL_SCOPES: readonly EmailScope[] = [
   "all",
   "onboarding",
   "task_notifications",
+  "outreach",
   "magic_link",
   "account_security",
 ];

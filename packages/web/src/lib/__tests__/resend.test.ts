@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  canSendEmailToAddress: vi.fn(),
   canSendEmailToUser: vi.fn(),
   emailSend: vi.fn(),
   readOutboundMessageGate: vi.fn(),
@@ -38,6 +39,7 @@ vi.mock("@/lib/env", () => ({
 }));
 
 vi.mock("@/lib/email/can-send.server", () => ({
+  canSendEmailToAddress: mocks.canSendEmailToAddress,
   canSendEmailToUser: mocks.canSendEmailToUser,
 }));
 
@@ -83,11 +85,13 @@ const OPEN_GATE = { allowlist: [], stopAllOutbound: false };
 
 describe("sendResendEmail", () => {
   beforeEach(() => {
+    mocks.canSendEmailToAddress.mockReset();
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
     mocks.receivingGet.mockReset();
     mocks.readOutboundMessageGate.mockReset();
     mocks.readOutboundMessageGate.mockResolvedValue(OPEN_GATE);
+    mocks.canSendEmailToAddress.mockResolvedValue(true);
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
@@ -389,8 +393,9 @@ describe("sendResendEmail", () => {
     mocks.serverEnv.EMAIL_MONITOR_BCC = "m@thinkbynumbers.org";
 
     await sendExternalResendEmail({
-        authorization: OWNER,
+      authorization: OWNER,
       html: "<p>Hello</p>",
+      scope: "task_notifications",
       subject: "Hello",
       text: "Hello",
       to: "citizen@example.com",
@@ -535,6 +540,7 @@ describe("outbound emergency stop", () => {
       sendExternalResendEmail({
         authorization: OWNER,
         html: "<p>Hello</p>",
+        scope: "task_notifications",
         subject: "Hello",
         text: "Hello",
         to: "senator@example.gov",
@@ -644,6 +650,7 @@ describe("send authorization", () => {
       sendExternalResendEmail({
         authorization: forged,
         html: "<p>Hello</p>",
+        scope: "task_notifications",
         subject: "Hello",
         text: "Hello",
         to: "senator@example.gov",
@@ -651,5 +658,40 @@ describe("send authorization", () => {
     ).rejects.toThrow(/not minted by authorizeApprovedSend/);
 
     expect(mocks.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("does not send to an address that has unsubscribed", async () => {
+    // The reason this check lives at the send boundary rather than in a
+    // caller: cold outreach reaches sendExternalResendEmail directly, so a
+    // caller-side check would be bypassable by the exact path it guards.
+    mocks.canSendEmailToAddress.mockResolvedValue(false);
+
+    const result = await sendExternalResendEmail({
+      authorization: OWNER,
+      html: "<p>Endorse the treaty?</p>",
+      scope: "outreach",
+      subject: "Endorse the treaty?",
+      text: "Endorse the treaty?",
+      to: "senator@example.gov",
+    });
+
+    expect(result).toEqual({ status: "suppressed", reason: "user_opt_out" });
+    expect(mocks.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("checks suppression against the recipient address and scope", async () => {
+    await sendExternalResendEmail({
+      authorization: OWNER,
+      html: "<p>Endorse the treaty?</p>",
+      scope: "outreach",
+      subject: "Endorse the treaty?",
+      text: "Endorse the treaty?",
+      to: "Senator@Example.Gov",
+    });
+
+    expect(mocks.canSendEmailToAddress).toHaveBeenCalledWith(
+      "Senator@Example.Gov",
+      "outreach",
+    );
   });
 });

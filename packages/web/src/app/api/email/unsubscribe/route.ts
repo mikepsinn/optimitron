@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  getEmailSuppressionStateForAddress,
   getEmailSuppressionStateForUser,
   isMasterSuppressed,
   isSendAllowed,
@@ -11,6 +12,8 @@ import {
   type EmailScope,
 } from "@/lib/email/scopes";
 import {
+  applyAddressResubscribe,
+  applyAddressUnsubscribe,
   applyResubscribe,
   applyUnsubscribe,
   type UnsubscribeVia,
@@ -38,7 +41,10 @@ const TREATY_STYLE_BLOCK = `<style>
 </style>`;
 
 interface ParsedRequest {
+  /** Empty when the link identifies a recipient with no account. */
   userId: string;
+  /** Set instead of `userId` for recipients with no account. */
+  email: string | null;
   scope: EmailScope;
   emailLogId: string | null;
   token: string;
@@ -92,12 +98,17 @@ function parseParams(
   const query = url.searchParams;
 
   const userId = query.get("u") ?? body?.get("u") ?? "";
+  const emailRaw = query.get("e") ?? body?.get("e") ?? "";
+  const email = emailRaw.trim().toLowerCase() || null;
   const scopeRaw = query.get("s") ?? body?.get("s") ?? "";
   const token = query.get("t") ?? body?.get("t") ?? "";
   const emailLogId = query.get("em") ?? body?.get("em") ?? null;
   const actionRaw = query.get("action") ?? body?.get("action") ?? "unsubscribe";
 
-  if (!userId || !scopeRaw || !token) {
+  // Either identifier is sufficient. Requiring `u` unconditionally would reject
+  // every link sent to somebody without an account — the people agents
+  // cold-contact, who have the most reason to use it.
+  if ((!userId && !email) || !scopeRaw || !token) {
     return { error: "Missing required parameters.", status: 400 };
   }
 
@@ -111,12 +122,17 @@ function parseParams(
 
   const action = actionRaw === "resubscribe" ? "resubscribe" : "unsubscribe";
 
-  const payload = { userId, scope: scopeRaw, emailLogId: emailLogId ?? undefined };
+  const payload = {
+    userId,
+    email: email ?? undefined,
+    scope: scopeRaw,
+    emailLogId: emailLogId ?? undefined,
+  };
   if (!verifyUnsubToken(payload, token)) {
     return { error: "Invalid or expired unsubscribe link.", status: 400 };
   }
 
-  return { userId, scope: scopeRaw, emailLogId, token, action };
+  return { userId, email, scope: scopeRaw, emailLogId, token, action };
 }
 
 async function getRecipientEmail(userId: string): Promise<string | null> {
@@ -147,6 +163,8 @@ ${TREATY_STYLE_BLOCK}
 
 function renderPromptHtml(input: {
   userId: string;
+  /** Carried into the form action so a no-account confirm POST still identifies someone. */
+  email?: string | null;
   scope: EmailScope;
   emailLogId: string | null;
   action: "unsubscribe" | "resubscribe";
@@ -157,7 +175,8 @@ function renderPromptHtml(input: {
   const headline = isUnsub ? "Confirm unsubscribe" : "Confirm resubscribe";
   const button = isUnsub ? "Unsubscribe" : "Resubscribe";
   const formAction = buildUnsubscribeUrl({
-    userId: input.userId,
+    userId: input.userId || undefined,
+    email: input.email ?? undefined,
     scope: input.scope,
     emailLogId: input.emailLogId ?? undefined,
   });
@@ -250,20 +269,23 @@ async function applyPreferenceChange(input: {
   parsed: ParsedRequest;
   via: UnsubscribeVia;
 }) {
-  if (input.parsed.action === "resubscribe") {
-    await applyResubscribe({
-      userId: input.parsed.userId,
-      scope: input.parsed.scope,
-      emailLogId: input.parsed.emailLogId,
-      via: input.via,
-    });
+  const { action, email, emailLogId, scope, userId } = input.parsed;
+
+  // No account: the refusal has nowhere to live on `User`, so it goes to the
+  // address-keyed store that the send boundary consults.
+  if (!userId && email) {
+    if (action === "resubscribe") {
+      await applyAddressResubscribe({ email, scope });
+    } else {
+      await applyAddressUnsubscribe({ email, scope, via: input.via });
+    }
+    return;
+  }
+
+  if (action === "resubscribe") {
+    await applyResubscribe({ userId, scope, emailLogId, via: input.via });
   } else {
-    await applyUnsubscribe({
-      userId: input.parsed.userId,
-      scope: input.parsed.scope,
-      emailLogId: input.parsed.emailLogId,
-      via: input.via,
-    });
+    await applyUnsubscribe({ userId, scope, emailLogId, via: input.via });
   }
 }
 
@@ -291,7 +313,11 @@ async function handle(request: Request) {
     }
 
     const confirmedEmail = body.form?.get("confirmEmail")?.trim().toLowerCase();
-    const recipientEmail = await getRecipientEmail(parsed.userId);
+    // For a no-account link the address in the signed token IS the recipient;
+    // there is no User row to look it up from.
+    const recipientEmail = parsed.userId
+      ? await getRecipientEmail(parsed.userId)
+      : parsed.email;
     if (!recipientEmail) {
       return htmlResponse(
         renderErrorHtml("We could not find the recipient for this link."),
@@ -316,7 +342,9 @@ async function handle(request: Request) {
     return htmlResponse(renderErrorHtml("Something went wrong. Please try again."), 500);
   }
 
-  const state = await getEmailSuppressionStateForUser(parsed.userId);
+  const state = parsed.userId
+    ? await getEmailSuppressionStateForUser(parsed.userId)
+    : await getEmailSuppressionStateForAddress(parsed.email ?? "");
   const masterSuppressed = state ? isMasterSuppressed(state) : false;
   const scopeEnabled = state ? isSendAllowed(parsed.scope, state) : false;
   return htmlResponse(

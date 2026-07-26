@@ -41,6 +41,9 @@ export async function forwardInboundReplyToMonitor(
   const response = await sendExternalResendEmail({
     // Goes only to the operator's own configured monitor mailbox.
     authorization: transactionalSend("operator_monitor_forward"),
+    // Transactional: the operator cannot opt their own monitor mailbox out of
+    // the forwards it exists to receive.
+    scope: "account_security",
     html: `<pre style="white-space:pre-wrap;font:14px/1.5 monospace;">${escapeHtml(text)}</pre>`,
     replyTo: getReplyToAddress(event.from) ?? undefined,
     skipWishoniaSignature: true,

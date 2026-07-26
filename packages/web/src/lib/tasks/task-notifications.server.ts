@@ -615,6 +615,9 @@ export async function sendDraftTaskNotification(
           html,
           bcc: bccEmails,
           headers,
+          // Same scope as the account-holder branch above, so a recipient's
+          // opt-out means the same thing whether or not they have signed up.
+          scope: userEmailOptions.emailScope,
           subject: message.subject,
           text: message.text,
           to: communication.recipientEmail,

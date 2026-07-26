@@ -11,6 +11,7 @@
  */
 import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
+import type { EmailScope } from "@/lib/email/scopes";
 import { serverEnv } from "@/lib/env";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@/lib/domains";
 import { getBaseUrl } from "@/lib/url";
@@ -91,6 +92,11 @@ export interface SendTaskNotificationEmailInput {
   subject: string;
   text: string;
   html?: string;
+  /// Category of email, checked against address-keyed suppression at the send
+  /// boundary. Defaults to `task_notifications`; agent first-contact should
+  /// pass `outreach` so a recipient can refuse cold mail without also losing
+  /// notifications for tasks they actually hold.
+  scope?: EmailScope;
   /// Per-message From override. Falls back to the campaign default
   /// (`International Campaign to End War and Disease <hello@updates.warondisease.org>`).
   from?: string;
@@ -112,6 +118,7 @@ export async function sendTaskNotificationEmail(
   try {
     const result: SendResult = await sendExternalResendEmail({
       authorization: input.authorization,
+      scope: input.scope ?? "task_notifications",
       to: input.recipientEmail,
       subject: input.subject,
       text: input.text,

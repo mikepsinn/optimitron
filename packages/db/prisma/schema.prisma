@@ -9578,6 +9578,47 @@ model EmailLog {
   @@index([sentAt])
 }
 
+/// Unsubscribe state for recipients who have no `User` row — the people an
+/// agent cold-contacts. `User.unsubscribedScopes` covers everyone with an
+/// account; this covers everyone else, using the same scope registry and the
+/// same "all" master bucket so there is one mental model and two lookups.
+///
+/// Keyed on the address rather than on `Person`, because a suppression has to
+/// outlive the record of the person. Deleting a `Person`, merging duplicates,
+/// or never having created one must not silently un-suppress somebody who
+/// asked never to be contacted again. This is also why mail providers key
+/// suppression lists on the address.
+///
+/// No `deletedAt`: a soft-deleted suppression is a suppression somebody has to
+/// remember to filter for, and forgetting means mailing a person who opted
+/// out. Re-subscribing deletes the row outright.
+model EmailSuppression {
+  /// Unique identifier
+  id String @id @default(cuid())
+
+  /// Recipient address, lowercased and trimmed before write. Never a raw
+  /// user-supplied string.
+  email String
+
+  /// `EmailScope` key from `lib/email/scopes.ts`. "all" suppresses every
+  /// non-transactional scope, present and future. Transactional scopes are
+  /// never written here.
+  scope String
+
+  /// How the opt-out arrived: "link" | "reply" | "admin" | "complaint".
+  /// String, not enum, so a new channel needs no migration.
+  source String
+
+  /// Optional operator or provider note.
+  reason String?
+
+  /// When this record was created
+  createdAt DateTime @default(now())
+
+  @@unique([email, scope])
+  @@index([email])
+}
+
 /// A single outbound share message (email-button press or in-app share). The
 /// canonical unit for cross-channel attribution. Embedded in `/r/{code}?sa={id}`
 /// on the referral URL inside the rendered message, so recipient clicks can

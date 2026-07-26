@@ -23,6 +23,95 @@ export interface UnsubscribeEffectInput {
   via: UnsubscribeVia;
 }
 
+export interface AddressUnsubscribeEffectInput {
+  email: string;
+  scope: EmailScope;
+  via: UnsubscribeVia;
+  reason?: string | null;
+}
+
+/** Maps the arrival channel onto `EmailSuppression.source`. */
+function sourceForVia(via: UnsubscribeVia): string {
+  switch (via) {
+    case "GET":
+    case "POST":
+      return "link";
+    case "preferences":
+      return "admin";
+    case "complaint":
+    case "hard_bounce":
+      return "complaint";
+    case "reply":
+      return "reply";
+  }
+}
+
+/**
+ * Apply an unsubscribe for a recipient with no `User` row. Idempotent.
+ *
+ * `applyUnsubscribe` silently returns when the user lookup misses, which is
+ * correct for account holders but leaves cold-contacted people with nowhere to
+ * record a refusal. This writes the address-keyed row that
+ * `canSendEmailToAddress` reads at the send boundary.
+ *
+ * Unsubscribing from the master scope deletes the narrower rows: they are
+ * redundant once "all" is set, and leaving them behind would make a later
+ * re-subscribe from "all" appear to do nothing.
+ */
+export async function applyAddressUnsubscribe(
+  input: AddressUnsubscribeEffectInput,
+): Promise<void> {
+  if (isTransactionalScope(input.scope)) {
+    // Defensive — a person cannot opt out of sign-in links.
+    return;
+  }
+
+  const email = input.email.trim().toLowerCase();
+  if (!email) return;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.emailSuppression.upsert({
+      where: { email_scope: { email, scope: input.scope } },
+      create: {
+        email,
+        scope: input.scope,
+        source: sourceForVia(input.via),
+        reason: input.reason ?? null,
+      },
+      update: {},
+    });
+
+    if (isMasterScope(input.scope)) {
+      await tx.emailSuppression.deleteMany({
+        where: { email, scope: { not: MASTER_SCOPE } },
+      });
+    }
+  });
+}
+
+/**
+ * Undo an address-keyed unsubscribe. Idempotent.
+ *
+ * Re-subscribing a specific scope also clears the master row, because "all"
+ * would otherwise keep blocking the very scope the person just asked to
+ * receive — the same reason the user path clears `newsletterSubscribed`.
+ */
+export async function applyAddressResubscribe(
+  input: Omit<AddressUnsubscribeEffectInput, "via" | "reason">,
+): Promise<void> {
+  const email = input.email.trim().toLowerCase();
+  if (!email) return;
+
+  await prisma.emailSuppression.deleteMany({
+    where: {
+      email,
+      scope: isMasterScope(input.scope)
+        ? MASTER_SCOPE
+        : { in: [input.scope, MASTER_SCOPE] },
+    },
+  });
+}
+
 /**
  * Apply an unsubscribe to the DB. Idempotent. Flipping the master scope also
  * sets `newsletterSubscribed=false` so legacy checks still suppress sends.

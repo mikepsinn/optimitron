@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { Resend } from "resend";
 import { serverEnv } from "@/lib/env";
-import { canSendEmailToUser } from "@/lib/email/can-send.server";
+import {
+  canSendEmailToAddress,
+  canSendEmailToUser,
+} from "@/lib/email/can-send.server";
 import {
   DEFAULT_UNSUBSCRIBE_EMAIL,
   formatDefaultSystemEmailFromHeader,
@@ -67,6 +70,12 @@ interface ResendReactMessage extends BaseMessage {
 interface ExternalResendMessage {
   /** See {@link BaseMessage.authorization}. */
   authorization: SendAuthorization;
+  /**
+   * Category of email. Required so the address-keyed suppression check can be
+   * scope-aware: somebody who refused campaign outreach may still be a task
+   * assignee, and a transactional scope must reach them regardless.
+   */
+  scope: EmailScope;
   from?: string;
   /// Optional RFC-5322 headers such as Message-ID / In-Reply-To for mail
   /// threading. Unsubscribe headers are still owned by this helper.
@@ -321,7 +330,12 @@ export async function sendResendEmail(
   if (gate) return gate;
 
   if (!message.skipSuppressionCheck) {
-    const allowed = await canSendEmailToUser(message.userId, message.scope);
+    // Both stores, because an address-keyed refusal can predate the account:
+    // somebody cold-contacted who said "never again" and later signed up must
+    // stay suppressed, and their new User row carries none of that history.
+    const allowed =
+      (await canSendEmailToUser(message.userId, message.scope)) &&
+      (await canSendEmailToAddress(message.to, message.scope));
     if (!allowed) {
       return { status: "suppressed", reason: "user_opt_out" };
     }
@@ -381,7 +395,12 @@ export async function sendReactEmail(
   if (gate) return gate;
 
   if (!message.skipSuppressionCheck) {
-    const allowed = await canSendEmailToUser(message.userId, message.scope);
+    // Both stores, because an address-keyed refusal can predate the account:
+    // somebody cold-contacted who said "never again" and later signed up must
+    // stay suppressed, and their new User row carries none of that history.
+    const allowed =
+      (await canSendEmailToUser(message.userId, message.scope)) &&
+      (await canSendEmailToAddress(message.to, message.scope));
     if (!allowed) {
       return { status: "suppressed", reason: "user_opt_out" };
     }
@@ -435,10 +454,17 @@ export async function sendExternalResendEmail(
     return { status: "disabled" };
   }
 
-  // External recipients have no per-user suppression check, so the emergency
-  // stop is the only gate on this path.
   const gate = await checkOutboundGate(message.authorization, message.to);
   if (gate) return gate;
+
+  // External recipients have no `User` row, so suppression is keyed on the
+  // address. This check lives here rather than in a caller because the whole
+  // point of the boundary is that no call site can forget it — the task layer
+  // already had opt-out enforcement via `findExternalOptOut`, but anything
+  // reaching this function directly (agent cold outreach) bypassed it.
+  if (!(await canSendEmailToAddress(message.to, message.scope))) {
+    return { status: "suppressed", reason: "user_opt_out" };
+  }
 
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
   const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
