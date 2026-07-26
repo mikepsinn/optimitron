@@ -36,6 +36,17 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # The action refuses bot-initiated runs by default, to stop a random
+          # bot from burning API credit on a privileged review. But our own
+          # `Update PR branches` workflow rebases every open PR whenever main
+          # moves, and that push fires `synchronize` with the pusher as actor.
+          # Unlisted, that turns this check red on every open PR after every
+          # merge -- pure noise that teaches us to ignore red checks.
+          #
+          # Allow only our two updater identities, never `*`:
+          #   github-actions        -- the GITHUB_TOKEN fallback path
+          #   optimitron-pr-updater -- the GitHub App, once it is installed
+          allowed_bots: "github-actions,optimitron-pr-updater"
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
