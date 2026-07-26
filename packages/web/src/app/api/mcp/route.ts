@@ -2,7 +2,7 @@ import { appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createMcpServer } from "@/lib/mcp-server";
-import { verifyMcpAccessToken } from "@/lib/mcp-oauth";
+import { getMcpRequestOrigin, verifyMcpAccessToken } from "@/lib/mcp-oauth";
 import { prisma } from "@/lib/prisma";
 import type { McpScope } from "@/lib/mcp-scopes";
 
@@ -57,13 +57,12 @@ async function logMcpRequest(req: Request) {
   ).catch(() => {});
 }
 
+// Point the client at the metadata document for the host it actually dialed.
+// Sending it to the canonical host's document instead returns a `resource`
+// that does not match this endpoint, which spec-compliant clients reject
+// before they ever open a browser.
 function getResourceMetadataUrl(req: Request): string {
-  const base =
-    process.env.NEXTAUTH_URL ??
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : new URL(req.url).origin);
-  return `${base}/.well-known/oauth-protected-resource/mcp`;
+  return `${getMcpRequestOrigin(req)}/.well-known/oauth-protected-resource/mcp`;
 }
 
 // MCP authorization spec (2025-03-26) + RFC 9728: an unauthenticated request
