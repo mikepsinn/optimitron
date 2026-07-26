@@ -145,6 +145,7 @@ export function OptimitronSheet() {
                 . The average treatment arrives{" "}
                 <ParameterValue
                   className={N}
+                  display="withUnit"
                   param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS}
                 />{" "}
                 sooner.{" "}

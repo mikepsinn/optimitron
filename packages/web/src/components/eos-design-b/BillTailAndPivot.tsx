@@ -68,7 +68,7 @@ export function BillTailAndPivot() {
               wealth since 1900, the average human would earn{" "}
               <ParameterValue
                 className={N}
-                param={WAR_COUNTERFACTUAL_GDP_PER_CAPITA}
+                param={{ ...WAR_COUNTERFACTUAL_GDP_PER_CAPITA, unit: "USD" }}
               />{" "}
               a year instead of{" "}
               <ParameterValue className={N} param={GLOBAL_AVG_INCOME_2025} />.
@@ -97,12 +97,18 @@ export function BillTailAndPivot() {
               not checking.{" "}
               <ParameterValue
                 className={N}
-                param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL}
+                param={{
+                  ...POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
+                  unit: "USD",
+                }}
               />{" "}
               per person per year.{" "}
               <ParameterValue
                 className={N}
-                param={POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL}
+                param={{
+                  ...POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL,
+                  unit: "USD",
+                }}
               />{" "}
               per household of four.
             </p>

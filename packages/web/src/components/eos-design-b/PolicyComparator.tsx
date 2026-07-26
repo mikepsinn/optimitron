@@ -62,7 +62,10 @@ const ROWS: Row[] = [
     after: (
       <>
         1% Treaty funds{" "}
-        <ParameterValue className={N} param={TREATY_ANNUAL_FUNDING} />
+        <ParameterValue
+          className={N}
+          param={{ ...TREATY_ANNUAL_FUNDING, unit: "USD" }}
+        />
         /year in trials
       </>
     ),
