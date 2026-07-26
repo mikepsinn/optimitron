@@ -12,6 +12,15 @@ const legislationContentTraceFiles = ["../../content/legislation/**/*.md"];
 const nextConfig = {
   experimental: {
     webpackMemoryOptimizations: true,
+    // Size the static-generation worker pool by available memory instead of
+    // CPU count. Next spawns one build worker per CPU by default, and every
+    // worker inherits NODE_OPTIONS -- so a per-process heap cap is really a
+    // cap times the core count. On Vercel's 8 GB standard build container
+    // that arithmetic does not close, and the container OOM-killed this
+    // build (SIGKILL, "Command exited with 1") once the branch grew past
+    // what main happens to fit in. Deriving the count from free memory is
+    // the supported fix and keeps builds off the Enhanced Builds upsell.
+    memoryBasedWorkersCount: true,
     // `import { Foo } from "lucide-react"` defeats tree-shaking under Next.js
     // App Router unless the package is in this allow-list. With 83 files
     // importing icons + 44MB of lucide source on disk, this is the single
