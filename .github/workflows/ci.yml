@@ -417,6 +417,14 @@ jobs:
       - web-e2e-validate
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    # Every run of this job force-pushes the gh-pages branch. Two PRs
+    # publishing at once would both read the same starting state, both add
+    # their own directory, and the second push would drop the first. Serialise
+    # publishes repo-wide and queue rather than cancel, so no PR loses its
+    # review page to a concurrent run.
+    concurrency:
+      group: visual-review-gh-pages
+      cancel-in-progress: false
     permissions:
       actions: read
       contents: write
@@ -714,6 +722,37 @@ jobs:
               description: 'Publishing screenshot review',
               target_url: process.env.VISUAL_REVIEW_URL,
             });
+
+      - name: Carry forward other PRs' review pages
+        # force_orphan below replaces the whole branch with one commit, which
+        # keeps screenshot binaries out of git history but also deletes every
+        # other PR's review directory. Before 2026-07-26 that left exactly one
+        # PR live at a time: three of four open PRs 404'd while their "Visual
+        # review" check still said SUCCESS, because each publish had genuinely
+        # succeeded and was then overwritten minutes later by the next one.
+        #
+        # Re-materialise the existing pr-* directories into the publish dir so
+        # the orphan commit contains them too. cp -n means anything this run
+        # just generated wins, so the current PR's fresh `latest` is kept while
+        # its older per-sha directories survive.
+        shell: bash
+        run: |
+          set -euo pipefail
+          publish_root="${{ steps.prepare_pages.outputs.publish_dir }}"
+          if ! git fetch --depth=1 origin gh-pages 2>/dev/null; then
+            echo "No gh-pages branch yet; publishing this PR's review only."
+            exit 0
+          fi
+          staging="$(mktemp -d)"
+          git archive FETCH_HEAD | tar -x -C "$staging"
+          carried=0
+          for existing in "$staging"/pr-*; do
+            [ -d "$existing" ] || continue
+            cp -Rn "$existing" "$publish_root/" 2>/dev/null || true
+            carried=$((carried + 1))
+          done
+          rm -rf "$staging"
+          echo "Carried forward $carried existing PR review director(ies)."
 
       - name: Publish visual review to gh-pages
         id: visual_review_pages
