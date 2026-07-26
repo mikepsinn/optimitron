@@ -92,9 +92,9 @@ export async function applyAddressUnsubscribe(
 /**
  * Undo an address-keyed unsubscribe. Idempotent.
  *
- * Re-subscribing a specific scope also clears the master row, because "all"
- * would otherwise keep blocking the very scope the person just asked to
- * receive — the same reason the user path clears `newsletterSubscribed`.
+ * Resubscribing to a specific scope clears only that scope's row, mirroring
+ * `applyResubscribe`: the master block stays in place unless the master
+ * scope itself is what's being resubscribed.
  */
 export async function applyAddressResubscribe(
   input: Omit<AddressUnsubscribeEffectInput, "via" | "reason">,
@@ -105,9 +105,7 @@ export async function applyAddressResubscribe(
   await prisma.emailSuppression.deleteMany({
     where: {
       email,
-      scope: isMasterScope(input.scope)
-        ? MASTER_SCOPE
-        : { in: [input.scope, MASTER_SCOPE] },
+      scope: isMasterScope(input.scope) ? MASTER_SCOPE : input.scope,
     },
   });
 }
