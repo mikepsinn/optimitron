@@ -271,6 +271,18 @@ describe("site variant registry", () => {
     });
   });
 
+  it("allows RFC 8615 well-known discovery paths on restricted variants", () => {
+    for (const host of ["dfda.earth", "dih.earth"]) {
+      const site = getSiteFromHost(host);
+      expect(
+        isSiteRouteAllowed(site, "/.well-known/oauth-protected-resource/mcp"),
+      ).toBe(true);
+      expect(getSiteRouteDisposition(site, "/.well-known/foo")).toEqual({
+        type: "allow",
+      });
+    }
+  });
+
   it("does not expose a custom coalition 404 route in site policies", () => {
     for (const siteKey of [
       "optimitron",
