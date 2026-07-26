@@ -59,13 +59,14 @@ export function TwoNumberDashboard() {
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    let frame = 0;
+
     const run = () => {
       if (reduce) {
         setProgress(1);
         return;
       }
       const start = performance.now();
-      let frame = 0;
       const step = (now: number) => {
         const t = Math.min((now - start) / DURATION_MS, 1);
         // ease-out cubic: the needles settle rather than slam.
@@ -73,12 +74,11 @@ export function TwoNumberDashboard() {
         if (t < 1) frame = requestAnimationFrame(step);
       };
       frame = requestAnimationFrame(step);
-      return () => cancelAnimationFrame(frame);
     };
 
     if (typeof IntersectionObserver === "undefined") {
       run();
-      return;
+      return () => cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(
@@ -93,7 +93,10 @@ export function TwoNumberDashboard() {
       { threshold: 0.4 },
     );
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
