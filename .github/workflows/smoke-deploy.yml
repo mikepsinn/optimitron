@@ -32,12 +32,11 @@ jobs:
         github.event.deployment_status.environment == 'Production' ||
         github.event.deployment_status.environment == 'production' ||
         contains(github.event.deployment_status.environment_url, 'warondisease.org') ||
-        contains(github.event.deployment_status.environment_url, 'optimitron.com') ||
-        contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org'))
+        contains(github.event.deployment_status.environment_url, 'optimitron.com'))
     runs-on: ubuntu-latest
     timeout-minutes: 90
     environment:
-      name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com') || contains(github.event.deployment_status.environment_url, 'onepercenttreaty.org')) && 'Production' || 'Preview' }}
+      name: ${{ (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production' || github.event.deployment_status.environment == 'Production' || github.event.deployment_status.environment == 'production' || contains(github.event.deployment_status.environment_url, 'warondisease.org') || contains(github.event.deployment_status.environment_url, 'optimitron.com')) && 'Production' || 'Preview' }}
       deployment: false
 
     steps:
@@ -90,7 +89,6 @@ jobs:
                 return [
                   "warondisease.org",
                   "optimitron.com",
-                  "onepercenttreaty.org",
                 ].some(
                   (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
                 );
@@ -276,12 +274,14 @@ jobs:
           RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
           RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          # onepercenttreaty.org is deliberately absent: the domain's Cloudflare
-          # nameservers serve no A/AAAA record, so all nine of its routes have
-          # always returned "no response" and made production smoke permanently
-          # red. Point the domain at the Vercel project, then add it back by
-          # setting the PUBLIC_PRODUCTION_SMOKE_URLS repo variable -- no code
-          # change needed.
+          # onepercenttreaty.org used to be listed here and is gone on purpose:
+          # we do not own it. It was registered by someone else on 2026-04-30,
+          # points at Cloudflare nameservers with an empty zone, and has never
+          # resolved -- so all nine of its routes returned "no response" and
+          # kept production smoke permanently red. Do not add it back. If we
+          # ever acquire it, the redirect (not the app) is what should be
+          # asserted, since smoke follows redirects and would otherwise just
+          # re-test warondisease.org.
           PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
         run: |
           node <<'NODE'
@@ -311,8 +311,6 @@ jobs:
             "www.warondisease.org",
             "optimitron.com",
             "www.optimitron.com",
-            "onepercenttreaty.org",
-            "www.onepercenttreaty.org",
           ]);
           const isProduction =
             /^production$/i.test(environmentName) ||
