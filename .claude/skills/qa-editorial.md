@@ -23,7 +23,7 @@ Run the gstack chain FIRST, then this:
 
 Three subagents IN PARALLEL via the `Agent` tool:
 
-1. **`voice-critic`** — Copy critique against project voice rules. Catches startup-bro phrasing, banned vocabulary (engage, empower, off-ramp, primitive), tautological hints under headings, adjective stacks with no number, Stripe-keynote sentences. **Required to call `mcp__optimitron-tasks__searchManual`** before proposing replacement copy, and to grep `parameters-calculations-citations.ts` for every hardcoded user-facing number. If MCP isn't wired, fall back to `curl https://manual.warondisease.org/assets/json/search-index.json` — same content, no auth.
+1. **`voice-critic`** — Copy critique against project voice rules. Catches startup-bro phrasing, banned vocabulary (engage, empower, off-ramp, primitive), tautological hints under headings, adjective stacks with no number, Stripe-keynote sentences. **Required to call the Optimitron MCP `searchManual` tool** before proposing replacement copy, and to grep `parameters-calculations-citations.ts` for every hardcoded user-facing number. If MCP isn't wired, fall back to `curl https://manual.warondisease.org/assets/json/search-index.json` — same content, no auth.
 2. **`cold-stranger-ux`** — Zero-context first-time reader reaction. Drives a real browser at iPhone-14 viewport, takes screenshots, reacts in plain English. Catches confusing UX, missing case-for-action, would-bail moments.
 3. **`test-auditor`** — Test suite slop + missing coverage. Catches "tests added for symmetry / documentation / to silence a bot" and missing regression tests for fixed bugs.
 

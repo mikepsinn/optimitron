@@ -6,7 +6,8 @@
 
 ## Research And Copy
 
-- For user-facing copy, call `mcp__optimitron-tasks__searchManual` before drafting. Use `askWishonia` only when synthesis is needed. If MCP is unavailable, search `https://manual.warondisease.org/assets/json/search-index.json` and say the fallback was used.
+- For user-facing copy, call the Optimitron MCP `searchManual` tool before drafting. Use `askWishonia` only when synthesis is needed. If MCP is unavailable, search `https://manual.warondisease.org/assets/json/search-index.json` and say the fallback was used.
+- **Use the hosted Optimitron connector, never a local MCP server.** Task, person, and organization writes must land in the production database. A local server exposes identically-named tools backed by a different database, so writes appear to succeed and are invisible on optimitron.com. If you see more than one Optimitron MCP server offering `createTask` or `proposeTaskBundle`, stop and ask which is production before writing.
 - Never hand-edit `page.logged-out.md` or `*.email.md`. Generate them with `pnpm --filter @optimitron/web copy:preview` or `email:preview-md`.
 - Use the production `optimitron:dev` task tree as the operational queue. Update the owning task's comments/status and link the implementation PR; do not maintain a parallel Markdown checklist.
 - Ask the human owner only for copy approval, a strategic fork, or a ship/redraft/abandon decision. Decide ordinary engineering details from code and tests.
