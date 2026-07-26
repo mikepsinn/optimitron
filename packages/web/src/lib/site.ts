@@ -1222,6 +1222,14 @@ export function isSiteRouteAllowed(
     return true;
   }
 
+  // RFC 8615 well-known URIs (OAuth discovery documents among them) are
+  // standardized per-host discovery paths; a restricted variant's content
+  // allowlist must not block them, or spec-compliant clients can never
+  // discover OAuth on that host.
+  if (matchesPrefix(pathname, "/.well-known")) {
+    return true;
+  }
+
   return (
     site.routePolicy.publicPrefixes.some((prefix) =>
       matchesPrefix(pathname, prefix),

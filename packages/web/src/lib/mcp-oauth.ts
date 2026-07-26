@@ -8,6 +8,11 @@
 import { createHash, randomBytes } from "crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { ALL_WIRE_SCOPES, type McpScope } from "./mcp-scopes";
+import {
+  getAllSiteConfigs,
+  getRequestSiteOrigin,
+  isSiteVariantOverrideHost,
+} from "./site";
 
 // ---------------------------------------------------------------------------
 // Config
@@ -227,15 +232,66 @@ export function getOAuthMetadata() {
   };
 }
 
-export function getProtectedResourceMetadata() {
-  const issuer = getIssuerUrl();
+// One Vercel project serves every site variant (optimitron.com,
+// warondisease.org, dfda.earth, dih.earth). RFC 9728 requires the advertised
+// `resource` to equal the URL the client actually dialed, so a single
+// env-derived value made every host claim to be NEXTAUTH_URL and spec-compliant
+// clients refused it ("Protected resource ... does not match expected").
+// The resource identity is therefore per-request. The authorization server
+// stays canonical: NextAuth sessions, the consent screen, and token issuance
+// only exist on one origin, and RFC 9728 explicitly allows the resource and
+// its authorization server to differ.
+const SERVED_MCP_HOSTS = new Set(
+  getAllSiteConfigs().flatMap((site) =>
+    site.domains.map((domain) => domain.toLowerCase()),
+  ),
+);
+
+// Reflecting an unrecognized Host header would let a caller mint metadata
+// advertising a resource identity this deployment does not own, so unknown
+// hosts fall back to the canonical origin instead.
+export function resolveMcpResourceOrigin(
+  requestOrigin: string | null | undefined,
+): string {
+  const canonical = getIssuerUrl();
+  if (!requestOrigin?.trim()) return canonical;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(requestOrigin);
+  } catch {
+    return canonical;
+  }
+
+  if (
+    SERVED_MCP_HOSTS.has(parsed.hostname.toLowerCase()) ||
+    isSiteVariantOverrideHost(parsed.host)
+  ) {
+    return parsed.origin;
+  }
+
+  return canonical;
+}
+
+export function getMcpRequestOrigin(req: Request): string {
+  return resolveMcpResourceOrigin(
+    getRequestSiteOrigin({
+      forwardedHost: req.headers.get("x-forwarded-host"),
+      forwardedProto: req.headers.get("x-forwarded-proto"),
+      host: req.headers.get("host"),
+    }),
+  );
+}
+
+export function getProtectedResourceMetadata(requestOrigin?: string | null) {
+  const resourceOrigin = resolveMcpResourceOrigin(requestOrigin);
   return {
-    resource: `${issuer}/api/mcp`,
-    authorization_servers: [issuer],
+    resource: `${resourceOrigin}/api/mcp`,
+    authorization_servers: [getIssuerUrl()],
     scopes_supported: ALL_WIRE_SCOPES,
     bearer_methods_supported: ["header"],
     resource_name: "Optimitron MCP Server",
-    resource_documentation: `${issuer}/mcp`,
+    resource_documentation: `${resourceOrigin}/mcp`,
   };
 }
 
