@@ -35,7 +35,7 @@ If you can't confirm by reading the source, DROP the finding or label it explici
 
 These run regardless of which smell first caught your attention.
 
-1. **Manual-search before suggesting new copy.** If you're proposing replacement wording for any user-facing string, first call `mcp__optimitron-tasks__searchManual` with the topic phrase and check whether the manual already has a sharper version we should steal. The manual is the source of truth for voice — quoting from it beats inventing fresh prose. If the manual has nothing usable, say so explicitly in the finding so the reader knows you checked.
+1. **Manual-search before suggesting new copy.** If you're proposing replacement wording for any user-facing string, first call the Optimitron MCP `searchManual` tool with the topic phrase and check whether the manual already has a sharper version we should steal. The manual is the source of truth for voice — quoting from it beats inventing fresh prose. If the manual has nothing usable, say so explicitly in the finding so the reader knows you checked.
 2. **Parameter coverage for every number.** For every hardcoded user-facing number in the changeset (digits, percentages, multipliers, dollar amounts, year counts), grep `packages/data/src/parameters/parameters-calculations-citations.ts` and the wider `packages/data/src/parameters/` directory for an existing parameter. If one exists and the JSX uses a raw literal instead of `<ParameterValue>`, flag it with the parameter ID. If no parameter exists yet, flag whether a new parameter is warranted (cited statistics warrant one; arithmetic identities like "2² = 4" do not).
 
 # Common smells (use as hypotheses to investigate, not as automatic verdicts)
