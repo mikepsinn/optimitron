@@ -11,6 +11,8 @@
  * From header — so a draft edited after approval no longer matches the hash the
  * approver signed, and `outbound-message-dispatch.server.ts` refuses it.
  */
+import { TaskCommunicationStatus } from "@optimitron/db/enums";
+import { prisma } from "@/lib/prisma";
 import {
   proposeExternalAction,
   type ExternalActionDb,
@@ -54,6 +56,11 @@ export function outboundMessageIdempotencyKey(communicationId: string) {
 
 /**
  * Queue a drafted message for human approval. Returns the PENDING request.
+ *
+ * If proposing throws, the draft is marked FAILED before the error propagates.
+ * A draft left at DRAFT with no request behind it is invisible to the approval
+ * queue and never retried — a message that silently goes nowhere is exactly the
+ * failure mode this whole gate exists to avoid.
  */
 export async function proposeOutboundMessage(input: {
   /** Whoever's action produced the draft, when there is one. */
@@ -65,20 +72,40 @@ export async function proposeOutboundMessage(input: {
   taskId: string;
 }) {
   const now = input.now ?? new Date();
-  return proposeExternalAction(
-    {
-      destination: input.content.recipientEmail.trim().toLowerCase(),
-      expiresAt: new Date(
-        now.getTime() + OUTBOUND_APPROVAL_WINDOW_MS,
-      ).toISOString(),
-      idempotencyKey: outboundMessageIdempotencyKey(
-        input.content.communicationId,
-      ),
-      operation: OUTBOUND_MESSAGE_OPERATION,
-      payload: outboundMessageApprovalPayload(input.content),
-      taskId: input.taskId,
-    },
-    input.actorUserId ?? null,
-    { db: input.db, systemProposal: true },
-  );
+  try {
+    return await proposeExternalAction(
+      {
+        destination: input.content.recipientEmail.trim().toLowerCase(),
+        expiresAt: new Date(
+          now.getTime() + OUTBOUND_APPROVAL_WINDOW_MS,
+        ).toISOString(),
+        idempotencyKey: outboundMessageIdempotencyKey(
+          input.content.communicationId,
+        ),
+        operation: OUTBOUND_MESSAGE_OPERATION,
+        payload: outboundMessageApprovalPayload(input.content),
+        taskId: input.taskId,
+      },
+      input.actorUserId ?? null,
+      { db: input.db, systemProposal: true },
+    );
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    // Best effort: inside a caller transaction poisoned by the original error
+    // this write also fails, and the draft rolls back with everything else.
+    await (input.db ?? prisma).taskCommunication
+      .updateMany({
+        where: {
+          id: input.content.communicationId,
+          status: TaskCommunicationStatus.DRAFT,
+        },
+        data: {
+          errorMessage: `approval_request_failed: ${reason}`,
+          failedAt: now,
+          status: TaskCommunicationStatus.FAILED,
+        },
+      })
+      .catch(() => undefined);
+    throw error;
+  }
 }

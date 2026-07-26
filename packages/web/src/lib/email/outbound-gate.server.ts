@@ -39,6 +39,9 @@ export async function readOutboundMessageGate(): Promise<OutboundGateState | nul
 
 export interface OutboundGateAdminView extends OutboundGateState {
   reason: string | null;
+  /** True when the row is soft-deleted, which the send boundary reads as
+   * unreadable — the panel has to say so or it shows config nothing obeys. */
+  unreadable: boolean;
   updatedAt: Date | null;
   updatedByUserId: string | null;
 }
@@ -49,20 +52,24 @@ export async function getOutboundMessageGateForAdmin(): Promise<OutboundGateAdmi
     where: { id: OUTBOUND_MESSAGE_GATE_ID },
     select: {
       allowlist: true,
+      deletedAt: true,
       reason: true,
       stopAllOutbound: true,
       updatedAt: true,
       updatedByUserId: true,
     },
   });
-  return (
-    row ?? {
+  if (!row) {
+    return {
       ...OPEN_GATE,
       reason: null,
+      unreadable: false,
       updatedAt: null,
       updatedByUserId: null,
-    }
-  );
+    };
+  }
+  const { deletedAt, ...gate } = row;
+  return { ...gate, unreadable: deletedAt !== null };
 }
 
 export async function setOutboundMessageGate(input: {

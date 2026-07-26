@@ -38,6 +38,7 @@ export type ExternalActionDb = Pick<
   | "formSubmission"
   | "person"
   | "task"
+  | "taskCommunication"
   | "taskExecutionAttempt"
   | "user"
 >;
@@ -660,8 +661,10 @@ export async function expireExternalActionRequest(
       },
       data: { status: ExternalActionRequestStatus.EXPIRED },
     });
+    // Only cancel a draft that is still a draft. A racing dispatcher may have
+    // already marked this submission SUBMITTED, and expiry must not undo that.
     await tx.formSubmission.updateMany({
-      where: { externalActionRequestId },
+      where: { externalActionRequestId, status: FormSubmissionStatus.DRAFT },
       data: { status: FormSubmissionStatus.CANCELLED },
     });
     return tx.externalActionRequest.findUniqueOrThrow({

@@ -130,8 +130,11 @@ async function checkOutboundGate(
     to,
   });
   if (decision.allowed) return null;
+  // Domain only. An operator needs to know which recipients are being held,
+  // not who they are, and suppression logs fan out to aggregators.
+  const recipientDomain = to.split("@")[1] ?? "unknown";
   console.warn(
-    `[OUTBOUND-EMAIL] Suppressed ${authorization.kind} send to ${to}: ${decision.reason}`,
+    `[OUTBOUND-EMAIL] Suppressed ${authorization.kind} send to @${recipientDomain}: ${decision.reason}`,
   );
   return { status: "suppressed", reason: decision.reason };
 }

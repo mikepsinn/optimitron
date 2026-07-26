@@ -35,6 +35,7 @@ const FILTERABLE_STATUSES = [
   TaskCommunicationStatus.FAILED,
   TaskCommunicationStatus.CANCELLED,
   TaskCommunicationStatus.SENT,
+  TaskCommunicationStatus.RECEIVED,
 ] as const;
 
 function parseStatus(value?: string): TaskCommunicationStatus | null {
@@ -125,13 +126,19 @@ function EmergencyStopPanel({ gate }: { gate: OutboundGateAdminView }) {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-xl font-black uppercase">Outbound mail</h2>
         <span className="text-xs font-black uppercase">
-          {gate.stopAllOutbound ? "Stopped" : "Sending"}
+          {gate.unreadable
+            ? "Held"
+            : gate.stopAllOutbound
+              ? "Stopped"
+              : "Sending"}
         </span>
       </div>
       <p className="mt-2 max-w-2xl text-sm font-bold text-muted-foreground">
-        {gate.stopAllOutbound
-          ? "Every outbound message is suppressed, including sign-in links. Nobody can log in by email until you release it."
-          : "Messages send normally once approved. Stopping suppresses everything, including sign-in links."}
+        {gate.unreadable
+          ? "This gate row is soft-deleted, so the send boundary cannot read it. Everything except sign-in links is held. Saving below restores the row."
+          : gate.stopAllOutbound
+            ? "Every outbound message is suppressed, including sign-in links. Nobody can log in by email until you release it."
+            : "Messages send normally once approved. Stopping suppresses everything, including sign-in links."}
       </p>
       {gate.reason ? (
         <p className="mt-2 text-sm font-bold">Reason: {gate.reason}</p>

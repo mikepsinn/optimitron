@@ -171,9 +171,19 @@ export async function dispatchApprovedOutboundMessage(input: {
       return { status: "sent", providerMessageId: result.providerMessageId };
     }
 
-    // Already-processed drafts mean a concurrent dispatch won the race; the
-    // conditional terminal write below is what actually decides.
+    // The draft left DRAFT without this call sending it — usually a concurrent
+    // dispatcher that already closed the request, in which case
+    // finalizeApprovedExternalAction returns the terminal row untouched. If it
+    // left DRAFT some other way, close the request here rather than leaving it
+    // APPROVED with its draft already consumed until the window expires.
     if (result.status === "already_processed") {
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: "draft_already_processed",
+        now,
+        result: "FAILED",
+      });
       return { status: "already_dispatched" };
     }
 
