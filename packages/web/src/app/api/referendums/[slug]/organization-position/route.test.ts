@@ -251,19 +251,19 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
     });
   });
 
-  it("uses the signed-in demo email when Institute for Accelerated Medicine creates an organization", async () => {
+  it("uses the signed-in demo email when Meridian Research Foundation creates an organization", async () => {
     mocks.requireAuth.mockResolvedValue({
       userEmail: "demo@thinkbynumbers.org",
       userId: "demo-user-id",
     });
     mocks.createOrganizationWithOwner.mockResolvedValue({
-      id: "org_iam",
-      name: "Institute for Accelerated Medicine",
-      slug: "institute-for-accelerated-medicine",
+      id: "org_meridian",
+      name: "Meridian Research Foundation",
+      slug: "meridian-research-foundation",
       status: OrgStatus.APPROVED,
     });
     mocks.ensureOrganizationTreatyActivationTask.mockResolvedValue({
-      id: "task_iam",
+      id: "task_meridian",
       title: ORGANIZATION_ACTIVATION_TASK_TITLE,
     });
 
@@ -271,8 +271,8 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
       makeRequest({
         position: "YES",
         newOrganization: {
-          name: "Institute for Accelerated Medicine",
-          website: "https://acceleratedmedicine.org",
+          name: "Meridian Research Foundation",
+          website: "https://meridian.example.org",
         },
       }),
       makeParams(),
@@ -280,25 +280,25 @@ describe("POST /api/referendums/[slug]/organization-position", () => {
 
     expect(res.status).toBe(201);
     await expect(res.json()).resolves.toMatchObject({
-      organizationId: "org_iam",
-      taskId: "task_iam",
+      organizationId: "org_meridian",
+      taskId: "task_meridian",
       success: true,
     });
     expect(mocks.createOrganizationWithOwner).toHaveBeenCalledWith(
       expect.objectContaining({
         contactEmail: "demo@thinkbynumbers.org",
-        name: "Institute for Accelerated Medicine",
+        name: "Meridian Research Foundation",
         status: OrgStatus.APPROVED,
-        website: "https://acceleratedmedicine.org/",
+        website: "https://meridian.example.org/",
       }),
       "demo-user-id",
       { rejectDuplicates: false },
     );
     expect(mocks.ensureOrganizationTreatyActivationTask).toHaveBeenCalledWith(
       {
-        organizationId: "org_iam",
-        organizationName: "Institute for Accelerated Medicine",
-        organizationSlug: "institute-for-accelerated-medicine",
+        organizationId: "org_meridian",
+        organizationName: "Meridian Research Foundation",
+        organizationSlug: "meridian-research-foundation",
       },
       "demo-user-id",
     );
