@@ -422,9 +422,18 @@ jobs:
     # their own directory, and the second push would drop the first. Serialise
     # publishes repo-wide and queue rather than cancel, so no PR loses its
     # review page to a concurrent run.
+    #
+    # `queue: max` is load-bearing, not decoration. The default `queue: single`
+    # allows exactly one pending member and cancels it when a newer one
+    # arrives, so a burst of three PRs would cancel the middle one outright —
+    # worse than the bug this job is fixing, because the canceled run never
+    # publishes at all and leaves a canceled check on the PR. `max` holds up
+    # to 100 waiters in FIFO order. It may not be combined with
+    # `cancel-in-progress: true`; `false` is what we want anyway.
     concurrency:
       group: visual-review-gh-pages
       cancel-in-progress: false
+      queue: max
     permissions:
       actions: read
       contents: write
@@ -742,16 +751,40 @@ jobs:
         #
         # Fail-open on the API check: if the PR-state lookup errors, carry the
         # directory anyway. Keeping a stale page beats deleting a live one.
+        #
+        # The `|| true` on each cp is required, not sloppiness. Since coreutils
+        # 9.2 `cp -n` exits non-zero whenever it skips a file, and 9.5 also
+        # prints a diagnostic per skip. ubuntu-latest ships 9.4. Skipping is
+        # the normal case here — this PR's own directory already exists in
+        # gh-pages from its previous run — so under `set -e` a bare cp would
+        # fail the step on every re-push and block the publish entirely.
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           publish_root="${{ steps.prepare_pages.outputs.publish_dir }}"
-          if ! git fetch --depth=1 origin gh-pages 2>/dev/null; then
+          # "gh-pages does not exist yet" and "the lookup failed" both make
+          # git exit non-zero, but only the first is safe to continue from.
+          # Treating a transient network or GitHub error as an absent branch
+          # would let the force_orphan publish below run with nothing carried
+          # forward, deleting every other PR's page — the exact bug this step
+          # exists to prevent. `ls-remote --exit-code` separates the two: 2
+          # means no matching ref, anything else non-zero is a real failure.
+          ls_remote_status=0
+          git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1 \
+            || ls_remote_status=$?
+          if [ "$ls_remote_status" -eq 2 ]; then
             echo "No gh-pages branch yet; publishing this PR's review only."
             exit 0
           fi
+          if [ "$ls_remote_status" -ne 0 ]; then
+            echo "::error::Could not determine whether gh-pages exists (git ls-remote exit $ls_remote_status). Failing before the force_orphan publish rather than wiping other PRs' review pages."
+            exit 1
+          fi
+          # Bare, so set -e fails the step on a fetch error. A failed step
+          # skips the publish and leaves gh-pages untouched.
+          git fetch --depth=1 origin gh-pages
           staging="$(mktemp -d)"
           git archive FETCH_HEAD | tar -x -C "$staging"
           carried=0
