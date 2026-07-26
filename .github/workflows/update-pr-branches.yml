@@ -22,9 +22,34 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+      # Pushing the update as github-actions[bot] leaves every refreshed PR
+      # with its checks stuck on "This workflow requires approval from a
+      # maintainer". The bot is not a repository collaborator, so the
+      # resulting `synchronize` event is treated as coming from an untrusted
+      # actor and gated — even though the branches are the owner's own. On
+      # 2026-07-26 one merge left 12 runs across 6 PRs sitting unapproved.
+      #
+      # Minting a short-lived GitHub App installation token fixes it at the
+      # source: the push is attributed to an installed app with write access,
+      # so the gate does not fire. Preferred over a personal access token
+      # because it is scoped to this repo, expires in an hour, is revocable
+      # by uninstalling the app, and is auditable as the app rather than as a
+      # human who did not actually do it.
+      #
+      # Optional by design. Without PR_UPDATER_APP_ID set the step is skipped
+      # and the run falls back to GITHUB_TOKEN, i.e. exactly today's
+      # behaviour, so this file is safe to merge before the app exists.
+      - name: Mint GitHub App token
+        id: app_token
+        if: ${{ vars.PR_UPDATER_APP_ID != '' }}
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.PR_UPDATER_APP_ID }}
+          private-key: ${{ secrets.PR_UPDATER_APP_PRIVATE_KEY }}
+
       - name: Update open PR branches that are behind main
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           set -u
