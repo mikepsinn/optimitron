@@ -8,8 +8,8 @@ import {
 describe("normalizeOrganizationName", () => {
   it("normalizes case, punctuation, apostrophes, and whitespace", () => {
     expect(
-      normalizeOrganizationName("  Accelerated  Medicine Foundation, Inc.  "),
-    ).toBe("accelerated medicine foundation inc");
+      normalizeOrganizationName("  Meridian  Research Foundation, Inc.  "),
+    ).toBe("meridian research foundation inc");
     expect(normalizeOrganizationName("Mike's Research Org")).toBe(
       "mikes research org",
     );
@@ -39,17 +39,17 @@ describe("normalizeOrganizationName", () => {
 
     expect(
       OrganizationNameSchema.parse({
-        id: "organization-name-amf",
-        organizationId: "organization-amf",
-        name: "Accelerated Medicine Foundation Inc",
-        normalizedName: "accelerated medicine foundation inc",
+        id: "organization-name-meridian",
+        organizationId: "organization-meridian",
+        name: "Meridian Research Foundation Inc",
+        normalizedName: "meridian research foundation inc",
         kind: "LEGAL",
         jurisdictionId: null,
         languageCode: "en",
         validFrom: null,
         validUntil: null,
-        sourceUrl: "https://warondisease.org/terms",
-        sourceRef: "managed-organization-name:amf:legal",
+        sourceUrl: "https://example.org/terms",
+        sourceRef: "test-organization-name:meridian:legal",
         createdByUserId: "user-mike",
         verifiedByUserId: "user-mike",
         verifiedAt: new Date(),
@@ -60,9 +60,9 @@ describe("normalizeOrganizationName", () => {
     ).toBe("LEGAL");
 
     const baseName = {
-      id: "organization-name-amf",
-      organizationId: "organization-amf",
-      name: "Accelerated Medicine Foundation Inc",
+      id: "organization-name-meridian",
+      organizationId: "organization-meridian",
+      name: "Meridian Research Foundation Inc",
       kind: "LEGAL" as const,
       jurisdictionId: null,
       languageCode: "en",
@@ -87,7 +87,7 @@ describe("normalizeOrganizationName", () => {
     expect(
       OrganizationNameSchema.safeParse({
         ...baseName,
-        normalizedName: "accelerated medicine foundation inc",
+        normalizedName: "meridian research foundation inc",
         validFrom: new Date("2026-02-01T00:00:00Z"),
         validUntil: new Date("2026-01-01T00:00:00Z"),
       }).success,

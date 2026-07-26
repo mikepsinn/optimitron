@@ -13,8 +13,8 @@ export const notionOperationalWorkspacesFixture = {
       type: "COMPANY",
     },
     {
-      sourceId: "org-fedmi",
-      name: "Example Medical Institute",
+      sourceId: "org-meridian",
+      name: "Meridian Research Foundation",
       type: "NONPROFIT",
     },
   ],
@@ -35,7 +35,7 @@ export const notionOperationalWorkspacesFixture = {
   ],
   documents: [
     {
-      sourceId: "document-ic2ewd-brief",
+      sourceId: "document-blue-harbor-brief",
       organizationSourceId: "org-eos",
       title: "Campaign operating brief",
       markdown: "# Campaign operating brief\n\nA sanitized example document.",
@@ -229,9 +229,9 @@ export const notionOperationalWorkspacesFixture = {
       ],
     },
     {
-      sourceId: "collection-fedmi-grants",
-      organizationSourceId: "org-fedmi",
-      name: "FEDMI Grants",
+      sourceId: "collection-meridian-grants",
+      organizationSourceId: "org-meridian",
+      name: "Meridian Research Foundation Grants",
       fields: [
         { key: "grant", name: "Grant", type: "TEXT", required: true },
         {
@@ -245,7 +245,7 @@ export const notionOperationalWorkspacesFixture = {
       ],
       records: [
         {
-          sourceId: "record-fedmi-grant",
+          sourceId: "record-meridian-grant",
           values: {
             grant: "Example research grant",
             stage: "Research",
@@ -265,9 +265,9 @@ export const notionOperationalWorkspacesFixture = {
   ],
   preservedArtifacts: [
     {
-      sourceId: "artifact-ic2ewd-unsupported-blocks",
+      sourceId: "artifact-blue-harbor-unsupported-blocks",
       artifactType: "NOTION_PAGE",
-      title: "Unsupported IC2EWD blocks",
+      title: "Unsupported Blue Harbor Institute blocks",
       raw: {
         blocks: [
           { id: "block-one", type: "unsupported_future_block", content: "kept" },

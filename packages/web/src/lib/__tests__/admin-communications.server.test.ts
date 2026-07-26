@@ -79,12 +79,12 @@ describe("admin communications", () => {
         purpose: "ASSIGNMENT",
         receivedAt: null,
         recipientEmail: "team@example.org",
-        recipientNameSnapshot: "Institute for Accelerated Medicine",
+        recipientNameSnapshot: "Meridian Research Foundation",
         recipientOrganization: {
           contactEmail: "team@example.org",
           id: "org-1",
-          name: "Institute for Accelerated Medicine",
-          slug: "institute-for-accelerated-medicine",
+          name: "Meridian Research Foundation",
+          slug: "meridian-research-foundation",
         },
         recipientPerson: null,
         recipientUser: null,
@@ -170,7 +170,7 @@ describe("admin communications", () => {
           sentTaskCommunications: 1,
         },
         createdAt: sentAt,
-        currentAffiliation: "Institute for Accelerated Medicine",
+        currentAffiliation: "Meridian Research Foundation",
         displayName: "Demo Human",
         email: "demo@thinkbynumbers.org",
         handle: "demo",
@@ -187,8 +187,8 @@ describe("admin communications", () => {
         contactEmail: "team@example.org",
         createdAt: sentAt,
         id: "org-1",
-        name: "Institute for Accelerated Medicine",
-        slug: "institute-for-accelerated-medicine",
+        name: "Meridian Research Foundation",
+        slug: "meridian-research-foundation",
         status: "APPROVED",
         type: "NONPROFIT",
         website: "https://example.org",
@@ -197,7 +197,7 @@ describe("admin communications", () => {
 
     const result = await listAdminCommunicationDirectory({
       limit: 5,
-      q: "Institute",
+      q: "Meridian",
     });
 
     expect(mocks.userFindMany).toHaveBeenCalledWith(
@@ -211,8 +211,6 @@ describe("admin communications", () => {
     );
     expect(result.users[0]?.createdAt).toBe(sentAt.toISOString());
     expect(result.people[0]?.displayName).toBe("Demo Human");
-    expect(result.organizations[0]?.name).toBe(
-      "Institute for Accelerated Medicine",
-    );
+    expect(result.organizations[0]?.name).toBe("Meridian Research Foundation");
   });
 });
