@@ -13,8 +13,8 @@ import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignmen
 import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
 
 const baseTaskInput = {
-  id: "task_iam",
-  recipientName: "Institute for Accelerated Medicine",
+  id: "task_meridian",
+  recipientName: "Meridian Research Foundation",
   replyInstruction: "Reply to this email to add a comment to the task.",
   title: ORGANIZATION_ACTIVATION_TASK_TITLE,
 };
@@ -35,11 +35,11 @@ describe("buildTaskAssignmentNotificationEmail", () => {
       `New task: ${ORGANIZATION_ACTIVATION_TASK_TITLE}`,
     );
     expect(email.text).toContain(
-      "New task for Institute for Accelerated Medicine",
+      "New task for Meridian Research Foundation",
     );
     expect(email.text).toContain("Put the survey link on your site.");
     expect(email.text).toContain(
-      "Open task https://warondisease.org/tasks/task_iam",
+      "Open task https://warondisease.org/tasks/task_meridian",
     );
     expect(email.text).toContain(
       "Reply to this email to add a comment to the task.",
@@ -50,7 +50,7 @@ describe("buildTaskAssignmentNotificationEmail", () => {
     expect(email.text).not.toContain(
       "decentralized to-do list for humanity",
     );
-    expect(email.html).toContain("Institute for Accelerated Medicine");
+    expect(email.html).toContain("Meridian Research Foundation");
     expect(email.html).toContain(ORGANIZATION_ACTIVATION_TASK_TITLE);
     expect(email.html).toContain("Open task");
     expect(email.html).not.toContain("Mark complete");
