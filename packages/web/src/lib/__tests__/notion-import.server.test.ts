@@ -179,7 +179,7 @@ describe("Notion import review", () => {
     expect(bundle.collections[0]?.records[0]?.values.score).toBe(12.5);
   });
 
-  it("dry-runs representative EOS, APG, personal, FEDMI, and IC2EWD data losslessly", async () => {
+  it("dry-runs representative EOS, APG, personal, Meridian, and Blue Harbor data losslessly", async () => {
     const bundle = notionImportBundleSchema.parse(
       notionOperationalWorkspacesFixture,
     );
