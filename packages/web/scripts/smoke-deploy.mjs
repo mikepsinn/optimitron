@@ -27,8 +27,13 @@ const ROUTES_TO_SMOKE = [
     path: "/",
     expectedH1: "PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE",
     expectedH1ByHost: {
-      "optimitron.com": "Play the Earth Optimization Game!",
-      "www.optimitron.com": "Play the Earth Optimization Game!",
+      // Kept in sync with `heroHeading` in
+      // packages/web/src/components/site/EarthOptimizationServicesLandingPage.tsx.
+      // The EOS showroom landing (e055e1dd) replaced the old game heading here
+      // without updating this assertion, so production smoke failed on a
+      // healthy page for every merge after it.
+      "optimitron.com": "The Government of Tomorrow is in stock.",
+      "www.optimitron.com": "The Government of Tomorrow is in stock.",
     },
     source: "warondisease landing action heading",
   },
