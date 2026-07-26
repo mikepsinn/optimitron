@@ -21,6 +21,14 @@ const nextConfig = {
     // what main happens to fit in. Deriving the count from free memory is
     // the supported fix and keeps builds off the Enhanced Builds upsell.
     memoryBasedWorkersCount: true,
+    // memoryBasedWorkersCount alone was not enough: the build then survived
+    // compilation and died at "Generating static pages (228/305)", because
+    // the container reports 4 cores and static generation fans out to one
+    // worker each. Pin the pool to 2 so peak worker heap stays inside 8 GB.
+    // Cheap in wall-clock -- generating all 305 pages took ~7s across 4
+    // workers, so halving the pool costs seconds against a 420s budget that
+    // currently finishes with ~135s to spare.
+    cpus: 2,
     // `import { Foo } from "lucide-react"` defeats tree-shaking under Next.js
     // App Router unless the package is in this allow-list. With 83 files
     // importing icons + 44MB of lucide source on disk, this is the single
