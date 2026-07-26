@@ -723,7 +723,7 @@ jobs:
               target_url: process.env.VISUAL_REVIEW_URL,
             });
 
-      - name: Carry forward other PRs' review pages
+      - name: Carry forward open PRs' review pages, prune closed ones
         # force_orphan below replaces the whole branch with one commit, which
         # keeps screenshot binaries out of git history but also deletes every
         # other PR's review directory. Before 2026-07-26 that left exactly one
@@ -731,11 +731,20 @@ jobs:
         # review" check still said SUCCESS, because each publish had genuinely
         # succeeded and was then overwritten minutes later by the next one.
         #
-        # Re-materialise the existing pr-* directories into the publish dir so
-        # the orphan commit contains them too. cp -n means anything this run
-        # just generated wins, so the current PR's fresh `latest` is kept while
-        # its older per-sha directories survive.
+        # Re-materialise existing pr-* directories into the publish dir so the
+        # orphan commit contains them too — but only for PRs that are still
+        # OPEN. Because every publish rebuilds the branch from scratch,
+        # pruning is simply declining to carry a directory forward: merged and
+        # closed PRs' pages drop off on the next publish with no separate
+        # cleanup job. cp -n means anything this run just generated wins, so
+        # the current PR's fresh `latest` is kept while its older per-sha
+        # directories survive.
+        #
+        # Fail-open on the API check: if the PR-state lookup errors, carry the
+        # directory anyway. Keeping a stale page beats deleting a live one.
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           publish_root="${{ steps.prepare_pages.outputs.publish_dir }}"
@@ -746,13 +755,29 @@ jobs:
           staging="$(mktemp -d)"
           git archive FETCH_HEAD | tar -x -C "$staging"
           carried=0
+          pruned=0
           for existing in "$staging"/pr-*; do
             [ -d "$existing" ] || continue
+            dir_name="$(basename "$existing")"
+            pr_number="${dir_name#pr-}"
+            case "$pr_number" in
+              ''|*[!0-9]*)
+                # Not a pr-<number> directory; carry it untouched.
+                cp -Rn "$existing" "$publish_root/" 2>/dev/null || true
+                continue
+                ;;
+            esac
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq .state 2>/dev/null || echo unknown)"
+            if [ "$state" = "closed" ]; then
+              pruned=$((pruned + 1))
+              echo "Pruning $dir_name (PR is closed)."
+              continue
+            fi
             cp -Rn "$existing" "$publish_root/" 2>/dev/null || true
             carried=$((carried + 1))
           done
           rm -rf "$staging"
-          echo "Carried forward $carried existing PR review director(ies)."
+          echo "Carried forward $carried open PR page(s); pruned $pruned closed."
 
       - name: Publish visual review to gh-pages
         id: visual_review_pages
