@@ -276,7 +276,13 @@ jobs:
           RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
           RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com,https://onepercenttreaty.org' }}
+          # onepercenttreaty.org is deliberately absent: the domain's Cloudflare
+          # nameservers serve no A/AAAA record, so all nine of its routes have
+          # always returned "no response" and made production smoke permanently
+          # red. Point the domain at the Vercel project, then add it back by
+          # setting the PUBLIC_PRODUCTION_SMOKE_URLS repo variable -- no code
+          # change needed.
+          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
         run: |
           node <<'NODE'
           const fs = require("node:fs");
