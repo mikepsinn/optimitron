@@ -74,7 +74,11 @@ const thermostatPanels = [
     feedback: "no sensor, no adjust",
     flow: ['"War on Drugs"', "$1 trillion", "policy", "???"],
     kicker: "it doesn't check anything",
-    stats: ["Overdose deaths 6,000 -> 107,000", "Budget change: none", "53 years"],
+    stats: [
+      "Overdose deaths: 6,000 → 107,000",
+      "Budget change: none",
+      "Years running: 53",
+    ],
     title: "Your government",
   },
   {
@@ -421,14 +425,19 @@ function ThermostatPanel({
                 aria-hidden="true"
                 className="text-center text-lg font-black"
               >
-                -&gt;
+                {"→"}
               </div>
             ) : null}
           </div>
         ))}
       </div>
+      {/* The return path. Without the arrows this reads as a fifth box under
+          the row instead of the loop closing — and the loop closing is the
+          entire argument of the section. */}
       <div className="mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase">
+        {"← "}
         {panel.feedback}
+        {" ←"}
       </div>
       {"stats" in panel ? (
         <dl className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
@@ -495,12 +504,6 @@ export function EarthOptimizationServicesLandingPage() {
                 {mastheadStatus}
               </p>
             </div>
-            <nav aria-label="Primary actions" className="flex flex-wrap gap-3">
-              <ActionButton href="#departments" primary>
-                {tourLabel}
-              </ActionButton>
-              <ActionButton href="#service-counter">{shopLabel}</ActionButton>
-            </nav>
           </header>
 
           <section className="py-12 sm:py-16">

@@ -30,7 +30,9 @@ export function formatUsd(value: number) {
 
 export function formatRatio(value: number) {
   if (!Number.isFinite(value) || value <= 0) return "Unranked";
-  return `${formatUsd(value)} expected per $1`;
+  // Bare value: the card's label already says "Return per $1", so a suffix
+  // here produced "RETURN PER $1 / $848K expected per $1" — per-$1 twice.
+  return formatUsd(value);
 }
 
 export function formatPercent(percent: number) {
