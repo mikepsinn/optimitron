@@ -14,12 +14,14 @@ export function CountUp({
   suffix = "",
   duration = 1.5,
   className,
+  format = formatNumber,
 }: {
   value: number;
   prefix?: string;
   suffix?: string;
   duration?: number;
   className?: string;
+  format?: (n: number) => string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -28,30 +30,30 @@ export function CountUp({
 
   useEffect(() => {
     if (!isInView) return;
-    if (prefersReducedMotion) {
-      if (ref.current) {
-        ref.current.textContent = `${prefix}${formatNumber(value)}${suffix}`;
-      }
-      return;
-    }
+    // Automation (copy previews, screenshots, e2e) must capture the final
+    // value, never a mid-animation frame.
+    if (prefersReducedMotion || navigator.webdriver) return;
 
     const controls = animate(motionValue, value, {
       duration,
       ease: "easeOut",
       onUpdate(latest) {
         if (ref.current) {
-          ref.current.textContent = `${prefix}${formatNumber(latest)}${suffix}`;
+          ref.current.textContent = `${prefix}${format(latest)}${suffix}`;
         }
       },
     });
 
     return () => controls.stop();
-  }, [isInView, value, prefix, suffix, duration, motionValue, prefersReducedMotion]);
+  }, [isInView, value, prefix, suffix, duration, motionValue, prefersReducedMotion, format]);
 
+  // Static markup carries the final value so SEO crawlers, no-JS readers,
+  // and snapshot tooling all see the real number; the effect animates
+  // 0 → value on top of it for humans.
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {formatNumber(0)}
+      {format(value)}
       {suffix}
     </span>
   );
