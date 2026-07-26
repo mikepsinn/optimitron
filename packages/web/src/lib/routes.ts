@@ -1131,6 +1131,8 @@ export const designBLink: NavItem = {
   emoji: "🚀",
   description:
     "Competing visual direction B for the Earth Optimization Services landing page: a 1962 NASA press kit.",
+  copyPreview: true,
+  screenshot: true,
   cta: "View",
 };
 
@@ -1873,6 +1875,7 @@ export const routeReviewNavItems = [
   courtLink,
   donateLink,
   eosLink,
+  designBLink,
   joinLink,
   foundationsLink,
   signatoriesLink,
