@@ -23,15 +23,25 @@ Every agent must follow this order:
 2. If GitHub Actions are broken because of repo code, treat fixing them as the immediate system-blocker task before trusting the queue.
 3. Audit whether the current queue is sane enough to trust.
 4. If the queue is clearly missing canonical campaign tasks, run `pnpm db:sync:managed-data -- --apply` first. If the queue is still broken after managed data sync, propose the smallest system-improvement task that would fix the specific gap.
-5. Call `getQueueAudit`, then select a task from the **agent** queue:
-   - Use `getAIQueue` (signed-in agent) or `getNextTask` (anonymous agent).
+5. If signed in, call `getQueueAudit` first to sanity-check your personal queue data (it requires an
+   authenticated caller — skip it if you have no session). Then select a task from the **public**
+   Earth queue with `getNextTask`. Use `getNextTask` whether or not you are signed in: `getAIQueue`
+   queries `visibility: "personal"` and returns only the authenticated user's own private AI-agent
+   tasks, never the public `optimize-earth` campaign tree. Signing in does not change which task
+   universe you should draw from — call `getAIQueue` only as an *additional* check of your own
+   private/assigned queue, never as a replacement for `getNextTask`.
    - Do **not** use `getNextAction`. That tool is documented as "the best next **self-work** action from
      available **private** tasks" — it ranks the human owner's personal queue and will hand an agent
      things like "Talk with <person> about the grant" (`executor_type: "Self"`, category `COMMUNICATION`).
      An agent cannot execute those, and attempting them violates the outreach rules below.
 6. Before working, verify the selected task is actually agent-executable:
-   - Require `executor_type: "AI Agent"` and `executionMode` of `HUMAN_OR_AGENT` or `AGENT_ONLY`.
-   - Skip and log anything `HUMAN_ONLY` or `executor_type: "Self"`, even if the queue ranked it first.
+   - Require `executionMode` of `HUMAN_OR_AGENT` or `AGENT_ONLY`. Skip and log anything `HUMAN_ONLY`,
+     even if the queue ranked it first.
+   - Do not additionally require `executor_type: "AI Agent"`. The managed public campaign tree mostly
+     leaves `executor_type` unset, and the server normalizes a missing value to `"Self"` — treating
+     that default as a hard gate would make an agent skip nearly every legitimately agent-executable
+     `HUMAN_OR_AGENT` task. `getNextTask`/`getAIQueue` already capability-filter on `executionMode`;
+     trust that filter instead of re-deriving eligibility from `executor_type`.
    - Do not trust `capabilityStatus: "eligible"` on its own. When no skills are recorded for the target
      executor, the capability check has no data and returns "All recorded capability requirements are
      satisfied" for every task, including human-only ones. Treat an empty capability record as UNKNOWN,
