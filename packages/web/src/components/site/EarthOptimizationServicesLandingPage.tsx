@@ -435,19 +435,18 @@ function ThermostatPanel({
           the row instead of the loop closing — and the loop closing is the
           entire argument of the section. */}
       <div className="mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase">
-        {"← "}
+        <span aria-hidden="true">{"← "}</span>
         {panel.feedback}
-        {" ←"}
+        <span aria-hidden="true">{" ←"}</span>
       </div>
       {"stats" in panel ? (
-        <dl className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
+        <div className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
           {panel.stats.map((stat) => (
             <div className="border-2 border-foreground p-3" key={stat}>
-              <dt className="sr-only">{stat}</dt>
-              <dd>{stat}</dd>
+              {stat}
             </div>
           ))}
-        </dl>
+        </div>
       ) : null}
       <p className="mt-4 text-base font-bold leading-7">{panel.caption}</p>
     </article>
