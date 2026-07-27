@@ -127,7 +127,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
           ),
           recipientEmail: "demo@thinkbynumbers.org",
         }),
-        taskId: "task_iam",
+        taskId: "task_meridian",
       }),
     );
   });
