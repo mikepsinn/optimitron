@@ -371,6 +371,14 @@ export function TreatyVoteFlow({
   useEffect(() => {
     if (!sliderSectionRef.current || userHasDragged || sliderTutorialFinished) return;
 
+    // Automation (screenshots, copy previews, e2e) must capture the settled
+    // slider, not a tutorial frame — and the flow may sit below the fold on
+    // embedding pages where the observer never fires at all.
+    if (navigator.webdriver) {
+      setSliderTutorialFinished(true);
+      return;
+    }
+
     let animationTimeout: number | null = null;
     const observer = new IntersectionObserver(
       (entries) => {
