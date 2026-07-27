@@ -23,6 +23,7 @@ import {
   type EmailPreview,
 } from "@/lib/email/preview-envelope";
 import type { SendResult } from "@/lib/email/resend";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import {
   formatPledgeAmountLabel,
@@ -135,6 +136,7 @@ export async function sendPledgeChargeReceiptEmail(
   }
 
   return sendDedupedEmail({
+    authorization: transactionalSend("task_funding_pledge_receipt"),
     dedupeKey: getPledgeReceiptDedupeKey(input.pledge.id),
     templateId: TASK_FUNDING_PLEDGE_RECEIPT_TEMPLATE_ID,
     subject: buildPledgeReceiptSubject(input.amountCents, input.task.title),

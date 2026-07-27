@@ -7,6 +7,7 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { requireAuth } from "@/lib/auth-utils";
+import { authorizeOwnerSend } from "@/lib/email/outbound-authorization.server";
 import { createLogger } from "@/lib/logger";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
@@ -35,9 +36,21 @@ const createInvitationSchema = z.object({
 
 const patchInvitationSchema = z.object({
   id: z.string().min(1).max(128),
-  action: z.enum(["markCopied", "markManualContacted", "decline", "cancel", "sendMessage"]),
+  action: z.enum([
+    "markCopied",
+    "markManualContacted",
+    "decline",
+    "cancel",
+    "sendMessage",
+  ]),
   messageText: z.string().trim().max(10_000).nullish(),
-  shareChannel: z.string().trim().min(1).max(64).regex(/^[a-z0-9_-]+$/i).nullish(),
+  shareChannel: z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z0-9_-]+$/i)
+    .nullish(),
   shareAttemptId: z.string().trim().min(1).max(128).nullish(),
   wasEdited: z.boolean().optional(),
 });
@@ -61,7 +74,10 @@ export async function GET(request?: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     log.error("Failed to list", error);
-    return NextResponse.json({ error: "Failed to list invitations." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to list invitations." },
+      { status: 500 },
+    );
   }
 }
 
@@ -104,7 +120,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     log.error("Failed to create", error);
-    return NextResponse.json({ error: "Failed to create invitation." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create invitation." },
+      { status: 500 },
+    );
   }
 }
 
@@ -114,7 +133,10 @@ export async function PATCH(request: Request) {
     const parsed = patchInvitationSchema.parse(await request.json());
     const now = new Date();
 
-    if (parsed.action === "markCopied" || parsed.action === "markManualContacted") {
+    if (
+      parsed.action === "markCopied" ||
+      parsed.action === "markManualContacted"
+    ) {
       const invitation = await markReferralInvitationCopied({
         invitationId: parsed.id,
         contactConfirmed: parsed.action === "markManualContacted",
@@ -127,22 +149,30 @@ export async function PATCH(request: Request) {
       });
 
       if (!invitation) {
-        return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+        return NextResponse.json(
+          { error: "Invitation not found." },
+          { status: 404 },
+        );
       }
 
       return NextResponse.json({ invitation });
     }
 
     if (parsed.action === "sendMessage") {
+      const ownerAuthorization = await authorizeOwnerSend(request);
       const result = await sendReferralInvitationMessage({
         invitationId: parsed.id,
         messageText: parsed.messageText,
+        ...(ownerAuthorization ? { ownerAuthorization } : {}),
         referrerUserId: userId,
         now,
       });
 
       if (result.status === "not_found") {
-        return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+        return NextResponse.json(
+          { error: "Invitation not found." },
+          { status: 404 },
+        );
       }
       if (result.status === "missing_recipient_email") {
         return NextResponse.json(
@@ -183,7 +213,10 @@ export async function PATCH(request: Request) {
     });
 
     if (result.count === 0) {
-      return NextResponse.json({ error: "Invitation not found." }, { status: 404 });
+      return NextResponse.json(
+        { error: "Invitation not found." },
+        { status: 404 },
+      );
     }
 
     if (parsed.action === "decline" || parsed.action === "cancel") {
@@ -221,6 +254,9 @@ export async function PATCH(request: Request) {
       );
     }
     log.error("Failed to update", error);
-    return NextResponse.json({ error: "Failed to update invitation." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update invitation." },
+      { status: 500 },
+    );
   }
 }

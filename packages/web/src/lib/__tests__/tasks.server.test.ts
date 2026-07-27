@@ -5,6 +5,7 @@ import {
   TaskStatus,
 } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 
 const mocks = vi.hoisted(() => ({
   countTaskCommunications: vi.fn(),
@@ -610,6 +611,10 @@ describe("tasks server", () => {
   });
 
   it("creates public assigned-only tasks for assignee-targeted work", async () => {
+    const ownerAuthorization = {
+      kind: "owner",
+      userId: "user_creator",
+    } as unknown as OwnerSendAuthorization;
     mocks.prisma.taskCreate.mockResolvedValue({
       assigneePersonId: "person_target",
       createdByUserId: "user_creator",
@@ -618,11 +623,15 @@ describe("tasks server", () => {
       title: "Fix the site",
     });
 
-    await createTask("user_creator", {
-      assigneePersonId: "person_target",
-      description: "The page should make the next action obvious.",
-      title: "Fix the site",
-    });
+    await createTask(
+      "user_creator",
+      {
+        assigneePersonId: "person_target",
+        description: "The page should make the next action obvious.",
+        title: "Fix the site",
+      },
+      { ownerAuthorization },
+    );
 
     expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -635,6 +644,7 @@ describe("tasks server", () => {
       }),
     );
     expect(mocks.notifyTaskAssigneeOfAssignment).toHaveBeenCalledWith({
+      ownerAuthorization,
       senderUserId: "user_creator",
       taskId: "task_2",
     });

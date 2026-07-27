@@ -38,11 +38,14 @@ export interface FireResult {
 // types makes TypeScript expand the entire generated schema at each union site.
 export type FireDb = Pick<
   Prisma.TransactionClient,
+  | "externalActionRequest"
+  | "formSubmission"
   | "person"
   | "task"
   | "taskComment"
   | "taskCommunication"
   | "taskCommunicationEndpoint"
+  | "taskExecutionAttempt"
   | "taskTrigger"
   | "taskTriggerFire"
   | "user"

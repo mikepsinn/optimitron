@@ -14,6 +14,7 @@ import React from "react";
 import { formatDefaultSystemEmailFromHeader } from "@/lib/email/from-address";
 import type { EmailPreview } from "@/lib/email/preview-envelope";
 import type { SendResult } from "@/lib/email/resend";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import {
   formatPledgeAmountLabel,
@@ -117,6 +118,7 @@ export async function sendPledgeConfirmationEmail(
 
   const cardLast4 = input.pledge.cardLast4?.trim();
   return sendDedupedEmail({
+    authorization: transactionalSend("task_funding_pledge_confirmation"),
     dedupeKey: getPledgeConfirmationDedupeKey(input.pledge.id),
     templateId: TASK_FUNDING_PLEDGE_CONFIRMATION_TEMPLATE_ID,
     subject: buildPledgeConfirmationSubject(input.amountCents),

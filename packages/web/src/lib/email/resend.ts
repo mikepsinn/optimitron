@@ -10,13 +10,25 @@ import {
   evaluateOutboundEmailPolicy,
   type OutboundSuppressionReason,
 } from "@/lib/email/outbound-mode";
+import {
+  assertGenuineSendAuthorization,
+  type SendAuthorization,
+} from "@/lib/email/outbound-authorization.server";
 import { composeOutboundEmailBody } from "@/lib/email/preview-envelope";
 import { renderReactEmailBody } from "@/lib/email/render-react-email";
 import { isTransactionalScope } from "@/lib/email/scopes";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import type { EmailScope } from "@/lib/email/scopes";
+import type { WishoniaSignatureSelection } from "@/lib/email/wishonia-signature";
 
 interface BaseMessage {
+  /**
+   * Who said to send this. Required on every path: recipient-initiated
+   * (`transactional`), a signed-in human pressing send (`owner`), or a
+   * human-approved ExternalActionRequest (`approved`). See
+   * `@/lib/email/outbound-authorization.server`.
+   */
+  authorization: SendAuthorization;
   /** The recipient's `User.id` — required so we can check suppression + build the unsubscribe URL. */
   userId: string;
   /** Category of email, drives suppression + the `List-Unsubscribe` URL scope. */
@@ -53,6 +65,10 @@ interface ResendReactMessage extends BaseMessage {
 }
 
 interface ExternalResendMessage {
+  /** See {@link BaseMessage.authorization}. */
+  authorization: SendAuthorization;
+  /** Category of email, used when composing the immutable envelope. */
+  scope: EmailScope;
   from?: string;
   /// Optional RFC-5322 headers such as Message-ID / In-Reply-To for mail
   /// threading. Unsubscribe headers are still owned by this helper.
@@ -70,6 +86,44 @@ interface ExternalResendMessage {
   text: string;
   to: string;
   unsubscribeUrl?: string | null;
+}
+
+/** Exact request body handed to `resend.emails.send`. */
+export interface ResendProviderEnvelope {
+  bcc?: string[];
+  from: string;
+  headers?: Record<string, string>;
+  html: string;
+  replyTo?: string;
+  subject: string;
+  text: string;
+  to: [string];
+}
+
+export interface PrepareResendProviderEnvelopeInput {
+  bcc?: string[];
+  from?: string | null;
+  headers?: Record<string, string>;
+  html: string;
+  replyTo?: string | null;
+  scope: EmailScope;
+  skipWishoniaSignature?: boolean;
+  subject: string;
+  text: string;
+  to: string;
+  unsubscribeUrl?: string | null;
+  wishoniaSelection?: WishoniaSignatureSelection;
+}
+
+export class ResendDeliveryError extends Error {
+  constructor(
+    message: string,
+    readonly code: string,
+    readonly retryable: boolean,
+  ) {
+    super(message);
+    this.name = "ResendDeliveryError";
+  }
 }
 
 export type SendResult =
@@ -102,20 +156,25 @@ function buildMockSendResult(unsubscribeUrl: string | null): SendResult {
   };
 }
 
-// Env-level outbound kill switch (OUTBOUND_EMAIL_MODE / OUTBOUND_EMAIL_ALLOWLIST).
-// Lives at the lowest-level send paths — including mock sends — so no call
-// site can forget it. Returns null when the send may proceed.
-function checkOutboundKillSwitch(to: string): SendResult | null {
-  const decision = evaluateOutboundEmailPolicy({
-    allowlist: serverEnv.OUTBOUND_EMAIL_ALLOWLIST,
-    mode: serverEnv.OUTBOUND_EMAIL_MODE,
-    to,
-  });
-  if (decision.allowed) return null;
-  console.warn(
-    `[OUTBOUND-EMAIL] Suppressed send to ${to}: ${decision.reason} (OUTBOUND_EMAIL_MODE=${serverEnv.OUTBOUND_EMAIL_MODE ?? "on"})`,
-  );
-  return { status: "suppressed", reason: decision.reason };
+// Env-level emergency stop. It covers To and BCC at the lowest send boundary,
+// including mock sends, so callers cannot bypass it accidentally.
+function checkOutboundPolicyForRecipients(
+  recipients: readonly string[],
+): SendResult | null {
+  for (const to of recipients) {
+    const decision = evaluateOutboundEmailPolicy({
+      allowlist: serverEnv.OUTBOUND_EMAIL_ALLOWLIST,
+      mode: serverEnv.OUTBOUND_EMAIL_MODE,
+      to,
+    });
+    if (decision.allowed) continue;
+    const recipientDomain = to.split("@")[1] ?? "unknown";
+    console.warn(
+      `[OUTBOUND-EMAIL] Suppressed send to @${recipientDomain}: ${decision.reason}`,
+    );
+    return { status: "suppressed", reason: decision.reason };
+  }
+  return null;
 }
 
 export function getEmailFromAddress() {
@@ -274,6 +333,135 @@ function resolveBcc(message: {
   return bcc.length > 0 ? bcc : undefined;
 }
 
+/**
+ * Resolve every provider-visible field once. Approval flows persist this exact
+ * object and later send it without consulting mutable drafts or environment.
+ */
+export function prepareResendProviderEnvelope(
+  message: PrepareResendProviderEnvelopeInput,
+): ResendProviderEnvelope {
+  const unsubscribeHeaders = buildUnsubscribeHeaders(
+    message.unsubscribeUrl ?? null,
+  );
+  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
+  const signed = composeOutboundEmailBody(message, {
+    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
+    hasFromOverride: Boolean(message.from),
+    unsubscribeUrl: message.unsubscribeUrl ?? "",
+    wishoniaSelection: message.wishoniaSelection,
+  });
+  assertEmailSafe({ ...signed, headers });
+  const to = message.to.trim().toLowerCase();
+  const bcc = resolveBcc({
+    bcc: message.bcc,
+    scope: message.scope,
+    to,
+  });
+  return {
+    from: message.from ?? getEmailFromAddress(),
+    to: [to],
+    ...(bcc ? { bcc } : {}),
+    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
+    subject: message.subject,
+    html: signed.html,
+    text: signed.text,
+    ...(headers ? { headers } : {}),
+  };
+}
+
+function retryableResendCode(code: string, statusCode?: number | null) {
+  return (
+    code === "concurrent_idempotent_requests" ||
+    code === "rate_limit_exceeded" ||
+    code === "application_error" ||
+    code === "internal_server_error" ||
+    statusCode === 429 ||
+    (typeof statusCode === "number" && statusCode >= 500)
+  );
+}
+
+async function sendProviderEnvelope(
+  envelope: ResendProviderEnvelope,
+  idempotencyKey?: string,
+) {
+  try {
+    const response = idempotencyKey
+      ? await getResendClient().emails.send(envelope, { idempotencyKey })
+      : await getResendClient().emails.send(envelope);
+    if (response.error) {
+      throw new ResendDeliveryError(
+        response.error.message,
+        response.error.name,
+        retryableResendCode(response.error.name, response.error.statusCode),
+      );
+    }
+    return response.data?.id ?? null;
+  } catch (error) {
+    if (error instanceof ResendDeliveryError) throw error;
+    throw new ResendDeliveryError(
+      error instanceof Error ? error.message : String(error),
+      "transport_error",
+      true,
+    );
+  }
+}
+
+async function deliverProviderEnvelope(input: {
+  envelope: ResendProviderEnvelope;
+  idempotencyKey?: string;
+  recipientUserId?: string | null;
+  scope: EmailScope;
+  skipSuppressionCheck?: boolean;
+  unsubscribeUrl: string | null;
+}): Promise<SendResult> {
+  if (!isResendConfigured()) return { status: "disabled" };
+  const policy = checkOutboundPolicyForRecipients(
+    normalizeEmailList([...input.envelope.to, ...(input.envelope.bcc ?? [])]),
+  );
+  if (policy) return policy;
+  if (
+    input.recipientUserId &&
+    !input.skipSuppressionCheck &&
+    !(await canSendEmailToUser(input.recipientUserId, input.scope))
+  ) {
+    return { status: "suppressed", reason: "user_opt_out" };
+  }
+  assertEmailSafe({
+    headers: input.envelope.headers,
+    html: input.envelope.html,
+    text: input.envelope.text,
+  });
+  if (isMockSendEnabled()) return buildMockSendResult(input.unsubscribeUrl);
+  const id = await sendProviderEnvelope(input.envelope, input.idempotencyKey);
+  return { status: "sent", id, unsubscribeUrl: input.unsubscribeUrl };
+}
+
+/** Send an already-composed immutable envelope with a provider idempotency key. */
+export async function sendPreparedResendEmail(input: {
+  authorization: SendAuthorization;
+  envelope: ResendProviderEnvelope;
+  idempotencyKey: string;
+  recipientUserId: string | null;
+  scope: EmailScope;
+}): Promise<SendResult> {
+  assertGenuineSendAuthorization(input.authorization);
+  if (!input.idempotencyKey || input.idempotencyKey.length > 256) {
+    throw new ResendDeliveryError(
+      "Resend idempotency keys must contain 1-256 characters",
+      "invalid_idempotency_key",
+      false,
+    );
+  }
+
+  return deliverProviderEnvelope({
+    envelope: input.envelope,
+    idempotencyKey: input.idempotencyKey,
+    recipientUserId: input.recipientUserId,
+    scope: input.scope,
+    unsubscribeUrl: null,
+  });
+}
+
 export function getEmailMonitorAddress() {
   const configured = serverEnv.EMAIL_MONITOR_BCC?.trim();
   if (!configured) {
@@ -291,166 +479,56 @@ export function getEmailMonitorAddress() {
 export async function sendResendEmail(
   message: ResendMessage,
 ): Promise<SendResult> {
-  if (!isResendConfigured()) {
-    return { status: "disabled" };
-  }
-
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
-
-  if (!message.skipSuppressionCheck) {
-    const allowed = await canSendEmailToUser(message.userId, message.scope);
-    if (!allowed) {
-      return { status: "suppressed", reason: "user_opt_out" };
-    }
-  }
-
+  assertGenuineSendAuthorization(message.authorization);
+  if (!isResendConfigured()) return { status: "disabled" };
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
-  const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
-  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
-
-  if (isMockSendEnabled()) {
-    return buildMockSendResult(unsubscribeUrl);
-  }
-
-  // Substitute the unsubscribe URL + append the Wishonia signature unless
-  // the caller has its own sender identity (per-message `from`) or has
-  // explicitly opted out. Shared with the preview pipeline so previews
-  // and real sends compose identically.
-  const signed = composeOutboundEmailBody(message, {
-    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
-    hasFromOverride: Boolean(message.from),
-    unsubscribeUrl: unsubscribeUrl ?? "",
-  });
-  assertEmailSafe({ ...signed, headers });
-  const resend = getResendClient();
-  const bcc = resolveBcc(message);
-  const response = await resend.emails.send({
-    from: message.from ?? getEmailFromAddress(),
-    to: [message.to],
-    ...(bcc ? { bcc } : {}),
-    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
-    subject: message.subject,
-    html: signed.html,
-    text: signed.text,
-    ...(headers ? { headers } : {}),
-  });
-
-  if (response.error) {
-    throw new Error(response.error.message);
-  }
-
-  return {
-    status: "sent",
-    id: response.data?.id ?? null,
+  const envelope = prepareResendProviderEnvelope({
+    ...message,
     unsubscribeUrl,
-  };
+  });
+  return deliverProviderEnvelope({
+    envelope,
+    recipientUserId: message.userId,
+    scope: message.scope,
+    skipSuppressionCheck: message.skipSuppressionCheck,
+    unsubscribeUrl,
+  });
 }
 
 export async function sendReactEmail(
   message: ResendReactMessage,
 ): Promise<SendResult> {
-  if (!isResendConfigured()) {
-    return { status: "disabled" };
-  }
-
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
-
-  if (!message.skipSuppressionCheck) {
-    const allowed = await canSendEmailToUser(message.userId, message.scope);
-    if (!allowed) {
-      return { status: "suppressed", reason: "user_opt_out" };
-    }
-  }
-
+  assertGenuineSendAuthorization(message.authorization);
+  if (!isResendConfigured()) return { status: "disabled" };
   const unsubscribeUrl = resolveUnsubscribeUrl(message);
-  const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
-  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
-
-  if (isMockSendEnabled()) {
-    return buildMockSendResult(unsubscribeUrl);
-  }
-
-  const resend = getResendClient();
   const rendered = await renderReactEmailBody(message.react);
-  const signed = composeOutboundEmailBody(rendered, {
-    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
-    hasFromOverride: Boolean(message.from),
-    unsubscribeUrl: unsubscribeUrl ?? "",
-  });
-  assertEmailSafe({ ...signed, headers });
-
-  const bcc = resolveBcc(message);
-  const response = await resend.emails.send({
-    from: message.from ?? getEmailFromAddress(),
-    to: [message.to],
-    ...(bcc ? { bcc } : {}),
-    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
-    subject: message.subject,
-    html: signed.html,
-    text: signed.text,
-    ...(headers ? { headers } : {}),
-  });
-
-  if (response.error) {
-    throw new Error(response.error.message);
-  }
-
-  return {
-    status: "sent",
-    id: response.data?.id ?? null,
+  const envelope = prepareResendProviderEnvelope({
+    ...message,
+    ...rendered,
     unsubscribeUrl,
-  };
+  });
+  return deliverProviderEnvelope({
+    envelope,
+    recipientUserId: message.userId,
+    scope: message.scope,
+    skipSuppressionCheck: message.skipSuppressionCheck,
+    unsubscribeUrl,
+  });
 }
 
 export async function sendExternalResendEmail(
   message: ExternalResendMessage,
 ): Promise<SendResult> {
-  if (!isResendConfigured()) {
-    return { status: "disabled" };
-  }
-
-  // External recipients have no per-user suppression check, so the env-level
-  // kill switch is the only gate on this path.
-  const killSwitch = checkOutboundKillSwitch(message.to);
-  if (killSwitch) return killSwitch;
-
+  assertGenuineSendAuthorization(message.authorization);
+  if (!isResendConfigured()) return { status: "disabled" };
   const unsubscribeUrl = message.unsubscribeUrl ?? null;
-  const unsubscribeHeaders = buildUnsubscribeHeaders(unsubscribeUrl);
-  const headers = mergeEmailHeaders(message.headers, unsubscribeHeaders);
-
-  if (isMockSendEnabled()) {
-    return buildMockSendResult(unsubscribeUrl);
-  }
-
-  // Shared composer: substitute unsub URL + apply Wishonia signature gate.
-  const signed = composeOutboundEmailBody(message, {
-    skipWishoniaSignature: Boolean(message.skipWishoniaSignature),
-    hasFromOverride: Boolean(message.from),
-    unsubscribeUrl: unsubscribeUrl ?? "",
-  });
-  assertEmailSafe({ ...signed, headers });
-  const resend = getResendClient();
-  const bcc = resolveBcc(message);
-  const response = await resend.emails.send({
-    from: message.from ?? getEmailFromAddress(),
-    to: [message.to],
-    ...(bcc ? { bcc } : {}),
-    subject: message.subject,
-    html: signed.html,
-    text: signed.text,
-    ...(message.replyTo ? { replyTo: message.replyTo } : {}),
-    ...(headers ? { headers } : {}),
-  });
-
-  if (response.error) {
-    throw new Error(response.error.message);
-  }
-
-  return {
-    status: "sent",
-    id: response.data?.id ?? null,
+  const envelope = prepareResendProviderEnvelope({
+    ...message,
     unsubscribeUrl,
-  };
+  });
+  return deliverProviderEnvelope({
+    envelope,
+    scope: message.scope,
+    unsubscribeUrl,
+  });
 }

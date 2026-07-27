@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  authorizeOwnerSend: vi.fn(),
   createReferralInvitation: vi.fn(),
   findMany: vi.fn(),
   findUnique: vi.fn(),
@@ -13,6 +14,10 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/auth-utils", () => ({
   requireAuth: mocks.requireAuth,
+}));
+
+vi.mock("@/lib/email/outbound-authorization.server", () => ({
+  authorizeOwnerSend: mocks.authorizeOwnerSend,
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -55,6 +60,7 @@ function makePatchRequest(body: Record<string, unknown>) {
 describe("/api/referral-invitations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.authorizeOwnerSend.mockResolvedValue(null);
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -105,7 +111,9 @@ describe("/api/referral-invitations", () => {
   it("validates create payloads", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
 
-    const response = await POST(makeJsonRequest({ recipientEmail: "not-email" }));
+    const response = await POST(
+      makeJsonRequest({ recipientEmail: "not-email" }),
+    );
 
     expect(response.status).toBe(400);
     const json = await response.json();
@@ -135,7 +143,10 @@ describe("/api/referral-invitations", () => {
 
   it("marks an owned invitation as copied", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.markReferralInvitationCopied.mockResolvedValue({ id: "invite_1", status: "COPIED" });
+    mocks.markReferralInvitationCopied.mockResolvedValue({
+      id: "invite_1",
+      status: "COPIED",
+    });
 
     const response = await PATCH(
       makePatchRequest({
@@ -164,7 +175,10 @@ describe("/api/referral-invitations", () => {
 
   it("records copy details without downgrading an already-sent invitation", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.markReferralInvitationCopied.mockResolvedValue({ id: "invite_1", status: "SENT" });
+    mocks.markReferralInvitationCopied.mockResolvedValue({
+      id: "invite_1",
+      status: "SENT",
+    });
 
     const response = await PATCH(
       makePatchRequest({
@@ -334,6 +348,8 @@ describe("/api/referral-invitations", () => {
   });
 
   it("dispatches sendMessage to advance the invitation to SENT when notification fires", async () => {
+    const ownerAuthorization = { kind: "owner", userId: "user_1" };
+    mocks.authorizeOwnerSend.mockResolvedValue(ownerAuthorization);
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.sendReferralInvitationMessage.mockResolvedValue({
       status: "ok",
@@ -353,6 +369,7 @@ describe("/api/referral-invitations", () => {
     expect(mocks.sendReferralInvitationMessage).toHaveBeenCalledWith({
       invitationId: "invite_1",
       messageText: "Hey Joe, please vote.",
+      ownerAuthorization,
       referrerUserId: "user_1",
       now: expect.any(Date),
     });
@@ -398,7 +415,9 @@ describe("/api/referral-invitations", () => {
 
   it("returns 400 when sendMessage targets an invitation without a recipient email", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.sendReferralInvitationMessage.mockResolvedValue({ status: "missing_recipient_email" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({
+      status: "missing_recipient_email",
+    });
 
     const response = await PATCH(
       makePatchRequest({
@@ -415,7 +434,9 @@ describe("/api/referral-invitations", () => {
 
   it("returns 404 when sendMessage targets a missing invitation", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
-    mocks.sendReferralInvitationMessage.mockResolvedValue({ status: "not_found" });
+    mocks.sendReferralInvitationMessage.mockResolvedValue({
+      status: "not_found",
+    });
 
     const response = await PATCH(
       makePatchRequest({

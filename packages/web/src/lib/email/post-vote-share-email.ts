@@ -19,6 +19,7 @@ import {
   SAMPLE_REFERRAL_URL,
   type EmailPreview,
 } from "@/lib/email/preview-envelope";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import type { SendResult } from "@/lib/email/resend";
 
@@ -58,6 +59,7 @@ export async function sendPostVoteShareEmail(
   input: PostVoteShareEmailInput,
 ): Promise<SendResult | { status: "duplicate" }> {
   return sendDedupedEmail({
+    authorization: transactionalSend("post_vote_share"),
     dedupeKey: `${POST_VOTE_SHARE_TEMPLATE_ID}:${input.voteId}`,
     templateId: POST_VOTE_SHARE_TEMPLATE_ID,
     subject: POST_VOTE_SHARE_SUBJECT,

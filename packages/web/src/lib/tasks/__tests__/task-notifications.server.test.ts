@@ -1,14 +1,36 @@
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
+
+// Transport is mocked in this unit; authorization behavior has its own suite.
+const TEST_AUTHORIZATION = transactionalSend("operator_monitor_forward");
+const APPROVED_DELIVERY = {
+  emailLogId: "approved-task-email:comm_1",
+  envelope: {
+    from: "Treaty <team@optimitron.com>",
+    headers: { "Message-ID": "<comm_1@example.org>" },
+    html: "<p>Do this thing in 10 minutes.</p>",
+    subject: "Please complete your task",
+    text: "Do this thing in 10 minutes.",
+    to: ["recipient@example.com"] as [string],
+  },
+  idempotencyKey: "outbound-message:v2:comm_1",
+  recipientUserId: null,
+  scope: "task_notifications" as const,
+};
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   claimEmailLog: vi.fn(),
   emailLogUpdate: vi.fn(),
+  emailLogFindUnique: vi.fn(),
   findMany: vi.fn(),
   findFirst: vi.fn(),
   findUnique: vi.fn(),
   getConfiguredTaskReplyAddress: vi.fn(),
   markEmailLogStatus: vi.fn(),
+  prepareResendProviderEnvelope: vi.fn(),
   sendExternalResendEmail: vi.fn(),
+  sendPreparedResendEmail: vi.fn(),
   sendResendEmail: vi.fn(),
   taskCommentCreate: vi.fn(),
   taskCommunicationUpdate: vi.fn(),
@@ -25,6 +47,7 @@ vi.mock("@/lib/prisma", () => ({
     },
     $transaction: mocks.transaction,
     emailLog: {
+      findUnique: mocks.emailLogFindUnique,
       update: mocks.emailLogUpdate,
     },
     taskComment: {
@@ -39,8 +62,19 @@ vi.mock("@/lib/email/email-log.server", () => ({
 }));
 
 vi.mock("@/lib/email/resend", () => ({
+  prepareResendProviderEnvelope: mocks.prepareResendProviderEnvelope,
+  ResendDeliveryError: class ResendDeliveryError extends Error {
+    constructor(
+      message: string,
+      readonly code: string,
+      readonly retryable: boolean,
+    ) {
+      super(message);
+    }
+  },
   sendResendEmail: mocks.sendResendEmail,
   sendExternalResendEmail: mocks.sendExternalResendEmail,
+  sendPreparedResendEmail: mocks.sendPreparedResendEmail,
 }));
 
 vi.mock("@/lib/email/task-notification", () => ({
@@ -67,6 +101,14 @@ describe("task notifications", () => {
       status: "sent",
       unsubscribeUrl: null,
     });
+    mocks.sendPreparedResendEmail.mockResolvedValue({
+      id: "approved-id",
+      status: "sent",
+      unsubscribeUrl: null,
+    });
+    mocks.markEmailLogStatus.mockResolvedValue(undefined);
+    mocks.taskCommentCreate.mockResolvedValue({ id: "comment_1" });
+    mocks.findFirst.mockResolvedValue(null);
     mocks.getConfiguredTaskReplyAddress.mockReturnValue(
       "reply+task_1@reply.test",
     );
@@ -134,6 +176,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -169,7 +212,7 @@ describe("task notifications", () => {
       task: { id: "task_1", title: "Sample task" },
     });
     mocks.findMany.mockResolvedValue([]);
-    mocks.findFirst.mockResolvedValue({
+    mocks.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({
       metadataJson: {
         messageId: "<task-task_1-comm-prior@updates.warondisease.org>",
       },
@@ -182,6 +225,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -213,16 +257,14 @@ describe("task notifications", () => {
       ...baseDraftRecord(),
       task: { id: "task_1", title: "Sample task" },
     });
-    mocks.findMany.mockResolvedValue([
-      {
-        id: "prior_1",
-        metadataJson: { optOut: true },
-        errorMessage:
-          "Recipient previously unsubscribed from this task communication purpose.",
-      },
-    ]);
+    mocks.findFirst.mockResolvedValueOnce({
+      id: "prior_1",
+      metadataJson: { optOut: true },
+      errorMessage: "Recipient unsubscribed by email reply.",
+    });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -246,6 +288,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -256,6 +299,75 @@ describe("task notifications", () => {
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 
+  it("requires reconciliation when an ambiguous approved send is older than the provider idempotency window", async () => {
+    const now = new Date("2026-07-26T12:00:00.000Z");
+    mocks.findUnique.mockResolvedValue({
+      ...baseDraftRecord(),
+      task: { id: "task_1", title: "Sample task" },
+    });
+    mocks.claimEmailLog.mockResolvedValue({
+      duplicate: true,
+      emailLogId: null,
+    });
+    mocks.emailLogFindUnique.mockResolvedValue({
+      createdAt: new Date(now.getTime() - 25 * 60 * 60 * 1_000),
+      errorMessage: "transport_error: request timed out",
+      providerMessageId: null,
+      status: "QUEUED",
+    });
+
+    const result = await sendDraftTaskNotification({
+      approvedDelivery: APPROVED_DELIVERY,
+      authorization: TEST_AUTHORIZATION,
+      communicationId: "comm_1",
+      now,
+    });
+
+    expect(result).toEqual({
+      reason: "manual_reconciliation_required",
+      status: "retryable",
+    });
+    expect(mocks.sendPreparedResendEmail).not.toHaveBeenCalled();
+  });
+
+  it("retries an old approved send that was held before reaching the provider", async () => {
+    const now = new Date("2026-07-26T12:00:00.000Z");
+    mocks.findUnique.mockResolvedValue({
+      ...baseDraftRecord(),
+      task: { id: "task_1", title: "Sample task" },
+    });
+    mocks.claimEmailLog.mockResolvedValue({
+      duplicate: true,
+      emailLogId: null,
+    });
+    mocks.emailLogFindUnique.mockResolvedValue({
+      createdAt: new Date(now.getTime() - 25 * 60 * 60 * 1_000),
+      errorMessage: "send_held:suppressed:outbound_mode_off",
+      providerMessageId: null,
+      status: "QUEUED",
+    });
+
+    const result = await sendDraftTaskNotification({
+      approvedDelivery: APPROVED_DELIVERY,
+      authorization: TEST_AUTHORIZATION,
+      communicationId: "comm_1",
+      now,
+    });
+
+    expect(mocks.sendPreparedResendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        envelope: APPROVED_DELIVERY.envelope,
+        idempotencyKey: APPROVED_DELIVERY.idempotencyKey,
+      }),
+    );
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: "sent",
+        providerMessageId: "approved-id",
+      }),
+    );
+  });
+
   it("returns missing message when no stored subject/text", async () => {
     mocks.findUnique.mockResolvedValue({
       ...baseDraftRecord(),
@@ -264,6 +376,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -282,6 +395,7 @@ describe("task notifications", () => {
     });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -311,6 +425,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -352,6 +467,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
       senderUserId: "user_1",
     });
@@ -378,6 +494,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     const result = await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
     });
 
@@ -410,6 +527,7 @@ describe("task notifications", () => {
     mocks.emailLogUpdate.mockResolvedValue({ id: "log_1" });
 
     await sendDraftTaskNotification({
+      authorization: TEST_AUTHORIZATION,
       communicationId: "comm_1",
     });
 

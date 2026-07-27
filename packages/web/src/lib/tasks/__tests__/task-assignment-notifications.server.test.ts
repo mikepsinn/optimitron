@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   draftTaskNotification: vi.fn(),
+  proposeOutboundMessage: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
   taskFindUnique: vi.fn(),
   userFindUnique: vi.fn(),
@@ -23,6 +24,10 @@ vi.mock("@/lib/tasks/task-notifications.server", () => ({
   sendDraftTaskNotification: mocks.sendDraftTaskNotification,
 }));
 
+vi.mock("@/lib/email/outbound-message-approval.server", () => ({
+  proposeOutboundMessage: mocks.proposeOutboundMessage,
+}));
+
 vi.mock("@/lib/email/task-notification", () => ({
   getAppBaseUrl: () => "https://warondisease.org",
   getTaskCompletionUrl: (taskId: string) =>
@@ -33,7 +38,13 @@ vi.mock("@/lib/email/task-notification", () => ({
 }));
 
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
+
+const OWNER_AUTHORIZATION = {
+  kind: "owner",
+  userId: "demo-user-id",
+} as unknown as OwnerSendAuthorization;
 
 function mockAssignedOrganizationTask(overrides?: {
   contactEmail?: string | null;
@@ -69,7 +80,11 @@ describe("notifyTaskAssigneeOfAssignment", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.draftTaskNotification.mockResolvedValue({ id: "comm_1" });
-    mocks.sendDraftTaskNotification.mockResolvedValue({ status: "sent" });
+    mocks.proposeOutboundMessage.mockResolvedValue({ id: "ear_1" });
+    mocks.sendDraftTaskNotification.mockResolvedValue({
+      providerMessageId: "email_1",
+      status: "sent",
+    });
     mocks.userFindUnique.mockResolvedValue({
       id: "demo-user-id",
       email: "demo@warondisease.org",
@@ -90,7 +105,11 @@ describe("notifyTaskAssigneeOfAssignment", () => {
       taskId: "task_meridian",
     });
 
-    expect(result).toEqual({ status: "sent" });
+    // Assigning a task queues the email for approval; it does not send.
+    expect(result).toEqual({
+      externalActionRequestId: "ear_1",
+      status: "pending_approval",
+    });
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         dedupeKey: "task-assignment:task_meridian:demo@thinkbynumbers.org",
@@ -110,13 +129,16 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     expect(mocks.draftTaskNotification.mock.calls[0]?.[0].senderName).toBe(
       "Mike",
     );
-    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith({
-      communicationId: "comm_1",
-      from: expect.stringMatching(
-        /^Mike via International Campaign to End War and Disease </,
-      ),
-      senderUserId: "demo-user-id",
-    });
+    expect(mocks.proposeOutboundMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actorUserId: "demo-user-id",
+        communicationId: "comm_1",
+        from: expect.stringMatching(
+          /^Mike via International Campaign to End War and Disease </,
+        ),
+        taskId: "task_meridian",
+      }),
+    );
   });
 
   it("falls back to an owner email when the organization has no contact email", async () => {
@@ -145,6 +167,27 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     );
   });
 
+  it("direct-sends only when the caller supplies session-minted owner authority", async () => {
+    mockAssignedOrganizationTask();
+
+    const result = await notifyTaskAssigneeOfAssignment({
+      ownerAuthorization: OWNER_AUTHORIZATION,
+      senderUserId: "demo-user-id",
+      taskId: "task_meridian",
+    });
+
+    expect(result).toMatchObject({ status: "sent" });
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith({
+      authorization: OWNER_AUTHORIZATION,
+      communicationId: "comm_1",
+      from: expect.stringMatching(
+        /^Mike via International Campaign to End War and Disease </,
+      ),
+      senderUserId: "demo-user-id",
+    });
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
+  });
+
   it("skips assigned tasks when no assignee email exists", async () => {
     mockAssignedOrganizationTask({ contactEmail: null, members: [] });
 
@@ -156,7 +199,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     });
 
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
-    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 
   it("skips private tasks whose assignee email has no User account", async () => {
@@ -169,7 +212,7 @@ describe("notifyTaskAssigneeOfAssignment", () => {
       status: "skipped",
     });
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
-    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 
   it("skips DRAFT tasks whose assignee email has no User account", async () => {
@@ -201,7 +244,10 @@ describe("notifyTaskAssigneeOfAssignment", () => {
       taskId: "task_meridian",
     });
 
-    expect(result).toEqual({ status: "sent" });
+    expect(result).toEqual({
+      externalActionRequestId: "ear_1",
+      status: "pending_approval",
+    });
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({ recipientUserId: "user_owner" }),
     );
@@ -218,6 +264,6 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     });
 
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
-    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 });

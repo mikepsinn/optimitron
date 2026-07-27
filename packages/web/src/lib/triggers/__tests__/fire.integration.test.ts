@@ -8,20 +8,10 @@ const harness = vi.hoisted(async () => {
   const { createFakeTriggerDb } = await import("./fake-prisma");
   return createFakeTriggerDb();
 });
-type MockTaskSendResult = {
-  status: "sent" | "disabled" | "failed";
-  providerMessageId?: string | null;
-  errorMessage?: string;
-  replyTo: string;
-};
 const emailMocks = vi.hoisted(() => ({
-  sendTaskNotificationEmail: vi.fn(
-    async (input: { taskId: string }): Promise<MockTaskSendResult> => ({
-      status: "sent",
-      providerMessageId: `mock_${input.taskId}_${Date.now()}`,
-      replyTo: `reply+${input.taskId}@reply.test`,
-    }),
-  ),
+  proposeOutboundMessage: vi.fn(async (input: { communicationId: string }) => ({
+    id: `ear_${input.communicationId}`,
+  })),
 }));
 
 vi.mock("@/lib/prisma", async () => ({
@@ -29,7 +19,9 @@ vi.mock("@/lib/prisma", async () => ({
 }));
 vi.mock("@/lib/email/task-notification", () => ({
   getReplyAddress: (taskId: string) => `reply+${taskId}@reply.test`,
-  sendTaskNotificationEmail: emailMocks.sendTaskNotificationEmail,
+}));
+vi.mock("@/lib/email/outbound-message-approval.server", () => ({
+  proposeOutboundMessage: emailMocks.proposeOutboundMessage,
 }));
 
 import { fireTaskTrigger, fireTaskTriggersForEvent } from "../fire";
@@ -61,7 +53,7 @@ async function reset() {
     personId: null,
     referralCode: null,
   });
-  emailMocks.sendTaskNotificationEmail.mockClear();
+  emailMocks.proposeOutboundMessage.mockClear();
 }
 
 describe("triggers/fire integration", () => {
@@ -707,10 +699,20 @@ describe("triggers/fire integration", () => {
       expect(subjects).not.toContain("THIRD");
     });
 
+    // The escalation ladder counts messages that actually reached someone, so
+    // it advances on approval + dispatch, not on drafting. These tests stand in
+    // for the dispatcher by marking the prior draft SENT.
+    function markAllCommunicationsSent() {
+      for (const communication of store.communications) {
+        communication.status = "SENT";
+      }
+    }
+
     it("second fire (priorSendCount=1) uses the 'second' spec", async () => {
       const taskId = await setupTriggerAndTask("demo:escalate-2");
       // Fire once → priorSendCount=0 → "FIRST"
       await fireTaskTrigger("demo:escalate-2", { task: { id: taskId } });
+      markAllCommunicationsSent();
       // Fire again → priorSendCount=1 → "SECOND"
       const second = await fireTaskTrigger("demo:escalate-2", {
         task: { id: taskId },
@@ -724,9 +726,10 @@ describe("triggers/fire integration", () => {
 
     it("open-ended upper bound keeps firing past the explicit ranges", async () => {
       const taskId = await setupTriggerAndTask("demo:escalate-3");
-      await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
-      await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
-      await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
+      for (let fire = 0; fire < 3; fire += 1) {
+        await fireTaskTrigger("demo:escalate-3", { task: { id: taskId } });
+        markAllCommunicationsSent();
+      }
       const fourth = await fireTaskTrigger("demo:escalate-3", {
         task: { id: taskId },
       });
@@ -767,22 +770,23 @@ describe("triggers/fire integration", () => {
         (c) => (c.metadataJson as { subject?: string })?.subject,
       );
       expect(subjects).toEqual(["FIRST", "FIRST"]);
-      expect(store.communications[1]?.status).toBe("SENT");
+      // Queued for approval, not sent — the draft stays DRAFT until a human
+      // clears it at /admin/communications.
+      expect(store.communications[1]?.status).toBe("DRAFT");
     });
 
-    it("returns failed when email infrastructure is disabled so the fire can retry", async () => {
+    it("returns failed when the approval request cannot be queued so the fire can retry", async () => {
       const taskId = await setupTriggerAndTask("demo:escalate-disabled");
-      emailMocks.sendTaskNotificationEmail.mockResolvedValueOnce({
-        status: "disabled",
-        replyTo: `reply+${taskId}@reply.test`,
-      });
+      emailMocks.proposeOutboundMessage.mockRejectedValueOnce(
+        new Error("approval queue offline"),
+      );
 
       const result = await fireTaskTrigger("demo:escalate-disabled", {
         task: { id: taskId },
       });
 
       expect(result.result).toBe("failed");
-      expect(result.error).toContain("first: disabled");
+      expect(result.error).toContain("first: approval_request_failed");
       expect(store.communications[0]?.status).toBe("DRAFT");
     });
 
@@ -807,7 +811,7 @@ describe("triggers/fire integration", () => {
       expect(store.communications[0]?.recipientEmail).toBe(
         "mailto-recipient@example.org",
       );
-      expect(store.communications[0]?.status).toBe("SENT");
+      expect(store.communications[0]?.status).toBe("DRAFT");
     });
 
     it("blocks endpoint emails for private tasks and records the reason", async () => {
@@ -822,7 +826,7 @@ describe("triggers/fire integration", () => {
       });
 
       expect(result.result).toBe("failed");
-      expect(emailMocks.sendTaskNotificationEmail).not.toHaveBeenCalled();
+      expect(emailMocks.proposeOutboundMessage).not.toHaveBeenCalled();
       expect(store.communications[0]?.status).toBe("FAILED");
       expect(store.communications[0]?.errorMessage).toContain(
         "private_task_external_recipient_blocked",
