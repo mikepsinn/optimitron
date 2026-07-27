@@ -182,3 +182,57 @@ test("keeps visual review status pending until the Pages URL is live", () => {
     "visual review should use commit statuses, not a GitHub deployment that retriggers deploy smoke",
   );
 });
+
+test("prefers the exact PR-base visual artifact regardless of overall run status", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const baselineStepStart = workflow.indexOf(
+    "- name: Resolve main visual baseline",
+  );
+  const baselineStepEnd = workflow.indexOf("- name: Resolve PR preview URL");
+  assert.notEqual(baselineStepStart, -1, "visual baseline step is missing");
+  assert.notEqual(
+    baselineStepEnd,
+    -1,
+    "visual baseline step boundary is missing",
+  );
+  const baselineStep = workflow.slice(baselineStepStart, baselineStepEnd);
+
+  assert.match(
+    baselineStep,
+    /base_sha="\$\{\{ github\.event\.pull_request\.base\.sha \}\}"/u,
+  );
+  assert.match(baselineStep, /--commit "\$base_sha"/u);
+  assert.doesNotMatch(
+    baselineStep,
+    /mapfile -t run_candidates < <\(/u,
+    "process substitution must not hide a failed GitHub run query",
+  );
+  assert.match(baselineStep, /exact_run_candidates="\$\(/u);
+  assert.match(baselineStep, /fallback_run_candidates="\$\(/u);
+  assert.match(
+    baselineStep,
+    /if \[ -n "\$run_candidates_output" \]; then\s+mapfile -t run_candidates/u,
+    "an empty successful query should leave the candidate array empty",
+  );
+  assert.doesNotMatch(
+    baselineStep,
+    /--status success/u,
+    "an unrelated failed job must not hide a usable visual artifact",
+  );
+
+  const exactBaseQuery = baselineStep.indexOf('--commit "$base_sha"');
+  const fallbackQuery = baselineStep.indexOf("--limit 20");
+  assert.ok(
+    exactBaseQuery < fallbackQuery,
+    "the exact PR-base run should be tried before recent-main fallbacks",
+  );
+  assert.match(
+    baselineStep,
+    /VISUAL_REVIEW_BASELINE_COMMIT_SHA=\$baseline_sha/u,
+  );
+  assert.match(
+    baselineStep,
+    /VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA=\$base_sha/u,
+  );
+  assert.match(baselineStep, /VISUAL_REVIEW_BASELINE_RUN_ID=\$run_id/u);
+});

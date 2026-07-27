@@ -22,6 +22,15 @@ const VISUAL_REVIEW_MANIFEST_PATH =
   process.env.VISUAL_REVIEW_MANIFEST_PATH ?? "";
 const VISUAL_REVIEW_MANIFEST_JSON =
   process.env.VISUAL_REVIEW_MANIFEST_JSON ?? "";
+const VISUAL_REVIEW_BASELINE_COMMIT_SHA = normalizeCommitSha(
+  process.env.VISUAL_REVIEW_BASELINE_COMMIT_SHA,
+);
+const VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA = normalizeCommitSha(
+  process.env.VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA,
+);
+const VISUAL_REVIEW_BASELINE_RUN_ID = normalizeRunId(
+  process.env.VISUAL_REVIEW_BASELINE_RUN_ID,
+);
 
 if (!PREVIEW_URL) {
   console.error("PREVIEW_URL not set; skipping comment generation.");
@@ -267,6 +276,45 @@ function authLabel(authState) {
   return authState === "demo-logged-in" ? "demo logged-in" : "logged-out";
 }
 
+function normalizeCommitSha(value) {
+  const normalized = String(value ?? "").trim();
+  return /^[0-9a-f]{7,40}$/i.test(normalized) ? normalized : null;
+}
+
+function normalizeRunId(value) {
+  const normalized = String(value ?? "").trim();
+  return /^\d+$/.test(normalized) ? normalized : null;
+}
+
+function shortSha(value) {
+  return value.slice(0, 12);
+}
+
+function buildBaselineSummaryLine() {
+  if (!VISUAL_REVIEW_BASELINE_COMMIT_SHA) return null;
+
+  const baseline = `\`main@${shortSha(VISUAL_REVIEW_BASELINE_COMMIT_SHA)}\``;
+  const run = VISUAL_REVIEW_BASELINE_RUN_ID
+    ? ` from CI run \`${VISUAL_REVIEW_BASELINE_RUN_ID}\``
+    : "";
+
+  if (!VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA) {
+    return `- :straight_ruler: Screenshot baseline: ${baseline}${run}.`;
+  }
+
+  if (
+    VISUAL_REVIEW_BASELINE_COMMIT_SHA ===
+    VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA
+  ) {
+    return `- :straight_ruler: Screenshot baseline: exact PR base ${baseline}${run}.`;
+  }
+
+  return (
+    `- :warning: Screenshot baseline fallback: ${baseline}${run}; ` +
+    `exact PR base \`main@${shortSha(VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA)}\` had no usable artifact.`
+  );
+}
+
 function visualStatusLabel(route) {
   if (route.errored || route.erroredPairs > 0) return "visual review errored";
   const parts = [];
@@ -336,6 +384,8 @@ function renderPacket({
   } else {
     lines.push("- :framed_picture: Visual review link appears here after CI publishes `latest.html`.");
   }
+  const baselineSummaryLine = buildBaselineSummaryLine();
+  if (baselineSummaryLine) lines.push(baselineSummaryLine);
   lines.push(`- :rocket: [Preview deployment](${PREVIEW_URL})`);
   lines.push("- :point_up: Cmd/Ctrl-click review links to keep this PR open.");
   lines.push("- :key: `?login=demo` signs in as the demo user; `?logout=1` clears the session.");
