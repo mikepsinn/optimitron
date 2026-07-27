@@ -68,11 +68,13 @@ export function WarheadGrid() {
       </div>
       <div className="flex flex-col gap-2 text-center sm:flex-row sm:justify-center sm:gap-10">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-foreground">
-          ■ The first {LETHAL_WARHEADS}: one dead civilization
+          <span aria-hidden="true">■ </span>The first {LETHAL_WARHEADS}: one
+          dead civilization
         </p>
         <p className="text-sm font-black uppercase tracking-[0.18em] text-muted-foreground">
-          ▪ The other {(TOTAL_WARHEADS - LETHAL_WARHEADS).toLocaleString("en-US")}:
-          you can only ruin Earth once
+          <span aria-hidden="true">▪ </span>The other{" "}
+          {(TOTAL_WARHEADS - LETHAL_WARHEADS).toLocaleString("en-US")}: you can
+          only ruin Earth once
         </p>
       </div>
       <style jsx global>{`
@@ -82,6 +84,10 @@ export function WarheadGrid() {
           align-content: flex-start;
           gap: 1px;
           content-visibility: auto;
+          /* Reserve space while offscreen so the skipped grid doesn't
+             collapse to 0px and lurch the scrollbar; "auto" adopts the
+             real rendered size after first paint. */
+          contain-intrinsic-size: auto 700px;
         }
 
         .wg-field .wg-dot {
