@@ -71,6 +71,7 @@ const warOnDiseaseDefaultSocialImage = {
 export const ROUTES = {
   home: "/",
   eos: "/eos",
+  invest: "/invest",
   // Optimized Governance
   agencies: "/agencies",
   dfda: "/agencies/dfda",
@@ -1120,6 +1121,23 @@ export const eosLink: NavItem = {
   cta: "View",
 };
 
+export const investLink: NavItem = {
+  href: ROUTES.invest,
+  // TODO(copy): Mike copy gate. Source: Mike 2026-07-26 EOS investor landing brief.
+  label: "Invest in an Optimized Earth",
+  emoji: "📈",
+  // TODO(copy): Mike copy gate. Source: Mike 2026-07-26 EOS investor landing brief.
+  description:
+    "Your governments fund 12,000 warheads and almost no cures. See why that's a bad investment, then claim your voting share in the fix.",
+  // TODO(copy): Mike copy gate. Source: Mike 2026-07-26 EOS investor landing brief.
+  tagline: "Your planet may be eligible for optimization",
+  copyPreview: true,
+  reviewName: "invest",
+  screenshot: true,
+  // TODO(copy): Mike copy gate. Source: Mike 2026-07-26 EOS investor landing brief.
+  cta: "See the pitch",
+};
+
 export const earthOptimizationPrizePaperLink: NavItem = {
   label: "Prize Rulebook",
   href: "https://prize.warondisease.org",
@@ -1859,6 +1877,7 @@ export const routeReviewNavItems = [
   courtLink,
   donateLink,
   eosLink,
+  investLink,
   joinLink,
   foundationsLink,
   signatoriesLink,

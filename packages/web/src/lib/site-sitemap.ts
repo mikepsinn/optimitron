@@ -47,6 +47,7 @@ const STATIC_SITEMAP_ROUTES: SiteSitemapRoute[] = [
   { path: ROUTES.dfda, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.dih, priority: 0.7, changeFrequency: "weekly" },
   { path: ROUTES.wishocracy, priority: 0.8, changeFrequency: "weekly" },
+  { path: ROUTES.invest, priority: 0.85, changeFrequency: "weekly" },
   { path: ROUTES.prize, priority: 0.9, changeFrequency: "daily" },
   { path: ROUTES.scoreboard, priority: 0.9, changeFrequency: "daily" },
   { path: ROUTES.referendum, priority: 0.8, changeFrequency: "daily" },
