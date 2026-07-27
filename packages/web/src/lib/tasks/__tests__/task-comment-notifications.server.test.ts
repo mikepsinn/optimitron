@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   recipientWithinRateLimits: vi.fn(),
   resolveTaskRecipient: vi.fn(),
   proposeOutboundMessage: vi.fn(),
+  sendDraftTaskNotification: vi.fn(),
   taskCommentCreate: vi.fn(),
   taskCommunicationUpdate: vi.fn(),
   taskFindUnique: vi.fn(),
@@ -33,6 +34,7 @@ vi.mock("@/lib/tasks/task-communications.server", () => ({
 
 vi.mock("@/lib/tasks/task-notifications.server", () => ({
   draftTaskNotification: mocks.draftTaskNotification,
+  sendDraftTaskNotification: mocks.sendDraftTaskNotification,
 }));
 
 vi.mock("@/lib/email/outbound-message-approval.server", () => ({
@@ -63,6 +65,12 @@ vi.mock("@/lib/tasks.server", () => ({
 }));
 
 import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
+
+const OWNER_AUTHORIZATION = {
+  kind: "owner",
+  userId: "user_alice",
+} as unknown as OwnerSendAuthorization;
 
 describe("postTaskCommentAndNotify", () => {
   beforeEach(() => {
@@ -97,6 +105,10 @@ describe("postTaskCommentAndNotify", () => {
       metadataJson: { unsubscribeUrl: "https://warondisease.org/unsub" },
     });
     mocks.proposeOutboundMessage.mockResolvedValue({ id: "ear_1" });
+    mocks.sendDraftTaskNotification.mockResolvedValue({
+      providerMessageId: "email_1",
+      status: "sent",
+    });
   });
 
   it("creates the comment and sends the notification on the happy path", async () => {
@@ -199,6 +211,25 @@ describe("postTaskCommentAndNotify", () => {
         recipientEmail: "admin2@example.com",
       }),
     );
+  });
+
+  it("direct-sends a human comment with session-minted owner authority", async () => {
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "Hey Joe, please vote.",
+      ownerAuthorization: OWNER_AUTHORIZATION,
+      taskId: "task_1",
+    });
+
+    expect(result).toEqual({ commentId: "comment_1", status: "sent" });
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorization: OWNER_AUTHORIZATION,
+        communicationId: "comm_1",
+        senderUserId: "user_alice",
+      }),
+    );
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 
   it("renders the comment body verbatim regardless of author override", async () => {

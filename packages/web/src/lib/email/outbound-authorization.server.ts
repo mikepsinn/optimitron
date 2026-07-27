@@ -10,11 +10,9 @@
  * - `approved` — a human approved an `ExternalActionRequest` whose payload hash
  *   still matches the exact bytes about to go out.
  *
- * `approved` values are unforgeable at runtime, not only in the type system.
- * {@link authorizeApprovedSend} is the only function that registers an object
- * in the module-private `mintedApprovals` set, and the send boundary refuses
- * any `approved` authorization that is not in it. An agent that hand-builds
- * `{ kind: "approved", requestId }` gets an exception, not an email.
+ * Authorization values are unforgeable at runtime, not only in the type
+ * system. Their factory functions register objects in a private WeakSet, and
+ * the send boundary refuses hand-built lookalikes.
  */
 import { ExternalActionRequestStatus } from "@optimitron/db/enums";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
@@ -35,22 +33,27 @@ export type TransactionalSendReason =
   | "task_funding_pledge_receipt"
   | "monthly_chain_digest";
 
+const sendAuthorizationBrand: unique symbol = Symbol("SendAuthorization");
+
 export interface TransactionalSendAuthorization {
-  kind: "transactional";
-  reason: TransactionalSendReason;
+  readonly kind: "transactional";
+  readonly reason: TransactionalSendReason;
+  readonly [sendAuthorizationBrand]: true;
 }
 
 export interface OwnerSendAuthorization {
-  kind: "owner";
-  userId: string;
+  readonly kind: "owner";
+  readonly userId: string;
+  readonly [sendAuthorizationBrand]: true;
 }
 
 export interface ApprovedSendAuthorization {
-  kind: "approved";
+  readonly kind: "approved";
   /** The APPROVED ExternalActionRequest this send is executing. */
-  requestId: string;
+  readonly requestId: string;
   /** Hash the approver signed off on, re-verified against the live payload. */
-  approvedPayloadHash: string;
+  readonly approvedPayloadHash: string;
+  readonly [sendAuthorizationBrand]: true;
 }
 
 export type SendAuthorization =
@@ -59,40 +62,75 @@ export type SendAuthorization =
   | ApprovedSendAuthorization;
 
 /**
- * Objects minted by {@link authorizeApprovedSend}. A WeakSet, so a forged
- * literal fails the check and nothing here keeps authorizations alive.
+ * Objects minted by the trusted authorization functions. The WeakSet makes
+ * forged literals fail the check without keeping authorizations alive.
  */
-const mintedApprovals = new WeakSet<ApprovedSendAuthorization>();
+const mintedSendAuthorizations = new WeakSet<SendAuthorization>();
 
 export function transactionalSend(
   reason: TransactionalSendReason,
 ): TransactionalSendAuthorization {
-  return { kind: "transactional", reason };
+  const authorization: TransactionalSendAuthorization = {
+    [sendAuthorizationBrand]: true,
+    kind: "transactional",
+    reason,
+  };
+  mintedSendAuthorizations.add(authorization);
+  return authorization;
 }
 
-export function ownerSend(userId: string): OwnerSendAuthorization {
-  const trimmed = userId.trim();
-  if (!trimmed) {
-    throw new Error("Owner-authorized sends require a signed-in user id");
-  }
-  return { kind: "owner", userId: trimmed };
+/**
+ * Mint direct-send authority from the original browser request.
+ *
+ * Bearer credentials always resolve to the approval path, even when the same
+ * request also carries a valid browser-session cookie. The session and live
+ * User lookup happen here so callers cannot turn an arbitrary `userId` into
+ * owner authority.
+ */
+export async function authorizeOwnerSend(
+  request: Request,
+): Promise<OwnerSendAuthorization | null> {
+  const authHeader = request.headers.get("authorization")?.trim() ?? "";
+  if (/^Bearer\b/iu.test(authHeader)) return null;
+
+  // Dynamic imports avoid a module cycle through auth -> magic-link email ->
+  // this authorization module. Nothing is loaded until a browser request
+  // actually asks to mint owner authority.
+  const [{ getServerSession }, { authOptions }] = await Promise.all([
+    import("next-auth"),
+    import("@/lib/auth"),
+  ]);
+  const session = await getServerSession(authOptions);
+  const sessionUserId = session?.user?.id?.trim();
+  if (!sessionUserId) return null;
+
+  const user = await prisma.user.findFirst({
+    where: { deletedAt: null, id: sessionUserId },
+    select: { id: true },
+  });
+  if (!user) return null;
+
+  const authorization: OwnerSendAuthorization = {
+    [sendAuthorizationBrand]: true,
+    kind: "owner",
+    userId: user.id,
+  };
+  mintedSendAuthorizations.add(authorization);
+  return authorization;
 }
 
 /** True when `authorization` is safe to dispatch. */
 export function isGenuineSendAuthorization(
   authorization: SendAuthorization,
 ): boolean {
-  if (authorization.kind !== "approved") return true;
-  return mintedApprovals.has(authorization);
+  return mintedSendAuthorizations.has(authorization);
 }
 
 export function assertGenuineSendAuthorization(
   authorization: SendAuthorization,
 ): void {
   if (!isGenuineSendAuthorization(authorization)) {
-    throw new Error(
-      "Refusing to send: approved authorization was not minted by authorizeApprovedSend",
-    );
+    throw new Error("Refusing to send: authorization was not genuinely minted");
   }
 }
 
@@ -116,7 +154,7 @@ export interface ApprovedSendVerificationInput {
   destination: string;
   /** Operation the approver saw. */
   operation: string;
-  /** The exact message about to be dispatched, rebuilt from live rows. */
+  /** The exact stored provider envelope about to be dispatched. */
   payload: Record<string, unknown>;
   now?: Date;
 }
@@ -124,9 +162,8 @@ export interface ApprovedSendVerificationInput {
 /**
  * The one way to obtain an `approved` authorization.
  *
- * Re-derives the payload hash from the message that is actually about to go
- * out and compares it to the hash the human approved, so a draft edited after
- * approval cannot ride an old approval out the door.
+ * Re-derives the payload hash from the immutable request about to go out and
+ * compares it to the hash the human approved.
  */
 export async function authorizeApprovedSend(
   input: ApprovedSendVerificationInput,
@@ -183,10 +220,11 @@ export async function authorizeApprovedSend(
   }
 
   const authorization: ApprovedSendAuthorization = {
+    [sendAuthorizationBrand]: true,
     approvedPayloadHash: request.approvedPayloadHash,
     kind: "approved",
     requestId: request.id,
   };
-  mintedApprovals.add(authorization);
+  mintedSendAuthorizations.add(authorization);
   return authorization;
 }

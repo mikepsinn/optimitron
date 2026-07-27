@@ -1,9 +1,7 @@
-/**
- * The dispatcher is the last thing between an approval and a stranger's inbox.
- * These cover the three ways it must refuse: the approval expired, the draft
- * changed after approval, and the request already ran.
- */
-import { ExternalActionRequestStatus } from "@optimitron/db/enums";
+import {
+  ExternalActionRequestStatus,
+  TaskCommunicationStatus,
+} from "@optimitron/db/enums";
 import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -12,15 +10,17 @@ const mocks = vi.hoisted(() => ({
   externalActionUpdateMany: vi.fn(),
   expireExternalActionRequest: vi.fn(),
   finalizeApprovedExternalAction: vi.fn(),
-  formSubmissionUpdateMany: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
-  taskCommunicationFindUnique: vi.fn(),
+  taskCommunicationFindFirst: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    externalActionRequest: { findFirst: mocks.externalActionFindFirst },
-    taskCommunication: { findUnique: mocks.taskCommunicationFindUnique },
+    externalActionRequest: {
+      findFirst: mocks.externalActionFindFirst,
+      updateMany: mocks.externalActionUpdateMany,
+    },
+    taskCommunication: { findFirst: mocks.taskCommunicationFindFirst },
   },
 }));
 
@@ -29,162 +29,125 @@ vi.mock("@/lib/tasks/external-action.server", () => ({
   finalizeApprovedExternalAction: mocks.finalizeApprovedExternalAction,
 }));
 
-vi.mock("@/lib/tasks/task-notifications.server", async () => {
-  const actual = await vi.importActual<
-    typeof import("@/lib/tasks/task-notifications.server")
-  >("@/lib/tasks/task-notifications.server");
-  return {
-    getStoredMessage: actual.getStoredMessage,
-    sendDraftTaskNotification: mocks.sendDraftTaskNotification,
-  };
-});
+vi.mock("@/lib/tasks/task-notifications.server", () => ({
+  sendDraftTaskNotification: mocks.sendDraftTaskNotification,
+}));
 
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { dispatchApprovedOutboundMessage } from "@/lib/email/outbound-message-dispatch.server";
 
 const DESTINATION = "assignee@example.org";
-const APPROVED_MESSAGE = {
+const ENVELOPE = {
+  bcc: ["monitor@example.org"],
+  from: "Treaty <team@optimitron.com>",
+  headers: { "Message-ID": "<comm_1@example.org>" },
   html: "<p>Please review the treaty.</p>",
+  replyTo: "reply@example.org",
   subject: "New task: review the treaty",
   text: "Please review the treaty.",
+  to: [DESTINATION] as [string],
+};
+const PAYLOAD = {
+  communicationId: "comm_1",
+  delivery: {
+    recipientUserId: "user_recipient",
+    scope: "task_notifications" as const,
+  },
+  emailLogId: "approved-task-email:comm_1",
+  envelope: ENVELOPE,
+  version: 2 as const,
 };
 
-async function approvedHash(overrides?: Partial<typeof APPROVED_MESSAGE>) {
-  const message = { ...APPROVED_MESSAGE, ...overrides };
+async function approvedHash() {
   return sha256CanonicalJson({
     destination: DESTINATION,
     operation: OUTBOUND_MESSAGE_OPERATION,
-    payload: {
-      communicationId: "comm_1",
-      from: null,
-      html: message.html,
-      recipientEmail: DESTINATION,
-      subject: message.subject,
-      text: message.text,
-    },
+    payload: PAYLOAD,
   });
 }
 
-function mockRequest(overrides?: {
+async function mockRequest(overrides?: {
   expiresAt?: Date;
+  idempotencyKey?: string;
   status?: ExternalActionRequestStatus;
 }) {
+  const hash = await approvedHash();
   mocks.externalActionFindFirst.mockResolvedValue({
-    approvedPayloadHash: null,
+    approvedPayloadHash: hash,
     destination: DESTINATION,
     expiresAt: overrides?.expiresAt ?? new Date(Date.now() + 60_000),
     id: "ear_1",
+    idempotencyKey: overrides?.idempotencyKey ?? "outbound-message:v2:comm_1",
     operation: OUTBOUND_MESSAGE_OPERATION,
-    payloadHash: null,
-    payloadJson: {
-      communicationId: "comm_1",
-      from: null,
-      html: APPROVED_MESSAGE.html,
-      recipientEmail: DESTINATION,
-      subject: APPROVED_MESSAGE.subject,
-      text: APPROVED_MESSAGE.text,
-    },
+    payloadHash: hash,
+    payloadJson: PAYLOAD,
     status: overrides?.status ?? ExternalActionRequestStatus.APPROVED,
+    taskId: "task_1",
   });
 }
 
-function mockDraft(message = APPROVED_MESSAGE) {
-  mocks.taskCommunicationFindUnique.mockResolvedValue({
+function mockCommunication(
+  status: TaskCommunicationStatus = TaskCommunicationStatus.DRAFT,
+) {
+  mocks.taskCommunicationFindFirst.mockResolvedValue({
     deletedAt: null,
+    emailLogId: status === TaskCommunicationStatus.SENT ? "log_1" : null,
     id: "comm_1",
-    metadataJson: {
-      html: message.html,
-      subject: message.subject,
-      text: message.text,
-    },
-    recipientEmail: DESTINATION,
+    providerMessageId:
+      status === TaskCommunicationStatus.SENT ? "email_1" : null,
     senderUserId: "user_creator",
+    status,
   });
 }
 
 describe("dispatchApprovedOutboundMessage", () => {
   beforeEach(() => {
     for (const fn of Object.values(mocks)) fn.mockReset();
+    mocks.externalActionUpdateMany.mockResolvedValue({ count: 1 });
     mocks.sendDraftTaskNotification.mockResolvedValue({
-      emailLogId: "log_1",
+      emailLogId: "approved-task-email:comm_1",
       providerMessageId: "email_1",
       status: "sent",
     });
   });
 
   it("never dispatches an approval that outlived its window", async () => {
-    // The hash matches; only the clock disqualifies this one.
-    const hash = await approvedHash();
-    mocks.externalActionFindFirst.mockResolvedValue({
-      approvedPayloadHash: hash,
-      destination: DESTINATION,
-      expiresAt: new Date(Date.now() - 60_000),
-      id: "ear_1",
-      operation: OUTBOUND_MESSAGE_OPERATION,
-      payloadHash: hash,
-      payloadJson: {
-        communicationId: "comm_1",
-        from: null,
-        html: APPROVED_MESSAGE.html,
-        recipientEmail: DESTINATION,
-        subject: APPROVED_MESSAGE.subject,
-        text: APPROVED_MESSAGE.text,
-      },
-      status: ExternalActionRequestStatus.APPROVED,
-    });
-    mockDraft();
+    await mockRequest({ expiresAt: new Date(Date.now() - 60_000) });
+    mockCommunication();
 
-    const result = await dispatchApprovedOutboundMessage({
-      approverUserId: "user_admin",
-      externalActionRequestId: "ear_1",
-    });
-
-    expect(result).toEqual({ status: "expired" });
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
+    ).resolves.toEqual({ status: "expired" });
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
     expect(mocks.expireExternalActionRequest).toHaveBeenCalledWith("ear_1");
   });
 
-  it("refuses a draft edited after the human approved it", async () => {
-    const hash = await approvedHash();
-    mocks.externalActionFindFirst.mockResolvedValue({
-      approvedPayloadHash: hash,
-      destination: DESTINATION,
-      expiresAt: new Date(Date.now() + 60_000),
-      id: "ear_1",
-      operation: OUTBOUND_MESSAGE_OPERATION,
-      payloadHash: hash,
-      payloadJson: {
-        communicationId: "comm_1",
-        from: null,
-        html: APPROVED_MESSAGE.html,
-        recipientEmail: DESTINATION,
-        subject: APPROVED_MESSAGE.subject,
-        text: APPROVED_MESSAGE.text,
-      },
-      status: ExternalActionRequestStatus.APPROVED,
-    });
-    mockDraft({
-      ...APPROVED_MESSAGE,
-      text: "Please review the treaty. Also wire us $5,000.",
-    });
+  it("fails closed when the communication is not in the approved task", async () => {
+    await mockRequest();
+    mocks.taskCommunicationFindFirst.mockResolvedValue(null);
 
-    const result = await dispatchApprovedOutboundMessage({
-      approverUserId: "user_admin",
-      externalActionRequestId: "ear_1",
-    });
-
-    expect(result).toEqual({ status: "failed", reason: "payload_mismatch" });
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
+    ).resolves.toEqual({ status: "failed", reason: "draft_not_found" });
+    expect(mocks.taskCommunicationFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: "comm_1", taskId: "task_1" }),
+      }),
+    );
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
     expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        executedByUserId: "user_admin",
-        result: "FAILED",
-      }),
+      expect.objectContaining({ result: "FAILED" }),
     );
   });
 
   it("is a no-op on a request that already ran", async () => {
-    mockRequest({ status: ExternalActionRequestStatus.EXECUTED });
+    await mockRequest({ status: ExternalActionRequestStatus.EXECUTED });
 
     await expect(
       dispatchApprovedOutboundMessage({
@@ -196,7 +159,7 @@ describe("dispatchApprovedOutboundMessage", () => {
   });
 
   it("refuses a request nobody approved", async () => {
-    mockRequest({ status: ExternalActionRequestStatus.PENDING });
+    await mockRequest({ status: ExternalActionRequestStatus.PENDING });
 
     await expect(
       dispatchApprovedOutboundMessage({
@@ -207,42 +170,90 @@ describe("dispatchApprovedOutboundMessage", () => {
     expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
   });
 
-  it("sends and records the receipt when the payload still matches", async () => {
-    const hash = await approvedHash();
-    mocks.externalActionFindFirst.mockResolvedValue({
-      approvedPayloadHash: hash,
-      destination: DESTINATION,
-      expiresAt: new Date(Date.now() + 60_000),
-      id: "ear_1",
-      operation: OUTBOUND_MESSAGE_OPERATION,
-      payloadHash: hash,
-      payloadJson: {
-        communicationId: "comm_1",
-        from: null,
-        html: APPROVED_MESSAGE.html,
-        recipientEmail: DESTINATION,
-        subject: APPROVED_MESSAGE.subject,
-        text: APPROVED_MESSAGE.text,
-      },
-      status: ExternalActionRequestStatus.APPROVED,
-    });
-    mockDraft();
+  it("dispatches the stored provider envelope and records its receipt", async () => {
+    await mockRequest();
+    mockCommunication();
 
-    const result = await dispatchApprovedOutboundMessage({
-      approverUserId: "user_admin",
-      externalActionRequestId: "ear_1",
-    });
-
-    expect(result).toEqual({ status: "sent", providerMessageId: "email_1" });
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
+    ).resolves.toEqual({ status: "sent", providerMessageId: "email_1" });
     expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
+        approvedDelivery: {
+          emailLogId: "approved-task-email:comm_1",
+          envelope: ENVELOPE,
+          idempotencyKey: "outbound-message:v2:comm_1",
+          recipientUserId: "user_recipient",
+          scope: "task_notifications",
+        },
         authorization: expect.objectContaining({ kind: "approved" }),
         communicationId: "comm_1",
       }),
     );
     expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
+      expect.objectContaining({ result: "EXECUTED" }),
+    );
+  });
+
+  it("derives the delivery key from the approved payload, not mutable request metadata", async () => {
+    await mockRequest({ idempotencyKey: "tampered-delivery-key" });
+    mockCommunication();
+
+    await dispatchApprovedOutboundMessage({
+      approverUserId: "user_admin",
+      externalActionRequestId: "ear_1",
+    });
+
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
-        executedByUserId: "user_admin",
+        approvedDelivery: expect.objectContaining({
+          idempotencyKey: "outbound-message:v2:comm_1",
+        }),
+      }),
+    );
+  });
+
+  it("leaves ambiguous delivery failures approved and retryable", async () => {
+    await mockRequest();
+    mockCommunication();
+    mocks.sendDraftTaskNotification.mockResolvedValue({
+      reason: "transport_error",
+      status: "retryable",
+    });
+
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
+    ).resolves.toEqual({ status: "retryable", reason: "transport_error" });
+    expect(mocks.externalActionUpdateMany).toHaveBeenCalledWith({
+      where: { id: "ear_1", status: ExternalActionRequestStatus.APPROVED },
+      data: { failureMessage: "retryable:transport_error" },
+    });
+    expect(mocks.finalizeApprovedExternalAction).not.toHaveBeenCalled();
+  });
+
+  it("heals an approved request when its communication is already sent", async () => {
+    await mockRequest();
+    mockCommunication(TaskCommunicationStatus.SENT);
+
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_1",
+      }),
+    ).resolves.toEqual({ status: "already_dispatched" });
+    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        receipt: expect.objectContaining({
+          emailLogId: "log_1",
+          providerMessageId: "email_1",
+        }),
         result: "EXECUTED",
       }),
     );

@@ -1,10 +1,7 @@
 import { DEFAULT_UNSUBSCRIBE_EMAIL, parseEmailFromHeader } from "@/lib/email/from-address";
 import type { InboundEmailEvent } from "@/lib/email/inbound-reply";
 import { parseReplyAddress } from "@/lib/email/task-notification";
-import {
-  applyAddressUnsubscribe,
-  applyUnsubscribe,
-} from "@/lib/email/suppression.server";
+import { applyUnsubscribe } from "@/lib/email/suppression.server";
 import { prisma } from "@/lib/prisma";
 import { unsubscribeTaskCommunicationByReply } from "@/lib/tasks/task-notifications.server";
 
@@ -102,17 +99,6 @@ export async function processInboundUnsubscribe(
     };
   }
 
-  // No account. Record the refusal address-keyed BEFORE touching task
-  // communications, so it holds even when no matching communication is found —
-  // somebody replying "unsubscribe" to a cold email has no task row at all, and
-  // previously that reply was silently discarded.
-  await applyAddressUnsubscribe({
-    email: senderEmail,
-    scope,
-    via: "reply",
-    reason: "Replied unsubscribe",
-  });
-
   const taskOptOut = await unsubscribeTaskCommunicationByReply({
     inReplyTo: event.inReplyTo,
     recipientEmail: senderEmail,
@@ -128,12 +114,9 @@ export async function processInboundUnsubscribe(
     };
   }
 
-  // No matching task communication, but the address-keyed suppression above
-  // succeeded, so the person IS unsubscribed. Reporting "skipped" here would
-  // claim we ignored a request we actually honoured.
   return {
     handled: true,
-    scope,
-    status: "unsubscribed",
+    reason: taskOptOut.reason,
+    status: "skipped",
   };
 }

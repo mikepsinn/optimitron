@@ -1,8 +1,6 @@
-import { ExternalActionRequestStatus } from "@optimitron/db/enums";
 import { NextResponse } from "next/server";
 import { requireTaskRequestAuth } from "@/lib/auth-utils";
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
-import { dispatchApprovedOutboundMessage } from "@/lib/email/outbound-message-dispatch.server";
 import { McpScope } from "@/lib/mcp-scopes";
 import { decideExternalActionRequest } from "@/lib/tasks/external-action.server";
 
@@ -27,19 +25,12 @@ export async function POST(
         externalActionRequestId: id,
       },
       userId,
-      { clientAccessBoundary },
+      {
+        blockedOperations: [OUTBOUND_MESSAGE_OPERATION],
+        clientAccessBoundary,
+      },
     );
-    // Approving an outbound message is the send. The dispatcher re-verifies
-    // the payload hash before anything leaves.
-    const dispatch =
-      result.status === ExternalActionRequestStatus.APPROVED &&
-      result.operation === OUTBOUND_MESSAGE_OPERATION
-        ? await dispatchApprovedOutboundMessage({
-            approverUserId: userId,
-            externalActionRequestId: result.id,
-          })
-        : null;
-    return NextResponse.json({ data: result, dispatch, success: true });
+    return NextResponse.json({ data: result, success: true });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

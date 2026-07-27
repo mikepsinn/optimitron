@@ -508,11 +508,6 @@ export async function fireSpawnCommunication(
           triggerKey: trigger.triggerKey,
           specKind: spec.kind,
           subject,
-          bodyText,
-          bodyHtml,
-          // `text`/`html` are the keys the shared draft reader uses, so an
-          // approved trigger email dispatches through the same path as every
-          // other task notification.
           text: bodyText,
           html: bodyHtml,
           dedupeKey,
@@ -528,32 +523,15 @@ export async function fireSpawnCommunication(
       unsentReasons.push(`${spec.kind}: ${resolved.reason}`);
       continue;
     }
-    const recipient = resolved.email;
 
     // Reminder triggers no longer mail anyone directly. The draft is queued
     // for approval and stays DRAFT until a human clears it.
     try {
-      const request = await proposeOutboundMessage({
+      await proposeOutboundMessage({
         actorUserId,
-        content: {
-          communicationId: communication.id,
-          from: null,
-          html: bodyHtml,
-          recipientEmail: recipient,
-          subject,
-          text: bodyText,
-        },
+        communicationId: communication.id,
         db: tx,
         taskId,
-      });
-      await tx.taskCommunication.update({
-        where: { id: communication.id },
-        data: {
-          metadataJson: {
-            ...(communication.metadataJson as Prisma.JsonObject),
-            externalActionRequestId: request.id,
-          } as Prisma.InputJsonValue,
-        },
       });
       sentCount++;
     } catch (error) {

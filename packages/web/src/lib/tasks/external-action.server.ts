@@ -73,7 +73,7 @@ export const ProposeExternalActionSchema = z
 
 export const DecideExternalActionSchema = z
   .object({
-    decision: z.enum(["APPROVE", "REJECT"]),
+    decision: z.enum(["APPROVE", "REJECT", "RETRY"]),
     externalActionRequestId: z.string().trim().min(1),
   })
   .strict();
@@ -130,7 +130,7 @@ async function loadActor(
 ) {
   return tx.user.findUnique({
     where: { id: actorUserId },
-    select: { isAdmin: true, personId: true },
+    select: { personId: true },
   });
 }
 
@@ -310,14 +310,9 @@ export async function proposeExternalAction(
 }
 
 /** MANAGE access for the actor, intersected with the delegated client's
- * grant boundary when the call arrives via an OAuth token.
- *
- * Platform admins reach every task: they are the humans on the hook for what
- * this app mails out, and an approval queue only one person can clear is an
- * approval queue nobody clears. The delegated client's grant boundary still
- * applies to them — being an admin does not widen a token someone issued. */
+ * grant boundary when the call arrives via an OAuth token. */
 function actionTaskWhere(
-  actor: { isAdmin: boolean; personId: string | null },
+  actor: { personId: string | null },
   actorUserId: string,
   clientAccessBoundary?: TaskClientAccessBoundary,
 ): Prisma.TaskWhereInput {
@@ -329,7 +324,7 @@ function actionTaskWhere(
   return {
     deletedAt: null,
     AND: [
-      ...(actor.isAdmin ? [] : [manageWhere]),
+      manageWhere,
       ...(clientAccessBoundary
         ? [getTaskClientAccessWhere(clientAccessBoundary)]
         : []),
@@ -344,6 +339,7 @@ export async function listExternalActionRequestsForHuman(input: {
   /** Narrow to one operation in the query, so the limit cannot crowd it out. */
   operation?: string | null;
   status?: ExternalActionRequestStatus | null;
+  statuses?: readonly ExternalActionRequestStatus[] | null;
   taskId?: string | null;
 }) {
   const actor = await loadActor(prisma, input.actorUserId);
@@ -383,7 +379,10 @@ export async function listExternalActionRequestsForHuman(input: {
     where: {
       deletedAt: null,
       operation: input.operation ?? undefined,
-      status: input.status ?? undefined,
+      status:
+        input.statuses && input.statuses.length > 0
+          ? { in: [...input.statuses] }
+          : (input.status ?? undefined),
       taskId: input.taskId ?? undefined,
       task: taskWhere,
     },
@@ -396,21 +395,31 @@ export async function listExternalActionRequestsForHuman(input: {
 export async function decideExternalActionRequest(
   rawInput: unknown,
   actorUserId: string,
-  options?: { clientAccessBoundary?: TaskClientAccessBoundary },
+  options?: {
+    /** Operations this caller may never decide, even with task access. */
+    blockedOperations?: readonly string[];
+    clientAccessBoundary?: TaskClientAccessBoundary;
+  },
 ) {
   const input = DecideExternalActionSchema.parse(rawInput);
   return prisma.$transaction(async (tx) => {
     const actor = await loadActor(tx, actorUserId);
     if (!actor) throw new Error("External action request not found");
+    const requiredStatus =
+      input.decision === "RETRY"
+        ? ExternalActionRequestStatus.APPROVED
+        : ExternalActionRequestStatus.PENDING;
     const request = await tx.externalActionRequest.findFirst({
       where: {
         deletedAt: null,
         id: input.externalActionRequestId,
-        status: ExternalActionRequestStatus.PENDING,
-        // Anyone with MANAGE access on the task can decide, plus admins.
-        // Restricting approval to the original requester made the queue
-        // unusable for the exact case it exists for: an agent proposes, a
-        // human decides.
+        operation:
+          options?.blockedOperations && options.blockedOperations.length > 0
+            ? { notIn: [...options.blockedOperations] }
+            : undefined,
+        status: requiredStatus,
+        // Any human with MANAGE access on the task can decide. Platform admin
+        // status alone never grants routine access to private task payloads.
         task: actionTaskWhere(
           actor,
           actorUserId,
@@ -420,6 +429,11 @@ export async function decideExternalActionRequest(
       select: externalActionSelect(),
     });
     if (!request) throw new Error("External action request not found");
+
+    // RETRY is authorization-only. The caller still has to execute the exact
+    // approved request through its dispatcher, which re-verifies the pinned
+    // payload hash before performing the side effect.
+    if (input.decision === "RETRY") return request;
 
     const now = new Date();
     // Guard every PENDING → terminal transition with a conditional write so
@@ -551,6 +565,7 @@ async function writeTerminalExternalActionResult(
   tx: ExternalActionDb,
   request: { id: string; payloadHash: string },
   input: {
+    allowExpiredExecution?: boolean;
     executedAt: Date;
     executedByAgentExecutorId?: string | null;
     executedByUserId?: string | null;
@@ -563,7 +578,14 @@ async function writeTerminalExternalActionResult(
     where: {
       approvedPayloadHash: request.payloadHash,
       id: request.id,
-      status: ExternalActionRequestStatus.APPROVED,
+      status: input.allowExpiredExecution
+        ? {
+            in: [
+              ExternalActionRequestStatus.APPROVED,
+              ExternalActionRequestStatus.EXPIRED,
+            ],
+          }
+        : ExternalActionRequestStatus.APPROVED,
     },
     data: {
       executedAt: input.executedAt,
@@ -635,6 +657,12 @@ export async function finalizeApprovedExternalAction(input: {
       return request;
     }
     return writeTerminalExternalActionResult(tx, request, {
+      // The dispatcher only supplies an execution receipt after its durable
+      // communication/email ledger write. That lets a send authorized just
+      // before expiry heal a racing EXPIRED row without making arbitrary
+      // expired requests executable.
+      allowExpiredExecution:
+        input.result === "EXECUTED" && input.receipt != null,
       executedAt: input.now ?? new Date(),
       executedByUserId: input.executedByUserId,
       failureMessage: input.failureMessage ?? null,

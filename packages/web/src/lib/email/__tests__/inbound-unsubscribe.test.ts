@@ -2,7 +2,6 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { InboundEmailEvent } from "../inbound-reply";
 
 const mocks = vi.hoisted(() => ({
-  applyAddressUnsubscribe: vi.fn(),
   applyUnsubscribe: vi.fn(),
   unsubscribeTaskCommunicationByReply: vi.fn(),
   userFindUnique: vi.fn(),
@@ -17,7 +16,6 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("../suppression.server", () => ({
-  applyAddressUnsubscribe: mocks.applyAddressUnsubscribe,
   applyUnsubscribe: mocks.applyUnsubscribe,
 }));
 
@@ -100,34 +98,6 @@ describe("processInboundUnsubscribe", () => {
     expect(mocks.unsubscribeTaskCommunicationByReply).toHaveBeenCalledWith({
       recipientEmail: "citizen@example.org",
       taskId: "task_1",
-    });
-  });
-
-  it("records an address-keyed opt-out when no account and no task communication match", async () => {
-    // The cold-outreach case: somebody an agent contacted has no User row and
-    // no TaskCommunication, so before this the reply was discarded and the next
-    // campaign mailed them again.
-    mocks.userFindUnique.mockResolvedValue(null);
-    mocks.unsubscribeTaskCommunicationByReply.mockResolvedValue({
-      reason: "no_matching_communication",
-      status: "skipped",
-    });
-
-    await expect(
-      processInboundUnsubscribe(
-        inbound({ to: "unsubscribe@updates.warondisease.org", subject: "unsubscribe" }),
-      ),
-    ).resolves.toEqual({
-      handled: true,
-      scope: "all",
-      status: "unsubscribed",
-    });
-
-    expect(mocks.applyAddressUnsubscribe).toHaveBeenCalledWith({
-      email: "citizen@example.org",
-      scope: "all",
-      via: "reply",
-      reason: "Replied unsubscribe",
     });
   });
 });

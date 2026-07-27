@@ -2,27 +2,14 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type { EmailScope } from "@/lib/email/scopes";
 
 export interface UnsubTokenPayload {
-  /** Empty for recipients with no account; `email` identifies them instead. */
-  userId?: string;
-  /**
-   * Set instead of `userId` when the recipient has no `User` row. Normalized
-   * before signing so a link generated from one casing verifies against the
-   * address stored in `EmailSuppression`.
-   */
-  email?: string;
+  userId: string;
   scope: EmailScope;
   /** Optional — when provided, ties the unsubscribe event back to the email that triggered it. */
   emailLogId?: string;
 }
 
 function payloadToCanonicalString(payload: UnsubTokenPayload): string {
-  // The email segment is appended ONLY when present. Adding it unconditionally
-  // would change the canonical string for every user-keyed payload, silently
-  // invalidating every unsubscribe link already sitting in somebody's inbox —
-  // which `signUnsubToken` promises will keep working indefinitely.
-  const base = `${payload.userId ?? ""}|${payload.scope}|${payload.emailLogId ?? ""}`;
-  const email = payload.email?.trim().toLowerCase();
-  return email ? `${base}|${email}` : base;
+  return `${payload.userId}|${payload.scope}|${payload.emailLogId ?? ""}`;
 }
 
 function computeHmac(payload: UnsubTokenPayload): string {

@@ -1,16 +1,18 @@
 /**
  * Sends a message a human approved — and nothing else.
  *
- * Approving in the UI calls this. It rebuilds the outbound payload from the
- * live draft, re-hashes it, and refuses to dispatch unless that hash still
- * matches what the approver signed. Editing a draft after approval, or letting
- * an approval sit past its window, means no email.
+ * Approving in the UI calls this. It validates the stored immutable envelope
+ * against the hash the human approved, then sends that exact envelope. Letting
+ * an approval sit past its window means no email.
  *
  * Safe to call twice: the request's APPROVED→terminal write is conditional, the
  * draft is only sent while it is still DRAFT, and the EmailLog dedupe key
  * catches anything that slips past both.
  */
-import { ExternalActionRequestStatus } from "@optimitron/db/enums";
+import {
+  ExternalActionRequestStatus,
+  TaskCommunicationStatus,
+} from "@optimitron/db/enums";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import {
@@ -19,16 +21,14 @@ import {
 } from "@/lib/email/outbound-authorization.server";
 import {
   OUTBOUND_MESSAGE_OPERATION,
-  outboundMessageApprovalPayload,
+  OutboundMessageApprovalPayloadSchema,
+  outboundMessageIdempotencyKey,
 } from "@/lib/email/outbound-message-approval.server";
 import {
   expireExternalActionRequest,
   finalizeApprovedExternalAction,
 } from "@/lib/tasks/external-action.server";
-import {
-  getStoredMessage,
-  sendDraftTaskNotification,
-} from "@/lib/tasks/task-notifications.server";
+import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
 
 const log = createLogger("outbound-message-dispatch");
 
@@ -37,15 +37,18 @@ export type DispatchOutboundMessageResult =
   | { status: "already_dispatched" }
   | { status: "expired" }
   | { status: "not_approved" }
+  | { status: "retryable"; reason: string }
   | { status: "unsupported_operation" }
   | { status: "failed"; reason: string };
 
-function readPayloadString(payload: unknown, key: string): string | null {
-  if (payload === null || typeof payload !== "object" || Array.isArray(payload)) {
-    return null;
-  }
-  const value = (payload as Record<string, unknown>)[key];
-  return typeof value === "string" ? value : null;
+async function recordRetryableFailure(requestId: string, reason: string) {
+  await prisma.externalActionRequest.updateMany({
+    where: {
+      id: requestId,
+      status: ExternalActionRequestStatus.APPROVED,
+    },
+    data: { failureMessage: `retryable:${reason}` },
+  });
 }
 
 export async function dispatchApprovedOutboundMessage(input: {
@@ -63,6 +66,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       operation: true,
       payloadJson: true,
       status: true,
+      taskId: true,
     },
   });
   if (!request) return { status: "failed", reason: "request_not_found" };
@@ -82,43 +86,55 @@ export async function dispatchApprovedOutboundMessage(input: {
     return { status: "not_approved" };
   }
 
-  const communicationId = readPayloadString(
+  const parsedPayload = OutboundMessageApprovalPayloadSchema.safeParse(
     request.payloadJson,
-    "communicationId",
   );
-  if (!communicationId) {
-    return { status: "failed", reason: "payload_missing_communication" };
+  if (!parsedPayload.success) {
+    await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
+      externalActionRequestId: request.id,
+      failureMessage: "invalid_outbound_message_payload",
+      now,
+      result: "FAILED",
+    });
+    return { status: "failed", reason: "invalid_payload" };
+  }
+  const payload = parsedPayload.data;
+  if (request.destination !== payload.envelope.to[0]) {
+    await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
+      externalActionRequestId: request.id,
+      failureMessage: "destination_does_not_match_provider_envelope",
+      now,
+      result: "FAILED",
+    });
+    return { status: "failed", reason: "destination_mismatch" };
   }
 
-  const communication = await prisma.taskCommunication.findUnique({
-    where: { id: communicationId },
+  const communication = await prisma.taskCommunication.findFirst({
+    where: {
+      id: payload.communicationId,
+      taskId: request.taskId,
+    },
     select: {
       deletedAt: true,
+      emailLogId: true,
       id: true,
-      metadataJson: true,
-      recipientEmail: true,
+      providerMessageId: true,
       senderUserId: true,
+      status: true,
     },
   });
   if (!communication || communication.deletedAt) {
+    await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
+      externalActionRequestId: request.id,
+      failureMessage: "task_scoped_draft_not_found",
+      now,
+      result: "FAILED",
+    });
     return { status: "failed", reason: "draft_not_found" };
   }
-  const message = getStoredMessage(communication.metadataJson);
-  if (!message || !communication.recipientEmail) {
-    return { status: "failed", reason: "draft_missing_message" };
-  }
-
-  // Rebuild what is about to go out, from the live draft, and let
-  // authorizeApprovedSend compare it to the approved hash.
-  const from = readPayloadString(request.payloadJson, "from");
-  const livePayload = outboundMessageApprovalPayload({
-    communicationId: communication.id,
-    from,
-    html: message.html ?? null,
-    recipientEmail: communication.recipientEmail,
-    subject: message.subject,
-    text: message.text,
-  });
 
   let authorization;
   try {
@@ -127,7 +143,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       externalActionRequestId: request.id,
       now,
       operation: request.operation,
-      payload: livePayload,
+      payload,
     });
   } catch (error) {
     if (error instanceof OutboundApprovalError) {
@@ -147,11 +163,32 @@ export async function dispatchApprovedOutboundMessage(input: {
     throw error;
   }
 
+  if (communication.status === TaskCommunicationStatus.SENT) {
+    await finalizeApprovedExternalAction({
+      executedByUserId: input.approverUserId,
+      externalActionRequestId: request.id,
+      now,
+      receipt: {
+        emailLogId: communication.emailLogId,
+        providerMessageId: communication.providerMessageId,
+        taskCommunicationId: communication.id,
+      },
+      result: "EXECUTED",
+    });
+    return { status: "already_dispatched" };
+  }
+
   try {
     const result = await sendDraftTaskNotification({
+      approvedDelivery: {
+        emailLogId: payload.emailLogId,
+        envelope: payload.envelope,
+        idempotencyKey: outboundMessageIdempotencyKey(payload.communicationId),
+        recipientUserId: payload.delivery.recipientUserId,
+        scope: payload.delivery.scope,
+      },
       authorization,
       communicationId: communication.id,
-      from,
       now,
       senderUserId: communication.senderUserId,
     });
@@ -171,12 +208,46 @@ export async function dispatchApprovedOutboundMessage(input: {
       return { status: "sent", providerMessageId: result.providerMessageId };
     }
 
+    if (result.status === "already_sent") {
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        now,
+        receipt: {
+          emailLogId: result.emailLogId,
+          providerMessageId: result.providerMessageId ?? null,
+          taskCommunicationId: communication.id,
+        },
+        result: "EXECUTED",
+      });
+      return { status: "already_dispatched" };
+    }
+
+    if (result.status === "retryable") {
+      await recordRetryableFailure(request.id, result.reason);
+      return { status: "retryable", reason: result.reason };
+    }
+
     // The draft left DRAFT without this call sending it — usually a concurrent
     // dispatcher that already closed the request, in which case
     // finalizeApprovedExternalAction returns the terminal row untouched. If it
     // left DRAFT some other way, close the request here rather than leaving it
     // APPROVED with its draft already consumed until the window expires.
     if (result.status === "already_processed") {
+      if (result.communication.status === TaskCommunicationStatus.SENT) {
+        await finalizeApprovedExternalAction({
+          executedByUserId: input.approverUserId,
+          externalActionRequestId: request.id,
+          now,
+          receipt: {
+            emailLogId: result.communication.emailLogId,
+            providerMessageId: result.communication.providerMessageId,
+            taskCommunicationId: result.communication.id,
+          },
+          result: "EXECUTED",
+        });
+        return { status: "already_dispatched" };
+      }
       await finalizeApprovedExternalAction({
         executedByUserId: input.approverUserId,
         externalActionRequestId: request.id,
@@ -205,13 +276,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       error,
       externalActionRequestId: request.id,
     });
-    await finalizeApprovedExternalAction({
-      executedByUserId: input.approverUserId,
-      externalActionRequestId: request.id,
-      failureMessage: reason,
-      now,
-      result: "FAILED",
-    });
-    return { status: "failed", reason };
+    await recordRetryableFailure(request.id, reason);
+    return { status: "retryable", reason };
   }
 }

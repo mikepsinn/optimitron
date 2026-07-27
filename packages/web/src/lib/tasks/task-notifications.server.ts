@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { nanoid } from "nanoid";
 import {
   EmailLogStatus,
@@ -20,10 +21,27 @@ import {
   markEmailLogStatus,
 } from "@/lib/email/email-log.server";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
-import { isEmailScope, type EmailScope } from "@/lib/email/scopes";
+import {
+  isEmailScope,
+  isTransactionalScope,
+  type EmailScope,
+} from "@/lib/email/scopes";
 import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
-import { sendExternalResendEmail, sendResendEmail } from "@/lib/email/resend";
+import {
+  prepareResendProviderEnvelope,
+  ResendDeliveryError,
+  sendExternalResendEmail,
+  sendPreparedResendEmail,
+  sendResendEmail,
+  type ResendProviderEnvelope,
+} from "@/lib/email/resend";
 import { getConfiguredTaskReplyAddress } from "@/lib/email/task-notification";
+import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
+import {
+  WISHONIA_TAGLINES,
+  WISHONIA_TITLES,
+  type WishoniaSignatureSelection,
+} from "@/lib/email/wishonia-signature";
 import { prisma } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/url";
 
@@ -83,6 +101,26 @@ export interface SendDraftTaskNotificationInput {
   from?: string | null;
   now?: Date;
   senderUserId?: string | null;
+  /** Immutable provider request approved through ExternalActionRequest. */
+  approvedDelivery?: {
+    emailLogId: string;
+    envelope: ResendProviderEnvelope;
+    idempotencyKey: string;
+    recipientUserId: string | null;
+    scope: EmailScope;
+  };
+}
+
+type TaskNotificationDb = Pick<Prisma.TransactionClient, "taskCommunication">;
+const RESEND_IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1_000;
+
+export interface PreparedTaskNotificationApproval {
+  delivery: {
+    recipientUserId: string | null;
+    scope: EmailScope;
+  };
+  emailLogId: string;
+  envelope: ResendProviderEnvelope;
 }
 
 function escapeHtml(value: string) {
@@ -218,6 +256,18 @@ function getStoredUnsubscribeUrl(metadata: unknown) {
   return typeof value === "string" && value.trim() ? value : null;
 }
 
+function getStoredReplyTo(metadata: unknown) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
+    return null;
+  }
+  const value = (metadata as Record<string, unknown>).replyTo;
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
 function getStoredDedupeKey(metadata: unknown) {
   if (
     metadata === null ||
@@ -320,10 +370,11 @@ function getStoredMessageId(metadata: unknown) {
 
 async function getPriorThreadMessageId(input: {
   communicationId: string;
+  db?: TaskNotificationDb;
   recipientEmail: string;
   taskId: string;
 }) {
-  const prior = await prisma.taskCommunication.findFirst({
+  const prior = await (input.db ?? prisma).taskCommunication.findFirst({
     where: {
       channel: TaskCommunicationChannel.EMAIL,
       deletedAt: null,
@@ -338,6 +389,96 @@ async function getPriorThreadMessageId(input: {
   });
 
   return getStoredMessageId(prior?.metadataJson);
+}
+
+function deterministicWishoniaSelection(
+  communicationId: string,
+): WishoniaSignatureSelection {
+  const digest = createHash("sha256").update(communicationId).digest();
+  return {
+    title: WISHONIA_TITLES[digest.readUInt32BE(0) % WISHONIA_TITLES.length]!,
+    tagline:
+      WISHONIA_TAGLINES[digest.readUInt32BE(4) % WISHONIA_TAGLINES.length]!,
+  };
+}
+
+/** Resolve and freeze the exact Resend request before asking for approval. */
+export async function prepareTaskNotificationForApproval(input: {
+  communicationId: string;
+  db?: TaskNotificationDb;
+  from: string | null;
+  taskId: string;
+}): Promise<PreparedTaskNotificationApproval> {
+  const db = input.db ?? prisma;
+  const communication = await db.taskCommunication.findFirst({
+    where: {
+      deletedAt: null,
+      id: input.communicationId,
+      status: TaskCommunicationStatus.DRAFT,
+      taskId: input.taskId,
+    },
+    select: {
+      id: true,
+      metadataJson: true,
+      recipientEmail: true,
+      recipientUserId: true,
+      taskId: true,
+    },
+  });
+  if (!communication || !communication.recipientEmail) {
+    throw new Error("Task notification draft not found");
+  }
+
+  const storedMessage = getStoredMessage(communication.metadataJson);
+  if (!storedMessage) throw new Error("Task notification draft has no message");
+
+  const emailOptions = getStoredUserEmailOptions(communication.metadataJson);
+  const emailLogId = `approved-task-email:${communication.id}`;
+  const unsubscribeUrl = communication.recipientUserId
+    ? isTransactionalScope(emailOptions.emailScope)
+      ? null
+      : buildUnsubscribeUrl({
+          emailLogId,
+          scope: emailOptions.emailScope,
+          userId: communication.recipientUserId,
+        })
+    : getStoredUnsubscribeUrl(communication.metadataJson);
+  const messageId = buildTaskCommunicationMessageId({
+    communicationId: communication.id,
+    taskId: communication.taskId,
+  });
+  const priorMessageId = await getPriorThreadMessageId({
+    communicationId: communication.id,
+    db,
+    recipientEmail: communication.recipientEmail,
+    taskId: communication.taskId,
+  });
+  const replyTo =
+    getStoredReplyTo(communication.metadataJson) ??
+    getConfiguredTaskReplyAddress(communication.taskId);
+  const envelope = prepareResendProviderEnvelope({
+    bcc: getStoredBccEmails(communication.metadataJson),
+    from: input.from,
+    headers: buildThreadHeaders({ messageId, priorMessageId }),
+    html: storedMessage.html ?? renderPlainTextHtml(storedMessage.text),
+    replyTo,
+    scope: emailOptions.emailScope,
+    skipWishoniaSignature: emailOptions.skipWishoniaSignature,
+    subject: storedMessage.subject,
+    text: storedMessage.text,
+    to: communication.recipientEmail,
+    unsubscribeUrl,
+    wishoniaSelection: deterministicWishoniaSelection(communication.id),
+  });
+
+  return {
+    delivery: {
+      recipientUserId: communication.recipientUserId,
+      scope: emailOptions.emailScope,
+    },
+    emailLogId,
+    envelope,
+  };
 }
 
 function buildThreadHeaders(input: {
@@ -355,46 +496,23 @@ function buildThreadHeaders(input: {
   };
 }
 
-function isExplicitOptOut(metadata: unknown, errorMessage?: string | null) {
-  if (
-    metadata !== null &&
-    typeof metadata === "object" &&
-    !Array.isArray(metadata)
-  ) {
-    const record = metadata as Record<string, unknown>;
-    if (record.optOut === true) {
-      return true;
-    }
-  }
-
-  return errorMessage?.toLowerCase().includes("unsubscribed") ?? false;
-}
-
-async function findExternalOptOut(input: {
-  audience: TaskCommunicationAudienceValue;
-  purpose: TaskCommunicationPurposeValue;
-  recipientEmail: string;
-}) {
-  const cancellations = await prisma.taskCommunication.findMany({
+async function findExternalOptOut(input: { recipientEmail: string }) {
+  return prisma.taskCommunication.findFirst({
     where: {
-      audience: input.audience,
       cancelledAt: { not: null },
+      channel: TaskCommunicationChannel.EMAIL,
       deletedAt: null,
-      purpose: input.purpose,
-      recipientEmail: input.recipientEmail,
+      OR: [
+        { metadataJson: { path: ["optOut"], equals: true } },
+        { errorMessage: { contains: "unsubscribed", mode: "insensitive" } },
+      ],
+      recipientEmail: normalizeEmail(input.recipientEmail),
       status: TaskCommunicationStatus.CANCELLED,
       unsubscribeToken: { not: null },
     },
     orderBy: { cancelledAt: "desc" },
     select: { errorMessage: true, id: true, metadataJson: true },
-    take: 25,
   });
-
-  return (
-    cancellations.find((communication) =>
-      isExplicitOptOut(communication.metadataJson, communication.errorMessage),
-    ) ?? null
-  );
 }
 
 export async function draftTaskNotification(input: DraftTaskNotificationInput) {
@@ -513,8 +631,6 @@ export async function sendDraftTaskNotification(
   }
 
   const optedOut = await findExternalOptOut({
-    audience: communication.audience,
-    purpose: communication.purpose,
     recipientEmail: communication.recipientEmail,
   });
   if (optedOut) {
@@ -522,8 +638,7 @@ export async function sendDraftTaskNotification(
       where: { id: communication.id },
       data: {
         cancelledAt: now,
-        errorMessage:
-          "Recipient previously unsubscribed from this task communication purpose.",
+        errorMessage: "Recipient previously unsubscribed from task emails.",
         status: TaskCommunicationStatus.CANCELLED,
       },
     });
@@ -533,7 +648,7 @@ export async function sendDraftTaskNotification(
     };
   }
 
-  const emailLogId = nanoid();
+  const emailLogId = input.approvedDelivery?.emailLogId ?? nanoid();
   const templateId =
     communication.templateId ??
     `task_notification:${communication.purpose.toLowerCase()}:step_${communication.step}`;
@@ -562,7 +677,41 @@ export async function sendDraftTaskNotification(
     userId: communication.recipientUserId ?? null,
   });
 
-  if (claimed.duplicate || !claimed.emailLogId) {
+  if (claimed.duplicate && input.approvedDelivery) {
+    const existing = await prisma.emailLog.findUnique({
+      where: { id: emailLogId },
+      select: {
+        createdAt: true,
+        errorMessage: true,
+        providerMessageId: true,
+        status: true,
+      },
+    });
+    if (
+      existing &&
+      existing.status !== EmailLogStatus.QUEUED &&
+      existing.status !== EmailLogStatus.FAILED
+    ) {
+      return {
+        emailLogId,
+        providerMessageId: existing.providerMessageId,
+        status: "already_sent" as const,
+      };
+    }
+    if (!existing || existing.status === EmailLogStatus.FAILED) {
+      return { status: "duplicate" as const };
+    }
+    if (
+      !existing.errorMessage?.startsWith("send_held:") &&
+      now.getTime() - existing.createdAt.getTime() >=
+        RESEND_IDEMPOTENCY_WINDOW_MS
+    ) {
+      return {
+        reason: "manual_reconciliation_required",
+        status: "retryable" as const,
+      };
+    }
+  } else if (claimed.duplicate || !claimed.emailLogId) {
     await prisma.taskCommunication.update({
       where: { id: communication.id },
       data: {
@@ -575,56 +724,71 @@ export async function sendDraftTaskNotification(
     return { status: "duplicate" as const };
   }
 
+  const deliveryEmailLogId = input.approvedDelivery
+    ? emailLogId
+    : claimed.emailLogId!;
   try {
-    const html = message.html ?? renderPlainTextHtml(message.text);
-    const userEmailOptions = getStoredUserEmailOptions(
-      communication.metadataJson,
-    );
-    const bccEmails = getStoredBccEmails(communication.metadataJson);
-    const replyTo = getConfiguredTaskReplyAddress(communication.taskId);
-    const messageId = buildTaskCommunicationMessageId({
-      communicationId: communication.id,
-      taskId: communication.taskId,
-    });
-    const priorMessageId = await getPriorThreadMessageId({
-      communicationId: communication.id,
-      recipientEmail: communication.recipientEmail,
-      taskId: communication.taskId,
-    });
-    const headers = buildThreadHeaders({ messageId, priorMessageId });
-    const result = communication.recipientUserId
-      ? await sendResendEmail({
-          authorization: input.authorization,
-          emailLogId: claimed.emailLogId,
-          from: input.from ?? undefined,
-          html,
-          bcc: bccEmails,
-          headers,
-          replyTo: replyTo ?? undefined,
-          scope: userEmailOptions.emailScope,
-          skipWishoniaSignature: userEmailOptions.skipWishoniaSignature,
-          skipSuppressionCheck: userEmailOptions.skipSuppressionCheck,
-          subject: message.subject,
-          text: message.text,
-          to: communication.recipientEmail,
-          userId: communication.recipientUserId,
-        })
-      : await sendExternalResendEmail({
-          authorization: input.authorization,
-          from: input.from ?? undefined,
-          html,
-          bcc: bccEmails,
-          headers,
-          // Same scope as the account-holder branch above, so a recipient's
-          // opt-out means the same thing whether or not they have signed up.
-          scope: userEmailOptions.emailScope,
-          subject: message.subject,
-          text: message.text,
-          to: communication.recipientEmail,
-          replyTo: replyTo ?? undefined,
-          skipWishoniaSignature: userEmailOptions.skipWishoniaSignature,
-          unsubscribeUrl: getStoredUnsubscribeUrl(communication.metadataJson),
+    const approved = input.approvedDelivery;
+    const userEmailOptions = approved
+      ? null
+      : getStoredUserEmailOptions(communication.metadataJson);
+    const messageId =
+      approved?.envelope.headers?.["Message-ID"] ??
+      buildTaskCommunicationMessageId({
+        communicationId: communication.id,
+        taskId: communication.taskId,
+      });
+    const priorMessageId = approved
+      ? (approved.envelope.headers?.["In-Reply-To"] ?? null)
+      : await getPriorThreadMessageId({
+          communicationId: communication.id,
+          recipientEmail: communication.recipientEmail,
+          taskId: communication.taskId,
         });
+    const headers = approved
+      ? approved.envelope.headers
+      : buildThreadHeaders({ messageId, priorMessageId });
+    const result = approved
+      ? await sendPreparedResendEmail({
+          authorization: input.authorization,
+          envelope: approved.envelope,
+          idempotencyKey: approved.idempotencyKey,
+          recipientUserId: approved.recipientUserId,
+          scope: approved.scope,
+        })
+      : communication.recipientUserId
+        ? await sendResendEmail({
+            authorization: input.authorization,
+            emailLogId: deliveryEmailLogId,
+            from: input.from ?? undefined,
+            html: message.html ?? renderPlainTextHtml(message.text),
+            bcc: getStoredBccEmails(communication.metadataJson),
+            headers,
+            replyTo:
+              getConfiguredTaskReplyAddress(communication.taskId) ?? undefined,
+            scope: userEmailOptions!.emailScope,
+            skipWishoniaSignature: userEmailOptions!.skipWishoniaSignature,
+            skipSuppressionCheck: userEmailOptions!.skipSuppressionCheck,
+            subject: message.subject,
+            text: message.text,
+            to: communication.recipientEmail,
+            userId: communication.recipientUserId,
+          })
+        : await sendExternalResendEmail({
+            authorization: input.authorization,
+            from: input.from ?? undefined,
+            html: message.html ?? renderPlainTextHtml(message.text),
+            bcc: getStoredBccEmails(communication.metadataJson),
+            headers,
+            scope: userEmailOptions!.emailScope,
+            subject: message.subject,
+            text: message.text,
+            to: communication.recipientEmail,
+            replyTo:
+              getConfiguredTaskReplyAddress(communication.taskId) ?? undefined,
+            skipWishoniaSignature: userEmailOptions!.skipWishoniaSignature,
+            unsubscribeUrl: getStoredUnsubscribeUrl(communication.metadataJson),
+          });
 
     if (result.status !== "sent") {
       // Keep the concrete suppression reason (user_opt_out /
@@ -634,14 +798,26 @@ export async function sendDraftTaskNotification(
         result.status === "suppressed"
           ? `${result.status}:${result.reason}`
           : result.status;
+      if (
+        approved &&
+        (result.status === "disabled" ||
+          (result.status === "suppressed" && result.reason !== "user_opt_out"))
+      ) {
+        await markEmailLogStatus({
+          emailLogId: deliveryEmailLogId,
+          errorMessage: `send_held:${abortReason}`,
+          status: EmailLogStatus.QUEUED,
+        });
+        return { reason: abortReason, status: "retryable" as const };
+      }
       await markEmailLogStatus({
-        emailLogId: claimed.emailLogId,
+        emailLogId: deliveryEmailLogId,
         errorMessage: `send_aborted:${abortReason}`,
         status: EmailLogStatus.FAILED,
       });
       await markCommunicationFailed({
         communicationId: communication.id,
-        emailLogId: claimed.emailLogId,
+        emailLogId: deliveryEmailLogId,
         errorMessage: `send_aborted:${abortReason}`,
       });
       return result;
@@ -649,7 +825,7 @@ export async function sendDraftTaskNotification(
 
     const updated = await prisma.$transaction(async (tx) => {
       await tx.emailLog.update({
-        where: { id: claimed.emailLogId },
+        where: { id: deliveryEmailLogId },
         data: {
           errorMessage: null,
           providerMessageId: result.id,
@@ -679,7 +855,7 @@ export async function sendDraftTaskNotification(
       return tx.taskCommunication.update({
         where: { id: communication.id },
         data: {
-          emailLogId: claimed.emailLogId,
+          emailLogId: deliveryEmailLogId,
           errorMessage: null,
           metadataJson: {
             ...asMetadataObject(communication.metadataJson),
@@ -697,22 +873,40 @@ export async function sendDraftTaskNotification(
 
     return {
       communication: updated,
-      emailLogId: claimed.emailLogId,
+      emailLogId: deliveryEmailLogId,
       providerMessageId: result.id,
       status: "sent" as const,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    if (
+      input.approvedDelivery &&
+      (!(error instanceof ResendDeliveryError) || error.retryable)
+    ) {
+      await markEmailLogStatus({
+        emailLogId: deliveryEmailLogId,
+        errorMessage,
+        status: EmailLogStatus.QUEUED,
+      }).catch(() => undefined);
+      return {
+        reason:
+          error instanceof ResendDeliveryError ? error.code : errorMessage,
+        status: "retryable" as const,
+      };
+    }
     await markEmailLogStatus({
-      emailLogId: claimed.emailLogId,
+      emailLogId: deliveryEmailLogId,
       errorMessage,
       status: EmailLogStatus.FAILED,
     });
     await markCommunicationFailed({
       communicationId: communication.id,
-      emailLogId: claimed.emailLogId,
+      emailLogId: deliveryEmailLogId,
       errorMessage,
     });
+    if (input.approvedDelivery && error instanceof ResendDeliveryError) {
+      return { reason: error.code, status: "failed" as const };
+    }
     throw error;
   }
 }

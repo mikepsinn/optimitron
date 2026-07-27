@@ -3,16 +3,18 @@
  *
  * Assigning a task to a person, a comment notification, or a reminder trigger
  * used to reach the recipient's inbox with no human in the loop. Each of those
- * paths now drafts the message as before and then proposes it as an
- * `ExternalActionRequest`, which lands PENDING until a human approves it at
- * /admin/communications. Owner-initiated sends from the web UI are unaffected.
+ * paths now draft the message as before and then propose it as an
+ * `ExternalActionRequest`, which stays PENDING until a task manager approves
+ * it on the task. Owner-initiated sends from the web UI are unaffected.
  *
- * The approved payload is the message itself — recipient, subject, text, html,
- * From header — so a draft edited after approval no longer matches the hash the
- * approver signed, and `outbound-message-dispatch.server.ts` refuses it.
+ * The approved payload is the exact provider envelope — recipients, headers,
+ * subject, text, and HTML. Dispatch sends that immutable snapshot rather than
+ * rebuilding it from mutable task state.
  */
 import { TaskCommunicationStatus } from "@optimitron/db/enums";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { prepareTaskNotificationForApproval } from "@/lib/tasks/task-notifications.server";
 import {
   proposeExternalAction,
   type ExternalActionDb,
@@ -23,35 +25,56 @@ export const OUTBOUND_MESSAGE_OPERATION = "outbound_message.email";
 /** Long enough to survive a weekend, short enough that stale mail dies. */
 export const OUTBOUND_APPROVAL_WINDOW_MS = 72 * 60 * 60 * 1_000;
 
-export interface OutboundMessageApprovalContent {
-  communicationId: string;
-  from: string | null;
-  html: string | null;
-  recipientEmail: string;
-  subject: string;
-  text: string;
-}
+const ResendProviderEnvelopeSchema = z
+  .object({
+    bcc: z.array(z.string().min(1)).optional(),
+    from: z.string().min(1),
+    headers: z.record(z.string()).optional(),
+    html: z.string(),
+    replyTo: z.string().min(1).optional(),
+    subject: z.string(),
+    text: z.string(),
+    to: z.tuple([z.string().min(1)]),
+  })
+  .strict();
+
+export const OutboundMessageApprovalPayloadSchema = z
+  .object({
+    communicationId: z.string().min(1),
+    delivery: z
+      .object({
+        recipientUserId: z.string().min(1).nullable(),
+        scope: z.enum([
+          "all",
+          "onboarding",
+          "task_notifications",
+          "magic_link",
+          "account_security",
+        ]),
+      })
+      .strict(),
+    emailLogId: z.string().min(1),
+    envelope: ResendProviderEnvelopeSchema,
+    version: z.literal(2),
+  })
+  .strict();
+
+export type OutboundMessageApprovalPayload = z.infer<
+  typeof OutboundMessageApprovalPayloadSchema
+>;
 
 /**
- * Canonical approval payload. Built here at propose time and rebuilt from live
- * rows at dispatch time — the two must agree byte for byte, so every field
- * that changes what the recipient sees belongs in it.
+ * Canonical approval payload. The exact provider envelope is resolved once at
+ * propose time and dispatched without rebuilding it from mutable state.
  */
 export function outboundMessageApprovalPayload(
-  content: OutboundMessageApprovalContent,
+  payload: OutboundMessageApprovalPayload,
 ): Record<string, unknown> {
-  return {
-    communicationId: content.communicationId,
-    from: content.from,
-    html: content.html,
-    recipientEmail: content.recipientEmail.trim().toLowerCase(),
-    subject: content.subject,
-    text: content.text,
-  };
+  return OutboundMessageApprovalPayloadSchema.parse(payload);
 }
 
 export function outboundMessageIdempotencyKey(communicationId: string) {
-  return `outbound-message:${communicationId}`;
+  return `outbound-message:v2:${communicationId}`;
 }
 
 /**
@@ -65,25 +88,37 @@ export function outboundMessageIdempotencyKey(communicationId: string) {
 export async function proposeOutboundMessage(input: {
   /** Whoever's action produced the draft, when there is one. */
   actorUserId?: string | null;
-  content: OutboundMessageApprovalContent;
+  communicationId: string;
   /** Caller's open transaction, when the draft was written inside one. */
   db?: ExternalActionDb;
+  from?: string | null;
   now?: Date;
   taskId: string;
 }) {
   const now = input.now ?? new Date();
   try {
+    const prepared = await prepareTaskNotificationForApproval({
+      communicationId: input.communicationId,
+      db: input.db,
+      from: input.from ?? null,
+      taskId: input.taskId,
+    });
+    const payload = outboundMessageApprovalPayload({
+      communicationId: input.communicationId,
+      delivery: prepared.delivery,
+      emailLogId: prepared.emailLogId,
+      envelope: prepared.envelope,
+      version: 2,
+    });
     return await proposeExternalAction(
       {
-        destination: input.content.recipientEmail.trim().toLowerCase(),
+        destination: prepared.envelope.to[0],
         expiresAt: new Date(
           now.getTime() + OUTBOUND_APPROVAL_WINDOW_MS,
         ).toISOString(),
-        idempotencyKey: outboundMessageIdempotencyKey(
-          input.content.communicationId,
-        ),
+        idempotencyKey: outboundMessageIdempotencyKey(input.communicationId),
         operation: OUTBOUND_MESSAGE_OPERATION,
-        payload: outboundMessageApprovalPayload(input.content),
+        payload,
         taskId: input.taskId,
       },
       input.actorUserId ?? null,
@@ -96,7 +131,7 @@ export async function proposeOutboundMessage(input: {
     await (input.db ?? prisma).taskCommunication
       .updateMany({
         where: {
-          id: input.content.communicationId,
+          id: input.communicationId,
           status: TaskCommunicationStatus.DRAFT,
         },
         data: {

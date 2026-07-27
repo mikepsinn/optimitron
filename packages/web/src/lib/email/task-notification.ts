@@ -9,9 +9,6 @@
  * source of truth on the address shape — change the encoding here and the
  * inbound webhook automatically picks up the new format on the next decode.
  */
-import type { SendAuthorization } from "@/lib/email/outbound-authorization.server";
-import { sendExternalResendEmail, type SendResult } from "@/lib/email/resend";
-import type { EmailScope } from "@/lib/email/scopes";
 import { serverEnv } from "@/lib/env";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@/lib/domains";
 import { getBaseUrl } from "@/lib/url";
@@ -25,10 +22,7 @@ export function getReplyAddress(taskId: string): string {
 }
 
 export function getConfiguredTaskReplyAddress(taskId: string): string | null {
-  if (
-    !serverEnv.RESEND_WEBHOOK_SECRET ||
-    !serverEnv.REPLY_EMAIL_DOMAIN
-  ) {
+  if (!serverEnv.RESEND_WEBHOOK_SECRET || !serverEnv.REPLY_EMAIL_DOMAIN) {
     return null;
   }
   return `reply+${taskId}@${serverEnv.REPLY_EMAIL_DOMAIN}`;
@@ -82,84 +76,4 @@ export function parseReplyAddress(
   const taskId = local.slice("reply+".length);
   if (!taskId) return null;
   return { taskId };
-}
-
-export interface SendTaskNotificationEmailInput {
-  /** Who said to send this — see `@/lib/email/outbound-authorization.server`. */
-  authorization: SendAuthorization;
-  taskId: string;
-  recipientEmail: string;
-  subject: string;
-  text: string;
-  html?: string;
-  /// Category of email, checked against address-keyed suppression at the send
-  /// boundary. Defaults to `task_notifications`; agent first-contact should
-  /// pass `outreach` so a recipient can refuse cold mail without also losing
-  /// notifications for tasks they actually hold.
-  scope?: EmailScope;
-  /// Per-message From override. Falls back to the campaign default
-  /// (`International Campaign to End War and Disease <hello@updates.warondisease.org>`).
-  from?: string;
-}
-
-export interface SendTaskNotificationResult {
-  /// "sent" | "disabled" | "failed". Disabled = email infrastructure not
-  /// configured (mock or no API key). Failed = the send raised an error.
-  status: "sent" | "disabled" | "failed";
-  providerMessageId?: string | null;
-  errorMessage?: string;
-  replyTo: string;
-}
-
-export async function sendTaskNotificationEmail(
-  input: SendTaskNotificationEmailInput,
-): Promise<SendTaskNotificationResult> {
-  const replyTo = getReplyAddress(input.taskId);
-  try {
-    const result: SendResult = await sendExternalResendEmail({
-      authorization: input.authorization,
-      scope: input.scope ?? "task_notifications",
-      to: input.recipientEmail,
-      subject: input.subject,
-      text: input.text,
-      // Resend requires html — fall back to a minimal wrapper around text.
-      html:
-        input.html ?? `<p>${escapeHtml(input.text).replace(/\n/g, "<br>")}</p>`,
-      replyTo,
-      from: input.from,
-    });
-    if (result.status === "disabled") {
-      return { status: "disabled", replyTo };
-    }
-    if (result.status === "suppressed") {
-      // Reached when the outbound emergency stop blocks the send. Carry the
-      // concrete reason so the TaskCommunication row's errorMessage explains
-      // the suppression in audit reads.
-      return {
-        status: "failed",
-        replyTo,
-        errorMessage: `Email suppressed: ${result.reason}`,
-      };
-    }
-    return {
-      status: "sent",
-      providerMessageId: result.id ?? null,
-      replyTo,
-    };
-  } catch (error) {
-    return {
-      status: "failed",
-      errorMessage: error instanceof Error ? error.message : String(error),
-      replyTo,
-    };
-  }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }

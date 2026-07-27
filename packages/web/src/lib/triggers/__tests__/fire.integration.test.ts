@@ -9,11 +9,9 @@ const harness = vi.hoisted(async () => {
   return createFakeTriggerDb();
 });
 const emailMocks = vi.hoisted(() => ({
-  proposeOutboundMessage: vi.fn(
-    async (input: { content: { communicationId: string } }) => ({
-      id: `ear_${input.content.communicationId}`,
-    }),
-  ),
+  proposeOutboundMessage: vi.fn(async (input: { communicationId: string }) => ({
+    id: `ear_${input.communicationId}`,
+  })),
 }));
 
 vi.mock("@/lib/prisma", async () => ({

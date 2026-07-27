@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   draftTaskNotification: vi.fn(),
   proposeOutboundMessage: vi.fn(),
+  sendDraftTaskNotification: vi.fn(),
   taskFindUnique: vi.fn(),
   userFindUnique: vi.fn(),
 }));
@@ -20,6 +21,7 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/lib/tasks/task-notifications.server", () => ({
   draftTaskNotification: mocks.draftTaskNotification,
+  sendDraftTaskNotification: mocks.sendDraftTaskNotification,
 }));
 
 vi.mock("@/lib/email/outbound-message-approval.server", () => ({
@@ -36,7 +38,13 @@ vi.mock("@/lib/email/task-notification", () => ({
 }));
 
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { ORGANIZATION_ACTIVATION_TASK_TITLE } from "@/lib/messaging";
+
+const OWNER_AUTHORIZATION = {
+  kind: "owner",
+  userId: "demo-user-id",
+} as unknown as OwnerSendAuthorization;
 
 function mockAssignedOrganizationTask(overrides?: {
   contactEmail?: string | null;
@@ -73,6 +81,10 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     vi.resetAllMocks();
     mocks.draftTaskNotification.mockResolvedValue({ id: "comm_1" });
     mocks.proposeOutboundMessage.mockResolvedValue({ id: "ear_1" });
+    mocks.sendDraftTaskNotification.mockResolvedValue({
+      providerMessageId: "email_1",
+      status: "sent",
+    });
     mocks.userFindUnique.mockResolvedValue({
       id: "demo-user-id",
       email: "demo@warondisease.org",
@@ -120,13 +132,10 @@ describe("notifyTaskAssigneeOfAssignment", () => {
     expect(mocks.proposeOutboundMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         actorUserId: "demo-user-id",
-        content: expect.objectContaining({
-          communicationId: "comm_1",
-          from: expect.stringMatching(
-            /^Mike via International Campaign to End War and Disease </,
-          ),
-          recipientEmail: "demo@thinkbynumbers.org",
-        }),
+        communicationId: "comm_1",
+        from: expect.stringMatching(
+          /^Mike via International Campaign to End War and Disease </,
+        ),
         taskId: "task_meridian",
       }),
     );
@@ -156,6 +165,27 @@ describe("notifyTaskAssigneeOfAssignment", () => {
         recipientUserId: "user_owner",
       }),
     );
+  });
+
+  it("direct-sends only when the caller supplies session-minted owner authority", async () => {
+    mockAssignedOrganizationTask();
+
+    const result = await notifyTaskAssigneeOfAssignment({
+      ownerAuthorization: OWNER_AUTHORIZATION,
+      senderUserId: "demo-user-id",
+      taskId: "task_meridian",
+    });
+
+    expect(result).toMatchObject({ status: "sent" });
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith({
+      authorization: OWNER_AUTHORIZATION,
+      communicationId: "comm_1",
+      from: expect.stringMatching(
+        /^Mike via International Campaign to End War and Disease </,
+      ),
+      senderUserId: "demo-user-id",
+    });
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 
   it("skips assigned tasks when no assignee email exists", async () => {

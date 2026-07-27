@@ -8,6 +8,7 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
 import type { SenderSignature } from "@/lib/email/wishonia-signature";
@@ -17,7 +18,10 @@ import {
   COMMENT_NOTIFICATION_PLACEHOLDER,
   type CommentNotificationCta,
 } from "@/lib/tasks/task-comment-notification-email.server";
-import { draftTaskNotification } from "@/lib/tasks/task-notifications.server";
+import {
+  draftTaskNotification,
+  sendDraftTaskNotification,
+} from "@/lib/tasks/task-notifications.server";
 import { recipientWithinRateLimits } from "@/lib/tasks/task-recipient-rate-limit.server";
 import { resolveTaskRecipients } from "@/lib/tasks/task-recipients.server";
 import { getRecipientReferralUrl } from "@/lib/referral-url-helpers.server";
@@ -37,6 +41,7 @@ export interface PostTaskCommentInput {
   from?: string | null;
   kind?: TaskCommentKind;
   message: string;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   /// When set, render a sender sign-off block in the email body. Used by
   /// share emails so the recipient sees their friend's name + role + org
   /// instead of (or in addition to) Wishonia's auto-signature. The Resend
@@ -125,6 +130,7 @@ export async function notifyTaskCommentRecipients(input: {
   cta?: CommentNotificationCta | null;
   from?: string | null;
   message: string;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   senderSignature?: SenderSignature | null;
   taskId: string;
 }): Promise<PostTaskCommentResult> {
@@ -184,6 +190,7 @@ export async function notifyTaskCommentRecipients(input: {
 
   try {
     let pendingCount = 0;
+    let sentCount = 0;
     let skippedReason: string | null = null;
 
     for (const recipient of filteredRecipients) {
@@ -201,7 +208,10 @@ export async function notifyTaskCommentRecipients(input: {
         );
       } catch (lookupError) {
         log.warn("Failed to resolve recipient referral URL", {
-          error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+          error:
+            lookupError instanceof Error
+              ? lookupError.message
+              : String(lookupError),
           userId: recipient.userId ?? null,
         });
       }
@@ -278,24 +288,39 @@ export async function notifyTaskCommentRecipients(input: {
         });
       }
 
-      // Approval is proposed against the final stored body, so the hash the
-      // human approves is the hash of what the recipient would read.
-      await proposeOutboundMessage({
-        actorUserId: input.authorUserId ?? null,
-        content: {
+      if (input.ownerAuthorization) {
+        const sendResult = await sendDraftTaskNotification({
+          authorization: input.ownerAuthorization,
           communicationId: draft.id,
           from: input.from ?? null,
-          html: storedHtml,
-          recipientEmail: recipient.email,
-          subject: email.subject,
-          text: storedText,
-        },
-        now,
-        taskId,
-      });
-      pendingCount += 1;
+          now,
+          senderUserId: input.authorUserId ?? null,
+        });
+        if (sendResult.status === "sent") {
+          sentCount += 1;
+        } else {
+          skippedReason =
+            sendResult.status === "suppressed"
+              ? sendResult.reason
+              : sendResult.status;
+        }
+      } else {
+        // Approval is proposed against the final stored body, so the hash the
+        // human approves is the hash of what the recipient would read.
+        await proposeOutboundMessage({
+          actorUserId: input.authorUserId ?? null,
+          communicationId: draft.id,
+          from: input.from ?? null,
+          now,
+          taskId,
+        });
+        pendingCount += 1;
+      }
     }
 
+    if (sentCount > 0) {
+      return { commentId, status: "sent" };
+    }
     if (pendingCount > 0) {
       return { commentId, pendingCount, status: "pending_approval" };
     }
@@ -349,6 +374,7 @@ export async function postTaskCommentAndNotify(
     cta: input.cta,
     from: input.from ?? null,
     message: input.message,
+    ownerAuthorization: input.ownerAuthorization ?? null,
     senderSignature: input.senderSignature ?? null,
     taskId: input.taskId,
   });

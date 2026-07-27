@@ -1,13 +1,7 @@
-import {
-  EmailLogStatus,
-  TaskCommentKind,
-  TaskCommentSource,
-  TaskCommunicationStatus,
-} from "@optimitron/db/enums";
+import { TaskCommunicationStatus } from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  notifyTaskCommentRecipients: vi.fn(),
   proposeOutboundMessage: vi.fn(),
   sendExternalResendEmail: vi.fn(),
   sendResendEmail: vi.fn(),
@@ -29,19 +23,8 @@ interface StoredCommunication {
   [key: string]: unknown;
 }
 
-interface StoredComment {
-  id: string;
-  kind: string;
-  message: string;
-  source: string;
-  taskId: string;
-  [key: string]: unknown;
-}
-
 const db = vi.hoisted(() => {
   const communications: StoredCommunication[] = [];
-  const comments: StoredComment[] = [];
-  const emailLogs: Record<string, unknown>[] = [];
   const task = {
     id: "task_mcp_assignment",
     title: "Ask Test Foundation to review the treaty",
@@ -63,39 +46,10 @@ const db = vi.hoisted(() => {
     communicationEndpoints: [],
   };
   const prismaMock = {
-    emailLog: {
-      create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
-        emailLogs.push(data);
-        return data;
-      }),
-      update: vi.fn(
-        async ({
-          data,
-          where,
-        }: {
-          data: Record<string, unknown>;
-          where: { id: string };
-        }) => {
-          const row = emailLogs.find((item) => item.id === where.id);
-          if (row) Object.assign(row, data);
-          return row ?? { id: where.id, ...data };
-        },
-      ),
-    },
     task: {
       findUnique: vi.fn(async ({ where }: { where: { id: string } }) =>
         where.id === task.id ? task : null,
       ),
-    },
-    taskComment: {
-      create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
-        const row = {
-          id: `comment_${comments.length + 1}`,
-          ...data,
-        } as StoredComment;
-        comments.push(row);
-        return row;
-      }),
     },
     taskCommunication: {
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
@@ -110,23 +64,6 @@ const db = vi.hoisted(() => {
         } as StoredCommunication;
         communications.push(row);
         return row;
-      }),
-      findFirst: vi.fn(async ({ where }: { where: Record<string, unknown> }) => {
-        if (typeof where.providerMessageId === "string") {
-          return (
-            communications.find(
-              (item) =>
-                item.providerMessageId === where.providerMessageId &&
-                !item.deletedAt,
-            ) ?? null
-          );
-        }
-        return null;
-      }),
-      findMany: vi.fn(async () => []),
-      findUnique: vi.fn(async ({ where }: { where: { id: string } }) => {
-        const row = communications.find((item) => item.id === where.id);
-        return row ? { ...row, task: { id: task.id, title: task.title } } : null;
       }),
       update: vi.fn(
         async ({
@@ -161,7 +98,7 @@ const db = vi.hoisted(() => {
     },
   };
 
-  return { comments, communications, emailLogs, prismaMock, task };
+  return { communications, prismaMock, task };
 });
 
 vi.mock("@/lib/env", () => ({
@@ -181,46 +118,17 @@ vi.mock("@/lib/email/resend", () => ({
   sendResendEmail: mocks.sendResendEmail,
 }));
 
-vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
-  notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
-}));
-
 vi.mock("@/lib/email/outbound-message-approval.server", () => ({
   proposeOutboundMessage: mocks.proposeOutboundMessage,
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    $transaction: async (
-      callback: (tx: Record<string, unknown>) => Promise<unknown>,
-    ) =>
-      callback({
-        emailLog: {
-          update: db.prismaMock.emailLog.update,
-        },
-        taskComment: {
-          create: db.prismaMock.taskComment.create,
-        },
-        taskCommunication: {
-          create: db.prismaMock.taskCommunication.create,
-          update: db.prismaMock.taskCommunication.update,
-        },
-      }),
-    emailLog: {
-      create: db.prismaMock.emailLog.create,
-      update: db.prismaMock.emailLog.update,
-    },
     task: {
       findUnique: db.prismaMock.task.findUnique,
     },
-    taskComment: {
-      create: db.prismaMock.taskComment.create,
-    },
     taskCommunication: {
       create: db.prismaMock.taskCommunication.create,
-      findFirst: db.prismaMock.taskCommunication.findFirst,
-      findMany: db.prismaMock.taskCommunication.findMany,
-      findUnique: db.prismaMock.taskCommunication.findUnique,
       update: db.prismaMock.taskCommunication.update,
     },
     user: {
@@ -229,16 +137,11 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { processInboundReply } from "@/lib/email/inbound-reply";
-import { ownerSend } from "@/lib/email/outbound-authorization.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
-import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
 
-describe("MCP task assignment email round trip", () => {
+describe("MCP task assignment email", () => {
   beforeEach(() => {
     db.communications.length = 0;
-    db.comments.length = 0;
-    db.emailLogs.length = 0;
     for (const fn of Object.values(mocks)) fn.mockReset();
     for (const group of Object.values(db.prismaMock)) {
       for (const fn of Object.values(group)) fn.mockClear();
@@ -253,15 +156,14 @@ describe("MCP task assignment email round trip", () => {
       status: "sent",
       unsubscribeUrl: null,
     });
-    mocks.notifyTaskCommentRecipients.mockResolvedValue({ sentCount: 1 });
     mocks.proposeOutboundMessage.mockImplementation(
-      async (input: { content: { communicationId: string } }) => ({
-        id: `ear_${input.content.communicationId}`,
+      async (input: { communicationId: string }) => ({
+        id: `ear_${input.communicationId}`,
       }),
     );
   });
 
-  it("queues the assignee email for approval, then sends it and threads the reply", async () => {
+  it("persists a draft and queues approval without touching the provider", async () => {
     const proposal = await notifyTaskAssigneeOfAssignment({
       senderUserId: "user_creator",
       taskId: db.task.id,
@@ -271,65 +173,5 @@ describe("MCP task assignment email round trip", () => {
     expect(proposal.status).toBe("pending_approval");
     expect(mocks.sendExternalResendEmail).not.toHaveBeenCalled();
     expect(db.communications[0]?.status).toBe(TaskCommunicationStatus.DRAFT);
-
-    // Stand in for the approval dispatcher: the same draft, now authorized.
-    const sendResult = await sendDraftTaskNotification({
-      authorization: ownerSend("user_creator"),
-      communicationId: db.communications[0]!.id,
-      from: "Mike via International Campaign to End War and Disease <hello@updates.warondisease.org>",
-      senderUserId: "user_creator",
-    });
-
-    expect(sendResult.status).toBe("sent");
-    expect(mocks.sendExternalResendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        from: "Mike via International Campaign to End War and Disease <hello@updates.warondisease.org>",
-        replyTo: "reply+task_mcp_assignment@updates.warondisease.org",
-        to: "foundation@example.org",
-      }),
-    );
-    expect(db.emailLogs[0]).toMatchObject({
-      status: EmailLogStatus.SENT,
-      toAddress: "foundation@example.org",
-    });
-    expect(db.communications[0]).toMatchObject({
-      providerMessageId: "email_assignment_1",
-      status: TaskCommunicationStatus.SENT,
-    });
-
-    const inboundResult = await processInboundReply({
-      from: "Test Foundation <foundation@example.org>",
-      to: "reply+task_mcp_assignment@updates.warondisease.org",
-      subject: "Re: Ask Test Foundation to review the treaty",
-      text: "Completed.\n\nOn Sun, May 10, 2026 at 1:00 PM, Mike wrote:\nQuoted text",
-      html: null,
-      providerMessageId: "received_reply_1",
-      inReplyTo: "<email_assignment_1@example.org>",
-    });
-
-    expect(inboundResult.status).toBe("created");
-    expect(db.comments).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          kind: TaskCommentKind.INBOUND_MESSAGE,
-          message: "Completed.",
-          source: TaskCommentSource.EMAIL_REPLY,
-          taskId: db.task.id,
-        }),
-      ]),
-    );
-    expect(db.communications.at(-1)).toMatchObject({
-      direction: "INBOUND",
-      providerMessageId: "received_reply_1",
-      recipientEmail: "reply+task_mcp_assignment@updates.warondisease.org",
-      status: "RECEIVED",
-    });
-    expect(mocks.notifyTaskCommentRecipients).toHaveBeenCalledWith(
-      expect.objectContaining({
-        authorOrganizationId: "org_test_foundation",
-        message: "Completed.",
-        taskId: db.task.id,
-      }),
-    );
   });
 });

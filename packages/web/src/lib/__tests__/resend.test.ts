@@ -1,22 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  canSendEmailToAddress: vi.fn(),
   canSendEmailToUser: vi.fn(),
   emailSend: vi.fn(),
-  readOutboundMessageGate: vi.fn(),
   receivingGet: vi.fn(),
   serverEnv: {
     EMAIL_FROM: "team@optimitron.com" as string | undefined,
     EMAIL_MONITOR_BCC: undefined as string | undefined,
     NODE_ENV: "development",
+    OUTBOUND_EMAIL_ALLOWLIST: undefined as string | undefined,
+    OUTBOUND_EMAIL_MODE: undefined as "off" | "allowlist" | "on" | undefined,
     RESEND_API_KEY: "resend_test_key" as string | undefined,
     RESEND_MOCK_SEND: undefined as "1" | undefined,
   },
-}));
-
-vi.mock("@/lib/email/outbound-gate.server", () => ({
-  readOutboundMessageGate: mocks.readOutboundMessageGate,
 }));
 
 vi.mock("resend", () => ({
@@ -39,7 +35,6 @@ vi.mock("@/lib/env", () => ({
 }));
 
 vi.mock("@/lib/email/can-send.server", () => ({
-  canSendEmailToAddress: mocks.canSendEmailToAddress,
   canSendEmailToUser: mocks.canSendEmailToUser,
 }));
 
@@ -64,8 +59,8 @@ vi.mock("@/lib/url", () => ({
 }));
 
 import {
-  ownerSend,
   transactionalSend,
+  type ApprovedSendAuthorization,
 } from "../email/outbound-authorization.server";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "../email/placeholders";
 import {
@@ -75,26 +70,24 @@ import {
 import {
   getReceivedEmailContent,
   sendExternalResendEmail,
+  sendPreparedResendEmail,
   sendReactEmail,
   sendResendEmail,
 } from "../email/resend";
 import { render } from "@react-email/components";
 
-const OWNER = ownerSend("user_owner");
-const OPEN_GATE = { allowlist: [], stopAllOutbound: false };
+const OWNER = transactionalSend("operator_monitor_forward");
 
 describe("sendResendEmail", () => {
   beforeEach(() => {
-    mocks.canSendEmailToAddress.mockReset();
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
     mocks.receivingGet.mockReset();
-    mocks.readOutboundMessageGate.mockReset();
-    mocks.readOutboundMessageGate.mockResolvedValue(OPEN_GATE);
-    mocks.canSendEmailToAddress.mockResolvedValue(true);
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = undefined;
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = undefined;
     mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
     mocks.serverEnv.RESEND_MOCK_SEND = undefined;
     mocks.canSendEmailToUser.mockResolvedValue(true);
@@ -491,11 +484,11 @@ describe("outbound emergency stop", () => {
   beforeEach(() => {
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
-    mocks.readOutboundMessageGate.mockReset();
-    mocks.readOutboundMessageGate.mockResolvedValue(OPEN_GATE);
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.EMAIL_MONITOR_BCC = undefined;
     mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = undefined;
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = undefined;
     mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
     mocks.serverEnv.RESEND_MOCK_SEND = undefined;
     mocks.canSendEmailToUser.mockResolvedValue(true);
@@ -516,15 +509,12 @@ describe("outbound emergency stop", () => {
   }
 
   it("suppresses all three send functions when the stop is pulled", async () => {
-    mocks.readOutboundMessageGate.mockResolvedValue({
-      allowlist: [],
-      stopAllOutbound: true,
-    });
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "off";
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     await expect(sendResendEmail(baseMessage())).resolves.toEqual({
       status: "suppressed",
-      reason: "emergency_stop",
+      reason: "outbound_mode_off",
     });
     await expect(
       sendReactEmail({
@@ -535,7 +525,10 @@ describe("outbound emergency stop", () => {
         to: "citizen@example.com",
         userId: "user_1",
       }),
-    ).resolves.toEqual({ status: "suppressed", reason: "emergency_stop" });
+    ).resolves.toEqual({
+      status: "suppressed",
+      reason: "outbound_mode_off",
+    });
     await expect(
       sendExternalResendEmail({
         authorization: OWNER,
@@ -545,53 +538,34 @@ describe("outbound emergency stop", () => {
         text: "Hello",
         to: "senator@example.gov",
       }),
-    ).resolves.toEqual({ status: "suppressed", reason: "emergency_stop" });
+    ).resolves.toEqual({
+      status: "suppressed",
+      reason: "outbound_mode_off",
+    });
 
     expect(mocks.emailSend).not.toHaveBeenCalled();
     expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining("emergency_stop"),
+      expect.stringContaining("outbound_mode_off"),
     );
     warn.mockRestore();
   });
 
   it("beats RESEND_MOCK_SEND so mock runs cannot fake sends past the stop", async () => {
-    mocks.readOutboundMessageGate.mockResolvedValue({
-      allowlist: [],
-      stopAllOutbound: true,
-    });
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "off";
     mocks.serverEnv.RESEND_MOCK_SEND = "1";
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     await expect(sendResendEmail(baseMessage())).resolves.toEqual({
       status: "suppressed",
-      reason: "emergency_stop",
+      reason: "outbound_mode_off",
     });
-    warn.mockRestore();
-  });
-
-  it("holds agent-initiated mail but not sign-in mail when the gate is unreadable", async () => {
-    mocks.readOutboundMessageGate.mockResolvedValue(null);
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    await expect(sendResendEmail(baseMessage())).resolves.toEqual({
-      status: "suppressed",
-      reason: "gate_unreadable",
-    });
-    await expect(
-      sendResendEmail({
-        ...baseMessage(),
-        authorization: transactionalSend("magic_link"),
-        scope: "magic_link" as const,
-      }),
-    ).resolves.toMatchObject({ status: "sent" });
     warn.mockRestore();
   });
 
   it("sends only to allowlisted recipients when an allowlist is set", async () => {
-    mocks.readOutboundMessageGate.mockResolvedValue({
-      allowlist: ["citizen@example.com", "@warondisease.org"],
-      stopAllOutbound: false,
-    });
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "allowlist";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST =
+      "citizen@example.com,@warondisease.org";
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     await expect(sendResendEmail(baseMessage())).resolves.toMatchObject({
@@ -610,16 +584,34 @@ describe("outbound emergency stop", () => {
     expect(mocks.emailSend).toHaveBeenCalledTimes(2);
     warn.mockRestore();
   });
+
+  it("requires every To and BCC recipient to pass the allowlist", async () => {
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = "allowlist";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = "citizen@example.com";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await expect(
+      sendResendEmail({
+        ...baseMessage(),
+        bcc: ["monitor@example.org"],
+      }),
+    ).resolves.toEqual({
+      status: "suppressed",
+      reason: "recipient_not_allowlisted",
+    });
+    expect(mocks.emailSend).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
 });
 
 describe("send authorization", () => {
   beforeEach(() => {
     mocks.canSendEmailToUser.mockReset();
     mocks.emailSend.mockReset();
-    mocks.readOutboundMessageGate.mockReset();
-    mocks.readOutboundMessageGate.mockResolvedValue(OPEN_GATE);
     mocks.serverEnv.EMAIL_FROM = "team@optimitron.com";
     mocks.serverEnv.NODE_ENV = "development";
+    mocks.serverEnv.OUTBOUND_EMAIL_ALLOWLIST = undefined;
+    mocks.serverEnv.OUTBOUND_EMAIL_MODE = undefined;
     mocks.serverEnv.RESEND_API_KEY = "resend_test_key";
     mocks.serverEnv.RESEND_MOCK_SEND = undefined;
     mocks.canSendEmailToUser.mockResolvedValue(true);
@@ -633,7 +625,7 @@ describe("send authorization", () => {
       approvedPayloadHash: "deadbeef",
       kind: "approved",
       requestId: "ear_forged",
-    } as const;
+    } as unknown as ApprovedSendAuthorization;
 
     await expect(
       sendResendEmail({
@@ -645,7 +637,7 @@ describe("send authorization", () => {
         to: "citizen@example.com",
         userId: "user_1",
       }),
-    ).rejects.toThrow(/not minted by authorizeApprovedSend/);
+    ).rejects.toThrow(/not genuinely minted/);
     await expect(
       sendExternalResendEmail({
         authorization: forged,
@@ -655,43 +647,41 @@ describe("send authorization", () => {
         text: "Hello",
         to: "senator@example.gov",
       }),
-    ).rejects.toThrow(/not minted by authorizeApprovedSend/);
+    ).rejects.toThrow(/not genuinely minted/);
 
     expect(mocks.emailSend).not.toHaveBeenCalled();
   });
 
-  it("does not send to an address that has unsubscribed", async () => {
-    // The reason this check lives at the send boundary rather than in a
-    // caller: cold outreach reaches sendExternalResendEmail directly, so a
-    // caller-side check would be bypassable by the exact path it guards.
-    mocks.canSendEmailToAddress.mockResolvedValue(false);
-
-    const result = await sendExternalResendEmail({
-      authorization: OWNER,
+  it("sends a prepared envelope unchanged with a stable idempotency key", async () => {
+    const envelope = {
+      bcc: ["monitor@example.org"],
+      from: "Treaty <team@optimitron.com>",
+      headers: { "Message-ID": "<comm_1@example.org>" },
       html: "<p>Endorse the treaty?</p>",
-      scope: "outreach",
+      replyTo: "reply@example.org",
       subject: "Endorse the treaty?",
       text: "Endorse the treaty?",
-      to: "senator@example.gov",
-    });
-
-    expect(result).toEqual({ status: "suppressed", reason: "user_opt_out" });
-    expect(mocks.emailSend).not.toHaveBeenCalled();
-  });
-
-  it("checks suppression against the recipient address and scope", async () => {
-    await sendExternalResendEmail({
+      to: ["senator@example.gov"] as [string],
+    };
+    const result = await sendPreparedResendEmail({
       authorization: OWNER,
-      html: "<p>Endorse the treaty?</p>",
-      scope: "outreach",
-      subject: "Endorse the treaty?",
-      text: "Endorse the treaty?",
-      to: "Senator@Example.Gov",
+      envelope,
+      idempotencyKey: "outbound-message:v2:comm_1",
+      recipientUserId: "user_1",
+      scope: "task_notifications",
     });
 
-    expect(mocks.canSendEmailToAddress).toHaveBeenCalledWith(
-      "Senator@Example.Gov",
-      "outreach",
+    expect(result).toEqual({
+      id: "email_1",
+      status: "sent",
+      unsubscribeUrl: null,
+    });
+    expect(mocks.canSendEmailToUser).toHaveBeenCalledWith(
+      "user_1",
+      "task_notifications",
     );
+    expect(mocks.emailSend).toHaveBeenCalledWith(envelope, {
+      idempotencyKey: "outbound-message:v2:comm_1",
+    });
   });
 });
