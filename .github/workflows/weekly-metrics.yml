@@ -1,0 +1,136 @@
+name: Weekly metrics
+
+# The feedback signal for the improvement loop: product funnel (pulled from
+# the app's CRON_SECRET-guarded endpoint) plus CI health (computed here,
+# where the GitHub token is native). Posts to Slack when the webhook secret
+# is configured; always writes the job summary either way.
+#
+# Zeros are reported on purpose. The daily Bluesky digest skips quiet days
+# because it exists to market; this exists to steer, and "0 votes this week"
+# is exactly the number that must not be hidden.
+
+on:
+  schedule:
+    # Mondays 13:00 UTC — early morning US, before the work week's decisions.
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: weekly-metrics
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # SLACK_WEBHOOK_URL lives in the Production environment (same place the
+    # deploy-smoke failure alert reads it), not in repo secrets.
+    environment:
+      name: Production
+      deployment: false
+    steps:
+      - name: Fetch funnel snapshot from production
+        id: funnel
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET is not configured as a secret in the Production environment. Copy the value Vercel uses (Vercel dashboard -> optimitron-web -> Settings -> Environment Variables -> CRON_SECRET), then: gh secret set CRON_SECRET --env Production"
+            exit 1
+          fi
+          status=$(curl -sS -o snapshot.json -w "%{http_code}" --max-time 60 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://optimitron.com/api/metrics/weekly")
+          if [ "$status" != "200" ]; then
+            echo "::error::/api/metrics/weekly returned HTTP $status"
+            cat snapshot.json || true
+            exit 1
+          fi
+          cat snapshot.json
+
+      - name: Compute CI health
+        id: ci
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          since=$(date -u -d "7 days ago" +%Y-%m-%dT%H:%M:%SZ)
+          # Deploy smoke pass rate over the last week of completed runs.
+          smoke=$(gh api "repos/$REPO/actions/workflows/smoke-deploy.yml/runs?created=>$since&per_page=100" \
+            --jq '[.workflow_runs[] | select(.status=="completed")] | "\([.[] | select(.conclusion=="success")] | length)/\(length)"')
+          # CI pass rate on main over the last week.
+          ci_main=$(gh api "repos/$REPO/actions/workflows/ci.yml/runs?branch=main&created=>$since&per_page=100" \
+            --jq '[.workflow_runs[] | select(.status=="completed")] | "\([.[] | select(.conclusion=="success")] | length)/\(length)"')
+          # Open PR count and the age of the oldest in days.
+          pr_stats=$(gh api "repos/$REPO/pulls?state=open&per_page=100" \
+            --jq '"\(length) open; oldest \((([.[].created_at] | min // empty) as $m | if $m then ((now - ($m | fromdateiso8601)) / 86400 | floor) else 0 end))d"')
+          {
+            echo "smoke=$smoke"
+            echo "ci_main=$ci_main"
+            echo "pr_stats=$pr_stats"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Format report
+        id: report
+        env:
+          SMOKE: ${{ steps.ci.outputs.smoke }}
+          CI_MAIN: ${{ steps.ci.outputs.ci_main }}
+          PR_STATS: ${{ steps.ci.outputs.pr_stats }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const s = JSON.parse(fs.readFileSync("snapshot.json", "utf8"));
+
+          const delta = (cur, prev) => {
+            const d = cur - prev;
+            return d === 0 ? "±0" : d > 0 ? `+${d}` : `${d}`;
+          };
+          const row = (label, cur, prev) =>
+            `${label}: ${cur} (${delta(cur, prev)} WoW)`;
+
+          const lines = [
+            `Optimitron weekly metrics — week ending ${s.current.end.slice(0, 10)}`,
+            "",
+            row("Treaty votes", s.current.votes, s.previous.votes),
+            row("  verified", s.current.verifiedVotes, s.previous.verifiedVotes),
+            row("Referrals", s.current.referrals, s.previous.referrals),
+            row("Signups", s.current.signups, s.previous.signups),
+            `Agent actions awaiting approval: ${s.current.externalActionsPending}`,
+            "",
+            `CI on main: ${process.env.CI_MAIN || "n/a"} green`,
+            `Deploy smoke: ${process.env.SMOKE || "n/a"} green`,
+            `PRs: ${process.env.PR_STATS || "n/a"}`,
+          ];
+          const text = lines.join("\n");
+          fs.writeFileSync("report.txt", text);
+          fs.appendFileSync(
+            process.env.GITHUB_STEP_SUMMARY,
+            "```\n" + text + "\n```\n",
+          );
+          console.log(text);
+          NODE
+
+      - name: Post to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL not configured; report is in the job summary only."
+            exit 0
+          fi
+          node <<'NODE'
+          const fs = require("node:fs");
+          const text = fs.readFileSync("report.txt", "utf8");
+          fetch(process.env.SLACK_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ text }),
+          }).then((r) => {
+            if (!r.ok) throw new Error(`Slack webhook HTTP ${r.status}`);
+          }).catch((e) => { console.error(e); process.exit(1); });
+          NODE
