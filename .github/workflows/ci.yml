@@ -498,23 +498,31 @@ jobs:
           # Prefer the artifact produced for this PR's exact base commit. The
           # overall workflow may still be red because production deployment
           # failed after web-e2e-validate successfully uploaded its artifact.
-          mapfile -t run_candidates < <(
-            {
-              gh run list \
-                --workflow CI \
-                --branch main \
-                --commit "$base_sha" \
-                --limit 5 \
-                --json databaseId,headSha \
-                --jq '.[] | "\(.databaseId)\t\(.headSha)"'
-              gh run list \
-                --workflow CI \
-                --branch main \
-                --limit 20 \
-                --json databaseId,headSha \
-                --jq '.[] | "\(.databaseId)\t\(.headSha)"'
-            } | awk -F '\t' '!seen[$1]++'
-          )
+          exact_run_candidates="$(
+            gh run list \
+              --workflow CI \
+              --branch main \
+              --commit "$base_sha" \
+              --limit 5 \
+              --json databaseId,headSha \
+              --jq '.[] | "\(.databaseId)\t\(.headSha)"'
+          )"
+          fallback_run_candidates="$(
+            gh run list \
+              --workflow CI \
+              --branch main \
+              --limit 20 \
+              --json databaseId,headSha \
+              --jq '.[] | "\(.databaseId)\t\(.headSha)"'
+          )"
+          run_candidates_output="$(
+            printf '%s\n%s\n' "$exact_run_candidates" "$fallback_run_candidates" |
+              awk -F '\t' 'NF && !seen[$1]++'
+          )"
+          run_candidates=()
+          if [ -n "$run_candidates_output" ]; then
+            mapfile -t run_candidates <<< "$run_candidates_output"
+          fi
 
           for candidate in "${run_candidates[@]}"; do
             IFS=$'\t' read -r run_id baseline_sha <<< "$candidate"

@@ -204,6 +204,18 @@ test("prefers the exact PR-base visual artifact regardless of overall run status
   assert.match(baselineStep, /--commit "\$base_sha"/u);
   assert.doesNotMatch(
     baselineStep,
+    /mapfile -t run_candidates < <\(/u,
+    "process substitution must not hide a failed GitHub run query",
+  );
+  assert.match(baselineStep, /exact_run_candidates="\$\(/u);
+  assert.match(baselineStep, /fallback_run_candidates="\$\(/u);
+  assert.match(
+    baselineStep,
+    /if \[ -n "\$run_candidates_output" \]; then\s+mapfile -t run_candidates/u,
+    "an empty successful query should leave the candidate array empty",
+  );
+  assert.doesNotMatch(
+    baselineStep,
     /--status success/u,
     "an unrelated failed job must not hide a usable visual artifact",
   );
