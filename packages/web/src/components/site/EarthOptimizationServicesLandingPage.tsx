@@ -66,6 +66,7 @@ const thermostatPanels = [
     feedback: "Thermometer feedback",
     flow: ["Set 350F", "Heat", "Oven", "Food"],
     kicker: "it checks, then adjusts",
+    loopClosed: true,
     title: "Your oven",
   },
   {
@@ -74,7 +75,13 @@ const thermostatPanels = [
     feedback: "no sensor, no adjust",
     flow: ['"War on Drugs"', "$1 trillion", "policy", "???"],
     kicker: "it doesn't check anything",
-    stats: ["Overdose deaths 6,000 -> 107,000", "Budget change: none", "53 years"],
+    // The whole point of this panel is that the return path DOES NOT exist.
+    loopClosed: false,
+    stats: [
+      "Overdose deaths: 6,000 → 107,000",
+      "Budget change: none",
+      "Years running: 53",
+    ],
     title: "Your government",
   },
   {
@@ -83,6 +90,7 @@ const thermostatPanels = [
     feedback: "health and income feedback",
     flow: ["Measure", "Compare", "Adjust", "Repeat"],
     kicker: "installs the thermostat",
+    loopClosed: true,
     title: "Earth Optimization Services",
   },
 ] as const;
@@ -421,24 +429,43 @@ function ThermostatPanel({
                 aria-hidden="true"
                 className="text-center text-lg font-black"
               >
-                -&gt;
+                {"→"}
               </div>
             ) : null}
           </div>
         ))}
       </div>
-      <div className="mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase">
-        {panel.feedback}
+      {/* The return path — but only where one exists. The oven and EOS panels
+          close the loop, so their bars carry return arrows (aria-hidden:
+          decorative). The government panel's entire argument is that no
+          return path exists (Codex review on PR #157 caught arrows here
+          reversing the panel's point), so its bar renders dashed with no
+          arrows: a visibly missing wire. */}
+      <div
+        className={
+          panel.loopClosed
+            ? "mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase"
+            : "mt-4 border-2 border-dashed border-foreground p-3 text-center text-sm font-black uppercase text-muted-foreground"
+        }
+      >
+        {panel.loopClosed ? (
+          <>
+            <span aria-hidden="true">{"← "}</span>
+            {panel.feedback}
+            <span aria-hidden="true">{" ←"}</span>
+          </>
+        ) : (
+          panel.feedback
+        )}
       </div>
       {"stats" in panel ? (
-        <dl className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
+        <div className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
           {panel.stats.map((stat) => (
             <div className="border-2 border-foreground p-3" key={stat}>
-              <dt className="sr-only">{stat}</dt>
-              <dd>{stat}</dd>
+              {stat}
             </div>
           ))}
-        </dl>
+        </div>
       ) : null}
       <p className="mt-4 text-base font-bold leading-7">{panel.caption}</p>
     </article>
@@ -495,12 +522,6 @@ export function EarthOptimizationServicesLandingPage() {
                 {mastheadStatus}
               </p>
             </div>
-            <nav aria-label="Primary actions" className="flex flex-wrap gap-3">
-              <ActionButton href="#departments" primary>
-                {tourLabel}
-              </ActionButton>
-              <ActionButton href="#service-counter">{shopLabel}</ActionButton>
-            </nav>
           </header>
 
           <section className="py-12 sm:py-16">
