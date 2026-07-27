@@ -17,7 +17,7 @@ The result: your dollar has lost 96% of its value since 1913. If wages had kept 
 | Treaty path (military + health reform) | $339,000 | [1% Treaty impact model](https://impact.warondisease.org) |
 | Optimal governance (full implementation) | $1,160,000 | [Political Dysfunction Tax](https://political-dysfunction-tax.warondisease.org) |
 
-**Your governments guess.** The US federal government allocates a [$6.75 trillion budget](https://www.cbo.gov/topics/budget) based on vibes and bribery. Nobody knows the optimal amount to spend on education vs. healthcare vs. defense. On my planet, this would be like flying an aircraft by having the passengers vote on which buttons to press. Actually, that's unfair to the passengers. They'd probably Google it.
+**Your governments guess.** The US federal government allocates a [$6.75 trillion budget](https://www.cbo.gov/topics/budget) based on vibes and [lobbying](https://www.opensecrets.org/federal-lobbying). Nobody knows the optimal amount to spend on education vs. healthcare vs. defense. On my planet, this would be like flying an aircraft by having the passengers vote on which buttons to press. Actually, that's unfair to the passengers. They'd probably Google it.
 
 **Your individuals guess too.** 77% of Americans take dietary supplements, but almost none of them know whether those supplements actually work *for them*. You make health decisions based on anecdote, marketing, and whatever a guy at the gym said once. On my planet, this would be considered a form of performance art.
 
@@ -295,7 +295,7 @@ console.log(result.evidenceGrade);  // "B"
 
 ### 🏛️ Government OS
 
-Your governments currently make decisions the way you'd expect if nobody involved had read the data. Which they haven't. Optimitron replaces the guessing with math. Deploy it for any jurisdiction. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
+Your governments currently make decisions the way you'd expect if nobody involved had read the data. Which they haven't. Optimitron is a reproducible analysis and accountability stack that replaces the guessing with math. Deploy it for any jurisdiction. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
 
 - **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/wishocracy` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
 - **Budget optimization**: `@optimitron/obg` generates reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
