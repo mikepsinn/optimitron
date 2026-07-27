@@ -4,7 +4,6 @@ import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_ID,
   LOVING_TAKEOVER_TASK_ID,
-  OPTIMITRON_DEV_TASK_ID,
   TASK_GRAPH_STEWARD_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "../task-keys.js";
@@ -95,7 +94,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(dev?.successProbabilityBase).toBeUndefined();
   });
 
-  it("adopts the live task-graph steward below the private dev branch", () => {
+  it("adopts the live task-graph steward as a private managed root branch", () => {
     const steward = OPTIMIZE_EARTH_TASK_TREE.find(
       (task) => task.taskKey === "optimitron:task-graph-steward",
     );
@@ -103,7 +102,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
       executionMode: "AGENT_ONLY",
       id: TASK_GRAPH_STEWARD_TASK_ID,
       isPublic: false,
-      parentTaskId: OPTIMITRON_DEV_TASK_ID,
+      parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     });
     expect(steward?.contextJson).toMatchObject({
       developmentOwner: "Mike",

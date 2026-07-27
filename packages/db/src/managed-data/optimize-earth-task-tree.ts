@@ -543,7 +543,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     isPublic: false,
     id: TASK_GRAPH_STEWARD_TASK_ID,
     taskKey: TASK_GRAPH_STEWARD_TASK_KEY,
-    parentTaskId: OPTIMITRON_DEV_TASK_ID,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     title: "Steward the Optimize Earth task graph",
     description: [
       "Continuously keep the Optimize Earth task tree coherent, complete, and routable.",
