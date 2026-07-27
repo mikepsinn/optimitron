@@ -18,6 +18,7 @@ import {
   type EmailPreview,
 } from "@/lib/email/preview-envelope";
 import type { SendResult } from "@/lib/email/resend";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import { TaskFundingPledgeDeclineReactEmail } from "@/lib/email/task-funding-pledge-decline-react-email";
 import { createLogger } from "@/lib/logger";
@@ -129,6 +130,7 @@ export async function sendPledgeDeclineRecoveryEmail(
   }
 
   return sendDedupedEmail({
+    authorization: transactionalSend("task_funding_pledge_decline"),
     dedupeKey: getPledgeDeclineRecoveryDedupeKey(input.pledge),
     templateId: TASK_FUNDING_PLEDGE_DECLINE_TEMPLATE_ID,
     subject: TASK_FUNDING_PLEDGE_DECLINE_SUBJECT,

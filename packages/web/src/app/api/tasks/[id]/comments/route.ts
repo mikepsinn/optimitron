@@ -5,6 +5,7 @@
 
 import { NextResponse } from "next/server";
 import { getCurrentUser, getTaskRequestIdentity } from "@/lib/auth-utils";
+import { authorizeOwnerSend } from "@/lib/email/outbound-authorization.server";
 import { prisma } from "@/lib/prisma";
 import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import { TaskCommentAttachmentInputError } from "@/lib/tasks/task-comment-attachments.server";
@@ -115,10 +116,12 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const [currentUser, { clientAccessBoundary }] = await Promise.all([
-      getCurrentUser(request),
-      getTaskRequestIdentity(request),
-    ]);
+    const [currentUser, { clientAccessBoundary }, ownerAuthorization] =
+      await Promise.all([
+        getCurrentUser(request),
+        getTaskRequestIdentity(request),
+        authorizeOwnerSend(request),
+      ]);
     if (!currentUser) {
       return NextResponse.json(
         { error: "Authentication required." },
@@ -223,6 +226,7 @@ export async function POST(
       authorUserId: currentUser.id,
       commentId: comment.id,
       message: notificationMessage,
+      ownerAuthorization,
       taskId,
     });
 

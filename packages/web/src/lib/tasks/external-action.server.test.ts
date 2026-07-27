@@ -8,6 +8,8 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import {
   decideExternalActionRequest,
+  expireExternalActionRequest,
+  finalizeApprovedExternalAction,
   listExternalActionRequestsForHuman,
   proposeExternalAction,
   recordExternalActionResult,
@@ -226,38 +228,158 @@ describe.sequential("external action request boundaries", () => {
     expect(decided.approvedPayloadHash).toBeNull();
   });
 
-  it("lets only the requester decide, even among users with manage access", async () => {
-    const owner = await createUser("org_owner");
-    const member = await createUser("org_member");
-    const admin = await createUser("org_admin");
-    const organization = await createOrganization(owner.user.id, [
-      { role: OrganizationMemberRole.OWNER, userId: owner.user.id },
-      { role: OrganizationMemberRole.MEMBER, userId: member.user.id },
-      { role: OrganizationMemberRole.ADMIN, userId: admin.user.id },
-    ]);
+  // An agent proposes and a human decides, so approval cannot be limited to
+  // the requester. It is limited to MANAGE access on the task.
+  it("lets manage-access holders decide, but not users without task access", async () => {
+    const requester = await createUser("manage_requester");
+    const directManager = await createUser("direct_manager");
+    const outsider = await createUser("outsider");
     const task = await createTask({
-      creatorUserId: member.user.id,
-      id: "requester_only_task",
-      ownerOrganizationId: organization.id,
+      creatorUserId: requester.user.id,
+      id: "manage_access_task",
+    });
+    await prisma.taskManager.create({
+      data: {
+        createdByUserId: requester.user.id,
+        role: "manager",
+        taskId: task.id,
+        userId: directManager.user.id,
+      },
     });
     const request = await proposeRequest(
       task.id,
-      member.user.id,
-      "requester_only",
+      requester.user.id,
+      "manage_access",
     );
 
     await expect(
       decideExternalActionRequest(
         { decision: "APPROVE", externalActionRequestId: request.id },
-        admin.user.id,
+        outsider.user.id,
       ),
     ).rejects.toThrow("External action request not found");
+    await expect(
+      listExternalActionRequestsForHuman({
+        actorUserId: outsider.user.id,
+        statuses: [ExternalActionRequestStatus.PENDING],
+        taskId: task.id,
+      }),
+    ).resolves.toEqual([]);
+
+    const listedForDirectManager = await listExternalActionRequestsForHuman({
+      actorUserId: directManager.user.id,
+      statuses: [ExternalActionRequestStatus.PENDING],
+      taskId: task.id,
+    });
+    expect(listedForDirectManager.map((row) => row.id)).toContain(request.id);
 
     const decided = await decideExternalActionRequest(
       { decision: "APPROVE", externalActionRequestId: request.id },
-      member.user.id,
+      directManager.user.id,
     );
     expect(decided.status).toBe(ExternalActionRequestStatus.APPROVED);
+    expect(decided.approvedByUserId).toBe(directManager.user.id);
+  });
+
+  it("keeps blocked operations pending even for task managers", async () => {
+    const manager = await createUser("blocked_operation_manager");
+    const task = await createTask({
+      creatorUserId: manager.user.id,
+      id: "blocked_operation_task",
+    });
+    const request = await proposeRequest(
+      task.id,
+      manager.user.id,
+      "blocked_operation",
+    );
+
+    await expect(
+      decideExternalActionRequest(
+        { decision: "APPROVE", externalActionRequestId: request.id },
+        manager.user.id,
+        { blockedOperations: [request.operation] },
+      ),
+    ).rejects.toThrow("External action request not found");
+    await expect(
+      prisma.externalActionRequest.findUniqueOrThrow({
+        where: { id: request.id },
+        select: { approvedAt: true, status: true },
+      }),
+    ).resolves.toEqual({
+      approvedAt: null,
+      status: ExternalActionRequestStatus.PENDING,
+    });
+  });
+
+  it("does not grant routine approval access from platform admin status", async () => {
+    const requester = await createUser("admin_case_requester");
+    const platformAdmin = await createUser("platform_admin");
+    await prisma.user.update({
+      where: { id: platformAdmin.user.id },
+      data: { isAdmin: true },
+    });
+    const task = await createTask({
+      creatorUserId: requester.user.id,
+      id: "platform_admin_task",
+    });
+    const request = await proposeRequest(
+      task.id,
+      requester.user.id,
+      "platform_admin",
+    );
+
+    await expect(
+      listExternalActionRequestsForHuman({
+        actorUserId: platformAdmin.user.id,
+        taskId: task.id,
+      }),
+    ).resolves.toEqual([]);
+    await expect(
+      decideExternalActionRequest(
+        { decision: "APPROVE", externalActionRequestId: request.id },
+        platformAdmin.user.id,
+      ),
+    ).rejects.toThrow("External action request not found");
+  });
+
+  it("authorizes retries only for MANAGE holders on approved requests", async () => {
+    const requester = await createUser("retry_requester");
+    const manager = await createUser("retry_manager");
+    const outsider = await createUser("retry_outsider");
+    const task = await createTask({
+      creatorUserId: requester.user.id,
+      id: "retry_authorization_task",
+    });
+    await prisma.taskManager.create({
+      data: {
+        createdByUserId: requester.user.id,
+        taskId: task.id,
+        userId: manager.user.id,
+      },
+    });
+    const request = await proposeRequest(
+      task.id,
+      requester.user.id,
+      "retry_authorization",
+    );
+    await decideExternalActionRequest(
+      { decision: "APPROVE", externalActionRequestId: request.id },
+      requester.user.id,
+    );
+
+    await expect(
+      decideExternalActionRequest(
+        { decision: "RETRY", externalActionRequestId: request.id },
+        outsider.user.id,
+      ),
+    ).rejects.toThrow("External action request not found");
+
+    const retry = await decideExternalActionRequest(
+      { decision: "RETRY", externalActionRequestId: request.id },
+      manager.user.id,
+    );
+    expect(retry.status).toBe(ExternalActionRequestStatus.APPROVED);
+    expect(retry.approvedPayloadHash).toBe(request.payloadHash);
   });
 
   it("hides org-owned requests from delegated clients unless the organization is granted", async () => {
@@ -308,6 +430,46 @@ describe.sequential("external action request boundaries", () => {
     expect(decided.status).toBe(ExternalActionRequestStatus.APPROVED);
   });
 
+  it("heals a receipted send that raced approval expiry", async () => {
+    const actor = await createUser("expiry_race");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "expiry_race_task",
+    });
+    const request = await proposeRequest(task.id, actor.user.id, "expiry_race");
+    await decideExternalActionRequest(
+      { decision: "APPROVE", externalActionRequestId: request.id },
+      actor.user.id,
+    );
+    await expireExternalActionRequest(request.id);
+
+    await expect(
+      finalizeApprovedExternalAction({
+        executedByUserId: actor.user.id,
+        externalActionRequestId: request.id,
+        failureMessage: "no durable send evidence",
+        result: "FAILED",
+      }),
+    ).rejects.toThrow("External action request is no longer executable");
+
+    const healed = await finalizeApprovedExternalAction({
+      executedByUserId: actor.user.id,
+      externalActionRequestId: request.id,
+      receipt: {
+        emailLogId: "email_log_expiry_race",
+        providerMessageId: "provider_expiry_race",
+        taskCommunicationId: "communication_expiry_race",
+      },
+      result: "EXECUTED",
+    });
+    expect(healed.status).toBe(ExternalActionRequestStatus.EXECUTED);
+    expect(healed.executionReceiptJson).toEqual({
+      emailLogId: "email_log_expiry_race",
+      providerMessageId: "provider_expiry_race",
+      taskCommunicationId: "communication_expiry_race",
+    });
+  });
+
   it("returns the terminal row unchanged when a recorded result is replayed", async () => {
     const actor = await createUser("replayer");
     const task = await createTask({
@@ -351,8 +513,6 @@ describe.sequential("external action request boundaries", () => {
     );
     expect(replayed.status).toBe(ExternalActionRequestStatus.EXECUTED);
     expect(replayed.executionReceiptJson).toEqual({ receiptId: "original" });
-    expect(replayed.executedAt?.getTime()).toBe(
-      executed.executedAt?.getTime(),
-    );
+    expect(replayed.executedAt?.getTime()).toBe(executed.executedAt?.getTime());
   });
 });

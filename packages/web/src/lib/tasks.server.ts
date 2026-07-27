@@ -24,6 +24,7 @@ import { canonicalizeSiteUrl } from "@/lib/site";
 import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 import { userDisplaySelect } from "@/lib/user-display";
 import { getTaskPath } from "@/lib/routes";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { countTaskCommunications } from "@/lib/tasks/task-communications.server";
 import { notifyTaskAssigneeOfAssignment } from "@/lib/tasks/task-assignment-notifications.server";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/execution-planner-audit";
@@ -1917,6 +1918,9 @@ export async function createTask(
     status?: TaskStatus | null;
     title: string;
   },
+  options?: {
+    ownerAuthorization?: OwnerSendAuthorization | null;
+  },
 ) {
   const title = input.title.trim();
   const description = input.description?.trim() ?? "";
@@ -2004,6 +2008,9 @@ export async function createTask(
   if (isAssignedTask) {
     try {
       await notifyTaskAssigneeOfAssignment({
+        ...(options?.ownerAuthorization
+          ? { ownerAuthorization: options.ownerAuthorization }
+          : {}),
         senderUserId: creatorUserId,
         taskId: task.id,
       });

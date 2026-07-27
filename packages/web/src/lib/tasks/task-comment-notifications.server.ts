@@ -8,6 +8,8 @@ import {
 import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
+import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
 import { checkTaskCommunicationCooldown } from "@/lib/tasks/task-communications.server";
 import type { SenderSignature } from "@/lib/email/wishonia-signature";
 import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
@@ -39,6 +41,7 @@ export interface PostTaskCommentInput {
   from?: string | null;
   kind?: TaskCommentKind;
   message: string;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   /// When set, render a sender sign-off block in the email body. Used by
   /// share emails so the recipient sees their friend's name + role + org
   /// instead of (or in addition to) Wishonia's auto-signature. The Resend
@@ -50,6 +53,7 @@ export interface PostTaskCommentInput {
 
 export type PostTaskCommentResult =
   | { commentId: string; status: "sent" }
+  | { commentId: string; status: "pending_approval"; pendingCount: number }
   | { commentId: string; status: "skipped"; reason: string }
   | { commentId: string; status: "failed"; reason: string };
 
@@ -126,6 +130,7 @@ export async function notifyTaskCommentRecipients(input: {
   cta?: CommentNotificationCta | null;
   from?: string | null;
   message: string;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   senderSignature?: SenderSignature | null;
   taskId: string;
 }): Promise<PostTaskCommentResult> {
@@ -184,6 +189,7 @@ export async function notifyTaskCommentRecipients(input: {
   });
 
   try {
+    let pendingCount = 0;
     let sentCount = 0;
     let skippedReason: string | null = null;
 
@@ -202,7 +208,10 @@ export async function notifyTaskCommentRecipients(input: {
         );
       } catch (lookupError) {
         log.warn("Failed to resolve recipient referral URL", {
-          error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+          error:
+            lookupError instanceof Error
+              ? lookupError.message
+              : String(lookupError),
           userId: recipient.userId ?? null,
         });
       }
@@ -253,43 +262,67 @@ export async function notifyTaskCommentRecipients(input: {
       });
 
       const unsubscribeUrl = getStoredUnsubscribeUrl(draft.metadataJson);
+      let storedHtml = email.html;
+      let storedText = email.text;
       if (
         unsubscribeUrl &&
         email.html.includes(COMMENT_NOTIFICATION_PLACEHOLDER)
       ) {
+        storedHtml = email.html.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
+          unsubscribeUrl,
+        );
+        storedText = email.text.replaceAll(
+          COMMENT_NOTIFICATION_PLACEHOLDER,
+          unsubscribeUrl,
+        );
         await prisma.taskCommunication.update({
           where: { id: draft.id },
           data: {
             metadataJson: {
               ...asMetadataObject(draft.metadataJson),
-              html: email.html.replaceAll(
-                COMMENT_NOTIFICATION_PLACEHOLDER,
-                unsubscribeUrl,
-              ),
-              text: email.text.replaceAll(
-                COMMENT_NOTIFICATION_PLACEHOLDER,
-                unsubscribeUrl,
-              ),
+              html: storedHtml,
+              text: storedText,
             } as Prisma.InputJsonObject,
           },
         });
       }
 
-      const sendResult = await sendDraftTaskNotification({
-        communicationId: draft.id,
-        from: input.from ?? null,
-        now,
-      });
-
-      if (sendResult.status === "sent") {
-        sentCount += 1;
-      } else if (!skippedReason) {
-        skippedReason = sendResult.status;
+      if (input.ownerAuthorization) {
+        const sendResult = await sendDraftTaskNotification({
+          authorization: input.ownerAuthorization,
+          communicationId: draft.id,
+          from: input.from ?? null,
+          now,
+          senderUserId: input.authorUserId ?? null,
+        });
+        if (sendResult.status === "sent") {
+          sentCount += 1;
+        } else {
+          skippedReason =
+            sendResult.status === "suppressed"
+              ? sendResult.reason
+              : sendResult.status;
+        }
+      } else {
+        // Approval is proposed against the final stored body, so the hash the
+        // human approves is the hash of what the recipient would read.
+        await proposeOutboundMessage({
+          actorUserId: input.authorUserId ?? null,
+          communicationId: draft.id,
+          from: input.from ?? null,
+          now,
+          taskId,
+        });
+        pendingCount += 1;
       }
     }
 
     if (sentCount > 0) {
       return { commentId, status: "sent" };
+    }
+    if (pendingCount > 0) {
+      return { commentId, pendingCount, status: "pending_approval" };
     }
     return { commentId, status: "skipped", reason: skippedReason ?? "skipped" };
   } catch (error) {
@@ -341,6 +374,7 @@ export async function postTaskCommentAndNotify(
     cta: input.cta,
     from: input.from ?? null,
     message: input.message,
+    ownerAuthorization: input.ownerAuthorization ?? null,
     senderSignature: input.senderSignature ?? null,
     taskId: input.taskId,
   });

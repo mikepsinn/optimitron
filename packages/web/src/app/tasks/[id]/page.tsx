@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
+  ExternalActionRequestStatus,
   TaskClaimPolicy,
   TaskClaimStatus,
   TaskCompensationCadence,
@@ -22,6 +23,10 @@ import { TaskClaimButton } from "@/components/tasks/TaskClaimButton";
 import { TaskCompleteForm } from "@/components/tasks/TaskCompleteForm";
 import { TaskDeleteButton } from "@/components/tasks/TaskDeleteButton";
 import { TaskDependenciesSection } from "@/components/tasks/TaskDependenciesSection";
+import {
+  TaskExternalActionApprovals,
+  type ApprovableStatus,
+} from "@/components/tasks/TaskExternalActionApprovals";
 import { TaskShareButtons } from "@/components/tasks/TaskShareButtons";
 import { TaskVerifyForm } from "@/components/tasks/TaskVerifyForm";
 import { getUserDisplayLabel } from "@/lib/user-display";
@@ -44,6 +49,8 @@ import {
 } from "@/lib/tasks/task-comments.server";
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
+import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
+import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 import { TASK_NOT_FOUND_MESSAGE } from "@/lib/tasks/task-visibility.server";
 import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
@@ -488,6 +495,24 @@ export default async function TaskDetailPage({
     task.impact.selectedFrame?.estimatedCashCostUsdBase ?? null;
   const hasRealFundingCost =
     fundingFrameCashCostUsd != null && fundingFrameCashCostUsd > 0;
+  const outboundApprovals = userId
+    ? (
+        await listExternalActionRequestsForHuman({
+          actorUserId: userId,
+          operation: OUTBOUND_MESSAGE_OPERATION,
+          statuses: [
+            ExternalActionRequestStatus.PENDING,
+            ExternalActionRequestStatus.APPROVED,
+          ],
+          taskId: task.id,
+        })
+      ).filter(
+        (request): request is typeof request & { status: ApprovableStatus } =>
+          (request.status === ExternalActionRequestStatus.PENDING ||
+            request.status === ExternalActionRequestStatus.APPROVED) &&
+          request.expiresAt > new Date(),
+      )
+    : [];
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -601,6 +626,8 @@ export default async function TaskDetailPage({
             </div>
           ) : null}
         </header>
+
+        <TaskExternalActionApprovals approvals={outboundApprovals} />
 
         {/* Delay-cost stats — kept (motivational, not duplicated in
             header). Owner/Progress/Time-needed/Area/Completed/Updates were

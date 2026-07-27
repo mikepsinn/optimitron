@@ -24,7 +24,8 @@ export interface EmailScopeDescriptor {
 export const EMAIL_SCOPES: Record<string, EmailScopeDescriptor> = {
   all: {
     label: "All non-essential email",
-    description: "Opt out of every non-transactional email, present and future.",
+    description:
+      "Opt out of every non-transactional email, present and future.",
     transactional: false,
     master: true,
   },
@@ -65,9 +66,11 @@ export const ALL_EMAIL_SCOPES: readonly EmailScope[] = [
 ];
 
 /** Scopes the user can actually opt out of (non-transactional, non-master). */
-export const NON_TRANSACTIONAL_SCOPES: readonly EmailScope[] = ALL_EMAIL_SCOPES.filter(
-  (scope) => !EMAIL_SCOPES[scope].transactional && !EMAIL_SCOPES[scope].master,
-);
+export const NON_TRANSACTIONAL_SCOPES: readonly EmailScope[] =
+  ALL_EMAIL_SCOPES.filter(
+    (scope) =>
+      !EMAIL_SCOPES[scope].transactional && !EMAIL_SCOPES[scope].master,
+  );
 
 export function isEmailScope(value: unknown): value is EmailScope {
   return typeof value === "string" && value in EMAIL_SCOPES;

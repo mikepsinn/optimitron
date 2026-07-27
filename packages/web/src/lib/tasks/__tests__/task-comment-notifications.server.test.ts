@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   resolveTaskRecipients: vi.fn(),
   recipientWithinRateLimits: vi.fn(),
   resolveTaskRecipient: vi.fn(),
+  proposeOutboundMessage: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
   taskCommentCreate: vi.fn(),
   taskCommunicationUpdate: vi.fn(),
@@ -36,6 +37,10 @@ vi.mock("@/lib/tasks/task-notifications.server", () => ({
   sendDraftTaskNotification: mocks.sendDraftTaskNotification,
 }));
 
+vi.mock("@/lib/email/outbound-message-approval.server", () => ({
+  proposeOutboundMessage: mocks.proposeOutboundMessage,
+}));
+
 vi.mock("@/lib/email/task-notification", () => ({
   getTaskEmailReplyInstruction: mocks.getTaskEmailReplyInstruction,
 }));
@@ -60,6 +65,12 @@ vi.mock("@/lib/tasks.server", () => ({
 }));
 
 import { postTaskCommentAndNotify } from "@/lib/tasks/task-comment-notifications.server";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
+
+const OWNER_AUTHORIZATION = {
+  kind: "owner",
+  userId: "user_alice",
+} as unknown as OwnerSendAuthorization;
 
 describe("postTaskCommentAndNotify", () => {
   beforeEach(() => {
@@ -93,8 +104,9 @@ describe("postTaskCommentAndNotify", () => {
       id: "comm_1",
       metadataJson: { unsubscribeUrl: "https://warondisease.org/unsub" },
     });
+    mocks.proposeOutboundMessage.mockResolvedValue({ id: "ear_1" });
     mocks.sendDraftTaskNotification.mockResolvedValue({
-      communication: { id: "comm_1" },
+      providerMessageId: "email_1",
       status: "sent",
     });
   });
@@ -106,7 +118,8 @@ describe("postTaskCommentAndNotify", () => {
       taskId: "task_1",
     });
 
-    expect(result.status).toBe("sent");
+    // The comment is created; the email waits for approval.
+    expect(result.status).toBe("pending_approval");
     expect(mocks.taskCommentCreate).toHaveBeenCalledWith({
       data: expect.objectContaining({
         authorUserId: "user_alice",
@@ -127,7 +140,7 @@ describe("postTaskCommentAndNotify", () => {
         ),
       }),
     );
-    expect(mocks.sendDraftTaskNotification).toHaveBeenCalled();
+    expect(mocks.proposeOutboundMessage).toHaveBeenCalled();
   });
 
   it("sends admin monitoring copies as separate reason-labeled emails", async () => {
@@ -166,7 +179,7 @@ describe("postTaskCommentAndNotify", () => {
       taskId: "task_1",
     });
 
-    expect(result.status).toBe("sent");
+    expect(result.status).toBe("pending_approval");
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         recipientEmail: "joe@example.com",
@@ -198,6 +211,25 @@ describe("postTaskCommentAndNotify", () => {
         recipientEmail: "admin2@example.com",
       }),
     );
+  });
+
+  it("direct-sends a human comment with session-minted owner authority", async () => {
+    const result = await postTaskCommentAndNotify({
+      authorUserId: "user_alice",
+      message: "Hey Joe, please vote.",
+      ownerAuthorization: OWNER_AUTHORIZATION,
+      taskId: "task_1",
+    });
+
+    expect(result).toEqual({ commentId: "comment_1", status: "sent" });
+    expect(mocks.sendDraftTaskNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorization: OWNER_AUTHORIZATION,
+        communicationId: "comm_1",
+        senderUserId: "user_alice",
+      }),
+    );
+    expect(mocks.proposeOutboundMessage).not.toHaveBeenCalled();
   });
 
   it("renders the comment body verbatim regardless of author override", async () => {
@@ -298,8 +330,8 @@ describe("postTaskCommentAndNotify", () => {
     );
   });
 
-  it("returns failed status when the send throws", async () => {
-    mocks.sendDraftTaskNotification.mockRejectedValue(new Error("boom"));
+  it("returns failed status when queuing the approval throws", async () => {
+    mocks.proposeOutboundMessage.mockRejectedValue(new Error("boom"));
 
     const result = await postTaskCommentAndNotify({
       authorUserId: "user_alice",

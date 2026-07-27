@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  authorizeOwnerSend: vi.fn(),
   canUserCommentOnTask: vi.fn(),
   canUserViewTask: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
@@ -9,6 +10,11 @@ const mocks = vi.hoisted(() => ({
   getTaskCommentFeed: vi.fn(),
   postComment: vi.fn(),
   generateAndPostWishoniaReply: vi.fn(),
+  notifyTaskCommentRecipients: vi.fn(),
+}));
+
+vi.mock("@/lib/email/outbound-authorization.server", () => ({
+  authorizeOwnerSend: mocks.authorizeOwnerSend,
 }));
 
 // getCurrentUser stays the identity seam; getTaskRequestIdentity mirrors the
@@ -46,7 +52,7 @@ vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
 }));
 
 vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
-  notifyTaskCommentRecipients: vi.fn(),
+  notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
 }));
 
 vi.mock("@/lib/tasks/wishonia-task-reply.server", () => ({
@@ -74,6 +80,7 @@ beforeEach(() => {
     fn.mockReset();
   }
   mocks.canUserCommentOnTask.mockResolvedValue(true);
+  mocks.authorizeOwnerSend.mockResolvedValue(null);
   mocks.canUserViewTask.mockResolvedValue(true);
   mocks.countUserCommentsInWindow.mockResolvedValue(0);
   mocks.postComment.mockResolvedValue({ id: "comment_1" });
@@ -163,6 +170,8 @@ describe("POST /api/tasks/[id]/comments", () => {
   });
 
   it("posts an attachment-only comment without starting an AI reply", async () => {
+    const ownerAuthorization = { kind: "owner", userId: "owner_1" };
+    mocks.authorizeOwnerSend.mockResolvedValue(ownerAuthorization);
     mocks.getCurrentUser.mockResolvedValue({ id: "owner_1" });
 
     const response = await POST(
@@ -184,6 +193,13 @@ describe("POST /api/tasks/[id]/comments", () => {
       taskId: "task_1",
     });
     expect(mocks.generateAndPostWishoniaReply).not.toHaveBeenCalled();
+    expect(mocks.notifyTaskCommentRecipients).toHaveBeenCalledWith({
+      authorUserId: "owner_1",
+      commentId: "comment_1",
+      message: "Attached 1 file",
+      ownerAuthorization,
+      taskId: "task_1",
+    });
   });
 
   it("rejects malformed attachment IDs before posting", async () => {

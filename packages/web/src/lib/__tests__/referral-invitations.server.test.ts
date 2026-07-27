@@ -31,7 +31,12 @@ const mocks = vi.hoisted(() => {
     prisma: {
       $transaction: vi.fn(),
       referendum: { findFirst: vi.fn() },
-      referralInvitation: { count: vi.fn(), findFirst: vi.fn(), findUnique: vi.fn() },
+      referralInvitation: {
+        count: vi.fn(),
+        findFirst: vi.fn(),
+        findUnique: vi.fn(),
+        update: vi.fn(),
+      },
       task: { findFirst: vi.fn() },
       user: { findUnique: vi.fn() },
     },
@@ -45,11 +50,11 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
-  postTaskCommentAndNotify: vi.fn(),
 }));
 
 vi.mock("@/lib/tasks/user-treaty-task-progress.server", () => ({
-  markNextHumanAssignmentSubtaskComplete: mocks.markNextHumanAssignmentSubtaskComplete,
+  markNextHumanAssignmentSubtaskComplete:
+    mocks.markNextHumanAssignmentSubtaskComplete,
   markUserTreatyPhoneCallComplete: mocks.markUserTreatyPhoneCallComplete,
 }));
 
@@ -58,7 +63,8 @@ vi.mock("@/lib/tasks/user-treaty-task.server", () => ({
 }));
 
 vi.mock("@/lib/referral-invitation-tasks.server", async (importOriginal) => {
-  const actual = await importOriginal() as typeof import("@/lib/referral-invitation-tasks.server");
+  const actual =
+    (await importOriginal()) as typeof import("@/lib/referral-invitation-tasks.server");
   return {
     ...actual,
     createReferralInvitationTask: mocks.createReferralInvitationTask,
@@ -72,7 +78,11 @@ vi.mock("@/lib/share-attempts.server", () => ({
 // Trigger framework is fired alongside the existing path; not relevant
 // to these unit tests. Mock as no-op.
 vi.mock("@/lib/triggers", () => ({
-  fireTaskTrigger: vi.fn().mockResolvedValue({ result: "filteredOut", spawnedTaskIds: [], spawnedTaskKeys: [] }),
+  fireTaskTrigger: vi.fn().mockResolvedValue({
+    result: "filteredOut",
+    spawnedTaskIds: [],
+    spawnedTaskKeys: [],
+  }),
   fireTaskTriggersForEvent: mocks.fireTaskTriggersForEvent,
   buildTriggerContext: (extras: Record<string, unknown> = {}) => extras,
   buildTriggerParams: () => ({}),
@@ -88,7 +98,9 @@ import { buildReferralUrl, getBaseUrl } from "@/lib/url";
 describe("createReferralInvitation", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.prisma.$transaction.mockImplementation((callback) => callback(mocks.tx));
+    mocks.prisma.$transaction.mockImplementation((callback) =>
+      callback(mocks.tx),
+    );
     mocks.prisma.user.findUnique.mockResolvedValue({
       id: "user_1",
       email: "sender@example.com",
@@ -179,7 +191,9 @@ describe("createReferralInvitation", () => {
 describe("markReferralInvitationCopied", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.prisma.$transaction.mockImplementation((callback) => callback(mocks.tx));
+    mocks.prisma.$transaction.mockImplementation((callback) =>
+      callback(mocks.tx),
+    );
     mocks.prisma.referralInvitation.findFirst.mockResolvedValue({
       contactMethod: ReferralInvitationContactMethod.OTHER,
       id: "invite_call",
@@ -197,7 +211,9 @@ describe("markReferralInvitationCopied", () => {
         referralCode: "ref_sender",
       },
     });
-    mocks.tx.referralInvitation.findUnique.mockResolvedValue({ id: "invite_call" });
+    mocks.tx.referralInvitation.findUnique.mockResolvedValue({
+      id: "invite_call",
+    });
     mocks.tx.referralInvitation.update.mockResolvedValue({ id: "invite_call" });
     mocks.tx.taskComment.create.mockResolvedValue({ id: "comment_1" });
     mocks.markNextHumanAssignmentSubtaskComplete.mockResolvedValue(true);
@@ -232,7 +248,8 @@ describe("markReferralInvitationCopied", () => {
   it("records the supplied direct share channel for one-human app shares", async () => {
     await markReferralInvitationCopied({
       invitationId: "invite_call",
-      messageText: "Please vote here: https://warondisease.org/vote/ref_sender?invite=abc&sa=share_1",
+      messageText:
+        "Please vote here: https://warondisease.org/vote/ref_sender?invite=abc&sa=share_1",
       referrerUserId: "user_1",
       shareAttemptId: "share_1",
       shareChannel: "whatsapp",
@@ -253,7 +270,9 @@ describe("markReferralInvitationCopied", () => {
 describe("convertReferralInvitationForVote", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.prisma.$transaction.mockImplementation((callback) => callback(mocks.tx));
+    mocks.prisma.$transaction.mockImplementation((callback) =>
+      callback(mocks.tx),
+    );
     mocks.notifyTaskCommentRecipients.mockResolvedValue({
       commentId: "comment_1",
       status: "sent",
@@ -354,11 +373,9 @@ describe("convertReferralInvitationForVote", () => {
     });
 
     expect(mocks.tx.user.update).toHaveBeenCalledTimes(3);
-    expect(mocks.tx.user.update.mock.calls.map(([input]) => input.where.id)).toEqual([
-      "ancestor_3",
-      "ancestor_2",
-      "ancestor_1",
-    ]);
+    expect(
+      mocks.tx.user.update.mock.calls.map(([input]) => input.where.id),
+    ).toEqual(["ancestor_3", "ancestor_2", "ancestor_1"]);
     for (const [input] of mocks.tx.user.update.mock.calls) {
       expect(input.data).toEqual({
         downstreamConversionCount: { increment: 1 },
