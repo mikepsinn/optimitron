@@ -6137,6 +6137,32 @@ describe("MCP server tool dispatch", () => {
       ]);
     });
 
+    it("inspectToolAccess rejects filters that exceed its response bounds", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const oversized = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {
+          toolNames: Array.from({ length: 201 }, (_, index) => `tool-${index}`),
+        },
+      });
+      expect(oversized.isError).toBe(true);
+      expect(parseToolBody(oversized)).toMatchObject({
+        details: { field: "toolNames", maxItems: 200 },
+        errorCode: "INVALID_ARGUMENT",
+      });
+
+      const duplicated = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: { toolNames: ["getMe", "getMe"] },
+      });
+      expect(duplicated.isError).toBe(true);
+      expect(parseToolBody(duplicated)).toMatchObject({
+        details: { field: "toolNames", uniqueItems: true },
+        errorCode: "INVALID_ARGUMENT",
+      });
+    });
+
     it("inspectToolAccess requires an authenticated connection", async () => {
       const client = await setup(undefined, ALL_SCOPES);
 

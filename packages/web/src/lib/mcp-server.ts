@@ -371,6 +371,8 @@ const DISABLED_TOOLS = new Set([
   "mergeDuplicatePeople",
 ]);
 
+const TOOL_ACCESS_INSPECTION_MAX_NAMES = 200;
+
 function hasScope(
   grantedScopes: McpScope[] | undefined,
   toolName: string,
@@ -6146,7 +6148,7 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Optional tool names to inspect. Omit to inspect the complete compact catalog.",
           items: { type: "string" },
-          maxItems: 200,
+          maxItems: TOOL_ACCESS_INSPECTION_MAX_NAMES,
           uniqueItems: true,
         },
       },
@@ -11756,11 +11758,43 @@ export function createMcpServer(
                 name,
                 "This tool explains access for the authenticated connection.",
               );
+            if (
+              a.toolNames !== undefined &&
+              (!Array.isArray(a.toolNames) ||
+                a.toolNames.some((value) => typeof value !== "string"))
+            ) {
+              return err("toolNames must be an array of strings.", {
+                code: "INVALID_ARGUMENT",
+                details: { field: "toolNames", itemType: "string" },
+              });
+            }
             const requestedNames = Array.isArray(a.toolNames)
-              ? a.toolNames.filter(
-                  (value): value is string => typeof value === "string",
-                )
+              ? (a.toolNames as string[])
               : null;
+            if (
+              requestedNames &&
+              requestedNames.length > TOOL_ACCESS_INSPECTION_MAX_NAMES
+            ) {
+              return err(
+                `toolNames must contain at most ${TOOL_ACCESS_INSPECTION_MAX_NAMES} entries.`,
+                {
+                  code: "INVALID_ARGUMENT",
+                  details: {
+                    field: "toolNames",
+                    maxItems: TOOL_ACCESS_INSPECTION_MAX_NAMES,
+                  },
+                },
+              );
+            }
+            if (
+              requestedNames &&
+              new Set(requestedNames).size !== requestedNames.length
+            ) {
+              return err("toolNames entries must be unique.", {
+                code: "INVALID_ARGUMENT",
+                details: { field: "toolNames", uniqueItems: true },
+              });
+            }
             const toolNames =
               requestedNames ??
               TASK_TOOL_DEFINITIONS.map((definition) => definition.name);
