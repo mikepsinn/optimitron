@@ -66,6 +66,7 @@ const thermostatPanels = [
     feedback: "Thermometer feedback",
     flow: ["Set 350F", "Heat", "Oven", "Food"],
     kicker: "it checks, then adjusts",
+    loopClosed: true,
     title: "Your oven",
   },
   {
@@ -74,6 +75,8 @@ const thermostatPanels = [
     feedback: "no sensor, no adjust",
     flow: ['"War on Drugs"', "$1 trillion", "policy", "???"],
     kicker: "it doesn't check anything",
+    // The whole point of this panel is that the return path DOES NOT exist.
+    loopClosed: false,
     stats: [
       "Overdose deaths: 6,000 → 107,000",
       "Budget change: none",
@@ -87,6 +90,7 @@ const thermostatPanels = [
     feedback: "health and income feedback",
     flow: ["Measure", "Compare", "Adjust", "Repeat"],
     kicker: "installs the thermostat",
+    loopClosed: true,
     title: "Earth Optimization Services",
   },
 ] as const;
@@ -431,13 +435,28 @@ function ThermostatPanel({
           </div>
         ))}
       </div>
-      {/* The return path. Without the arrows this reads as a fifth box under
-          the row instead of the loop closing — and the loop closing is the
-          entire argument of the section. */}
-      <div className="mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase">
-        <span aria-hidden="true">{"← "}</span>
-        {panel.feedback}
-        <span aria-hidden="true">{" ←"}</span>
+      {/* The return path — but only where one exists. The oven and EOS panels
+          close the loop, so their bars carry return arrows (aria-hidden:
+          decorative). The government panel's entire argument is that no
+          return path exists (Codex review on PR #157 caught arrows here
+          reversing the panel's point), so its bar renders dashed with no
+          arrows: a visibly missing wire. */}
+      <div
+        className={
+          panel.loopClosed
+            ? "mt-4 border-2 border-foreground p-3 text-center text-sm font-black uppercase"
+            : "mt-4 border-2 border-dashed border-foreground p-3 text-center text-sm font-black uppercase text-muted-foreground"
+        }
+      >
+        {panel.loopClosed ? (
+          <>
+            <span aria-hidden="true">{"← "}</span>
+            {panel.feedback}
+            <span aria-hidden="true">{" ←"}</span>
+          </>
+        ) : (
+          panel.feedback
+        )}
       </div>
       {"stats" in panel ? (
         <div className="mt-4 grid gap-2 text-sm font-black uppercase sm:grid-cols-3">
