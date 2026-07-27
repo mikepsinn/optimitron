@@ -42,7 +42,12 @@ function checkCommand(command) {
   // to single-clause commands — never compound.
   const hasShellSeparator =
     /(?:&&|\|\||;|\n|\|(?!\|)|&(?!&))/.test(text);
-  const safeDelete = /\b(remove-item|rm)\b[\s\S]*(node_modules|\.next|dist|build|\.turbo|coverage|__pycache__|\.cache)\b/i;
+  // `.claude/worktrees` joined node_modules on 2026-07-26 (Mike): agent
+  // sessions mint worktrees there constantly and abandon them, every one is
+  // regenerable from git (worktree removal never deletes branches), and the
+  // gate was firing on routine cleanup twice a day. Everything else recursive
+  // still needs a human.
+  const safeDelete = /\b(remove-item|rm)\b[\s\S]*(node_modules|\.next|dist|build|\.turbo|coverage|__pycache__|\.cache|\.claude[\\\/]+worktrees)\b/i;
   const isSafeCleanupSingleClause =
     safeDelete.test(text) && !hasShellSeparator;
 
