@@ -121,13 +121,13 @@ const MANAGER_VOCAB: UserFramingVocabulary = {
     shortName: "Earth Optimization Services",
     longName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
-  recruitCtaShort: "Hire two humanity managers",
+  recruitCtaShort: "Tell two friends to optimize Earth",
   shareLinkPrompt:
     "Share your link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Each humanity manager you hire earns you 1 ${POINT}.`,
   earnPerRecruitShort: `1 ${POINT} per humanity manager hired`,
   verifyAndEarn: `Verify personhood, then share your link. Each humanity manager you hire earns you 1 ${POINT}.`,
-  depositAndRecruit: `Deposit into the prize pool, hire humanity managers, earn ${POINTS}.`,
+  depositAndRecruit: `Deposit into the prize pool, tell friends, earn ${POINTS}.`,
   recruitedActivityVerb: "hired a humanity manager",
 };
 
@@ -145,14 +145,14 @@ const VOTER_VOCAB: UserFramingVocabulary = {
     shortName: "Earth Optimization Services",
     longName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
-  recruitCtaShort: "Recruit verified voters",
+  recruitCtaShort: "Get friends to vote",
   shareLinkPrompt:
     "Share your vote link with everyone you do not want to suffer and die of horrible diseases. It will significantly reduce the probability that they will suffer and die from horrible diseases.",
   earnPerRecruit: `Every verified voter you bring in earns you 1 ${POINT}.`,
-  earnPerRecruitShort: `1 ${POINT} per verified voter recruited`,
+  earnPerRecruitShort: `1 ${POINT} per verified voter`,
   verifyAndEarn: `Verify personhood, then share your link. Each verified voter who uses it earns you 1 ${POINT}.`,
-  depositAndRecruit: `Deposit into the prize pool, recruit verified voters, earn ${POINTS}.`,
-  recruitedActivityVerb: "recruited a voter",
+  depositAndRecruit: `Deposit into the prize pool, get friends to vote, earn ${POINTS}.`,
+  recruitedActivityVerb: "brought in a voter",
 };
 
 export function getUserFramingVocabulary(

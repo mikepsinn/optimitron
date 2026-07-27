@@ -34,10 +34,8 @@ There is nothing else to do. If you change your mind, you can [cancel this pledg
 
 Love,
 
-🛸 Wishonia
+Wishonia Love
 
-Chief Optimization Officer
-
-Earth Optimization Services Inc.
+CEO of Universe Optimization Services
 
 Maximizing median income and health-adjusted life years since 2026

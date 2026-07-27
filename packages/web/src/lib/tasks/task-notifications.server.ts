@@ -38,8 +38,8 @@ import {
 import { getConfiguredTaskReplyAddress } from "@/lib/email/task-notification";
 import { buildUnsubscribeUrl } from "@/lib/email/unsub-url";
 import {
+  WISHONIA_SIGNATURE_TITLE,
   WISHONIA_TAGLINES,
-  WISHONIA_TITLES,
   type WishoniaSignatureSelection,
 } from "@/lib/email/wishonia-signature";
 import { prisma } from "@/lib/prisma";
@@ -396,7 +396,7 @@ function deterministicWishoniaSelection(
 ): WishoniaSignatureSelection {
   const digest = createHash("sha256").update(communicationId).digest();
   return {
-    title: WISHONIA_TITLES[digest.readUInt32BE(0) % WISHONIA_TITLES.length]!,
+    title: WISHONIA_SIGNATURE_TITLE,
     tagline:
       WISHONIA_TAGLINES[digest.readUInt32BE(4) % WISHONIA_TAGLINES.length]!,
   };
