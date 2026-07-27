@@ -2008,6 +2008,7 @@ describe("MCP server tool dispatch", () => {
         id: string,
         parentTaskId: string | null,
         childTasks: Array<{ id: string }>,
+        overrides: Record<string, unknown> = {},
       ) => ({
         assigneeOrganizationId: null,
         assigneePersonId: null,
@@ -2015,6 +2016,7 @@ describe("MCP server tool dispatch", () => {
         category: "GOVERNANCE",
         childTasks,
         claimPolicy: "OPEN_SINGLE",
+        communicationEndpoints: [],
         contextJson: {
           acceptanceCriteria: ["The result is independently verifiable."],
         },
@@ -2038,10 +2040,16 @@ describe("MCP server tool dispatch", () => {
         status: "ACTIVE",
         taskKey: `task:${id}`,
         title: id === "optimize-earth" ? "Optimize Earth" : "Research a fix",
+        ...overrides,
       });
       mocks.taskFindMany.mockResolvedValueOnce([
         storedTask("optimize-earth", null, [{ id: "leaf" }]),
-        storedTask("leaf", "optimize-earth", []),
+        storedTask("leaf", "optimize-earth", [], {
+          communicationEndpoints: [
+            { sourceUrl: "https://example.org/authoritative-source" },
+          ],
+          isPublic: true,
+        }),
       ]);
       mocks.taskEdgeFindMany.mockResolvedValueOnce([]);
       const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
@@ -2070,8 +2078,24 @@ describe("MCP server tool dispatch", () => {
           }),
         ],
       });
+      expect(
+        (
+          parseToolBody(result) as { issues: Array<{ code?: string }> }
+        ).issues.some(
+          (issue: { code?: string }) => issue.code === "MISSING_PUBLIC_SOURCE",
+        ),
+      ).toBe(false);
       expect(mocks.taskFindMany).toHaveBeenCalledWith(
         expect.objectContaining({ where: { deletedAt: null } }),
+      );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            fromTask: { deletedAt: null },
+            toTask: { deletedAt: null },
+          },
+        }),
       );
     });
 

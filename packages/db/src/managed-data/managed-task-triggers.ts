@@ -471,6 +471,11 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
 // assignee from, and the sweeps must land in the operator's AI queue.
 const OPERATOR_PERSON_ID = "cmoi5ad7v000004jvp8vozoki";
 
+const FULL_TREE_AUDIT_STEPS = [
+  "1. Call getTaskTreeAudit and keep passing nextCursor until complete is true. Process each issueKey only once.",
+  "2. Use searchTasks, listTasks, and getQueueAudit only to inspect relevant findings; their limited result sets are not a substitute for the full-tree audit.",
+] as const;
+
 const HYGIENE_SWEEP_SPEC_BASE = {
   isParent: true,
   kind: "sweep",
@@ -499,10 +504,10 @@ const hygieneDuplicateSweep: ManagedTaskTriggerInput = {
       descriptionTemplate: [
         "Scan the active task tree for duplicates and misparented tasks, then submit fixes as approval-gated proposals — never mutate directly.",
         "",
-        "1. Pull candidates: searchTasks/listTasks over active tasks; compare normalized title + assignee fingerprints (the task-governance duplicate fingerprint) and taskKey collisions.",
-        "2. For each duplicate pair, decide the canonical task (older, richer history, referenced by edges) and propose folding the other into it via the admin mergeTask tool — post the pair and rationale as a task comment on the canonical task for approval first.",
-        "3. For each misparented task (wrong branch, personal task under a public program, program task under a personal branch), post a re-parent proposal comment naming the target parent.",
-        "4. Record what was swept and proposed in a completion comment, then mark this task VERIFIED. The schedule reopens it tomorrow.",
+        ...FULL_TREE_AUDIT_STEPS,
+        "3. For each duplicate pair, decide the canonical task (older, richer history, referenced by edges) and propose folding the other into it via the admin mergeTask tool — post the pair and rationale as a task comment on the canonical task for approval first.",
+        "4. For each misparented task (wrong branch, personal task under a public program, program task under a personal branch), post a re-parent proposal comment naming the target parent.",
+        "5. Record what was swept and proposed in a completion comment, then mark this task VERIFIED. The schedule reopens it tomorrow.",
       ].join("\n"),
       impactStatementTemplate:
         "Duplicates split effort and corrupt EV roll-ups; every merged pair makes the queue ranking more truthful.",
@@ -539,9 +544,8 @@ const hygieneRootOrphanSweep: ManagedTaskTriggerInput = {
       descriptionTemplate: [
         "Find tasks that sit directly under the Optimize Earth root without being a managed program branch, plus tasks detached from the rooted tree entirely.",
         "",
-        "1. listTasks(parentTaskId: optimize-earth) and flag anything that is not a managed branch or reserved planner root.",
-        "2. getQueueAudit for unrooted/orphaned findings.",
-        "3. For each orphan, post a re-parent proposal comment on the task naming the correct branch (personal planner root, org branch, or program). Do not re-parent directly.",
+        ...FULL_TREE_AUDIT_STEPS,
+        "3. For each orphan or unkeyed root child, inspect its evidence and post a re-parent proposal naming the correct branch (personal planner root, organization branch, or program). Do not re-parent directly.",
         "4. Summarize findings in a completion comment and mark this task VERIFIED. The schedule reopens it tomorrow.",
       ].join("\n"),
       impactStatementTemplate:
@@ -579,9 +583,10 @@ const hygieneEstimateStalenessSweep: ManagedTaskTriggerInput = {
       descriptionTemplate: [
         "Audit impact estimates across the active tree: parameterInputsStale sets, tasks missing impact frames, and hand-entered estimates that now have parameter-catalog equivalents.",
         "",
-        "1. getQueueAudit for MISSING_ESTIMATES / stale-input findings; searchParameters for catalog coverage.",
-        "2. For each stale or missing estimate, submit a refreshed estimate through proposeParameterBundle / proposeTaskImpact so it lands in the review queue — never edit estimates directly.",
-        "3. Summarize what was refreshed and what needs a human decision in a completion comment, then mark this task VERIFIED. The schedule reopens it next Monday.",
+        ...FULL_TREE_AUDIT_STEPS,
+        "3. Use searchParameters to check catalog coverage for each stale or missing estimate finding.",
+        "4. For each stale or missing estimate, submit a refreshed estimate through proposeParameterBundle / proposeTaskImpact so it lands in the review queue — never edit estimates directly.",
+        "5. Summarize what was refreshed and what needs a human decision in a completion comment, then mark this task VERIFIED. The schedule reopens it next Monday.",
       ].join("\n"),
       impactStatementTemplate:
         "Stale estimates rank the wrong work first; the queue is only as honest as its inputs.",

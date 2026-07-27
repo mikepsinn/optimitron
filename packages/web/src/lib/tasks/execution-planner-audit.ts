@@ -32,31 +32,74 @@ export interface ExecutionGraphFinding {
   taskId?: string;
 }
 
-function findDirectedCycle(
+function findDirectedCycles(
   nodeIds: readonly string[],
   neighbors: (nodeId: string) => readonly string[],
 ) {
-  const visiting = new Set<string>();
-  const visited = new Set<string>();
-
-  function visit(nodeId: string): string | null {
-    if (visiting.has(nodeId)) return nodeId;
-    if (visited.has(nodeId)) return null;
-    visiting.add(nodeId);
-    for (const neighbor of neighbors(nodeId)) {
-      const cycleNode = visit(neighbor);
-      if (cycleNode) return cycleNode;
+  const discoveredNodeIds = new Set(nodeIds);
+  const pendingNodeIds = Array.from(discoveredNodeIds).sort();
+  const adjacency = new Map<string, string[]>();
+  for (let index = 0; index < pendingNodeIds.length; index += 1) {
+    const nodeId = pendingNodeIds[index]!;
+    const adjacentNodeIds = Array.from(new Set(neighbors(nodeId))).sort();
+    adjacency.set(nodeId, adjacentNodeIds);
+    for (const adjacentNodeId of adjacentNodeIds) {
+      if (discoveredNodeIds.has(adjacentNodeId)) continue;
+      discoveredNodeIds.add(adjacentNodeId);
+      pendingNodeIds.push(adjacentNodeId);
     }
-    visiting.delete(nodeId);
-    visited.add(nodeId);
-    return null;
+  }
+  const uniqueNodeIds = Array.from(discoveredNodeIds).sort();
+  const indexByNode = new Map<string, number>();
+  const lowLinkByNode = new Map<string, number>();
+  const stack: string[] = [];
+  const onStack = new Set<string>();
+  const cycles: string[][] = [];
+  let nextIndex = 0;
+
+  function visit(nodeId: string) {
+    indexByNode.set(nodeId, nextIndex);
+    lowLinkByNode.set(nodeId, nextIndex);
+    nextIndex += 1;
+    stack.push(nodeId);
+    onStack.add(nodeId);
+
+    for (const neighbor of adjacency.get(nodeId) ?? []) {
+      if (!indexByNode.has(neighbor)) {
+        visit(neighbor);
+        lowLinkByNode.set(
+          nodeId,
+          Math.min(lowLinkByNode.get(nodeId)!, lowLinkByNode.get(neighbor)!),
+        );
+      } else if (onStack.has(neighbor)) {
+        lowLinkByNode.set(
+          nodeId,
+          Math.min(lowLinkByNode.get(nodeId)!, indexByNode.get(neighbor)!),
+        );
+      }
+    }
+
+    if (lowLinkByNode.get(nodeId) !== indexByNode.get(nodeId)) return;
+    const component: string[] = [];
+    let member: string;
+    do {
+      member = stack.pop()!;
+      onStack.delete(member);
+      component.push(member);
+    } while (member !== nodeId);
+    component.sort();
+    if (
+      component.length > 1 ||
+      (adjacency.get(component[0]!) ?? []).includes(component[0]!)
+    ) {
+      cycles.push(component);
+    }
   }
 
-  for (const nodeId of nodeIds) {
-    const cycleNode = visit(nodeId);
-    if (cycleNode) return cycleNode;
+  for (const nodeId of uniqueNodeIds) {
+    if (!indexByNode.has(nodeId)) visit(nodeId);
   }
-  return null;
+  return cycles.sort((left, right) => left[0]!.localeCompare(right[0]!));
 }
 
 function reachesRoot(
@@ -109,19 +152,19 @@ export function auditExecutionGraph(input: {
     });
   }
 
-  const parentCycle = findDirectedCycle(
+  const parentCycles = findDirectedCycles(
     input.tasks.map((task) => task.id),
     (taskId) => {
       const parentTaskId = taskById.get(taskId)?.parentTaskId;
       return parentTaskId ? [parentTaskId] : [];
     },
   );
-  if (parentCycle) {
+  for (const parentCycle of parentCycles) {
     findings.push({
       code: "PARENT_CYCLE",
-      message: `Task ${parentCycle} participates in a parent-tree cycle.`,
+      message: `Tasks ${parentCycle.join(", ")} participate in a parent-tree cycle.`,
       severity: "high",
-      taskId: parentCycle,
+      taskId: parentCycle[0],
     });
   }
 
@@ -132,16 +175,16 @@ export function auditExecutionGraph(input: {
     neighbors.push(edge.toTaskId);
     outgoingDependencies.set(edge.fromTaskId, neighbors);
   }
-  const dependencyCycle = findDirectedCycle(
+  const dependencyCycles = findDirectedCycles(
     input.tasks.map((task) => task.id),
     (taskId) => outgoingDependencies.get(taskId) ?? [],
   );
-  if (dependencyCycle) {
+  for (const dependencyCycle of dependencyCycles) {
     findings.push({
       code: "DEPENDENCY_CYCLE",
-      message: `Task ${dependencyCycle} participates in a dependency cycle.`,
+      message: `Tasks ${dependencyCycle.join(", ")} participate in a dependency cycle.`,
       severity: "high",
-      taskId: dependencyCycle,
+      taskId: dependencyCycle[0],
     });
   }
 

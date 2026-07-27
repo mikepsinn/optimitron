@@ -19,6 +19,7 @@ export interface TaskTreeStewardTask {
   estimatedEffortHours: number | null;
   executionMode: string;
   hasMarginalEstimate: boolean;
+  hasSourceUrl: boolean;
   id: string;
   isPublic: boolean;
   parentTaskId: string | null;
@@ -86,9 +87,7 @@ function hasAcceptanceCriteria(task: TaskTreeStewardTask) {
   const criteria = asRecord(task.contextJson).acceptanceCriteria;
   if (
     Array.isArray(criteria) &&
-    criteria.some(
-      (item) => typeof item === "string" && item.trim().length > 0,
-    )
+    criteria.some((item) => typeof item === "string" && item.trim().length > 0)
   ) {
     return true;
   }
@@ -121,10 +120,7 @@ function issueKey(finding: FindingInput) {
   ].join(":");
 }
 
-function addFinding(
-  findings: TaskTreeStewardFinding[],
-  finding: FindingInput,
-) {
+function addFinding(findings: TaskTreeStewardFinding[], finding: FindingInput) {
   const relatedTaskIds = Array.from(
     new Set(finding.relatedTaskIds ?? []),
   ).sort();
@@ -299,7 +295,7 @@ export function auditTaskTree(input: {
         taskId: task.id,
       });
     }
-    if (task.isPublic && task.sourceArtifactCount === 0) {
+    if (task.isPublic && task.sourceArtifactCount === 0 && !task.hasSourceUrl) {
       addFinding(findings, {
         code: "MISSING_PUBLIC_SOURCE",
         message: `Public active leaf task ${task.id} has no source URL or source artifact.`,
@@ -332,9 +328,7 @@ export function auditTaskTree(input: {
     if (!hasAssignee && task.activeCandidateMatchCount === 0) {
       tasksNeedingCandidateResearch += 1;
       addFinding(findings, {
-        code: agentTask
-          ? "AGENT_ROUTE_NEEDED"
-          : "CANDIDATE_RESEARCH_NEEDED",
+        code: agentTask ? "AGENT_ROUTE_NEEDED" : "CANDIDATE_RESEARCH_NEEDED",
         message: `Active leaf task ${task.id} has no assignee or saved candidate match.`,
         recommendedAction: agentTask
           ? "Score registered agents and save the best eligible agent candidate."

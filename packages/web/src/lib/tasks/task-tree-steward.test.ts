@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  auditTaskTree,
-  type TaskTreeStewardTask,
-} from "./task-tree-steward";
+import { auditTaskTree, type TaskTreeStewardTask } from "./task-tree-steward";
 
 function task(
   id: string,
@@ -25,6 +22,7 @@ function task(
     estimatedEffortHours: 2,
     executionMode: "HUMAN_OR_AGENT",
     hasMarginalEstimate: true,
+    hasSourceUrl: false,
     id,
     isPublic: false,
     parentTaskId,
@@ -149,5 +147,24 @@ describe("auditTaskTree", () => {
         tasks: [task("optimize-earth", null)],
       }),
     ).toThrow("Invalid task tree audit cursor");
+  });
+
+  it("counts a direct source URL as public-task provenance", () => {
+    const result = auditTaskTree({
+      edges: [],
+      tasks: [
+        task("optimize-earth", null, { activeChildTaskCount: 1 }),
+        task("public-leaf", "optimize-earth", {
+          hasSourceUrl: true,
+          isPublic: true,
+        }),
+      ],
+    });
+
+    expect(
+      result.issues.filter(
+        (finding) => finding.code === "MISSING_PUBLIC_SOURCE",
+      ),
+    ).toEqual([]);
   });
 });

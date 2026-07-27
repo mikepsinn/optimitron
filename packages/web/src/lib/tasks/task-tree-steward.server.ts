@@ -36,6 +36,10 @@ export async function loadTaskTreeAudit(input: {
           select: { id: true },
         },
         claimPolicy: true,
+        communicationEndpoints: {
+          where: { deletedAt: null, sourceUrl: { not: null } },
+          select: { sourceUrl: true },
+        },
         contextJson: true,
         currentImpactEstimateSet: {
           select: { id: true, publicationStatus: true },
@@ -62,7 +66,11 @@ export async function loadTaskTreeAudit(input: {
       },
     }),
     prisma.taskEdge.findMany({
-      where: { deletedAt: null },
+      where: {
+        deletedAt: null,
+        fromTask: { deletedAt: null },
+        toTask: { deletedAt: null },
+      },
       orderBy: { id: "asc" },
       select: {
         edgeType: true,
@@ -95,6 +103,9 @@ export async function loadTaskTreeAudit(input: {
       estimatedEffortHours: task.estimatedEffortHours,
       executionMode: task.executionMode,
       hasMarginalEstimate: task.currentImpactEstimateSet != null,
+      hasSourceUrl: task.communicationEndpoints.some((endpoint) =>
+        Boolean(endpoint.sourceUrl?.trim()),
+      ),
       id: task.id,
       isPublic: task.isPublic,
       parentTaskId: task.parentTaskId,

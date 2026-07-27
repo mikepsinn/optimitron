@@ -49,6 +49,44 @@ describe("auditExecutionGraph", () => {
     );
   });
 
+  it("reports every independent dependency cycle", () => {
+    const findings = auditExecutionGraph({
+      edges: [
+        { edgeType: "BLOCKS", fromTaskId: "a", toTaskId: "b" },
+        { edgeType: "BLOCKS", fromTaskId: "b", toTaskId: "a" },
+        { edgeType: "DEPENDS_ON", fromTaskId: "c", toTaskId: "d" },
+        { edgeType: "DEPENDS_ON", fromTaskId: "d", toTaskId: "c" },
+      ],
+      tasks: [
+        graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
+        graphTask("a", OPTIMIZE_EARTH_ROOT_TASK_ID),
+        graphTask("b", OPTIMIZE_EARTH_ROOT_TASK_ID),
+        graphTask("c", OPTIMIZE_EARTH_ROOT_TASK_ID),
+        graphTask("d", OPTIMIZE_EARTH_ROOT_TASK_ID),
+      ],
+    });
+
+    expect(
+      findings
+        .filter((finding) => finding.code === "DEPENDENCY_CYCLE")
+        .map((finding) => finding.taskId),
+    ).toEqual(["a", "c"]);
+  });
+
+  it("includes edge-referenced nodes when validating a proposed cycle", () => {
+    const findings = auditExecutionGraph({
+      edges: [
+        { edgeType: "BLOCKS", fromTaskId: "a", toTaskId: "b" },
+        { edgeType: "BLOCKS", fromTaskId: "b", toTaskId: "a" },
+      ],
+      tasks: [graphTask("a", OPTIMIZE_EARTH_ROOT_TASK_ID)],
+    });
+
+    expect(
+      findings.find((finding) => finding.code === "DEPENDENCY_CYCLE"),
+    ).toMatchObject({ taskId: "a" });
+  });
+
   it("flags parents and missing estimates when they pollute a queue", () => {
     const findings = auditExecutionGraph({
       edges: [],
