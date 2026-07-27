@@ -105,7 +105,10 @@ describe("tree-hygiene sweep blueprints", () => {
       true,
     );
     expect(validateParentResolver(spec!.parentResolver!)).toBe(true);
-    expect(spec?.parentResolver).toBe("fixed:optimitron:dev");
+    expect(spec?.parentResolver).toBe(
+      "fixed:optimitron:task-graph-steward",
+    );
+    expect(spec?.category).toBe("GOVERNANCE");
 
     const metadata = spec?.metadata as {
       reactivateOnFire?: unknown;

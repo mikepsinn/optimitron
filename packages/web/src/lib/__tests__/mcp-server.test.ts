@@ -1023,6 +1023,7 @@ describe("MCP server tool dispatch", () => {
     expect(nonAdminNames).not.toContain("listTaskEmails");
     expect(nonAdminNames).not.toContain("listRecipientEmails");
     expect(nonAdminNames).not.toContain("listEmailLogs");
+    expect(nonAdminNames).not.toContain("getTaskTreeAudit");
     expect(nonAdminNames).toContain("createTask");
 
     expect(adminNames).toContain("proposeTaskBundle");
@@ -1033,6 +1034,7 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("listTaskEmails");
     expect(adminNames).toContain("listRecipientEmails");
     expect(adminNames).toContain("listEmailLogs");
+    expect(adminNames).toContain("getTaskTreeAudit");
   });
 
   it("dispatches task impact trace reads", async () => {
@@ -2001,6 +2003,78 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task read tools", () => {
+    it("lets an admin audit the complete task tree through one paged tool", async () => {
+      const storedTask = (
+        id: string,
+        parentTaskId: string | null,
+        childTasks: Array<{ id: string }>,
+      ) => ({
+        assigneeOrganizationId: null,
+        assigneePersonId: null,
+        candidateMatches: [],
+        category: "GOVERNANCE",
+        childTasks,
+        claimPolicy: "OPEN_SINGLE",
+        contextJson: {
+          acceptanceCriteria: ["The result is independently verifiable."],
+        },
+        currentImpactEstimateSet: {
+          id: `estimate-${id}`,
+          publicationStatus: "REVIEWED",
+        },
+        description: "Produce one bounded and independently verifiable result.",
+        estimatedEffortHours: 2,
+        executionMode: "HUMAN_ONLY",
+        id,
+        isPublic: false,
+        parentTaskId,
+        preferredSkillTags: [],
+        requiredAccessTags: [],
+        requiredCredentialTags: [],
+        requiredToolTags: [],
+        roleTitle: null,
+        skillTags: ["research"],
+        sourceArtifacts: [],
+        status: "ACTIVE",
+        taskKey: `task:${id}`,
+        title: id === "optimize-earth" ? "Optimize Earth" : "Research a fix",
+      });
+      mocks.taskFindMany.mockResolvedValueOnce([
+        storedTask("optimize-earth", null, [{ id: "leaf" }]),
+        storedTask("leaf", "optimize-earth", []),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValueOnce([]);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "getTaskTreeAudit",
+        arguments: { limit: 50 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        complete: true,
+        rootTaskId: "optimize-earth",
+        summary: {
+          activeLeafTasks: 1,
+          issueCount: 1,
+          tasksNeedingCandidateResearch: 1,
+          totalTasks: 2,
+          unrootedTasks: 0,
+        },
+        issues: [
+          expect.objectContaining({
+            code: "CANDIDATE_RESEARCH_NEEDED",
+            requiresApproval: false,
+            taskId: "leaf",
+          }),
+        ],
+      });
+      expect(mocks.taskFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { deletedAt: null } }),
+      );
+    });
+
     it("advertises and applies assignedToMe without requiring the caller to know their personId", async () => {
       const client = await setup("user-1", ALL_SCOPES);
 

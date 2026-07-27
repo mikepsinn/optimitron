@@ -311,6 +311,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getTaskTreeAudit: [McpScope.TASKS_ADMIN],
   [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
@@ -356,6 +357,7 @@ const ADMIN_ONLY_TOOLS = new Set([
   "listAgentExecutors",
   "upsertAgentExecutor",
   "setAgentExecutorStatus",
+  "getTaskTreeAudit",
   ...TASK_TEMPLATE_ADMIN_TOOL_NAMES,
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
   "hideContent",
@@ -4878,6 +4880,67 @@ const TASK_TOOL_DEFINITIONS = [
     ],
   },
   {
+    name: "getTaskTreeAudit",
+    description:
+      "Admin-only complete audit of the task graph rooted at Optimize Earth. Pages stable findings—not tasks—so a steward can inspect every structural, duplicate, routing, provenance, estimate, and bounded-agent-work issue without the listTasks result cap. Treat requiresApproval=true findings as proposals only.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        cursor: {
+          type: "string",
+          description:
+            "Stable issue cursor returned by the preceding page. Omit for the first page.",
+        },
+        limit: {
+          type: "number",
+          description: "Findings per page (default 100, maximum 500).",
+        },
+        rootTaskId: {
+          type: "string",
+          description: "Root task ID. Defaults to optimize-earth.",
+        },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        complete: {
+          type: "boolean",
+          description: "True when this is the final findings page.",
+        },
+        issues: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              code: { type: "string" },
+              issueKey: { type: "string" },
+              message: { type: "string" },
+              recommendedAction: { type: "string" },
+              relatedTaskIds: {
+                type: "array",
+                items: { type: "string" },
+              },
+              requiresApproval: { type: "boolean" },
+              severity: {
+                type: "string",
+                enum: ["high", "medium", "low"],
+              },
+              taskId: { type: "string" },
+            },
+          },
+        },
+        nextCursor: { type: ["string", "null"] },
+        rootTaskId: { type: "string" },
+        summary: {
+          type: "object",
+          description:
+            "Counts for the complete audit, repeated unchanged on every findings page.",
+        },
+      },
+    },
+  },
+  {
     name: "getMyQueue",
     description:
       "Get the authenticated user's available private self-work queue sorted by computed priority. Returns tasks the user created OR has been assigned to (via assigneePersonId). Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
@@ -9107,6 +9170,29 @@ export function createMcpServer(
                 ),
                 clientAccessBoundary: taskClientBoundary,
                 userId,
+              }),
+            );
+          }
+
+          // ── getTaskTreeAudit ──────────────────────────────────
+          case "getTaskTreeAudit": {
+            const { loadTaskTreeAudit } = await import(
+              "./tasks/task-tree-steward.server"
+            );
+            return ok(
+              await loadTaskTreeAudit({
+                cursor:
+                  typeof a.cursor === "string" && a.cursor.length > 0
+                    ? a.cursor
+                    : null,
+                limit:
+                  typeof a.limit === "number" && Number.isFinite(a.limit)
+                    ? a.limit
+                    : undefined,
+                rootTaskId:
+                  typeof a.rootTaskId === "string" && a.rootTaskId.length > 0
+                    ? a.rootTaskId
+                    : undefined,
               }),
             );
           }

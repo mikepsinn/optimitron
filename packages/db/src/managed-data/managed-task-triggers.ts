@@ -10,9 +10,9 @@ import {
   type PrismaClient,
 } from "../generated/prisma/client.js";
 import {
-  OPTIMITRON_DEV_TASK_KEY,
   REFERRAL_INVITATION_TASK_KEY_PREFIX,
   SIGNER_REMINDER_TASK_KEY_PREFIX,
+  TASK_GRAPH_STEWARD_TASK_KEY,
   TREATY_PARENT_TASK_KEY,
   TREATY_SIGNER_TASK_KEY_PREFIX,
   USER_TREATY_TASK_KEY_PREFIX,
@@ -458,7 +458,7 @@ const treatySignerPerSlot: ManagedTaskTriggerInput = {
 };
 
 // ---------------------------------------------------------------------------
-// Tree-hygiene sweeps — scheduled agent tasks under the optimitron:dev branch
+// Tree-hygiene sweeps — scheduled agent tasks under the task-graph steward
 // ---------------------------------------------------------------------------
 // Each sweep is ONE persistent agent task with a stable taskKey: the schedule
 // re-activates it (spec metadata.reactivateOnFire) instead of spawning dated
@@ -474,12 +474,12 @@ const OPERATOR_PERSON_ID = "cmoi5ad7v000004jvp8vozoki";
 const HYGIENE_SWEEP_SPEC_BASE = {
   isParent: true,
   kind: "sweep",
-  category: "ENGINEERING",
+  category: "GOVERNANCE",
   claimPolicy: "ASSIGNED_ONLY",
   isPublic: false,
   creatorResolver: "system",
   assigneePersonResolver: `fixed-person:${OPERATOR_PERSON_ID}`,
-  parentResolver: `fixed:${OPTIMITRON_DEV_TASK_KEY}`,
+  parentResolver: `fixed:${TASK_GRAPH_STEWARD_TASK_KEY}`,
 } satisfies Partial<ManagedTaskSpawnSpecInput>;
 
 const hygieneDuplicateSweep: ManagedTaskTriggerInput = {

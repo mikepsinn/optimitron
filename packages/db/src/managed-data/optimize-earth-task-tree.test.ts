@@ -4,6 +4,8 @@ import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_ID,
   LOVING_TAKEOVER_TASK_ID,
+  OPTIMITRON_DEV_TASK_ID,
+  TASK_GRAPH_STEWARD_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "../task-keys.js";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "../task-keys.js";
@@ -91,5 +93,21 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     // (mcp-direct-v1) stays current. Adding a value here would demote it.
     expect(dev?.expectedEconomicValueUsdBase).toBeUndefined();
     expect(dev?.successProbabilityBase).toBeUndefined();
+  });
+
+  it("adopts the live task-graph steward below the private dev branch", () => {
+    const steward = OPTIMIZE_EARTH_TASK_TREE.find(
+      (task) => task.taskKey === "optimitron:task-graph-steward",
+    );
+    expect(steward).toMatchObject({
+      executionMode: "AGENT_ONLY",
+      id: TASK_GRAPH_STEWARD_TASK_ID,
+      isPublic: false,
+      parentTaskId: OPTIMITRON_DEV_TASK_ID,
+    });
+    expect(steward?.contextJson).toMatchObject({
+      developmentOwner: "Mike",
+      stewardPolicyVersion: "task-graph-steward.v1",
+    });
   });
 });
