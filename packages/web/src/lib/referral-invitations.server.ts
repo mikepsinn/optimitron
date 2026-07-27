@@ -9,6 +9,7 @@ import {
 } from "@optimitron/db/enums";
 import type { Prisma } from "@optimitron/db";
 import { formatShareEmailFromHeader } from "@/lib/email/from-address";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
 import { prisma } from "@/lib/prisma";
 import {
   createReferralInvitationTask,
@@ -30,14 +31,20 @@ import {
   getReferralInvitationFirstName,
 } from "@/lib/referral-invitation-copy";
 import { insertGeneratedReferralInviteUrl } from "@/lib/referral-invitation-message-url";
-import { buildUserInviteReferralUrl, buildUserReferralUrl, getBaseUrl } from "@/lib/url";
+import {
+  buildUserInviteReferralUrl,
+  buildUserReferralUrl,
+  getBaseUrl,
+} from "@/lib/url";
 import { getUserDisplayName, userDisplaySelect } from "@/lib/user-display";
 
 const INVITE_TOKEN_SIZE = 24;
 const CREATE_LIMIT_PER_HOUR = 50;
 const DOWNSTREAM_CONVERSION_INCREMENT_MAX_DEPTH = 32;
 
-export function isValidInvitationEmail(email: string | null | undefined): boolean {
+export function isValidInvitationEmail(
+  email: string | null | undefined,
+): boolean {
   if (!email) return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
@@ -75,7 +82,9 @@ async function createUniqueInviteToken() {
   throw new Error("Unable to create unique invitation token.");
 }
 
-function getTrainingContactChannel(method: ReferralInvitationContactMethod | null) {
+function getTrainingContactChannel(
+  method: ReferralInvitationContactMethod | null,
+) {
   switch (method) {
     case ReferralInvitationContactMethod.EMAIL:
       return "email";
@@ -135,7 +144,8 @@ async function incrementDownstreamConversionCountsForAncestors(
 
   for (
     let depth = 0;
-    depth < DOWNSTREAM_CONVERSION_INCREMENT_MAX_DEPTH && currentAncestorIds.length > 0;
+    depth < DOWNSTREAM_CONVERSION_INCREMENT_MAX_DEPTH &&
+    currentAncestorIds.length > 0;
     depth += 1
   ) {
     const uniqueAncestorIds = [...new Set(currentAncestorIds)].filter(
@@ -176,7 +186,6 @@ async function incrementDownstreamConversionCountsForAncestors(
       );
   }
 }
-
 
 export async function createReferralInvitation(input: {
   referrerUserId: string;
@@ -238,10 +247,7 @@ export async function createReferralInvitation(input: {
       where: {
         id: linkedTaskId,
         deletedAt: null,
-        OR: [
-          { createdByUserId: input.referrerUserId },
-          { isPublic: true },
-        ],
+        OR: [{ createdByUserId: input.referrerUserId }, { isPublic: true }],
       },
       select: { id: true },
     });
@@ -260,7 +266,8 @@ export async function createReferralInvitation(input: {
   });
 
   const inviteToken = await createUniqueInviteToken();
-  const messageFormat = input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
+  const messageFormat =
+    input.messageFormat ?? ReferralInvitationMessageFormat.SINCERE;
   const baseUrl = getBaseUrl();
   // The URL builders only inspect top-level `handle` / `referralCode`. The
   // Prisma user shape nests handle under `.person.handle`, so we adapt.
@@ -268,7 +275,11 @@ export async function createReferralInvitation(input: {
     handle: referrer.person?.handle ?? null,
     referralCode: referrer.referralCode,
   };
-  const inviteUrl = buildUserInviteReferralUrl(referrerForUrl, inviteToken, baseUrl);
+  const inviteUrl = buildUserInviteReferralUrl(
+    referrerForUrl,
+    inviteToken,
+    baseUrl,
+  );
   const draftReferralUrl = buildUserReferralUrl(referrerForUrl, baseUrl);
   const senderName = getUserDisplayName(referrer) || "A voter";
   const rawMessageText = input.messageText?.trim() || null;
@@ -338,7 +349,8 @@ export async function createReferralInvitation(input: {
         recipientName,
         recipientEmail,
         contactMethod:
-          input.contactMethod ?? (recipientEmail ? ReferralInvitationContactMethod.EMAIL : null),
+          input.contactMethod ??
+          (recipientEmail ? ReferralInvitationContactMethod.EMAIL : null),
         messageFormat,
         messageText,
         referendumId: referendum?.id ?? null,
@@ -374,6 +386,7 @@ export async function createReferralInvitation(input: {
 export async function sendReferralInvitationMessage(input: {
   invitationId: string;
   messageText?: string | null;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   referrerUserId: string;
   now?: Date;
 }): Promise<
@@ -446,6 +459,7 @@ export async function sendReferralInvitationMessage(input: {
     from: fromHeader || null,
     kind: TaskCommentKind.OUTBOUND_MESSAGE,
     message: messageBody,
+    ownerAuthorization: input.ownerAuthorization ?? null,
     senderSignature: { name: senderName },
     source: TaskCommentSource.WEB,
     taskId: invitation.taskId,
@@ -474,7 +488,8 @@ export async function sendReferralInvitationMessage(input: {
         authorUserId: input.referrerUserId,
         kind: TaskCommentKind.STATUS_UPDATE,
         message: buildTrainingAssignmentComment({
-          contactMethod: invitation.contactMethod ?? ReferralInvitationContactMethod.EMAIL,
+          contactMethod:
+            invitation.contactMethod ?? ReferralInvitationContactMethod.EMAIL,
           deliveryStatus: dispatched ? "sent" : "queued",
           recipientName: invitation.recipientName,
         }),
@@ -502,7 +517,9 @@ export async function sendReferralInvitationMessage(input: {
   };
 }
 
-export async function resolveInvitationReferrer(inviteToken: string | null | undefined) {
+export async function resolveInvitationReferrer(
+  inviteToken: string | null | undefined,
+) {
   const token = inviteToken?.trim();
   if (!token) return null;
 
@@ -569,7 +586,8 @@ export async function markReferralInvitationCopied(input: {
     (input.contactConfirmed ? existingShareAttemptId : null) ||
     (messageText ? nanoid() : null);
   const shouldRecordShareAttempt =
-    Boolean(messageText && shareAttemptId) && shareAttemptId !== existingShareAttemptId;
+    Boolean(messageText && shareAttemptId) &&
+    shareAttemptId !== existingShareAttemptId;
   const senderName = getUserDisplayName(invitation.referrer) || "A voter";
   const referrerForUrl = invitation.referrer
     ? {
@@ -589,76 +607,66 @@ export async function markReferralInvitationCopied(input: {
     treatyUrl: inviteUrl,
   });
 
-  return prisma.$transaction(async (tx) => {
-    if (messageText && shareAttemptId && shouldRecordShareAttempt) {
-      await recordShareAttempt(tx, {
-        id: shareAttemptId,
-        userId: input.referrerUserId,
-        source: ShareSource.IN_APP,
-        surface: "referral_invitation_composer",
-        channel:
-          input.shareChannel?.trim() ||
-          getShareAttemptChannel({
-            contactConfirmed: input.contactConfirmed,
-            contactMethod: invitation.contactMethod,
-          }),
-        taskId: invitation.taskId,
-        templateId: `referral_invitation:${invitation.messageFormat.toLowerCase()}`,
-        templateBody,
-        renderedMessage: messageText,
-        wasEdited: Boolean(input.wasEdited),
-        context: {
-          invitationId: invitation.id,
-          messageFormat: invitation.messageFormat,
-          purpose: input.contactConfirmed
-            ? "referral_invitation_manual_contact"
-            : "referral_invitation_copy",
-          recipientName: invitation.recipientName,
-        } satisfies Prisma.InputJsonObject,
-      });
-    }
-
-    if (input.contactConfirmed && invitation.taskId) {
-      if (messageText) {
-        await tx.taskComment.create({
-          data: {
-            authorUserId: input.referrerUserId,
-            kind: TaskCommentKind.OUTBOUND_MESSAGE,
-            message: messageText,
-            source: TaskCommentSource.WEB,
-            taskId: invitation.taskId,
-          },
-        });
-      }
-
-      if (invitation.task?.parentTaskId) {
-        await tx.taskComment.create({
-          data: {
-            authorUserId: input.referrerUserId,
-            kind: TaskCommentKind.STATUS_UPDATE,
-            message: buildTrainingAssignmentComment({
-              contactMethod: invitation.contactMethod,
-              deliveryStatus: "confirmed",
-              recipientName: invitation.recipientName,
-            }),
-            source: TaskCommentSource.WEB,
-            taskId: invitation.task.parentTaskId,
-          },
-        });
-      }
-
-      await markNextHumanAssignmentSubtaskComplete(
-        {
-          invitationId: invitation.id,
-          now,
-          personId: invitation.referrer.person?.id ?? null,
-          recipientName: invitation.recipientName,
+  return prisma.$transaction(
+    async (tx) => {
+      if (messageText && shareAttemptId && shouldRecordShareAttempt) {
+        await recordShareAttempt(tx, {
+          id: shareAttemptId,
           userId: input.referrerUserId,
-        },
-        tx,
-      );
-      if (invitation.contactMethod === ReferralInvitationContactMethod.OTHER) {
-        await markUserTreatyPhoneCallComplete(
+          source: ShareSource.IN_APP,
+          surface: "referral_invitation_composer",
+          channel:
+            input.shareChannel?.trim() ||
+            getShareAttemptChannel({
+              contactConfirmed: input.contactConfirmed,
+              contactMethod: invitation.contactMethod,
+            }),
+          taskId: invitation.taskId,
+          templateId: `referral_invitation:${invitation.messageFormat.toLowerCase()}`,
+          templateBody,
+          renderedMessage: messageText,
+          wasEdited: Boolean(input.wasEdited),
+          context: {
+            invitationId: invitation.id,
+            messageFormat: invitation.messageFormat,
+            purpose: input.contactConfirmed
+              ? "referral_invitation_manual_contact"
+              : "referral_invitation_copy",
+            recipientName: invitation.recipientName,
+          } satisfies Prisma.InputJsonObject,
+        });
+      }
+
+      if (input.contactConfirmed && invitation.taskId) {
+        if (messageText) {
+          await tx.taskComment.create({
+            data: {
+              authorUserId: input.referrerUserId,
+              kind: TaskCommentKind.OUTBOUND_MESSAGE,
+              message: messageText,
+              source: TaskCommentSource.WEB,
+              taskId: invitation.taskId,
+            },
+          });
+        }
+
+        if (invitation.task?.parentTaskId) {
+          await tx.taskComment.create({
+            data: {
+              authorUserId: input.referrerUserId,
+              kind: TaskCommentKind.STATUS_UPDATE,
+              message: buildTrainingAssignmentComment({
+                contactMethod: invitation.contactMethod,
+                deliveryStatus: "confirmed",
+                recipientName: invitation.recipientName,
+              }),
+              source: TaskCommentSource.WEB,
+              taskId: invitation.task.parentTaskId,
+            },
+          });
+        }
+
+        await markNextHumanAssignmentSubtaskComplete(
           {
             invitationId: invitation.id,
             now,
@@ -668,25 +676,40 @@ export async function markReferralInvitationCopied(input: {
           },
           tx,
         );
+        if (
+          invitation.contactMethod === ReferralInvitationContactMethod.OTHER
+        ) {
+          await markUserTreatyPhoneCallComplete(
+            {
+              invitationId: invitation.id,
+              now,
+              personId: invitation.referrer.person?.id ?? null,
+              recipientName: invitation.recipientName,
+              userId: input.referrerUserId,
+            },
+            tx,
+          );
+        }
       }
-    }
 
-    await tx.referralInvitation.update({
-      where: { id: invitation.id },
-      data: {
-        copiedAt: now,
-        ...(messageText ? { messageText } : {}),
-        ...(shareAttemptId ? { shareAttemptId } : {}),
-        ...(invitation.status === ReferralInvitationStatus.PENDING
-          ? { status: ReferralInvitationStatus.COPIED }
-          : {}),
-      },
-    });
+      await tx.referralInvitation.update({
+        where: { id: invitation.id },
+        data: {
+          copiedAt: now,
+          ...(messageText ? { messageText } : {}),
+          ...(shareAttemptId ? { shareAttemptId } : {}),
+          ...(invitation.status === ReferralInvitationStatus.PENDING
+            ? { status: ReferralInvitationStatus.COPIED }
+            : {}),
+        },
+      });
 
-    return tx.referralInvitation.findUnique({
-      where: { id: invitation.id },
-    });
-  }, { timeout: 20_000 });
+      return tx.referralInvitation.findUnique({
+        where: { id: invitation.id },
+      });
+    },
+    { timeout: 20_000 },
+  );
 }
 
 export async function convertReferralInvitationForVote(input: {
@@ -698,7 +721,10 @@ export async function convertReferralInvitationForVote(input: {
   const invitation = await resolveInvitationReferrer(input.inviteToken);
   if (!invitation) return null;
   if (invitation.referrerUserId === input.voterUserId) return null;
-  if (invitation.referendumId && invitation.referendumId !== input.referendumId) {
+  if (
+    invitation.referendumId &&
+    invitation.referendumId !== input.referendumId
+  ) {
     return null;
   }
   if (invitation.convertedVoteId) return invitation;

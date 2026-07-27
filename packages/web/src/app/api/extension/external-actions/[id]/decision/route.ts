@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireTaskRequestAuth } from "@/lib/auth-utils";
+import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { McpScope } from "@/lib/mcp-scopes";
 import { decideExternalActionRequest } from "@/lib/tasks/external-action.server";
 
@@ -24,7 +25,10 @@ export async function POST(
         externalActionRequestId: id,
       },
       userId,
-      { clientAccessBoundary },
+      {
+        blockedOperations: [OUTBOUND_MESSAGE_OPERATION],
+        clientAccessBoundary,
+      },
     );
     return NextResponse.json({ data: result, success: true });
   } catch (error) {

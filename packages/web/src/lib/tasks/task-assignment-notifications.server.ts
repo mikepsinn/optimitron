@@ -9,6 +9,8 @@ import type { Prisma } from "@optimitron/db";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { formatShareEmailFromHeader } from "@/lib/email/from-address";
+import type { OwnerSendAuthorization } from "@/lib/email/outbound-authorization.server";
+import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
 import { getTaskEmailReplyInstruction } from "@/lib/email/task-notification";
 import { buildTaskAssignmentNotificationEmail } from "@/lib/tasks/task-assignment-notification-email.server";
 import {
@@ -161,6 +163,7 @@ export async function notifyTaskAssigneeOfAssignment(input: {
   /// task-recipients.server.ts for the semantics. No production caller
   /// passes true today.
   allowExternalOnRestrictedTask?: boolean;
+  ownerAuthorization?: OwnerSendAuthorization | null;
   senderUserId?: string | null;
   taskId: string;
 }) {
@@ -191,7 +194,10 @@ export async function notifyTaskAssigneeOfAssignment(input: {
       recipientReferralUrl = await getRecipientReferralUrl(recipient.userId);
     } catch (lookupError) {
       log.warn("Failed to resolve recipient referral URL", {
-        error: lookupError instanceof Error ? lookupError.message : String(lookupError),
+        error:
+          lookupError instanceof Error
+            ? lookupError.message
+            : String(lookupError),
         userId: recipient.userId,
       });
     }
@@ -226,11 +232,27 @@ export async function notifyTaskAssigneeOfAssignment(input: {
       text: email.text,
     });
 
-    return sendDraftTaskNotification({
+    const from = senderName ? formatShareEmailFromHeader(senderName) : null;
+    if (input.ownerAuthorization) {
+      return sendDraftTaskNotification({
+        authorization: input.ownerAuthorization,
+        communicationId: draft.id,
+        from,
+        senderUserId: input.senderUserId ?? null,
+      });
+    }
+
+    const request = await proposeOutboundMessage({
+      actorUserId: input.senderUserId ?? null,
       communicationId: draft.id,
-      from: senderName ? formatShareEmailFromHeader(senderName) : null,
-      senderUserId: input.senderUserId ?? null,
+      from,
+      taskId: task.id,
     });
+
+    return {
+      externalActionRequestId: request.id,
+      status: "pending_approval" as const,
+    };
   } catch (error) {
     log.error("Failed to send task assignment notification", {
       error,

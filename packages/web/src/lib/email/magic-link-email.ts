@@ -2,6 +2,7 @@ import type { SendVerificationRequestParams } from "next-auth/providers/email";
 import React from "react";
 import { prisma } from "@/lib/prisma";
 import { formatSystemEmailFromHeader } from "@/lib/email/from-address";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendReactEmail } from "@/lib/email/resend";
 import {
   buildMagicLinkSubject,
@@ -26,6 +27,8 @@ export async function sendMagicLinkEmail({
 
   const copy = getMagicLinkCopy(host);
   const result = await sendReactEmail({
+    // The recipient just typed this address into the sign-in form.
+    authorization: transactionalSend("magic_link"),
     from: getMagicLinkFromHeader(host),
     to: identifier,
     userId: existing?.id ?? identifier,

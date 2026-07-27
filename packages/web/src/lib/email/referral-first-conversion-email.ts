@@ -20,6 +20,7 @@ import {
   type EmailPreview,
 } from "@/lib/email/preview-envelope";
 import { ReferralFirstConversionReactEmail } from "@/lib/email/referral-first-conversion-react-email";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import type { SendResult } from "@/lib/email/resend";
 
@@ -60,6 +61,7 @@ export async function sendReferralFirstConversionEmail(
   input: ReferralFirstConversionEmailInput,
 ): Promise<SendResult | { status: "duplicate" }> {
   return sendDedupedEmail({
+    authorization: transactionalSend("referral_first_conversion"),
     dedupeKey: `${REFERRAL_FIRST_CONVERSION_TEMPLATE_ID}:${input.referrerUserId}`,
     templateId: REFERRAL_FIRST_CONVERSION_TEMPLATE_ID,
     subject: REFERRAL_FIRST_CONVERSION_SUBJECT,

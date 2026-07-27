@@ -20,6 +20,7 @@ import {
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import type { SendResult } from "@/lib/email/resend";
+import { transactionalSend } from "@/lib/email/outbound-authorization.server";
 import { sendDedupedEmail } from "@/lib/email/send-deduped-email.server";
 import {
   MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
@@ -342,6 +343,7 @@ async function sendMonthlyChainDigestEmail(input: {
 }): Promise<SendResult | { status: "duplicate" }> {
   const subject = buildMonthlyChainDigestSubject(input.digestInput);
   return sendDedupedEmail({
+    authorization: transactionalSend("monthly_chain_digest"),
     dedupeKey: `${MONTHLY_CHAIN_DIGEST_TEMPLATE_ID}:${input.userId}:${input.monthBucket}`,
     templateId: MONTHLY_CHAIN_DIGEST_TEMPLATE_ID,
     subject,

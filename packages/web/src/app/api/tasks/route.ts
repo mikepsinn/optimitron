@@ -7,6 +7,7 @@ import {
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getTaskRequestIdentity, requireAuth } from "@/lib/auth-utils";
+import { authorizeOwnerSend } from "@/lib/email/outbound-authorization.server";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
@@ -178,6 +179,7 @@ export async function POST(request: Request) {
       McpScope.TASKS_PERSONAL,
       McpScope.TASKS_ADMIN,
     ]);
+    const ownerAuthorization = await authorizeOwnerSend(request);
     const parsed = CreateTaskBodySchema.parse(await request.json());
     const {
       assigneePersonIdentifier,
@@ -267,7 +269,7 @@ export async function POST(request: Request) {
     // disclosure on /tasks/[id]. Honoring a client-supplied `isPublic: true`
     // here would let any caller graft a public subtask onto someone else's
     // tree.
-    const task = await createTask(userId, {
+    const taskInput = {
       ...rest,
       assigneePersonId,
       dueAt: dueAt == null ? null : new Date(dueAt),
@@ -276,7 +278,10 @@ export async function POST(request: Request) {
         : rest.claimPolicy,
       isPublic: parentTaskId ? false : rest.isPublic,
       parentTaskId: parentTaskId ?? null,
-    });
+    };
+    const task = ownerAuthorization
+      ? await createTask(userId, taskInput, { ownerAuthorization })
+      : await createTask(userId, taskInput);
 
     return NextResponse.json({ data: task, success: true }, { status: 201 });
   } catch (error) {

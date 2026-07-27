@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
+  authorizeOwnerSend: vi.fn(),
   createTask: vi.fn(),
   getServerSession: vi.fn(),
   listTasks: vi.fn(),
@@ -17,6 +18,10 @@ vi.mock("next-auth", () => ({
 
 vi.mock("@/lib/auth", () => ({
   authOptions: {},
+}));
+
+vi.mock("@/lib/email/outbound-authorization.server", () => ({
+  authorizeOwnerSend: mocks.authorizeOwnerSend,
 }));
 
 // Mock requireAuth/getServerSession as the auth seams, but keep the REAL
@@ -78,6 +83,8 @@ import { GET, POST } from "./route";
 
 describe("tasks route", () => {
   beforeEach(() => {
+    mocks.authorizeOwnerSend.mockReset();
+    mocks.authorizeOwnerSend.mockResolvedValue(null);
     mocks.createTask.mockReset();
     mocks.getServerSession.mockReset();
     mocks.listTasks.mockReset();
@@ -211,6 +218,8 @@ describe("tasks route", () => {
   });
 
   it("creates a task for the authenticated user", async () => {
+    const ownerAuthorization = { kind: "owner", userId: "user_1" };
+    mocks.authorizeOwnerSend.mockResolvedValue(ownerAuthorization);
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.createTask.mockResolvedValue({
       createdByUserId: "user_1",
@@ -238,6 +247,7 @@ describe("tasks route", () => {
         isPublic: false,
         title: "Write docs",
       }),
+      { ownerAuthorization },
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });

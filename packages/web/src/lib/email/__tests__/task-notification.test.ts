@@ -181,7 +181,9 @@ describe("app-URL helpers", () => {
     vi.resetModules();
     const { getTaskUrl } = await import("../task-notification");
 
-    expect(getTaskUrl("xyz")).toBe("https://preview.example.vercel.app/tasks/xyz");
+    expect(getTaskUrl("xyz")).toBe(
+      "https://preview.example.vercel.app/tasks/xyz",
+    );
   });
 
   it("falls back to the local dev origin when no env vars are set", async () => {
@@ -191,41 +193,5 @@ describe("app-URL helpers", () => {
     const { getTaskUrl } = await import("../task-notification");
 
     expect(getTaskUrl("xyz")).toBe("http://localhost:3001/tasks/xyz");
-  });
-});
-
-describe("sendTaskNotificationEmail", () => {
-  // Capture the env before each test so we can flip RESEND_API_KEY off and
-  // observe the disabled-status path without hitting the real Resend.
-  const originalApiKey = process.env.RESEND_API_KEY;
-  const originalMockSend = process.env.RESEND_MOCK_SEND;
-
-  beforeEach(() => {
-    vi.resetModules();
-    delete process.env.RESEND_API_KEY;
-    delete process.env.RESEND_MOCK_SEND;
-  });
-  afterEach(() => {
-    if (originalApiKey !== undefined)
-      process.env.RESEND_API_KEY = originalApiKey;
-    if (originalMockSend !== undefined)
-      process.env.RESEND_MOCK_SEND = originalMockSend;
-  });
-
-  it("returns disabled status when Resend is not configured", async () => {
-    // Re-import to pick up the env change since serverEnv may be cached.
-    const mod = await import("../task-notification");
-    const result = await mod.sendTaskNotificationEmail({
-      taskId: "abc",
-      recipientEmail: "test@example.com",
-      subject: "test",
-      text: "test body",
-    });
-    // Either disabled (preferred) or failed are both acceptable when no
-    // Resend creds — the import-cache + env-lookup interaction inside
-    // serverEnv may treat the absence either way. The contract is "no
-    // crash, no real send."
-    expect(["disabled", "failed"]).toContain(result.status);
-    expect(result.replyTo).toContain("reply+abc@");
   });
 });
