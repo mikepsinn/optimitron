@@ -1,10 +1,14 @@
 import {
   ExternalActionRequestStatus,
+  TaskClaimPolicy,
   TaskCommunicationChannel,
   TaskCommunicationDirection,
   TaskCommunicationStatus,
+  TaskStatus,
+  type Prisma,
 } from "@optimitron/db";
 import { z } from "zod";
+import { lockContentResources } from "@/lib/content-access.server";
 import { dispatchApprovedOutboundMessage } from "@/lib/email/outbound-message-dispatch.server";
 import {
   OUTBOUND_MESSAGE_OPERATION,
@@ -13,13 +17,18 @@ import {
 import { prisma } from "@/lib/prisma";
 import {
   getCommunicationBatchKey,
+  getPrivateReviewBatchKey,
   getPrivateReviewApprovalContext,
+  privateReviewBatchIdentityMatches,
+  PRIVATE_REVIEW_INVITATION_SCHEMA,
+  type PrivateReviewBatchIdentity,
 } from "@/lib/tasks/private-review-invitation-contracts";
 import {
   getTaskAccessWhere,
   getTaskClientAccessWhere,
   type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
+import { privateReviewTaskMatchesApprovalContext } from "@/lib/tasks/private-review-outreach-safety.server";
 
 export const ApproveOutboundMessageBatchSchema = z
   .object({
@@ -64,6 +73,8 @@ export async function approveOutboundMessageBatch(
   },
 ) {
   const input = ApproveOutboundMessageBatchSchema.parse(rawInput);
+  // `input.batchKey` is retained for older clients, but it is never trusted to
+  // select or define a batch. The stored authority task and full revision pin do.
   const now = options?.now ?? new Date();
   return prisma.$transaction(async (tx) => {
     const actor = await tx.user.findFirst({
@@ -128,7 +139,7 @@ export async function approveOutboundMessageBatch(
       const reviewContext = getPrivateReviewApprovalContext(
         payload.approvalContext,
       );
-      if (!reviewContext || reviewContext.batchKey !== input.batchKey) {
+      if (!reviewContext?.authorityTaskId) {
         throw new Error(
           `Outbound message request ${request.id} is not in this review batch`,
         );
@@ -138,8 +149,51 @@ export async function approveOutboundMessageBatch(
           `Outbound message request ${request.id} has a mismatched task binding`,
         );
       }
-      return { payload, request };
+      const identity: PrivateReviewBatchIdentity = {
+        authorityTaskId: reviewContext.authorityTaskId,
+        revision: reviewContext.revision,
+      };
+      if (!privateReviewBatchIdentityMatches(reviewContext, identity)) {
+        throw new Error(
+          `Outbound message request ${request.id} has a mismatched batch identity`,
+        );
+      }
+      return { identity, payload, request, reviewContext };
     });
+
+    const batchIdentity = parsedRequests[0]!.identity;
+    const batchKey = getPrivateReviewBatchKey(batchIdentity);
+    for (const { request, reviewContext } of parsedRequests) {
+      if (!privateReviewBatchIdentityMatches(reviewContext, batchIdentity)) {
+        throw new Error(
+          `Outbound message request ${request.id} is not in this review batch`,
+        );
+      }
+    }
+
+    // A document edit and review-task changes must not cross the batch's final
+    // validity check. Dispatch repeats the check because approval and sending
+    // are deliberately separate operations.
+    await lockContentResources(tx, [
+      { id: batchIdentity.revision.documentId, type: "document" },
+    ]);
+    const taskIds = [
+      ...new Set(parsedRequests.map(({ request }) => request.taskId)),
+    ].sort();
+    for (const taskId of taskIds) {
+      await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "Task"
+        WHERE "id" = ${taskId}
+        FOR UPDATE
+      `;
+    }
+    for (const { request, reviewContext } of parsedRequests) {
+      if (!(await privateReviewTaskMatchesApprovalContext(reviewContext, tx))) {
+        throw new Error(
+          `Outbound message request ${request.id} has a stale or inactive review binding`,
+        );
+      }
+    }
 
     const communicationIds = parsedRequests.map(
       ({ payload }) => payload.communicationId,
@@ -168,7 +222,7 @@ export async function approveOutboundMessageBatch(
       if (
         !communication ||
         communication.taskId !== request.taskId ||
-        getCommunicationBatchKey(communication.metadataJson) !== input.batchKey
+        getCommunicationBatchKey(communication.metadataJson) !== batchKey
       ) {
         throw new Error(
           `Outbound message request ${request.id} has a mismatched batch draft`,
@@ -176,13 +230,103 @@ export async function approveOutboundMessageBatch(
       }
     }
 
+    const exactReviewTaskWhere: Prisma.TaskWhereInput = {
+      AND: [
+        {
+          deletedAt: null,
+          claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+          isPublic: false,
+          parentTaskId: batchIdentity.authorityTaskId,
+          status: TaskStatus.ACTIVE,
+        },
+        getTaskAccessWhere({
+          action: "MANAGE",
+          personId: actor.personId,
+          userId: actor.id,
+        }),
+        ...(options?.clientAccessBoundary
+          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+          : []),
+        {
+          contextJson: {
+            equals: batchIdentity.authorityTaskId,
+            path: ["documentReview", "authorityTaskId"],
+          },
+        },
+        {
+          contextJson: {
+            equals: batchIdentity.revision.contentHash,
+            path: ["documentReview", "target", "contentHash"],
+          },
+        },
+        {
+          contextJson: {
+            equals: batchIdentity.revision.documentId,
+            path: ["documentReview", "target", "documentId"],
+          },
+        },
+        {
+          contextJson: {
+            equals: batchIdentity.revision.documentRevisionId,
+            path: ["documentReview", "target", "revisionId"],
+          },
+        },
+        {
+          contextJson: {
+            equals: batchIdentity.revision.documentVersion,
+            path: ["documentReview", "target", "version"],
+          },
+        },
+      ],
+    };
     const allDraftsInBatch = await tx.taskCommunication.findMany({
       where: {
-        channel: TaskCommunicationChannel.EMAIL,
-        deletedAt: null,
-        direction: TaskCommunicationDirection.OUTBOUND,
-        metadataJson: { path: ["batchKey"], equals: input.batchKey },
-        status: TaskCommunicationStatus.DRAFT,
+        AND: [
+          {
+            channel: TaskCommunicationChannel.EMAIL,
+            deletedAt: null,
+            direction: TaskCommunicationDirection.OUTBOUND,
+            metadataJson: { path: ["batchKey"], equals: batchKey },
+            status: TaskCommunicationStatus.DRAFT,
+            task: exactReviewTaskWhere,
+          },
+          {
+            metadataJson: {
+              equals: PRIVATE_REVIEW_INVITATION_SCHEMA,
+              path: ["reviewInvitation", "schema"],
+            },
+          },
+          {
+            metadataJson: {
+              equals: batchIdentity.authorityTaskId,
+              path: ["reviewInvitation", "authorityTaskId"],
+            },
+          },
+          {
+            metadataJson: {
+              equals: batchIdentity.revision.contentHash,
+              path: ["reviewInvitation", "revision", "contentHash"],
+            },
+          },
+          {
+            metadataJson: {
+              equals: batchIdentity.revision.documentId,
+              path: ["reviewInvitation", "revision", "documentId"],
+            },
+          },
+          {
+            metadataJson: {
+              equals: batchIdentity.revision.documentRevisionId,
+              path: ["reviewInvitation", "revision", "documentRevisionId"],
+            },
+          },
+          {
+            metadataJson: {
+              equals: batchIdentity.revision.documentVersion,
+              path: ["reviewInvitation", "revision", "documentVersion"],
+            },
+          },
+        ],
       },
       select: { id: true },
     });
@@ -220,7 +364,7 @@ export async function approveOutboundMessageBatch(
     }
 
     return {
-      batchKey: input.batchKey,
+      batchKey,
       requests: requests.map((request) => ({
         externalActionRequestId: request.id,
         payloadHash: request.payloadHash,

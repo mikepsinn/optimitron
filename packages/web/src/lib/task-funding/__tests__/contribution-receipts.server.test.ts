@@ -147,6 +147,8 @@ function buildFixture() {
   ];
 
   const tx = {
+    $executeRaw: vi.fn(async () => 1),
+    $queryRaw: vi.fn(async () => [{ id: payment.id }]),
     document: {
       findMany: vi.fn(async ({ where }: { where: { id: { in: string[] } } }) =>
         revisions
@@ -382,6 +384,34 @@ describe("issueContributionReceipt", () => {
     });
   });
 
+  it("refuses to configure a first binding after a legacy target has a payment", async () => {
+    const fixture = buildFixture();
+    fixture.payment.task.fundingTarget = {
+      id: "target_legacy_paid",
+      metadata: {},
+    };
+
+    await expect(
+      configureContributionReceiptBindingInTransaction(
+        {
+          governingDocumentRevisionIds: [
+            "revision_terms",
+            "revision_authority",
+          ],
+          taskId: "funded_task_1",
+          termsDocumentRevisionId: "revision_terms",
+        },
+        "issuer_1",
+        fixture.tx as never,
+        { canManageTask: fixture.canManageTask },
+      ),
+    ).rejects.toThrow(
+      "target with existing payments cannot receive its first receipt binding",
+    );
+    expect(fixture.tx.taskFundingTarget.update).not.toHaveBeenCalled();
+    expect(fixture.taskUpdates).toEqual([]);
+  });
+
   it("freezes the paid contribution, documents, and impact estimate once", async () => {
     const fixture = buildFixture();
     const now = new Date("2026-07-21T12:00:00.000Z");
@@ -471,6 +501,100 @@ describe("issueContributionReceipt", () => {
     expect(
       result.receipt.governingDocuments.map((row) => row.revisionId),
     ).toEqual(["revision_authority", "revision_terms"]);
+  });
+
+  it("rejects a first receipt whose governing revisions bypass the frozen target binding", async () => {
+    const fixture = buildFixture();
+
+    await expect(
+      issueContributionReceipt(
+        {
+          governingDocumentRevisionIds: ["revision_terms"],
+          paymentId: "payment_1",
+          termsDocumentRevisionId: "revision_terms",
+        },
+        "issuer_1",
+        {
+          canManageTask: fixture.canManageTask,
+          db: fixture.db as never,
+        },
+      ),
+    ).rejects.toThrow("does not match the frozen funding binding");
+    expect(fixture.artifacts.size).toBe(0);
+  });
+
+  it("rejects a first receipt issued by a manager other than the frozen issuer", async () => {
+    const fixture = buildFixture();
+    const metadata = fixture.payment.target.metadata as {
+      contributionReceipt: { issuerUserId: string };
+    };
+    metadata.contributionReceipt.issuerUserId = "issuer_2";
+
+    await expect(
+      issueContributionReceipt(
+        {
+          governingDocumentRevisionIds: [
+            "revision_authority",
+            "revision_terms",
+          ],
+          paymentId: "payment_1",
+          termsDocumentRevisionId: "revision_terms",
+        },
+        "issuer_1",
+        {
+          canManageTask: fixture.canManageTask,
+          db: fixture.db as never,
+        },
+      ),
+    ).rejects.toThrow("does not match the frozen funding binding");
+    expect(fixture.artifacts.size).toBe(0);
+  });
+
+  it("fails closed when a legacy paid target has no frozen receipt binding", async () => {
+    const fixture = buildFixture();
+    fixture.payment.target.metadata = {} as never;
+
+    await expect(
+      issueContributionReceipt(
+        {
+          governingDocumentRevisionIds: [
+            "revision_authority",
+            "revision_terms",
+          ],
+          paymentId: "payment_1",
+          termsDocumentRevisionId: "revision_terms",
+        },
+        "issuer_1",
+        {
+          canManageTask: fixture.canManageTask,
+          db: fixture.db as never,
+        },
+      ),
+    ).rejects.toThrow(
+      "requires adopted terms and governing document revisions before payment",
+    );
+    expect(fixture.artifacts.size).toBe(0);
+  });
+
+  it("detects paid timestamp drift between an immutable receipt and its ledger row", async () => {
+    const fixture = buildFixture();
+    const input = {
+      governingDocumentRevisionIds: ["revision_authority", "revision_terms"],
+      paymentId: "payment_1",
+      termsDocumentRevisionId: "revision_terms",
+    };
+    await issueContributionReceipt(input, "issuer_1", {
+      canManageTask: fixture.canManageTask,
+      db: fixture.db as never,
+    });
+    fixture.payment.paidAt = new Date("2026-07-23T12:00:00.000Z");
+
+    await expect(
+      issueContributionReceipt(input, "issuer_1", {
+        canManageTask: fixture.canManageTask,
+        db: fixture.db as never,
+      }),
+    ).rejects.toThrow("payment facts do not match the funding ledger");
   });
 
   it("rejects arbitrary document revisions that are not attached to the funded task", async () => {

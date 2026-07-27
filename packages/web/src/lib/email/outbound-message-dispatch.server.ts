@@ -36,6 +36,10 @@ import {
   evaluatePrivateReviewOutreachSuppression,
   privateReviewTaskMatchesApprovalContext,
 } from "@/lib/tasks/private-review-outreach-safety.server";
+import {
+  releaseRecipientRateLimitSlot,
+  reserveRecipientRateLimitSlot,
+} from "@/lib/tasks/task-recipient-rate-limit.server";
 import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
 
 const log = createLogger("outbound-message-dispatch");
@@ -171,6 +175,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       return { status: "failed", reason: "review_binding_mismatch" };
     }
     const suppressionReason = await evaluatePrivateReviewOutreachSuppression({
+      communicationId: communication.id,
       now,
       recipientEmail: communication.recipientEmail,
       recipientPersonId: communication.recipientPersonId,
@@ -244,7 +249,101 @@ export async function dispatchApprovedOutboundMessage(input: {
     return { status: "already_dispatched" };
   }
 
+  let recipientRateLimitReserved = false;
+  if (reviewContext) {
+    const reservation = await reserveRecipientRateLimitSlot({
+      communicationId: communication.id,
+      emailLogId: payload.emailLogId,
+      now,
+      recipientEmail: communication.recipientEmail!,
+      recipientUserId: payload.delivery.recipientUserId,
+      subject: payload.envelope.subject,
+      taskId: request.taskId,
+    });
+    if (reservation.status === "rate_limited") {
+      // A retry may already own an older QUEUED reservation. It lost the live
+      // cap to a newer send, so close that held slot with the draft.
+      await releaseRecipientRateLimitSlot({
+        communicationId: communication.id,
+        emailLogId: payload.emailLogId,
+        reason: "recipient_rate_limited",
+      });
+      await prisma.taskCommunication.updateMany({
+        where: {
+          id: communication.id,
+          status: TaskCommunicationStatus.DRAFT,
+        },
+        data: {
+          cancelledAt: now,
+          errorMessage: "Review invitation suppressed: recipient_rate_limited.",
+          status: TaskCommunicationStatus.CANCELLED,
+        },
+      });
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: "suppressed:recipient_rate_limited",
+        now,
+        result: "FAILED",
+      });
+      return {
+        status: "failed",
+        reason: "suppressed:recipient_rate_limited",
+      };
+    }
+    if (reservation.status === "conflict") {
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: "recipient_rate_limit_reservation_conflict",
+        now,
+        result: "FAILED",
+      });
+      return { status: "failed", reason: "rate_limit_reservation_conflict" };
+    }
+    recipientRateLimitReserved = reservation.status === "reserved";
+  }
+
+  const releaseRecipientReservation = async (reason: string) => {
+    if (!recipientRateLimitReserved) return;
+    await releaseRecipientRateLimitSlot({
+      communicationId: communication.id,
+      emailLogId: payload.emailLogId,
+      reason,
+    });
+  };
+
   try {
+    // Approval, authorization, and quota reservation can take long enough for
+    // an ordinary document edit to supersede the pinned revision. Repeat the
+    // live binding check at the last practical boundary before provider I/O.
+    if (
+      reviewContext &&
+      !(await privateReviewTaskMatchesApprovalContext(reviewContext))
+    ) {
+      await releaseRecipientReservation("review_binding_mismatch");
+      await prisma.taskCommunication.updateMany({
+        where: {
+          id: communication.id,
+          status: TaskCommunicationStatus.DRAFT,
+        },
+        data: {
+          cancelledAt: now,
+          errorMessage:
+            "Review invitation cancelled because its document revision is no longer current.",
+          status: TaskCommunicationStatus.CANCELLED,
+        },
+      });
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: "private_review_invitation_binding_mismatch",
+        now,
+        result: "FAILED",
+      });
+      return { status: "failed", reason: "review_binding_mismatch" };
+    }
+
     const result = await sendDraftTaskNotification({
       approvedDelivery: {
         emailLogId: payload.emailLogId,
@@ -314,6 +413,7 @@ export async function dispatchApprovedOutboundMessage(input: {
         });
         return { status: "already_dispatched" };
       }
+      await releaseRecipientReservation("draft_already_processed");
       await finalizeApprovedExternalAction({
         executedByUserId: input.approverUserId,
         externalActionRequestId: request.id,
@@ -328,6 +428,7 @@ export async function dispatchApprovedOutboundMessage(input: {
       result.status === "suppressed"
         ? `suppressed:${result.reason}`
         : result.status;
+    await releaseRecipientReservation(reason);
     await finalizeApprovedExternalAction({
       executedByUserId: input.approverUserId,
       externalActionRequestId: request.id,

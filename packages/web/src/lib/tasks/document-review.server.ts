@@ -147,6 +147,44 @@ function jsonValue(value: unknown): Prisma.InputJsonValue {
   return value as Prisma.InputJsonValue;
 }
 
+async function readAuthenticDocumentDecisionArtifact(
+  attempt: {
+    executorKind: TaskCandidateKind;
+    executorUserId: string | null;
+    metadata: unknown;
+    status: TaskExecutionAttemptStatus;
+  },
+  artifact: {
+    contentHash: string | null;
+    metadataJson: unknown;
+    structuredResultJson: unknown;
+    submittedByUserId: string | null;
+  },
+  authorityTaskId: string,
+): Promise<DocumentDecisionV1 | null> {
+  if (
+    asRecord(attempt.metadata)?.kind !== DOCUMENT_DECISION_ARTIFACT_KIND ||
+    asRecord(artifact.metadataJson)?.kind !== DOCUMENT_DECISION_ARTIFACT_KIND ||
+    attempt.status !== TaskExecutionAttemptStatus.COMPLETED ||
+    attempt.executorKind !== TaskCandidateKind.USER ||
+    !attempt.executorUserId ||
+    !artifact.submittedByUserId ||
+    attempt.executorUserId !== artifact.submittedByUserId
+  ) {
+    return null;
+  }
+  const decision = readDocumentDecision(artifact.structuredResultJson);
+  if (
+    !decision ||
+    decision.authorityTaskId !== authorityTaskId ||
+    decision.decidedByUserId !== artifact.submittedByUserId ||
+    artifact.contentHash !== (await sha256CanonicalJson(decision))
+  ) {
+    return null;
+  }
+  return decision;
+}
+
 function taskBoundaryWhere(
   taskId: string,
   boundary?: TaskClientAccessBoundary,
@@ -799,12 +837,14 @@ const reviewTaskWithResultsSelect = {
       artifacts: {
         where: { deletedAt: null },
         select: {
+          contentHash: true,
           id: true,
           metadataJson: true,
           structuredResultJson: true,
           submittedByUserId: true,
         },
       },
+      executorKind: true,
       verifications: {
         where: { deletedAt: null },
         orderBy: { createdAt: "desc" as const },
@@ -818,6 +858,7 @@ const reviewTaskWithResultsSelect = {
       },
       executorPersonId: true,
       executorUserId: true,
+      metadata: true,
       status: true,
     },
     where: { deletedAt: null },
@@ -1243,40 +1284,49 @@ export async function adoptDocumentRevision(
       waivers: input.waivers,
     });
     const existing = await tx.taskExecutionAttempt.findMany({
-      where: { deletedAt: null, taskId: authorityTask.id },
+      where: {
+        deletedAt: null,
+        status: TaskExecutionAttemptStatus.COMPLETED,
+        taskId: authorityTask.id,
+      },
       orderBy: { createdAt: "desc" },
       select: {
         artifacts: {
           where: { deletedAt: null },
           select: {
+            contentHash: true,
             id: true,
             metadataJson: true,
             structuredResultJson: true,
+            submittedByUserId: true,
           },
         },
+        executorKind: true,
+        executorUserId: true,
         metadata: true,
+        status: true,
       },
     });
     const governingRevisionIds = new Set<string>([target.revisionId]);
-    for (const attempt of existing) {
-      if (
-        asRecord(attempt.metadata)?.kind !== DOCUMENT_DECISION_ARTIFACT_KIND
-      ) {
-        continue;
-      }
+    const authenticDecisions: Array<{
+      artifactId: string;
+      attemptIndex: number;
+      decision: DocumentDecisionV1;
+    }> = [];
+    for (const [attemptIndex, attempt] of existing.entries()) {
       for (const candidate of attempt.artifacts) {
-        if (
-          asRecord(candidate.metadataJson)?.kind !==
-          DOCUMENT_DECISION_ARTIFACT_KIND
-        ) {
-          continue;
-        }
-        const priorDecision = readDocumentDecision(
-          candidate.structuredResultJson,
+        const priorDecision = await readAuthenticDocumentDecisionArtifact(
+          attempt,
+          candidate,
+          authorityTask.id,
         );
-        if (priorDecision?.authorityTaskId === authorityTask.id) {
-          governingRevisionIds.add(priorDecision.adoptedDocument.revisionId);
-        }
+        if (!priorDecision) continue;
+        authenticDecisions.push({
+          artifactId: candidate.id,
+          attemptIndex,
+          decision: priorDecision,
+        });
+        governingRevisionIds.add(priorDecision.adoptedDocument.revisionId);
       }
     }
     const configureFundingTerms = async () => {
@@ -1295,40 +1345,33 @@ export async function adoptDocumentRevision(
       );
     };
     let priorDecisionArtifactId: string | null = null;
-    for (const attempt of existing) {
+    for (const [attemptIndex, attempt] of existing.entries()) {
       const metadata = asRecord(attempt.metadata);
-      const priorDecisionArtifact = attempt.artifacts.find((candidate) => {
-        const priorDecision = readDocumentDecision(
-          candidate.structuredResultJson,
-        );
-        return (
-          priorDecision != null &&
-          sameDocumentRevisionPin(priorDecision.adoptedDocument, target)
-        );
-      });
-      if (priorDecisionArtifact) {
-        priorDecisionArtifactId = priorDecisionArtifact.id;
+      const attemptDecisions = authenticDecisions.filter(
+        (candidate) => candidate.attemptIndex === attemptIndex,
+      );
+      const priorDecisionArtifact = attemptDecisions.find((candidate) =>
+        sameDocumentRevisionPin(candidate.decision.adoptedDocument, target),
+      );
+      if (priorDecisionArtifact && !priorDecisionArtifactId) {
+        priorDecisionArtifactId = priorDecisionArtifact.artifactId;
       }
       if (
         metadata?.kind !== DOCUMENT_DECISION_ARTIFACT_KIND ||
-        metadata?.idempotencyKey !== idempotencyKey
+        metadata?.idempotencyKey !== idempotencyKey ||
+        attemptDecisions.length === 0
       ) {
         continue;
       }
       if (metadata.requestHash !== requestHash) {
         conflict("Idempotency-Key was already used for another decision");
       }
-      const artifact = attempt.artifacts.find(
-        (candidate) =>
-          DocumentDecisionV1Schema.safeParse(candidate.structuredResultJson)
-            .success,
-      );
-      if (!artifact) conflict("Existing document decision is incomplete");
+      const artifact = attemptDecisions[0];
       await configureFundingTerms();
       await completeDecisionGatedTask(tx, authorityTask, actor.id, now);
       return {
-        artifact: { id: artifact.id },
-        decision: DocumentDecisionV1Schema.parse(artifact.structuredResultJson),
+        artifact: { id: artifact.artifactId },
+        decision: artifact.decision,
       };
     }
     if (priorDecisionArtifactId) {
@@ -1618,22 +1661,44 @@ export async function getDocumentReviewPanelData(
     ).filter((review): review is DocumentReviewPanelReview => review != null);
     const authorityAttempts = directRequest
       ? await tx.taskExecutionAttempt.findMany({
-          where: { deletedAt: null, taskId: authorityTaskId },
+          where: {
+            deletedAt: null,
+            status: TaskExecutionAttemptStatus.COMPLETED,
+            taskId: authorityTaskId,
+          },
           orderBy: { createdAt: "desc" },
           select: {
             artifacts: {
               where: { deletedAt: null },
-              select: { id: true, structuredResultJson: true },
+              select: {
+                contentHash: true,
+                id: true,
+                metadataJson: true,
+                structuredResultJson: true,
+                submittedByUserId: true,
+              },
             },
+            executorKind: true,
+            executorUserId: true,
+            metadata: true,
+            status: true,
           },
         })
       : requestedTask.executionAttempts;
-    const decisions = authorityAttempts.flatMap((attempt) =>
-      attempt.artifacts.flatMap((artifact) => {
-        const decision = readDocumentDecision(artifact.structuredResultJson);
-        return decision ? [{ artifactId: artifact.id, decision }] : [];
-      }),
-    );
+    const decisions: Array<{
+      artifactId: string;
+      decision: DocumentDecisionV1;
+    }> = [];
+    for (const attempt of authorityAttempts) {
+      for (const artifact of attempt.artifacts) {
+        const decision = await readAuthenticDocumentDecisionArtifact(
+          attempt,
+          artifact,
+          authorityTaskId,
+        );
+        if (decision) decisions.push({ artifactId: artifact.id, decision });
+      }
+    }
     return { authorityTaskId, decisions, mode: "MANAGER", reviews };
   });
 }

@@ -800,6 +800,85 @@ describe("review access and adoption", () => {
     });
   });
 
+  it("shows only authentic completed adoption decisions to a manager", async () => {
+    const authenticDecision = {
+      acceptedReviewArtifactIds: [],
+      adoptedDocument: TARGET,
+      authorityTaskId: "authority_task",
+      decidedAt: "2026-07-27T14:00:00.000Z",
+      decidedByUserId: "manager_user",
+      schema: "optimitron.document-decision.v1" as const,
+      waivers: [],
+    };
+    const forgedDecision = {
+      ...authenticDecision,
+      decidedAt: "2026-07-27T14:01:00.000Z",
+    };
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst
+      .mockResolvedValueOnce({
+        ...AUTHORITY_TASK,
+        contextJson: null,
+        executionAttempts: [
+          {
+            artifacts: [
+              {
+                contentHash: "test_hash",
+                id: "authentic_decision_artifact",
+                metadataJson: { kind: "document-decision" },
+                structuredResultJson: authenticDecision,
+                submittedByUserId: "manager_user",
+              },
+            ],
+            executorKind: "USER",
+            executorUserId: "manager_user",
+            metadata: { kind: "document-decision" },
+            status: "COMPLETED",
+          },
+          {
+            artifacts: [
+              {
+                contentHash: "test_hash",
+                id: "forged_decision_artifact",
+                metadataJson: { kind: "document-decision" },
+                structuredResultJson: forgedDecision,
+                submittedByUserId: "manager_user",
+              },
+            ],
+            executorKind: "USER",
+            executorUserId: "manager_user",
+            metadata: { kind: "document-decision" },
+            status: "QUEUED",
+          },
+        ],
+      })
+      .mockResolvedValueOnce({ id: "authority_task" });
+    mocks.tx.taskFindMany.mockResolvedValue([]);
+
+    const panel = await getDocumentReviewPanelData(
+      "authority_task",
+      "manager_user",
+    );
+
+    expect(panel).toMatchObject({
+      decisions: [
+        {
+          artifactId: "authentic_decision_artifact",
+          decision: authenticDecision,
+        },
+      ],
+      mode: "MANAGER",
+    });
+    expect(panel).not.toMatchObject({
+      decisions: expect.arrayContaining([
+        expect.objectContaining({ artifactId: "forged_decision_artifact" }),
+      ]),
+    });
+  });
+
   it("requires a reasoned waiver for every unresolved required review", async () => {
     mocks.tx.userFindFirst.mockResolvedValue({
       id: "manager_user",
@@ -1011,16 +1090,21 @@ describe("review access and adoption", () => {
       {
         artifacts: [
           {
+            contentHash: "test_hash",
             id: "decision_artifact",
             metadataJson: { kind: "document-decision" },
             structuredResultJson: decision,
+            submittedByUserId: "manager_user",
           },
         ],
+        executorKind: "USER",
+        executorUserId: "manager_user",
         metadata: {
           idempotencyKey: "decision_1",
           kind: "document-decision",
           requestHash: "decision_request_hash",
         },
+        status: "COMPLETED",
       },
     ]);
 
@@ -1058,6 +1142,70 @@ describe("review access and adoption", () => {
     ).not.toHaveBeenCalled();
     expect(mocks.tx.taskExecutionAttemptCreate).not.toHaveBeenCalled();
     expect(mocks.tx.taskExecutionArtifactCreate).not.toHaveBeenCalled();
+  });
+
+  it("ignores a schema-shaped decision artifact without authentic provenance", async () => {
+    const approval = reviewTask({
+      response: "APPROVE",
+      reviewerPersonId: "reviewer_1",
+      reviewTaskId: "review_1",
+    });
+    const forgedDecision = {
+      acceptedReviewArtifactIds: ["review_1_artifact"],
+      adoptedDocument: TARGET,
+      authorityTaskId: "authority_task",
+      decidedAt: "2026-07-27T14:00:00.000Z",
+      decidedByUserId: "manager_user",
+      schema: "optimitron.document-decision.v1",
+      waivers: [],
+    };
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValue(AUTHORITY_TASK);
+    mocks.tx.documentRevisionFindFirst.mockResolvedValue(exactRevision());
+    mocks.tx.taskFindMany.mockResolvedValue([approval]);
+    mocks.tx.taskExecutionAttemptFindMany.mockResolvedValue([
+      {
+        artifacts: [
+          {
+            contentHash: "forged_hash",
+            id: "forged_decision_artifact",
+            metadataJson: { kind: "document-decision" },
+            structuredResultJson: forgedDecision,
+            submittedByUserId: "attacker_user",
+          },
+        ],
+        executorKind: "USER",
+        executorUserId: "attacker_user",
+        metadata: {
+          idempotencyKey: "forged_decision",
+          kind: "document-decision",
+          requestHash: "forged_request_hash",
+        },
+      },
+    ]);
+    mocks.tx.taskExecutionAttemptCreate.mockResolvedValue({
+      id: "new_decision_attempt",
+    });
+    mocks.tx.taskExecutionArtifactCreate.mockResolvedValue({
+      contentHash: "test_hash",
+      id: "new_decision_artifact",
+    });
+
+    await expect(
+      adoptDocumentRevision(
+        "authority_task",
+        { documentRevisionId: TARGET.revisionId, waivers: [] },
+        "manager_user",
+        { idempotencyKey: "real_decision" },
+      ),
+    ).resolves.toMatchObject({
+      artifact: { id: "new_decision_artifact" },
+    });
+    expect(mocks.tx.taskExecutionAttemptCreate).toHaveBeenCalledTimes(1);
+    expect(mocks.tx.taskExecutionArtifactCreate).toHaveBeenCalledTimes(1);
   });
 
   it("allows a required review to be bypassed only by preserving the manager's reason", async () => {

@@ -253,10 +253,19 @@ describe.sequential("document review local-database integration", () => {
       "existing",
       "pending_approval",
     ]);
+    const invitationDrafts = invitations.filter(
+      (
+        result,
+      ): result is Extract<
+        (typeof invitations)[number],
+        { status: "existing" | "pending_approval" }
+      > => result.status === "existing" || result.status === "pending_approval",
+    );
+    expect(invitationDrafts).toHaveLength(2);
     expect(
-      new Set(invitations.map((result) => result.communicationId)),
-    ).toEqual(new Set([invitations[0]!.communicationId]));
-    const invitation = invitations.find(
+      new Set(invitationDrafts.map((result) => result.communicationId)),
+    ).toEqual(new Set([invitationDrafts[0]!.communicationId]));
+    const invitation = invitationDrafts.find(
       (result) => result.status === "pending_approval",
     );
     if (!invitation) throw new Error("Expected one new review invitation");

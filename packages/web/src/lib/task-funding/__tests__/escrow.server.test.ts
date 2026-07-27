@@ -13,6 +13,7 @@ import {
   maybeChargeCallablePledges,
   refundDeadTargetFunding,
   resetStalePledgeCallState,
+  settlePledgeCallPaymentIntent,
 } from "../escrow.server";
 
 const mocks = vi.hoisted(() => ({
@@ -54,9 +55,18 @@ vi.mock("../contribution-receipts.server", () => ({
   issuePaidContributionReceiptInTransaction: mocks.receiptIssue,
   requireContributionReceiptBinding: mocks.requireReceiptBinding,
   resolveContributionReceiptBinding: mocks.resolveReceiptBinding,
+  upsertTaskFundingTargetWithReceiptBindingInTransaction: vi.fn(),
 }));
 
 const TEST_PREFIX = "tf_escrow_";
+
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
 
 /** Minimal shape maybeChargeCallablePledges reads off a confirmed intent. */
 function succeededPaymentIntent(id: string) {
@@ -217,6 +227,39 @@ async function createPaidCheckoutPayment(input: {
       status: TaskFundingPaymentStatus.PAID,
       stripeChargeId: `${TEST_PREFIX}ch_${input.suffix}`,
       stripeCheckoutSessionId: `${TEST_PREFIX}cs_${input.suffix}`,
+      stripeTransferGroup: `task_funding_${input.taskId}`,
+      targetId: input.targetId,
+      taskId: input.taskId,
+    },
+  });
+}
+
+async function createPendingPledgeCallPayment(input: {
+  pledgeId: string;
+  suffix: string;
+  targetId: string;
+  taskId: string;
+}) {
+  const order = await prisma.commerceOrder.create({
+    data: {
+      id: `${TEST_PREFIX}order_${input.suffix}`,
+      currency: "usd",
+      donationCents: 5000,
+      purposeKey: "task-funding",
+      status: CommerceOrderStatus.PENDING_PAYMENT,
+      subtotalCents: 5000,
+      totalCents: 5000,
+    },
+  });
+  return prisma.taskFundingPayment.create({
+    data: {
+      id: `${TEST_PREFIX}payment_${input.suffix}`,
+      amountCents: 5000,
+      commerceOrderId: order.id,
+      currency: "usd",
+      pledgeId: input.pledgeId,
+      source: TaskFundingPaymentSource.PLEDGE_CALL,
+      status: TaskFundingPaymentStatus.PENDING,
       stripeTransferGroup: `task_funding_${input.taskId}`,
       targetId: input.targetId,
       taskId: input.taskId,
@@ -539,6 +582,97 @@ describe("maybeChargeCallablePledges", () => {
         pledge: expect.objectContaining({ id: pledgeB.id }),
       }),
     );
+  });
+});
+
+describe("settlePledgeCallPaymentIntent", () => {
+  it("keeps paidAt and receipt facts on the first writer under concurrent webhook settlement", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    const originalFindFirst =
+      prisma.taskFundingPayment.findFirst.bind(prisma.taskFundingPayment);
+    const readGates = [deferred(), deferred()];
+    const bothReadsReady = deferred();
+    let staleReadCount = 0;
+    const findFirstSpy = vi
+      .spyOn(prisma.taskFundingPayment, "findFirst")
+      .mockImplementation(
+        (async (args: Parameters<typeof originalFindFirst>[0]) => {
+          const result = await originalFindFirst(args as never);
+          if (staleReadCount < 2) {
+            const gate = readGates[staleReadCount];
+            staleReadCount += 1;
+            if (staleReadCount === 2) bothReadsReady.resolve();
+            await gate?.promise;
+          }
+          return result as never;
+        }) as never,
+      );
+    const firstReceiptEntered = deferred();
+    const releaseFirstReceipt = deferred();
+
+    try {
+      const { target, task } = await createFundedTask(
+        "settlement_race",
+        5000n,
+      );
+      const pledger = await createPledger("settlement_race");
+      const pledge = await createPledge({
+        amountCents: 5000n,
+        cardBacked: true,
+        suffix: "settlement_race",
+        targetId: target.id,
+        userId: pledger.id,
+      });
+      const payment = await createPendingPledgeCallPayment({
+        pledgeId: pledge.id,
+        suffix: "settlement_race",
+        targetId: target.id,
+        taskId: task.id,
+      });
+      mocks.receiptIssue.mockImplementationOnce(async () => {
+        firstReceiptEntered.resolve();
+        await releaseFirstReceipt.promise;
+        return { created: true };
+      });
+
+      const intent = {
+        id: "pi_tf_escrow_settlement_race",
+        latest_charge: "ch_tf_escrow_settlement_race",
+        metadata: { task_funding_payment_id: payment.id },
+        status: "succeeded",
+      };
+      const firstPaidAt = new Date("2026-07-20T12:00:00.000Z");
+      vi.setSystemTime(firstPaidAt);
+      const first = settlePledgeCallPaymentIntent(intent as never);
+      const second = settlePledgeCallPaymentIntent(intent as never);
+      await bothReadsReady.promise;
+
+      readGates[0]?.resolve();
+      await firstReceiptEntered.promise;
+      vi.setSystemTime(new Date("2026-07-20T13:00:00.000Z"));
+      readGates[1]?.resolve();
+      releaseFirstReceipt.resolve();
+
+      await expect(Promise.all([first, second])).resolves.toEqual([
+        expect.objectContaining({ outcome: "succeeded", paymentId: payment.id }),
+        expect.objectContaining({ outcome: "succeeded", paymentId: payment.id }),
+      ]);
+      const stored = await prisma.taskFundingPayment.findUniqueOrThrow({
+        where: { id: payment.id },
+        select: { paidAt: true, stripePaymentIntentId: true },
+      });
+      expect(stored).toEqual({
+        paidAt: firstPaidAt,
+        stripePaymentIntentId: intent.id,
+      });
+      expect(mocks.receiptIssue).toHaveBeenCalledTimes(2);
+      for (const call of mocks.receiptIssue.mock.calls) {
+        expect(call[2]).toEqual({ now: firstPaidAt });
+      }
+    } finally {
+      findFirstSpy.mockRestore();
+      vi.useRealTimers();
+    }
   });
 });
 

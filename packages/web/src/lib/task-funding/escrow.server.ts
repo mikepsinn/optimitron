@@ -20,6 +20,7 @@ import {
   issuePaidContributionReceiptInTransaction,
   requireContributionReceiptBinding,
   resolveContributionReceiptBinding,
+  upsertTaskFundingTargetWithReceiptBindingInTransaction,
 } from "./contribution-receipts.server";
 import {
   chooseTargetAmountCents,
@@ -29,6 +30,7 @@ import {
   TASK_FUNDING_ORDER_TYPE,
   TASK_FUNDING_PURPOSE_KEY,
 } from "./payments.server";
+import { lockTaskFundingPaymentInTransaction } from "./payment-lock.server";
 import { createOrReplaceTaskFundingPledge } from "./pledges.server";
 
 /**
@@ -79,12 +81,6 @@ function truncateStripeName(value: string) {
 function clampLimit(value: number | undefined, fallback: number) {
   if (value === undefined || !Number.isFinite(value)) return fallback;
   return Math.max(1, Math.min(100, Math.trunc(value)));
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value != null && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
 }
 
 function toChargeableAmountCents(value: bigint): number | null {
@@ -196,13 +192,6 @@ export async function createPledgeCardSetupSession(
     task.fundingTarget?.metadata,
     task.contextJson,
   );
-  const existingTargetMetadata = asRecord(task.fundingTarget?.metadata);
-  const fundingTargetMetadata = {
-    ...existingTargetMetadata,
-    contributionReceipt: receiptBinding,
-    createdBy:
-      existingTargetMetadata.createdBy ?? TASK_FUNDING_PLEDGE_SETUP_KIND,
-  } satisfies Prisma.InputJsonValue;
 
   const currency = task.compensationCurrency?.trim().toLowerCase() || "usd";
   if (currency !== "usd") {
@@ -218,21 +207,18 @@ export async function createPledgeCardSetupSession(
     throw new Error("Task has no funding target yet.");
   }
 
-  await prisma.taskFundingTarget.upsert({
-    where: { taskId: task.id },
-    create: {
-      currency,
-      metadata: fundingTargetMetadata,
-      status: TaskFundingTargetStatus.OPEN,
-      targetAmountCents: BigInt(targetAmountCentsValue),
-      taskId: task.id,
-    },
-    update: {
-      deletedAt: null,
-      metadata: fundingTargetMetadata,
-    },
-    select: { id: true },
-  });
+  await prisma.$transaction((tx) =>
+    upsertTaskFundingTargetWithReceiptBindingInTransaction(
+      {
+        binding: receiptBinding,
+        createdBy: TASK_FUNDING_PLEDGE_SETUP_KIND,
+        currency,
+        targetAmountCents: BigInt(targetAmountCentsValue),
+        taskId: task.id,
+      },
+      tx,
+    ),
+  );
 
   const user = await prisma.user.findFirst({
     where: { deletedAt: null, id: input.userId },
@@ -441,41 +427,74 @@ async function recordPledgeChargeSucceeded(
   plan: PledgeChargeRefs,
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  const paidAt = new Date();
-  const chargeId = getLatestChargeId(paymentIntent);
-  await prisma.$transaction(async (tx) => {
-    await tx.taskFundingPayment.update({
-      where: { id: plan.paymentId },
+  const candidatePaidAt = new Date();
+  const candidateChargeId = getLatestChargeId(paymentIntent);
+  const settled = await prisma.$transaction(async (tx) => {
+    await lockTaskFundingPaymentInTransaction(plan.paymentId, tx);
+    await tx.taskFundingPayment.updateMany({
+      where: {
+        deletedAt: null,
+        id: plan.paymentId,
+        paidAt: null,
+        status: {
+          notIn: [
+            TaskFundingPaymentStatus.REFUNDED,
+            TaskFundingPaymentStatus.DISPUTED,
+          ],
+        },
+      },
       data: {
         failedAt: null,
-        paidAt,
+        paidAt: candidatePaidAt,
         status: TaskFundingPaymentStatus.PAID,
-        stripeChargeId: chargeId,
+        stripeChargeId: candidateChargeId,
         stripePaymentIntentId: paymentIntent.id,
       },
     });
+    const payment = await tx.taskFundingPayment.findUnique({
+      where: { id: plan.paymentId },
+      select: {
+        paidAt: true,
+        status: true,
+        stripePaymentIntentId: true,
+      },
+    });
+    if (
+      !payment ||
+      !payment.paidAt ||
+      payment.status !== TaskFundingPaymentStatus.PAID
+    ) {
+      return false;
+    }
     await tx.commerceOrder.update({
       where: { id: plan.commerceOrderId },
       data: {
         lastError: null,
-        paidAt,
+        paidAt: payment.paidAt,
         status: CommerceOrderStatus.PAID,
-        stripePaymentIntentId: paymentIntent.id,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
       },
     });
+    const pledge = await tx.taskFundingPledge.findUnique({
+      where: { id: plan.pledgeId },
+      select: { fulfilledAt: true },
+    });
+    if (!pledge) throw new Error(`Task funding pledge ${plan.pledgeId} missing.`);
     await tx.taskFundingPledge.update({
       where: { id: plan.pledgeId },
       data: {
-        fulfilledAt: paidAt,
+        fulfilledAt: pledge.fulfilledAt ?? payment.paidAt,
         status: TaskFundingPledgeStatus.FULFILLED,
       },
     });
     await issuePaidContributionReceiptInTransaction(plan.paymentId, tx, {
-      now: paidAt,
+      now: payment.paidAt,
     });
     await refreshTaskFundingTargetStatus(plan.targetId, tx);
+    return true;
   });
-  await notifyPledgeChargeReceipt(plan);
+  if (settled) await notifyPledgeChargeReceipt(plan);
+  return settled;
 }
 
 async function recordPledgeChargeDeclined(
@@ -483,15 +502,21 @@ async function recordPledgeChargeDeclined(
   decline: StripeCardDeclineInfo,
 ) {
   const declinedAt = new Date();
-  await prisma.$transaction(async (tx) => {
-    await tx.taskFundingPayment.update({
-      where: { id: plan.paymentId },
+  const declined = await prisma.$transaction(async (tx) => {
+    const changed = await tx.taskFundingPayment.updateMany({
+      where: {
+        deletedAt: null,
+        id: plan.paymentId,
+        paidAt: null,
+        status: TaskFundingPaymentStatus.PENDING,
+      },
       data: {
         failedAt: declinedAt,
         status: TaskFundingPaymentStatus.FAILED,
         stripePaymentIntentId: decline.paymentIntentId ?? undefined,
       },
     });
+    if (changed.count !== 1) return false;
     await tx.commerceOrder.update({
       where: { id: plan.commerceOrderId },
       data: {
@@ -510,8 +535,10 @@ async function recordPledgeChargeDeclined(
     // A decline can drop the committed total below the target; flip the
     // target back to OPEN so new pledges can re-trigger the threshold.
     await refreshTaskFundingTargetStatus(plan.targetId, tx);
+    return true;
   });
-  await notifyPledgeDeclined(plan, declinedAt);
+  if (declined) await notifyPledgeDeclined(plan, declinedAt);
+  return declined;
 }
 
 /**
@@ -963,13 +990,14 @@ export async function maybeChargeCallablePledges(
       );
 
       if (paymentIntent.status === "succeeded") {
-        await recordPledgeChargeSucceeded(plan, paymentIntent);
-        charged.push(toChargeRecord(plan));
-        log.info("Pledge charged at threshold", {
-          amountCents: plan.amountCents,
-          pledgeId: plan.pledgeId,
-          targetId: plan.targetId,
-        });
+        if (await recordPledgeChargeSucceeded(plan, paymentIntent)) {
+          charged.push(toChargeRecord(plan));
+          log.info("Pledge charged at threshold", {
+            amountCents: plan.amountCents,
+            pledgeId: plan.pledgeId,
+            targetId: plan.targetId,
+          });
+        }
       } else if (paymentIntent.status === "processing") {
         // Async settlement: persist the intent id and let the webhook or the
         // next retryCallableCharges pass finish the bookkeeping.
@@ -992,27 +1020,29 @@ export async function maybeChargeCallablePledges(
           message: `Off-session PaymentIntent ended in status ${paymentIntent.status}.`,
           paymentIntentId: paymentIntent.id,
         };
-        await recordPledgeChargeDeclined(plan, decline);
-        declined.push({
-          ...toChargeRecord(plan),
-          declineCode: decline.code,
-          declineMessage: decline.message,
-        });
+        if (await recordPledgeChargeDeclined(plan, decline)) {
+          declined.push({
+            ...toChargeRecord(plan),
+            declineCode: decline.code,
+            declineMessage: decline.message,
+          });
+        }
       }
     } catch (error) {
       const decline = getStripeCardDeclineInfo(error);
       if (decline) {
-        await recordPledgeChargeDeclined(plan, decline);
-        declined.push({
-          ...toChargeRecord(plan),
-          declineCode: decline.code,
-          declineMessage: decline.message,
-        });
-        log.info("Pledge charge declined", {
-          declineCode: decline.code,
-          pledgeId: plan.pledgeId,
-          targetId: plan.targetId,
-        });
+        if (await recordPledgeChargeDeclined(plan, decline)) {
+          declined.push({
+            ...toChargeRecord(plan),
+            declineCode: decline.code,
+            declineMessage: decline.message,
+          });
+          log.info("Pledge charge declined", {
+            declineCode: decline.code,
+            pledgeId: plan.pledgeId,
+            targetId: plan.targetId,
+          });
+        }
       } else {
         // Transient (network/config) failure: payment stays PENDING and the
         // pledge stays ACTIVE with calledAt set, so retryCallableCharges
@@ -1331,7 +1361,7 @@ export async function settlePledgeCallPaymentIntent(
   };
 
   if (paymentIntent.status === "succeeded") {
-    await recordPledgeChargeSucceeded(refs, paymentIntent);
+    if (!(await recordPledgeChargeSucceeded(refs, paymentIntent))) return null;
     log.info("Pledge charge settled by webhook", settlement);
     return { outcome: "succeeded", ...settlement };
   }
@@ -1348,7 +1378,7 @@ export async function settlePledgeCallPaymentIntent(
         `Off-session PaymentIntent ended in status ${paymentIntent.status}.`,
       paymentIntentId: paymentIntent.id,
     };
-    await recordPledgeChargeDeclined(refs, decline);
+    if (!(await recordPledgeChargeDeclined(refs, decline))) return null;
     log.info("Pledge charge declined by webhook", {
       declineCode: decline.code,
       ...settlement,

@@ -17,7 +17,9 @@ import { getBaseUrl } from "@/lib/url";
 import {
   issuePaidContributionReceiptInTransaction,
   resolveContributionReceiptBinding,
+  upsertTaskFundingTargetWithReceiptBindingInTransaction,
 } from "./contribution-receipts.server";
+import { lockTaskFundingPaymentInTransaction } from "./payment-lock.server";
 
 export const TASK_FUNDING_PURPOSE_KEY = "task-funding";
 export const TASK_FUNDING_ORDER_TYPE = "task_funding";
@@ -69,12 +71,6 @@ function normalizeEmail(value: string | null | undefined) {
 function normalizeCurrency(value: string | null | undefined) {
   const currency = value?.trim().toLowerCase();
   return currency && /^[a-z]{3}$/u.test(currency) ? currency : "usd";
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value != null && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
 }
 
 function truncateMetadata(value: string | null | undefined) {
@@ -276,12 +272,6 @@ export async function createTaskFundingCheckoutSession(
     task.fundingTarget?.metadata,
     task.contextJson,
   );
-  const existingTargetMetadata = asRecord(task.fundingTarget?.metadata);
-  const fundingTargetMetadata = {
-    ...existingTargetMetadata,
-    contributionReceipt: receiptBinding,
-    createdBy: existingTargetMetadata.createdBy ?? "task-funding-checkout",
-  } satisfies Prisma.InputJsonValue;
 
   const currency = normalizeCurrency(task.compensationCurrency);
   if (currency !== "usd") {
@@ -300,24 +290,17 @@ export async function createTaskFundingCheckoutSession(
   const transferGroup = getTaskFundingTransferGroup(task.id);
 
   const { commerceOrder, payment } = await db.$transaction(async (tx) => {
-    const target = await tx.taskFundingTarget.upsert({
-      where: { taskId: task.id },
-      create: {
-        currency,
-        status: TaskFundingTargetStatus.OPEN,
-        targetAmountCents,
-        taskId: task.id,
-        metadata: fundingTargetMetadata,
-      },
-      update: {
-        deletedAt: null,
-        metadata: fundingTargetMetadata,
-      },
-      select: {
-        id: true,
-        targetAmountCents: true,
-      },
-    });
+    const target =
+      await upsertTaskFundingTargetWithReceiptBindingInTransaction(
+        {
+          binding: receiptBinding,
+          createdBy: "task-funding-checkout",
+          currency,
+          targetAmountCents,
+          taskId: task.id,
+        },
+        tx,
+      );
 
     const order = await tx.commerceOrder.create({
       data: {
@@ -559,37 +542,76 @@ export async function recordTaskFundingCheckoutPaid(
     return payment;
   }
 
-  const paidAt = payment.paidAt ?? new Date();
-  await db.$transaction(async (tx) => {
-    await tx.taskFundingPayment.update({
-      where: { id: payment.id },
+  const candidatePaidAt = new Date();
+  const settledPayment = await db.$transaction(async (tx) => {
+    await lockTaskFundingPaymentInTransaction(payment.id, tx);
+    await tx.taskFundingPayment.updateMany({
+      where: {
+        deletedAt: null,
+        id: payment.id,
+        paidAt: null,
+        status: {
+          notIn: [
+            TaskFundingPaymentStatus.REFUNDED,
+            TaskFundingPaymentStatus.DISPUTED,
+          ],
+        },
+      },
       data: {
         donorEmail: customerEmail,
         donorName: customerName,
-        paidAt,
+        paidAt: candidatePaidAt,
         status: TaskFundingPaymentStatus.PAID,
         stripeChargeId: chargeId,
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId: paymentIntentId,
       },
     });
-    await tx.commerceOrder.update({
-      where: { id: payment.commerceOrderId },
-      data: {
-        buyerEmail: customerEmail,
-        buyerName: customerName,
-        lastError: null,
-        paidAt,
-        status: CommerceOrderStatus.PAID,
-        stripeCheckoutSessionId: session.id,
-        stripeCustomerId: getStripeObjectId(session.customer),
-        stripePaymentIntentId: paymentIntentId,
+    const current = await tx.taskFundingPayment.findUnique({
+      where: { id: payment.id },
+      select: {
+        commerceOrderId: true,
+        donorEmail: true,
+        donorName: true,
+        id: true,
+        paidAt: true,
+        status: true,
+        stripeCheckoutSessionId: true,
+        stripePaymentIntentId: true,
+        targetId: true,
       },
     });
-    await issuePaidContributionReceiptInTransaction(payment.id, tx, {
-      now: paidAt,
+    if (!current) {
+      throw new Error(`Missing task funding payment ${payment.id}.`);
+    }
+    if (
+      current.status === TaskFundingPaymentStatus.REFUNDED ||
+      current.status === TaskFundingPaymentStatus.DISPUTED
+    ) {
+      return current;
+    }
+    if (current.status !== TaskFundingPaymentStatus.PAID || !current.paidAt) {
+      throw new Error(`Task funding payment ${payment.id} did not settle.`);
+    }
+
+    await tx.commerceOrder.update({
+      where: { id: current.commerceOrderId },
+      data: {
+        buyerEmail: current.donorEmail,
+        buyerName: current.donorName,
+        lastError: null,
+        paidAt: current.paidAt,
+        status: CommerceOrderStatus.PAID,
+        stripeCheckoutSessionId: current.stripeCheckoutSessionId,
+        stripeCustomerId: getStripeObjectId(session.customer),
+        stripePaymentIntentId: current.stripePaymentIntentId,
+      },
     });
-    await refreshTaskFundingTargetStatus(payment.targetId, tx);
+    await issuePaidContributionReceiptInTransaction(current.id, tx, {
+      now: current.paidAt,
+    });
+    await refreshTaskFundingTargetStatus(current.targetId, tx);
+    return current;
   });
 
   log.info("Task funding payment recorded", {
@@ -597,7 +619,7 @@ export async function recordTaskFundingCheckoutPaid(
     stripeCheckoutSessionId: session.id,
   });
 
-  return payment;
+  return settledPayment;
 }
 
 export async function recordTaskFundingCheckoutFailed(
@@ -632,34 +654,55 @@ export async function recordTaskFundingCheckoutFailed(
   }
 
   const now = new Date();
-  await db.$transaction([
-    db.taskFundingPayment.update({
-      where: { id: payment.id },
+  return db.$transaction(async (tx) => {
+    const changed = await tx.taskFundingPayment.updateMany({
+      where: {
+        deletedAt: null,
+        id: payment.id,
+        paidAt: null,
+        status: {
+          notIn: [
+            TaskFundingPaymentStatus.PAID,
+            TaskFundingPaymentStatus.REFUNDED,
+            TaskFundingPaymentStatus.DISPUTED,
+          ],
+        },
+      },
       data: {
         canceledAt:
           status === TaskFundingPaymentStatus.CANCELED ? now : undefined,
         failedAt: status === TaskFundingPaymentStatus.FAILED ? now : undefined,
         status,
       },
-    }),
-    db.commerceOrder.update({
-      where: { id: payment.commerceOrderId },
-      data: {
-        canceledAt:
-          status === TaskFundingPaymentStatus.CANCELED ? now : undefined,
-        lastError:
-          status === TaskFundingPaymentStatus.FAILED
-            ? "Stripe Checkout payment failed."
-            : null,
-        status:
-          status === TaskFundingPaymentStatus.CANCELED
-            ? CommerceOrderStatus.CANCELED
-            : CommerceOrderStatus.FAILED,
+    });
+    if (changed.count === 1) {
+      await tx.commerceOrder.update({
+        where: { id: payment.commerceOrderId },
+        data: {
+          canceledAt:
+            status === TaskFundingPaymentStatus.CANCELED ? now : undefined,
+          lastError:
+            status === TaskFundingPaymentStatus.FAILED
+              ? "Stripe Checkout payment failed."
+              : null,
+          status:
+            status === TaskFundingPaymentStatus.CANCELED
+              ? CommerceOrderStatus.CANCELED
+              : CommerceOrderStatus.FAILED,
+        },
+      });
+    }
+    return tx.taskFundingPayment.findUnique({
+      where: { id: payment.id },
+      select: {
+        commerceOrderId: true,
+        id: true,
+        paidAt: true,
+        status: true,
+        targetId: true,
       },
-    }),
-  ]);
-
-  return payment;
+    });
+  });
 }
 
 export async function recordTaskFundingChargeRefunded(
@@ -687,6 +730,7 @@ export async function recordTaskFundingChargeRefunded(
   if (!payment) return null;
 
   await db.$transaction(async (tx) => {
+    await lockTaskFundingPaymentInTransaction(payment.id, tx);
     await tx.taskFundingPayment.update({
       where: { id: payment.id },
       data: {
@@ -730,6 +774,7 @@ export async function recordTaskFundingChargeDisputed(
   if (!payment) return null;
 
   await db.$transaction(async (tx) => {
+    await lockTaskFundingPaymentInTransaction(payment.id, tx);
     await tx.taskFundingPayment.update({
       where: { id: payment.id },
       data: {

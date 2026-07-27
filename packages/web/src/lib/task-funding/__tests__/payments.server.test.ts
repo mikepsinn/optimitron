@@ -4,13 +4,24 @@ import {
   TaskFundingTargetStatus,
 } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { recordTaskFundingCheckoutPaid } from "../payments.server";
+import {
+  recordTaskFundingChargeRefunded,
+  recordTaskFundingCheckoutPaid,
+} from "../payments.server";
 
 const mocks = vi.hoisted(() => ({
   issueReceipt: vi.fn(),
   resolveReceiptBinding: vi.fn(),
   retrievePaymentIntent: vi.fn(),
 }));
+
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
 
 vi.mock("@/lib/stripe", () => ({
   getStripeClient: () => ({
@@ -23,6 +34,7 @@ vi.mock("../contribution-receipts.server", () => ({
   issuePaidContributionReceiptInTransaction: mocks.issueReceipt,
   requireContributionReceiptBinding: vi.fn(),
   resolveContributionReceiptBinding: mocks.resolveReceiptBinding,
+  upsertTaskFundingTargetWithReceiptBindingInTransaction: vi.fn(),
 }));
 
 function buildFixture() {
@@ -53,6 +65,7 @@ function buildFixture() {
   };
 
   const tx = {
+    $queryRaw: vi.fn(async () => [{ id: payment.id }]),
     commerceOrder: {
       update: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
         Object.assign(order, data);
@@ -70,6 +83,20 @@ function buildFixture() {
         Object.assign(payment, data);
         return payment;
       }),
+      updateMany: vi.fn(
+        async ({ data }: { data: Record<string, unknown> }) => {
+          if (
+            payment.paidAt !== null ||
+            payment.status === TaskFundingPaymentStatus.REFUNDED ||
+            payment.status === TaskFundingPaymentStatus.DISPUTED
+          ) {
+            return { count: 0 };
+          }
+          Object.assign(payment, data);
+          return { count: 1 };
+        },
+      ),
+      findUnique: vi.fn(async () => ({ ...payment })),
     },
     taskFundingPledge: {
       aggregate: vi.fn(async () => ({
@@ -187,5 +214,133 @@ describe("recordTaskFundingCheckoutPaid", () => {
     expect(mocks.issueReceipt).toHaveBeenCalledWith("payment_1", fixture.tx, {
       now: originalPaidAt,
     });
+  });
+
+  it("does not let a stale concurrent checkout settlement overwrite the first paid facts", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      const fixture = buildFixture();
+      const stalePayment = {
+        commerceOrderId: fixture.payment.commerceOrderId,
+        id: fixture.payment.id,
+        paidAt: null,
+        status: TaskFundingPaymentStatus.PENDING,
+        targetId: fixture.payment.targetId,
+      };
+      fixture.db.taskFundingPayment.findFirst.mockResolvedValue(stalePayment);
+      mocks.retrievePaymentIntent.mockImplementation(
+        async (paymentIntentId: string) => ({
+          id: paymentIntentId,
+          latest_charge: `ch_${paymentIntentId}`,
+        }),
+      );
+      const firstPaidAt = new Date("2026-07-20T12:00:00.000Z");
+      vi.setSystemTime(firstPaidAt);
+      await recordTaskFundingCheckoutPaid(
+        {
+          ...fixture.session,
+          customer_details: {
+            email: "first@example.com",
+            name: "First Writer",
+          },
+          id: "cs_first",
+          payment_intent: "pi_first",
+        } as never,
+        fixture.db as never,
+      );
+
+      vi.setSystemTime(new Date("2026-07-20T13:00:00.000Z"));
+      await recordTaskFundingCheckoutPaid(
+        {
+          ...fixture.session,
+          customer_details: {
+            email: "second@example.com",
+            name: "Stale Writer",
+          },
+          id: "cs_second",
+          payment_intent: "pi_second",
+        } as never,
+        fixture.db as never,
+      );
+
+      expect(fixture.payment).toMatchObject({
+        donorEmail: "first@example.com",
+        donorName: "First Writer",
+        paidAt: firstPaidAt,
+        stripeChargeId: "ch_pi_first",
+        stripeCheckoutSessionId: "cs_first",
+        stripePaymentIntentId: "pi_first",
+      });
+      expect(fixture.tx.taskFundingPayment.updateMany).toHaveBeenCalledTimes(2);
+      expect(mocks.issueReceipt).toHaveBeenCalledTimes(2);
+      for (const call of mocks.issueReceipt.mock.calls) {
+        expect(call[2]).toEqual({ now: firstPaidAt });
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not let a paid replay overwrite a concurrent refund on the order", async () => {
+    const fixture = buildFixture();
+    const originalPaidAt = new Date("2026-07-20T12:00:00.000Z");
+    fixture.payment.status = TaskFundingPaymentStatus.PAID;
+    fixture.payment.paidAt = originalPaidAt;
+    fixture.payment.stripeChargeId = "ch_1";
+    fixture.payment.stripePaymentIntentId = "pi_1";
+    fixture.order.status = CommerceOrderStatus.PAID;
+    fixture.order.paidAt = originalPaidAt;
+
+    const replayRead = deferred();
+    const releaseReplayRead = deferred();
+    fixture.tx.taskFundingPayment.findUnique.mockImplementationOnce(
+      async () => {
+        const snapshot = { ...fixture.payment };
+        replayRead.resolve();
+        await releaseReplayRead.promise;
+        return snapshot;
+      },
+    );
+
+    let lockTail = Promise.resolve();
+    fixture.db.$transaction = async <T>(
+      callback: (client: typeof fixture.tx) => Promise<T>,
+    ) => {
+      let releaseLock: (() => void) | undefined;
+      const client = {
+        ...fixture.tx,
+        $queryRaw: vi.fn(async () => {
+          if (!releaseLock) {
+            const previous = lockTail;
+            lockTail = new Promise<void>((resolve) => {
+              releaseLock = resolve;
+            });
+            await previous;
+          }
+          return [{ id: fixture.payment.id }];
+        }),
+      };
+      try {
+        return await callback(client);
+      } finally {
+        releaseLock?.();
+      }
+    };
+
+    const replay = recordTaskFundingCheckoutPaid(
+      fixture.session as never,
+      fixture.db as never,
+    );
+    await replayRead.promise;
+    const refund = recordTaskFundingChargeRefunded(
+      { id: "ch_1", payment_intent: "pi_1" } as never,
+      fixture.db as never,
+    );
+    releaseReplayRead.resolve();
+    await Promise.all([replay, refund]);
+
+    expect(fixture.payment.status).toBe(TaskFundingPaymentStatus.REFUNDED);
+    expect(fixture.order.status).toBe(CommerceOrderStatus.REFUNDED);
+    expect(mocks.issueReceipt).toHaveBeenCalledTimes(1);
   });
 });

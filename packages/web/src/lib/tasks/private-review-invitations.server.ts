@@ -9,6 +9,7 @@ import {
 } from "@optimitron/db";
 import { formatShareEmailFromHeader } from "@/lib/email/from-address";
 import { proposeOutboundMessage } from "@/lib/email/outbound-message-approval.server";
+import { lockContentResources } from "@/lib/content-access.server";
 import { prisma } from "@/lib/prisma";
 import { readReviewRequest } from "@/lib/tasks/document-review-contracts";
 import { documentReviewBindingMatches } from "@/lib/tasks/document-review-binding.server";
@@ -22,6 +23,7 @@ import {
   getPrivateReviewSignInUrl,
 } from "@/lib/tasks/private-review-invitation-email.server";
 import {
+  getPrivateReviewBatchKey,
   PRIVATE_REVIEW_INVITATION_SCHEMA,
   PrivateReviewInvitationApprovalContextSchema,
   ProposePrivateReviewInvitationSchema,
@@ -182,20 +184,35 @@ export async function proposePrivateReviewInvitation(
       "Invitation revision must exactly match the task's document review request",
     );
   }
+  const batchKey = getPrivateReviewBatchKey({
+    authorityTaskId: reviewRequest.authorityTaskId,
+    revision: input.revision,
+  });
 
   const revision = await prisma.documentRevision.findFirst({
     where: {
       contentHash: input.revision.contentHash,
       deletedAt: null,
-      document: { deletedAt: null },
+      document: {
+        currentRevisionId: input.revision.documentRevisionId,
+        deletedAt: null,
+        version: input.revision.documentVersion,
+      },
       documentId: input.revision.documentId,
       id: input.revision.documentRevisionId,
       version: input.revision.documentVersion,
     },
-    select: { id: true },
+    select: {
+      document: { select: { currentRevisionId: true, version: true } },
+      id: true,
+    },
   });
-  if (!revision) {
-    throw new Error("Pinned document revision does not match its content hash");
+  if (
+    !revision ||
+    revision.document.currentRevisionId !== revision.id ||
+    revision.document.version !== input.revision.documentVersion
+  ) {
+    throw new Error("Pinned document revision is no longer current");
   }
 
   const key = invitationKey({
@@ -204,63 +221,28 @@ export async function proposePrivateReviewInvitation(
     revisionId: input.revision.documentRevisionId,
     taskId: input.taskId,
   });
-  const existing = await findExistingInvitation(key);
-  if (existing) {
-    return {
-      communicationId: existing.communication.id,
-      externalActionRequestId: existing.request?.id ?? null,
-      payloadHash: existing.request?.payloadHash ?? null,
-      status: "existing" as const,
-    };
-  }
-
-  if (input.kind === "REMINDER") {
-    const originalKey = invitationKey({
-      kind: "INVITATION",
+  // A fast lookup avoids changing idempotent replay into a suppression result,
+  // but only the post-lock lookup is authoritative enough to return.
+  const existingBeforeLock = await findExistingInvitation(key);
+  if (!existingBeforeLock) {
+    const suppressionReason = await evaluatePrivateReviewOutreachSuppression({
+      now,
+      recipientEmail,
       recipientPersonId: input.recipientPersonId,
-      revisionId: input.revision.documentRevisionId,
       taskId: input.taskId,
     });
-    const original = await findExistingInvitation(originalKey);
-    if (
-      !original?.communication.sentAt ||
-      original.communication.status !== TaskCommunicationStatus.SENT
-    ) {
-      throw new Error("A reminder requires a successfully sent invitation");
-    }
-    const reminderEligibleAt = new Date(
-      original.communication.sentAt.getTime() +
-        PRIVATE_REVIEW_REMINDER_DELAY_MS,
-    );
-    if (reminderEligibleAt > now) {
-      throw new Error(
-        `Review reminder is not allowed before ${reminderEligibleAt.toISOString()}`,
-      );
+    if (suppressionReason) {
+      return { reason: suppressionReason, status: "suppressed" as const };
     }
   }
-
-  const suppressionReason = await evaluatePrivateReviewOutreachSuppression({
-    now,
-    recipientEmail,
-    recipientPersonId: input.recipientPersonId,
-    taskId: input.taskId,
-  });
-  if (suppressionReason) {
-    return { reason: suppressionReason, status: "suppressed" as const };
-  }
-
-  const approvalContext = PrivateReviewInvitationApprovalContextSchema.parse({
-    batchKey: input.batchKey,
-    kind: input.kind,
-    recipientPersonId: input.recipientPersonId,
-    revision: input.revision,
-    schema: PRIVATE_REVIEW_INVITATION_SCHEMA,
-    taskId: input.taskId,
-  });
   const senderName = actor.person?.displayName?.trim() || null;
   return prisma.$transaction(async (tx) => {
-    // The task is the serialization point for its invitation/reminder keys.
-    // PostgreSQL releases this lock only after both records below commit.
+    // Lock documents before tasks everywhere these invitation batches are
+    // frozen. This serializes a generic document edit with the final current-
+    // revision check and keeps the lock order consistent with batch approval.
+    await lockContentResources(tx, [
+      { id: input.revision.documentId, type: "document" },
+    ]);
     await tx.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "Task" WHERE "id" = ${input.taskId} FOR UPDATE
     `;
@@ -346,18 +328,43 @@ export async function proposePrivateReviewInvitation(
       where: {
         contentHash: input.revision.contentHash,
         deletedAt: null,
-        document: { deletedAt: null },
+        document: {
+          currentRevisionId: input.revision.documentRevisionId,
+          deletedAt: null,
+          version: input.revision.documentVersion,
+        },
         documentId: input.revision.documentId,
         id: input.revision.documentRevisionId,
         version: input.revision.documentVersion,
       },
-      select: { id: true },
+      select: {
+        document: { select: { currentRevisionId: true, version: true } },
+        id: true,
+      },
     });
-    if (!lockedRevision) {
-      throw new Error(
-        "Pinned document revision does not match its content hash",
-      );
+    if (
+      !lockedRevision ||
+      lockedRevision.document.currentRevisionId !== lockedRevision.id ||
+      lockedRevision.document.version !== input.revision.documentVersion
+    ) {
+      throw new Error("Pinned document revision is no longer current");
     }
+    const lockedBatchKey = getPrivateReviewBatchKey({
+      authorityTaskId: lockedReviewRequest.authorityTaskId,
+      revision: input.revision,
+    });
+    if (lockedBatchKey !== batchKey) {
+      throw new Error("Review invitation batch changed while drafting");
+    }
+    const approvalContext = PrivateReviewInvitationApprovalContextSchema.parse({
+      authorityTaskId: lockedReviewRequest.authorityTaskId,
+      batchKey: lockedBatchKey,
+      kind: input.kind,
+      recipientPersonId: input.recipientPersonId,
+      revision: input.revision,
+      schema: PRIVATE_REVIEW_INVITATION_SCHEMA,
+      taskId: input.taskId,
+    });
 
     const lockedExisting = await findExistingInvitation(key, tx);
     if (lockedExisting) {
@@ -408,7 +415,7 @@ export async function proposePrivateReviewInvitation(
         emailScope: "task_notifications",
         html: email.html,
         metadataJson: {
-          batchKey: input.batchKey,
+          batchKey: lockedBatchKey,
           notificationKind: "private_document_review",
           reviewInvitation:
             approvalContext as unknown as Prisma.InputJsonObject,

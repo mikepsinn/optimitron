@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   documentReviewBindingMatches: vi.fn(),
   draftTaskNotification: vi.fn(),
   evaluatePrivateReviewOutreachSuppression: vi.fn(),
+  executeRaw: vi.fn(),
   externalActionFindUnique: vi.fn(),
   findExternalRecipientSuppression: vi.fn(),
   proposeOutboundMessage: vi.fn(),
@@ -21,6 +22,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: (() => {
     const tx = {
+      $executeRaw: mocks.executeRaw,
       $queryRaw: mocks.queryRaw,
       documentRevision: { findFirst: mocks.documentRevisionFindFirst },
       externalActionRequest: { findUnique: mocks.externalActionFindUnique },
@@ -70,7 +72,7 @@ vi.mock("@/lib/url", () => ({
 import { proposePrivateReviewInvitation } from "./private-review-invitations.server";
 
 const INPUT = {
-  batchKey: "batch_12345678",
+  batchKey: "caller_controlled_batch",
   kind: "INVITATION" as const,
   recipientPersonId: "person_reviewer",
   revision: {
@@ -81,6 +83,7 @@ const INPUT = {
   },
   taskId: "task_review",
 };
+const EXPECTED_BATCH_KEY = "review:task_authority:revision_1";
 
 function managerTask() {
   return {
@@ -125,7 +128,10 @@ describe("private review invitations", () => {
     });
     mocks.documentReviewBindingMatches.mockResolvedValue(true);
     mocks.taskFindFirst.mockResolvedValue(managerTask());
-    mocks.documentRevisionFindFirst.mockResolvedValue({ id: "revision_1" });
+    mocks.documentRevisionFindFirst.mockResolvedValue({
+      document: { currentRevisionId: "revision_1", version: 1 },
+      id: "revision_1",
+    });
     mocks.evaluatePrivateReviewOutreachSuppression.mockResolvedValue(null);
     mocks.taskCommunicationFindFirst.mockResolvedValue(null);
     mocks.commentFindFirst.mockResolvedValue(null);
@@ -154,8 +160,10 @@ describe("private review invitations", () => {
     expect(mocks.draftTaskNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         metadataJson: expect.objectContaining({
-          batchKey: "batch_12345678",
+          batchKey: EXPECTED_BATCH_KEY,
           reviewInvitation: expect.objectContaining({
+            authorityTaskId: "task_authority",
+            batchKey: EXPECTED_BATCH_KEY,
             revision: INPUT.revision,
             taskId: INPUT.taskId,
           }),
@@ -170,7 +178,8 @@ describe("private review invitations", () => {
     expect(mocks.proposeOutboundMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         approvalContext: expect.objectContaining({
-          batchKey: "batch_12345678",
+          authorityTaskId: "task_authority",
+          batchKey: EXPECTED_BATCH_KEY,
           revision: INPUT.revision,
           taskId: INPUT.taskId,
         }),
@@ -192,7 +201,7 @@ describe("private review invitations", () => {
 
   it("returns the deterministic existing proposal instead of drafting twice", async () => {
     mocks.taskFindFirst.mockReset();
-    mocks.taskFindFirst.mockResolvedValueOnce(managerTask());
+    mocks.taskFindFirst.mockResolvedValue(managerTask());
     mocks.taskCommunicationFindFirst.mockResolvedValue({
       id: "comm_existing",
       metadataJson: {},
@@ -246,11 +255,43 @@ describe("private review invitations", () => {
     expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
   });
 
+  it("rejects a proposal after a generic edit advances the canonical document", async () => {
+    mocks.documentRevisionFindFirst.mockResolvedValue({
+      document: { currentRevisionId: "revision_2", version: 2 },
+      id: "revision_1",
+    });
+
+    await expect(
+      proposePrivateReviewInvitation(INPUT, "user_manager"),
+    ).rejects.toThrow("Pinned document revision is no longer current");
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
+  it("rechecks the current revision under lock before returning a draft", async () => {
+    mocks.documentRevisionFindFirst
+      .mockResolvedValueOnce({
+        document: { currentRevisionId: "revision_1", version: 1 },
+        id: "revision_1",
+      })
+      .mockResolvedValueOnce({
+        document: { currentRevisionId: "revision_2", version: 2 },
+        id: "revision_1",
+      });
+
+    await expect(
+      proposePrivateReviewInvitation(INPUT, "user_manager"),
+    ).rejects.toThrow("Pinned document revision is no longer current");
+    expect(mocks.executeRaw).toHaveBeenCalledTimes(1);
+    expect(mocks.queryRaw).toHaveBeenCalledTimes(1);
+    expect(mocks.draftTaskNotification).not.toHaveBeenCalled();
+  });
+
   it("refuses the only reminder until seven days after the invitation was sent", async () => {
     const now = new Date("2026-07-27T12:00:00.000Z");
     mocks.taskFindFirst.mockReset();
-    mocks.taskFindFirst.mockResolvedValueOnce(managerTask());
+    mocks.taskFindFirst.mockResolvedValue(managerTask());
     mocks.taskCommunicationFindFirst
+      .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce({
         id: "comm_invitation",
@@ -285,12 +326,6 @@ describe("private review invitations", () => {
     mocks.taskFindFirst.mockResolvedValue(managerTask());
     mocks.taskCommunicationFindFirst
       .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce({
-        id: "comm_invitation",
-        metadataJson: {},
-        sentAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1_000),
-        status: TaskCommunicationStatus.SENT,
-      })
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce({
         id: "comm_invitation",

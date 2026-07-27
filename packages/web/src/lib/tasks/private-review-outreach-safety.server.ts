@@ -3,6 +3,7 @@ import {
   TaskClaimPolicy,
   TaskExecutionAttemptStatus,
   TaskStatus,
+  type Prisma,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { readReviewRequest } from "@/lib/tasks/document-review-contracts";
@@ -21,12 +22,18 @@ export type PrivateReviewOutreachSuppressionReason =
   | "hard_bounce"
   | "provider_suppressed";
 
+type PrivateReviewBindingDb = Pick<
+  Prisma.TransactionClient,
+  "documentRevision" | "task"
+>;
+
 /** Re-check the live private task and pinned revision immediately before send. */
 export async function privateReviewTaskMatchesApprovalContext(
   context: PrivateReviewInvitationApprovalContext,
+  db: PrivateReviewBindingDb = prisma,
 ) {
   const [task, revision] = await Promise.all([
-    prisma.task.findFirst({
+    db.task.findFirst({
       where: { deletedAt: null, id: context.taskId },
       select: {
         applicationPolicy: true,
@@ -43,7 +50,7 @@ export async function privateReviewTaskMatchesApprovalContext(
         taskKey: true,
       },
     }),
-    prisma.documentRevision.findFirst({
+    db.documentRevision.findFirst({
       where: {
         contentHash: context.revision.contentHash,
         deletedAt: null,
@@ -86,6 +93,7 @@ export async function privateReviewTaskMatchesApprovalContext(
  * before sending so a reply or completion that arrives after approval wins.
  */
 export async function evaluatePrivateReviewOutreachSuppression(input: {
+  communicationId?: string;
   now?: Date;
   recipientEmail: string;
   recipientPersonId: string;
@@ -122,7 +130,9 @@ export async function evaluatePrivateReviewOutreachSuppression(input: {
         recipientEmail: input.recipientEmail,
         recipientPersonId: input.recipientPersonId,
       }),
-      recipientWithinRateLimits(input.recipientEmail, now),
+      recipientWithinRateLimits(input.recipientEmail, now, {
+        excludeCommunicationId: input.communicationId,
+      }),
     ]);
 
   const reviewRequest = readReviewRequest(task?.contextJson);

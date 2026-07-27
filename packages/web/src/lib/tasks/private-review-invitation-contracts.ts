@@ -14,6 +14,7 @@ export const PrivateReviewRevisionBindingSchema = z
 
 export const PrivateReviewInvitationApprovalContextSchema = z
   .object({
+    authorityTaskId: z.string().trim().min(1).optional(),
     batchKey: z.string().trim().min(8).max(200),
     kind: z.enum(["INVITATION", "REMINDER"]),
     recipientPersonId: z.string().trim().min(1),
@@ -25,7 +26,8 @@ export const PrivateReviewInvitationApprovalContextSchema = z
 
 export const ProposePrivateReviewInvitationSchema = z
   .object({
-    batchKey: z.string().trim().min(8).max(200),
+    // Accepted for compatibility with existing clients; the server derives it.
+    batchKey: z.string().trim().min(8).max(200).optional(),
     kind: z.enum(["INVITATION", "REMINDER"]).default("INVITATION"),
     recipientPersonId: z.string().trim().min(1),
     revision: PrivateReviewRevisionBindingSchema,
@@ -39,6 +41,31 @@ export type PrivateReviewInvitationApprovalContext = z.infer<
 export type PrivateReviewRevisionBinding = z.infer<
   typeof PrivateReviewRevisionBindingSchema
 >;
+
+export interface PrivateReviewBatchIdentity {
+  authorityTaskId: string;
+  revision: PrivateReviewRevisionBinding;
+}
+
+/** Canonical display/storage key; security checks also compare the full pin. */
+export function getPrivateReviewBatchKey(identity: PrivateReviewBatchIdentity) {
+  return `review:${identity.authorityTaskId}:${identity.revision.documentRevisionId}`;
+}
+
+export function privateReviewBatchIdentityMatches(
+  context: PrivateReviewInvitationApprovalContext,
+  identity: PrivateReviewBatchIdentity,
+) {
+  return (
+    context.authorityTaskId === identity.authorityTaskId &&
+    context.revision.contentHash === identity.revision.contentHash &&
+    context.revision.documentId === identity.revision.documentId &&
+    context.revision.documentRevisionId ===
+      identity.revision.documentRevisionId &&
+    context.revision.documentVersion === identity.revision.documentVersion &&
+    context.batchKey === getPrivateReviewBatchKey(identity)
+  );
+}
 
 export function isPrivateReviewInvitationApprovalPayload(value: unknown) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {

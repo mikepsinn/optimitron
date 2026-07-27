@@ -4,6 +4,7 @@ import {
   TaskClaimPolicy,
   TaskExecutionAttemptStatus,
   TaskFundingPaymentStatus,
+  TaskFundingTargetStatus,
   TaskStatus,
   TaskVerificationMethod,
   TaskVerificationResult,
@@ -29,6 +30,7 @@ import {
   isTaskWithinClientAccessBoundary,
   type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
+import { lockTaskFundingPaymentInTransaction } from "./payment-lock.server";
 
 const IdSchema = z.string().trim().min(1).max(300);
 const ContentHashSchema = z.string().trim().min(1).max(200);
@@ -595,6 +597,125 @@ function sameContributionReceiptBinding(
 }
 
 /**
+ * Funding-target creation and binding changes share the same per-task lock as
+ * funding allocation. The advisory lock also covers the no-target-yet case,
+ * where a row lock cannot prevent two concurrent first writers.
+ */
+export async function lockContributionReceiptBindingInTransaction(
+  taskId: string,
+  tx: Prisma.TransactionClient,
+) {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${taskId}, 0))`;
+}
+
+async function assertTargetHasNoPaymentsBeforeFirstBinding(
+  targetId: string,
+  tx: Prisma.TransactionClient,
+) {
+  const payment = await tx.taskFundingPayment.findFirst({
+    where: { deletedAt: null, targetId },
+    select: { id: true },
+  });
+  if (payment) {
+    throw new Error(
+      "A funding target with existing payments cannot receive its first receipt binding",
+    );
+  }
+}
+
+/**
+ * Create (or restore) a funding target while freezing its receipt binding.
+ * Callers may have read task context before entering their transaction, so the
+ * target is re-read under the advisory lock before any metadata is written.
+ */
+export async function upsertTaskFundingTargetWithReceiptBindingInTransaction(
+  rawInput: {
+    binding: ContributionReceiptBindingV1;
+    createdBy: string;
+    currency: string;
+    targetAmountCents: bigint;
+    taskId: string;
+  },
+  tx: Prisma.TransactionClient,
+) {
+  const binding = ContributionReceiptBindingV1Schema.parse(rawInput.binding);
+  await lockContributionReceiptBindingInTransaction(rawInput.taskId, tx);
+
+  const current = await tx.taskFundingTarget.findUnique({
+    where: { taskId: rawInput.taskId },
+    select: {
+      id: true,
+      metadata: true,
+      targetAmountCents: true,
+    },
+  });
+  const currentMetadata = asRecord(current?.metadata) ?? {};
+  const existingBinding = readContributionReceiptBinding(currentMetadata);
+  if (
+    current &&
+    "contributionReceipt" in currentMetadata &&
+    !existingBinding
+  ) {
+    throw new Error(
+      "The existing funding round has an invalid frozen receipt binding",
+    );
+  }
+  if (existingBinding) {
+    if (!sameContributionReceiptBinding(existingBinding, binding)) {
+      throw new Error(
+        "The existing funding round is already bound to different adopted terms",
+      );
+    }
+  } else {
+    if (current) {
+      await assertTargetHasNoPaymentsBeforeFirstBinding(current.id, tx);
+    }
+    const task = await tx.task.findFirst({
+      where: { deletedAt: null, id: rawInput.taskId },
+      select: { contextJson: true },
+    });
+    if (!task) throw new Error(RECEIPT_NOT_FOUND_MESSAGE);
+    const authoritativeBinding = requireContributionReceiptBinding(
+      task.contextJson,
+    );
+    if (!sameContributionReceiptBinding(authoritativeBinding, binding)) {
+      throw new Error(
+        "The task's adopted receipt binding changed before funding started",
+      );
+    }
+  }
+
+  if (current) {
+    return tx.taskFundingTarget.update({
+      where: { id: current.id },
+      data: {
+        deletedAt: null,
+        metadata: jsonValue({
+          ...currentMetadata,
+          contributionReceipt: binding,
+          createdBy: currentMetadata.createdBy ?? rawInput.createdBy,
+        }),
+      },
+      select: { id: true, targetAmountCents: true },
+    });
+  }
+
+  return tx.taskFundingTarget.create({
+    data: {
+      currency: rawInput.currency,
+      metadata: jsonValue({
+        contributionReceipt: binding,
+        createdBy: rawInput.createdBy,
+      }),
+      status: TaskFundingTargetStatus.OPEN,
+      targetAmountCents: rawInput.targetAmountCents,
+      taskId: rawInput.taskId,
+    },
+    select: { id: true, targetAmountCents: true },
+  });
+}
+
+/**
  * Freeze the adopted document set that every later payment on this funding
  * round must copy into its receipt. Task context holds the pending binding
  * before a target exists; an existing target is immutable once bound.
@@ -617,6 +738,7 @@ export async function configureContributionReceiptBindingInTransaction(
     schema: "optimitron.contribution-receipt-binding.v1",
     termsDocumentRevisionId: rawInput.termsDocumentRevisionId,
   });
+  await lockContributionReceiptBindingInTransaction(rawInput.taskId, tx);
   const task = await tx.task.findFirst({
     where: { deletedAt: null, id: rawInput.taskId },
     select: {
@@ -662,12 +784,28 @@ export async function configureContributionReceiptBindingInTransaction(
   const existingTargetBinding = readContributionReceiptBinding(
     task.fundingTarget?.metadata,
   );
+  const existingTargetMetadata = asRecord(task.fundingTarget?.metadata) ?? {};
+  if (
+    task.fundingTarget &&
+    "contributionReceipt" in existingTargetMetadata &&
+    !existingTargetBinding
+  ) {
+    throw new Error(
+      "The existing funding round has an invalid frozen receipt binding",
+    );
+  }
   if (
     existingTargetBinding &&
     !sameContributionReceiptBinding(existingTargetBinding, binding)
   ) {
     throw new Error(
       "The existing funding round is already bound to different adopted terms",
+    );
+  }
+  if (task.fundingTarget && !existingTargetBinding) {
+    await assertTargetHasNoPaymentsBeforeFirstBinding(
+      task.fundingTarget.id,
+      tx,
     );
   }
 
@@ -685,13 +823,53 @@ export async function configureContributionReceiptBindingInTransaction(
       where: { id: task.fundingTarget.id },
       data: {
         metadata: jsonValue({
-          ...(asRecord(task.fundingTarget.metadata) ?? {}),
+          ...existingTargetMetadata,
           contributionReceipt: binding,
         }),
       },
     });
   }
   return binding;
+}
+
+function assertContributionReceiptMatchesPaymentLedger(
+  receipt: ContributionReceiptV1,
+  payment: {
+    amountCents: number;
+    commerceOrderId: string;
+    currency: string;
+    donorEmail: string | null;
+    donorName: string | null;
+    donorOrganizationId: string | null;
+    donorUserId: string | null;
+    paidAt: Date | null;
+    source: string;
+    stripeChargeId: string | null;
+    stripePaymentIntentId: string | null;
+    targetId: string;
+    taskId: string;
+  },
+) {
+  const matches =
+    payment.paidAt !== null &&
+    receipt.intendedTask.id === payment.taskId &&
+    receipt.contributor.donorEmail === payment.donorEmail &&
+    receipt.contributor.donorName === payment.donorName &&
+    receipt.contributor.donorOrganizationId === payment.donorOrganizationId &&
+    receipt.contributor.donorUserId === payment.donorUserId &&
+    receipt.payment.amountCents === payment.amountCents &&
+    receipt.payment.commerceOrderId === payment.commerceOrderId &&
+    receipt.payment.currency === payment.currency.toLowerCase() &&
+    receipt.payment.paidAt === payment.paidAt.toISOString() &&
+    receipt.payment.source === payment.source &&
+    receipt.payment.stripeChargeId === payment.stripeChargeId &&
+    receipt.payment.stripePaymentIntentId === payment.stripePaymentIntentId &&
+    receipt.payment.targetId === payment.targetId;
+  if (!matches) {
+    throw new Error(
+      "Contribution receipt payment facts do not match the funding ledger",
+    );
+  }
 }
 
 async function issueContributionReceiptInTransactionCore(
@@ -702,6 +880,7 @@ async function issueContributionReceiptInTransactionCore(
   now: Date,
 ) {
   const ids = getContributionReceiptIds(input.paymentId);
+  await lockTaskFundingPaymentInTransaction(input.paymentId, tx);
   const existing = await tx.taskExecutionArtifact.findUnique({
     where: { id: ids.artifactId },
     select: { contentHash: true, id: true, structuredResultJson: true },
@@ -723,6 +902,26 @@ async function issueContributionReceiptInTransactionCore(
     const receipt = ContributionReceiptV1Schema.parse(
       existing.structuredResultJson,
     );
+    const payment = await tx.taskFundingPayment.findFirst({
+      where: { deletedAt: null, id: input.paymentId },
+      select: {
+        amountCents: true,
+        commerceOrderId: true,
+        currency: true,
+        donorEmail: true,
+        donorName: true,
+        donorOrganizationId: true,
+        donorUserId: true,
+        paidAt: true,
+        source: true,
+        stripeChargeId: true,
+        stripePaymentIntentId: true,
+        targetId: true,
+        taskId: true,
+      },
+    });
+    if (!payment) throw new Error("Contribution receipt identity conflict");
+    assertContributionReceiptMatchesPaymentLedger(receipt, payment);
     if (receipt.intendedTask.id !== fundedTask.id) {
       throw new Error("Contribution receipt does not match funded task");
     }
@@ -779,7 +978,7 @@ async function issueContributionReceiptInTransactionCore(
         source: true,
         stripeChargeId: true,
         stripePaymentIntentId: true,
-        target: { select: { termsVersion: true } },
+        target: { select: { metadata: true, termsVersion: true } },
         targetId: true,
         task: {
           select: {
@@ -891,6 +1090,20 @@ async function issueContributionReceiptInTransactionCore(
     throw new Error("Paid task funding payment not found");
   }
   await assertCanManageReceiptTask(payment.task, issuerUserId, options);
+  const requestedBinding = ContributionReceiptBindingV1Schema.parse({
+    governingDocumentRevisionIds: input.governingDocumentRevisionIds,
+    issuerUserId,
+    schema: "optimitron.contribution-receipt-binding.v1",
+    termsDocumentRevisionId: input.termsDocumentRevisionId,
+  });
+  const frozenBinding = requireContributionReceiptBinding(
+    payment.target.metadata,
+  );
+  if (!sameContributionReceiptBinding(frozenBinding, requestedBinding)) {
+    throw new Error(
+      "Contribution receipt request does not match the frozen funding binding",
+    );
+  }
   const estimate = payment.task.currentImpactEstimateSet;
   if (!estimate) {
     throw new Error("Funded task has no current impact estimate to freeze");
