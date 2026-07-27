@@ -201,10 +201,15 @@ function proposalRef(task: TaskProposalCandidate) {
     return trimmedTaskKey;
   }
 
-  return fingerprint(task);
+  return taskGovernanceFingerprint(task);
 }
 
-function fingerprint(task: Pick<TaskProposalCandidate | ExistingTaskSummary, 'assigneeOrganizationId' | 'assigneePersonId' | 'roleTitle' | 'title'>) {
+export function taskGovernanceFingerprint(
+  task: Pick<
+    TaskProposalCandidate | ExistingTaskSummary,
+    'assigneeOrganizationId' | 'assigneePersonId' | 'roleTitle' | 'title'
+  >,
+) {
   return [
     normalizeText(task.title),
     task.assigneePersonId?.trim() ?? '',
@@ -465,7 +470,7 @@ export function reviewTaskProposalBundle(input: {
   const policy = DEFAULT_TASK_PROPOSAL_REVIEW_POLICY;
   const existingTasks = parsedInput.existingTasks ?? [];
   const existingTaskKeys = new Set(existingTasks.map((task) => task.taskKey?.trim()).filter(Boolean) as string[]);
-  const existingFingerprints = new Set(existingTasks.map((task) => fingerprint(task)));
+  const existingFingerprints = new Set(existingTasks.map((task) => taskGovernanceFingerprint(task)));
   const existingRefs = new Set<string>([
     ...existingTasks.map((task) => task.id),
     ...existingTasks.map((task) => task.taskKey?.trim()).filter(Boolean) as string[],
@@ -479,7 +484,7 @@ export function reviewTaskProposalBundle(input: {
     const ref = proposalRef(candidate);
     const issues: TaskProposalIssue[] = [];
     const taskKey = candidate.taskKey?.trim();
-    const currentFingerprint = fingerprint(candidate);
+    const currentFingerprint = taskGovernanceFingerprint(candidate);
     const sourceUrls = uniqueStrings(candidate.sourceUrls);
 
     if (bundleTooLarge) {

@@ -22,7 +22,8 @@ describe("1% Treaty trigger blueprints", () => {
       typeof hmtGate?.completionGate === "object" &&
       hmtGate.completionGate !== null &&
       "evidenceTemplate" in hmtGate.completionGate
-        ? (hmtGate.completionGate as { evidenceTemplate?: unknown }).evidenceTemplate
+        ? (hmtGate.completionGate as { evidenceTemplate?: unknown })
+            .evidenceTemplate
         : undefined;
 
     expect(phoneTask?.titleTemplate).toBe(
@@ -36,19 +37,17 @@ describe("1% Treaty trigger blueprints", () => {
     );
     expect(phoneTask?.descriptionTemplate).not.toContain("make two calls");
     expect(phoneTask?.descriptionTemplate).not.toContain("made two calls");
-    expect(evidenceTemplate).toContain(
-      "made the phone call",
-    );
-    expect(evidenceTemplate).not.toContain(
-      "made the phone calls",
-    );
+    expect(evidenceTemplate).toContain("made the phone call");
+    expect(evidenceTemplate).not.toContain("made the phone calls");
   });
 
   it("uses shared trigger params for HMT scale and propagation numbers", () => {
     const onboarding = ONE_PERCENT_TREATY_TRIGGER_BLUEPRINTS.find(
       (blueprint) => blueprint.triggerKey === "user-onboarding:treaty",
     );
-    const rootTask = onboarding?.spawnSpecs?.find((spec) => spec.kind === "root");
+    const rootTask = onboarding?.spawnSpecs?.find(
+      (spec) => spec.kind === "root",
+    );
     const phoneTask = onboarding?.spawnSpecs?.find(
       (spec) => spec.kind === "phoneScript",
     );
@@ -91,9 +90,7 @@ describe("tree-hygiene sweep blueprints", () => {
     // isScheduleDue swallows cron parse errors and returns false, so a typo'd
     // schedule would silently never fire. Assert the cron string actually
     // parses instead of merely being truthy.
-    expect(() =>
-      CronExpressionParser.parse(trigger!.schedule!),
-    ).not.toThrow();
+    expect(() => CronExpressionParser.parse(trigger!.schedule!)).not.toThrow();
     // No {{tokens}} — scheduled fires carry no event context to render from.
     expect(trigger?.idempotencyKeyTemplate).not.toContain("{{");
 
@@ -105,7 +102,11 @@ describe("tree-hygiene sweep blueprints", () => {
       true,
     );
     expect(validateParentResolver(spec!.parentResolver!)).toBe(true);
-    expect(spec?.parentResolver).toBe("fixed:optimitron:dev");
+    expect(spec?.parentResolver).toBe("fixed:optimitron:task-graph-steward");
+    expect(spec?.category).toBe("GOVERNANCE");
+    expect(spec?.descriptionTemplate).toContain("getTaskTreeAudit");
+    expect(spec?.descriptionTemplate).toContain("nextCursor");
+    expect(spec?.descriptionTemplate).toContain("complete is true");
 
     const metadata = spec?.metadata as {
       reactivateOnFire?: unknown;
