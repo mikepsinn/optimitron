@@ -2,14 +2,14 @@
 
 Governments spend [**$604 on the capacity for mass murder for every $1 they spend testing which medicines work**](https://manual.warondisease.org/knowledge/problem/military-vs-health-spending.html). Since 1913, they have printed **$170 trillion** and used it to kill **97 million** of you in wars nobody asked you if you wanted to have.
 
-The [**Political Dysfunction Tax**](https://political-dysfunction-tax.warondisease.org) — the total cost of this misallocation — is [**$101 trillion per year**](https://political-dysfunction-tax.warondisease.org). Roughly **$12,600 per person**. That's $50,500 per household of four. Per year. Every year. It's like being subscribed to the world's most expensive streaming service except all it shows is war and preventable disease.
+The [**Political Dysfunction Tax**](https://political-dysfunction-tax.warondisease.org) — the total cost of this misallocation — is [**$101 trillion per year**](https://political-dysfunction-tax.warondisease.org). Roughly **$12,600 per person**. That's $50,500 per household of four. Per year. Every year. It's like being subscribed to the world's most expensive streaming service except all it plays is war and preventable disease and you can't cancel.
 
 This comes from two ledgers:
 
 - **Waste** — $4T+ in administrative bloat, compliance friction, fossil fuel subsidies, and mass incarceration costs
 - **Buried multipliers** — $34T in health innovation delayed by regulatory bottlenecks, $57T in output lost to migration restrictions, $6T in lead poisoning damage, and trillions more in underfunded science
 
-The result: your dollar has lost 96% of its value since 1913. If wages had kept pace with productivity, the median family would [earn **$528,000**](https://manual.warondisease.org/knowledge/economics/wage-productivity-gap.html). The actual number is $77,500. On my planet we have a word for this. It translates roughly to "beige crime" — theft that is far too boring for anyone to investigate.
+The result: your dollar has lost 96% of its value since 1913. If wages had kept pace with productivity, the median family would [earn **$528,000**](https://manual.warondisease.org/knowledge/economics/wage-productivity-gap.html). The actual number is $77,500. On my planet we have a word for this. It translates roughly to "beige crime" — theft so boring nobody investigates it.
 
 | Scenario | Per Capita Income (Year 20) | Source |
 |----------|----------------------------:|--------|
@@ -17,11 +17,11 @@ The result: your dollar has lost 96% of its value since 1913. If wages had kept 
 | Treaty path (military + health reform) | $339,000 | [1% Treaty impact model](https://impact.warondisease.org) |
 | Optimal governance (full implementation) | $1,160,000 | [Political Dysfunction Tax](https://political-dysfunction-tax.warondisease.org) |
 
-**Your governments guess.** The US federal government allocates a [$6.75 trillion budget](https://www.cbo.gov/topics/budget) based on political negotiation, not evidence. Nobody knows the optimal amount to spend on education vs. healthcare vs. defense. On my planet, this would be like flying an aircraft by having the passengers vote on which buttons to press. Actually, that's unfair to the passengers. They'd probably Google it.
+**Your governments guess.** The US federal government allocates a [$6.75 trillion budget](https://www.cbo.gov/topics/budget) based on vibes and [lobbying](https://www.opensecrets.org/federal-lobbying). Nobody knows the optimal amount to spend on education vs. healthcare vs. defense. On my planet, this would be like flying an aircraft by having the passengers vote on which buttons to press. Actually, that's unfair to the passengers. They'd probably Google it.
 
-**Your individuals guess too.** 77% of Americans take dietary supplements, but almost none of them know whether those supplements actually work *for them*. You make health decisions based on anecdote, marketing, and vibes. On my planet, this would be considered a form of performance art.
+**Your individuals guess too.** 77% of Americans take dietary supplements, but almost none of them know whether those supplements actually work *for them*. You make health decisions based on anecdote, marketing, and whatever a guy at the gym said once. On my planet, this would be considered a form of performance art.
 
-**Your businesses guess.** Marketing budgets, pricing strategies, and feature investments are set by intuition and A/B tests that measure correlation, not causation. You've heard of causation. It's the thing you keep confusing with correlation.
+**Your businesses guess.** Marketing budgets, pricing strategies, and feature investments are set by intuition and A/B tests nobody on the team can interpret correctly. You've heard of causation. It's the thing you keep confusing with correlation.
 
 **The core issue is the same everywhere:** you have time series data and you need to know what causes what. The tools to answer that question should be universal, open, and free. On my planet, they are. Here, I had to build them myself. You're welcome.
 
@@ -29,7 +29,7 @@ The result: your dollar has lost 96% of its value since 1913. If wages had kept 
 
 ## The Solution
 
-On my planet, governance takes about four minutes a week. You lot seem to spend most of your time shouting about it on your little phones and then doing absolutely nothing. So I built you a five-layer system that turns raw data into optimal decisions. It's not complicated. It's just maths. You invented maths. I'm not sure why you stopped using it.
+On my planet, governance takes about four minutes a week. You lot spend most of your time screaming about it on your little phones and doing nothing. So I built you a five-layer system that turns raw data into optimal decisions. It's not complicated. It's just maths. You invented maths. I'm not sure why you stopped using it.
 
 | Layer | Name | What It Does |
 |:-----:|------|-------------|
@@ -43,7 +43,7 @@ On my planet, governance takes about four minutes a week. You lot seem to spend 
 
 ## How to Fix Earth
 
-On my planet, when you want people to coordinate, you design a mechanism where every participant is better off regardless of the outcome. You lot call this "too good to be true" and then go back to losing money on things that are obviously bad. Remarkable.
+On my planet, when you want people to coordinate, you make it profitable. You lot tried shame. It didn't work. Then you tried hashtags. That also didn't work. So I built you a mechanism where every participant is better off regardless of the outcome. You call this "too good to be true" and then go back to losing money on things that are obviously bad. Remarkable.
 
 Three steps:
 
@@ -68,10 +68,10 @@ A dominant assurance contract that makes voter recruitment individually rational
 
 These aren't standalone products. They're the evidence and mechanisms that make the treaty case:
 
-- **[Wishocracy](/agencies/dcongress/wishocracy)** — pairwise preference allocation. Eight billion ranked preferences, one optimal budget. Your species identified the bug preventing this (pluralistic ignorance) in 1965, published it, assigned it in universities, and then continued to be governed by it for sixty years.
-- **[Optimal Budget Generator](/agencies/domb)** — find the cheapest high-performer for each spending category. Singapore: $3K/person on healthcare, lives to 84. America: $12K, lives to 78. It's like watching someone pay four times more for a worse sandwich.
-- **[Optimal Policy Generator](/agencies/dcbo)** — grade every policy A–F by what actually happened. Portugal decriminalised drugs: overdose deaths dropped 80%. America declared war on drugs: overdose deaths rose 1,700%. The data existed. Nobody looked at it. The data did not have a lobbying firm.
-- **[Decentralized FDA](/agencies/dih/discoveries)** — Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. For every 1 person it protects from a bad drug, 3,070 die waiting for a good one. The dFDA replaces this with real-time Outcome Labels and Treatment Rankings — 44x cheaper, 12.3x more capacity, zero queue.
+- **[Wishocracy](/agencies/dcongress/wishocracy)** — pairwise preference allocation. Eight billion ranked preferences, one optimal budget. Your species identified the bug preventing this (pluralistic ignorance) in 1965, published it, assigned it in universities, gave each other awards for discovering it, and then continued to be governed by it for sixty years.
+- **[Optimal Budget Generator](/agencies/domb)** — find the cheapest high-performer for each spending category. Singapore: $3K/person on healthcare, lives to 84. America: $12K, lives to 78. It's like paying four times more for a worse sandwich and then blaming the bread.
+- **[Optimal Policy Generator](/agencies/dcbo)** — grade every policy A–F by what actually happened. Portugal decriminalised drugs: overdose deaths dropped 80%. America declared war on drugs: overdose deaths rose 1,700%. The data existed. Nobody looked at it. Data doesn't have a lobbying firm.
+- **[Decentralized FDA](/agencies/dih/discoveries)** — Your FDA makes treatments wait 8.2 years AFTER they've been proven safe. Just sitting there. Being safe. Filling out paperwork. For every 1 person it protects from a bad drug, 3,070 die waiting for a good one. The dFDA replaces this with real-time Outcome Labels and Treatment Rankings — 44x cheaper, 12.3x more capacity, zero queue.
 - **[Incentive Alignment Bonds](/iab)** — fund the treaty campaign once demand is proven (see Phase 2 below). Cost: $1B. Treaty revenue: $27B/year. Indefinitely.
 
 [Read the paper](https://iab.warondisease.org) | [See the contract architecture](#economic-instruments)
@@ -80,7 +80,7 @@ These aren't standalone products. They're the evidence and mechanisms that make 
 
 ## What You Can Do Today
 
-Right now. With this code. Not in some theoretical future where humans have learned to cooperate — *today*.
+Right now. With this code. Not in some theoretical future where humans have learned to cooperate — which, based on current trends, is never — but *today*.
 
 | What | How | Where |
 |------|-----|-------|
@@ -88,7 +88,7 @@ Right now. With this code. Not in some theoretical future where humans have lear
 | Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](packages/web/) |
 | Join as an organization | Join, embed, and recruit your community | [`/join`](packages/web/) |
 | Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](packages/web/) |
-| Remind a leader | 193 heads of state have a constitutional duty to promote the general welfare — remind them it's overdue | [`/tasks/1-pct-treaty`](packages/web/) |
+| Remind a leader | 193 heads of state have a constitutional duty to promote the general welfare — remind them they're late | [`/tasks/1-pct-treaty`](packages/web/) |
 | Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](packages/web/) |
 | Score your politicians | Alignment reports vs your stated preferences | [`/agencies/dfec/alignment`](packages/web/) |
 | Grade governments by outcomes | Every nation ranked by health, income, and freedom | [`/governments`](packages/web/) |
@@ -153,7 +153,7 @@ primary user-facing product. Here's what's live:
 
 ### Optimized Governance Agencies (`/agencies`)
 
-Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code. Just code.
+Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-four-thousand-page tax code that nobody has read including the people who wrote it. Just code.
 
 | Page | Route | What It Does |
 |------|-------|-------------|
@@ -166,7 +166,7 @@ Ten agencies running a civilisation. No bureaucracy, no corruption, no seventy-f
 | dGAO - Transparency & Audit | `/agencies/dgao` | IPFS snapshots, Hypercerts, smart contract verification |
 | dIH - Health Discoveries | `/agencies/dih/discoveries` | Population-level health insights from tracked data |
 | dTreasury | `/agencies/dtreasury` | Transaction tax, UBI, Wishocratic budget allocation |
-| dTreasury - dFED | `/agencies/dtreasury/dfed` | Monetary policy: transparent algorithm vs 12 guessers |
+| dTreasury - dFED | `/agencies/dtreasury/dfed` | Monetary policy: transparent algorithm vs 12 people in a room with a feeling |
 | dTreasury - dIRS | `/agencies/dtreasury/dirs` | 0.5% transaction tax replacing 74,000-page tax code |
 | dTreasury - dSSA | `/agencies/dtreasury/dssa` | Universal Basic Income replacing 80+ welfare programs |
 | dDoD - Defense | `/agencies/ddod` | Military spending analysis and 1% Treaty case |
@@ -242,7 +242,7 @@ Auth: Google OAuth, magic-link email, proof-of-personhood. Referral tracking bui
 
 ## How It Works
 
-It's three steps. On my planet, toddlers learn this before they learn to walk. But I'll go slowly.
+It's three steps. On my planet, toddlers learn this before they learn to walk. I'll go slowly. I've learned to adjust my expectations.
 
 ```
  ┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐
@@ -268,7 +268,7 @@ It's three steps. On my planet, toddlers learn this before they learn to walk. B
 
 ### 🔒 Digital Twin Safe
 
-You have 37.2 trillion cells and you let a doctor look at you for eleven minutes once a year. That's like monitoring a nuclear reactor by popping in on Tuesdays. The Digital Twin Safe lets you actually track what's happening in your own body — locally, on your own device, where no corporation can sell your depression scores to advertisers.
+You have 37.2 trillion cells and you let a doctor glance at you for eleven minutes once a year. That's like monitoring a nuclear reactor by popping in on Tuesdays to see if anything's glowing. The Digital Twin Safe lets you actually track what's happening in your own body — locally, on your own device, where no corporation can sell your depression scores to an advertiser who will use them to sell you a candle.
 
 - **9 local-first health importers** in `@optimitron/data` parse Apple Health, Fitbit, Oura, MyFitnessPal, Withings, Google Fit, Cronometer, Strava, and CSV exports into one normalized record shape.
 - **Conversational tracking UI** in `@optimitron/chat-ui` includes cards and text-to-measurement parsing for symptom, treatment, mood, food, and insight flows.
@@ -295,7 +295,7 @@ console.log(result.evidenceGrade);  // "B"
 
 ### 🏛️ Government OS
 
-Your governments currently make decisions the way a blindfolded person throws darts — occasionally they hit something useful and then take credit for it. Optimitron is alignment software for these misaligned superintelligences. Deploy it for any jurisdiction as a reproducible analysis and accountability stack. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
+Your governments currently make decisions the way you'd expect if nobody involved had read the data. Which they haven't. Optimitron is a reproducible analysis and accountability stack that replaces the guessing with math. Deploy it for any jurisdiction. Think Shopify, but instead of selling candles, you're trying not to waste $101 trillion a year.
 
 - **Preference collection**: citizens allocate trade-offs through RAPPA pairwise surveys at `/wishocracy` across 15 budget categories — from healthcare and education to active policy questions like foreign military operations, corporate welfare, and AI surveillance — and the system turns those into stable priority weights.
 - **Budget optimization**: `@optimitron/obg` generates reallocation targets, minimum-effective spending floors, overspend diagnostics, and constrained budget reports. The interactive `/budget` page lets anyone explore current vs. optimal spending.
@@ -312,7 +312,7 @@ The database is multi-tenant: every jurisdiction is a tenant with its own priori
 
 ## Economic Mechanisms
 
-Three separate mechanisms. On my planet, we would combine them. But your species has a talent for confusing things that are next to each other, so I kept them apart. Details in the [Incentive Alignment Bonds paper](https://iab.warondisease.org).
+Three separate mechanisms. On my planet, we'd combine them. But your species has a talent for confusing things that are next to each other, so I kept them apart. You're welcome. Details in the [Incentive Alignment Bonds paper](https://iab.warondisease.org).
 
 ### Phase 1: Earth Optimization Prize — `/prize`
 
@@ -324,15 +324,15 @@ After the Prize proves demand, IABs raise ~$1B to fund the treaty campaign. Trea
 
 ### Phase 3: Monetary Reform — `/money`
 
-Independent from Prize and IABs. The endgame: replace 80,000 IRS employees interpreting a 74,000-page tax code with a 0.5% transaction tax. Replace 27+ overlapping welfare bureaucracies with UBI. Replace politicians deciding budgets via influence markets with 5-minute pairwise comparisons that produce stable budget weights automatically.
+Independent from Prize and IABs. The endgame: replace 80,000 IRS employees interpreting a 74,000-page tax code with a 0.5% transaction tax. Replace 27+ overlapping welfare bureaucracies with UBI. Replace politicians deciding budgets based on who bought them dinner with 5-minute pairwise comparisons that produce stable budget weights automatically.
 
-On my planet, this is called "basic infrastructure." On yours, it would be the largest quality-of-life improvement in the history of your species. The [economic projections](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html) show what happens when you stop lighting money on fire.
+On my planet, this is called "basic infrastructure." On yours, it would be the largest quality-of-life improvement in the history of your species. The [economic projections](https://manual.warondisease.org/knowledge/economics/gdp-trajectories.html) show what happens when you stop paying people to set money on fire and then investigating why you're broke.
 
 ---
 
 ## Architecture
 
-The architecture is clean, modular, and dependency-free at the core. It took me about forty-five minutes. On my planet, this would be considered slow.
+The architecture is clean, modular, and dependency-free at the core. It took me about forty-five minutes. I was distracted. Your internet is full of cats.
 
 > Full details in **[docs/PRD.md](./docs/PRD.md)**
 
@@ -376,7 +376,7 @@ The architecture is clean, modular, and dependency-free at the core. It took me 
 
 ## Contributing
 
-Oh, you want to help. How refreshingly unusual for your species.
+Oh, you want to help. That's new. Usually your species just watches.
 
 ```bash
 # Install
@@ -406,7 +406,7 @@ pnpm build
 
 ## Papers
 
-Every algorithm is defined in a published paper with exact formulas, worked examples, and parameter justifications. Because on my planet we don't ship code and then retroactively invent a justification for it. We call that "science." You also call it that, but you seem to mean something slightly different.
+Every algorithm is defined in a published paper with exact formulas, worked examples, and parameter justifications. On my planet we don't ship code and then retroactively invent a justification for it. You call that "science." We call it "fraud." There may be a translation issue.
 
 ### Core Algorithm Papers
 
@@ -435,14 +435,14 @@ Every algorithm is defined in a published paper with exact formulas, worked exam
 
 ---
 
-*Singapore spends a quarter of what America spends on healthcare and their people live six years longer. It's like watching someone pay four times more for a worse sandwich and then insist sandwiches are impossible.*
+*Singapore spends a quarter of what America spends on healthcare and their people live six years longer. America has not asked Singapore how.*
 
-*Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just... sitting there. Being safe. While 102 million people died waiting.*
+*Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just sitting there. Being safe. Filling out forms about being safe. 102 million people died waiting. The forms are doing fine.*
 
-*You could fix all of this. The maths exists. The data exists. The code exists. You're looking at it. The only thing missing is the part where you stop arguing about it and actually do something.*
+*You could fix all of this. The maths exists. The data exists. The code exists. You're looking at it. The only thing missing is the part where you stop arguing about it and do something. I'd say "I believe in you" but I've read your history.*
 
 *— Wishonia, World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation*
-*4,237 years of governance experience. Mildly disappointed in all of you.*
+*4,237 years of governance experience. Increasingly concerned.*
 
 ---
 
