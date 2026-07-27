@@ -1,5 +1,11 @@
 import { taskGovernanceFingerprint } from "@optimitron/agent";
 import {
+  TaskCategory,
+  TaskClaimPolicy,
+  TaskExecutionMode,
+  TaskStatus,
+} from "@optimitron/db/enums";
+import {
   auditExecutionGraph,
   getRootedTaskIds,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
@@ -11,13 +17,13 @@ export interface TaskTreeStewardTask {
   activeCandidateMatchCount: number;
   assigneeOrganizationId: string | null;
   assigneePersonId: string | null;
-  category: string;
-  claimPolicy: string;
+  category: TaskCategory;
+  claimPolicy: TaskClaimPolicy;
   contextJson?: unknown;
   description: string;
   estimatePublicationEligible?: boolean;
   estimatedEffortHours: number | null;
-  executionMode: string;
+  executionMode: TaskExecutionMode;
   hasMarginalEstimate: boolean;
   hasSourceUrl: boolean;
   id: string;
@@ -30,7 +36,7 @@ export interface TaskTreeStewardTask {
   roleTitle: string | null;
   skillTags?: string[];
   sourceArtifactCount: number;
-  status: string;
+  status: TaskStatus;
   taskKey: string | null;
   title: string;
 }
@@ -98,7 +104,7 @@ function hasAcceptanceCriteria(task: TaskTreeStewardTask) {
 
 function isAgentTask(task: TaskTreeStewardTask) {
   const executorType = asRecord(task.contextJson).executor_type;
-  return task.executionMode === "AGENT_ONLY" || executorType === "AI Agent";
+  return task.executionMode === TaskExecutionMode.AGENT_ONLY || executorType === "AI Agent";
 }
 
 function hasRoutingTags(task: TaskTreeStewardTask) {
@@ -182,7 +188,7 @@ export function auditTaskTree(input: {
       parentTaskId: task.parentTaskId,
       queueEligible: false,
       requiresMarginalEstimate:
-        task.status === "ACTIVE" && task.activeChildTaskCount === 0,
+        task.status === TaskStatus.ACTIVE && task.activeChildTaskCount === 0,
     })),
   })) {
     addFinding(findings, {
@@ -197,7 +203,7 @@ export function auditTaskTree(input: {
 
   const duplicateGroups = new Map<string, TaskTreeStewardTask[]>();
   for (const task of input.tasks) {
-    if (task.status === "VERIFIED") continue;
+    if (task.status === TaskStatus.VERIFIED) continue;
     const fingerprint = taskGovernanceFingerprint(task);
     const group = duplicateGroups.get(fingerprint) ?? [];
     group.push(task);
@@ -253,7 +259,7 @@ export function auditTaskTree(input: {
       });
     }
 
-    if (task.status !== "ACTIVE" || task.activeChildTaskCount > 0) continue;
+    if (task.status !== TaskStatus.ACTIVE || task.activeChildTaskCount > 0) continue;
     activeLeafTasks += 1;
     const agentTask = isAgentTask(task);
     if (agentTask) agentExecutableLeaves += 1;
@@ -307,7 +313,7 @@ export function auditTaskTree(input: {
       });
     }
     if (
-      task.claimPolicy === "ASSIGNED_ONLY" &&
+      task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY &&
       !task.assigneePersonId &&
       !task.assigneeOrganizationId
     ) {
@@ -364,7 +370,7 @@ export function auditTaskTree(input: {
       });
     }
     if (
-      task.category === "ENGINEERING" &&
+      task.category === TaskCategory.ENGINEERING &&
       !task.assigneePersonId &&
       task.activeCandidateMatchCount === 0
     ) {
@@ -412,7 +418,7 @@ export function auditTaskTree(input: {
     rootTaskId,
     summary: {
       activeLeafTasks,
-      activeTasks: input.tasks.filter((task) => task.status === "ACTIVE")
+      activeTasks: input.tasks.filter((task) => task.status === TaskStatus.ACTIVE)
         .length,
       agentExecutableLeaves,
       duplicateGroups: duplicateGroupCount,
