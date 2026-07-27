@@ -317,6 +317,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
   respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  inspectToolAccess: [],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
   searchRepo: [McpScope.GITHUB],
   getFileContent: [McpScope.GITHUB],
@@ -382,6 +383,72 @@ function hasScope(
   if (!required) return false;
   if (required.length === 0) return true;
   return required.some((s) => grantedScopes.includes(s));
+}
+
+type ToolAccessReasonCode =
+  | "ADMIN_USER_REQUIRED"
+  | "ARGUMENT_DEPENDENT_ACCESS"
+  | "AVAILABLE"
+  | "MISSING_REQUIRED_SCOPE"
+  | "TOOL_DISABLED"
+  | "TOOL_NOT_FOUND";
+
+function inspectToolAccess(
+  toolName: string,
+  grantedScopes: McpScope[] | undefined,
+  isAdmin: boolean,
+): {
+  accessible: boolean;
+  adminOnly: boolean;
+  enabled: boolean;
+  missingScopes: string[];
+  name: string;
+  reasonCodes: ToolAccessReasonCode[];
+  requiredScopes: string[];
+} {
+  const definition = TASK_TOOL_DEFINITIONS.find(
+    (tool) => tool.name === toolName,
+  );
+  if (!definition) {
+    return {
+      accessible: false,
+      adminOnly: false,
+      enabled: false,
+      missingScopes: [],
+      name: toolName,
+      reasonCodes: ["TOOL_NOT_FOUND"],
+      requiredScopes: [],
+    };
+  }
+
+  const requiredScopes = TOOL_SCOPES[toolName] ?? [];
+  const scopeGranted = hasScope(grantedScopes, toolName);
+  const missingScopes = scopeGranted ? [] : requiredScopes;
+  const enabled = !DISABLED_TOOLS.has(toolName);
+  const adminOnly = ADMIN_ONLY_TOOLS.has(toolName);
+  const accessible = enabled && scopeGranted && (!adminOnly || isAdmin);
+  const reasonCodes: ToolAccessReasonCode[] = [];
+  if (!enabled) reasonCodes.push("TOOL_DISABLED");
+  if (!scopeGranted) {
+    reasonCodes.push("MISSING_REQUIRED_SCOPE");
+  }
+  if (adminOnly && !isAdmin) reasonCodes.push("ADMIN_USER_REQUIRED");
+  if (accessible) {
+    reasonCodes.push("AVAILABLE");
+    if (requiredScopes.includes(McpScope.TASKS_ORGANIZATION)) {
+      reasonCodes.push("ARGUMENT_DEPENDENT_ACCESS");
+    }
+  }
+
+  return {
+    accessible,
+    adminOnly,
+    enabled,
+    missingScopes: missingScopes.map(scopeToWire),
+    name: toolName,
+    reasonCodes,
+    requiredScopes: requiredScopes.map(scopeToWire),
+  };
 }
 
 function hasAdminTaskWriteAccess(
@@ -6064,6 +6131,24 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "inspectToolAccess",
+    description:
+      "Explain which MCP tools this connection can use and why. Optionally filter by tool name. Returns effective scopes, server identity, and stable access reason codes without exposing token data.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        toolNames: {
+          type: "array",
+          description:
+            "Optional tool names to inspect. Omit to inspect the complete compact catalog.",
+          items: { type: "string" },
+          maxItems: 200,
+          uniqueItems: true,
+        },
+      },
+    },
+  },
+  {
     name: "updateMyProfile",
     description:
       'Update the authenticated user\'s profile. Person is canonical for the public-facing fields (displayName, handle, bio, headline, coverImage, website, isPublic); this tool writes Person directly. Only fields you supply are changed. Pass `handle: ""` (or null) to clear the handle. Returns the fresh profile.',
@@ -11658,6 +11743,54 @@ export function createMcpServer(
               setupGaps,
               userId,
               ...profile,
+            });
+          }
+
+          case "inspectToolAccess": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool explains access for the authenticated connection.",
+              );
+            const requestedNames = Array.isArray(a.toolNames)
+              ? a.toolNames.filter(
+                  (value): value is string => typeof value === "string",
+                )
+              : null;
+            const toolNames =
+              requestedNames ??
+              TASK_TOOL_DEFINITIONS.map((definition) => definition.name);
+            const catalogRevision = createHash("sha256")
+              .update(
+                JSON.stringify(
+                  TASK_TOOL_DEFINITIONS.map((definition) => ({
+                    adminOnly: ADMIN_ONLY_TOOLS.has(definition.name),
+                    enabled: !DISABLED_TOOLS.has(definition.name),
+                    definition,
+                    scopes: TOOL_SCOPES[definition.name] ?? null,
+                  })),
+                ),
+              )
+              .digest("hex")
+              .slice(0, 16);
+            const baseUrl = getMcpBaseUrl();
+            return ok({
+              principal: {
+                grantedOrganizationIds: organizationIds,
+                grantedScopes: (scopes ?? []).map(scopeToWire),
+                isAdmin,
+                userId,
+              },
+              server: {
+                canonicalUrl: `${baseUrl.replace(/\/$/, "")}/api/mcp`,
+                catalogRevision,
+                environment:
+                  process.env.VERCEL_ENV ??
+                  (baseUrl.includes("localhost") ? "development" : "unknown"),
+              },
+              tools: toolNames.map((toolName) =>
+                inspectToolAccess(toolName, scopes, isAdmin),
+              ),
             });
           }
 

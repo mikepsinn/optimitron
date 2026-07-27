@@ -6037,6 +6037,101 @@ describe("MCP server tool dispatch", () => {
       expect(body.details).toMatchObject({ tool: "getMe" });
     });
 
+    it("inspectToolAccess explains scope, admin, unknown, and argument-dependent access", async () => {
+      const client = await setup("user-1", [
+        McpScope.TASKS_ADMIN,
+        McpScope.TASKS_ORGANIZATION,
+      ]);
+
+      const result = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {
+          toolNames: ["createPerson", "getMyQueue", "doesNotExist"],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body.principal).toMatchObject({
+        grantedScopes: ["tasks:admin", "tasks:organization"],
+        isAdmin: false,
+        userId: "user-1",
+      });
+      expect(body.server).toMatchObject({
+        canonicalUrl: "http://localhost:3001/api/mcp",
+        environment: "development",
+      });
+      expect(body.server).toHaveProperty("catalogRevision");
+      expect(body.tools).toEqual([
+        expect.objectContaining({
+          accessible: false,
+          missingScopes: [],
+          name: "createPerson",
+          reasonCodes: ["ADMIN_USER_REQUIRED"],
+          requiredScopes: ["tasks:admin"],
+        }),
+        expect.objectContaining({
+          accessible: true,
+          name: "getMyQueue",
+          reasonCodes: ["AVAILABLE", "ARGUMENT_DEPENDENT_ACCESS"],
+        }),
+        expect.objectContaining({
+          accessible: false,
+          name: "doesNotExist",
+          reasonCodes: ["TOOL_NOT_FOUND"],
+        }),
+      ]);
+    });
+
+    it("inspectToolAccess reports missing scopes and allows an authorized admin", async () => {
+      const personalClient = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const denied = parseToolBody(
+        await personalClient.callTool({
+          name: "inspectToolAccess",
+          arguments: { toolNames: ["createPerson"] },
+        }),
+      );
+      expect(denied.tools).toEqual([
+        expect.objectContaining({
+          accessible: false,
+          missingScopes: ["tasks:admin"],
+          reasonCodes: ["MISSING_REQUIRED_SCOPE", "ADMIN_USER_REQUIRED"],
+        }),
+      ]);
+
+      const adminClient = await setup("admin-1", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const allowed = parseToolBody(
+        await adminClient.callTool({
+          name: "inspectToolAccess",
+          arguments: { toolNames: ["createPerson"] },
+        }),
+      );
+      expect(allowed.tools).toEqual([
+        expect.objectContaining({
+          accessible: true,
+          missingScopes: [],
+          reasonCodes: ["AVAILABLE"],
+        }),
+      ]);
+    });
+
+    it("inspectToolAccess requires an authenticated connection", async () => {
+      const client = await setup(undefined, ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {},
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toMatchObject({
+        errorCode: "AUTHENTICATION_REQUIRED",
+        details: { tool: "inspectToolAccess" },
+      });
+    });
+
     it("updateMyProfile forwards only the supplied fields and returns the fresh profile", async () => {
       mocks.updateUserProfile.mockResolvedValue(profile);
       const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
