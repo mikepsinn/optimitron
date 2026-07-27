@@ -26,7 +26,7 @@ YOUR LINK WORKED. ROUND 1 OF [32](https://manual.WarOnDisease.org/knowledge/stra
 
 The math: [32](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) doubling rounds × [2](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) referrals each = [4 billion](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans, every adult on Earth.
 
-The chain breaks when voters stop reaching [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) humans each. Your job: keep going, and make sure Sample Voter keeps going too.
+The chain only works when voters keep telling friends. Celebrate Sample Voter, then optimize Earth — save lives, prevent suffering, and send this to [two](https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html) more humans you love.
 
 [OPEN DASHBOARD](https://warondisease.org/dashboard)
 

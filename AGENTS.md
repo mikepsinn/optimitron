@@ -105,6 +105,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 
 - Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
 - Treat the human owner as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
+- Internal development text—PRs, CI, logs, tests, and developer tooling—does not require copy approval.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.
@@ -116,6 +117,10 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Before writing campaign copy, name the audience, desired action, and legal/quantitative anchor. Preserve the anchor when it creates trust or legitimacy; compress around it instead of replacing it.
 - On vote, survey, referral, and embed surfaces, choose words that increase the target action. Move precision that slows response into citations, expanders, and case pages.
 - **No startup-bro copy.** No infrastructure metaphors (stack, rails, off-ramp, primitive, substrate), empty mechanism vocabulary (incentive layer, the protocol that, fundamentally), or corporate openers (We're building, Let's take a moment). Bad: *"The treaty is the off-ramp. The Court is the road that produces the off-ramp."* If a sentence could appear unchanged in a Stripe keynote, rewrite.
+- **No MLM copy.** Ban recruit/downline/power-recruiter/keep-going/your-job-is/build-your-team hierarchy language on public surfaces. Prefer outcome verbs: tell friends, share, vote, optimize Earth, save lives, prevent suffering. Humanity Manager / Office Space comedy can stay; pyramid-scheme enrollment tone cannot.
+- **Ban “movement”** as campaign identity language (“build a movement”, “movement builder”, “this is how a vote becomes a movement”). Political-science citations of Chenoweth in long-form docs can keep the word.
+- **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
+- **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.

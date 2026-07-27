@@ -327,12 +327,14 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertAgentExecutor: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   setAgentExecutorStatus: [McpScope.AGENT_RUN, McpScope.TASKS_ADMIN],
   getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  getTaskTreeAudit: [McpScope.TASKS_ADMIN],
   [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
   respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
+  inspectToolAccess: [],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
   searchRepo: [McpScope.GITHUB],
   getFileContent: [McpScope.GITHUB],
@@ -373,6 +375,7 @@ const ADMIN_ONLY_TOOLS = new Set([
   "listAgentExecutors",
   "upsertAgentExecutor",
   "setAgentExecutorStatus",
+  "getTaskTreeAudit",
   ...TASK_TEMPLATE_ADMIN_TOOL_NAMES,
   ...TASK_TRIGGER_ADMIN_TOOL_NAMES,
   "hideContent",
@@ -388,6 +391,8 @@ const DISABLED_TOOLS = new Set([
   "mergeDuplicatePeople",
 ]);
 
+const TOOL_ACCESS_INSPECTION_MAX_NAMES = 200;
+
 function hasScope(
   grantedScopes: McpScope[] | undefined,
   toolName: string,
@@ -400,6 +405,76 @@ function hasScope(
   if (!required) return false;
   if (required.length === 0) return true;
   return required.some((s) => grantedScopes.includes(s));
+}
+
+type ToolAccessReasonCode =
+  | "ADMIN_USER_REQUIRED"
+  | "ARGUMENT_DEPENDENT_ACCESS"
+  | "AVAILABLE"
+  | "MISSING_REQUIRED_SCOPE"
+  | "TOOL_DISABLED"
+  | "TOOL_NOT_FOUND";
+
+function inspectToolAccess(
+  toolName: string,
+  grantedScopes: McpScope[] | undefined,
+  isAdmin: boolean,
+): {
+  accessible: boolean;
+  adminOnly: boolean;
+  enabled: boolean;
+  missingScopes: string[];
+  name: string;
+  reasonCodes: ToolAccessReasonCode[];
+  requiredScopes: string[];
+  scopeMatch: "ANY" | "NONE_REQUIRED";
+} {
+  const definition = TASK_TOOL_DEFINITIONS.find(
+    (tool) => tool.name === toolName,
+  );
+  if (!definition) {
+    return {
+      accessible: false,
+      adminOnly: false,
+      enabled: false,
+      missingScopes: [],
+      name: toolName,
+      reasonCodes: ["TOOL_NOT_FOUND"],
+      requiredScopes: [],
+      scopeMatch: "NONE_REQUIRED",
+    };
+  }
+
+  const requiredScopes = TOOL_SCOPES[toolName] ?? [];
+  const scopeMatch = requiredScopes.length > 0 ? "ANY" : "NONE_REQUIRED";
+  const scopeGranted = hasScope(grantedScopes, toolName);
+  const missingScopes = scopeGranted ? [] : requiredScopes;
+  const enabled = !DISABLED_TOOLS.has(toolName);
+  const adminOnly = ADMIN_ONLY_TOOLS.has(toolName);
+  const accessible = enabled && scopeGranted && (!adminOnly || isAdmin);
+  const reasonCodes: ToolAccessReasonCode[] = [];
+  if (!enabled) reasonCodes.push("TOOL_DISABLED");
+  if (!scopeGranted) {
+    reasonCodes.push("MISSING_REQUIRED_SCOPE");
+  }
+  if (adminOnly && !isAdmin) reasonCodes.push("ADMIN_USER_REQUIRED");
+  if (accessible) {
+    reasonCodes.push("AVAILABLE");
+    if (requiredScopes.includes(McpScope.TASKS_ORGANIZATION)) {
+      reasonCodes.push("ARGUMENT_DEPENDENT_ACCESS");
+    }
+  }
+
+  return {
+    accessible,
+    adminOnly,
+    enabled,
+    missingScopes: missingScopes.map(scopeToWire),
+    name: toolName,
+    reasonCodes,
+    requiredScopes: requiredScopes.map(scopeToWire),
+    scopeMatch,
+  };
 }
 
 function hasAdminTaskWriteAccess(
@@ -4823,6 +4898,67 @@ const TASK_TOOL_DEFINITIONS = [
     ],
   },
   {
+    name: "getTaskTreeAudit",
+    description:
+      "Admin-only complete audit of the task graph rooted at Optimize Earth. Pages stable findings—not tasks—so a steward can inspect every structural, duplicate, routing, provenance, estimate, and bounded-agent-work issue without the listTasks result cap. Treat requiresApproval=true findings as proposals only.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        cursor: {
+          type: "string",
+          description:
+            "Stable issue cursor returned by the preceding page. Omit for the first page.",
+        },
+        limit: {
+          type: "number",
+          description: "Findings per page (default 100, maximum 500).",
+        },
+        rootTaskId: {
+          type: "string",
+          description: "Root task ID. Defaults to optimize-earth.",
+        },
+      },
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        complete: {
+          type: "boolean",
+          description: "True when this is the final findings page.",
+        },
+        issues: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              code: { type: "string" },
+              issueKey: { type: "string" },
+              message: { type: "string" },
+              recommendedAction: { type: "string" },
+              relatedTaskIds: {
+                type: "array",
+                items: { type: "string" },
+              },
+              requiresApproval: { type: "boolean" },
+              severity: {
+                type: "string",
+                enum: ["high", "medium", "low"],
+              },
+              taskId: { type: "string" },
+            },
+          },
+        },
+        nextCursor: { type: ["string", "null"] },
+        rootTaskId: { type: "string" },
+        summary: {
+          type: "object",
+          description:
+            "Counts for the complete audit, repeated unchanged on every findings page.",
+        },
+      },
+    },
+  },
+  {
     name: "getMyQueue",
     description:
       "Get the authenticated user's available private self-work queue sorted by computed priority. Returns tasks the user created OR has been assigned to (via assigneePersonId). Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
@@ -6087,6 +6223,24 @@ const TASK_TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object" as const,
       properties: {},
+    },
+  },
+  {
+    name: "inspectToolAccess",
+    description:
+      "Explain which MCP tools this connection can use and why. Optionally filter by tool name. Returns effective scopes, server identity, and stable access reason codes without exposing token data.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        toolNames: {
+          type: "array",
+          description:
+            "Optional tool names to inspect. Omit to inspect the complete compact catalog.",
+          items: { type: "string" },
+          maxItems: TOOL_ACCESS_INSPECTION_MAX_NAMES,
+          uniqueItems: true,
+        },
+      },
     },
   },
   {
@@ -9076,6 +9230,29 @@ export function createMcpServer(
             );
           }
 
+          // ── getTaskTreeAudit ──────────────────────────────────
+          case "getTaskTreeAudit": {
+            const { loadTaskTreeAudit } = await import(
+              "./tasks/task-tree-steward.server"
+            );
+            return ok(
+              await loadTaskTreeAudit({
+                cursor:
+                  typeof a.cursor === "string" && a.cursor.length > 0
+                    ? a.cursor
+                    : null,
+                limit:
+                  typeof a.limit === "number" && Number.isFinite(a.limit)
+                    ? a.limit
+                    : undefined,
+                rootTaskId:
+                  typeof a.rootTaskId === "string" && a.rootTaskId.length > 0
+                    ? a.rootTaskId
+                    : undefined,
+              }),
+            );
+          }
+
           // ── getNextAction ──────────────────────────────────────
           case "getNextAction": {
             if (!userId)
@@ -11793,6 +11970,86 @@ export function createMcpServer(
               setupGaps,
               userId,
               ...profile,
+            });
+          }
+
+          case "inspectToolAccess": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool explains access for the authenticated connection.",
+              );
+            if (
+              a.toolNames !== undefined &&
+              (!Array.isArray(a.toolNames) ||
+                a.toolNames.some((value) => typeof value !== "string"))
+            ) {
+              return err("toolNames must be an array of strings.", {
+                code: "INVALID_ARGUMENT",
+                details: { field: "toolNames", itemType: "string" },
+              });
+            }
+            const requestedNames = Array.isArray(a.toolNames)
+              ? (a.toolNames as string[])
+              : null;
+            if (
+              requestedNames &&
+              requestedNames.length > TOOL_ACCESS_INSPECTION_MAX_NAMES
+            ) {
+              return err(
+                `toolNames must contain at most ${TOOL_ACCESS_INSPECTION_MAX_NAMES} entries.`,
+                {
+                  code: "INVALID_ARGUMENT",
+                  details: {
+                    field: "toolNames",
+                    maxItems: TOOL_ACCESS_INSPECTION_MAX_NAMES,
+                  },
+                },
+              );
+            }
+            if (
+              requestedNames &&
+              new Set(requestedNames).size !== requestedNames.length
+            ) {
+              return err("toolNames entries must be unique.", {
+                code: "INVALID_ARGUMENT",
+                details: { field: "toolNames", uniqueItems: true },
+              });
+            }
+            const toolNames =
+              requestedNames ??
+              TASK_TOOL_DEFINITIONS.map((definition) => definition.name);
+            const catalogRevision = createHash("sha256")
+              .update(
+                JSON.stringify(
+                  TASK_TOOL_DEFINITIONS.map((definition) => ({
+                    adminOnly: ADMIN_ONLY_TOOLS.has(definition.name),
+                    enabled: !DISABLED_TOOLS.has(definition.name),
+                    definition,
+                    scopes: TOOL_SCOPES[definition.name] ?? null,
+                  })),
+                ),
+              )
+              .digest("hex")
+              .slice(0, 16);
+            const baseUrl = getMcpBaseUrl();
+            return ok({
+              principal: {
+                grantedOrganizationIds: organizationIds,
+                grantedScopes: (scopes ?? []).map(scopeToWire),
+                isAdmin,
+                userId,
+              },
+              server: {
+                canonicalUrl: `${baseUrl.replace(/\/$/, "")}/api/mcp`,
+                catalogRevision,
+                environment:
+                  process.env.VERCEL_ENV ??
+                  (baseUrl.includes("localhost") ? "development" : "unknown"),
+              },
+              tools: toolNames.map((toolName) =>
+                inspectToolAccess(toolName, scopes, isAdmin),
+              ),
             });
           }
 

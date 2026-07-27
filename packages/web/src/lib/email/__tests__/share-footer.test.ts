@@ -17,7 +17,8 @@ describe("share footer", () => {
     expect(html).toContain(
       `href="${FLOW_MAJORITY_OF_HUMANS_ON_EARTH.manualPageUrl}"`,
     );
-    expect(normalized).toContain(">two</a> more humans");
+    expect(normalized).toContain("Earth optimization starts with you");
+    expect(normalized).toContain("telling your friends");
     expect(normalized).toContain(">4 billion</a> humans reached");
     expect(html).not.toContain("4,300,000,000");
   });
@@ -26,6 +27,8 @@ describe("share footer", () => {
     const text = buildShareFooterText(SAMPLE_URL);
     expect(text).toContain("30 seconds");
     expect(text).toContain("vote on this stupid treaty");
+    expect(text).toContain("Earth optimization starts with you");
+    expect(text).toContain("telling your friends");
     expect(text).toContain("4 billion humans reached");
     expect(text).not.toContain("<a ");
     expect(text).not.toContain("[4 billion]");

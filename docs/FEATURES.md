@@ -60,9 +60,9 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** implemented
-- **Summary:** Validates the execution graph: cycles, unrooted tasks, non-atomic tasks in queues, missing marginal estimates, invalid/unannotated value edges, nondeterministic ties.
-- **Evidence:** packages/web/src/lib/tasks/execution-planner-audit.ts (`auditExecutionGraph`); execution-planner-audit.test.ts; wired into `getQueueAudit` in packages/web/src/lib/mcp-server.ts
-- **Acceptance:** Introducing a dependency cycle yields a DEPENDENCY_CYCLE finding from getQueueAudit.
+- **Summary:** Validates personal execution queues for cycles, unrooted tasks, non-atomic queue entries, missing marginal estimates, invalid value edges, and nondeterministic ties. The admin-only `getTaskTreeAudit` adds a complete, stably paged Optimize Earth audit for missing parents, duplicate fingerprints, candidate coverage, provenance, acceptance criteria, and oversized agent work.
+- **Evidence:** packages/web/src/lib/tasks/execution-planner-audit.ts; packages/web/src/lib/tasks/task-tree-steward.ts; packages/web/src/lib/tasks/task-tree-steward.server.ts; execution-planner-audit.test.ts; task-tree-steward.test.ts; wired into `getQueueAudit` and `getTaskTreeAudit` in packages/web/src/lib/mcp-server.ts
+- **Acceptance:** Introducing a dependency cycle yields a DEPENDENCY_CYCLE finding from getQueueAudit; an admin can page every root-tree finding through getTaskTreeAudit without relying on the listTasks result cap.
 - **Roadmap:** shipped — maintain
 
 ### OPT-TASK-05 — Brain-dump capture via MCP

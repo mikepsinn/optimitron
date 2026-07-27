@@ -639,6 +639,7 @@ function makePriority(overrides: Record<string, unknown> = {}) {
 }
 
 beforeEach(() => {
+  vi.unstubAllEnvs();
   for (const fn of Object.values(mocks)) fn.mockReset();
   // Default: the caller can view the task. Visibility-denial cases override.
   mocks.canUserViewTask.mockResolvedValue(true);
@@ -1029,6 +1030,7 @@ describe("MCP server tool dispatch", () => {
     expect(nonAdminNames).not.toContain("listTaskEmails");
     expect(nonAdminNames).not.toContain("listRecipientEmails");
     expect(nonAdminNames).not.toContain("listEmailLogs");
+    expect(nonAdminNames).not.toContain("getTaskTreeAudit");
     expect(nonAdminNames).toContain("createTask");
 
     expect(adminNames).toContain("proposeTaskBundle");
@@ -1039,6 +1041,7 @@ describe("MCP server tool dispatch", () => {
     expect(adminNames).toContain("listTaskEmails");
     expect(adminNames).toContain("listRecipientEmails");
     expect(adminNames).toContain("listEmailLogs");
+    expect(adminNames).toContain("getTaskTreeAudit");
   });
 
   it("dispatches task impact trace reads", async () => {
@@ -2007,6 +2010,102 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task read tools", () => {
+    it("lets an admin audit the complete task tree through one paged tool", async () => {
+      const storedTask = (
+        id: string,
+        parentTaskId: string | null,
+        childTasks: Array<{ id: string }>,
+        overrides: Record<string, unknown> = {},
+      ) => ({
+        assigneeOrganizationId: null,
+        assigneePersonId: null,
+        candidateMatches: [],
+        category: "GOVERNANCE",
+        childTasks,
+        claimPolicy: "OPEN_SINGLE",
+        communicationEndpoints: [],
+        contextJson: {
+          acceptanceCriteria: ["The result is independently verifiable."],
+        },
+        currentImpactEstimateSet: {
+          id: `estimate-${id}`,
+          publicationStatus: "REVIEWED",
+        },
+        description: "Produce one bounded and independently verifiable result.",
+        estimatedEffortHours: 2,
+        executionMode: "HUMAN_ONLY",
+        id,
+        isPublic: false,
+        parentTaskId,
+        preferredSkillTags: [],
+        requiredAccessTags: [],
+        requiredCredentialTags: [],
+        requiredToolTags: [],
+        roleTitle: null,
+        skillTags: ["research"],
+        sourceArtifacts: [],
+        status: "ACTIVE",
+        taskKey: `task:${id}`,
+        title: id === "optimize-earth" ? "Optimize Earth" : "Research a fix",
+        ...overrides,
+      });
+      mocks.taskFindMany.mockResolvedValueOnce([
+        storedTask("optimize-earth", null, [{ id: "leaf" }]),
+        storedTask("leaf", "optimize-earth", [], {
+          communicationEndpoints: [
+            { sourceUrl: "https://example.org/authoritative-source" },
+          ],
+          isPublic: true,
+        }),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValueOnce([]);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "getTaskTreeAudit",
+        arguments: { limit: 50 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        complete: true,
+        rootTaskId: "optimize-earth",
+        summary: {
+          activeLeafTasks: 1,
+          issueCount: 1,
+          tasksNeedingCandidateResearch: 1,
+          totalTasks: 2,
+          unrootedTasks: 0,
+        },
+        issues: [
+          expect.objectContaining({
+            code: "CANDIDATE_RESEARCH_NEEDED",
+            requiresApproval: false,
+            taskId: "leaf",
+          }),
+        ],
+      });
+      expect(
+        (
+          parseToolBody(result) as { issues: Array<{ code?: string }> }
+        ).issues.some(
+          (issue: { code?: string }) => issue.code === "MISSING_PUBLIC_SOURCE",
+        ),
+      ).toBe(false);
+      expect(mocks.taskFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { deletedAt: null } }),
+      );
+      expect(mocks.taskEdgeFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            fromTask: { deletedAt: null },
+            toTask: { deletedAt: null },
+          },
+        }),
+      );
+    });
+
     it("advertises and applies assignedToMe without requiring the caller to know their personId", async () => {
       const client = await setup("user-1", ALL_SCOPES);
 
@@ -6100,6 +6199,146 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(result);
       expect(body.errorCode).toBe("AUTHENTICATION_REQUIRED");
       expect(body.details).toMatchObject({ tool: "getMe" });
+    });
+
+    it("inspectToolAccess explains scope, admin, unknown, and argument-dependent access", async () => {
+      vi.stubEnv("NEXTAUTH_URL", "https://mcp.example.test");
+      vi.stubEnv("VERCEL_ENV", "preview");
+      const client = await setup("user-1", [
+        McpScope.TASKS_ADMIN,
+        McpScope.TASKS_ORGANIZATION,
+      ]);
+
+      const result = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {
+          toolNames: ["createPerson", "getMyQueue", "doesNotExist"],
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result);
+      expect(body.principal).toMatchObject({
+        grantedScopes: ["tasks:admin", "tasks:organization"],
+        isAdmin: false,
+        userId: "user-1",
+      });
+      expect(body.server).toMatchObject({
+        canonicalUrl: "https://mcp.example.test/api/mcp",
+        environment: "preview",
+      });
+      expect(body.server).toHaveProperty("catalogRevision");
+      expect(body.tools).toEqual([
+        expect.objectContaining({
+          accessible: false,
+          missingScopes: [],
+          name: "createPerson",
+          reasonCodes: ["ADMIN_USER_REQUIRED"],
+          requiredScopes: ["tasks:admin"],
+          scopeMatch: "ANY",
+        }),
+        expect.objectContaining({
+          accessible: true,
+          missingScopes: [],
+          name: "getMyQueue",
+          reasonCodes: ["AVAILABLE", "ARGUMENT_DEPENDENT_ACCESS"],
+          requiredScopes: ["tasks:personal", "tasks:organization"],
+          scopeMatch: "ANY",
+        }),
+        expect.objectContaining({
+          accessible: false,
+          name: "doesNotExist",
+          reasonCodes: ["TOOL_NOT_FOUND"],
+        }),
+      ]);
+    });
+
+    it("inspectToolAccess reports missing scopes and allows an authorized admin", async () => {
+      const personalClient = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const denied = parseToolBody(
+        await personalClient.callTool({
+          name: "inspectToolAccess",
+          arguments: { toolNames: ["createPerson"] },
+        }),
+      );
+      expect(denied.tools).toEqual([
+        expect.objectContaining({
+          accessible: false,
+          missingScopes: ["tasks:admin"],
+          reasonCodes: ["MISSING_REQUIRED_SCOPE", "ADMIN_USER_REQUIRED"],
+          scopeMatch: "ANY",
+        }),
+      ]);
+
+      const adminClient = await setup(
+        "admin-1",
+        [McpScope.TASKS_ADMIN, McpScope.EARTHDATA_ADMIN],
+        { isAdmin: true },
+      );
+      const allowed = parseToolBody(
+        await adminClient.callTool({
+          name: "inspectToolAccess",
+          arguments: {
+            toolNames: ["createPerson", "mergeDuplicatePeople"],
+          },
+        }),
+      );
+      expect(allowed.tools).toEqual([
+        expect.objectContaining({
+          accessible: true,
+          missingScopes: [],
+          name: "createPerson",
+          reasonCodes: ["AVAILABLE"],
+        }),
+        expect.objectContaining({
+          accessible: false,
+          enabled: false,
+          missingScopes: [],
+          name: "mergeDuplicatePeople",
+          reasonCodes: ["TOOL_DISABLED"],
+        }),
+      ]);
+    });
+
+    it("inspectToolAccess rejects filters that exceed its response bounds", async () => {
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+
+      const oversized = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {
+          toolNames: Array.from({ length: 201 }, (_, index) => `tool-${index}`),
+        },
+      });
+      expect(oversized.isError).toBe(true);
+      expect(parseToolBody(oversized)).toMatchObject({
+        details: { field: "toolNames", maxItems: 200 },
+        errorCode: "INVALID_ARGUMENT",
+      });
+
+      const duplicated = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: { toolNames: ["getMe", "getMe"] },
+      });
+      expect(duplicated.isError).toBe(true);
+      expect(parseToolBody(duplicated)).toMatchObject({
+        details: { field: "toolNames", uniqueItems: true },
+        errorCode: "INVALID_ARGUMENT",
+      });
+    });
+
+    it("inspectToolAccess requires an authenticated connection", async () => {
+      const client = await setup(undefined, ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "inspectToolAccess",
+        arguments: {},
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result)).toMatchObject({
+        errorCode: "AUTHENTICATION_REQUIRED",
+        details: { tool: "inspectToolAccess" },
+      });
     });
 
     it("updateMyProfile forwards only the supplied fields and returns the fresh profile", async () => {

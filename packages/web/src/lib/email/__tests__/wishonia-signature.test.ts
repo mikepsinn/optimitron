@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  WISHONIA_SIGNATURE_NAME,
+  WISHONIA_SIGNATURE_TITLE,
   WISHONIA_TAGLINES,
-  WISHONIA_TITLES,
   appendWishoniaSignature,
   buildSenderSignatureHtml,
   buildSenderSignatureText,
@@ -20,23 +21,18 @@ afterEach(() => {
 
 describe("Wishonia signature module", () => {
   describe("source-of-truth arrays", () => {
-    it("ships 15 titles per the spec (collectors' items)", () => {
-      expect(WISHONIA_TITLES).toHaveLength(15);
+    it("ships a fixed name and CEO title", () => {
+      expect(WISHONIA_SIGNATURE_NAME).toBe("Wishonia Love");
+      expect(WISHONIA_SIGNATURE_TITLE).toBe(
+        "CEO of Universe Optimization Services",
+      );
     });
 
-    it("ships 11 taglines per the spec", () => {
+    it("ships 11 taglines per the collectors'-items joke", () => {
       expect(WISHONIA_TAGLINES).toHaveLength(11);
     });
 
-    it("includes the canonical first title from the spec", () => {
-      expect(WISHONIA_TITLES).toContain("Chief Optimization Officer");
-    });
-
     it("titles and taglines are non-empty strings", () => {
-      for (const t of WISHONIA_TITLES) {
-        expect(typeof t).toBe("string");
-        expect(t.length).toBeGreaterThan(0);
-      }
       for (const t of WISHONIA_TAGLINES) {
         expect(typeof t).toBe("string");
         expect(t.length).toBeGreaterThan(0);
@@ -45,39 +41,37 @@ describe("Wishonia signature module", () => {
   });
 
   describe("selectWishoniaSignature", () => {
-    it("returns a title and tagline drawn from the registered arrays", () => {
+    it("returns the fixed title and a tagline from the registered array", () => {
       const sel = selectWishoniaSignature();
-      expect(WISHONIA_TITLES).toContain(sel.title);
+      expect(sel.title).toBe(WISHONIA_SIGNATURE_TITLE);
       expect(WISHONIA_TAGLINES).toContain(sel.tagline);
     });
 
-    it("samples title and tagline INDEPENDENTLY (all 15×11=165 combos reachable)", () => {
-      // Two consecutive Math.random calls feed title then tagline. Drive
-      // them to opposite corners of each array to verify independent indexing.
+    it("samples taglines at random while keeping the title fixed", () => {
       const spy = vi.spyOn(Math, "random");
-      spy.mockReturnValueOnce(0).mockReturnValueOnce(0.99);
+      spy.mockReturnValueOnce(0);
       const sel1 = selectWishoniaSignature();
-      expect(sel1.title).toBe(WISHONIA_TITLES[0]);
-      expect(sel1.tagline).toBe(WISHONIA_TAGLINES.at(-1));
+      expect(sel1.title).toBe(WISHONIA_SIGNATURE_TITLE);
+      expect(sel1.tagline).toBe(WISHONIA_TAGLINES[0]);
 
-      spy.mockReturnValueOnce(0.99).mockReturnValueOnce(0);
+      spy.mockReturnValueOnce(0.99);
       const sel2 = selectWishoniaSignature();
-      expect(sel2.title).toBe(WISHONIA_TITLES.at(-1));
-      expect(sel2.tagline).toBe(WISHONIA_TAGLINES[0]);
+      expect(sel2.title).toBe(WISHONIA_SIGNATURE_TITLE);
+      expect(sel2.tagline).toBe(WISHONIA_TAGLINES.at(-1));
     });
   });
 
   describe("buildWishoniaSignatureText", () => {
-    it("renders the canonical 'Love,' sign-off, name, title, company, and tagline", () => {
+    it("renders the canonical Love / Wishonia Love / CEO sign-off plus tagline", () => {
       const text = buildWishoniaSignatureText({
-        title: "Chief Optimization Officer",
+        title: WISHONIA_SIGNATURE_TITLE,
         tagline:
           "Maximizing median income and health-adjusted life years since 2026",
       });
       expect(text).toContain("Love,");
-      expect(text).toContain("🛸 Wishonia");
-      expect(text).toContain("Chief Optimization Officer");
-      expect(text).toContain("Earth Optimization Services Inc.");
+      expect(text).toContain("Wishonia Love");
+      expect(text).toContain("CEO of Universe Optimization Services");
+      expect(text).not.toContain("Earth Optimization Services Inc.");
       expect(text).toContain(
         "Maximizing median income and health-adjusted life years since 2026",
       );
@@ -97,11 +91,15 @@ describe("Wishonia signature module", () => {
       );
     });
 
-    it("includes the canonical sign-off, name, and company", () => {
-      const html = buildWishoniaSignatureHtml({ title: "X", tagline: "Y" });
+    it("includes the canonical sign-off and name", () => {
+      const html = buildWishoniaSignatureHtml({
+        title: WISHONIA_SIGNATURE_TITLE,
+        tagline: "Y",
+      });
       expect(html).toContain("Love,");
-      expect(html).toContain("🛸 Wishonia");
-      expect(html).toContain("Earth Optimization Services Inc.");
+      expect(html).toContain("Wishonia Love");
+      expect(html).toContain("CEO of Universe Optimization Services");
+      expect(html).not.toContain("Earth Optimization Services Inc.");
     });
 
     it("escapes HTML in title and tagline (defends against rogue array entries)", () => {
@@ -137,15 +135,14 @@ describe("Wishonia signature module", () => {
     });
 
     it("appends to both html and text, picking ONE selection used for both", () => {
-      // Pin the random selection so html/text agree.
-      vi.spyOn(Math, "random").mockReturnValue(0); // first title, first tagline
+      vi.spyOn(Math, "random").mockReturnValue(0); // first tagline
       const out = appendWishoniaSignature({
         html: "<p>body</p>",
         text: "body",
       });
-      expect(out.text).toContain(WISHONIA_TITLES[0]!);
+      expect(out.text).toContain(WISHONIA_SIGNATURE_TITLE);
       expect(out.text).toContain(WISHONIA_TAGLINES[0]!);
-      expect(out.html).toContain(WISHONIA_TITLES[0]!);
+      expect(out.html).toContain(WISHONIA_SIGNATURE_TITLE);
       expect(out.html).toContain(WISHONIA_TAGLINES[0]!);
     });
 

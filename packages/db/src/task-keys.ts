@@ -194,6 +194,8 @@ export function buildTaskFundingReceiptTaskKey(paymentId: string) {
 // — that crashes the preview sync against the prod-fork database.
 export const OPTIMITRON_DEV_TASK_ID = "cmrh79s7h000604jtqfckws4t";
 export const OPTIMITRON_DEV_TASK_KEY = "optimitron:dev";
+export const TASK_GRAPH_STEWARD_TASK_ID = "cms3mwj7h000l04jrx9f6i3n5";
+export const TASK_GRAPH_STEWARD_TASK_KEY = "optimitron:task-graph-steward";
 
 // 1% Treaty parent + signer subtree
 
