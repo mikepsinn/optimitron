@@ -24,8 +24,8 @@ import {
   buildWishoniaSignatureHtml,
   buildWishoniaSignatureText,
   selectWishoniaSignature,
+  WISHONIA_SIGNATURE_TITLE,
   WISHONIA_TAGLINES,
-  WISHONIA_TITLES,
   type WishoniaSignatureSelection,
 } from "@/lib/email/wishonia-signature";
 import { EMAIL_UNSUBSCRIBE_URL_PLACEHOLDER } from "@/lib/email/placeholders";
@@ -187,7 +187,7 @@ export function composeOutboundEmailBody<T extends EmailBody>(
  * `.email.md` snapshots are stable diffs. Real sends pick at random.
  */
 export const PREVIEW_WISHONIA_SELECTION: WishoniaSignatureSelection = {
-  title: WISHONIA_TITLES[0]!,
+  title: WISHONIA_SIGNATURE_TITLE,
   tagline: WISHONIA_TAGLINES[0]!,
 };
 

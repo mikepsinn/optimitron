@@ -8,8 +8,11 @@ import {
 import { EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME } from "@optimitron/db/system-identities";
 import type { ParameterValueProps } from "@/components/shared/ParameterValue.core";
 import {
+  FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM,
   FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR,
   FLOW_REFERRALS_PER_VOTER,
+  FLOW_TOTAL_LIVES_SAVED,
+  FLOW_TOTAL_SUFFERING_HOURS,
 } from "@/lib/treaty-share-flow-parameters";
 
 type ParameterValueComponent = React.ComponentType<ParameterValueProps>;
@@ -74,7 +77,20 @@ export function createHumanityManagerPromotion({
             .
           </PromoText>
           <PromoText>
-            Hire 2 subordinates by sending this message to{" "}
+            Optimize Earth — save{" "}
+            <ParameterValue
+              className="font-black"
+              figures={3}
+              param={FLOW_TOTAL_LIVES_SAVED}
+            />{" "}
+            lives and prevent{" "}
+            <ParameterValue
+              className="font-black"
+              figures={3}
+              param={FLOW_TOTAL_SUFFERING_HOURS}
+            />{" "}
+            hours of suffering by telling all your friends! Earth optimization
+            starts with you. Send this message to{" "}
             <ParameterValue
               param={FLOW_REFERRALS_PER_VOTER}
               presentation="inline"
@@ -86,8 +102,14 @@ export function createHumanityManagerPromotion({
               presentation="inline"
               valueOverride="two"
             />{" "}
-            more and after 32 of these doublings, the majority of humanity has
-            agreed to transcend war and disease!
+            more and after{" "}
+            <ParameterValue
+              className="font-black"
+              display="integer"
+              param={FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM}
+            />{" "}
+            of these doublings, the majority of humanity has agreed to transcend
+            war and disease!
           </PromoText>
         </PromoBody>
       </>

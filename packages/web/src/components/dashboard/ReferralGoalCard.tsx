@@ -38,10 +38,10 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
             </summary>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
               {[
-                { milestone: 1, label: "FIRST RECRUIT" },
+                { milestone: 1, label: "FIRST FRIEND" },
                 { milestone: GAME.referralGoal, label: "GOAL MET" },
-                { milestone: 5, label: "POWER RECRUITER" },
-                { milestone: 10, label: "SUPER SPREADER" },
+                { milestone: 5, label: "EARTH OPTIMIZER" },
+                { milestone: 10, label: "PLANETARY HERO" },
               ].map((item) => (
                 <div
                   key={item.milestone}
@@ -63,7 +63,7 @@ export function ReferralGoalCard({ stats }: ReferralGoalCardProps) {
                 ? "You're in the top 50%! Can you reach 5?"
                 : stats.referrals < 10
                   ? "You're in the top 20%! Can you reach 10?"
-                  : "You're a LEGENDARY recruiter! 🏆"}
+                  : "You're a LEGEND! 🏆"}
           </p>
         </div>
       </Card.Content>

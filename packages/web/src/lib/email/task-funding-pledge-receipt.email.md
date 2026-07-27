@@ -36,10 +36,8 @@ If this task dies before the work happens, this charge comes back to your card a
 
 Love,
 
-🛸 Wishonia
+Wishonia Love
 
-Chief Optimization Officer
-
-Earth Optimization Services Inc.
+CEO of Universe Optimization Services
 
 Maximizing median income and health-adjusted life years since 2026
