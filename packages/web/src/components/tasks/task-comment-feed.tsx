@@ -1291,7 +1291,7 @@ function formatActivityType(type: string): string {
     case "VOTED_REFERENDUM":
       return "voted on the referendum";
     case "RECRUITED_VOTER":
-      return "recruited a voter";
+      return "brought in a voter";
     case "DEPOSITED_PRIZE":
       return "deposited into the prize";
     default:

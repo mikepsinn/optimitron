@@ -21,7 +21,7 @@ describe("getUserFramingVocabulary", () => {
     expect(vocab.recruit.verb).toBe("recruit");
     expect(vocab.recruit.noun).toBe("voter");
     expect(vocab.recruit.nounPlural).toBe("voters");
-    expect(vocab.recruitedActivityVerb).toBe("recruited a voter");
+    expect(vocab.recruitedActivityVerb).toBe("brought in a voter");
     expect(vocab.org.longName).toBe("Earth Optimization Services Inc.");
   });
 

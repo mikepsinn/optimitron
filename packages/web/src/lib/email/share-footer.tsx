@@ -9,6 +9,8 @@ import {
   FLOW_DOUBLING_ROUNDS_TO_TARGET_PARAM,
   FLOW_MAJORITY_OF_HUMANS_ON_EARTH,
   FLOW_REFERRALS_PER_VOTER,
+  FLOW_TOTAL_LIVES_SAVED,
+  FLOW_TOTAL_SUFFERING_HOURS,
   formatFlowWords,
 } from "@/lib/treaty-share-flow-parameters";
 import { renderReactEmailHtml } from "@/lib/email/render-react-email";
@@ -154,8 +156,18 @@ export function buildReferralChainMathText(resultSuffix = "humans reached") {
 export function ShareFooter({ referralUrl }: { referralUrl: string }) {
   return (
     <div style={EMAIL_STYLES.divider}>
-      <p style={EMAIL_STYLES.smallEyebrow}>
-        Recruit <ReferralAskValue word /> more humans
+      <p style={EMAIL_STYLES.smallEyebrow}>Earth optimization starts with you</p>
+      <p
+        style={{
+          ...EMAIL_STYLES.paragraph,
+          fontSize: "14px",
+          margin: "0 0 12px",
+        }}
+      >
+        Optimize Earth — save{" "}
+        <ParameterValue param={FLOW_TOTAL_LIVES_SAVED} figures={3} /> lives and
+        prevent <ParameterValue param={FLOW_TOTAL_SUFFERING_HOURS} figures={3} />{" "}
+        hours of suffering by telling your friends!
       </p>
       <p
         style={{
@@ -187,7 +199,9 @@ export function buildShareFooterText(referralUrl: string): string {
     "",
     "—",
     "",
-    `Recruit ${ReferralAskText({ word: true })} more humans`,
+    "Earth optimization starts with you",
+    "",
+    `Optimize Earth — save ${formatFlowWords(FLOW_TOTAL_LIVES_SAVED, 3)} lives and prevent ${formatFlowWords(FLOW_TOTAL_SUFFERING_HOURS, 3)} hours of suffering by telling your friends!`,
     "",
     buildShareMessage(referralUrl),
     "",

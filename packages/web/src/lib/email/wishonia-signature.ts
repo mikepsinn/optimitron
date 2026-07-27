@@ -2,12 +2,9 @@
  * Wishonia email signature — appended to every outgoing email by the
  * Resend send helpers in `resend.ts`.
  *
- * 165 combinations: 15 randomized titles × 11 randomized taglines, selected
- * independently per send. Recipients who get multiple emails slowly notice
- * something is off (collectors' items).
- *
- * Both arrays are intentionally the single source of truth — adding a new
- * title or tagline is a one-line edit. Don't duplicate this list anywhere.
+ * Fixed name + title (Wishonia Love / CEO of Universe Optimization Services),
+ * with a rotating tagline per send so recipients who get multiple emails
+ * slowly notice something is off (collectors' items).
  *
  * Spec: docs/questions.md → Add Wishonia email signature task.
  */
@@ -17,23 +14,9 @@ import { getBaseUrl } from "@/lib/url";
 
 export const WISHONIA_AVATAR_PATH = "/sprites/wishonia/happy-smile.png";
 
-export const WISHONIA_TITLES: readonly string[] = [
-  "Chief Optimization Officer",
-  "Director of Not Dying",
-  "Head of Human Maintenance",
-  "Planetary Systems Administrator",
-  "Chief Survival Officer",
-  "VP of Species Preservation",
-  "Senior Director, Mortality Reduction",
-  "Head of Civilization Debugging",
-  "Chief Existential Risk Mitigator",
-  "Director of Keeping Everyone Alive",
-  "Interim Planetary Manager",
-  "VP of Accidentally Running Earth",
-  "Chief Why-Is-This-My-Job Officer",
-  "Head of General Welfare Accounting",
-  "Director of Budget Unfucking",
-];
+export const WISHONIA_SIGNATURE_NAME = "Wishonia Love";
+export const WISHONIA_SIGNATURE_TITLE =
+  "CEO of Universe Optimization Services";
 
 export const WISHONIA_TAGLINES: readonly string[] = [
   "Maximizing median income and health-adjusted life years since 2026",
@@ -50,32 +33,28 @@ export const WISHONIA_TAGLINES: readonly string[] = [
 ];
 
 export interface WishoniaSignatureSelection {
+  /** Fixed title — kept on the selection object so previews stay stable. */
   title: string;
   tagline: string;
 }
 
 /**
- * Pick a title and a tagline INDEPENDENTLY at random. The two arrays are
- * sampled separately so the 15×11=165 combinations are all reachable.
+ * Fixed title + a tagline drawn at random from WISHONIA_TAGLINES.
  */
 export function selectWishoniaSignature(): WishoniaSignatureSelection {
-  const title =
-    WISHONIA_TITLES[Math.floor(Math.random() * WISHONIA_TITLES.length)]!;
   const tagline =
     WISHONIA_TAGLINES[Math.floor(Math.random() * WISHONIA_TAGLINES.length)]!;
-  return { title, tagline };
+  return { title: WISHONIA_SIGNATURE_TITLE, tagline };
 }
 
 /**
- * Plain-text signature for the `text` body of every outgoing email. Format
- * mirrors a corporate signature so it reads as serious-on-first-glance:
+ * Plain-text signature for the `text` body of every outgoing email:
  *
  *   ---
  *   Love,
  *
- *   🛸 Wishonia
- *   Chief Optimization Officer
- *   Earth Optimization Services Inc.
+ *   Wishonia Love
+ *   CEO of Universe Optimization Services
  *   Maximizing median income and health-adjusted life years since 2026
  */
 export function buildWishoniaSignatureText(
@@ -87,9 +66,8 @@ export function buildWishoniaSignatureText(
     "",
     "Love,",
     "",
-    "🛸 Wishonia",
+    WISHONIA_SIGNATURE_NAME,
     selection.title,
-    EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
     selection.tagline,
   ].join("\n");
 }
@@ -112,14 +90,13 @@ export function buildWishoniaSignatureHtml(
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0 0 0;border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
   <tr>
     <td valign="top" style="padding:0 16px 0 0;">
-      <img src="${avatar}" alt="Wishonia" width="80" height="80" style="display:block;width:80px;height:80px;border-radius:8px;background:#f4f4f5;border:0;outline:none;" />
+      <img src="${avatar}" alt="${escapeHtml(WISHONIA_SIGNATURE_NAME)}" width="80" height="80" style="display:block;width:80px;height:80px;border-radius:8px;background:#f4f4f5;border:0;outline:none;" />
     </td>
     <td valign="top" style="border-left:3px solid #111827;padding:0 0 0 16px;">
       <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:0 0 8px 0;">Love,</p>
-      <p style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">🛸 Wishonia</p>
+      <p style="font-size:18px;font-weight:700;line-height:1.3;color:#111827;margin:0;">${escapeHtml(WISHONIA_SIGNATURE_NAME)}</p>
       <p style="font-size:14px;line-height:1.4;color:#3f3f46;margin:2px 0 0 0;">${escapeHtml(selection.title)}</p>
-      <p style="font-size:14px;line-height:1.4;font-weight:600;color:#111827;margin:8px 0 0 0;">${EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}</p>
-      <p style="font-size:12px;line-height:1.4;font-style:italic;color:#71717a;margin:2px 0 0 0;">${escapeHtml(selection.tagline)}</p>
+      <p style="font-size:12px;line-height:1.4;font-style:italic;color:#71717a;margin:8px 0 0 0;">${escapeHtml(selection.tagline)}</p>
     </td>
   </tr>
 </table>`.trim();

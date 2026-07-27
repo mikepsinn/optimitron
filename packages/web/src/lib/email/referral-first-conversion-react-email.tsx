@@ -36,9 +36,9 @@ export function ReferralFirstConversionReactEmail({
         Earth.
       </CampaignText>
       <CampaignText>
-        The chain breaks when voters stop reaching{" "}
-        <ReferralAskValue word /> humans each. Your job: keep going, and make
-        sure {voterDisplayName} keeps going too.
+        The chain only works when voters keep telling friends. Celebrate{" "}
+        {voterDisplayName}, then optimize Earth — save lives, prevent suffering,
+        and send this to <ReferralAskValue word /> more humans you love.
       </CampaignText>
       <CampaignButton href={dashboardUrl}>Open dashboard</CampaignButton>
       <CampaignText muted>

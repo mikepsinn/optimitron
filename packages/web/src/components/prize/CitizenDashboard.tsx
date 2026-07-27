@@ -57,10 +57,10 @@ const AVG_IMPRESSIONS_PER_SHARE = 265;
 // ---------------------------------------------------------------------------
 
 const BADGES = [
-  { threshold: 1, label: "FIRST RECRUIT", icon: "🎯" },
+  { threshold: 1, label: "FIRST VOTE SHARED", icon: "🎯" },
   { threshold: 3, label: "CATALYST", icon: "⚡" },
-  { threshold: 10, label: "POWER RECRUITER", icon: "💪" },
-  { threshold: 50, label: "MOVEMENT BUILDER", icon: "🚀" },
+  { threshold: 10, label: "EARTH OPTIMIZER", icon: "💪" },
+  { threshold: 50, label: "PLANETARY HERO", icon: "🚀" },
   { threshold: 100, label: "LEGEND", icon: "🏆" },
 ];
 
@@ -72,15 +72,15 @@ function getNextMilestone(current: number): number {
 }
 
 function getTierMessage(count: number): string {
-  if (count === 0) return "Share your referral link to start recruiting.";
+  if (count === 0) return "Share your referral link and tell your friends.";
   if (count < 3)
     return `${3 - count} more verified votes to Catalyst status.`;
   if (count < 10)
-    return "You're a Catalyst. Can you hit 10 for Power Recruiter?";
+    return "You're a Catalyst. Can you hit 10 for Earth Optimizer?";
   if (count < 50)
-    return "You're a Power Recruiter. 50 verified votes = Movement Builder.";
+    return "You're an Earth Optimizer. 50 verified votes = Planetary Hero.";
   if (count < 100)
-    return "You're building a movement. 100 verified votes = LEGEND status.";
+    return "You're a Planetary Hero. 100 verified votes = LEGEND status.";
   return "You're a LEGEND. Every additional vote compounds the signal.";
 }
 
