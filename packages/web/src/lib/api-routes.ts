@@ -31,10 +31,30 @@ export const API_ROUTES = {
     applications: (id: string) => `/api/tasks/${id}/applications`,
     application: (id: string, applicationId: string) =>
       `/api/tasks/${id}/applications/${applicationId}`,
+    documentReviews: (id: string) => `/api/tasks/${id}/document-reviews`,
+    documentReviewResponse: (id: string) =>
+      `/api/tasks/${id}/document-reviews/response`,
+    documentReviewApplyProposal: (id: string, reviewTaskId: string) =>
+      `/api/tasks/${id}/document-reviews/${reviewTaskId}/apply-proposal`,
+    documentReviewVerification: (id: string, reviewTaskId: string) =>
+      `/api/tasks/${id}/document-reviews/${reviewTaskId}/verification`,
+    documentReviewAdoption: (id: string) =>
+      `/api/tasks/${id}/document-reviews/adoption`,
+    documentReviewPublication: (id: string) =>
+      `/api/tasks/${id}/document-reviews/publication`,
+    documentReviewInvitations: (id: string) =>
+      `/api/tasks/${id}/document-review-invitations`,
+    documentReviewInvitationBatch: (id: string) =>
+      `/api/tasks/${id}/document-review-invitations/batch`,
   },
   documents: {
     root: "/api/documents",
     document: (id: string) => `/api/documents/${id}`,
+  },
+  contributionReceipts: {
+    issue: "/api/contribution-receipts",
+    addenda: (paymentId: string) =>
+      `/api/contribution-receipts/${paymentId}/addenda`,
   },
   collections: {
     root: "/api/collections",

@@ -12,6 +12,9 @@ import {
 import { getServerSession } from "next-auth";
 import { TaskFundingCheckoutForm } from "@/components/task-funding/TaskFundingCheckoutForm";
 import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
+import { ContributionReceiptPanel } from "@/components/task-funding/ContributionReceiptPanel";
+import { DocumentReviewManagerPanel } from "@/components/tasks/document-review-manager-panel";
+import { DocumentReviewReviewerPanel } from "@/components/tasks/document-review-reviewer-panel";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
@@ -48,6 +51,9 @@ import {
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
+import { getContributionReceiptPanelData } from "@/lib/task-funding/contribution-receipt-ui.server";
+import { getDocumentReviewPageData } from "@/lib/tasks/document-review-ui.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
@@ -332,7 +338,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { id: routeId } = await params;
+  const id = decodeTaskRouteId(routeId);
   const data = await getTaskDetailData(id, null);
 
   if (!data) {
@@ -381,7 +388,8 @@ export default async function TaskDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: routeId } = await params;
+  const id = decodeTaskRouteId(routeId);
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
   const publicPageData = userId ? null : await getPublicTaskPageData(id);
@@ -416,7 +424,7 @@ export default async function TaskDetailPage({
       ])
     : [
         publicPageData?.data ?? null,
-        publicPageData?.commentFeed ?? { comments: [], total: 0 },
+        publicPageData?.commentFeed ?? EMPTY_COMMENT_FEED,
         publicPageData?.activityTimeline ?? [],
         await getWishoniaUserId().catch(() => null),
         publicPageData?.ancestors ?? [],
@@ -439,9 +447,18 @@ export default async function TaskDetailPage({
   }
 
   const { task, viewer, viewerClaim } = data;
+  const [documentReviewPageData, contributionReceiptData] = userId
+    ? await Promise.all([
+        getDocumentReviewPageData(task.id, userId),
+        getContributionReceiptPanelData(task.id, userId),
+      ])
+    : [null, null];
+  const isAssignedDocumentReviewer =
+    documentReviewPageData?.panel.mode === "REVIEWER";
   const hasOtherPersonAssignee =
     task.assigneePerson != null && task.assigneePerson.id !== viewer?.personId;
-  const canShowClaimButton = !hasOtherPersonAssignee;
+  const canShowClaimButton =
+    !hasOtherPersonAssignee && !isAssignedDocumentReviewer;
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
     claimPolicy: task.claimPolicy,
@@ -499,18 +516,23 @@ export default async function TaskDetailPage({
     ? (
         await listExternalActionRequestsForHuman({
           actorUserId: userId,
+          limit: 500,
           operation: OUTBOUND_MESSAGE_OPERATION,
           statuses: [
             ExternalActionRequestStatus.PENDING,
             ExternalActionRequestStatus.APPROVED,
           ],
-          taskId: task.id,
         })
       ).filter(
         (request): request is typeof request & { status: ApprovableStatus } =>
           (request.status === ExternalActionRequestStatus.PENDING ||
             request.status === ExternalActionRequestStatus.APPROVED) &&
-          request.expiresAt > new Date(),
+          request.expiresAt > new Date() &&
+          (request.taskId === task.id ||
+            (documentReviewPageData?.panel.mode === "MANAGER" &&
+              documentReviewPageData.panel.reviews.some(
+                (review) => review.reviewTaskId === request.taskId,
+              ))),
       )
     : [];
 
@@ -524,7 +546,7 @@ export default async function TaskDetailPage({
           >
             Tasks
           </Link>
-          {ancestors.map((ancestor) => (
+          {(isAssignedDocumentReviewer ? [] : ancestors).map((ancestor) => (
             <span key={ancestor.id} className="flex items-center gap-2">
               <span>/</span>
               <Link
@@ -627,7 +649,31 @@ export default async function TaskDetailPage({
           ) : null}
         </header>
 
-        <TaskExternalActionApprovals approvals={outboundApprovals} />
+        {documentReviewPageData?.panel.mode !== "MANAGER" ? (
+          <TaskExternalActionApprovals
+            approvals={outboundApprovals}
+            authorityTaskId={task.id}
+          />
+        ) : null}
+
+        {contributionReceiptData ? (
+          <ContributionReceiptPanel data={contributionReceiptData} />
+        ) : documentReviewPageData?.panel.mode === "MANAGER" &&
+          documentReviewPageData.setup ? (
+          <DocumentReviewManagerPanel
+            panel={documentReviewPageData.panel}
+            setup={documentReviewPageData.setup}
+          />
+        ) : documentReviewPageData?.panel.mode === "REVIEWER" ? (
+          <DocumentReviewReviewerPanel panel={documentReviewPageData.panel} />
+        ) : null}
+
+        {documentReviewPageData?.panel.mode === "MANAGER" ? (
+          <TaskExternalActionApprovals
+            approvals={outboundApprovals}
+            authorityTaskId={task.id}
+          />
+        ) : null}
 
         {/* Delay-cost stats — kept (motivational, not duplicated in
             header). Owner/Progress/Time-needed/Area/Completed/Updates were
@@ -823,6 +869,11 @@ export default async function TaskDetailPage({
                   ? c.deletedAt.toISOString()
                   : c.deletedAt,
             }))}
+            initialNextCursor={
+              commentFeed.nextCursor instanceof Date
+                ? commentFeed.nextCursor.toISOString()
+                : commentFeed.nextCursor
+            }
             initialActivities={activityTimeline.map((a) => ({
               ...a,
               createdAt:
@@ -834,6 +885,9 @@ export default async function TaskDetailPage({
             currentUserIsAdmin={viewerIsAdmin}
             wishoniaUserId={wishoniaUserId}
             signInHref={signInHref}
+            showReviewNotice={
+              !contributionReceiptData && Boolean(documentReviewPageData)
+            }
           />
         </section>
       </div>

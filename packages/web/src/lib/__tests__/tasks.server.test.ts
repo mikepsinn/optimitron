@@ -894,6 +894,42 @@ describe("tasks server", () => {
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
   });
 
+  it("blocks generic edits to service-managed document review tasks", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      personId: "person_manager",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      contextJson: {
+        documentReview: {
+          authorityTaskId: "authority_task",
+          checklist: [],
+          instructions: "Review the exact revision.",
+          requestedAt: "2026-07-27T12:00:00.000Z",
+          requestedByUserId: "user_creator",
+          required: true,
+          schema: "optimitron.review-request.v1",
+          target: {
+            contentHash: "hash_1",
+            documentId: "document_1",
+            revisionId: "revision_1",
+            version: 1,
+          },
+        },
+      },
+      id: "review_task",
+      isPublic: false,
+    });
+
+    await expect(
+      updateTaskCreatedByUser("review_task", "user_creator", {
+        description: "Point at another revision.",
+      }),
+    ).rejects.toThrow(
+      "Document review tasks can only be changed through document review operations.",
+    );
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
   describe("getTaskDetailData visibility", () => {
     // Regression for the 404-on-own-task bug: a private task assigned to
     // the viewer's Person but created by a different user (or the system,
@@ -925,6 +961,48 @@ describe("tasks server", () => {
       expect(ors).toContainEqual({ assigneePersonId: "person_demo" });
     });
 
+    it("selects every child task the signed-in viewer can read", async () => {
+      mocks.prisma.userFindUniqueOrThrow.mockResolvedValue({
+        availableHoursPerWeek: null,
+        id: "user_demo",
+        interestTags: [],
+        isAdmin: false,
+        personId: "person_demo",
+        skillTags: [],
+      });
+      mocks.prisma.taskFindFirst.mockResolvedValue(null);
+
+      await getTaskDetailData("task_parent", "user_demo");
+
+      const args = mocks.prisma.taskFindFirst.mock.calls[0]?.[0] as
+        | {
+            select?: {
+              _count?: {
+                select?: {
+                  childTasks?: { where?: { AND?: unknown[] } };
+                };
+              };
+              childTasks?: { where?: { AND?: unknown[] } };
+            };
+          }
+        | undefined;
+      const childAccess = args?.select?.childTasks?.where?.AND?.[1];
+      const countedChildAccess =
+        args?.select?._count?.select?.childTasks?.where?.AND?.[1];
+
+      expect(args?.select?.childTasks?.where?.AND?.[0]).toEqual({
+        deletedAt: null,
+      });
+      expect(childAccess).toMatchObject({
+        OR: expect.arrayContaining([
+          { isPublic: true },
+          { createdByUserId: "user_demo" },
+          { assigneePersonId: "person_demo" },
+        ]),
+      });
+      expect(countedChildAccess).toEqual(childAccess);
+    });
+
     it("falls back to public-only matching when no signed-in viewer", async () => {
       mocks.prisma.taskFindFirst.mockResolvedValue(null);
       mocks.countTaskCommunications.mockResolvedValue(0);
@@ -933,12 +1011,28 @@ describe("tasks server", () => {
 
       expect(mocks.prisma.userFindUniqueOrThrow).not.toHaveBeenCalled();
       const args = mocks.prisma.taskFindFirst.mock.calls[0]?.[0] as
-        | { where?: Record<string, unknown> }
+        | {
+            select?: {
+              _count?: {
+                select?: {
+                  childTasks?: { where?: { AND?: unknown[] } };
+                };
+              };
+              childTasks?: { where?: { AND?: unknown[] } };
+            };
+            where?: Record<string, unknown>;
+          }
         | undefined;
       // For unauthenticated callers, getTaskVisibilityWhere returns the
       // base where with isPublic: true (no OR clause).
       expect(args?.where).toMatchObject({ isPublic: true });
       expect(args?.where).not.toHaveProperty("OR");
+      expect(args?.select?.childTasks?.where).toEqual({
+        AND: [{ deletedAt: null }, { isPublic: true }],
+      });
+      expect(args?.select?._count?.select?.childTasks?.where?.AND?.[1]).toEqual(
+        { isPublic: true },
+      );
     });
   });
 });

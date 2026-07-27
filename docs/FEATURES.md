@@ -31,8 +31,8 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** implemented
-- **Summary:** Full task lifecycle over MCP (~110 tools) and REST: create/update/delete, claim → complete → verify, threaded comments, applications and candidate matching, org ownership.
-- **Evidence:** packages/web/src/lib/mcp-server.ts; packages/web/src/lib/tasks.server.ts (`createTask`); packages/web/src/lib/tasks/task-comments.server.ts; tests: packages/web/src/lib/**tests**/mcp-server.test.ts, **tests**/tasks.server.test.ts, **tests**/task-comments.server.test.ts
+- **Summary:** Full task lifecycle over MCP and REST: create/update/delete, claim → complete → verify, threaded comments, applications and candidate matching, org ownership. `createPerson` idempotently creates or updates people, and candidate results include saved external `Person` matches with validated typed provenance when supplied, even before signup.
+- **Evidence:** packages/web/src/lib/mcp-server.ts; packages/web/src/lib/tasks.server.ts (`createTask`); packages/web/src/lib/tasks/task-comments.server.ts; packages/web/src/lib/tasks/task-candidate-evidence.ts; tests: packages/web/src/lib/**tests**/mcp-server.test.ts, **tests**/tasks.server.test.ts, **tests**/task-comments.server.test.ts, packages/web/src/lib/tasks/task-candidate-evidence.test.ts
 - **Acceptance:** An MCP client can create a task under an explicit parent, claim it, complete the claim, and read the comment thread — all persisted.
 - **Roadmap:** shipped — maintain
 
@@ -279,10 +279,10 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** earth
 - **Status:** implemented
-- **Summary:** Structured accountability cases: parties, claims, harms, evidence, remedies, jury votes.
-- **Evidence:** `upsertCourtCase`, `addCourtCaseClaim`, `getCourtCase`, `openCourtCaseJuryVote` in packages/web/src/lib/mcp-server.ts; packages/web/src/app/court/page.tsx
+- **Summary:** Structured accountability cases currently retain case and party records, plaintiff identity and consent/privacy boundaries, claims, harms, evidence, remedies, jury votes, and separate memorial records. Expansion of the claim/harm/evidence/remedy schema is frozen: new case narratives use Documents, supporting evidence uses SourceArtifacts, and work or review uses Tasks until the generic workflow completes its EOS pilot and production Court data is audited.
+- **Evidence:** packages/db/prisma/schema.prisma (`CourtCase`, `CourtCaseParty`, `CourtCaseClaim`, `CourtCaseHarm`, `CourtCaseEvidence`, `CourtCaseRemedy`, `PersonMemorial*`); `upsertCourtCase`, `addCourtCaseClaim`, `getCourtCase`, `openCourtCaseJuryVote` in packages/web/src/lib/mcp-server.ts; packages/web/src/app/court/page.tsx
 - **Acceptance:** A case built via MCP renders complete on /court with its parties, claims, and evidence.
-- **Roadmap:** now — campaign track (operational-surface rework is production task `optimitron:dev:court-operational-surface`)
+- **Roadmap:** now — preserve the case, party, plaintiff, consent/privacy, jury, and memorial paths; reassess specialized claim/harm/evidence/remedy models only after the EOS document-review pilot and a production data audit
 
 ### OPT-EARTH-05 — Leader/signer reminders
 
@@ -388,6 +388,16 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Acceptance:** A user can create and share a document or collection, edit and query table records without conflicts or authorization leaks, and retrieve a private file only through an authorized short-lived URL.
 - **Roadmap:** shipped foundation — expand only for migrated workflows
 
+### OPT-CONTENT-02 — Exact-revision review, adoption, and publication
+
+- **Layer:** personal / organization / earth
+- **Status:** implemented
+- **Summary:** A reusable governance workflow assigns one hash-bound private `ASSIGNED_ONLY` review task per reviewer, exposes only the exact pinned document revision, records an explained substantive verdict and optional separate proposal document, applies accepted proposals as new canonical revisions, and records manager adoption with reasoned waivers. Manager and reviewer workspaces separate overview, changes, reviews, and history; a unified line diff supports exact-revision comments whose replies and votes remain in the private task discussion. Generic task mutation and execution cannot alter or complete formal reviews. An adopted revision can be copied into a new immutable referendum snapshot with a provenance artifact. Safe review outreach uses one hash-sealed `ExternalActionRequest` per email, atomic exact-batch approval, external-recipient suppression, and at most one separately approved reminder after seven days. No separate wiki, legal-review tables, or board model were added.
+- **Evidence:** packages/web/src/lib/tasks/document-review-contracts.ts; packages/web/src/lib/tasks/document-review.server.ts; packages/web/src/lib/tasks/document-comment-anchor.ts; packages/web/src/lib/mcp-tools/document-reviews.ts; packages/web/src/lib/referendums/document-publication.server.ts; packages/web/src/lib/tasks/private-review-invitations.server.ts; packages/web/src/lib/tasks/outbound-message-batch.server.ts; packages/web/src/components/documents/document-review-annotated-diff.tsx; packages/web/src/components/tasks/document-review-manager-panel.tsx; packages/web/src/components/tasks/document-review-reviewer-panel.tsx; packages/db/src/managed-data/optimize-earth-task-tree.ts; tests: packages/web/src/lib/tasks/document-review-contracts.test.ts, document-review.server.test.ts, document-comment-anchor.server.test.ts, private-review-invitations.server.test.ts, outbound-message-batch.server.test.ts, packages/web/src/lib/referendums/document-publication.server.test.ts, packages/web/src/lib/**tests**/documents.server.test.ts, packages/web/src/lib/**tests**/person.server.test.ts
+- **Acceptance:** A manager can assign an external person to one exact revision, approve a frozen invitation batch, accept or reject review delivery independently of the reviewer's verdict, compare and comment on a proposal line by line, apply it to a new revision, reject stale responses, adopt the current revision only after independent approvals or reasoned required-review waivers, and publish a locked referendum without exposing sibling reviews or document history to the reviewer.
+- **Roadmap:** pilot on EOS only after its entity, jurisdiction, and authoritative signed/filed records are confirmed; candidate research and real outreach have not been performed
+- **Notes:** Managed task-tree source defines the sequenced EOS entity verification, reviewer recruitment, five document-review workstreams, packet adoption, round opening, work-package funding, and receipt work with blocker edges. This entry does not claim that the tree was synced to production or that authoritative records were imported.
+
 ## Knowledge, verification, improvement, and sustainability
 
 ### OPT-KNOW-01 — Reusable entity knowledge
@@ -402,11 +412,11 @@ verified against `feature/private-execution-system` (2026-07-17).
 ### OPT-EPI-01 — Authority-aware collective verification
 
 - **Layer:** cross-cutting
-- **Status:** planned
-- **Summary:** Comment reactions may rank helpfulness or attention, while operational truth and acceptance remain a separate authority-, provenance-, freshness-, conflict-, and evidence-aware verification decision.
-- **Evidence:** target contract in PRD §9.6; TaskComment and typed TaskVerification foundations; production task `optimitron:dev:product-constitution:approve-schema-work`; no public reputation or consensus weighting ships
+- **Status:** partial
+- **Summary:** The document-review slice now separates five signals: comment votes rank discussion; `TaskVerification` accepts review delivery; review artifacts carry substantive verdicts; authorized managers adopt exact revisions or record reasoned waivers; public referendum votes decide the separate ballot. The broader authority-, freshness-, corroboration-, conflict-, and reputation-aware system for arbitrary claims does not ship.
+- **Evidence:** target contract in PRD §9.6; packages/web/src/lib/tasks/document-review.server.ts and document-review.server.test.ts; packages/web/src/lib/referendums/document-publication.server.ts and document-publication.server.test.ts; packages/web/src/components/tasks/task-comment-feed.tsx and task-comment-feed.test.tsx; no public reputation or consensus weighting ships
 - **Acceptance:** A popular but unauthorized or stale comment cannot verify an answer or task; an authorized verifier can accept or supersede a sourced answer with an auditable reason.
-- **Roadmap:** next — private owner-authorized verification first; public consensus later
+- **Roadmap:** pilot private owner-authorized document decisions first; design public reputation or consensus weighting only after the pilot
 
 ### OPT-LOOP-01 — Auditable product self-improvement loop
 
@@ -425,6 +435,15 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Evidence:** target contract in PRD §9.8; existing task listings, compensation, applications, artifacts, and verification foundations; no qualifying paid pilot or operating-margin proof ships
 - **Acceptance:** A named customer pays for a bounded workflow whose costs, receipts, verified deliverable, and gross margin are recorded, with commercial funds kept separate from Accelerated Medicine Foundation campaign donations.
 - **Roadmap:** later — one design-partner workflow, then a small paid pilot
+
+### OPT-BIZ-02 — Immutable contribution receipts and outcome addenda
+
+- **Layer:** organization
+- **Status:** implemented
+- **Summary:** A manager can explicitly bind an adopted task-attached revision as funding terms. `contribution-receipt-binding.v1` freezes the issuer, terms, and adopted governing revisions in task context before a target exists; the first checkout or pledge copies that binding onto the target, where different terms cannot replace it. Every successful payment creates one deterministic private receipt task and immutable `optimitron.contribution-receipt.v1` artifact in the same transaction, freezing payment facts, governing hashes, intended work, and the pinned impact estimate. Invalid provenance fails closed and receipt failure rolls the local paid transition back. The receipt explicitly records that work is incomplete, impact is unrealized, and no EOP was minted. Completion, measured impact, refunds, and corrections append `optimitron.outcome-addendum.v1` artifacts instead of rewriting the receipt.
+- **Evidence:** packages/web/src/lib/task-funding/contribution-receipts.server.ts; packages/web/src/lib/task-funding/payments.server.ts; packages/web/src/lib/task-funding/escrow.server.ts; packages/web/src/lib/mcp-tools/contribution-receipts.ts; packages/web/src/app/api/contribution-receipts/; packages/web/src/components/task-funding/ContributionReceiptPanel.tsx; tests under `packages/web/src/lib/task-funding/__tests__/`
+- **Acceptance:** Each successful payment atomically produces the deterministic receipt, and reissuing it returns the same hash-validated artifact; later completion, outcome, refund, or correction evidence appears only as ordered append-only addenda and never changes the original receipt.
+- **Roadmap:** exercise with individually fundable EOS work-package tasks after financing terms and governing revisions are adopted; no real receipt has been issued by this implementation
 
 ### OPT-INTG-02 — Google Calendar import
 

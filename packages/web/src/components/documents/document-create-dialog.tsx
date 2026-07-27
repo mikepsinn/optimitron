@@ -9,7 +9,15 @@ import { Input } from "@/components/retroui/Input";
 import { Textarea } from "@/components/retroui/Textarea";
 import { API_ROUTES } from "@/lib/api-routes";
 
-export function DocumentCreateDialog() {
+export function DocumentCreateDialog({
+  navigateToDocument = true,
+  taskId,
+  triggerLabel = "New document",
+}: {
+  navigateToDocument?: boolean;
+  taskId?: string;
+  triggerLabel?: string;
+} = {}) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +32,7 @@ export function DocumentCreateDialog() {
     setIsSaving(true);
     try {
       const response = await fetch(API_ROUTES.documents.root, {
-        body: JSON.stringify({ body, title }),
+        body: JSON.stringify({ body, ...(taskId ? { taskId } : {}), title }),
         headers: {
           "Content-Type": "application/json",
           "Idempotency-Key": crypto.randomUUID(),
@@ -39,8 +47,13 @@ export function DocumentCreateDialog() {
         throw new Error(payload?.error ?? "Could not create the document.");
       }
       setOpen(false);
-      router.push(`/documents/${payload.document.id}`);
-      router.refresh();
+      if (navigateToDocument) {
+        router.push(`/documents/${payload.document.id}`);
+      } else {
+        setBody("");
+        setTitle("");
+        router.refresh();
+      }
     } catch (createError) {
       setError(
         createError instanceof Error
@@ -60,7 +73,7 @@ export function DocumentCreateDialog() {
         type="button"
       >
         <Plus className="h-4 w-4" />
-        New document
+        {triggerLabel}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content

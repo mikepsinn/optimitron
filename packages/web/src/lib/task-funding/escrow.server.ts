@@ -17,6 +17,11 @@ import { prisma } from "@/lib/prisma";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { withTaskFundingLock } from "@/lib/task-payouts.server";
 import {
+  issuePaidContributionReceiptInTransaction,
+  requireContributionReceiptBinding,
+  resolveContributionReceiptBinding,
+} from "./contribution-receipts.server";
+import {
   chooseTargetAmountCents,
   getTaskFundingTransferGroup,
   normalizeTaskFundingAmountCents,
@@ -76,6 +81,12 @@ function clampLimit(value: number | undefined, fallback: number) {
   return Math.max(1, Math.min(100, Math.trunc(value)));
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value != null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 function toChargeableAmountCents(value: bigint): number | null {
   const numeric = Number(value);
   if (
@@ -102,7 +113,9 @@ interface StripeCardDeclineInfo {
  * path. Anything else (network, config) is transient and re-attempted by
  * retryCallableCharges.
  */
-function getStripeCardDeclineInfo(error: unknown): StripeCardDeclineInfo | null {
+function getStripeCardDeclineInfo(
+  error: unknown,
+): StripeCardDeclineInfo | null {
   const stripeError = error as Partial<Stripe.errors.StripeCardError> & {
     raw?: { type?: string };
   };
@@ -170,6 +183,8 @@ export async function createPledgeCardSetupSession(
           },
         },
       },
+      contextJson: true,
+      fundingTarget: { select: { metadata: true } },
       id: true,
       title: true,
     },
@@ -177,6 +192,17 @@ export async function createPledgeCardSetupSession(
   if (!task) {
     throw new Error("Task not found.");
   }
+  const receiptBinding = resolveContributionReceiptBinding(
+    task.fundingTarget?.metadata,
+    task.contextJson,
+  );
+  const existingTargetMetadata = asRecord(task.fundingTarget?.metadata);
+  const fundingTargetMetadata = {
+    ...existingTargetMetadata,
+    contributionReceipt: receiptBinding,
+    createdBy:
+      existingTargetMetadata.createdBy ?? TASK_FUNDING_PLEDGE_SETUP_KIND,
+  } satisfies Prisma.InputJsonValue;
 
   const currency = task.compensationCurrency?.trim().toLowerCase() || "usd";
   if (currency !== "usd") {
@@ -196,15 +222,14 @@ export async function createPledgeCardSetupSession(
     where: { taskId: task.id },
     create: {
       currency,
-      metadata: {
-        createdBy: TASK_FUNDING_PLEDGE_SETUP_KIND,
-      } satisfies Prisma.InputJsonValue,
+      metadata: fundingTargetMetadata,
       status: TaskFundingTargetStatus.OPEN,
       targetAmountCents: BigInt(targetAmountCentsValue),
       taskId: task.id,
     },
     update: {
       deletedAt: null,
+      metadata: fundingTargetMetadata,
     },
     select: { id: true },
   });
@@ -445,6 +470,9 @@ async function recordPledgeChargeSucceeded(
         status: TaskFundingPledgeStatus.FULFILLED,
       },
     });
+    await issuePaidContributionReceiptInTransaction(plan.paymentId, tx, {
+      now: paidAt,
+    });
     await refreshTaskFundingTargetStatus(plan.targetId, tx);
   });
   await notifyPledgeChargeReceipt(plan);
@@ -679,6 +707,7 @@ export async function maybeChargeCallablePledges(
     select: {
       currency: true,
       id: true,
+      metadata: true,
       status: true,
       task: { select: { deletedAt: true, id: true, title: true } },
       taskId: true,
@@ -691,6 +720,7 @@ export async function maybeChargeCallablePledges(
   ) {
     return empty;
   }
+  requireContributionReceiptBinding(target.metadata);
 
   const transferGroup = getTaskFundingTransferGroup(target.taskId);
   const calledAt = new Date();

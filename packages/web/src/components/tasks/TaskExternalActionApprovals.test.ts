@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildNetworkBlockedHtmlPreview,
   readOutboundEnvelopeV2,
+  readPrivateReviewApprovalContext,
 } from "./TaskExternalActionApprovals";
 
 describe("readOutboundEnvelopeV2", () => {
@@ -67,6 +68,54 @@ describe("readOutboundEnvelopeV2", () => {
         version: 2,
       }),
     ).toBeNull();
+  });
+});
+
+describe("readPrivateReviewApprovalContext", () => {
+  it("reads the exact task and revision binding from a version 3 approval", () => {
+    expect(
+      readPrivateReviewApprovalContext({
+        approvalContext: {
+          batchKey: "review-batch-1",
+          kind: "INVITATION",
+          recipientPersonId: "person_1",
+          revision: {
+            contentHash: "hash_1",
+            documentId: "document_1",
+            documentRevisionId: "revision_1",
+            documentVersion: 1,
+          },
+          schema: "optimitron.private-review-invitation.v1",
+          taskId: "review_task_1",
+        },
+        communicationId: "communication_1",
+        delivery: {
+          recipientUserId: null,
+          scope: "task_notifications",
+        },
+        emailLogId: "email_log_1",
+        envelope: {
+          from: "Manager <hello@example.org>",
+          html: "<p>Sign in to review.</p>",
+          subject: "Private document review invitation",
+          text: "Sign in to review.",
+          to: ["reviewer@example.org"],
+        },
+        version: 3,
+      }),
+    ).toEqual({
+      batchKey: "review-batch-1",
+      kind: "INVITATION",
+      recipientPersonId: "person_1",
+      revision: {
+        contentHash: "hash_1",
+        documentId: "document_1",
+        documentRevisionId: "revision_1",
+        documentVersion: 1,
+      },
+      schema: "optimitron.private-review-invitation.v1",
+      taskId: "review_task_1",
+    });
   });
 });
 

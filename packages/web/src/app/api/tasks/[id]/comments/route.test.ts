@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   authorizeOwnerSend: vi.fn(),
   canUserCommentOnTask: vi.fn(),
   canUserViewTask: vi.fn(),
+  buildDocumentCommentCitationsJson: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
   getCurrentUser: vi.fn(),
   getTaskActivityTimeline: vi.fn(),
@@ -51,6 +52,13 @@ vi.mock("@/lib/tasks/task-comment-attachments.server", () => ({
   },
 }));
 
+vi.mock("@/lib/tasks/document-comment-anchor.server", () => ({
+  buildDocumentCommentCitationsJson: mocks.buildDocumentCommentCitationsJson,
+  DocumentCommentAnchorError: class extends Error {
+    status = 400 as const;
+  },
+}));
+
 vi.mock("@/lib/tasks/task-comment-notifications.server", () => ({
   notifyTaskCommentRecipients: mocks.notifyTaskCommentRecipients,
 }));
@@ -63,6 +71,7 @@ vi.mock("@/lib/tasks/wishonia-task-reply.server", () => ({
 }));
 
 import { GET, POST } from "./route";
+import { DocumentCommentAnchorError } from "@/lib/tasks/document-comment-anchor.server";
 
 const FEED = { comments: [], nextCursor: null, total: 0 };
 
@@ -138,6 +147,31 @@ describe("GET /api/tasks/[id]/comments", () => {
     );
   });
 
+  it.each([
+    ["receipt%3Apayment_123", "receipt:payment_123"],
+    ["receipt%253Apayment_123", "receipt%3Apayment_123"],
+    ["bad%2", "bad%2"],
+  ])(
+    "decodes the comment feed task id exactly once and safely preserves %s as %s",
+    async (routeId, expectedTaskId) => {
+      mocks.getCurrentUser.mockResolvedValue(null);
+      mocks.getTaskCommentFeed.mockResolvedValue(FEED);
+      mocks.getTaskActivityTimeline.mockResolvedValue([]);
+
+      const response = await getRequest(routeId);
+
+      expect(response.status).toBe(200);
+      expect(mocks.getTaskCommentFeed).toHaveBeenCalledWith(
+        expect.objectContaining({ taskId: expectedTaskId }),
+      );
+      expect(mocks.getTaskActivityTimeline).toHaveBeenCalledWith(
+        expectedTaskId,
+        50,
+        null,
+      );
+    },
+  );
+
   it("truncates fractional page limits before querying Prisma", async () => {
     mocks.getCurrentUser.mockResolvedValue(null);
     mocks.getTaskCommentFeed.mockResolvedValue(FEED);
@@ -150,6 +184,21 @@ describe("GET /api/tasks/[id]/comments", () => {
       expect.objectContaining({ limit: 50 }),
     );
   });
+
+  it("fetches document annotations without the unrelated activity feed", async () => {
+    mocks.getTaskCommentFeed.mockResolvedValue(FEED);
+
+    const response = await getRequest(
+      "private_task",
+      "?documentAnchors=1&limit=100",
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.getTaskCommentFeed).toHaveBeenCalledWith(
+      expect.objectContaining({ documentAnchorsOnly: true, limit: 100 }),
+    );
+    expect(mocks.getTaskActivityTimeline).not.toHaveBeenCalled();
+  });
 });
 
 describe("POST /api/tasks/[id]/comments", () => {
@@ -160,12 +209,85 @@ describe("POST /api/tasks/[id]/comments", () => {
     const response = await POST(
       new Request("http://localhost/api/tasks/private_task/comments", {
         method: "POST",
-        body: JSON.stringify({ message: "hello" }),
+        body: JSON.stringify({ documentAnchor: {}, message: "hello" }),
       }),
       { params: Promise.resolve({ id: "private_task" }) },
     );
 
     expect(response.status).toBe(404);
+    expect(mocks.buildDocumentCommentCitationsJson).not.toHaveBeenCalled();
+    expect(mocks.postComment).not.toHaveBeenCalled();
+  });
+
+  it("persists only the server-built exact-revision anchor metadata", async () => {
+    const documentAnchor = {
+      endOffset: 22,
+      exact: "Review this",
+      field: "BODY",
+      revisionId: "revision-2",
+      startOffset: 11,
+    };
+    const citationsJson = {
+      documentAnchor: {
+        schema: "optimitron.document-comment-anchor.v1",
+      },
+    };
+    mocks.getCurrentUser.mockResolvedValue({ id: "reviewer-user" });
+    mocks.buildDocumentCommentCitationsJson.mockResolvedValue(citationsJson);
+    mocks.countUserCommentsInWindow.mockResolvedValue(5);
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks/review-task/comments", {
+        headers: { Accept: "application/x-ndjson" },
+        method: "POST",
+        body: JSON.stringify({ documentAnchor, message: "Please revise." }),
+      }),
+      { params: Promise.resolve({ id: "review-task" }) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("application/json");
+    expect(mocks.buildDocumentCommentCitationsJson).toHaveBeenCalledWith({
+      clientAccessBoundary: undefined,
+      rawAnchor: documentAnchor,
+      taskId: "review-task",
+      userId: "reviewer-user",
+    });
+    expect(mocks.postComment).toHaveBeenCalledWith(
+      expect.objectContaining({ citationsJson }),
+    );
+    expect(mocks.generateAndPostWishoniaReply).not.toHaveBeenCalled();
+  });
+
+  it("returns a validation error instead of silently posting an unanchored comment", async () => {
+    mocks.getCurrentUser.mockResolvedValue({ id: "reviewer-user" });
+    mocks.buildDocumentCommentCitationsJson.mockRejectedValue(
+      new DocumentCommentAnchorError(
+        "Inline document comments require an exact-version review task.",
+      ),
+    );
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks/ordinary-task/comments", {
+        method: "POST",
+        body: JSON.stringify({
+          documentAnchor: {
+            endOffset: 4,
+            exact: "Text",
+            field: "BODY",
+            revisionId: "revision-2",
+            startOffset: 0,
+          },
+          message: "Please revise.",
+        }),
+      }),
+      { params: Promise.resolve({ id: "ordinary-task" }) },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "Inline document comments require an exact-version review task.",
+    });
     expect(mocks.postComment).not.toHaveBeenCalled();
   });
 

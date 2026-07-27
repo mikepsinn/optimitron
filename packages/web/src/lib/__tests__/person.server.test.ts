@@ -54,7 +54,8 @@ describe("person server", () => {
       id: "person_1",
       image: null,
       isPublicFigure: true,
-      sourceRef: "public-figure:donald-trump:president:united-states-government",
+      sourceRef:
+        "public-figure:donald-trump:president:united-states-government",
       sourceUrl: "https://manual.example/president",
     };
     const db = {
@@ -79,7 +80,8 @@ describe("person server", () => {
 
     expect(db.person.findUnique).toHaveBeenCalledWith({
       where: {
-        sourceRef: "public-figure:donald-trump:president:united-states-government",
+        sourceRef:
+          "public-figure:donald-trump:president:united-states-government",
       },
     });
     expect(db.person.update).toHaveBeenCalledWith({
@@ -91,7 +93,8 @@ describe("person server", () => {
         email: null,
         image: null,
         isPublicFigure: true,
-        sourceRef: "public-figure:donald-trump:president:united-states-government",
+        sourceRef:
+          "public-figure:donald-trump:president:united-states-government",
         sourceUrl: "https://manual.example/president",
       },
       where: { id: "person_1" },
@@ -134,9 +137,11 @@ describe("person server", () => {
     };
     const db = {
       person: {
-        findUnique: vi.fn().mockImplementation(({ where }: { where: { id: string } }) => (
-          where.id === "person_canonical" ? canonicalPerson : duplicatePerson
-        )),
+        findUnique: vi
+          .fn()
+          .mockImplementation(({ where }: { where: { id: string } }) =>
+            where.id === "person_canonical" ? canonicalPerson : duplicatePerson,
+          ),
         update: vi.fn().mockResolvedValue(canonicalPerson),
       },
       referralInvitation: {
@@ -205,21 +210,23 @@ describe("person server", () => {
   it("refuses to merge people that are linked to different users", async () => {
     const db = {
       person: {
-        findUnique: vi.fn().mockImplementation(({ where }: { where: { id: string } }) => ({
-          bio: null,
-          countryCode: null,
-          currentAffiliation: null,
-          displayName: "Jake Smith",
-          email: null,
-          handle: null,
-          id: where.id,
-          image: null,
-          isPublicFigure: false,
-          links: null,
-          sourceRef: null,
-          sourceUrl: null,
-          user: { id: where.id === "person_canonical" ? "user_1" : "user_2" },
-        })),
+        findUnique: vi
+          .fn()
+          .mockImplementation(({ where }: { where: { id: string } }) => ({
+            bio: null,
+            countryCode: null,
+            currentAffiliation: null,
+            displayName: "Jake Smith",
+            email: null,
+            handle: null,
+            id: where.id,
+            image: null,
+            isPublicFigure: false,
+            links: null,
+            sourceRef: null,
+            sourceUrl: null,
+            user: { id: where.id === "person_canonical" ? "user_1" : "user_2" },
+          })),
         update: vi.fn(),
       },
       referralInvitation: {
@@ -241,7 +248,9 @@ describe("person server", () => {
         },
         db as never,
       ),
-    ).rejects.toThrow("Cannot merge two Person records that are linked to different users");
+    ).rejects.toThrow(
+      "Cannot merge two Person records that are linked to different users",
+    );
     expect(db.task.updateMany).not.toHaveBeenCalled();
     expect(db.referralInvitation.updateMany).not.toHaveBeenCalled();
     expect(db.user.updateMany).not.toHaveBeenCalled();
@@ -310,7 +319,9 @@ describe("ensurePersonForUser", () => {
       handle: "user-chose-this",
     } as never);
 
-    await ensurePersonForUser("user_existing", { displayName: "Should Be Ignored" });
+    await ensurePersonForUser("user_existing", {
+      displayName: "Should Be Ignored",
+    });
 
     const updateCall = vi.mocked(prisma.person.update).mock.calls[0]?.[0];
     expect(updateCall?.data).not.toHaveProperty("handle");
@@ -342,5 +353,53 @@ describe("ensurePersonForUser", () => {
 
     const updateCall = vi.mocked(prisma.person.update).mock.calls[0]?.[0];
     expect(updateCall?.data).toMatchObject({ handle: "seeded-handle" });
+  });
+
+  it("links a first-login User to an existing same-email Person", async () => {
+    vi.mocked(prisma.user.findUniqueOrThrow).mockResolvedValue({
+      countryCode: "US",
+      email: "reviewer@example.com",
+      id: "user_reviewer",
+      personId: null,
+    } as never);
+    vi.mocked(prisma.person.findUnique).mockResolvedValue({
+      id: "person_reviewer",
+      handle: "independent-reviewer",
+      user: null,
+    } as never);
+    vi.mocked(prisma.person.update).mockResolvedValue({
+      id: "person_reviewer",
+      handle: "independent-reviewer",
+    } as never);
+
+    await ensurePersonForUser("user_reviewer", {
+      displayName: "Ignored signup name",
+    });
+
+    expect(prisma.person.create).not.toHaveBeenCalled();
+    expect(prisma.person.update).toHaveBeenCalledWith({
+      where: { id: "person_reviewer" },
+      data: {
+        countryCode: "US",
+        email: "reviewer@example.com",
+        lifeStatus: "LIVING",
+      },
+    });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user_reviewer" },
+      data: { personId: "person_reviewer" },
+    });
+    expect(prisma.subject.upsert).toHaveBeenCalledWith({
+      where: { userId: "user_reviewer" },
+      update: expect.objectContaining({
+        personId: "person_reviewer",
+        subjectType: "USER",
+      }),
+      create: expect.objectContaining({
+        personId: "person_reviewer",
+        subjectType: "USER",
+        userId: "user_reviewer",
+      }),
+    });
   });
 });

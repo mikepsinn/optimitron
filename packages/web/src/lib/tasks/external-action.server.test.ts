@@ -142,6 +142,53 @@ describe.sequential("external action request boundaries", () => {
     expect(decided.approvedAt).not.toBeNull();
   });
 
+  it("refuses to approve a private review invitation outside its exact batch", async () => {
+    const actor = await createUser("review_batch_manager");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "review_batch_task",
+    });
+    const request = await proposeExternalAction(
+      {
+        destination: "reviewer@example.test",
+        idempotencyKey: `${TEST_PREFIX}review_batch`,
+        operation: "outbound_message.email",
+        payload: {
+          approvalContext: {
+            batchKey: "batch_review_123",
+            kind: "INVITATION",
+            recipientPersonId: "person_reviewer",
+            revision: {
+              contentHash: "hash_1",
+              documentId: "doc_1",
+              documentRevisionId: "revision_1",
+              documentVersion: 1,
+            },
+            schema: "optimitron.private-review-invitation.v1",
+            taskId: task.id,
+          },
+        },
+        taskId: task.id,
+      },
+      actor.user.id,
+    );
+
+    await expect(
+      decideExternalActionRequest(
+        { decision: "APPROVE", externalActionRequestId: request.id },
+        actor.user.id,
+      ),
+    ).rejects.toThrow(
+      "Private review invitations must be approved as one exact batch",
+    );
+    await expect(
+      prisma.externalActionRequest.findUniqueOrThrow({
+        where: { id: request.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: ExternalActionRequestStatus.PENDING });
+  });
+
   it("refuses to re-decide a request that already reached a terminal decision", async () => {
     const actor = await createUser("redecider");
     const task = await createTask({

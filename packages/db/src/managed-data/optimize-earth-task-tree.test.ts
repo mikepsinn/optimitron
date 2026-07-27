@@ -3,6 +3,15 @@ import {
   COURT_OF_HUMANITY_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_ID,
+  EOS_APPROVE_FINANCING_PACKET_TASK_KEY,
+  EOS_CAPITALIZE_TASK_ID,
+  EOS_OPEN_FINANCING_ROUND_TASK_KEY,
+  EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY,
+  EOS_REVIEW_FINANCING_TERMS_TASK_KEY,
+  EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY,
+  EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY,
+  EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY,
+  EOS_VERIFY_ENTITY_TASK_KEY,
   LOVING_TAKEOVER_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "../task-keys.js";
@@ -72,6 +81,39 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
   it("the shirt seed is a child of End War and Disease", () => {
     const seed = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "shirt-seed");
     expect(seed?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
+  });
+
+  it("decomposes EOS capitalization into deterministic, gated work", () => {
+    const steps = OPTIMIZE_EARTH_TASK_TREE.filter(
+      (task) => task.parentTaskId === EOS_CAPITALIZE_TASK_ID,
+    );
+    expect(steps).toHaveLength(11);
+
+    const byKey = new Map(steps.map((task) => [task.taskKey, task]));
+    expect(
+      byKey.get(EOS_APPROVE_FINANCING_PACKET_TASK_KEY)?.blockedByTaskKeys,
+    ).toEqual(
+      expect.arrayContaining([
+        EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY,
+        EOS_REVIEW_FINANCING_TERMS_TASK_KEY,
+        EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY,
+        EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY,
+        EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY,
+      ]),
+    );
+    expect(
+      byKey.get(EOS_OPEN_FINANCING_ROUND_TASK_KEY)?.blockedByTaskKeys,
+    ).toEqual([EOS_APPROVE_FINANCING_PACKET_TASK_KEY]);
+    expect(
+      byKey.get(EOS_APPROVE_FINANCING_PACKET_TASK_KEY)?.contextJson,
+    ).toEqual({
+      requiresDocumentDecision: {
+        schema: "optimitron.requires-document-decision.v1",
+      },
+    });
+    expect(
+      byKey.get(EOS_VERIFY_ENTITY_TASK_KEY)?.blockedByTaskKeys,
+    ).toBeUndefined();
   });
 
   // Regression guard: the optimitron:dev entry adopted a runtime-created row,

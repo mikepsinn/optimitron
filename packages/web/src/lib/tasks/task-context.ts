@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ReviewRequestV1Schema } from "@/lib/tasks/document-review-contracts";
 
 // ---------------------------------------------------------------------------
 // task.contextJson Zod schema — the single contract between the seeder and UI
@@ -42,9 +43,7 @@ const AssigneeProfileSchema = z.object({
    * government report-card dataset at runtime.
    */
   militaryToClinicalTrialsRatio: z.number().optional(),
-  jobQuote: z
-    .object({ text: z.string(), source: z.string() })
-    .optional(),
+  jobQuote: z.object({ text: z.string(), source: z.string() }).optional(),
   contactChannels: z.array(ContactChannelSchema).optional(),
 });
 
@@ -123,6 +122,12 @@ const CurrentActivitySchema = z.object({
   updated: z.string().optional(),
 });
 
+const RequiresDocumentDecisionSchema = z
+  .object({
+    schema: z.literal("optimitron.requires-document-decision.v1"),
+  })
+  .strict();
+
 export const TaskContextJsonSchema = z
   .object({
     assigneeProfile: AssigneeProfileSchema.optional(),
@@ -135,13 +140,17 @@ export const TaskContextJsonSchema = z
     expectedDeliverable: z.string().min(1).optional(),
     acceptanceCriteria: z.array(z.string()).optional(),
     currentActivities: z.array(CurrentActivitySchema).optional(),
+    documentReview: ReviewRequestV1Schema.optional(),
+    requiresDocumentDecision: RequiresDocumentDecisionSchema.optional(),
   })
   .passthrough();
 
 export type TaskContext = z.infer<typeof TaskContextJsonSchema>;
 export type TaskContextAssigneeProfile = z.infer<typeof AssigneeProfileSchema>;
 export type TaskContextUnlock = z.infer<typeof UnlockSchema>;
-export type TaskContextPerformanceReview = z.infer<typeof PerformanceReviewSchema>;
+export type TaskContextPerformanceReview = z.infer<
+  typeof PerformanceReviewSchema
+>;
 export type TaskContextReminder = z.infer<typeof ReminderSchema>;
 export type TaskContextComparison = z.infer<typeof ContextComparisonSchema>;
 export type TaskContextBlockedBy = z.infer<typeof BlockedBySchema>;
@@ -172,7 +181,9 @@ export function getAssigneeMilitaryBudgetUsd(
   contextJson: unknown,
 ): number | null {
   const profile = readTaskContext(contextJson).assigneeProfile;
-  return typeof profile?.budgetUsdPerYear === "number" ? profile.budgetUsdPerYear : null;
+  return typeof profile?.budgetUsdPerYear === "number"
+    ? profile.budgetUsdPerYear
+    : null;
 }
 
 /**

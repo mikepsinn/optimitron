@@ -24,6 +24,11 @@ const mocks = vi.hoisted(() => ({
     taskCommentUpdate: vi.fn(),
     taskCommentAttachmentUpdateMany: vi.fn(),
     taskCommentAttachmentDeleteMany: vi.fn(),
+    taskCommentVoteCount: vi.fn(),
+    taskCommentVoteCreate: vi.fn(),
+    taskCommentVoteDelete: vi.fn(),
+    taskCommentVoteFindUnique: vi.fn(),
+    taskCommentVoteUpdate: vi.fn(),
   },
 }));
 
@@ -88,6 +93,13 @@ function createTxClient() {
     taskCommentAttachment: {
       deleteMany: mocks.tx.taskCommentAttachmentDeleteMany,
       updateMany: mocks.tx.taskCommentAttachmentUpdateMany,
+    },
+    taskCommentVote: {
+      count: mocks.tx.taskCommentVoteCount,
+      create: mocks.tx.taskCommentVoteCreate,
+      delete: mocks.tx.taskCommentVoteDelete,
+      findUnique: mocks.tx.taskCommentVoteFindUnique,
+      update: mocks.tx.taskCommentVoteUpdate,
     },
   };
 }
@@ -503,6 +515,25 @@ describe("getTaskCommentFeed visibility gate", () => {
     const where = mocks.prisma.taskCommentFindMany.mock.calls[0]?.[0]?.where;
     expect(where.visibility).toBeUndefined();
   });
+
+  it("can fetch only root document annotations for an inline review", async () => {
+    await getTaskCommentFeed({
+      currentUserId: "manager_1",
+      documentAnchorsOnly: true,
+      taskId: "public_task",
+    });
+
+    const where = mocks.prisma.taskCommentFindMany.mock.calls[0]?.[0]?.where;
+    expect(where).toEqual(
+      expect.objectContaining({
+        citationsJson: {
+          equals: "optimitron.document-comment-anchor.v1",
+          path: ["documentAnchor", "schema"],
+        },
+        parentCommentId: null,
+      }),
+    );
+  });
 });
 
 describe("getTaskActivityTimeline visibility gate", () => {
@@ -558,5 +589,93 @@ describe("voteComment visibility gate", () => {
 
     expect(mocks.assertUserCanViewTask).not.toHaveBeenCalled();
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
+  it("adds, toggles, flips, and removes votes without drifting cached totals", async () => {
+    let vote: {
+      id: string;
+      ipHash: string | null;
+      userAgentHash: string | null;
+      value: 1 | -1;
+    } | null = null;
+    mocks.prisma.taskCommentFindUnique.mockResolvedValue({
+      taskId: "task_1",
+      visibility: "PUBLIC",
+    });
+    mocks.tx.taskCommentVoteFindUnique.mockImplementation(async () => vote);
+    mocks.tx.taskCommentVoteCreate.mockImplementation(
+      async ({ data }: { data: { value: 1 | -1 } }) => {
+        vote = {
+          id: "vote_1",
+          ipHash: null,
+          userAgentHash: null,
+          value: data.value,
+        };
+        return vote;
+      },
+    );
+    mocks.tx.taskCommentVoteUpdate.mockImplementation(
+      async ({ data }: { data: { value: 1 | -1 } }) => {
+        if (!vote) throw new Error("missing vote");
+        vote = { ...vote, value: data.value };
+        return vote;
+      },
+    );
+    mocks.tx.taskCommentVoteDelete.mockImplementation(async () => {
+      vote = null;
+      return { id: "vote_1" };
+    });
+    mocks.tx.taskCommentVoteCount.mockImplementation(
+      async ({ where }: { where: { value: 1 | -1 } }) =>
+        vote?.value === where.value ? 1 : 0,
+    );
+    mocks.tx.taskCommentUpdate.mockImplementation(
+      async ({ data }: { data: Record<string, number> }) => data,
+    );
+    mocks.prisma.transaction.mockImplementation(
+      async (callback: (tx: ReturnType<typeof createTxClient>) => unknown) =>
+        callback(createTxClient()),
+    );
+
+    await expect(
+      voteComment({ commentId: "c1", userId: "user_1", value: 1 }),
+    ).resolves.toMatchObject({
+      downvoteCount: 0,
+      upvoteCount: 1,
+      userVote: 1,
+      voteScore: 1,
+    });
+    await expect(
+      voteComment({ commentId: "c1", userId: "user_1", value: 1 }),
+    ).resolves.toMatchObject({
+      downvoteCount: 0,
+      upvoteCount: 0,
+      userVote: 0,
+      voteScore: 0,
+    });
+    await expect(
+      voteComment({ commentId: "c1", userId: "user_1", value: -1 }),
+    ).resolves.toMatchObject({
+      downvoteCount: 1,
+      upvoteCount: 0,
+      userVote: -1,
+      voteScore: -1,
+    });
+    await expect(
+      voteComment({ commentId: "c1", userId: "user_1", value: 1 }),
+    ).resolves.toMatchObject({
+      downvoteCount: 0,
+      upvoteCount: 1,
+      userVote: 1,
+      voteScore: 1,
+    });
+    await expect(
+      voteComment({ commentId: "c1", userId: "user_1", value: 0 }),
+    ).resolves.toMatchObject({
+      downvoteCount: 0,
+      upvoteCount: 0,
+      userVote: 0,
+      voteScore: 0,
+    });
   });
 });

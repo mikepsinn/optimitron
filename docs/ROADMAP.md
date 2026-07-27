@@ -94,14 +94,31 @@ The unused campaign-specific reasoning subsystem has been removed. For
 reusable knowledge and self-improvement, let the production queue rank the
 remaining work while preserving this dependency order:
 
-1. Pilot reusable question tasks and verified answer artifacts with the
+1. Run the generic document-review proof on the EOS financing packet. First
+   confirm EOS's legal entity and jurisdiction and import authoritative
+   signed/filed records; do not present generated templates as current legal
+   documents. Only then research 12 qualified external candidates from
+   authoritative directories and published professional sources, save them as
+   `SUGGESTED`, assign exact-revision reviews, and human-approve any invitation
+   batch. No candidate research or real outreach has been completed yet
+   (OPT-CONTENT-02).
+2. Exercise deterministic contribution receipts on individually fundable EOS
+   work-package tasks after the financing packet is adopted. Preserve the
+   original payment/terms/impact snapshot and record later results only as
+   append-only addenda; no real receipt has been issued yet (OPT-BIZ-02).
+3. Pilot reusable question tasks and verified answer artifacts with the
    longevity-fellowship application (OPT-KNOW-01, OPT-EPI-01).
-2. Add generic artifact lineage only if the pilot demonstrates a need for
+4. Add generic artifact lineage only if the pilot demonstrates a need for
    exact answer-version-to-submission relations (OPT-KNOW-01).
-3. Add MCP blocker surfacing and notifications after the underlying human
+5. Add MCP blocker surfacing and notifications after the underlying human
    review workflow is reliable (OPT-TASK-02, OPT-KNOW-01).
-4. Design public reputation or consensus weighting only after private
+6. Design public reputation or consensus weighting only after private
    owner-authorized verification works (OPT-EPI-01).
+
+The EOS pilot keeps expert review verdicts, review-delivery verification,
+manager adoption, comment votes, and public referendum votes as distinct
+signals. Do not add a board/director schema until counsel establishes the
+entity's actual authority requirements.
 
 - Automated parent-task matching and reviewed decomposition into child tasks
   (OPT-TASK-06, OPT-TASK-07) after the private bundle path proves the contract.
@@ -155,6 +172,11 @@ Do not pick these up unless they directly unblock a Now track:
   state diverse enough to bite regularly.
 - New treasury/token mechanics beyond the current treaty/prize path.
 - Non-campaign variant polish that does not protect a shipping path.
+- Expansion of `CourtCaseClaim`, `CourtCaseHarm`, `CourtCaseEvidence`, or
+  `CourtCaseRemedy`. Keep case, party, plaintiff identity, consent/privacy,
+  jury, and memorial records; put new narratives in Documents, evidence in
+  SourceArtifacts, and work/review in Tasks. Reassess only after the EOS
+  document-review pilot succeeds and production Court data is audited.
 
 ## Won't
 
@@ -163,6 +185,10 @@ Do not pick these up unless they directly unblock a Now track:
 - A second task model, a separate personal-tracking app, or a bespoke
   outreach model. The canonical Task graph, artifacts, and verification
   lifecycle cover those workflows.
+- A separate wiki, legal-review subsystem, review or decision tables, or board
+  model before a real workflow proves a missing invariant. Task pages,
+  versioned Documents, artifacts, existing outreach approval, and Referendums
+  are the reusable governance surface.
 - A custom chat client, coding agent, connector suite, model gateway, terminal,
   general browser controller, ambient private-message scraper, or credential
   sharing/resale system.

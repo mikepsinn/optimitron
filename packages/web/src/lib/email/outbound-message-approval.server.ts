@@ -40,6 +40,11 @@ const ResendProviderEnvelopeSchema = z
 
 export const OutboundMessageApprovalPayloadSchema = z
   .object({
+    /**
+     * Human-readable, immutable context shown beside the exact provider
+     * envelope at approval time. The provider never receives this object.
+     */
+    approvalContext: z.record(z.unknown()).optional(),
     communicationId: z.string().min(1),
     delivery: z
       .object({
@@ -55,9 +60,25 @@ export const OutboundMessageApprovalPayloadSchema = z
       .strict(),
     emailLogId: z.string().min(1),
     envelope: ResendProviderEnvelopeSchema,
-    version: z.literal(2),
+    version: z.union([z.literal(2), z.literal(3)]),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (value.version === 3 && !value.approvalContext) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Version 3 outbound approvals require approvalContext",
+        path: ["approvalContext"],
+      });
+    }
+    if (value.version === 2 && value.approvalContext) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Version 2 outbound approvals cannot include approvalContext",
+        path: ["approvalContext"],
+      });
+    }
+  });
 
 export type OutboundMessageApprovalPayload = z.infer<
   typeof OutboundMessageApprovalPayloadSchema
@@ -88,6 +109,8 @@ export function outboundMessageIdempotencyKey(communicationId: string) {
 export async function proposeOutboundMessage(input: {
   /** Whoever's action produced the draft, when there is one. */
   actorUserId?: string | null;
+  /** Immutable non-provider context the human must see before approval. */
+  approvalContext?: Record<string, unknown> | null;
   communicationId: string;
   /** Caller's open transaction, when the draft was written inside one. */
   db?: ExternalActionDb;
@@ -104,11 +127,14 @@ export async function proposeOutboundMessage(input: {
       taskId: input.taskId,
     });
     const payload = outboundMessageApprovalPayload({
+      ...(input.approvalContext
+        ? { approvalContext: input.approvalContext }
+        : {}),
       communicationId: input.communicationId,
       delivery: prepared.delivery,
       emailLogId: prepared.emailLogId,
       envelope: prepared.envelope,
-      version: 2,
+      version: input.approvalContext ? 3 : 2,
     });
     return await proposeExternalAction(
       {

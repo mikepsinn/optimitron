@@ -93,6 +93,41 @@ describe("proposeOutboundMessage", () => {
     );
   });
 
+  it("freezes private review context beside the provider envelope", async () => {
+    const approvalContext = {
+      batchKey: "batch_12345678",
+      kind: "INVITATION",
+      recipientPersonId: "person_1",
+      revision: {
+        contentHash: "hash_1",
+        documentId: "doc_1",
+        documentRevisionId: "revision_1",
+        documentVersion: 1,
+      },
+      schema: "optimitron.private-review-invitation.v1",
+      taskId: "task_1",
+    };
+
+    await proposeOutboundMessage({
+      actorUserId: "user_creator",
+      approvalContext,
+      communicationId: "comm_1",
+      taskId: "task_1",
+    });
+
+    expect(mocks.proposeExternalAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          approvalContext,
+          envelope: ENVELOPE,
+          version: 3,
+        }),
+      }),
+      "user_creator",
+      expect.objectContaining({ systemProposal: true }),
+    );
+  });
+
   it("marks the draft failed when no approval request can be created", async () => {
     const now = new Date("2026-07-26T12:00:00.000Z");
     mocks.prepareTaskNotificationForApproval.mockRejectedValue(

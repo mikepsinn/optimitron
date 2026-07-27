@@ -78,6 +78,7 @@ const mocks = vi.hoisted(() => ({
   taskApplicationCreate: vi.fn(),
   taskApplicationUpdate: vi.fn(),
   taskApplicationEventCreate: vi.fn(),
+  taskCandidateMatchFindFirst: vi.fn(),
   taskCandidateMatchFindMany: vi.fn(),
   taskCandidateMatchUpsert: vi.fn(),
   taskCandidateMatchUpdate: vi.fn(),
@@ -92,6 +93,7 @@ const mocks = vi.hoisted(() => ({
   updateTaskApplication: vi.fn(),
   upsertPrimaryTaskCommunicationEndpoint: vi.fn(),
   countUserCommentsInWindow: vi.fn(),
+  buildDocumentCommentCitationsJson: vi.fn(),
   postComment: vi.fn(),
   canUserViewTask: vi.fn(),
   notifyTaskCommentRecipients: vi.fn(),
@@ -204,6 +206,9 @@ vi.mock("../tasks/task-communication-endpoints.server", () => ({
 vi.mock("../tasks/task-comments.server", () => ({
   countUserCommentsInWindow: mocks.countUserCommentsInWindow,
   postComment: mocks.postComment,
+}));
+vi.mock("../tasks/document-comment-anchor.server", () => ({
+  buildDocumentCommentCitationsJson: mocks.buildDocumentCommentCitationsJson,
 }));
 vi.mock("../tasks/task-visibility.server", () => ({
   TASK_NOT_FOUND_MESSAGE: "Task not found",
@@ -388,6 +393,7 @@ vi.mock("../prisma", () => ({
       create: mocks.taskApplicationEventCreate,
     },
     taskCandidateMatch: {
+      findFirst: mocks.taskCandidateMatchFindFirst,
       findMany: mocks.taskCandidateMatchFindMany,
       upsert: mocks.taskCandidateMatchUpsert,
       update: mocks.taskCandidateMatchUpdate,
@@ -767,6 +773,7 @@ beforeEach(() => {
     eventType: TaskApplicationEventType.CREATED,
     id: "application-event-1",
   });
+  mocks.taskCandidateMatchFindFirst.mockResolvedValue(null);
   mocks.taskCandidateMatchFindMany.mockResolvedValue([]);
   mocks.taskCandidateMatchUpsert.mockResolvedValue({
     candidateKey: "user:user-1",
@@ -5965,6 +5972,13 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "postTaskComment",
         arguments: {
+          documentAnchor: {
+            endOffset: 4,
+            exact: "Text",
+            field: "BODY",
+            revisionId: "revision-2",
+            startOffset: 0,
+          },
           taskId: "private-task",
           message: "should not land",
         },
@@ -5972,7 +5986,58 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).message).toBe("Task not found");
+      expect(mocks.buildDocumentCommentCitationsJson).not.toHaveBeenCalled();
       expect(mocks.postComment).not.toHaveBeenCalled();
+    });
+
+    it("postTaskComment persists a server-built anchor within the MCP task boundary", async () => {
+      const documentAnchor = {
+        endOffset: 22,
+        exact: "Review this",
+        field: "BODY",
+        revisionId: "revision-2",
+        startOffset: 11,
+      };
+      const citationsJson = {
+        documentAnchor: {
+          schema: "optimitron.document-comment-anchor.v1",
+        },
+      };
+      mocks.taskFindFirst.mockResolvedValue({
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
+      mocks.buildDocumentCommentCitationsJson.mockResolvedValue(citationsJson);
+      mocks.countUserCommentsInWindow.mockResolvedValue(5);
+      mocks.postComment.mockResolvedValueOnce({
+        id: "comment-anchored",
+        message: "Please revise.",
+        taskId: "review-task",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "postTaskComment",
+        arguments: {
+          documentAnchor,
+          message: "Please revise.",
+          taskId: "review-task",
+        },
+      });
+
+      expect(result.isError).not.toBe(true);
+      expect(mocks.buildDocumentCommentCitationsJson).toHaveBeenCalledWith({
+        clientAccessBoundary: expect.objectContaining({
+          allowPersonalPrivate: true,
+        }),
+        rawAnchor: documentAnchor,
+        taskId: "review-task",
+        userId: "user-1",
+      });
+      expect(mocks.postComment).toHaveBeenCalledWith(
+        expect.objectContaining({ citationsJson }),
+      );
+      expect(mocks.generateAndPostWishoniaReply).not.toHaveBeenCalled();
     });
   });
 
@@ -6161,6 +6226,33 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("task applications and matching MCP tools", () => {
+    const externalPersonEvidence = {
+      confidence: 0.9,
+      conflicts: [],
+      contactProvenance: {
+        channel: "EMAIL",
+        sourceUrl: "https://example.org/contact",
+        type: "PUBLISHED_BUSINESS_CONTACT",
+      },
+      fitSummary: "Licensed counsel with relevant financing experience.",
+      qualifications: [
+        {
+          claim: "Active license",
+          sourceUrls: ["https://example.org/bar-directory"],
+          verified: true,
+        },
+      ],
+      schema: "candidate-evidence.v1",
+      sources: [
+        {
+          label: "Official bar directory",
+          sourceKind: "OFFICIAL_DIRECTORY",
+          url: "https://example.org/bar-directory",
+        },
+      ],
+      uncertainties: ["Availability is unknown."],
+    };
+
     it("applyToTask creates a task-scoped application for the authenticated user", async () => {
       mocks.taskFindFirst.mockResolvedValue({
         applicationPolicy: TaskApplicationPolicy.OPEN,
@@ -6299,6 +6391,201 @@ describe("MCP server tool dispatch", () => {
             score: 321,
           },
         ],
+      });
+    });
+
+    it("findTaskCandidates includes saved sourced people who have not signed up", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "task-1",
+          title: "Review financing terms",
+        }),
+      });
+      mocks.userFindMany.mockResolvedValue([]);
+      mocks.taskCandidateMatchFindMany.mockResolvedValue([
+        {
+          blockersJson: null,
+          candidateKey: "person:outside-counsel",
+          candidateKind: TaskCandidateKind.PERSON,
+          candidatePerson: {
+            currentAffiliation: "Example LLP",
+            displayName: "Outside Counsel",
+            handle: null,
+            headline: "Corporate lawyer",
+            id: "outside-counsel",
+            image: null,
+            sourceUrl: "https://example.org/profile",
+            user: null,
+          },
+          candidatePersonId: "outside-counsel",
+          id: "match-outside-counsel",
+          reasonJson: {
+            confidence: 0.9,
+            conflicts: [],
+            fitSummary: "Relevant financing experience.",
+            qualifications: [],
+            schema: "candidate-evidence.v1",
+            sources: [
+              {
+                label: "Official profile",
+                sourceKind: "OFFICIAL_PROFILE",
+                url: "https://example.org/profile",
+              },
+            ],
+            uncertainties: ["Availability is unknown."],
+          },
+          score: 88,
+          scoreVersion: "researched-v1",
+          status: TaskCandidateMatchStatus.SUGGESTED,
+        },
+      ]);
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const result = await client.callTool({
+        name: "findTaskCandidates",
+        arguments: { includeAgents: false, limit: 5, taskId: "task-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        candidates: [
+          {
+            candidateKey: "person:outside-counsel",
+            candidateKind: TaskCandidateKind.PERSON,
+            candidatePersonId: "outside-counsel",
+            matchId: "match-outside-counsel",
+            score: 88,
+          },
+        ],
+      });
+    });
+
+    it("requires candidate-evidence.v1 when saving a Person match", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        id: "task-1",
+        jurisdictionId: null,
+      });
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const rejected = await client.callTool({
+        name: "saveTaskCandidateMatch",
+        arguments: {
+          candidateKind: TaskCandidateKind.PERSON,
+          candidatePersonId: "outside-counsel",
+          reasonJson: { skillTags: ["corporate-law"] },
+          score: 88,
+          taskId: "task-1",
+        },
+      });
+      const accepted = await client.callTool({
+        name: "saveTaskCandidateMatch",
+        arguments: {
+          candidateKind: TaskCandidateKind.PERSON,
+          candidatePersonId: "outside-counsel",
+          reasonJson: externalPersonEvidence,
+          score: 88,
+          taskId: "task-1",
+        },
+      });
+
+      expect(rejected.isError).toBe(true);
+      expect(accepted.isError).toBeFalsy();
+      expect(mocks.taskCandidateMatchUpsert).toHaveBeenCalledTimes(1);
+      expect(mocks.taskCandidateMatchUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            candidateKind: TaskCandidateKind.PERSON,
+            reasonJson: expect.objectContaining({
+              schema: "candidate-evidence.v1",
+              sources: expect.any(Array),
+            }),
+          }),
+        }),
+      );
+    });
+
+    it("keeps legacy reason JSON compatible for User and Agent matches", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        id: "task-1",
+        jurisdictionId: null,
+      });
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const userResult = await client.callTool({
+        name: "saveTaskCandidateMatch",
+        arguments: {
+          candidateKind: TaskCandidateKind.USER,
+          candidateUserId: "candidate-user",
+          reasonJson: { skillTags: ["campaign-management"] },
+          score: 77,
+          taskId: "task-1",
+        },
+      });
+      const agentResult = await client.callTool({
+        name: "saveTaskCandidateMatch",
+        arguments: {
+          agentExecutorId: "agent-1",
+          candidateKind: TaskCandidateKind.AGENT,
+          reasonJson: { capabilityTags: ["research"] },
+          score: 76,
+          taskId: "task-1",
+        },
+      });
+
+      expect(userResult.isError).toBeFalsy();
+      expect(agentResult.isError).toBeFalsy();
+      expect(mocks.taskCandidateMatchUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            candidateKind: TaskCandidateKind.USER,
+            reasonJson: { skillTags: ["campaign-management"] },
+          }),
+        }),
+      );
+      expect(mocks.taskCandidateMatchUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            candidateKind: TaskCandidateKind.AGENT,
+            reasonJson: { capabilityTags: ["research"] },
+          }),
+        }),
+      );
+    });
+
+    it("refuses to advance a legacy Person match until typed evidence is supplied", async () => {
+      mocks.taskCandidateMatchFindFirst.mockResolvedValue({
+        candidateKind: TaskCandidateKind.PERSON,
+        reasonJson: { skillTags: ["corporate-law"] },
+      });
+      const client = await setup("admin-1", ALL_SCOPES, { isAdmin: true });
+
+      const rejected = await client.callTool({
+        name: "updateTaskCandidateMatchStatus",
+        arguments: {
+          matchId: "candidate-match-1",
+          status: TaskCandidateMatchStatus.CONTACTED,
+        },
+      });
+      const accepted = await client.callTool({
+        name: "updateTaskCandidateMatchStatus",
+        arguments: {
+          matchId: "candidate-match-1",
+          reasonJson: externalPersonEvidence,
+          status: TaskCandidateMatchStatus.CONTACTED,
+        },
+      });
+
+      expect(rejected.isError).toBe(true);
+      expect(accepted.isError).toBeFalsy();
+      expect(mocks.taskCandidateMatchUpdate).toHaveBeenCalledTimes(1);
+      expect(mocks.taskCandidateMatchUpdate).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          reasonJson: expect.objectContaining({
+            schema: "candidate-evidence.v1",
+          }),
+          status: TaskCandidateMatchStatus.CONTACTED,
+        }),
+        where: { id: "candidate-match-1" },
       });
     });
 

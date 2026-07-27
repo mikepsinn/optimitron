@@ -54,6 +54,9 @@ import type { Prisma } from "@optimitron/db";
 import { getOrganizationPlanningRootTaskKey } from "@optimitron/db/task-keys";
 import { ensureExecutionPlanningBranch } from "./tasks/planning-branch.server";
 import { parseDatedTaskKey } from "./tasks/dated-task-series";
+import { DOCUMENT_COMMENT_ANCHOR_INPUT_JSON_SCHEMA } from "./tasks/document-comment-anchor-schema";
+import { buildDocumentCommentCitationsJson } from "./tasks/document-comment-anchor.server";
+import { readReviewRequest } from "./tasks/document-review-contracts";
 // ---------------------------------------------------------------------------
 // Scopes — re-exported from the browser-safe `mcp-scopes` module so client
 // components (consent UI, dev portal) can pull just the catalog without
@@ -88,6 +91,18 @@ import {
   handleDocumentToolCall,
   isDocumentToolName,
 } from "./mcp-tools/documents";
+import {
+  DOCUMENT_REVIEW_TOOL_DEFINITIONS,
+  DOCUMENT_REVIEW_TOOL_SCOPES,
+  handleDocumentReviewToolCall,
+  isDocumentReviewToolName,
+} from "./mcp-tools/document-reviews";
+import {
+  CONTRIBUTION_RECEIPT_TOOL_DEFINITIONS,
+  CONTRIBUTION_RECEIPT_TOOL_SCOPES,
+  handleContributionReceiptToolCall,
+  isContributionReceiptToolName,
+} from "./mcp-tools/contribution-receipts";
 import {
   COLLECTION_TOOL_DEFINITIONS,
   COLLECTION_TOOL_SCOPES,
@@ -135,6 +150,7 @@ import {
   type TaskClientAccessBoundary,
 } from "./tasks/task-visibility.server";
 import { resolveTaskClaimSettings } from "./tasks/task-claim-policy";
+import { validateTaskCandidateReasonJson } from "./tasks/task-candidate-evidence";
 import type { PlanningCommitment } from "./tasks/execution-planner";
 import {
   auditExecutionGraph,
@@ -326,6 +342,8 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...TASK_TRIGGER_TOOL_SCOPES,
   ...COLLECTION_TOOL_SCOPES,
   ...DOCUMENT_TOOL_SCOPES,
+  ...DOCUMENT_REVIEW_TOOL_SCOPES,
+  ...CONTRIBUTION_RECEIPT_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
   ...PRIVATE_EXECUTION_TOOL_SCOPES,
   ...FORM_RESPONSE_TOOL_SCOPES,
@@ -5536,7 +5554,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "findTaskCandidates",
     description:
-      "Admin-only: score users and active agent executors as possible executors for one task.",
+      "Admin-only: score users and active agent executors, then include saved sourced external-person matches for one task.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5576,7 +5594,11 @@ const TASK_TOOL_DEFINITIONS = [
         agentExecutorId: { type: "string" },
         score: { type: "number" },
         scoreVersion: { type: "string" },
-        reasonJson: { type: ["object", "array", "null"] },
+        reasonJson: {
+          type: ["object", "array", "null"],
+          description:
+            "Required for PERSON matches and must satisfy candidate-evidence.v1. USER and AGENT matches may keep legacy scoring JSON.",
+        },
         blockersJson: { type: ["object", "array", "null"] },
         estimatedCostMinorUnits: { type: ["integer", "null"] },
         estimatedCostCurrency: { type: ["string", "null"] },
@@ -5617,7 +5639,11 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           enum: Object.values(TaskCandidateMatchStatus),
         },
-        reasonJson: { type: ["object", "array", "null"] },
+        reasonJson: {
+          type: ["object", "array", "null"],
+          description:
+            "PERSON matches require candidate-evidence.v1; USER and AGENT matches may keep legacy scoring JSON.",
+        },
         blockersJson: { type: ["object", "array", "null"] },
       },
       required: ["matchId", "status"],
@@ -6019,7 +6045,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createPerson",
     description:
-      "Create or idempotently update a person profile by displayName, email, sourceRef, or public-figure signature.",
+      "Create a person profile, or idempotently update one matched by email, sourceRef, or public-figure signature.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7811,8 +7837,8 @@ const TASK_TOOL_DEFINITIONS = [
 - Charts: \`\`\`chart { ...Chart.js config JSON... } \`\`\` fences
 - Images: ![alt](url) inline
 - Tables, lists, strikethrough, code blocks, blockquotes — all standard
-Max length: 20,000 characters. Rate limit: 5 comments per task per hour.
-Posting a comment automatically sends comment notifications to task recipients and triggers a Wishonia auto-reply in the background.`,
+Max length: 20,000 characters. Rate limit: 5 ordinary or 50 anchored comments per task per hour.
+Posting sends comment notifications. Ordinary comments may trigger a Wishonia reply; exact-document annotations do not.`,
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7829,6 +7855,11 @@ Posting a comment automatically sends comment notifications to task recipients a
         mediaUrl: {
           type: "string",
           description: "Optional evidence URL (tweet, screenshot, article)",
+        },
+        documentAnchor: {
+          ...DOCUMENT_COMMENT_ANCHOR_INPUT_JSON_SCHEMA,
+          description:
+            "Optional exact-text anchor on this private review task's pinned or validated proposal revision.",
         },
       },
       required: ["taskId", "message"],
@@ -7889,6 +7920,8 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...TASK_TRIGGER_TOOL_DEFINITIONS,
   ...COLLECTION_TOOL_DEFINITIONS,
   ...DOCUMENT_TOOL_DEFINITIONS,
+  ...DOCUMENT_REVIEW_TOOL_DEFINITIONS,
+  ...CONTRIBUTION_RECEIPT_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
   ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
   ...FORM_RESPONSE_TOOL_DEFINITIONS,
@@ -8078,6 +8111,29 @@ export function createMcpServer(
           return normalizeDelegatedToolResponse(
             await handleDocumentToolCall({
               args: a,
+              clientAccessBoundary: taskClientBoundary,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
+        }
+        if (isDocumentReviewToolName(name)) {
+          return normalizeDelegatedToolResponse(
+            await handleDocumentReviewToolCall({
+              args: a,
+              clientAccessBoundary: taskClientBoundary,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
+        }
+        if (isContributionReceiptToolName(name)) {
+          return normalizeDelegatedToolResponse(
+            await handleContributionReceiptToolCall({
+              args: a,
+              clientAccessBoundary: taskClientBoundary,
               name,
               userId: userId ?? null,
             }),
@@ -9744,31 +9800,33 @@ export function createMcpServer(
             if (typeof taskId !== "string") return taskId;
             const prisma = await getPrisma();
             const applications = await import("./task-applications.server");
-            const [task, user] = await Promise.all([
-              prisma.task.findFirst({
-                where: { deletedAt: null, id: taskId },
-                select: {
-                  applicationPolicy: true,
-                  id: true,
-                  jurisdictionId: true,
-                  title: true,
-                },
-              }),
-              prisma.user.findUnique({
-                where: { id: userId },
-                select: USER_MATCHING_SELECT,
-              }),
-            ]);
-            if (!task) return err("Task not found.");
+            const user = await prisma.user.findUnique({
+              where: { id: userId },
+              select: USER_MATCHING_SELECT,
+            });
             if (!user) return err("User not found.");
-            if (task.applicationPolicy === TaskApplicationPolicy.CLOSED) {
-              const canReview = await applications.canReviewTaskApplications(
-                userId,
-                taskId,
-              );
-              if (!canReview) {
-                return err("This task is not accepting applications.");
-              }
+            const task = await prisma.task.findFirst({
+              where: {
+                AND: [
+                  { deletedAt: null, id: taskId },
+                  getTaskClientAccessWhere(taskClientBoundary),
+                  getTaskAccessWhere({
+                    action: "READ",
+                    personId: user.personId,
+                    userId,
+                  }),
+                ],
+              },
+              select: {
+                applicationPolicy: true,
+                id: true,
+                jurisdictionId: true,
+                title: true,
+              },
+            });
+            if (!task) return err("Task not found.");
+            if (task.applicationPolicy !== TaskApplicationPolicy.OPEN) {
+              return err("This task is not accepting open applications.");
             }
 
             const answersJson =
@@ -9782,7 +9840,11 @@ export function createMcpServer(
                   deletedAt: null,
                   taskId,
                 },
-                select: { id: true, jurisdictionId: true, status: true },
+                select: {
+                  id: true,
+                  jurisdictionId: true,
+                  status: true,
+                },
               });
               const applicationData = {
                 applicantEmailSnapshot:
@@ -9986,14 +10048,40 @@ export function createMcpServer(
             if (!detail) return err("Task not found.");
             const task = detail.task as Record<string, unknown>;
             const limit = parseQueueLimit(a.limit, 20, 100);
-            const users = await prisma.user.findMany({
-              where: {
-                deletedAt: null,
-                isSystem: false,
-              },
-              select: USER_MATCHING_SELECT,
-              take: Math.max(limit * 5, 50),
-            });
+            const [users, savedPersonMatches] = await Promise.all([
+              prisma.user.findMany({
+                where: {
+                  deletedAt: null,
+                  isSystem: false,
+                },
+                select: USER_MATCHING_SELECT,
+                take: Math.max(limit * 5, 50),
+              }),
+              prisma.taskCandidateMatch.findMany({
+                where: {
+                  candidateKind: TaskCandidateKind.PERSON,
+                  candidatePersonId: { not: null },
+                  deletedAt: null,
+                  taskId,
+                },
+                include: {
+                  candidatePerson: {
+                    select: {
+                      currentAffiliation: true,
+                      displayName: true,
+                      handle: true,
+                      headline: true,
+                      id: true,
+                      image: true,
+                      sourceUrl: true,
+                      user: { select: { id: true } },
+                    },
+                  },
+                },
+                orderBy: [{ score: "desc" }, { updatedAt: "desc" }],
+                take: Math.max(limit * 2, 20),
+              }),
+            ]);
             const userCandidates = users
               .map((candidate) => ({
                 candidateKind: TaskCandidateKind.USER,
@@ -10038,7 +10126,29 @@ export function createMcpServer(
                   score: scoreAgentCandidate(task, agent as any),
                 }))
               : [];
-            const candidates = [...userCandidates, ...agentCandidates]
+            const savedExternalPersonCandidates = savedPersonMatches
+              .filter(
+                (match) =>
+                  match.candidatePerson != null &&
+                  match.candidatePerson.user == null,
+              )
+              .map((match) => ({
+                blockersJson: match.blockersJson,
+                candidateKind: TaskCandidateKind.PERSON,
+                candidateKey: match.candidateKey,
+                candidatePersonId: match.candidatePersonId,
+                matchId: match.id,
+                person: match.candidatePerson,
+                reasonJson: match.reasonJson,
+                score: match.score,
+                scoreVersion: match.scoreVersion,
+                status: match.status,
+              }));
+            const candidates = [
+              ...userCandidates,
+              ...savedExternalPersonCandidates,
+              ...agentCandidates,
+            ]
               .sort((left, right) => right.score - left.score)
               .slice(0, limit);
             return ok({
@@ -10104,6 +10214,7 @@ export function createMcpServer(
             }
             let estimatedCostMinorUnits: bigint | null | undefined;
             let estimatedDurationSeconds: number | null | undefined;
+            let reasonJson: unknown;
             try {
               estimatedCostMinorUnits = parseMinorUnitsInput(
                 a,
@@ -10112,6 +10223,15 @@ export function createMcpServer(
               estimatedDurationSeconds = parseOptionalIntegerInput(
                 a,
                 "estimatedDurationSeconds",
+              );
+              reasonJson = validateTaskCandidateReasonJson(
+                "reasonJson" in a
+                  ? normalizeJsonPatchValue(a.reasonJson)
+                  : undefined,
+                {
+                  requireTypedEvidence:
+                    candidateKind === TaskCandidateKind.PERSON,
+                },
               );
             } catch (error) {
               return err(
@@ -10146,10 +10266,7 @@ export function createMcpServer(
                     ? undefined
                     : estimatedDurationSeconds,
                 jurisdictionId: task.jurisdictionId,
-                reasonJson:
-                  "reasonJson" in a
-                    ? normalizeJsonPatchValue(a.reasonJson)
-                    : undefined,
+                reasonJson: "reasonJson" in a ? reasonJson : undefined,
                 score,
                 scoreVersion,
                 status,
@@ -10170,10 +10287,7 @@ export function createMcpServer(
                   estimatedDurationSeconds === undefined
                     ? undefined
                     : estimatedDurationSeconds,
-                reasonJson:
-                  "reasonJson" in a
-                    ? normalizeJsonPatchValue(a.reasonJson)
-                    : undefined,
+                reasonJson: "reasonJson" in a ? reasonJson : undefined,
                 score,
                 status,
               } as any,
@@ -10259,6 +10373,12 @@ export function createMcpServer(
             if (!isAdmin) return err("Admin privileges are required.");
             const matchId = requiredString(a.matchId, "matchId");
             if (typeof matchId !== "string") return matchId;
+            const prisma = await getPrisma();
+            const existingMatch = await prisma.taskCandidateMatch.findFirst({
+              where: { deletedAt: null, id: matchId },
+              select: { candidateKind: true, reasonJson: true },
+            });
+            if (!existingMatch) return err("Candidate match not found.");
             let status: TaskCandidateMatchStatus | undefined;
             try {
               status = parseEnumInput(
@@ -10272,7 +10392,25 @@ export function createMcpServer(
               );
             }
             if (!status) return err("status is required.");
-            const prisma = await getPrisma();
+            let reasonJson: unknown;
+            try {
+              const validatedReasonJson = validateTaskCandidateReasonJson(
+                "reasonJson" in a
+                  ? normalizeJsonPatchValue(a.reasonJson)
+                  : existingMatch.reasonJson,
+                {
+                  requireTypedEvidence:
+                    existingMatch.candidateKind === TaskCandidateKind.PERSON,
+                },
+              );
+              reasonJson = "reasonJson" in a ? validatedReasonJson : undefined;
+            } catch (error) {
+              return err(
+                error instanceof Error
+                  ? error.message
+                  : "Invalid candidate evidence.",
+              );
+            }
             const match = await prisma.taskCandidateMatch.update({
               where: { id: matchId },
               data: {
@@ -10280,10 +10418,7 @@ export function createMcpServer(
                   "blockersJson" in a
                     ? normalizeJsonPatchValue(a.blockersJson)
                     : undefined,
-                reasonJson:
-                  "reasonJson" in a
-                    ? normalizeJsonPatchValue(a.reasonJson)
-                    : undefined,
+                reasonJson: "reasonJson" in a ? reasonJson : undefined,
                 status,
               } as any,
             });
@@ -12800,6 +12935,11 @@ export function createMcpServer(
             ) {
               return err("Task not found");
             }
+            if (readReviewRequest(existingTask.contextJson)) {
+              return err(
+                "Document review tasks can only be changed through document review operations.",
+              );
+            }
             if (a.parentTaskId !== undefined) {
               const parentTaskId = requiredString(
                 a.parentTaskId,
@@ -14339,15 +14479,38 @@ export function createMcpServer(
               return err("Task not found");
             }
 
-            // Rate limit: 5 per user per task per hour
+            let citationsJson: Prisma.InputJsonValue | undefined;
+            if (Object.hasOwn(a, "documentAnchor")) {
+              if (parentCommentId) {
+                return err(
+                  "Replies inherit the parent comment's document anchor.",
+                );
+              }
+              try {
+                citationsJson = await buildDocumentCommentCitationsJson({
+                  clientAccessBoundary: taskClientBoundary,
+                  rawAnchor: a.documentAnchor,
+                  taskId,
+                  userId,
+                });
+              } catch (error) {
+                return err(
+                  error instanceof Error
+                    ? error.message
+                    : "Invalid document comment anchor.",
+                );
+              }
+            }
+
+            const rateLimitMax = citationsJson ? 50 : 5;
             const recentCount = await countUserCommentsInWindow(
               taskId,
               userId,
               60 * 60 * 1000,
             );
-            if (recentCount >= 5) {
+            if (recentCount >= rateLimitMax) {
               return err(
-                "Rate limit exceeded: max 5 comments per task per hour",
+                `Rate limit exceeded: max ${rateLimitMax} comments per task per hour`,
               );
             }
 
@@ -14358,6 +14521,7 @@ export function createMcpServer(
               message,
               mediaUrl,
               enforceParentVisibility: true,
+              ...(citationsJson ? { citationsJson } : {}),
             });
 
             void notifyTaskCommentRecipients({
@@ -14367,12 +14531,14 @@ export function createMcpServer(
               taskId,
             });
 
-            void generateAndPostWishoniaReply({
-              taskId,
-              parentCommentId: comment.id,
-              userComment: message,
-              userCommentAuthorId: userId,
-            });
+            if (!citationsJson) {
+              void generateAndPostWishoniaReply({
+                taskId,
+                parentCommentId: comment.id,
+                userComment: message,
+                userCommentAuthorId: userId,
+              });
+            }
 
             return ok({ comment });
           }

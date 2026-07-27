@@ -7,6 +7,7 @@ import {
   MAX_TASK_FUNDING_AMOUNT_CENTS,
   MIN_TASK_FUNDING_AMOUNT_CENTS,
 } from "@/lib/task-funding/payments.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -38,7 +39,8 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params;
+  const { id: routeId } = await context.params;
+  const id = decodeTaskRouteId(routeId);
   const parsed = CheckoutBodySchema.safeParse(
     await request.json().catch(() => null),
   );

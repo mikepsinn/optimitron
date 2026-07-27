@@ -10,6 +10,10 @@ import { prisma } from "@/lib/prisma";
 import { notifyTaskCommentRecipients } from "@/lib/tasks/task-comment-notifications.server";
 import { TaskCommentAttachmentInputError } from "@/lib/tasks/task-comment-attachments.server";
 import {
+  buildDocumentCommentCitationsJson,
+  DocumentCommentAnchorError,
+} from "@/lib/tasks/document-comment-anchor.server";
+import {
   countUserCommentsInWindow,
   getTaskActivityTimeline,
   getTaskCommentFeed,
@@ -22,6 +26,7 @@ import {
   TASK_NOT_FOUND_MESSAGE,
   type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 import {
   buildCitationsJson,
   generateAndPostWishoniaReply,
@@ -34,6 +39,7 @@ export const runtime = "nodejs";
 const MAX_MESSAGE_LENGTH = 20_000;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const RATE_LIMIT_MAX_COMMENTS = 5;
+const RATE_LIMIT_MAX_ANCHORED_COMMENTS = 50;
 
 /** MCP parity (canAccessTaskResource): a delegated client only reaches a
  * task's comment thread when the task is inside its grant boundary. */
@@ -54,12 +60,14 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id: taskId } = await context.params;
+    const { id: routeId } = await context.params;
+    const taskId = decodeTaskRouteId(routeId);
     const url = new URL(request.url);
     const sortParam = url.searchParams.get("sort");
     const sort: CommentSortKey = sortParam === "top" ? "top" : "new";
     const cursorParam = url.searchParams.get("cursor");
     const cursor = cursorParam ? new Date(cursorParam) : null;
+    const documentAnchorsOnly = url.searchParams.get("documentAnchors") === "1";
     const limitParam = Number(url.searchParams.get("limit") ?? 50);
     const limit = Number.isFinite(limitParam)
       ? Math.min(Math.max(Math.trunc(limitParam), 1), 100)
@@ -76,13 +84,14 @@ export async function GET(
         getTaskCommentFeed({
           taskId,
           sort,
+          documentAnchorsOnly,
           cursor: cursor && !Number.isNaN(cursor.getTime()) ? cursor : null,
           limit,
           currentUserId: userId,
         }),
         // Only fetch activities on the first page load (no cursor) — they're
         // not paginated, they're just a supplementary timeline.
-        cursor
+        cursor || documentAnchorsOnly
           ? Promise.resolve([])
           : getTaskActivityTimeline(taskId, 50, userId),
       ],
@@ -129,7 +138,8 @@ export async function POST(
       );
     }
 
-    const { id: taskId } = await context.params;
+    const { id: routeId } = await context.params;
+    const taskId = decodeTaskRouteId(routeId);
     if (await isTaskOutsideClientBoundary(taskId, clientAccessBoundary)) {
       return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
@@ -138,6 +148,7 @@ export async function POST(
       parentCommentId?: unknown;
       mediaUrl?: unknown;
       attachmentIds?: unknown;
+      documentAnchor?: unknown;
     } | null;
 
     const message =
@@ -193,16 +204,38 @@ export async function POST(
       return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
 
-    // Rate limit: 5 comments per user per task per hour
+    if (
+      parentCommentId &&
+      body != null &&
+      Object.hasOwn(body, "documentAnchor")
+    ) {
+      throw new DocumentCommentAnchorError(
+        "Replies inherit the parent comment's document anchor.",
+      );
+    }
+
+    const citationsJson =
+      body != null && Object.hasOwn(body, "documentAnchor")
+        ? await buildDocumentCommentCitationsJson({
+            clientAccessBoundary,
+            rawAnchor: body.documentAnchor,
+            taskId,
+            userId: currentUser.id,
+          })
+        : null;
+
+    const rateLimitMax = citationsJson
+      ? RATE_LIMIT_MAX_ANCHORED_COMMENTS
+      : RATE_LIMIT_MAX_COMMENTS;
     const recentCount = await countUserCommentsInWindow(
       taskId,
       currentUser.id,
       RATE_LIMIT_WINDOW_MS,
     );
-    if (recentCount >= RATE_LIMIT_MAX_COMMENTS) {
+    if (recentCount >= rateLimitMax) {
       return NextResponse.json(
         {
-          error: `Rate limit exceeded. Max ${RATE_LIMIT_MAX_COMMENTS} comments per task per hour.`,
+          error: `Rate limit exceeded. Max ${rateLimitMax} comments per task per hour.`,
         },
         { status: 429 },
       );
@@ -216,6 +249,7 @@ export async function POST(
       mediaUrl,
       attachmentIds,
       enforceParentVisibility: true,
+      ...(citationsJson ? { citationsJson } : {}),
     });
 
     const notificationMessage =
@@ -234,7 +268,7 @@ export async function POST(
     // emits the user comment, then pipes Wishonia's generation chunks, then
     // a final comment object once posted.
     const acceptHeader = request.headers.get("accept") ?? "";
-    if (acceptHeader.includes("application/x-ndjson")) {
+    if (!citationsJson && acceptHeader.includes("application/x-ndjson")) {
       return streamCommentResponse({
         taskId,
         comment,
@@ -245,7 +279,7 @@ export async function POST(
 
     // Non-streaming clients (MCP, curl, older browsers): background-fire
     // Wishonia reply so the user's comment returns immediately.
-    if (message) {
+    if (message && !citationsJson) {
       void generateAndPostWishoniaReply({
         taskId,
         parentCommentId: comment.id,
@@ -260,6 +294,12 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     if (error instanceof TaskCommentAttachmentInputError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    if (error instanceof DocumentCommentAnchorError) {
       return NextResponse.json(
         { error: error.message },
         { status: error.status },

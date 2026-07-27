@@ -26,6 +26,7 @@ import {
   TASK_COMMENT_ATTACHMENT_MAX_BYTES,
   TASK_COMMENT_ATTACHMENT_MAX_COUNT,
 } from "@/lib/tasks/task-comment-attachment-policy";
+import { readDocumentCommentAnchor } from "@/lib/tasks/document-comment-anchor";
 import {
   getUserDisplayAvatar,
   getUserDisplayHandle,
@@ -94,11 +95,13 @@ interface TaskActivityRow {
 interface TaskCommentFeedProps {
   taskId: string;
   initialComments: TaskCommentRow[];
+  initialNextCursor?: string | null;
   initialActivities: TaskActivityRow[];
   currentUserId: string | null;
   currentUserIsAdmin: boolean;
   wishoniaUserId: string | null;
   signInHref: string;
+  showReviewNotice?: boolean;
 }
 
 type SortMode = "new" | "top";
@@ -182,7 +185,7 @@ function AttachmentPicker({
   return (
     <div className="mt-2">
       <label
-        className={`inline-flex h-8 w-8 items-center justify-center border border-foreground bg-background ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-foreground hover:text-background"}`}
+        className={`inline-flex h-10 w-10 items-center justify-center border border-foreground bg-background focus-within:ring-2 focus-within:ring-foreground focus-within:ring-offset-2 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-foreground hover:text-background"}`}
         aria-label="Attach files"
         title="Attach files"
       >
@@ -234,13 +237,16 @@ function AttachmentPicker({
 export function TaskCommentFeed({
   taskId,
   initialComments,
+  initialNextCursor = null,
   initialActivities,
   currentUserId,
   currentUserIsAdmin,
   wishoniaUserId,
   signInHref,
+  showReviewNotice = false,
 }: TaskCommentFeedProps) {
   const [comments, setComments] = useState<TaskCommentRow[]>(initialComments);
+  const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [activities] = useState<TaskActivityRow[]>(initialActivities);
   const [sort, setSort] = useState<SortMode>("new");
   const [draft, setDraft] = useState("");
@@ -250,6 +256,8 @@ export function TaskCommentFeed({
   const [replyDraft, setReplyDraft] = useState("");
   const [replyFiles, setReplyFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const [postError, setPostError] = useState<string | null>(null);
   const [replyError, setReplyError] = useState<string | null>(null);
   const [wishoniaNotice, setWishoniaNotice] = useState<string | null>(null);
@@ -257,6 +265,8 @@ export function TaskCommentFeed({
     id: string;
     path: string;
   } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -339,6 +349,46 @@ export function TaskCommentFeed({
       console.error("[TaskCommentFeed] Failed to poll:", err);
     }
   }, [taskId]);
+
+  async function loadOlderComments() {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    setLoadMoreError(null);
+    try {
+      const query = new URLSearchParams({
+        cursor: nextCursor,
+        limit: "100",
+        sort: "new",
+      });
+      const response = await fetch(
+        API_ROUTES.tasks.comments(taskId, query.toString()),
+      );
+      const data = (await response.json().catch(() => null)) as {
+        comments?: TaskCommentRow[];
+        error?: string;
+        nextCursor?: string | null;
+      } | null;
+      if (!response.ok || !data?.comments) {
+        throw new Error(data?.error ?? "Could not load older comments.");
+      }
+      setComments((current) => {
+        const merged = new Map(current.map((comment) => [comment.id, comment]));
+        for (const comment of data.comments ?? []) {
+          merged.set(comment.id, comment);
+        }
+        return [...merged.values()];
+      });
+      setNextCursor(data.nextCursor ?? null);
+    } catch (error) {
+      setLoadMoreError(
+        error instanceof Error
+          ? error.message
+          : "Could not load older comments.",
+      );
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   useEffect(() => {
     if (pollTimerRef.current) clearInterval(pollTimerRef.current);
@@ -536,6 +586,10 @@ export function TaskCommentFeed({
             break;
           case "error":
             console.error("[TaskCommentFeed] Stream error:", event.error);
+            if (wishoniaStarted) removeStreamingPlaceholder();
+            showWishoniaNotice(
+              `Your comment was posted, but the live response failed: ${event.error}`,
+            );
             break;
         }
       }
@@ -671,13 +725,15 @@ export function TaskCommentFeed({
   function onDelete(commentId: string) {
     const c = commentsById.get(commentId);
     if (!c) return;
+    setDeleteError(null);
     setDeleteTarget({ id: commentId, path: c.path });
   }
 
   async function confirmDelete() {
     if (!deleteTarget) return;
     const target = deleteTarget;
-    setDeleteTarget(null);
+    setDeleting(true);
+    setDeleteError(null);
     try {
       const res = await fetch(API_ROUTES.tasks.comment(target.id), {
         method: "DELETE",
@@ -698,8 +754,14 @@ export function TaskCommentFeed({
           ),
         );
       }
+      setDeleteTarget(null);
     } catch (err) {
       console.error("[TaskCommentFeed] Delete failed:", err);
+      setDeleteError(
+        err instanceof Error ? err.message : "Could not delete the comment.",
+      );
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -713,20 +775,30 @@ export function TaskCommentFeed({
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black">Updates</h2>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-black">Discussion and evidence</h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Vote for useful contributions.
+            {showReviewNotice
+              ? " Votes do not approve work or adopt text."
+              : ""}
+          </p>
+        </div>
         <div className="flex gap-1 text-xs font-bold uppercase">
           <button
+            aria-pressed={sort === "new"}
             type="button"
             onClick={() => setSort("new")}
-            className={`border-2 border-foreground px-2 py-1 ${sort === "new" ? "bg-foreground text-background" : "bg-background"}`}
+            className={`min-h-10 min-w-10 border border-foreground px-3 py-1 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 ${sort === "new" ? "bg-foreground text-background" : "bg-background"}`}
           >
             New
           </button>
           <button
+            aria-pressed={sort === "top"}
             type="button"
             onClick={() => setSort("top")}
-            className={`border-2 border-foreground px-2 py-1 ${sort === "top" ? "bg-foreground text-background" : "bg-background"}`}
+            className={`min-h-10 min-w-10 border border-foreground px-3 py-1 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 ${sort === "top" ? "bg-foreground text-background" : "bg-background"}`}
           >
             Top
           </button>
@@ -736,19 +808,21 @@ export function TaskCommentFeed({
       {currentUserId ? (
         <div className="border border-foreground bg-background p-3">
           <textarea
+            aria-label="Comment"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             maxLength={MAX_MESSAGE_LENGTH}
             placeholder="Share an update, evidence, or question..."
-            className="w-full resize-y border border-foreground bg-background p-2 text-sm font-bold focus:outline-none"
+            className="w-full resize-y border border-foreground bg-background p-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
             rows={3}
           />
           <input
+            aria-label="Optional evidence URL"
             type="url"
             value={draftMediaUrl}
             onChange={(e) => setDraftMediaUrl(e.target.value)}
             placeholder="Optional evidence URL (tweet, article, screenshot)"
-            className="mt-2 w-full border border-foreground bg-background p-2 text-xs font-bold focus:outline-none"
+            className="mt-2 w-full border border-foreground bg-background p-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
           />
           <AttachmentPicker
             disabled={submitting}
@@ -824,6 +898,7 @@ export function TaskCommentFeed({
             key={comment.id}
             comment={comment}
             replies={threaded.repliesByParent.get(comment.id) ?? []}
+            repliesByParent={threaded.repliesByParent}
             wishoniaUserId={wishoniaUserId}
             currentUserId={currentUserId}
             currentUserIsAdmin={currentUserIsAdmin}
@@ -845,23 +920,49 @@ export function TaskCommentFeed({
         ))}
       </div>
 
+      {nextCursor ? (
+        <div className="text-center">
+          <Button
+            className="font-bold uppercase"
+            disabled={loadingMore}
+            onClick={() => void loadOlderComments()}
+            size="sm"
+            variant="outline"
+          >
+            {loadingMore ? "Loading…" : "Load older comments"}
+          </Button>
+        </div>
+      ) : null}
+      {loadMoreError ? (
+        <p
+          className="text-center text-sm font-semibold text-destructive"
+          role="alert"
+        >
+          {loadMoreError}
+        </p>
+      ) : null}
+
       <Dialog
         open={deleteTarget != null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (!open && !deleting) setDeleteTarget(null);
         }}
       >
-        <Dialog.Content size="sm">
+        <Dialog.Content
+          size="sm"
+          title={currentUserIsAdmin ? "Delete permanently?" : "Delete comment?"}
+        >
           <Dialog.Header asChild>
-            <div className="flex min-h-12 items-center justify-between border-b-2 bg-primary px-4">
-              <h2 className="text-base font-black uppercase text-primary-foreground">
+            <div className="flex min-h-12 items-center justify-between border-b border-foreground bg-foreground px-4">
+              <h2 className="text-base font-black uppercase text-background">
                 {currentUserIsAdmin ? "Delete permanently?" : "Delete comment?"}
               </h2>
               <Dialog.Close asChild>
                 <button
                   type="button"
                   aria-label="Close"
-                  className="cursor-pointer text-primary-foreground"
+                  className="cursor-pointer text-background disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={deleting}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -875,15 +976,32 @@ export function TaskCommentFeed({
                 : "Removes this comment permanently. Gone forever. No placeholder."
               : "Marks this comment as [deleted]. Replies remain visible."}
           </Dialog.Description>
+          {deleteError ? (
+            <p
+              className="px-4 pb-3 text-sm font-semibold text-destructive"
+              role="alert"
+            >
+              {deleteError}
+            </p>
+          ) : null}
           <Dialog.Footer>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+            <Button
+              disabled={deleting}
+              variant="outline"
+              onClick={() => setDeleteTarget(null)}
+            >
               Cancel
             </Button>
             <Button
-              className="bg-brutal-red text-brutal-red-foreground hover:bg-brutal-red/80"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/80"
+              disabled={deleting}
               onClick={() => void confirmDelete()}
             >
-              {currentUserIsAdmin ? "Delete forever" : "Delete"}
+              {deleting
+                ? "Deleting…"
+                : currentUserIsAdmin
+                  ? "Delete forever"
+                  : "Delete"}
             </Button>
           </Dialog.Footer>
         </Dialog.Content>
@@ -895,6 +1013,7 @@ export function TaskCommentFeed({
 function CommentNode({
   comment,
   replies,
+  repliesByParent,
   wishoniaUserId,
   currentUserId,
   currentUserIsAdmin,
@@ -914,6 +1033,7 @@ function CommentNode({
 }: {
   comment: TaskCommentRow;
   replies: TaskCommentRow[];
+  repliesByParent: ReadonlyMap<string, TaskCommentRow[]>;
   wishoniaUserId: string | null;
   currentUserId: string | null;
   currentUserIsAdmin: boolean;
@@ -943,14 +1063,24 @@ function CommentNode({
   const avatar = getUserDisplayAvatar(comment.authorUser);
   const personHref = getUserDisplayHref(comment.authorUser);
   const citations = extractCitations(comment.citationsJson);
+  const documentAnchor = readDocumentCommentAnchor(comment.citationsJson);
+  const anchoredExcerpt = documentAnchor
+    ? documentAnchor.selector.exact.length > 500
+      ? `${documentAnchor.selector.exact.slice(0, 500)}…`
+      : documentAnchor.selector.exact
+    : null;
 
   return (
-    <div className={depth > 0 ? "ml-6 border-l-2 border-primary/40 pl-4" : ""}>
-      <article className="border-2 border-primary bg-background p-3">
+    <div
+      className={
+        depth > 0 && depth <= 3 ? "ml-4 border-l border-foreground/30 pl-3" : ""
+      }
+    >
+      <article className="border border-foreground bg-background p-3">
         <header className="mb-2 flex items-center gap-2">
           {personHref ? (
             <Link href={personHref} className="shrink-0">
-              <Avatar className="h-7 w-7 border-2 border-foreground bg-muted">
+              <Avatar className="h-7 w-7 border border-foreground bg-muted">
                 <Avatar.Image alt={handle} src={avatar ?? undefined} />
                 <Avatar.Fallback className="bg-foreground text-[10px] font-black text-background">
                   {handle.slice(0, 2).toUpperCase()}
@@ -958,7 +1088,7 @@ function CommentNode({
               </Avatar>
             </Link>
           ) : (
-            <Avatar className="h-7 w-7 shrink-0 border-2 border-foreground bg-muted">
+            <Avatar className="h-7 w-7 shrink-0 border border-foreground bg-muted">
               <Avatar.Image alt={handle} src={avatar ?? undefined} />
               <Avatar.Fallback className="bg-foreground text-[10px] font-black text-background">
                 {handle.slice(0, 2).toUpperCase()}
@@ -976,11 +1106,14 @@ function CommentNode({
             <span className="text-sm font-bold">@{handle}</span>
           )}
           {isWishonia ? (
-            <span className="border-2 border-foreground bg-foreground px-1.5 py-0 text-[10px] font-bold uppercase text-background">
+            <span className="border border-foreground bg-foreground px-1.5 py-0 text-[10px] font-bold uppercase text-background">
               Wishonia
             </span>
           ) : null}
-          <span className="text-xs font-bold text-muted-foreground">
+          <span
+            className="text-xs font-bold text-muted-foreground"
+            suppressHydrationWarning
+          >
             · {formatRelative(comment.createdAt)}
           </span>
           {comment.editedAt ? (
@@ -1007,6 +1140,21 @@ function CommentNode({
           </p>
         ) : (
           <>
+            {documentAnchor && anchoredExcerpt ? (
+              <blockquote className="mb-3 border-l-2 border-foreground pl-3 text-xs">
+                <p className="font-semibold text-muted-foreground">
+                  Version {documentAnchor.target.version} · line{" "}
+                  {documentAnchor.selector.startLine}
+                  {documentAnchor.selector.endLine ===
+                  documentAnchor.selector.startLine
+                    ? ""
+                    : `–${documentAnchor.selector.endLine}`}
+                </p>
+                <p className="mt-1 whitespace-pre-wrap break-words font-mono">
+                  {anchoredExcerpt}
+                </p>
+              </blockquote>
+            ) : null}
             {comment.isStreaming && comment.message.length === 0 ? (
               <p className="flex items-center gap-2 text-sm font-bold italic text-muted-foreground">
                 <span className="inline-flex gap-1">
@@ -1102,7 +1250,7 @@ function CommentNode({
                     href={c.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block border-2 border-foreground bg-muted px-2 py-0.5 text-[10px] font-bold uppercase hover:bg-foreground hover:text-background"
+                    className="inline-block border border-foreground bg-muted px-2 py-0.5 text-[10px] font-bold uppercase hover:bg-foreground hover:text-background"
                     title={c.description ?? undefined}
                   >
                     {c.title}
@@ -1116,12 +1264,13 @@ function CommentNode({
         <footer className="mt-3 flex items-center gap-2">
           <div className="flex items-center gap-1">
             <button
+              aria-pressed={comment.viewerVote === 1}
               type="button"
               onClick={() =>
                 onVote(comment.id, comment.viewerVote === 1 ? 0 : 1)
               }
               disabled={currentUserId == null || isDeleted}
-              className={`border-2 border-foreground p-0.5 ${
+              className={`inline-flex min-h-9 min-w-9 items-center justify-center border border-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 ${
                 comment.viewerVote === 1
                   ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
@@ -1135,14 +1284,15 @@ function CommentNode({
               {comment.voteScore}
             </span>
             <button
+              aria-pressed={comment.viewerVote === -1}
               type="button"
               onClick={() =>
                 onVote(comment.id, comment.viewerVote === -1 ? 0 : -1)
               }
               disabled={currentUserId == null || isDeleted}
-              className={`border-2 border-foreground p-0.5 ${
+              className={`inline-flex min-h-9 min-w-9 items-center justify-center border border-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 ${
                 comment.viewerVote === -1
-                  ? "bg-background text-foreground"
+                  ? "bg-foreground text-background"
                   : "bg-background text-foreground hover:bg-muted"
               }`}
               aria-label="Downvote"
@@ -1154,8 +1304,9 @@ function CommentNode({
           {canReply ? (
             <button
               type="button"
-              className="flex items-center gap-1 text-xs font-bold uppercase text-muted-foreground hover:text-foreground"
+              className="flex min-h-9 items-center gap-1 px-2 text-xs font-bold uppercase text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
               onClick={() => {
+                setReplyDraft("");
                 setReplyFiles([]);
                 onAttachmentError(null);
                 setReplyingTo(replyingTo === comment.id ? null : comment.id);
@@ -1174,13 +1325,14 @@ function CommentNode({
         </footer>
 
         {replyingTo === comment.id ? (
-          <div className="mt-3 border-2 border-foreground bg-muted/20 p-2">
+          <div className="mt-3 border border-foreground bg-muted/20 p-2">
             <textarea
+              aria-label={`Reply to ${handle}`}
               value={replyDraft}
               onChange={(e) => setReplyDraft(e.target.value)}
               maxLength={MAX_MESSAGE_LENGTH}
               placeholder="Reply..."
-              className="w-full resize-y border-2 border-foreground bg-background p-2 text-sm font-bold focus:outline-none"
+              className="w-full resize-y border border-foreground bg-background p-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
               rows={3}
             />
             <AttachmentPicker
@@ -1232,7 +1384,8 @@ function CommentNode({
             <CommentNode
               key={reply.id}
               comment={reply}
-              replies={[]}
+              replies={repliesByParent.get(reply.id) ?? []}
+              repliesByParent={repliesByParent}
               wishoniaUserId={wishoniaUserId}
               currentUserId={currentUserId}
               currentUserIsAdmin={currentUserIsAdmin}
@@ -1279,7 +1432,9 @@ function ActivityRow({ activity }: { activity: TaskActivityRow }) {
         <span>@{handle}</span>
       )}
       <span>{label}</span>
-      <span className="ml-auto">{formatRelative(activity.createdAt)}</span>
+      <span className="ml-auto" suppressHydrationWarning>
+        {formatRelative(activity.createdAt)}
+      </span>
     </div>
   );
 }

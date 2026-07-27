@@ -12,6 +12,7 @@ import {
   type ApplicationRow,
 } from "@/components/tasks/ApplicationReviewUI";
 import { getTaskPath } from "@/lib/routes";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { id: routeId } = await params;
+  const id = decodeTaskRouteId(routeId);
   const task = await prisma.task.findUnique({
     where: { id },
     select: { title: true },
@@ -35,7 +37,8 @@ export default async function TaskApplicationsPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: routeId } = await params;
+  const id = decodeTaskRouteId(routeId);
 
   const user = await getCurrentUser();
   if (!user) redirect(`/auth/signin?callbackUrl=/tasks/${id}/applications`);

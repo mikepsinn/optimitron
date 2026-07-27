@@ -5,6 +5,7 @@ import {
   getTaskFundingStatus,
   type TaskFundingStatus,
 } from "@/lib/task-funding/status.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -101,7 +102,7 @@ export async function GET(
   let taskId: string | null = null;
 
   try {
-    taskId = (await context.params).id;
+    taskId = decodeTaskRouteId((await context.params).id);
     const access = await ensureCanReadFundingStatus(taskId);
     if (!access.allowed) {
       return NextResponse.json(

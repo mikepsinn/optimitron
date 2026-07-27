@@ -1,8 +1,4 @@
-import {
-  TaskCategory,
-  TaskClaimPolicy,
-  TaskStatus,
-} from "@optimitron/db";
+import { TaskCategory, TaskClaimPolicy, TaskStatus } from "@optimitron/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import {
@@ -15,6 +11,7 @@ import {
   updateTaskCreatedByUser,
 } from "@/lib/tasks.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -26,7 +23,8 @@ const PrimaryEndpointBodySchema = z.object({
   url: z
     .string()
     .refine((value) => normalizeTaskCommunicationEndpointUrl(value) !== null, {
-      message: "Primary endpoint URL must be http, https, mailto, or an internal path.",
+      message:
+        "Primary endpoint URL must be http, https, mailto, or an internal path.",
     })
     .nullish(),
 });
@@ -60,7 +58,8 @@ export async function GET(
   try {
     const { clientAccessBoundary, userId } =
       await getTaskRequestIdentity(_request);
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const data = clientAccessBoundary
       ? await getTaskDetailData(id, userId, { clientAccessBoundary })
       : await getTaskDetailData(id, userId);
@@ -90,7 +89,8 @@ export async function PATCH(
   try {
     const { clientAccessBoundary, userId } =
       await requireTaskRequestAuth(request);
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const parsed = UpdateTaskBodySchema.parse(await request.json());
     const { dueAt, ...rest } = parsed;
     // MCP parity: delegated clients never change publication state; the
@@ -144,7 +144,8 @@ export async function DELETE(
   try {
     const { clientAccessBoundary, userId } =
       await requireTaskRequestAuth(_request);
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const result = await deleteTaskCreatedByUser(id, userId, {
       clientAccessBoundary,
     });

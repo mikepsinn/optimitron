@@ -89,6 +89,38 @@ For `OPEN_SINGLE`, accepting the completed claim also verifies the task in the s
 - Agents may submit work but cannot grant their own human approval. OAuth identity, not caller-supplied user IDs, determines the human actor.
 - Later outcome observations do not rewrite the original deliverable verdict.
 
+## Documents, Review, And Decisions
+
+- A task is the knowledge and coordination hub: brief, assignment, comments, funding, artifacts, verification, and audit. Put substantial authoritative text in a `Document`; ordinary task descriptions are concise briefs and are not versioned.
+- A formal review is one private `ASSIGNED_ONLY` child task for one reviewer. Its Zod-validated `optimitron.review-request.v1` context pins the exact document ID, revision ID, version, and content hash plus instructions, checklist, and required/advisory status. A service-issued binding hash also freezes the requester, assignee, authority task, access policy, and request; generic task editing and execution cannot mutate or complete the review.
+- The assigned reviewer can read the pinned revision through the review-task authorization path. That grant does not reveal sibling reviews, the private parent tree, the canonical document history, or later revisions.
+- A Zod-validated `optimitron.review-response.v1` artifact records `APPROVE`, `CHANGES_REQUESTED`, `REJECT`, or `ABSTAIN`, an explanation, checklist answers, and an optional proposal. A proposal is a separate private document; it is not a child document. Applying it creates a new canonical revision and makes exact-revision reviews of the prior version stale.
+- A review's `TaskVerification` records whether the assigned review was delivered and accepted as work. It never changes the substantive verdict or converts `REJECT`, `CHANGES_REQUESTED`, or `ABSTAIN` into approval.
+- The authorized task manager adopts an exact current revision through an immutable `optimitron.document-decision.v1` artifact. Required reviews need accepted delivery verification and an independent `APPROVE`; every unresolved required review needs a permanent reasoned waiver. Advisory reviews need no waiver, self-review does not satisfy independent approval, and there is no automatic approval threshold.
+- Comment votes rank useful discussion only. They do not establish truth, accept work, adopt text, allocate funding, or decide a referendum.
+- Publishing an adopted revision creates a new immutable referendum snapshot and an `optimitron.document-publication.v1` provenance artifact. Expert review verdicts and public referendum votes are separate signals. A failed referendum remains unchanged; changed text requires a new revision, adoption, and referendum.
+- These contracts reuse `Task.contextJson`, `TaskExecutionArtifact`, and existing document and referendum rows. There is no parallel wiki, review table, decision table, board model, or legal-review subsystem.
+
+## External Candidates And Review Outreach
+
+- A candidate may be a saved external `Person` without a `User`. External-person matches require validated `candidate-evidence.v1` in `TaskCandidateMatch.reasonJson`: sources, sourced qualifications, confidence, conflicts, contact provenance, and uncertainties. Existing user and agent matches retain legacy compatibility.
+- A same-email first sign-in links the new `User` to the existing `Person`, so the reviewer receives access to the already-assigned private review task instead of creating a duplicate identity.
+- Each exact invitation or reminder is one hash-sealed `ExternalActionRequest`. A review batch is approved only if every request ID and payload hash matches and no unlisted draft shares the batch key; approval is atomic, while dispatch records a result per message.
+- The approval record binds the task and revision; the invitation email contains a sign-in link but no confidential document text. One invitation and at most one separately approved reminder after seven days are allowed. Completion, reply, decline, opt-out, bounce, complaint, or rate-limit failure suppresses further outreach, including for external `Person` recipients without accounts.
+
+## Contribution Receipts
+
+- During adoption, a manager may explicitly bind that revision as the task's funding terms. The resulting `optimitron.contribution-receipt-binding.v1` freezes the issuer, terms revision, and adopted governing revisions in task context before a target exists; the first checkout or pledge copies it onto the target, where a different binding cannot replace it. Every successful payment then creates one deterministic private receipt task and immutable `optimitron.contribution-receipt.v1` artifact in the same transaction. Missing or invalid adoption provenance fails closed, and receipt failure rolls back the local paid transition.
+- The receipt freezes the payment, terms revision, governing document hashes, intended funded task, and current impact-estimate version.
+- The original receipt states that work is incomplete, impact is unrealized, and no Earth Optimization Points were minted. It is never rewritten.
+- Completion, measured impact, refund, and correction records are append-only `optimitron.outcome-addendum.v1` artifacts. An addendum may report later facts but still does not mint Earth Optimization Points.
+
+## Court Boundary
+
+- Keep `CourtCase`, `CourtCaseParty`, plaintiff identity, consent, privacy, and memorial records as the Court of Humanity's durable case and human-safety boundary.
+- Do not expand `CourtCaseClaim`, `CourtCaseHarm`, `CourtCaseEvidence`, or `CourtCaseRemedy` while the generic workflow is piloted. New narratives use versioned documents, evidence uses `SourceArtifact`, and investigation and review work uses tasks.
+- Do not migrate or delete existing Court data. Reassess the specific Court schema only after the EOS financing-packet workflow succeeds and production Court data is audited.
+
 ## Impact Estimates
 
 - `Task.currentImpactEstimateSetId` is the canonical pointer to the estimate currently used by APIs and ranking.

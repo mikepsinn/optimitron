@@ -5,6 +5,7 @@ import {
   TaskCommunicationEndpointVerificationStatus,
   TaskCompensationKind,
   TaskDeadlinePolicy,
+  TaskEdgeType,
   TaskExecutionMode,
   TaskRemotePolicy,
   TaskStatus,
@@ -39,6 +40,8 @@ export interface ManagedTaskRecord {
   id: string;
   taskKey: string;
   parentTaskId: string | null;
+  /** Managed prerequisite tasks whose completion unblocks this task. */
+  blockedByTaskKeys?: string[];
   title: string;
   description: string;
   impactStatement?: string | null;
@@ -155,12 +158,12 @@ interface ManagedEndpointRow {
   email: string | null;
   instructions: string | null;
   isPrimary: boolean;
-  kind: typeof TaskCommunicationEndpointKind[keyof typeof TaskCommunicationEndpointKind];
+  kind: (typeof TaskCommunicationEndpointKind)[keyof typeof TaskCommunicationEndpointKind];
   label: string | null;
   priority: number;
   sourceUrl: string | null;
   url: string | null;
-  verificationStatus: typeof TaskCommunicationEndpointVerificationStatus[keyof typeof TaskCommunicationEndpointVerificationStatus];
+  verificationStatus: (typeof TaskCommunicationEndpointVerificationStatus)[keyof typeof TaskCommunicationEndpointVerificationStatus];
 }
 
 interface ManagedTaskImpactEstimateSetRow {
@@ -184,6 +187,9 @@ export interface ManagedTaskClient {
   };
   taskImpactFrameEstimate: {
     upsert(args: unknown): Promise<ManagedTaskImpactFrameRow>;
+  };
+  taskEdge: {
+    upsert(args: unknown): Promise<unknown>;
   };
   taskCommunicationEndpoint: {
     create(args: unknown): Promise<unknown>;
@@ -256,7 +262,11 @@ export function normalizeManagedTaskEndpointUrl(value?: string | null) {
   try {
     const parsed = new URL(url);
     const protocol = parsed.protocol.toLowerCase();
-    if (protocol === "http:" || protocol === "https:" || protocol === "mailto:") {
+    if (
+      protocol === "http:" ||
+      protocol === "https:" ||
+      protocol === "mailto:"
+    ) {
       return parsed.toString();
     }
   } catch {
@@ -266,7 +276,10 @@ export function normalizeManagedTaskEndpointUrl(value?: string | null) {
   return null;
 }
 
-function inferEndpointKind(input: { email: string | null; url: string | null }) {
+function inferEndpointKind(input: {
+  email: string | null;
+  url: string | null;
+}) {
   if (input.url?.toLowerCase().startsWith("mailto:")) {
     return TaskCommunicationEndpointKind.MAILTO;
   }
@@ -284,10 +297,9 @@ function inferEndpointKind(input: { email: string | null; url: string | null }) 
 
 function normalizePrimaryEndpoint(input: ManagedTaskPrimaryEndpoint) {
   const url = normalizeManagedTaskEndpointUrl(input.url);
-  const emailFromMailto =
-    url?.toLowerCase().startsWith("mailto:")
-      ? clean(url.slice("mailto:".length).split("?")[0] ?? null)
-      : null;
+  const emailFromMailto = url?.toLowerCase().startsWith("mailto:")
+    ? clean(url.slice("mailto:".length).split("?")[0] ?? null)
+    : null;
   const email = clean(input.email) ?? emailFromMailto;
   const label = clean(input.label);
   const instructions = clean(input.instructions);
@@ -433,7 +445,8 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
     preferredAccessTags: record.preferredAccessTags ?? [],
     contextJson: buildManagedContext(collectionKey, record),
     claimPolicy: record.claimPolicy ?? TaskClaimPolicy.OPEN_MANY,
-    compensationKind: record.compensationKind ?? TaskCompensationKind.UNSPECIFIED,
+    compensationKind:
+      record.compensationKind ?? TaskCompensationKind.UNSPECIFIED,
     compensationCadence: record.compensationCadence ?? null,
     compensationCurrency: record.compensationCurrency ?? null,
     compensationMinAmountMinorUnits: toManagedBigInt(
@@ -468,7 +481,10 @@ function buildTaskScalars(collectionKey: string, record: ManagedTaskRecord) {
   };
 }
 
-function buildTaskWriteScalars(collectionKey: string, record: ManagedTaskRecord) {
+function buildTaskWriteScalars(
+  collectionKey: string,
+  record: ManagedTaskRecord,
+) {
   const { ownerOrganizationId: _ownerOrganizationId, ...scalars } =
     buildTaskScalars(collectionKey, record);
   return scalars;
@@ -542,7 +558,9 @@ function validateManagedTaskTree(
     return;
   }
 
-  const rootRecords = activeRecords.filter((record) => record.parentTaskId === null);
+  const rootRecords = activeRecords.filter(
+    (record) => record.parentTaskId === null,
+  );
   if (rootRecords.length !== 1) {
     throw new Error(
       `Managed task tree must have exactly one active root: ${OPTIMIZE_EARTH_ROOT_TASK_ID} (${OPTIMIZE_EARTH_ROOT_TASK_KEY})`,
@@ -565,10 +583,11 @@ function validateManagedTaskTree(
   }
 
   const activeRecordIds = new Set(activeRecords.map((record) => record.id));
+  const activeRecordsByKey = new Map(
+    activeRecords.map((record) => [record.taskKey, record]),
+  );
   const activeExistingIds = new Set(
-    existingRows
-      .filter((row) => row.deletedAt === null)
-      .map((row) => row.id),
+    existingRows.filter((row) => row.deletedAt === null).map((row) => row.id),
   );
 
   for (const record of activeRecords) {
@@ -581,7 +600,46 @@ function validateManagedTaskTree(
         `Managed task ${record.id} (${record.taskKey}) references missing parentTaskId ${record.parentTaskId}`,
       );
     }
+
+    const blockerKeys = record.blockedByTaskKeys ?? [];
+    if (new Set(blockerKeys).size !== blockerKeys.length) {
+      throw new Error(
+        `Managed task ${record.id} (${record.taskKey}) repeats a blocker task key`,
+      );
+    }
+    for (const blockerKey of blockerKeys) {
+      const blocker = activeRecordsByKey.get(blockerKey);
+      if (!blocker) {
+        throw new Error(
+          `Managed task ${record.id} (${record.taskKey}) references missing blocker task key ${blockerKey}`,
+        );
+      }
+      if (blocker.id === record.id) {
+        throw new Error(
+          `Managed task ${record.id} (${record.taskKey}) cannot block itself`,
+        );
+      }
+    }
   }
+
+  const visitedBlockers = new Set<string>();
+  const visitingBlockers = new Set<string>();
+  function visitBlockers(record: ManagedTaskRecord) {
+    if (visitedBlockers.has(record.taskKey)) return;
+    if (visitingBlockers.has(record.taskKey)) {
+      throw new Error(
+        `Managed task blocker cycle detected at ${record.id} (${record.taskKey})`,
+      );
+    }
+    visitingBlockers.add(record.taskKey);
+    for (const blockerKey of record.blockedByTaskKeys ?? []) {
+      const blocker = activeRecordsByKey.get(blockerKey);
+      if (blocker) visitBlockers(blocker);
+    }
+    visitingBlockers.delete(record.taskKey);
+    visitedBlockers.add(record.taskKey);
+  }
+  for (const record of activeRecords) visitBlockers(record);
 }
 
 function buildTaskUpdateData(collectionKey: string, record: ManagedTaskRecord) {
@@ -600,7 +658,9 @@ function stableJson(value: unknown): unknown {
   }
 
   if (value && typeof value === "object") {
-    const entries = Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
+    const entries = Object.entries(value).sort(([a], [b]) =>
+      a.localeCompare(b),
+    );
     return Object.fromEntries(
       entries.map(([key, nested]) => [key, stableJson(nested)]),
     );
@@ -636,8 +696,14 @@ function managedTaskNeedsUpdate(
     !sameJson(existing.skillTags, scalars.skillTags) ||
     !sameJson(existing.preferredSkillTags, scalars.preferredSkillTags) ||
     !sameJson(existing.interestTags, scalars.interestTags) ||
-    !sameJson(existing.requiredCredentialTags, scalars.requiredCredentialTags) ||
-    !sameJson(existing.preferredCredentialTags, scalars.preferredCredentialTags) ||
+    !sameJson(
+      existing.requiredCredentialTags,
+      scalars.requiredCredentialTags,
+    ) ||
+    !sameJson(
+      existing.preferredCredentialTags,
+      scalars.preferredCredentialTags,
+    ) ||
     !sameJson(existing.requiredLanguageTags, scalars.requiredLanguageTags) ||
     !sameJson(existing.preferredLanguageTags, scalars.preferredLanguageTags) ||
     !sameJson(existing.requiredToolTags, scalars.requiredToolTags) ||
@@ -649,9 +715,14 @@ function managedTaskNeedsUpdate(
     existing.compensationKind !== scalars.compensationKind ||
     existing.compensationCadence !== scalars.compensationCadence ||
     existing.compensationCurrency !== scalars.compensationCurrency ||
-    existing.compensationMinAmountMinorUnits !== scalars.compensationMinAmountMinorUnits ||
-    existing.compensationMaxAmountMinorUnits !== scalars.compensationMaxAmountMinorUnits ||
-    !sameJson(existing.compensationPaymentRails, scalars.compensationPaymentRails) ||
+    existing.compensationMinAmountMinorUnits !==
+      scalars.compensationMinAmountMinorUnits ||
+    existing.compensationMaxAmountMinorUnits !==
+      scalars.compensationMaxAmountMinorUnits ||
+    !sameJson(
+      existing.compensationPaymentRails,
+      scalars.compensationPaymentRails,
+    ) ||
     existing.estimatedHoursPerWeekMin !== scalars.estimatedHoursPerWeekMin ||
     existing.estimatedHoursPerWeekMax !== scalars.estimatedHoursPerWeekMax ||
     existing.remotePolicy !== scalars.remotePolicy ||
@@ -664,7 +735,10 @@ function managedTaskNeedsUpdate(
     existing.workLocationLongitude !== scalars.workLocationLongitude ||
     existing.workLocationRadiusKm !== scalars.workLocationRadiusKm ||
     existing.workTimeZone !== scalars.workTimeZone ||
-    !sameJson(existing.applicationQuestionsJson, scalars.applicationQuestionsJson) ||
+    !sameJson(
+      existing.applicationQuestionsJson,
+      scalars.applicationQuestionsJson,
+    ) ||
     existing.executionMode !== scalars.executionMode ||
     existing.maxClaims !== scalars.maxClaims ||
     existing.status !== scalars.status ||
@@ -677,10 +751,7 @@ function managedTaskNeedsUpdate(
   );
 }
 
-function findExistingTask(
-  rows: ManagedTaskRow[],
-  record: ManagedTaskRecord,
-) {
+function findExistingTask(rows: ManagedTaskRow[], record: ManagedTaskRecord) {
   const byId = rows.find((row) => row.id === record.id);
   if (byId) return byId;
   return rows.find((row) => row.taskKey === record.taskKey) ?? null;
@@ -688,10 +759,10 @@ function findExistingTask(
 
 function hasManagedTaskImpact(record: ManagedTaskRecord) {
   return (
-    record.expectedEconomicValueUsdBase !== null &&
-      record.expectedEconomicValueUsdBase !== undefined ||
-    record.successProbabilityBase !== null &&
-      record.successProbabilityBase !== undefined
+    (record.expectedEconomicValueUsdBase !== null &&
+      record.expectedEconomicValueUsdBase !== undefined) ||
+    (record.successProbabilityBase !== null &&
+      record.successProbabilityBase !== undefined)
   );
 }
 
@@ -861,10 +932,7 @@ export async function syncManagedTasks(
   const lookupIds = [...new Set([...ids, ...parentTaskIds])];
   const existingRows = await client.task.findMany({
     where: {
-      OR: [
-        { id: { in: lookupIds } },
-        { taskKey: { in: taskKeys } },
-      ],
+      OR: [{ id: { in: lookupIds } }, { taskKey: { in: taskKeys } }],
     },
     select: {
       id: true,
@@ -954,38 +1022,41 @@ export async function syncManagedTasks(
       }
 
       if (options.apply) {
-        const retiredEndpoints = await client.taskCommunicationEndpoint.updateMany({
-          where: {
-            deletedAt: null,
-            taskId: existing.id,
-          },
-          data: {
-            deletedAt: now,
-            isPrimary: false,
-          },
-        });
+        const retiredEndpoints =
+          await client.taskCommunicationEndpoint.updateMany({
+            where: {
+              deletedAt: null,
+              taskId: existing.id,
+            },
+            data: {
+              deletedAt: now,
+              isPrimary: false,
+            },
+          });
         if (retiredEndpoints.count > 0) {
           result.endpointRetired.push(label);
         }
       } else {
-        const activeEndpoint = await client.taskCommunicationEndpoint.findFirst({
-          where: {
-            deletedAt: null,
-            taskId: existing.id,
+        const activeEndpoint = await client.taskCommunicationEndpoint.findFirst(
+          {
+            where: {
+              deletedAt: null,
+              taskId: existing.id,
+            },
+            select: {
+              id: true,
+              email: true,
+              instructions: true,
+              isPrimary: true,
+              kind: true,
+              label: true,
+              priority: true,
+              sourceUrl: true,
+              url: true,
+              verificationStatus: true,
+            },
           },
-          select: {
-            id: true,
-            email: true,
-            instructions: true,
-            isPrimary: true,
-            kind: true,
-            label: true,
-            priority: true,
-            sourceUrl: true,
-            url: true,
-            verificationStatus: true,
-          },
-        });
+        );
         if (activeEndpoint) {
           result.endpointRetired.push(label);
         }
@@ -1001,10 +1072,7 @@ export async function syncManagedTasks(
         await client.task.updateMany({
           where: {
             deletedAt: null,
-            OR: [
-              { id: record.id },
-              { taskKey: record.taskKey },
-            ],
+            OR: [{ id: record.id }, { taskKey: record.taskKey }],
           },
           data: {
             deletedAt: now,
@@ -1017,7 +1085,9 @@ export async function syncManagedTasks(
 
     if (!existing) {
       result.created.push(label);
-    } else if (managedTaskNeedsUpdate(options.collectionKey, existing, record)) {
+    } else if (
+      managedTaskNeedsUpdate(options.collectionKey, existing, record)
+    ) {
       result.updated.push(label);
     } else {
       result.unchanged.push(label);
@@ -1034,7 +1104,11 @@ export async function syncManagedTasks(
         update: buildTaskUpdateData(options.collectionKey, record),
       });
 
-      await syncManagedTaskImpactEstimate(client, options.collectionKey, record);
+      await syncManagedTaskImpactEstimate(
+        client,
+        options.collectionKey,
+        record,
+      );
 
       if (record.primaryEndpoint !== undefined) {
         const endpointAction = await upsertPrimaryEndpoint(
@@ -1050,25 +1124,27 @@ export async function syncManagedTasks(
         }
       }
     } else if (record.primaryEndpoint !== undefined) {
-      const existingEndpoint = await client.taskCommunicationEndpoint.findFirst({
-        where: {
-          deletedAt: null,
-          isPrimary: true,
-          taskId: record.id,
+      const existingEndpoint = await client.taskCommunicationEndpoint.findFirst(
+        {
+          where: {
+            deletedAt: null,
+            isPrimary: true,
+            taskId: record.id,
+          },
+          select: {
+            id: true,
+            email: true,
+            instructions: true,
+            isPrimary: true,
+            kind: true,
+            label: true,
+            priority: true,
+            sourceUrl: true,
+            url: true,
+            verificationStatus: true,
+          },
         },
-        select: {
-          id: true,
-          email: true,
-          instructions: true,
-          isPrimary: true,
-          kind: true,
-          label: true,
-          priority: true,
-          sourceUrl: true,
-          url: true,
-          verificationStatus: true,
-        },
-      });
+      );
       const normalized = record.primaryEndpoint
         ? normalizePrimaryEndpoint(record.primaryEndpoint)
         : null;
@@ -1076,13 +1152,53 @@ export async function syncManagedTasks(
         normalized === null
           ? existingEndpoint !== null
           : !existingEndpoint ||
-            !sameJson(existingEndpoint, { id: existingEndpoint.id, ...normalized });
+            !sameJson(existingEndpoint, {
+              id: existingEndpoint.id,
+              ...normalized,
+            });
       if (wouldChange) {
         if (normalized === null) {
           result.endpointRetired.push(label);
         } else {
           result.endpointUpdated.push(label);
         }
+      }
+    }
+  }
+
+  if (options.apply) {
+    const activeRecordsByKey = new Map(
+      records
+        .filter((record) => !record.retired)
+        .map((record) => [record.taskKey, record]),
+    );
+    for (const record of records) {
+      if (record.retired) continue;
+      for (const blockerKey of record.blockedByTaskKeys ?? []) {
+        const blocker = activeRecordsByKey.get(blockerKey);
+        if (!blocker) {
+          // validateManagedTaskTree rejects this before any writes.
+          throw new Error(`Missing managed blocker ${blockerKey}`);
+        }
+        await client.taskEdge.upsert({
+          where: {
+            fromTaskId_toTaskId_edgeType: {
+              edgeType: TaskEdgeType.BLOCKS,
+              fromTaskId: blocker.id,
+              toTaskId: record.id,
+            },
+          },
+          create: {
+            calculationVersion: `managed:${options.collectionKey}`,
+            edgeType: TaskEdgeType.BLOCKS,
+            fromTaskId: blocker.id,
+            toTaskId: record.id,
+          },
+          // Managed sync never removes or overwrites runtime-owned edge data.
+          // It only restores a declared prerequisite if that exact edge was
+          // previously soft-deleted.
+          update: { deletedAt: null },
+        });
       }
     }
   }

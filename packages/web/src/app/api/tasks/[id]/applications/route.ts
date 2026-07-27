@@ -4,6 +4,7 @@ import {
   assertCanReviewTaskApplications,
   getTaskApplications,
 } from "@/lib/task-applications.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -13,7 +14,8 @@ export async function GET(
 ) {
   try {
     const { userId } = await requireAuth();
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     await assertCanReviewTaskApplications(userId, id);
 
     const applications = await getTaskApplications(id);

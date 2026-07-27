@@ -43,6 +43,7 @@ import {
   type WishoniaSignatureSelection,
 } from "@/lib/email/wishonia-signature";
 import { prisma } from "@/lib/prisma";
+import { findExternalRecipientSuppression } from "@/lib/tasks/external-recipient-suppression.server";
 import { getBaseUrl } from "@/lib/url";
 
 export interface TaskNotificationMessage {
@@ -496,26 +497,10 @@ function buildThreadHeaders(input: {
   };
 }
 
-async function findExternalOptOut(input: { recipientEmail: string }) {
-  return prisma.taskCommunication.findFirst({
-    where: {
-      cancelledAt: { not: null },
-      channel: TaskCommunicationChannel.EMAIL,
-      deletedAt: null,
-      OR: [
-        { metadataJson: { path: ["optOut"], equals: true } },
-        { errorMessage: { contains: "unsubscribed", mode: "insensitive" } },
-      ],
-      recipientEmail: normalizeEmail(input.recipientEmail),
-      status: TaskCommunicationStatus.CANCELLED,
-      unsubscribeToken: { not: null },
-    },
-    orderBy: { cancelledAt: "desc" },
-    select: { errorMessage: true, id: true, metadataJson: true },
-  });
-}
-
-export async function draftTaskNotification(input: DraftTaskNotificationInput) {
+export async function draftTaskNotification(
+  input: DraftTaskNotificationInput,
+  db: TaskNotificationDb = prisma,
+) {
   const recipientEmail = normalizeEmail(input.recipientEmail);
   const audience = input.audience ?? TaskCommunicationAudience.ASSIGNEE;
   const purpose = input.purpose ?? TaskCommunicationPurpose.ASSIGNMENT;
@@ -533,7 +518,7 @@ export async function draftTaskNotification(input: DraftTaskNotificationInput) {
   const metadataInput = { ...input, bccEmails, unsubscribeToken };
   const initialMetadata = getMetadata(metadataInput);
 
-  const communication = await prisma.taskCommunication.create({
+  const communication = await db.taskCommunication.create({
     data: {
       audience,
       channel: input.channel ?? TaskCommunicationChannel.EMAIL,
@@ -568,7 +553,7 @@ export async function draftTaskNotification(input: DraftTaskNotificationInput) {
     return communication;
   }
 
-  return prisma.taskCommunication.update({
+  return db.taskCommunication.update({
     where: { id: communication.id },
     data: {
       metadataJson: replaceDraftUnsubscribeUrl(
@@ -630,21 +615,22 @@ export async function sendDraftTaskNotification(
     return { status: "missing_message" as const, communication };
   }
 
-  const optedOut = await findExternalOptOut({
+  const externalSuppression = await findExternalRecipientSuppression({
     recipientEmail: communication.recipientEmail,
+    recipientPersonId: communication.recipientPersonId,
   });
-  if (optedOut) {
+  if (externalSuppression) {
     await prisma.taskCommunication.update({
       where: { id: communication.id },
       data: {
         cancelledAt: now,
-        errorMessage: "Recipient previously unsubscribed from task emails.",
+        errorMessage: `Recipient suppressed from task emails: ${externalSuppression.reason}.`,
         status: TaskCommunicationStatus.CANCELLED,
       },
     });
     return {
       status: "suppressed" as const,
-      reason: "external_opt_out" as const,
+      reason: externalSuppression.reason,
     };
   }
 

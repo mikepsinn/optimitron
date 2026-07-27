@@ -5,6 +5,7 @@ import {
   TaskCommunicationEndpointKind,
   TaskCommunicationEndpointVerificationStatus,
   TaskDeadlinePolicy,
+  TaskEdgeType,
   TaskStatus,
 } from "../generated/prisma/client.js";
 import {
@@ -46,7 +47,7 @@ type FakeTask = {
   workTimeZone: string | null;
   applicationQuestionsJson: unknown;
   executionMode: string;
-  category: typeof TaskCategory[keyof typeof TaskCategory];
+  category: (typeof TaskCategory)[keyof typeof TaskCategory];
   estimatedEffortHours: number | null;
   skillTags: string[];
   preferredSkillTags: string[];
@@ -60,13 +61,13 @@ type FakeTask = {
   requiredAccessTags: string[];
   preferredAccessTags: string[];
   contextJson: unknown;
-  claimPolicy: typeof TaskClaimPolicy[keyof typeof TaskClaimPolicy];
+  claimPolicy: (typeof TaskClaimPolicy)[keyof typeof TaskClaimPolicy];
   maxClaims: number | null;
-  status: typeof TaskStatus[keyof typeof TaskStatus];
+  status: (typeof TaskStatus)[keyof typeof TaskStatus];
   isPublic: boolean;
   availableAt: Date | null;
   dueAt: Date | null;
-  deadlinePolicy: typeof TaskDeadlinePolicy[keyof typeof TaskDeadlinePolicy];
+  deadlinePolicy: (typeof TaskDeadlinePolicy)[keyof typeof TaskDeadlinePolicy];
   sortOrder: number;
   deletedAt: Date | null;
   createdByUserId: string;
@@ -106,19 +107,29 @@ type FakeImpactFrameEstimate = {
 type FakeEndpoint = {
   id: string;
   taskId: string;
-  kind: typeof TaskCommunicationEndpointKind[keyof typeof TaskCommunicationEndpointKind];
+  kind: (typeof TaskCommunicationEndpointKind)[keyof typeof TaskCommunicationEndpointKind];
   label: string | null;
   url: string | null;
   email: string | null;
   instructions: string | null;
   sourceUrl: string | null;
-  verificationStatus: typeof TaskCommunicationEndpointVerificationStatus[keyof typeof TaskCommunicationEndpointVerificationStatus];
+  verificationStatus: (typeof TaskCommunicationEndpointVerificationStatus)[keyof typeof TaskCommunicationEndpointVerificationStatus];
   priority: number;
   isPrimary: boolean;
   deletedAt: Date | null;
 };
 
-function makeTask(input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">): FakeTask {
+type FakeTaskEdge = {
+  calculationVersion: string | null;
+  deletedAt: Date | null;
+  edgeType: (typeof TaskEdgeType)[keyof typeof TaskEdgeType];
+  fromTaskId: string;
+  toTaskId: string;
+};
+
+function makeTask(
+  input: Partial<FakeTask> & Pick<FakeTask, "id" | "taskKey">,
+): FakeTask {
   return {
     parentTaskId: null,
     title: "Old title",
@@ -279,10 +290,12 @@ function assertValidTaskSelect(select: Record<string, unknown> | undefined) {
 class FakeManagedTaskClient implements ManagedTaskClient {
   tasks: FakeTask[];
   endpoints: FakeEndpoint[];
+  edges: FakeTaskEdge[];
   impactEstimateSets: FakeImpactEstimateSet[];
   impactFrameEstimates: FakeImpactFrameEstimate[];
 
   constructor(input: {
+    edges?: FakeTaskEdge[];
     endpoints?: FakeEndpoint[];
     impactEstimateSets?: FakeImpactEstimateSet[];
     impactFrameEstimates?: FakeImpactFrameEstimate[];
@@ -290,6 +303,7 @@ class FakeManagedTaskClient implements ManagedTaskClient {
   }) {
     this.tasks = input.tasks ?? [];
     this.endpoints = input.endpoints ?? [];
+    this.edges = input.edges ?? [];
     this.impactEstimateSets = input.impactEstimateSets ?? [];
     this.impactFrameEstimates = input.impactFrameEstimates ?? [];
   }
@@ -312,8 +326,7 @@ class FakeManagedTaskClient implements ManagedTaskClient {
 
       return this.tasks.filter(
         (task) =>
-          ids.has(task.id) ||
-          (task.taskKey !== null && keys.has(task.taskKey)),
+          ids.has(task.id) || (task.taskKey !== null && keys.has(task.taskKey)),
       );
     },
     update: async (args: unknown) => {
@@ -336,7 +349,8 @@ class FakeManagedTaskClient implements ManagedTaskClient {
         const deletedAtMatches =
           !("deletedAt" in where) || task.deletedAt === where.deletedAt;
         const identityMatches =
-          !where.OR || where.OR.some((clause) => matchesIdOrTaskKey(clause, task));
+          !where.OR ||
+          where.OR.some((clause) => matchesIdOrTaskKey(clause, task));
         if (deletedAtMatches && identityMatches) {
           applyTaskData(task, data);
           count += 1;
@@ -355,7 +369,10 @@ class FakeManagedTaskClient implements ManagedTaskClient {
         const parentConnect = (
           create["parentTask"] as { connect?: { id: string } } | undefined
         )?.connect?.id;
-        if (parentConnect && !this.tasks.some((item) => item.id === parentConnect)) {
+        if (
+          parentConnect &&
+          !this.tasks.some((item) => item.id === parentConnect)
+        ) {
           throw new Error(`Missing parent task ${parentConnect}`);
         }
         task = makeTask({
@@ -387,8 +404,10 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       for (const estimateSet of this.impactEstimateSets) {
         const matches =
           estimateSet.taskId === where.taskId &&
-          (!("deletedAt" in where) || estimateSet.deletedAt === where.deletedAt) &&
-          (!("isCurrent" in where) || estimateSet.isCurrent === where.isCurrent) &&
+          (!("deletedAt" in where) ||
+            estimateSet.deletedAt === where.deletedAt) &&
+          (!("isCurrent" in where) ||
+            estimateSet.isCurrent === where.isCurrent) &&
           (!where.NOT || estimateSet.id !== where.NOT.id);
         if (matches) {
           Object.assign(estimateSet, data);
@@ -475,6 +494,36 @@ class FakeManagedTaskClient implements ManagedTaskClient {
     },
   };
 
+  taskEdge = {
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          fromTaskId_toTaskId_edgeType: {
+            edgeType: (typeof TaskEdgeType)[keyof typeof TaskEdgeType];
+            fromTaskId: string;
+            toTaskId: string;
+          };
+        };
+        create: FakeTaskEdge;
+        update: Partial<FakeTaskEdge>;
+      };
+      const key = where.fromTaskId_toTaskId_edgeType;
+      let edge = this.edges.find(
+        (candidate) =>
+          candidate.fromTaskId === key.fromTaskId &&
+          candidate.toTaskId === key.toTaskId &&
+          candidate.edgeType === key.edgeType,
+      );
+      if (!edge) {
+        edge = { deletedAt: null, ...create };
+        this.edges.push(edge);
+      } else {
+        Object.assign(edge, update);
+      }
+      return edge;
+    },
+  };
+
   taskCommunicationEndpoint = {
     create: async (args: unknown) => {
       const { data } = args as { data: Omit<FakeEndpoint, "id" | "deletedAt"> };
@@ -494,7 +543,8 @@ class FakeManagedTaskClient implements ManagedTaskClient {
         this.endpoints.find(
           (candidate) =>
             candidate.deletedAt === where.deletedAt &&
-            (!("isPrimary" in where) || candidate.isPrimary === where.isPrimary) &&
+            (!("isPrimary" in where) ||
+              candidate.isPrimary === where.isPrimary) &&
             candidate.taskId === where.taskId,
         ) ?? null;
       if (!endpoint) return null;
@@ -516,7 +566,9 @@ class FakeManagedTaskClient implements ManagedTaskClient {
         where: { id: string };
         data: Partial<FakeEndpoint>;
       };
-      const endpoint = this.endpoints.find((candidate) => candidate.id === where.id);
+      const endpoint = this.endpoints.find(
+        (candidate) => candidate.id === where.id,
+      );
       if (!endpoint) throw new Error(`Missing endpoint ${where.id}`);
       Object.assign(endpoint, data);
       return endpoint;
@@ -604,7 +656,11 @@ describe("syncManagedTasks", () => {
           title: "Stale root",
         }),
         makeTask({ id: "retired", taskKey: "program:test:retired" }),
-        makeTask({ id: "user-task", taskKey: "user:created", title: "Do not touch" }),
+        makeTask({
+          id: "user-task",
+          taskKey: "user:created",
+          title: "Do not touch",
+        }),
       ],
       endpoints: [
         {
@@ -654,9 +710,12 @@ describe("syncManagedTasks", () => {
     expect(result.retired).toContain("retired (program:test:retired)");
     expect(result.endpointRetired).toContain("retired (program:test:retired)");
     expect(
-      client.tasks.find((task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID)?.title,
+      client.tasks.find((task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID)
+        ?.title,
     ).toBe("Stale root");
-    expect(client.tasks.find((task) => task.id === "retired")?.deletedAt).toBeNull();
+    expect(
+      client.tasks.find((task) => task.id === "retired")?.deletedAt,
+    ).toBeNull();
     expect(client.tasks.find((task) => task.id === "user-task")?.title).toBe(
       "Do not touch",
     );
@@ -672,7 +731,11 @@ describe("syncManagedTasks", () => {
           title: "Stale root",
         }),
         makeTask({ id: "retired", taskKey: "program:test:retired" }),
-        makeTask({ id: "user-task", taskKey: "user:created", title: "Do not touch" }),
+        makeTask({
+          id: "user-task",
+          taskKey: "user:created",
+          title: "Do not touch",
+        }),
       ],
     });
     const records: ManagedTaskRecord[] = [
@@ -824,7 +887,9 @@ describe("syncManagedTasks", () => {
     });
 
     expect(result.retired).toEqual([]);
-    expect(client.tasks.find((task) => task.id === "previously-managed")).toMatchObject({
+    expect(
+      client.tasks.find((task) => task.id === "previously-managed"),
+    ).toMatchObject({
       deletedAt: null,
       status: TaskStatus.ACTIVE,
       title: "Keep me unless explicitly retired",
@@ -855,9 +920,7 @@ describe("syncManagedTasks", () => {
     expect(
       client.tasks.find((task) => task.id === OPTIMIZE_EARTH_ROOT_TASK_ID)
         ?.taskKey,
-    ).toBe(
-      "program:test:old-root",
-    );
+    ).toBe("program:test:old-root");
   });
 
   it("runs apply mode inside a transaction when the client supports it", async () => {
@@ -899,6 +962,127 @@ describe("syncManagedTasks", () => {
     expect(client.tasks.find((task) => task.id === "child")).toMatchObject({
       parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     });
+  });
+
+  it("upserts declared blockers without removing runtime-owned edges", async () => {
+    const deletedAt = new Date("2026-06-01T00:00:00.000Z");
+    const client = new FakeManagedTaskClient({
+      edges: [
+        {
+          calculationVersion: "runtime",
+          deletedAt,
+          edgeType: TaskEdgeType.BLOCKS,
+          fromTaskId: "blocker",
+          toTaskId: "blocked",
+        },
+        {
+          calculationVersion: "runtime",
+          deletedAt: null,
+          edgeType: TaskEdgeType.BLOCKS,
+          fromTaskId: "unrelated",
+          toTaskId: "blocked",
+        },
+      ],
+      tasks: [],
+    });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        activeRecord,
+        {
+          id: "blocker",
+          taskKey: "program:test:blocker",
+          parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          title: "Complete prerequisite",
+          description: "Complete the prerequisite.",
+        },
+        {
+          blockedByTaskKeys: ["program:test:blocker"],
+          id: "blocked",
+          taskKey: "program:test:blocked",
+          parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          title: "Complete downstream work",
+          description: "Complete the downstream work.",
+        },
+      ],
+    });
+
+    expect(client.edges).toHaveLength(2);
+    expect(client.edges[0]).toMatchObject({
+      calculationVersion: "runtime",
+      deletedAt: null,
+      edgeType: TaskEdgeType.BLOCKS,
+      fromTaskId: "blocker",
+      toTaskId: "blocked",
+    });
+    expect(client.edges[1]).toMatchObject({
+      calculationVersion: "runtime",
+      deletedAt: null,
+      fromTaskId: "unrelated",
+      toTaskId: "blocked",
+    });
+  });
+
+  it("rejects blocker keys outside the active managed collection", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await expect(
+      syncManagedTasks(client, {
+        apply: false,
+        collectionKey: "test-tree",
+        createdByUserId: "creator",
+        records: [
+          activeRecord,
+          {
+            blockedByTaskKeys: ["program:test:missing"],
+            id: "blocked",
+            taskKey: "program:test:blocked",
+            parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+            title: "Blocked task",
+            description: "This task references an undeclared blocker.",
+          },
+        ],
+      }),
+    ).rejects.toThrow(
+      "Managed task blocked (program:test:blocked) references missing blocker task key program:test:missing",
+    );
+    expect(client.tasks).toEqual([]);
+  });
+
+  it("rejects managed blocker cycles before writing", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await expect(
+      syncManagedTasks(client, {
+        apply: true,
+        collectionKey: "test-tree",
+        createdByUserId: "creator",
+        records: [
+          activeRecord,
+          {
+            blockedByTaskKeys: ["program:test:second"],
+            id: "first",
+            taskKey: "program:test:first",
+            parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+            title: "First task",
+            description: "First side of a blocker cycle.",
+          },
+          {
+            blockedByTaskKeys: ["program:test:first"],
+            id: "second",
+            taskKey: "program:test:second",
+            parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+            title: "Second task",
+            description: "Second side of a blocker cycle.",
+          },
+        ],
+      }),
+    ).rejects.toThrow("Managed task blocker cycle detected");
+    expect(client.tasks).toEqual([]);
+    expect(client.edges).toEqual([]);
   });
 
   it("rejects active records that reference missing parents during dry-run", async () => {

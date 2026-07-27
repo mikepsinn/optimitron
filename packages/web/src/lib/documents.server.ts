@@ -12,6 +12,8 @@ import {
 } from "@/lib/content-access.server";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { hasAssignedDocumentReviewRevisionAccess } from "@/lib/tasks/document-review.server";
+import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const DOCUMENT_NOT_FOUND_MESSAGE = "Document not found";
 export const DOCUMENT_EMPTY_PATCH_MESSAGE =
@@ -143,23 +145,101 @@ async function assertDocumentAccessOrNotFound(
 }
 
 async function assertTaskLink(input: {
+  clientAccessBoundary?: TaskClientAccessBoundary;
   taskId: string | null;
   userId: string;
   visibility: ContentVisibility;
-}): Promise<{ jurisdictionId: string | null } | null> {
+}): Promise<{
+  isPublic: boolean;
+  jurisdictionId: string | null;
+  ownerOrganizationId: string | null;
+} | null> {
   if (!input.taskId) return null;
-  const { assertUserCanViewTask } =
+  const { assertUserCanViewTask, getTaskClientAccessWhere } =
     await import("@/lib/tasks/task-visibility.server");
   await assertUserCanViewTask(input.taskId, input.userId);
   const task = await prisma.task.findFirst({
-    where: { id: input.taskId, deletedAt: null },
-    select: { isPublic: true, jurisdictionId: true },
+    where: input.clientAccessBoundary
+      ? {
+          AND: [
+            { id: input.taskId, deletedAt: null },
+            getTaskClientAccessWhere(input.clientAccessBoundary),
+          ],
+        }
+      : { id: input.taskId, deletedAt: null },
+    select: {
+      isPublic: true,
+      jurisdictionId: true,
+      ownerOrganizationId: true,
+    },
   });
   if (!task) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
   if (input.visibility === ContentVisibility.PUBLIC && !task.isPublic) {
     throw new Error(DOCUMENT_PRIVATE_TASK_MESSAGE);
   }
   return task;
+}
+
+function clientCanAccessOrganization(
+  organizationId: string,
+  boundary: TaskClientAccessBoundary,
+): boolean {
+  return (
+    boundary.organizationIds === null ||
+    boundary.organizationIds.includes(organizationId)
+  );
+}
+
+async function isDocumentWithinClientAccessBoundary(
+  document: Pick<
+    DocumentWithCurrentRevision,
+    "organizationId" | "taskId" | "visibility"
+  >,
+  boundary?: TaskClientAccessBoundary,
+): Promise<boolean> {
+  if (!boundary || document.visibility === ContentVisibility.PUBLIC) {
+    return true;
+  }
+  if (document.organizationId) {
+    return clientCanAccessOrganization(document.organizationId, boundary);
+  }
+  if (!document.taskId) return boundary.allowPersonalPrivate;
+
+  const task = await prisma.task.findFirst({
+    where: { deletedAt: null, id: document.taskId },
+    select: { isPublic: true, ownerOrganizationId: true },
+  });
+  if (!task) return false;
+  const { isTaskWithinClientAccessBoundary } =
+    await import("@/lib/tasks/task-visibility.server");
+  return isTaskWithinClientAccessBoundary(task, boundary);
+}
+
+async function assertDocumentCreationWithinClientAccessBoundary(input: {
+  boundary?: TaskClientAccessBoundary;
+  organizationId: string | null;
+  task: {
+    isPublic: boolean;
+    ownerOrganizationId: string | null;
+  } | null;
+  visibility: ContentVisibility;
+}): Promise<void> {
+  if (!input.boundary || input.visibility === ContentVisibility.PUBLIC) return;
+  if (input.organizationId) {
+    if (clientCanAccessOrganization(input.organizationId, input.boundary)) {
+      return;
+    }
+    throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
+  if (input.task) {
+    const { isTaskWithinClientAccessBoundary } =
+      await import("@/lib/tasks/task-visibility.server");
+    if (isTaskWithinClientAccessBoundary(input.task, input.boundary)) return;
+    throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
+  if (!input.boundary.allowPersonalPrivate) {
+    throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
 }
 
 async function assertOrganizationOwner(
@@ -234,18 +314,43 @@ export function toDocumentDto(view: DocumentView): DocumentDto {
 }
 
 async function buildDocumentView(input: {
+  clientAccessBoundary?: TaskClientAccessBoundary;
   document: DocumentWithCurrentRevision;
   revision: NonNullable<DocumentWithCurrentRevision["currentRevision"]>;
   userId: string | null;
 }): Promise<DocumentView | null> {
-  const effectivePermission = await resolveDocumentAccess(
+  if (
+    !(await isDocumentWithinClientAccessBoundary(
+      input.document,
+      input.clientAccessBoundary,
+    ))
+  ) {
+    return null;
+  }
+  const resolvedPermission = await resolveDocumentAccess(
     input.document.id,
     input.userId,
   );
+  const hasAssignedReviewAccess =
+    !resolvedPermission && input.userId
+      ? await hasAssignedDocumentReviewRevisionAccess({
+          clientAccessBoundary: input.clientAccessBoundary,
+          documentId: input.document.id,
+          revisionId: input.revision.id,
+          userId: input.userId,
+        })
+      : false;
+  const effectivePermission =
+    resolvedPermission ??
+    (hasAssignedReviewAccess ? ContentAccessLevel.COMMENT : null);
   if (!effectivePermission) return null;
 
   const versions = await prisma.documentRevision.findMany({
-    where: { documentId: input.document.id, deletedAt: null },
+    where: {
+      documentId: input.document.id,
+      deletedAt: null,
+      id: hasAssignedReviewAccess ? input.revision.id : undefined,
+    },
     orderBy: { version: "desc" },
     select: { id: true, version: true, title: true, createdAt: true },
   });
@@ -287,27 +392,35 @@ async function buildDocumentView(input: {
 export async function getDocumentForViewer(
   documentOrRevisionId: string,
   userId?: string | null,
+  options: { clientAccessBoundary?: TaskClientAccessBoundary } = {},
 ): Promise<DocumentView | null> {
   const loaded = await loadDocumentAndRevision(documentOrRevisionId);
   if (!loaded) return null;
-  return buildDocumentView({ ...loaded, userId: userId?.trim() || null });
+  return buildDocumentView({
+    ...loaded,
+    clientAccessBoundary: options.clientAccessBoundary,
+    userId: userId?.trim() || null,
+  });
 }
 
-export async function createDocument(input: {
-  body: string;
-  createdByUserId: string;
-  idempotencyKey?: string | null;
-  jurisdictionId?: string | null;
-  organizationId?: string | null;
-  parentDocumentId?: string | null;
-  requestHash?: string | null;
-  sourceArtifactId?: string | null;
-  sourceKey?: string | null;
-  sourceUrl?: string | null;
-  taskId?: string | null;
-  title: string;
-  visibility?: ContentVisibility | null;
-}): Promise<DocumentView> {
+export async function createDocument(
+  input: {
+    body: string;
+    createdByUserId: string;
+    idempotencyKey?: string | null;
+    jurisdictionId?: string | null;
+    organizationId?: string | null;
+    parentDocumentId?: string | null;
+    requestHash?: string | null;
+    sourceArtifactId?: string | null;
+    sourceKey?: string | null;
+    sourceUrl?: string | null;
+    taskId?: string | null;
+    title: string;
+    visibility?: ContentVisibility | null;
+  },
+  options: { clientAccessBoundary?: TaskClientAccessBoundary } = {},
+): Promise<DocumentView> {
   const title = input.title.trim();
   const body = input.body;
   validateTitleAndBody(title, body);
@@ -325,7 +438,12 @@ export async function createDocument(input: {
   );
 
   const [task] = await Promise.all([
-    assertTaskLink({ taskId, userId: input.createdByUserId, visibility }),
+    assertTaskLink({
+      clientAccessBoundary: options.clientAccessBoundary,
+      taskId,
+      userId: input.createdByUserId,
+      visibility,
+    }),
     assertOrganizationOwner({
       organizationId,
       userId: input.createdByUserId,
@@ -338,6 +456,12 @@ export async function createDocument(input: {
         )
       : Promise.resolve(null),
   ]);
+  await assertDocumentCreationWithinClientAccessBoundary({
+    boundary: options.clientAccessBoundary,
+    organizationId,
+    task,
+    visibility,
+  });
 
   const jurisdictionId =
     normalizeOptional(input.jurisdictionId) ?? task?.jurisdictionId ?? null;
@@ -392,7 +516,11 @@ export async function createDocument(input: {
     if (existing.requestHash !== requestHash) {
       throw new Error(DOCUMENT_IDEMPOTENCY_CONFLICT_MESSAGE);
     }
-    const view = await getDocumentForViewer(existing.id, input.createdByUserId);
+    const view = await getDocumentForViewer(
+      existing.id,
+      input.createdByUserId,
+      options,
+    );
     if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
     return view;
   };
@@ -464,25 +592,32 @@ export async function createDocument(input: {
     return returnExisting(raced);
   }
 
-  const view = await getDocumentForViewer(documentId, input.createdByUserId);
+  const view = await getDocumentForViewer(
+    documentId,
+    input.createdByUserId,
+    options,
+  );
   if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
   return view;
 }
 
-export async function updateDocument(input: {
-  body?: string | null;
-  documentId: string;
-  editorUserId: string;
-  expectedVersion: number;
-  organizationId?: string | null;
-  parentDocumentId?: string | null;
-  requestHash?: string | null;
-  sourceArtifactId?: string | null;
-  sourceUrl?: string | null;
-  taskId?: string | null;
-  title?: string | null;
-  visibility?: ContentVisibility | null;
-}): Promise<DocumentView> {
+export async function updateDocument(
+  input: {
+    body?: string | null;
+    documentId: string;
+    editorUserId: string;
+    expectedVersion: number;
+    organizationId?: string | null;
+    parentDocumentId?: string | null;
+    requestHash?: string | null;
+    sourceArtifactId?: string | null;
+    sourceUrl?: string | null;
+    taskId?: string | null;
+    title?: string | null;
+    visibility?: ContentVisibility | null;
+  },
+  options: { clientAccessBoundary?: TaskClientAccessBoundary } = {},
+): Promise<DocumentView> {
   const hasContentPatch = input.title != null || input.body != null;
   const hasMetadataPatch =
     input.visibility != null ||
@@ -499,6 +634,19 @@ export async function updateDocument(input: {
     throw new Error("expectedVersion must be a positive integer");
   }
 
+  const current = await prisma.document.findFirst({
+    where: { id: input.documentId, deletedAt: null },
+    include: documentInclude,
+  });
+  if (!current?.currentRevision) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  if (
+    !(await isDocumentWithinClientAccessBoundary(
+      current,
+      options.clientAccessBoundary,
+    ))
+  ) {
+    throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
+  }
   await assertDocumentAccessOrNotFound(
     input.documentId,
     input.editorUserId,
@@ -506,12 +654,6 @@ export async function updateDocument(input: {
       ? ContentAccessLevel.FULL_ACCESS
       : ContentAccessLevel.EDIT_CONTENT,
   );
-
-  const current = await prisma.document.findFirst({
-    where: { id: input.documentId, deletedAt: null },
-    include: documentInclude,
-  });
-  if (!current?.currentRevision) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
   if (current.version !== input.expectedVersion) {
     throw new Error(DOCUMENT_CONFLICT_MESSAGE);
   }
@@ -543,8 +685,13 @@ export async function updateDocument(input: {
       ? current.sourceUrl
       : normalizeOptional(input.sourceUrl);
 
-  await Promise.all([
-    assertTaskLink({ taskId, userId: input.editorUserId, visibility }),
+  const [task] = await Promise.all([
+    assertTaskLink({
+      clientAccessBoundary: options.clientAccessBoundary,
+      taskId,
+      userId: input.editorUserId,
+      visibility,
+    }),
     assertOrganizationOwner({ organizationId, userId: input.editorUserId }),
     assertValidDocumentParent({
       documentId: current.id,
@@ -558,6 +705,12 @@ export async function updateDocument(input: {
         )
       : Promise.resolve(null),
   ]);
+  await assertDocumentCreationWithinClientAccessBoundary({
+    boundary: options.clientAccessBoundary,
+    organizationId,
+    task,
+    visibility,
+  });
 
   const nextVersion = current.version + 1;
   await prisma.$transaction(async (tx) => {
@@ -633,12 +786,17 @@ export async function updateDocument(input: {
     });
   });
 
-  const view = await getDocumentForViewer(current.id, input.editorUserId);
+  const view = await getDocumentForViewer(
+    current.id,
+    input.editorUserId,
+    options,
+  );
   if (!view) throw new Error(DOCUMENT_NOT_FOUND_MESSAGE);
   return view;
 }
 
 export async function listDocumentsForViewer(input: {
+  clientAccessBoundary?: TaskClientAccessBoundary;
   limit?: number | null;
   taskId?: string | null;
   userId?: string | null;
@@ -647,9 +805,23 @@ export async function listDocumentsForViewer(input: {
   const taskId = normalizeOptional(input.taskId);
 
   if (taskId) {
-    const { canUserViewTask } =
+    const { canUserViewTask, getTaskClientAccessWhere } =
       await import("@/lib/tasks/task-visibility.server");
     if (!(await canUserViewTask(taskId, input.userId ?? null))) return [];
+    if (
+      input.clientAccessBoundary &&
+      !(await prisma.task.findFirst({
+        where: {
+          AND: [
+            { deletedAt: null, id: taskId },
+            getTaskClientAccessWhere(input.clientAccessBoundary),
+          ],
+        },
+        select: { id: true },
+      }))
+    ) {
+      return [];
+    }
   }
 
   const viewerUserId = input.userId?.trim() || null;
@@ -689,6 +861,14 @@ export async function listDocumentsForViewer(input: {
       viewerUserId,
     );
     for (const document of rows) {
+      if (
+        !(await isDocumentWithinClientAccessBoundary(
+          document,
+          input.clientAccessBoundary,
+        ))
+      ) {
+        continue;
+      }
       const effectivePermission = accessById.get(document.id) ?? null;
       if (!effectivePermission) continue;
       summaries.push({

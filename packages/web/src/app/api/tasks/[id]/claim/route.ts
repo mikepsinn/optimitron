@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { claimTask } from "@/lib/tasks.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,8 @@ export async function POST(
       McpScope.TASKS_PERSONAL,
       McpScope.TASKS_ADMIN,
     ]);
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const claim = await claimTask(id, userId);
 
     return NextResponse.json({ data: claim, success: true });
@@ -28,6 +30,9 @@ export async function POST(
     }
 
     console.error("[TASKS] Failed to claim task:", error);
-    return NextResponse.json({ error: "Failed to claim task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to claim task." },
+      { status: 500 },
+    );
   }
 }

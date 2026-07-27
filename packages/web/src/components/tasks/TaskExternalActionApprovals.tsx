@@ -1,7 +1,15 @@
 import { ExternalActionRequestStatus } from "@optimitron/db/enums";
-import { decideTaskExternalAction } from "@/app/tasks/[id]/actions";
+import {
+  approveTaskExternalActionBatch,
+  decideTaskExternalAction,
+} from "@/app/tasks/[id]/actions";
 import { Button } from "@/components/retroui/Button";
+import { IntegrityProof } from "@/components/ui/integrity-proof";
 import { OutboundMessageApprovalPayloadSchema } from "@/lib/email/outbound-message-approval.server";
+import {
+  getPrivateReviewApprovalContext,
+  type PrivateReviewInvitationApprovalContext,
+} from "@/lib/tasks/private-review-invitation-contracts";
 
 export type ApprovableStatus =
   | typeof ExternalActionRequestStatus.PENDING
@@ -11,6 +19,7 @@ export interface TaskExternalActionApproval {
   expiresAt: Date;
   failureMessage?: string | null;
   id: string;
+  payloadHash: string;
   payloadJson: unknown;
   status: ApprovableStatus;
 }
@@ -32,6 +41,12 @@ export function readOutboundEnvelopeV2(payload: unknown) {
     text: envelope.text,
     to: envelope.to,
   };
+}
+
+export function readPrivateReviewApprovalContext(payload: unknown) {
+  const parsed = OutboundMessageApprovalPayloadSchema.safeParse(payload);
+  if (!parsed.success) return null;
+  return getPrivateReviewApprovalContext(parsed.data.approvalContext);
 }
 
 const PREVIEW_CSP =
@@ -131,7 +146,15 @@ function retryExplanation(failureMessage?: string | null) {
   return "The email provider did not confirm delivery. Retrying uses the same email and delivery key.";
 }
 
-function ApprovalCard({ approval }: { approval: TaskExternalActionApproval }) {
+function ApprovalCard({
+  approval,
+  batchManaged = false,
+  reviewContext,
+}: {
+  approval: TaskExternalActionApproval;
+  batchManaged?: boolean;
+  reviewContext?: PrivateReviewInvitationApprovalContext | null;
+}) {
   const envelope = readOutboundEnvelopeV2(approval.payloadJson);
   const isPending = approval.status === ExternalActionRequestStatus.PENDING;
   const requiresReconciliation =
@@ -178,6 +201,37 @@ function ApprovalCard({ approval }: { approval: TaskExternalActionApproval }) {
             </p>
           </div>
 
+          {reviewContext ? (
+            <dl className="mt-4 border-t border-foreground pt-3">
+              <Field
+                label="Document version"
+                value={`Version ${reviewContext.revision.documentVersion} · exact text for this review`}
+              />
+            </dl>
+          ) : null}
+
+          {reviewContext ? (
+            <IntegrityProof
+              className="mt-4"
+              items={[
+                { label: "Review task ID", value: reviewContext.taskId },
+                {
+                  label: "Document ID",
+                  value: reviewContext.revision.documentId,
+                },
+                {
+                  label: "Revision ID",
+                  value: reviewContext.revision.documentRevisionId,
+                },
+                {
+                  label: "Revision hash",
+                  value: reviewContext.revision.contentHash,
+                },
+                { label: "Payload hash", value: approval.payloadHash },
+              ]}
+            />
+          ) : null}
+
           <details className="mt-4 border-t border-foreground pt-3">
             <summary className="cursor-pointer text-xs font-black uppercase underline underline-offset-4">
               Headers ({headerEntries.length})
@@ -205,7 +259,7 @@ function ApprovalCard({ approval }: { approval: TaskExternalActionApproval }) {
 
           <details
             className="mt-3 border-t border-foreground pt-3"
-            open={Boolean(envelope.html)}
+            open={Boolean(envelope.html) && !batchManaged}
           >
             <summary className="cursor-pointer text-xs font-black uppercase underline underline-offset-4">
               HTML preview
@@ -232,7 +286,21 @@ function ApprovalCard({ approval }: { approval: TaskExternalActionApproval }) {
       )}
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-        {!envelope ? (
+        {batchManaged ? (
+          <>
+            <p className="flex-1 text-xs font-semibold text-muted-foreground">
+              This invitation can only be approved with every message in its
+              frozen batch.
+            </p>
+            {isPending ? (
+              <DecisionForm
+                decision="REJECT"
+                id={approval.id}
+                label="Reject this email"
+              />
+            ) : null}
+          </>
+        ) : !envelope ? (
           isPending ? (
             <DecisionForm decision="REJECT" id={approval.id} label="Reject" />
           ) : null
@@ -259,17 +327,102 @@ function ApprovalCard({ approval }: { approval: TaskExternalActionApproval }) {
   );
 }
 
+interface ReviewApprovalBatch {
+  approvals: Array<{
+    approval: TaskExternalActionApproval;
+    context: PrivateReviewInvitationApprovalContext;
+  }>;
+  batchKey: string;
+}
+
+function ReviewBatchApproval({
+  authorityTaskId,
+  batch,
+}: {
+  authorityTaskId: string;
+  batch: ReviewApprovalBatch;
+}) {
+  return (
+    <section className="border border-foreground p-4">
+      <h3 className="text-sm font-semibold">
+        Review invitation batch ({batch.approvals.length})
+      </h3>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Every recipient, message, task, and document version is frozen. Approval
+        fails if anything changed or is missing.
+      </p>
+      <div className="mt-4 space-y-4">
+        {batch.approvals.map(({ approval, context }) => (
+          <ApprovalCard
+            approval={approval}
+            batchManaged
+            key={approval.id}
+            reviewContext={context}
+          />
+        ))}
+      </div>
+      <form action={approveTaskExternalActionBatch} className="mt-4">
+        <input name="authorityTaskId" type="hidden" value={authorityTaskId} />
+        <input name="batchKey" type="hidden" value={batch.batchKey} />
+        {batch.approvals.map(({ approval }) => (
+          <span key={approval.id}>
+            <input
+              name="externalActionRequestId"
+              type="hidden"
+              value={approval.id}
+            />
+            <input
+              name="expectedPayloadHash"
+              type="hidden"
+              value={approval.payloadHash}
+            />
+          </span>
+        ))}
+        <Button
+          className="w-full rounded-none border border-foreground bg-foreground px-4 py-2 text-xs font-black uppercase text-background sm:w-auto"
+          type="submit"
+          variant="outline"
+        >
+          Approve and send entire batch
+        </Button>
+      </form>
+    </section>
+  );
+}
+
 export function TaskExternalActionApprovals({
   approvals,
+  authorityTaskId,
 }: {
   approvals: TaskExternalActionApproval[];
+  authorityTaskId: string;
 }) {
   if (approvals.length === 0) return null;
+
+  const reviewBatches = new Map<string, ReviewApprovalBatch>();
+  const standaloneApprovals: Array<{
+    approval: TaskExternalActionApproval;
+    context: PrivateReviewInvitationApprovalContext | null;
+  }> = [];
+  for (const approval of approvals) {
+    const context = readPrivateReviewApprovalContext(approval.payloadJson);
+    if (approval.status !== ExternalActionRequestStatus.PENDING || !context) {
+      standaloneApprovals.push({ approval, context });
+      continue;
+    }
+    const batch = reviewBatches.get(context.batchKey) ?? {
+      approvals: [],
+      batchKey: context.batchKey,
+    };
+    batch.approvals.push({ approval, context });
+    reviewBatches.set(context.batchKey, batch);
+  }
 
   return (
     <section
       aria-labelledby="outbound-approvals-heading"
       className="border-b border-foreground py-6"
+      id="outbound-approvals"
     >
       <div className="mb-4">
         <h2 id="outbound-approvals-heading" className="text-base font-semibold">
@@ -280,8 +433,19 @@ export function TaskExternalActionApprovals({
         </p>
       </div>
       <div className="space-y-4">
-        {approvals.map((approval) => (
-          <ApprovalCard approval={approval} key={approval.id} />
+        {[...reviewBatches.values()].map((batch) => (
+          <ReviewBatchApproval
+            authorityTaskId={authorityTaskId}
+            batch={batch}
+            key={batch.batchKey}
+          />
+        ))}
+        {standaloneApprovals.map(({ approval, context }) => (
+          <ApprovalCard
+            approval={approval}
+            key={approval.id}
+            reviewContext={context}
+          />
         ))}
       </div>
     </section>

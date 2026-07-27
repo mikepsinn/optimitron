@@ -7,6 +7,7 @@ import {
   createPendingTaskCommentAttachment,
   TaskCommentAttachmentInputError,
 } from "@/lib/tasks/task-comment-attachments.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 import { TASK_NOT_FOUND_MESSAGE } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
@@ -37,7 +38,8 @@ export async function POST(
       );
     }
 
-    const { id: taskId } = await context.params;
+    const { id: routeId } = await context.params;
+    const taskId = decodeTaskRouteId(routeId);
     const attachment = await createPendingTaskCommentAttachment({
       ...parsed.data,
       taskId,

@@ -57,8 +57,7 @@ export const END_WAR_AND_DISEASE_TASK_KEY = "program:end-war-and-disease";
 
 export const COURT_OF_HUMANITY_TASK_ID = "court-of-humanity";
 export const COURT_OF_HUMANITY_TASK_KEY = "program:court-of-humanity:establish";
-export const COURT_OF_HUMANITY_CHARTER_TASK_ID =
-  "court-of-humanity-charter";
+export const COURT_OF_HUMANITY_CHARTER_TASK_ID = "court-of-humanity-charter";
 export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
   "program:court-of-humanity:charter";
 
@@ -71,8 +70,7 @@ export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
  */
 export const HUMANITY_V_GOVERNMENT_CASE_NAME = "Humanity v. Government";
 
-export const HUMANITY_V_GOVERNMENTS_TASK_ID =
-  "humanity-v-governments-of-earth";
+export const HUMANITY_V_GOVERNMENTS_TASK_ID = "humanity-v-governments-of-earth";
 export const HUMANITY_V_GOVERNMENTS_TASK_KEY =
   "program:humanity-v-governments-of-earth:prosecute";
 export const REGISTER_PLAINTIFFS_TASK_ID = "register-plaintiffs";
@@ -139,6 +137,54 @@ export const SHIRT_SEED_TASK_KEY = "program:shirt-seed";
 
 export const EOS_CAPITALIZE_TASK_ID = "eos-capitalize";
 export const EOS_CAPITALIZE_TASK_KEY = "program:eos:capitalize";
+export const EOS_VERIFY_ENTITY_TASK_ID = "eos-verify-entity";
+export const EOS_VERIFY_ENTITY_TASK_KEY =
+  "program:eos:capitalize:verify-entity";
+export const EOS_APPROVE_FINANCING_PACKET_TASK_ID =
+  "eos-approve-financing-packet";
+export const EOS_APPROVE_FINANCING_PACKET_TASK_KEY =
+  "program:eos:capitalize:approve-financing-packet";
+export const EOS_REVIEW_CORPORATE_AUTHORITY_TASK_ID =
+  "eos-review-corporate-authority";
+export const EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY =
+  "program:eos:capitalize:review-corporate-authority";
+export const EOS_REVIEW_FINANCING_TERMS_TASK_ID = "eos-review-financing-terms";
+export const EOS_REVIEW_FINANCING_TERMS_TASK_KEY =
+  "program:eos:capitalize:review-financing-terms";
+export const EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_ID =
+  "eos-review-subscription-agreement";
+export const EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY =
+  "program:eos:capitalize:review-subscription-agreement";
+export const EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_ID =
+  "eos-review-securities-exemptions";
+export const EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY =
+  "program:eos:capitalize:review-securities-exemptions";
+export const EOS_REVIEW_USE_OF_PROCEEDS_TASK_ID = "eos-review-use-of-proceeds";
+export const EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY =
+  "program:eos:capitalize:review-use-of-proceeds";
+export const EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_ID =
+  "eos-recruit-independent-reviewers";
+export const EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY =
+  "program:eos:capitalize:recruit-independent-reviewers";
+export const EOS_OPEN_FINANCING_ROUND_TASK_ID = "eos-open-financing-round";
+export const EOS_OPEN_FINANCING_ROUND_TASK_KEY =
+  "program:eos:capitalize:open-financing-round";
+export const EOS_FUND_WORK_PACKAGES_TASK_ID = "eos-fund-work-packages";
+export const EOS_FUND_WORK_PACKAGES_TASK_KEY =
+  "program:eos:capitalize:fund-work-packages";
+export const EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_ID =
+  "eos-issue-contribution-receipts";
+export const EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_KEY =
+  "program:eos:capitalize:issue-contribution-receipts";
+
+export const TASK_FUNDING_RECEIPT_TASK_KEY_PREFIX = "funding-receipt";
+
+export function buildTaskFundingReceiptTaskKey(paymentId: string) {
+  if (!paymentId.trim()) {
+    throw new Error("Task funding payment id is required");
+  }
+  return `${TASK_FUNDING_RECEIPT_TASK_KEY_PREFIX}:${paymentId}`;
+}
 
 // Optimize Optimitron engineering program (the dev branch of the task tree).
 //
@@ -155,7 +201,8 @@ export const TREATY_PARENT_TASK_ID = "1-pct-treaty";
 export const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
 export const TREATY_PARENT_TASK_TITLE = "Ratify the 1% Treaty";
 export const TREATY_SIGNER_TASK_ID_PREFIX = "1-pct-treaty-signer";
-export const TREATY_SIGNER_TASK_KEY_PREFIX = "program:one-percent-treaty:signer";
+export const TREATY_SIGNER_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:signer";
 export const TREATY_SIGNER_TASK_TITLE = "Sign the 1% Treaty";
 
 export function getTreatySignerTaskKey(input: { countryCode: string }) {
@@ -171,10 +218,15 @@ export function isTreatyParentTaskKey(taskKey: string | null | undefined) {
 }
 
 export function isTreatySignerTaskKey(taskKey: string | null | undefined) {
-  return taskKey != null && /^program:one-percent-treaty:signer:[a-z0-9-]+$/i.test(taskKey);
+  return (
+    taskKey != null &&
+    /^program:one-percent-treaty:signer:[a-z0-9-]+$/i.test(taskKey)
+  );
 }
 
-export function isTreatySignerTaskKeyPrefix(taskKey: string | null | undefined) {
+export function isTreatySignerTaskKeyPrefix(
+  taskKey: string | null | undefined,
+) {
   return (
     taskKey != null && taskKey.startsWith(`${TREATY_SIGNER_TASK_KEY_PREFIX}:`)
   );
@@ -197,15 +249,20 @@ export function getUserTreatySubtaskKey(userId: string, kind: string) {
 
 // Signer reminder subtask
 
-export const SIGNER_REMINDER_TASK_KEY_PREFIX = "program:one-percent-treaty:reminder";
+export const SIGNER_REMINDER_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:reminder";
 
-export function buildSignerReminderTaskKey(countryCode: string, userId: string) {
+export function buildSignerReminderTaskKey(
+  countryCode: string,
+  userId: string,
+) {
   return `${SIGNER_REMINDER_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${userId}`;
 }
 
 // Referral invitation task
 
-export const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
+export const REFERRAL_INVITATION_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:referral-invitation";
 
 export function buildReferralInvitationTaskKey(inviteToken: string) {
   return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
@@ -215,6 +272,9 @@ export function buildReferralInvitationTaskKey(inviteToken: string) {
 
 export const ACCOUNTABILITY_TASK_KEY_PREFIX = "accountability";
 
-export function buildAccountabilityTaskKey(countryCode: string, activitySlug: string) {
+export function buildAccountabilityTaskKey(
+  countryCode: string,
+  activitySlug: string,
+) {
   return `${ACCOUNTABILITY_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${activitySlug}`;
 }

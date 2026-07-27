@@ -95,14 +95,20 @@ export function derivePersonSourceRef(input: PersonDraftInput) {
   return keyParts.length > 0 ? `public-figure:${keyParts.join(":")}` : null;
 }
 
-function defaultDisplayName(user: UserPersonIdentity, override?: string | null) {
+function defaultDisplayName(
+  user: UserPersonIdentity,
+  override?: string | null,
+) {
   const trimmedOverride = override?.trim();
   if (trimmedOverride) return trimmedOverride;
   if (user.email.trim()) return user.email.trim().toLowerCase();
   return `Person ${user.id.slice(0, 8)}`;
 }
 
-async function loadUserIdentity(db: DbClient, userId: string): Promise<UserPersonIdentity> {
+async function loadUserIdentity(
+  db: DbClient,
+  userId: string,
+): Promise<UserPersonIdentity> {
   return db.user.findUniqueOrThrow({
     where: { id: userId },
     select: {
@@ -146,7 +152,8 @@ function mergePersonUpdateData(
   return {
     bio: canonical.bio ?? duplicate.bio,
     countryCode: canonical.countryCode ?? duplicate.countryCode,
-    currentAffiliation: canonical.currentAffiliation ?? duplicate.currentAffiliation,
+    currentAffiliation:
+      canonical.currentAffiliation ?? duplicate.currentAffiliation,
     displayName: canonical.displayName || duplicate.displayName,
     email: canonical.email ?? duplicate.email,
     handle: canonical.handle ?? duplicate.handle,
@@ -163,7 +170,9 @@ async function mergeDuplicatePersonInClient(
   db: DbClient,
 ): Promise<MergeDuplicatePersonResult> {
   if (input.canonicalPersonId === input.duplicatePersonId) {
-    throw new Error("canonicalPersonId and duplicatePersonId must be different");
+    throw new Error(
+      "canonicalPersonId and duplicatePersonId must be different",
+    );
   }
 
   const [canonical, duplicate] = await Promise.all([
@@ -178,8 +187,14 @@ async function mergeDuplicatePersonInClient(
     throw new Error(`Duplicate person not found: ${input.duplicatePersonId}`);
   }
 
-  if (canonical.user && duplicate.user && canonical.user.id !== duplicate.user.id) {
-    throw new Error("Cannot merge two Person records that are linked to different users");
+  if (
+    canonical.user &&
+    duplicate.user &&
+    canonical.user.id !== duplicate.user.id
+  ) {
+    throw new Error(
+      "Cannot merge two Person records that are linked to different users",
+    );
   }
 
   const now = input.now ?? new Date();
@@ -288,7 +303,10 @@ async function ensurePersonForUserInClient(
   });
 
   let person;
-  if (existingPerson && (!existingPerson.user || existingPerson.user.id === user.id)) {
+  if (
+    existingPerson &&
+    (!existingPerson.user || existingPerson.user.id === user.id)
+  ) {
     // Linking an existing Person to this User. Don't overwrite display data
     // the Person may already own. Backfill handle if it's missing.
     person = await db.person.update({
@@ -329,15 +347,27 @@ export async function ensurePersonForUser(
   db: DbClient = prisma,
 ): Promise<Person> {
   if ("$transaction" in db) {
-    return db.$transaction((tx) => ensurePersonForUserInClient(userId, options, tx));
+    return db.$transaction((tx) =>
+      ensurePersonForUserInClient(userId, options, tx),
+    );
   }
 
   return ensurePersonForUserInClient(userId, options, db);
 }
 
-export async function findOrCreatePerson(
+async function lockPersonIdentity(
+  db: DbClient,
+  identityKeys: readonly string[],
+) {
+  if (!("$executeRaw" in db) || typeof db.$executeRaw !== "function") return;
+  for (const identityKey of [...new Set(identityKeys)].sort()) {
+    await db.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('person-upsert'), hashtext(${identityKey}))`;
+  }
+}
+
+async function findOrCreatePersonInClient(
   input: PersonDraftInput,
-  db: DbClient = prisma,
+  db: DbClient,
 ) {
   const displayName = input.displayName.trim();
 
@@ -362,11 +392,14 @@ export async function findOrCreatePerson(
         where: { id: existingByEmail.id },
         data: {
           countryCode: input.countryCode ?? existingByEmail.countryCode,
-          currentAffiliation: input.currentAffiliation ?? existingByEmail.currentAffiliation,
-          createdByUserId: existingByEmail.createdByUserId ?? input.createdByUserId ?? null,
+          currentAffiliation:
+            input.currentAffiliation ?? existingByEmail.currentAffiliation,
+          createdByUserId:
+            existingByEmail.createdByUserId ?? input.createdByUserId ?? null,
           displayName,
           image: input.image ?? existingByEmail.image,
-          isPublicFigure: input.isPublicFigure ?? existingByEmail.isPublicFigure,
+          isPublicFigure:
+            input.isPublicFigure ?? existingByEmail.isPublicFigure,
           sourceRef: normalizedSourceRef ?? existingByEmail.sourceRef,
           sourceUrl: input.sourceUrl ?? existingByEmail.sourceUrl,
         },
@@ -386,13 +419,17 @@ export async function findOrCreatePerson(
         where: { id: existingBySourceRef.id },
         data: {
           countryCode: input.countryCode ?? existingBySourceRef.countryCode,
-          currentAffiliation: input.currentAffiliation ?? existingBySourceRef.currentAffiliation,
+          currentAffiliation:
+            input.currentAffiliation ?? existingBySourceRef.currentAffiliation,
           createdByUserId:
-            existingBySourceRef.createdByUserId ?? input.createdByUserId ?? null,
+            existingBySourceRef.createdByUserId ??
+            input.createdByUserId ??
+            null,
           displayName,
           email: normalizedEmail ?? existingBySourceRef.email,
           image: input.image ?? existingBySourceRef.image,
-          isPublicFigure: input.isPublicFigure ?? existingBySourceRef.isPublicFigure,
+          isPublicFigure:
+            input.isPublicFigure ?? existingBySourceRef.isPublicFigure,
           sourceRef: normalizedSourceRef,
           sourceUrl: input.sourceUrl ?? existingBySourceRef.sourceUrl,
         },
@@ -414,11 +451,15 @@ export async function findOrCreatePerson(
       return db.person.update({
         where: { id: existingByPublicSignature.id },
         data: {
-          countryCode: input.countryCode ?? existingByPublicSignature.countryCode,
+          countryCode:
+            input.countryCode ?? existingByPublicSignature.countryCode,
           currentAffiliation:
-            input.currentAffiliation ?? existingByPublicSignature.currentAffiliation,
+            input.currentAffiliation ??
+            existingByPublicSignature.currentAffiliation,
           createdByUserId:
-            existingByPublicSignature.createdByUserId ?? input.createdByUserId ?? null,
+            existingByPublicSignature.createdByUserId ??
+            input.createdByUserId ??
+            null,
           displayName,
           email: normalizedEmail ?? existingByPublicSignature.email,
           image: input.image ?? existingByPublicSignature.image,
@@ -443,4 +484,33 @@ export async function findOrCreatePerson(
       sourceUrl: input.sourceUrl ?? null,
     },
   });
+}
+
+export async function findOrCreatePerson(
+  input: PersonDraftInput,
+  db: DbClient = prisma,
+) {
+  const displayName = input.displayName.trim();
+  if (!displayName) throw new Error("displayName is required");
+
+  const normalizedEmail = input.email?.trim().toLowerCase() || null;
+  const normalizedSourceRef = derivePersonSourceRef({
+    ...input,
+    displayName,
+    email: normalizedEmail,
+  });
+  const identityKeys = [
+    normalizedEmail ? `email:${normalizedEmail}` : null,
+    normalizedSourceRef ? `source:${normalizedSourceRef}` : null,
+  ].filter((value): value is string => value != null);
+  const run = async (client: DbClient) => {
+    await lockPersonIdentity(client, identityKeys);
+    return findOrCreatePersonInClient(input, client);
+  };
+
+  const transaction = (db as typeof prisma).$transaction;
+  if (typeof transaction === "function") {
+    return (db as typeof prisma).$transaction((tx) => run(tx));
+  }
+  return run(db);
 }

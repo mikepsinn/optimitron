@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import { McpScope } from "@/lib/mcp-scopes";
 import { completeTaskClaim } from "@/lib/tasks.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -14,21 +15,26 @@ export async function POST(
       McpScope.TASKS_PERSONAL,
       McpScope.TASKS_ADMIN,
     ]);
-    const body = (await request.json().catch(() => null)) as
-      | {
-          actualCashCostUsd?: unknown;
-          actualEffortSeconds?: unknown;
-          completionEvidence?: unknown;
-        }
-      | null;
+    const body = (await request.json().catch(() => null)) as {
+      actualCashCostUsd?: unknown;
+      actualEffortSeconds?: unknown;
+      completionEvidence?: unknown;
+    } | null;
     const completionEvidence =
-      typeof body?.completionEvidence === "string" ? body.completionEvidence : "";
-    const { id } = await context.params;
+      typeof body?.completionEvidence === "string"
+        ? body.completionEvidence
+        : "";
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const claim = await completeTaskClaim(id, userId, completionEvidence, {
       actualCashCostUsd:
-        typeof body?.actualCashCostUsd === "number" ? body.actualCashCostUsd : null,
+        typeof body?.actualCashCostUsd === "number"
+          ? body.actualCashCostUsd
+          : null,
       actualEffortSeconds:
-        typeof body?.actualEffortSeconds === "number" ? body.actualEffortSeconds : null,
+        typeof body?.actualEffortSeconds === "number"
+          ? body.actualEffortSeconds
+          : null,
     });
 
     return NextResponse.json({ data: claim, success: true });
@@ -42,6 +48,9 @@ export async function POST(
     }
 
     console.error("[TASKS] Failed to complete task:", error);
-    return NextResponse.json({ error: "Failed to complete task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to complete task." },
+      { status: 500 },
+    );
   }
 }

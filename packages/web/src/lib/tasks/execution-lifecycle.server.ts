@@ -15,6 +15,7 @@ import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSourceArtifactVisibilityWhere } from "@/lib/source-artifact-visibility.server";
+import { readReviewRequest } from "@/lib/tasks/document-review-contracts";
 import { readTaskContext } from "@/lib/tasks/task-context";
 import {
   canUserViewInternalTaskContent,
@@ -147,9 +148,15 @@ export async function startTaskExecution(
         status: TaskStatus.ACTIVE,
         ...executionAccess,
       },
-      select: { id: true },
+      select: { contextJson: true, id: true },
     });
     if (!accessibleTask) throw new Error("Task not found");
+    if (
+      readReviewRequest(accessibleTask.contextJson) ||
+      readTaskContext(accessibleTask.contextJson).requiresDocumentDecision
+    ) {
+      throw new Error("Task not found");
+    }
 
     // Serialize attempt creation on the task row. Without this lock, two
     // transactions can both observe no active attempt and both create one.
@@ -204,6 +211,7 @@ export async function startTaskExecution(
         },
         executionMode: true,
         id: true,
+        contextJson: true,
         claims: {
           where: {
             deletedAt: null,
@@ -233,6 +241,12 @@ export async function startTaskExecution(
       },
     });
     if (!task) throw new Error("Task not found");
+    if (
+      readReviewRequest(task.contextJson) ||
+      readTaskContext(task.contextJson).requiresDocumentDecision
+    ) {
+      throw new Error("Task not found");
+    }
     if (isReservedPlanningRootTask(task) || task.childTasks.length > 0) {
       throw new Error("Task is a container and cannot enter execution");
     }
@@ -373,6 +387,12 @@ export async function submitTaskArtifact(
     if (!attempt || attempt.status !== TaskExecutionAttemptStatus.RUNNING) {
       throw new Error("Task execution attempt not found");
     }
+    if (
+      readReviewRequest(attempt.task.contextJson) ||
+      readTaskContext(attempt.task.contextJson).requiresDocumentDecision
+    ) {
+      throw new Error("Task execution attempt not found");
+    }
 
     let contentHash: string;
     if (input.documentRevisionId) {
@@ -482,6 +502,12 @@ export async function submitTaskForVerification(
     if (!attempt || attempt.status !== TaskExecutionAttemptStatus.RUNNING) {
       throw new Error("Task execution attempt not found");
     }
+    if (
+      readReviewRequest(attempt.task.contextJson) ||
+      readTaskContext(attempt.task.contextJson).requiresDocumentDecision
+    ) {
+      throw new Error("Task execution attempt not found");
+    }
     const artifactCount = await tx.taskExecutionArtifact.count({
       where: { deletedAt: null, taskExecutionAttemptId: attempt.id },
     });
@@ -555,6 +581,7 @@ export async function submitTaskForVerification(
 export async function verifyTaskExecution(
   rawInput: unknown,
   actorUserId: string,
+  options: { allowDocumentReview?: boolean } = {},
 ) {
   const input = VerifyTaskExecutionSchema.parse(rawInput);
   const actor = await prisma.user.findUnique({
@@ -595,11 +622,24 @@ export async function verifyTaskExecution(
             executorUserId: true,
             id: true,
             taskId: true,
+            task: { select: { contextJson: true } },
           },
         },
       },
     });
     if (!verification) throw new Error("Task verification not found");
+    if (
+      readReviewRequest(verification.taskExecutionAttempt.task.contextJson) &&
+      !options.allowDocumentReview
+    ) {
+      throw new Error("Task verification not found");
+    }
+    if (
+      readTaskContext(verification.taskExecutionAttempt.task.contextJson)
+        .requiresDocumentDecision
+    ) {
+      throw new Error("Task verification not found");
+    }
 
     const accepted = input.result === "ACCEPTED";
     const completedAt = new Date();

@@ -14,6 +14,10 @@ import { prisma } from "@/lib/prisma";
 import { getTaskPath } from "@/lib/routes";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/url";
+import {
+  issuePaidContributionReceiptInTransaction,
+  resolveContributionReceiptBinding,
+} from "./contribution-receipts.server";
 
 export const TASK_FUNDING_PURPOSE_KEY = "task-funding";
 export const TASK_FUNDING_ORDER_TYPE = "task_funding";
@@ -67,6 +71,12 @@ function normalizeCurrency(value: string | null | undefined) {
   return currency && /^[a-z]{3}$/u.test(currency) ? currency : "usd";
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value != null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 function truncateMetadata(value: string | null | undefined) {
   return trimToNull(value, 500) ?? "";
 }
@@ -82,7 +92,9 @@ function toPositiveSafeInt(value: bigint | number | null | undefined) {
   return numeric;
 }
 
-function decimalDollarsToCents(value: Prisma.Decimal | number | null | undefined) {
+function decimalDollarsToCents(
+  value: Prisma.Decimal | number | null | undefined,
+) {
   if (value == null) return null;
   const numeric = value instanceof Prisma.Decimal ? value.toNumber() : value;
   if (!Number.isFinite(numeric) || numeric <= 0) return null;
@@ -193,7 +205,10 @@ export async function refreshTaskFundingTargetStatus(
     return;
   }
 
-  if (!thresholdMet && target.status === TaskFundingTargetStatus.THRESHOLD_MET) {
+  if (
+    !thresholdMet &&
+    target.status === TaskFundingTargetStatus.THRESHOLD_MET
+  ) {
     await db.taskFundingTarget.update({
       where: { id: target.id },
       data: {
@@ -241,9 +256,11 @@ export async function createTaskFundingCheckoutSession(
           },
         },
       },
+      contextJson: true,
       fundingTarget: {
         select: {
           id: true,
+          metadata: true,
           targetAmountCents: true,
         },
       },
@@ -255,6 +272,16 @@ export async function createTaskFundingCheckoutSession(
   if (!task) {
     throw new Error("Task not found.");
   }
+  const receiptBinding = resolveContributionReceiptBinding(
+    task.fundingTarget?.metadata,
+    task.contextJson,
+  );
+  const existingTargetMetadata = asRecord(task.fundingTarget?.metadata);
+  const fundingTargetMetadata = {
+    ...existingTargetMetadata,
+    contributionReceipt: receiptBinding,
+    createdBy: existingTargetMetadata.createdBy ?? "task-funding-checkout",
+  } satisfies Prisma.InputJsonValue;
 
   const currency = normalizeCurrency(task.compensationCurrency);
   if (currency !== "usd") {
@@ -280,12 +307,11 @@ export async function createTaskFundingCheckoutSession(
         status: TaskFundingTargetStatus.OPEN,
         targetAmountCents,
         taskId: task.id,
-        metadata: {
-          createdBy: "task-funding-checkout",
-        } satisfies Prisma.InputJsonValue,
+        metadata: fundingTargetMetadata,
       },
       update: {
         deletedAt: null,
+        metadata: fundingTargetMetadata,
       },
       select: {
         id: true,
@@ -443,7 +469,8 @@ export async function createTaskFundingCheckoutSession(
       url: session.url,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Stripe checkout failed.";
+    const message =
+      error instanceof Error ? error.message : "Stripe checkout failed.";
     await db.$transaction([
       db.commerceOrder.update({
         where: { id: commerceOrder.id },
@@ -493,13 +520,16 @@ export async function recordTaskFundingCheckoutPaid(
         session.customer_details?.email,
     ) ?? null;
   const customerName =
-    trimToNull(session.metadata?.donorName ?? session.customer_details?.name, 200) ??
-    null;
+    trimToNull(
+      session.metadata?.donorName ?? session.customer_details?.name,
+      200,
+    ) ?? null;
   const predicates: Prisma.TaskFundingPaymentWhereInput[] = [
     { stripeCheckoutSessionId: session.id },
   ];
   if (paymentId) predicates.unshift({ id: paymentId });
-  if (paymentIntentId) predicates.push({ stripePaymentIntentId: paymentIntentId });
+  if (paymentIntentId)
+    predicates.push({ stripePaymentIntentId: paymentIntentId });
   if (commerceOrderId) predicates.push({ commerceOrderId });
 
   const payment = await db.taskFundingPayment.findFirst({
@@ -510,13 +540,16 @@ export async function recordTaskFundingCheckoutPaid(
     select: {
       commerceOrderId: true,
       id: true,
+      paidAt: true,
       status: true,
       targetId: true,
     },
   });
 
   if (!payment) {
-    throw new Error(`Missing task funding payment for Checkout session ${session.id}.`);
+    throw new Error(
+      `Missing task funding payment for Checkout session ${session.id}.`,
+    );
   }
 
   if (
@@ -526,7 +559,7 @@ export async function recordTaskFundingCheckoutPaid(
     return payment;
   }
 
-  const paidAt = new Date();
+  const paidAt = payment.paidAt ?? new Date();
   await db.$transaction(async (tx) => {
     await tx.taskFundingPayment.update({
       where: { id: payment.id },
@@ -552,6 +585,9 @@ export async function recordTaskFundingCheckoutPaid(
         stripeCustomerId: getStripeObjectId(session.customer),
         stripePaymentIntentId: paymentIntentId,
       },
+    });
+    await issuePaidContributionReceiptInTransaction(payment.id, tx, {
+      now: paidAt,
     });
     await refreshTaskFundingTargetStatus(payment.targetId, tx);
   });

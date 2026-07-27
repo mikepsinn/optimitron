@@ -359,8 +359,11 @@ not to one application or program. The target contract is:
   block one or more application or execution tasks and receive comments,
   assignment, deadlines, and verification.
 - A `KnowledgeAnswer` gives each reusable subject-owned answer a stable
-  identity. Its review task supplies the immutable `DocumentRevision` and
-  accepted `TaskVerification` that contain and approve the exact answer.
+  identity. Its execution task supplies the immutable `DocumentRevision` and
+  accepted `TaskVerification` for the exact answer. When an independent formal
+  document review is requested, the verification accepts delivery of that
+  review; the review artifact carries the substantive verdict and a separate
+  manager decision adopts or waives it.
 - One answer may serve many tasks. Each use records the exact question,
   answer revision, form revision, actor, approval, destination, and resulting
   receipt or outcome; forms do not copy an answer into a second canonical
@@ -389,6 +392,32 @@ task's acceptance criteria. Verification and supersession are append-only
 evidence. Private owner-authorized verification must work before public
 reputation or consensus weighting is designed.
 
+The reusable document path makes the separation concrete:
+
+- A private assigned review task exposes one exact immutable revision and no
+  sibling-review or document-history access.
+- `TaskVerification` records whether the reviewer delivered the requested
+  work correctly. The `optimitron.review-response.v1` artifact separately records
+  `APPROVE`, `CHANGES_REQUESTED`, `REJECT`, or `ABSTAIN` with an explanation.
+- A reviewer rewrite is a separate private proposal document. Applying it
+  creates a new canonical revision and makes reviews of the old revision
+  stale.
+- The authorized manager adopts the current revision in an immutable decision
+  artifact. Each unresolved required review needs a permanent reasoned waiver;
+  there is no automatic vote threshold and a self-review cannot supply the
+  independent approval.
+- Review authority, assignee, access policy, instructions, checklist, and exact
+  revision are hash-bound. Generic task editing or execution cannot rewrite or
+  complete a formal review.
+- Publication creates a new locked referendum snapshot. Referendum votes are a
+  public decision signal, not a substitute for expert review, manager
+  authority, or delivery verification.
+
+Task pages remain the collaboration and audit hub, while substantial text
+lives in versioned Documents. This is the generic governance surface for
+policies, research protocols, specifications, contracts, and founding records;
+it is not a separate wiki or legal-review product.
+
 ### 9.7 Auditable self-improvement loop (OPT-LOOP-01)
 
 The product improvement loop is:
@@ -414,6 +443,17 @@ Commercial EOS revenue, contracts, expenses, and liabilities remain legally
 and operationally separate from Accelerated Medicine Foundation and its DBA
 campaign donations. A pilot advances only with a named payer, deliverable,
 cost, receipt, verification method, and margin calculation.
+
+For task-funded work, the manager explicitly marks an adopted revision as the
+funding terms. That freezes the issuer, terms, and adopted governing-document
+revisions on the task; the first checkout or pledge copies the same immutable
+binding onto the funding target. Every successful payment then creates one
+deterministic private receipt in the same transaction. Missing provenance fails
+closed, and receipt failure rolls back the local paid transition. The receipt
+freezes the payment, intended task, and impact-estimate version. It always says
+that work is incomplete, impact is unrealized, and no Earth Optimization Points
+were minted. Completion, measured outcomes, refunds, and corrections are
+append-only addenda; they never rewrite the payment-time record.
 
 ---
 

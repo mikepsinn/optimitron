@@ -153,10 +153,7 @@ describe("getTaskVisibilityWhere", () => {
           ],
         },
         {
-          OR: [
-            { createdByUserId: "user_1" },
-            { assigneePersonId: "person_1" },
-          ],
+          OR: [{ createdByUserId: "user_1" }, { assigneePersonId: "person_1" }],
         },
       ],
     });
@@ -166,10 +163,16 @@ describe("getTaskVisibilityWhere", () => {
     // Walk the where tree and collect membership role filters so the
     // assertion targets the actual query constraint, not string rendering.
     const collectMembershipRoleFilters = (node: unknown): string[][] => {
-      if (Array.isArray(node)) return node.flatMap(collectMembershipRoleFilters);
+      if (Array.isArray(node))
+        return node.flatMap(collectMembershipRoleFilters);
       if (!node || typeof node !== "object") return [];
       return Object.entries(node).flatMap(([key, value]) => {
-        if (key === "role" && value && typeof value === "object" && "in" in value) {
+        if (
+          key === "role" &&
+          value &&
+          typeof value === "object" &&
+          "in" in value
+        ) {
           return [[...(value as { in: string[] }).in]];
         }
         return collectMembershipRoleFilters(value);
@@ -189,8 +192,13 @@ describe("getTaskVisibilityWhere", () => {
       userId: "viewer_1",
     });
 
-    // READ membership is unfiltered by role (viewers may read).
-    expect(collectMembershipRoleFilters(readable)).toEqual([]);
+    // Ordinary organization members may still read ordinary tasks, while
+    // owner/admin branches retain access to private document-review tasks.
+    for (const roles of collectMembershipRoleFilters(readable)) {
+      expect(roles).toEqual(["OWNER", "ADMIN"]);
+    }
+    expect(JSON.stringify(readable)).toContain("document-review:");
+    expect(JSON.stringify(readable)).toContain('"taskKey":null');
     for (const roles of collectMembershipRoleFilters(executable)) {
       expect(roles).toEqual(["OWNER", "ADMIN", "MEMBER"]);
     }
@@ -199,6 +207,30 @@ describe("getTaskVisibilityWhere", () => {
     }
     expect(collectMembershipRoleFilters(executable)).not.toHaveLength(0);
     expect(collectMembershipRoleFilters(manageable)).not.toHaveLength(0);
+  });
+
+  it("blocks the generic execution path for document-review tasks", () => {
+    const executable = getTaskAccessWhere({
+      action: "EXECUTE",
+      personId: "reviewer_person",
+      userId: "reviewer_user",
+    });
+
+    expect(executable).toMatchObject({
+      AND: [
+        expect.objectContaining({ OR: expect.any(Array) }),
+        {
+          OR: [
+            { taskKey: null },
+            {
+              taskKey: {
+                not: { startsWith: "document-review:" },
+              },
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it("defaults to public-only when no visibility is given", () => {

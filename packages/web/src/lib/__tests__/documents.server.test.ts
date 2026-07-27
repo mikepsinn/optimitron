@@ -10,6 +10,9 @@ const mocks = vi.hoisted(() => ({
   },
   canManageOrganization: vi.fn(),
   canUserViewTask: vi.fn(),
+  getTaskClientAccessWhere: vi.fn(() => ({})),
+  hasAssignedDocumentReviewRevisionAccess: vi.fn(),
+  isTaskWithinClientAccessBoundary: vi.fn(() => true),
   prisma: {
     documentCreate: vi.fn(),
     documentFindFirst: vi.fn(),
@@ -48,9 +51,16 @@ vi.mock("@/lib/organization.server", () => ({
   canManageOrganization: mocks.canManageOrganization,
 }));
 
+vi.mock("@/lib/tasks/document-review.server", () => ({
+  hasAssignedDocumentReviewRevisionAccess:
+    mocks.hasAssignedDocumentReviewRevisionAccess,
+}));
+
 vi.mock("@/lib/tasks/task-visibility.server", () => ({
   assertUserCanViewTask: vi.fn(),
   canUserViewTask: mocks.canUserViewTask,
+  getTaskClientAccessWhere: mocks.getTaskClientAccessWhere,
+  isTaskWithinClientAccessBoundary: mocks.isTaskWithinClientAccessBoundary,
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -139,9 +149,12 @@ beforeEach(() => {
   mocks.canManageOrganization.mockResolvedValue(true);
   mocks.canUserViewTask.mockReset();
   mocks.canUserViewTask.mockResolvedValue(true);
+  mocks.hasAssignedDocumentReviewRevisionAccess.mockReset();
+  mocks.hasAssignedDocumentReviewRevisionAccess.mockResolvedValue(false);
   mocks.prisma.taskFindFirst.mockResolvedValue({
     isPublic: true,
     jurisdictionId: "jurisdiction_1",
+    ownerOrganizationId: null,
   });
   mocks.access.assertDocumentAccess.mockResolvedValue("FULL_ACCESS");
   mocks.access.assertValidDocumentParent.mockResolvedValue(undefined);
@@ -195,8 +208,57 @@ describe("stable document reads", () => {
     mocks.prisma.documentFindFirst.mockResolvedValue(DOCUMENT);
     mocks.access.resolveDocumentAccess.mockResolvedValue(null);
 
-    await expect(getDocumentForViewer("document_1", "stranger")).resolves.toBeNull();
+    await expect(
+      getDocumentForViewer("document_1", "stranger"),
+    ).resolves.toBeNull();
     expect(mocks.prisma.documentRevisionFindMany).not.toHaveBeenCalled();
+  });
+
+  it("does not let a personal-scope client read an organization-private revision", async () => {
+    mocks.prisma.documentFindFirst.mockResolvedValue({
+      ...DOCUMENT,
+      organizationId: "organization_1",
+    });
+
+    const result = await getDocumentForViewer("document_1", "counsel_1", {
+      clientAccessBoundary: {
+        allowPersonalPrivate: true,
+        organizationIds: [],
+      },
+    });
+
+    expect(result).toBeNull();
+    expect(mocks.access.resolveDocumentAccess).not.toHaveBeenCalled();
+    expect(
+      mocks.hasAssignedDocumentReviewRevisionAccess,
+    ).not.toHaveBeenCalled();
+  });
+
+  it("shows only the exact revision pinned by an assigned review task", async () => {
+    const clientAccessBoundary = {
+      allowPersonalPrivate: true,
+      organizationIds: [],
+    };
+    mocks.prisma.documentFindFirst.mockResolvedValue(DOCUMENT);
+    mocks.access.resolveDocumentAccess.mockResolvedValue(null);
+    mocks.hasAssignedDocumentReviewRevisionAccess.mockResolvedValue(true);
+
+    const result = await getDocumentForViewer("revision_3", "reviewer_1", {
+      clientAccessBoundary,
+    });
+
+    expect(result?.effectivePermission).toBe("COMMENT");
+    expect(mocks.prisma.documentRevisionFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: "revision_3" }),
+      }),
+    );
+    expect(mocks.hasAssignedDocumentReviewRevisionAccess).toHaveBeenCalledWith({
+      clientAccessBoundary,
+      documentId: "document_1",
+      revisionId: "revision_3",
+      userId: "reviewer_1",
+    });
   });
 });
 
@@ -212,7 +274,9 @@ describe("document creation", () => {
       currentRevision: { ...REVISION, id: "revision_new", version: 1 },
     };
     mocks.prisma.documentCreate.mockResolvedValue({ id: created.id });
-    mocks.prisma.documentRevisionCreate.mockResolvedValue({ id: "revision_new" });
+    mocks.prisma.documentRevisionCreate.mockResolvedValue({
+      id: "revision_new",
+    });
     mocks.prisma.documentUpdate.mockResolvedValue(created);
     mocks.prisma.documentFindFirst.mockResolvedValue(created);
 
@@ -298,7 +362,9 @@ describe("optimistic document updates", () => {
       .mockResolvedValueOnce(DOCUMENT)
       .mockResolvedValueOnce(updatedDocument);
     mocks.prisma.documentUpdateMany.mockResolvedValue({ count: 1 });
-    mocks.prisma.documentRevisionCreate.mockResolvedValue({ id: nextRevision.id });
+    mocks.prisma.documentRevisionCreate.mockResolvedValue({
+      id: nextRevision.id,
+    });
     mocks.prisma.documentUpdate.mockResolvedValue(updatedDocument);
 
     const result = await updateDocument({

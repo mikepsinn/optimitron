@@ -480,6 +480,7 @@ export async function deleteComment(input: {
  * Includes the viewer's existing votes on each comment.
  */
 export async function getTaskCommentFeed(input: {
+  documentAnchorsOnly?: boolean;
   taskId: string;
   sort?: CommentSortKey;
   cursor?: Date | null;
@@ -506,6 +507,15 @@ export async function getTaskCommentFeed(input: {
     taskId: input.taskId,
     deletedAt: null,
     ...(canSeeInternal ? {} : { visibility: "PUBLIC" }),
+    ...(input.documentAnchorsOnly
+      ? {
+          citationsJson: {
+            equals: "optimitron.document-comment-anchor.v1",
+            path: ["documentAnchor", "schema"],
+          },
+          parentCommentId: null,
+        }
+      : {}),
   };
   const where: Prisma.TaskCommentWhereInput = {
     ...baseWhere,

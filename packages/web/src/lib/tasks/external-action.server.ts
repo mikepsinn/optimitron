@@ -11,6 +11,7 @@ import { WISHONIA_EMAIL } from "@optimitron/db/system-identities";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getStartedByUserId } from "@/lib/tasks/execution-lifecycle.server";
+import { isPrivateReviewInvitationApprovalPayload } from "@/lib/tasks/private-review-invitation-contracts";
 import {
   getTaskAccessWhere,
   getTaskClientAccessWhere,
@@ -429,6 +430,15 @@ export async function decideExternalActionRequest(
       select: externalActionSelect(),
     });
     if (!request) throw new Error("External action request not found");
+
+    if (
+      input.decision === "APPROVE" &&
+      isPrivateReviewInvitationApprovalPayload(request.payloadJson)
+    ) {
+      throw new Error(
+        "Private review invitations must be approved as one exact batch",
+      );
+    }
 
     // RETRY is authorization-only. The caller still has to execute the exact
     // approved request through its dispatcher, which re-verifies the pinned

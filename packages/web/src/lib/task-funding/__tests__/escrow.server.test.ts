@@ -19,6 +19,9 @@ const mocks = vi.hoisted(() => ({
   chargesRetrieve: vi.fn(),
   paymentIntentsCreate: vi.fn(),
   paymentMethodsDetach: vi.fn(),
+  receiptIssue: vi.fn(),
+  requireReceiptBinding: vi.fn(),
+  resolveReceiptBinding: vi.fn(),
   refundsCreate: vi.fn(),
   sendConfirmationEmail: vi.fn(),
   sendDeclineEmail: vi.fn(),
@@ -45,6 +48,12 @@ vi.mock("@/lib/email/task-funding-pledge-decline-email", () => ({
 
 vi.mock("@/lib/email/task-funding-pledge-receipt-email", () => ({
   sendPledgeChargeReceiptEmail: mocks.sendReceiptEmail,
+}));
+
+vi.mock("../contribution-receipts.server", () => ({
+  issuePaidContributionReceiptInTransaction: mocks.receiptIssue,
+  requireContributionReceiptBinding: mocks.requireReceiptBinding,
+  resolveContributionReceiptBinding: mocks.resolveReceiptBinding,
 }));
 
 const TEST_PREFIX = "tf_escrow_";
@@ -223,6 +232,15 @@ beforeEach(async () => {
   mocks.paymentIntentsCreate.mockReset();
   mocks.paymentMethodsDetach.mockReset();
   mocks.paymentMethodsDetach.mockResolvedValue({ id: "pm_detached" });
+  mocks.receiptIssue.mockReset();
+  mocks.receiptIssue.mockResolvedValue({ created: true });
+  mocks.requireReceiptBinding.mockReset();
+  mocks.requireReceiptBinding.mockReturnValue({
+    governingDocumentRevisionIds: ["revision_terms"],
+    issuerUserId: "issuer_1",
+    schema: "optimitron.contribution-receipt-binding.v1",
+    termsDocumentRevisionId: "revision_terms",
+  });
   mocks.refundsCreate.mockReset();
   mocks.sendConfirmationEmail.mockReset();
   mocks.sendConfirmationEmail.mockResolvedValue({ status: "sent" });
@@ -339,6 +357,11 @@ describe("maybeChargeCallablePledges", () => {
       stripePaymentIntentId: "pi_tf_escrow_full",
     });
     expect(payment.commerceOrder.status).toBe(CommerceOrderStatus.PAID);
+    expect(mocks.receiptIssue).toHaveBeenCalledWith(
+      payment.id,
+      expect.anything(),
+      { now: expect.any(Date) },
+    );
 
     // Boundary: Stripe charge -> receipt email input (amount, card owner,
     // and the calculated statement descriptor looked up from the charge).
@@ -352,6 +375,46 @@ describe("maybeChargeCallablePledges", () => {
         toEmail: pledger.email,
       }),
     );
+  });
+
+  it("keeps a succeeded Stripe charge locally pending when its receipt cannot be created", async () => {
+    const { target } = await createFundedTask("receipt_fail", 5000n);
+    const pledger = await createPledger("receipt_fail");
+    const pledge = await createPledge({
+      amountCents: 5000n,
+      cardBacked: true,
+      suffix: "receipt_fail",
+      targetId: target.id,
+      userId: pledger.id,
+    });
+    mocks.paymentIntentsCreate.mockResolvedValue(
+      succeededPaymentIntent("pi_tf_escrow_receipt_fail"),
+    );
+    mocks.receiptIssue.mockRejectedValueOnce(
+      new Error("Receipt provenance is incomplete"),
+    );
+
+    const result = await maybeChargeCallablePledges(target.id);
+
+    expect(result.charged).toEqual([]);
+    const unsettled = await prisma.taskFundingPayment.findUniqueOrThrow({
+      where: { pledgeId: pledge.id },
+      select: {
+        commerceOrder: { select: { status: true } },
+        status: true,
+      },
+    });
+    expect(unsettled.status).toBe(TaskFundingPaymentStatus.PENDING);
+    expect(unsettled.commerceOrder.status).toBe(
+      CommerceOrderStatus.PENDING_PAYMENT,
+    );
+    await expect(
+      prisma.taskFundingPledge.findUniqueOrThrow({
+        where: { id: pledge.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskFundingPledgeStatus.ACTIVE });
+    expect(mocks.sendReceiptEmail).not.toHaveBeenCalled();
   });
 
   it("creates exactly one PLEDGE_CALL payment per pledge under concurrent runs", async () => {
@@ -612,10 +675,9 @@ describe("resetStalePledgeCallState", () => {
     });
     expect(newPayment.id).not.toBe(failedPayment.id);
     expect(newPayment.status).toBe(TaskFundingPaymentStatus.PAID);
-    expect(mocks.paymentIntentsCreate).toHaveBeenCalledWith(
-      expect.anything(),
-      { idempotencyKey: `pledge-call:${newPayment.id}:v1` },
-    );
+    expect(mocks.paymentIntentsCreate).toHaveBeenCalledWith(expect.anything(), {
+      idempotencyKey: `pledge-call:${newPayment.id}:v1`,
+    });
   });
 
   it("leaves an in-flight PENDING pledge-call payment and the saved card alone", async () => {

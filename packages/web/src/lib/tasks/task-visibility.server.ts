@@ -73,6 +73,19 @@ const MANAGER_ORGANIZATION_ROLES = [
   OrganizationMemberRole.ADMIN,
 ] as const;
 
+const NON_DOCUMENT_REVIEW_TASK_WHERE: Prisma.TaskWhereInput = {
+  OR: [
+    { taskKey: null },
+    { taskKey: { not: { startsWith: "document-review:" } } },
+  ],
+};
+
+function excludeDocumentReviews(
+  where: Prisma.TaskWhereInput,
+): Prisma.TaskWhereInput {
+  return { AND: [where, NON_DOCUMENT_REVIEW_TASK_WHERE] };
+}
+
 function organizationAccessWhere(
   userId: string,
   roles?: readonly OrganizationMemberRole[],
@@ -115,7 +128,10 @@ export function getTaskAccessWhere(input: {
   }
 
   if (input.action === "READ" || input.action === "READ_INTERNAL") {
-    principalWhere.push(...organizationAccessWhere(userId));
+    principalWhere.push(
+      ...organizationAccessWhere(userId).map(excludeDocumentReviews),
+      ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+    );
     return input.action === "READ"
       ? { OR: [{ isPublic: true }, ...principalWhere] }
       : { OR: principalWhere };
@@ -123,10 +139,23 @@ export function getTaskAccessWhere(input: {
 
   if (input.action === "COMMENT" || input.action === "EXECUTE") {
     principalWhere.push(
-      ...organizationAccessWhere(userId, CONTRIBUTOR_ORGANIZATION_ROLES),
+      ...organizationAccessWhere(userId, CONTRIBUTOR_ORGANIZATION_ROLES).map(
+        excludeDocumentReviews,
+      ),
     );
+    if (input.action === "EXECUTE") {
+      return {
+        AND: [{ OR: principalWhere }, NON_DOCUMENT_REVIEW_TASK_WHERE],
+      };
+    }
     return input.action === "COMMENT"
-      ? { OR: [{ isPublic: true }, ...principalWhere] }
+      ? {
+          OR: [
+            { isPublic: true },
+            ...principalWhere,
+            ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+          ],
+        }
       : { OR: principalWhere };
   }
 

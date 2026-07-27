@@ -8,10 +8,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   externalActionFindFirst: vi.fn(),
   externalActionUpdateMany: vi.fn(),
+  evaluatePrivateReviewOutreachSuppression: vi.fn(),
   expireExternalActionRequest: vi.fn(),
   finalizeApprovedExternalAction: vi.fn(),
   sendDraftTaskNotification: vi.fn(),
+  privateReviewTaskMatchesApprovalContext: vi.fn(),
   taskCommunicationFindFirst: vi.fn(),
+  taskCommunicationUpdateMany: vi.fn(),
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -20,7 +23,10 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.externalActionFindFirst,
       updateMany: mocks.externalActionUpdateMany,
     },
-    taskCommunication: { findFirst: mocks.taskCommunicationFindFirst },
+    taskCommunication: {
+      findFirst: mocks.taskCommunicationFindFirst,
+      updateMany: mocks.taskCommunicationUpdateMany,
+    },
   },
 }));
 
@@ -31,6 +37,13 @@ vi.mock("@/lib/tasks/external-action.server", () => ({
 
 vi.mock("@/lib/tasks/task-notifications.server", () => ({
   sendDraftTaskNotification: mocks.sendDraftTaskNotification,
+}));
+
+vi.mock("@/lib/tasks/private-review-outreach-safety.server", () => ({
+  evaluatePrivateReviewOutreachSuppression:
+    mocks.evaluatePrivateReviewOutreachSuppression,
+  privateReviewTaskMatchesApprovalContext:
+    mocks.privateReviewTaskMatchesApprovalContext,
 }));
 
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
@@ -104,6 +117,9 @@ describe("dispatchApprovedOutboundMessage", () => {
   beforeEach(() => {
     for (const fn of Object.values(mocks)) fn.mockReset();
     mocks.externalActionUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.evaluatePrivateReviewOutreachSuppression.mockResolvedValue(null);
+    mocks.privateReviewTaskMatchesApprovalContext.mockResolvedValue(true);
+    mocks.taskCommunicationUpdateMany.mockResolvedValue({ count: 1 });
     mocks.sendDraftTaskNotification.mockResolvedValue({
       emailLogId: "approved-task-email:comm_1",
       providerMessageId: "email_1",
@@ -255,6 +271,145 @@ describe("dispatchApprovedOutboundMessage", () => {
           providerMessageId: "email_1",
         }),
         result: "EXECUTED",
+      }),
+    );
+  });
+
+  it("rejects an approved review invitation when its exact task binding changed before dispatch", async () => {
+    const reviewPayload = {
+      ...PAYLOAD,
+      approvalContext: {
+        batchKey: "batch_12345678",
+        kind: "INVITATION" as const,
+        recipientPersonId: "person_1",
+        revision: {
+          contentHash: "hash_1",
+          documentId: "doc_1",
+          documentRevisionId: "revision_1",
+          documentVersion: 1,
+        },
+        schema: "optimitron.private-review-invitation.v1" as const,
+        taskId: "task_1",
+      },
+      version: 3 as const,
+    };
+    const hash = await sha256CanonicalJson({
+      destination: DESTINATION,
+      operation: OUTBOUND_MESSAGE_OPERATION,
+      payload: reviewPayload,
+    });
+    mocks.externalActionFindFirst.mockResolvedValue({
+      approvedPayloadHash: hash,
+      destination: DESTINATION,
+      expiresAt: new Date(Date.now() + 60_000),
+      id: "ear_review",
+      operation: OUTBOUND_MESSAGE_OPERATION,
+      payloadHash: hash,
+      payloadJson: reviewPayload,
+      status: ExternalActionRequestStatus.APPROVED,
+      taskId: "task_1",
+    });
+    mocks.taskCommunicationFindFirst.mockResolvedValue({
+      deletedAt: null,
+      emailLogId: null,
+      id: "comm_1",
+      metadataJson: { batchKey: "batch_12345678" },
+      providerMessageId: null,
+      recipientEmail: DESTINATION,
+      recipientPersonId: "person_1",
+      senderUserId: "user_creator",
+      status: TaskCommunicationStatus.DRAFT,
+    });
+    mocks.privateReviewTaskMatchesApprovalContext.mockResolvedValue(false);
+
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_review",
+      }),
+    ).resolves.toEqual({
+      status: "failed",
+      reason: "review_binding_mismatch",
+    });
+    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        failureMessage: "private_review_invitation_binding_mismatch",
+        result: "FAILED",
+      }),
+    );
+  });
+
+  it("suppresses an approved review invitation when the reviewer replied before dispatch", async () => {
+    const reviewPayload = {
+      ...PAYLOAD,
+      approvalContext: {
+        batchKey: "batch_12345678",
+        kind: "INVITATION" as const,
+        recipientPersonId: "person_1",
+        revision: {
+          contentHash: "hash_1",
+          documentId: "doc_1",
+          documentRevisionId: "revision_1",
+          documentVersion: 1,
+        },
+        schema: "optimitron.private-review-invitation.v1" as const,
+        taskId: "task_1",
+      },
+      version: 3 as const,
+    };
+    const hash = await sha256CanonicalJson({
+      destination: DESTINATION,
+      operation: OUTBOUND_MESSAGE_OPERATION,
+      payload: reviewPayload,
+    });
+    mocks.externalActionFindFirst.mockResolvedValue({
+      approvedPayloadHash: hash,
+      destination: DESTINATION,
+      expiresAt: new Date(Date.now() + 60_000),
+      id: "ear_review",
+      operation: OUTBOUND_MESSAGE_OPERATION,
+      payloadHash: hash,
+      payloadJson: reviewPayload,
+      status: ExternalActionRequestStatus.APPROVED,
+      taskId: "task_1",
+    });
+    mocks.taskCommunicationFindFirst.mockResolvedValue({
+      deletedAt: null,
+      emailLogId: null,
+      id: "comm_1",
+      metadataJson: { batchKey: "batch_12345678" },
+      providerMessageId: null,
+      recipientEmail: DESTINATION,
+      recipientPersonId: "person_1",
+      senderUserId: "user_creator",
+      status: TaskCommunicationStatus.DRAFT,
+    });
+    mocks.evaluatePrivateReviewOutreachSuppression.mockResolvedValue(
+      "recipient_replied",
+    );
+
+    await expect(
+      dispatchApprovedOutboundMessage({
+        approverUserId: "user_admin",
+        externalActionRequestId: "ear_review",
+      }),
+    ).resolves.toEqual({
+      status: "failed",
+      reason: "suppressed:recipient_replied",
+    });
+    expect(mocks.sendDraftTaskNotification).not.toHaveBeenCalled();
+    expect(mocks.taskCommunicationUpdateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: TaskCommunicationStatus.CANCELLED,
+        }),
+      }),
+    );
+    expect(mocks.finalizeApprovedExternalAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        failureMessage: "suppressed:recipient_replied",
+        result: "FAILED",
       }),
     );
   });

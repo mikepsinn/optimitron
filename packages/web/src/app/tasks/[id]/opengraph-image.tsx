@@ -13,6 +13,7 @@ import {
   getTreatyLevelCostOfDelay,
 } from "@/lib/tasks/delay-attribution";
 import { readTaskContext } from "@/lib/tasks/task-context";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 import { getTaskDetailData } from "@/lib/tasks.server";
 
 export const runtime = "nodejs";
@@ -53,7 +54,8 @@ export default async function TaskOpengraphImage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: routeId } = await params;
+  const id = decodeTaskRouteId(routeId);
   const data = await getTaskDetailData(id, null);
 
   if (!data) {
@@ -75,7 +77,8 @@ export default async function TaskOpengraphImage({
   const costOfDelay = signerAttribution ?? treatyLevel;
 
   // Stat cells — only include ones with real values
-  const stats: Array<{ label: string; value: string; tone: "red" | "yellow" }> = [];
+  const stats: Array<{ label: string; value: string; tone: "red" | "yellow" }> =
+    [];
   if (delayStats.currentDelayDays > 0) {
     stats.push({
       label: "Overdue",
@@ -224,11 +227,11 @@ export default async function TaskOpengraphImage({
                 <div
                   style={{
                     color: COLORS.accent,
-                  display: "flex",
-                  fontSize: 16,
-                  fontWeight: 900,
-                  letterSpacing: 0,
-                  textTransform: "uppercase",
+                    display: "flex",
+                    fontSize: 16,
+                    fontWeight: 900,
+                    letterSpacing: 0,
+                    textTransform: "uppercase",
                   }}
                 >
                   {stat.label}

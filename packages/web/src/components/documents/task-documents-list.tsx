@@ -8,9 +8,11 @@ import { listDocumentSummariesForViewer } from "@/lib/documents.server";
  * DocumentRow carries, which this list never renders.
  */
 export async function TaskDocumentsList({
+  excludeDocumentIds = [],
   taskId,
   userId,
 }: {
+  excludeDocumentIds?: string[];
   taskId: string;
   userId: string | null;
 }) {
@@ -21,7 +23,11 @@ export async function TaskDocumentsList({
     userId,
     limit: 50,
   }).catch(() => []);
-  if (documents.length === 0) {
+  const excludedIds = new Set(excludeDocumentIds);
+  const visibleDocuments = documents.filter(
+    (document) => !excludedIds.has(document.id),
+  );
+  if (visibleDocuments.length === 0) {
     return null;
   }
 
@@ -31,7 +37,7 @@ export async function TaskDocumentsList({
         Documents
       </h2>
       <ul className="mt-3 space-y-1">
-        {documents.map((document) => (
+        {visibleDocuments.map((document) => (
           <li key={document.id} className="text-sm font-bold">
             <Link
               className="underline underline-offset-4"

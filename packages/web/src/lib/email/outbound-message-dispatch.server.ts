@@ -28,6 +28,14 @@ import {
   expireExternalActionRequest,
   finalizeApprovedExternalAction,
 } from "@/lib/tasks/external-action.server";
+import {
+  getCommunicationBatchKey,
+  getPrivateReviewApprovalContext,
+} from "@/lib/tasks/private-review-invitation-contracts";
+import {
+  evaluatePrivateReviewOutreachSuppression,
+  privateReviewTaskMatchesApprovalContext,
+} from "@/lib/tasks/private-review-outreach-safety.server";
 import { sendDraftTaskNotification } from "@/lib/tasks/task-notifications.server";
 
 const log = createLogger("outbound-message-dispatch");
@@ -120,7 +128,10 @@ export async function dispatchApprovedOutboundMessage(input: {
       deletedAt: true,
       emailLogId: true,
       id: true,
+      metadataJson: true,
       providerMessageId: true,
+      recipientEmail: true,
+      recipientPersonId: true,
       senderUserId: true,
       status: true,
     },
@@ -134,6 +145,61 @@ export async function dispatchApprovedOutboundMessage(input: {
       result: "FAILED",
     });
     return { status: "failed", reason: "draft_not_found" };
+  }
+
+  const reviewContext = getPrivateReviewApprovalContext(
+    payload.approvalContext,
+  );
+  if (reviewContext) {
+    const liveBindingMatches =
+      await privateReviewTaskMatchesApprovalContext(reviewContext);
+    if (
+      !liveBindingMatches ||
+      reviewContext.taskId !== request.taskId ||
+      reviewContext.recipientPersonId !== communication.recipientPersonId ||
+      reviewContext.batchKey !==
+        getCommunicationBatchKey(communication.metadataJson) ||
+      !communication.recipientEmail
+    ) {
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: "private_review_invitation_binding_mismatch",
+        now,
+        result: "FAILED",
+      });
+      return { status: "failed", reason: "review_binding_mismatch" };
+    }
+    const suppressionReason = await evaluatePrivateReviewOutreachSuppression({
+      now,
+      recipientEmail: communication.recipientEmail,
+      recipientPersonId: communication.recipientPersonId,
+      taskId: request.taskId,
+    });
+    if (suppressionReason) {
+      await prisma.taskCommunication.updateMany({
+        where: {
+          id: communication.id,
+          status: TaskCommunicationStatus.DRAFT,
+        },
+        data: {
+          cancelledAt: now,
+          errorMessage: `Review invitation suppressed: ${suppressionReason}.`,
+          status: TaskCommunicationStatus.CANCELLED,
+        },
+      });
+      await finalizeApprovedExternalAction({
+        executedByUserId: input.approverUserId,
+        externalActionRequestId: request.id,
+        failureMessage: `suppressed:${suppressionReason}`,
+        now,
+        result: "FAILED",
+      });
+      return {
+        status: "failed",
+        reason: `suppressed:${suppressionReason}`,
+      };
+    }
   }
 
   let authorization;

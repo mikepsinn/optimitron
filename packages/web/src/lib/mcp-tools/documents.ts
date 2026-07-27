@@ -5,6 +5,7 @@
 
 import { stringifyJsonSafe } from "../json-safe";
 import { McpScope } from "../mcp-scopes";
+import type { TaskClientAccessBoundary } from "../tasks/task-visibility.server";
 
 type ToolResponse = {
   content: Array<{ type: "text"; text: string }>;
@@ -23,10 +24,26 @@ function err(message: string): ToolResponse {
 }
 
 export const DOCUMENT_TOOL_SCOPES = {
-  createDocument: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  updateDocument: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  getDocument: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
-  listDocuments: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN],
+  createDocument: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  updateDocument: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  getDocument: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
+  listDocuments: [
+    McpScope.TASKS_PERSONAL,
+    McpScope.TASKS_ORGANIZATION,
+    McpScope.TASKS_ADMIN,
+  ],
 } satisfies Record<string, McpScope[]>;
 
 export type DocumentToolName = keyof typeof DOCUMENT_TOOL_SCOPES;
@@ -155,10 +172,12 @@ function readNullableString(value: unknown): string | null | undefined {
 
 export async function handleDocumentToolCall({
   args,
+  clientAccessBoundary,
   name,
   userId,
 }: {
   args: Record<string, unknown>;
+  clientAccessBoundary?: TaskClientAccessBoundary;
   name: DocumentToolName;
   userId: string | null | undefined;
 }): Promise<ToolResponse> {
@@ -173,20 +192,23 @@ export async function handleDocumentToolCall({
         const idempotencyKey = readString(args.idempotencyKey);
         if (!title || !body) return err("title and body are required");
         if (!idempotencyKey) return err("idempotencyKey is required");
-        const row = await documents.createDocument({
-          title,
-          body,
-          createdByUserId: userId,
-          taskId: readString(args.taskId) ?? null,
-          jurisdictionId: readString(args.jurisdictionId) ?? null,
-          organizationId: readString(args.organizationId) ?? null,
-          parentDocumentId: readString(args.parentDocumentId) ?? null,
-          idempotencyKey,
-          visibility:
-            args.visibility === "PUBLIC" || args.visibility === "PRIVATE"
-              ? args.visibility
-              : null,
-        });
+        const row = await documents.createDocument(
+          {
+            title,
+            body,
+            createdByUserId: userId,
+            taskId: readString(args.taskId) ?? null,
+            jurisdictionId: readString(args.jurisdictionId) ?? null,
+            organizationId: readString(args.organizationId) ?? null,
+            parentDocumentId: readString(args.parentDocumentId) ?? null,
+            idempotencyKey,
+            visibility:
+              args.visibility === "PUBLIC" || args.visibility === "PRIVATE"
+                ? args.visibility
+                : null,
+          },
+          { clientAccessBoundary },
+        );
         return ok({ document: documents.toDocumentDto(row) });
       }
 
@@ -202,27 +224,36 @@ export async function handleDocumentToolCall({
         ) {
           return err("expectedVersion must be a positive integer");
         }
-        const row = await documents.updateDocument({
-          documentId,
-          editorUserId: userId,
-          expectedVersion,
-          title: readString(args.title) ?? null,
-          body: typeof args.body === "string" ? args.body : null,
-          organizationId: readNullableString(args.organizationId),
-          parentDocumentId: readNullableString(args.parentDocumentId),
-          taskId: readNullableString(args.taskId),
-          visibility:
-            args.visibility === "PUBLIC" || args.visibility === "PRIVATE"
-              ? args.visibility
-              : null,
-        });
+        const row = await documents.updateDocument(
+          {
+            documentId,
+            editorUserId: userId,
+            expectedVersion,
+            title: readString(args.title) ?? null,
+            body: typeof args.body === "string" ? args.body : null,
+            organizationId: readNullableString(args.organizationId),
+            parentDocumentId: readNullableString(args.parentDocumentId),
+            taskId: readNullableString(args.taskId),
+            visibility:
+              args.visibility === "PUBLIC" || args.visibility === "PRIVATE"
+                ? args.visibility
+                : null,
+          },
+          { clientAccessBoundary },
+        );
         return ok({ document: documents.toDocumentDto(row) });
       }
 
       case "getDocument": {
         const documentId = readString(args.documentId);
         if (!documentId) return err("documentId is required");
-        const result = await documents.getDocumentForViewer(documentId, userId);
+        const result = await documents.getDocumentForViewer(
+          documentId,
+          userId,
+          {
+            clientAccessBoundary,
+          },
+        );
         if (!result) return err(documents.DOCUMENT_NOT_FOUND_MESSAGE);
         return ok({
           document: documents.toDocumentDto(result),
@@ -233,6 +264,7 @@ export async function handleDocumentToolCall({
 
       case "listDocuments": {
         const rows = await documents.listDocumentsForViewer({
+          clientAccessBoundary,
           userId: userId ?? null,
           taskId: readString(args.taskId) ?? null,
           limit: typeof args.limit === "number" ? args.limit : null,

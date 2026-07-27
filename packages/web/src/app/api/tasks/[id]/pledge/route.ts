@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { assertCanPledgeForOrganization } from "@/lib/task-funding/permissions.server";
 import { createOrReplaceTaskFundingPledge } from "@/lib/task-funding/pledges.server";
 import type { TaskFundingStatus } from "@/lib/task-funding/status.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -108,7 +109,7 @@ export async function POST(
   try {
     const auth = await requireAuth();
     userId = auth.userId;
-    taskId = (await context.params).id;
+    taskId = decodeTaskRouteId((await context.params).id);
     const parsed = PledgeBodySchema.safeParse(
       await request.json().catch(() => null),
     );

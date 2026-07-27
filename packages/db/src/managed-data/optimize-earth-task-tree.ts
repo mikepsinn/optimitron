@@ -9,15 +9,34 @@ import {
   MECHANISM_TREATY_CAMPAIGN_P_SUCCESS,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
 } from "@optimitron/data/parameters";
-import {
-  TaskCategory,
-  TaskClaimPolicy,
-} from "../generated/prisma/client.js";
+import { TaskCategory, TaskClaimPolicy } from "../generated/prisma/client.js";
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
+  EOS_APPROVE_FINANCING_PACKET_TASK_ID,
+  EOS_APPROVE_FINANCING_PACKET_TASK_KEY,
   EOS_CAPITALIZE_TASK_ID,
   EOS_CAPITALIZE_TASK_KEY,
+  EOS_FUND_WORK_PACKAGES_TASK_ID,
+  EOS_FUND_WORK_PACKAGES_TASK_KEY,
+  EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_ID,
+  EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_KEY,
+  EOS_OPEN_FINANCING_ROUND_TASK_ID,
+  EOS_OPEN_FINANCING_ROUND_TASK_KEY,
+  EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_ID,
+  EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+  EOS_REVIEW_CORPORATE_AUTHORITY_TASK_ID,
+  EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY,
+  EOS_REVIEW_FINANCING_TERMS_TASK_ID,
+  EOS_REVIEW_FINANCING_TERMS_TASK_KEY,
+  EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_ID,
+  EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY,
+  EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_ID,
+  EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY,
+  EOS_REVIEW_USE_OF_PROCEEDS_TASK_ID,
+  EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY,
+  EOS_VERIFY_ENTITY_TASK_ID,
+  EOS_VERIFY_ENTITY_TASK_KEY,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
   LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
@@ -106,6 +125,210 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       instructions:
         "Open the root task and choose the highest-leverage child task you can complete.",
     },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    id: EOS_VERIFY_ENTITY_TASK_ID,
+    taskKey: EOS_VERIFY_ENTITY_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Verify the EOS legal entity and records",
+    description:
+      "Confirm the entity name, jurisdiction, standing, ownership, and authority from signed or filed records. Attach authoritative records before anyone reviews drafts or raises money.",
+    impactStatement:
+      "Investors and reviewers need verified facts, not a legal identity assembled from old website copy.",
+    skillTags: ["corporate-law", "corporate-records", "due-diligence"],
+    requiredCredentialTags: ["licensed-attorney"],
+    sortOrder: -609,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OUTREACH,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [EOS_VERIFY_ENTITY_TASK_KEY],
+    id: EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_ID,
+    taskKey: EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Recruit independent financing reviewers",
+    description:
+      "Find qualified lawyers and finance experts for the verified entity and jurisdiction. Record credential sources and conflicts, then request human approval before contacting anyone.",
+    impactStatement:
+      "Independent review is useful only when the reviewers are qualified, conflict-checked, and reviewing the right entity.",
+    skillTags: ["expert-research", "legal-recruiting", "due-diligence"],
+    sortOrder: -608,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_VERIFY_ENTITY_TASK_KEY,
+      EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    ],
+    id: EOS_REVIEW_CORPORATE_AUTHORITY_TASK_ID,
+    taskKey: EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Review EOS corporate authority and governance",
+    description:
+      "Review the exact governing-document revisions and identify the approvals, signatures, filings, and conflicts that must be resolved before EOS accepts financing.",
+    impactStatement:
+      "Money should not arrive before the entity has authority to accept it and use it as promised.",
+    skillTags: ["corporate-law", "corporate-governance"],
+    requiredCredentialTags: ["licensed-attorney"],
+    sortOrder: -607,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_VERIFY_ENTITY_TASK_KEY,
+      EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    ],
+    id: EOS_REVIEW_FINANCING_TERMS_TASK_ID,
+    taskKey: EOS_REVIEW_FINANCING_TERMS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Review EOS financing terms",
+    description:
+      "Review the exact financing terms for economics, control, dilution, investor rights, restrictions, and conflicts with the verified governing records.",
+    impactStatement:
+      "Clear terms let contributors understand what they receive and what EOS may do with their money.",
+    skillTags: ["corporate-finance", "venture-financing"],
+    requiredCredentialTags: ["licensed-attorney"],
+    sortOrder: -606,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_VERIFY_ENTITY_TASK_KEY,
+      EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    ],
+    id: EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_ID,
+    taskKey: EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Review the EOS subscription agreement",
+    description:
+      "Review the exact agreement contributors will sign, including representations, disclosures, payment terms, remedies, privacy, and links to the adopted financing terms.",
+    impactStatement:
+      "The signed agreement should match the offer people were shown and the records EOS adopted.",
+    skillTags: ["contract-review", "venture-financing"],
+    requiredCredentialTags: ["licensed-attorney"],
+    sortOrder: -605,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_VERIFY_ENTITY_TASK_KEY,
+      EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    ],
+    id: EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_ID,
+    taskKey: EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Review securities exemptions and investor eligibility",
+    description:
+      "Determine which offering rules apply, who may participate, what disclosures and filings are required, and which jurisdictions must remain excluded.",
+    impactStatement:
+      "A financing round is not ready until EOS knows whom it may legally accept money from and under which rules.",
+    skillTags: ["securities-law", "regulatory-compliance"],
+    requiredCredentialTags: ["licensed-attorney"],
+    sortOrder: -604,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_VERIFY_ENTITY_TASK_KEY,
+      EOS_RECRUIT_INDEPENDENT_REVIEWERS_TASK_KEY,
+    ],
+    id: EOS_REVIEW_USE_OF_PROCEEDS_TASK_ID,
+    taskKey: EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Review EOS use of proceeds and impact allocation",
+    description:
+      "Turn each promised use of proceeds into a separately fundable task with adopted terms, a pinned impact estimate, spending authority, and outcome reporting.",
+    impactStatement:
+      "Contributors should be able to trace money from the financing terms to concrete work and later evidence.",
+    skillTags: ["impact-accounting", "budget-review", "corporate-governance"],
+    sortOrder: -603,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [
+      EOS_REVIEW_CORPORATE_AUTHORITY_TASK_KEY,
+      EOS_REVIEW_FINANCING_TERMS_TASK_KEY,
+      EOS_REVIEW_SUBSCRIPTION_AGREEMENT_TASK_KEY,
+      EOS_REVIEW_SECURITIES_EXEMPTIONS_TASK_KEY,
+      EOS_REVIEW_USE_OF_PROCEEDS_TASK_KEY,
+    ],
+    id: EOS_APPROVE_FINANCING_PACKET_TASK_ID,
+    taskKey: EOS_APPROVE_FINANCING_PACKET_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Approve the EOS financing packet",
+    description:
+      "Adopt one exact, internally consistent set of financing documents after required reviews are accepted. Record any reviewer waiver and its reason in the permanent decision artifact.",
+    contextJson: {
+      requiresDocumentDecision: {
+        schema: "optimitron.requires-document-decision.v1",
+      },
+    },
+    impactStatement:
+      "One adopted packet prevents investors, operators, and payment systems from acting on different drafts.",
+    skillTags: ["corporate-governance", "document-review"],
+    sortOrder: -602,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+    blockedByTaskKeys: [EOS_APPROVE_FINANCING_PACKET_TASK_KEY],
+    id: EOS_OPEN_FINANCING_ROUND_TASK_ID,
+    taskKey: EOS_OPEN_FINANCING_ROUND_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Open the EOS financing round",
+    description:
+      "Open contributions only after the adopted packet, eligibility rules, payment flow, and exact public offer have passed their approval gates.",
+    impactStatement:
+      "The fastest safe financing round is one that does not need to unwind avoidable legal or disclosure mistakes.",
+    skillTags: ["fundraising", "financing-operations"],
+    sortOrder: -601,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    blockedByTaskKeys: [EOS_OPEN_FINANCING_ROUND_TASK_KEY],
+    id: EOS_FUND_WORK_PACKAGES_TASK_ID,
+    taskKey: EOS_FUND_WORK_PACKAGES_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Fund concrete EOS work packages",
+    description:
+      "Let contributors fund separately scoped tasks with their own target, adopted governing revisions, expected costs, and pinned impact estimate.",
+    impactStatement:
+      "Specific work packages make the use of money inspectable and let higher-impact work earn priority.",
+    skillTags: ["fundraising", "program-management", "impact-accounting"],
+    sortOrder: -600,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    blockedByTaskKeys: [EOS_OPEN_FINANCING_ROUND_TASK_KEY],
+    id: EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_ID,
+    taskKey: EOS_ISSUE_CONTRIBUTION_RECEIPTS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Issue contribution receipts and outcome addenda",
+    description:
+      "For every successful payment, preserve the amount, intended task, adopted terms, document hashes, and impact-estimate version. Append later completion, refund, correction, and outcome evidence without rewriting the original receipt.",
+    impactStatement:
+      "A contributor should be able to see exactly what was promised, what happened later, and what remains only an estimate.",
+    skillTags: ["audit-trail", "impact-accounting", "payment-operations"],
+    sortOrder: -599,
   },
   {
     ...defaultTaskFields,
@@ -209,8 +432,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     primaryEndpoint: {
       label: "Register a plaintiff",
       url: "/plaintiffs",
-      instructions:
-        `Register a plaintiff in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
+      instructions: `Register a plaintiff in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     },
   },
   {
@@ -220,16 +442,14 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     taskKey: SUMMON_JURORS_TASK_KEY,
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Summon jurors",
-    description:
-      `Invite humans to act as jurors by voting on the verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
+    description: `Invite humans to act as jurors by voting on the verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     impactStatement:
       "A court for humanity needs a jury large enough to matter.",
     sortOrder: -760,
     primaryEndpoint: {
       label: "Open the referral dashboard",
       url: "/dashboard",
-      instructions:
-        "Invite at least two humans to vote on the case.",
+      instructions: "Invite at least two humans to vote on the case.",
     },
   },
   {
@@ -554,7 +774,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     primaryEndpoint: {
       label: "Read the dFDA impact math",
       url: "https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html",
-      instructions: "Read the impact math, then fund or build the decentralized FDA.",
+      instructions:
+        "Read the impact math, then fund or build the decentralized FDA.",
     },
   },
   {

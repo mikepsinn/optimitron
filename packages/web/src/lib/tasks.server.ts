@@ -59,6 +59,8 @@ import {
   scoreTaskForAccountability,
 } from "@/lib/tasks/rank-tasks";
 import { getExplicitEdgeMarginalFrames } from "@/lib/tasks/marginal-impact";
+import { readReviewRequest } from "@/lib/tasks/document-review-contracts";
+import { readTaskContext } from "@/lib/tasks/task-context";
 import {
   canUserViewInternalTaskContent,
   getTaskAccessWhere,
@@ -732,7 +734,7 @@ function taskDetailSelectForViewer(input: {
     childTasks: {
       ...taskDetailSelect.childTasks,
       where: {
-        AND: [taskDetailSelect.childTasks.where, taskAccess],
+        AND: [{ deletedAt: null }, taskAccess],
       },
       select: listSelect,
     },
@@ -2074,6 +2076,7 @@ export async function updateTaskCreatedByUser(
       assigneeOrganizationId: true,
       assigneePersonId: true,
       claimPolicy: true,
+      contextJson: true,
       id: true,
       isPublic: true,
       maxClaims: true,
@@ -2082,6 +2085,12 @@ export async function updateTaskCreatedByUser(
 
   if (!existingTask) {
     throw new Error("Task not found.");
+  }
+
+  if (readReviewRequest(existingTask.contextJson)) {
+    throw new Error(
+      "Document review tasks can only be changed through document review operations.",
+    );
   }
 
   if (existingTask.isPublic && input.isPublic === false) {
@@ -2404,11 +2413,18 @@ export async function verifyTask(
       },
       select: {
         claimPolicy: true,
+        contextJson: true,
         id: true,
         status: true,
       },
     });
     if (!task) throw new Error("Task not found");
+    if (
+      readReviewRequest(task.contextJson) ||
+      readTaskContext(task.contextJson).requiresDocumentDecision
+    ) {
+      throw new Error("Task not found");
+    }
 
     if (input.claimId) {
       const claim = await tx.taskClaim.findUniqueOrThrow({

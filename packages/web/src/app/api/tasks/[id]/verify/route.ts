@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
 import { verifyTask } from "@/lib/tasks.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -10,26 +11,33 @@ export async function POST(
 ) {
   try {
     const { userId } = await requireAuth();
-    const body = (await request.json().catch(() => null)) as
-      | {
-          actualCashCostUsd?: unknown;
-          actualEffortSeconds?: unknown;
-          claimId?: unknown;
-          completionEvidence?: unknown;
-          verificationNote?: unknown;
-        }
-      | null;
-    const { id } = await context.params;
+    const body = (await request.json().catch(() => null)) as {
+      actualCashCostUsd?: unknown;
+      actualEffortSeconds?: unknown;
+      claimId?: unknown;
+      completionEvidence?: unknown;
+      verificationNote?: unknown;
+    } | null;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const result = await verifyTask(id, userId, {
       actualCashCostUsd:
-        typeof body?.actualCashCostUsd === "number" ? body.actualCashCostUsd : null,
+        typeof body?.actualCashCostUsd === "number"
+          ? body.actualCashCostUsd
+          : null,
       actualEffortSeconds:
-        typeof body?.actualEffortSeconds === "number" ? body.actualEffortSeconds : null,
+        typeof body?.actualEffortSeconds === "number"
+          ? body.actualEffortSeconds
+          : null,
       claimId: typeof body?.claimId === "string" ? body.claimId : null,
       completionEvidence:
-        typeof body?.completionEvidence === "string" ? body.completionEvidence : null,
+        typeof body?.completionEvidence === "string"
+          ? body.completionEvidence
+          : null,
       verificationNote:
-        typeof body?.verificationNote === "string" ? body.verificationNote : null,
+        typeof body?.verificationNote === "string"
+          ? body.verificationNote
+          : null,
     });
 
     return NextResponse.json({ data: result, success: true });
@@ -47,6 +55,9 @@ export async function POST(
     }
 
     console.error("[TASKS] Failed to verify task:", error);
-    return NextResponse.json({ error: "Failed to verify task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to verify task." },
+      { status: 500 },
+    );
   }
 }

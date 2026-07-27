@@ -12,24 +12,23 @@ import {
   canUserViewTask,
   TASK_NOT_FOUND_MESSAGE,
 } from "@/lib/tasks/task-visibility.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
 type RawTaskImpactTrace = Awaited<ReturnType<typeof getTaskImpactTrace>>;
 
-function serializeSourceArtifact(
-  sourceArtifact: {
-    artifactType: string;
-    contentHash: string | null;
-    id: string;
-    sourceKey: string;
-    sourceRef: string | null;
-    sourceSystem: string;
-    sourceUrl: string | null;
-    title: string | null;
-    versionKey: string | null;
-  },
-): PublicTraceSourceArtifact {
+function serializeSourceArtifact(sourceArtifact: {
+  artifactType: string;
+  contentHash: string | null;
+  id: string;
+  sourceKey: string;
+  sourceRef: string | null;
+  sourceSystem: string;
+  sourceUrl: string | null;
+  title: string | null;
+  versionKey: string | null;
+}): PublicTraceSourceArtifact {
   return {
     artifactType: sourceArtifact.artifactType,
     contentHash: sourceArtifact.contentHash,
@@ -116,10 +115,8 @@ function serializeTaskImpactTrace(
       expectedEconomicValueUsdLow: frame.expectedEconomicValueUsdLow,
       frameKey: frame.frameKey,
       frameSlug: frame.frameSlug,
-      medianHealthyLifeYearsEffectBase:
-        frame.medianHealthyLifeYearsEffectBase,
-      medianHealthyLifeYearsEffectHigh:
-        frame.medianHealthyLifeYearsEffectHigh,
+      medianHealthyLifeYearsEffectBase: frame.medianHealthyLifeYearsEffectBase,
+      medianHealthyLifeYearsEffectHigh: frame.medianHealthyLifeYearsEffectHigh,
       medianHealthyLifeYearsEffectLow: frame.medianHealthyLifeYearsEffectLow,
       medianIncomeGrowthEffectPpPerYearBase:
         frame.medianIncomeGrowthEffectPpPerYearBase,
@@ -160,17 +157,15 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id: taskId } = await context.params;
+    const { id: routeId } = await context.params;
+    const taskId = decodeTaskRouteId(routeId);
     const currentUser = await getCurrentUser(request, [
       McpScope.TASKS_PERSONAL,
       McpScope.TASKS_ADMIN,
     ]);
     const userId = currentUser?.id ?? null;
     if (!(await canUserViewTask(taskId, userId))) {
-      return NextResponse.json(
-        { error: "Task not found." },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Task not found." }, { status: 404 });
     }
 
     const trace = await getTaskImpactTrace(

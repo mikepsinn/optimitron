@@ -196,12 +196,12 @@ describe.sequential("private execution lifecycle boundaries", () => {
       startTaskExecution({ taskId: task.id }, actor.user.id),
     ]);
 
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(
-      1,
-    );
-    expect(results.filter((result) => result.status === "rejected")).toHaveLength(
-      1,
-    );
+    expect(
+      results.filter((result) => result.status === "fulfilled"),
+    ).toHaveLength(1);
+    expect(
+      results.filter((result) => result.status === "rejected"),
+    ).toHaveLength(1);
     await expect(
       prisma.taskExecutionAttempt.count({
         where: {
@@ -211,6 +211,31 @@ describe.sequential("private execution lifecycle boundaries", () => {
         },
       }),
     ).resolves.toBe(1);
+  });
+
+  it("does not let generic execution complete a decision-gated task", async () => {
+    const actor = await createUser("decision_gate");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "decision_gate_task",
+    });
+    await prisma.task.update({
+      where: { id: task.id },
+      data: {
+        contextJson: {
+          requiresDocumentDecision: {
+            schema: "optimitron.requires-document-decision.v1",
+          },
+        },
+      },
+    });
+
+    await expect(
+      startTaskExecution({ taskId: task.id }, actor.user.id),
+    ).rejects.toThrow("Task not found");
+    await expect(
+      prisma.taskExecutionAttempt.count({ where: { taskId: task.id } }),
+    ).resolves.toBe(0);
   });
 
   it("lets a public claimant contribute to the attempt linked to their claim", async () => {
@@ -602,10 +627,7 @@ describe.sequential("task verification decisions", () => {
       creatorUserId: actor.user.id,
       id: "self_verify_task",
     });
-    const { submission } = await submitCompletedAttempt(
-      task.id,
-      actor.user.id,
-    );
+    const { submission } = await submitCompletedAttempt(task.id, actor.user.id);
 
     await expect(
       verifyTaskExecution(
@@ -727,8 +749,8 @@ describe.sequential("task verification decisions", () => {
     expect(auditTrail.executionAttempts[0]?.artifacts).toHaveLength(1);
     expect(auditTrail.executionAttempts[0]?.verifications).toHaveLength(1);
 
-    await expect(
-      getTaskAuditTrail(task.id, unrelated.user.id),
-    ).rejects.toThrow("Task not found");
+    await expect(getTaskAuditTrail(task.id, unrelated.user.id)).rejects.toThrow(
+      "Task not found",
+    );
   });
 });

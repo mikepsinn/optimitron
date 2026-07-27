@@ -110,6 +110,32 @@ describe("task detail route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
+  it.each([
+    ["task-funding-receipt%3Apayment_123", "task-funding-receipt:payment_123"],
+    ["task%253Aencoded", "task%3Aencoded"],
+    ["bad%2", "bad%2"],
+  ])(
+    "decodes the task route id exactly once and safely preserves %s as %s",
+    async (routeId, expectedTaskId) => {
+      mocks.getServerSession.mockResolvedValue({ user: { id: "user_1" } });
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: { id: expectedTaskId },
+        viewer: null,
+      });
+
+      const response = await GET(
+        new Request("http://localhost/api/tasks/route-id"),
+        { params: Promise.resolve({ id: routeId }) },
+      );
+
+      expect(response.status).toBe(200);
+      expect(mocks.getTaskDetailData).toHaveBeenCalledWith(
+        expectedTaskId,
+        "user_1",
+      );
+    },
+  );
+
   it("prefers an OAuth Bearer identity over a browser session", async () => {
     mocks.getServerSession.mockResolvedValue({ user: { id: "user_cookie" } });
     mocks.requireAuth.mockResolvedValue({

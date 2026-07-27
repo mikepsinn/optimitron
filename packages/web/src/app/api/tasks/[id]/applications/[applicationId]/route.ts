@@ -7,6 +7,7 @@ import {
   updateTaskApplication,
   type ApplicationUpdateInput,
 } from "@/lib/task-applications.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,8 @@ export async function PATCH(
 ) {
   try {
     const { userId } = await requireAuth();
-    const { applicationId, id } = await context.params;
+    const { applicationId, id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
 
     await assertCanReviewTaskApplications(userId, id);
 

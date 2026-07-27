@@ -1,5 +1,8 @@
 import { ContentVisibility } from "@optimitron/db/enums";
-import { getCurrentUser } from "@/lib/auth-utils";
+import {
+  getTaskRequestIdentity,
+  requireTaskRequestAuth,
+} from "@/lib/auth-utils";
 import {
   contentErrorResponse,
   noStoreJson,
@@ -10,11 +13,8 @@ import {
   listDocumentsForViewer,
   toDocumentDto,
 } from "@/lib/documents.server";
-import { McpScope } from "@/lib/mcp-scopes";
 
 export const runtime = "nodejs";
-
-const CONTENT_SCOPES = [McpScope.TASKS_PERSONAL, McpScope.TASKS_ADMIN];
 
 function optionalString(value: unknown): string | null | undefined {
   if (value === null) return null;
@@ -23,10 +23,11 @@ function optionalString(value: unknown): string | null | undefined {
 
 export async function GET(request: Request) {
   try {
-    const currentUser = await getCurrentUser(request, CONTENT_SCOPES);
+    const identity = await getTaskRequestIdentity(request);
     const url = new URL(request.url);
     const documents = await listDocumentsForViewer({
-      userId: currentUser?.id ?? null,
+      clientAccessBoundary: identity.clientAccessBoundary,
+      userId: identity.userId,
       taskId: url.searchParams.get("taskId"),
       limit: parseOptionalPositiveInteger(
         url.searchParams.get("limit"),
@@ -47,27 +48,29 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser(request, CONTENT_SCOPES);
-    if (!currentUser) throw new Error("Unauthorized");
+    const identity = await requireTaskRequestAuth(request);
     const body = (await request.json()) as Record<string, unknown>;
     const idempotencyKey =
       request.headers.get("Idempotency-Key") ??
       optionalString(body.idempotencyKey);
     if (!idempotencyKey) throw new Error("Idempotency-Key is required");
-    const document = await createDocument({
-      body: typeof body.body === "string" ? body.body : "",
-      createdByUserId: currentUser.id,
-      idempotencyKey,
-      jurisdictionId: optionalString(body.jurisdictionId),
-      organizationId: optionalString(body.organizationId),
-      parentDocumentId: optionalString(body.parentDocumentId),
-      taskId: optionalString(body.taskId),
-      title: typeof body.title === "string" ? body.title : "",
-      visibility:
-        body.visibility === ContentVisibility.PUBLIC
-          ? ContentVisibility.PUBLIC
-          : ContentVisibility.PRIVATE,
-    });
+    const document = await createDocument(
+      {
+        body: typeof body.body === "string" ? body.body : "",
+        createdByUserId: identity.userId,
+        idempotencyKey,
+        jurisdictionId: optionalString(body.jurisdictionId),
+        organizationId: optionalString(body.organizationId),
+        parentDocumentId: optionalString(body.parentDocumentId),
+        taskId: optionalString(body.taskId),
+        title: typeof body.title === "string" ? body.title : "",
+        visibility:
+          body.visibility === ContentVisibility.PUBLIC
+            ? ContentVisibility.PUBLIC
+            : ContentVisibility.PRIVATE,
+      },
+      { clientAccessBoundary: identity.clientAccessBoundary },
+    );
     return noStoreJson({ document: toDocumentDto(document) }, { status: 201 });
   } catch (error) {
     const response = contentErrorResponse(error);

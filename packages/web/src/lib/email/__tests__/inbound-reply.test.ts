@@ -1,8 +1,4 @@
-import {
-  Prisma,
-  TaskCommentKind,
-  TaskCommentSource,
-} from "@optimitron/db";
+import { Prisma, TaskCommentKind, TaskCommentSource } from "@optimitron/db";
 import { WAR_ON_DISEASE_REPLY_DOMAIN } from "@optimitron/db/system-identities";
 import { describe, expect, it, vi } from "vitest";
 import { processInboundReply, stripQuotedReply } from "../inbound-reply";
@@ -168,6 +164,20 @@ function makeInboundDb() {
 }
 
 describe("processInboundReply", () => {
+  it("records inbound reviewer mail as a REPLY from the assigned Person", async () => {
+    const db = makeInboundDb();
+
+    await processInboundReply(inboundEvent(), db as never);
+
+    expect(db.taskCommunication.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        purpose: "REPLY",
+        senderPersonId: "person_1",
+        senderUserId: null,
+      }),
+    });
+  });
+
   it("rejects an inbound reply when the sender is not known on the task", async () => {
     const db = makeInboundDb();
 

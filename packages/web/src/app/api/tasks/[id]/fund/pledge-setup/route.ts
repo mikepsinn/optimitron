@@ -8,6 +8,7 @@ import {
   MAX_TASK_FUNDING_AMOUNT_CENTS,
   MIN_TASK_FUNDING_AMOUNT_CENTS,
 } from "@/lib/task-funding/payments.server";
+import { decodeTaskRouteId } from "@/lib/tasks/task-route-id";
 import { getBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
@@ -45,7 +46,8 @@ export async function POST(
 ) {
   try {
     const auth = await requireAuth();
-    const { id } = await context.params;
+    const { id: routeId } = await context.params;
+    const id = decodeTaskRouteId(routeId);
     const parsed = PledgeSetupBodySchema.safeParse(
       await request.json().catch(() => null),
     );

@@ -23,6 +23,8 @@ It does that by pointing labor and money at the highest-value bottlenecks, makin
 - "Before contacting this official, check whether communication is allowed and record what URL was opened."
 - "Rank my feasible action options and explain why the selected one beats the next-best alternatives."
 - "Create a private task for a user, add a probability-weighted value estimate, and ask for the next best action."
+- "Save a sourced external expert, assign a private review of one exact document revision, and record the reviewer's verdict."
+- "Adopt an approved revision, publish it as a new referendum snapshot, and preserve the decision provenance."
 - "Look up the sourced parameter value behind this expected-value calculation once parameter tools are implemented."
 - "Inventory every public page on `1percenttreaty.org`, then fetch the page copy before editing route metadata."
 - "Search the Optimitron repo for the helper that owns a behavior before writing another one."
@@ -81,16 +83,16 @@ tasks:personal
 
 The full scope vocabulary (live-rendered on `/developers` and in `/api/mcp/tools`):
 
-| Scope | Grants |
-| --- | --- |
-| `tasks:personal` | Create, update, prioritize, and comment on the user's private tasks; personal planning roots. |
-| `tasks:organization` | The same for organizations where the user is an explicit member; org planning roots. |
-| `tasks:admin` | Public Earth-level task management. Admin users only. |
-| `actions:approve` | Approve proposed external actions. Human approval clients only; agent tokens may not hold it. |
-| `earthdata:write` | Public Earth-data writes — court cases, memorials, evidence, corrections, measurements/tracking. Gates roughly a third of all tools. |
-| `earthdata:admin` | Administrative Earth-data operations. |
-| `agent:run` | Agent run logging and lease coordination. |
-| `github` | Repo search/read and GitHub API passthrough. |
+| Scope                | Grants                                                                                                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `tasks:personal`     | Create, update, prioritize, and comment on the user's private tasks; personal planning roots.                                        |
+| `tasks:organization` | The same for organizations where the user is an explicit member; org planning roots.                                                 |
+| `tasks:admin`        | Public Earth-level task management. Admin users only.                                                                                |
+| `actions:approve`    | Approve proposed external actions. Human approval clients only; agent tokens may not hold it.                                        |
+| `earthdata:write`    | Public Earth-data writes — court cases, memorials, evidence, corrections, measurements/tracking. Gates roughly a third of all tools. |
+| `earthdata:admin`    | Administrative Earth-data operations.                                                                                                |
+| `agent:run`          | Agent run logging and lease coordination.                                                                                            |
+| `github`             | Repo search/read and GitHub API passthrough.                                                                                         |
 
 Do not request `tasks:admin` for personal planning. Public manual search and public task reads do not require OAuth permissions. Add `tasks:organization` only for work in organizations where the user is an explicit member.
 
@@ -177,6 +179,44 @@ are specified in [TASK_COMMUNICATION_MODEL.md](./TASK_COMMUNICATION_MODEL.md)
 - Platform admin status is not routine private access. Break-glass access is explicit and audited.
 - Private conversation sources retain safe hashes, anchors, aliases, timestamps, approved excerpts, and model metadata; never unrestricted transcripts.
 
+## Generic Document Review Protocol
+
+Document review reuses tasks, immutable document revisions, execution artifacts,
+verification, and referendums. It does not create a separate wiki or legal
+workflow:
+
+1. `requestDocumentReview` creates one private `ASSIGNED_ONLY` child task for
+   one external or signed-in `Person`, pinned to an exact revision ID, version,
+   and hash. A binding hash freezes the request, authority, assignee, and access
+   policy; generic task editing and execution reject the review task.
+2. `submitDocumentReview` records an explained substantive verdict:
+   `APPROVE`, `CHANGES_REQUESTED`, `REJECT`, or `ABSTAIN`. An optional proposed
+   rewrite is a separate private document.
+3. `postTaskComment.documentAnchor` can bind a private review comment to exact
+   UTF-16 offsets on the pinned or validated proposal revision. The server
+   derives the full revision pin and line numbers; replies and votes remain
+   ordinary task discussion and never decide adoption.
+4. An authorized manager accepts or rejects delivery through ordinary
+   `TaskVerification`. This answers whether the reviewer completed the assigned
+   work correctly; it never changes the substantive verdict.
+5. `applyDocumentProposal` copies an accepted proposal into a new canonical
+   revision. Reviews pinned to the prior revision then become stale.
+6. `adoptDocumentRevision` writes an immutable decision artifact. Every
+   unresolved required review needs a permanent reasoned waiver; advisory
+   reviews do not. A comment vote is never an adoption vote.
+7. `publishDocumentRevisionAsReferendum` copies the adopted revision into a new
+   locked referendum and records publication provenance. Public referendum
+   votes remain separate from expert review verdicts.
+
+The dedicated invitation path is human-gated in the task UI. Each recipient,
+subject, body, task, and revision binding is previewed as a hash-sealed
+`ExternalActionRequest`; an exact batch validates every request ID and payload
+hash transactionally before per-message dispatch. Invitations contain no
+document text. The path permits one invitation and one separately approved
+reminder after seven days, and applies reply, decline, opt-out, bounce,
+complaint, completion, and rate-limit suppression to external people as well as
+account holders.
+
 ## Tool Groups
 
 This is an orientation map, not an inventory. The complete, generated,
@@ -187,6 +227,7 @@ disagree, those sources win.
 
 - Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
 - Personal task management: `createTask`, `updateTask`, `deleteTask`, `proposeTaskBundle` (multi-task drafts with duplicate review), `promoteTask` (DRAFT → ACTIVE after review).
+- People and candidates: `createPerson` idempotently creates or updates an external or signed-in `Person`; `findTaskCandidates` includes saved external `Person` matches as well as users and agents. External `PERSON` matches require typed `candidate-evidence.v1` on save and status transition (sources, qualifications, confidence, conflicts, contact provenance, and uncertainties); existing `USER` and `AGENT` matches retain legacy compatibility.
 - Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection`.
 - Private execution (admin/agent-gated; not exposed to ordinary third-party tokens): `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail`.
 - External approval: `proposeExternalAction`, `recordExternalActionResult`; human approval is performed only by an `actions:approve` client.
@@ -197,6 +238,8 @@ disagree, those sources win.
 - Agent coordination (`agent:run`): `acquireLease`, `heartbeatLease`, `releaseLease`, `logAgentRun`, `getNextTask`.
 - Comments: `postTaskComment`, `getTaskComments`, `voteTaskComment`, `deleteTaskComment`.
 - Documents (versioned markdown): `createDocument`, `updateDocument`, `getDocument`, `listDocuments`.
+- Document review and decisions: `requestDocumentReview`, `submitDocumentReview`, `applyDocumentProposal`, `adoptDocumentRevision`, `publishDocumentRevisionAsReferendum`.
+- Contribution receipts: during adoption a manager may mark the revision as the task's funding terms, freezing `contribution-receipt-binding.v1` in task context; the first checkout or pledge copies it onto the target. Successful checkout and pledge-call payments automatically invoke the idempotent `issueContributionReceipt` operation inside their paid-transition transaction. Missing adopted provenance fails closed. `appendContributionOutcomeAddendum` records completion, measured-impact, refund, or correction evidence without rewriting the receipt.
 - Collections (structured records): `createCollection`, `updateCollection`, `getCollection`, `listCollections`, `createCollectionRecord`, `updateCollectionRecord`, `queryCollectionRecords`, `upsertCollectionRecordsBatch`, `saveCollectionView`.
 - Reviewed form responses: `findReviewedAnswers`, `prepareFormResponses`, `proposeFormSubmission`. Applications, surveys, RFPs, intake forms, and questionnaires can reuse person- or organization-owned text and narrative answers. Accepted answers are immutable document-revision artifacts; unresolved questions become private atomic tasks; the prepared text-response payload remains a pending external action until human approval. The normalized data model preserves typed free-form surveys; these MCP tools currently handle narrative fields only, not signatures, file uploads, or one-time typed controls.
 - Content: `searchContent`, `exportContent`, `manageContentAccess`, `manageContentFiles`, `reportContent`.
@@ -224,8 +267,8 @@ Claude:
   "args": {
     "triggerKey": "user-onboarding:treaty",
     "spawnSpecs": [
-      /* ... existing specs ... */,
-      {
+      ,
+      /* ... existing specs ... */ {
         "kind": "elevatorPitch",
         "sortOrder": 25,
         "titleTemplate": "Write your 1% Treaty elevator pitch",
@@ -260,7 +303,13 @@ Local Claude Code runs can use the stdio MCP server with a real Optimitron user 
   "mcpServers": {
     "optimitron-tasks": {
       "command": "pnpm",
-      "args": ["--filter", "@optimitron/web", "exec", "tsx", "scripts/mcp-task-server.ts"],
+      "args": [
+        "--filter",
+        "@optimitron/web",
+        "exec",
+        "tsx",
+        "scripts/mcp-task-server.ts"
+      ],
       "cwd": "E:/eos/optimitron",
       "env": {
         "MCP_USER_EMAIL": "you@example.com"

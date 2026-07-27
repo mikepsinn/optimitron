@@ -1,7 +1,13 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { ActivityType, EmailLogStatus } from "@optimitron/db";
+import {
+  ActivityType,
+  EmailLogStatus,
+  TaskCandidateMatchStatus,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { applyUnsubscribe } from "@/lib/email/suppression.server";
+import { persistExternalRecipientSuppressionForEmailLog } from "@/lib/tasks/external-recipient-suppression.server";
+import { readReviewRequest } from "@/lib/tasks/document-review-contracts";
 
 /** Minimal Resend webhook event shapes. Trim/extend as we use more fields. */
 export type ResendEventType =
@@ -48,7 +54,9 @@ export function verifyResendSignature(input: {
   const { rawBody, svixId, svixTimestamp, svixSignature, secret } = input;
   if (!svixId || !svixTimestamp || !svixSignature || !secret) return false;
 
-  const rawSecret = secret.startsWith("whsec_") ? secret.slice("whsec_".length) : secret;
+  const rawSecret = secret.startsWith("whsec_")
+    ? secret.slice("whsec_".length)
+    : secret;
   let secretBytes: Buffer;
   try {
     secretBytes = Buffer.from(rawSecret, "base64");
@@ -103,7 +111,11 @@ async function writeWebhookActivity(input: {
       userId: input.userId,
       type: ActivityType.UNSUBSCRIBED,
       description: `Email webhook: ${input.action}`,
-      metadata: JSON.stringify({ action: input.action, via: "webhook", ...input.extra }),
+      metadata: JSON.stringify({
+        action: input.action,
+        via: "webhook",
+        ...input.extra,
+      }),
       entityType: "EmailLog",
       entityId: input.emailLogId,
     },
@@ -112,12 +124,18 @@ async function writeWebhookActivity(input: {
 
 export async function applyComplaintEvent(event: ResendEvent): Promise<void> {
   const ctx = await findEmailLogContext(event.data.email_id);
-  if (!ctx?.userId) return;
-  await applyUnsubscribe({
-    userId: ctx.userId,
-    scope: "all",
+  if (!ctx) return;
+  if (ctx.userId) {
+    await applyUnsubscribe({
+      userId: ctx.userId,
+      scope: "all",
+      emailLogId: ctx.id,
+      via: "complaint",
+    });
+  }
+  await persistExternalRecipientSuppressionForEmailLog({
     emailLogId: ctx.id,
-    via: "complaint",
+    reason: "complaint",
   });
 }
 
@@ -135,13 +153,19 @@ export async function applyBounceEvent(event: ResendEvent): Promise<void> {
   });
 
   const bounceType = event.data.bounce?.type;
-  if (bounceType === "hard" && ctx.userId) {
-    // Invalid address — stop sending entirely, mirroring the complaint effect.
-    await applyUnsubscribe({
-      userId: ctx.userId,
-      scope: "all",
+  if (bounceType === "hard") {
+    if (ctx.userId) {
+      // Invalid address — stop sending entirely, mirroring the complaint effect.
+      await applyUnsubscribe({
+        userId: ctx.userId,
+        scope: "all",
+        emailLogId: ctx.id,
+        via: "hard_bounce",
+      });
+    }
+    await persistExternalRecipientSuppressionForEmailLog({
       emailLogId: ctx.id,
-      via: "hard_bounce",
+      reason: "hard_bounce",
     });
   } else if (ctx.userId) {
     await writeWebhookActivity({
@@ -167,6 +191,32 @@ export async function applyDeliveredEvent(event: ResendEvent): Promise<void> {
     },
     data: { status: EmailLogStatus.DELIVERED },
   });
+
+  const deliveredRecipients = await prisma.taskCommunication.findMany({
+    where: {
+      deletedAt: null,
+      emailLogId: ctx.id,
+      recipientPersonId: { not: null },
+    },
+    select: {
+      recipientPersonId: true,
+      task: { select: { contextJson: true } },
+      taskId: true,
+    },
+  });
+  for (const recipient of deliveredRecipients) {
+    if (!recipient.recipientPersonId) continue;
+    const reviewRequest = readReviewRequest(recipient.task?.contextJson);
+    await prisma.taskCandidateMatch.updateMany({
+      where: {
+        candidatePersonId: recipient.recipientPersonId,
+        deletedAt: null,
+        status: TaskCandidateMatchStatus.SUGGESTED,
+        taskId: reviewRequest?.authorityTaskId ?? recipient.taskId,
+      },
+      data: { status: TaskCandidateMatchStatus.CONTACTED },
+    });
+  }
 }
 
 export async function applyOpenedEvent(event: ResendEvent): Promise<void> {
@@ -203,9 +253,14 @@ export async function applySuppressedEvent(event: ResendEvent): Promise<void> {
       status: { in: [EmailLogStatus.QUEUED, EmailLogStatus.SENT] },
     },
     data: {
-      errorMessage: getWebhookErrorMessage(event) ?? "Resend suppressed this email.",
+      errorMessage:
+        getWebhookErrorMessage(event) ?? "Resend suppressed this email.",
       status: EmailLogStatus.FAILED,
     },
+  });
+  await persistExternalRecipientSuppressionForEmailLog({
+    emailLogId: ctx.id,
+    reason: "provider_suppressed",
   });
 }
 
