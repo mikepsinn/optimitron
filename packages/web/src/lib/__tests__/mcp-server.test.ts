@@ -633,6 +633,7 @@ function makePriority(overrides: Record<string, unknown> = {}) {
 }
 
 beforeEach(() => {
+  vi.unstubAllEnvs();
   for (const fn of Object.values(mocks)) fn.mockReset();
   // Default: the caller can view the task. Visibility-denial cases override.
   mocks.canUserViewTask.mockResolvedValue(true);
@@ -6038,6 +6039,8 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("inspectToolAccess explains scope, admin, unknown, and argument-dependent access", async () => {
+      vi.stubEnv("NEXTAUTH_URL", "https://mcp.example.test");
+      vi.stubEnv("VERCEL_ENV", "preview");
       const client = await setup("user-1", [
         McpScope.TASKS_ADMIN,
         McpScope.TASKS_ORGANIZATION,
@@ -6058,8 +6061,8 @@ describe("MCP server tool dispatch", () => {
         userId: "user-1",
       });
       expect(body.server).toMatchObject({
-        canonicalUrl: "http://localhost:3001/api/mcp",
-        environment: "development",
+        canonicalUrl: "https://mcp.example.test/api/mcp",
+        environment: "preview",
       });
       expect(body.server).toHaveProperty("catalogRevision");
       expect(body.tools).toEqual([
@@ -6069,11 +6072,15 @@ describe("MCP server tool dispatch", () => {
           name: "createPerson",
           reasonCodes: ["ADMIN_USER_REQUIRED"],
           requiredScopes: ["tasks:admin"],
+          scopeMatch: "ANY",
         }),
         expect.objectContaining({
           accessible: true,
+          missingScopes: [],
           name: "getMyQueue",
           reasonCodes: ["AVAILABLE", "ARGUMENT_DEPENDENT_ACCESS"],
+          requiredScopes: ["tasks:personal", "tasks:organization"],
+          scopeMatch: "ANY",
         }),
         expect.objectContaining({
           accessible: false,
@@ -6096,23 +6103,36 @@ describe("MCP server tool dispatch", () => {
           accessible: false,
           missingScopes: ["tasks:admin"],
           reasonCodes: ["MISSING_REQUIRED_SCOPE", "ADMIN_USER_REQUIRED"],
+          scopeMatch: "ANY",
         }),
       ]);
 
-      const adminClient = await setup("admin-1", [McpScope.TASKS_ADMIN], {
-        isAdmin: true,
-      });
+      const adminClient = await setup(
+        "admin-1",
+        [McpScope.TASKS_ADMIN, McpScope.EARTHDATA_ADMIN],
+        { isAdmin: true },
+      );
       const allowed = parseToolBody(
         await adminClient.callTool({
           name: "inspectToolAccess",
-          arguments: { toolNames: ["createPerson"] },
+          arguments: {
+            toolNames: ["createPerson", "mergeDuplicatePeople"],
+          },
         }),
       );
       expect(allowed.tools).toEqual([
         expect.objectContaining({
           accessible: true,
           missingScopes: [],
+          name: "createPerson",
           reasonCodes: ["AVAILABLE"],
+        }),
+        expect.objectContaining({
+          accessible: false,
+          enabled: false,
+          missingScopes: [],
+          name: "mergeDuplicatePeople",
+          reasonCodes: ["TOOL_DISABLED"],
         }),
       ]);
     });

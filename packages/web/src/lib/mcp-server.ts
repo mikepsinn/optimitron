@@ -405,6 +405,7 @@ function inspectToolAccess(
   name: string;
   reasonCodes: ToolAccessReasonCode[];
   requiredScopes: string[];
+  scopeMatch: "ANY" | "NONE_REQUIRED";
 } {
   const definition = TASK_TOOL_DEFINITIONS.find(
     (tool) => tool.name === toolName,
@@ -418,10 +419,12 @@ function inspectToolAccess(
       name: toolName,
       reasonCodes: ["TOOL_NOT_FOUND"],
       requiredScopes: [],
+      scopeMatch: "NONE_REQUIRED",
     };
   }
 
   const requiredScopes = TOOL_SCOPES[toolName] ?? [];
+  const scopeMatch = requiredScopes.length > 0 ? "ANY" : "NONE_REQUIRED";
   const scopeGranted = hasScope(grantedScopes, toolName);
   const missingScopes = scopeGranted ? [] : requiredScopes;
   const enabled = !DISABLED_TOOLS.has(toolName);
@@ -448,6 +451,7 @@ function inspectToolAccess(
     name: toolName,
     reasonCodes,
     requiredScopes: requiredScopes.map(scopeToWire),
+    scopeMatch,
   };
 }
 
