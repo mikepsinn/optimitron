@@ -555,6 +555,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
 
 const OPTIMITRON_PLATFORM_PREFIXES = [
   "/eos",
+  "/invest",
   "/game",
   "/agencies",
   "/scoreboard",
