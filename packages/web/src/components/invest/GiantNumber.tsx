@@ -54,9 +54,11 @@ export function GiantNumber({
         />
       </div>
       <ScrollReveal delay={0.15}>
-        <div className="mx-auto max-w-2xl text-lg font-bold leading-8 text-foreground sm:text-2xl sm:leading-10">
+        {/* A <p>, not a <div>: the copy-preview walker only extracts prose
+            from a fixed tag set, and these captions are the page's core copy. */}
+        <p className="mx-auto max-w-2xl text-lg font-bold leading-8 text-foreground sm:text-2xl sm:leading-10">
           {caption}
-        </div>
+        </p>
       </ScrollReveal>
       {source ? (
         <ParameterValue

@@ -61,6 +61,8 @@ export function ProgressSpine({
 
       <a
         href={voteHref}
+        aria-hidden={!showNudge}
+        tabIndex={showNudge ? 0 : -1}
         className={`fixed bottom-0 left-0 right-0 z-40 border-t-2 border-foreground bg-background px-4 py-3 text-center text-xs font-black uppercase tracking-[0.25em] text-foreground transition-transform duration-300 hover:bg-foreground hover:text-background sm:text-sm ${
           showNudge ? "translate-y-0" : "translate-y-full"
         }`}

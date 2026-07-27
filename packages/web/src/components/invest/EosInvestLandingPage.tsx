@@ -35,6 +35,7 @@ const CHAPTERS = [
 const RISK_STEPS: RiskStep[] = [
   {
     id: "universal-owners",
+    holdingsVariant: "owned",
     kicker: "The universal owners",
     title: "They already own basically everything",
     portfolioCaption: "A slice of every major company",
@@ -61,6 +62,7 @@ const RISK_STEPS: RiskStep[] = [
   },
   {
     id: "risk-nuclear",
+    holdingsVariant: "zeroed",
     kicker: "Unpriced risk no. 1",
     title: "Nuclear apocalypse",
     portfolioCaption: "No diversification against a dead planet",
@@ -95,6 +97,7 @@ const RISK_STEPS: RiskStep[] = [
   },
   {
     id: "risk-disease",
+    holdingsVariant: "dragged",
     kicker: "Unpriced risk no. 2",
     title: "Systemic drag from preventable disease",
     portfolioCaption: "Preventable disease taxes every holding",
@@ -118,6 +121,7 @@ const RISK_STEPS: RiskStep[] = [
   },
   {
     id: "risk-misallocation",
+    holdingsVariant: "shorted",
     kicker: "Unpriced risk no. 3",
     title: "Misallocated trillions",
     portfolioCaption: "Shorting their own future cash flows",

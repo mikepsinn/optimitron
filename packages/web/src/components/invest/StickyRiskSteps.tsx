@@ -5,11 +5,16 @@ import { cn } from "@/lib/utils";
 
 const HOLDINGS = 100;
 
+/** How the pinned portfolio's holdings render while a step is active. */
+type HoldingsVariant = "owned" | "zeroed" | "dragged" | "shorted";
+
 interface RiskStep {
   id: string;
   kicker: string;
   title: string;
   body: ReactNode;
+  /** Visual state of the pinned portfolio while this step is active. */
+  holdingsVariant: HoldingsVariant;
   /** Caption shown under the pinned portfolio while this step is active. */
   portfolioCaption: string;
   /** Value label shown on the pinned portfolio while this step is active. */
@@ -48,24 +53,22 @@ function useActiveStep(stepCount: number) {
   return { active, setStepRef };
 }
 
-function holdingClass(stepIndex: number, holdingIndex: number) {
-  switch (stepIndex) {
-    // Intro: a universal owner holds everything.
-    case 0:
+function holdingClass(variant: HoldingsVariant, holdingIndex: number) {
+  switch (variant) {
+    // A universal owner holds everything.
+    case "owned":
       return "bg-foreground";
     // Nuclear apocalypse: every holding is worth the same amount — zero.
-    case 1:
+    case "zeroed":
       return "border border-foreground bg-transparent";
     // Preventable disease: a permanent drag on every holding.
-    case 2:
+    case "dragged":
       return "bg-foreground/40";
     // Misallocated trillions: shorting the future of a third of the book.
-    case 3:
+    case "shorted":
       return holdingIndex % 3 === 0
         ? "border border-foreground bg-transparent"
         : "bg-foreground/70";
-    default:
-      return "bg-foreground";
   }
 }
 
@@ -80,13 +83,17 @@ export function StickyRiskSteps({ steps }: { steps: RiskStep[] }) {
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground sm:text-xs">
             A universal owner&apos;s portfolio
           </p>
-          <div className="mt-3 grid grid-cols-10 gap-1">
+          <div
+            className="mt-3 grid grid-cols-10 gap-1"
+            role="img"
+            aria-label={`Portfolio visualization: ${current.portfolioCaption}, ${current.portfolioValue}`}
+          >
             {Array.from({ length: HOLDINGS }, (_, i) => (
               <span
                 key={i}
                 className={cn(
                   "aspect-square w-full transition-all duration-500",
-                  holdingClass(active, i),
+                  holdingClass(current.holdingsVariant, i),
                 )}
               />
             ))}
