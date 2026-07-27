@@ -21,20 +21,22 @@
 - [↓ THIS ENDS WITH A VOTE. SKIP AHEAD AND CAST IT.](#claim)
 - IS YOUR GOVERNMENT PAYING FOR
 - 12,241
-- [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)
+- nuclear weapons — when it takes about [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) to trigger a nuclear winter that could collapse civilization?
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)
-- Every square is a live nuclear warhead. It takes about [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) to trigger a nuclear winter that collapses civilization.
+- Every square is a nuclear warhead in today's global inventory. It takes about [100](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) to trigger a nuclear winter that collapses civilization.
 - ■ THE FIRST 100: ONE DEAD CIVILIZATION
 - ▪ THE OTHER 12,141: YOU CAN ONLY RUIN EARTH ONCE
 - MEANWHILE, YOUR GOVERNMENTS SPEND
 - 604×
+- more on mass-murder capacity than on clinical trials to cure the diseases that will actually kill you and everyone you've ever loved.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 - OVER THE LAST CENTURY THEY SPENT
 - $170T
+- on mass-murder capacity — weapons, armies, and the machinery for burning human beings.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html)
 - THEN THEY USED IT TO KILL
 - 310,000,000
-- [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html)
+- of their own employers — the citizens — including [102 million](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html) children who almost certainly didn't deserve it.
 ## YOUR PLANET MAY BE ELIGIBLE FOR OPTIMIZATION.
 - We're Earth Optimization Services. We buy controlling shares of the companies that control your government, and we use the scientific method and real evidence to calculate optimal public policies and budgets that maximize the general welfare.
 - MAXIMIZE MEDIAN HEALTH-ADJUSTED LIFE EXPECTANCY
@@ -87,9 +89,11 @@
 - If we fail completely — no board seats, no laws changed, not one dollar of government spending redirected — Class B shareholders simply own a broad basket of major companies, similar to an S&P 500 fund. Your worst case is essentially market-level returns.
 - THE UPSIDE IF WE PASS SOMETHING LIKE THE 1% TREATY
 - ×1.71
+- Modeled global GDP after 20 years, as a multiple of the current trajectory — from redirecting about 1% of military spending into pragmatic clinical trials and life-extending technologies. Broad market assets, including your Class B shares, ride the same curve.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html)
 - THE UPSIDE IF GOVERNANCE IS FULLY OPTIMIZED
 - ×57
+- Modeled global GDP after 20 years under the most efficient evidence-based policies and budgets our engine can find. Small shifts in how trillions are governed compound into civilization-scale increases in output, stability, and well-being.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html)
 - OUTCOME-BASED GOVERNANCE
 ### THE OPTIMITRON
