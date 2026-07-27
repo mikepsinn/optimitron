@@ -491,18 +491,33 @@ jobs:
         run: |
           baseline_root="packages/web/output/playwright/main-baseline"
           pr_screenshots="packages/web/output/playwright/pr-screenshots"
+          base_sha="${{ github.event.pull_request.base.sha }}"
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
 
-          mapfile -t run_ids < <(gh run list \
-            --workflow CI \
-            --branch main \
-            --status success \
-            --limit 5 \
-            --json databaseId \
-            --jq '.[].databaseId')
+          # Prefer the artifact produced for this PR's exact base commit. The
+          # overall workflow may still be red because production deployment
+          # failed after web-e2e-validate successfully uploaded its artifact.
+          mapfile -t run_candidates < <(
+            {
+              gh run list \
+                --workflow CI \
+                --branch main \
+                --commit "$base_sha" \
+                --limit 5 \
+                --json databaseId,headSha \
+                --jq '.[] | "\(.databaseId)\t\(.headSha)"'
+              gh run list \
+                --workflow CI \
+                --branch main \
+                --limit 20 \
+                --json databaseId,headSha \
+                --jq '.[] | "\(.databaseId)\t\(.headSha)"'
+            } | awk -F '\t' '!seen[$1]++'
+          )
 
-          for run_id in "${run_ids[@]}"; do
+          for candidate in "${run_candidates[@]}"; do
+            IFS=$'\t' read -r run_id baseline_sha <<< "$candidate"
             run_root="$baseline_root/run-$run_id"
             rm -rf "$run_root"
             mkdir -p "$run_root"
@@ -513,6 +528,9 @@ jobs:
               for screenshots_dir in "$run_root/screenshots" "$run_root/packages/web/screenshots"; do
                 if [ -d "$screenshots_dir" ]; then
                   echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
+                  echo "VISUAL_REVIEW_BASELINE_COMMIT_SHA=$baseline_sha" >> "$GITHUB_ENV"
+                  echo "VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA=$base_sha" >> "$GITHUB_ENV"
+                  echo "VISUAL_REVIEW_BASELINE_RUN_ID=$run_id" >> "$GITHUB_ENV"
                   for copy_dir in \
                     "$run_root/copy-snapshots" \
                     "$run_root/output/playwright/copy-snapshots" \
@@ -523,7 +541,7 @@ jobs:
                       break
                     fi
                   done
-                  echo "Downloaded visual baseline from main run $run_id."
+                  echo "Downloaded visual baseline main@$baseline_sha from run $run_id (requested main@$base_sha)."
                   rm -rf packages/web/screenshots
                   cp -R "$pr_screenshots" packages/web/screenshots
                   exit 0
