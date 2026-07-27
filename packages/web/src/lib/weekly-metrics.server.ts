@@ -18,6 +18,7 @@ import {
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import { buildOfficialReferendumVoteWhere } from "@/lib/referendum-vote-classification.server";
+import { TREATY_REFERENDUM_SLUG } from "@/lib/treaty";
 
 export interface WeeklyFunnelWindow {
   /** ISO instant, inclusive. */
@@ -63,15 +64,23 @@ export function getWeeklyWindows(reference: Date) {
 async function countWindow(
   createdAt: { gte: Date; lt: Date },
   pendingIsPointInTime: boolean,
+  treatyReferendumId: string,
 ): Promise<WeeklyFunnelWindow> {
   const [votes, verifiedVotes, referrals, signups, externalActionsPending] =
     await Promise.all([
       prisma.referendumVote.count({
-        where: { ...buildOfficialReferendumVoteWhere(), createdAt },
+        where: {
+          ...buildOfficialReferendumVoteWhere({
+            referendumId: treatyReferendumId,
+          }),
+          createdAt,
+        },
       }),
       prisma.referendumVote.count({
         where: {
-          ...buildOfficialReferendumVoteWhere(),
+          ...buildOfficialReferendumVoteWhere({
+            referendumId: treatyReferendumId,
+          }),
           createdAt,
           user: {
             personhoodVerifications: {
@@ -86,12 +95,13 @@ async function countWindow(
       prisma.referral.count({
         where: { deletedAt: null, referredByUserId: { not: null }, createdAt },
       }),
-      prisma.user.count({ where: { createdAt } }),
+      prisma.user.count({ where: { createdAt, deletedAt: null } }),
       pendingIsPointInTime
         ? prisma.externalActionRequest.count({
             where: {
               status: ExternalActionRequestStatus.PENDING,
               deletedAt: null,
+              expiresAt: { gt: new Date() },
             },
           })
         : prisma.externalActionRequest.count({
@@ -110,13 +120,21 @@ async function countWindow(
   };
 }
 
+/** Never matches a real referendum id — used if the treaty referendum row is missing. */
+const NO_TREATY_REFERENDUM_ID = "no-treaty-referendum-configured";
+
 export async function getWeeklyMetricsSnapshot(
   reference: Date = new Date(),
 ): Promise<WeeklyMetricsSnapshot> {
   const windows = getWeeklyWindows(reference);
+  const treatyReferendum = await prisma.referendum.findUnique({
+    where: { slug: TREATY_REFERENDUM_SLUG },
+    select: { id: true },
+  });
+  const treatyReferendumId = treatyReferendum?.id ?? NO_TREATY_REFERENDUM_ID;
   const [current, previous] = await Promise.all([
-    countWindow(windows.current, true),
-    countWindow(windows.previous, false),
+    countWindow(windows.current, true, treatyReferendumId),
+    countWindow(windows.previous, false, treatyReferendumId),
   ]);
   return { generatedAt: reference.toISOString(), current, previous };
 }

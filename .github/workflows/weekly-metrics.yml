@@ -68,7 +68,7 @@ jobs:
             --jq '[.workflow_runs[] | select(.status=="completed")] | "\([.[] | select(.conclusion=="success")] | length)/\(length)"')
           # Open PR count and the age of the oldest in days.
           pr_stats=$(gh api "repos/$REPO/pulls?state=open&per_page=100" \
-            --jq '"\(length) open; oldest \((([.[].created_at] | min // empty) as $m | if $m then ((now - ($m | fromdateiso8601)) / 86400 | floor) else 0 end))d"')
+            --jq '"\(length) open; oldest \((([.[].created_at] | min) as $m | if $m == null then 0 else ((now - ($m | fromdateiso8601)) / 86400 | floor) end))d"')
           {
             echo "smoke=$smoke"
             echo "ci_main=$ci_main"
