@@ -12,6 +12,9 @@ function runGenerator(env) {
     encoding: "utf8",
     env: {
       ...process.env,
+      VISUAL_REVIEW_BASELINE_COMMIT_SHA: "",
+      VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: "",
+      VISUAL_REVIEW_BASELINE_RUN_ID: "",
       ...env,
     },
   });
@@ -116,4 +119,33 @@ test("reports when no user-facing page or component routes are inferred", () => 
 
   assert.match(output, /No user-facing page or component changes were inferred/);
   assert.doesNotMatch(output, /<!-- review-item:/);
+});
+
+test("identifies exact and fallback screenshot baselines", () => {
+  const exactBase = "a21b72d83b4207cd89481d84a0cff952c6107bc4";
+  const staleBase = "6fb97658853ac6114047a7b0642f27be646b1580";
+  const sharedEnv = {
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    CHANGED_FILES: JSON.stringify([]),
+    VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: exactBase,
+    VISUAL_REVIEW_BASELINE_RUN_ID: "30252000160",
+  };
+
+  const exactOutput = runGenerator({
+    ...sharedEnv,
+    VISUAL_REVIEW_BASELINE_COMMIT_SHA: exactBase,
+  });
+  assert.match(
+    exactOutput,
+    /Screenshot baseline: exact PR base `main@a21b72d83b42` from CI run `30252000160`\./,
+  );
+
+  const fallbackOutput = runGenerator({
+    ...sharedEnv,
+    VISUAL_REVIEW_BASELINE_COMMIT_SHA: staleBase,
+  });
+  assert.match(
+    fallbackOutput,
+    /Screenshot baseline fallback: `main@6fb97658853a` from CI run `30252000160`; exact PR base `main@a21b72d83b42` had no usable artifact\./,
+  );
 });

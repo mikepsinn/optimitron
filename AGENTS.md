@@ -105,6 +105,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 
 - Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
 - Treat the human owner as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
+- Internal development text—PRs, CI, logs, tests, and developer tooling—does not require copy approval.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.
