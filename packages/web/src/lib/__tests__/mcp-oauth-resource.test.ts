@@ -6,10 +6,10 @@ import {
   resolveMcpResourceOrigin,
 } from "@/lib/mcp-oauth";
 
-const CANONICAL = "https://warondisease.org";
+const CANONICAL = "https://optimitron.com";
 
 function stubCanonicalOrigin() {
-  vi.stubEnv("NEXTAUTH_URL", CANONICAL);
+  vi.stubEnv("MCP_OAUTH_ISSUER", CANONICAL);
 }
 
 function request(headers: Record<string, string>) {
@@ -43,6 +43,18 @@ describe("resolveMcpResourceOrigin", () => {
     expect(resolveMcpResourceOrigin(null)).toBe(CANONICAL);
     expect(resolveMcpResourceOrigin("  ")).toBe(CANONICAL);
     expect(resolveMcpResourceOrigin("not-a-url")).toBe(CANONICAL);
+  });
+});
+
+describe("OAuth issuer", () => {
+  it("keeps Optimitron as the production authorization server", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "");
+
+    const { getOAuthMetadata } = await import("@/lib/mcp-oauth");
+
+    expect(getOAuthMetadata().issuer).toBe(CANONICAL);
   });
 });
 
