@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
     documentUpdate: vi.fn(),
     documentUpdateMany: vi.fn(),
     taskFindFirst: vi.fn(),
+    taskUpdateMany: vi.fn(),
     transaction: vi.fn(),
   },
 }));
@@ -79,7 +80,10 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.prisma.documentRevisionFindFirst,
       findMany: mocks.prisma.documentRevisionFindMany,
     },
-    task: { findFirst: mocks.prisma.taskFindFirst },
+    task: {
+      findFirst: mocks.prisma.taskFindFirst,
+      updateMany: mocks.prisma.taskUpdateMany,
+    },
   },
 }));
 
@@ -138,6 +142,7 @@ function transactionClient() {
       updateMany: mocks.prisma.documentUpdateMany,
     },
     documentRevision: { create: mocks.prisma.documentRevisionCreate },
+    task: { updateMany: mocks.prisma.taskUpdateMany },
   };
 }
 
@@ -345,7 +350,7 @@ describe("optimistic document updates", () => {
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
   });
 
-  it("claims the expected version and appends an immutable revision", async () => {
+  it("appends a revision and stales every prior exact-revision review", async () => {
     const nextRevision = {
       ...REVISION,
       id: "revision_4",
@@ -366,6 +371,7 @@ describe("optimistic document updates", () => {
       id: nextRevision.id,
     });
     mocks.prisma.documentUpdate.mockResolvedValue(updatedDocument);
+    mocks.prisma.taskUpdateMany.mockResolvedValue({ count: 2 });
 
     const result = await updateDocument({
       body: "New body",
@@ -386,7 +392,45 @@ describe("optimistic document updates", () => {
       }),
       select: { id: true },
     });
+    expect(mocks.prisma.taskUpdateMany).toHaveBeenCalledWith({
+      where: {
+        AND: [
+          {
+            contextJson: {
+              equals: "optimitron.review-request.v1",
+              path: ["documentReview", "schema"],
+            },
+          },
+          {
+            contextJson: {
+              equals: DOCUMENT.id,
+              path: ["documentReview", "target", "documentId"],
+            },
+          },
+        ],
+        deletedAt: null,
+        status: { in: ["DRAFT", "ACTIVE", "VERIFIED"] },
+      },
+      data: { status: "STALE" },
+    });
     expect(result.revision.id).toBe("revision_4");
+  });
+
+  it("does not stale reviews when the optimistic version claim loses a race", async () => {
+    mocks.prisma.documentFindFirst.mockResolvedValue(DOCUMENT);
+    mocks.prisma.documentUpdateMany.mockResolvedValue({ count: 0 });
+
+    await expect(
+      updateDocument({
+        body: "New body",
+        documentId: DOCUMENT.id,
+        editorUserId: "user_1",
+        expectedVersion: 3,
+      }),
+    ).rejects.toThrow(DOCUMENT_CONFLICT_MESSAGE);
+
+    expect(mocks.prisma.documentRevisionCreate).not.toHaveBeenCalled();
+    expect(mocks.prisma.taskUpdateMany).not.toHaveBeenCalled();
   });
 });
 

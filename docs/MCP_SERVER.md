@@ -196,15 +196,22 @@ workflow:
    UTF-16 offsets on the pinned or validated proposal revision. The server
    derives the full revision pin and line numbers; replies and votes remain
    ordinary task discussion and never decide adoption.
-4. An authorized manager accepts or rejects delivery through ordinary
+4. An authorized task manager or connected agent uses ordinary
+   `createDocument` to draft a separate private proposal attached to the
+   authority task. The canonical document is unchanged at this point.
+5. An authorized manager accepts or rejects delivery through ordinary
    `TaskVerification`. This answers whether the reviewer completed the assigned
    work correctly; it never changes the substantive verdict.
-5. `applyDocumentProposal` copies an accepted proposal into a new canonical
-   revision. Reviews pinned to the prior revision then become stale.
-6. `adoptDocumentRevision` writes an immutable decision artifact. Every
+6. `applyDocumentProposal` copies either an accepted reviewer proposal or a
+   private proposal into a new canonical revision. A generic proposal must pin
+   the exact base and proposal revisions and cite authorized source comments;
+   the immutable application artifact snapshots those comments and the change
+   summary. Every live review of the superseded document becomes stale.
+   Generic canonical document updates enforce the same invalidation rule.
+7. `adoptDocumentRevision` writes an immutable decision artifact. Every
    unresolved required review needs a permanent reasoned waiver; advisory
    reviews do not. A comment vote is never an adoption vote.
-7. `publishDocumentRevisionAsReferendum` copies the adopted revision into a new
+8. `publishDocumentRevisionAsReferendum` copies the adopted revision into a new
    locked referendum and records publication provenance. Public referendum
    votes remain separate from expert review verdicts.
 

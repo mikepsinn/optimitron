@@ -792,11 +792,13 @@ export default async function TaskDetailPage({
           </section>
         ) : null}
 
-        <section className="border-b border-foreground py-6">
-          <article className="min-w-0">
-            <TaskDescription markdown={task.description} />
-          </article>
-        </section>
+        {documentReviewPageData?.panel.mode !== "REVIEWER" ? (
+          <section className="border-b border-foreground py-6">
+            <article className="min-w-0">
+              <TaskDescription markdown={task.description} />
+            </article>
+          </section>
+        ) : null}
 
         <TaskDocumentsList taskId={task.id} userId={userId} />
 

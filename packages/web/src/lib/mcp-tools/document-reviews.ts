@@ -133,15 +133,48 @@ export const DOCUMENT_REVIEW_TOOL_DEFINITIONS = [
   {
     name: "applyDocumentProposal",
     description:
-      "Apply a reviewer's separate proposal as a new canonical document revision. Prior exact-revision reviews become stale.",
+      "Apply a reviewer's proposal, or a generic proposal created first as a separate PRIVATE document with createDocument, as a new canonical revision. Generic proposals must identify the exact base and proposal revisions, source comments, and summary. Prior reviews of the canonical document become stale. This does not adopt or publish it.",
     inputSchema: {
       type: "object" as const,
+      additionalProperties: false,
       properties: {
         authorityTaskId: { type: "string" },
-        expectedDocumentVersion: { type: "number" },
+        baseDocumentRevisionId: { type: "string" },
+        expectedDocumentVersion: { type: "integer", minimum: 1 },
+        proposalDocumentRevisionId: { type: "string" },
         reviewTaskId: { type: "string" },
+        sourceCommentIds: {
+          type: "array",
+          items: { type: "string" },
+          minItems: 1,
+          maxItems: 500,
+          uniqueItems: true,
+        },
+        summary: { type: "string" },
       },
-      required: ["authorityTaskId", "expectedDocumentVersion", "reviewTaskId"],
+      required: ["authorityTaskId", "expectedDocumentVersion"],
+      oneOf: [
+        {
+          required: ["reviewTaskId"],
+          not: {
+            anyOf: [
+              { required: ["baseDocumentRevisionId"] },
+              { required: ["proposalDocumentRevisionId"] },
+              { required: ["sourceCommentIds"] },
+              { required: ["summary"] },
+            ],
+          },
+        },
+        {
+          required: [
+            "baseDocumentRevisionId",
+            "proposalDocumentRevisionId",
+            "sourceCommentIds",
+            "summary",
+          ],
+          not: { required: ["reviewTaskId"] },
+        },
+      ],
     },
   },
   {

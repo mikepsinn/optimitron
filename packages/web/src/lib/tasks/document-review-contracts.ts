@@ -97,18 +97,51 @@ export const ReviewResponseV1Schema = z
     }
   });
 
-export const DocumentProposalApplicationV1Schema = z
+export const DocumentProposalSourceCommentV1Schema = z
+  .object({
+    authorNameSnapshot: z.string().nullable(),
+    authorOrganizationId: z.string().trim().min(1).nullable(),
+    authorPersonId: z.string().trim().min(1).nullable(),
+    authorUserId: z.string().trim().min(1).nullable(),
+    commentId: z.string().trim().min(1),
+    contentHash: z.string().trim().min(1).max(256),
+    createdAt: z.string().datetime(),
+    editedAt: z.string().datetime().nullable(),
+    taskId: z.string().trim().min(1),
+  })
+  .strict();
+
+const DocumentProposalApplicationBaseV1Schema = z
   .object({
     appliedAt: z.string().datetime(),
     appliedByUserId: z.string().trim().min(1),
     baseDocument: DocumentRevisionPinSchema,
     resultingDocument: DocumentRevisionPinSchema,
-    reviewArtifactId: z.string().trim().min(1),
-    reviewTaskId: z.string().trim().min(1),
     schema: z.literal("optimitron.document-proposal-application.v1"),
     sourceProposalDocument: DocumentRevisionPinSchema,
   })
   .strict();
+
+export const DocumentProposalApplicationV1Schema = z.union([
+  DocumentProposalApplicationBaseV1Schema.extend({
+    reviewArtifactId: z.string().trim().min(1),
+    reviewTaskId: z.string().trim().min(1),
+  }).strict(),
+  DocumentProposalApplicationBaseV1Schema.extend({
+    proposalCreatorUserId: z.string().trim().min(1),
+    sourceComments: z
+      .array(DocumentProposalSourceCommentV1Schema)
+      .min(1)
+      .max(500)
+      .refine(
+        (comments) =>
+          new Set(comments.map((comment) => comment.commentId)).size ===
+          comments.length,
+        { message: "Source comments must be unique" },
+      ),
+    summary: z.string().trim().min(1).max(20_000),
+  }).strict(),
+]);
 
 export const DocumentDecisionWaiverSchema = z
   .object({
@@ -175,12 +208,33 @@ export const SubmitDocumentReviewInputSchema = z
   })
   .strict();
 
-export const ApplyDocumentProposalInputSchema = z
+const ReviewDocumentProposalInputSchema = z
   .object({
     expectedDocumentVersion: z.number().int().positive(),
     reviewTaskId: z.string().trim().min(1),
   })
   .strict();
+
+const GenericDocumentProposalInputSchema = z
+  .object({
+    baseDocumentRevisionId: z.string().trim().min(1),
+    expectedDocumentVersion: z.number().int().positive(),
+    proposalDocumentRevisionId: z.string().trim().min(1),
+    sourceCommentIds: z
+      .array(z.string().trim().min(1))
+      .min(1)
+      .max(500)
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: "Source comment IDs must be unique",
+      }),
+    summary: z.string().trim().min(1).max(20_000),
+  })
+  .strict();
+
+export const ApplyDocumentProposalInputSchema = z.union([
+  ReviewDocumentProposalInputSchema,
+  GenericDocumentProposalInputSchema,
+]);
 
 export const AdoptDocumentRevisionInputSchema = z
   .object({
@@ -191,6 +245,9 @@ export const AdoptDocumentRevisionInputSchema = z
   .strict();
 
 export type DocumentRevisionPin = z.infer<typeof DocumentRevisionPinSchema>;
+export type DocumentProposalSourceCommentV1 = z.infer<
+  typeof DocumentProposalSourceCommentV1Schema
+>;
 export type ReviewRequestV1 = z.infer<typeof ReviewRequestV1Schema>;
 export type ReviewResponseV1 = z.infer<typeof ReviewResponseV1Schema>;
 export type DocumentProposalApplicationV1 = z.infer<
@@ -266,10 +323,15 @@ export function assertReviewResponseMatchesRequest(
   if (unknown) {
     throw new Error(`Unknown review criterion: ${unknown.criterionId}`);
   }
-  const missing = request.checklist.find(
-    (item) => item.required && !responses.has(item.id),
-  );
-  if (missing) {
-    throw new Error(`Required review criterion not answered: ${missing.id}`);
+  const failedApprovalCriterion =
+    response.verdict === "APPROVE"
+      ? request.checklist.find(
+          (item) => item.required && responses.get(item.id)?.result !== "PASS",
+        )
+      : undefined;
+  if (failedApprovalCriterion) {
+    throw new Error(
+      `Required approval criterion did not pass: ${failedApprovalCriterion.id}`,
+    );
   }
 }

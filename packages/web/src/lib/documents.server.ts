@@ -12,6 +12,7 @@ import {
 } from "@/lib/content-access.server";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
+import { invalidateDocumentReviewsForDocument } from "@/lib/tasks/document-review-invalidation.server";
 import { hasAssignedDocumentReviewRevisionAccess } from "@/lib/tasks/document-review.server";
 import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
@@ -784,6 +785,9 @@ export async function updateDocument(
       where: { id: current.id },
       data: { currentRevisionId: revision.id },
     });
+    // A completed approval is still approval of the superseded exact revision,
+    // so every non-stale review of this document must become stale atomically.
+    await invalidateDocumentReviewsForDocument(tx, current.id);
   });
 
   const view = await getDocumentForViewer(

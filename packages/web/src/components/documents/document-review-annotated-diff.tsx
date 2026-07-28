@@ -253,7 +253,7 @@ export function DocumentReviewAnnotatedDiff({
           return (
             <button
               aria-label={`Comment on ${row.kind} line ${row.newLineNumber ?? row.oldLineNumber}`}
-              className="border border-foreground bg-background px-2 py-1 text-[0.6875rem] font-semibold text-foreground"
+              className="min-h-10 border border-foreground bg-background px-2 py-1 text-xs font-semibold text-foreground"
               onClick={() => {
                 setDraft("");
                 setError(null);
@@ -261,12 +261,9 @@ export function DocumentReviewAnnotatedDiff({
               }}
               type="button"
             >
-              <span className="sm:hidden">{count > 0 ? count : "Note"}</span>
-              <span className="hidden sm:inline">
-                {count > 0
-                  ? `${count} comment${count === 1 ? "" : "s"}`
-                  : "Comment"}
-              </span>
+              {count > 0
+                ? `${count} comment${count === 1 ? "" : "s"}`
+                : "Comment"}
             </button>
           );
         }}

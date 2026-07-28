@@ -1,4 +1,8 @@
-import { TaskStatus, TaskVerificationResult } from "@optimitron/db/enums";
+import {
+  ContentAccessLevel,
+  TaskStatus,
+  TaskVerificationResult,
+} from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -24,6 +28,7 @@ const mocks = vi.hoisted(() => ({
     personFindFirst: vi.fn(),
     queryRaw: vi.fn(),
     taskCreate: vi.fn(),
+    taskCommentFindMany: vi.fn(),
     taskExecutionArtifactCreate: vi.fn(),
     taskExecutionAttemptCreate: vi.fn(),
     taskExecutionAttemptFindFirst: vi.fn(),
@@ -56,6 +61,7 @@ function transactionClient() {
       findMany: mocks.tx.taskFindMany,
       updateMany: mocks.tx.taskUpdateMany,
     },
+    taskComment: { findMany: mocks.tx.taskCommentFindMany },
     taskExecutionArtifact: {
       create: mocks.tx.taskExecutionArtifactCreate,
     },
@@ -147,9 +153,13 @@ function exactRevision(overrides: Record<string, unknown> = {}) {
     createdByUser: { personId: "author_person" },
     createdByUserId: "author_user",
     document: {
+      createdByUserId: "author_user",
       currentRevisionId: TARGET.revisionId,
       id: TARGET.documentId,
+      organizationId: "organization_1",
+      taskId: "authority_task",
       version: TARGET.version,
+      visibility: "PRIVATE",
     },
     documentId: TARGET.documentId,
     id: TARGET.revisionId,
@@ -316,6 +326,39 @@ describe("requestDocumentReview", () => {
     expect(mocks.tx.taskCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects a revision attached to a different authority task", async () => {
+    const revision = exactRevision();
+    revision.document.taskId = "other_task";
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValueOnce(AUTHORITY_TASK);
+    mocks.tx.documentRevisionFindFirst.mockResolvedValue(revision);
+    mocks.tx.personFindFirst.mockResolvedValue({
+      displayName: "Independent reviewer",
+      email: "reviewer@example.test",
+      id: "reviewer_person",
+      user: null,
+    });
+
+    await expect(
+      requestDocumentReview(
+        "authority_task",
+        {
+          checklist: REQUEST.checklist,
+          documentRevisionId: TARGET.revisionId,
+          instructions: REQUEST.instructions,
+          reviewerPersonId: "reviewer_person",
+        },
+        "manager_user",
+        { idempotencyKey: "cross_task_review" },
+      ),
+    ).rejects.toMatchObject({ status: 404 });
+    expect(mocks.lockContentResources).not.toHaveBeenCalled();
+    expect(mocks.tx.taskCreate).not.toHaveBeenCalled();
+  });
+
   it("creates one private assigned child task pinned to the exact revision", async () => {
     mocks.tx.userFindFirst.mockResolvedValue({
       id: "manager_user",
@@ -448,6 +491,7 @@ describe("submitDocumentReview", () => {
         document: {
           currentRevisionId: "revision_2",
           id: TARGET.documentId,
+          taskId: "authority_task",
           version: 2,
         },
       }),
@@ -552,9 +596,13 @@ describe("review access and adoption", () => {
         createdByUser: { personId: "reviewer_person" },
         createdByUserId: "review_1_user",
         document: {
+          createdByUserId: "review_1_user",
           currentRevisionId: proposalPin.revisionId,
           id: proposalPin.documentId,
+          organizationId: "organization_1",
+          taskId: "review_1",
           version: 1,
+          visibility: "PRIVATE",
         },
         documentId: proposalPin.documentId,
         id: proposalPin.revisionId,
@@ -605,6 +653,179 @@ describe("review access and adoption", () => {
       data: { status: TaskStatus.STALE },
       where: expect.objectContaining({ deletedAt: null }),
     });
+  });
+
+  it("applies a separate private proposal revision and freezes its comment provenance", async () => {
+    const proposalPin = {
+      contentHash: "proposal_hash",
+      documentId: "proposal_document",
+      revisionId: "proposal_revision",
+      version: 1,
+    };
+    const proposalRevision = {
+      body: "Proposed body",
+      contentHash: proposalPin.contentHash,
+      createdByUser: { personId: "agent_person" },
+      createdByUserId: "agent_user",
+      document: {
+        createdByUserId: "agent_user",
+        currentRevisionId: proposalPin.revisionId,
+        id: proposalPin.documentId,
+        organizationId: "organization_1",
+        taskId: "authority_task",
+        version: 1,
+        visibility: "PRIVATE",
+      },
+      documentId: proposalPin.documentId,
+      id: proposalPin.revisionId,
+      title: "Proposed title",
+      version: 1,
+    };
+    const commentCreatedAt = new Date("2026-07-27T13:00:00.000Z");
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValue(AUTHORITY_TASK);
+    mocks.tx.taskFindMany.mockResolvedValue([]);
+    mocks.tx.taskCommentFindMany.mockResolvedValue([
+      {
+        authorNameSnapshot: "Independent reviewer",
+        authorOrganizationId: null,
+        authorPersonId: "reviewer_person",
+        authorUserId: null,
+        createdAt: commentCreatedAt,
+        editedAt: null,
+        id: "comment_1",
+        message: "Clarify the authority clause.",
+        taskId: "authority_task",
+      },
+    ]);
+    mocks.tx.documentRevisionFindFirst
+      .mockResolvedValueOnce(exactRevision())
+      .mockResolvedValueOnce(proposalRevision)
+      .mockResolvedValueOnce(exactRevision())
+      .mockResolvedValueOnce(proposalRevision);
+    mocks.tx.documentRevisionCreate.mockResolvedValue({
+      id: "canonical_revision_2",
+    });
+    mocks.tx.documentUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.taskExecutionAttemptCreate.mockResolvedValue({
+      id: "application_attempt",
+    });
+    mocks.tx.taskExecutionArtifactCreate.mockResolvedValue({
+      contentHash: "application_hash",
+      id: "application_artifact",
+    });
+
+    const result = await applyDocumentProposal(
+      "authority_task",
+      {
+        baseDocumentRevisionId: TARGET.revisionId,
+        expectedDocumentVersion: 1,
+        proposalDocumentRevisionId: proposalPin.revisionId,
+        sourceCommentIds: ["comment_1"],
+        summary: "Applied the requested clarification.",
+      },
+      "manager_user",
+      { now: new Date("2026-07-27T14:00:00.000Z") },
+    );
+
+    expect(result.application).toMatchObject({
+      baseDocument: TARGET,
+      proposalCreatorUserId: "agent_user",
+      resultingDocument: {
+        documentId: TARGET.documentId,
+        revisionId: "canonical_revision_2",
+        version: 2,
+      },
+      sourceComments: [
+        {
+          authorNameSnapshot: "Independent reviewer",
+          authorOrganizationId: null,
+          authorPersonId: "reviewer_person",
+          authorUserId: null,
+          commentId: "comment_1",
+          contentHash: "test_hash",
+          createdAt: commentCreatedAt.toISOString(),
+          editedAt: null,
+          taskId: "authority_task",
+        },
+      ],
+      sourceProposalDocument: proposalPin,
+      summary: "Applied the requested clarification.",
+    });
+    expect(mocks.sha256CanonicalJson).toHaveBeenCalledWith({
+      authorNameSnapshot: "Independent reviewer",
+      authorOrganizationId: null,
+      authorPersonId: "reviewer_person",
+      authorUserId: null,
+      createdAt: commentCreatedAt.toISOString(),
+      editedAt: null,
+      id: "comment_1",
+      message: "Clarify the authority clause.",
+      taskId: "authority_task",
+    });
+    expect(mocks.tx.taskVerificationCreate).not.toHaveBeenCalled();
+    expect(mocks.tx.taskUpdateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { status: TaskStatus.STALE },
+      }),
+    );
+  });
+
+  it("hides generic proposal state until base edit access is authorized", async () => {
+    const staleBaseRevision = exactRevision();
+    staleBaseRevision.document.currentRevisionId = "revision_2";
+    staleBaseRevision.document.version = 2;
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValue(AUTHORITY_TASK);
+    mocks.tx.documentRevisionFindFirst
+      .mockResolvedValueOnce(staleBaseRevision)
+      .mockResolvedValueOnce({
+        contentHash: "proposal_hash",
+        createdByUserId: "agent_user",
+        document: {
+          currentRevisionId: "proposal_revision",
+          id: "proposal_document",
+          taskId: "authority_task",
+          version: 1,
+          visibility: "PRIVATE",
+        },
+        documentId: "proposal_document",
+        id: "proposal_revision",
+        version: 1,
+      });
+    mocks.assertDocumentAccess.mockRejectedValue(
+      new Error("Content not found"),
+    );
+
+    await expect(
+      applyDocumentProposal(
+        "authority_task",
+        {
+          baseDocumentRevisionId: TARGET.revisionId,
+          expectedDocumentVersion: 1,
+          proposalDocumentRevisionId: "proposal_revision",
+          sourceCommentIds: ["comment_1"],
+          summary: "Apply the requested clarification.",
+        },
+        "manager_user",
+      ),
+    ).rejects.toMatchObject({ status: 404 });
+
+    expect(mocks.assertDocumentAccess).toHaveBeenCalledWith(
+      TARGET.documentId,
+      "manager_user",
+      ContentAccessLevel.EDIT_CONTENT,
+      expect.anything(),
+    );
+    expect(mocks.lockContentResources).not.toHaveBeenCalled();
+    expect(mocks.tx.taskCommentFindMany).not.toHaveBeenCalled();
+    expect(mocks.tx.documentRevisionCreate).not.toHaveBeenCalled();
   });
 
   it("grants document-reader access to only the assigned person's exact pin", async () => {
@@ -663,6 +884,34 @@ describe("review access and adoption", () => {
     ]);
     mocks.tx.taskFindFirst.mockResolvedValue(null);
     mocks.tx.documentRevisionFindFirst.mockResolvedValue(exactRevision());
+
+    await expect(
+      hasAssignedDocumentReviewRevisionAccess({
+        documentId: TARGET.documentId,
+        revisionId: TARGET.revisionId,
+        userId: "reviewer_user",
+      }),
+    ).resolves.toBe(false);
+  });
+
+  it("rejects review-task provenance when the pinned document belongs to another task", async () => {
+    const crossTaskRevision = exactRevision();
+    crossTaskRevision.document.taskId = "other_task";
+    mocks.tx.userFindFirst.mockImplementation(({ where }) =>
+      Promise.resolve(
+        where.id === "reviewer_user"
+          ? { id: "reviewer_user", personId: "reviewer_person" }
+          : { id: "manager_user", personId: "manager_person" },
+      ),
+    );
+    mocks.tx.taskFindMany.mockResolvedValue([
+      reviewTask({
+        reviewerPersonId: "reviewer_person",
+        reviewTaskId: "cross_task_review",
+      }),
+    ]);
+    mocks.tx.taskFindFirst.mockResolvedValue(AUTHORITY_TASK);
+    mocks.tx.documentRevisionFindFirst.mockResolvedValue(crossTaskRevision);
 
     await expect(
       hasAssignedDocumentReviewRevisionAccess({
@@ -877,6 +1126,29 @@ describe("review access and adoption", () => {
         expect.objectContaining({ artifactId: "forged_decision_artifact" }),
       ]),
     });
+  });
+
+  it("rejects adopting a revision attached to a different authority task", async () => {
+    const revision = exactRevision();
+    revision.document.taskId = "other_task";
+    mocks.tx.userFindFirst.mockResolvedValue({
+      id: "manager_user",
+      personId: "manager_person",
+    });
+    mocks.tx.taskFindFirst.mockResolvedValue(AUTHORITY_TASK);
+    mocks.tx.documentRevisionFindFirst.mockResolvedValue(revision);
+
+    await expect(
+      adoptDocumentRevision(
+        "authority_task",
+        { documentRevisionId: TARGET.revisionId, waivers: [] },
+        "manager_user",
+        { idempotencyKey: "cross_task_decision" },
+      ),
+    ).rejects.toMatchObject({ status: 404 });
+    expect(mocks.lockContentResources).not.toHaveBeenCalled();
+    expect(mocks.tx.taskFindMany).not.toHaveBeenCalled();
+    expect(mocks.tx.taskExecutionArtifactCreate).not.toHaveBeenCalled();
   });
 
   it("requires a reasoned waiver for every unresolved required review", async () => {

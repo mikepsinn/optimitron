@@ -25,6 +25,7 @@ import {
   DocumentDecisionV1Schema,
   type DocumentDecisionV1,
   DocumentProposalApplicationV1Schema,
+  type DocumentProposalSourceCommentV1,
   type DocumentRevisionPin,
   RequestDocumentReviewInputSchema,
   type ReviewRequestV1,
@@ -49,6 +50,7 @@ import {
   documentReviewBindingMatches,
   hashDocumentReviewBinding,
 } from "@/lib/tasks/document-review-binding.server";
+import { invalidateDocumentReviewsForDocument } from "@/lib/tasks/document-review-invalidation.server";
 
 const REVIEW_RESPONSE_ARTIFACT_KIND = "document-review-response";
 const PROPOSAL_APPLICATION_ARTIFACT_KIND = "document-proposal-application";
@@ -370,9 +372,13 @@ async function loadExactRevision(
       createdByUserId: true,
       document: {
         select: {
+          createdByUserId: true,
           currentRevisionId: true,
           id: true,
+          organizationId: true,
+          taskId: true,
           version: true,
+          visibility: true,
         },
       },
       documentId: true,
@@ -383,6 +389,61 @@ async function loadExactRevision(
   });
   if (!revision?.contentHash) notFound();
   return revision;
+}
+
+async function createPrivateProposalDocument(
+  tx: Prisma.TransactionClient,
+  input: {
+    body: string;
+    createdByUserId: string;
+    idempotencyKey?: string;
+    jurisdictionId: string | null;
+    organizationId?: string | null;
+    requestHash?: string;
+    taskId: string;
+    title: string;
+  },
+): Promise<DocumentRevisionPin> {
+  const proposal = await tx.document.create({
+    data: {
+      createdByUserId: input.createdByUserId,
+      idempotencyKey: input.idempotencyKey,
+      jurisdictionId: input.jurisdictionId,
+      organizationId: input.organizationId,
+      requestHash: input.requestHash,
+      searchText: `${input.title}\n${input.body}`,
+      taskId: input.taskId,
+      title: input.title,
+      version: 0,
+      visibility: ContentVisibility.PRIVATE,
+    },
+    select: { id: true },
+  });
+  const contentHash = await sha256CanonicalJson({
+    body: input.body,
+    title: input.title,
+  });
+  const proposalRevision = await tx.documentRevision.create({
+    data: {
+      body: input.body,
+      contentHash,
+      createdByUserId: input.createdByUserId,
+      documentId: proposal.id,
+      title: input.title,
+      version: 1,
+    },
+    select: { id: true },
+  });
+  await tx.document.update({
+    where: { id: proposal.id },
+    data: { currentRevisionId: proposalRevision.id, version: 1 },
+  });
+  return {
+    contentHash,
+    documentId: proposal.id,
+    revisionId: proposalRevision.id,
+    version: 1,
+  };
 }
 
 export async function requestDocumentReview(
@@ -474,7 +535,12 @@ export async function requestDocumentReview(
             createdByUser: { select: { personId: true } },
             createdByUserId: true,
             document: {
-              select: { currentRevisionId: true, id: true, version: true },
+              select: {
+                currentRevisionId: true,
+                id: true,
+                taskId: true,
+                version: true,
+              },
             },
             documentId: true,
             id: true,
@@ -493,6 +559,7 @@ export async function requestDocumentReview(
         }),
       ]);
       if (!revision?.contentHash || !reviewer) notFound();
+      if (revision.document.taskId !== authorityTask.id) notFound();
       if (
         revision.document.currentRevisionId !== revision.id ||
         revision.document.version !== revision.version
@@ -549,6 +616,7 @@ export async function requestDocumentReview(
           document: {
             currentRevisionId: revision.id,
             deletedAt: null,
+            taskId: authorityTask.id,
             version: revision.version,
           },
         },
@@ -689,39 +757,14 @@ export async function submitDocumentReview(
 
     let proposalDocument: DocumentRevisionPin | undefined;
     if (input.proposal) {
-      const proposal = await tx.document.create({
-        data: {
-          createdByUserId: actor.id,
-          searchText: `${input.proposal.title}\n${input.proposal.body}`,
-          taskId: task.id,
-          title: input.proposal.title,
-          version: 0,
-          visibility: ContentVisibility.PRIVATE,
-        },
-        select: { id: true },
+      proposalDocument = await createPrivateProposalDocument(tx, {
+        body: input.proposal.body,
+        createdByUserId: actor.id,
+        jurisdictionId: task.jurisdictionId,
+        organizationId: task.ownerOrganizationId,
+        taskId: task.id,
+        title: input.proposal.title,
       });
-      const contentHash = await sha256CanonicalJson(input.proposal);
-      const proposalRevision = await tx.documentRevision.create({
-        data: {
-          body: input.proposal.body,
-          contentHash,
-          createdByUserId: actor.id,
-          documentId: proposal.id,
-          title: input.proposal.title,
-          version: 1,
-        },
-        select: { id: true },
-      });
-      await tx.document.update({
-        where: { id: proposal.id },
-        data: { currentRevisionId: proposalRevision.id, version: 1 },
-      });
-      proposalDocument = {
-        contentHash,
-        documentId: proposal.id,
-        revisionId: proposalRevision.id,
-        version: 1,
-      };
     }
 
     const response = ReviewResponseV1Schema.parse({
@@ -928,6 +971,7 @@ async function hasValidReviewTaskProvenance(
       select: {
         createdByUser: { select: { personId: true } },
         createdByUserId: true,
+        document: { select: { taskId: true } },
         documentId: true,
       },
     }),
@@ -937,6 +981,7 @@ async function hasValidReviewTaskProvenance(
     !revision ||
     authorityTask.ownerOrganizationId !== task.ownerOrganizationId ||
     authorityTask.jurisdictionId !== task.jurisdictionId ||
+    revision.document.taskId !== request.authorityTaskId ||
     revision.createdByUser.personId === task.assigneePersonId
   ) {
     return false;
@@ -954,6 +999,133 @@ async function hasValidReviewTaskProvenance(
   return true;
 }
 
+async function snapshotAuthorizedProposalSourceComments(
+  tx: Prisma.TransactionClient,
+  input: {
+    actor: { id: string; personId: string | null };
+    authorityTaskId: string;
+    baseDocument: DocumentRevisionPin;
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    sourceCommentIds: string[];
+  },
+): Promise<DocumentProposalSourceCommentV1[]> {
+  const candidateReviewTasks = await tx.task.findMany({
+    where: {
+      deletedAt: null,
+      parentTaskId: input.authorityTaskId,
+      AND: [
+        {
+          contextJson: {
+            equals: input.baseDocument.documentId,
+            path: [DOCUMENT_REVIEW_CONTEXT_KEY, "target", "documentId"],
+          },
+        },
+        {
+          contextJson: {
+            equals: input.baseDocument.revisionId,
+            path: [DOCUMENT_REVIEW_CONTEXT_KEY, "target", "revisionId"],
+          },
+        },
+        {
+          contextJson: {
+            equals: input.baseDocument.version,
+            path: [DOCUMENT_REVIEW_CONTEXT_KEY, "target", "version"],
+          },
+        },
+        {
+          contextJson: {
+            equals: input.baseDocument.contentHash,
+            path: [DOCUMENT_REVIEW_CONTEXT_KEY, "target", "contentHash"],
+          },
+        },
+      ],
+    },
+    select: reviewTaskWithResultsSelect,
+  });
+  const validSourceTaskIds = new Set<string>([input.authorityTaskId]);
+  for (const reviewTask of candidateReviewTasks) {
+    const request = readReviewRequest(reviewTask.contextJson);
+    if (
+      request &&
+      sameDocumentRevisionPin(request.target, input.baseDocument) &&
+      (await hasValidReviewTaskProvenance(tx, reviewTask, request))
+    ) {
+      validSourceTaskIds.add(reviewTask.id);
+    }
+  }
+
+  const sourceComments = await tx.taskComment.findMany({
+    where: {
+      deletedAt: null,
+      hiddenByCurator: false,
+      id: { in: input.sourceCommentIds },
+      task: {
+        AND: [
+          { deletedAt: null, id: { in: [...validSourceTaskIds] } },
+          getTaskAccessWhere({
+            action: "COMMENT",
+            personId: input.actor.personId,
+            userId: input.actor.id,
+          }),
+          getTaskAccessWhere({
+            action: "READ_INTERNAL",
+            personId: input.actor.personId,
+            userId: input.actor.id,
+          }),
+          ...(input.clientAccessBoundary
+            ? [getTaskClientAccessWhere(input.clientAccessBoundary)]
+            : []),
+        ],
+      },
+    },
+    select: {
+      authorNameSnapshot: true,
+      authorOrganizationId: true,
+      authorPersonId: true,
+      authorUserId: true,
+      createdAt: true,
+      editedAt: true,
+      id: true,
+      message: true,
+      taskId: true,
+    },
+  });
+  if (sourceComments.length !== input.sourceCommentIds.length) notFound();
+  const commentsById = new Map(
+    sourceComments.map((comment) => [comment.id, comment]),
+  );
+
+  return Promise.all(
+    input.sourceCommentIds.map(async (commentId) => {
+      const comment = commentsById.get(commentId);
+      if (!comment) notFound();
+      const createdAt = comment.createdAt.toISOString();
+      const editedAt = comment.editedAt?.toISOString() ?? null;
+      return {
+        authorNameSnapshot: comment.authorNameSnapshot,
+        authorOrganizationId: comment.authorOrganizationId,
+        authorPersonId: comment.authorPersonId,
+        authorUserId: comment.authorUserId,
+        commentId: comment.id,
+        contentHash: await sha256CanonicalJson({
+          authorNameSnapshot: comment.authorNameSnapshot,
+          authorOrganizationId: comment.authorOrganizationId,
+          authorPersonId: comment.authorPersonId,
+          authorUserId: comment.authorUserId,
+          createdAt,
+          editedAt,
+          id: comment.id,
+          message: comment.message,
+          taskId: comment.taskId,
+        }),
+        createdAt,
+        editedAt,
+        taskId: comment.taskId,
+      };
+    }),
+  );
+}
+
 export async function applyDocumentProposal(
   authorityTaskId: string,
   rawInput: unknown,
@@ -969,57 +1141,193 @@ export async function applyDocumentProposal(
       actorUserId,
       options.clientAccessBoundary,
     );
-    const reviewTask = await tx.task.findFirst({
-      where: taskBoundaryWhere(
-        input.reviewTaskId,
-        options.clientAccessBoundary,
-      ),
-      select: reviewTaskWithResultsSelect,
-    });
-    const request = readReviewRequest(reviewTask?.contextJson);
-    const result =
-      reviewTask && request
-        ? findReviewResponse(reviewTask.executionAttempts, {
-            assigneePersonId: reviewTask.assigneePersonId,
-            request,
-            reviewTaskId: reviewTask.id,
-          })
-        : null;
-    if (
-      !reviewTask ||
-      !request ||
-      !(await hasValidReviewTaskProvenance(tx, reviewTask, request)) ||
-      request.authorityTaskId !== authorityTask.id ||
-      reviewTask.parentTaskId !== authorityTask.id ||
-      !result?.response.proposalDocument ||
-      result.submittedByUserId == null ||
-      result.submittedByUserId === actor.id ||
-      result.verification?.result !== TaskVerificationResult.ACCEPTED ||
-      result.verification.reviewerUserId == null ||
-      result.verification.reviewerUserId === result.submittedByUserId ||
-      result.verification.selfReviewed
-    ) {
-      notFound();
+    let baseDocument: DocumentRevisionPin;
+    let proposalAuthorUserId: string;
+    let proposalTaskId: string;
+    let sourceProposalDocument: DocumentRevisionPin;
+    let reviewSource: {
+      reviewArtifactId: string;
+      reviewTaskId: string;
+    } | null = null;
+    let genericSourceInput: {
+      sourceCommentIds: string[];
+      summary: string;
+    } | null = null;
+    let requireProposalDocumentCreatorMatch = false;
+
+    if ("reviewTaskId" in input) {
+      const reviewTask = await tx.task.findFirst({
+        where: taskBoundaryWhere(
+          input.reviewTaskId,
+          options.clientAccessBoundary,
+        ),
+        select: reviewTaskWithResultsSelect,
+      });
+      const request = readReviewRequest(reviewTask?.contextJson);
+      const result =
+        reviewTask && request
+          ? findReviewResponse(reviewTask.executionAttempts, {
+              assigneePersonId: reviewTask.assigneePersonId,
+              request,
+              reviewTaskId: reviewTask.id,
+            })
+          : null;
+      if (
+        !reviewTask ||
+        !request ||
+        !(await hasValidReviewTaskProvenance(tx, reviewTask, request)) ||
+        request.authorityTaskId !== authorityTask.id ||
+        reviewTask.parentTaskId !== authorityTask.id ||
+        !result?.response.proposalDocument ||
+        result.submittedByUserId == null ||
+        result.submittedByUserId === actor.id ||
+        result.verification?.result !== TaskVerificationResult.ACCEPTED ||
+        result.verification.reviewerUserId == null ||
+        result.verification.reviewerUserId === result.submittedByUserId ||
+        result.verification.selfReviewed
+      ) {
+        notFound();
+      }
+      validateChecklistResponse(result.response, request);
+      baseDocument = request.target;
+      proposalAuthorUserId = result.submittedByUserId;
+      proposalTaskId = reviewTask.id;
+      sourceProposalDocument = result.response.proposalDocument;
+      reviewSource = {
+        reviewArtifactId: result.artifactId,
+        reviewTaskId: reviewTask.id,
+      };
+      requireProposalDocumentCreatorMatch = true;
+    } else {
+      const [initialBaseRevision, initialProposalRevision] = await Promise.all([
+        tx.documentRevision.findFirst({
+          where: {
+            deletedAt: null,
+            id: input.baseDocumentRevisionId,
+            document: { deletedAt: null },
+          },
+          select: {
+            contentHash: true,
+            createdByUserId: true,
+            document: {
+              select: {
+                currentRevisionId: true,
+                id: true,
+                taskId: true,
+                version: true,
+                visibility: true,
+              },
+            },
+            documentId: true,
+            id: true,
+            version: true,
+          },
+        }),
+        tx.documentRevision.findFirst({
+          where: {
+            deletedAt: null,
+            id: input.proposalDocumentRevisionId,
+            document: { deletedAt: null },
+          },
+          select: {
+            contentHash: true,
+            createdByUserId: true,
+            document: {
+              select: {
+                currentRevisionId: true,
+                id: true,
+                taskId: true,
+                version: true,
+                visibility: true,
+              },
+            },
+            documentId: true,
+            id: true,
+            version: true,
+          },
+        }),
+      ]);
+      if (!initialBaseRevision?.contentHash) {
+        notFound();
+      }
+      await assertDocumentPermission(
+        initialBaseRevision.documentId,
+        actor.id,
+        ContentAccessLevel.EDIT_CONTENT,
+        tx,
+      );
+      if (!initialProposalRevision?.contentHash) notFound();
+      if (
+        initialBaseRevision.document.taskId !== authorityTask.id ||
+        initialProposalRevision.document.taskId !== authorityTask.id ||
+        initialProposalRevision.document.visibility !==
+          ContentVisibility.PRIVATE
+      ) {
+        notFound();
+      }
+      if (
+        initialBaseRevision.documentId === initialProposalRevision.documentId
+      ) {
+        invalid("A proposal must be a separate private document");
+      }
+      if (
+        initialBaseRevision.document.currentRevisionId !==
+          initialBaseRevision.id ||
+        initialBaseRevision.document.version !==
+          input.expectedDocumentVersion ||
+        initialBaseRevision.version !== input.expectedDocumentVersion
+      ) {
+        conflict(
+          "The canonical document changed before the proposal was applied",
+        );
+      }
+      if (
+        initialProposalRevision.document.currentRevisionId !==
+          initialProposalRevision.id ||
+        initialProposalRevision.document.version !==
+          initialProposalRevision.version
+      ) {
+        conflict("The proposed document changed before it was applied");
+      }
+      baseDocument = {
+        contentHash: initialBaseRevision.contentHash,
+        documentId: initialBaseRevision.documentId,
+        revisionId: initialBaseRevision.id,
+        version: initialBaseRevision.version,
+      };
+      proposalAuthorUserId = initialProposalRevision.createdByUserId;
+      proposalTaskId = authorityTask.id;
+      sourceProposalDocument = {
+        contentHash: initialProposalRevision.contentHash,
+        documentId: initialProposalRevision.documentId,
+        revisionId: initialProposalRevision.id,
+        version: initialProposalRevision.version,
+      };
+      genericSourceInput = {
+        sourceCommentIds: input.sourceCommentIds,
+        summary: input.summary,
+      };
     }
-    validateChecklistResponse(result.response, request);
+
+    if (baseDocument.documentId === sourceProposalDocument.documentId) {
+      invalid("A proposal must be a separate private document");
+    }
     await lockContentResources(tx, [
-      { id: request.target.documentId, type: "document" },
-      {
-        id: result.response.proposalDocument.documentId,
-        type: "document",
-      },
+      { id: baseDocument.documentId, type: "document" },
+      { id: sourceProposalDocument.documentId, type: "document" },
     ]);
     await assertDocumentPermission(
-      request.target.documentId,
+      baseDocument.documentId,
       actor.id,
       ContentAccessLevel.EDIT_CONTENT,
       tx,
     );
     const [baseRevision, proposalRevision] = await Promise.all([
-      loadExactRevision(tx, request.target),
-      loadExactRevision(tx, result.response.proposalDocument),
+      loadExactRevision(tx, baseDocument),
+      loadExactRevision(tx, sourceProposalDocument),
     ]);
     if (
+      baseRevision.document.taskId !== authorityTask.id ||
       baseRevision.document.currentRevisionId !== baseRevision.id ||
       baseRevision.document.version !== input.expectedDocumentVersion ||
       baseRevision.version !== input.expectedDocumentVersion
@@ -1029,11 +1337,41 @@ export async function applyDocumentProposal(
       );
     }
     if (
+      proposalRevision.createdByUserId !== proposalAuthorUserId ||
+      proposalRevision.document.taskId !== proposalTaskId ||
+      proposalRevision.document.visibility !== ContentVisibility.PRIVATE ||
       proposalRevision.document.currentRevisionId !== proposalRevision.id ||
-      proposalRevision.document.version !== proposalRevision.version
+      proposalRevision.document.version !== proposalRevision.version ||
+      (requireProposalDocumentCreatorMatch &&
+        proposalRevision.document.createdByUserId !== proposalAuthorUserId)
     ) {
       conflict("The proposed document changed before it was applied");
     }
+
+    let applicationSource:
+      | { reviewArtifactId: string; reviewTaskId: string }
+      | {
+          proposalCreatorUserId: string;
+          sourceComments: DocumentProposalSourceCommentV1[];
+          summary: string;
+        };
+    if (reviewSource) {
+      applicationSource = reviewSource;
+    } else {
+      if (!genericSourceInput) invalid("Proposal source is required");
+      applicationSource = {
+        proposalCreatorUserId: proposalAuthorUserId,
+        sourceComments: await snapshotAuthorizedProposalSourceComments(tx, {
+          actor,
+          authorityTaskId: authorityTask.id,
+          baseDocument,
+          clientAccessBoundary: options.clientAccessBoundary,
+          sourceCommentIds: genericSourceInput.sourceCommentIds,
+        }),
+        summary: genericSourceInput.summary,
+      };
+    }
+
     const nextVersion = baseRevision.version + 1;
     const resultingContentHash = await sha256CanonicalJson({
       body: proposalRevision.body,
@@ -1059,7 +1397,7 @@ export async function applyDocumentProposal(
       },
       data: {
         currentRevisionId: resultingRevision.id,
-        searchText: `${proposalRevision.title}\n${proposalRevision.body}`,
+        searchText: [proposalRevision.title, proposalRevision.body].join("\n"),
         title: proposalRevision.title,
         version: nextVersion,
       },
@@ -1069,30 +1407,20 @@ export async function applyDocumentProposal(
         "The canonical document changed before the proposal was applied",
       );
     }
-    await tx.task.updateMany({
-      where: {
-        deletedAt: null,
-        contextJson: {
-          equals: request.target.revisionId,
-          path: [DOCUMENT_REVIEW_CONTEXT_KEY, "target", "revisionId"],
-        },
-      },
-      data: { status: TaskStatus.STALE },
-    });
+    await invalidateDocumentReviewsForDocument(tx, baseRevision.documentId);
     const application = DocumentProposalApplicationV1Schema.parse({
       appliedAt: now.toISOString(),
       appliedByUserId: actor.id,
-      baseDocument: request.target,
+      baseDocument,
+      ...applicationSource,
       resultingDocument: {
         contentHash: resultingContentHash,
         documentId: baseRevision.documentId,
         revisionId: resultingRevision.id,
         version: nextVersion,
       },
-      reviewArtifactId: result.artifactId,
-      reviewTaskId: reviewTask.id,
       schema: "optimitron.document-proposal-application.v1",
-      sourceProposalDocument: result.response.proposalDocument,
+      sourceProposalDocument,
     });
     const artifact = await createAuditArtifact({
       actor,
@@ -1141,7 +1469,12 @@ export async function adoptDocumentRevision(
         createdByUser: { select: { personId: true } },
         createdByUserId: true,
         document: {
-          select: { currentRevisionId: true, id: true, version: true },
+          select: {
+            currentRevisionId: true,
+            id: true,
+            taskId: true,
+            version: true,
+          },
         },
         documentId: true,
         id: true,
@@ -1149,6 +1482,7 @@ export async function adoptDocumentRevision(
       },
     });
     if (!targetRevision?.contentHash) notFound();
+    if (targetRevision.document.taskId !== authorityTask.id) notFound();
     await lockContentResources(tx, [
       { id: targetRevision.documentId, type: "document" },
     ]);
@@ -1169,6 +1503,7 @@ export async function adoptDocumentRevision(
         currentRevisionId: targetRevision.id,
         deletedAt: null,
         id: targetRevision.documentId,
+        taskId: authorityTask.id,
         version: targetRevision.version,
       },
       select: { id: true },
