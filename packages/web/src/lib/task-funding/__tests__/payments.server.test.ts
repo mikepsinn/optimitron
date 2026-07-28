@@ -10,7 +10,6 @@ import {
 } from "../payments.server";
 
 const mocks = vi.hoisted(() => ({
-  issueReceipt: vi.fn(),
   resolveReceiptBinding: vi.fn(),
   retrievePaymentIntent: vi.fn(),
 }));
@@ -31,7 +30,6 @@ vi.mock("@/lib/stripe", () => ({
 }));
 
 vi.mock("../contribution-receipts.server", () => ({
-  issuePaidContributionReceiptInTransaction: mocks.issueReceipt,
   requireContributionReceiptBinding: vi.fn(),
   resolveContributionReceiptBinding: mocks.resolveReceiptBinding,
   upsertTaskFundingTargetWithReceiptBindingInTransaction: vi.fn(),
@@ -153,8 +151,6 @@ function buildFixture() {
 }
 
 beforeEach(() => {
-  mocks.issueReceipt.mockReset();
-  mocks.issueReceipt.mockResolvedValue({ created: true });
   mocks.retrievePaymentIntent.mockReset();
   mocks.retrievePaymentIntent.mockResolvedValue({
     id: "pi_1",
@@ -163,7 +159,7 @@ beforeEach(() => {
 });
 
 describe("recordTaskFundingCheckoutPaid", () => {
-  it("creates the immutable receipt in the same transaction as PAID", async () => {
+  it("refreshes the funding target after persisting PAID", async () => {
     const fixture = buildFixture();
 
     await recordTaskFundingCheckoutPaid(
@@ -173,28 +169,7 @@ describe("recordTaskFundingCheckoutPaid", () => {
 
     expect(fixture.payment.status).toBe(TaskFundingPaymentStatus.PAID);
     expect(fixture.order.status).toBe(CommerceOrderStatus.PAID);
-    expect(mocks.issueReceipt).toHaveBeenCalledWith("payment_1", fixture.tx, {
-      now: expect.any(Date),
-    });
-  });
-
-  it("rolls PAID and the order back when receipt creation fails", async () => {
-    const fixture = buildFixture();
-    mocks.issueReceipt.mockRejectedValueOnce(
-      new Error("No valid adopted governing revision"),
-    );
-
-    await expect(
-      recordTaskFundingCheckoutPaid(
-        fixture.session as never,
-        fixture.db as never,
-      ),
-    ).rejects.toThrow("No valid adopted governing revision");
-
-    expect(fixture.payment.status).toBe(TaskFundingPaymentStatus.PENDING);
-    expect(fixture.payment.paidAt).toBeNull();
-    expect(fixture.order.status).toBe(CommerceOrderStatus.PENDING_PAYMENT);
-    expect(fixture.order.paidAt).toBeNull();
+    expect(fixture.tx.taskFundingPayment.aggregate).toHaveBeenCalled();
   });
 
   it("preserves the original paid timestamp on webhook replay", async () => {
@@ -211,9 +186,7 @@ describe("recordTaskFundingCheckoutPaid", () => {
     );
 
     expect(fixture.payment.paidAt).toEqual(originalPaidAt);
-    expect(mocks.issueReceipt).toHaveBeenCalledWith("payment_1", fixture.tx, {
-      now: originalPaidAt,
-    });
+    expect(fixture.order.paidAt).toEqual(originalPaidAt);
   });
 
   it("does not let a stale concurrent checkout settlement overwrite the first paid facts", async () => {
@@ -272,10 +245,6 @@ describe("recordTaskFundingCheckoutPaid", () => {
         stripePaymentIntentId: "pi_first",
       });
       expect(fixture.tx.taskFundingPayment.updateMany).toHaveBeenCalledTimes(2);
-      expect(mocks.issueReceipt).toHaveBeenCalledTimes(2);
-      for (const call of mocks.issueReceipt.mock.calls) {
-        expect(call[2]).toEqual({ now: firstPaidAt });
-      }
     } finally {
       vi.useRealTimers();
     }
@@ -341,6 +310,5 @@ describe("recordTaskFundingCheckoutPaid", () => {
 
     expect(fixture.payment.status).toBe(TaskFundingPaymentStatus.REFUNDED);
     expect(fixture.order.status).toBe(CommerceOrderStatus.REFUNDED);
-    expect(mocks.issueReceipt).toHaveBeenCalledTimes(1);
   });
 });

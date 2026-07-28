@@ -21,6 +21,7 @@ import {
   settlePledgeCallPaymentIntent,
   TASK_FUNDING_PLEDGE_SETUP_KIND,
 } from "@/lib/task-funding/escrow.server";
+import { issuePaidContributionReceipt } from "@/lib/task-funding/contribution-receipts.server";
 import {
   recordTaskFundingChargeDisputed,
   recordTaskFundingChargeRefunded,
@@ -180,7 +181,9 @@ function getStripeObjectId(value: string | { id?: string | null } | null | undef
  */
 async function settleTaskFundingCheckoutPaid(session: Stripe.Checkout.Session) {
   const payment = await recordTaskFundingCheckoutPaid(session);
+  if (payment.status !== TaskFundingPaymentStatus.PAID) return;
   await maybeChargeCallablePledges(payment.targetId);
+  await issuePaidContributionReceipt(payment.id);
 }
 
 async function recordStoreOfferPayment(session: Stripe.Checkout.Session) {

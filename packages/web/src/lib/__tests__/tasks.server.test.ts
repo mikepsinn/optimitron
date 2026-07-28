@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindMany: vi.fn(),
+    taskUpdate: vi.fn(),
     personFindFirst: vi.fn(),
     transaction: vi.fn(),
     userFindUnique: vi.fn(),
@@ -51,6 +52,7 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.prisma.taskCreate,
       findFirst: mocks.prisma.taskFindFirst,
       findMany: mocks.prisma.taskFindMany,
+      update: mocks.prisma.taskUpdate,
     },
     person: {
       findFirst: mocks.prisma.personFindFirst,
@@ -92,6 +94,7 @@ import {
   getTaskDetailData,
   getPersonTaskProfileData,
   listTasks,
+  reassignTask,
   searchTasks,
   updateTaskCreatedByUser,
   verifyTask,
@@ -928,6 +931,99 @@ describe("tasks server", () => {
       "Document review tasks can only be changed through document review operations.",
     );
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
+  it("blocks reassignment of service-managed document review tasks", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      id: "user_manager",
+      isAdmin: false,
+      personId: "person_manager",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      contextJson: {
+        documentReview: {
+          authorityTaskId: "authority_task",
+          checklist: [],
+          instructions: "Review the exact revision.",
+          requestedAt: "2026-07-27T12:00:00.000Z",
+          requestedByUserId: "user_manager",
+          required: true,
+          schema: "optimitron.review-request.v1",
+          target: {
+            contentHash: "hash_1",
+            documentId: "document_1",
+            revisionId: "revision_1",
+            version: 1,
+          },
+        },
+      },
+      id: "review_task",
+      isPublic: false,
+    });
+
+    await expect(
+      reassignTask("review_task", "user_manager", {
+        personId: "person_other",
+      }),
+    ).rejects.toThrow(
+      "Document review tasks can only be changed through document review operations.",
+    );
+    expect(mocks.prisma.taskUpdate).not.toHaveBeenCalled();
+  });
+
+  it("blocks generic edits and reassignment of immutable receipt tasks", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      id: "user_manager",
+      isAdmin: false,
+      personId: "person_manager",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      contextJson: null,
+      id: "receipt_task",
+      isPublic: false,
+      taskKey: "task-funding-receipt:payment_1",
+    });
+
+    await expect(
+      updateTaskCreatedByUser("receipt_task", "user_manager", {
+        description: "Rewrite the receipt shell.",
+      }),
+    ).rejects.toThrow("Contribution receipt tasks cannot be changed.");
+    await expect(
+      reassignTask("receipt_task", "user_manager", {
+        personId: "person_other",
+      }),
+    ).rejects.toThrow("Contribution receipt tasks cannot be changed.");
+
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+    expect(mocks.prisma.taskUpdate).not.toHaveBeenCalled();
+  });
+
+  it("continues to reassign ordinary tasks", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      id: "user_manager",
+      isAdmin: false,
+      personId: "person_manager",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      contextJson: null,
+      id: "ordinary_task",
+      isPublic: false,
+    });
+    mocks.prisma.taskUpdate.mockResolvedValue({ id: "ordinary_task" });
+
+    await expect(
+      reassignTask("ordinary_task", "user_manager", {}),
+    ).resolves.toEqual({ id: "ordinary_task" });
+    expect(mocks.prisma.taskUpdate).toHaveBeenCalledWith({
+      data: {
+        assigneeAffiliationSnapshot: null,
+        assigneeOrganizationId: null,
+        assigneePersonId: null,
+        roleTitle: null,
+      },
+      where: { id: "ordinary_task" },
+    });
   });
 
   describe("getTaskDetailData visibility", () => {

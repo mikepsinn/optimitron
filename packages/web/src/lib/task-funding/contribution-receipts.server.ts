@@ -26,7 +26,6 @@ import {
 } from "@/lib/tasks/document-review-contracts";
 import {
   canUserManageTask,
-  canUserViewTask,
   isTaskWithinClientAccessBoundary,
   type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
@@ -362,12 +361,11 @@ export const AppendContributionOutcomeAddendumInputSchema = z
 
 type ContributionReceiptDb = Pick<
   PrismaClient,
-  "$transaction" | "task" | "taskExecutionArtifact"
+  "$transaction" | "task" | "taskExecutionArtifact" | "user"
 >;
 
 export interface ContributionReceiptOptions {
   canManageTask?: typeof canUserManageTask;
-  canViewTask?: typeof canUserViewTask;
   clientAccessBoundary?: TaskClientAccessBoundary;
   db?: ContributionReceiptDb;
   now?: Date;
@@ -1361,9 +1359,9 @@ export async function issueContributionReceipt(
 }
 
 /**
- * Settlement-only entrypoint. The binding is read from the funding target in
- * the same transaction that marks the payment PAID, so a missing or invalid
- * binding rolls the payment state transition back.
+ * Follow-up settlement entrypoint. Call this in a separate transaction after
+ * the PAID state is durable; receipt failures leave payment settlement intact
+ * and can be retried safely.
  */
 export async function issuePaidContributionReceiptInTransaction(
   paymentId: string,
@@ -1386,6 +1384,15 @@ export async function issuePaidContributionReceiptInTransaction(
     binding.issuerUserId,
     tx,
     options,
+  );
+}
+
+export async function issuePaidContributionReceipt(
+  paymentId: string,
+  db: Pick<PrismaClient, "$transaction"> = prisma,
+) {
+  return db.$transaction((tx) =>
+    issuePaidContributionReceiptInTransaction(paymentId, tx),
   );
 }
 
@@ -1555,7 +1562,7 @@ export async function appendContributionOutcomeAddendum(
 }
 
 /**
- * Returns the immutable receipt thread to either its assigned donor or a
+ * Returns the immutable receipt thread to either its recorded donor or a
  * manager of the funded task. Denials deliberately look like missing data.
  */
 export async function getContributionReceiptForViewer(
@@ -1604,18 +1611,7 @@ export async function getContributionReceiptForViewer(
     throw new Error(RECEIPT_NOT_FOUND_MESSAGE);
   }
 
-  const canView = options.canViewTask ?? canUserViewTask;
   const canManage = options.canManageTask ?? canUserManageTask;
-  const [canViewReceipt, canManageFundedTask] = await Promise.all([
-    canView(receiptTask.id, viewerUserId),
-    receiptTask.parentTaskId
-      ? canManage(receiptTask.parentTaskId, viewerUserId)
-      : Promise.resolve(false),
-  ]);
-  if (!canViewReceipt && !canManageFundedTask) {
-    throw new Error(RECEIPT_NOT_FOUND_MESSAGE);
-  }
-
   const receipt = ContributionReceiptV1Schema.parse(
     receiptArtifact.structuredResultJson,
   );
@@ -1628,6 +1624,36 @@ export async function getContributionReceiptForViewer(
   const receiptContentHash = await sha256CanonicalJson(receipt);
   if (receiptArtifact.contentHash !== receiptContentHash) {
     throw new Error("Contribution receipt content hash does not match");
+  }
+
+  const [viewer, donorUser, canManageFundedTask] = await Promise.all([
+    db.user.findFirst({
+      where: { deletedAt: null, id: viewerUserId },
+      select: { id: true, personId: true },
+    }),
+    receipt.contributor.donorUserId
+      ? db.user.findFirst({
+          where: {
+            deletedAt: null,
+            id: receipt.contributor.donorUserId,
+          },
+          select: { id: true, personId: true },
+        })
+      : Promise.resolve(null),
+    receiptTask.parentTaskId
+      ? canManage(receiptTask.parentTaskId, viewerUserId)
+      : Promise.resolve(false),
+  ]);
+  const isRecordedDonor = Boolean(
+    viewer && receipt.contributor.donorUserId === viewerUserId,
+  );
+  const isRecordedDonorPerson = Boolean(
+    viewer?.personId &&
+      donorUser?.personId &&
+      viewer.personId === donorUser.personId,
+  );
+  if (!isRecordedDonor && !isRecordedDonorPerson && !canManageFundedTask) {
+    throw new Error(RECEIPT_NOT_FOUND_MESSAGE);
   }
 
   const addendumArtifacts = await db.taskExecutionArtifact.findMany({

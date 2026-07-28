@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   handlePledgeSetupSessionCompleted: vi.fn(),
   headersGet: vi.fn(),
   isStripeConfigured: vi.fn(),
+  issuePaidContributionReceipt: vi.fn(),
   maybeChargeCallablePledges: vi.fn(),
   recordTaskFundingChargeDisputed: vi.fn(),
   recordTaskFundingChargeRefunded: vi.fn(),
@@ -71,6 +72,10 @@ vi.mock("@/lib/task-funding/payments.server", () => ({
   recordTaskFundingCheckoutFailed: mocks.recordTaskFundingCheckoutFailed,
   recordTaskFundingCheckoutPaid: mocks.recordTaskFundingCheckoutPaid,
   TASK_FUNDING_ORDER_TYPE: "task_funding",
+}));
+
+vi.mock("@/lib/task-funding/contribution-receipts.server", () => ({
+  issuePaidContributionReceipt: mocks.issuePaidContributionReceipt,
 }));
 
 vi.mock("@/lib/task-funding/escrow.server", () => ({
@@ -206,6 +211,7 @@ describe("POST /api/stripe/webhook", () => {
     });
     mocks.recordTaskFundingCheckoutPaid.mockResolvedValue({
       id: "tfp_123",
+      status: "PAID",
       targetId: "target_123",
     });
     mocks.maybeChargeCallablePledges.mockResolvedValue({
@@ -221,8 +227,48 @@ describe("POST /api/stripe/webhook", () => {
     // Paid checkout money counts toward the charging threshold, so the paid
     // path must attempt to call card-backed pledges on the same target.
     expect(mocks.maybeChargeCallablePledges).toHaveBeenCalledWith("target_123");
+    expect(mocks.issuePaidContributionReceipt).toHaveBeenCalledWith("tfp_123");
     expect(mocks.activityCreate).not.toHaveBeenCalled();
     expect(mocks.commerceOrderFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("calls pledges before retryable receipt issuance", async () => {
+    const session = {
+      id: "cs_receipt_retry",
+      metadata: {
+        order_type: "task_funding",
+        task_funding_payment_id: "tfp_retry",
+      },
+      mode: "payment",
+    };
+    mocks.constructEvent.mockReturnValue({
+      data: { object: session },
+      type: "checkout.session.completed",
+    });
+    mocks.recordTaskFundingCheckoutPaid.mockResolvedValue({
+      id: "tfp_retry",
+      status: "PAID",
+      targetId: "target_retry",
+    });
+    mocks.maybeChargeCallablePledges.mockResolvedValue({
+      charged: [],
+      declined: [],
+      fullyFunded: true,
+    });
+    mocks.issuePaidContributionReceipt.mockRejectedValueOnce(
+      new Error("Missing current impact estimate"),
+    );
+
+    const res = await POST(makeWebhookRequest());
+
+    expect(res.status).toBe(500);
+    expect(mocks.recordTaskFundingCheckoutPaid).toHaveBeenCalledWith(session);
+    expect(mocks.maybeChargeCallablePledges).toHaveBeenCalledWith(
+      "target_retry",
+    );
+    expect(mocks.issuePaidContributionReceipt).toHaveBeenCalledWith(
+      "tfp_retry",
+    );
   });
 
   it("routes setup-mode pledge sessions to the pledge setup handler", async () => {

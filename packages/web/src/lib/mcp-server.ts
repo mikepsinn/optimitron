@@ -13155,6 +13155,7 @@ export function createMcpServer(
                   isPublic: true,
                   maxClaims: true,
                   ownerOrganizationId: true,
+                  taskKey: true,
                 },
               });
               if (adminVisibleTask) {
@@ -13196,6 +13197,12 @@ export function createMcpServer(
               return err(
                 "Document review tasks can only be changed through document review operations.",
               );
+            }
+            if (
+              typeof existingTask.taskKey === "string" &&
+              existingTask.taskKey.startsWith("task-funding-receipt:")
+            ) {
+              return err("Contribution receipt tasks cannot be changed.");
             }
             if (a.parentTaskId !== undefined) {
               const parentTaskId = requiredString(

@@ -512,28 +512,47 @@ export default async function TaskDetailPage({
     task.impact.selectedFrame?.estimatedCashCostUsdBase ?? null;
   const hasRealFundingCost =
     fundingFrameCashCostUsd != null && fundingFrameCashCostUsd > 0;
+  const outboundApprovalAuthorityTaskId =
+    documentReviewPageData?.panel.mode === "MANAGER"
+      ? documentReviewPageData.panel.authorityTaskId
+      : task.id;
+  const outboundApprovalTaskIds = Array.from(
+    new Set([
+      outboundApprovalAuthorityTaskId,
+      ...(documentReviewPageData?.panel.mode === "MANAGER"
+        ? documentReviewPageData.panel.reviews.map(
+            (review) => review.reviewTaskId,
+          )
+        : []),
+    ]),
+  );
   const outboundApprovals = userId
     ? (
-        await listExternalActionRequestsForHuman({
-          actorUserId: userId,
-          limit: 500,
-          operation: OUTBOUND_MESSAGE_OPERATION,
-          statuses: [
-            ExternalActionRequestStatus.PENDING,
-            ExternalActionRequestStatus.APPROVED,
-          ],
-        })
-      ).filter(
-        (request): request is typeof request & { status: ApprovableStatus } =>
-          (request.status === ExternalActionRequestStatus.PENDING ||
-            request.status === ExternalActionRequestStatus.APPROVED) &&
-          request.expiresAt > new Date() &&
-          (request.taskId === task.id ||
-            (documentReviewPageData?.panel.mode === "MANAGER" &&
-              documentReviewPageData.panel.reviews.some(
-                (review) => review.reviewTaskId === request.taskId,
-              ))),
+        await Promise.all(
+          outboundApprovalTaskIds.map((taskId) =>
+            listExternalActionRequestsForHuman({
+              actorUserId: userId,
+              limit: 500,
+              operation: OUTBOUND_MESSAGE_OPERATION,
+              statuses: [
+                ExternalActionRequestStatus.PENDING,
+                ExternalActionRequestStatus.APPROVED,
+              ],
+              taskId,
+            }),
+          ),
+        )
       )
+        .flat()
+        .filter(
+          (request): request is typeof request & { status: ApprovableStatus } =>
+            (request.status === ExternalActionRequestStatus.PENDING ||
+              request.status === ExternalActionRequestStatus.APPROVED) &&
+            request.expiresAt > new Date(),
+        )
+        .sort(
+          (left, right) => right.createdAt.getTime() - left.createdAt.getTime(),
+        )
     : [];
 
   return (
@@ -671,7 +690,7 @@ export default async function TaskDetailPage({
         {documentReviewPageData?.panel.mode === "MANAGER" ? (
           <TaskExternalActionApprovals
             approvals={outboundApprovals}
-            authorityTaskId={task.id}
+            authorityTaskId={outboundApprovalAuthorityTaskId}
           />
         ) : null}
 

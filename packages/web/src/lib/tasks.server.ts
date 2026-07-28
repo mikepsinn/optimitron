@@ -2080,6 +2080,7 @@ export async function updateTaskCreatedByUser(
       id: true,
       isPublic: true,
       maxClaims: true,
+      taskKey: true,
     },
   });
 
@@ -2091,6 +2092,9 @@ export async function updateTaskCreatedByUser(
     throw new Error(
       "Document review tasks can only be changed through document review operations.",
     );
+  }
+  if (existingTask.taskKey?.startsWith("task-funding-receipt:")) {
+    throw new Error("Contribution receipt tasks cannot be changed.");
   }
 
   if (existingTask.isPublic && input.isPublic === false) {
@@ -2569,9 +2573,18 @@ export async function reassignTask(
         ...(reviewer.isAdmin ? [{ isPublic: true }] : []),
       ],
     },
-    select: { id: true, isPublic: true },
+    select: { contextJson: true, id: true, isPublic: true, taskKey: true },
   });
   if (!task) throw new Error("Task not found");
+
+  if (readReviewRequest(task.contextJson)) {
+    throw new Error(
+      "Document review tasks can only be changed through document review operations.",
+    );
+  }
+  if (task.taskKey?.startsWith("task-funding-receipt:")) {
+    throw new Error("Contribution receipt tasks cannot be changed.");
+  }
 
   const assigneeOrganization = input.organizationId?.trim()
     ? await prisma.organization.findUniqueOrThrow({

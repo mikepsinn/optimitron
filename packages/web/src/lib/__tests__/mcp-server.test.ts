@@ -5487,6 +5487,32 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("rejects generic updates to immutable contribution receipt tasks", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "task-funding-receipt:payment_1",
+          createdByUserId: "user-1",
+          isPublic: false,
+          taskKey: "task-funding-receipt:payment_1",
+        }),
+      });
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "task-funding-receipt:payment_1",
+          assigneePersonId: "person-other",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toBe(
+        "Contribution receipt tasks cannot be changed.",
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
     it("lets an owner repair a one-off task that was incorrectly left OPEN_MANY", async () => {
       mocks.getTaskDetailData
         .mockResolvedValueOnce({

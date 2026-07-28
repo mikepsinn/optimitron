@@ -15,7 +15,6 @@ import { getTaskPath } from "@/lib/routes";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/url";
 import {
-  issuePaidContributionReceiptInTransaction,
   resolveContributionReceiptBinding,
   upsertTaskFundingTargetWithReceiptBindingInTransaction,
 } from "./contribution-receipts.server";
@@ -607,12 +606,36 @@ export async function recordTaskFundingCheckoutPaid(
         stripePaymentIntentId: current.stripePaymentIntentId,
       },
     });
-    await issuePaidContributionReceiptInTransaction(current.id, tx, {
-      now: current.paidAt,
-    });
-    await refreshTaskFundingTargetStatus(current.targetId, tx);
     return current;
   });
+
+  if (settledPayment.status === TaskFundingPaymentStatus.PAID) {
+    await db.$transaction(async (tx) => {
+      await lockTaskFundingPaymentInTransaction(settledPayment.id, tx);
+      const current = await tx.taskFundingPayment.findUnique({
+        where: { id: settledPayment.id },
+        select: {
+          id: true,
+          paidAt: true,
+          status: true,
+          targetId: true,
+        },
+      });
+      if (
+        !current ||
+        current.status === TaskFundingPaymentStatus.REFUNDED ||
+        current.status === TaskFundingPaymentStatus.DISPUTED
+      ) {
+        return;
+      }
+      if (current.status !== TaskFundingPaymentStatus.PAID || !current.paidAt) {
+        throw new Error(
+          `Task funding payment ${settledPayment.id} did not remain settled.`,
+        );
+      }
+      await refreshTaskFundingTargetStatus(current.targetId, tx);
+    });
+  }
 
   log.info("Task funding payment recorded", {
     paymentId: payment.id,

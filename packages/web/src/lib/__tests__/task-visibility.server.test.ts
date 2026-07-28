@@ -193,11 +193,12 @@ describe("getTaskVisibilityWhere", () => {
     });
 
     // Ordinary organization members may still read ordinary tasks, while
-    // owner/admin branches retain access to private document-review tasks.
+    // owner/admin branches retain access to service-managed private tasks.
     for (const roles of collectMembershipRoleFilters(readable)) {
       expect(roles).toEqual(["OWNER", "ADMIN"]);
     }
     expect(JSON.stringify(readable)).toContain("document-review:");
+    expect(JSON.stringify(readable)).toContain("task-funding-receipt:");
     expect(JSON.stringify(readable)).toContain('"taskKey":null');
     for (const roles of collectMembershipRoleFilters(executable)) {
       expect(roles).toEqual(["OWNER", "ADMIN", "MEMBER"]);
@@ -209,28 +210,15 @@ describe("getTaskVisibilityWhere", () => {
     expect(collectMembershipRoleFilters(manageable)).not.toHaveLength(0);
   });
 
-  it("blocks the generic execution path for document-review tasks", () => {
+  it("blocks generic execution of service-managed private tasks", () => {
     const executable = getTaskAccessWhere({
       action: "EXECUTE",
       personId: "reviewer_person",
       userId: "reviewer_user",
     });
 
-    expect(executable).toMatchObject({
-      AND: [
-        expect.objectContaining({ OR: expect.any(Array) }),
-        {
-          OR: [
-            { taskKey: null },
-            {
-              taskKey: {
-                not: { startsWith: "document-review:" },
-              },
-            },
-          ],
-        },
-      ],
-    });
+    expect(JSON.stringify(executable)).toContain("document-review:");
+    expect(JSON.stringify(executable)).toContain("task-funding-receipt:");
   });
 
   it("defaults to public-only when no visibility is given", () => {

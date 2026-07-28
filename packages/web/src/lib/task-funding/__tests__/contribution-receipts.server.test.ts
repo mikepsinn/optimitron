@@ -281,7 +281,14 @@ function buildFixture() {
       }),
     },
     user: {
-      findFirst: vi.fn(async () => ({ id: "issuer_1", personId: null })),
+      findFirst: vi.fn(
+        async ({ where }: { where: { id: string } }) =>
+          where.id === "donor_user_1" || where.id === "same_person_user"
+            ? { id: where.id, personId: "person_1" }
+            : where.id === "reassigned_user"
+              ? { id: where.id, personId: "person_2" }
+            : { id: where.id, personId: null },
+      ),
     },
   };
   const db = {
@@ -289,17 +296,16 @@ function buildFixture() {
       callback(tx),
     task: tx.task,
     taskExecutionArtifact: tx.taskExecutionArtifact,
+    user: tx.user,
   };
 
   const canManageTask = vi.fn(async () => true);
-  const canViewTask = vi.fn(async () => true);
 
   return {
     artifacts,
     attempts,
     createdTasks,
     canManageTask,
-    canViewTask,
     db,
     payment,
     revisions,
@@ -1017,7 +1023,6 @@ describe("getContributionReceiptForViewer", () => {
       "donor_user_1",
       {
         canManageTask: vi.fn(async () => false),
-        canViewTask: fixture.canViewTask,
         db: fixture.db as never,
       },
     );
@@ -1026,7 +1031,6 @@ describe("getContributionReceiptForViewer", () => {
       "manager_user_1",
       {
         canManageTask: fixture.canManageTask,
-        canViewTask: vi.fn(async () => false),
         db: fixture.db as never,
       },
     );
@@ -1059,9 +1063,69 @@ describe("getContributionReceiptForViewer", () => {
     await expect(
       getContributionReceiptForViewer("payment_1", "stranger_user", {
         canManageTask: vi.fn(async () => false),
-        canViewTask: vi.fn(async () => false),
         db: fixture.db as never,
       }),
     ).rejects.toThrow("Task funding receipt not found");
+  });
+
+  it("does not expose a receipt to an ordinary member of its owner organization", async () => {
+    const fixture = buildFixture();
+    await issueContributionReceipt(
+      {
+        governingDocumentRevisionIds: ["revision_authority", "revision_terms"],
+        paymentId: "payment_1",
+        termsDocumentRevisionId: "revision_terms",
+      },
+      "issuer_1",
+      {
+        canManageTask: fixture.canManageTask,
+        db: fixture.db as never,
+      },
+    );
+
+    // The receipt task is owned by org_1, but ordinary organization membership
+    // is not authority to read another donor's financial receipt.
+    await expect(
+      getContributionReceiptForViewer("payment_1", "org_member_user", {
+        canManageTask: vi.fn(async () => false),
+        db: fixture.db as never,
+      }),
+    ).rejects.toThrow("Task funding receipt not found");
+  });
+
+  it("uses immutable donor identity instead of the mutable task assignee", async () => {
+    const fixture = buildFixture();
+    await issueContributionReceipt(
+      {
+        governingDocumentRevisionIds: ["revision_authority", "revision_terms"],
+        paymentId: "payment_1",
+        termsDocumentRevisionId: "revision_terms",
+      },
+      "issuer_1",
+      {
+        canManageTask: fixture.canManageTask,
+        db: fixture.db as never,
+      },
+    );
+    const receiptTask = fixture.createdTasks.find(
+      (task) => task.id === "task-funding-receipt:payment_1",
+    );
+    expect(receiptTask).toBeDefined();
+    if (receiptTask) receiptTask.assigneePersonId = "person_2";
+
+    await expect(
+      getContributionReceiptForViewer("payment_1", "reassigned_user", {
+        canManageTask: vi.fn(async () => false),
+        db: fixture.db as never,
+      }),
+    ).rejects.toThrow("Task funding receipt not found");
+    await expect(
+      getContributionReceiptForViewer("payment_1", "same_person_user", {
+        canManageTask: vi.fn(async () => false),
+        db: fixture.db as never,
+      }),
+    ).resolves.toMatchObject({
+      receipt: { payment: { paymentId: "payment_1" } },
+    });
   });
 });
