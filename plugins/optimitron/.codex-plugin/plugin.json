@@ -1,0 +1,31 @@
+{
+  "name": "optimitron",
+  "version": "0.1.0",
+  "description": "Choose and complete the highest-value work available to you.",
+  "author": {
+    "name": "Accelerated Medicine Foundation",
+    "email": "m@warondisease.org",
+    "url": "https://optimitron.com"
+  },
+  "homepage": "https://optimitron.com/mcp",
+  "repository": "https://github.com/mikepsinn/optimitron",
+  "license": "MIT",
+  "keywords": ["tasks", "prioritization", "expected-value", "coordination"],
+  "interface": {
+    "displayName": "Optimitron",
+    "shortDescription": "Do the highest-value work available to you.",
+    "longDescription": "Choose work, inspect its expected value and blockers, coordinate execution, and leave an auditable record of what happened.",
+    "developerName": "Accelerated Medicine Foundation",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://optimitron.com",
+    "privacyPolicyURL": "https://optimitron.com/privacy",
+    "termsOfServiceURL": "https://optimitron.com/terms",
+    "defaultPrompt": [
+      "What is the highest-value task available to me?",
+      "Audit my task queue and explain the top bottleneck.",
+      "Help me complete my highest-value task."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}
