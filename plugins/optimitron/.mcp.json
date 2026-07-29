@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "optimitron": {
+      "type": "http",
+      "url": "https://optimitron.com/api/mcp"
+    }
+  }
+}

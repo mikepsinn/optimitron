@@ -32,7 +32,13 @@ function getSecret() {
 }
 
 function getIssuerUrl(): string {
-  // Use NEXTAUTH_URL in dev, or infer from Vercel
+  // OAuth belongs to the Optimitron product even though the same Vercel
+  // deployment serves campaign site variants. Production stays fixed to
+  // the canonical issuer regardless of MCP_OAUTH_ISSUER so a variable
+  // scoped to all Vercel environments cannot move it; the override only
+  // applies to local/preview environments.
+  if (process.env.VERCEL_ENV === "production") return "https://optimitron.com";
+  if (process.env.MCP_OAUTH_ISSUER) return process.env.MCP_OAUTH_ISSUER;
   return (
     process.env.NEXTAUTH_URL ??
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
