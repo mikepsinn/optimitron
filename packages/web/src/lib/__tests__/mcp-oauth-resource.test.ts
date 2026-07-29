@@ -56,6 +56,16 @@ describe("OAuth issuer", () => {
 
     expect(getOAuthMetadata().issuer).toBe(CANONICAL);
   });
+
+  it("ignores a non-empty MCP_OAUTH_ISSUER override in production", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "https://preview.example.com");
+
+    const { getOAuthMetadata } = await import("@/lib/mcp-oauth");
+
+    expect(getOAuthMetadata().issuer).toBe(CANONICAL);
+  });
 });
 
 describe("getProtectedResourceMetadata", () => {
