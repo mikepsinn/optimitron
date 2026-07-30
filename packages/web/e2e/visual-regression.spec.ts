@@ -98,6 +98,12 @@ function buildRouteReviewManifest() {
     name: route.name,
     path: route.path,
     authenticated: route.authenticated === true,
+    required: route.required,
+    requiredProjects: ["default", "visual-mobile"],
+    ...(route.requiredSelector
+      ? { activationSelector: route.requiredSelector }
+      : {}),
+    ...(route.covers?.length ? { covers: route.covers } : {}),
     ...(route.siteVariant ? { siteVariant: route.siteVariant } : {}),
   }));
   const representedStates = new Set(
@@ -121,6 +127,8 @@ function buildRouteReviewManifest() {
           authenticated && hasLoggedOutState ? `${spec.name}-auth` : spec.name,
         path: spec.path,
         authenticated,
+        required: false,
+        requiredProjects: ["default", "visual-mobile"],
       });
       representedStates.add(stateKey);
     }

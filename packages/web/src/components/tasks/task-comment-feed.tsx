@@ -996,6 +996,7 @@ function CommentNode({
           ) : null}
           <span
             className="text-xs font-bold text-muted-foreground"
+            data-volatile="time"
             suppressHydrationWarning
           >
             · {formatRelative(comment.createdAt)}
@@ -1297,7 +1298,7 @@ function ActivityRow({ activity }: { activity: TaskActivityRow }) {
         <span>@{handle}</span>
       )}
       <span>{label}</span>
-      <span className="ml-auto" suppressHydrationWarning>
+      <span className="ml-auto" data-volatile="time" suppressHydrationWarning>
         {formatRelative(activity.createdAt)}
       </span>
     </div>

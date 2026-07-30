@@ -26,7 +26,7 @@
     "typecheck:app": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit --project tsconfig.next.json",
     "typecheck:tests": "cross-env NODE_OPTIONS=--max-old-space-size=6144 tsc --noEmit --project tsconfig.tests.json",
     "typecheck:full": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
-    "test": "pnpm exec vitest run",
+    "test": "node --test scripts/visual-review-coverage.test.mjs && pnpm exec vitest run",
     "generate": "tsx scripts/generate-web-data.ts",
     "fetch": "tsx scripts/fetch-and-generate.ts",
     "causal": "tsx scripts/generate-causal-reports.ts",

@@ -107,6 +107,7 @@ export function DocumentReviewReviewerPanel({
     <section
       aria-labelledby="document-review-heading"
       className="border-b border-foreground py-6"
+      data-document-review-state={isStale ? "stale" : "active"}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>

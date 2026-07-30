@@ -14,6 +14,7 @@ import { renderReviewHtml } from "./visual-review-page.mjs";
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = join(here, "..", "output");
 const htmlPath = join(outDir, "visual-page-smoke.html");
+const coverageHtmlPath = join(outDir, "visual-page-coverage-smoke.html");
 const clientJsPath = join(outDir, "visual-page-smoke.client.js");
 
 const XSS = 'Home <script>alert("xss")</script> & "quotes" \'single\'';
@@ -30,15 +31,31 @@ const input = {
     previewBaseUrl: "https://optimitron-git-feature-preview.vercel.app",
     productionBaseUrl: "https://warondisease.org",
     reviewUrl: "https://mikepsinn.github.io/optimitron/pr-123/abc1234/",
-    baselineDescription: "screenshots vs main @ 871661d, copy vs pre-merge snapshots",
+    baselineDescription:
+      "screenshots vs main @ 871661d, copy vs pre-merge snapshots",
   },
-  summary: { changedRoutes: 2, copyOnlyRoutes: 1, unchangedRoutes: 0, variantRoutes: 1, erroredRoutes: 0, totalRoutes: 4 },
+  summary: {
+    changedRoutes: 2,
+    copyOnlyRoutes: 1,
+    unchangedRoutes: 0,
+    variantRoutes: 1,
+    erroredRoutes: 0,
+    totalRoutes: 4,
+  },
+  coverage: {
+    analysisAvailable: true,
+    blockingIssues: [],
+    changedUiFiles: [],
+    complete: true,
+    coveredUiFiles: [],
+  },
   routes: [
     {
       routeName: "home",
       routeLabel: XSS,
       routePath: "/",
-      routeUrl: "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=reset",
+      routeUrl:
+        "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=reset",
       authState: "logged-out",
       changed: true,
       copyChanged: true,
@@ -47,14 +64,22 @@ const input = {
       markdownDiff: {
         addedLines: 3,
         removedLines: 1,
-        metaChanges: [{ field: "title", before: "Old <title>", after: "New & improved" }],
+        metaChanges: [
+          { field: "title", before: "Old <title>", after: "New & improved" },
+        ],
         lines: [
           { kind: "header", text: "--- a/page.logged-out.md" },
           { kind: "header", text: "+++ b/page.logged-out.md" },
           { kind: "hunk", text: "@@ -1,4 +1,6 @@" },
-          { kind: "context", text: " Humanity still has about 121 spare apocalypses." },
+          {
+            kind: "context",
+            text: " Humanity still has about 121 spare apocalypses.",
+          },
           { kind: "del", text: "-Old line" },
-          { kind: "add", text: "+New line with <script>alert(1)</script> markup" },
+          {
+            kind: "add",
+            text: "+New line with <script>alert(1)</script> markup",
+          },
           { kind: "add", text: "+Another added line" },
         ],
       },
@@ -74,9 +99,24 @@ const input = {
           afterWidth: 1440,
           afterHeight: 4200,
           hunks: [
-            { before: { yStart: 300, yEnd: 520 }, after: { yStart: 300, yEnd: 560 }, kind: "changed", pctOfPage: 5.2 },
-            { before: { yStart: 2000, yEnd: 2000 }, after: { yStart: 2100, yEnd: 2400 }, kind: "inserted", pctOfPage: 7.1 },
-            { before: { yStart: 3600, yEnd: 3700 }, after: { yStart: 3980, yEnd: 3980 }, kind: "deleted", pctOfPage: 0.3 },
+            {
+              before: { yStart: 300, yEnd: 520 },
+              after: { yStart: 300, yEnd: 560 },
+              kind: "changed",
+              pctOfPage: 5.2,
+            },
+            {
+              before: { yStart: 2000, yEnd: 2000 },
+              after: { yStart: 2100, yEnd: 2400 },
+              kind: "inserted",
+              pctOfPage: 7.1,
+            },
+            {
+              before: { yStart: 3600, yEnd: 3700 },
+              after: { yStart: 3980, yEnd: 3980 },
+              kind: "deleted",
+              pctOfPage: 0.3,
+            },
           ],
           alignmentAnchors: [
             { beforeY: 0, afterY: 0 },
@@ -101,7 +141,10 @@ const input = {
           afterWidth: 390,
           afterHeight: 7000,
           hunks: [],
-          alignmentAnchors: [{ beforeY: 0, afterY: 0 }, { beforeY: 7000, afterY: 7000 }],
+          alignmentAnchors: [
+            { beforeY: 0, afterY: 0 },
+            { beforeY: 7000, afterY: 7000 },
+          ],
         },
       ],
     },
@@ -109,7 +152,8 @@ const input = {
       routeName: "calendar",
       routeLabel: "Calendar",
       routePath: "/calendar",
-      routeUrl: "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo&site=reset",
+      routeUrl:
+        "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo&site=reset",
       authState: "demo-logged-in",
       changed: true,
       copyChanged: false,
@@ -162,7 +206,8 @@ const input = {
       routeName: "variant-dfda-home",
       routeLabel: "dfda.earth · Home",
       routePath: "/",
-      routeUrl: "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=dfda",
+      routeUrl:
+        "https://optimitron-git-feature-preview.vercel.app/?logout=1&site=dfda",
       productionUrl: "https://dfda.earth/",
       authState: "logged-out",
       siteVariant: "dfda",
@@ -179,9 +224,24 @@ const input = {
 
 // ---------- render ----------
 const html = renderReviewHtml(input);
+const coverageHtml = renderReviewHtml({
+  ...input,
+  summary: { ...input.summary, changedRoutes: 0 },
+  coverage: {
+    analysisAvailable: true,
+    blockingIssues: [
+      "packages/web/src/app/tasks/[id]/page.tsx: no required visual state is registered for this changed UI source",
+      '<script>alert("coverage")</script>: invalid capture state',
+    ],
+    changedUiFiles: ["packages/web/src/app/tasks/[id]/page.tsx"],
+    complete: false,
+    coveredUiFiles: [],
+  },
+});
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(htmlPath, html, "utf8");
+writeFileSync(coverageHtmlPath, coverageHtml, "utf8");
 
 // ---------- assertions ----------
 const failures = [];
@@ -195,37 +255,98 @@ assert(html.includes("PR #123 review"), "server-rendered header title");
 assert(html.includes('id="review-data"'), "JSON island present");
 assert(html.includes('id="noise"'), "noise select present");
 assert(html.includes('id="export-btn"'), "export button present");
-assert(html.includes("data-live-toggle"), "live-compare toggle keyword in client JS");
+assert(html.includes('id="copy-review-btn"'), "copy PR comment button present");
+assert(
+  html.includes("data-live-toggle"),
+  "live-compare toggle keyword in client JS",
+);
 assert(html.includes("Copy context"), "context copy action present");
-assert(html.includes("Complain"), "complaint issue action present");
-assert(html.includes("Originating PR: #"), "complaint payload preserves originating PR marker");
-assert(!html.includes('<script>alert("xss")</script>'), "route label XSS not raw in HTML");
-assert(!/<script>alert\(1\)<\/script>/.test(html), "copy-diff XSS not raw in HTML");
+assert(html.includes("Open GitHub issue"), "complaint issue action present");
+assert(
+  html.includes("Originating PR: #"),
+  "complaint payload preserves originating PR marker",
+);
+assert(
+  !html.includes('<script>alert("xss")</script>'),
+  "route label XSS not raw in HTML",
+);
+assert(
+  !/<script>alert\(1\)<\/script>/.test(html),
+  "copy-diff XSS not raw in HTML",
+);
 assert(html.includes("\\u003c"), "JSON island escapes < sequences");
-assert(html.includes("2 changed"), "summary chip: changed");
+assert(
+  html.includes("2 screenshot differences"),
+  "summary chip: screenshot differences",
+);
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
 assert(html.includes("4 routes"), "summary chip: total");
+assert(
+  !html.includes("Visual capture contract failed"),
+  "complete review omits coverage failure",
+);
+assert(
+  coverageHtml.includes("0 screenshot differences"),
+  "coverage failure preserves screenshot-diff count",
+);
+assert(
+  coverageHtml.includes("capture contract failed · 0/1 UI files"),
+  "coverage failure chip",
+);
+assert(
+  coverageHtml.includes("Visual capture contract failed"),
+  "coverage failure heading",
+);
+assert(
+  coverageHtml.includes("the visual-review check must fail"),
+  "coverage failure explains the gate",
+);
+assert(
+  coverageHtml.includes("packages/web/src/app/tasks/[id]/page.tsx"),
+  "coverage failure lists blocking UI file",
+);
+assert(
+  !coverageHtml.includes('<script>alert("coverage")</script>'),
+  "coverage file XSS not raw in HTML",
+);
 
 // ---------- extract inline JS and node --check it ----------
 const scripts = [];
 const re = /<script(?![^>]*application\/json)[^>]*>([\s\S]*?)<\/script>/g;
 let m;
 while ((m = re.exec(html)) !== null) scripts.push(m[1]);
-assert(scripts.length === 1, "exactly one inline client <script> (got " + scripts.length + ")");
+assert(
+  scripts.length === 1,
+  "exactly one inline client <script> (got " + scripts.length + ")",
+);
 
 const clientJs = scripts.join("\n;\n");
 writeFileSync(clientJsPath, clientJs, "utf8");
 
-const check = spawnSync(process.execPath, ["--check", clientJsPath], { encoding: "utf8" });
-assert(check.status === 0, "node --check on extracted client JS: " + (check.stderr || "").trim());
+const check = spawnSync(process.execPath, ["--check", clientJsPath], {
+  encoding: "utf8",
+});
+assert(
+  check.status === 0,
+  "node --check on extracted client JS: " + (check.stderr || "").trim(),
+);
 
 // JSON island round-trips
 try {
-  const island = /<script type="application\/json" id="review-data">([\s\S]*?)<\/script>/.exec(html);
+  const island =
+    /<script type="application\/json" id="review-data">([\s\S]*?)<\/script>/.exec(
+      html,
+    );
   const parsed = JSON.parse(island[1]);
   assert(parsed.routes.length === 4, "JSON island round-trips (routes)");
-  assert(parsed.routes[0].pairs[0].hunks.length === 3, "JSON island round-trips (hunks)");
-  assert(parsed.routes[0].routeLabel === XSS, "JSON island preserves raw strings");
+  assert(
+    parsed.routes[0].pairs[0].hunks.length === 3,
+    "JSON island round-trips (hunks)",
+  );
+  assert(
+    parsed.routes[0].routeLabel === XSS,
+    "JSON island preserves raw strings",
+  );
 } catch (err) {
   failures.push("JSON island parse failed: " + err.message);
 }
@@ -234,6 +355,7 @@ try {
 const summary = {
   ok: failures.length === 0,
   htmlPath,
+  coverageHtmlPath,
   htmlBytes: Buffer.byteLength(html, "utf8"),
   clientJsPath,
   clientJsBytes: Buffer.byteLength(clientJs, "utf8"),
