@@ -8,13 +8,13 @@ import { ParameterValue } from "@/components/shared/ParameterValue";
 export function TreatyTradeThesis() {
   return (
     <>
-      humanity should redirect one percent of military spending from weapons
-      capable of causing{" "}
+      humanity should trade one of its{" "}
       <ParameterValue
         param={NUCLEAR_WINTER_OVERKILL_FACTOR}
         display="integer"
       />{" "}
-      apocalypses to compress the disease-eradication timeline from{" "}
+      apocalypses of mass-murder capacity to compress the disease-eradication
+      timeline from{" "}
       <ParameterValue
         param={STATUS_QUO_QUEUE_CLEARANCE_YEARS}
         display="integer"

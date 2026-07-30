@@ -46,13 +46,13 @@ function FooterBrandDescription({
 
   return (
     <>
-      Humanity maintains weapons capable of causing{" "}
+      Let&apos;s trade one apocalypse out of humanity&apos;s{" "}
       <ParameterValue
         className="font-black text-foreground"
         display="integer"
         param={NUCLEAR_WINTER_OVERKILL_FACTOR}
       />
-      {" "}apocalypses. Let&apos;s trade one for disease eradication in{" "}
+      -apocalypse mass-murder capacity for disease eradication in{" "}
       <ParameterValue
         className="font-black text-foreground"
         display="integer"

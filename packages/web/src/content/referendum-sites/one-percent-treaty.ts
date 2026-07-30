@@ -29,7 +29,7 @@ const dfdaQueueYears = Math.round(
 ).toLocaleString("en-US");
 const campaignName = CAMPAIGN_NAME;
 const treatyReduction = fmtParamValueOnly(TREATY_REDUCTION_PCT, 1);
-const treatyTradePosition = `humanity should redirect one percent of military spending from weapons capable of causing ${apocalypseCount} apocalypses to compress the disease-eradication timeline from ${statusQuoQueueYears} years to ${dfdaQueueYears} years`;
+const treatyTradePosition = `humanity should trade one of its ${apocalypseCount} apocalypses of mass-murder capacity to compress the disease-eradication timeline from ${statusQuoQueueYears} years to ${dfdaQueueYears} years`;
 
 const onePercentTreatyMessageCatalog: OnePercentTreatyMessageCatalog =
   messages.onePercentTreaty;

@@ -500,8 +500,8 @@ export default async function ShirtPage() {
               </h2>
               <p className="mt-4 text-base font-bold leading-7 text-foreground">
                 If 1 billion humans wear this shirt on the same day, humanity is
-                forced to discuss the fact that it currently maintains weapons
-                capable of causing{" "}
+                forced to discuss the fact that it currently maintains
+                sufficient mass-murder capacity to cause{" "}
                 <ParameterValue
                   className="font-black"
                   param={NUCLEAR_WINTER_OVERKILL_FACTOR}

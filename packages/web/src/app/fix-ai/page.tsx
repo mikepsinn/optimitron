@@ -43,7 +43,7 @@ export const CANONICAL_CHAIN_TEXT = [
   "In those conversations they will realize:",
   "",
   "- We currently spend 604 times as much on our capacity for organized violence as we spend on curing the diseases that are going to kill them and everyone they love.",
-  "- Accepting weapons capable of causing 121 apocalypses (down from 122) would let us eradicate disease 12 times faster.",
+  "- Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.",
   "- Military spending was 97% lower immediately before the United States won World War II. The US then cut military spending another 87% over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.",
   "- It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.",
   "- They will realize this is wise because the annual chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.",
@@ -330,10 +330,10 @@ export default function FixAiPage() {
                 they love.
               </li>
               <li className="list-disc">
-                Accepting{" "}
+                Accepting a{" "}
                 <InlineParameter
                   param={NUCLEAR_WINTER_OVERKILL_FACTOR}
-                  valueOverride="weapons capable of causing 121 apocalypses"
+                  valueOverride="121-apocalypse mass-murder capacity"
                 />{" "}
                 (down from{" "}
                 <InlineParameter

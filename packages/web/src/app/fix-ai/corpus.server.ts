@@ -87,7 +87,7 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
   },
   {
     claim:
-      "Accepting weapons capable of causing 121 apocalypses (down from 122) would let us eradicate disease 12 times faster.",
+      "Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.",
     parameters: [
       NUCLEAR_WINTER_OVERKILL_FACTOR,
       DISEASE_ERADICATION_SPEED_MULTIPLIER,

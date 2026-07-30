@@ -62,7 +62,7 @@ import { OPTIMITRON_CANONICAL_ORIGIN } from "@optimitron/db/system-identities";
 const apocalypseCount = Math.round(NUCLEAR_WINTER_OVERKILL_FACTOR.value);
 const statusQuoYears = Math.round(STATUS_QUO_QUEUE_CLEARANCE_YEARS.value);
 const dfdaYears = Math.round(DFDA_QUEUE_CLEARANCE_YEARS.value);
-export const WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION = `Let's trade one apocalypse out of humanity's weapons capable of causing ${apocalypseCount} apocalypses for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`;
+export const WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION = `Let's trade one apocalypse out of humanity's ${apocalypseCount}-apocalypse mass-murder capacity for disease eradication in ${dfdaYears} years instead of ${statusQuoYears}.`;
 
 export { OPTIMITRON_CANONICAL_ORIGIN };
 export const OPTIMITRON_LOCAL_ORIGIN = "http://localhost:3001";
