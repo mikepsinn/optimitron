@@ -1,4 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Prisma } from "@optimitron/db";
+import {
+  DOCUMENT_REVIEW_CONTEXT_KEY,
+  DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+} from "@/lib/tasks/document-review-contracts";
+
+const DOCUMENT_REVIEW_REQUEST_SCHEMA = "optimitron.review-request.v1";
 
 const mocks = vi.hoisted(() => ({
   prisma: {
@@ -153,10 +160,7 @@ describe("getTaskVisibilityWhere", () => {
           ],
         },
         {
-          OR: [
-            { createdByUserId: "user_1" },
-            { assigneePersonId: "person_1" },
-          ],
+          OR: [{ createdByUserId: "user_1" }, { assigneePersonId: "person_1" }],
         },
       ],
     });
@@ -166,10 +170,16 @@ describe("getTaskVisibilityWhere", () => {
     // Walk the where tree and collect membership role filters so the
     // assertion targets the actual query constraint, not string rendering.
     const collectMembershipRoleFilters = (node: unknown): string[][] => {
-      if (Array.isArray(node)) return node.flatMap(collectMembershipRoleFilters);
+      if (Array.isArray(node))
+        return node.flatMap(collectMembershipRoleFilters);
       if (!node || typeof node !== "object") return [];
       return Object.entries(node).flatMap(([key, value]) => {
-        if (key === "role" && value && typeof value === "object" && "in" in value) {
+        if (
+          key === "role" &&
+          value &&
+          typeof value === "object" &&
+          "in" in value
+        ) {
           return [[...(value as { in: string[] }).in]];
         }
         return collectMembershipRoleFilters(value);
@@ -189,8 +199,12 @@ describe("getTaskVisibilityWhere", () => {
       userId: "viewer_1",
     });
 
-    // READ membership is unfiltered by role (viewers may read).
-    expect(collectMembershipRoleFilters(readable)).toEqual([]);
+    // Ordinary members can read ordinary tasks, but only organization
+    // managers can read service-managed review tasks through membership.
+    for (const roles of collectMembershipRoleFilters(readable)) {
+      expect(roles).toEqual(["OWNER", "ADMIN"]);
+    }
+    expect(JSON.stringify(readable)).toContain(DOCUMENT_REVIEW_TASK_KEY_PREFIX);
     for (const roles of collectMembershipRoleFilters(executable)) {
       expect(roles).toEqual(["OWNER", "ADMIN", "MEMBER"]);
     }
@@ -199,6 +213,93 @@ describe("getTaskVisibilityWhere", () => {
     }
     expect(collectMembershipRoleFilters(executable)).not.toHaveLength(0);
     expect(collectMembershipRoleFilters(manageable)).not.toHaveLength(0);
+  });
+
+  it("classifies a task as a document review only when its key and signed context agree", () => {
+    const executable = getTaskAccessWhere({
+      action: "EXECUTE",
+      personId: "reviewer_person",
+      userId: "reviewer_user",
+    });
+
+    expect(executable.AND).toContainEqual({
+      OR: [
+        { taskKey: null },
+        {
+          taskKey: {
+            not: { startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX },
+          },
+        },
+        {
+          AND: [
+            {
+              taskKey: {
+                startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+              },
+            },
+            {
+              OR: [
+                { contextJson: { equals: Prisma.DbNull } },
+                {
+                  contextJson: {
+                    equals: Prisma.AnyNull,
+                    path: [DOCUMENT_REVIEW_CONTEXT_KEY, "schema"],
+                  },
+                },
+                {
+                  NOT: {
+                    contextJson: {
+                      equals: DOCUMENT_REVIEW_REQUEST_SCHEMA,
+                      path: [DOCUMENT_REVIEW_CONTEXT_KEY, "schema"],
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it.each(["EXECUTE", "MANAGE", "VERIFY"] as const)(
+    "blocks generic %s access to document review tasks",
+    (action) => {
+      const where = getTaskAccessWhere({
+        action,
+        personId: "reviewer_person",
+        userId: "reviewer_user",
+      });
+
+      expect(JSON.stringify(where)).toContain(DOCUMENT_REVIEW_TASK_KEY_PREFIX);
+      expect(JSON.stringify(where)).toContain(DOCUMENT_REVIEW_REQUEST_SCHEMA);
+    },
+  );
+
+  it("keeps review tasks readable and commentable by direct collaborators", () => {
+    const readable = getTaskAccessWhere({
+      action: "READ",
+      personId: "reviewer_person",
+      userId: "reviewer_user",
+    });
+    const commentable = getTaskAccessWhere({
+      action: "COMMENT",
+      personId: "reviewer_person",
+      userId: "reviewer_user",
+    });
+
+    expect(readable).toMatchObject({
+      OR: expect.arrayContaining([
+        { createdByUserId: "reviewer_user" },
+        { assigneePersonId: "reviewer_person" },
+      ]),
+    });
+    expect(commentable).toMatchObject({
+      OR: expect.arrayContaining([
+        { createdByUserId: "reviewer_user" },
+        { assigneePersonId: "reviewer_person" },
+      ]),
+    });
   });
 
   it("defaults to public-only when no visibility is given", () => {

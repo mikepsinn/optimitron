@@ -29,6 +29,10 @@ beforeEach(() => {
 
 describe("MCP document tools", () => {
   it("updates and clears document ownership links through the shared server path", async () => {
+    const clientAccessBoundary = {
+      allowPersonalPrivate: false,
+      organizationIds: ["organization_1"],
+    };
     const response = await handleDocumentToolCall({
       args: {
         documentId: "document_1",
@@ -37,6 +41,7 @@ describe("MCP document tools", () => {
         parentDocumentId: null,
         taskId: null,
       },
+      clientAccessBoundary,
       name: "updateDocument",
       userId: "user_1",
     });
@@ -45,16 +50,19 @@ describe("MCP document tools", () => {
     expect(responseBody(response)).toEqual({
       document: { id: "document_1", version: 2 },
     });
-    expect(mocks.updateDocument).toHaveBeenCalledWith({
-      body: null,
-      documentId: "document_1",
-      editorUserId: "user_1",
-      expectedVersion: 1,
-      organizationId: "organization_1",
-      parentDocumentId: null,
-      taskId: null,
-      title: null,
-      visibility: null,
-    });
+    expect(mocks.updateDocument).toHaveBeenCalledWith(
+      {
+        body: null,
+        documentId: "document_1",
+        editorUserId: "user_1",
+        expectedVersion: 1,
+        organizationId: "organization_1",
+        parentDocumentId: null,
+        taskId: null,
+        title: null,
+        visibility: null,
+      },
+      { clientAccessBoundary },
+    );
   });
 });

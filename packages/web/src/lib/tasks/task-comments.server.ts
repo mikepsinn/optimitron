@@ -3,7 +3,11 @@
  * counters (voteScore, upvoteCount, downvoteCount, replyCount) never drift.
  */
 
-import { Prisma } from "@optimitron/db";
+import {
+  Prisma,
+  TaskCommentSource,
+  TaskCommentVisibility,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 import {
   TaskCommentAttachmentInputError,
@@ -90,6 +94,81 @@ async function resolveMentionedUserIds(handles: string[]): Promise<string[]> {
     select: { user: { select: { id: true } } },
   });
   return persons.flatMap((p) => (p.user ? [p.user.id] : []));
+}
+
+/**
+ * Inserts a top-level comment using an existing transaction. Callers own task
+ * authorization and the surrounding state transition.
+ */
+export async function createTopLevelTaskCommentInTransaction(
+  tx: Prisma.TransactionClient,
+  input: {
+    authorUserId: string;
+    citationsJson?: Prisma.InputJsonValue | null;
+    message: string;
+    source?: TaskCommentSource;
+    taskId: string;
+    visibility?: TaskCommentVisibility;
+  },
+) {
+  const message = input.message.trim();
+  if (message.length < MIN_MESSAGE_LENGTH) {
+    throw new Error("Comment message is required");
+  }
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    throw new Error(`Comment exceeds ${MAX_MESSAGE_LENGTH} character limit`);
+  }
+  const handles = parseMentions(message);
+  const mentionedPeople =
+    handles.length === 0
+      ? []
+      : await tx.person.findMany({
+          where: { handle: { in: handles, mode: "insensitive" } },
+          select: { user: { select: { id: true } } },
+        });
+  const mentionedUserIds = mentionedPeople.flatMap((person) =>
+    person.user ? [person.user.id] : [],
+  );
+  const comment = await tx.taskComment.create({
+    data: {
+      authorUserId: input.authorUserId,
+      citationsJson: input.citationsJson ?? Prisma.JsonNull,
+      mentionedUserIds,
+      message,
+      path: "",
+      source: input.source ?? TaskCommentSource.WEB,
+      taskId: input.taskId,
+      visibility: input.visibility ?? TaskCommentVisibility.PUBLIC,
+    },
+    select: {
+      authorNameSnapshot: true,
+      authorOrganizationId: true,
+      authorPersonId: true,
+      authorUserId: true,
+      createdAt: true,
+      editedAt: true,
+      id: true,
+      message: true,
+      taskId: true,
+      version: true,
+    },
+  });
+  return tx.taskComment.update({
+    where: { id: comment.id },
+    data: { path: `/${comment.id}` },
+    select: {
+      authorNameSnapshot: true,
+      authorOrganizationId: true,
+      authorPersonId: true,
+      authorUserId: true,
+      createdAt: true,
+      editedAt: true,
+      id: true,
+      message: true,
+      taskId: true,
+      version: true,
+    },
+  });
 }
 
 /**

@@ -27,6 +27,7 @@ import {
   TaskStatus,
 } from "@optimitron/db/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DOCUMENT_REVIEW_TASK_KEY_PREFIX } from "../tasks/document-review-contracts";
 
 const mocks = vi.hoisted(() => ({
   listTasks: vi.fn(),
@@ -3823,6 +3824,31 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
+    it("reserves document review task keys from proposal bundles", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "proposeTaskBundle",
+        arguments: {
+          candidates: [
+            {
+              description: "A generic proposal cannot impersonate a review.",
+              estimatedEffortHours: 1,
+              parentTaskRef: "$target-root",
+              taskKey: `${DOCUMENT_REVIEW_TASK_KEY_PREFIX}authority:revision:reviewer`,
+              title: "Spoofed document review",
+            },
+          ],
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "reserved document-review namespace",
+      );
+      expect(mocks.taskFindFirst).not.toHaveBeenCalled();
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
     it("reuses a source-identical proposal instead of creating another draft", async () => {
       mocks.taskFindFirst.mockImplementation(
         (args: { where?: { taskKey?: string } }) =>
@@ -4236,6 +4262,23 @@ describe("MCP server tool dispatch", () => {
     });
 
     describe("createTask required-field validation", () => {
+      it("reserves document review task keys for requestDocumentReview", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: makeCreateTaskArguments({
+            taskKey: `${DOCUMENT_REVIEW_TASK_KEY_PREFIX}authority:revision:reviewer`,
+          }),
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).message).toContain(
+          "Use requestDocumentReview",
+        );
+        expect(mocks.taskFindFirst).not.toHaveBeenCalled();
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
       it("rejects when description is missing", async () => {
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
@@ -5439,6 +5482,52 @@ describe("MCP server tool dispatch", () => {
       expect(parseToolBody(result).message).toContain(
         "Updating public tasks requires an admin user",
       );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+    });
+
+    it("rejects generic admin updates to document review tasks", async () => {
+      mocks.getTaskDetailData.mockResolvedValue(null);
+      mocks.taskFindFirst.mockResolvedValue(
+        makeCreatedTask({
+          id: "review-task",
+          isPublic: true,
+          taskKey: `${DOCUMENT_REVIEW_TASK_KEY_PREFIX}authority-1:revision-1:reviewer-1`,
+        }),
+      );
+
+      const client = await setup("admin-1", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: { taskId: "review-task", title: "Nope" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toBe(
+        "Document review tasks can only be changed through document review operations.",
+      );
+      expect(mocks.taskUpdate).not.toHaveBeenCalled();
+      expect(mocks.canUserManageTask).not.toHaveBeenCalled();
+    });
+
+    it("rejects changing an ordinary task into a document review task", async () => {
+      const client = await setup("admin-1", [McpScope.TASKS_ADMIN], {
+        isAdmin: true,
+      });
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          taskId: "ordinary-task",
+          taskKey: `${DOCUMENT_REVIEW_TASK_KEY_PREFIX}authority:revision:reviewer`,
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "Use requestDocumentReview",
+      );
+      expect(mocks.getTaskDetailData).not.toHaveBeenCalled();
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 

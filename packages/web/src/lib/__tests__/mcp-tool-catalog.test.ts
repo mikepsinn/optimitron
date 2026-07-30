@@ -23,12 +23,27 @@ describe("MCP tool catalog", () => {
     }
   });
 
+  it("registers the complete governance review transport", () => {
+    const registered = new Set(getToolDefinitions().map((tool) => tool.name));
+
+    for (const name of [
+      "createDocumentProposal",
+      "applyDocumentProposal",
+      "requestDocumentReview",
+      "submitDocumentReview",
+      "decideDocumentRevision",
+    ]) {
+      expect(registered.has(name)).toBe(true);
+    }
+  });
+
   it("only references real tools in the server instructions", () => {
     // The docs-drift class this prevents: MCP_SERVER.md once documented a
     // phantom updateMilestone tool. Instructions ship to every client on
     // initialize, so every backticked-or-bare tool mention must exist.
     const registered = new Set(getToolDefinitions().map((tool) => tool.name));
-    const mentioned = MCP_SERVER_INSTRUCTIONS.match(/\bget[A-Z]\w+|\b[a-z]+[A-Z]\w+/g) ?? [];
+    const mentioned =
+      MCP_SERVER_INSTRUCTIONS.match(/\bget[A-Z]\w+|\b[a-z]+[A-Z]\w+/g) ?? [];
     const phantom = [...new Set(mentioned)].filter(
       (word) =>
         /^(get|list|create|update|propose|post|claim|complete|search|record|upsert|respond|fire|evaluate)[A-Z]/.test(

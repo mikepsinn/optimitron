@@ -31,6 +31,14 @@ export const API_ROUTES = {
     applications: (id: string) => `/api/tasks/${id}/applications`,
     application: (id: string, applicationId: string) =>
       `/api/tasks/${id}/applications/${applicationId}`,
+    documentReviews: (taskId: string) =>
+      `/api/tasks/${taskId}/document-reviews`,
+    documentReviewResponse: (reviewTaskId: string) =>
+      `/api/tasks/${reviewTaskId}/document-reviews/response`,
+    documentReviewProposal: (authorityTaskId: string) =>
+      `/api/tasks/${authorityTaskId}/document-reviews/proposal`,
+    documentReviewDecision: (authorityTaskId: string) =>
+      `/api/tasks/${authorityTaskId}/document-reviews/decision`,
   },
   documents: {
     root: "/api/documents",
