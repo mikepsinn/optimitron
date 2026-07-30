@@ -9,6 +9,7 @@ import type { DocumentReviewPanelData } from "@/lib/tasks/document-review.server
 
 type ReviewerPanel = Extract<DocumentReviewPanelData, { mode: "REVIEWER" }>;
 type Verdict = "APPROVE" | "CHANGES_REQUESTED" | "REJECT" | "ABSTAIN";
+type IdempotencyState = { fingerprint: string; key: string };
 
 const fieldClassName =
   "w-full rounded-none border border-foreground bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-background";
@@ -48,7 +49,7 @@ export function DocumentReviewReviewerPanel({
   panel: ReviewerPanel;
 }) {
   const router = useRouter();
-  const idempotencyKey = useRef<string | null>(null);
+  const responseIdempotency = useRef<IdempotencyState | null>(null);
   const [feedback, setFeedback] = useState("");
   const [busyVerdict, setBusyVerdict] = useState<Verdict | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,15 +70,22 @@ export function DocumentReviewReviewerPanel({
     }
     setError(null);
     setBusyVerdict(verdict);
-    idempotencyKey.current ??= `document-review-response:${crypto.randomUUID()}`;
+    const body = { explanation, verdict };
+    const fingerprint = JSON.stringify(body);
+    if (responseIdempotency.current?.fingerprint !== fingerprint) {
+      responseIdempotency.current = {
+        fingerprint,
+        key: `document-review-response:${crypto.randomUUID()}`,
+      };
+    }
     try {
       const response = await fetch(
         API_ROUTES.tasks.documentReviewResponse(review.reviewTaskId),
         {
-          body: JSON.stringify({ explanation, verdict }),
+          body: JSON.stringify(body),
           headers: {
             "Content-Type": "application/json",
-            "Idempotency-Key": idempotencyKey.current,
+            "Idempotency-Key": responseIdempotency.current.key,
           },
           method: "POST",
         },

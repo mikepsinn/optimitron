@@ -1,6 +1,11 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/components/markdown/rich-markdown", () => ({
+  RichMarkdown: ({ markdown }: { markdown: string }) => <div>{markdown}</div>,
+}));
+
 import { TaskCommentFeed } from "./task-comment-feed";
 
 function comment({
@@ -48,8 +53,6 @@ function comment({
 
 describe("TaskCommentFeed", () => {
   it("renders replies at arbitrary depth in chronological sibling order", () => {
-    (globalThis as typeof globalThis & { React: typeof React }).React = React;
-
     const comments = [
       comment({
         createdAt: "2026-01-01T00:04:00.000Z",

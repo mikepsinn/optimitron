@@ -12,7 +12,9 @@ const mocks = vi.hoisted(() => ({
   canUserViewTask: vi.fn(),
   getTaskClientAccessWhere: vi.fn(() => ({})),
   invalidateDocumentReviewsForDocument: vi.fn(),
-  isTaskWithinClientAccessBoundary: vi.fn(() => true),
+  isTaskWithinClientAccessBoundary: vi.fn(
+    (_task: unknown, _boundary: unknown) => true,
+  ),
   prisma: {
     documentCreate: vi.fn(),
     documentFindFirst: vi.fn(),
@@ -24,6 +26,7 @@ const mocks = vi.hoisted(() => ({
     documentUpdate: vi.fn(),
     documentUpdateMany: vi.fn(),
     taskFindFirst: vi.fn(),
+    taskFindMany: vi.fn(),
     transaction: vi.fn(),
   },
 }));
@@ -79,7 +82,10 @@ vi.mock("@/lib/prisma", () => ({
       findFirst: mocks.prisma.documentRevisionFindFirst,
       findMany: mocks.prisma.documentRevisionFindMany,
     },
-    task: { findFirst: mocks.prisma.taskFindFirst },
+    task: {
+      findFirst: mocks.prisma.taskFindFirst,
+      findMany: mocks.prisma.taskFindMany,
+    },
   },
 }));
 
@@ -151,6 +157,8 @@ beforeEach(() => {
   mocks.canUserViewTask.mockResolvedValue(true);
   mocks.invalidateDocumentReviewsForDocument.mockReset();
   mocks.invalidateDocumentReviewsForDocument.mockResolvedValue(undefined);
+  mocks.isTaskWithinClientAccessBoundary.mockReset();
+  mocks.isTaskWithinClientAccessBoundary.mockReturnValue(true);
   mocks.prisma.taskFindFirst.mockResolvedValue({
     isPublic: true,
     jurisdictionId: "jurisdiction_1",
@@ -448,5 +456,96 @@ describe("document boundaries", () => {
       ["visible", "private"],
       null,
     );
+  });
+
+  it("batch-checks task boundaries for an unfiltered document list", async () => {
+    mocks.prisma.documentFindMany.mockResolvedValue([
+      {
+        id: "allowed",
+        organizationId: null,
+        taskId: "task_allowed",
+        title: "Allowed",
+        updatedAt: DOCUMENT.updatedAt,
+        version: 1,
+        visibility: "PRIVATE",
+      },
+      {
+        id: "blocked",
+        organizationId: null,
+        taskId: "task_blocked",
+        title: "Blocked",
+        updatedAt: DOCUMENT.updatedAt,
+        version: 1,
+        visibility: "PRIVATE",
+      },
+    ]);
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      {
+        id: "task_allowed",
+        isPublic: false,
+        ownerOrganizationId: "organization_allowed",
+      },
+      {
+        id: "task_blocked",
+        isPublic: false,
+        ownerOrganizationId: "organization_blocked",
+      },
+    ]);
+    mocks.isTaskWithinClientAccessBoundary.mockImplementation(
+      (task: unknown) => (task as { id: string }).id === "task_allowed",
+    );
+    mocks.access.resolveDocumentAccessBatch.mockResolvedValue(
+      new Map([
+        ["allowed", "VIEW"],
+        ["blocked", "VIEW"],
+      ]),
+    );
+
+    const result = await listDocumentsForViewer({
+      clientAccessBoundary: {
+        allowPersonalPrivate: false,
+        organizationIds: ["organization_allowed"],
+      },
+      userId: "viewer_1",
+    });
+
+    expect(result.map((row) => row.id)).toEqual(["allowed"]);
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledOnce();
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        id: { in: ["task_allowed", "task_blocked"] },
+      },
+      select: { id: true, isPublic: true, ownerOrganizationId: true },
+    });
+  });
+
+  it("keeps organization boundaries on a task-filtered document list", async () => {
+    mocks.prisma.documentFindMany.mockResolvedValue([
+      {
+        id: "organization-private",
+        organizationId: "organization_blocked",
+        taskId: "task_1",
+        title: "Organization private",
+        updatedAt: DOCUMENT.updatedAt,
+        version: 1,
+        visibility: "PRIVATE",
+      },
+    ]);
+    mocks.access.resolveDocumentAccessBatch.mockResolvedValue(
+      new Map([["organization-private", "VIEW"]]),
+    );
+
+    const result = await listDocumentsForViewer({
+      clientAccessBoundary: {
+        allowPersonalPrivate: true,
+        organizationIds: [],
+      },
+      taskId: "task_1",
+      userId: "viewer_1",
+    });
+
+    expect(result).toEqual([]);
+    expect(mocks.prisma.taskFindMany).not.toHaveBeenCalled();
   });
 });

@@ -201,7 +201,9 @@ describe("getTaskVisibilityWhere", () => {
 
     // Ordinary members can read ordinary tasks, but only organization
     // managers can read service-managed review tasks through membership.
-    for (const roles of collectMembershipRoleFilters(readable)) {
+    const readableRoleFilters = collectMembershipRoleFilters(readable);
+    expect(readableRoleFilters).not.toHaveLength(0);
+    for (const roles of readableRoleFilters) {
       expect(roles).toEqual(["OWNER", "ADMIN"]);
     }
     expect(JSON.stringify(readable)).toContain(DOCUMENT_REVIEW_TASK_KEY_PREFIX);

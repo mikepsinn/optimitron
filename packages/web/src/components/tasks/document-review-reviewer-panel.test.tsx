@@ -67,6 +67,7 @@ function findButton(container: HTMLElement, label: string) {
 describe("DocumentReviewReviewerPanel", () => {
   let container: HTMLDivElement;
   let fetchMock: ReturnType<typeof vi.fn>;
+  let randomUUIDMock: ReturnType<typeof vi.fn>;
   let root: Root;
 
   beforeEach(() => {
@@ -85,7 +86,11 @@ describe("DocumentReviewReviewerPanel", () => {
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
-    vi.stubGlobal("crypto", { randomUUID: () => "response-key" });
+    randomUUIDMock = vi
+      .fn()
+      .mockReturnValueOnce("response-key-1")
+      .mockReturnValueOnce("response-key-2");
+    vi.stubGlobal("crypto", { randomUUID: randomUUIDMock });
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
@@ -135,6 +140,57 @@ describe("DocumentReviewReviewerPanel", () => {
       explanation: "Cite the source for the central claim.",
       verdict: "CHANGES_REQUESTED",
     });
+  });
+
+  it("changes the idempotency key when a failed submission body changes", async () => {
+    fetchMock
+      .mockRejectedValueOnce(new Error("Network interrupted"))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: true }), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }),
+      );
+    await act(async () => {
+      root.render(<DocumentReviewReviewerPanel panel={panelFixture()} />);
+    });
+    const feedback = container.querySelector("textarea");
+    await act(async () => {
+      Simulate.change(feedback!, {
+        target: { value: "First explanation." } as EventTarget & {
+          value: string;
+        },
+      });
+    });
+    await act(async () => {
+      Simulate.click(findButton(container, "Request changes")!);
+    });
+    await act(async () => {
+      Simulate.change(feedback!, {
+        target: { value: "Corrected explanation." } as EventTarget & {
+          value: string;
+        },
+      });
+    });
+    await act(async () => {
+      Simulate.click(findButton(container, "Request changes")!);
+    });
+
+    const firstHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Record<
+      string,
+      string
+    >;
+    const secondHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(firstHeaders["Idempotency-Key"]).toBe(
+      "document-review-response:response-key-1",
+    );
+    expect(secondHeaders["Idempotency-Key"]).toBe(
+      "document-review-response:response-key-2",
+    );
+    expect(randomUUIDMock).toHaveBeenCalledTimes(2);
   });
 
   it("keeps stale text readable without offering a new verdict", async () => {

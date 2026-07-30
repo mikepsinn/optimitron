@@ -1624,6 +1624,7 @@ export async function submitDocumentReview(
       authorUserId: actor.id,
       message: input.explanation,
       taskId: task.id,
+      visibility: TaskCommentVisibility.INTERNAL,
     });
     const commentHash = await sha256CanonicalJson({
       authorNameSnapshot: comment.authorNameSnapshot,

@@ -815,6 +815,7 @@ export async function listDocumentsForViewer(input: {
 
   const viewerUserId = input.userId?.trim() || null;
   const summaries: DocumentSummary[] = [];
+  const boundaryTaskAccess = new Map<string, boolean>();
   let cursor: string | undefined;
   let scanned = 0;
 
@@ -852,14 +853,60 @@ export async function listDocumentsForViewer(input: {
       rows.map((document) => document.id),
       viewerUserId,
     );
+    if (input.clientAccessBoundary && !taskId) {
+      const unresolvedTaskIds = [
+        ...new Set(
+          rows.flatMap((document) =>
+            document.visibility === ContentVisibility.PRIVATE &&
+            !document.organizationId &&
+            document.taskId &&
+            !boundaryTaskAccess.has(document.taskId)
+              ? [document.taskId]
+              : [],
+          ),
+        ),
+      ];
+      if (unresolvedTaskIds.length > 0) {
+        const tasks = await prisma.task.findMany({
+          where: { deletedAt: null, id: { in: unresolvedTaskIds } },
+          select: { id: true, isPublic: true, ownerOrganizationId: true },
+        });
+        const taskById = new Map(tasks.map((task) => [task.id, task]));
+        const { isTaskWithinClientAccessBoundary } =
+          await import("@/lib/tasks/task-visibility.server");
+        for (const unresolvedTaskId of unresolvedTaskIds) {
+          const task = taskById.get(unresolvedTaskId);
+          boundaryTaskAccess.set(
+            unresolvedTaskId,
+            Boolean(
+              task &&
+              isTaskWithinClientAccessBoundary(
+                task,
+                input.clientAccessBoundary,
+              ),
+            ),
+          );
+        }
+      }
+    }
     for (const document of rows) {
-      if (
-        !(await isDocumentWithinClientAccessBoundary(
-          document,
-          input.clientAccessBoundary,
-        ))
-      ) {
-        continue;
+      if (input.clientAccessBoundary) {
+        if (document.visibility !== ContentVisibility.PUBLIC) {
+          if (document.organizationId) {
+            if (
+              !clientCanAccessOrganization(
+                document.organizationId,
+                input.clientAccessBoundary,
+              )
+            ) {
+              continue;
+            }
+          } else if (document.taskId) {
+            if (!taskId && !boundaryTaskAccess.get(document.taskId)) continue;
+          } else if (!input.clientAccessBoundary.allowPersonalPrivate) {
+            continue;
+          }
+        }
       }
       const effectivePermission = accessById.get(document.id) ?? null;
       if (!effectivePermission) continue;

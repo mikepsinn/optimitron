@@ -1,5 +1,6 @@
 import {
   ContentVisibility,
+  TaskCommentVisibility,
   TaskStatus,
   TaskVerificationMethod,
   TaskVerificationResult,
@@ -332,6 +333,12 @@ describe.sequential("document governance kernel integration", () => {
       fixture.secondReviewer.user.id,
       { idempotencyKey: "approval" },
     );
+    await expect(
+      prisma.taskComment.findUniqueOrThrow({
+        where: { id: submitted.comment.id },
+        select: { visibility: true },
+      }),
+    ).resolves.toEqual({ visibility: TaskCommentVisibility.INTERNAL });
     const persistedReview = await prisma.task.findUniqueOrThrow({
       where: { id: review.reviewTaskId },
       select: {
