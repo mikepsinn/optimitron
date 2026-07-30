@@ -5,6 +5,7 @@ import {
 } from "@optimitron/db/constants";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
@@ -38,8 +39,12 @@ type DocumentReviewFixtureManifest = {
   version: 1;
 };
 
+const WEB_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
 const DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH = path.resolve(
-  process.cwd(),
+  WEB_ROOT,
   "output",
   "playwright",
   "visual-fixtures",

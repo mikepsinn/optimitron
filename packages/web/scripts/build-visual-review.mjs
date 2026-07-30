@@ -1046,7 +1046,15 @@ function getBaselineRef() {
 function loadChangedFiles() {
   const envJson = process.env.VISUAL_REVIEW_CHANGED_FILES_JSON?.trim();
   if (envJson) {
-    const parsed = JSON.parse(envJson);
+    let parsed;
+    try {
+      parsed = JSON.parse(envJson);
+    } catch (error) {
+      throw new TypeError(
+        "VISUAL_REVIEW_CHANGED_FILES_JSON must be a JSON array of file paths",
+        { cause: error },
+      );
+    }
     if (
       !Array.isArray(parsed) ||
       parsed.some((entry) => typeof entry !== "string")

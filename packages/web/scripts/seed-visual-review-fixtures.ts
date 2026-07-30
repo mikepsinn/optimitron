@@ -1,12 +1,13 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ContentVisibility } from "@optimitron/db";
+import { ContentVisibility, TaskExecutionAttemptStatus } from "@optimitron/db";
 import { createDocument, updateDocument } from "@/lib/documents.server";
 import { prisma } from "@/lib/prisma";
 import { postComment } from "@/lib/tasks/task-comments.server";
 import {
   DOCUMENT_PROPOSAL_ARTIFACT_KIND,
+  DocumentReviewVerdictSchema,
   readDocumentProposal,
 } from "@/lib/tasks/document-review-contracts";
 import {
@@ -53,9 +54,13 @@ function assertLocalFixtureDatabase() {
   }
   const hostname = new URL(databaseUrl).hostname;
   if (
-    !new Set(["localhost", "127.0.0.1", "::1", "host.docker.internal"]).has(
-      hostname,
-    )
+    !new Set([
+      "localhost",
+      "127.0.0.1",
+      "::1",
+      "[::1]",
+      "host.docker.internal",
+    ]).has(hostname)
   ) {
     throw new Error(
       `Refusing to seed visual review fixtures into non-local database host ${hostname}.`,
@@ -113,7 +118,7 @@ async function resetVisualReviewFixtures() {
               equals: DOCUMENT_PROPOSAL_ARTIFACT_KIND,
               path: ["kind"],
             },
-            status: "COMPLETED",
+            status: TaskExecutionAttemptStatus.COMPLETED,
             taskId: { in: taskIdList },
           },
         },
@@ -334,7 +339,7 @@ async function seedManagerState(input: {
     {
       explanation:
         "Approved. The authority boundary is explicit, and the text does not claim filing or legal effect.",
-      verdict: "APPROVE",
+      verdict: DocumentReviewVerdictSchema.enum.APPROVE,
     },
     input.fixtureManager.user.id,
     { idempotencyKey: `${FIXTURE_PREFIX}approved_response` },
@@ -458,9 +463,9 @@ async function seedStaleReviewerState(input: {
 }
 
 async function main() {
-  await removeFixtureManifest();
   assertFixtureRunner();
   assertLocalFixtureDatabase();
+  await removeFixtureManifest();
   await resetVisualReviewFixtures();
   const [demo, fixtureManager] = await Promise.all([
     loadDemoActor(),

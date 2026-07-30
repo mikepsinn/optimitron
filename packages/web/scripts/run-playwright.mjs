@@ -14,11 +14,14 @@ const WEB_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
+const REPO_ROOT = path.resolve(WEB_ROOT, "../..");
 const scriptArgs = process.argv
   .slice(2)
   .filter((arg, index) => !(index === 0 && arg === "--"));
 const requestedMode = scriptArgs[0];
-if (requestedMode === "visual") loadEnvFile({ quiet: true });
+if (requestedMode === "visual") {
+  loadEnvFile({ path: path.resolve(REPO_ROOT, ".env"), quiet: true });
+}
 const DEFAULT_BASE_URL = "http://127.0.0.1:3001";
 const NEW_USER_FLOW_ARTIFACT_DIR = path.resolve(
   process.cwd(),
