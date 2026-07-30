@@ -82,12 +82,12 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
   },
   {
     claim:
-      "We currently spend 604 times as much on our capacity for mass murder as we spend on curing the diseases that are going to kill them and everyone they love.",
+      "We currently spend 604 times as much on our capacity for organized violence as we spend on curing the diseases that are going to kill them and everyone they love.",
     parameters: [MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO],
   },
   {
     claim:
-      "Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.",
+      "Accepting weapons capable of causing 121 apocalypses (down from 122) would let us eradicate disease 12 times faster.",
     parameters: [
       NUCLEAR_WINTER_OVERKILL_FACTOR,
       DISEASE_ERADICATION_SPEED_MULTIPLIER,

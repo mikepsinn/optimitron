@@ -105,7 +105,7 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             years to cure them all.
           </p>
           <p className="mt-3">
-            Humanity currently spends enough on its capacity for mass murder to achieve{" "}
+            Humanity currently spends enough on its capacity for organized violence to achieve{" "}
             <ParameterValue
               param={NUCLEAR_WINTER_OVERKILL_FACTOR}
               display="integer"

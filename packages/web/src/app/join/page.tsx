@@ -235,9 +235,8 @@ export default async function EndorsePage() {
           </p>
           <p className="mt-3">
             We are trying to get a global survey of at least 4 billion people
-            where a majority of humans say: yes, we can have one fewer
-            apocalypse of mass-murder capacity in exchange for eradicating
-            disease{" "}
+            where a majority of humans say: yes, we can reduce our weapons by
+            one apocalypse&apos;s worth in exchange for eradicating disease{" "}
             <ParameterValue
               display="withUnit"
               figures={3}

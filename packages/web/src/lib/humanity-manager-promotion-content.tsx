@@ -49,13 +49,14 @@ export function createHumanityManagerPromotion({
               figures={1}
               param={GLOBAL_POPULATION_2024}
             />{" "}
-            humans to agree to trade one of Earth&apos;s{" "}
+            humans to agree to trade one apocalypse from Earth&apos;s weapons,
+            capable of causing{" "}
             <ParameterValue
               className="font-black"
               figures={3}
               param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
             />{" "}
-            apocalypses worth of mass murder capacity for{" "}
+            apocalypses, for{" "}
             <ParameterValue
               className="font-black"
               figures={3}

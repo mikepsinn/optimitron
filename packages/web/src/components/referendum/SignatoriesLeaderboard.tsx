@@ -134,13 +134,13 @@ export function SignatoriesLeaderboard({
             </h2>
             <p className="mx-auto max-w-3xl text-center text-lg leading-9 text-[var(--treaty-ink-soft)] [font-family:var(--v0-font-libre-baskerville)] sm:text-[1.2rem]">
               Allowing billions of people to suffer and die from disease so
-              humanity can preserve its{" "}
+              humanity can maintain weapons capable of causing{" "}
               <ParameterValue
                 className="font-black text-[var(--treaty-ink)]"
                 figures={3}
                 param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
               />
-              -apocalypse mass-murder capacity is a conscious act of barbaric
+              {" "}apocalypses is a conscious act of barbaric
               mass cruelty. Like slavery, it will be allowed to continue until
               enough people are brave enough to publicly state that it is
               morally wrong and incredibly stupid. These are those people.

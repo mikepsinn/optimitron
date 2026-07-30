@@ -113,7 +113,7 @@ export default async function OrganizationPage({
 
 It currently requires about ${nuclearWinterWarheadThreshold} nuclear weapons to create a nuclear winter, destroy the food system, and cause an apocalypse. Humanity currently has about ${globalWarheadCount} nuclear weapons, sufficient to cause at least ${apocalypseCount} of these apocalypses.
 
-Sacrificing one apocalypse of this mass-murder capacity by redirecting ${treatyReduction} of military spending to fund high-efficiency pragmatic clinical trials could increase the pace of medical research ${trialCapacityMultiplier} times. This could compress the time required to find the first treatment for all diseases from ${statusQuoYears} years to ${diseaseEradicationYears} years.
+Sacrificing one apocalypse of this capacity for organized violence by redirecting ${treatyReduction} of military spending to fund high-efficiency pragmatic clinical trials could increase the pace of medical research ${trialCapacityMultiplier} times. This could compress the time required to find the first treatment for all diseases from ${statusQuoYears} years to ${diseaseEradicationYears} years.
 
 Please take this survey to share your opinion on this proposal:
 ${organizationSurveyUrl}`;
@@ -133,7 +133,7 @@ ${organizationSurveyUrl}`;
       apocalypseCount,
       FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR.manualPageUrl,
     )} of these apocalypses.</p>`,
-    `<p>Sacrificing one apocalypse of this mass-murder capacity by redirecting ${linkHtml(
+    `<p>Sacrificing one apocalypse of this capacity for organized violence by redirecting ${linkHtml(
       treatyReduction,
       TREATY_REDUCTION_PCT.manualPageUrl,
     )} of military spending to fund high-efficiency ${linkHtml(

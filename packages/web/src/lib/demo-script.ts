@@ -206,7 +206,7 @@ export const SEGMENTS = [
     slideId: "military-health-ratio",
     bgColor: "foreground",
     tags: ["hook", "problem"],
-    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
+    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for organized violence for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
   },
   // ── SCRIPT-ALIGNED HACKATHON ─────────────────────────────────────────────
   {
@@ -242,7 +242,7 @@ export const SEGMENTS = [
     bgColor: "foreground",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
+    narration: `Your governments currently spend ${milToTrialRatio} dollars on the capacity for organized violence for every one dollar they spend testing which medicines work. Your chance of dying from terrorism: one in thirty million. Your chance of dying from disease: one hundred percent.`,
   },
   {
     id: "economic-collapse-clock",
@@ -344,7 +344,7 @@ export const SEGMENTS = [
     act: "II-accountability",
     scoreAdd: 3_000_000_000,
     inventoryAdd: { id: "alignment", name: "ALIGNMENT SCORE", icon: "\u{1F50D}" },
-    narration: `Every politician ranked by the ratio of spending they have voted for: mass murder capacity versus clinical trial funding. A single number. Public. Immutable. On-chain. Your leaders are not evil. They are just optimising for the wrong metric. We changed the metric.`,
+    narration: `Every politician ranked by the ratio of spending they have voted for: capacity for organized violence versus clinical trial funding. A single number. Public. Immutable. On-chain. Your leaders are not evil. They are just optimising for the wrong metric. We changed the metric.`,
   },
   {
     id: "final-call-to-action",
@@ -1024,7 +1024,7 @@ export const SEGMENTS = [
     slideId: "military-health-ratio",
     tags: ["hook", "problem"],
     act: "I",
-    narration: `So right now they currently spend ${milToTrialRatio} dollars on the capacity for mass murder for every one dollar testing which medicines work. ${unexploredPct} percent of drug-disease combinations have never been tested. Curing them all at current spending takes ${oldQueue} years. You will be dead in ${usLE}. I mention this not to be rude but because you seem weirdly calm about it.`,
+    narration: `So right now they currently spend ${milToTrialRatio} dollars on the capacity for organized violence for every one dollar testing which medicines work. ${unexploredPct} percent of drug-disease combinations have never been tested. Curing them all at current spending takes ${oldQueue} years. You will be dead in ${usLE}. I mention this not to be rude but because you seem weirdly calm about it.`,
   },
   {
     id: "economic-collapse-clock-brief",
