@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   canManageOrganization: vi.fn(),
   canUserViewTask: vi.fn(),
   getTaskClientAccessWhere: vi.fn(() => ({})),
+  hasDocumentGovernanceHistory: vi.fn(),
   invalidateDocumentReviewsForDocument: vi.fn(),
   isTaskWithinClientAccessBoundary: vi.fn(
     (_task: unknown, _boundary: unknown) => true,
@@ -55,6 +56,7 @@ vi.mock("@/lib/organization.server", () => ({
 }));
 
 vi.mock("@/lib/tasks/document-review-invalidation.server", () => ({
+  hasDocumentGovernanceHistory: mocks.hasDocumentGovernanceHistory,
   invalidateDocumentReviewsForDocument:
     mocks.invalidateDocumentReviewsForDocument,
 }));
@@ -155,6 +157,8 @@ beforeEach(() => {
   mocks.canManageOrganization.mockResolvedValue(true);
   mocks.canUserViewTask.mockReset();
   mocks.canUserViewTask.mockResolvedValue(true);
+  mocks.hasDocumentGovernanceHistory.mockReset();
+  mocks.hasDocumentGovernanceHistory.mockResolvedValue(false);
   mocks.invalidateDocumentReviewsForDocument.mockReset();
   mocks.invalidateDocumentReviewsForDocument.mockResolvedValue(undefined);
   mocks.isTaskWithinClientAccessBoundary.mockReset();
@@ -386,6 +390,30 @@ describe("optimistic document updates", () => {
 
     expect(mocks.prisma.documentRevisionCreate).not.toHaveBeenCalled();
     expect(mocks.invalidateDocumentReviewsForDocument).not.toHaveBeenCalled();
+  });
+
+  it("does not relink a document after review or decision history exists", async () => {
+    mocks.prisma.documentFindFirst.mockResolvedValue(DOCUMENT);
+    mocks.hasDocumentGovernanceHistory.mockResolvedValue(true);
+
+    await expect(
+      updateDocument({
+        documentId: DOCUMENT.id,
+        editorUserId: "user_1",
+        expectedVersion: 3,
+        taskId: "task_2",
+      }),
+    ).rejects.toThrow(
+      "Documents with review or decision history cannot be linked to another task",
+    );
+
+    expect(mocks.hasDocumentGovernanceHistory).toHaveBeenCalledWith(
+      expect.objectContaining({ document: expect.any(Object) }),
+      DOCUMENT.id,
+      "task_1",
+    );
+    expect(mocks.prisma.documentUpdateMany).not.toHaveBeenCalled();
+    expect(mocks.prisma.documentRevisionCreate).not.toHaveBeenCalled();
   });
 });
 

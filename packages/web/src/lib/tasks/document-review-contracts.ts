@@ -2,6 +2,13 @@ import { z } from "zod";
 
 export const DOCUMENT_REVIEW_CONTEXT_KEY = "documentReview" as const;
 export const DOCUMENT_REVIEW_TASK_KEY_PREFIX = "document-review:" as const;
+export const DOCUMENT_PROPOSAL_ARTIFACT_KIND = "document-proposal" as const;
+export const DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND =
+  "document-proposal-application" as const;
+export const DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND =
+  "document-review-response" as const;
+export const INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND =
+  "internal-document-decision" as const;
 
 export const DocumentRevisionPinSchema = z
   .object({
@@ -63,6 +70,7 @@ export const DocumentProposalV1Schema = z
     base: DocumentRevisionPinSchema,
     proposal: DocumentRevisionPinSchema,
     proposedAt: z.string().datetime(),
+    proposedByPersonId: z.string().trim().min(1),
     proposedByUserId: z.string().trim().min(1),
     schema: z.literal("optimitron.document-proposal.v1"),
     sourceComments: z

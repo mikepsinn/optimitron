@@ -13,6 +13,14 @@ type DocumentReviewOperation = (
   },
 ) => Promise<unknown>;
 
+type DocumentReviewReadOperation = (
+  reviewTaskId: string,
+  actorUserId: string,
+  options: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
+  },
+) => Promise<unknown>;
+
 interface ReviewHttpError {
   code?: unknown;
   message?: unknown;
@@ -39,6 +47,23 @@ export async function runDocumentReviewOperation(
       },
     );
     return noStoreJson(result, { status: 201 });
+  } catch (error) {
+    return documentReviewErrorResponse(error, fallbackMessage);
+  }
+}
+
+export async function runDocumentReviewRead(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+  operation: DocumentReviewReadOperation,
+  fallbackMessage: string,
+) {
+  try {
+    const { clientAccessBoundary, userId } =
+      await requireTaskRequestAuth(request);
+    const { id } = await context.params;
+    const result = await operation(id, userId, { clientAccessBoundary });
+    return noStoreJson(result);
   } catch (error) {
     return documentReviewErrorResponse(error, fallbackMessage);
   }

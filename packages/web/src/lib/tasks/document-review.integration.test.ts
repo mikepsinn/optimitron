@@ -1,6 +1,12 @@
 import {
+  ContentAccessLevel,
   ContentVisibility,
+  OrganizationMemberRole,
+  OrgStatus,
+  OrgType,
+  TaskCandidateKind,
   TaskCommentVisibility,
+  TaskExecutionAttemptStatus,
   TaskStatus,
   TaskVerificationMethod,
   TaskVerificationResult,
@@ -17,6 +23,7 @@ import {
   applyDocumentProposal,
   createDocumentProposal,
   decideDocumentRevision,
+  getAssignedDocumentReview,
   getDocumentReviewPanelData,
   requestDocumentReview,
   submitDocumentReview,
@@ -50,6 +57,17 @@ async function cleanup() {
   await prisma.task.deleteMany({
     where: { id: { startsWith: TEST_PREFIX } },
   });
+  await prisma.organizationMember.deleteMany({
+    where: {
+      OR: [
+        { organizationId: { startsWith: TEST_PREFIX } },
+        { userId: { startsWith: TEST_PREFIX } },
+      ],
+    },
+  });
+  await prisma.organization.deleteMany({
+    where: { id: { startsWith: TEST_PREFIX } },
+  });
   await prisma.user.deleteMany({
     where: { id: { startsWith: TEST_PREFIX } },
   });
@@ -73,6 +91,27 @@ async function createUser(suffix: string) {
     },
   });
   return { person, user };
+}
+
+async function createOrganization(suffix: string, creatorId: string) {
+  const organization = await prisma.organization.create({
+    data: {
+      creatorId,
+      id: `${TEST_PREFIX}organization_${suffix}`,
+      name: `Document review organization ${suffix}`,
+      slug: `${TEST_PREFIX}organization_${suffix}`,
+      status: OrgStatus.APPROVED,
+      type: OrgType.OTHER,
+    },
+  });
+  await prisma.organizationMember.create({
+    data: {
+      organizationId: organization.id,
+      role: OrganizationMemberRole.OWNER,
+      userId: creatorId,
+    },
+  });
+  return organization;
 }
 
 async function createFixture() {
@@ -312,6 +351,20 @@ describe.sequential("document governance kernel integration", () => {
       fixture.manager.user.id,
       { idempotencyKey: "current-review" },
     );
+    await expect(
+      getAssignedDocumentReview(
+        review.reviewTaskId,
+        fixture.secondReviewer.user.id,
+      ),
+    ).resolves.toMatchObject({
+      canSubmit: true,
+      request: { instructions: "Approve only if the revised text is sound." },
+      reviewTaskId: review.reviewTaskId,
+      target: {
+        body: "Revised governing text.",
+        revisionId: current.revisionId,
+      },
+    });
     const reviewerPanel = await getDocumentReviewPanelData(
       review.reviewTaskId,
       fixture.secondReviewer.user.id,
@@ -393,6 +446,361 @@ describe.sequential("document governance kernel integration", () => {
         select: { status: true },
       }),
     ).resolves.toEqual({ status: TaskStatus.ACTIVE });
+  });
+
+  it("does not expose pinned document bodies to task-only managers", async () => {
+    const fixture = await createFixture();
+    const taskOnlyManager = await createUser("task_only_manager");
+    const review = await requestDocumentReview(
+      fixture.authorityTask.id,
+      {
+        documentRevisionId: fixture.document.revision.id,
+        instructions: "Review text the task-only manager must not see.",
+        reviewerPersonId: fixture.firstReviewer.person.id,
+      },
+      fixture.manager.user.id,
+      { idempotencyKey: "manager-document-boundary" },
+    );
+    await prisma.taskManager.create({
+      data: {
+        createdByUserId: fixture.manager.user.id,
+        taskId: fixture.authorityTask.id,
+        userId: taskOnlyManager.user.id,
+      },
+    });
+    await expect(
+      updateDocument({
+        documentId: fixture.document.document.id,
+        editorUserId: fixture.manager.user.id,
+        expectedVersion: fixture.document.document.version,
+        taskId: null,
+      }),
+    ).rejects.toThrow(
+      "Documents with review or decision history cannot be linked to another task",
+    );
+
+    const panel = await getDocumentReviewPanelData(
+      fixture.authorityTask.id,
+      taskOnlyManager.user.id,
+    );
+    expect(panel).toMatchObject({
+      authorityTaskId: fixture.authorityTask.id,
+      mode: "MANAGER",
+    });
+    expect(panel?.mode === "MANAGER" ? panel.reviews : null).toEqual([]);
+    await expect(
+      getAssignedDocumentReview(review.reviewTaskId, taskOnlyManager.user.id),
+    ).rejects.toThrow("Document review not found");
+  });
+
+  it("enforces the OAuth organization boundary on exact review reads and writes", async () => {
+    const manager = await createUser("boundary_manager");
+    const firstReviewer = await createUser("boundary_reviewer_1");
+    const secondReviewer = await createUser("boundary_reviewer_2");
+    const organizationA = await createOrganization("a", manager.user.id);
+    const organizationB = await createOrganization("b", manager.user.id);
+    const authorityTask = await prisma.task.create({
+      data: {
+        createdByUserId: manager.user.id,
+        description: "Organization A authority task.",
+        id: `${TEST_PREFIX}boundary_authority`,
+        isPublic: false,
+        ownerOrganizationId: organizationA.id,
+        title: "Organization A authority",
+      },
+    });
+    const document = await createDocument({
+      body: "Organization B confidential text.",
+      createdByUserId: manager.user.id,
+      organizationId: organizationB.id,
+      taskId: authorityTask.id,
+      title: "Cross-organization document",
+      visibility: ContentVisibility.PRIVATE,
+    });
+    const review = await requestDocumentReview(
+      authorityTask.id,
+      {
+        documentRevisionId: document.revision.id,
+        instructions: "Review through the normal browser session.",
+        reviewerPersonId: firstReviewer.person.id,
+      },
+      manager.user.id,
+      { idempotencyKey: "boundary-browser-review" },
+    );
+    const organizationABoundary = {
+      allowPersonalPrivate: false,
+      organizationIds: [organizationA.id],
+    };
+
+    await expect(
+      getAssignedDocumentReview(review.reviewTaskId, firstReviewer.user.id, {
+        clientAccessBoundary: organizationABoundary,
+      }),
+    ).rejects.toThrow("Document review not found");
+    await expect(
+      requestDocumentReview(
+        authorityTask.id,
+        {
+          documentRevisionId: document.revision.id,
+          instructions: "This scoped client must not cross organizations.",
+          reviewerPersonId: secondReviewer.person.id,
+        },
+        manager.user.id,
+        {
+          clientAccessBoundary: organizationABoundary,
+          idempotencyKey: "boundary-scoped-review",
+        },
+      ),
+    ).rejects.toThrow("Document review not found");
+  });
+
+  it("treats an organization review assignment as personal MCP access for its external reviewer", async () => {
+    const manager = await createUser("external_review_manager");
+    const reviewer = await createUser("external_review_reviewer");
+    const organization = await createOrganization(
+      "external_review",
+      manager.user.id,
+    );
+    const authorityTask = await prisma.task.create({
+      data: {
+        createdByUserId: manager.user.id,
+        description: "Organization review for an external assignee.",
+        id: `${TEST_PREFIX}external_review_authority`,
+        isPublic: false,
+        ownerOrganizationId: organization.id,
+        title: "External exact-revision review",
+      },
+    });
+    const document = await createDocument({
+      body: "Organization text assigned to external counsel.",
+      createdByUserId: manager.user.id,
+      organizationId: organization.id,
+      taskId: authorityTask.id,
+      title: "External review document",
+      visibility: ContentVisibility.PRIVATE,
+    });
+    const review = await requestDocumentReview(
+      authorityTask.id,
+      {
+        documentRevisionId: document.revision.id,
+        instructions: "Review the exact assigned text.",
+        reviewerPersonId: reviewer.person.id,
+      },
+      manager.user.id,
+      { idempotencyKey: "external-review-assignment" },
+    );
+    const personalBoundary = {
+      allowPersonalPrivate: true,
+      organizationIds: [] as string[],
+    };
+
+    await expect(
+      getAssignedDocumentReview(review.reviewTaskId, reviewer.user.id, {
+        clientAccessBoundary: personalBoundary,
+      }),
+    ).resolves.toMatchObject({
+      canSubmit: true,
+      target: { body: "Organization text assigned to external counsel." },
+    });
+    await expect(
+      submitDocumentReview(
+        review.reviewTaskId,
+        { explanation: "The assigned text is sound.", verdict: "APPROVE" },
+        reviewer.user.id,
+        {
+          clientAccessBoundary: personalBoundary,
+          idempotencyKey: "external-review-response",
+        },
+      ),
+    ).resolves.toMatchObject({ response: { verdict: "APPROVE" } });
+  });
+
+  it("lets an organization MCP manager apply an authentic personal proposal", async () => {
+    const manager = await createUser("scoped_apply_manager");
+    const organization = await createOrganization(
+      "scoped_apply",
+      manager.user.id,
+    );
+    const authorityTask = await prisma.task.create({
+      data: {
+        createdByUserId: manager.user.id,
+        description: "Organization authority with a browser proposal.",
+        id: `${TEST_PREFIX}scoped_apply_authority`,
+        isPublic: false,
+        ownerOrganizationId: organization.id,
+        title: "Apply a submitted proposal",
+      },
+    });
+    const document = await createDocument({
+      body: "Original organization text.",
+      createdByUserId: manager.user.id,
+      organizationId: organization.id,
+      taskId: authorityTask.id,
+      title: "Organization document",
+      visibility: ContentVisibility.PRIVATE,
+    });
+    const comment = await postComment({
+      authorUserId: manager.user.id,
+      message: "Use the clearer wording.",
+      taskId: authorityTask.id,
+    });
+    const proposalInput = {
+      baseDocumentRevisionId: document.revision.id,
+      body: "Clearer organization text.",
+      sourceCommentIds: [comment.id],
+      summary: "Applied the requested clarification.",
+      title: "Organization document",
+    };
+    const proposal = await createDocumentProposal(
+      authorityTask.id,
+      proposalInput,
+      manager.user.id,
+      { idempotencyKey: "browser-personal-proposal" },
+    );
+    const organizationBoundary = {
+      allowPersonalPrivate: false,
+      organizationIds: [organization.id],
+    };
+    await expect(
+      createDocumentProposal(authorityTask.id, proposalInput, manager.user.id, {
+        clientAccessBoundary: organizationBoundary,
+        idempotencyKey: "browser-personal-proposal",
+      }),
+    ).resolves.toMatchObject({ artifact: { id: proposal.artifact.id } });
+    await expect(
+      getDocumentReviewPanelData(authorityTask.id, manager.user.id, {
+        clientAccessBoundary: organizationBoundary,
+      }),
+    ).resolves.toMatchObject({
+      mode: "MANAGER",
+      proposals: [{ artifactId: proposal.artifact.id }],
+    });
+
+    const apply = () =>
+      applyDocumentProposal(
+        authorityTask.id,
+        { proposalArtifactId: proposal.artifact.id },
+        manager.user.id,
+        {
+          clientAccessBoundary: organizationBoundary,
+          idempotencyKey: "organization-scoped-apply",
+        },
+      );
+    await expect(apply()).resolves.toMatchObject({
+      application: {
+        resultingDocument: { documentId: document.document.id, version: 2 },
+      },
+    });
+    await expect(apply()).resolves.toMatchObject({
+      application: {
+        resultingDocument: { documentId: document.document.id, version: 2 },
+      },
+    });
+  });
+
+  it("does not treat caller-authored artifact metadata as governance history", async () => {
+    const fixture = await createFixture();
+    const now = new Date();
+    const attempt = await prisma.taskExecutionAttempt.create({
+      data: {
+        completedAt: now,
+        executorKey: `user:${fixture.manager.user.id}`,
+        executorKind: TaskCandidateKind.USER,
+        executorPersonId: fixture.manager.person.id,
+        executorUserId: fixture.manager.user.id,
+        metadata: { startedByUserId: fixture.manager.user.id },
+        startedAt: now,
+        status: TaskExecutionAttemptStatus.COMPLETED,
+        taskId: fixture.authorityTask.id,
+      },
+    });
+    await prisma.taskExecutionArtifact.create({
+      data: {
+        contentHash: "caller-controlled-lookalike",
+        metadataJson: { kind: "document-proposal" },
+        structuredResultJson: {
+          base: { documentId: fixture.document.document.id },
+        },
+        submittedByUserId: fixture.manager.user.id,
+        taskExecutionAttemptId: attempt.id,
+      },
+    });
+
+    await expect(
+      updateDocument({
+        documentId: fixture.document.document.id,
+        editorUserId: fixture.manager.user.id,
+        expectedVersion: fixture.document.document.version,
+        taskId: null,
+      }),
+    ).resolves.toMatchObject({ document: { taskId: null, version: 2 } });
+  });
+
+  it("does not let a proposal author review the applied version of their own text", async () => {
+    const fixture = await createFixture();
+    await Promise.all([
+      prisma.taskManager.create({
+        data: {
+          createdByUserId: fixture.manager.user.id,
+          taskId: fixture.authorityTask.id,
+          userId: fixture.firstReviewer.user.id,
+        },
+      }),
+      prisma.contentAccessGrant.create({
+        data: {
+          accessLevel: ContentAccessLevel.VIEW,
+          documentId: fixture.document.document.id,
+          grantedByUserId: fixture.manager.user.id,
+          userId: fixture.firstReviewer.user.id,
+        },
+      }),
+    ]);
+    const comment = await postComment({
+      authorUserId: fixture.firstReviewer.user.id,
+      message: "Replace the original language with my proposed text.",
+      taskId: fixture.authorityTask.id,
+    });
+    const proposal = await createDocumentProposal(
+      fixture.authorityTask.id,
+      {
+        baseDocumentRevisionId: fixture.document.revision.id,
+        body: "Text authored by the proposed reviewer.",
+        sourceCommentIds: [comment.id],
+        summary: "Replace the original language.",
+        title: "Governing document",
+      },
+      fixture.firstReviewer.user.id,
+      { idempotencyKey: "reviewer-authored-proposal" },
+    );
+    await expect(
+      updateDocument({
+        documentId: proposal.proposal.proposal.documentId,
+        editorUserId: fixture.firstReviewer.user.id,
+        expectedVersion: proposal.proposal.proposal.version,
+        taskId: fixture.authorityTask.id,
+      }),
+    ).rejects.toThrow(
+      "Documents with review or decision history cannot be linked to another task",
+    );
+    const applied = await applyDocumentProposal(
+      fixture.authorityTask.id,
+      { proposalArtifactId: proposal.artifact.id },
+      fixture.manager.user.id,
+      { idempotencyKey: "manager-applies-reviewer-proposal" },
+    );
+
+    await expect(
+      requestDocumentReview(
+        fixture.authorityTask.id,
+        {
+          documentRevisionId: applied.application.resultingDocument.revisionId,
+          instructions: "Independently review the applied text.",
+          reviewerPersonId: fixture.firstReviewer.person.id,
+        },
+        fixture.manager.user.id,
+        { idempotencyKey: "proposal-author-self-review" },
+      ),
+    ).rejects.toThrow("based on their own proposal");
   });
 
   it("ignores forged duplicates and keeps unrelated children out of the manager review list", async () => {

@@ -29,6 +29,7 @@ describe("MCP tool catalog", () => {
     for (const name of [
       "createDocumentProposal",
       "applyDocumentProposal",
+      "getDocumentReview",
       "requestDocumentReview",
       "submitDocumentReview",
       "decideDocumentRevision",

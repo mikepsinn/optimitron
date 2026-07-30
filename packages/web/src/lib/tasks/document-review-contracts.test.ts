@@ -69,6 +69,7 @@ describe("document governance contracts", () => {
         version: 1,
       },
       proposedAt: "2026-07-29T13:00:00.000Z",
+      proposedByPersonId: "agent_oauth_person",
       proposedByUserId: "agent_oauth_user",
       schema: "optimitron.document-proposal.v1",
       sourceComments: [sourceComment],

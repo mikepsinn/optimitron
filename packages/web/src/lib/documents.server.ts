@@ -12,7 +12,10 @@ import {
 } from "@/lib/content-access.server";
 import { canManageOrganization } from "@/lib/organization.server";
 import { prisma } from "@/lib/prisma";
-import { invalidateDocumentReviewsForDocument } from "@/lib/tasks/document-review-invalidation.server";
+import {
+  hasDocumentGovernanceHistory,
+  invalidateDocumentReviewsForDocument,
+} from "@/lib/tasks/document-review-invalidation.server";
 import type { TaskClientAccessBoundary } from "@/lib/tasks/task-visibility.server";
 
 export const DOCUMENT_NOT_FOUND_MESSAGE = "Document not found";
@@ -191,12 +194,13 @@ function clientCanAccessOrganization(
   );
 }
 
-async function isDocumentWithinClientAccessBoundary(
+export async function isDocumentWithinClientAccessBoundary(
   document: Pick<
     DocumentWithCurrentRevision,
     "organizationId" | "taskId" | "visibility"
   >,
   boundary?: TaskClientAccessBoundary,
+  db: Pick<Prisma.TransactionClient, "task"> = prisma,
 ): Promise<boolean> {
   if (!boundary || document.visibility === ContentVisibility.PUBLIC) {
     return true;
@@ -206,7 +210,7 @@ async function isDocumentWithinClientAccessBoundary(
   }
   if (!document.taskId) return boundary.allowPersonalPrivate;
 
-  const task = await prisma.task.findFirst({
+  const task = await db.task.findFirst({
     where: { deletedAt: null, id: document.taskId },
     select: { isPublic: true, ownerOrganizationId: true },
   });
@@ -731,6 +735,14 @@ export async function updateDocument(
           input.editorUserId,
           ContentAccessLevel.EDIT,
           tx,
+        );
+      }
+      if (
+        taskId !== current.taskId &&
+        (await hasDocumentGovernanceHistory(tx, current.id, current.taskId))
+      ) {
+        throw new Error(
+          "Documents with review or decision history cannot be linked to another task",
         );
       }
     } catch (error) {

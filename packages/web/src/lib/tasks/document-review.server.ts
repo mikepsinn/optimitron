@@ -17,20 +17,26 @@ import {
   assertDocumentAccess,
   lockContentResources,
 } from "@/lib/content-access.server";
+import { isDocumentWithinClientAccessBoundary } from "@/lib/documents.server";
 import { prisma } from "@/lib/prisma";
 import {
   ApplyDocumentProposalInputSchema,
   assertReviewResponseMatchesRequest,
   CreateDocumentProposalInputSchema,
   DecideDocumentRevisionInputSchema,
+  DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
+  DOCUMENT_PROPOSAL_ARTIFACT_KIND,
   DOCUMENT_REVIEW_CONTEXT_KEY,
+  DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND,
   DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+  type DocumentProposalApplicationV1,
   DocumentProposalApplicationV1Schema,
   type DocumentProposalSourceCommentV1,
   DocumentProposalV1Schema,
   type DocumentRevisionPin,
   InternalDocumentDecisionV1Schema,
   type InternalDocumentDecisionV1,
+  INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
   readDocumentProposal,
   readDocumentProposalApplication,
   readInternalDocumentDecision,
@@ -58,10 +64,6 @@ import {
   type TaskClientAccessBoundary,
 } from "@/lib/tasks/task-visibility.server";
 
-const PROPOSAL_ARTIFACT_KIND = "document-proposal";
-const PROPOSAL_APPLICATION_ARTIFACT_KIND = "document-proposal-application";
-const REVIEW_RESPONSE_ARTIFACT_KIND = "document-review-response";
-const INTERNAL_DECISION_ARTIFACT_KIND = "internal-document-decision";
 const REVIEW_DELIVERY_RULE_KEY = "document-review-delivery.v1";
 
 type JsonRecord = Record<string, unknown>;
@@ -169,6 +171,28 @@ function taskBoundaryWhere(
 ): Prisma.TaskWhereInput {
   const base: Prisma.TaskWhereInput = { deletedAt: null, id: taskId };
   return boundary ? { AND: [base, getTaskClientAccessWhere(boundary)] } : base;
+}
+
+function assignedReviewTaskBoundaryWhere(
+  taskId: string,
+  assigneePersonId: string,
+  boundary?: TaskClientAccessBoundary,
+): Prisma.TaskWhereInput {
+  const base: Prisma.TaskWhereInput = { deletedAt: null, id: taskId };
+  if (!boundary) return base;
+  const allowed: Prisma.TaskWhereInput[] = [getTaskClientAccessWhere(boundary)];
+  if (boundary.allowPersonalPrivate) {
+    allowed.push({
+      assigneePersonId,
+      contextJson: {
+        equals: "optimitron.review-request.v1",
+        path: [DOCUMENT_REVIEW_CONTEXT_KEY, "schema"],
+      },
+      isPublic: false,
+      taskKey: { startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX },
+    });
+  }
+  return { AND: [base, { OR: allowed }] };
 }
 
 function genuineReviewChildWhere(
@@ -365,6 +389,64 @@ async function loadExactRevision(
   return revision;
 }
 
+async function assertRevisionClientBoundary(
+  tx: Prisma.TransactionClient,
+  revision: ExactRevision,
+  boundary?: TaskClientAccessBoundary,
+) {
+  if (
+    !(await isDocumentWithinClientAccessBoundary(
+      revision.document,
+      boundary,
+      tx,
+    ))
+  ) {
+    notFound();
+  }
+}
+
+async function assertAssignedReviewRevisionClientBoundary(
+  tx: Prisma.TransactionClient,
+  revision: ExactRevision,
+  boundary?: TaskClientAccessBoundary,
+) {
+  if (boundary?.allowPersonalPrivate) return;
+  await assertRevisionClientBoundary(tx, revision, boundary);
+}
+
+async function canActorReadDocument(
+  tx: Prisma.TransactionClient,
+  documentId: string,
+  actorUserId: string,
+  boundary?: TaskClientAccessBoundary,
+) {
+  const document = await tx.document.findFirst({
+    where: { deletedAt: null, id: documentId },
+    select: {
+      organizationId: true,
+      taskId: true,
+      visibility: true,
+    },
+  });
+  if (
+    !document ||
+    !(await isDocumentWithinClientAccessBoundary(document, boundary, tx))
+  ) {
+    return false;
+  }
+  try {
+    await assertDocumentAccess(
+      documentId,
+      actorUserId,
+      ContentAccessLevel.VIEW,
+      tx,
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function loadExactRevisionOrNull(
   tx: Prisma.TransactionClient,
   pin: DocumentRevisionPin,
@@ -439,6 +521,7 @@ const reviewTaskSelect = {
 } satisfies Prisma.TaskSelect;
 
 type ReviewTask = Prisma.TaskGetPayload<{ select: typeof reviewTaskSelect }>;
+type AppliedProposalAuthorCache = Map<string, Promise<Set<string>>>;
 
 const requestedTaskProbeSelect = {
   assigneePersonId: true,
@@ -450,6 +533,7 @@ async function hasValidReviewTaskProvenance(
   tx: Prisma.TransactionClient,
   task: ReviewTask,
   request = readReviewRequest(task.contextJson),
+  proposalAuthorCache?: AppliedProposalAuthorCache,
 ): Promise<boolean> {
   if (
     !request ||
@@ -492,16 +576,25 @@ async function hasValidReviewTaskProvenance(
       },
     }),
   ]);
-  return Boolean(
+  const validBinding = Boolean(
     requester?.personId &&
-    requester.personId !== task.assigneePersonId &&
     authorityTask &&
     revision &&
+    requester.personId !== task.assigneePersonId &&
     authorityTask.ownerOrganizationId === task.ownerOrganizationId &&
     authorityTask.jurisdictionId === task.jurisdictionId &&
     revision.document.taskId === request.authorityTaskId &&
     revision.createdByUser.personId !== task.assigneePersonId,
   );
+  if (!validBinding) return false;
+
+  const proposalAuthorPersonIds = await getAppliedProposalAuthorPersonIds(
+    tx,
+    request.authorityTaskId,
+    request.target,
+    proposalAuthorCache,
+  );
+  return !proposalAuthorPersonIds.has(task.assigneePersonId);
 }
 
 async function findAuthenticReviewResponse(
@@ -515,7 +608,8 @@ async function findAuthenticReviewResponse(
       attempt.executorKind !== TaskCandidateKind.USER ||
       !attempt.executorUserId ||
       attempt.executorPersonId !== task.assigneePersonId ||
-      asRecord(attempt.metadata)?.kind !== REVIEW_RESPONSE_ARTIFACT_KIND
+      asRecord(attempt.metadata)?.kind !==
+        DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND
     ) {
       continue;
     }
@@ -534,7 +628,7 @@ async function findAuthenticReviewResponse(
       if (
         (artifactId && artifact.id !== artifactId) ||
         asRecord(artifact.metadataJson)?.kind !==
-          REVIEW_RESPONSE_ARTIFACT_KIND ||
+          DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND ||
         artifact.submittedByAgentExecutorId != null ||
         artifact.submittedByUserId !== attempt.executorUserId
       ) {
@@ -691,14 +785,15 @@ async function readAuthenticProposalArtifact(
     !proposal ||
     proposal.authorityTaskId !== authorityTaskId ||
     artifact.contentHash !== (await sha256CanonicalJson(proposal)) ||
-    asRecord(artifact.metadataJson)?.kind !== PROPOSAL_ARTIFACT_KIND ||
-    asRecord(attempt.metadata)?.kind !== PROPOSAL_ARTIFACT_KIND ||
+    asRecord(artifact.metadataJson)?.kind !== DOCUMENT_PROPOSAL_ARTIFACT_KIND ||
+    asRecord(attempt.metadata)?.kind !== DOCUMENT_PROPOSAL_ARTIFACT_KIND ||
     attempt.status !== TaskExecutionAttemptStatus.COMPLETED ||
     attempt.taskId !== authorityTaskId
   ) {
     return null;
   }
   return attempt.executorKind === TaskCandidateKind.USER &&
+    attempt.executorPersonId === proposal.proposedByPersonId &&
     attempt.executorUserId === proposal.proposedByUserId &&
     artifact.submittedByUserId === proposal.proposedByUserId &&
     artifact.submittedByAgentExecutorId == null
@@ -718,8 +813,9 @@ async function readAuthenticApplicationArtifact(
     application.authorityTaskId === authorityTaskId &&
     artifact.contentHash === (await sha256CanonicalJson(application)) &&
     asRecord(artifact.metadataJson)?.kind ===
-      PROPOSAL_APPLICATION_ARTIFACT_KIND &&
-    asRecord(attempt.metadata)?.kind === PROPOSAL_APPLICATION_ARTIFACT_KIND &&
+      DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND &&
+    asRecord(attempt.metadata)?.kind ===
+      DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND &&
     attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
     attempt.taskId === authorityTaskId &&
     attempt.executorKind === TaskCandidateKind.USER &&
@@ -728,6 +824,108 @@ async function readAuthenticApplicationArtifact(
     artifact.submittedByAgentExecutorId == null
     ? application
     : null;
+}
+
+async function getAppliedProposalAuthorPersonIds(
+  tx: Prisma.TransactionClient,
+  authorityTaskId: string,
+  target: DocumentRevisionPin,
+  cache?: AppliedProposalAuthorCache,
+): Promise<Set<string>> {
+  const cacheKey = `${authorityTaskId}:${target.documentId}:${target.revisionId}:${target.contentHash}`;
+  const cached = cache?.get(cacheKey);
+  if (cached) return cached;
+  const result = loadAppliedProposalAuthorPersonIds(
+    tx,
+    authorityTaskId,
+    target,
+  );
+  cache?.set(cacheKey, result);
+  return result;
+}
+
+async function loadAppliedProposalAuthorPersonIds(
+  tx: Prisma.TransactionClient,
+  authorityTaskId: string,
+  target: DocumentRevisionPin,
+): Promise<Set<string>> {
+  const applicationArtifacts = await tx.taskExecutionArtifact.findMany({
+    where: {
+      structuredResultJson: {
+        equals: target.revisionId,
+        path: ["resultingDocument", "revisionId"],
+      },
+      taskExecutionAttempt: {
+        metadata: {
+          equals: DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
+          path: ["kind"],
+        },
+        taskId: authorityTaskId,
+      },
+    },
+    select: artifactWithAttemptSelect,
+  });
+  const applications = (
+    await Promise.all(
+      applicationArtifacts.map(async (artifact) => ({
+        application: await readAuthenticApplicationArtifact(
+          artifact,
+          authorityTaskId,
+        ),
+        artifact,
+      })),
+    )
+  ).filter(
+    (
+      item,
+    ): item is {
+      application: DocumentProposalApplicationV1;
+      artifact: ArtifactWithAttempt;
+    } =>
+      item.application != null &&
+      sameDocumentRevisionPin(item.application.resultingDocument, target),
+  );
+  if (applications.length === 0) return new Set();
+
+  const proposalArtifacts = await tx.taskExecutionArtifact.findMany({
+    where: {
+      id: {
+        in: applications.map(
+          ({ application }) => application.proposalArtifact.artifactId,
+        ),
+      },
+    },
+    select: artifactWithAttemptSelect,
+  });
+  const proposalsById = new Map(
+    proposalArtifacts.map((artifact) => [artifact.id, artifact]),
+  );
+  const authorPersonIds = new Set<string>();
+  for (const { application } of applications) {
+    const artifact = proposalsById.get(application.proposalArtifact.artifactId);
+    if (
+      !artifact ||
+      artifact.contentHash !== application.proposalArtifact.contentHash
+    ) {
+      continue;
+    }
+    const proposal = await readAuthenticProposalArtifact(
+      artifact,
+      authorityTaskId,
+    );
+    if (
+      !proposal ||
+      !sameDocumentRevisionPin(proposal.base, application.base) ||
+      !sameDocumentRevisionPin(
+        proposal.proposal,
+        application.sourceProposalDocument,
+      )
+    ) {
+      continue;
+    }
+    authorPersonIds.add(proposal.proposedByPersonId);
+  }
+  return authorPersonIds;
 }
 
 async function readAuthenticDecisionArtifact(
@@ -739,8 +937,10 @@ async function readAuthenticDecisionArtifact(
   return decision &&
     decision.authorityTaskId === authorityTaskId &&
     artifact.contentHash === (await sha256CanonicalJson(decision)) &&
-    asRecord(artifact.metadataJson)?.kind === INTERNAL_DECISION_ARTIFACT_KIND &&
-    asRecord(attempt.metadata)?.kind === INTERNAL_DECISION_ARTIFACT_KIND &&
+    asRecord(artifact.metadataJson)?.kind ===
+      INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND &&
+    asRecord(attempt.metadata)?.kind ===
+      INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND &&
     attempt.status === TaskExecutionAttemptStatus.COMPLETED &&
     attempt.taskId === authorityTaskId &&
     attempt.executorKind === TaskCandidateKind.USER &&
@@ -803,6 +1003,7 @@ async function createPrivateProposalDocument(
     createdByUserId: string;
     idempotencyKey: string;
     jurisdictionId: string | null;
+    organizationId: string | null;
     requestHash: string;
     title: string;
   },
@@ -812,6 +1013,7 @@ async function createPrivateProposalDocument(
       createdByUserId: input.createdByUserId,
       idempotencyKey: input.idempotencyKey,
       jurisdictionId: input.jurisdictionId,
+      organizationId: input.organizationId,
       requestHash: input.requestHash,
       searchText: `${input.title}\n${input.body}`,
       taskId: null,
@@ -882,12 +1084,18 @@ async function snapshotAuthorizedProposalSourceComments(
     select: reviewTaskSelect,
   });
   const validTaskIds = new Set([input.authorityTaskId]);
+  const proposalAuthorCache: AppliedProposalAuthorCache = new Map();
   for (const reviewTask of candidateReviewTasks) {
     const request = readReviewRequest(reviewTask.contextJson);
     if (
       request &&
       sameDocumentRevisionPin(request.target, input.base) &&
-      (await hasValidReviewTaskProvenance(tx, reviewTask, request))
+      (await hasValidReviewTaskProvenance(
+        tx,
+        reviewTask,
+        request,
+        proposalAuthorCache,
+      ))
     ) {
       validTaskIds.add(reviewTask.id);
     }
@@ -1019,7 +1227,7 @@ export async function createDocumentProposal(
     );
     const existingArtifactId = await findIdempotentArtifactId(tx, {
       idempotencyKey,
-      kind: PROPOSAL_ARTIFACT_KIND,
+      kind: DOCUMENT_PROPOSAL_ARTIFACT_KIND,
       requestHash,
       taskId: authorityTask.id,
     });
@@ -1030,6 +1238,15 @@ export async function createDocumentProposal(
         authorityTask.id,
       );
       if (!proposal) conflict("The prior proposal artifact is invalid");
+      const [baseRevision] = await Promise.all([
+        loadExactRevision(tx, proposal.base),
+        loadExactRevision(tx, proposal.proposal),
+      ]);
+      await assertRevisionClientBoundary(
+        tx,
+        baseRevision,
+        options.clientAccessBoundary,
+      );
       return {
         artifact: { contentHash: artifact.contentHash, id: artifact.id },
         proposal,
@@ -1052,6 +1269,11 @@ export async function createDocumentProposal(
     ]);
     const base = revisionPin(baseRevision);
     const lockedBase = await loadExactRevision(tx, base);
+    await assertRevisionClientBoundary(
+      tx,
+      lockedBase,
+      options.clientAccessBoundary,
+    );
     if (
       lockedBase.document.currentRevisionId !== lockedBase.id ||
       lockedBase.document.version !== lockedBase.version
@@ -1072,11 +1294,30 @@ export async function createDocumentProposal(
     const documentIdempotencyKey = `document-proposal:${await sha256CanonicalJson(
       { actorUserId, authorityTaskId, idempotencyKey },
     )}`;
+    const proposalOrganizationId =
+      options.clientAccessBoundary?.allowPersonalPrivate === false
+        ? (lockedBase.document.organizationId ??
+          authorityTask.ownerOrganizationId)
+        : null;
+    if (
+      !(await isDocumentWithinClientAccessBoundary(
+        {
+          organizationId: proposalOrganizationId,
+          taskId: null,
+          visibility: ContentVisibility.PRIVATE,
+        },
+        options.clientAccessBoundary,
+        tx,
+      ))
+    ) {
+      notFound();
+    }
     const proposalPin = await createPrivateProposalDocument(tx, {
       body: input.body,
       createdByUserId: actor.id,
       idempotencyKey: documentIdempotencyKey,
       jurisdictionId: authorityTask.jurisdictionId,
+      organizationId: proposalOrganizationId,
       requestHash,
       title: input.title,
     });
@@ -1085,6 +1326,7 @@ export async function createDocumentProposal(
       base,
       proposal: proposalPin,
       proposedAt: now.toISOString(),
+      proposedByPersonId: actor.personId,
       proposedByUserId: actor.id,
       schema: "optimitron.document-proposal.v1",
       sourceComments,
@@ -1093,7 +1335,7 @@ export async function createDocumentProposal(
     const artifact = await createCompletedArtifact({
       actor,
       idempotencyKey,
-      kind: PROPOSAL_ARTIFACT_KIND,
+      kind: DOCUMENT_PROPOSAL_ARTIFACT_KIND,
       label: "Document revision proposal",
       now,
       requestHash,
@@ -1109,18 +1351,35 @@ async function buildProposalPreview(
   tx: Prisma.TransactionClient,
   artifact: ArtifactWithAttempt,
   authorityTaskId: string,
+  clientAccessBoundary?: TaskClientAccessBoundary,
+  canReadBaseDocument?: (documentId: string) => Promise<boolean>,
 ): Promise<DocumentProposalPreview | null> {
   const proposal = await readAuthenticProposalArtifact(
     artifact,
     authorityTaskId,
   );
   if (!proposal) return null;
+  if (
+    canReadBaseDocument &&
+    !(await canReadBaseDocument(proposal.base.documentId))
+  ) {
+    return null;
+  }
   const revisions = await Promise.all([
     loadExactRevisionOrNull(tx, proposal.base),
     loadExactRevisionOrNull(tx, proposal.proposal),
   ]);
   const [baseRevision, proposalRevision] = revisions;
   if (!baseRevision || !proposalRevision) return null;
+  if (
+    !(await isDocumentWithinClientAccessBoundary(
+      baseRevision.document,
+      clientAccessBoundary,
+      tx,
+    ))
+  ) {
+    return null;
+  }
   if (
     proposalRevision.document.taskId != null ||
     proposalRevision.document.visibility !== ContentVisibility.PRIVATE ||
@@ -1182,7 +1441,7 @@ export async function applyDocumentProposal(
     );
     const existingArtifactId = await findIdempotentArtifactId(tx, {
       idempotencyKey,
-      kind: PROPOSAL_APPLICATION_ARTIFACT_KIND,
+      kind: DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
       requestHash,
       taskId: authorityTask.id,
     });
@@ -1193,6 +1452,20 @@ export async function applyDocumentProposal(
         authorityTask.id,
       );
       if (!application) conflict("The prior proposal application is invalid");
+      const [baseRevision, , resultingRevision] = await Promise.all([
+        loadExactRevision(tx, application.base),
+        loadExactRevision(tx, application.sourceProposalDocument),
+        loadExactRevision(tx, application.resultingDocument),
+      ]);
+      await Promise.all(
+        [baseRevision, resultingRevision].map((revision) =>
+          assertRevisionClientBoundary(
+            tx,
+            revision,
+            options.clientAccessBoundary,
+          ),
+        ),
+      );
       return {
         application,
         artifact: { contentHash: artifact.contentHash, id: artifact.id },
@@ -1226,6 +1499,11 @@ export async function applyDocumentProposal(
       loadExactRevision(tx, proposal.base),
       loadExactRevision(tx, proposal.proposal),
     ]);
+    await assertRevisionClientBoundary(
+      tx,
+      baseRevision,
+      options.clientAccessBoundary,
+    );
     if (
       baseRevision.document.taskId !== authorityTask.id ||
       baseRevision.document.currentRevisionId !== baseRevision.id ||
@@ -1327,7 +1605,7 @@ export async function applyDocumentProposal(
     const artifact = await createCompletedArtifact({
       actor,
       idempotencyKey,
-      kind: PROPOSAL_APPLICATION_ARTIFACT_KIND,
+      kind: DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
       label: "Applied document revision proposal",
       now,
       requestHash,
@@ -1396,6 +1674,11 @@ export async function requestDocumentReview(
       ) {
         conflict("Idempotency-Key was already used for a different review");
       }
+      await assertRevisionClientBoundary(
+        tx,
+        await loadExactRevision(tx, request.target),
+        options.clientAccessBoundary,
+      );
       return { request, reviewTaskId: existing.id };
     }
     if (
@@ -1438,6 +1721,11 @@ export async function requestDocumentReview(
     );
     const target = revisionPin(revision);
     const lockedRevision = await loadExactRevision(tx, target);
+    await assertRevisionClientBoundary(
+      tx,
+      lockedRevision,
+      options.clientAccessBoundary,
+    );
     if (
       lockedRevision.document.currentRevisionId !== lockedRevision.id ||
       lockedRevision.document.version !== lockedRevision.version
@@ -1449,6 +1737,14 @@ export async function requestDocumentReview(
       reviewer.id === lockedRevision.createdByUser.personId
     ) {
       invalid("A person cannot review their own request or document revision");
+    }
+    const proposalAuthorPersonIds = await getAppliedProposalAuthorPersonIds(
+      tx,
+      authorityTask.id,
+      target,
+    );
+    if (proposalAuthorPersonIds.has(reviewer.id)) {
+      invalid("A person cannot review a revision based on their own proposal");
     }
     const duplicateCandidates = await tx.task.findMany({
       where: {
@@ -1545,7 +1841,11 @@ export async function submitDocumentReview(
   return prisma.$transaction(async (tx) => {
     const actor = await getActor(tx, actorUserId);
     const initialTask = await tx.task.findFirst({
-      where: taskBoundaryWhere(reviewTaskId, options.clientAccessBoundary),
+      where: assignedReviewTaskBoundaryWhere(
+        reviewTaskId,
+        actor.personId,
+        options.clientAccessBoundary,
+      ),
       select: reviewTaskSelect,
     });
     const initialRequest = readReviewRequest(initialTask?.contextJson);
@@ -1560,7 +1860,11 @@ export async function submitDocumentReview(
     }
     await lockTaskRow(tx, initialTask.id);
     const task = await tx.task.findFirst({
-      where: taskBoundaryWhere(reviewTaskId, options.clientAccessBoundary),
+      where: assignedReviewTaskBoundaryWhere(
+        reviewTaskId,
+        actor.personId,
+        options.clientAccessBoundary,
+      ),
       select: reviewTaskSelect,
     });
     const request = readReviewRequest(task?.contextJson);
@@ -1576,7 +1880,7 @@ export async function submitDocumentReview(
 
     const existingArtifactId = await findIdempotentArtifactId(tx, {
       idempotencyKey,
-      kind: REVIEW_RESPONSE_ARTIFACT_KIND,
+      kind: DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND,
       requestHash,
       taskId: task.id,
     });
@@ -1587,6 +1891,11 @@ export async function submitDocumentReview(
         existingArtifactId,
       );
       if (!existing) conflict("The prior review response is invalid");
+      await assertAssignedReviewRevisionClientBoundary(
+        tx,
+        await loadExactRevision(tx, request.target),
+        options.clientAccessBoundary,
+      );
       return {
         artifact: {
           contentHash: existing.artifact.contentHash,
@@ -1607,6 +1916,11 @@ export async function submitDocumentReview(
       conflict("The review task is no longer active");
     }
     const revision = await loadExactRevision(tx, request.target);
+    await assertAssignedReviewRevisionClientBoundary(
+      tx,
+      revision,
+      options.clientAccessBoundary,
+    );
     if (
       revision.document.currentRevisionId !== revision.id ||
       revision.document.version !== revision.version
@@ -1652,7 +1966,7 @@ export async function submitDocumentReview(
     assertReviewResponseMatchesRequest(response, request, task.id);
     const metadata = {
       idempotencyKey,
-      kind: REVIEW_RESPONSE_ARTIFACT_KIND,
+      kind: DOCUMENT_REVIEW_RESPONSE_ARTIFACT_KIND,
       requestHash,
     };
     const attempt = await tx.taskExecutionAttempt.create({
@@ -1779,7 +2093,7 @@ export async function decideDocumentRevision(
     );
     const existingArtifactId = await findIdempotentArtifactId(tx, {
       idempotencyKey,
-      kind: INTERNAL_DECISION_ARTIFACT_KIND,
+      kind: INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
       requestHash,
       taskId: authorityTask.id,
     });
@@ -1790,6 +2104,11 @@ export async function decideDocumentRevision(
         authorityTask.id,
       );
       if (!decision) conflict("The prior internal decision is invalid");
+      await assertRevisionClientBoundary(
+        tx,
+        await loadExactRevision(tx, decision.target),
+        options.clientAccessBoundary,
+      );
       return {
         artifact: { contentHash: artifact.contentHash, id: artifact.id },
         decision,
@@ -1809,6 +2128,11 @@ export async function decideDocumentRevision(
     );
     const target = revisionPin(targetRevision);
     const lockedTarget = await loadExactRevision(tx, target);
+    await assertRevisionClientBoundary(
+      tx,
+      lockedTarget,
+      options.clientAccessBoundary,
+    );
     if (
       lockedTarget.document.currentRevisionId !== lockedTarget.id ||
       lockedTarget.document.version !== lockedTarget.version
@@ -1843,7 +2167,7 @@ export async function decideDocumentRevision(
         taskExecutionAttempt: {
           deletedAt: null,
           metadata: {
-            equals: INTERNAL_DECISION_ARTIFACT_KIND,
+            equals: INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
             path: ["kind"],
           },
           taskId: authorityTask.id,
@@ -1881,7 +2205,7 @@ export async function decideDocumentRevision(
     const artifact = await createCompletedArtifact({
       actor,
       idempotencyKey,
-      kind: INTERNAL_DECISION_ARTIFACT_KIND,
+      kind: INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
       label:
         decision.action === "ADOPT"
           ? "Internal document adoption"
@@ -1899,17 +2223,44 @@ export async function decideDocumentRevision(
 async function buildPanelReview(
   tx: Prisma.TransactionClient,
   task: ReviewTask,
+  options: {
+    assignedReviewGrant?: boolean;
+    canReadDocument?: (documentId: string) => Promise<boolean>;
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    proposalAuthorCache?: AppliedProposalAuthorCache;
+  } = {},
 ): Promise<DocumentReviewPanelReview | null> {
   const request = readReviewRequest(task.contextJson);
   if (
     !request ||
     !task.assigneePerson ||
-    !(await hasValidReviewTaskProvenance(tx, task, request))
+    !(await hasValidReviewTaskProvenance(
+      tx,
+      task,
+      request,
+      options.proposalAuthorCache,
+    ))
+  ) {
+    return null;
+  }
+  if (
+    options.canReadDocument &&
+    !(await options.canReadDocument(request.target.documentId))
   ) {
     return null;
   }
   const revision = await loadExactRevisionOrNull(tx, request.target);
   if (!revision) return null;
+  if (
+    !options.assignedReviewGrant &&
+    !(await isDocumentWithinClientAccessBoundary(
+      revision.document,
+      options.clientAccessBoundary,
+      tx,
+    ))
+  ) {
+    return null;
+  }
   const result = await findAuthenticReviewResponse(task, request);
   const stale =
     task.status === TaskStatus.STALE ||
@@ -1954,21 +2305,37 @@ export async function getDocumentReviewPanelData(
       select: { id: true, personId: true },
     });
     const requestedTaskProbe = await tx.task.findFirst({
-      where: taskBoundaryWhere(taskId, options.clientAccessBoundary),
+      where: actor?.personId
+        ? assignedReviewTaskBoundaryWhere(
+            taskId,
+            actor.personId,
+            options.clientAccessBoundary,
+          )
+        : { id: "__unreachable__" },
       select: requestedTaskProbeSelect,
     });
     if (!actor?.personId || !requestedTaskProbe) return null;
+    const proposalAuthorCache: AppliedProposalAuthorCache = new Map();
     const directRequest = readReviewRequest(requestedTaskProbe.contextJson);
     if (
       directRequest &&
       requestedTaskProbe.assigneePersonId === actor.personId
     ) {
       const requestedReviewTask = await tx.task.findFirst({
-        where: taskBoundaryWhere(taskId, options.clientAccessBoundary),
+        where: assignedReviewTaskBoundaryWhere(
+          taskId,
+          actor.personId,
+          options.clientAccessBoundary,
+        ),
         select: reviewTaskSelect,
       });
       if (!requestedReviewTask) return null;
-      const review = await buildPanelReview(tx, requestedReviewTask);
+      const review = await buildPanelReview(tx, requestedReviewTask, {
+        assignedReviewGrant:
+          options.clientAccessBoundary?.allowPersonalPrivate === true,
+        clientAccessBoundary: options.clientAccessBoundary,
+        proposalAuthorCache,
+      });
       if (!review) return null;
       return {
         authorityTaskId: review.request.authorityTaskId,
@@ -1997,6 +2364,19 @@ export async function getDocumentReviewPanelData(
       select: { id: true },
     });
     if (!managed) return null;
+    const readableDocuments = new Map<string, Promise<boolean>>();
+    const canManagerReadDocument = (documentId: string) => {
+      const cached = readableDocuments.get(documentId);
+      if (cached) return cached;
+      const result = canActorReadDocument(
+        tx,
+        documentId,
+        actor.id,
+        options.clientAccessBoundary,
+      );
+      readableDocuments.set(documentId, result);
+      return result;
+    };
     const reviewTasks = await tx.task.findMany({
       where: {
         AND: [
@@ -2010,7 +2390,15 @@ export async function getDocumentReviewPanelData(
       select: reviewTaskSelect,
     });
     const reviews = (
-      await Promise.all(reviewTasks.map((task) => buildPanelReview(tx, task)))
+      await Promise.all(
+        reviewTasks.map((task) =>
+          buildPanelReview(tx, task, {
+            canReadDocument: canManagerReadDocument,
+            clientAccessBoundary: options.clientAccessBoundary,
+            proposalAuthorCache,
+          }),
+        ),
+      )
     ).filter((review): review is DocumentReviewPanelReview => review != null);
 
     const operationArtifacts = (kind: string) =>
@@ -2028,9 +2416,9 @@ export async function getDocumentReviewPanelData(
       });
     const [decisionArtifacts, proposalArtifacts, applicationArtifacts] =
       await Promise.all([
-        operationArtifacts(INTERNAL_DECISION_ARTIFACT_KIND),
-        operationArtifacts(PROPOSAL_ARTIFACT_KIND),
-        operationArtifacts(PROPOSAL_APPLICATION_ARTIFACT_KIND),
+        operationArtifacts(INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND),
+        operationArtifacts(DOCUMENT_PROPOSAL_ARTIFACT_KIND),
+        operationArtifacts(DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND),
       ]);
     const decisions: Array<{
       artifactId: string;
@@ -2041,7 +2429,12 @@ export async function getDocumentReviewPanelData(
         artifact,
         authorityTaskId,
       );
-      if (decision) decisions.push({ artifactId: artifact.id, decision });
+      if (
+        decision &&
+        (await canManagerReadDocument(decision.target.documentId))
+      ) {
+        decisions.push({ artifactId: artifact.id, decision });
+      }
     }
     const appliedProposalArtifactIds = new Set<string>();
     for (const artifact of applicationArtifacts) {
@@ -2056,7 +2449,13 @@ export async function getDocumentReviewPanelData(
     const proposals: DocumentProposalPreview[] = [];
     for (const artifact of proposalArtifacts) {
       if (appliedProposalArtifactIds.has(artifact.id)) continue;
-      const preview = await buildProposalPreview(tx, artifact, authorityTaskId);
+      const preview = await buildProposalPreview(
+        tx,
+        artifact,
+        authorityTaskId,
+        options.clientAccessBoundary,
+        canManagerReadDocument,
+      );
       if (preview) proposals.push(preview);
     }
     return {
@@ -2067,4 +2466,27 @@ export async function getDocumentReviewPanelData(
       reviews,
     };
   });
+}
+
+export async function getAssignedDocumentReview(
+  reviewTaskId: string,
+  actorUserId: string,
+  options: { clientAccessBoundary?: TaskClientAccessBoundary } = {},
+) {
+  const panel = await getDocumentReviewPanelData(
+    reviewTaskId,
+    actorUserId,
+    options,
+  );
+  if (!panel || panel.mode !== "REVIEWER") notFound();
+  return {
+    authorityTaskId: panel.authorityTaskId,
+    canSubmit: panel.canSubmit,
+    request: panel.review.request,
+    response: panel.review.response,
+    reviewer: panel.review.reviewer,
+    reviewTaskId: panel.review.reviewTaskId,
+    state: panel.review.state,
+    target: panel.review.target,
+  };
 }

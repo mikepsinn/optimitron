@@ -17,6 +17,7 @@ export const DOCUMENT_REVIEW_TOOL_SCOPES = {
   applyDocumentProposal: REVIEW_TOOL_SCOPES,
   createDocumentProposal: REVIEW_TOOL_SCOPES,
   decideDocumentRevision: REVIEW_TOOL_SCOPES,
+  getDocumentReview: REVIEW_TOOL_SCOPES,
   requestDocumentReview: REVIEW_TOOL_SCOPES,
   submitDocumentReview: REVIEW_TOOL_SCOPES,
 } satisfies Record<string, McpScope[]>;
@@ -34,6 +35,19 @@ const VERDICT = {
 } as const;
 
 export const DOCUMENT_REVIEW_TOOL_DEFINITIONS = [
+  {
+    name: "getDocumentReview",
+    description:
+      "Read the exact document revision and instructions assigned to the authenticated reviewer.",
+    inputSchema: {
+      type: "object" as const,
+      additionalProperties: false,
+      properties: {
+        reviewTaskId: { type: "string" },
+      },
+      required: ["reviewTaskId"],
+    },
+  },
   {
     name: "createDocumentProposal",
     description:
@@ -187,6 +201,27 @@ export async function handleDocumentReviewToolCall({
   userId: string | null | undefined;
 }): Promise<ToolResponse> {
   if (!userId) return err(`${name} requires an identified user`);
+
+  if (name === "getDocumentReview") {
+    const reviewTaskId = readRequiredString(args, "reviewTaskId");
+    if (!reviewTaskId) return err("reviewTaskId is required");
+
+    try {
+      const reviews = await import("../tasks/document-review.server");
+      return ok(
+        await reviews.getAssignedDocumentReview(reviewTaskId, userId, {
+          clientAccessBoundary,
+        }),
+      );
+    } catch (error) {
+      return err(
+        error instanceof Error
+          ? error.message
+          : "Document review operation failed",
+      );
+    }
+  }
+
   const idempotencyKey = readRequiredString(args, "idempotencyKey");
   if (!idempotencyKey) return err("idempotencyKey is required");
 

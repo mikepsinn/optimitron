@@ -177,6 +177,63 @@ describe("mergeTask", () => {
     expectNoWrites();
   });
 
+  it("refuses to merge away a document-review authority with historical review children", async () => {
+    seedTasks({ can: {}, dup: {} });
+    h.state.tx.task.count.mockImplementation(
+      async (args: {
+        where: {
+          deletedAt?: unknown;
+          parentTaskId?: string;
+          taskKey?: unknown;
+        };
+      }) =>
+        args.where.parentTaskId === "dup" &&
+        !("deletedAt" in args.where) &&
+        args.where.taskKey != null
+          ? 1
+          : 0,
+    );
+
+    const report = await mergeTask({
+      canonicalTaskId: "can",
+      duplicateTaskId: "dup",
+    });
+
+    expect(report.refused).toContain("document-review authority");
+    expect(h.state.tx.task.count).toHaveBeenCalledWith({
+      where: {
+        parentTaskId: "dup",
+        taskKey: { startsWith: "document-review:dup:" },
+      },
+    });
+    expect(h.state.tx.$queryRaw).toHaveBeenCalledTimes(1);
+    expectNoWrites();
+  });
+
+  it("refuses to merge away an authority with historical governance artifacts", async () => {
+    seedTasks({ can: {}, dup: {} });
+    h.state.tx.taskExecutionAttempt.count.mockImplementation(
+      async (args: { where: { deletedAt?: unknown; taskId?: string } }) =>
+        args.where.taskId === "dup" && !("deletedAt" in args.where) ? 1 : 0,
+    );
+
+    const report = await mergeTask({
+      canonicalTaskId: "can",
+      duplicateTaskId: "dup",
+    });
+
+    expect(report.refused).toContain(
+      "proposal, application, or decision history",
+    );
+    expect(h.state.tx.taskExecutionAttempt.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ taskId: "dup" }),
+      }),
+    );
+    expect(h.state.tx.$queryRaw).toHaveBeenCalledTimes(1);
+    expectNoWrites();
+  });
+
   it("refuses when both tasks have a funding target, before any re-point", async () => {
     seedTasks({ can: {}, dup: {} });
     h.state.tx.taskFundingTarget.findUnique.mockImplementation(
