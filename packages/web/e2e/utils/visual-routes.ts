@@ -38,6 +38,26 @@ type DocumentReviewFixtureManifest = {
   version: 1;
 };
 
+function isDocumentReviewFixtureManifest(
+  value: unknown,
+): value is DocumentReviewFixtureManifest {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    candidate.version === 1 &&
+    isNonEmptyString(candidate.managerTaskId) &&
+    isNonEmptyString(candidate.activeReviewTaskId) &&
+    isNonEmptyString(candidate.staleReviewTaskId)
+  );
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 const WEB_ROOT = path.resolve(__dirname, "../..");
 const DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH = path.resolve(
   WEB_ROOT,
@@ -295,11 +315,11 @@ function loadDocumentReviewRoutes(): VisualRoute[] {
     return [];
   }
 
-  let manifest: DocumentReviewFixtureManifest;
+  let manifest: unknown;
   try {
     manifest = JSON.parse(
       readFileSync(DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH, "utf8"),
-    ) as DocumentReviewFixtureManifest;
+    );
   } catch (error) {
     throw new Error(
       `Document-review visual fixture manifest is missing at ${DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH}. The visual fixture seeder must run before Playwright.`,
@@ -307,12 +327,7 @@ function loadDocumentReviewRoutes(): VisualRoute[] {
     );
   }
 
-  if (
-    manifest.version !== 1 ||
-    !manifest.managerTaskId ||
-    !manifest.activeReviewTaskId ||
-    !manifest.staleReviewTaskId
-  ) {
+  if (!isDocumentReviewFixtureManifest(manifest)) {
     throw new Error(
       `Document-review visual fixture manifest is invalid at ${DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH}.`,
     );
