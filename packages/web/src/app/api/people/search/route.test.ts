@@ -77,17 +77,27 @@ describe("people search route", () => {
         orderBy: [{ isPublicFigure: "desc" }, { displayName: "asc" }],
         take: 8,
         where: expect.objectContaining({
-          deletedAt: null,
-          lifeStatus: { not: PersonLifeStatus.DECEASED },
-          OR: expect.arrayContaining([
-            { email: { equals: "ada@example.org" } },
+          AND: expect.arrayContaining([
+            expect.objectContaining({
+              OR: expect.arrayContaining([
+                { email: { equals: "ada@example.org" } },
+                {
+                  handle: {
+                    contains: "ada@example.org",
+                    mode: "insensitive",
+                  },
+                },
+              ]),
+            }),
             {
-              handle: {
-                contains: "ada@example.org",
-                mode: "insensitive",
-              },
+              OR: [
+                { email: { not: null } },
+                { user: { is: { deletedAt: null } } },
+              ],
             },
           ]),
+          deletedAt: null,
+          lifeStatus: { not: PersonLifeStatus.DECEASED },
         }),
       }),
     );

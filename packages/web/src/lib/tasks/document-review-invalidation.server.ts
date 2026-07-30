@@ -1,5 +1,8 @@
 import { TaskStatus, type Prisma } from "@optimitron/db";
-import { DOCUMENT_REVIEW_CONTEXT_KEY } from "@/lib/tasks/document-review-contracts";
+import {
+  DOCUMENT_REVIEW_CONTEXT_KEY,
+  DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+} from "@/lib/tasks/document-review-contracts";
 
 /** Atomically closes every live review pinned anywhere in this document's history. */
 export function invalidateDocumentReviewsForDocument(
@@ -26,6 +29,7 @@ export function invalidateDocumentReviewsForDocument(
       status: {
         in: [TaskStatus.DRAFT, TaskStatus.ACTIVE, TaskStatus.VERIFIED],
       },
+      taskKey: { startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX },
     },
     data: { status: TaskStatus.STALE },
   });

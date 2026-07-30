@@ -1415,10 +1415,18 @@ export async function requestDocumentReview(
       loadRevisionById(tx, input.documentRevisionId),
       tx.person.findFirst({
         where: { deletedAt: null, id: input.reviewerPersonId },
-        select: { displayName: true, id: true },
+        select: {
+          displayName: true,
+          email: true,
+          id: true,
+          user: { select: { id: true } },
+        },
       }),
     ]);
     if (!reviewer || revision.document.taskId !== authorityTask.id) notFound();
+    if (!reviewer.email && !reviewer.user) {
+      invalid("Reviewer needs an email address or linked account to sign in");
+    }
     await lockContentResources(tx, [
       { id: revision.documentId, type: "document" },
     ]);

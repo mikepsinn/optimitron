@@ -8,7 +8,10 @@ import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { createDocument, updateDocument } from "@/lib/documents.server";
 import { prisma } from "@/lib/prisma";
 import { postComment } from "@/lib/tasks/task-comments.server";
-import { DOCUMENT_REVIEW_TASK_KEY_PREFIX } from "./document-review-contracts";
+import {
+  DOCUMENT_REVIEW_CONTEXT_KEY,
+  DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+} from "./document-review-contracts";
 import {
   applyDocumentProposal,
   createDocumentProposal,
@@ -152,6 +155,24 @@ describe.sequential("document governance kernel integration", () => {
 
   it("turns comments into an optimistic proposal, stales old reviews, and adopts an independent approval", async () => {
     const fixture = await createFixture();
+    const unreachableReviewer = await prisma.person.create({
+      data: {
+        displayName: "Unreachable reviewer",
+        id: `${TEST_PREFIX}person_unreachable`,
+      },
+    });
+    await expect(
+      requestDocumentReview(
+        fixture.authorityTask.id,
+        {
+          documentRevisionId: fixture.document.revision.id,
+          instructions: "This assignment must remain reachable.",
+          reviewerPersonId: unreachableReviewer.id,
+        },
+        fixture.manager.user.id,
+        { idempotencyKey: "unreachable-reviewer" },
+      ),
+    ).rejects.toThrow("email address or linked account");
     await expect(
       requestDocumentReview(
         fixture.authorityTask.id,
@@ -175,6 +196,20 @@ describe.sequential("document governance kernel integration", () => {
       fixture.manager.user.id,
       { idempotencyKey: "old-review" },
     );
+    const forgedReview = await prisma.task.create({
+      data: {
+        contextJson: {
+          [DOCUMENT_REVIEW_CONTEXT_KEY]: oldReview.request,
+        },
+        createdByUserId: fixture.manager.user.id,
+        description: "Ordinary task with colliding metadata.",
+        id: `${TEST_PREFIX}forged_review`,
+        parentTaskId: fixture.authorityTask.id,
+        status: TaskStatus.ACTIVE,
+        taskKey: `${TEST_PREFIX}ordinary-task`,
+        title: "Do not stale this ordinary task",
+      },
+    });
     const comment = await postComment({
       authorUserId: fixture.manager.user.id,
       message: "Replace 'Original' with 'Revised' and explain the change.",
@@ -258,6 +293,12 @@ describe.sequential("document governance kernel integration", () => {
         select: { status: true },
       }),
     ).resolves.toEqual({ status: TaskStatus.STALE });
+    await expect(
+      prisma.task.findUniqueOrThrow({
+        where: { id: forgedReview.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskStatus.ACTIVE });
 
     const current = applied.application.resultingDocument;
     const review = await requestDocumentReview(
