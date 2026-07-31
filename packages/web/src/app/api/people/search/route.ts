@@ -38,17 +38,34 @@ export async function GET(request: Request) {
       },
       take: 8,
       where: {
+        AND: [
+          {
+            OR: [
+              { displayName: { contains: query, mode: "insensitive" } },
+              { firstName: { contains: query, mode: "insensitive" } },
+              { lastName: { contains: query, mode: "insensitive" } },
+              {
+                handle: {
+                  contains: query.replace(/^@/u, ""),
+                  mode: "insensitive",
+                },
+              },
+              { headline: { contains: query, mode: "insensitive" } },
+              {
+                currentAffiliation: { contains: query, mode: "insensitive" },
+              },
+              ...(emailSearch ? [{ email: { equals: emailSearch } }] : []),
+            ],
+          },
+          {
+            OR: [
+              { email: { not: null } },
+              { user: { is: { deletedAt: null } } },
+            ],
+          },
+        ],
         deletedAt: null,
         lifeStatus: { not: PersonLifeStatus.DECEASED },
-        OR: [
-          { displayName: { contains: query, mode: "insensitive" } },
-          { firstName: { contains: query, mode: "insensitive" } },
-          { lastName: { contains: query, mode: "insensitive" } },
-          { handle: { contains: query.replace(/^@/u, ""), mode: "insensitive" } },
-          { headline: { contains: query, mode: "insensitive" } },
-          { currentAffiliation: { contains: query, mode: "insensitive" } },
-          ...(emailSearch ? [{ email: { equals: emailSearch } }] : []),
-        ],
       },
     });
 

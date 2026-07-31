@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  getCurrentUser: vi.fn(),
   getDocumentForViewer: vi.fn(),
+  getTaskRequestIdentity: vi.fn(),
+  requireTaskRequestAuth: vi.fn(),
   updateDocument: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-utils", () => ({
-  getCurrentUser: mocks.getCurrentUser,
+  getTaskRequestIdentity: mocks.getTaskRequestIdentity,
+  requireTaskRequestAuth: mocks.requireTaskRequestAuth,
 }));
 
 vi.mock("@/lib/documents.server", () => ({
@@ -33,7 +35,7 @@ beforeEach(() => {
 
 describe("GET /api/documents/[id]", () => {
   it("returns 404 for an anonymous viewer on a private document", async () => {
-    mocks.getCurrentUser.mockResolvedValue(null);
+    mocks.getTaskRequestIdentity.mockResolvedValue({ userId: null });
     mocks.getDocumentForViewer.mockResolvedValue(null);
 
     const response = await GET(
@@ -49,7 +51,14 @@ describe("GET /api/documents/[id]", () => {
   });
 
   it("returns the document for a permitted viewer", async () => {
-    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    const clientAccessBoundary = {
+      allowPersonalPrivate: false,
+      organizationIds: ["organization_1"],
+    };
+    mocks.getTaskRequestIdentity.mockResolvedValue({
+      clientAccessBoundary,
+      userId: "creator_1",
+    });
     mocks.getDocumentForViewer.mockResolvedValue({
       document: { id: "doc_1" },
       versions: [],
@@ -65,13 +74,14 @@ describe("GET /api/documents/[id]", () => {
     expect(mocks.getDocumentForViewer).toHaveBeenCalledWith(
       "doc_1",
       "creator_1",
+      { clientAccessBoundary },
     );
   });
 });
 
 describe("POST /api/documents/[id]", () => {
   it("requires authentication", async () => {
-    mocks.getCurrentUser.mockResolvedValue(null);
+    mocks.requireTaskRequestAuth.mockRejectedValue(new Error("Unauthorized"));
 
     const response = await POST(
       new Request("http://localhost/api/documents/doc_1", {
@@ -86,7 +96,7 @@ describe("POST /api/documents/[id]", () => {
   });
 
   it("maps the not-found error from non-creator edits to 404", async () => {
-    mocks.getCurrentUser.mockResolvedValue({ id: "stranger_1" });
+    mocks.requireTaskRequestAuth.mockResolvedValue({ userId: "stranger_1" });
     mocks.updateDocument.mockRejectedValue(new Error("Document not found"));
 
     const response = await POST(
@@ -101,11 +111,9 @@ describe("POST /api/documents/[id]", () => {
   });
 
   it("maps the empty-patch rejection to 400", async () => {
-    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    mocks.requireTaskRequestAuth.mockResolvedValue({ userId: "creator_1" });
     mocks.updateDocument.mockRejectedValue(
-      new Error(
-        "At least one editable document field must be provided",
-      ),
+      new Error("At least one editable document field must be provided"),
     );
 
     const response = await POST(
@@ -120,7 +128,7 @@ describe("POST /api/documents/[id]", () => {
   });
 
   it("maps the public-visibility-on-a-private-task rejection to 400", async () => {
-    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    mocks.requireTaskRequestAuth.mockResolvedValue({ userId: "creator_1" });
     mocks.updateDocument.mockRejectedValue(
       new Error("Cannot make a document attached to a private task public"),
     );
@@ -137,7 +145,14 @@ describe("POST /api/documents/[id]", () => {
   });
 
   it("maps an optimistic concurrency conflict to 409", async () => {
-    mocks.getCurrentUser.mockResolvedValue({ id: "creator_1" });
+    const clientAccessBoundary = {
+      allowPersonalPrivate: true,
+      organizationIds: [],
+    };
+    mocks.requireTaskRequestAuth.mockResolvedValue({
+      clientAccessBoundary,
+      userId: "creator_1",
+    });
     mocks.updateDocument.mockRejectedValue(
       new Error("Document changed since it was loaded. Refresh and try again."),
     );
@@ -151,5 +166,13 @@ describe("POST /api/documents/[id]", () => {
     );
 
     expect(response.status).toBe(409);
+    expect(mocks.updateDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        documentId: "doc_1",
+        editorUserId: "creator_1",
+        expectedVersion: 2,
+      }),
+      { clientAccessBoundary },
+    );
   });
 });

@@ -2,21 +2,41 @@
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import { rm } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
+import { config as loadEnvFile } from "dotenv";
 
 const require = createRequire(import.meta.url);
+const WEB_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
+const REPO_ROOT = path.resolve(WEB_ROOT, "../..");
+const scriptArgs = process.argv
+  .slice(2)
+  .filter((arg, index) => !(index === 0 && arg === "--"));
+const requestedMode = scriptArgs[0];
+if (requestedMode === "visual") {
+  loadEnvFile({ path: path.resolve(REPO_ROOT, ".env"), quiet: true });
+}
 const DEFAULT_BASE_URL = "http://127.0.0.1:3001";
 const NEW_USER_FLOW_ARTIFACT_DIR = path.resolve(
   process.cwd(),
   "../../screenshots/new-user-flow/_playwright-artifacts",
 );
-const LOCAL_REACHABILITY_PATHS = [
-  "/favicon.ico",
-  "/manifest.json",
-  "/",
-];
+const VISUAL_FIXTURE_MANIFEST_PATH = path.resolve(
+  WEB_ROOT,
+  "output",
+  "playwright",
+  "visual-fixtures",
+  "document-review.json",
+);
+const VISUAL_SCREENSHOT_DIR = path.resolve(WEB_ROOT, "screenshots");
+const VISUAL_FIXTURE_RUNNER_ENV = "OPTIMITRON_VISUAL_FIXTURE_RUNNER";
+const LOCAL_REACHABILITY_PATHS = ["/favicon.ico", "/manifest.json", "/"];
 const LOCAL_REACHABILITY_RETRIES = 3;
 const LOCAL_REACHABILITY_TIMEOUT_MS = 5_000;
 const LOCAL_REACHABILITY_RETRY_DELAY_MS = 750;
@@ -39,10 +59,7 @@ const MODE_SPECS = {
         "e2e/contrast-audit.spec.ts",
         "e2e/treaty-page-structure.spec.ts",
       ]
-    : [
-        "e2e/smoke.spec.ts",
-        "e2e/treaty-page-structure.spec.ts",
-      ],
+    : ["e2e/smoke.spec.ts", "e2e/treaty-page-structure.spec.ts"],
   contrast: ["e2e/contrast-audit.spec.ts"],
   mobile: ["e2e/mobile-responsiveness-audit.spec.ts"],
   "new-user-flow-screenshots": ["e2e/new-user-flow-screenshots.spec.ts"],
@@ -63,13 +80,13 @@ const PLAYWRIGHT_DEFAULT_ARGS = ["--project=default"];
 const PLAYWRIGHT_MODE_DEFAULT_ARGS = {
   visual: ["--project=default", "--project=visual-mobile"],
 };
-const scriptArgs = process.argv.slice(2).filter((arg, index) => !(index === 0 && arg === "--"));
-const requestedMode = scriptArgs[0];
 const helpRequested = ["-h", "--help", "help"].includes(requestedMode ?? "");
-const mode = requestedMode && requestedMode in MODE_SPECS ? requestedMode : "all";
-const passthroughArgs = requestedMode && requestedMode in MODE_SPECS
-  ? scriptArgs.slice(1)
-  : scriptArgs;
+const mode =
+  requestedMode && requestedMode in MODE_SPECS ? requestedMode : "all";
+const passthroughArgs =
+  requestedMode && requestedMode in MODE_SPECS
+    ? scriptArgs.slice(1)
+    : scriptArgs;
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
@@ -109,16 +126,42 @@ async function main() {
   }
 
   if (mode === "new-user-flow-screenshots") {
-    env.PLAYWRIGHT_OUTPUT_DIR = process.env.PLAYWRIGHT_OUTPUT_DIR ?? NEW_USER_FLOW_ARTIFACT_DIR;
+    env.PLAYWRIGHT_OUTPUT_DIR =
+      process.env.PLAYWRIGHT_OUTPUT_DIR ?? NEW_USER_FLOW_ARTIFACT_DIR;
   }
 
   if (mode === "visual") {
     env.ROUTE_VISUAL_REVIEW = "1";
+    delete env[VISUAL_FIXTURE_RUNNER_ENV];
+    await Promise.all([
+      rm(VISUAL_FIXTURE_MANIFEST_PATH, { force: true }),
+      rm(VISUAL_SCREENSHOT_DIR, { force: true, recursive: true }),
+    ]);
+    let fixtureExitCode;
+    try {
+      fixtureExitCode = await runNodeModule(
+        resolveTsxCli(),
+        [path.resolve(WEB_ROOT, "scripts", "seed-visual-review-fixtures.ts")],
+        { ...env, [VISUAL_FIXTURE_RUNNER_ENV]: "1" },
+        "Visual review fixture seeder",
+      );
+    } catch (error) {
+      await rm(VISUAL_FIXTURE_MANIFEST_PATH, { force: true });
+      throw error;
+    }
+    if (fixtureExitCode !== 0) {
+      await rm(VISUAL_FIXTURE_MANIFEST_PATH, { force: true });
+      process.exit(fixtureExitCode);
+    }
   } else {
     delete env.ROUTE_VISUAL_REVIEW;
   }
 
-  const playwrightArgs = ["test", ...MODE_SPECS[mode], ...appendDefaultProjectArg(passthroughArgs, mode)];
+  const playwrightArgs = [
+    "test",
+    ...MODE_SPECS[mode],
+    ...appendDefaultProjectArg(passthroughArgs, mode),
+  ];
 
   console.log(`[e2e] mode=${mode}`);
   console.log(`[e2e] baseUrl=${execution.baseUrl}`);
@@ -163,16 +206,21 @@ async function resolveLocalExecution(options = {}) {
   return {
     baseUrl: process.env.BASE_URL ?? DEFAULT_BASE_URL,
     reuseExistingServer: false,
-    reason: "No running dev server detected; using existing production build via Playwright",
+    reason:
+      "No running dev server detected; using existing production build via Playwright",
   };
 }
 
 function appendDefaultProjectArg(args, selectedMode) {
-  const hasProjectArg = args.some((arg, index) => (
-    arg === "--project" || arg.startsWith("--project=") || (index > 0 && args[index - 1] === "--project")
-  ));
+  const hasProjectArg = args.some(
+    (arg, index) =>
+      arg === "--project" ||
+      arg.startsWith("--project=") ||
+      (index > 0 && args[index - 1] === "--project"),
+  );
 
-  const defaultArgs = PLAYWRIGHT_MODE_DEFAULT_ARGS[selectedMode] ?? PLAYWRIGHT_DEFAULT_ARGS;
+  const defaultArgs =
+    PLAYWRIGHT_MODE_DEFAULT_ARGS[selectedMode] ?? PLAYWRIGHT_DEFAULT_ARGS;
   return hasProjectArg ? args : [...defaultArgs, ...args];
 }
 
@@ -215,7 +263,10 @@ function buildReachabilityProbeUrls(baseUrl) {
 
 async function isReachableProbe(probeUrl) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), LOCAL_REACHABILITY_TIMEOUT_MS);
+  const timeout = setTimeout(
+    () => controller.abort(),
+    LOCAL_REACHABILITY_TIMEOUT_MS,
+  );
 
   try {
     const response = await fetch(probeUrl, {
@@ -245,8 +296,12 @@ function dedupe(values) {
 }
 
 function runCommand(args, env) {
+  return runNodeModule(resolvePlaywrightCli(), args, env, "Playwright");
+}
+
+function runNodeModule(modulePath, args, env, label) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [resolvePlaywrightCli(), ...args], {
+    const child = spawn(process.execPath, [modulePath, ...args], {
       cwd: process.cwd(),
       env,
       stdio: "inherit",
@@ -255,7 +310,7 @@ function runCommand(args, env) {
     child.on("error", reject);
     child.on("exit", (code, signal) => {
       if (signal) {
-        reject(new Error(`Playwright exited from signal ${signal}`));
+        reject(new Error(`${label} exited from signal ${signal}`));
         return;
       }
       resolve(code ?? 1);
@@ -264,7 +319,14 @@ function runCommand(args, env) {
 }
 
 function resolvePlaywrightCli() {
-  return path.join(path.dirname(require.resolve("@playwright/test/package.json")), "cli.js");
+  return path.join(
+    path.dirname(require.resolve("@playwright/test/package.json")),
+    "cli.js",
+  );
+}
+
+function resolveTsxCli() {
+  return require.resolve("tsx/cli");
 }
 
 function printHelp() {

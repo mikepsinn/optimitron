@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -99,6 +105,7 @@ interface TaskCommentFeedProps {
   currentUserIsAdmin: boolean;
   wishoniaUserId: string | null;
   signInHref: string;
+  heading?: string;
 }
 
 type SortMode = "new" | "top";
@@ -239,6 +246,7 @@ export function TaskCommentFeed({
   currentUserIsAdmin,
   wishoniaUserId,
   signInHref,
+  heading = "Updates",
 }: TaskCommentFeedProps) {
   const [comments, setComments] = useState<TaskCommentRow[]>(initialComments);
   const [activities] = useState<TaskActivityRow[]>(initialActivities);
@@ -714,7 +722,7 @@ export function TaskCommentFeed({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black">Updates</h2>
+        <h2 className="text-xl font-black">{heading}</h2>
         <div className="flex gap-1 text-xs font-bold uppercase">
           <button
             type="button"
@@ -823,6 +831,7 @@ export function TaskCommentFeed({
           <CommentNode
             key={comment.id}
             comment={comment}
+            repliesByParent={threaded.repliesByParent}
             replies={threaded.repliesByParent.get(comment.id) ?? []}
             wishoniaUserId={wishoniaUserId}
             currentUserId={currentUserId}
@@ -895,6 +904,7 @@ export function TaskCommentFeed({
 function CommentNode({
   comment,
   replies,
+  repliesByParent,
   wishoniaUserId,
   currentUserId,
   currentUserIsAdmin,
@@ -914,6 +924,7 @@ function CommentNode({
 }: {
   comment: TaskCommentRow;
   replies: TaskCommentRow[];
+  repliesByParent: Map<string, TaskCommentRow[]>;
   wishoniaUserId: string | null;
   currentUserId: string | null;
   currentUserIsAdmin: boolean;
@@ -946,7 +957,10 @@ function CommentNode({
 
   return (
     <div className={depth > 0 ? "ml-6 border-l-2 border-primary/40 pl-4" : ""}>
-      <article className="border-2 border-primary bg-background p-3">
+      <article
+        className="scroll-mt-24 border-2 border-primary bg-background p-3"
+        id={`comment-${comment.id}`}
+      >
         <header className="mb-2 flex items-center gap-2">
           {personHref ? (
             <Link href={personHref} className="shrink-0">
@@ -980,7 +994,11 @@ function CommentNode({
               Wishonia
             </span>
           ) : null}
-          <span className="text-xs font-bold text-muted-foreground">
+          <span
+            className="text-xs font-bold text-muted-foreground"
+            data-volatile="time"
+            suppressHydrationWarning
+          >
             · {formatRelative(comment.createdAt)}
           </span>
           {comment.editedAt ? (
@@ -1232,7 +1250,8 @@ function CommentNode({
             <CommentNode
               key={reply.id}
               comment={reply}
-              replies={[]}
+              replies={repliesByParent.get(reply.id) ?? []}
+              repliesByParent={repliesByParent}
               wishoniaUserId={wishoniaUserId}
               currentUserId={currentUserId}
               currentUserIsAdmin={currentUserIsAdmin}
@@ -1279,7 +1298,9 @@ function ActivityRow({ activity }: { activity: TaskActivityRow }) {
         <span>@{handle}</span>
       )}
       <span>{label}</span>
-      <span className="ml-auto">{formatRelative(activity.createdAt)}</span>
+      <span className="ml-auto" data-volatile="time" suppressHydrationWarning>
+        {formatRelative(activity.createdAt)}
+      </span>
     </div>
   );
 }

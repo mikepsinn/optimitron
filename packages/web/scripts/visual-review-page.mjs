@@ -19,6 +19,7 @@
  *           generatedAtCentral, previewBaseUrl, productionBaseUrl,
  *           reviewUrl, baselineDescription },
  *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, variantRoutes, erroredRoutes, totalRoutes },
+ *   coverage: { analysisAvailable, complete, changedUiFiles, coveredUiFiles, blockingIssues },
  *   routes: [{
  *     routeName, routeLabel, routePath, routeUrl, productionUrl, authState,
  *     siteVariant,     // null for the default surface; site key for variant-delta shots
@@ -118,6 +119,8 @@ const CSS = `
   }
   .chip.changed { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
   .chip.errored { border-color: var(--err); color: var(--err); }
+  .chip.coverage-complete { border-color: var(--good); color: var(--good); background: var(--good-soft); }
+  .chip.coverage-failed { border-color: var(--err); color: var(--err); background: var(--bad-soft); }
   .chip.reviewed { border-color: var(--good); color: var(--good); background: var(--good-soft); }
   .hdr-spacer { flex: 1 1 auto; }
   .noise-label { font-size: 12px; color: var(--dim); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
@@ -135,6 +138,17 @@ const CSS = `
   .hdr-row2 code { font-family: var(--mono); font-size: 11px; }
   body.condensed .hdr-row2 { display: none; }
   body.condensed header#hdr { box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+  .coverage-failure {
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--err);
+    background: var(--bad-soft);
+    color: var(--ink);
+    padding: 10px 16px;
+  }
+  .coverage-failure p { margin: 2px 0 0; }
+  .coverage-failure ul { margin: 6px 0 0; padding-left: 22px; }
+  .coverage-failure code { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
 
   /* ---------- layout ---------- */
   .app { flex: 1 1 auto; display: flex; min-height: 0; }
@@ -434,11 +448,14 @@ const CSS = `
   }
   .vbtn { border: 1px solid var(--border); border-radius: 4px; background: var(--panel); padding: 6px 12px; white-space: nowrap; }
   .vbtn.btn-good { border-color: var(--good); color: var(--good); }
-  .vbtn.btn-good.on, .vbtn.btn-good:hover { background: var(--good-soft); }
+  .vbtn.btn-good:hover { background: var(--good-soft); }
+  .vbtn.btn-good.on { background: var(--good); color: #fff; font-weight: 700; }
   .vbtn.btn-bad { border-color: var(--bad); color: var(--bad); }
-  .vbtn.btn-bad.on, .vbtn.btn-bad:hover { background: var(--bad-soft); }
+  .vbtn.btn-bad:hover { background: var(--bad-soft); }
+  .vbtn.btn-bad.on { background: var(--bad); color: #fff; font-weight: 700; }
   .vbtn.btn-skip { border-style: dashed; }
-  .vbtn.btn-skip.on { background: var(--bg); }
+  .vbtn.btn-skip.on { background: var(--ink); color: #fff; font-weight: 700; }
+  .review-status { flex: 1 1 100%; font-size: 12px; font-weight: 700; color: var(--ink); }
   .note-box { flex: 1 1 200px; min-width: 160px; }
   .note-box input {
     width: 100%; font: inherit;
@@ -518,6 +535,7 @@ const CLIENT_JS = `
   var minimap = null;           // { el, update(startFrac, lenFrac), setActive(origIdx) }
   var fullWells = null;         // linked-scroll wells for the current full-page render
   var verdicts = {};            // routeName -> { v, note, ts, commit }
+  var reviewStatus = "";        // visible confirmation after a route verdict
   var storeKey = "visualReview:" + (meta.commitSha || meta.shortSha || "unknown");
   var MOBILE_MQ = "(max-width: 700px)";
   var STRIP_CONTEXT_PX = 16;    // extra context cropped around each hunk band
@@ -649,8 +667,12 @@ const CLIENT_JS = `
     } catch (e) { /* corrupted state loses politely */ }
   }
   function saveVerdicts() {
-    try { localStorage.setItem(storeKey, JSON.stringify({ verdicts: verdicts })); }
-    catch (e) { /* private mode: verdicts live for the session only */ }
+    try {
+      localStorage.setItem(storeKey, JSON.stringify({ verdicts: verdicts }));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
   function verdictOf(r) { return verdicts[r.routeName] || null; }
   function verdictMark(v) {
@@ -661,14 +683,17 @@ const CLIENT_JS = `
   }
   function updateReviewedChip() {
     var pool = reviewable();
-    var done = 0, flagged = 0;
+    var done = 0, flagged = 0, skipped = 0;
     pool.forEach(function (r) {
       var v = verdictOf(r);
-      if (v && v.v !== "skipped") done++;
+      if (v) done++;
       if (v && v.v === "needs-work") flagged++;
+      if (v && v.v === "skipped") skipped++;
     });
     var chip = document.getElementById("chip-reviewed");
-    chip.textContent = done + "/" + pool.length + " reviewed" + (flagged ? " \\u00b7 " + flagged + " flagged" : "");
+    chip.textContent = done + "/" + pool.length + " reviewed" +
+      (flagged ? " \\u00b7 " + flagged + " flagged" : "") +
+      (skipped ? " \\u00b7 " + skipped + " skipped" : "");
     chip.classList.toggle("reviewed", done > 0);
   }
 
@@ -699,6 +724,13 @@ const CLIENT_JS = `
       noise = parseFloat(noiseSel.value) || 0;
       refreshRailBadges();
       renderPane(true);
+    });
+    var copyReview = document.getElementById("copy-review-btn");
+    copyReview.addEventListener("click", function () {
+      copyText(buildReviewMarkdown(), function (ok) {
+        copyReview.textContent = ok ? "Copied PR comment" : "Copy failed";
+        setTimeout(function () { copyReview.textContent = "Copy PR comment"; }, 1500);
+      });
     });
     document.getElementById("export-btn").addEventListener("click", exportNotes);
     document.getElementById("reset-btn").addEventListener("click", function () {
@@ -897,6 +929,7 @@ const CLIENT_JS = `
     opts = opts || {};
     var r = routeByName(name);
     if (!r) return;
+    reviewStatus = typeof opts.reviewStatus === "string" ? opts.reviewStatus : "";
     selectedName = name;
     pairName = (opts.pair && pairOf(r, opts.pair)) ? opts.pair : defaultPairFor(r);
     if (opts.mode) cmpMode = opts.mode;
@@ -1183,14 +1216,14 @@ const CLIENT_JS = `
     });
     wrap.appendChild(copy);
 
-    var complainAttrs = { type: "button", class: "context-btn", text: "Complain", title: "Open a GitHub issue with visual-review context" };
+    var complainAttrs = { type: "button", class: "context-btn", text: "Open GitHub issue", title: "Open a GitHub issue with visual-review context" };
     if (!meta.repo) complainAttrs.disabled = "disabled";
     var complain = el("button", complainAttrs);
     complain.addEventListener("click", function () {
       var ok = openComplaint(buildContext(r));
       if (!ok) {
         complain.textContent = "No repo";
-        setTimeout(function () { complain.textContent = "Complain"; }, 1500);
+        setTimeout(function () { complain.textContent = "Open GitHub issue"; }, 1500);
       }
     });
     wrap.appendChild(complain);
@@ -1798,6 +1831,9 @@ const CLIENT_JS = `
       var cur = verdicts[r.routeName];
       if (cur) { cur.note = note.value.trim(); saveVerdicts(); }
     });
+    if (reviewStatus) {
+      bar.appendChild(el("span", { class: "review-status", role: "status", text: reviewStatus }));
+    }
     bar.appendChild(good);
     bar.appendChild(bad);
     bar.appendChild(skip);
@@ -1816,21 +1852,41 @@ const CLIENT_JS = `
       ts: new Date().toISOString(),
       commit: meta.shortSha
     };
-    saveVerdicts();
+    var persisted = saveVerdicts();
     updateReviewedChip();
     refreshRailMarks();
-    // auto-advance to the next route in nav order
-    var names = navNames();
-    var idx = names.indexOf(selectedName);
-    if (idx !== -1 && idx + 1 < names.length) selectRoute(names[idx + 1]);
-    else renderPane(true);
+    var mark = verdictMark(verdicts[r.routeName]);
+    var saved = (persisted ? "Saved locally " : "Saved for this open page ") +
+      mark + " for " + r.routeLabel + ".";
+    var nextName = nextUnreviewedRouteName(r.routeName);
+    if (nextName) {
+      var next = routeByName(nextName);
+      selectRoute(nextName, {
+        reviewStatus: saved + " Next unreviewed: " + next.routeLabel + "."
+      });
+      return;
+    }
+    reviewStatus = saved + " Review pass complete. Copy the PR comment or export the notes.";
+    renderPane(true);
+  }
+
+  function nextUnreviewedRouteName(currentName) {
+    var names = reviewable().map(function (r) { return r.routeName; });
+    if (!names.length) return null;
+    var currentIndex = names.indexOf(currentName);
+    if (currentIndex === -1) currentIndex = 0;
+    for (var offset = 1; offset <= names.length; offset++) {
+      var candidate = names[(currentIndex + offset) % names.length];
+      if (!verdicts[candidate]) return candidate;
+    }
+    return null;
   }
 
   /* ---------------- export ---------------- */
-  function exportNotes() {
+  function buildReviewMarkdown() {
     var pool = reviewable();
     var good = 0, bad = 0, skip = 0;
-    routes.forEach(function (r) {
+    pool.forEach(function (r) {
       var v = verdictOf(r);
       if (!v) return;
       if (v.v === "looks-right") good++;
@@ -1839,17 +1895,21 @@ const CLIENT_JS = `
     });
     var tick = String.fromCharCode(96); // backtick; literal would end the server template literal
     var lines = [];
-    lines.push("# Review notes \\u2014 PR #" + meta.prNumber + " (" + meta.shortSha + ")");
+    var heading = "# Review notes";
+    if (meta.prNumber) heading += " \\u2014 PR #" + meta.prNumber;
+    if (meta.shortSha) heading += " (" + meta.shortSha + ")";
+    lines.push(heading);
     lines.push("");
-    lines.push("- Branch: " + tick + meta.headBranch + tick + " @ " + tick + meta.shortSha + tick);
+    if (meta.headBranch) lines.push("- Branch: " + tick + meta.headBranch + tick);
+    if (meta.shortSha) lines.push("- Commit: " + tick + meta.shortSha + tick);
     lines.push("- Generated: " + (meta.generatedAtCentral || meta.generatedAt));
     lines.push("- Baseline: " + (meta.baselineDescription || "n/a"));
     if (meta.reviewUrl) lines.push("- Artifact: " + meta.reviewUrl);
     lines.push("- Routes: " + routes.length + " total \\u00b7 " + pool.length + " with visual or copy changes");
     lines.push("- Verdicts: " + good + " looks right \\u00b7 " + bad + " needs work \\u00b7 " + skip + " skipped \\u00b7 " +
-      (routes.length - good - bad - skip) + " not reviewed");
+      (pool.length - good - bad - skip) + " not reviewed");
     lines.push("");
-    var flagged = routes.filter(function (r) { var v = verdictOf(r); return v && v.v === "needs-work"; });
+    var flagged = pool.filter(function (r) { var v = verdictOf(r); return v && v.v === "needs-work"; });
     if (flagged.length) {
       lines.push("## Needs work");
       lines.push("");
@@ -1859,11 +1919,11 @@ const CLIENT_JS = `
       });
       lines.push("");
     }
-    lines.push("## All verdicts");
+    lines.push("## All review verdicts");
     lines.push("");
     lines.push("| Route | Path | Status | Verdict | Note |");
     lines.push("| --- | --- | --- | --- | --- |");
-    routes.forEach(function (r) {
+    pool.forEach(function (r) {
       var v = verdictOf(r);
       var label = v
         ? (v.v === "looks-right" ? "looks right" : v.v === "needs-work" ? "NEEDS WORK" : "skipped")
@@ -1872,10 +1932,16 @@ const CLIENT_JS = `
       lines.push("| " + r.routeLabel + " | " + tick + r.routePath + tick + " | " + r.statusLabel + " | " + label + " | " + noteTxt + " |");
     });
     lines.push("");
-    var blob = new Blob([lines.join("\\n")], { type: "text/markdown" });
+    return lines.join("\\n");
+  }
+
+  function exportNotes() {
+    var blob = new Blob([buildReviewMarkdown()], { type: "text/markdown" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "pr-" + meta.prNumber + "-review-" + meta.shortSha + ".md";
+    a.download = meta.prNumber
+      ? "pr-" + meta.prNumber + "-review-" + (meta.shortSha || "notes") + ".md"
+      : "visual-review-notes.md";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1955,14 +2021,42 @@ const CLIENT_JS = `
 })();
 `;
 
-function renderHeaderHtml(meta, summary) {
+function renderHeaderHtml(meta, summary, coverage) {
   const chips = [];
-  chips.push(`<span class="chip changed">${escapeHtml(summary.changedRoutes)} changed</span>`);
-  if (summary.copyOnlyRoutes) chips.push(`<span class="chip">${escapeHtml(summary.copyOnlyRoutes)} copy-only</span>`);
-  chips.push(`<span class="chip">${escapeHtml(summary.unchangedRoutes)} unchanged</span>`);
-  if (summary.variantRoutes) chips.push(`<span class="chip">${escapeHtml(summary.variantRoutes)} variant</span>`);
-  if (summary.erroredRoutes) chips.push(`<span class="chip errored">${escapeHtml(summary.erroredRoutes)} errored</span>`);
-  chips.push(`<span class="chip">${escapeHtml(summary.totalRoutes)} routes</span>`);
+  chips.push(
+    `<span class="chip changed">${escapeHtml(summary.changedRoutes)} screenshot difference${Number(summary.changedRoutes) === 1 ? "" : "s"}</span>`,
+  );
+  if (summary.copyOnlyRoutes)
+    chips.push(
+      `<span class="chip">${escapeHtml(summary.copyOnlyRoutes)} copy-only</span>`,
+    );
+  chips.push(
+    `<span class="chip">${escapeHtml(summary.unchangedRoutes)} unchanged</span>`,
+  );
+  if (summary.variantRoutes)
+    chips.push(
+      `<span class="chip">${escapeHtml(summary.variantRoutes)} variant</span>`,
+    );
+  if (summary.erroredRoutes)
+    chips.push(
+      `<span class="chip errored">${escapeHtml(summary.erroredRoutes)} errored</span>`,
+    );
+  chips.push(
+    `<span class="chip">${escapeHtml(summary.totalRoutes)} routes</span>`,
+  );
+  if (coverage?.changedUiFiles?.length) {
+    const coveredCount = coverage.coveredUiFiles?.length ?? 0;
+    const changedCount = coverage.changedUiFiles.length;
+    chips.push(
+      coverage.complete
+        ? `<span class="chip coverage-complete">${escapeHtml(coveredCount)}/${escapeHtml(changedCount)} changed UI files captured</span>`
+        : `<span class="chip coverage-failed">capture contract failed · ${escapeHtml(coveredCount)}/${escapeHtml(changedCount)} UI files</span>`,
+    );
+  } else if (coverage && coverage.complete === false) {
+    chips.push(
+      `<span class="chip coverage-failed">capture contract failed</span>`,
+    );
+  }
   chips.push(`<span class="chip" id="chip-reviewed">0 reviewed</span>`);
 
   const noteBits = [
@@ -1970,8 +2064,12 @@ function renderHeaderHtml(meta, summary) {
     `<code>${escapeHtml(meta.headBranch)}</code> @ <code>${escapeHtml(meta.shortSha)}</code>`,
     `generated ${escapeHtml(meta.generatedAtCentral || meta.generatedAt)}`,
   ];
-  if (meta.baselineDescription) noteBits.push(escapeHtml(meta.baselineDescription));
-  if (meta.reviewUrl) noteBits.push(`<a href="${escapeHtml(meta.reviewUrl)}" target="_blank" rel="noopener">artifact</a>`);
+  if (meta.baselineDescription)
+    noteBits.push(escapeHtml(meta.baselineDescription));
+  if (meta.reviewUrl)
+    noteBits.push(
+      `<a href="${escapeHtml(meta.reviewUrl)}" target="_blank" rel="noopener">artifact</a>`,
+    );
 
   return `<header id="hdr">
   <div class="hdr-row1">
@@ -1986,11 +2084,28 @@ function renderHeaderHtml(meta, summary) {
         <option value="1">hide diffs under 1%</option>
       </select>
     </label>
+    <button type="button" id="copy-review-btn" class="hbtn" title="Copy every verdict and note as one pull request comment">Copy PR comment</button>
     <button type="button" id="export-btn" class="hbtn" title="Download every verdict + note as a markdown review packet">Export review notes</button>
     <button type="button" id="reset-btn" class="hbtn" title="Clear saved verdicts for this commit">Reset</button>
   </div>
   <div class="hdr-row2" id="gen-note">${noteBits.join(" · ")}</div>
 </header>`;
+}
+
+function renderCoverageFailureHtml(coverage) {
+  if (!coverage || coverage.complete !== false) return "";
+  const blockingIssues = Array.isArray(coverage.blockingIssues)
+    ? coverage.blockingIssues
+    : ["Visual capture coverage could not be proven."];
+  const issueItems = blockingIssues
+    .map((issue) => `<li><code>${escapeHtml(issue)}</code></li>`)
+    .join("");
+
+  return `<section class="coverage-failure" role="alert" aria-labelledby="coverage-failure-title">
+  <strong id="coverage-failure-title">Visual capture contract failed</strong>
+  <p>This report is incomplete and the visual-review check must fail until every changed UI file has its required desktop and mobile state.</p>
+  <ul>${issueItems}</ul>
+</section>`;
 }
 
 /**
@@ -1999,10 +2114,13 @@ function renderHeaderHtml(meta, summary) {
  * @returns {string} full HTML document
  */
 export function renderReviewHtml(input) {
-  if (!input || typeof input !== "object") throw new TypeError("renderReviewHtml: input must be an object");
+  if (!input || typeof input !== "object")
+    throw new TypeError("renderReviewHtml: input must be an object");
   const meta = input.meta || {};
   const summary = input.summary || {};
-  if (!Array.isArray(input.routes)) throw new TypeError("renderReviewHtml: input.routes must be an array");
+  const coverage = input.coverage || {};
+  if (!Array.isArray(input.routes))
+    throw new TypeError("renderReviewHtml: input.routes must be an array");
 
   const title = `PR #${meta.prNumber ?? "?"} review — ${meta.shortSha ?? "?"}`;
 
@@ -2015,7 +2133,8 @@ export function renderReviewHtml(input) {
 <style>${CSS}</style>
 </head>
 <body>
-${renderHeaderHtml(meta, summary)}
+${renderHeaderHtml(meta, summary, coverage)}
+${renderCoverageFailureHtml(coverage)}
 <div class="app">
   <button id="rail-toggle" type="button" aria-expanded="false" aria-controls="rail">
     <span class="rt-caret" aria-hidden="true">▾</span>

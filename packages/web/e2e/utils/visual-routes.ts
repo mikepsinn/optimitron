@@ -3,6 +3,8 @@ import {
   MANAGED_DEMO_COLLECTION_ID,
   MANAGED_DEMO_DOCUMENT_ID,
 } from "@optimitron/db/constants";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import type { SiteKey } from "@/lib/site";
 import {
   filterRedirectOnlyRoutes,
@@ -12,6 +14,8 @@ import { ALL_PAGE_PATHS, PUBLIC_PAGE_PATHS } from "./static-pages";
 
 export type VisualRoute = {
   authenticated?: boolean;
+  /** UI source files whose rendered states this route is required to exercise. */
+  covers?: string[];
   createTaskMode?: "person";
   expectSettings?: boolean;
   name: string;
@@ -26,6 +30,49 @@ export type VisualRoute = {
   siteVariant?: SiteKey;
   waitForImages?: boolean;
 };
+
+type DocumentReviewFixtureManifest = {
+  activeReviewTaskId: string;
+  managerTaskId: string;
+  staleReviewTaskId: string;
+  version: 1;
+};
+
+function isDocumentReviewFixtureManifest(
+  value: unknown,
+): value is DocumentReviewFixtureManifest {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    candidate.version === 1 &&
+    isNonEmptyString(candidate.managerTaskId) &&
+    isNonEmptyString(candidate.activeReviewTaskId) &&
+    isNonEmptyString(candidate.staleReviewTaskId)
+  );
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+const WEB_ROOT = path.resolve(__dirname, "../..");
+const DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH = path.resolve(
+  WEB_ROOT,
+  "output",
+  "playwright",
+  "visual-fixtures",
+  "document-review.json",
+);
+const TASK_DETAIL_PAGE_FILE = "packages/web/src/app/tasks/[id]/page.tsx";
+const DOCUMENT_REVIEW_MANAGER_FILE =
+  "packages/web/src/components/tasks/document-review-manager-panel.tsx";
+const DOCUMENT_REVIEW_REVIEWER_FILE =
+  "packages/web/src/components/tasks/document-review-reviewer-panel.tsx";
+const TASK_COMMENT_FEED_FILE =
+  "packages/web/src/components/tasks/task-comment-feed.tsx";
 
 const PRESIDENT_TASK_LIST_SELECTOR =
   '[data-visual-section="president-task-list"]';
@@ -164,6 +211,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/tasks/1-pct-treaty-signer-ca",
     required: false,
   },
+  ...loadDocumentReviewRoutes(),
 ];
 
 const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
@@ -260,4 +308,67 @@ function dedupeRoutes(routes: VisualRoute[]): VisualRoute[] {
     deduped.push(route);
   }
   return deduped;
+}
+
+function loadDocumentReviewRoutes(): VisualRoute[] {
+  if (process.env.ROUTE_VISUAL_REVIEW !== "1") {
+    return [];
+  }
+
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(
+      readFileSync(DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH, "utf8"),
+    );
+  } catch (error) {
+    throw new Error(
+      `Document-review visual fixture manifest is missing at ${DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH}. The visual fixture seeder must run before Playwright.`,
+      { cause: error },
+    );
+  }
+
+  if (!isDocumentReviewFixtureManifest(manifest)) {
+    throw new Error(
+      `Document-review visual fixture manifest is invalid at ${DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH}.`,
+    );
+  }
+
+  return [
+    {
+      authenticated: true,
+      covers: [
+        TASK_DETAIL_PAGE_FILE,
+        DOCUMENT_REVIEW_MANAGER_FILE,
+        TASK_COMMENT_FEED_FILE,
+      ],
+      name: "document-review-manager",
+      path: `/tasks/${manifest.managerTaskId}`,
+      required: true,
+      requiredSelector: "#document-review-manager-heading",
+    },
+    {
+      authenticated: true,
+      covers: [
+        TASK_DETAIL_PAGE_FILE,
+        DOCUMENT_REVIEW_REVIEWER_FILE,
+        TASK_COMMENT_FEED_FILE,
+      ],
+      name: "document-review-reviewer",
+      path: `/tasks/${manifest.activeReviewTaskId}`,
+      required: true,
+      requiredSelector:
+        '[data-document-review-state="active"] #document-review-heading',
+      requiredText: /^Review this version$/,
+    },
+    {
+      authenticated: true,
+      covers: [TASK_DETAIL_PAGE_FILE, DOCUMENT_REVIEW_REVIEWER_FILE],
+      name: "document-review-stale",
+      path: `/tasks/${manifest.staleReviewTaskId}`,
+      required: true,
+      requiredSelector:
+        '[data-document-review-state="stale"] #document-review-heading',
+      requiredText: /^Past review$/,
+    },
+  ];
 }

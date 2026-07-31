@@ -19,6 +19,10 @@ import {
   isSignificantDimensionChange,
   normalizeVisualReviewMarkdown,
 } from "./visual-review-diff.mjs";
+import {
+  buildChangedFileDiscoveryArgs,
+  buildVisualCoverage,
+} from "./visual-review-coverage.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -43,7 +47,7 @@ const pageLinkBaseUrl = parseOptionalUrl(
   process.env.VISUAL_REVIEW_BASE_URL ??
     (process.env.CI === "true"
       ? null
-      : process.env.BASE_URL ?? process.env.NEXTAUTH_URL),
+      : (process.env.BASE_URL ?? process.env.NEXTAUTH_URL)),
 );
 const outputRoot = path.resolve(webRoot, "output", "playwright", "review");
 const assetRoot = path.join(outputRoot, "assets");
@@ -62,7 +66,10 @@ const diffPixelRatioThreshold = parseNumberEnv(
   "VISUAL_REVIEW_DIFF_RATIO",
   0.002,
 );
-const pixelmatchThreshold = parseNumberEnv("VISUAL_REVIEW_PIXEL_THRESHOLD", 0.12);
+const pixelmatchThreshold = parseNumberEnv(
+  "VISUAL_REVIEW_PIXEL_THRESHOLD",
+  0.12,
+);
 // Full-page height deltas below this are treated as rendering drift, not a
 // change, so a sub-pixel reflow in shared chrome stops force-flagging every
 // route with "0% overlap". See isSignificantDimensionChange in
@@ -149,6 +156,9 @@ const routeOrder = [
   "task-optimize-earth",
   "task-one-percent-treaty",
   "task-signer-canada",
+  "document-review-manager",
+  "document-review-reviewer",
+  "document-review-stale",
   "variant-optimitron-home",
   "variant-optimitron-tasks",
   "variant-dfda-home",
@@ -166,7 +176,9 @@ const VARIANT_DOMAIN_LABELS = {
 };
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.stack ?? error.message : error);
+  console.error(
+    error instanceof Error ? (error.stack ?? error.message) : error,
+  );
   process.exitCode = 1;
 });
 
@@ -183,9 +195,23 @@ async function main() {
   const grouped = appendCopyOnlyGroups(
     await analyzeGroups(groupScreenshots(screenshots)),
   );
-  const html = renderHtml(grouped);
-  const manifest = buildReviewManifest(grouped);
-  const blockingIssues = getBlockingReviewIssues(grouped, screenshots);
+  const coverage = buildVisualCoverage({
+    afterCaptures: screenshots.filter(
+      (screenshot) => screenshot.version === "after",
+    ),
+    changedFiles: loadChangedFiles(),
+    routes: [...routeSpecs.entries()].map(([name, spec]) => ({
+      name,
+      ...spec,
+    })),
+  });
+  const html = renderHtml(grouped, coverage);
+  const manifest = buildReviewManifest(grouped, coverage);
+  const blockingIssues = getBlockingReviewIssues(
+    grouped,
+    screenshots,
+    coverage,
+  );
 
   writeFileSync(latestHtmlPath, html, "utf8");
   writeFileSync(reviewManifestPath, JSON.stringify(manifest, null, 2), "utf8");
@@ -194,6 +220,9 @@ async function main() {
   console.log(`[visual-review] screenshots=${screenshots.length}`);
   console.log(
     `[visual-review] changed=${grouped.filter((group) => group.changed).length} unchanged=${grouped.filter((group) => !group.changed).length}`,
+  );
+  console.log(
+    `[visual-review] UI coverage=${coverage.coveredUiFiles.length}/${coverage.changedUiFiles.length} changed source files`,
   );
 
   if (!allowIncompleteReview && blockingIssues.length > 0) {
@@ -245,7 +274,8 @@ function collectScreenshots(root, version) {
   }
 
   return files.sort((a, b) => {
-    const routeDelta = routeSortIndex(a.routeName) - routeSortIndex(b.routeName);
+    const routeDelta =
+      routeSortIndex(a.routeName) - routeSortIndex(b.routeName);
     if (routeDelta !== 0) {
       return routeDelta;
     }
@@ -281,12 +311,13 @@ function groupScreenshots(screenshots) {
   return [...grouped.entries()].map(([routeName, projectMap]) => ({
     routeName,
     pairs: [...projectMap.values()].sort(
-      (a, b) => projectSortIndex(a.projectName) - projectSortIndex(b.projectName),
+      (a, b) =>
+        projectSortIndex(a.projectName) - projectSortIndex(b.projectName),
     ),
   }));
 }
 
-function renderHtml(groups) {
+function renderHtml(groups, coverage) {
   if (groups.length === 0) {
     return `<!doctype html>
 <html lang="en">
@@ -302,7 +333,7 @@ function renderHtml(groups) {
 </html>
 `;
   }
-  return renderReviewHtml(buildReviewPageInput(groups));
+  return renderReviewHtml(buildReviewPageInput(groups, coverage));
 }
 
 /**
@@ -311,7 +342,7 @@ function renderHtml(groups) {
  * ordered changed -> copy-only -> unchanged; the sort is stable, so
  * routeOrder is preserved within each rank.
  */
-function buildReviewPageInput(groups) {
+function buildReviewPageInput(groups, coverage) {
   const reviewBase = getPublishedReviewBase();
   const routes = groups.map((group) => buildReviewPageRoute(group));
   // Changed variant routes rank 0 with everything else (they must surface);
@@ -347,6 +378,7 @@ function buildReviewPageInput(groups) {
       erroredRoutes: routes.filter((route) => route.errored).length,
       totalRoutes: routes.length,
     },
+    coverage,
     routes,
   };
 }
@@ -506,8 +538,16 @@ async function comparePair(pair) {
     });
     const compareWidth = Math.min(before.width, after.width);
     const compareHeight = Math.min(before.height, after.height);
-    const beforeData = getComparableImageData(before, compareWidth, compareHeight);
-    const afterData = getComparableImageData(after, compareWidth, compareHeight);
+    const beforeData = getComparableImageData(
+      before,
+      compareWidth,
+      compareHeight,
+    );
+    const afterData = getComparableImageData(
+      after,
+      compareWidth,
+      compareHeight,
+    );
     const diffData = new Uint8Array(compareWidth * compareHeight * 4);
     const diffPixels = pixelmatch(
       beforeData,
@@ -525,7 +565,11 @@ async function comparePair(pair) {
     let alignmentAnchors = buildDefaultAlignmentAnchors(before, after);
     if (changed) {
       try {
-        const extracted = extractHunksAndAlignment({ before, after, noiseFloorPct: 0 });
+        const extracted = extractHunksAndAlignment({
+          before,
+          after,
+          noiseFloorPct: 0,
+        });
         hunks = extracted.hunks;
         alignmentAnchors = extracted.alignmentAnchors;
       } catch (error) {
@@ -543,7 +587,10 @@ async function comparePair(pair) {
       const afterDir = path.dirname(pair.after.assetPath);
       const diffPng = new PNG({ width: compareWidth, height: compareHeight });
       diffPng.data = Buffer.from(diffData);
-      const diffAssetPath = path.join(afterDir, buildDiffFileName(pair.after.fileName));
+      const diffAssetPath = path.join(
+        afterDir,
+        buildDiffFileName(pair.after.fileName),
+      );
       writeFileSync(diffAssetPath, PNG.sync.write(diffPng));
       diffRelPath = toPosix(path.relative(outputRoot, diffAssetPath));
       beforeRegions = buildDiffRegions(
@@ -564,11 +611,21 @@ async function comparePair(pair) {
     if (dimensionChanged) {
       beforeRegions = [
         ...beforeRegions,
-        ...buildDimensionExtraRegions(before.width, before.height, compareWidth, compareHeight),
+        ...buildDimensionExtraRegions(
+          before.width,
+          before.height,
+          compareWidth,
+          compareHeight,
+        ),
       ];
       afterRegions = [
         ...afterRegions,
-        ...buildDimensionExtraRegions(after.width, after.height, compareWidth, compareHeight),
+        ...buildDimensionExtraRegions(
+          after.width,
+          after.height,
+          compareWidth,
+          compareHeight,
+        ),
       ];
     }
     return {
@@ -618,12 +675,20 @@ function getComparableImageData(image, width, height) {
   const rowLength = width * 4;
   for (let y = 0; y < height; y += 1) {
     const sourceStart = y * image.width * 4;
-    data.set(image.data.subarray(sourceStart, sourceStart + rowLength), y * rowLength);
+    data.set(
+      image.data.subarray(sourceStart, sourceStart + rowLength),
+      y * rowLength,
+    );
   }
   return data;
 }
 
-function buildDimensionExtraRegions(width, height, compareWidth, compareHeight) {
+function buildDimensionExtraRegions(
+  width,
+  height,
+  compareWidth,
+  compareHeight,
+) {
   const regions = [];
   if (height > compareHeight) {
     regions.push({
@@ -678,10 +743,7 @@ function buildDiffRegions(
       const index = tileY * columns + tileX;
       const tileWidth = Math.min(tileSize, compareWidth - tileX * tileSize);
       const tileHeight = Math.min(tileSize, compareHeight - tileY * tileSize);
-      const minPixels = Math.max(
-        3,
-        Math.ceil(tileWidth * tileHeight * 0.006),
-      );
+      const minPixels = Math.max(3, Math.ceil(tileWidth * tileHeight * 0.006));
       if (tileCounts[index] >= minPixels) {
         dirtyTiles[index] = 1;
       }
@@ -799,14 +861,12 @@ function compactDiffRegions(regions, width, height) {
     selected.push(mergeDiffRegions(sortedRegions.slice(maxRegions)));
   }
 
-  return selected
-    .filter(Boolean)
-    .map((region) => ({
-      height: roundPercent(((region.bottom - region.top) / height) * 100),
-      left: roundPercent((region.left / width) * 100),
-      top: roundPercent((region.top / height) * 100),
-      width: roundPercent(((region.right - region.left) / width) * 100),
-    }));
+  return selected.filter(Boolean).map((region) => ({
+    height: roundPercent(((region.bottom - region.top) / height) * 100),
+    left: roundPercent((region.left / width) * 100),
+    top: roundPercent((region.top / height) * 100),
+    width: roundPercent(((region.right - region.left) / width) * 100),
+  }));
 }
 
 function mergeDiffRegions(regions) {
@@ -981,6 +1041,51 @@ function getBaselineRef() {
   }
   cachedBaselineRef = "main";
   return cachedBaselineRef;
+}
+
+function loadChangedFiles() {
+  const envJson = process.env.VISUAL_REVIEW_CHANGED_FILES_JSON?.trim();
+  if (envJson) {
+    let parsed;
+    try {
+      parsed = JSON.parse(envJson);
+    } catch (error) {
+      throw new TypeError(
+        "VISUAL_REVIEW_CHANGED_FILES_JSON must be a JSON array of file paths",
+        { cause: error },
+      );
+    }
+    if (
+      !Array.isArray(parsed) ||
+      parsed.some((entry) => typeof entry !== "string")
+    ) {
+      throw new TypeError(
+        "VISUAL_REVIEW_CHANGED_FILES_JSON must be a JSON array of file paths",
+      );
+    }
+    return parsed;
+  }
+
+  try {
+    const output = execFileSync(
+      "git",
+      buildChangedFileDiscoveryArgs(getBaselineRef()),
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      },
+    );
+    return output
+      .split(/\r?\n/)
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  } catch {
+    console.warn(
+      "[visual-review] changed-file analysis unavailable; screenshot coverage cannot be proven",
+    );
+    return null;
+  }
 }
 
 function readMainFile(repoRelativePath) {
@@ -1173,22 +1278,25 @@ function formatUnifiedRange(start, count) {
 function renderMarkdownDiffLines(lines) {
   return lines
     .map((line) => {
-      const className = line.kind === "add" || line.kind === "added"
-        ? "added"
-        : line.kind === "del" || line.kind === "removed"
-          ? "removed"
-          : line.kind === "hunk"
-            ? "hunk"
-            : line.kind === "header"
-              ? "header"
-              : "context";
+      const className =
+        line.kind === "add" || line.kind === "added"
+          ? "added"
+          : line.kind === "del" || line.kind === "removed"
+            ? "removed"
+            : line.kind === "hunk"
+              ? "hunk"
+              : line.kind === "header"
+                ? "header"
+                : "context";
       return `<span class="markdown-diff-line ${className}">${escapeHtml(line.text)}</span>`;
     })
     .join("");
 }
 
 function buildDiffFileName(fileName) {
-  const baseName = path.basename(fileName, ".png").replace(/-(before|after)$/i, "");
+  const baseName = path
+    .basename(fileName, ".png")
+    .replace(/-(before|after)$/i, "");
   return `${baseName}-diff.png`;
 }
 
@@ -1204,15 +1312,13 @@ function summarizeGroups(groups) {
     erroredRoutes: groups.filter((group) => group.errored).length,
     unchangedRoutes: groups.filter(
       (group) =>
-        !group.changed &&
-        !group.errored &&
-        !buildMarkdownDiff(group.routeName),
+        !group.changed && !group.errored && !buildMarkdownDiff(group.routeName),
     ).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
 }
 
-function buildReviewManifest(groups) {
+function buildReviewManifest(groups, coverage) {
   const reviewBase = getPublishedReviewBase();
   return {
     version: 1,
@@ -1226,6 +1332,7 @@ function buildReviewManifest(groups) {
     previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
     reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
     summary: summarizeGroups(groups),
+    coverage,
     routes: groups.map((group) => {
       const markdownDiff = buildMarkdownDiff(group.routeName);
       const copyChanged = Boolean(markdownDiff);
@@ -1269,8 +1376,8 @@ function reviewStatusLabel(group, markdownDiff) {
   return routeStatusLabel(group);
 }
 
-function getBlockingReviewIssues(groups, screenshots) {
-  const issues = [];
+function getBlockingReviewIssues(groups, screenshots, coverage) {
+  const issues = [...coverage.blockingIssues];
   const afterCount = screenshots.filter(
     (screenshot) => screenshot.version === "after",
   ).length;
@@ -1414,16 +1521,30 @@ function loadRouteSpecs() {
 
     return new Map(
       parsed
-        .filter((entry) => (
-          entry &&
-          typeof entry.name === "string" &&
-          typeof entry.path === "string"
-        ))
+        .filter(
+          (entry) =>
+            entry &&
+            typeof entry.name === "string" &&
+            typeof entry.path === "string",
+        )
         .map((entry) => [
           entry.name,
           {
             path: entry.path,
             authenticated: entry.authenticated === true,
+            activationSelector:
+              typeof entry.activationSelector === "string"
+                ? entry.activationSelector
+                : "",
+            covers: Array.isArray(entry.covers)
+              ? entry.covers.filter((filePath) => typeof filePath === "string")
+              : [],
+            required: entry.required === true,
+            requiredProjects: Array.isArray(entry.requiredProjects)
+              ? entry.requiredProjects.filter(
+                  (projectName) => typeof projectName === "string",
+                )
+              : [],
             siteVariant:
               typeof entry.siteVariant === "string" ? entry.siteVariant : null,
           },
@@ -1444,7 +1565,10 @@ function getPublishedReviewBase() {
 }
 
 function getRouteAuthState(routeName) {
-  if (routeSpecs.get(routeName)?.authenticated || isAuthenticatedMarkdownRoute(routeName)) {
+  if (
+    routeSpecs.get(routeName)?.authenticated ||
+    isAuthenticatedMarkdownRoute(routeName)
+  ) {
     return "demo-logged-in";
   }
   return "logged-out";
@@ -1512,7 +1636,9 @@ function parseOptionalUrl(value) {
   try {
     return new URL(value);
   } catch {
-    console.warn(`[visual-review] Ignoring invalid page link base URL: ${value}`);
+    console.warn(
+      `[visual-review] Ignoring invalid page link base URL: ${value}`,
+    );
     return null;
   }
 }

@@ -12,6 +12,8 @@ import {
 import { getServerSession } from "next-auth";
 import { TaskFundingCheckoutForm } from "@/components/task-funding/TaskFundingCheckoutForm";
 import { TaskFundingProgress } from "@/components/task-funding/TaskFundingProgress";
+import { DocumentReviewManagerPanel } from "@/components/tasks/document-review-manager-panel";
+import { DocumentReviewReviewerPanel } from "@/components/tasks/document-review-reviewer-panel";
 import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
@@ -48,6 +50,7 @@ import {
   getTaskCommentFeed,
 } from "@/lib/tasks/task-comments.server";
 import { getTaskFundingStatus } from "@/lib/task-funding/status.server";
+import { getDocumentReviewPageData } from "@/lib/tasks/document-review-ui.server";
 import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communication-endpoints.server";
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
@@ -392,6 +395,7 @@ export default async function TaskDetailPage({
     wishoniaUserId,
     ancestors,
     viewerIsAdmin,
+    documentReviewPageData,
   ] = userId
     ? await Promise.all([
         getTaskDetailData(id, userId),
@@ -413,6 +417,7 @@ export default async function TaskDetailPage({
         prisma.user
           .findUnique({ where: { id: userId }, select: { isAdmin: true } })
           .then((u) => u?.isAdmin ?? false),
+        getDocumentReviewPageData(id, userId),
       ])
     : [
         publicPageData?.data ?? null,
@@ -421,6 +426,7 @@ export default async function TaskDetailPage({
         await getWishoniaUserId().catch(() => null),
         publicPageData?.ancestors ?? [],
         false,
+        null,
       ];
 
   if (!data) {
@@ -439,9 +445,18 @@ export default async function TaskDetailPage({
   }
 
   const { task, viewer, viewerClaim } = data;
+  const isAssignedDocumentReviewer =
+    documentReviewPageData?.panel.mode === "REVIEWER";
+  const showDocumentReviewManager =
+    documentReviewPageData?.panel.mode === "MANAGER" &&
+    documentReviewPageData.setup != null &&
+    (documentReviewPageData.setup.documents.length > 0 ||
+      documentReviewPageData.panel.proposals.length > 0 ||
+      documentReviewPageData.panel.reviews.length > 0);
   const hasOtherPersonAssignee =
     task.assigneePerson != null && task.assigneePerson.id !== viewer?.personId;
-  const canShowClaimButton = !hasOtherPersonAssignee;
+  const canShowClaimButton =
+    !hasOtherPersonAssignee && !isAssignedDocumentReviewer;
   const canClaim = canTaskAcceptMoreClaims({
     activeClaimCount: task.activeClaimCount,
     claimPolicy: task.claimPolicy,
@@ -524,7 +539,7 @@ export default async function TaskDetailPage({
           >
             Tasks
           </Link>
-          {ancestors.map((ancestor) => (
+          {(isAssignedDocumentReviewer ? [] : ancestors).map((ancestor) => (
             <span key={ancestor.id} className="flex items-center gap-2">
               <span>/</span>
               <Link
@@ -629,6 +644,17 @@ export default async function TaskDetailPage({
 
         <TaskExternalActionApprovals approvals={outboundApprovals} />
 
+        {showDocumentReviewManager &&
+        documentReviewPageData?.panel.mode === "MANAGER" &&
+        documentReviewPageData.setup ? (
+          <DocumentReviewManagerPanel
+            panel={documentReviewPageData.panel}
+            setup={documentReviewPageData.setup}
+          />
+        ) : documentReviewPageData?.panel.mode === "REVIEWER" ? (
+          <DocumentReviewReviewerPanel panel={documentReviewPageData.panel} />
+        ) : null}
+
         {/* Delay-cost stats — kept (motivational, not duplicated in
             header). Owner/Progress/Time-needed/Area/Completed/Updates were
             previously listed in a verbose `<dl>` enterprise-CRM sidebar
@@ -727,17 +753,22 @@ export default async function TaskDetailPage({
           </section>
         ) : null}
 
-        <section className="border-b border-foreground py-6">
-          <article className="min-w-0">
-            <TaskDescription markdown={task.description} />
-          </article>
-        </section>
+        {!isAssignedDocumentReviewer ? (
+          <>
+            <section className="border-b border-foreground py-6">
+              <article className="min-w-0">
+                <TaskDescription markdown={task.description} />
+              </article>
+            </section>
 
-        <TaskDocumentsList taskId={task.id} userId={userId} />
+            <TaskDocumentsList taskId={task.id} userId={userId} />
 
-        <TaskDependenciesSection task={task} viewer={viewer} />
+            <TaskDependenciesSection task={task} viewer={viewer} />
+          </>
+        ) : null}
 
-        {viewer?.isAdmin &&
+        {!isAssignedDocumentReviewer &&
+        viewer?.isAdmin &&
         task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY &&
         task.status !== TaskStatus.VERIFIED ? (
           <details className="border-b border-foreground py-5">
@@ -755,7 +786,9 @@ export default async function TaskDetailPage({
           </details>
         ) : null}
 
-        {viewer?.isAdmin && reviewableClaims.length > 0 ? (
+        {!isAssignedDocumentReviewer &&
+        viewer?.isAdmin &&
+        reviewableClaims.length > 0 ? (
           <details className="border-b border-foreground py-5">
             <summary className="cursor-pointer text-sm font-black uppercase tracking-[0.12em] text-foreground">
               Pending claim reviews ({reviewableClaims.length})
@@ -787,7 +820,7 @@ export default async function TaskDetailPage({
           </details>
         ) : null}
 
-        {task.childTasks.length > 0 ? (
+        {!isAssignedDocumentReviewer && task.childTasks.length > 0 ? (
           <section id="subtasks" className="border-b border-foreground py-8">
             <h2 className="mb-4 text-base font-semibold">
               Steps ({task.childTasks.length})
@@ -834,6 +867,11 @@ export default async function TaskDetailPage({
             currentUserIsAdmin={viewerIsAdmin}
             wishoniaUserId={wishoniaUserId}
             signInHref={signInHref}
+            heading={
+              showDocumentReviewManager || isAssignedDocumentReviewer
+                ? "Discussion"
+                : undefined
+            }
           />
         </section>
       </div>

@@ -1,6 +1,16 @@
-import { TaskStatus, type Prisma } from "@optimitron/db";
+import {
+  TaskExecutionAttemptStatus,
+  TaskStatus,
+  type Prisma,
+} from "@optimitron/db";
 import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 import { prisma } from "@/lib/prisma";
+import {
+  DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
+  DOCUMENT_PROPOSAL_ARTIFACT_KIND,
+  DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+  INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
+} from "./document-review-contracts";
 
 /**
  * Admin-only duplicate-task merge.
@@ -22,6 +32,11 @@ type DbClient = Prisma.TransactionClient | typeof prisma;
 type TxClient = Prisma.TransactionClient;
 
 const MAX_ANCESTOR_DEPTH = 200;
+const DOCUMENT_GOVERNANCE_ARTIFACT_KINDS = [
+  DOCUMENT_PROPOSAL_ARTIFACT_KIND,
+  DOCUMENT_PROPOSAL_APPLICATION_ARTIFACT_KIND,
+  INTERNAL_DOCUMENT_DECISION_ARTIFACT_KIND,
+] as const;
 
 export interface MergeTaskInput {
   canonicalTaskId: string;
@@ -189,6 +204,49 @@ async function mergeTaskInClient(
   if (locked.length !== 2) {
     return refuse(
       "One of the tasks was deleted or merged by a concurrent operation; retry.",
+    );
+  }
+
+  // A review authority task's id is part of every immutable review request,
+  // proposal application, and decision. Re-parenting its review children or
+  // moving its governance artifacts would leave those records pointing at an
+  // authority task that this merge then soft-deletes. Historical rows count:
+  // soft deletion does not make governance provenance disposable. Check after
+  // locking the authority so a concurrent governance write cannot race this
+  // decision.
+  const [documentReviewChildCount, documentGovernanceAttemptCount] =
+    await Promise.all([
+      tx.task.count({
+        where: {
+          parentTaskId: duplicate.id,
+          taskKey: {
+            startsWith: `${DOCUMENT_REVIEW_TASK_KEY_PREFIX}${duplicate.id}:`,
+          },
+        },
+      }),
+      tx.taskExecutionAttempt.count({
+        where: {
+          OR: [
+            ...DOCUMENT_GOVERNANCE_ARTIFACT_KINDS.map((kind) => ({
+              artifacts: {
+                some: { metadataJson: { equals: kind, path: ["kind"] } },
+              },
+              metadata: { equals: kind, path: ["kind"] },
+              status: TaskExecutionAttemptStatus.COMPLETED,
+            })),
+          ],
+          taskId: duplicate.id,
+        },
+      }),
+    ]);
+  if (documentReviewChildCount > 0) {
+    return refuse(
+      `Duplicate task ${duplicate.id} is a document-review authority with review history and cannot be merged away.`,
+    );
+  }
+  if (documentGovernanceAttemptCount > 0) {
+    return refuse(
+      `Duplicate task ${duplicate.id} has document proposal, application, or decision history and cannot be merged away.`,
     );
   }
 

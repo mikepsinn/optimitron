@@ -9,10 +9,14 @@
 import {
   ActivityType,
   OrganizationMemberRole,
-  type Prisma,
+  Prisma,
   type TaskStatus,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
+import {
+  DOCUMENT_REVIEW_CONTEXT_KEY,
+  DOCUMENT_REVIEW_TASK_KEY_PREFIX,
+} from "@/lib/tasks/document-review-contracts";
 
 /** Error message API routes map to HTTP 404. Private tasks throw the same
  * message as missing ones so they stay indistinguishable. */
@@ -73,6 +77,49 @@ const MANAGER_ORGANIZATION_ROLES = [
   OrganizationMemberRole.ADMIN,
 ] as const;
 
+const DOCUMENT_REVIEW_SCHEMA_WHERE: Prisma.TaskWhereInput = {
+  contextJson: {
+    equals: "optimitron.review-request.v1",
+    path: [DOCUMENT_REVIEW_CONTEXT_KEY, "schema"],
+  },
+};
+
+const NON_DOCUMENT_REVIEW_CONTEXT_WHERE: Prisma.TaskWhereInput = {
+  OR: [
+    { contextJson: { equals: Prisma.DbNull } },
+    {
+      contextJson: {
+        equals: Prisma.AnyNull,
+        path: [DOCUMENT_REVIEW_CONTEXT_KEY, "schema"],
+      },
+    },
+    { NOT: DOCUMENT_REVIEW_SCHEMA_WHERE },
+  ],
+};
+
+const NON_DOCUMENT_REVIEW_TASK_WHERE: Prisma.TaskWhereInput = {
+  OR: [
+    { taskKey: null },
+    {
+      taskKey: {
+        not: { startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX },
+      },
+    },
+    {
+      AND: [
+        { taskKey: { startsWith: DOCUMENT_REVIEW_TASK_KEY_PREFIX } },
+        NON_DOCUMENT_REVIEW_CONTEXT_WHERE,
+      ],
+    },
+  ],
+};
+
+function excludeDocumentReviewTasks(
+  where: Prisma.TaskWhereInput,
+): Prisma.TaskWhereInput {
+  return { AND: [where, NON_DOCUMENT_REVIEW_TASK_WHERE] };
+}
+
 function organizationAccessWhere(
   userId: string,
   roles?: readonly OrganizationMemberRole[],
@@ -115,7 +162,10 @@ export function getTaskAccessWhere(input: {
   }
 
   if (input.action === "READ" || input.action === "READ_INTERNAL") {
-    principalWhere.push(...organizationAccessWhere(userId));
+    principalWhere.push(
+      ...organizationAccessWhere(userId).map(excludeDocumentReviewTasks),
+      ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+    );
     return input.action === "READ"
       ? { OR: [{ isPublic: true }, ...principalWhere] }
       : { OR: principalWhere };
@@ -123,22 +173,38 @@ export function getTaskAccessWhere(input: {
 
   if (input.action === "COMMENT" || input.action === "EXECUTE") {
     principalWhere.push(
-      ...organizationAccessWhere(userId, CONTRIBUTOR_ORGANIZATION_ROLES),
+      ...organizationAccessWhere(userId, CONTRIBUTOR_ORGANIZATION_ROLES).map(
+        excludeDocumentReviewTasks,
+      ),
     );
-    return input.action === "COMMENT"
-      ? { OR: [{ isPublic: true }, ...principalWhere] }
-      : { OR: principalWhere };
+    if (input.action === "EXECUTE") {
+      return {
+        AND: [{ OR: principalWhere }, NON_DOCUMENT_REVIEW_TASK_WHERE],
+      };
+    }
+    return {
+      OR: [
+        { isPublic: true },
+        ...principalWhere,
+        ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+      ],
+    };
   }
 
   return {
-    OR: [
-      { createdByUserId: userId },
+    AND: [
       {
-        managers: {
-          some: { deletedAt: null, userId },
-        },
+        OR: [
+          { createdByUserId: userId },
+          {
+            managers: {
+              some: { deletedAt: null, userId },
+            },
+          },
+          ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+        ],
       },
-      ...organizationAccessWhere(userId, MANAGER_ORGANIZATION_ROLES),
+      NON_DOCUMENT_REVIEW_TASK_WHERE,
     ],
   };
 }

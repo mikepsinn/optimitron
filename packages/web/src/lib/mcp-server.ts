@@ -89,6 +89,12 @@ import {
   isDocumentToolName,
 } from "./mcp-tools/documents";
 import {
+  DOCUMENT_REVIEW_TOOL_DEFINITIONS,
+  DOCUMENT_REVIEW_TOOL_SCOPES,
+  handleDocumentReviewToolCall,
+  isDocumentReviewToolName,
+} from "./mcp-tools/document-reviews";
+import {
   COLLECTION_TOOL_DEFINITIONS,
   COLLECTION_TOOL_SCOPES,
   handleCollectionToolCall,
@@ -135,6 +141,7 @@ import {
   type TaskClientAccessBoundary,
 } from "./tasks/task-visibility.server";
 import { resolveTaskClaimSettings } from "./tasks/task-claim-policy";
+import { DOCUMENT_REVIEW_TASK_KEY_PREFIX } from "./tasks/document-review-contracts";
 import type { PlanningCommitment } from "./tasks/execution-planner";
 import {
   auditExecutionGraph,
@@ -328,6 +335,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   ...TASK_TRIGGER_TOOL_SCOPES,
   ...COLLECTION_TOOL_SCOPES,
   ...DOCUMENT_TOOL_SCOPES,
+  ...DOCUMENT_REVIEW_TOOL_SCOPES,
   ...CONTENT_TOOL_SCOPES,
   ...PRIVATE_EXECUTION_TOOL_SCOPES,
   ...FORM_RESPONSE_TOOL_SCOPES,
@@ -926,6 +934,15 @@ function asStringArray(value: unknown) {
 function optionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
+
+function isReservedDocumentReviewTaskKey(value: unknown) {
+  return (
+    optionalString(value)?.startsWith(DOCUMENT_REVIEW_TASK_KEY_PREFIX) === true
+  );
+}
+
+const RESERVED_DOCUMENT_REVIEW_TASK_KEY_MESSAGE =
+  "taskKey uses the reserved document-review namespace. Use requestDocumentReview to create review tasks.";
 
 function optionalStringInput(
   input: Record<string, unknown>,
@@ -8043,6 +8060,7 @@ Posting a comment automatically sends comment notifications to task recipients a
   ...TASK_TRIGGER_TOOL_DEFINITIONS,
   ...COLLECTION_TOOL_DEFINITIONS,
   ...DOCUMENT_TOOL_DEFINITIONS,
+  ...DOCUMENT_REVIEW_TOOL_DEFINITIONS,
   ...CONTENT_TOOL_DEFINITIONS,
   ...PRIVATE_EXECUTION_TOOL_DEFINITIONS,
   ...FORM_RESPONSE_TOOL_DEFINITIONS,
@@ -8232,6 +8250,18 @@ export function createMcpServer(
           return normalizeDelegatedToolResponse(
             await handleDocumentToolCall({
               args: a,
+              clientAccessBoundary: taskClientBoundary,
+              name,
+              userId: userId ?? null,
+            }),
+            err,
+          );
+        }
+        if (isDocumentReviewToolName(name)) {
+          return normalizeDelegatedToolResponse(
+            await handleDocumentReviewToolCall({
+              args: a,
+              clientAccessBoundary: taskClientBoundary,
               name,
               userId: userId ?? null,
             }),
@@ -9176,9 +9206,8 @@ export function createMcpServer(
 
           // ── getTaskTreeAudit ──────────────────────────────────
           case "getTaskTreeAudit": {
-            const { loadTaskTreeAudit } = await import(
-              "./tasks/task-tree-steward.server"
-            );
+            const { loadTaskTreeAudit } =
+              await import("./tasks/task-tree-steward.server");
             return ok(
               await loadTaskTreeAudit({
                 cursor:
@@ -10805,6 +10834,9 @@ export function createMcpServer(
               parseFiniteNumber(a.successProbabilityBase) != null;
             const parentTaskId = optionalString(a.parentTaskId);
             const taskKey = optionalString(a.taskKey);
+            if (isReservedDocumentReviewTaskKey(taskKey)) {
+              return err(RESERVED_DOCUMENT_REVIEW_TASK_KEY_MESSAGE);
+            }
             const validationMissingFields: string[] = [];
             if (!title) validationMissingFields.push("title");
             if (!description.trim())
@@ -12170,6 +12202,9 @@ export function createMcpServer(
                   "taskKey uses a reserved execution-planning branch namespace.",
                 );
               }
+              if (isReservedDocumentReviewTaskKey(candidate.taskKey)) {
+                return err(RESERVED_DOCUMENT_REVIEW_TASK_KEY_MESSAGE);
+              }
               for (const dependency of (candidate.dependencies as Array<
                 Record<string, unknown>
               >) ?? []) {
@@ -12976,6 +13011,9 @@ export function createMcpServer(
                 "Completion and VERIFIED status can only be recorded through execution submission and verification acceptance.",
               );
             }
+            if (isReservedDocumentReviewTaskKey(a.taskKey)) {
+              return err(RESERVED_DOCUMENT_REVIEW_TASK_KEY_MESSAGE);
+            }
             const updates: Record<string, unknown> = {};
             const existingDetail = await tasks.getTaskDetailData(
               a.taskId as string,
@@ -13020,6 +13058,7 @@ export function createMcpServer(
                   isPublic: true,
                   maxClaims: true,
                   ownerOrganizationId: true,
+                  taskKey: true,
                 },
               });
               if (adminVisibleTask) {
@@ -13037,6 +13076,14 @@ export function createMcpServer(
               }
             }
             if (!existingTask) return err("Task not found");
+            if (
+              typeof existingTask.taskKey === "string" &&
+              existingTask.taskKey.startsWith(DOCUMENT_REVIEW_TASK_KEY_PREFIX)
+            ) {
+              return err(
+                "Document review tasks can only be changed through document review operations.",
+              );
+            }
             if (existingTask.isPublic && !isAdminWriter) {
               return err("Updating public tasks requires an admin user.");
             }
