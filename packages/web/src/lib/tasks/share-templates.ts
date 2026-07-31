@@ -364,7 +364,7 @@ export const SHARE_TEMPLATES: ShareTemplate[] = [
     recipientModes: ["leader", "humanity", "one_human"],
     requiredTokens: ["target_name"],
     body:
-      "{target_name} — your employees spend $2.72 trillion a year on their capacity for mass murder, which is enough to buy 850 bullets for every man, woman, and child every year, even though it would require at most 2 bullets per person to murder everyone. After the 1% Treaty cut they would still have $2.69 trillion — enough to murder everyone 20 times, which should be more than sufficient. Sign: {treaty_url}",
+      "{target_name} — your employees spend $2.72 trillion a year preparing for and waging war — enough to buy 850 bullets for every human on Earth every year, even though it would require at most 2 bullets per person to murder everyone. After the 1% Treaty cut they would still have $2.69 trillion — enough to murder everyone 20 times, which should be more than sufficient. Sign: {treaty_url}",
   },
   {
     id: "diseases-no-decency",
