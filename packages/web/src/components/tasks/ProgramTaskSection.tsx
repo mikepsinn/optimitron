@@ -105,17 +105,19 @@ export function ProgramCard({ task }: { task: TaskCardTask }) {
             years to cure them all.
           </p>
           <p className="mt-3">
-            Humanity currently spends enough on its capacity for organized violence to achieve{" "}
+            Humanity maintains enough nuclear weapons to trigger a
+            civilization-ending nuclear winter{" "}
             <ParameterValue
               param={NUCLEAR_WINTER_OVERKILL_FACTOR}
               display="integer"
               className="font-black text-foreground"
             />{" "}
-            apocalypses. This treaty asks it to settle for{" "}
+            times over. This treaty asks us to settle for enough weapons to do
+            it{" "}
             <span className="font-black text-foreground">
               {(NUCLEAR_WINTER_OVERKILL_FACTOR.value * 0.99).toFixed(1)}
             </span>{" "}
-            apocalypses in exchange for{" "}
+            times in exchange for{" "}
             <ParameterValue
               param={DFDA_TRIAL_CAPACITY_MULTIPLIER}
               className="font-black text-foreground"

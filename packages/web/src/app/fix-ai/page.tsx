@@ -42,7 +42,7 @@ export const CANONICAL_CHAIN_TEXT = [
   "",
   "In those conversations they will realize:",
   "",
-  "- We currently spend 604 times as much on our capacity for organized violence as we spend on curing the diseases that are going to kill them and everyone they love.",
+  "- We currently spend 604 times as much preparing for and waging war as we spend testing medicines for diseases that will kill us and everyone we love.",
   "- Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.",
   "- Military spending was 97% lower immediately before the United States won World War II. The US then cut military spending another 87% over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.",
   "- It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.",
@@ -325,9 +325,8 @@ export default function FixAiPage() {
                   param={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
                   valueOverride="604"
                 />{" "}
-                times as much on our capacity for organized violence as we spend on
-                curing the diseases that are going to kill them and everyone
-                they love.
+                times as much preparing for and waging war as we spend testing
+                medicines for diseases that will kill us and everyone we love.
               </li>
               <li className="list-disc">
                 Accepting a{" "}

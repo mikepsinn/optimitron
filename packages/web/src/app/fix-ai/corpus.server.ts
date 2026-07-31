@@ -82,7 +82,7 @@ const NUMERIC_CLAIMS: NumericClaim[] = [
   },
   {
     claim:
-      "We currently spend 604 times as much on our capacity for organized violence as we spend on curing the diseases that are going to kill them and everyone they love.",
+      "We currently spend 604 times as much preparing for and waging war as we spend testing medicines for diseases that will kill us and everyone we love.",
     parameters: [MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO],
   },
   {

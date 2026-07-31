@@ -220,7 +220,7 @@ export async function GET() {
                     textTransform: "uppercase",
                   }}
                 >
-                  {militarySpending} for capacity for organized violence
+                  {militarySpending} to wage war
                 </div>
               </div>
             </div>

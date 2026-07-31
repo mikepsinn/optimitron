@@ -28,11 +28,11 @@
 - ▪ THE OTHER 12,141: YOU CAN ONLY RUIN EARTH ONCE
 - MEANWHILE, YOUR GOVERNMENTS SPEND
 - 604×
-- more on mass-murder capacity than on clinical trials to cure the diseases that will actually kill you and everyone you've ever loved.
+- more preparing for and waging war than testing medicines for diseases that will actually kill you and everyone you've ever loved.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html)
 - OVER THE LAST CENTURY THEY SPENT
 - $170T
-- on mass-murder capacity — weapons, armies, and the machinery for burning human beings.
+- preparing for and waging war — weapons, armies, and the machinery for burning human beings.
 - [TAP FOR SOURCE AND MATH](https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html)
 - THEN THEY USED IT TO KILL
 - 310,000,000
@@ -62,7 +62,7 @@
 - Radically accelerating cures reduces healthcare burdens, expands the effective workforce, and compounds global output for decades. That is good business for anyone who owns everything.
 - UNPRICED RISK NO. 3
 #### MISALLOCATED TRILLIONS
-- When governments sink tens of trillions into mass-murder capacity instead of resilience, research, and human capital, they are effectively shorting the future cash flows of the very companies whose shares these funds own.
+- When governments sink tens of trillions into preparing for and waging war instead of resilience, research, and human capital, they are effectively shorting the future cash flows of the very companies whose shares these funds own.
 - THAT IS A BAD INVESTMENT.
 #### EARTH OPTIMIZATION SERVICES EXISTS TO CORRECT THAT MISPRICING.
 - We create a coordinated fund structure that buys small but strategically significant stakes — as little as 0.02% — across key companies.

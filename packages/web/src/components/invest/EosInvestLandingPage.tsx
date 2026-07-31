@@ -129,7 +129,7 @@ const RISK_STEPS: RiskStep[] = [
     body: (
       <>
         <p>
-          When governments sink tens of trillions into capacity for organized violence
+          When governments sink tens of trillions into preparing for and waging war
           instead of resilience, research, and human capital, they are
           effectively shorting the future cash flows of the very companies
           whose shares these funds own.
@@ -193,7 +193,7 @@ export function EosInvestLandingPage() {
           eyebrow="Meanwhile, your governments spend"
           value={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value}
           format={(n) => `${Math.round(n)}×`}
-          caption="more on capacity for organized violence than on clinical trials to cure the diseases that will actually kill you and everyone you've ever loved."
+          caption="more preparing for and waging war than testing medicines for diseases that will actually kill you and everyone you've ever loved."
           source={MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO}
         />
 
@@ -201,7 +201,7 @@ export function EosInvestLandingPage() {
           eyebrow="Over the last century they spent"
           value={CUMULATIVE_MILITARY_SPENDING_FED_ERA.value}
           format={(n) => `$${Math.round(n / 1e12)}T`}
-          caption="on capacity for organized violence — weapons, armies, and the machinery for burning human beings."
+          caption="preparing for and waging war — weapons, armies, and the machinery for burning human beings."
           source={CUMULATIVE_MILITARY_SPENDING_FED_ERA}
         />
 
