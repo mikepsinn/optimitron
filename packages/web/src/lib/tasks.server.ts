@@ -2,16 +2,21 @@ import {
   CourtCasePartyRole,
   OrgType,
   ReferendumVoteSource,
+  TaskApplicationPolicy,
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
+  TaskCompensationKind,
+  TaskEdgeType,
   TaskExecutionAttemptStatus,
+  TaskExecutionMode,
   TaskImpactFrameKey,
   TaskStatus,
   TaskVerificationResult,
   VotePosition,
   type Prisma,
 } from "@optimitron/db";
+import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 import {
   assertOrganizationCanBePubliclyReferenced,
   upsertTrustedOrganization,
@@ -2195,6 +2200,233 @@ export async function deleteTaskCreatedByUser(
   return { id: taskId, deleted: true };
 }
 
+const SIMPLE_SELF_COMPLETION_ERROR =
+  "completeTask only works for a private, owner-created, uncompensated Self task that is unassigned or assigned only to you. Use startTaskExecution, submitTaskArtifact, and submitTaskForVerification for delegated, shared, paid, public, organization, or agent work.";
+
+function isSelfExecutorContext(contextJson: unknown) {
+  if (
+    !contextJson ||
+    typeof contextJson !== "object" ||
+    Array.isArray(contextJson)
+  ) {
+    return false;
+  }
+  const context = contextJson as Record<string, unknown>;
+  const executorType = context.executor_type ?? context.executorType;
+  return (
+    typeof executorType === "string" &&
+    executorType.trim().toLowerCase() === "self"
+  );
+}
+
+async function lockTaskForUpdate(tx: Prisma.TransactionClient, taskId: string) {
+  await tx.$queryRaw<Array<{ id: string }>>`
+    SELECT "id"
+    FROM "Task"
+    WHERE "id" = ${taskId}
+    FOR UPDATE
+  `;
+}
+
+/**
+ * Self-attest one small personal task in a single call. This deliberately does
+ * not replace the artifact + independent-verification path for consequential
+ * work. The narrow eligibility checks keep this equivalent to the owner
+ * clicking "done" on a private personal reminder.
+ */
+export async function completeSelfTask(
+  taskId: string,
+  userId: string,
+  completionEvidence: string,
+) {
+  const evidence = completionEvidence.trim();
+  if (!evidence) throw new Error("Completion evidence is required.");
+
+  const actor = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  if (!actor) throw new Error("Task not found");
+
+  return prisma.$transaction(async (tx) => {
+    const taskAccess = getTaskAccessWhere({
+      action: "VERIFY",
+      personId: actor.personId,
+      userId,
+    });
+    const accessibleTask = await tx.task.findFirst({
+      where: { deletedAt: null, id: taskId, ...taskAccess },
+      select: { id: true },
+    });
+    if (!accessibleTask) throw new Error("Task not found");
+
+    await lockTaskForUpdate(tx, taskId);
+    const checkedAt = new Date();
+
+    const task = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        ...taskAccess,
+      },
+      select: {
+        agentLeases: {
+          where: { expiresAt: { gte: checkedAt }, released: false },
+          select: { id: true },
+          take: 1,
+        },
+        applicationPolicy: true,
+        applications: {
+          select: { id: true },
+          take: 1,
+        },
+        assigneeOrganizationId: true,
+        assigneePersonId: true,
+        childTasks: {
+          select: { id: true },
+          take: 1,
+        },
+        claimPolicy: true,
+        claims: {
+          select: { id: true },
+          take: 1,
+        },
+        compensationCadence: true,
+        compensationCurrency: true,
+        compensationKind: true,
+        compensationMaxAmountMinorUnits: true,
+        compensationMinAmountMinorUnits: true,
+        compensationPaymentRails: true,
+        contextJson: true,
+        createdByUserId: true,
+        executionAttempts: {
+          select: { id: true },
+          take: 1,
+        },
+        executionMode: true,
+        id: true,
+        incomingEdges: {
+          where: {
+            deletedAt: null,
+            edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
+            fromTask: {
+              deletedAt: null,
+              status: { not: TaskStatus.VERIFIED },
+            },
+          },
+          select: { id: true },
+          take: 1,
+        },
+        isPublic: true,
+        managers: {
+          select: { id: true },
+          take: 1,
+        },
+        ownerOrganizationId: true,
+        payouts: {
+          select: { id: true },
+          take: 1,
+        },
+        status: true,
+        taskKey: true,
+        verifiedByUserId: true,
+      },
+    });
+    if (!task) throw new Error("Task not found");
+
+    const eligible =
+      !task.isPublic &&
+      task.ownerOrganizationId === null &&
+      task.createdByUserId === userId &&
+      task.assigneeOrganizationId === null &&
+      ((task.assigneePersonId === null &&
+        (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
+          task.claimPolicy === TaskClaimPolicy.OPEN_MANY)) ||
+        task.assigneePersonId === actor.personId) &&
+      task.applicationPolicy === TaskApplicationPolicy.CLOSED &&
+      (task.compensationKind === TaskCompensationKind.UNSPECIFIED ||
+        task.compensationKind === TaskCompensationKind.VOLUNTEER) &&
+      task.compensationCadence === null &&
+      task.compensationCurrency === null &&
+      task.compensationMinAmountMinorUnits === null &&
+      task.compensationMaxAmountMinorUnits === null &&
+      task.compensationPaymentRails.length === 0 &&
+      task.executionMode !== TaskExecutionMode.AGENT_ONLY &&
+      isSelfExecutorContext(task.contextJson);
+    if (!eligible) throw new Error(SIMPLE_SELF_COMPLETION_ERROR);
+
+    if (task.status === TaskStatus.VERIFIED) {
+      return {
+        alreadyCompleted: true,
+        task: {
+          id: task.id,
+          status: task.status,
+          verifiedByUserId: task.verifiedByUserId,
+        },
+      };
+    }
+    if (task.status !== TaskStatus.ACTIVE) {
+      throw new Error("Only active Self tasks can be completed.");
+    }
+    if (isReservedPlanningRootTask(task) || task.childTasks.length > 0) {
+      throw new Error(
+        "Task is a container. Use the formal execution and verification workflow.",
+      );
+    }
+    if (task.incomingEdges.length > 0) {
+      throw new Error("Task is blocked by an unverified dependency.");
+    }
+    if (
+      task.agentLeases.length > 0 ||
+      task.applications.length > 0 ||
+      task.claims.length > 0 ||
+      task.executionAttempts.length > 0 ||
+      task.managers.length > 0 ||
+      task.payouts.length > 0
+    ) {
+      throw new Error(
+        "Task already has shared or formal work state or history. Finish that workflow instead.",
+      );
+    }
+
+    const completedAt = checkedAt;
+    const updated = await tx.task.updateMany({
+      where: {
+        childTasks: { none: {} },
+        id: task.id,
+        status: TaskStatus.ACTIVE,
+      },
+      data: {
+        completedAt,
+        completionEvidence: evidence,
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: userId,
+      },
+    });
+    if (updated.count !== 1) {
+      throw new Error("Task is no longer active.");
+    }
+
+    const completedTask = await tx.task.findUniqueOrThrow({
+      where: { id: task.id },
+      select: {
+        completedAt: true,
+        completionEvidence: true,
+        id: true,
+        status: true,
+        verifiedAt: true,
+        verifiedByUserId: true,
+      },
+    });
+
+    return {
+      alreadyCompleted: false,
+      task: completedTask,
+    };
+  });
+}
+
 export async function claimTask(taskId: string, userId: string) {
   return prisma.$transaction(async (tx) => {
     const actor = await tx.user.findUnique({
@@ -2202,15 +2434,23 @@ export async function claimTask(taskId: string, userId: string) {
       select: { personId: true },
     });
     if (!actor) throw new Error("Task not found");
+    const taskAccess = getTaskAccessWhere({
+      action: "COMMENT",
+      personId: actor.personId,
+      userId,
+    });
+    const accessibleTask = await tx.task.findFirst({
+      where: { deletedAt: null, id: taskId, ...taskAccess },
+      select: { id: true },
+    });
+    if (!accessibleTask) throw new Error("Task not found");
+
+    await lockTaskForUpdate(tx, taskId);
     const task = await tx.task.findFirst({
       where: {
         deletedAt: null,
         id: taskId,
-        ...getTaskAccessWhere({
-          action: "COMMENT",
-          personId: actor.personId,
-          userId,
-        }),
+        ...taskAccess,
       },
       select: {
         claimPolicy: true,
