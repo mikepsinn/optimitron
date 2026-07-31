@@ -18,7 +18,7 @@
 ### THE CORRECT ANSWER.
 - If [8 billion](https://manual.WarOnDisease.org/knowledge/solution/dih.html) people buy this t-shirt and wear it on the same day, they will have conversations with each other about it.
 - In those conversations they will realize:
-- We currently spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times as much on our capacity for mass murder as we spend on curing the diseases that are going to kill them and everyone they love.
+- We currently spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times as much preparing for and waging war as we spend testing medicines for diseases that will kill us and everyone we love.
 - Accepting a [121-apocalypse mass-murder capacity](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) (down from [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html)) would let us eradicate disease [12](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) times faster.
 - Military spending was [97%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) lower immediately before the United States won World War II. The US then cut military spending another [87%](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html) over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.
 - It is therefore possible to cut vastly more than [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), and doing so would speed up the rate of medical progress unimaginably.
@@ -54,7 +54,7 @@ If 8 billion people buy this t-shirt and wear it on the same day, they will have
 
 In those conversations they will realize:
 
-- We currently spend 604 times as much on our capacity for mass murder as we spend on curing the diseases that are going to kill them and everyone they love.
+- We currently spend 604 times as much preparing for and waging war as we spend testing medicines for diseases that will kill us and everyone we love.
 - Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.
 - Military spending was 97% lower immediately before the United States won World War II. The US then cut military spending another 87% over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.
 - It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.
@@ -83,7 +83,7 @@ NUMERIC CLAIMS, SOURCES, AND UNCERTAINTY
 1. Claim: If 8 billion people buy this t-shirt and wear it on the same day, they will have conversations with each other about it.
    Parameter: GLOBAL_POPULATION_2024 | Value: 8.00 billion | Source URL: https://manual.WarOnDisease.org/knowledge/solution/dih.html | 95% confidence interval: 7.80 billion – 8.20 billion | Source notes: Global population in 2024. Catalog confidence: high. Source type: external. Manual page: Decentralized Institutes of Health. Calculation URL: https://manual.WarOnDisease.org/calculations.html#sec-global_population_2024. External source URL: https://www.un.org/en/desa/world-population-reach-8-billion-15-november-2022. Citation title: Global population reaches 8 billion. Citation URL: https://www.un.org/en/desa/world-population-reach-8-billion-15-november-2022. Citation note: UN: World Population 8 Billion Nov 15 2022 | UN: Day of 8 Billion | Wikipedia: Day of Eight Billion.
 
-2. Claim: We currently spend 604 times as much on our capacity for mass murder as we spend on curing the diseases that are going to kill them and everyone they love.
+2. Claim: We currently spend 604 times as much preparing for and waging war as we spend testing medicines for diseases that will kill us and everyone we love.
    Parameter: MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO | Value: 604x | Source URL: https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html | 95% confidence interval: 453x – 888x | Source notes: Ratio of global military spending to government clinical trials spending. Formula: MILITARY_SPENDING / GOVT_CLINICAL_TRIALS_SPENDING. Catalog confidence: high. Source type: calculated. Manual page: The 1% Treaty. Calculation URL: https://manual.WarOnDisease.org/calculations.html#sec-military_to_government_clinical_trials_spending_ratio.
 
 3. Claim: Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.
