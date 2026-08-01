@@ -33,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   listTasks: vi.fn(),
   getTaskDetailData: vi.fn(),
   claimTask: vi.fn(),
+  completeSelfTask: vi.fn(),
   completeTaskClaim: vi.fn(),
   computeTaskPriority: vi.fn(),
   rankTasksForUser: vi.fn(),
@@ -168,6 +169,7 @@ vi.mock("../triggers", () => ({
 
 vi.mock("../tasks.server", () => ({
   claimTask: mocks.claimTask,
+  completeSelfTask: mocks.completeSelfTask,
   completeTaskClaim: mocks.completeTaskClaim,
   listTasks: mocks.listTasks,
   getTaskDetailData: mocks.getTaskDetailData,
@@ -716,6 +718,10 @@ beforeEach(() => {
   mocks.claimTask.mockResolvedValue({
     id: "claim-1",
     status: TaskClaimStatus.CLAIMED,
+  });
+  mocks.completeSelfTask.mockResolvedValue({
+    alreadyCompleted: false,
+    task: { id: "task-1", status: TaskStatus.VERIFIED },
   });
   mocks.completeTaskClaim.mockResolvedValue({
     id: "claim-1",
@@ -4757,6 +4763,60 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("completeTask self-verifies an eligible personal task in one call", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "completeTask",
+        arguments: {
+          completionEvidence: "Text sent and reply received.",
+          taskId: "task-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.completeSelfTask).toHaveBeenCalledWith(
+        "task-1",
+        "user-1",
+        "Text sent and reply received.",
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        alreadyCompleted: false,
+        completionMode: "OWNER_SELF_ATTESTATION",
+        status: TaskStatus.VERIFIED,
+        taskId: "task-1",
+        writeReceipt: {
+          operation: "completeTask",
+          outcome: "verified",
+          requestId: expect.any(String),
+          taskId: "task-1",
+        },
+      });
+    });
+
+    it("reports an already verified task without relabeling its provenance", async () => {
+      mocks.completeSelfTask.mockResolvedValue({
+        alreadyCompleted: true,
+        task: { id: "task-1", status: TaskStatus.VERIFIED },
+      });
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "completeTask",
+        arguments: {
+          completionEvidence: "Retry after the task left the queue.",
+          taskId: "task-1",
+        },
+      });
+
+      expect(parseToolBody(result)).toMatchObject({
+        alreadyCompleted: true,
+        completionMode: "ALREADY_VERIFIED",
+        status: TaskStatus.VERIFIED,
+        writeReceipt: { outcome: "already_completed" },
+      });
+    });
+
     it("completeTaskClaim claims the task before completing it", async () => {
       mocks.taskFindFirst.mockResolvedValue({ id: "task-1" });
       const client = await setup("user-1", ALL_SCOPES);
@@ -4778,7 +4838,10 @@ describe("MCP server tool dispatch", () => {
       );
       expect(parseToolBody(result)).toMatchObject({
         alreadyCompleted: false,
+        awaitingVerification: true,
         claimId: "claim-1",
+        claimStatus: TaskClaimStatus.COMPLETED,
+        nextAction: "await_claim_verification",
         status: TaskClaimStatus.COMPLETED,
         writeReceipt: {
           operation: "completeTaskClaim",

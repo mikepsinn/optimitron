@@ -35,11 +35,14 @@ For personal and organization planning, the MCP server is an expected-value task
 2. Create individual tasks or call `reviewPrivateTaskBundle` for an explicitly selected source batch.
 3. Inspect every normalized action, duplicate, dependency, estimate, source anchor, and error. Apply the unchanged review with `applyPrivateTaskBundle`; private candidates become `ACTIVE`, never public proposals.
 4. Audit with `getQueueAudit`, then ask `getNextAction` or `getExecutionPlan`.
-5. Call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
-6. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
-7. Repeat; dependents become available only after accepted verification.
+5. For a private, uncompensated `Self` task you own, call `completeTask` once with factual completion evidence. It self-verifies the task and removes it from the active queue.
+6. For delegated, shared, paid, public, organization, or agent work, call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
+7. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
+8. Repeat; dependents become available only after accepted verification.
 
 `updateTask(status="VERIFIED")` is invalid. Claim and completion operations derive the actor from OAuth and never accept authority from a caller-supplied user ID.
+
+`completeTaskClaim` is a contribution-coordination operation, not task completion. It auto-claims open work when needed and marks that claim `COMPLETED`. An authorized reviewer may later verify the claim; `OPEN_SINGLE` then resolves the task, while `OPEN_MANY` remains active for more contributions.
 
 The canonical score is `priority`:
 
@@ -203,7 +206,8 @@ disagree, those sources win.
 - Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
 - Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
-- Claims: `claimTask`, `completeTaskClaim`.
+- Completion: `completeTask` for a private owner-created `Self` task; `startTaskExecution` → `submitTaskArtifact` → `submitTaskForVerification` for formal work.
+- Claims: `claimTask`, `completeTaskClaim` (claim submission only).
 - Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
 
 ## Task Trigger Framework

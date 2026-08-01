@@ -48,6 +48,12 @@ Task status is intentionally narrow:
 
 Reviewed private source actions are created directly as private `ACTIVE` tasks. There is no separate long-lived `COMPLETED` task state. Only accepted verification may move a task to `VERIFIED`; generic update paths may not set it.
 
+### Personal Self-Completion
+
+The authenticated creator may self-attest a private, uncompensated `Self` task with `completeTask`. The shortcut is limited to a childless, unblocked personal task that is unassigned or assigned only to the creator, has no claim, application, payout, manager, or execution history, and has no active agent lease. It records evidence and moves the task directly to `VERIFIED`, which is the resolved task state.
+
+Delegated, shared, paid, public, organization, and agent work stays on the artifact-and-verification lifecycle. `completeTaskClaim` completes only one worker's claim; it does not resolve the task.
+
 ## Deadlines
 
 - `Task.dueAt` is the first-class accountability deadline / target date field.
@@ -65,7 +71,7 @@ Claim status is more expressive than task status because claims represent user w
 - `REJECTED`
 - `ABANDONED`
 
-Claims coordinate public or multi-claimant work. `TaskExecutionAttempt` is the canonical record for each real execution. The execution workflow is:
+Claims coordinate public or multi-claimant work. `TaskExecutionAttempt` is the canonical record for formal execution; the narrow personal `completeTask` shortcut records evidence directly on the task. The formal execution workflow is:
 
 - `ACTIVE task -> RUNNING attempt -> submitted attempt -> accepted or rejected verification`
 

@@ -286,6 +286,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   claimSignerReminder: [McpScope.TASKS_PERSONAL],
+  completeTask: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   logAgentRun: [McpScope.AGENT_RUN],
   acquireLease: [McpScope.AGENT_RUN],
@@ -7543,9 +7544,25 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "completeTask",
+    description:
+      "Mark one private Self task you own VERIFIED in a single call so it leaves your active queue. This owner-attestation shortcut is only for uncompensated, childless personal tasks that are unassigned or assigned only to you and have no formal work history. For delegated, shared, paid, public, organization, or agent work, use startTaskExecution, submitTaskArtifact, and submitTaskForVerification instead.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Private Self task ID" },
+        completionEvidence: {
+          type: "string",
+          description: "A short factual description of what was completed",
+        },
+      },
+      required: ["taskId", "completionEvidence"],
+    },
+  },
+  {
     name: "completeTaskClaim",
     description:
-      "Claim an open task if needed, then mark the authenticated user's claim completed. Safe to retry after completion. Requires completionEvidence describing what was done.",
+      "Claim an open task if needed, then mark only the authenticated user's claim completed. This does not itself complete the task. An authorized reviewer may later verify the claim; OPEN_SINGLE then resolves the task, while OPEN_MANY remains active for more contributions. Safe to retry after claim completion.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7555,7 +7572,7 @@ const TASK_TOOL_DEFINITIONS = [
           description: "What was done and proof it worked",
         },
       },
-      // Handler validation keeps errors concise for remote clients.
+      required: ["taskId", "completionEvidence"],
     },
   },
   {
@@ -13879,7 +13896,7 @@ export function createMcpServer(
 
           // ── claimTask ──────────────────────────────────────────
           case "claimTask": {
-            const { tasks } = await getTaskFunctions();
+            const tasks = await import("./tasks.server");
             if (!userId) return authRequired(name, "Claiming requires OAuth.");
             if (!(await canAccessTaskResource(a.taskId as string, "COMMENT"))) {
               return err("Task not found");
@@ -14016,9 +14033,53 @@ export function createMcpServer(
             });
           }
 
+          // ── completeTask ───────────────────────────────────────
+          case "completeTask": {
+            const tasks = await import("./tasks.server");
+            if (!userId)
+              return authRequired(name, "Completing a task requires OAuth.");
+            const taskId = optionalString(a.taskId);
+            const completionEvidence = optionalString(a.completionEvidence);
+            const missingFields = [
+              ...(taskId ? [] : ["taskId"]),
+              ...(completionEvidence ? [] : ["completionEvidence"]),
+            ];
+            if (missingFields.length > 0) {
+              return err(
+                `Missing required fields: ${missingFields.join(", ")}.`,
+                {
+                  code: "INVALID_ARGUMENT",
+                  details: { missingFields },
+                },
+              );
+            }
+
+            const completion = await tasks.completeSelfTask(
+              taskId!,
+              userId,
+              completionEvidence!,
+            );
+            return ok({
+              alreadyCompleted: completion.alreadyCompleted,
+              completionMode: completion.alreadyCompleted
+                ? "ALREADY_VERIFIED"
+                : "OWNER_SELF_ATTESTATION",
+              status: completion.task.status,
+              taskId: completion.task.id,
+              writeReceipt: {
+                operation: "completeTask",
+                outcome: completion.alreadyCompleted
+                  ? "already_completed"
+                  : "verified",
+                requestId,
+                taskId: completion.task.id,
+              },
+            });
+          }
+
           // ── completeTaskClaim ──────────────────────────────────
           case "completeTaskClaim": {
-            const { tasks } = await getTaskFunctions();
+            const tasks = await import("./tasks.server");
             if (!userId)
               return authRequired(name, "Completing a claim requires OAuth.");
             const taskId = optionalString(a.taskId);
@@ -14058,7 +14119,13 @@ export function createMcpServer(
               alreadyCompleted:
                 existingClaim.status === TaskClaimStatus.COMPLETED ||
                 existingClaim.status === TaskClaimStatus.VERIFIED,
+              awaitingVerification: claim.status !== TaskClaimStatus.VERIFIED,
               claimId: claim.id,
+              claimStatus: claim.status,
+              nextAction:
+                claim.status === TaskClaimStatus.VERIFIED
+                  ? "none"
+                  : "await_claim_verification",
               status: claim.status,
               writeReceipt: {
                 operation: "completeTaskClaim",

@@ -38,6 +38,30 @@ describe("MCP tool catalog", () => {
     }
   });
 
+  it("makes task completion and claim submission unambiguous", () => {
+    const definitions = getToolDefinitions();
+    const completeTask = definitions.find(
+      (tool) => tool.name === "completeTask",
+    );
+    const completeClaim = definitions.find(
+      (tool) => tool.name === "completeTaskClaim",
+    );
+
+    expect(
+      completeTask && "required" in completeTask.inputSchema
+        ? completeTask.inputSchema.required
+        : undefined,
+    ).toEqual(["taskId", "completionEvidence"]);
+    expect(
+      completeClaim && "required" in completeClaim.inputSchema
+        ? completeClaim.inputSchema.required
+        : undefined,
+    ).toEqual(["taskId", "completionEvidence"]);
+    expect(completeClaim?.description).toContain(
+      "does not itself complete the task",
+    );
+  });
+
   it("only references real tools in the server instructions", () => {
     // The docs-drift class this prevents: MCP_SERVER.md once documented a
     // phantom updateMilestone tool. Instructions ship to every client on
