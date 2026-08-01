@@ -11,7 +11,9 @@ START HERE (in order):
 2. getQueueAudit — data-health check of the personal queue; repair high-severity issues before trusting rankings.
 3. getNextAction or getMyQueue — the user's own ranked next actions. getAIQueue — tasks marked for autonomous agent execution. getNextTask — best public task for an anonymous agent.
 
-CREATING WORK: always searchTasks first (visibility defaults to 'all' — public plus your private work — when signed in; pass 'public' or 'private' to narrow). createTask requires an explicit parentTaskId — choose the closest existing objective; never attach directly to Optimize Earth. Estimate value/p_success/hours honestly; a calibrated guess beats omission. Use proposeTaskBundle for multi-task drafts (it runs duplicate review).
+CREATING WORK: always searchTasks first (visibility defaults to 'all' — public plus your private work — when signed in; pass 'public' or 'private' to narrow). createTask requires an explicit parentTaskId or exact parentTaskKey — choose the closest existing objective; never attach directly to Optimize Earth. Estimate value/p_success/hours honestly; a calibrated guess beats omission. Use proposeTaskBundle for multi-task drafts (it runs duplicate review).
+
+OPTIMITRON DEVELOPMENT: for an improvement to Optimitron itself, searchTasks with query "optimitron:dev" and visibility "all". Confirm the exact taskKey "optimitron:dev", search again for duplicate work, then call createTask with parentTaskKey "optimitron:dev". If the development root is not accessible, stop instead of attaching the task somewhere else.
 
 COMPLETING WORK: for a private uncompensated Self task you own, call completeTask once with factual completion evidence; it self-verifies the task and removes it from your active queue. For delegated, shared, paid, public, organization, or agent work, use startTaskExecution → submitTaskArtifact → submitTaskForVerification, then wait for authorized verification. completeTaskClaim only submits one claim for review and never completes the task itself.
 

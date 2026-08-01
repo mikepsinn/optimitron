@@ -78,4 +78,8 @@ describe("MCP tool catalog", () => {
 
     expect(phantom).toEqual([]);
   });
+
+  it("tells coding agents how to target the canonical development branch", () => {
+    expect(MCP_SERVER_INSTRUCTIONS).toContain('parentTaskKey "optimitron:dev"');
+  });
 });

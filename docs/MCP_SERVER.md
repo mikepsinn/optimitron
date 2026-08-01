@@ -99,17 +99,21 @@ Do not request `tasks:admin` for personal planning. Public manual search and pub
 
 Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work). On the tools that previously exposed `scope`/`taskScope`, `"accessible"` survives as a deprecated alias for `"all"`; `listTasks` never had the alias and takes only `visibility`.
 
-Example private task:
+Example private task (use the `personalRoot.id` returned by `getMe`):
 
 ```json
 {
   "title": "File federal taxes",
+  "description": "Prepare, review, and file the federal and state returns before the legal deadline.",
+  "parentTaskId": "<personalRoot.id from getMe>",
+  "taskKey": "personal:taxes:2026",
+  "category": "OTHER",
   "hours": 3,
   "value": 20000,
   "p_success": 0.99,
   "cash_cost": 150,
-  "expected_deliverable": "Accepted federal and state returns with filing receipts",
-  "acceptance_criteria": [
+  "impactStatement": "Filing correctly and on time avoids penalties, interest, and account disruption.",
+  "acceptanceCriteria": [
     "Return totals match reviewed source documents",
     "Filing receipt is attached"
   ],
@@ -117,6 +121,45 @@ Example private task:
   "due_at": "2026-04-15T17:00:00-05:00",
   "deadline_policy": "REQUIRED",
   "deadline_rationale": "Avoid legal penalties, interest, and account disruption."
+}
+```
+
+## Creating Optimitron Development Tasks
+
+Improvements to Optimitron itself belong under the managed development root
+whose stable task key is `optimitron:dev`. Do not attach them directly to
+Optimize Earth and do not rely on a memorized database ID:
+
+1. Call `getMe` and confirm the connected identity has access to the
+   development tree.
+2. Call `searchTasks` with `query: "optimitron:dev"` and
+   `visibility: "all"`.
+3. Select the exact `taskKey: "optimitron:dev"` result. Search the proposed
+   title and its distinctive terms to avoid duplicating existing work.
+4. Call `createTask` with `parentTaskKey: "optimitron:dev"`; use an
+   `optimitron:dev:<short-slug>` key for the new task.
+
+If the exact development root is not returned, stop and report the access or
+search problem. Do not substitute the Optimize Earth root or a merely similar
+task.
+
+```json
+{
+  "title": "Make development-parent discovery reliable in MCP",
+  "description": "Let agents find the canonical development root with natural task-search queries and document the exact creation flow.",
+  "parentTaskKey": "optimitron:dev",
+  "taskKey": "optimitron:dev:mcp-development-parent-discovery",
+  "category": "ENGINEERING",
+  "hours": 4,
+  "value": 20000,
+  "p_success": 0.9,
+  "impactStatement": "Reliable parent discovery prevents orphaned and duplicate development work.",
+  "acceptanceCriteria": [
+    "Natural multi-word searches return the development root",
+    "The MCP instructions show the exact search-then-create flow",
+    "Regression tests cover development-root discovery"
+  ],
+  "executor_type": "AI Agent"
 }
 ```
 
@@ -188,7 +231,7 @@ admin gating — is the **[MCP Tool Reference](https://optimitron.com/developers
 (human) and `/api/mcp/tools` (machine). When this section and those sources
 disagree, those sources win.
 
-- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
+- Queue discovery: `listTasks`, `searchTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
 - Personal task management: `createTask`, `updateTask`, `deleteTask`, `proposeTaskBundle` (multi-task drafts with duplicate review), `promoteTask` (DRAFT → ACTIVE after review).
 - Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection`.
 - Private execution (admin/agent-gated; not exposed to ordinary third-party tokens): `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail`.

@@ -719,24 +719,98 @@ describe("tasks server", () => {
     ]);
   });
 
-  it("searchTasks without a user searches public tasks only", async () => {
-    await searchTasks("secret grant memo", { userId: null });
+  it("searchTasks without a user searches public tasks using OR-ranked terms", async () => {
+    await searchTasks("find secret grant memo task", { userId: null });
 
     const args = lastTaskFindManyArgs();
     const filters = (args.where as { AND: unknown[] }).AND;
     expect(filters[0]).toEqual(
       expect.objectContaining({ deletedAt: null, isPublic: true }),
     );
-    expect(filters.slice(1)).toHaveLength(3);
+    expect(filters.slice(1)).toHaveLength(1);
+    const termFilter = filters[1] as { OR: unknown[] };
     for (const term of ["secret", "grant", "memo"]) {
-      expect(filters.slice(1)).toContainEqual(
-        expect.objectContaining({
-          OR: expect.arrayContaining([
-            { title: { contains: term, mode: "insensitive" } },
-          ]),
-        }),
-      );
+      expect(termFilter.OR).toContainEqual({
+        title: { contains: term, mode: "insensitive" },
+      });
     }
+    expect(termFilter.OR).not.toContainEqual({
+      title: { contains: "find", mode: "insensitive" },
+    });
+    expect(termFilter.OR).not.toContainEqual({
+      title: { contains: "task", mode: "insensitive" },
+    });
+    expect(args.take).toBe(128);
+  });
+
+  it.each([
+    ["Optimize Optimitron parent", "optimitron:dev"],
+    ["estimate calibration guard", "optimitron:dev:estimate-calibration-guard"],
+    ["duplicate detection semantic", "optimitron:dev:semantic-dedup"],
+  ])(
+    "searchTasks ranks the expected task for natural multi-word query %s",
+    async (query, expectedTaskKey) => {
+      mocks.prisma.taskFindMany.mockResolvedValue([
+        mockTask({
+          description: "Container for self-improvement development tasks.",
+          id: "optimitron-dev",
+          taskKey: "optimitron:dev",
+          title: "Optimize Optimitron: engineering program",
+        }),
+        mockTask({
+          description: "Reject stale or uncalibrated task estimates.",
+          id: "estimate-calibration",
+          taskKey: "optimitron:dev:estimate-calibration-guard",
+          title: "Add an estimate calibration guard",
+        }),
+        mockTask({
+          description: "Detect semantically similar duplicate tasks.",
+          id: "semantic-dedup",
+          taskKey: "optimitron:dev:semantic-dedup",
+          title: "Build semantic duplicate detection",
+        }),
+      ]);
+
+      const results = await searchTasks(query, { userId: "user-a" });
+
+      expect(results[0]?.taskKey).toBe(expectedTaskKey);
+    },
+  );
+
+  it("uses an exact-key fast path and ranks it ahead of stronger prefix matches", async () => {
+    mocks.prisma.taskFindFirst.mockResolvedValue(
+      mockTask({
+        description: "Container for self-improvement development tasks.",
+        id: "optimitron-dev",
+        taskKey: "optimitron:dev",
+        title: "Optimize Optimitron: engineering program",
+      }),
+    );
+    const childTasks = Array.from({ length: 25 }, (_, index) =>
+      mockTask({
+        description:
+          "Build optimitron:dev parent discovery for Optimitron development.",
+        id: `dev-child-${index}`,
+        taskKey: `optimitron:dev:child-${index}`,
+        title: `Optimitron dev development task ${index}`,
+      }),
+    );
+    mocks.prisma.taskFindMany.mockResolvedValue(childTasks);
+
+    const results = await searchTasks("optimitron:dev", {
+      limit: 20,
+      userId: "user-a",
+    });
+
+    expect(results).toHaveLength(20);
+    expect(results[0]?.taskKey).toBe("optimitron:dev");
+    expect(mocks.prisma.taskFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([{ taskKey: "optimitron:dev" }]),
+        }),
+      }),
+    );
   });
 
   it("searchTasks with a user searches public tasks plus that user's created private tasks", async () => {
