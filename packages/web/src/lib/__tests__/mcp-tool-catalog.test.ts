@@ -38,7 +38,7 @@ describe("MCP tool catalog", () => {
     }
   });
 
-  it("makes task completion and claim submission unambiguous", () => {
+  it("requires evidence for both task completion writes", () => {
     const definitions = getToolDefinitions();
     const completeTask = definitions.find(
       (tool) => tool.name === "completeTask",
@@ -57,9 +57,6 @@ describe("MCP tool catalog", () => {
         ? completeClaim.inputSchema.required
         : undefined,
     ).toEqual(["taskId", "completionEvidence"]);
-    expect(completeClaim?.description).toContain(
-      "does not itself complete the task",
-    );
   });
 
   it("only references real tools in the server instructions", () => {

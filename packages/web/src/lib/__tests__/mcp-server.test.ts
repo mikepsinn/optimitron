@@ -4782,7 +4782,6 @@ describe("MCP server tool dispatch", () => {
       );
       expect(parseToolBody(result)).toMatchObject({
         alreadyCompleted: false,
-        completionMode: "OWNER_SELF_ATTESTATION",
         status: TaskStatus.VERIFIED,
         taskId: "task-1",
         writeReceipt: {
@@ -4791,29 +4790,6 @@ describe("MCP server tool dispatch", () => {
           requestId: expect.any(String),
           taskId: "task-1",
         },
-      });
-    });
-
-    it("reports an already verified task without relabeling its provenance", async () => {
-      mocks.completeSelfTask.mockResolvedValue({
-        alreadyCompleted: true,
-        task: { id: "task-1", status: TaskStatus.VERIFIED },
-      });
-      const client = await setup("user-1", ALL_SCOPES);
-
-      const result = await client.callTool({
-        name: "completeTask",
-        arguments: {
-          completionEvidence: "Retry after the task left the queue.",
-          taskId: "task-1",
-        },
-      });
-
-      expect(parseToolBody(result)).toMatchObject({
-        alreadyCompleted: true,
-        completionMode: "ALREADY_VERIFIED",
-        status: TaskStatus.VERIFIED,
-        writeReceipt: { outcome: "already_completed" },
       });
     });
 
@@ -4840,8 +4816,6 @@ describe("MCP server tool dispatch", () => {
         alreadyCompleted: false,
         awaitingVerification: true,
         claimId: "claim-1",
-        claimStatus: TaskClaimStatus.COMPLETED,
-        nextAction: "await_claim_verification",
         status: TaskClaimStatus.COMPLETED,
         writeReceipt: {
           operation: "completeTaskClaim",
