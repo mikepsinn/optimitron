@@ -884,20 +884,22 @@ function mapTaskSearchResult(
     category: task.category,
     href,
     id: task.id,
-    score: scoreSearchRecord(searchTerms, {
-      title: task.title,
-      description: snippet,
-      href,
-      keywords: [
-        task.category,
-        task.status,
-        task.taskKey ?? "",
-        ...task.interestTags,
-        ...task.skillTags,
-        ...assigneeParts,
-      ],
-      section: "Tasks",
-    }),
+    score:
+      (task.taskKey?.toLowerCase() === searchTerms.normalizedQuery ? 100 : 0) +
+      scoreSearchRecord(searchTerms, {
+        title: task.title,
+        description: snippet,
+        href,
+        keywords: [
+          task.category,
+          task.status,
+          task.taskKey ?? "",
+          ...task.interestTags,
+          ...task.skillTags,
+          ...assigneeParts,
+        ],
+        section: "Tasks",
+      }),
     snippet: snippet || null,
     status: task.status,
     taskKey: task.taskKey,
@@ -1696,66 +1698,102 @@ export async function searchTasks(
     return [];
   }
 
-  const requiredTerms =
+  const queryTerms =
     searchTerms.terms.length > 0
       ? searchTerms.terms
       : [searchTerms.normalizedQuery];
+  const taskSearchIntentTerms = new Set([
+    "create",
+    "find",
+    "parent",
+    "search",
+    "task",
+    "tasks",
+  ]);
+  const distinctiveTerms = queryTerms.filter(
+    (term) => !taskSearchIntentTerms.has(term),
+  );
+  const candidateTerms =
+    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms;
 
-  const tasks = await prisma.task.findMany({
-    where: {
-      AND: [
-        getTaskVisibilityWhere({
-          userId: options?.userId,
-          visibility:
-            options?.visibility ?? (options?.userId ? "accessible" : "public"),
-        }),
-        ...(options?.clientAccessBoundary
-          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
-          : []),
-        ...(options?.status ? [{ status: options.status }] : []),
-        ...requiredTerms.map((term) => ({
-          OR: [
-            { title: { contains: term, mode: "insensitive" as const } },
-            {
-              description: { contains: term, mode: "insensitive" as const },
+  // Prisma cannot order substring matches by relevance. Require every
+  // distinctive term at the database boundary, then rank the bounded matches
+  // in memory. Ignoring request-framing words keeps natural agent queries such
+  // as "find Optimize Optimitron parent" from failing on the word "parent"
+  // without letting a single common term flood the candidate window.
+  const candidateLimit = Math.min(Math.max(limit * 4, 64), 500);
+  const requiredTermMatches = candidateTerms.map((term) => ({
+    OR: [
+      { title: { contains: term, mode: "insensitive" as const } },
+      { description: { contains: term, mode: "insensitive" as const } },
+      { taskKey: { contains: term, mode: "insensitive" as const } },
+      { roleTitle: { contains: term, mode: "insensitive" as const } },
+      {
+        assigneeOrganization: {
+          is: {
+            name: { contains: term, mode: "insensitive" as const },
+          },
+        },
+      },
+      {
+        assigneePerson: {
+          is: {
+            displayName: {
+              contains: term,
+              mode: "insensitive" as const,
             },
-            { taskKey: { contains: term, mode: "insensitive" as const } },
-            { roleTitle: { contains: term, mode: "insensitive" as const } },
-            {
-              assigneeOrganization: {
-                is: {
-                  name: { contains: term, mode: "insensitive" as const },
-                },
-              },
+          },
+        },
+      },
+      {
+        assigneePerson: {
+          is: {
+            currentAffiliation: {
+              contains: term,
+              mode: "insensitive" as const,
             },
-            {
-              assigneePerson: {
-                is: {
-                  displayName: {
-                    contains: term,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              assigneePerson: {
-                is: {
-                  currentAffiliation: {
-                    contains: term,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-          ],
-        })),
-      ],
-    },
-    orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-    select: taskSearchSelect,
-    take: Math.max(limit * 4, 24),
-  });
+          },
+        },
+      },
+    ],
+  }));
+
+  const accessFilters: Prisma.TaskWhereInput[] = [
+    getTaskVisibilityWhere({
+      userId: options?.userId,
+      visibility:
+        options?.visibility ?? (options?.userId ? "accessible" : "public"),
+    }),
+    ...(options?.clientAccessBoundary
+      ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+      : []),
+    ...(options?.status ? [{ status: options.status }] : []),
+  ];
+  const exactTaskKeyPromise = searchTerms.normalizedQuery.includes(":")
+    ? prisma.task.findFirst({
+        where: {
+          AND: [...accessFilters, { taskKey: searchTerms.normalizedQuery }],
+        },
+        select: taskSearchSelect,
+      })
+    : Promise.resolve(null);
+  const [exactTaskKeyMatch, candidates] = await Promise.all([
+    exactTaskKeyPromise,
+    prisma.task.findMany({
+      where: {
+        AND: [...accessFilters, ...requiredTermMatches],
+      },
+      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+      select: taskSearchSelect,
+      take: candidateLimit,
+    }),
+  ]);
+  const tasks = exactTaskKeyMatch
+    ? [
+        exactTaskKeyMatch,
+        ...candidates.filter((task) => task.id !== exactTaskKeyMatch.id),
+      ]
+    : candidates;
 
   return tasks
     .map((task) => mapTaskSearchResult(task, searchTerms))
