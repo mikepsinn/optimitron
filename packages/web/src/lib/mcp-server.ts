@@ -7731,6 +7731,20 @@ const TASK_TOOL_DEFINITIONS = [
       "Add a dependency between tasks. The blocked task cannot proceed until the blocker is done. Optional edge metadata can estimate how much the blocker raises downstream success probability or accelerates downstream value.",
     inputSchema: {
       type: "object" as const,
+      allOf: [
+        {
+          anyOf: [
+            { required: ["blockedTaskRef"] },
+            { required: ["blockedTaskId"] },
+          ],
+        },
+        {
+          anyOf: [
+            { required: ["blockerTaskRef"] },
+            { required: ["blockerTaskId"] },
+          ],
+        },
+      ],
       properties: {
         blockedTaskRef: {
           type: "string",
@@ -13173,6 +13187,7 @@ export function createMcpServer(
                     });
                   }
 
+                  const wiredBlockerTaskIds = new Set<string>();
                   for (const blockerRef of (
                     (candidate.blockerRefs as string[]) ?? []
                   ).filter(Boolean)) {
@@ -13185,6 +13200,8 @@ export function createMcpServer(
                         `Accepted task references unavailable blocker ${JSON.stringify(blockerRef)}.`,
                       );
                     }
+                    if (wiredBlockerTaskIds.has(blockerTaskId)) continue;
+                    wiredBlockerTaskIds.add(blockerTaskId);
 
                     const dependency = (
                       (candidate.dependencies as Array<

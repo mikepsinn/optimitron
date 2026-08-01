@@ -74,7 +74,7 @@ Deadline policy rules:
 - `EXPIRES`: opportunity disappears after `due_at`, such as a grant or application.
 - `REQUIRED`: must-do obligation, such as taxes, legal filings, medicine refills, or safety/health maintenance.
 
-Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, use `depends_on`.
+Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, add its task ID or exact task key to each dependent task's `blockerTaskRefs`.
 
 Recommended OAuth scope for a personal life-planning AI:
 
@@ -101,7 +101,9 @@ Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in
 
 ## Task References, Pagination, And Bundles
 
-Call `listTasks` or `searchTasks` with `paginated: true` to receive this envelope:
+Call `listTasks` or `searchTasks` with `paginated: true`.
+
+Example `listTasks` request:
 
 ```json
 {
@@ -111,6 +113,10 @@ Call `listTasks` or `searchTasks` with `paginated: true` to receive this envelop
   "paginated": true
 }
 ```
+
+`searchTasks` uses the same pagination fields plus its required `query`.
+
+Paginated response from either tool:
 
 ```json
 {

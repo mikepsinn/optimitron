@@ -4062,7 +4062,7 @@ describe("MCP server tool dispatch", () => {
               title: "Upstream work",
             }),
             makeProposalCandidate({
-              blockerRefs: ["bundle:upstream"],
+              blockerRefs: ["bundle:upstream", "upstream-ref"],
               description:
                 "Complete the child work beneath its same-bundle parent after the prerequisite evidence exists.",
               id: "legacy-child-id",
@@ -4101,6 +4101,7 @@ describe("MCP server tool dispatch", () => {
           toTaskId: "persisted-child",
         }),
       });
+      expect(mocks.taskEdgeCreate).toHaveBeenCalledTimes(1);
     });
 
     it.each([
@@ -7028,6 +7029,32 @@ describe("MCP server tool dispatch", () => {
           skipDuplicates: true,
         }),
       );
+    });
+
+    it("advertises canonical-or-legacy references for both dependency sides", async () => {
+      const client = await setup("user-1", ALL_SCOPES, { isAdmin: true });
+
+      const tools = await client.listTools();
+      const addDependency = tools.tools.find(
+        (tool) => tool.name === "addDependency",
+      );
+
+      expect(addDependency?.inputSchema).toMatchObject({
+        allOf: [
+          {
+            anyOf: [
+              { required: ["blockedTaskRef"] },
+              { required: ["blockedTaskId"] },
+            ],
+          },
+          {
+            anyOf: [
+              { required: ["blockerTaskRef"] },
+              { required: ["blockerTaskId"] },
+            ],
+          },
+        ],
+      });
     });
 
     it("addDependency resolves persisted IDs and exact taskKeys and reports a new edge", async () => {

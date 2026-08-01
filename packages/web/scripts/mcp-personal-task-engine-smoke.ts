@@ -143,14 +143,15 @@ async function markDone(task: CreatedTask) {
   });
 }
 
-async function listAllTasks() {
+async function searchPublicSmokeTasks() {
   const tasks: unknown[] = [];
   let cursor: string | null = null;
   do {
-    const page = await callTool<{ nextCursor: string | null; tasks: unknown[] }>("listTasks", {
+    const page = await callTool<{ nextCursor: string | null; tasks: unknown[] }>("searchTasks", {
       ...(cursor ? { cursor } : {}),
-      limit: 50,
+      limit: 5,
       paginated: true,
+      query: RUN_ID,
       visibility: "public",
     });
     tasks.push(...page.tasks);
@@ -175,7 +176,6 @@ async function main() {
   const me = await callTool<{ personalRoot: { id: string } | null }>("getMe");
   personalRootId = me.personalRoot?.id ?? "";
   assert(personalRootId, "getMe returned no personalRoot; grant tasks:personal");
-  const publicBefore = await listAllTasks();
 
   try {
     const A = await createTask({ key: "A", title: "Build product demo", hours: 6, value: 50000, p_success: 0.9, executor_type: "Self" });
@@ -188,6 +188,11 @@ async function main() {
     const H = await createTask({ key: "H", title: "Set up donation page", hours: 2, value: 10000, p_success: 0.8, executor_type: "Self" });
     const I = await createTask({ key: "I", title: "Organize files and folders", hours: 1, value: 100, p_success: 1, executor_type: "Self" });
     await createTask({ key: "J", title: "Research potential funders list", hours: 3, value: 20000, p_success: 0.7, executor_type: "AI Agent" });
+    const publicSmokeTasks = await searchPublicSmokeTasks();
+    assert(
+      publicSmokeTasks.length === 0,
+      `Personal smoke tasks leaked into public search: ${JSON.stringify(publicSmokeTasks)}`,
+    );
 
     await callTool("updateTask", { taskId: C.id, blockerTaskRefs: [A.taskKey] });
     await callTool("updateTask", { taskId: D.id, blockerTaskRefs: [A.taskKey] });
@@ -263,9 +268,6 @@ async function main() {
   } finally {
     await cleanup();
   }
-
-  const publicAfter = await listAllTasks();
-  assert(publicAfter.length === publicBefore.length, "Public task count changed after personal smoke test cleanup");
 
   console.log("MCP personal task engine smoke test passed.");
 }
