@@ -124,7 +124,7 @@ export function LiveDeathTicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersReducedMotion]);
 
-  if (hasHydrated && prefersReducedMotion) {
+  if (!hasHydrated || prefersReducedMotion) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 text-center ${className}`}>
         {counters.map((c) => (

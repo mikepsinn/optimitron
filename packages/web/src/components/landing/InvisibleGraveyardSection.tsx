@@ -23,6 +23,7 @@ interface GraveyardStat {
 
 const graveyardStats: GraveyardStat[] = [
   {
+    // Intentionally show 95%; the dialog retains the related canonical 6,650-disease count and confidence interval.
     value: (
       <ParameterValue
         param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}

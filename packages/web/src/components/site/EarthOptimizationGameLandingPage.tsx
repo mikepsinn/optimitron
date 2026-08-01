@@ -220,6 +220,7 @@ export function EarthOptimizationGameLandingPage() {
             }))}
             systemWideRatio={SYSTEM_WIDE_MILITARY_TO_TRIALS_RATIO}
             limit={10}
+            hideControls
           />
           <div className="mt-8 text-center">
             <GameCTA href="/governments/US/politicians" variant="cyan">

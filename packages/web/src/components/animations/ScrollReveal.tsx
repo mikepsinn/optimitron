@@ -34,7 +34,7 @@ export function ScrollReveal({
   const prefersReducedMotion = useReducedMotion();
   const hasHydrated = useHydrated();
 
-  if (hasHydrated && prefersReducedMotion) {
+  if (!hasHydrated || prefersReducedMotion) {
     return <div className={className}>{children}</div>;
   }
 

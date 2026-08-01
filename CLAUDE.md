@@ -11,6 +11,7 @@
 - Never hand-edit `page.logged-out.md` or `*.email.md`. Generate them with `pnpm --filter @optimitron/web copy:preview` or `email:preview-md`.
 - Use the production `optimitron:dev` task tree as the operational queue. Update the owning task's comments/status and link the implementation PR; do not maintain a parallel Markdown checklist.
 - Ask the human owner only for copy approval, a strategic fork, or a ship/redraft/abandon decision. Decide ordinary engineering details from code and tests.
+- `ParameterValue.valueOverride` may summarize related canonical evidence; do not force its trigger and dialog values to match (for example, `95%` may open the canonical 6,650-disease count and confidence interval).
 - For a non-trivial cross-system change, show the current and proposed flow before editing.
 
 ## Claude Tools
