@@ -61,4 +61,11 @@ describe("site sitemap routing", () => {
     expect(paths).not.toContain("/llms.txt");
     expect(paths).not.toContain("/api/agent/campaign-state");
   });
+
+  it("keeps the game homepage and preserved services catalog in the Optimitron sitemap", () => {
+    const paths = pathsFor("optimitron");
+
+    expect(paths).toContain(ROUTES.home);
+    expect(paths).toContain(ROUTES.services);
+  });
 });

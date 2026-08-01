@@ -139,14 +139,15 @@ describe("site variant registry", () => {
     );
   });
 
-  it("uses EOS as the Optimitron home while keeping the game route available", () => {
+  it("uses the game as the Optimitron home while keeping the services catalog available", () => {
     const optimitron = getSiteConfig("optimitron");
 
     expect(getSiteFromHost("optimitron.com").pageVariants.home).toBe(
-      "eosLanding",
+      "optimitronLanding",
     );
     expect(isSiteRouteAllowed(optimitron, ROUTES.eos)).toBe(true);
     expect(isSiteRouteAllowed(optimitron, ROUTES.game)).toBe(true);
+    expect(isSiteRouteAllowed(optimitron, ROUTES.services)).toBe(true);
   });
 
   it("getTreatySignUrl returns relative /treaty for sites that allow the route, canonical fallback otherwise", () => {

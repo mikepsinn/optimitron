@@ -73,12 +73,39 @@ const DOCUMENT_REVIEW_REVIEWER_FILE =
   "packages/web/src/components/tasks/document-review-reviewer-panel.tsx";
 const TASK_COMMENT_FEED_FILE =
   "packages/web/src/components/tasks/task-comment-feed.tsx";
+const POLITICIAN_SCORECARD_TABLE_FILE =
+  "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
+const OPTIMITRON_GAME_LANDING_FILES = [
+  "packages/web/src/app/page.tsx",
+  "packages/web/src/components/animations/CollapseCountdownTimer.tsx",
+  "packages/web/src/components/animations/LiveDeathTicker.tsx",
+  "packages/web/src/components/animations/ScrollReveal.tsx",
+  "packages/web/src/components/dfda/OutcomeLabel.tsx",
+  "packages/web/src/components/landing/DecisionMatrixSection.tsx",
+  "packages/web/src/components/landing/HeroSection.tsx",
+  "packages/web/src/components/landing/InvisibleGraveyardSection.tsx",
+  "packages/web/src/components/landing/TreatyVoteFlow.tsx",
+  "packages/web/src/components/landing/TreatyVoteSection.tsx",
+  "packages/web/src/components/landing/WishocracyPreview.tsx",
+  POLITICIAN_SCORECARD_TABLE_FILE,
+  "packages/web/src/components/site/EarthOptimizationGameLandingPage.tsx",
+  "packages/web/src/components/tasks/TasksRootIntro.tsx",
+];
+
+const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
+  [ROUTES.game, ["packages/web/src/app/game/page.tsx"]],
+  [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
+  [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
+]);
 
 const PRESIDENT_TASK_LIST_SELECTOR =
   '[data-visual-section="president-task-list"]';
 
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
+  [ROUTES.game, "#vote"],
+  [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
+  [ROUTES.services, "h1"],
 ]);
 
 const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.employees]);
@@ -219,6 +246,7 @@ const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
 )
   .filter(({ path }) => PUBLIC_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
+    covers: VISUAL_COVERS_BY_PATH.get(path),
     name,
     path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
@@ -245,9 +273,11 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
 // review matrix. Disallowed routes redirect to production, so exclude them.
 const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   {
+    covers: OPTIMITRON_GAME_LANDING_FILES,
     name: "variant-optimitron-home",
     path: ROUTES.home,
     required: true,
+    requiredSelector: "#vote",
     siteVariant: "optimitron",
   },
   {

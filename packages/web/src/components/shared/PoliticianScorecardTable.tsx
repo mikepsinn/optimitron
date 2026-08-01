@@ -51,8 +51,10 @@ interface PoliticianScorecardTableProps {
   scorecards: PoliticianScore[];
   systemWideRatio: number;
   countryCode?: string;
-  /** Show only this many rows. Hides filters and ratio callout when set. */
+  /** Show only this many rows. Disables chamber and column sorting when set. */
   limit?: number;
+  /** Hide the rank-mode toggle, search box, and ranking methodology. */
+  hideControls?: boolean;
   /** Show a dynamic heading that updates with the rank mode toggle */
   showTitle?: boolean;
   subtitle?: string;
@@ -76,6 +78,7 @@ export function PoliticianScorecardTable({
   systemWideRatio,
   countryCode = "US",
   limit,
+  hideControls = false,
   showTitle = false,
   subtitle,
   rankModeLabels = {
@@ -195,37 +198,41 @@ export function PoliticianScorecardTable({
         </div>
       )}
 
-      {/* Rank mode toggle + search */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-2 gap-2 sm:gap-4">
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant={rankMode === "worst" ? "default" : "outline"}
-            onClick={() => handleRankMode("worst")}
-            className="text-xs font-black uppercase"
-          >
-            {rankModeLabels.worst}
-          </Button>
-          <Button
-            size="sm"
-            variant={rankMode === "least-bad" ? "default" : "outline"}
-            onClick={() => handleRankMode("least-bad")}
-            className="text-xs font-black uppercase"
-          >
-            {rankModeLabels.leastBad}
-          </Button>
-        </div>
-        <input
-          type="text"
-          placeholder="Search name or state..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground w-full sm:w-48"
-        />
-      </div>
-      <p className="text-xs font-bold text-muted-foreground mb-3">
-        Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
-      </p>
+      {!hideControls && (
+        <>
+          {/* Rank mode toggle + search */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-2 gap-2 sm:gap-4">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={rankMode === "worst" ? "default" : "outline"}
+                onClick={() => handleRankMode("worst")}
+                className="text-xs font-black uppercase"
+              >
+                {rankModeLabels.worst}
+              </Button>
+              <Button
+                size="sm"
+                variant={rankMode === "least-bad" ? "default" : "outline"}
+                onClick={() => handleRankMode("least-bad")}
+                className="text-xs font-black uppercase"
+              >
+                {rankModeLabels.leastBad}
+              </Button>
+            </div>
+            <input
+              type="text"
+              placeholder="Search name or state..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border-2 border-primary bg-background px-3 py-1 text-sm font-bold text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground w-full sm:w-48"
+            />
+          </div>
+          <p className="text-xs font-bold text-muted-foreground mb-3">
+            Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+          </p>
+        </>
+      )}
 
       {/* Table */}
       <div className="border-0 sm:border-2 sm:border-primary overflow-x-auto">

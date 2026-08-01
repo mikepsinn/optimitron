@@ -19,6 +19,7 @@ import {
   publicProfileLink,
   questionsLink,
   routeReviewNavItems,
+  servicesLink,
   voteLink,
 } from "../routes";
 
@@ -110,8 +111,12 @@ describe("navigation routes", () => {
     expect(routeReviewNavItems).not.toContain(publicProfileLink);
   });
 
-  it("keeps the game landing in route review after moving it off the home page", () => {
+  it("keeps the game homepage alias in route review", () => {
     expect(routeReviewNavItems).toContain(gameLink);
+  });
+
+  it("keeps the preserved services landing in route review", () => {
+    expect(routeReviewNavItems).toContain(servicesLink);
   });
 
   it("keeps the EOS landing in route review after the donation page", () => {

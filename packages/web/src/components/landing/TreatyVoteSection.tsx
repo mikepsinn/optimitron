@@ -1,10 +1,9 @@
-import { DISEASES_WITHOUT_EFFECTIVE_TREATMENT } from "@optimitron/data/parameters";
+import { Suspense } from "react";
+import { TreatyVoteFlow } from "@/components/landing/TreatyVoteFlow";
 import { Container } from "@/components/ui/container";
-import { ParameterValue } from "@/components/shared/ParameterValue";
-import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
 import { ROUTES } from "@/lib/routes";
-import { FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR } from "@/lib/treaty-share-flow-parameters";
+import { TREATY_FLOW_VARIANTS } from "@/lib/treaty-flow-variants";
 
 export default function TreatyVoteSection() {
   return (
@@ -12,36 +11,19 @@ export default function TreatyVoteSection() {
       id="vote"
       bgColor="background"
       borderPosition="both"
-      padding="md"
+      padding="sm"
     >
-      <Container size="md">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-black uppercase leading-tight sm:text-5xl">
-            Vote on the 1% Treaty
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base font-bold leading-7 text-muted-foreground sm:text-lg">
-            Trade one apocalypse for disease eradication. Humanity has{" "}
-            <ParameterValue
-              param={FLOW_NUCLEAR_WINTER_OVERKILL_FACTOR}
-              display="integer"
-              presentation="inline"
-            />{" "}
-            stockpiled — you can spare one to cure the{" "}
-            <ParameterValue
-              param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
-              presentation="inline"
-              valueOverride={DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value.toLocaleString(
-                "en-US",
-              )}
-            />{" "}
-            diseases with no treatment.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <GameCTA href={ROUTES.vote} size="lg" variant="primary">
-              Vote Now
-            </GameCTA>
-          </div>
-        </div>
+      <Container size="lg">
+        <Suspense fallback={null}>
+          <TreatyVoteFlow
+            authCallbackUrl={ROUTES.dashboard}
+            compactInitialScreen
+            defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
+            respectStoredFlowVariant={false}
+            sliderHeadingLevel="h2"
+            surface="game_landing"
+          />
+        </Suspense>
       </Container>
     </SectionContainer>
   );

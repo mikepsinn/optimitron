@@ -2,6 +2,7 @@
 
 import { type ReactNode, useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type Direction = "up" | "down" | "left" | "right" | "none";
 
@@ -31,20 +32,25 @@ export function ScrollReveal({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, margin: "-60px" });
   const prefersReducedMotion = useReducedMotion();
-
-  if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
+  const hasHydrated = useHydrated();
   const { x, y } = offsets[direction];
+  const shouldAnimate = hasHydrated && !prefersReducedMotion;
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, x, y }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x, y }}
-      transition={{ duration, delay, ease: "easeOut" }}
+      initial={false}
+      animate={
+        shouldAnimate && !isInView
+          ? { opacity: 0, x, y }
+          : { opacity: 1, x: 0, y: 0 }
+      }
+      transition={
+        shouldAnimate
+          ? { duration, delay, ease: "easeOut" }
+          : { duration: 0 }
+      }
     >
       {children}
     </motion.div>

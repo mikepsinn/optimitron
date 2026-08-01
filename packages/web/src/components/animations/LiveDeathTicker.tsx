@@ -10,6 +10,7 @@ import {
   DESTRUCTIVE_PER_SECOND,
   DESTRUCTIVE_BASE_T,
 } from "@/lib/collapse-projections";
+import { useHydrated } from "@/lib/use-hydrated";
 
 function formatDollars(n: number): string {
   if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
@@ -105,6 +106,7 @@ export function LiveDeathTicker({
     useRef<HTMLSpanElement>(null),
   ];
   const prefersReducedMotion = useReducedMotion();
+  const hasHydrated = useHydrated();
 
   useEffect(() => {
     if (prefersReducedMotion) return;
@@ -122,7 +124,7 @@ export function LiveDeathTicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersReducedMotion]);
 
-  if (prefersReducedMotion) {
+  if (!hasHydrated || prefersReducedMotion) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 text-center ${className}`}>
         {counters.map((c) => (
