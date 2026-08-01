@@ -926,6 +926,102 @@ function dedupeStrings(values: Array<string | null | undefined>) {
   );
 }
 
+const TASK_PAGE_CURSOR_VERSION = 1;
+
+function getTaskPageSignature(
+  tool: "listTasks" | "searchTasks",
+  filters: Record<string, unknown>,
+) {
+  return createHash("sha256")
+    .update(JSON.stringify({ filters, tool }))
+    .digest("base64url")
+    .slice(0, 24);
+}
+
+function encodeTaskPageCursor(input: {
+  anchorTaskId: string;
+  signature: string;
+  tool: "listTasks" | "searchTasks";
+}) {
+  return Buffer.from(
+    JSON.stringify({
+      anchorTaskId: input.anchorTaskId,
+      signature: input.signature,
+      tool: input.tool,
+      version: TASK_PAGE_CURSOR_VERSION,
+    }),
+  ).toString("base64url");
+}
+
+function paginateAuthorizedTasks<T extends { id: string }>(input: {
+  cursor: unknown;
+  limit: number;
+  signature: string;
+  tasks: T[];
+  tool: "listTasks" | "searchTasks";
+}) {
+  let startIndex = 0;
+  if (input.cursor != null && input.cursor !== "") {
+    if (typeof input.cursor !== "string") {
+      throw new Error("cursor must be a string.");
+    }
+    try {
+      const parsed = JSON.parse(
+        Buffer.from(input.cursor, "base64url").toString("utf8"),
+      ) as Record<string, unknown>;
+      if (
+        parsed.version !== TASK_PAGE_CURSOR_VERSION ||
+        parsed.tool !== input.tool ||
+        parsed.signature !== input.signature ||
+        typeof parsed.anchorTaskId !== "string"
+      ) {
+        throw new Error("cursor does not match this task query.");
+      }
+      const anchorIndex = input.tasks.findIndex(
+        (task) => task.id === parsed.anchorTaskId,
+      );
+      if (anchorIndex < 0) {
+        throw new Error("cursor anchor is no longer accessible.");
+      }
+      startIndex = anchorIndex + 1;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error && error.message.startsWith("cursor ")
+          ? error.message
+          : "cursor is invalid.",
+      );
+    }
+  }
+
+  const page = input.tasks.slice(startIndex, startIndex + input.limit);
+  const hasMore = startIndex + page.length < input.tasks.length;
+  return {
+    nextCursor:
+      hasMore && page.length > 0
+        ? encodeTaskPageCursor({
+            anchorTaskId: page[page.length - 1]!.id,
+            signature: input.signature,
+            tool: input.tool,
+          })
+        : null,
+    tasks: page,
+  };
+}
+
+function resolveExactTaskReferences<
+  T extends { id: string; taskKey?: string | null },
+>(refs: string[], tasks: T[]) {
+  const taskByRef = new Map<string, T>();
+  for (const ref of refs) {
+    const matches = tasks.filter(
+      (task) => task.id === ref || task.taskKey === ref,
+    );
+    if (matches.length !== 1) return null;
+    taskByRef.set(ref, matches[0]!);
+  }
+  return taskByRef;
+}
+
 function asStringArray(value: unknown) {
   return Array.isArray(value)
     ? value.filter((entry): entry is string => typeof entry === "string")
@@ -1532,6 +1628,7 @@ function buildStoredProposalContext(input: {
       parentTaskRef: (input.candidate.parentTaskRef as string) ?? null,
       proposalRef:
         input.decision?.proposalRef ??
+        (input.candidate.ref as string) ??
         (input.candidate.id as string) ??
         (input.candidate.taskKey as string) ??
         null,
@@ -1620,11 +1717,9 @@ function matchCandidateToDecision(
   decision: { proposalRef: string; title: string },
 ) {
   return (
+    (candidate.ref as string) === decision.proposalRef ||
     (candidate.id as string) === decision.proposalRef ||
-    (candidate.taskKey as string) === decision.proposalRef ||
-    (((candidate.id as string) ?? "").length === 0 &&
-      ((candidate.taskKey as string) ?? "").length === 0 &&
-      (candidate.title as string) === decision.title)
+    (candidate.taskKey as string) === decision.proposalRef
   );
 }
 
@@ -1695,7 +1790,7 @@ function taskProposalCandidateFromRecord(task: {
 
 async function attachProposalImpactEstimate(input: {
   actor: { isAdmin: boolean; userId: string };
-  prisma: Awaited<ReturnType<typeof getPrisma>>;
+  prisma: Prisma.TransactionClient;
   taskId: string;
   estimatedEffortHours: number | null;
   impact: Record<string, unknown> | null;
@@ -1718,7 +1813,7 @@ async function attachProposalImpactEstimate(input: {
     (input.estimatedEffortHours == null || expectedValuePerHourUsd == null
       ? null
       : expectedValuePerHourUsd * input.estimatedEffortHours);
-  return taskImpact.createDirectTaskImpact(
+  return taskImpact.createDirectTaskImpactInTransaction(
     {
       assumptions: asStringArray(impact.assumptions),
       calculationVersion: "mcp-proposal-v2",
@@ -1866,6 +1961,7 @@ function normalizeProposalCandidate(
     isPublic: candidate.isPublic === true,
     source: normalizedSource,
     sourceUrls,
+    ref: optionalString(candidate.ref),
     taskKey: generatedTaskKey,
   };
 }
@@ -1882,7 +1978,7 @@ function getPlannerSourceArtifactKey(source: Record<string, unknown> | null) {
 }
 
 async function attachProposalSourceArtifact(input: {
-  prisma: Awaited<ReturnType<typeof getPrisma>>;
+  prisma: Prisma.TransactionClient;
   source: Record<string, unknown> | null;
   taskId: string;
 }) {
@@ -2012,6 +2108,7 @@ function createTaskReplayResult(
   requestId: string,
 ) {
   return {
+    id: task.id,
     idempotentReplay: true,
     isPublic: task.isPublic,
     status: task.status,
@@ -5489,7 +5586,7 @@ const TASK_TOOL_DEFINITIONS = [
     description:
       "List tasks with optional filters. Returns up to 50 tasks sorted by accountability score. " +
       "Signed-in callers see public tasks plus their own private work by default (visibility 'all'); " +
-      "pass visibility 'public' or 'private' to narrow.",
+      "pass visibility 'public' or 'private' to narrow. Returns the legacy task array unless paginated=true or cursor is supplied.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5575,8 +5672,20 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description: "Filter by parent task ID (get subtasks)",
         },
+        cursor: {
+          type: "string",
+          description:
+            "Opaque cursor returned as nextCursor by the preceding page. Copy it verbatim and keep all filters unchanged.",
+        },
+        paginated: {
+          type: "boolean",
+          description:
+            "Return {tasks,nextCursor}. Omit for the legacy task-array response.",
+        },
         limit: {
-          type: "number",
+          type: "integer",
+          minimum: 1,
+          maximum: 50,
           description: "Max results (default 20, max 50)",
         },
       },
@@ -6462,12 +6571,24 @@ const TASK_TOOL_DEFINITIONS = [
             "Alias for blockerTaskIds: existing task IDs that must be VERIFIED before this task appears in active queues. Use only for real prerequisites, not generic importance.",
           minItems: 0,
         },
+        blockerTaskRefs: {
+          type: "array",
+          items: { type: "string" },
+          description: "Prerequisite task IDs or exact taskKeys.",
+          minItems: 0,
+        },
         blockerTaskIds: {
           type: "array",
           items: { type: "string" },
           description:
             "Optional IDs of existing tasks that block this task (must be completed first). " +
             "Use searchTasks first to discover valid blocker task IDs.",
+          minItems: 0,
+        },
+        blockedTaskRefs: {
+          type: "array",
+          items: { type: "string" },
+          description: "Blocked task IDs or exact taskKeys.",
           minItems: 0,
         },
         blockedTaskIds: {
@@ -6890,6 +7011,11 @@ const TASK_TOOL_DEFINITIONS = [
                 description: "Action and acceptance criteria",
               },
               taskKey: { type: "string", description: "Stable key for dedup" },
+              ref: {
+                type: "string",
+                description:
+                  "Canonical same-request alias used by parentTaskRef, blockerRefs, proposalRef, and referenceMap.",
+              },
               id: { type: "string", description: "Draft reference ID" },
               assigneePersonId: { type: "string" },
               assigneeOrganizationId: { type: "string" },
@@ -7125,6 +7251,11 @@ const TASK_TOOL_DEFINITIONS = [
           items: { type: "string" },
           description:
             "Replace blocker dependencies with this exact list of task IDs. Blockers must be completed/VERIFIED before this task appears in active queues.",
+        },
+        blockerTaskRefs: {
+          type: "array",
+          items: { type: "string" },
+          description: "Replace blockers using task IDs or exact taskKeys.",
         },
         blockerTaskIds: {
           type: "array",
@@ -7598,7 +7729,17 @@ const TASK_TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object" as const,
       properties: {
+        blockedTaskRef: {
+          type: "string",
+          description:
+            "Canonical task ID or exact taskKey for the task that is blocked.",
+        },
         blockedTaskId: { type: "string", description: "Task that is blocked" },
+        blockerTaskRef: {
+          type: "string",
+          description:
+            "Canonical task ID or exact taskKey for the task that must complete first.",
+        },
         blockerTaskId: {
           type: "string",
           description: "Task that must complete first",
@@ -7640,7 +7781,6 @@ const TASK_TOOL_DEFINITIONS = [
           description: "Optional note describing the dependency",
         },
       },
-      required: ["blockedTaskId", "blockerTaskId"],
     },
   },
   {
@@ -7975,11 +8115,21 @@ const TASK_TOOL_DEFINITIONS = [
     description:
       "Search your accessible tasks by title, description, task key, assignee, or organization. " +
       "Use this before createTask/updateTask to find parents, duplicates, blockerTaskIds, or blockedTaskIds. " +
-      "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'.",
+      "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'. Returns the legacy result array unless paginated=true or cursor is supplied.",
     inputSchema: {
       type: "object" as const,
       properties: {
         query: { type: "string", description: "Search query text." },
+        cursor: {
+          type: "string",
+          description:
+            "Opaque cursor returned as nextCursor by the preceding page. Copy it verbatim and keep query and filters unchanged.",
+        },
+        paginated: {
+          type: "boolean",
+          description:
+            "Return {tasks,nextCursor}. Omit for the legacy result-array response.",
+        },
         limit: {
           type: "number",
           description: "Max results to return (default 20, max 100)",
@@ -9389,7 +9539,7 @@ export function createMcpServer(
               typeof a.category === "string" && a.category in TaskCategory
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
                 : null;
-            const limit = Math.min(Number(a.limit) || 20, 50);
+            const limit = parseQueueLimit(a.limit, 20, 50);
             let assigneePersonId = (a.assigneePersonId as string) ?? null;
             const assigneeOrganizationId =
               (a.assigneeOrganizationId as string) ?? null;
@@ -9466,6 +9616,9 @@ export function createMcpServer(
                 error instanceof Error ? error.message : "Invalid filter.",
               );
             }
+            const wantsPagination =
+              a.paginated === true ||
+              (typeof a.cursor === "string" && a.cursor.length > 0);
             const needsExtendedFiltering = Object.values(extendedFilters).some(
               (value) =>
                 Array.isArray(value) ? value.length > 0 : value != null,
@@ -9474,6 +9627,8 @@ export function createMcpServer(
               typeof a.parentTaskId === "string" && a.parentTaskId
                 ? a.parentTaskId
                 : null;
+            const needsCompleteAuthorizedWindow =
+              wantsPagination || needsExtendedFiltering;
             const list = await tasks.listTasks({
               status,
               category,
@@ -9482,13 +9637,27 @@ export function createMcpServer(
               assigneePersonId,
               assigneeOrganizationId,
               parentTaskId: parentTaskIdFilter,
-              limit: needsExtendedFiltering ? 5000 : limit,
+              // Pagination and post-query filters need a stable authorized
+              // window. Fetch one sentinel row past the advertised maximum so
+              // oversized queries fail instead of doing unbounded work or
+              // silently omitting matches.
+              limit: needsCompleteAuthorizedWindow ? 5001 : limit,
               personId: visibility === "public" ? null : viewerPersonId,
               userId: visibility === "public" ? null : userId,
               visibility,
             });
             // parentTaskId is filtered in the Prisma query above; no in-memory pass.
-            let filtered = Array.isArray(list) ? list : [];
+            const authorizedWindow = Array.isArray(list) ? list : [];
+            if (
+              needsCompleteAuthorizedWindow &&
+              authorizedWindow.length > 5000
+            ) {
+              return err(
+                "This task listing exceeds the 5000-task result window. Narrow the query-level filters before using pagination or extended filters.",
+                { code: "RESULT_WINDOW_EXCEEDED" },
+              );
+            }
+            let filtered = authorizedWindow;
             filtered = filtered.filter((task: Record<string, unknown>) => {
               if (
                 extendedFilters.ownerOrganizationId &&
@@ -9530,7 +9699,43 @@ export function createMcpServer(
               }
               return true;
             });
-            return ok(filtered.slice(0, limit).map(summarizeTask));
+            if (!wantsPagination) {
+              return ok(filtered.slice(0, limit).map(summarizeTask));
+            }
+            try {
+              const page = paginateAuthorizedTasks({
+                cursor: a.cursor,
+                limit,
+                signature: getTaskPageSignature("listTasks", {
+                  applicationPolicy: extendedFilters.applicationPolicy ?? null,
+                  assignedToMe: a.assignedToMe === true,
+                  assigneeOrganizationId,
+                  assigneePersonId,
+                  category,
+                  compensationKind: extendedFilters.compensationKind ?? null,
+                  engagementKind: extendedFilters.engagementKind ?? null,
+                  executionMode: extendedFilters.executionMode ?? null,
+                  ownerOrganizationId:
+                    extendedFilters.ownerOrganizationId ?? null,
+                  parentTaskId: parentTaskIdFilter,
+                  remotePolicy: extendedFilters.remotePolicy ?? null,
+                  requiredTags: extendedFilters.requiredTags ?? [],
+                  status,
+                  visibility,
+                }),
+                tasks: filtered as Array<SummarizableTask & { id: string }>,
+                tool: "listTasks",
+              });
+              return ok({
+                nextCursor: page.nextCursor,
+                tasks: page.tasks.map(summarizeTask),
+              });
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Invalid cursor.",
+                { code: "INVALID_ARGUMENT" },
+              );
+            }
           }
 
           // ── listPeople ────────────────────────────────────────
@@ -9899,17 +10104,48 @@ export function createMcpServer(
             const status = a.status
               ? (a.status as "DRAFT" | "ACTIVE" | "VERIFIED" | "STALE")
               : undefined;
+            const wantsPagination =
+              a.paginated === true ||
+              (typeof a.cursor === "string" && a.cursor.length > 0);
 
+            // Search ranks a bounded candidate set in memory. Use one fixed
+            // authorized window for every page so the cursor remains anchored
+            // to the same ranking instead of widening it page by page.
             const results = await tasks.searchTasks(query, {
               clientAccessBoundary:
                 scope === "public" ? undefined : taskClientBoundary,
-              limit,
+              limit: wantsPagination ? 500 : limit,
               userId: scope === "public" ? null : userId,
               status,
               visibility: scope,
             });
+            if (!wantsPagination) return ok(results.slice(0, limit));
+            if (results.length >= 500) {
+              return err(
+                "This search matched the server's 500-candidate ranking window. Narrow the query or filters before paginating so no matches are silently omitted.",
+                { code: "RESULT_WINDOW_EXCEEDED" },
+              );
+            }
 
-            return ok(results);
+            try {
+              const page = paginateAuthorizedTasks({
+                cursor: a.cursor,
+                limit,
+                signature: getTaskPageSignature("searchTasks", {
+                  query,
+                  scope,
+                  status: status ?? null,
+                }),
+                tasks: results,
+                tool: "searchTasks",
+              });
+              return ok(page);
+            } catch (error) {
+              return err(
+                error instanceof Error ? error.message : "Invalid cursor.",
+                { code: "INVALID_ARGUMENT" },
+              );
+            }
           }
 
           // ── getTask ────────────────────────────────────────────
@@ -10798,7 +11034,10 @@ export function createMcpServer(
             const prisma = await getPrisma();
 
             const economics = resolveTaskEconomics(a);
-            const blockerTaskIds = dedupeStrings([
+            const blockerTaskRefs = dedupeStrings([
+              ...(Array.isArray(a.blockerTaskRefs)
+                ? (a.blockerTaskRefs as string[])
+                : []),
               ...(Array.isArray(a.blockerTaskIds)
                 ? (a.blockerTaskIds as string[])
                 : []),
@@ -10806,15 +11045,20 @@ export function createMcpServer(
                 ? (a.depends_on as string[])
                 : []),
             ]);
-            const blockedTaskIds = dedupeStrings(
-              Array.isArray(a.blockedTaskIds)
+            const blockedTaskRefs = dedupeStrings([
+              ...(Array.isArray(a.blockedTaskRefs)
+                ? (a.blockedTaskRefs as string[])
+                : []),
+              ...(Array.isArray(a.blockedTaskIds)
                 ? (a.blockedTaskIds as string[])
-                : [],
-            );
-            const dependencyTaskIds = dedupeStrings([
-              ...blockerTaskIds,
-              ...blockedTaskIds,
+                : []),
             ]);
+            const dependencyTaskRefs = dedupeStrings([
+              ...blockerTaskRefs,
+              ...blockedTaskRefs,
+            ]);
+            let blockerTaskIds: string[] = [];
+            let blockedTaskIds: string[] = [];
 
             // Accept either an explicit array, or a markdown 'Acceptance
             // criteria' section in the description. Missing both = error.
@@ -10974,13 +11218,18 @@ export function createMcpServer(
               }
             }
 
-            if (dependencyTaskIds.length > 0) {
+            if (dependencyTaskRefs.length > 0) {
               const sessionPersonId = await loadSessionPersonId(userId);
               const dependencyTasks = await prisma.task.findMany({
                 where: {
                   deletedAt: null,
-                  id: { in: dependencyTaskIds },
                   AND: [
+                    {
+                      OR: [
+                        { id: { in: dependencyTaskRefs } },
+                        { taskKey: { in: dependencyTaskRefs } },
+                      ],
+                    },
                     getTaskAccessWhere({
                       action: "READ",
                       personId: sessionPersonId,
@@ -10993,20 +11242,24 @@ export function createMcpServer(
                   createdByUserId: true,
                   id: true,
                   isPublic: true,
+                  taskKey: true,
                 },
               });
-              const foundDependencyIds = new Set(
-                dependencyTasks.map((task) => task.id),
+              const dependencyTaskByRef = resolveExactTaskReferences(
+                dependencyTaskRefs,
+                dependencyTasks,
               );
-              const missingDependencyIds = dependencyTaskIds.filter(
-                (id) => !foundDependencyIds.has(id),
-              );
-              if (missingDependencyIds.length > 0) {
+              if (!dependencyTaskByRef) {
                 return err(
-                  "One or more dependency tasks were not found or are inaccessible.",
+                  "One or more dependency task references were not found, were inaccessible, or were ambiguous.",
                 );
               }
-
+              blockerTaskIds = dedupeStrings(
+                blockerTaskRefs.map((ref) => dependencyTaskByRef.get(ref)?.id),
+              );
+              blockedTaskIds = dedupeStrings(
+                blockedTaskRefs.map((ref) => dependencyTaskByRef.get(ref)?.id),
+              );
               const forbiddenBlockedTaskIds: string[] = [];
               for (const task of dependencyTasks) {
                 if (!blockedTaskIds.includes(task.id)) continue;
@@ -11347,6 +11600,7 @@ export function createMcpServer(
             };
             return ok({
               ...baseResult,
+              id: task.id,
               idempotentReplay: false,
               isPublic,
               missingFields,
@@ -11355,6 +11609,7 @@ export function createMcpServer(
                   ? "Task created with full metadata."
                   : `Task created. Consider an updateTask call to fill in: ${missingFields.join(", ")}.`,
               supersededTaskIds,
+              taskId: task.id,
               visibility: formatTaskVisibility(isPublic),
               writeReceipt: {
                 idempotencyKey: taskKey,
@@ -12236,9 +12491,39 @@ export function createMcpServer(
             >();
             const { canManageOrganization } =
               await import("./organization.server");
+            const candidateAliasOwner = new Map<string, number>();
+            const normalizedCandidates = rawCandidates.map(
+              (rawCandidate, candidateIndex) => {
+                const candidate = normalizeProposalCandidate(rawCandidate);
+                return optionalString(candidate.ref) ||
+                  optionalString(candidate.id) ||
+                  optionalString(candidate.taskKey)
+                  ? candidate
+                  : { ...candidate, ref: `candidate-${candidateIndex + 1}` };
+              },
+            );
+            for (const [
+              candidateIndex,
+              candidate,
+            ] of normalizedCandidates.entries()) {
+              const candidateAliases = dedupeStrings([
+                optionalString(candidate.ref),
+                optionalString(candidate.id),
+                optionalString(candidate.taskKey),
+              ]);
+              for (const alias of candidateAliases) {
+                const ownerIndex = candidateAliasOwner.get(alias);
+                if (ownerIndex != null && ownerIndex !== candidateIndex) {
+                  return err(
+                    `Candidate reference alias ${JSON.stringify(alias)} is used by more than one candidate. ref, id, and taskKey aliases must be unique within a bundle.`,
+                    { code: "INVALID_ARGUMENT" },
+                  );
+                }
+                candidateAliasOwner.set(alias, candidateIndex);
+              }
+            }
 
-            for (const rawCandidate of rawCandidates) {
-              const candidate = normalizeProposalCandidate(rawCandidate);
+            for (const candidate of normalizedCandidates) {
               if (
                 typeof candidate.taskKey === "string" &&
                 /^planner:(?:person|organization):/.test(candidate.taskKey)
@@ -12286,10 +12571,24 @@ export function createMcpServer(
                 typeof candidate.assigneePersonId === "string"
                   ? candidate.assigneePersonId
                   : null;
+              const candidateIsPublic = isAdmin && candidate.isPublic === true;
 
               if (!isAdmin && candidate.isPublic) {
                 return err(
                   "Non-admin task proposals must remain private drafts.",
+                );
+              }
+              if (
+                !isTaskWithinClientAccessBoundary(
+                  {
+                    isPublic: candidateIsPublic,
+                    ownerOrganizationId: assigneeOrganizationId,
+                  },
+                  taskClientBoundary,
+                )
+              ) {
+                return err(
+                  "The OAuth grant does not allow private tasks for this target.",
                 );
               }
               if (assigneeOrganizationId) {
@@ -12339,7 +12638,7 @@ export function createMcpServer(
                 ...candidate,
                 assigneeOrganizationId,
                 assigneePersonId,
-                isPublic: isAdmin && candidate.isPublic === true,
+                isPublic: candidateIsPublic,
                 parentTaskRef:
                   requestedParentTaskRef === "$target-root"
                     ? branch.id
@@ -12358,32 +12657,37 @@ export function createMcpServer(
             );
             const existingTasks = await prisma.task.findMany({
               where: {
-                deletedAt: null,
-                ...(!isAdmin
-                  ? {
-                      OR: [
-                        { isPublic: true },
-                        { createdByUserId: userId },
-                        ...(sessionPersonId
-                          ? [{ assigneePersonId: sessionPersonId }]
-                          : []),
-                        ...(proposalOrganizationIds.length > 0
-                          ? [
-                              {
-                                assigneeOrganizationId: {
-                                  in: proposalOrganizationIds,
-                                },
-                              },
-                              {
-                                ownerOrganizationId: {
-                                  in: proposalOrganizationIds,
-                                },
-                              },
-                            ]
-                          : []),
-                      ],
-                    }
-                  : {}),
+                AND: [
+                  { deletedAt: null },
+                  getTaskClientAccessWhere(taskClientBoundary),
+                  ...(!isAdmin
+                    ? [
+                        {
+                          OR: [
+                            { isPublic: true },
+                            { createdByUserId: userId },
+                            ...(sessionPersonId
+                              ? [{ assigneePersonId: sessionPersonId }]
+                              : []),
+                            ...(proposalOrganizationIds.length > 0
+                              ? [
+                                  {
+                                    assigneeOrganizationId: {
+                                      in: proposalOrganizationIds,
+                                    },
+                                  },
+                                  {
+                                    ownerOrganizationId: {
+                                      in: proposalOrganizationIds,
+                                    },
+                                  },
+                                ]
+                              : []),
+                          ],
+                        },
+                      ]
+                    : []),
+                ],
               },
               select: {
                 assigneeOrganizationId: true,
@@ -12414,7 +12718,11 @@ export function createMcpServer(
                 : `person:${String(candidate.assigneePersonId ?? userId)}`;
             const candidateByRef = new Map<string, Record<string, unknown>>();
             for (const candidate of candidates) {
-              for (const ref of [candidate.id, candidate.taskKey]) {
+              for (const ref of [
+                candidate.ref,
+                candidate.id,
+                candidate.taskKey,
+              ]) {
                 if (typeof ref === "string" && ref) {
                   candidateByRef.set(ref, candidate);
                 }
@@ -12425,19 +12733,68 @@ export function createMcpServer(
               (typeof existingTasks)[number]
             >();
             for (const task of existingTasks) {
-              existingTaskByRef.set(task.id, task);
-              if (task.taskKey) existingTaskByRef.set(task.taskKey, task);
+              for (const ref of dedupeStrings([task.id, task.taskKey])) {
+                const existing = existingTaskByRef.get(ref);
+                if (existing && existing.id !== task.id) {
+                  return err(
+                    `Persisted task reference ${JSON.stringify(ref)} is ambiguous between task IDs and taskKeys.`,
+                    { code: "AMBIGUOUS_TASK_REFERENCE" },
+                  );
+                }
+                existingTaskByRef.set(ref, task);
+              }
+            }
+            const existingTaskByKey = new Map(
+              existingTasks.flatMap((task) =>
+                task.taskKey ? [[task.taskKey, task] as const] : [],
+              ),
+            );
+            const reusedAliasToTaskId = new Map<string, string>();
+            for (const candidate of candidates) {
+              const reusedTask = optionalString(candidate.taskKey)
+                ? existingTaskByKey.get(candidate.taskKey as string)
+                : null;
+              for (const alias of dedupeStrings([
+                optionalString(candidate.ref),
+                optionalString(candidate.id),
+                optionalString(candidate.taskKey),
+              ])) {
+                const persistedTask = existingTaskByRef.get(alias);
+                const branchTaskId = Array.from(planningBranches.values()).find(
+                  (branch) => alias === branch.id || alias === branch.taskKey,
+                )?.id;
+                if (
+                  (persistedTask && persistedTask.id !== reusedTask?.id) ||
+                  (branchTaskId && branchTaskId !== reusedTask?.id)
+                ) {
+                  return err(
+                    `Candidate alias ${JSON.stringify(alias)} is ambiguous with a persisted task reference.`,
+                    { code: "AMBIGUOUS_TASK_REFERENCE" },
+                  );
+                }
+                if (reusedTask) reusedAliasToTaskId.set(alias, reusedTask.id);
+              }
             }
 
             for (const candidate of candidates) {
               const targetKey = targetKeyForCandidate(candidate);
               const branch = planningBranches.get(targetKey)!;
               const parentRef = String(candidate.parentTaskRef ?? "");
-              const parentCandidate = candidateByRef.get(parentRef);
-              const parentTask = existingTaskByRef.get(parentRef);
+              const reusedParentTaskId = reusedAliasToTaskId.get(parentRef);
+              const parentCandidate = reusedParentTaskId
+                ? undefined
+                : candidateByRef.get(parentRef);
+              const parentTask = existingTaskByRef.get(
+                reusedParentTaskId ?? parentRef,
+              );
               const isBranch =
                 parentRef === branch.id || parentRef === branch.taskKey;
-              if (parentCandidate === candidate) {
+              if (
+                parentCandidate === candidate ||
+                (reusedParentTaskId != null &&
+                  existingTaskByKey.get(candidate.taskKey as string)?.id ===
+                    reusedParentTaskId)
+              ) {
                 return err("A proposed task cannot be its own parent.");
               }
               if (!isBranch && !parentCandidate && !parentTask) {
@@ -12470,8 +12827,13 @@ export function createMcpServer(
                 const targetKey = targetKeyForCandidate(candidate);
                 const branch = planningBranches.get(targetKey)!;
                 const parentRef = String(candidate.parentTaskRef ?? "");
-                const parentCandidate = candidateByRef.get(parentRef);
-                const parentTask = existingTaskByRef.get(parentRef);
+                const reusedParentTaskId = reusedAliasToTaskId.get(parentRef);
+                const parentCandidate = reusedParentTaskId
+                  ? undefined
+                  : candidateByRef.get(parentRef);
+                const parentTask = existingTaskByRef.get(
+                  reusedParentTaskId ?? parentRef,
+                );
                 const isBranch =
                   parentRef === branch.id || parentRef === branch.taskKey;
                 const isSameTargetCandidate =
@@ -12494,8 +12856,14 @@ export function createMcpServer(
                 }
 
                 for (const blockerRef of candidate.blockerRefs as string[]) {
-                  if (candidateByRef.has(blockerRef)) continue;
-                  const dependencyTask = existingTaskByRef.get(blockerRef);
+                  const reusedBlockerTaskId =
+                    reusedAliasToTaskId.get(blockerRef);
+                  if (!reusedBlockerTaskId && candidateByRef.has(blockerRef)) {
+                    continue;
+                  }
+                  const dependencyTask = existingTaskByRef.get(
+                    reusedBlockerTaskId ?? blockerRef,
+                  );
                   if (
                     !dependencyTask ||
                     !canUsePrivateDependency(dependencyTask)
@@ -12507,11 +12875,6 @@ export function createMcpServer(
                 }
               }
             }
-            const existingTaskByKey = new Map(
-              existingTasks.flatMap((task) =>
-                task.taskKey ? [[task.taskKey, task] as const] : [],
-              ),
-            );
             const existingDrafts: Array<{
               proposalRef: string;
               status: TaskStatus;
@@ -12551,14 +12914,20 @@ export function createMcpServer(
                 changedDrafts.push({
                   newSourceHash,
                   previousSourceHash: linkedArtifact?.contentHash ?? null,
-                  proposalRef: taskKey,
+                  proposalRef:
+                    optionalString(candidate.ref) ??
+                    optionalString(candidate.id) ??
+                    taskKey,
                   status: existingTask.status,
                   taskId: existingTask.id,
                   title: existingTask.title,
                 });
               } else {
                 existingDrafts.push({
-                  proposalRef: taskKey,
+                  proposalRef:
+                    optionalString(candidate.ref) ??
+                    optionalString(candidate.id) ??
+                    taskKey,
                   status: existingTask.status,
                   taskId: existingTask.id,
                   title: existingTask.title,
@@ -12569,12 +12938,29 @@ export function createMcpServer(
               const taskKey = candidate.taskKey as string | null;
               return !taskKey || !existingTaskByKey.has(taskKey);
             });
+            const referenceMap: Record<string, string> = {};
+            for (const candidate of candidates) {
+              const taskKey = optionalString(candidate.taskKey);
+              const existingTask = taskKey
+                ? existingTaskByKey.get(taskKey)
+                : null;
+              if (!existingTask) continue;
+              for (const ref of dedupeStrings([
+                optionalString(candidate.ref),
+                optionalString(candidate.id),
+                taskKey,
+                existingTask.id,
+              ])) {
+                referenceMap[ref] = existingTask.id;
+              }
+            }
 
             if (newCandidates.length === 0) {
               return ok({
                 changedDrafts,
                 createdDrafts: [],
                 existingDrafts,
+                referenceMap,
                 message:
                   changedDrafts.length > 0
                     ? `${changedDrafts.length} existing draft sources changed and require review; no duplicate drafts were created.`
@@ -12595,15 +12981,24 @@ export function createMcpServer(
                 title: c.title as string,
                 description: (c.description as string) ?? null,
                 taskKey: (c.taskKey as string) ?? null,
-                id: (c.id as string) ?? null,
+                id:
+                  (c.ref as string) ??
+                  (c.id as string) ??
+                  (c.taskKey as string) ??
+                  null,
                 assigneePersonId: (c.assigneePersonId as string) ?? null,
                 assigneeOrganizationId:
                   (c.assigneeOrganizationId as string) ?? null,
                 roleTitle: (c.roleTitle as string) ?? null,
                 contactUrl: (c.contactUrl as string) ?? null,
                 sourceUrls: (c.sourceUrls as string[]) ?? [],
-                blockerRefs: (c.blockerRefs as string[]) ?? [],
-                parentTaskRef: (c.parentTaskRef as string) ?? null,
+                blockerRefs: ((c.blockerRefs as string[]) ?? []).map(
+                  (ref) => reusedAliasToTaskId.get(ref) ?? ref,
+                ),
+                parentTaskRef:
+                  reusedAliasToTaskId.get(c.parentTaskRef as string) ??
+                  (c.parentTaskRef as string) ??
+                  null,
                 estimatedEffortHours:
                   (c.estimatedEffortHours as number) ?? null,
                 isPublic: (c.isPublic as boolean) ?? false,
@@ -12621,10 +13016,45 @@ export function createMcpServer(
               })),
             });
 
+            const decisionByCandidate = new Map<
+              Record<string, unknown>,
+              (typeof review.decisions)[number]
+            >();
+            for (const decision of review.decisions) {
+              const candidate = newCandidates.find((item) =>
+                matchCandidateToDecision(item, decision),
+              );
+              if (candidate) decisionByCandidate.set(candidate, decision);
+            }
+            for (const [candidate, decision] of decisionByCandidate) {
+              if (!decision.promotable) continue;
+              const rejectedReference = dedupeStrings([
+                optionalString(candidate.parentTaskRef),
+                ...asStringArray(candidate.blockerRefs),
+              ]).find((ref) => {
+                const referencedCandidate = candidateByRef.get(ref);
+                return (
+                  referencedCandidate != null &&
+                  newCandidates.includes(referencedCandidate) &&
+                  decisionByCandidate.get(referencedCandidate)?.promotable ===
+                    false
+                );
+              });
+              if (rejectedReference) {
+                return err(
+                  `Candidate ${JSON.stringify(decision.proposalRef)} references same-bundle parent or blocker ${JSON.stringify(rejectedReference)}, which did not pass review. No bundle drafts were persisted.`,
+                  { code: "BUNDLE_REFERENCE_CLOSURE_VIOLATION" },
+                );
+              }
+            }
+
             const existingRefToTaskId = new Map<string, string>();
             for (const task of existingTasks) {
               existingRefToTaskId.set(task.id, task.id);
               if (task.taskKey) existingRefToTaskId.set(task.taskKey, task.id);
+            }
+            for (const [alias, taskId] of reusedAliasToTaskId) {
+              existingRefToTaskId.set(alias, taskId);
             }
             for (const branch of planningBranches.values()) {
               existingRefToTaskId.set(branch.id, branch.id);
@@ -12633,171 +13063,204 @@ export function createMcpServer(
               }
             }
 
-            const created: Array<{
-              taskId: string;
-              title: string;
-              proposalRef: string;
-            }> = [];
-            const createdRefToTaskId = new Map<string, string>();
-            const createdDecisionByTaskId = new Map<
-              string,
-              {
-                candidate: Record<string, unknown>;
-                decision: (typeof review.decisions)[number];
-              }
-            >();
+            const created = await prisma.$transaction(
+              async (tx) => {
+                const createdDrafts: Array<{
+                  taskId: string;
+                  title: string;
+                  proposalRef: string;
+                }> = [];
+                const createdRefToTaskId = new Map<string, string>();
+                const createdDecisionByTaskId = new Map<
+                  string,
+                  {
+                    candidate: Record<string, unknown>;
+                    decision: (typeof review.decisions)[number];
+                  }
+                >();
 
-            for (const decision of review.decisions) {
-              if (!decision.promotable) continue;
-              const candidate = newCandidates.find((c) =>
-                matchCandidateToDecision(c, decision),
-              );
-              if (!candidate) continue;
+                for (const decision of review.decisions) {
+                  if (!decision.promotable) continue;
+                  const candidate = newCandidates.find((c) =>
+                    matchCandidateToDecision(c, decision),
+                  );
+                  if (!candidate) continue;
 
-              const task = await prisma.task.create({
-                data: {
-                  title: candidate.title as string,
-                  description: (candidate.description as string) ?? "",
-                  createdByUserId: userId,
-                  taskKey: (candidate.taskKey as string) ?? null,
-                  category: inferProposalCategory(candidate),
-                  assigneePersonId:
-                    (candidate.assigneePersonId as string) ?? null,
-                  assigneeOrganizationId:
-                    (candidate.assigneeOrganizationId as string) ?? null,
-                  roleTitle: (candidate.roleTitle as string) ?? null,
-                  estimatedEffortHours:
-                    (candidate.estimatedEffortHours as number) ?? null,
-                  isPublic: candidate.isPublic === true,
-                  impactStatement: (candidate.description as string) ?? null,
-                  contextJson: {
-                    ...buildStoredProposalContext({ candidate, decision }),
-                    acceptanceCriteria:
-                      (candidate.acceptanceCriteria as string[]) ?? [],
-                    best_route: (candidate.bestRoute as string) ?? null,
-                    executor_type: normalizeExecutorType(
-                      candidate.executorType,
-                    ),
-                    sourceProvenance: asObject(candidate.source),
-                  },
-                  deadlinePolicy: normalizeDeadlinePolicy(
-                    candidate.deadlinePolicy,
-                  ),
-                  dueAt: parseTaskDate(candidate.dueAt),
-                  status: TaskStatus.DRAFT,
-                } as any,
-              });
-              await endpoints.upsertPrimaryTaskCommunicationEndpoint(
-                prisma,
-                task.id,
-                {
-                  url: (candidate.contactUrl as string) ?? null,
-                },
-              );
-              await attachProposalImpactEstimate({
-                actor: { isAdmin, userId },
-                estimatedEffortHours:
-                  (candidate.estimatedEffortHours as number) ?? null,
-                impact: (candidate.impact as Record<string, unknown>) ?? null,
-                prisma,
-                sourceUrls: asStringArray(candidate.sourceUrls),
-                taskId: task.id,
-              });
-              await attachProposalSourceArtifact({
-                prisma,
-                source: asObject(candidate.source),
-                taskId: task.id,
-              });
+                  const task = await tx.task.create({
+                    data: {
+                      title: candidate.title as string,
+                      description: (candidate.description as string) ?? "",
+                      createdByUserId: userId,
+                      taskKey: (candidate.taskKey as string) ?? null,
+                      category: inferProposalCategory(candidate),
+                      assigneePersonId:
+                        (candidate.assigneePersonId as string) ?? null,
+                      assigneeOrganizationId:
+                        (candidate.assigneeOrganizationId as string) ?? null,
+                      ownerOrganizationId:
+                        (candidate.assigneeOrganizationId as string) ?? null,
+                      roleTitle: (candidate.roleTitle as string) ?? null,
+                      estimatedEffortHours:
+                        (candidate.estimatedEffortHours as number) ?? null,
+                      isPublic: candidate.isPublic === true,
+                      impactStatement:
+                        (candidate.description as string) ?? null,
+                      contextJson: {
+                        ...buildStoredProposalContext({ candidate, decision }),
+                        acceptanceCriteria:
+                          (candidate.acceptanceCriteria as string[]) ?? [],
+                        best_route: (candidate.bestRoute as string) ?? null,
+                        executor_type: normalizeExecutorType(
+                          candidate.executorType,
+                        ),
+                        sourceProvenance: asObject(candidate.source),
+                      },
+                      deadlinePolicy: normalizeDeadlinePolicy(
+                        candidate.deadlinePolicy,
+                      ),
+                      dueAt: parseTaskDate(candidate.dueAt),
+                      status: TaskStatus.DRAFT,
+                    } as any,
+                  });
+                  createdDrafts.push({
+                    taskId: task.id,
+                    title: task.title,
+                    proposalRef: decision.proposalRef,
+                  });
+                  createdRefToTaskId.set(decision.proposalRef, task.id);
+                  referenceMap[decision.proposalRef] = task.id;
+                  referenceMap[task.id] = task.id;
+                  if (candidate.ref) {
+                    createdRefToTaskId.set(candidate.ref as string, task.id);
+                    referenceMap[candidate.ref as string] = task.id;
+                  }
+                  if (candidate.taskKey)
+                    createdRefToTaskId.set(
+                      candidate.taskKey as string,
+                      task.id,
+                    );
+                  if (candidate.taskKey)
+                    referenceMap[candidate.taskKey as string] = task.id;
+                  if (candidate.id)
+                    createdRefToTaskId.set(candidate.id as string, task.id);
+                  if (candidate.id)
+                    referenceMap[candidate.id as string] = task.id;
+                  createdDecisionByTaskId.set(task.id, { candidate, decision });
+                }
 
-              created.push({
-                taskId: task.id,
-                title: task.title,
-                proposalRef: decision.proposalRef,
-              });
-              createdRefToTaskId.set(decision.proposalRef, task.id);
-              if (candidate.taskKey)
-                createdRefToTaskId.set(candidate.taskKey as string, task.id);
-              if (candidate.id)
-                createdRefToTaskId.set(candidate.id as string, task.id);
-              createdDecisionByTaskId.set(task.id, { candidate, decision });
-            }
+                for (const [
+                  taskId,
+                  { candidate },
+                ] of createdDecisionByTaskId.entries()) {
+                  const parentTaskRef =
+                    (candidate.parentTaskRef as string) ?? null;
+                  if (parentTaskRef) {
+                    const parentTaskId =
+                      createdRefToTaskId.get(parentTaskRef) ??
+                      existingRefToTaskId.get(parentTaskRef) ??
+                      null;
+                    if (!parentTaskId) {
+                      throw new Error(
+                        `Accepted task references unavailable parent ${JSON.stringify(parentTaskRef)}.`,
+                      );
+                    }
+                    await tx.task.update({
+                      where: { id: taskId },
+                      data: { parentTaskId },
+                    });
+                  }
 
-            for (const [
-              taskId,
-              { candidate },
-            ] of createdDecisionByTaskId.entries()) {
-              const parentTaskRef = (candidate.parentTaskRef as string) ?? null;
-              if (parentTaskRef) {
-                const parentTaskId =
-                  createdRefToTaskId.get(parentTaskRef) ??
-                  existingRefToTaskId.get(parentTaskRef) ??
-                  null;
-                if (parentTaskId) {
-                  await prisma.task.update({
-                    where: { id: taskId },
-                    data: { parentTaskId },
+                  for (const blockerRef of (
+                    (candidate.blockerRefs as string[]) ?? []
+                  ).filter(Boolean)) {
+                    const blockerTaskId =
+                      createdRefToTaskId.get(blockerRef) ??
+                      existingRefToTaskId.get(blockerRef) ??
+                      null;
+                    if (!blockerTaskId) {
+                      throw new Error(
+                        `Accepted task references unavailable blocker ${JSON.stringify(blockerRef)}.`,
+                      );
+                    }
+
+                    const dependency = (
+                      (candidate.dependencies as Array<
+                        Record<string, unknown>
+                      >) ?? []
+                    ).find((item) => item.taskRef === blockerRef);
+                    const probabilityDeltaBase = parseFiniteNumber(
+                      dependency?.probabilityDeltaBase,
+                    );
+                    const timeDeltaDaysBase = parseFiniteNumber(
+                      dependency?.timeDeltaDaysBase,
+                    );
+                    if (
+                      probabilityDeltaBase != null &&
+                      (probabilityDeltaBase < 0 || probabilityDeltaBase > 1)
+                    ) {
+                      throw new Error(
+                        `Dependency ${blockerRef} probabilityDeltaBase must be between 0 and 1.`,
+                      );
+                    }
+                    if (timeDeltaDaysBase != null && timeDeltaDaysBase < 0) {
+                      throw new Error(
+                        `Dependency ${blockerRef} timeDeltaDaysBase must be non-negative.`,
+                      );
+                    }
+
+                    await tx.taskEdge.create({
+                      data: {
+                        assumptionsJson:
+                          asStringArray(dependency?.assumptions).length > 0
+                            ? toInputJsonValue({
+                                assumptions: asStringArray(
+                                  dependency?.assumptions,
+                                ),
+                              })
+                            : undefined,
+                        calculationVersion:
+                          (dependency?.calculationVersion as string) ?? null,
+                        edgeType: TaskEdgeType.BLOCKS,
+                        fromTaskId: blockerTaskId,
+                        probabilityDeltaBase,
+                        timeDeltaDaysBase,
+                        toTaskId: taskId,
+                      },
+                    });
+                  }
+
+                  await endpoints.upsertPrimaryTaskCommunicationEndpoint(
+                    tx,
+                    taskId,
+                    { url: (candidate.contactUrl as string) ?? null },
+                  );
+                  await attachProposalImpactEstimate({
+                    actor: { isAdmin, userId },
+                    estimatedEffortHours:
+                      (candidate.estimatedEffortHours as number) ?? null,
+                    impact:
+                      (candidate.impact as Record<string, unknown>) ?? null,
+                    prisma: tx,
+                    sourceUrls: asStringArray(candidate.sourceUrls),
+                    taskId,
+                  });
+                  await attachProposalSourceArtifact({
+                    prisma: tx,
+                    source: asObject(candidate.source),
+                    taskId,
                   });
                 }
-              }
-
-              for (const blockerRef of (
-                (candidate.blockerRefs as string[]) ?? []
-              ).filter(Boolean)) {
-                const blockerTaskId =
-                  createdRefToTaskId.get(blockerRef) ??
-                  existingRefToTaskId.get(blockerRef) ??
-                  null;
-                if (!blockerTaskId) continue;
-
-                const dependency = (
-                  (candidate.dependencies as Array<Record<string, unknown>>) ??
-                  []
-                ).find((item) => item.taskRef === blockerRef);
-                const probabilityDeltaBase = parseFiniteNumber(
-                  dependency?.probabilityDeltaBase,
-                );
-                const timeDeltaDaysBase = parseFiniteNumber(
-                  dependency?.timeDeltaDaysBase,
-                );
-                if (
-                  probabilityDeltaBase != null &&
-                  (probabilityDeltaBase < 0 || probabilityDeltaBase > 1)
-                ) {
-                  throw new Error(
-                    `Dependency ${blockerRef} probabilityDeltaBase must be between 0 and 1.`,
-                  );
-                }
-                if (timeDeltaDaysBase != null && timeDeltaDaysBase < 0) {
-                  throw new Error(
-                    `Dependency ${blockerRef} timeDeltaDaysBase must be non-negative.`,
-                  );
-                }
-
-                await prisma.taskEdge.create({
-                  data: {
-                    assumptionsJson:
-                      asStringArray(dependency?.assumptions).length > 0
-                        ? toInputJsonValue({
-                            assumptions: asStringArray(dependency?.assumptions),
-                          })
-                        : undefined,
-                    calculationVersion:
-                      (dependency?.calculationVersion as string) ?? null,
-                    edgeType: TaskEdgeType.BLOCKS,
-                    fromTaskId: blockerTaskId,
-                    probabilityDeltaBase,
-                    timeDeltaDaysBase,
-                    toTaskId: taskId,
-                  },
-                });
-              }
-            }
+                return createdDrafts;
+              },
+              { maxWait: 10_000, timeout: 60_000 },
+            );
 
             return ok({
               review,
               changedDrafts,
               createdDrafts: created,
               existingDrafts,
+              referenceMap,
               message: `${review.promotableCount} of ${review.decisions.length} new candidates passed review. ${created.length} drafts created; ${existingDrafts.length} source-identical tasks reused; ${changedDrafts.length} changed sources require review.`,
             });
           }
@@ -13189,9 +13652,14 @@ export function createMcpServer(
               updates.parentTaskId = parentTaskId;
             }
             const dependencyPatchProvided =
-              Array.isArray(a.depends_on) || Array.isArray(a.blockerTaskIds);
-            const blockerTaskIds = dependencyPatchProvided
+              Array.isArray(a.depends_on) ||
+              Array.isArray(a.blockerTaskRefs) ||
+              Array.isArray(a.blockerTaskIds);
+            const blockerTaskRefs = dependencyPatchProvided
               ? dedupeStrings([
+                  ...(Array.isArray(a.blockerTaskRefs)
+                    ? (a.blockerTaskRefs as string[])
+                    : []),
                   ...(Array.isArray(a.blockerTaskIds)
                     ? (a.blockerTaskIds as string[])
                     : []),
@@ -13200,13 +13668,19 @@ export function createMcpServer(
                     : []),
                 ])
               : [];
-            if (dependencyPatchProvided && blockerTaskIds.length > 0) {
+            let blockerTaskIds: string[] = [];
+            if (dependencyPatchProvided && blockerTaskRefs.length > 0) {
               const sessionPersonId = await loadSessionPersonId(userId);
               const dependencyTasks = await prisma.task.findMany({
                 where: {
                   deletedAt: null,
-                  id: { in: blockerTaskIds },
                   AND: [
+                    {
+                      OR: [
+                        { id: { in: blockerTaskRefs } },
+                        { taskKey: { in: blockerTaskRefs } },
+                      ],
+                    },
                     getTaskAccessWhere({
                       action: "READ",
                       personId: sessionPersonId,
@@ -13215,19 +13689,25 @@ export function createMcpServer(
                     getTaskScopeWhere(scopes, organizationIds),
                   ],
                 },
-                select: { createdByUserId: true, id: true, isPublic: true },
+                select: {
+                  createdByUserId: true,
+                  id: true,
+                  isPublic: true,
+                  taskKey: true,
+                },
               });
-              const foundDependencyIds = new Set(
-                dependencyTasks.map((task) => task.id),
+              const dependencyTaskByRef = resolveExactTaskReferences(
+                blockerTaskRefs,
+                dependencyTasks,
               );
-              const missingDependencyIds = blockerTaskIds.filter(
-                (id) => !foundDependencyIds.has(id),
-              );
-              if (missingDependencyIds.length > 0) {
+              if (!dependencyTaskByRef) {
                 return err(
-                  "One or more dependency tasks were not found or are inaccessible.",
+                  "One or more dependency task references were not found, were inaccessible, or were ambiguous.",
                 );
               }
+              blockerTaskIds = dedupeStrings(
+                blockerTaskRefs.map((ref) => dependencyTaskByRef.get(ref)?.id),
+              );
             }
             if (dependencyPatchProvided) {
               const dependencyEdges = await loadReachableDependencyEdges(
@@ -14170,14 +14650,48 @@ export function createMcpServer(
               );
             const prisma = await getPrisma();
             const { TaskEdgeType } = await import("@optimitron/db");
-            const blockedTaskId = a.blockedTaskId as string;
-            const blockerTaskId = a.blockerTaskId as string;
+            const canonicalBlockedTaskRef = optionalString(a.blockedTaskRef);
+            const legacyBlockedTaskRef = optionalString(a.blockedTaskId);
+            const canonicalBlockerTaskRef = optionalString(a.blockerTaskRef);
+            const legacyBlockerTaskRef = optionalString(a.blockerTaskId);
+            if (
+              canonicalBlockedTaskRef &&
+              legacyBlockedTaskRef &&
+              canonicalBlockedTaskRef !== legacyBlockedTaskRef
+            ) {
+              return err(
+                "Provide blockedTaskRef or legacy blockedTaskId, not both with different values.",
+              );
+            }
+            if (
+              canonicalBlockerTaskRef &&
+              legacyBlockerTaskRef &&
+              canonicalBlockerTaskRef !== legacyBlockerTaskRef
+            ) {
+              return err(
+                "Provide blockerTaskRef or legacy blockerTaskId, not both with different values.",
+              );
+            }
+            const blockedTaskRef =
+              canonicalBlockedTaskRef ?? legacyBlockedTaskRef;
+            const blockerTaskRef =
+              canonicalBlockerTaskRef ?? legacyBlockerTaskRef;
+            if (!blockedTaskRef || !blockerTaskRef) {
+              return err("blockedTaskRef and blockerTaskRef are required.", {
+                code: "INVALID_ARGUMENT",
+              });
+            }
             const sessionPersonId = await loadSessionPersonId(userId);
             const dependencyTasks = await prisma.task.findMany({
               where: {
                 deletedAt: null,
-                id: { in: [blockedTaskId, blockerTaskId] },
                 AND: [
+                  {
+                    OR: [
+                      { id: { in: [blockedTaskRef, blockerTaskRef] } },
+                      { taskKey: { in: [blockedTaskRef, blockerTaskRef] } },
+                    ],
+                  },
                   getTaskAccessWhere({
                     action: "READ",
                     personId: sessionPersonId,
@@ -14191,15 +14705,18 @@ export function createMcpServer(
                 id: true,
                 isPublic: true,
                 ownerOrganizationId: true,
+                taskKey: true,
               },
             });
-            const blockedTask = dependencyTasks.find(
-              (task) => task.id === blockedTaskId,
+            const dependencyTaskByRef = resolveExactTaskReferences(
+              [blockedTaskRef, blockerTaskRef],
+              dependencyTasks,
             );
-            const blockerTask = dependencyTasks.find(
-              (task) => task.id === blockerTaskId,
-            );
+            const blockedTask = dependencyTaskByRef?.get(blockedTaskRef);
+            const blockerTask = dependencyTaskByRef?.get(blockerTaskRef);
             if (!blockedTask || !blockerTask) return err("Task not found");
+            const blockedTaskId = blockedTask.id;
+            const blockerTaskId = blockerTask.id;
             if (blockedTaskId === blockerTaskId) {
               return err("A task cannot depend on itself.");
             }
@@ -14269,10 +14786,18 @@ export function createMcpServer(
             if (cycle) {
               return err(`Dependency update rejected: ${cycle.message}`);
             }
+            const existingEdge = await prisma.taskEdge.findFirst({
+              where: {
+                edgeType: TaskEdgeType.BLOCKS,
+                fromTaskId: blockerTaskId,
+                toTaskId: blockedTaskId,
+              },
+              select: { deletedAt: true },
+            });
             await prisma.taskEdge.updateMany({
               where: {
-                fromTaskId: a.blockerTaskId as string,
-                toTaskId: a.blockedTaskId as string,
+                fromTaskId: blockerTaskId,
+                toTaskId: blockedTaskId,
                 edgeType: TaskEdgeType.BLOCKS,
               },
               data: { deletedAt: null, ...edgeMetadata },
@@ -14280,8 +14805,8 @@ export function createMcpServer(
             await prisma.taskEdge.createMany({
               data: [
                 {
-                  fromTaskId: a.blockerTaskId as string,
-                  toTaskId: a.blockedTaskId as string,
+                  fromTaskId: blockerTaskId,
+                  toTaskId: blockedTaskId,
                   edgeType: TaskEdgeType.BLOCKS,
                   ...edgeMetadata,
                 },
@@ -14291,7 +14816,13 @@ export function createMcpServer(
             return ok({
               blockedTaskId,
               blockerTaskId,
-              created: true,
+              created: existingEdge == null,
+              outcome:
+                existingEdge == null
+                  ? "created"
+                  : existingEdge.deletedAt
+                    ? "reactivated"
+                    : "updated",
               ...edgeMetadata,
             });
           }

@@ -29,10 +29,12 @@ type QueueRow = {
 
 type CreatedTask = {
   id: string;
+  taskKey: string;
   title: string;
 };
 
 const createdTasks: CreatedTask[] = [];
+let personalRootId = "";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -99,9 +101,14 @@ async function createTask(input: {
   p_success: number;
   executor_type: "Self" | "AI Agent";
 }) {
-  const task = await callTool<CreatedTask>("createTask", {
-    title: `${RUN_ID}: ${input.title}`,
+  assert(personalRootId, "getMe returned no personal planning root");
+  const title = `${RUN_ID}: ${input.title}`;
+  const taskKey = `${RUN_ID}:${input.key}`;
+  const response = await callTool<{ id?: string; taskId?: string; title?: string }>("createTask", {
+    title,
     description: `Temporary personal task engine smoke test row ${input.key}.`,
+    parentTaskId: personalRootId,
+    taskKey,
     hours: input.hours,
     value: input.value,
     p_success: input.p_success,
@@ -109,8 +116,12 @@ async function createTask(input: {
     executor_type: input.executor_type,
     ev_math: "Smoke-test deterministic EV inputs.",
     category: "OTHER",
+    acceptanceCriteria: ["The smoke test completes and cleans up this task"],
+    impactStatement: "Verifies the live personal task queue and dependency contract.",
   });
-  assert(task.id, `createTask returned no id for ${input.title}`);
+  const taskId = response.taskId ?? response.id;
+  assert(taskId, `createTask returned no task ID for ${input.title}`);
+  const task = { id: taskId, taskKey, title: response.title ?? title };
   createdTasks.push(task);
   return task;
 }
@@ -126,11 +137,26 @@ async function getAIQueue() {
 }
 
 async function markDone(task: CreatedTask) {
-  await callTool("updateTask", {
+  await callTool("completeTask", {
     taskId: task.id,
-    status: "VERIFIED",
     completionEvidence: "Completed by MCP personal task engine smoke test.",
   });
+}
+
+async function listAllTasks() {
+  const tasks: unknown[] = [];
+  let cursor: string | null = null;
+  do {
+    const page = await callTool<{ nextCursor: string | null; tasks: unknown[] }>("listTasks", {
+      ...(cursor ? { cursor } : {}),
+      limit: 50,
+      paginated: true,
+      visibility: "public",
+    });
+    tasks.push(...page.tasks);
+    cursor = page.nextCursor;
+  } while (cursor);
+  return tasks;
 }
 
 async function cleanup() {
@@ -146,7 +172,10 @@ async function cleanup() {
 async function main() {
   console.log(`MCP personal task engine smoke test against ${BASE}`);
 
-  const publicBefore = await callTool<unknown[]>("listTasks", { limit: 500 });
+  const me = await callTool<{ personalRoot: { id: string } | null }>("getMe");
+  personalRootId = me.personalRoot?.id ?? "";
+  assert(personalRootId, "getMe returned no personalRoot; grant tasks:personal");
+  const publicBefore = await listAllTasks();
 
   try {
     const A = await createTask({ key: "A", title: "Build product demo", hours: 6, value: 50000, p_success: 0.9, executor_type: "Self" });
@@ -158,13 +187,13 @@ async function main() {
     const G = await createTask({ key: "G", title: "Write Grant Application Beta", hours: 6, value: 50000, p_success: 0.2, executor_type: "Self" });
     const H = await createTask({ key: "H", title: "Set up donation page", hours: 2, value: 10000, p_success: 0.8, executor_type: "Self" });
     const I = await createTask({ key: "I", title: "Organize files and folders", hours: 1, value: 100, p_success: 1, executor_type: "Self" });
-    const J = await createTask({ key: "J", title: "Research potential funders list", hours: 3, value: 20000, p_success: 0.7, executor_type: "AI Agent" });
+    await createTask({ key: "J", title: "Research potential funders list", hours: 3, value: 20000, p_success: 0.7, executor_type: "AI Agent" });
 
-    await callTool("updateTask", { taskId: C.id, depends_on: [A.id] });
-    await callTool("updateTask", { taskId: D.id, depends_on: [A.id] });
-    await callTool("updateTask", { taskId: E.id, depends_on: [A.id] });
-    await callTool("updateTask", { taskId: F.id, depends_on: [A.id, B.id, C.id] });
-    await callTool("updateTask", { taskId: G.id, depends_on: [A.id, B.id, D.id] });
+    await callTool("updateTask", { taskId: C.id, blockerTaskRefs: [A.taskKey] });
+    await callTool("updateTask", { taskId: D.id, blockerTaskRefs: [A.taskKey] });
+    await callTool("updateTask", { taskId: E.id, blockerTaskRefs: [A.taskKey] });
+    await callTool("updateTask", { taskId: F.id, blockerTaskRefs: [A.taskKey, B.taskKey, C.taskKey] });
+    await callTool("updateTask", { taskId: G.id, blockerTaskRefs: [A.taskKey, B.taskKey, D.taskKey] });
 
     assertQueue(await getMyQueue(), [
       "Create credibility page on website",
@@ -231,12 +260,11 @@ async function main() {
       await markDone(task);
     }
     assertQueue(await getMyQueue(), [], {});
-    await markDone(J);
   } finally {
     await cleanup();
   }
 
-  const publicAfter = await callTool<unknown[]>("listTasks", { limit: 500 });
+  const publicAfter = await listAllTasks();
   assert(publicAfter.length === publicBefore.length, "Public task count changed after personal smoke test cleanup");
 
   console.log("MCP personal task engine smoke test passed.");

@@ -61,7 +61,7 @@ Use these fields when creating personal tasks:
 - `p_success`: probability from `0` to `1`; the MCP layer computes expected value as `value * p_success`.
 - `cash_cost`: dollars required to execute; defaults to `0`.
 - `executor_type`: `Self` for normal user work, even if AI assists; `AI Agent` only for autonomous assistant work.
-- `depends_on`: task IDs that must be `VERIFIED` before this task appears in queues.
+- `blockerTaskRefs`: task IDs or exact task keys that must be `VERIFIED` before this task appears in queues. `depends_on` remains a legacy alias.
 - `available_at`: earliest ISO time the task should appear in active queues.
 - `due_at`: due date or expiry date.
 - `deadline_policy`: `NONE`, `SOFT`, `EXPIRES`, or `REQUIRED`.
@@ -98,6 +98,159 @@ The full scope vocabulary (live-rendered on `/developers` and in `/api/mcp/tools
 Do not request `tasks:admin` for personal planning. Public manual search and public task reads do not require OAuth permissions. Add `tasks:organization` only for work in organizations where the user is an explicit member.
 
 Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work). On the tools that previously exposed `scope`/`taskScope`, `"accessible"` survives as a deprecated alias for `"all"`; `listTasks` never had the alias and takes only `visibility`.
+
+## Task References, Pagination, And Bundles
+
+Call `listTasks` or `searchTasks` with `paginated: true` to receive this envelope:
+
+```json
+{
+  "parentTaskId": "<task whose children you are enumerating>",
+  "visibility": "all",
+  "limit": 50,
+  "paginated": true
+}
+```
+
+```json
+{
+  "tasks": [],
+  "nextCursor": "<opaque cursor or null>"
+}
+```
+
+When `nextCursor` is not `null`, repeat the same tool call with that exact value as `cursor`. Keep `paginated: true`, the query, and every filter unchanged. Continue until `nextCursor` is `null` before saying that a task list or search is complete. A cursor belongs only to the call that produced it. Calls with neither `paginated: true` nor `cursor` retain the legacy one-page array response for existing clients.
+
+Pagination is intentionally bounded. If a call returns `RESULT_WINDOW_EXCEEDED`, narrow its query-level filters instead of assuming the returned window is complete.
+
+A persisted task reference is one of these:
+
+- The task ID returned by a create, apply, search, or list operation.
+- The exact stable `taskKey`.
+
+Titles are display text, not references. Do not search for a task merely to recover the ID of something the preceding write already returned.
+
+`createTask` returns the persisted identifier as both `id` and `taskId`, and repeats it in `writeReceipt.taskId`. Save it or the stable task key immediately.
+
+For `createTask`, use `parentTaskId` or `parentTaskKey` for the parent. Use `blockerTaskRefs` and `blockedTaskRefs` for graph edges; each reference may be a persisted ID or exact task key. The legacy `depends_on`, `blockerTaskIds`, and `blockedTaskIds` fields remain accepted, but new agents should use the `*Refs` names because they describe the actual contract.
+
+For one shared/public multi-task proposal, use `proposeTaskBundle` and give every candidate:
+
+- A short, unique `ref` for links within that request.
+- A stable `taskKey` for idempotency and later calls.
+
+Use a candidate's `ref` in another candidate's `parentTaskRef`, `blockerRefs`, or `dependencies[].taskRef`. An `id` candidate field remains a legacy alias for `ref`. Candidate refs, legacy ids, and task keys must not collide.
+
+```json
+{
+  "candidates": [
+    {
+      "ref": "implement-contract",
+      "taskKey": "optimitron:dev:mcp-task-reference-contract",
+      "title": "Make MCP task references consistent",
+      "description": "Accept exact task IDs or task keys and return an explicit reference map.",
+      "parentTaskRef": "optimitron:dev",
+      "estimatedEffortHours": 4,
+      "executorType": "AI Agent",
+      "acceptanceCriteria": [
+        "Standalone and bundle dependency calls resolve exact task keys",
+        "Every created draft is mapped to its persisted task ID"
+      ]
+    },
+    {
+      "ref": "document-contract",
+      "taskKey": "optimitron:dev:mcp-task-reference-docs",
+      "title": "Document the MCP task reference contract",
+      "description": "Give agents one copyable task-authoring workflow.",
+      "parentTaskRef": "implement-contract",
+      "blockerRefs": ["implement-contract"],
+      "dependencies": [
+        {
+          "taskRef": "implement-contract",
+          "assumptions": ["Documentation must describe the shipped contract"]
+        }
+      ],
+      "estimatedEffortHours": 1,
+      "executorType": "AI Agent",
+      "acceptanceCriteria": [
+        "The MCP instructions and guide contain the same reference rules"
+      ]
+    }
+  ]
+}
+```
+
+The response includes review decisions plus a `referenceMap` object whose keys are the accepted bundle refs, legacy ids, task keys, and persisted IDs and whose values are persisted task IDs. Save that map. `createdDrafts`, `existingDrafts`, and `changedDrafts` report the write outcome. Bundle refs end with that request; later calls use the mapped task ID or task key.
+
+```json
+{
+  "createdDrafts": [
+    {
+      "proposalRef": "implement-contract",
+      "taskId": "<persisted implementation task ID>",
+      "title": "Make MCP task references consistent"
+    },
+    {
+      "proposalRef": "document-contract",
+      "taskId": "<persisted documentation task ID>",
+      "title": "Document the MCP task reference contract"
+    }
+  ],
+  "existingDrafts": [],
+  "changedDrafts": [],
+  "referenceMap": {
+    "implement-contract": "<persisted implementation task ID>",
+    "optimitron:dev:mcp-task-reference-contract": "<persisted implementation task ID>",
+    "document-contract": "<persisted documentation task ID>",
+    "optimitron:dev:mcp-task-reference-docs": "<persisted documentation task ID>"
+  },
+  "review": {
+    "decisions": [
+      {
+        "proposalRef": "implement-contract",
+        "title": "Make MCP task references consistent",
+        "promotable": true,
+        "evaluation": {
+          "qualityScore": 1,
+          "rationale": []
+        },
+        "issues": []
+      },
+      {
+        "proposalRef": "document-contract",
+        "title": "Document the MCP task reference contract",
+        "promotable": true,
+        "evaluation": {
+          "qualityScore": 1,
+          "rationale": []
+        },
+        "issues": []
+      }
+    ],
+    "promotableCount": 2,
+    "summary": "<review summary>"
+  },
+  "message": "<write summary>"
+}
+```
+
+`proposeTaskBundle` creates reviewed `DRAFT` tasks. Inspect every decision, then call `promoteTask` with the accepted tasks' returned IDs or exact task keys. Being the task owner does not skip this promotion boundary.
+
+The caller's OAuth grant must include the selected personal or organization target. Accepted task rows, parents, blocker edges, communication endpoints, impact estimates, and source provenance commit in one transaction; a failed attachment does not leave a partial bundle.
+
+Private source-derived work uses a different, atomic protocol: call `reviewPrivateTaskBundle`, inspect its normalized actions and errors, then pass the unchanged bundle and returned `reviewHash` to `applyPrivateTaskBundle`. Its candidate `ref`, `parentRef`, and `dependencyRefs` are local to that reviewed bundle. Successful apply returns persisted IDs and creates private `ACTIVE` tasks; do not send private work through the public draft/promotion path.
+
+### Finishing A Task
+
+There is no generic `COMPLETED` task status. Pick the operation from the work's actual ownership and review boundary:
+
+| Work                                                                  | Operation                                                                    | Result                                                                                           |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Private, uncompensated `Self` task created by and owned by the caller | `completeTask` with factual evidence                                         | Records the evidence and moves the task to `VERIFIED`.                                           |
+| One contributor finishing a claim on open work                        | `completeTaskClaim`                                                          | Marks that claim `COMPLETED` for review; it does not by itself verify the task.                  |
+| Delegated, shared, paid, public, organization, or agent work          | `startTaskExecution`, `submitTaskArtifact`, then `submitTaskForVerification` | Preserves the formal artifact and verification trail; an authorized human accepts or rejects it. |
+
+Do not call `updateTask(status="VERIFIED")`; the server rejects that shortcut. If `completeTask` says the task is ineligible, read the returned reason instead of submitting an unrelated claim. Correct a genuinely misclassified private one-person task to `OPEN_SINGLE` only when its real workflow permits that change.
 
 Example private task (use the `personalRoot.id` returned by `getMe`):
 
