@@ -80,6 +80,6 @@ describe("MCP tool catalog", () => {
   });
 
   it("tells coding agents how to target the canonical development branch", () => {
-    expect(MCP_SERVER_INSTRUCTIONS).toContain('parentTaskKey "optimitron:dev"');
+    expect(MCP_SERVER_INSTRUCTIONS).toContain("parentTaskKey='optimitron:dev'");
   });
 });
