@@ -31,8 +31,10 @@ import { DOCUMENT_REVIEW_TASK_KEY_PREFIX } from "../tasks/document-review-contra
 
 const mocks = vi.hoisted(() => ({
   listTasks: vi.fn(),
+  searchTasks: vi.fn(),
   getTaskDetailData: vi.fn(),
   claimTask: vi.fn(),
+  completeSelfTask: vi.fn(),
   completeTaskClaim: vi.fn(),
   computeTaskPriority: vi.fn(),
   rankTasksForUser: vi.fn(),
@@ -168,8 +170,10 @@ vi.mock("../triggers", () => ({
 
 vi.mock("../tasks.server", () => ({
   claimTask: mocks.claimTask,
+  completeSelfTask: mocks.completeSelfTask,
   completeTaskClaim: mocks.completeTaskClaim,
   listTasks: mocks.listTasks,
+  searchTasks: mocks.searchTasks,
   getTaskDetailData: mocks.getTaskDetailData,
 }));
 
@@ -713,9 +717,14 @@ beforeEach(() => {
       }),
   );
   mocks.listTasks.mockResolvedValue([]);
+  mocks.searchTasks.mockResolvedValue([]);
   mocks.claimTask.mockResolvedValue({
     id: "claim-1",
     status: TaskClaimStatus.CLAIMED,
+  });
+  mocks.completeSelfTask.mockResolvedValue({
+    alreadyCompleted: false,
+    task: { id: "task-1", status: TaskStatus.VERIFIED },
   });
   mocks.completeTaskClaim.mockResolvedValue({
     id: "claim-1",
@@ -2188,6 +2197,52 @@ describe("MCP server tool dispatch", () => {
         parentTaskId: "parent-2",
         title: "Child returned by query",
       });
+    });
+
+    it("routes natural development-parent searches through the authenticated task boundary", async () => {
+      mocks.searchTasks.mockResolvedValue([
+        {
+          id: "optimitron-dev",
+          taskKey: "optimitron:dev",
+          title: "Optimize Optimitron: engineering program",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const tools = await client.listTools();
+      const searchTool = tools.tools.find(
+        (tool) => tool.name === "searchTasks",
+      );
+      const createTool = tools.tools.find((tool) => tool.name === "createTask");
+      expect(searchTool?.description).toContain("optimitron:dev");
+      expect(createTool?.description).toContain("optimitron:dev");
+
+      const result = await client.callTool({
+        name: "searchTasks",
+        arguments: {
+          query: "find Optimize Optimitron parent",
+          status: "ACTIVE",
+          visibility: "all",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.searchTasks).toHaveBeenCalledWith(
+        "find Optimize Optimitron parent",
+        expect.objectContaining({
+          clientAccessBoundary: expect.any(Object),
+          limit: 20,
+          status: "ACTIVE",
+          userId: "user-1",
+          visibility: "accessible",
+        }),
+      );
+      expect(parseToolBody(result)).toEqual([
+        expect.objectContaining({
+          id: "optimitron-dev",
+          taskKey: "optimitron:dev",
+        }),
+      ]);
     });
 
     it("does not invent private visibility when listTasks omits isPublic", async () => {
@@ -4453,6 +4508,21 @@ describe("MCP server tool dispatch", () => {
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
+      it("rejects ambiguous parent id and key inputs", async () => {
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: makeCreateTaskArguments({
+            parentTaskKey: "optimitron:dev",
+          }),
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).message).toContain("provide exactly one");
+        expect(mocks.taskFindFirst).not.toHaveBeenCalled();
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
       it("rejects Optimize Earth as a direct task parent", async () => {
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
@@ -4469,6 +4539,25 @@ describe("MCP server tool dispatch", () => {
             value: 100,
             p_success: 0.5,
           },
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).message).toContain(
+          "Optimize Earth is reserved",
+        );
+        expect(mocks.taskCreate).not.toHaveBeenCalled();
+      });
+
+      it("rejects the Optimize Earth stable key as a direct task parent", async () => {
+        mocks.taskFindFirst.mockResolvedValue(makeOptimizeEarthRoot());
+        const { parentTaskId: _parentTaskId, ...argumentsWithoutParentId } =
+          makeCreateTaskArguments({
+            parentTaskKey: "program:optimize-earth",
+          });
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "createTask",
+          arguments: argumentsWithoutParentId,
         });
 
         expect(result.isError).toBe(true);
@@ -4757,6 +4846,36 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("completeTask self-verifies an eligible personal task in one call", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+
+      const result = await client.callTool({
+        name: "completeTask",
+        arguments: {
+          completionEvidence: "Text sent and reply received.",
+          taskId: "task-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.completeSelfTask).toHaveBeenCalledWith(
+        "task-1",
+        "user-1",
+        "Text sent and reply received.",
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        alreadyCompleted: false,
+        status: TaskStatus.VERIFIED,
+        taskId: "task-1",
+        writeReceipt: {
+          operation: "completeTask",
+          outcome: "verified",
+          requestId: expect.any(String),
+          taskId: "task-1",
+        },
+      });
+    });
+
     it("completeTaskClaim claims the task before completing it", async () => {
       mocks.taskFindFirst.mockResolvedValue({ id: "task-1" });
       const client = await setup("user-1", ALL_SCOPES);
@@ -4778,6 +4897,7 @@ describe("MCP server tool dispatch", () => {
       );
       expect(parseToolBody(result)).toMatchObject({
         alreadyCompleted: false,
+        awaitingVerification: true,
         claimId: "claim-1",
         status: TaskClaimStatus.COMPLETED,
         writeReceipt: {
@@ -5461,6 +5581,98 @@ describe("MCP server tool dispatch", () => {
       expect(data.assigneePersonId).toBe("person-1");
       expect(data.claimPolicy).toBe(TaskClaimPolicy.ASSIGNED_ONLY);
       expect(data.maxClaims).toBeNull();
+    });
+
+    it("createTask resolves an exact parentTaskKey without requiring an opaque parent id", async () => {
+      mocks.taskFindFirst.mockImplementation(
+        async (args?: { where?: { taskKey?: string } }) => {
+          if (args?.where?.taskKey === "optimitron:dev") {
+            return makePlanningBranch({
+              id: "optimitron-dev",
+              taskKey: "optimitron:dev",
+            });
+          }
+          return null;
+        },
+      );
+      mocks.getTaskDetailData.mockResolvedValue({
+        task: makeCreatedTask({
+          id: "created-task",
+          parentTaskId: "optimitron-dev",
+          contextJson: {
+            executor_type: "AI Agent",
+            value: 100,
+            p_success: 0.5,
+            cash_cost: 0,
+          },
+        }),
+      });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+      const { parentTaskId: _parentTaskId, ...argumentsWithoutParentId } =
+        makeCreateTaskArguments({
+          executor_type: "AI Agent",
+          parentTaskKey: "optimitron:dev",
+        });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: argumentsWithoutParentId,
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ taskKey: "optimitron:dev" }),
+        }),
+      );
+      const data = (
+        mocks.taskCreate.mock.calls[0]![0] as { data: Record<string, unknown> }
+      ).data;
+      expect(data.parentTaskId).toBe("optimitron-dev");
+      expect(data).not.toHaveProperty("parentTaskKey");
+    });
+
+    it("scopes parentTaskKey resolution to the OAuth client boundary", async () => {
+      mocks.taskFindFirst.mockResolvedValue(null);
+      const clientBoundaryWhere = {
+        OR: [
+          { isPublic: true },
+          {
+            isPublic: false,
+            ownerOrganizationId: { in: ["organization-1"] },
+          },
+        ],
+      };
+      mocks.getTaskClientAccessWhere.mockReturnValue(clientBoundaryWhere);
+      const { parentTaskId: _parentTaskId, ...argumentsWithoutParentId } =
+        makeCreateTaskArguments({
+          parentTaskKey: "optimitron:dev",
+        });
+      const client = await setup("user-1", [McpScope.TASKS_ORGANIZATION], {
+        organizationIds: ["organization-1"],
+      });
+
+      const result = await client.callTool({
+        name: "createTask",
+        arguments: argumentsWithoutParentId,
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain("was not found");
+      expect(mocks.getTaskClientAccessWhere).toHaveBeenCalledWith({
+        allowPersonalPrivate: false,
+        organizationIds: ["organization-1"],
+      });
+      expect(mocks.taskFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            taskKey: "optimitron:dev",
+            AND: expect.arrayContaining([clientBoundaryWhere]),
+          }),
+        }),
+      );
+      expect(mocks.taskCreate).not.toHaveBeenCalled();
     });
 
     it("rejects updateTask when a non-admin user targets a public task", async () => {

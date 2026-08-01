@@ -286,6 +286,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   // tasks:personal
   claimTask: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   claimSignerReminder: [McpScope.TASKS_PERSONAL],
+  completeTask: [McpScope.TASKS_PERSONAL],
   completeTaskClaim: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   logAgentRun: [McpScope.AGENT_RUN],
   acquireLease: [McpScope.AGENT_RUN],
@@ -2255,22 +2256,26 @@ function enrichTaskForMcp(task: unknown) {
 }
 
 async function validateExplicitTaskParent(input: {
-  parentTaskId: string;
+  clientAccessBoundary: TaskClientAccessBoundary;
+  parentTaskId?: string | null;
+  parentTaskKey?: string | null;
   prisma: Awaited<ReturnType<typeof getPrisma>>;
   taskId?: string;
   userId: string;
 }) {
-  if (input.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID) {
-    throw new Error(
-      "Optimize Earth is reserved for managed top-level branches. Choose the closest existing objective or task instead.",
-    );
+  if (!input.parentTaskId && !input.parentTaskKey) {
+    throw new Error("A parent task ID or key is required.");
   }
 
   const parent = await input.prisma.task.findFirst({
     where: {
       deletedAt: null,
-      id: input.parentTaskId,
-      ...getTaskAccessWhere({ action: "COMMENT", userId: input.userId }),
+      ...(input.parentTaskId ? { id: input.parentTaskId } : {}),
+      ...(input.parentTaskKey ? { taskKey: input.parentTaskKey } : {}),
+      AND: [
+        getTaskAccessWhere({ action: "COMMENT", userId: input.userId }),
+        getTaskClientAccessWhere(input.clientAccessBoundary),
+      ],
     },
     select: {
       assigneeOrganizationId: true,
@@ -2283,8 +2288,14 @@ async function validateExplicitTaskParent(input: {
     },
   });
   if (!parent) {
+    const parentRef = input.parentTaskId ?? input.parentTaskKey;
     throw new Error(
-      `Parent task ${JSON.stringify(input.parentTaskId)} was not found. Search the existing task tree and choose a valid parent.`,
+      `Parent task ${JSON.stringify(parentRef)} was not found. Search the existing task tree and choose a valid accessible parent.`,
+    );
+  }
+  if (parent.id === OPTIMIZE_EARTH_ROOT_TASK_ID) {
+    throw new Error(
+      "Optimize Earth is reserved for managed top-level branches. Choose the closest existing objective or task instead.",
     );
   }
   if (input.taskId === parent.id) {
@@ -6389,7 +6400,8 @@ const TASK_TOOL_DEFINITIONS = [
     name: "createTask",
     description:
       "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
-      "Required: title, description, parentTaskId, taskKey, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
+      "Required: title, description, one of parentTaskId or parentTaskKey, taskKey, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
+      "For Optimitron code or documentation improvements, search for duplicate work and set parentTaskKey='optimitron:dev'. " +
       "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
       "taskKey is the idempotency key: retrying the same create returns the existing task instead of creating a duplicate. The response includes a writeReceipt and a missingFields[] array for soft-recommended metadata.",
@@ -6404,7 +6416,12 @@ const TASK_TOOL_DEFINITIONS = [
         parentTaskId: {
           type: "string",
           description:
-            "Required existing parent task ID. Search the accessible task tree first and choose the closest objective or task; do not use Optimize Earth directly.",
+            "Existing parent task ID. Provide this or parentTaskKey, not both. Search the accessible task tree first and choose the closest objective or task; do not use Optimize Earth directly.",
+        },
+        parentTaskKey: {
+          type: "string",
+          description:
+            "Exact stable key of the existing parent task. Provide this or parentTaskId, not both. For Optimitron development work use 'optimitron:dev'.",
         },
         taskKey: {
           type: "string",
@@ -7543,9 +7560,25 @@ const TASK_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "completeTask",
+    description:
+      "Mark one private Self task you own VERIFIED in a single call so it leaves your active queue. This owner-attestation shortcut is only for uncompensated, childless personal tasks that are unassigned or assigned only to you and have no formal work history. Use the submission-and-verification workflow for OPEN_MANY, delegated, shared, paid, public, organization, or agent work. If a one-person task was incorrectly stored as OPEN_MANY and has no formal history, update its claimPolicy to OPEN_SINGLE first.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        taskId: { type: "string", description: "Private Self task ID" },
+        completionEvidence: {
+          type: "string",
+          description: "A short factual description of what was completed",
+        },
+      },
+      required: ["taskId", "completionEvidence"],
+    },
+  },
+  {
     name: "completeTaskClaim",
     description:
-      "Claim an open task if needed, then mark the authenticated user's claim completed. Safe to retry after completion. Requires completionEvidence describing what was done.",
+      "Claim an open task if needed, then mark only the authenticated user's claim completed. This does not itself complete the task. An authorized reviewer may later verify the claim; OPEN_SINGLE then resolves the task, while OPEN_MANY remains active for more contributions. Safe to retry after claim completion.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7555,7 +7588,7 @@ const TASK_TOOL_DEFINITIONS = [
           description: "What was done and proof it worked",
         },
       },
-      // Handler validation keeps errors concise for remote clients.
+      required: ["taskId", "completionEvidence"],
     },
   },
   {
@@ -7941,7 +7974,8 @@ const TASK_TOOL_DEFINITIONS = [
     name: "searchTasks",
     description:
       "Search your accessible tasks by title, description, task key, assignee, or organization. " +
-      "Use this before createTask/updateTask when you need blockerTaskIds or blockedTaskIds.",
+      "Use this before createTask/updateTask to find parents, duplicates, blockerTaskIds, or blockedTaskIds. " +
+      "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -10832,7 +10866,8 @@ export function createMcpServer(
               parseFiniteNumber(a.p_success) != null ||
               parseFiniteNumber(a.pSuccess) != null ||
               parseFiniteNumber(a.successProbabilityBase) != null;
-            const parentTaskId = optionalString(a.parentTaskId);
+            const requestedParentTaskId = optionalString(a.parentTaskId);
+            const parentTaskKey = optionalString(a.parentTaskKey);
             const taskKey = optionalString(a.taskKey);
             if (isReservedDocumentReviewTaskKey(taskKey)) {
               return err(RESERVED_DOCUMENT_REVIEW_TASK_KEY_MESSAGE);
@@ -10841,7 +10876,14 @@ export function createMcpServer(
             if (!title) validationMissingFields.push("title");
             if (!description.trim())
               validationMissingFields.push("description");
-            if (!parentTaskId) validationMissingFields.push("parentTaskId");
+            if (!requestedParentTaskId && !parentTaskKey) {
+              validationMissingFields.push("parentTaskId or parentTaskKey");
+            }
+            if (requestedParentTaskId && parentTaskKey) {
+              invalidFields.push(
+                "parentTaskId and parentTaskKey (provide exactly one)",
+              );
+            }
             if (!taskKey) validationMissingFields.push("taskKey");
             if (!a.category) validationMissingFields.push("category");
             if (extractedCriteria.length === 0)
@@ -10878,7 +10920,9 @@ export function createMcpServer(
             >;
             try {
               parentTask = await validateExplicitTaskParent({
-                parentTaskId: parentTaskId!,
+                clientAccessBoundary: taskClientBoundary,
+                parentTaskId: requestedParentTaskId,
+                parentTaskKey,
                 prisma,
                 userId,
               });
@@ -10887,6 +10931,7 @@ export function createMcpServer(
                 error instanceof Error ? error.message : "Invalid parent task.",
               );
             }
+            const parentTaskId = parentTask.id;
 
             if (taskKey) {
               const existingTask = await prisma.task.findFirst({
@@ -11116,7 +11161,7 @@ export function createMcpServer(
             const data: Record<string, unknown> = {
               title: title!,
               description,
-              parentTaskId: parentTaskId!,
+              parentTaskId,
               taskKey,
               category: a.category
                 ? TaskCategory[a.category as keyof typeof TaskCategory]
@@ -13115,6 +13160,7 @@ export function createMcpServer(
               >;
               try {
                 parentTask = await validateExplicitTaskParent({
+                  clientAccessBoundary: taskClientBoundary,
                   parentTaskId,
                   prisma,
                   taskId: existingTask.id,
@@ -13879,7 +13925,7 @@ export function createMcpServer(
 
           // ── claimTask ──────────────────────────────────────────
           case "claimTask": {
-            const { tasks } = await getTaskFunctions();
+            const tasks = await import("./tasks.server");
             if (!userId) return authRequired(name, "Claiming requires OAuth.");
             if (!(await canAccessTaskResource(a.taskId as string, "COMMENT"))) {
               return err("Task not found");
@@ -14016,9 +14062,50 @@ export function createMcpServer(
             });
           }
 
+          // ── completeTask ───────────────────────────────────────
+          case "completeTask": {
+            const tasks = await import("./tasks.server");
+            if (!userId)
+              return authRequired(name, "Completing a task requires OAuth.");
+            const taskId = optionalString(a.taskId);
+            const completionEvidence = optionalString(a.completionEvidence);
+            const missingFields = [
+              ...(taskId ? [] : ["taskId"]),
+              ...(completionEvidence ? [] : ["completionEvidence"]),
+            ];
+            if (missingFields.length > 0) {
+              return err(
+                `Missing required fields: ${missingFields.join(", ")}.`,
+                {
+                  code: "INVALID_ARGUMENT",
+                  details: { missingFields },
+                },
+              );
+            }
+
+            const completion = await tasks.completeSelfTask(
+              taskId!,
+              userId,
+              completionEvidence!,
+            );
+            return ok({
+              alreadyCompleted: completion.alreadyCompleted,
+              status: completion.task.status,
+              taskId: completion.task.id,
+              writeReceipt: {
+                operation: "completeTask",
+                outcome: completion.alreadyCompleted
+                  ? "already_completed"
+                  : "verified",
+                requestId,
+                taskId: completion.task.id,
+              },
+            });
+          }
+
           // ── completeTaskClaim ──────────────────────────────────
           case "completeTaskClaim": {
-            const { tasks } = await getTaskFunctions();
+            const tasks = await import("./tasks.server");
             if (!userId)
               return authRequired(name, "Completing a claim requires OAuth.");
             const taskId = optionalString(a.taskId);
@@ -14058,6 +14145,7 @@ export function createMcpServer(
               alreadyCompleted:
                 existingClaim.status === TaskClaimStatus.COMPLETED ||
                 existingClaim.status === TaskClaimStatus.VERIFIED,
+              awaitingVerification: claim.status !== TaskClaimStatus.VERIFIED,
               claimId: claim.id,
               status: claim.status,
               writeReceipt: {

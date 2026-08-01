@@ -1,7 +1,21 @@
+import { TaskStatus, type Prisma } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
 /** Default lease duration: 10 minutes. */
 const DEFAULT_LEASE_SECONDS = 600;
+
+async function lockActiveTask(tx: Prisma.TransactionClient, taskId: string) {
+  const [task] = await tx.$queryRaw<Array<{ status: TaskStatus }>>`
+    SELECT "status"
+    FROM "Task"
+    WHERE "id" = ${taskId} AND "deletedAt" IS NULL
+    FOR UPDATE
+  `;
+  if (!task) throw new Error("Task not found.");
+  if (task.status !== TaskStatus.ACTIVE) {
+    throw new Error("Task is not active.");
+  }
+}
 
 /**
  * Acquire a short-lived lease on a task. Prevents multiple agents from
@@ -15,10 +29,13 @@ export async function acquireLease(
   agentId: string,
   leaseSeconds = DEFAULT_LEASE_SECONDS,
 ) {
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + leaseSeconds * 1000);
-
   return prisma.$transaction(async (tx) => {
+    // Serialize with task completion and competing acquisitions; the locked
+    // row carries the current lifecycle state.
+    await lockActiveTask(tx, taskId);
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + leaseSeconds * 1000);
+
     // Release any expired leases on this task
     await tx.agentTaskLease.updateMany({
       where: {
@@ -76,26 +93,28 @@ export async function heartbeatLease(
   agentId: string,
   leaseSeconds = DEFAULT_LEASE_SECONDS,
 ) {
-  const now = new Date();
+  return prisma.$transaction(async (tx) => {
+    await lockActiveTask(tx, taskId);
+    const now = new Date();
+    const lease = await tx.agentTaskLease.findUnique({
+      where: { taskId_agentId: { taskId, agentId } },
+      select: { id: true, expiresAt: true, released: true },
+    });
 
-  const lease = await prisma.agentTaskLease.findUnique({
-    where: { taskId_agentId: { taskId, agentId } },
-    select: { id: true, expiresAt: true, released: true },
-  });
+    if (!lease || lease.released) {
+      throw new Error("No active lease found. Acquire a new lease.");
+    }
+    if (lease.expiresAt < now) {
+      throw new Error("Lease has expired. Acquire a new lease.");
+    }
 
-  if (!lease || lease.released) {
-    throw new Error("No active lease found. Acquire a new lease.");
-  }
-  if (lease.expiresAt < now) {
-    throw new Error("Lease has expired. Acquire a new lease.");
-  }
-
-  return prisma.agentTaskLease.update({
-    where: { id: lease.id },
-    data: {
-      expiresAt: new Date(now.getTime() + leaseSeconds * 1000),
-      lastHeartbeatAt: now,
-    },
+    return tx.agentTaskLease.update({
+      where: { id: lease.id },
+      data: {
+        expiresAt: new Date(now.getTime() + leaseSeconds * 1000),
+        lastHeartbeatAt: now,
+      },
+    });
   });
 }
 
@@ -139,6 +158,10 @@ export async function isTaskLeased(taskId: string) {
   });
 
   return activeLease
-    ? { leased: true as const, agentId: activeLease.agentId, expiresAt: activeLease.expiresAt }
+    ? {
+        leased: true as const,
+        agentId: activeLease.agentId,
+        expiresAt: activeLease.expiresAt,
+      }
     : { leased: false as const };
 }

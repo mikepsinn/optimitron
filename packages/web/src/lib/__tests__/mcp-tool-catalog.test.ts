@@ -38,6 +38,27 @@ describe("MCP tool catalog", () => {
     }
   });
 
+  it("requires evidence for both task completion writes", () => {
+    const definitions = getToolDefinitions();
+    const completeTask = definitions.find(
+      (tool) => tool.name === "completeTask",
+    );
+    const completeClaim = definitions.find(
+      (tool) => tool.name === "completeTaskClaim",
+    );
+
+    expect(
+      completeTask && "required" in completeTask.inputSchema
+        ? completeTask.inputSchema.required
+        : undefined,
+    ).toEqual(["taskId", "completionEvidence"]);
+    expect(
+      completeClaim && "required" in completeClaim.inputSchema
+        ? completeClaim.inputSchema.required
+        : undefined,
+    ).toEqual(["taskId", "completionEvidence"]);
+  });
+
   it("only references real tools in the server instructions", () => {
     // The docs-drift class this prevents: MCP_SERVER.md once documented a
     // phantom updateMilestone tool. Instructions ship to every client on
@@ -53,5 +74,9 @@ describe("MCP tool catalog", () => {
     );
 
     expect(phantom).toEqual([]);
+  });
+
+  it("tells coding agents how to target the canonical development branch", () => {
+    expect(MCP_SERVER_INSTRUCTIONS).toContain("parentTaskKey='optimitron:dev'");
   });
 });

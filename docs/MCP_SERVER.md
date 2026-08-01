@@ -35,11 +35,14 @@ For personal and organization planning, the MCP server is an expected-value task
 2. Create individual tasks or call `reviewPrivateTaskBundle` for an explicitly selected source batch.
 3. Inspect every normalized action, duplicate, dependency, estimate, source anchor, and error. Apply the unchanged review with `applyPrivateTaskBundle`; private candidates become `ACTIVE`, never public proposals.
 4. Audit with `getQueueAudit`, then ask `getNextAction` or `getExecutionPlan`.
-5. Call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
-6. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
-7. Repeat; dependents become available only after accepted verification.
+5. For a private, uncompensated `Self` task you own, call `completeTask` once with factual completion evidence. It self-verifies the task and removes it from the active queue. `OPEN_MANY` work remains contribution-oriented and cannot use this shortcut; correct an incorrectly classified one-person task to `OPEN_SINGLE` first.
+6. For delegated, shared, paid, public, organization, or agent work, call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
+7. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
+8. Repeat; dependents become available only after accepted verification.
 
 `updateTask(status="VERIFIED")` is invalid. Claim and completion operations derive the actor from OAuth and never accept authority from a caller-supplied user ID.
+
+`completeTaskClaim` is a contribution-coordination operation, not task completion. It auto-claims open work when needed and marks that claim `COMPLETED`. An authorized reviewer may later verify the claim; `OPEN_SINGLE` then resolves the task, while `OPEN_MANY` remains active for more contributions.
 
 The canonical score is `priority`:
 
@@ -96,17 +99,21 @@ Do not request `tasks:admin` for personal planning. Public manual search and pub
 
 Task-listing tools take `visibility: "all" | "public" | "private"` — signed-in callers default to `all` (public plus their own private work). On the tools that previously exposed `scope`/`taskScope`, `"accessible"` survives as a deprecated alias for `"all"`; `listTasks` never had the alias and takes only `visibility`.
 
-Example private task:
+Example private task (use the `personalRoot.id` returned by `getMe`):
 
 ```json
 {
   "title": "File federal taxes",
+  "description": "Prepare, review, and file the federal and state returns before the legal deadline.",
+  "parentTaskId": "<personalRoot.id from getMe>",
+  "taskKey": "personal:taxes:2026",
+  "category": "OTHER",
   "hours": 3,
   "value": 20000,
   "p_success": 0.99,
   "cash_cost": 150,
-  "expected_deliverable": "Accepted federal and state returns with filing receipts",
-  "acceptance_criteria": [
+  "impactStatement": "Filing correctly and on time avoids penalties, interest, and account disruption.",
+  "acceptanceCriteria": [
     "Return totals match reviewed source documents",
     "Filing receipt is attached"
   ],
@@ -114,6 +121,45 @@ Example private task:
   "due_at": "2026-04-15T17:00:00-05:00",
   "deadline_policy": "REQUIRED",
   "deadline_rationale": "Avoid legal penalties, interest, and account disruption."
+}
+```
+
+## Creating Optimitron Development Tasks
+
+Improvements to Optimitron itself belong under the managed development root
+whose stable task key is `optimitron:dev`. Do not attach them directly to
+Optimize Earth and do not rely on a memorized database ID:
+
+1. Call `getMe` and confirm the connected identity has access to the
+   development tree.
+2. Call `searchTasks` with `query: "optimitron:dev"` and
+   `visibility: "all"`.
+3. Select the exact `taskKey: "optimitron:dev"` result. Search the proposed
+   title and its distinctive terms to avoid duplicating existing work.
+4. Call `createTask` with `parentTaskKey: "optimitron:dev"`; use an
+   `optimitron:dev:<short-slug>` key for the new task.
+
+If the exact development root is not returned, stop and report the access or
+search problem. Do not substitute the Optimize Earth root or a merely similar
+task.
+
+```json
+{
+  "title": "Make development-parent discovery reliable in MCP",
+  "description": "Let agents find the canonical development root with natural task-search queries and document the exact creation flow.",
+  "parentTaskKey": "optimitron:dev",
+  "taskKey": "optimitron:dev:mcp-development-parent-discovery",
+  "category": "ENGINEERING",
+  "hours": 4,
+  "value": 20000,
+  "p_success": 0.9,
+  "impactStatement": "Reliable parent discovery prevents orphaned and duplicate development work.",
+  "acceptanceCriteria": [
+    "Natural multi-word searches return the development root",
+    "The MCP instructions show the exact search-then-create flow",
+    "Regression tests cover development-root discovery"
+  ],
+  "executor_type": "AI Agent"
 }
 ```
 
@@ -185,7 +231,7 @@ admin gating — is the **[MCP Tool Reference](https://optimitron.com/developers
 (human) and `/api/mcp/tools` (machine). When this section and those sources
 disagree, those sources win.
 
-- Queue discovery: `listTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
+- Queue discovery: `listTasks`, `searchTasks`, `getTask`, `getBlockers`, `getQueueAudit`, `getNextAction`, `getMyQueue`, `getAIQueue`, `evaluateTaskEconomics`.
 - Personal task management: `createTask`, `updateTask`, `deleteTask`, `proposeTaskBundle` (multi-task drafts with duplicate review), `promoteTask` (DRAFT → ACTIVE after review).
 - Reviewed private import: `reviewPrivateTaskBundle`, `applyPrivateTaskBundle`, `deletePrivateSourceSelection`.
 - Private execution (admin/agent-gated; not exposed to ordinary third-party tokens): `startTaskExecution`, `submitTaskArtifact`, `submitTaskForVerification`, `verifyTaskExecution`, `getTaskAuditTrail`.
@@ -203,7 +249,8 @@ disagree, those sources win.
 - Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
 - Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
-- Claims: `claimTask`, `completeTaskClaim`.
+- Completion: `completeTask` for a private owner-created `Self` task; `startTaskExecution` → `submitTaskArtifact` → `submitTaskForVerification` for formal work.
+- Claims: `claimTask`, `completeTaskClaim` (claim submission only).
 - Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
 
 ## Task Trigger Framework

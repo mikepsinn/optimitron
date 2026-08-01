@@ -1,7 +1,10 @@
 import {
+  TaskApplicationPolicy,
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
+  TaskCompensationKind,
+  TaskExecutionMode,
   TaskStatus,
 } from "@optimitron/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -26,11 +29,13 @@ const mocks = vi.hoisted(() => ({
     userFindUniqueOrThrow: vi.fn(),
   },
   tx: {
+    queryRaw: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskFindUniqueOrThrow: vi.fn(),
     taskFindFirst: vi.fn(),
     taskUpdate: vi.fn(),
+    taskUpdateMany: vi.fn(),
     userFindUnique: vi.fn(),
   },
 }));
@@ -87,6 +92,7 @@ vi.mock("@/lib/tasks/planning-branch.server", async (importActual) => ({
 }));
 
 import {
+  completeSelfTask,
   completeTaskClaim,
   createTask,
   getTaskDetailData,
@@ -99,10 +105,12 @@ import {
 
 function createTransactionClient() {
   return {
+    $queryRaw: mocks.tx.queryRaw,
     task: {
       findFirst: mocks.tx.taskFindFirst,
       findUniqueOrThrow: mocks.tx.taskFindUniqueOrThrow,
       update: mocks.tx.taskUpdate,
+      updateMany: mocks.tx.taskUpdateMany,
     },
     user: { findUnique: mocks.tx.userFindUnique },
     taskClaim: {
@@ -191,6 +199,7 @@ describe("tasks server", () => {
     mocks.ensureExecutionPlanningBranch.mockResolvedValue({
       id: "planner-branch-1",
     });
+    mocks.tx.queryRaw.mockResolvedValue([{ id: "task_1" }]);
     mocks.prisma.taskFindMany.mockResolvedValue([]);
     mocks.prisma.userFindUnique.mockResolvedValue({
       isAdmin: true,
@@ -206,6 +215,203 @@ describe("tasks server", () => {
         callback: (tx: ReturnType<typeof createTransactionClient>) => unknown,
       ) => callback(createTransactionClient()),
     );
+  });
+
+  function eligibleSelfTask(overrides: Record<string, unknown> = {}) {
+    return {
+      agentLeases: [],
+      applicationPolicy: TaskApplicationPolicy.CLOSED,
+      applications: [],
+      assigneeOrganizationId: null,
+      assigneePersonId: null,
+      childTasks: [],
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      claims: [],
+      compensationKind: TaskCompensationKind.UNSPECIFIED,
+      compensationCadence: null,
+      compensationCurrency: null,
+      compensationMaxAmountMinorUnits: null,
+      compensationMinAmountMinorUnits: null,
+      compensationPaymentRails: [],
+      contextJson: { executor_type: "Self" },
+      createdByUserId: "user_1",
+      executionAttempts: [],
+      executionMode: TaskExecutionMode.HUMAN_OR_AGENT,
+      id: "task_1",
+      incomingEdges: [],
+      isPublic: false,
+      managers: [],
+      ownerOrganizationId: null,
+      payouts: [],
+      status: TaskStatus.ACTIVE,
+      taskKey: null,
+      verifiedByUserId: null,
+      ...overrides,
+    };
+  }
+
+  it.each([
+    ["unassigned", {}],
+    ["unassigned task without executor metadata", { contextJson: null }],
+    [
+      "legacy unassigned ASSIGNED_ONLY",
+      { claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY },
+    ],
+    [
+      "self-assigned",
+      {
+        assigneePersonId: "person_1",
+        claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      },
+    ],
+    ["volunteer", { compensationKind: TaskCompensationKind.VOLUNTEER }],
+  ])(
+    "completes an owner-created %s Self task in one call",
+    async (_kind, overrides) => {
+      mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+      mocks.tx.taskFindFirst.mockResolvedValue(eligibleSelfTask(overrides));
+      mocks.tx.taskUpdateMany.mockResolvedValue({ count: 1 });
+      mocks.tx.taskFindUniqueOrThrow.mockResolvedValue({
+        completionEvidence: "Text sent and reply received.",
+        id: "task_1",
+        status: TaskStatus.VERIFIED,
+        verifiedByUserId: "user_1",
+      });
+
+      const result = await completeSelfTask(
+        "task_1",
+        "user_1",
+        "Text sent and reply received.",
+      );
+
+      expect(mocks.tx.queryRaw).toHaveBeenCalledOnce();
+      expect(mocks.tx.taskUpdateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            completionEvidence: "Text sent and reply received.",
+            status: TaskStatus.VERIFIED,
+            verifiedByUserId: "user_1",
+          }),
+          where: {
+            childTasks: { none: {} },
+            id: "task_1",
+            status: TaskStatus.ACTIVE,
+          },
+        }),
+      );
+      expect(result).toMatchObject({
+        alreadyCompleted: false,
+        task: { id: "task_1", status: TaskStatus.VERIFIED },
+      });
+    },
+  );
+
+  it.each([
+    ["assigned", { assigneePersonId: "person_2" }, "completeTask only works"],
+    [
+      "OPEN_MANY",
+      { claimPolicy: TaskClaimPolicy.OPEN_MANY },
+      "completeTask only works",
+    ],
+    [
+      "paid",
+      { compensationKind: TaskCompensationKind.BOUNTY },
+      "completeTask only works",
+    ],
+    [
+      "compensation metadata",
+      { compensationMinAmountMinorUnits: BigInt(1000) },
+      "completeTask only works",
+    ],
+    [
+      "agent",
+      { contextJson: { executor_type: "AI Agent" } },
+      "completeTask only works",
+    ],
+    [
+      "unknown executor",
+      { contextJson: { executor_type: "Unknown" } },
+      "completeTask only works",
+    ],
+    [
+      "AGENT_ONLY",
+      { executionMode: TaskExecutionMode.AGENT_ONLY },
+      "completeTask only works",
+    ],
+    ["actively leased", { agentLeases: [{ id: "lease_1" }] }, "formal work"],
+    ["claimed", { claims: [{ id: "claim_1" }] }, "formal work"],
+    [
+      "previously executed",
+      { executionAttempts: [{ id: "attempt_1" }] },
+      "formal work",
+    ],
+    [
+      "container with resolved child history",
+      { childTasks: [{ id: "child_1" }] },
+      "Task is a container",
+    ],
+    [
+      "reserved planning root",
+      { taskKey: "planner:person:person_1" },
+      "Task is a container",
+    ],
+  ])(
+    "keeps %s work on formal verification",
+    async (_kind, overrides, error) => {
+      mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+      mocks.tx.taskFindFirst.mockResolvedValue(eligibleSelfTask(overrides));
+
+      await expect(
+        completeSelfTask("task_1", "user_1", "I say this is done."),
+      ).rejects.toThrow(error);
+      expect(mocks.tx.taskUpdateMany).not.toHaveBeenCalled();
+    },
+  );
+
+  it("does not match an assigned task to an actor without a Person", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: null });
+    mocks.tx.taskFindFirst.mockResolvedValue(
+      eligibleSelfTask({
+        assigneePersonId: "person_1",
+        claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      }),
+    );
+
+    await expect(
+      completeSelfTask("task_1", "user_1", "I say this is done."),
+    ).rejects.toThrow("completeTask only works");
+    expect(mocks.tx.taskUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("preserves completion provenance when a completed task is retried", async () => {
+    const completedAt = new Date("2026-07-30T18:00:00.000Z");
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.tx.taskFindFirst.mockResolvedValue(
+      eligibleSelfTask({
+        completedAt,
+        completionEvidence: "Original evidence.",
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: "user_original",
+      }),
+    );
+
+    await expect(
+      completeSelfTask("task_1", "user_1", "Replacement evidence."),
+    ).resolves.toEqual({
+      alreadyCompleted: true,
+      task: {
+        completedAt,
+        completionEvidence: "Original evidence.",
+        id: "task_1",
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: "user_original",
+      },
+    });
+
+    expect(mocks.tx.taskUpdateMany).not.toHaveBeenCalled();
+    expect(mocks.tx.taskFindUniqueOrThrow).not.toHaveBeenCalled();
   });
 
   it("completes active claims without overwriting their original start time", async () => {
@@ -549,8 +755,8 @@ describe("tasks server", () => {
     ]);
   });
 
-  it("searchTasks without a user searches public tasks only", async () => {
-    await searchTasks("secret grant memo", { userId: null });
+  it("searchTasks ignores request-framing words but requires every distinctive term", async () => {
+    await searchTasks("find secret grant memo task", { userId: null });
 
     const args = lastTaskFindManyArgs();
     const filters = (args.where as { AND: unknown[] }).AND;
@@ -567,6 +773,79 @@ describe("tasks server", () => {
         }),
       );
     }
+    expect(JSON.stringify(filters.slice(1))).not.toContain('"find"');
+    expect(JSON.stringify(filters.slice(1))).not.toContain('"task"');
+    expect(args.take).toBe(64);
+  });
+
+  it.each([
+    ["Optimize Optimitron parent", "optimitron:dev"],
+    ["estimate calibration guard", "optimitron:dev:estimate-calibration-guard"],
+    ["duplicate detection semantic", "optimitron:dev:semantic-dedup"],
+  ])(
+    "searchTasks ranks the expected task for natural multi-word query %s",
+    async (query, expectedTaskKey) => {
+      mocks.prisma.taskFindMany.mockResolvedValue([
+        mockTask({
+          description: "Container for self-improvement development tasks.",
+          id: "optimitron-dev",
+          taskKey: "optimitron:dev",
+          title: "Optimize Optimitron: engineering program",
+        }),
+        mockTask({
+          description: "Reject stale or uncalibrated task estimates.",
+          id: "estimate-calibration",
+          taskKey: "optimitron:dev:estimate-calibration-guard",
+          title: "Add an estimate calibration guard",
+        }),
+        mockTask({
+          description: "Detect semantically similar duplicate tasks.",
+          id: "semantic-dedup",
+          taskKey: "optimitron:dev:semantic-dedup",
+          title: "Build semantic duplicate detection",
+        }),
+      ]);
+
+      const results = await searchTasks(query, { userId: "user-a" });
+
+      expect(results[0]?.taskKey).toBe(expectedTaskKey);
+    },
+  );
+
+  it("uses an exact-key fast path and ranks it ahead of stronger prefix matches", async () => {
+    mocks.prisma.taskFindFirst.mockResolvedValue(
+      mockTask({
+        description: "Container for self-improvement development tasks.",
+        id: "optimitron-dev",
+        taskKey: "optimitron:dev",
+        title: "Optimize Optimitron: engineering program",
+      }),
+    );
+    const childTasks = Array.from({ length: 25 }, (_, index) =>
+      mockTask({
+        description:
+          "Build optimitron:dev parent discovery for Optimitron development.",
+        id: `dev-child-${index}`,
+        taskKey: `optimitron:dev:child-${index}`,
+        title: `Optimitron dev development task ${index}`,
+      }),
+    );
+    mocks.prisma.taskFindMany.mockResolvedValue(childTasks);
+
+    const results = await searchTasks("optimitron:dev", {
+      limit: 20,
+      userId: "user-a",
+    });
+
+    expect(results).toHaveLength(20);
+    expect(results[0]?.taskKey).toBe("optimitron:dev");
+    expect(mocks.prisma.taskFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([{ taskKey: "optimitron:dev" }]),
+        }),
+      }),
+    );
   });
 
   it("searchTasks with a user searches public tasks plus that user's created private tasks", async () => {
@@ -713,12 +992,12 @@ describe("tasks server", () => {
 
   // OPT-TASK-06 regression: a parentless PRIVATE task lands in the creator's
   // private planning branch, never the root.
-  it("defaults a parentless private task into the creator's planning branch", async () => {
+  it("defaults a parentless private task to OPEN_SINGLE in the creator's planning branch", async () => {
     mocks.ensureExecutionPlanningBranch.mockResolvedValue({
       id: "planner-branch-1",
     });
     mocks.prisma.taskCreate.mockResolvedValue({
-      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
       createdByUserId: "user_creator",
       id: "task_4",
       isPublic: false,
@@ -736,7 +1015,9 @@ describe("tasks server", () => {
     expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
+          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
           isPublic: false,
+          maxClaims: null,
           parentTaskId: "planner-branch-1",
         }),
       }),

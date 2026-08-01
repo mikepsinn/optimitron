@@ -2,16 +2,21 @@ import {
   CourtCasePartyRole,
   OrgType,
   ReferendumVoteSource,
+  TaskApplicationPolicy,
   TaskCategory,
   TaskClaimPolicy,
   TaskClaimStatus,
+  TaskCompensationKind,
+  TaskEdgeType,
   TaskExecutionAttemptStatus,
+  TaskExecutionMode,
   TaskImpactFrameKey,
   TaskStatus,
   TaskVerificationResult,
   VotePosition,
   type Prisma,
 } from "@optimitron/db";
+import { isReservedPlanningRootTask } from "@optimitron/db/task-keys";
 import {
   assertOrganizationCanBePubliclyReferenced,
   upsertTrustedOrganization,
@@ -879,20 +884,22 @@ function mapTaskSearchResult(
     category: task.category,
     href,
     id: task.id,
-    score: scoreSearchRecord(searchTerms, {
-      title: task.title,
-      description: snippet,
-      href,
-      keywords: [
-        task.category,
-        task.status,
-        task.taskKey ?? "",
-        ...task.interestTags,
-        ...task.skillTags,
-        ...assigneeParts,
-      ],
-      section: "Tasks",
-    }),
+    score:
+      (task.taskKey?.toLowerCase() === searchTerms.normalizedQuery ? 100 : 0) +
+      scoreSearchRecord(searchTerms, {
+        title: task.title,
+        description: snippet,
+        href,
+        keywords: [
+          task.category,
+          task.status,
+          task.taskKey ?? "",
+          ...task.interestTags,
+          ...task.skillTags,
+          ...assigneeParts,
+        ],
+        section: "Tasks",
+      }),
     snippet: snippet || null,
     status: task.status,
     taskKey: task.taskKey,
@@ -1691,66 +1698,102 @@ export async function searchTasks(
     return [];
   }
 
-  const requiredTerms =
+  const queryTerms =
     searchTerms.terms.length > 0
       ? searchTerms.terms
       : [searchTerms.normalizedQuery];
+  const taskSearchIntentTerms = new Set([
+    "create",
+    "find",
+    "parent",
+    "search",
+    "task",
+    "tasks",
+  ]);
+  const distinctiveTerms = queryTerms.filter(
+    (term) => !taskSearchIntentTerms.has(term),
+  );
+  const candidateTerms =
+    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms;
 
-  const tasks = await prisma.task.findMany({
-    where: {
-      AND: [
-        getTaskVisibilityWhere({
-          userId: options?.userId,
-          visibility:
-            options?.visibility ?? (options?.userId ? "accessible" : "public"),
-        }),
-        ...(options?.clientAccessBoundary
-          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
-          : []),
-        ...(options?.status ? [{ status: options.status }] : []),
-        ...requiredTerms.map((term) => ({
-          OR: [
-            { title: { contains: term, mode: "insensitive" as const } },
-            {
-              description: { contains: term, mode: "insensitive" as const },
+  // Prisma cannot order substring matches by relevance. Require every
+  // distinctive term at the database boundary, then rank the bounded matches
+  // in memory. Ignoring request-framing words keeps natural agent queries such
+  // as "find Optimize Optimitron parent" from failing on the word "parent"
+  // without letting a single common term flood the candidate window.
+  const candidateLimit = Math.min(Math.max(limit * 4, 64), 500);
+  const requiredTermMatches = candidateTerms.map((term) => ({
+    OR: [
+      { title: { contains: term, mode: "insensitive" as const } },
+      { description: { contains: term, mode: "insensitive" as const } },
+      { taskKey: { contains: term, mode: "insensitive" as const } },
+      { roleTitle: { contains: term, mode: "insensitive" as const } },
+      {
+        assigneeOrganization: {
+          is: {
+            name: { contains: term, mode: "insensitive" as const },
+          },
+        },
+      },
+      {
+        assigneePerson: {
+          is: {
+            displayName: {
+              contains: term,
+              mode: "insensitive" as const,
             },
-            { taskKey: { contains: term, mode: "insensitive" as const } },
-            { roleTitle: { contains: term, mode: "insensitive" as const } },
-            {
-              assigneeOrganization: {
-                is: {
-                  name: { contains: term, mode: "insensitive" as const },
-                },
-              },
+          },
+        },
+      },
+      {
+        assigneePerson: {
+          is: {
+            currentAffiliation: {
+              contains: term,
+              mode: "insensitive" as const,
             },
-            {
-              assigneePerson: {
-                is: {
-                  displayName: {
-                    contains: term,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              assigneePerson: {
-                is: {
-                  currentAffiliation: {
-                    contains: term,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-          ],
-        })),
-      ],
-    },
-    orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-    select: taskSearchSelect,
-    take: Math.max(limit * 4, 24),
-  });
+          },
+        },
+      },
+    ],
+  }));
+
+  const accessFilters: Prisma.TaskWhereInput[] = [
+    getTaskVisibilityWhere({
+      userId: options?.userId,
+      visibility:
+        options?.visibility ?? (options?.userId ? "accessible" : "public"),
+    }),
+    ...(options?.clientAccessBoundary
+      ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+      : []),
+    ...(options?.status ? [{ status: options.status }] : []),
+  ];
+  const exactTaskKeyPromise = searchTerms.normalizedQuery.includes(":")
+    ? prisma.task.findFirst({
+        where: {
+          AND: [...accessFilters, { taskKey: searchTerms.normalizedQuery }],
+        },
+        select: taskSearchSelect,
+      })
+    : Promise.resolve(null);
+  const [exactTaskKeyMatch, candidates] = await Promise.all([
+    exactTaskKeyPromise,
+    prisma.task.findMany({
+      where: {
+        AND: [...accessFilters, ...requiredTermMatches],
+      },
+      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+      select: taskSearchSelect,
+      take: candidateLimit,
+    }),
+  ]);
+  const tasks = exactTaskKeyMatch
+    ? [
+        exactTaskKeyMatch,
+        ...candidates.filter((task) => task.id !== exactTaskKeyMatch.id),
+      ]
+    : candidates;
 
   return tasks
     .map((task) => mapTaskSearchResult(task, searchTerms))
@@ -1930,10 +1973,7 @@ export async function createTask(
   const claimSettings = resolveTaskClaimSettings({
     assigneeOrganizationId,
     assigneePersonId,
-    requestedClaimPolicy:
-      input.isPublic === false && input.claimPolicy == null
-        ? TaskClaimPolicy.ASSIGNED_ONLY
-        : input.claimPolicy,
+    requestedClaimPolicy: input.claimPolicy,
     requestedMaxClaims: input.maxClaims,
   });
   const resolvedClaimPolicy = claimSettings.claimPolicy;
@@ -2195,6 +2235,238 @@ export async function deleteTaskCreatedByUser(
   return { id: taskId, deleted: true };
 }
 
+const SIMPLE_SELF_COMPLETION_ERROR =
+  "completeTask only works for a private, owner-created, uncompensated Self task that is unassigned or assigned only to you. If a one-person task was incorrectly stored as OPEN_MANY and has no formal history, update its claimPolicy to OPEN_SINGLE first. Use startTaskExecution, submitTaskArtifact, and submitTaskForVerification for genuine OPEN_MANY, delegated, shared, paid, public, organization, or agent work.";
+
+function isSelfExecutorContext(contextJson: unknown) {
+  if (contextJson == null) return true;
+  if (typeof contextJson !== "object" || Array.isArray(contextJson)) {
+    return false;
+  }
+  const context = contextJson as Record<string, unknown>;
+  const executorType = context.executor_type ?? context.executorType;
+  if (executorType == null) return true;
+  return (
+    typeof executorType === "string" &&
+    ["", "self"].includes(executorType.trim().toLowerCase())
+  );
+}
+
+async function lockTaskForUpdate(tx: Prisma.TransactionClient, taskId: string) {
+  await tx.$queryRaw<Array<{ id: string }>>`
+    SELECT "id"
+    FROM "Task"
+    WHERE "id" = ${taskId}
+    FOR UPDATE
+  `;
+}
+
+/**
+ * Self-attest one small personal task in a single call. This deliberately does
+ * not replace the artifact + independent-verification path for consequential
+ * work. The narrow eligibility checks keep this equivalent to the owner
+ * clicking "done" on a private personal reminder.
+ */
+export async function completeSelfTask(
+  taskId: string,
+  userId: string,
+  completionEvidence: string,
+) {
+  const evidence = completionEvidence.trim();
+  if (!evidence) throw new Error("Completion evidence is required.");
+
+  const actor = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  if (!actor) throw new Error("Task not found");
+
+  return prisma.$transaction(async (tx) => {
+    const taskAccess = getTaskAccessWhere({
+      action: "VERIFY",
+      personId: actor.personId,
+      userId,
+    });
+    const accessibleTask = await tx.task.findFirst({
+      where: { deletedAt: null, id: taskId, ...taskAccess },
+      select: { id: true },
+    });
+    if (!accessibleTask) throw new Error("Task not found");
+
+    await lockTaskForUpdate(tx, taskId);
+    const checkedAt = new Date();
+
+    const task = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        ...taskAccess,
+      },
+      select: {
+        agentLeases: {
+          where: { expiresAt: { gte: checkedAt }, released: false },
+          select: { id: true },
+          take: 1,
+        },
+        applicationPolicy: true,
+        applications: {
+          select: { id: true },
+          take: 1,
+        },
+        assigneeOrganizationId: true,
+        assigneePersonId: true,
+        childTasks: {
+          select: { id: true },
+          take: 1,
+        },
+        claimPolicy: true,
+        claims: {
+          select: { id: true },
+          take: 1,
+        },
+        compensationCadence: true,
+        compensationCurrency: true,
+        compensationKind: true,
+        compensationMaxAmountMinorUnits: true,
+        compensationMinAmountMinorUnits: true,
+        compensationPaymentRails: true,
+        completedAt: true,
+        completionEvidence: true,
+        contextJson: true,
+        createdByUserId: true,
+        executionAttempts: {
+          select: { id: true },
+          take: 1,
+        },
+        executionMode: true,
+        id: true,
+        incomingEdges: {
+          where: {
+            deletedAt: null,
+            edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
+            fromTask: {
+              deletedAt: null,
+              status: { not: TaskStatus.VERIFIED },
+            },
+          },
+          select: { id: true },
+          take: 1,
+        },
+        isPublic: true,
+        managers: {
+          select: { id: true },
+          take: 1,
+        },
+        ownerOrganizationId: true,
+        payouts: {
+          select: { id: true },
+          take: 1,
+        },
+        status: true,
+        taskKey: true,
+        verifiedAt: true,
+        verifiedByUserId: true,
+      },
+    });
+    if (!task) throw new Error("Task not found");
+
+    const eligible =
+      !task.isPublic &&
+      task.ownerOrganizationId === null &&
+      task.createdByUserId === userId &&
+      task.assigneeOrganizationId === null &&
+      (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
+        task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) &&
+      (task.assigneePersonId === null ||
+        (actor.personId !== null &&
+          task.assigneePersonId === actor.personId)) &&
+      task.applicationPolicy === TaskApplicationPolicy.CLOSED &&
+      (task.compensationKind === TaskCompensationKind.UNSPECIFIED ||
+        task.compensationKind === TaskCompensationKind.VOLUNTEER) &&
+      task.compensationCadence === null &&
+      task.compensationCurrency === null &&
+      task.compensationMinAmountMinorUnits === null &&
+      task.compensationMaxAmountMinorUnits === null &&
+      task.compensationPaymentRails.length === 0 &&
+      task.executionMode !== TaskExecutionMode.AGENT_ONLY &&
+      isSelfExecutorContext(task.contextJson);
+    if (!eligible) throw new Error(SIMPLE_SELF_COMPLETION_ERROR);
+
+    if (task.status === TaskStatus.VERIFIED) {
+      return {
+        alreadyCompleted: true,
+        task: {
+          completedAt: task.completedAt,
+          completionEvidence: task.completionEvidence,
+          id: task.id,
+          status: task.status,
+          verifiedAt: task.verifiedAt,
+          verifiedByUserId: task.verifiedByUserId,
+        },
+      };
+    }
+    if (task.status !== TaskStatus.ACTIVE) {
+      throw new Error("Only active Self tasks can be completed.");
+    }
+    if (isReservedPlanningRootTask(task) || task.childTasks.length > 0) {
+      throw new Error(
+        "Task is a container. Use the formal execution and verification workflow.",
+      );
+    }
+    if (task.incomingEdges.length > 0) {
+      throw new Error("Task is blocked by an unverified dependency.");
+    }
+    if (
+      task.agentLeases.length > 0 ||
+      task.applications.length > 0 ||
+      task.claims.length > 0 ||
+      task.executionAttempts.length > 0 ||
+      task.managers.length > 0 ||
+      task.payouts.length > 0
+    ) {
+      throw new Error(
+        "Task already has shared or formal work state or history. Finish that workflow instead.",
+      );
+    }
+
+    const completedAt = checkedAt;
+    const updated = await tx.task.updateMany({
+      where: {
+        childTasks: { none: {} },
+        id: task.id,
+        status: TaskStatus.ACTIVE,
+      },
+      data: {
+        completedAt,
+        completionEvidence: evidence,
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: userId,
+      },
+    });
+    if (updated.count !== 1) {
+      throw new Error("Task is no longer active.");
+    }
+
+    const completedTask = await tx.task.findUniqueOrThrow({
+      where: { id: task.id },
+      select: {
+        completedAt: true,
+        completionEvidence: true,
+        id: true,
+        status: true,
+        verifiedAt: true,
+        verifiedByUserId: true,
+      },
+    });
+
+    return {
+      alreadyCompleted: false,
+      task: completedTask,
+    };
+  });
+}
+
 export async function claimTask(taskId: string, userId: string) {
   return prisma.$transaction(async (tx) => {
     const actor = await tx.user.findUnique({
@@ -2202,15 +2474,23 @@ export async function claimTask(taskId: string, userId: string) {
       select: { personId: true },
     });
     if (!actor) throw new Error("Task not found");
+    const taskAccess = getTaskAccessWhere({
+      action: "COMMENT",
+      personId: actor.personId,
+      userId,
+    });
+    const accessibleTask = await tx.task.findFirst({
+      where: { deletedAt: null, id: taskId, ...taskAccess },
+      select: { id: true },
+    });
+    if (!accessibleTask) throw new Error("Task not found");
+
+    await lockTaskForUpdate(tx, taskId);
     const task = await tx.task.findFirst({
       where: {
         deletedAt: null,
         id: taskId,
-        ...getTaskAccessWhere({
-          action: "COMMENT",
-          personId: actor.personId,
-          userId,
-        }),
+        ...taskAccess,
       },
       select: {
         claimPolicy: true,

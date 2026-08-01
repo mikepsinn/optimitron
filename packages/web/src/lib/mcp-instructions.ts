@@ -11,9 +11,13 @@ START HERE (in order):
 2. getQueueAudit — data-health check of the personal queue; repair high-severity issues before trusting rankings.
 3. getNextAction or getMyQueue — the user's own ranked next actions. getAIQueue — tasks marked for autonomous agent execution. getNextTask — best public task for an anonymous agent.
 
-CREATING WORK: always searchTasks first (visibility defaults to 'all' — public plus your private work — when signed in; pass 'public' or 'private' to narrow). createTask requires an explicit parentTaskId — choose the closest existing objective; never attach directly to Optimize Earth. Estimate value/p_success/hours honestly; a calibrated guess beats omission. Use proposeTaskBundle for multi-task drafts (it runs duplicate review).
+CREATING WORK: always searchTasks first (visibility defaults to 'all' — public plus your private work — when signed in; pass 'public' or 'private' to narrow). createTask requires an explicit parentTaskId or exact parentTaskKey — choose the closest existing objective; never attach directly to Optimize Earth. Estimate value/p_success/hours honestly; a calibrated guess beats omission. Use proposeTaskBundle for multi-task drafts (it runs duplicate review).
 
-COORDINATING: postTaskComment for threaded discussion (markdown, math, mermaid); use claimTask to reserve work before starting, or call completeTaskClaim directly when the work is done (it claims first if needed); updateTask to fix estimates, parents, or dependencies as scope changes.
+OPTIMITRON DEVELOPMENT: for an improvement to Optimitron itself, searchTasks with query "optimitron:dev" and visibility "all". Confirm the exact taskKey "optimitron:dev", search again for duplicate work, then call createTask with parentTaskKey='optimitron:dev'. If the development root is not accessible, stop instead of attaching the task somewhere else.
+
+COMPLETING WORK: for a private uncompensated Self task you own, call completeTask once with factual completion evidence; it self-verifies the task and removes it from your active queue. Use startTaskExecution → submitTaskArtifact → submitTaskForVerification for OPEN_MANY, delegated, shared, paid, public, organization, or agent work, then wait for authorized verification. If a one-person task was incorrectly stored as OPEN_MANY and has no formal work history, change it to OPEN_SINGLE before completing it. completeTaskClaim only submits one claim for review and never completes the task itself.
+
+COORDINATING: postTaskComment for threaded discussion (markdown, math, mermaid); use claimTask to reserve open work before starting; updateTask to fix estimates, parents, or dependencies as scope changes.
 
 CLIENT RECOVERY: if the MCP host says a tool "has not been loaded yet," retry the exact same call once. That message comes from the host's lazy tool catalog, not Optimitron's argument validation; do not rewrite correct parameters in response.
 
