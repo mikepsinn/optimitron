@@ -252,19 +252,16 @@ describe("tasks server", () => {
 
   it.each([
     ["unassigned", {}],
-    ["unassigned OPEN_MANY", { claimPolicy: TaskClaimPolicy.OPEN_MANY }],
+    ["unassigned task without executor metadata", { contextJson: null }],
+    [
+      "legacy unassigned ASSIGNED_ONLY",
+      { claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY },
+    ],
     [
       "self-assigned",
       {
         assigneePersonId: "person_1",
         claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
-      },
-    ],
-    [
-      "self-assigned OPEN_MANY",
-      {
-        assigneePersonId: "person_1",
-        claimPolicy: TaskClaimPolicy.OPEN_MANY,
       },
     ],
     ["volunteer", { compensationKind: TaskCompensationKind.VOLUNTEER }],
@@ -312,8 +309,8 @@ describe("tasks server", () => {
   it.each([
     ["assigned", { assigneePersonId: "person_2" }, "completeTask only works"],
     [
-      "unassigned ASSIGNED_ONLY",
-      { claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY },
+      "OPEN_MANY",
+      { claimPolicy: TaskClaimPolicy.OPEN_MANY },
       "completeTask only works",
     ],
     [
@@ -329,6 +326,16 @@ describe("tasks server", () => {
     [
       "agent",
       { contextJson: { executor_type: "AI Agent" } },
+      "completeTask only works",
+    ],
+    [
+      "unknown executor",
+      { contextJson: { executor_type: "Unknown" } },
+      "completeTask only works",
+    ],
+    [
+      "AGENT_ONLY",
+      { executionMode: TaskExecutionMode.AGENT_ONLY },
       "completeTask only works",
     ],
     ["actively leased", { agentLeases: [{ id: "lease_1" }] }, "formal work"],
@@ -361,20 +368,49 @@ describe("tasks server", () => {
     },
   );
 
-  it("does not verify a task when a child appears before the guarded update", async () => {
-    mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
-    mocks.tx.taskFindFirst.mockResolvedValue(eligibleSelfTask());
-    mocks.tx.taskUpdateMany.mockResolvedValue({ count: 0 });
+  it("does not match an assigned task to an actor without a Person", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: null });
+    mocks.tx.taskFindFirst.mockResolvedValue(
+      eligibleSelfTask({
+        assigneePersonId: "person_1",
+        claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      }),
+    );
 
     await expect(
       completeSelfTask("task_1", "user_1", "I say this is done."),
-    ).rejects.toThrow("Task is no longer active");
+    ).rejects.toThrow("completeTask only works");
+    expect(mocks.tx.taskUpdateMany).not.toHaveBeenCalled();
+  });
 
-    expect(mocks.tx.taskUpdateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ childTasks: { none: {} } }),
+  it("preserves completion provenance when a completed task is retried", async () => {
+    const completedAt = new Date("2026-07-30T18:00:00.000Z");
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.tx.taskFindFirst.mockResolvedValue(
+      eligibleSelfTask({
+        completedAt,
+        completionEvidence: "Original evidence.",
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: "user_original",
       }),
     );
+
+    await expect(
+      completeSelfTask("task_1", "user_1", "Replacement evidence."),
+    ).resolves.toEqual({
+      alreadyCompleted: true,
+      task: {
+        completedAt,
+        completionEvidence: "Original evidence.",
+        id: "task_1",
+        status: TaskStatus.VERIFIED,
+        verifiedAt: completedAt,
+        verifiedByUserId: "user_original",
+      },
+    });
+
+    expect(mocks.tx.taskUpdateMany).not.toHaveBeenCalled();
     expect(mocks.tx.taskFindUniqueOrThrow).not.toHaveBeenCalled();
   });
 
@@ -956,12 +992,12 @@ describe("tasks server", () => {
 
   // OPT-TASK-06 regression: a parentless PRIVATE task lands in the creator's
   // private planning branch, never the root.
-  it("defaults a parentless private task into the creator's planning branch", async () => {
+  it("defaults a parentless private task to OPEN_SINGLE in the creator's planning branch", async () => {
     mocks.ensureExecutionPlanningBranch.mockResolvedValue({
       id: "planner-branch-1",
     });
     mocks.prisma.taskCreate.mockResolvedValue({
-      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
       createdByUserId: "user_creator",
       id: "task_4",
       isPublic: false,
@@ -979,7 +1015,9 @@ describe("tasks server", () => {
     expect(mocks.prisma.taskCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
+          claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
           isPublic: false,
+          maxClaims: null,
           parentTaskId: "planner-branch-1",
         }),
       }),

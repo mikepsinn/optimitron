@@ -15,7 +15,7 @@ CREATING WORK: always searchTasks first (visibility defaults to 'all' — public
 
 OPTIMITRON DEVELOPMENT: for an improvement to Optimitron itself, searchTasks with query "optimitron:dev" and visibility "all". Confirm the exact taskKey "optimitron:dev", search again for duplicate work, then call createTask with parentTaskKey='optimitron:dev'. If the development root is not accessible, stop instead of attaching the task somewhere else.
 
-COMPLETING WORK: for a private uncompensated Self task you own, call completeTask once with factual completion evidence; it self-verifies the task and removes it from your active queue. For delegated, shared, paid, public, organization, or agent work, use startTaskExecution → submitTaskArtifact → submitTaskForVerification, then wait for authorized verification. completeTaskClaim only submits one claim for review and never completes the task itself.
+COMPLETING WORK: for a private uncompensated Self task you own, call completeTask once with factual completion evidence; it self-verifies the task and removes it from your active queue. Use startTaskExecution → submitTaskArtifact → submitTaskForVerification for OPEN_MANY, delegated, shared, paid, public, organization, or agent work, then wait for authorized verification. If a one-person task was incorrectly stored as OPEN_MANY and has no formal work history, change it to OPEN_SINGLE before completing it. completeTaskClaim only submits one claim for review and never completes the task itself.
 
 COORDINATING: postTaskComment for threaded discussion (markdown, math, mermaid); use claimTask to reserve open work before starting; updateTask to fix estimates, parents, or dependencies as scope changes.
 

@@ -7562,7 +7562,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "completeTask",
     description:
-      "Mark one private Self task you own VERIFIED in a single call so it leaves your active queue. This owner-attestation shortcut is only for uncompensated, childless personal tasks that are unassigned or assigned only to you and have no formal work history. For delegated, shared, paid, public, organization, or agent work, use startTaskExecution, submitTaskArtifact, and submitTaskForVerification instead.",
+      "Mark one private Self task you own VERIFIED in a single call so it leaves your active queue. This owner-attestation shortcut is only for uncompensated, childless personal tasks that are unassigned or assigned only to you and have no formal work history. Use the submission-and-verification workflow for OPEN_MANY, delegated, shared, paid, public, organization, or agent work. If a one-person task was incorrectly stored as OPEN_MANY and has no formal history, update its claimPolicy to OPEN_SINGLE first.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -14090,9 +14090,6 @@ export function createMcpServer(
             );
             return ok({
               alreadyCompleted: completion.alreadyCompleted,
-              completionMode: completion.alreadyCompleted
-                ? "ALREADY_VERIFIED"
-                : "OWNER_SELF_ATTESTATION",
               status: completion.task.status,
               taskId: completion.task.id,
               writeReceipt: {
@@ -14150,11 +14147,6 @@ export function createMcpServer(
                 existingClaim.status === TaskClaimStatus.VERIFIED,
               awaitingVerification: claim.status !== TaskClaimStatus.VERIFIED,
               claimId: claim.id,
-              claimStatus: claim.status,
-              nextAction:
-                claim.status === TaskClaimStatus.VERIFIED
-                  ? "none"
-                  : "await_claim_verification",
               status: claim.status,
               writeReceipt: {
                 operation: "completeTaskClaim",
