@@ -29,9 +29,7 @@ import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
-import { getTaskPath } from "@/lib/routes";
 import { getTaskDetailData } from "@/lib/tasks.server";
-import { getAssigneeMilitaryBudgetUsd } from "@/lib/tasks/task-context";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 
 function toTaskCardTask(task: TaskCardTask): TaskCardTask {
@@ -126,14 +124,7 @@ async function PresidentManagementSection() {
     ? toTaskCardTask(rawProgramTask)
     : null;
   const allLateEmployeeTasks = rawProgramTask?.childTasks ?? [];
-  const lateEmployeeTasks = [...allLateEmployeeTasks]
-    .sort(
-      (a, b) =>
-        (getAssigneeMilitaryBudgetUsd(b.contextJson) ?? 0) -
-        (getAssigneeMilitaryBudgetUsd(a.contextJson) ?? 0),
-    )
-    .slice(0, 10)
-    .map(toTaskCardTask);
+  const lateEmployeeTasks = allLateEmployeeTasks.map(toTaskCardTask);
 
   return (
     <SectionContainer bgColor="background" borderPosition="both" padding="lg">
@@ -155,16 +146,6 @@ async function PresidentManagementSection() {
                   : undefined
               }
             />
-            {allLateEmployeeTasks.length > lateEmployeeTasks.length ? (
-              <div className="mt-6 text-center">
-                <GameCTA
-                  href={`${getTaskPath(lateEmployeeProgramTask.id)}#subtasks`}
-                  variant="outline"
-                >
-                  See all {allLateEmployeeTasks.length} overdue tasks
-                </GameCTA>
-              </div>
-            ) : null}
           </div>
         ) : null}
       </Container>
@@ -227,7 +208,7 @@ export function EarthOptimizationGameLandingPage() {
             className="text-background [&_p]:text-background"
           />
           <PoliticianScorecardTable
-            scorecards={POLITICIAN_SCORECARDS.slice(0, 10).map((p) => ({
+            scorecards={POLITICIAN_SCORECARDS.map((p) => ({
               bioguideId: p.id.toUpperCase(),
               name: p.name,
               party: p.party,
