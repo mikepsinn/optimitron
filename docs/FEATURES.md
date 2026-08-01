@@ -31,9 +31,9 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** implemented
-- **Summary:** Full task lifecycle over MCP (~110 tools) and REST: create/update/delete, claim → complete → verify, threaded comments, applications and candidate matching, org ownership.
+- **Summary:** Full task lifecycle over MCP (~110 tools) and REST: create/update/delete, one-call completion for private owner-created `Self` tasks, claim → complete → verify for contributed work, threaded comments, applications and candidate matching, org ownership.
 - **Evidence:** packages/web/src/lib/mcp-server.ts; packages/web/src/lib/tasks.server.ts (`createTask`); packages/web/src/lib/tasks/task-comments.server.ts; tests: packages/web/src/lib/**tests**/mcp-server.test.ts, **tests**/tasks.server.test.ts, **tests**/task-comments.server.test.ts
-- **Acceptance:** An MCP client can create a task under an explicit parent, claim it, complete the claim, and read the comment thread — all persisted.
+- **Acceptance:** An MCP client can create a task under an explicit parent, mark its own simple private `Self` task done in one call, or claim and submit contributed work for verification — all persisted.
 - **Roadmap:** shipped — maintain
 
 ### OPT-TASK-02 — Dependency graph (TaskEdge) with blocker gating

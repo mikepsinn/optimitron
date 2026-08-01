@@ -13,7 +13,9 @@ START HERE (in order):
 
 CREATING WORK: always searchTasks first (visibility defaults to 'all' — public plus your private work — when signed in; pass 'public' or 'private' to narrow). createTask requires an explicit parentTaskId — choose the closest existing objective; never attach directly to Optimize Earth. Estimate value/p_success/hours honestly; a calibrated guess beats omission. Use proposeTaskBundle for multi-task drafts (it runs duplicate review).
 
-COORDINATING: postTaskComment for threaded discussion (markdown, math, mermaid); use claimTask to reserve work before starting, or call completeTaskClaim directly when the work is done (it claims first if needed); updateTask to fix estimates, parents, or dependencies as scope changes.
+COMPLETING WORK: for a private uncompensated Self task you own, call completeTask once with factual completion evidence; it self-verifies the task and removes it from your active queue. For delegated, shared, paid, public, organization, or agent work, use startTaskExecution → submitTaskArtifact → submitTaskForVerification, then wait for authorized verification. completeTaskClaim only submits one claim for review and never completes the task itself.
+
+COORDINATING: postTaskComment for threaded discussion (markdown, math, mermaid); use claimTask to reserve open work before starting; updateTask to fix estimates, parents, or dependencies as scope changes.
 
 CLIENT RECOVERY: if the MCP host says a tool "has not been loaded yet," retry the exact same call once. That message comes from the host's lazy tool catalog, not Optimitron's argument validation; do not rewrite correct parameters in response.
 
