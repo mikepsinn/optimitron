@@ -9111,6 +9111,69 @@ describe("MCP server tool dispatch", () => {
       expect(body.result.measurement?.value).toBe(3);
     });
 
+    it("respondToTrackingReminder updates the same local-date response after the reminder time changes", async () => {
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: TRACKING_VARIABLE,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "09:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue({
+        id: "notification-at-old-time",
+        notifyAt: new Date("2026-07-01T13:00:00.000Z"),
+        status: NotificationStatus.TRACKED,
+        trackedValue: 3,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationUpdate.mockResolvedValue({
+        id: "notification-at-old-time",
+        notifyAt: new Date("2026-07-01T13:00:00.000Z"),
+        status: NotificationStatus.SKIPPED,
+        trackedValue: null,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "SKIPPED",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderNotificationFindFirst).toHaveBeenCalledWith({
+        where: {
+          deletedAt: null,
+          notifyAt: {
+            gte: new Date("2026-07-01T05:00:00.000Z"),
+            lt: new Date("2026-07-02T05:00:00.000Z"),
+          },
+          trackingReminderId: "reminder-1",
+          userId: "user-1",
+        },
+      });
+      expect(mocks.trackingReminderNotificationUpdate).toHaveBeenCalledWith({
+        data: {
+          receivedAt: expect.any(Date),
+          status: NotificationStatus.SKIPPED,
+          trackedValue: null,
+        },
+        where: { id: "notification-at-old-time" },
+      });
+      expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
+    });
+
     it("respondToTrackingReminder SKIPPED writes the notification but no Measurement", async () => {
       mocks.trackingReminderFindFirst.mockResolvedValue({
         defaultValue: 3,

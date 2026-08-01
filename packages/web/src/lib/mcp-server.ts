@@ -3525,6 +3525,8 @@ async function listDueTrackingRemindersForUser(
 async function findOrCreateTrackingNotification(
   tx: Prisma.TransactionClient,
   input: {
+    localDayEnd: Date;
+    localDayStart: Date;
     notifyAt: Date;
     status: NotificationStatus;
     trackedValue: number | null;
@@ -3535,7 +3537,7 @@ async function findOrCreateTrackingNotification(
   const existing = await tx.trackingReminderNotification.findFirst({
     where: {
       deletedAt: null,
-      notifyAt: input.notifyAt,
+      notifyAt: { gte: input.localDayStart, lt: input.localDayEnd },
       trackingReminderId: input.trackingReminderId,
       userId: input.userId,
     },
@@ -3615,7 +3617,13 @@ async function respondToTrackingReminderForUser(
       reminder.reminderStartTime,
       timeZone,
     );
+    const { end: localDayEnd, start: localDayStart } = dayRange(
+      dateKey,
+      timeZone,
+    );
     const notification = await findOrCreateTrackingNotification(tx, {
+      localDayEnd,
+      localDayStart,
       notifyAt,
       status,
       trackedValue,
