@@ -15,9 +15,13 @@
 
 ## PLAY THE EARTH OPTIMIZATION GAME!
 - Optimize public policy to stop making you poorer and deader and start making you healthier and wealthier!
+- [PLAY NOW](#vote)
 - [READ DECLARATION](/declaration)
 - [OPEN TOP TASKS](/tasks)
-- [PLAY NOW](#vote)
+### PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE
+- You pay governments [$36.5 trillion](https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html) a year to promote the general welfare: maximize median health and wealth. Of the money available for military/weapons and pragmatic clinical trials, how much should go to each?
+- PRAGMATIC CLINICAL TRIALS
+- SLIDE ME
 ### HOW DO YOU PLAY?
 - It's embarrassingly easy.
 - CLICK 2 BUTTONS
@@ -26,72 +30,6 @@
 - They click 2 buttons. Then they tell their friends. That's how 8 billion people vote.
 - That's it. You're done. 99% of you don't need to know anything else.
 - The rest of this site is the instruction manual. Read it if you're into ending war and disease. But for the love of your species, click the buttons first.
-### VOTE ON THE 1% TREATY
-- Trade one apocalypse for disease eradication. Humanity has [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) stockpiled — you can spare one to cure the [6,650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases with no treatment.
-- [VOTE NOW](/vote)
-## PRESIDENT MANAGEMENT SYSTEM
-- You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
-#### SEND EARTH OPTIMIZATION TASK REMINDER
-- SIGN THE 1% TREATY
-- STEP 1. SELECT RECIPIENT
-- PRESIDENT
-- HUMANITY
-- ONE HUMAN
-- STEP 2. SELECT THE FUNNIEST MESSAGE
-- VOICE:
-- THE DEAL-MAKER
-- STEP 3. CLICK TO COPY
-- STEP 4. SELECT MEANS OF TRANSMISSION AND PASTE
-- BLUESKY
-- EMAIL
-- LINKEDIN
-- FACEBOOK
-- REDDIT
-- COPY LINK
-- [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
-- 1.5 YEARS OVERDUE
-- TIME REQUIRED: 1.6 HOURS COMBINED
-- [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
-- Humanity currently spends enough on its capacity for mass murder to achieve [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) apocalypses. This treaty asks it to settle for 121.2 apocalypses in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
-- This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [10.7 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [1.93 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$84.8 quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
-- 💀 DEAD ALREADY FROM THE DELAY
-- [count]
-- RATE: [150,000 deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × [DAYS-OVERDUE]
-- 💸 WASTED ON DISEASE WHILE THEY DELAY
-- [money]
-- RATE: [$9.90 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
-### ↳ 202 employees have overdue tasks
-- 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
-- ASSIGNEE
-- TASK
-- 💀 DEATHS FROM DELAY
-- 💸 WASTED BY DELAY
-- ⏱ TIME
-- REMIND
-- [Donald Trump](/tasks/1-pct-treaty-signer-us)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-us)
-- [Li Qiang](/tasks/1-pct-treaty-signer-cn)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-cn)
-- [Yulia Svyrydenko](/tasks/1-pct-treaty-signer-ua)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ua)
-- [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
-- [Narendra Modi](/tasks/1-pct-treaty-signer-in)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
-- [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
-- [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
-- [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
-- [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
-- [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
-- [[initials]](/people/sifi-ghrieb-dz)
-- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-dz)
-- ← PREV
-- PAGE 1 / 21
-- NEXT →
 ### HOW TO WIN
 - Two numbers. That's the whole game.
 - PLEASE SELECT AN EARTH
@@ -183,25 +121,22 @@
 - FARM SUBSIDIES AGRIBUSINESS 1.5%
 - See the gap? That gap costs 150,000 lives a day.
 - [MAKE YOUR ALLOCATION →](/agencies/dcongress/wishocracy)
-### 🪦THE INVISIBLE GRAVEYARD🪦🪦THE INVISIBLE GRAVEYARD🪦🪦THE INVISIBLE GRAVEYARD🪦
-- [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) people permanently stop every day. Not because cures don't exist. Because the money for finding them was busy being missiles.
-- 👻
-- 🦠
-#### DISEASES UNTREATED
-- Not because cures are impossible. Because nobody ran the trial.
-- 🔒
-- 0 years
-#### YEARS IN THE CABINET
-- Proven safe. Locked in a cabinet. While you die.
-- ⚰️
-- 0M deaths
-#### DEAD ON THE WAITING LIST
-- Died waiting for treatments that were already ready.
-- 🚪
-#### DOORS OPEN VS. DOORS USED
-- 1.08 billion willing. 1.9 million slots. On my planet this would be a crime.
-- [😴 READ THE RECEIPTS →](https://invisible-graveyard.warondisease.org)
-- [🧪 SEE THE SOLUTION →](https://dfda-spec.warondisease.org)
+### THE INVISIBLE GRAVEYARD
+- Disease and aging kill [150,000](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) humans every day. Meanwhile, the money for finding treatments is busy being missiles.
+- [95%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+#### RARE DISEASES WITHOUT AN FDA-APPROVED TREATMENT
+- Not because treatments are impossible. Because nobody ran the trial.
+- [8.2 years](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
+#### WAIT AFTER SAFETY TESTING
+- Proven safe. Just sitting there. Being safe. While people die.
+- [102M deaths](https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html)
+#### MODELED DEATHS DURING THE WAIT
+- The model's primary estimate for 1962–2024. Inspect the assumptions.
+- [0.06%](https://manual.WarOnDisease.org/knowledge/solution/dfda.html)
+#### CURRENT ANNUAL TRIAL PARTICIPATION
+- About [1.08 billion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) patients are willing. The current system enrolls [1.9 million](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year.
+- [READ THE RECEIPTS](https://invisible-graveyard.warondisease.org)
+- [SEE THE SOLUTION](https://dfda-spec.warondisease.org)
 ### OUTCOME LABELS
 - Comprehensive health impact data
 - Both positive and negative effects
@@ -253,12 +188,14 @@
 | OPTIMAL GOVERNANCE End the $101T/yr Dysfunction Tax | 35.0× current$504K | 90.1 yrs |
 - [CHOOSE PATH B](/prize)
 ### THE DECISION MATRIX
-- Every cell is better if you deposit. That's called a dominant strategy.
-| YOUR MOVE | TARGETS MISSED Somalia, but everywhere by 2040 | TARGETS HIT 1.6x richer · +16.1 healthy years |
+- Depositors claim the pool if the targets are missed. Earth Optimization Point holders split it if the targets are hit. You can do both.
+| YOUR MOVE | TARGETS MISSED | TARGETS HIT |
 | --- | --- | --- |
-| YOU DEPOSIT | ~[9](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)x return [15.8%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) annual, diversified across VC sector | ~[$6,670](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)/Earth Optimization Point at 1% of global savings in prize pool |
-| YOU DON'T | $0 and civilizational collapse | $0 and zero credit for the nice world |
-- [DEPOSIT & VOTE](#vote)
+| DEPOSIT + EARN POINTS | Your deposit claims a pro-rata share of the realized pool:~[9](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)x projected by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) at [15.8%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) annually. | Your points split the pool: Modeled ~[$6,670](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per point if [1%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) of global investable assets enter. |
+| DO NEITHER | No prize claim. | No prize claim. |
+- Modeled world outcome: Targets missed — the destructive economy reaches [50% of GDP by 2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Targets hit — [1.6x](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) lifetime income and +[16.1](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) healthy years.
+- Every verified voter you bring in earns you 1 Earth Optimization Point. Deposits are locked until [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). All figures are projections, not guarantees.
+- [SEE HOW THE PRIZE WORKS](/prize)
 ### WORST PLAYERS: GOVERNMENTS
 - Every government ranked by body count. The data they hope you never see.
 - WORST GOVERNMENTS
@@ -280,21 +217,80 @@
 - [💀 SEE ALL REPORT CARDS](/governments)
 ### WORST PLAYERS: POLITICIANS
 - How your representatives actually vote vs what humans actually wanted.
-- WORST PLAYERS
-- LEAST BAD PLAYERS
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
 | 2 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
 | 3 | [John Kennedy Louisiana](/governments/US/politicians/K000393) | $2.7T | $0 | -$2.7T | ∞ |
-| 4 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
-| 5 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
-| 6 | [Ann Wagner Missouri](/governments/US/politicians/W000812) | $2.7T | $0 | -$2.7T | ∞ |
-| 7 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
-| 8 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
-| 9 | [Pete Sessions Texas](/governments/US/politicians/S000250) | $2.7T | $0 | -$2.7T | ∞ |
-| 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
+| 4 | [Tommy Tuberville Alabama](/governments/US/politicians/T000278) | $2.6T | $0 | -$2.6T | ∞ |
+| 5 | [Rick Scott Florida](/governments/US/politicians/S001217) | $2.6T | $0 | -$2.6T | ∞ |
+| 6 | [Tim Scott South Carolina](/governments/US/politicians/S001184) | $2.6T | $0 | -$2.6T | ∞ |
+| 7 | [Roger Marshall Kansas](/governments/US/politicians/M001198) | $2.6T | $0 | -$2.6T | ∞ |
+| 8 | [Pete Ricketts Nebraska](/governments/US/politicians/R000618) | $1.9T | $0 | -$1.9T | ∞ |
+| 9 | [Eric Schmitt Missouri](/governments/US/politicians/S001227) | $1.8T | $0 | -$1.8T | ∞ |
+| 10 | [Cynthia M. Lummis Wyoming](/governments/US/politicians/L000571) | $895B | $0 | -$895B | ∞ |
 - [SEE ALL POLITICIANS](/governments/US/politicians)
+### PRESIDENT MANAGEMENT SYSTEM
+- You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
+#### SEND EARTH OPTIMIZATION TASK REMINDER
+- SIGN THE 1% TREATY
+- STEP 1. SELECT RECIPIENT
+- PRESIDENT
+- HUMANITY
+- ONE HUMAN
+- STEP 2. SELECT THE FUNNIEST MESSAGE
+- VOICE:
+- THE DEAL-MAKER
+- STEP 3. CLICK TO COPY
+- STEP 4. SELECT MEANS OF TRANSMISSION AND PASTE
+- BLUESKY
+- EMAIL
+- LINKEDIN
+- FACEBOOK
+- REDDIT
+- COPY LINK
+- [RATIFY THE 1% TREATY](/tasks/1-pct-treaty)
+- 1.6 YEARS OVERDUE
+- TIME REQUIRED: 1.6 HOURS COMBINED
+- [6650](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases have 0 FDA-approved treatments. At current clinical trial capacity, it could take [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to cure them all.
+- Humanity maintains enough nuclear weapons to trigger a civilization-ending nuclear winter [122](https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html) times over. This treaty asks us to settle for enough weapons to do it 121.2 times in exchange for [12.3](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)× more clinical trial capacity to cure disease.
+- This could compress that [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years into [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html), avoiding [10.7 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) deaths, [1.93 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) hours of suffering, and [$84.8 quadrillion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) wasted by delayed disease eradication.
+- 💀 DEAD ALREADY FROM THE DELAY
+- [count]
+- RATE: [150,000 deaths/day](https://manual.WarOnDisease.org/knowledge/strategy/questions.html) × [DAYS-OVERDUE]
+- 💸 WASTED ON DISEASE WHILE THEY DELAY
+- [money]
+- RATE: [$9.90 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
+### ↳ 202 employees have overdue tasks
+- 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
+- ASSIGNEE
+- TASK
+- 💀 DEATHS FROM DELAY
+- 💸 WASTED BY DELAY
+- ⏱ TIME
+- REMIND
+- [Donald Trump](/tasks/1-pct-treaty-signer-us)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-us)
+- [Li Qiang](/tasks/1-pct-treaty-signer-cn)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-cn)
+- [Yulia Svyrydenko](/tasks/1-pct-treaty-signer-ua)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ua)
+- [Mikhail Mishustin](/tasks/1-pct-treaty-signer-ru)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-ru)
+- [Narendra Modi](/tasks/1-pct-treaty-signer-in)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-in)
+- [Donald Tusk](/tasks/1-pct-treaty-signer-pl)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-pl)
+- [Salman bin Abdulaziz Al Saud](/tasks/1-pct-treaty-signer-sa)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-sa)
+- [Keir Starmer](/tasks/1-pct-treaty-signer-gb)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-gb)
+- [Friedrich Merz](/tasks/1-pct-treaty-signer-de)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-de)
+- [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
+- [[initials]](/people/sifi-ghrieb-dz)
+- [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-dz)
+- [SEE ALL 202 OVERDUE TASKS](/tasks/1-pct-treaty#subtasks)
 ### OPTIMIZED GOVERNANCE
 - Every agency redesigned around one question: what does the data say actually works?
 - [🗳️WISHOCRACY Pick between two things. Do it ten times. Congratulations, you've just outperformed Congress. START VOTING →](/agencies/dcongress/wishocracy)

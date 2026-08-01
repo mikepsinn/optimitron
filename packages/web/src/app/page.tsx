@@ -4,12 +4,17 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationServicesLandingPage } from "@/components/site/EarthOptimizationServicesLandingPage";
+import { EarthOptimizationGameLandingPage } from "@/components/site/EarthOptimizationGameLandingPage";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
 import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
-import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
+import {
+  getRootSiteMetadata,
+  getRouteMetadata,
+  getSiteMetadata,
+} from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
-import { ROUTES } from "@/lib/routes";
+import { gameLink, ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
 const NEXT_AUTH_SESSION_COOKIE_PATTERN =
@@ -28,6 +33,12 @@ export async function generateMetadata(): Promise<Metadata> {
     if (content) {
       return getSiteMetadata(site, content.metadata.home, "/");
     }
+  }
+
+  if (site.pageVariants.home === "optimitronLanding") {
+    return getRouteMetadata(gameLink, {
+      alternates: { canonical: ROUTES.home },
+    });
   }
 
   return getRootSiteMetadata(site);
@@ -75,6 +86,10 @@ export default async function Home() {
 
   if (site.pageVariants.home === "initiativeLanding") {
     return <SiteVariantLandingPage site={site} />;
+  }
+
+  if (site.pageVariants.home === "optimitronLanding") {
+    return <EarthOptimizationGameLandingPage />;
   }
 
   if (site.pageVariants.home === "eosLanding") {

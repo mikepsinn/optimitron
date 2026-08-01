@@ -99,6 +99,7 @@ export interface TreatyVoteFlowProps {
   postVoteCompletion?: "share" | "message";
   postVoteRedirectUrl?: string;
   respectStoredFlowVariant?: boolean;
+  sliderHeadingLevel?: "h1" | "h2";
   sliderHeadline?: string;
   sliderPrompt?: ReactNode;
   surface?: string;
@@ -233,10 +234,12 @@ export function TreatyVoteFlow({
   postVoteCompletion = "share",
   postVoteRedirectUrl = ROUTES.dashboard,
   respectStoredFlowVariant = true,
+  sliderHeadingLevel = "h1",
   sliderHeadline = DEFAULT_SLIDER_HEADLINE,
   sliderPrompt = <DefaultSliderPrompt />,
   surface = "treaty_vote_flow",
 }: TreatyVoteFlowProps) {
+  const SliderHeading = sliderHeadingLevel;
   const searchParams = useSearchParams();
   const queryFlowVariant =
     normalizeTreatyFlowVariant(searchParams?.get(TREATY_FLOW_VARIANT_QUERY_PARAM)) ??
@@ -885,9 +888,9 @@ export function TreatyVoteFlow({
               className={initialVoteShellClassName}
               contentClassName={initialVoteContentClassName}
             >
-              <h1 className="mx-auto max-w-4xl text-center text-2xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
+              <SliderHeading className="mx-auto max-w-4xl text-center text-2xl font-black uppercase leading-tight tracking-tight text-[var(--treaty-ink)] sm:text-5xl [font-family:var(--v0-font-libre-baskerville)]">
                 {sliderHeadline}
-              </h1>
+              </SliderHeading>
 
               <TreatyFlowParagraph
                 dropCap

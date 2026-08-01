@@ -71,6 +71,7 @@ const warOnDiseaseDefaultSocialImage = {
 export const ROUTES = {
   home: "/",
   eos: "/eos",
+  services: "/services",
   invest: "/invest",
   // Optimized Governance
   agencies: "/agencies",
@@ -1104,6 +1105,19 @@ export const gameLink: NavItem = {
   cta: "Play the Game",
 };
 
+export const servicesLink: NavItem = {
+  href: ROUTES.services,
+  label: "Earth Optimization Services",
+  emoji: "⚡",
+  description:
+    "Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.",
+  tagline: "The Government of Tomorrow is in stock.",
+  copyPreview: true,
+  reviewName: "services",
+  screenshot: true,
+  cta: "Tour the Departments",
+};
+
 export const eosLink: NavItem = {
   href: ROUTES.eos,
   // TODO(copy): Mike copy gate. Source: Pivot 3 route requirement.
@@ -1351,6 +1365,7 @@ export const navSections: NavSection[] = [
       wishocracyLink,
       alignmentLink,
       referendumLink,
+      servicesLink,
       contributeLink,
     ],
   },
@@ -1432,6 +1447,7 @@ export const toolSections: NavSection[] = [
 /** Footer-only internal links */
 export const footerAppLinks: NavItem[] = [
   gameLink,
+  servicesLink,
   fixAiLink,
   wishocracyLink,
   alignmentLink,
@@ -1863,6 +1879,7 @@ export const routeReviewNavItems = [
   homeLink,
   prizeLink,
   gameLink,
+  servicesLink,
   voteLink,
   treatyLink,
   wishoniaWorldLink,

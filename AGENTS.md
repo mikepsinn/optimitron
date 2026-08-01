@@ -123,6 +123,7 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
 - Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
+- For copy approval, show each change as Before → After; label additions New and unchanged relocations Moved unchanged.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 
 ## Critical Architecture Rules

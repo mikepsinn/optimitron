@@ -30,6 +30,12 @@ export function HeroSection() {
 
           <div className="mt-8 grid w-full max-w-2xl gap-3 sm:grid-cols-3">
             <Link
+              href="#vote"
+              className={`${treatyPrimaryButtonClass} inline-flex items-center`}
+            >
+              {CTA.playNow}
+            </Link>
+            <Link
               href={ROUTES.declaration}
               className={`${treatySecondaryButtonClass} inline-flex items-center`}
             >
@@ -40,12 +46,6 @@ export function HeroSection() {
               className={`${treatySecondaryButtonClass} inline-flex items-center`}
             >
               Open Top Tasks
-            </Link>
-            <Link
-              href="#vote"
-              className={`${treatyPrimaryButtonClass} inline-flex items-center`}
-            >
-              {CTA.playNow}
             </Link>
           </div>
         </div>

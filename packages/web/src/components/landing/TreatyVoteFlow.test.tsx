@@ -127,6 +127,23 @@ describe("TreatyVoteFlow", () => {
     container.remove();
   });
 
+  it("uses the requested heading level when embedded in a page", async () => {
+    await act(async () => {
+      root.render(
+        <TreatyVoteFlow
+          defaultFlowVariant={TREATY_FLOW_VARIANTS.voteFirstV1}
+          respectStoredFlowVariant={false}
+          sliderHeadingLevel="h2"
+        />,
+      );
+    });
+
+    expect(container.querySelector("h1")).toBeNull();
+    expect(container.querySelector("h2")?.textContent).toContain(
+      "PLEASE TAKE 30 SECONDS",
+    );
+  });
+
   it("scrolls the choice card to the top after the slider is submitted", async () => {
     await act(async () => {
       root.render(
