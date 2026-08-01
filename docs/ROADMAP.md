@@ -203,9 +203,9 @@ the human owner's schema approval where noted.
    `components/tasks/blocks/` plus their contextJson slots that seed data
    dutifully populates. Render them on the task page or delete both sides
    (OPT-PLAT-01).
-6. **TrackingReminder disposition** — dead model; superseded by the
-   TaskTrigger decision in Now Track B stage 1 (OPT-HEALTH-04). Drop or
-   revive; don't leave schema fiction.
+6. **TrackingReminder delivery** — the MCP create/edit/list/respond workflow
+   is live. Decide whether its schedules or TaskTrigger own queue and push
+   delivery in Now Track B stage 1 (OPT-HEALTH-04/06); do not duplicate them.
 7. **`engagementKind`** — stored and filterable, never scored or branched on.
    Removal is an API-surface change; decide with OPT-TASK-01 consumers.
 8. **Task-kind removal** — done on `feature/private-execution-system`:
