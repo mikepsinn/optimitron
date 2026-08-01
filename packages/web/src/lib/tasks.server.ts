@@ -1716,45 +1716,47 @@ export async function searchTasks(
   const candidateTerms =
     distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms;
 
-  // Prisma cannot order substring matches by relevance. Fetch a bounded set,
-  // then let scoreSearchRecord rank title/task-key matches ahead of incidental
-  // description matches. Requiring every term here made natural agent queries
-  // such as "find Optimize Optimitron parent" return nothing even though the
-  // distinctive terms matched the canonical task.
-  const candidateLimit = Math.min(Math.max(limit * 4, 128), 500);
-  const termMatches = candidateTerms.flatMap((term) => [
-    { title: { contains: term, mode: "insensitive" as const } },
-    { description: { contains: term, mode: "insensitive" as const } },
-    { taskKey: { contains: term, mode: "insensitive" as const } },
-    { roleTitle: { contains: term, mode: "insensitive" as const } },
-    {
-      assigneeOrganization: {
-        is: {
-          name: { contains: term, mode: "insensitive" as const },
-        },
-      },
-    },
-    {
-      assigneePerson: {
-        is: {
-          displayName: {
-            contains: term,
-            mode: "insensitive" as const,
+  // Prisma cannot order substring matches by relevance. Require every
+  // distinctive term at the database boundary, then rank the bounded matches
+  // in memory. Ignoring request-framing words keeps natural agent queries such
+  // as "find Optimize Optimitron parent" from failing on the word "parent"
+  // without letting a single common term flood the candidate window.
+  const candidateLimit = Math.min(Math.max(limit * 4, 64), 500);
+  const requiredTermMatches = candidateTerms.map((term) => ({
+    OR: [
+      { title: { contains: term, mode: "insensitive" as const } },
+      { description: { contains: term, mode: "insensitive" as const } },
+      { taskKey: { contains: term, mode: "insensitive" as const } },
+      { roleTitle: { contains: term, mode: "insensitive" as const } },
+      {
+        assigneeOrganization: {
+          is: {
+            name: { contains: term, mode: "insensitive" as const },
           },
         },
       },
-    },
-    {
-      assigneePerson: {
-        is: {
-          currentAffiliation: {
-            contains: term,
-            mode: "insensitive" as const,
+      {
+        assigneePerson: {
+          is: {
+            displayName: {
+              contains: term,
+              mode: "insensitive" as const,
+            },
           },
         },
       },
-    },
-  ]);
+      {
+        assigneePerson: {
+          is: {
+            currentAffiliation: {
+              contains: term,
+              mode: "insensitive" as const,
+            },
+          },
+        },
+      },
+    ],
+  }));
 
   const accessFilters: Prisma.TaskWhereInput[] = [
     getTaskVisibilityWhere({
@@ -1779,7 +1781,7 @@ export async function searchTasks(
     exactTaskKeyPromise,
     prisma.task.findMany({
       where: {
-        AND: [...accessFilters, { OR: termMatches }],
+        AND: [...accessFilters, ...requiredTermMatches],
       },
       orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
       select: taskSearchSelect,

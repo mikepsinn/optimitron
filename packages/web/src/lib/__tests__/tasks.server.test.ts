@@ -719,7 +719,7 @@ describe("tasks server", () => {
     ]);
   });
 
-  it("searchTasks without a user searches public tasks using OR-ranked terms", async () => {
+  it("searchTasks ignores request-framing words but requires every distinctive term", async () => {
     await searchTasks("find secret grant memo task", { userId: null });
 
     const args = lastTaskFindManyArgs();
@@ -727,20 +727,19 @@ describe("tasks server", () => {
     expect(filters[0]).toEqual(
       expect.objectContaining({ deletedAt: null, isPublic: true }),
     );
-    expect(filters.slice(1)).toHaveLength(1);
-    const termFilter = filters[1] as { OR: unknown[] };
+    expect(filters.slice(1)).toHaveLength(3);
     for (const term of ["secret", "grant", "memo"]) {
-      expect(termFilter.OR).toContainEqual({
-        title: { contains: term, mode: "insensitive" },
-      });
+      expect(filters.slice(1)).toContainEqual(
+        expect.objectContaining({
+          OR: expect.arrayContaining([
+            { title: { contains: term, mode: "insensitive" } },
+          ]),
+        }),
+      );
     }
-    expect(termFilter.OR).not.toContainEqual({
-      title: { contains: "find", mode: "insensitive" },
-    });
-    expect(termFilter.OR).not.toContainEqual({
-      title: { contains: "task", mode: "insensitive" },
-    });
-    expect(args.take).toBe(128);
+    expect(JSON.stringify(filters.slice(1))).not.toContain('"find"');
+    expect(JSON.stringify(filters.slice(1))).not.toContain('"task"');
+    expect(args.take).toBe(64);
   });
 
   it.each([
