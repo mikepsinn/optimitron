@@ -35,7 +35,7 @@ For personal and organization planning, the MCP server is an expected-value task
 2. Create individual tasks or call `reviewPrivateTaskBundle` for an explicitly selected source batch.
 3. Inspect every normalized action, duplicate, dependency, estimate, source anchor, and error. Apply the unchanged review with `applyPrivateTaskBundle`; private candidates become `ACTIVE`, never public proposals.
 4. Audit with `getQueueAudit`, then ask `getNextAction` or `getExecutionPlan`.
-5. For a private, uncompensated `Self` task you own, call `completeTask` once with factual completion evidence. It self-verifies the task and removes it from the active queue.
+5. For a private, uncompensated `Self` task you own, call `completeTask` once with factual completion evidence. It self-verifies the task and removes it from the active queue. `OPEN_MANY` work remains contribution-oriented and cannot use this shortcut; correct an incorrectly classified one-person task to `OPEN_SINGLE` first.
 6. For delegated, shared, paid, public, organization, or agent work, call `startTaskExecution`, coordinate through comments, and submit outputs with `submitTaskArtifact` and `submitTaskForVerification`.
 7. An authorized human calls `verifyTaskExecution`. Acceptance alone sets the task to `VERIFIED`; rejection preserves history and requeues the task.
 8. Repeat; dependents become available only after accepted verification.

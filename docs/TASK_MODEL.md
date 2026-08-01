@@ -50,7 +50,7 @@ Reviewed private source actions are created directly as private `ACTIVE` tasks. 
 
 ### Personal Self-Completion
 
-The authenticated creator may self-attest a private, uncompensated `Self` task with `completeTask`. The shortcut is limited to a childless, unblocked personal task that is unassigned or assigned only to the creator, has no claim, application, payout, manager, or execution history, and has no active agent lease. It records evidence and moves the task directly to `VERIFIED`, which is the resolved task state.
+The authenticated creator may self-attest a private, uncompensated `Self` task with `completeTask`. The shortcut is limited to a childless, unblocked personal task that is unassigned or assigned only to the creator, has no claim, application, payout, manager, or execution history, and has no active agent lease. It records evidence and moves the task directly to `VERIFIED`, which is the resolved task state. `OPEN_MANY` work remains open for independent contributions and cannot use this shortcut.
 
 Delegated, shared, paid, public, organization, and agent work stays on the artifact-and-verification lifecycle. `completeTaskClaim` completes only one worker's claim; it does not resolve the task.
 

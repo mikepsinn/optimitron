@@ -1935,10 +1935,7 @@ export async function createTask(
   const claimSettings = resolveTaskClaimSettings({
     assigneeOrganizationId,
     assigneePersonId,
-    requestedClaimPolicy:
-      input.isPublic === false && input.claimPolicy == null
-        ? TaskClaimPolicy.ASSIGNED_ONLY
-        : input.claimPolicy,
+    requestedClaimPolicy: input.claimPolicy,
     requestedMaxClaims: input.maxClaims,
   });
   const resolvedClaimPolicy = claimSettings.claimPolicy;
@@ -2201,21 +2198,19 @@ export async function deleteTaskCreatedByUser(
 }
 
 const SIMPLE_SELF_COMPLETION_ERROR =
-  "completeTask only works for a private, owner-created, uncompensated Self task that is unassigned or assigned only to you. Use startTaskExecution, submitTaskArtifact, and submitTaskForVerification for delegated, shared, paid, public, organization, or agent work.";
+  "completeTask only works for a private, owner-created, uncompensated Self task that is unassigned or assigned only to you. If a one-person task was incorrectly stored as OPEN_MANY and has no formal history, update its claimPolicy to OPEN_SINGLE first. Use startTaskExecution, submitTaskArtifact, and submitTaskForVerification for genuine OPEN_MANY, delegated, shared, paid, public, organization, or agent work.";
 
 function isSelfExecutorContext(contextJson: unknown) {
-  if (
-    !contextJson ||
-    typeof contextJson !== "object" ||
-    Array.isArray(contextJson)
-  ) {
+  if (contextJson == null) return true;
+  if (typeof contextJson !== "object" || Array.isArray(contextJson)) {
     return false;
   }
   const context = contextJson as Record<string, unknown>;
   const executorType = context.executor_type ?? context.executorType;
+  if (executorType == null) return true;
   return (
     typeof executorType === "string" &&
-    executorType.trim().toLowerCase() === "self"
+    ["", "self"].includes(executorType.trim().toLowerCase())
   );
 }
 
@@ -2297,6 +2292,8 @@ export async function completeSelfTask(
         compensationMaxAmountMinorUnits: true,
         compensationMinAmountMinorUnits: true,
         compensationPaymentRails: true,
+        completedAt: true,
+        completionEvidence: true,
         contextJson: true,
         createdByUserId: true,
         executionAttempts: {
@@ -2329,6 +2326,7 @@ export async function completeSelfTask(
         },
         status: true,
         taskKey: true,
+        verifiedAt: true,
         verifiedByUserId: true,
       },
     });
@@ -2339,10 +2337,11 @@ export async function completeSelfTask(
       task.ownerOrganizationId === null &&
       task.createdByUserId === userId &&
       task.assigneeOrganizationId === null &&
-      ((task.assigneePersonId === null &&
-        (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
-          task.claimPolicy === TaskClaimPolicy.OPEN_MANY)) ||
-        task.assigneePersonId === actor.personId) &&
+      (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
+        task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) &&
+      (task.assigneePersonId === null ||
+        (actor.personId !== null &&
+          task.assigneePersonId === actor.personId)) &&
       task.applicationPolicy === TaskApplicationPolicy.CLOSED &&
       (task.compensationKind === TaskCompensationKind.UNSPECIFIED ||
         task.compensationKind === TaskCompensationKind.VOLUNTEER) &&
@@ -2359,8 +2358,11 @@ export async function completeSelfTask(
       return {
         alreadyCompleted: true,
         task: {
+          completedAt: task.completedAt,
+          completionEvidence: task.completionEvidence,
           id: task.id,
           status: task.status,
+          verifiedAt: task.verifiedAt,
           verifiedByUserId: task.verifiedByUserId,
         },
       };
