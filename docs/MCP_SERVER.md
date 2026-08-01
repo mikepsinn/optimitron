@@ -119,7 +119,7 @@ Call `listTasks` or `searchTasks` with `paginated: true` to receive this envelop
 }
 ```
 
-When `nextCursor` is not `null`, repeat the same tool call with that exact value as `cursor`. Keep `paginated: true`, the query, and every filter unchanged. Continue until `nextCursor` is `null` before saying that a task list or search is complete. A cursor belongs only to the call that produced it. Calls with neither `paginated: true` nor `cursor` retain the legacy one-page array response for existing clients.
+When `nextCursor` is not `null`, repeat the same tool call with that exact value as `cursor`. Keep `paginated: true`, the query, and every filter unchanged. Continue until `nextCursor` is `null` before saying that a task list or search is complete. Paginated inventory uses immutable task-ID order so priority or relevance changes between calls cannot move tasks across the cursor; use queue-ranking tools when order matters. A cursor belongs only to the call that produced it. Calls with neither `paginated: true` nor `cursor` retain the legacy one-page array response for existing clients.
 
 Pagination is intentionally bounded. If a call returns `RESULT_WINDOW_EXCEEDED`, narrow its query-level filters instead of assuming the returned window is complete.
 

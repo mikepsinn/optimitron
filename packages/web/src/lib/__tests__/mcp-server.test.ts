@@ -2334,6 +2334,31 @@ describe("MCP server tool dispatch", () => {
       ]);
     });
 
+    it("keeps paginated inventory stable when task rankings change", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      mocks.listTasks
+        .mockResolvedValueOnce(
+          ["task-a", "task-b", "task-c"].map((id) => makeCreatedTask({ id })),
+        )
+        .mockResolvedValueOnce(
+          ["task-c", "task-a", "task-b"].map((id) => makeCreatedTask({ id })),
+        );
+
+      const first = await callTaskPage(client, "listTasks", {
+        limit: 1,
+        paginated: true,
+      });
+      const second = await callTaskPage(client, "listTasks", {
+        cursor: first.nextCursor,
+        limit: 2,
+        paginated: true,
+      });
+
+      expect(first.tasks.map((task) => task.id)).toEqual(["task-a"]);
+      expect(second.tasks.map((task) => task.id)).toEqual(["task-b", "task-c"]);
+      expect(second.nextCursor).toBeNull();
+    });
+
     it("clamps invalid list page limits to at least one task", async () => {
       mocks.listTasks.mockResolvedValue(
         ["task-a", "task-b"].map((id) => makeCreatedTask({ id })),

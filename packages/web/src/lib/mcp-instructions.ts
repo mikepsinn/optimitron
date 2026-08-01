@@ -11,7 +11,7 @@ START HERE (in order):
 2. getQueueAudit — data-health check of the personal queue; repair high-severity issues before trusting rankings.
 3. getNextAction or getMyQueue — the user's own ranked next actions. getAIQueue — tasks marked for autonomous agent execution. getNextTask — best public task for an anonymous agent.
 
-DISCOVERY: call listTasks or searchTasks with paginated=true to receive {tasks, nextCursor}. Repeat the same call with cursor=nextCursor until nextCursor is null before claiming an inventory is complete. Copy cursors verbatim and never reuse one with different filters. Calls with neither paginated=true nor cursor retain the legacy one-page array response.
+DISCOVERY: call listTasks or searchTasks with paginated=true to receive {tasks, nextCursor}. Repeat the same call with cursor=nextCursor until nextCursor is null before claiming an inventory is complete. Copy cursors verbatim and never reuse one with different filters. Paginated inventory uses immutable task-ID order, not priority or relevance order. Calls with neither paginated=true nor cursor retain the legacy one-page array response.
 
 TASK REFERENCES: a persisted task reference is either its returned task ID or its exact taskKey, never its title. Use bundle-local ref values only inside that same bundle request; use a stable taskKey or returned task ID in later calls. Save returned task IDs and referenceMap entries instead of searching for records you just created.
 

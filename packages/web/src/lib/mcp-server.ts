@@ -926,7 +926,7 @@ function dedupeStrings(values: Array<string | null | undefined>) {
   );
 }
 
-const TASK_PAGE_CURSOR_VERSION = 1;
+const TASK_PAGE_CURSOR_VERSION = 2;
 
 function getTaskPageSignature(
   tool: "listTasks" | "searchTasks",
@@ -939,13 +939,13 @@ function getTaskPageSignature(
 }
 
 function encodeTaskPageCursor(input: {
-  anchorTaskId: string;
+  afterTaskId: string;
   signature: string;
   tool: "listTasks" | "searchTasks";
 }) {
   return Buffer.from(
     JSON.stringify({
-      anchorTaskId: input.anchorTaskId,
+      afterTaskId: input.afterTaskId,
       signature: input.signature,
       tool: input.tool,
       version: TASK_PAGE_CURSOR_VERSION,
@@ -960,6 +960,12 @@ function paginateAuthorizedTasks<T extends { id: string }>(input: {
   tasks: T[];
   tool: "listTasks" | "searchTasks";
 }) {
+  // Ranked task order can change between calls. Paginated inventory instead
+  // uses the immutable persisted task ID so a score change cannot move an
+  // unseen task across the cursor or return an already-seen task again.
+  const orderedTasks = [...input.tasks].sort((left, right) =>
+    left.id < right.id ? -1 : left.id > right.id ? 1 : 0,
+  );
   let startIndex = 0;
   if (input.cursor != null && input.cursor !== "") {
     if (typeof input.cursor !== "string") {
@@ -973,17 +979,14 @@ function paginateAuthorizedTasks<T extends { id: string }>(input: {
         parsed.version !== TASK_PAGE_CURSOR_VERSION ||
         parsed.tool !== input.tool ||
         parsed.signature !== input.signature ||
-        typeof parsed.anchorTaskId !== "string"
+        typeof parsed.afterTaskId !== "string"
       ) {
         throw new Error("cursor does not match this task query.");
       }
-      const anchorIndex = input.tasks.findIndex(
-        (task) => task.id === parsed.anchorTaskId,
+      const nextIndex = orderedTasks.findIndex(
+        (task) => task.id > (parsed.afterTaskId as string),
       );
-      if (anchorIndex < 0) {
-        throw new Error("cursor anchor is no longer accessible.");
-      }
-      startIndex = anchorIndex + 1;
+      startIndex = nextIndex < 0 ? orderedTasks.length : nextIndex;
     } catch (error) {
       throw new Error(
         error instanceof Error && error.message.startsWith("cursor ")
@@ -993,13 +996,13 @@ function paginateAuthorizedTasks<T extends { id: string }>(input: {
     }
   }
 
-  const page = input.tasks.slice(startIndex, startIndex + input.limit);
-  const hasMore = startIndex + page.length < input.tasks.length;
+  const page = orderedTasks.slice(startIndex, startIndex + input.limit);
+  const hasMore = startIndex + page.length < orderedTasks.length;
   return {
     nextCursor:
       hasMore && page.length > 0
         ? encodeTaskPageCursor({
-            anchorTaskId: page[page.length - 1]!.id,
+            afterTaskId: page[page.length - 1]!.id,
             signature: input.signature,
             tool: input.tool,
           })
@@ -5586,7 +5589,7 @@ const TASK_TOOL_DEFINITIONS = [
     description:
       "List tasks with optional filters. Returns up to 50 tasks sorted by accountability score. " +
       "Signed-in callers see public tasks plus their own private work by default (visibility 'all'); " +
-      "pass visibility 'public' or 'private' to narrow. Returns the legacy task array unless paginated=true or cursor is supplied.",
+      "pass visibility 'public' or 'private' to narrow. Returns the legacy task array unless paginated=true or cursor is supplied. Paginated inventory uses immutable task-ID order, not priority order.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -8115,7 +8118,7 @@ const TASK_TOOL_DEFINITIONS = [
     description:
       "Search your accessible tasks by title, description, task key, assignee, or organization. " +
       "Use this before createTask/updateTask to find parents, duplicates, blockerTaskIds, or blockedTaskIds. " +
-      "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'. Returns the legacy result array unless paginated=true or cursor is supplied.",
+      "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'. Returns the legacy result array unless paginated=true or cursor is supplied. Paginated inventory uses immutable task-ID order, not relevance order.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -10109,8 +10112,8 @@ export function createMcpServer(
               (typeof a.cursor === "string" && a.cursor.length > 0);
 
             // Search ranks a bounded candidate set in memory. Use one fixed
-            // authorized window for every page so the cursor remains anchored
-            // to the same ranking instead of widening it page by page.
+            // authorized window for every page; paginateAuthorizedTasks then
+            // traverses it by immutable task ID rather than mutable rank.
             const results = await tasks.searchTasks(query, {
               clientAccessBoundary:
                 scope === "public" ? undefined : taskClientBoundary,
