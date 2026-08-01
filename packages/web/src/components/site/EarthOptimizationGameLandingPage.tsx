@@ -116,7 +116,13 @@ function toTaskCardTask(task: TaskCardTask): TaskCardTask {
 }
 
 async function PresidentManagementSection() {
-  const treatyParentTask = await getTaskDetailData(TREATY_PARENT_TASK_ID, null);
+  const treatyParentTask = await getTaskDetailData(
+    TREATY_PARENT_TASK_ID,
+    null,
+  ).catch((error: unknown) => {
+    console.error("Unable to load the optional president task section", error);
+    return null;
+  });
   const rawProgramTask = (treatyParentTask?.task ?? null) as
     | (TaskCardTask & { childTasks?: TaskCardTask[] })
     | null;

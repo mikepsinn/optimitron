@@ -33,20 +33,24 @@ export function ScrollReveal({
   const isInView = useInView(ref, { once, margin: "-60px" });
   const prefersReducedMotion = useReducedMotion();
   const hasHydrated = useHydrated();
-
-  if (!hasHydrated || prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
   const { x, y } = offsets[direction];
+  const shouldAnimate = hasHydrated && !prefersReducedMotion;
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, x, y }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x, y }}
-      transition={{ duration, delay, ease: "easeOut" }}
+      initial={false}
+      animate={
+        shouldAnimate && !isInView
+          ? { opacity: 0, x, y }
+          : { opacity: 1, x: 0, y: 0 }
+      }
+      transition={
+        shouldAnimate
+          ? { duration, delay, ease: "easeOut" }
+          : { duration: 0 }
+      }
     >
       {children}
     </motion.div>

@@ -1108,7 +1108,7 @@ export const gameLink: NavItem = {
 export const servicesLink: NavItem = {
   href: ROUTES.services,
   label: "Earth Optimization Services",
-  emoji: "⚡",
+  emoji: "",
   description:
     "Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.",
   tagline: "The Government of Tomorrow is in stock.",
