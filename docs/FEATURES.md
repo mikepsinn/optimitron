@@ -175,11 +175,11 @@ verified against `feature/private-execution-system` (2026-07-17).
 ### OPT-HEALTH-04 — TrackingReminder model
 
 - **Layer:** personal
-- **Status:** dead
-- **Summary:** Schema for scheduled health-variable reminders ("rate mood daily at 8am") with zero application usage: no scheduler, no UI, no trigger reads it.
-- **Evidence:** packages/db/prisma/schema.prisma (`TrackingReminder`, `TrackingReminderNotification`); zero non-generated references verified repo-wide
-- **Acceptance:** n/a (dead) — successor acceptance lives in OPT-HEALTH-06.
-- **Roadmap:** decision recorded in ROADMAP.md companion-loop track: revive with a scheduler, or supersede via TaskTrigger cron (OPT-TASK-03) and drop the model.
+- **Status:** implemented
+- **Summary:** Personal health-variable reminders can be created, edited in place, listed, queried by due date, and answered as tracked, skipped, or snoozed through MCP. Answering a tracked reminder writes a `Measurement`; reminders are queried on demand rather than delivered by a scheduler or UI.
+- **Evidence:** `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, and `respondToTrackingReminder` in packages/web/src/lib/mcp-server.ts
+- **Acceptance:** An authenticated caller can preserve a reminder's ID and response history while changing its schedule, and a tracked response writes a measurement.
+- **Roadmap:** shipped MCP workflow — task-queue or push delivery remains in OPT-HEALTH-06.
 
 ### OPT-HEALTH-05 — Wearable/app health importers
 
@@ -197,7 +197,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Summary:** Scheduled mood/energy/symptom ratings and medication reminders appear IN the task queue as recurring atomic tasks; completing one writes a Measurement. No cron trigger spawns check-in tasks today.
 - **Evidence:** absence verified in packages/web/src/lib/triggers/ and app/api/cron/run-due-triggers/route.ts (no cron.\* trigger spawning measurement tasks)
 - **Acceptance:** A daily mood-rating task appears in getMyQueue each morning; completing it writes a Measurement and the next occurrence schedules itself.
-- **Roadmap:** now — companion loop stage 1 (implementation decision: TaskTrigger cron vs TrackingReminder revival)
+- **Roadmap:** now — companion loop stage 1 (decide whether TaskTrigger or the live TrackingReminder schedule owns task-queue delivery)
 
 ### OPT-HEALTH-07 — Change-from-baseline outcome reports
 

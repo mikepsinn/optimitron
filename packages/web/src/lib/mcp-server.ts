@@ -2758,6 +2758,7 @@ const TRACKING_REMINDER_INCLUDE = {
       defaultUnitId: true,
       fillingType: true,
       id: true,
+      subjectId: true,
     },
   },
 } satisfies Prisma.TrackingReminderInclude;
@@ -3245,6 +3246,115 @@ async function upsertTrackingReminderForUser(
   input: Record<string, unknown>,
   userId: string,
 ) {
+  const trackingReminderId = optionalString(input.trackingReminderId);
+  if ("trackingReminderId" in input && !trackingReminderId) {
+    throw new Error("trackingReminderId must be a non-empty string.");
+  }
+  if (trackingReminderId) {
+    const immutableVariableFields = [
+      "categoryName",
+      "combinationOperation",
+      "fillingType",
+      "globalVariableId",
+      "unitAbbreviation",
+      "unitId",
+      "unitName",
+      "variableName",
+    ].filter((fieldName) => fieldName in input);
+    if (immutableVariableFields.length > 0) {
+      throw new Error(
+        `A reminder's tracked variable cannot be changed. Omit ${immutableVariableFields.join(
+          ", ",
+        )} when editing by trackingReminderId.`,
+      );
+    }
+
+    const update: Prisma.TrackingReminderUpdateInput = {};
+    if ("active" in input) {
+      if (typeof input.active !== "boolean") {
+        throw new Error("active must be a boolean.");
+      }
+      update.active = input.active;
+    }
+    const defaultValue = parseOptionalFiniteNumberInput(input, "defaultValue");
+    if (defaultValue !== undefined) update.defaultValue = defaultValue;
+    const instructions = optionalStringInput(input, "instructions");
+    if (instructions !== undefined) update.instructions = instructions;
+    if ("reminderEndTime" in input) {
+      update.reminderEndTime = parseOptionalTimeOfDay(
+        input.reminderEndTime,
+        "reminderEndTime",
+      );
+    }
+    if ("reminderFrequency" in input) {
+      if (input.reminderFrequency == null || input.reminderFrequency === "") {
+        throw new Error("reminderFrequency must be a positive integer.");
+      }
+      update.reminderFrequency = parsePositiveInteger(
+        input.reminderFrequency,
+        "reminderFrequency",
+        86_400,
+      );
+    }
+    if ("reminderStartTime" in input) {
+      update.reminderStartTime = parseTimeOfDay(
+        input.reminderStartTime,
+        "reminderStartTime",
+      );
+    }
+    if ("startTrackingDate" in input) {
+      update.startTrackingDate = parseOptionalDateValue(
+        input.startTrackingDate,
+        "startTrackingDate",
+      );
+    }
+    if ("stopTrackingDate" in input) {
+      update.stopTrackingDate = parseOptionalDateValue(
+        input.stopTrackingDate,
+        "stopTrackingDate",
+      );
+    }
+
+    const prisma = await getPrisma();
+    try {
+      return await prisma.$transaction(async (tx) => {
+        const existing = await tx.trackingReminder.findFirst({
+          include: TRACKING_REMINDER_INCLUDE,
+          where: {
+            deletedAt: null,
+            id: trackingReminderId,
+            userId,
+          },
+        });
+        if (!existing) {
+          throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
+        }
+        if (Object.keys(update).length === 0) {
+          return {
+            reminder: existing,
+            subjectId: existing.nOf1Variable.subjectId,
+          };
+        }
+        const reminder = await tx.trackingReminder.update({
+          data: update,
+          include: TRACKING_REMINDER_INCLUDE,
+          where: { id: existing.id },
+        });
+        return {
+          reminder,
+          subjectId: reminder.nOf1Variable.subjectId,
+        };
+      });
+    } catch (error) {
+      if (isPrismaUniqueConstraintError(error)) {
+        throw new Error(
+          "Another tracking reminder already uses this variable, start time, and frequency.",
+        );
+      }
+      throw error;
+    }
+  }
+
   const reminderStartTime = parseTimeOfDay(
     input.reminderStartTime,
     "reminderStartTime",
@@ -3434,6 +3544,8 @@ async function listDueTrackingRemindersForUser(
 async function findOrCreateTrackingNotification(
   tx: Prisma.TransactionClient,
   input: {
+    localDayEnd: Date;
+    localDayStart: Date;
     notifyAt: Date;
     status: NotificationStatus;
     trackedValue: number | null;
@@ -3444,7 +3556,7 @@ async function findOrCreateTrackingNotification(
   const existing = await tx.trackingReminderNotification.findFirst({
     where: {
       deletedAt: null,
-      notifyAt: input.notifyAt,
+      notifyAt: { gte: input.localDayStart, lt: input.localDayEnd },
       trackingReminderId: input.trackingReminderId,
       userId: input.userId,
     },
@@ -3524,7 +3636,13 @@ async function respondToTrackingReminderForUser(
       reminder.reminderStartTime,
       timeZone,
     );
+    const { end: localDayEnd, start: localDayStart } = dayRange(
+      dateKey,
+      timeZone,
+    );
     const notification = await findOrCreateTrackingNotification(tx, {
+      localDayEnd,
+      localDayStart,
       notifyAt,
       status,
       trackedValue,
@@ -4787,10 +4905,19 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "upsertTrackingReminder",
     description:
-      "Create or update a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
+      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
     inputSchema: {
       type: "object" as const,
+      anyOf: [
+        { required: ["trackingReminderId"] },
+        { required: ["reminderStartTime"] },
+      ],
       properties: {
+        trackingReminderId: {
+          type: "string",
+          description:
+            "Existing reminder ID to edit in place. When present, variable identity fields must be omitted and all other fields are optional patches.",
+        },
         globalVariableId: { type: "string" },
         variableName: { type: "string" },
         categoryName: {
@@ -4799,9 +4926,9 @@ const TRACKING_TOOL_DEFINITIONS = [
             "Required when variableName does not already exist. Examples: Treatment, Food, Drink, Nutrient, Symptom, Emotion, Sleep, Activity, Vital Sign, or Biomarker.",
         },
         defaultValue: {
-          type: "number",
+          type: ["number", "null"],
           description:
-            "Pre-filled value, such as a normal medication dose or symptom rating.",
+            "Pre-filled value, such as a normal medication dose or symptom rating. Pass null to clear it when editing.",
         },
         unitId: { type: "string" },
         unitAbbreviation: {
@@ -4818,24 +4945,30 @@ const TRACKING_TOOL_DEFINITIONS = [
           description: "Local wall-clock time in HH:mm, for example 08:00.",
         },
         reminderEndTime: {
-          type: "string",
-          description: "Optional local end/quiet time in HH:mm.",
+          type: ["string", "null"],
+          description:
+            "Optional local end/quiet time in HH:mm. Pass null to clear it when editing.",
         },
         reminderFrequency: {
           type: "number",
           description: "Seconds between reminders. Default 86400.",
         },
         active: { type: "boolean" },
-        instructions: { type: "string" },
-        startTrackingDate: { type: "string", description: "ISO date/time." },
-        stopTrackingDate: { type: "string", description: "ISO date/time." },
+        instructions: { type: ["string", "null"] },
+        startTrackingDate: {
+          type: ["string", "null"],
+          description: "ISO date/time, or null to clear it when editing.",
+        },
+        stopTrackingDate: {
+          type: ["string", "null"],
+          description: "ISO date/time, or null to clear it when editing.",
+        },
         combinationOperation: { type: "string", enum: ["SUM", "MEAN"] },
         fillingType: {
           type: "string",
           enum: ["ZERO", "NONE", "INTERPOLATION", "VALUE"],
         },
       },
-      required: ["reminderStartTime"],
     },
   },
   {
