@@ -85,6 +85,7 @@ const VISUAL_REVIEW_CSS = `
     visibility: hidden !important;
   }
 `;
+
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 const REVIEW_AFTER_ROOT = path.resolve(
@@ -278,7 +279,7 @@ async function openVisualRoute(
 
   page.on("pageerror", (error) => {
     if (!isIgnoredVisualPageError(error)) {
-      errors.push(error.stack ?? error.message);
+      errors.push(error.stack || error.message || error.name || String(error));
     }
   });
 
