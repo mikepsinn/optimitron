@@ -56,7 +56,7 @@ describe("site inventory", () => {
     ).toBe(true);
   });
 
-  it("extracts clean markdown from an allowed Optimitron property URL", async () => {
+  it("extracts clean markdown from an allowed manual URL", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
@@ -74,23 +74,114 @@ describe("site inventory", () => {
     );
 
     const result = await getPageContent({
-      url: "https://warondisease.org/vote",
+      url: "https://manual.warondisease.org/knowledge/test-page",
     });
 
     expect(result).toMatchObject({
       lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
       sections: ["Vote"],
       title: "Vote",
-      url: "https://warondisease.org/vote",
+      url: "https://manual.warondisease.org/knowledge/test-page",
     });
     expect(result.content).toContain("# Vote");
     expect(result.content).toContain("- One task");
     expect(result.content).not.toContain("<main");
   });
 
+  it("serves the rendered logged-out snapshot instead of fetching a loader", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({
+      url: "https://warondisease.org/invest",
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result.title).toContain("Invest");
+    expect(result.content).toContain(
+      "YOUR PLANET MAY BE ELIGIBLE FOR OPTIMIZATION",
+    );
+    expect(result.content).not.toContain("Booting Earth Optimization System");
+  });
+
+  it("does not serve the War on Disease home snapshot for another site variant", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Optimitron</title></head><body><main><h1>Optimize Earth</h1><p>Every job required to optimize it.</p></main></body></html>",
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({ url: "https://optimitron.com/" });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.title).toBe("Optimitron");
+    expect(result.content).toContain("Optimize Earth");
+    expect(result.content).not.toContain("TAKE 30 SECONDS");
+  });
+
+  it("does not serve a non-root snapshot captured for another site variant", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Compute</title></head><body><main><h1>Optimitron compute</h1></main></body></html>",
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({
+      url: "https://optimitron.com/invest",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.content).toContain("Optimitron compute");
+    expect(result.content).not.toContain("QUANTIFY ANYTHING");
+  });
+
+  it("rejects a loading shell when no rendered snapshot exists", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            "<html><body><main>Booting Earth Optimization System. Thank you for your patience. Your civilization is very important to us.</main></body></html>",
+          ),
+      ),
+    );
+
+    await expect(
+      getPageContent({
+        url: "https://manual.warondisease.org/knowledge/no-snapshot",
+      }),
+    ).rejects.toThrow("Page returned only its loading shell");
+  });
+
   it("rejects URLs outside configured Optimitron properties", async () => {
     await expect(
       getPageContent({ url: "https://example.com/vote" }),
     ).rejects.toThrow("URL is not an allowed Optimitron property route");
+  });
+
+  it("does not let an encoded '..' segment traverse to another route's snapshot", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Fallback</title></head><body><main><h1>Fallback</h1></main></body></html>",
+          { headers: { "content-type": "text/html" } },
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    // "%2e%2e%2Fvote" decodes to "../vote", which (pre-fix) escaped the
+    // "invest" segment and resolved to the unrelated vote snapshot instead
+    // of being rejected. The fix must reject the whole snapshot lookup and
+    // fall through to a live fetch instead of serving the wrong page.
+    const result = await getPageContent({
+      url: "https://optimitron.com/invest/%2e%2e%2Fvote",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.title).toBe("Fallback");
   });
 });

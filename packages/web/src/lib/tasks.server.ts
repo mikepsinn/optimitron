@@ -555,6 +555,7 @@ const taskSearchSelect = {
   category: true,
   description: true,
   id: true,
+  impactStatement: true,
   interestTags: true,
   roleTitle: true,
   skillTags: true,
@@ -871,6 +872,7 @@ function mapTaskSearchResult(
   const href = getTaskPath(task.id);
   const snippet = [
     task.description,
+    task.impactStatement,
     task.roleTitle,
     assigneeParts.length > 0
       ? `Assigned to ${assigneeParts.join(" / ")}`
@@ -899,12 +901,111 @@ function mapTaskSearchResult(
           ...assigneeParts,
         ],
         section: "Tasks",
-      }),
+      }) +
+      fuzzyTaskSearchScore(task, searchTerms),
     snippet: snippet || null,
     status: task.status,
     taskKey: task.taskKey,
     title: task.title,
   };
+}
+
+function editDistance(left: string, right: string) {
+  const previous = Array.from(
+    { length: right.length + 1 },
+    (_, index) => index,
+  );
+
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    const current = [leftIndex];
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      current[rightIndex] = Math.min(
+        (current[rightIndex - 1] ?? 0) + 1,
+        (previous[rightIndex] ?? 0) + 1,
+        (previous[rightIndex - 1] ?? 0) +
+          (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1),
+      );
+    }
+    previous.splice(0, previous.length, ...current);
+  }
+
+  return previous[right.length] ?? Math.max(left.length, right.length);
+}
+
+function fuzzyTokenSimilarity(queryTerm: string, candidate: string) {
+  if (queryTerm === candidate) return 1;
+  if (
+    queryTerm.length >= 3 &&
+    (candidate.includes(queryTerm) || queryTerm.includes(candidate))
+  ) {
+    return (
+      Math.min(queryTerm.length, candidate.length) /
+      Math.max(queryTerm.length, candidate.length)
+    );
+  }
+
+  const maximumDistance =
+    Math.max(queryTerm.length, candidate.length) >= 7 ? 2 : 1;
+  const distance = editDistance(queryTerm, candidate);
+  return distance <= maximumDistance
+    ? 1 - distance / Math.max(queryTerm.length, candidate.length)
+    : 0;
+}
+
+function searchTokens(value: string | null | undefined) {
+  return (value ?? "")
+    .toLowerCase()
+    .split(/[^a-z0-9%]+/i)
+    .filter((token) => token.length >= 2);
+}
+
+function fuzzyTaskSearchScore(
+  task: TaskSearchItem,
+  searchTerms: ReturnType<typeof getSearchTerms>,
+) {
+  const assigneeParts = [
+    task.assigneePerson?.displayName,
+    task.assigneePerson?.currentAffiliation,
+    task.assigneeOrganization?.name,
+  ];
+  const weightedFields = [
+    { tokens: searchTokens(task.title), weight: 5 },
+    {
+      tokens: searchTokens(
+        [task.taskKey, task.roleTitle, ...task.interestTags, ...task.skillTags]
+          .filter(Boolean)
+          .join(" "),
+      ),
+      weight: 3,
+    },
+    {
+      tokens: searchTokens(
+        [task.description, task.impactStatement, ...assigneeParts]
+          .filter(Boolean)
+          .join(" "),
+      ),
+      weight: 2,
+    },
+  ];
+
+  let score = 0;
+  for (const queryTerm of searchTerms.terms) {
+    let bestWeightedSimilarity = 0;
+    for (const field of weightedFields) {
+      for (const token of field.tokens) {
+        const similarity = fuzzyTokenSimilarity(queryTerm, token);
+        if (similarity >= 0.7) {
+          bestWeightedSimilarity = Math.max(
+            bestWeightedSimilarity,
+            similarity * field.weight,
+          );
+        }
+      }
+    }
+    score += bestWeightedSimilarity;
+  }
+
+  return Number(score.toFixed(3));
 }
 
 function buildParentInheritedImpactFrame(
@@ -1713,19 +1814,24 @@ export async function searchTasks(
   const distinctiveTerms = queryTerms.filter(
     (term) => !taskSearchIntentTerms.has(term),
   );
-  const candidateTerms =
-    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms;
+  const candidateTerms = (
+    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms
+  ).slice(0, 8);
 
-  // Prisma cannot order substring matches by relevance. Require every
-  // distinctive term at the database boundary, then rank the bounded matches
-  // in memory. Ignoring request-framing words keeps natural agent queries such
-  // as "find Optimize Optimitron parent" from failing on the word "parent"
-  // without letting a single common term flood the candidate window.
+  // Prisma cannot order substring matches by relevance. Pull any literal
+  // match into a bounded candidate set, then rank it in memory. Requiring
+  // every word here made natural-language agent queries fail whenever they
+  // included one reasonable synonym that was not copied into the task.
   const candidateLimit = Math.min(Math.max(limit * 4, 64), 500);
-  const requiredTermMatches = candidateTerms.map((term) => ({
+  const perTermLimit = Math.max(
+    limit,
+    Math.floor(candidateLimit / candidateTerms.length),
+  );
+  const matchesTerm = (term: string): Prisma.TaskWhereInput => ({
     OR: [
       { title: { contains: term, mode: "insensitive" as const } },
       { description: { contains: term, mode: "insensitive" as const } },
+      { impactStatement: { contains: term, mode: "insensitive" as const } },
       { taskKey: { contains: term, mode: "insensitive" as const } },
       { roleTitle: { contains: term, mode: "insensitive" as const } },
       {
@@ -1756,10 +1862,18 @@ export async function searchTasks(
         },
       },
     ],
-  }));
+  });
+
+  const viewer = options?.userId
+    ? await prisma.user.findUnique({
+        where: { id: options.userId },
+        select: { personId: true },
+      })
+    : null;
 
   const accessFilters: Prisma.TaskWhereInput[] = [
     getTaskVisibilityWhere({
+      personId: viewer?.personId,
       userId: options?.userId,
       visibility:
         options?.visibility ?? (options?.userId ? "accessible" : "public"),
@@ -1777,23 +1891,47 @@ export async function searchTasks(
         select: taskSearchSelect,
       })
     : Promise.resolve(null);
-  const [exactTaskKeyMatch, candidates] = await Promise.all([
+  const [exactTaskKeyMatch, candidateGroups] = await Promise.all([
     exactTaskKeyPromise,
-    prisma.task.findMany({
-      where: {
-        AND: [...accessFilters, ...requiredTermMatches],
-      },
-      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-      select: taskSearchSelect,
-      take: candidateLimit,
-    }),
+    Promise.all(
+      candidateTerms.map((term) =>
+        prisma.task.findMany({
+          where: {
+            AND: [...accessFilters, matchesTerm(term)],
+          },
+          orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+          select: taskSearchSelect,
+          take: perTermLimit,
+        }),
+      ),
+    ),
   ]);
-  const tasks = exactTaskKeyMatch
+  const candidates = Array.from(
+    new Map(candidateGroups.flat().map((task) => [task.id, task])).values(),
+  );
+  let tasks = exactTaskKeyMatch
     ? [
         exactTaskKeyMatch,
         ...candidates.filter((task) => task.id !== exactTaskKeyMatch.id),
       ]
     : candidates;
+
+  // A bounded accessible fallback makes misspellings discoverable even when
+  // no token can pass Prisma's literal `contains` filter. It is only used
+  // when literal matching did not fill the requested result window.
+  if (tasks.length < limit) {
+    const fuzzyCandidates = await prisma.task.findMany({
+      where: { AND: accessFilters },
+      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+      select: taskSearchSelect,
+      take: 500,
+    });
+    const taskIds = new Set(tasks.map((task) => task.id));
+    tasks = [
+      ...tasks,
+      ...fuzzyCandidates.filter((task) => !taskIds.has(task.id)),
+    ];
+  }
 
   return tasks
     .map((task) => mapTaskSearchResult(task, searchTerms))
