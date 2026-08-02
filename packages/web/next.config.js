@@ -8,6 +8,7 @@ const { REDIRECTS } = require("./src/lib/redirects");
 /** @type {import('next').NextConfig} */
 const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === "true";
 const legislationContentTraceFiles = ["../../content/legislation/**/*.md"];
+const loggedOutPageSnapshotTraceFiles = ["./src/app/**/page.logged-out.md"];
 
 const nextConfig = {
   experimental: {
@@ -48,6 +49,7 @@ const nextConfig = {
   basePath: isStaticExport ? "/optimitron" : "",
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
   outputFileTracingIncludes: {
+    "/api/mcp": loggedOutPageSnapshotTraceFiles,
     "/legislation": legislationContentTraceFiles,
     "/legislation/*": legislationContentTraceFiles,
     "/api/og/route": [

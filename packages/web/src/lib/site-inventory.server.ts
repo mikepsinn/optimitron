@@ -1,3 +1,5 @@
+import { readFile, stat } from "node:fs/promises";
+import path from "node:path";
 import { allNavLinks, type NavItem } from "@/lib/routes";
 import { isRedirectOnlyRoutePath } from "@/lib/redirect-review";
 import {
@@ -27,6 +29,10 @@ interface SitePageInventoryEntry {
 const MANUAL_HOST = "manual.warondisease.org";
 const MANUAL_SITEMAP_URL = `https://${MANUAL_HOST}/sitemap.xml`;
 const SITE_INVENTORY_FETCH_TIMEOUT_MS = 10_000;
+const GLOBAL_LOADING_TEXT = [
+  "Booting Earth Optimization System",
+  "Your civilization is very important to us.",
+] as const;
 
 function hostnameFromOrigin(origin: string) {
   return new URL(origin).hostname.toLowerCase();
@@ -307,6 +313,104 @@ function sectionsFromMarkdown(markdown: string) {
     .filter((section): section is string => Boolean(section));
 }
 
+function snapshotPaths(pathname: string) {
+  const rawSegments = pathname.split("/").filter(Boolean);
+  const segments: string[] = [];
+  for (const rawSegment of rawSegments) {
+    let segment: string;
+    try {
+      segment = decodeURIComponent(rawSegment);
+    } catch {
+      return [];
+    }
+    // Reject segments that are (or, once decoded, resolve to) "." / ".." or
+    // that contain a path separator — otherwise a value like "%2e%2e%2fsecret"
+    // decodes to "../secret" and can traverse outside src/app when joined.
+    if (
+      segment === "." ||
+      segment === ".." ||
+      segment.includes("/") ||
+      segment.includes("\\")
+    ) {
+      return [];
+    }
+    segments.push(segment);
+  }
+
+  const relativePath = path.join(...segments, "page.logged-out.md");
+  return [
+    path.resolve(process.cwd(), "src", "app", relativePath),
+    path.resolve(process.cwd(), "packages", "web", "src", "app", relativePath),
+  ];
+}
+
+function visibleCopyFromSnapshot(snapshot: string) {
+  const marker = "## Visible Page Copy";
+  const markerIndex = snapshot.indexOf(marker);
+  return markerIndex >= 0
+    ? snapshot.slice(markerIndex + marker.length).trim()
+    : snapshot.trim();
+}
+
+async function readLoggedOutPageSnapshot(url: URL) {
+  if (url.hostname.toLowerCase() === MANUAL_HOST) return null;
+  const requestedSite = getKnownSite(url.hostname.toLowerCase());
+
+  for (const snapshotPath of snapshotPaths(url.pathname)) {
+    try {
+      const [snapshot, fileStats] = await Promise.all([
+        readFile(snapshotPath, "utf8"),
+        stat(snapshotPath),
+      ]);
+      const content = visibleCopyFromSnapshot(snapshot);
+      if (!content) continue;
+
+      const metadataTitle = snapshot
+        .match(/^- Page title:\s*(.+)$/m)?.[1]
+        ?.trim();
+      const canonicalUrl = snapshot
+        .match(/^- Canonical:\s*(.+)$/m)?.[1]
+        ?.trim();
+      let snapshotSite: ReturnType<typeof getKnownSite> = null;
+      if (canonicalUrl && canonicalUrl !== "[missing]") {
+        try {
+          snapshotSite = getKnownSite(
+            new URL(canonicalUrl).hostname.toLowerCase(),
+          );
+        } catch {
+          snapshotSite = null;
+        }
+      }
+      if (
+        requestedSite &&
+        snapshotSite &&
+        requestedSite.key !== snapshotSite.key
+      ) {
+        continue;
+      }
+      return {
+        content,
+        lastModified: fileStats.mtime.toUTCString(),
+        sections: sectionsFromMarkdown(content),
+        title: metadataTitle || titleFromPath(url.pathname),
+        url: url.toString(),
+      };
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "ENOENT" && code !== "ENOTDIR") throw error;
+    }
+  }
+
+  return null;
+}
+
+function isLoadingShell(content: string) {
+  const normalized = content.toLowerCase();
+  return GLOBAL_LOADING_TEXT.some((text) =>
+    normalized.includes(text.toLowerCase()),
+  );
+}
+
 export async function getPageContent(input: GetPageContentInput) {
   if (!input.url?.trim()) {
     throw new Error("url is required");
@@ -316,6 +420,9 @@ export async function getPageContent(input: GetPageContentInput) {
   if (!isAllowedPropertyUrl(url)) {
     throw new Error(`URL is not an allowed Optimitron property route: ${input.url}`);
   }
+
+  const snapshot = await readLoggedOutPageSnapshot(url);
+  if (snapshot) return snapshot;
 
   const response = await fetch(url.toString(), {
     headers: { accept: "text/html,application/xhtml+xml" },
@@ -327,6 +434,11 @@ export async function getPageContent(input: GetPageContentInput) {
 
   const html = await response.text();
   const content = htmlToMarkdown(html);
+  if (isLoadingShell(content)) {
+    throw new Error(
+      `Page returned only its loading shell and no rendered logged-out snapshot exists for ${url.pathname}`,
+    );
+  }
   return {
     content,
     lastModified: response.headers.get("last-modified"),
