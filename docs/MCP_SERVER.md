@@ -76,6 +76,14 @@ Deadline policy rules:
 
 Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, add its task ID or exact task key to each dependent task's `blockerTaskRefs`.
 
+A blocker edge is binary and does not need a probability delta. It gates only
+the task it explicitly targets, not that task's children. While the target is
+blocked, the queue attributes the downstream plan's EV/hour to the currently
+executable blocker frontier using all remaining explicit blocker effort. This
+raises prerequisites without copying the downstream task's gross value onto
+every blocker. Probability and time deltas remain optional causal modifiers;
+they are not substitutes for dependency gating.
+
 `getMyQueue` returns two lanes. `deadlineLane` contains available, unblocked
 `REQUIRED` or `EXPIRES` work that is past `dueAt` or `latestStartAt`, sorted
 most-overdue first and not truncated by `maxResults`. `evLane` preserves the
