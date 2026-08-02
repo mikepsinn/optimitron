@@ -91,7 +91,7 @@ describe("getTaskVisibilityWhere", () => {
     expect(where.isPublic).toBeUndefined();
   });
 
-  it("lets signed-in viewers reach public, own, and assigned tasks", () => {
+  it("lets signed-in viewers reach public, own, assigned, and claimed tasks", () => {
     const where = getTaskVisibilityWhere({
       taskId: "task_1",
       userId: "user_1",
@@ -107,6 +107,17 @@ describe("getTaskVisibilityWhere", () => {
         {
           managers: {
             some: { deletedAt: null, userId: "user_1" },
+          },
+        },
+        {
+          claims: {
+            some: {
+              deletedAt: null,
+              status: {
+                in: ["CLAIMED", "IN_PROGRESS", "COMPLETED", "VERIFIED"],
+              },
+              userId: "user_1",
+            },
           },
         },
       ]),

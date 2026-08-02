@@ -8085,7 +8085,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getPageContent",
     description:
-      "Fetch an Optimitron-owned page URL and return clean markdown, title, section headings, and last-modified metadata.",
+      "Return the fully rendered logged-out text for an Optimitron-owned page as clean markdown, with its title, section headings, and last-modified metadata. Checked-in rendered snapshots are preferred so client-side loading shells are never mistaken for page content; this public reader does not expose authenticated page text.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -8130,7 +8130,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "searchTasks",
     description:
-      "Search your accessible tasks by title, description, task key, assignee, or organization. " +
+      "Fuzzy-search your accessible tasks by title, description, impact statement, task key, assignee, or organization. Signed-in results may include public tasks and private tasks you created, manage, are assigned, claimed, or can access through an organization; other users' private work remains excluded. " +
       "Use this before createTask/updateTask to find parents, duplicates, blockerTaskIds, or blockedTaskIds. " +
       "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'. Returns the legacy result array unless paginated=true or cursor is supplied. Paginated inventory uses immutable task-ID order, not relevance order.",
     inputSchema: {

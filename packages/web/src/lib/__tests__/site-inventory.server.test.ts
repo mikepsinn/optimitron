@@ -56,7 +56,7 @@ describe("site inventory", () => {
     ).toBe(true);
   });
 
-  it("extracts clean markdown from an allowed Optimitron property URL", async () => {
+  it("extracts clean markdown from an allowed manual URL", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
@@ -74,18 +74,52 @@ describe("site inventory", () => {
     );
 
     const result = await getPageContent({
-      url: "https://warondisease.org/vote",
+      url: "https://manual.warondisease.org/knowledge/test-page",
     });
 
     expect(result).toMatchObject({
       lastModified: "Wed, 29 Apr 2026 12:00:00 GMT",
       sections: ["Vote"],
       title: "Vote",
-      url: "https://warondisease.org/vote",
+      url: "https://manual.warondisease.org/knowledge/test-page",
     });
     expect(result.content).toContain("# Vote");
     expect(result.content).toContain("- One task");
     expect(result.content).not.toContain("<main");
+  });
+
+  it("serves the rendered logged-out snapshot instead of fetching a loader", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({
+      url: "https://optimitron.com/invest",
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result.title).toContain("Invest");
+    expect(result.content).toContain(
+      "YOUR PLANET MAY BE ELIGIBLE FOR OPTIMIZATION",
+    );
+    expect(result.content).not.toContain("Booting Earth Optimization System");
+  });
+
+  it("rejects a loading shell when no rendered snapshot exists", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            "<html><body><main>Booting Earth Optimization System. Thank you for your patience. Your civilization is very important to us.</main></body></html>",
+          ),
+      ),
+    );
+
+    await expect(
+      getPageContent({
+        url: "https://manual.warondisease.org/knowledge/no-snapshot",
+      }),
+    ).rejects.toThrow("Page returned only its loading shell");
   });
 
   it("rejects URLs outside configured Optimitron properties", async () => {

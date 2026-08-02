@@ -10,6 +10,7 @@ import {
   ActivityType,
   OrganizationMemberRole,
   Prisma,
+  TaskClaimStatus,
   type TaskStatus,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
@@ -75,6 +76,13 @@ const CONTRIBUTOR_ORGANIZATION_ROLES = [
 const MANAGER_ORGANIZATION_ROLES = [
   OrganizationMemberRole.OWNER,
   OrganizationMemberRole.ADMIN,
+] as const;
+
+const VIEWABLE_CLAIM_STATUSES = [
+  TaskClaimStatus.CLAIMED,
+  TaskClaimStatus.IN_PROGRESS,
+  TaskClaimStatus.COMPLETED,
+  TaskClaimStatus.VERIFIED,
 ] as const;
 
 const DOCUMENT_REVIEW_SCHEMA_WHERE: Prisma.TaskWhereInput = {
@@ -154,6 +162,15 @@ export function getTaskAccessWhere(input: {
     {
       managers: {
         some: { deletedAt: null, userId },
+      },
+    },
+    {
+      claims: {
+        some: {
+          deletedAt: null,
+          status: { in: [...VIEWABLE_CLAIM_STATUSES] },
+          userId,
+        },
       },
     },
   ];
@@ -286,7 +303,8 @@ export function getTaskVisibilityWhere(input?: {
     input?.userId
   ) {
     // Accessible tasks include public work and private work connected to the
-    // viewer by creation, assignment, management, or organization membership.
+    // viewer by creation, assignment, an active/completed claim, management,
+    // or organization membership.
     // from /tasks "Your Tasks" → /tasks/[id]. "private" narrows the same
     // access predicate to non-public rows only.
     const accessWhere = getTaskAccessWhere({

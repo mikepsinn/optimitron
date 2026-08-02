@@ -115,6 +115,10 @@ Example `listTasks` request:
 ```
 
 `searchTasks` uses the same pagination fields plus its required `query`.
+It fuzzy-ranks title, description, impact statement, task key, assignee, and
+organization matches. For signed-in callers, `visibility: "all"` includes
+private tasks they created, manage, are assigned, claimed, or can access through
+an organization; it never means every user's private work.
 
 Paginated response from either tool:
 
@@ -408,6 +412,11 @@ disagree, those sources win.
 - Health tracking (`earthdata:write`, companion-loop stage 1): `recordMeasurement`, `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, `recordInterventionExperience`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
 - Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
+
+`getPageContent` is a public, logged-out page reader. It prefers the repository's
+rendered `page.logged-out.md` snapshot so client-side loading shells are not
+returned as page text. It does not expose authenticated page copy.
+
 - Completion: `completeTask` for a private owner-created `Self` task; `startTaskExecution` → `submitTaskArtifact` → `submitTaskForVerification` for formal work.
 - Claims: `claimTask`, `completeTaskClaim` (claim submission only).
 - Task triggers (data-driven blueprints): `createTaskTrigger`, `updateTaskTrigger`, `disableTaskTrigger`, `listTaskTriggers`, `getTaskTrigger`, `fireTaskTrigger`. See "Task Trigger Framework" below.
