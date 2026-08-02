@@ -3594,17 +3594,11 @@ function nextActionRecommendation(task: PersonalQueueRow | null) {
   };
 }
 
-function selectPersonalNextAction(queue: PersonalQueueRow[]) {
-  const deadlineCriticalTasks = queue.filter(
-    (task) =>
-      (task.deadlinePolicy === "REQUIRED" &&
-        (task.deadlineStatus === "start_now" ||
-          (task.deadlineStatus === "missed" &&
-            task.deadlineOverrideEligible))) ||
-      (task.deadlinePolicy === "EXPIRES" &&
-        task.deadlineStatus === "start_now"),
-  );
-  const selected = deadlineCriticalTasks[0] ?? queue[0] ?? null;
+function selectPersonalNextAction(
+  deadlineLane: PersonalQueueRow[],
+  evLane: PersonalQueueRow[],
+) {
+  const selected = deadlineLane[0] ?? evLane[0] ?? null;
   if (!selected) {
     return {
       deadlineOverride: false,
@@ -3612,12 +3606,13 @@ function selectPersonalNextAction(queue: PersonalQueueRow[]) {
       task: null,
     };
   }
-  if (deadlineCriticalTasks.length > 0) {
+  if (deadlineLane.length > 0) {
     return {
       deadlineOverride: true,
       selectionReason:
-        selected.deadlineStatus === "missed"
-          ? "deadline_missed"
+        selected.deadlineStatus === "missed" ||
+        selected.deadlineStatus === "expired"
+          ? "deadline_overdue"
           : "deadline_latest_start",
       task: selected,
     };
@@ -5071,13 +5066,14 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getMyQueue",
     description:
-      "Get the authenticated user's available private self-work queue sorted by computed priority. Returns tasks the user created OR has been assigned to (via assigneePersonId). Hidden rows include completed tasks, blocked tasks, future available_at tasks, AI Agent tasks, and expired EXPIRES opportunities. Use this for the user's own next actions.",
+      "Get the authenticated user's available private self-work in two lanes. deadlineLane contains unblocked REQUIRED or EXPIRES work that is past due or past latest-start, sorted most-overdue first and never truncated by maxResults. evLane contains all other executable work in the existing expected-value order and is limited by maxResults. Returns tasks the user created OR has been assigned to (via assigneePersonId).",
     inputSchema: {
       type: "object" as const,
       properties: {
         maxResults: {
           type: "number",
-          description: "Max number of tasks to return (default 20, max 100)",
+          description:
+            "Max number of evLane tasks to return (default 20, max 100). Does not truncate deadlineLane.",
         },
         buybackRate: {
           type: "number",
@@ -5094,8 +5090,37 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "USD/hour used for priority denominator cash-equivalent conversion.",
         },
-        queue: {
+        deadlineLane: {
           type: "array",
+          description:
+            "Unblocked, available REQUIRED or EXPIRES tasks past dueAt or latestStartAt, sorted most-overdue first. Same task shape as evLane.",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "Task identifier." },
+              title: { type: "string", description: "Task title." },
+              priority: {
+                type: "number",
+                description:
+                  "Expected-value score retained for explanation; deadline-lane order is based on overdue time.",
+              },
+              deadlinePolicy: {
+                type: "string",
+                enum: ["EXPIRES", "REQUIRED"],
+              },
+              deadlineStatus: {
+                type: "string",
+                enum: ["start_now", "missed", "expired"],
+              },
+              latestStartAt: { type: ["string", "null"] },
+              timeUntilDueHours: { type: ["number", "null"] },
+            },
+          },
+        },
+        evLane: {
+          type: "array",
+          description:
+            "All other executable work in the existing expected-value order, truncated by maxResults.",
           items: {
             type: "object",
             properties: {
@@ -5204,6 +5229,14 @@ const TASK_TOOL_DEFINITIONS = [
           type: "array",
           items: { type: "object" },
         },
+        queueAudit: {
+          type: "object",
+          properties: {
+            activeCreatedTasks: { type: "number" },
+            activePersonalTasks: { type: "number" },
+            unblockedTasks: { type: "number" },
+          },
+        },
       },
     },
     examples: [
@@ -5211,7 +5244,8 @@ const TASK_TOOL_DEFINITIONS = [
         input: { maxResults: 2 },
         output: {
           buybackRate: 1000,
-          queue: [
+          deadlineLane: [],
+          evLane: [
             {
               id: "task_example_1",
               title: "Prepare investor update",
@@ -5460,7 +5494,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getNextAction",
     description:
-      "Get the best next self-work action from available private tasks. Priority is pure expected net value per hour-equivalent: (P(success) * value - cash_cost) / (hours + cash_cost / buybackRate). Dependencies decide availability. REQUIRED and EXPIRES deadline tasks can override pure priority when they have reached latest-start time.",
+      "Get the best next self-work action from the same two-lane result as getMyQueue. Returns the most-overdue deadlineLane task whenever that lane is non-empty; otherwise returns the highest-ranked evLane task.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5510,7 +5544,7 @@ const TASK_TOOL_DEFINITIONS = [
           enum: [
             "highest_priority",
             "deadline_latest_start",
-            "deadline_missed",
+            "deadline_overdue",
             "empty_queue",
           ],
           description: "Why this task was selected.",
@@ -9434,67 +9468,29 @@ export function createMcpServer(
                 "getNextAction",
                 'It returns the top-ranked task in your personal queue. For an anonymous "what should I work on next?", call getNextTask instead.',
               );
-            const { tasks, ranking } = await getTaskFunctions();
             const buybackRate = parsePositiveNumber(
               a.buybackRate,
               DEFAULT_PERSONAL_BUYBACK_RATE,
             );
-            const personId = await loadSessionPersonId(userId);
-            const personalTasks = await tasks.listTasks({
+            const queue = await loadPersonalQueue({
+              buybackRate,
               clientAccessBoundary: taskClientBoundary,
-              limit: 5000,
-              status: TaskStatus.ACTIVE,
-              userId,
-              personId,
-              visibility: "personal",
-            });
-            const graph = await loadExecutionGraphContext(
-              personalTasks as PersonalQueueTaskRecord[],
-              taskClientBoundary,
-            );
-            const executorProfiles = await loadHumanPlanningProfiles({
-              kind: "self",
-              personId,
+              maxResults: 20,
               userId,
             });
-            const selfTasks = (personalTasks as unknown[]).filter((task) =>
-              isSelfExecutableTask(task as PersonalQueueTaskRecord),
-            ) as PersonalQueueTaskRecord[];
-            const planningTasks = await attachPlanningEffortEvidence(
-              selfTasks,
-              executorProfiles,
+            const selection = selectPersonalNextAction(
+              queue.deadlineLane,
+              queue.evLane,
             );
-            const allRows = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: selfTasks.length,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-            const queue = buildPersonalQueueRows(
-              planningTasks,
-              ranking,
-              buybackRate,
-              {
-                executorProfiles,
-                limit: selfTasks.length,
-                requireExecutable: true,
-                requireUnblocked: true,
-                rootedTaskIds: graph.rootedTaskIds,
-              },
-            );
-            const selection = selectPersonalNextAction(queue);
             const topAction = selection.task;
             const recommendation =
               selection.deadlineOverride && topAction
                 ? {
-                    ...nextActionRecommendation(topAction),
+                    label: "do it",
                     rationale: [
-                      topAction.deadlineStatus === "missed"
-                        ? "This required task is past its deadline; remedial action should happen before optional work."
+                      topAction.deadlineStatus === "missed" ||
+                      topAction.deadlineStatus === "expired"
+                        ? "This task is past its required or expiring deadline; remedial action should happen before optional work."
                         : "This task has reached its latest-start time for a required or expiring deadline.",
                     ],
                   }
@@ -9506,16 +9502,10 @@ export function createMcpServer(
               selectionReason: selection.selectionReason,
               task: topAction,
               priority: topAction?.priority ?? 0,
-              ...summarizeCapabilityWork(allRows),
-              queueAudit: {
-                activeCreatedTasks: personalTasks.filter(
-                  (task) =>
-                    (task as PersonalQueueTaskRecord).createdByUserId ===
-                    userId,
-                ).length,
-                activePersonalTasks: personalTasks.length,
-                unblockedTasks: queue.length,
-              },
+              capabilityExcludedWork: queue.capabilityExcludedWork,
+              itemsNeedingCapabilityConfirmation:
+                queue.itemsNeedingCapabilityConfirmation,
+              queueAudit: queue.queueAudit,
             });
           }
 

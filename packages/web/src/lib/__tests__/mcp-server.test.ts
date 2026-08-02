@@ -3381,7 +3381,7 @@ describe("MCP server tool dispatch", () => {
         arguments: {},
       });
 
-      const queue = parseToolBody(queueResult).queue as Array<{
+      const queue = parseToolBody(queueResult).deadlineLane as Array<{
         hasMarginalEstimate: boolean;
         id: string;
       }>;
@@ -3400,6 +3400,34 @@ describe("MCP server tool dispatch", () => {
       expect(body.deadlineOverride).toBe(true);
       expect(body.selectionReason).toBe("deadline_latest_start");
       expect(body.priority).toBe(0);
+    });
+
+    it("returns a long-overdue required filing before any higher-EV undated task", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          id: "high-ev",
+          title: "Optional high-EV work",
+        }),
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          id: "old-required",
+          title: "File the overdue report",
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id === "high-ev" ? 1_000_000 : 1 }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getNextAction", arguments: {} }),
+      );
+
+      expect(body.task).toMatchObject({ id: "old-required" });
+      expect(body.deadlineOverride).toBe(true);
+      expect(body.selectionReason).toBe("deadline_overdue");
     });
   });
 
@@ -3514,6 +3542,63 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("personal queues", () => {
+    it("returns overdue legal filings in an untruncated lane beside the default EV window", async () => {
+      const evTasks = Array.from({ length: 30 }, (_, index) =>
+        makeCreatedTask({ id: `ev-${index}`, title: `EV task ${index}` }),
+      );
+      mocks.listTasks.mockResolvedValue([
+        ...evTasks,
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+          id: "cmsars14i000004jzz27qll3i",
+          title: "IRS Form 8822-B address change",
+        }),
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+          id: "cmojj2opw000904l13xnb217u",
+          title: "Zero-wage Form 941 Q2 2026",
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id.startsWith("ev-") ? 50_000 : 1 }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+
+      expect(
+        (body.deadlineLane as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["cmojj2opw000904l13xnb217u", "cmsars14i000004jzz27qll3i"]);
+      expect(body.evLane).toHaveLength(20);
+    });
+
+    it("keeps NONE and SOFT deadlines in expected-value ranking", async () => {
+      const overdue = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({ deadlinePolicy: "NONE", dueAt: overdue, id: "none" }),
+        makeCreatedTask({ deadlinePolicy: "SOFT", dueAt: overdue, id: "soft" }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({ priority: task.id === "soft" ? 2 : 1 }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+
+      expect(body.deadlineLane).toEqual([]);
+      expect(
+        (body.evLane as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["soft", "none"]);
+    });
+
     it("splits self-executed tasks from AI-agent-executed tasks", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
@@ -3547,7 +3632,7 @@ describe("MCP server tool dispatch", () => {
         arguments: {},
       });
 
-      const myQueue = parseToolBody(myQueueResult).queue as Array<
+      const myQueue = parseToolBody(myQueueResult).evLane as Array<
         Record<string, unknown>
       >;
       const aiQueue = parseToolBody(aiQueueResult).queue as Array<
@@ -3572,7 +3657,8 @@ describe("MCP server tool dispatch", () => {
         await client.callTool({ name: "getMyQueue", arguments: {} }),
       );
 
-      expect(body.queue).toEqual([]);
+      expect(body.deadlineLane).toEqual([]);
+      expect(body.evLane).toEqual([]);
       expect(body.itemsNeedingCapabilityConfirmation).toEqual([
         expect.objectContaining({ id: "bookkeeping" }),
       ]);
@@ -3594,7 +3680,8 @@ describe("MCP server tool dispatch", () => {
         await client.callTool({ name: "getMyQueue", arguments: {} }),
       );
 
-      expect(body.queue).toEqual([]);
+      expect(body.deadlineLane).toEqual([]);
+      expect(body.evLane).toEqual([]);
       expect(body.itemsNeedingCapabilityConfirmation).toEqual([]);
       expect(body.capabilityExcludedWork).toEqual([
         expect.objectContaining({ id: "bookkeeping" }),
@@ -3648,7 +3735,7 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(
         await client.callTool({ name: "getMyQueue", arguments: {} }),
       );
-      const queue = body.queue as Array<Record<string, unknown>>;
+      const queue = body.evLane as Array<Record<string, unknown>>;
 
       expect(queue.find((task) => task.id === "actual")).toMatchObject({
         effortEstimateSource: "target-actual-history",
@@ -3665,6 +3752,8 @@ describe("MCP server tool dispatch", () => {
         makeCreatedTask({
           id: "blocked",
           blockerStatuses: [TaskStatus.ACTIVE],
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         }),
         makeCreatedTask({ id: "open", blockerStatuses: [TaskStatus.VERIFIED] }),
       ]);
@@ -3680,17 +3769,19 @@ describe("MCP server tool dispatch", () => {
         arguments: {},
       });
 
-      const queue = parseToolBody(result).queue as Array<
+      const queue = parseToolBody(result).evLane as Array<
         Record<string, unknown>
       >;
       expect(queue.map((task) => task.id)).toEqual(["open"]);
     });
 
-    it("hides tasks before availableAt and expired expiring opportunities", async () => {
+    it("hides future work but keeps an expired expiring task in the deadline lane", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
           id: "future",
           availableAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         }),
         makeCreatedTask({
           id: "expired-grant",
@@ -3708,10 +3799,15 @@ describe("MCP server tool dispatch", () => {
         arguments: {},
       });
 
-      const queue = parseToolBody(result).queue as Array<
-        Record<string, unknown>
-      >;
-      expect(queue.map((task) => task.id)).toEqual(["open"]);
+      const body = parseToolBody(result);
+      expect(
+        (body.deadlineLane as Array<Record<string, unknown>>).map(
+          (task) => task.id,
+        ),
+      ).toEqual(["expired-grant"]);
+      expect(
+        (body.evLane as Array<Record<string, unknown>>).map((task) => task.id),
+      ).toEqual(["open"]);
     });
   });
 
@@ -3822,6 +3918,34 @@ describe("MCP server tool dispatch", () => {
           taskId: "taxes",
         }),
       );
+    });
+
+    it("keeps an indefinitely overdue required deadline escalated", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          id: "overdue-filing",
+        }),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValue([]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getQueueAudit", arguments: {} }),
+      );
+      const issue = (
+        body.issues as Array<{
+          code: string;
+          message: string;
+          severity: string;
+        }>
+      ).find((candidate) => candidate.code === "REQUIRED_DEADLINE_MISSED");
+
+      expect(issue).toMatchObject({ severity: "high" });
+      expect(issue?.message).toContain("remains in the deadline lane");
     });
   });
 
@@ -8073,7 +8197,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBeFalsy();
       const body = parseToolBody(result);
-      const queue = body.queue as Array<{
+      const queue = body.evLane as Array<{
         id: string;
         taskKey: string;
         title: string;
@@ -8123,7 +8247,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       const body = parseToolBody(result);
-      const queue = body.queue as Array<{ id: string; taskKey: string }>;
+      const queue = body.evLane as Array<{ id: string; taskKey: string }>;
       expect(queue).toEqual([]);
     });
 
@@ -8166,7 +8290,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       const body = parseToolBody(result);
-      const queue = body.queue as Array<{ taskKey: string }>;
+      const queue = body.evLane as Array<{ taskKey: string }>;
       const inviteIndex = queue.findIndex((t) =>
         t.taskKey.startsWith("program:one-percent-treaty:referral-invitation:"),
       );
@@ -8217,7 +8341,7 @@ describe("MCP server tool dispatch", () => {
       });
 
       const body = parseToolBody(result);
-      const queue = body.queue as Array<{ id: string; taskKey: string }>;
+      const queue = body.evLane as Array<{ id: string; taskKey: string }>;
 
       const reminderIndex = queue.findIndex((t) =>
         t.taskKey.startsWith("program:one-percent-treaty:reminder:"),

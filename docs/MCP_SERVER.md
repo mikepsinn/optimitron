@@ -76,6 +76,12 @@ Deadline policy rules:
 
 Do not use difficulty or urgency words as substitutes for estimates. If something is mandatory, encode the avoided downside in `value`, put the real due date in `due_at`, and use `deadline_policy: "REQUIRED"`. If something unlocks other work, add its task ID or exact task key to each dependent task's `blockerTaskRefs`.
 
+`getMyQueue` returns two lanes. `deadlineLane` contains available, unblocked
+`REQUIRED` or `EXPIRES` work that is past `dueAt` or `latestStartAt`, sorted
+most-overdue first and not truncated by `maxResults`. `evLane` preserves the
+normal expected-value ordering and is limited by `maxResults`. `getNextAction`
+always chooses `deadlineLane` when it is non-empty.
+
 Recommended OAuth scope for a personal life-planning AI:
 
 ```text
