@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TaskStatus } from "@optimitron/db";
 import { McpScope } from "@/lib/mcp-scopes";
 
 const mocks = vi.hoisted(() => ({
   authorizeOwnerSend: vi.fn(),
+  canUserManageTask: vi.fn(),
   createTask: vi.fn(),
   getServerSession: vi.fn(),
   listTasks: vi.fn(),
@@ -79,6 +81,10 @@ vi.mock("@/lib/tasks.server", () => ({
   listTasks: mocks.listTasks,
 }));
 
+vi.mock("@/lib/tasks/task-visibility.server", () => ({
+  canUserManageTask: mocks.canUserManageTask,
+}));
+
 import { GET, POST } from "./route";
 
 describe("tasks route", () => {
@@ -86,6 +92,7 @@ describe("tasks route", () => {
     mocks.authorizeOwnerSend.mockReset();
     mocks.authorizeOwnerSend.mockResolvedValue(null);
     mocks.createTask.mockReset();
+    mocks.canUserManageTask.mockReset();
     mocks.getServerSession.mockReset();
     mocks.listTasks.mockReset();
     mocks.personFindFirst.mockReset();
@@ -250,6 +257,126 @@ describe("tasks route", () => {
       { ownerAuthorization },
     );
     await expect(response.json()).resolves.toMatchObject({ success: true });
+  });
+
+  it("lets a manager add a step to an accessible private personal task", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.taskFindFirst.mockResolvedValue({
+      id: "parent_1",
+      isPublic: false,
+      ownerOrganizationId: null,
+      status: TaskStatus.ACTIVE,
+    });
+    mocks.canUserManageTask.mockResolvedValue(true);
+    mocks.createTask.mockResolvedValue({ id: "step_1" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({ parentTaskId: "parent_1", title: "First step" }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      "user_1",
+      expect.objectContaining({
+        isPublic: false,
+        parentTaskId: "parent_1",
+      }),
+    );
+  });
+
+  it("keeps Add Step self-only instead of creating dead-end assigned work", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({
+          assigneePersonInvite: {
+            email: "jane@example.org",
+            firstName: "Jane",
+            lastName: "Reviewer",
+          },
+          parentTaskId: "parent_1",
+          title: "First step",
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: "Add Step currently creates work only on your own task list.",
+    });
+    expect(mocks.personUpsert).not.toHaveBeenCalled();
+    expect(mocks.taskFindFirst).not.toHaveBeenCalled();
+    expect(mocks.createTask).not.toHaveBeenCalled();
+  });
+
+  it("hides a private parent from a user who cannot manage it", async () => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.taskFindFirst.mockResolvedValue({
+      id: "parent_1",
+      isPublic: false,
+      ownerOrganizationId: "org_private",
+      status: TaskStatus.STALE,
+    });
+    mocks.canUserManageTask.mockResolvedValue(false);
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({ parentTaskId: "parent_1", title: "First step" }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({
+      error: "Parent task not found.",
+    });
+    expect(mocks.createTask).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      "organization-owned",
+      {
+        id: "parent_org",
+        isPublic: true,
+        ownerOrganizationId: "org_1",
+        status: TaskStatus.ACTIVE,
+      },
+      "Organization-owned task steps are not supported here yet.",
+    ],
+    [
+      "completed",
+      {
+        id: "parent_done",
+        isPublic: true,
+        ownerOrganizationId: null,
+        status: TaskStatus.VERIFIED,
+      },
+      "Steps can only be added to draft or active tasks.",
+    ],
+  ])("rejects steps on %s parents", async (_kind, parent, error) => {
+    mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
+    mocks.taskFindFirst.mockResolvedValue(parent);
+
+    const response = await POST(
+      new Request("http://localhost/api/tasks", {
+        body: JSON.stringify({ parentTaskId: parent.id, title: "First step" }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error });
+    expect(mocks.createTask).not.toHaveBeenCalled();
   });
 
   it("creates a public assigned task without letting the caller pick a creator", async () => {
