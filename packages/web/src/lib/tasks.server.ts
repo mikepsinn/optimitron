@@ -2488,6 +2488,10 @@ export async function completeSelfTask(
   taskId: string,
   userId: string,
   completionEvidence: string,
+  actuals?: {
+    actualCashCostUsd?: number | null;
+    actualEffortSeconds?: number | null;
+  },
 ) {
   const evidence = completionEvidence.trim();
   if (!evidence) throw new Error("Completion evidence is required.");
@@ -2572,6 +2576,11 @@ export async function completeSelfTask(
         status: TaskStatus.ACTIVE,
       },
       data: {
+        // Self-completed tasks have no claim row, so actuals are recorded
+        // directly on the task (see the Task.actualCashCostUsd/
+        // actualEffortSeconds schema comments).
+        actualCashCostUsd: actuals?.actualCashCostUsd ?? null,
+        actualEffortSeconds: actuals?.actualEffortSeconds ?? null,
         completedAt,
         completionEvidence: evidence,
         status: TaskStatus.VERIFIED,
@@ -2586,6 +2595,8 @@ export async function completeSelfTask(
     const completedTask = await tx.task.findUniqueOrThrow({
       where: { id: task.id },
       select: {
+        actualCashCostUsd: true,
+        actualEffortSeconds: true,
         completedAt: true,
         completionEvidence: true,
         id: true,
@@ -2746,11 +2757,7 @@ export async function completeTaskClaim(
         userId,
       },
     },
-    select: {
-      claimedAt: true,
-      id: true,
-      startedAt: true,
-      status: true,
+    include: {
       task: { select: { status: true } },
     },
   });
@@ -2763,12 +2770,11 @@ export async function completeTaskClaim(
     claim.status === TaskClaimStatus.COMPLETED ||
     claim.status === TaskClaimStatus.VERIFIED
   ) {
-    return {
-      claimedAt: claim.claimedAt,
-      id: claim.id,
-      startedAt: claim.startedAt,
-      status: claim.status,
-    };
+    // Idempotent retry: return the same shape the update path below returns,
+    // including completionEvidence and actuals, instead of a partial record.
+    const { task, ...completedClaim } = claim;
+    void task;
+    return completedClaim;
   }
 
   if (
@@ -2836,7 +2842,7 @@ export async function completeTaskForUser(
 
   return {
     kind: "self" as const,
-    value: await completeSelfTask(taskId, userId, completionEvidence),
+    value: await completeSelfTask(taskId, userId, completionEvidence, actuals),
   };
 }
 
