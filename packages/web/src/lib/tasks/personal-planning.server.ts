@@ -120,6 +120,7 @@ export type PersonalQueueTaskRecord = Record<string, unknown> &
     deadlinePolicy?: DeadlinePolicy | string | null;
     contextJson?: unknown;
     directImpactFrame?: unknown;
+    hiddenUnresolvedBlockerCount?: number | null;
     marginalImpactFrame?: unknown;
     selectedImpactFrame?: unknown;
     blockerStatuses?: TaskStatus[] | null;
@@ -149,10 +150,13 @@ export type PersonalQueueTaskRecord = Record<string, unknown> &
       updatedAt?: Date | string | null;
     }> | null;
     incomingEdges?: Array<{
+      edgeType?: string | null;
       fromTask?: {
         id?: string | null;
         status?: TaskStatus | string | null;
       } | null;
+      probabilityDeltaBase?: number | null;
+      timeDeltaDaysBase?: number | null;
     }> | null;
     impact?: {
       currentSet?: {
@@ -187,6 +191,7 @@ export type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   createdByUserId?: string | null;
   executorType: string;
   hasMarginalEstimate: boolean;
+  hasStructuralUnlockEstimate: boolean;
   estimatePublicationEligible: boolean;
   estimateInputsStale: boolean;
   pSuccess: number | null;
@@ -197,6 +202,8 @@ export type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   unblockedBlockers: number;
   unresolvedBlockers: number;
   timeUntilDueHours: number | null;
+  structuralUnlockPriority: number;
+  unlocksTaskIds: string[];
   valid: boolean;
   value: number | null;
   validationNotes: string[];
@@ -654,7 +661,16 @@ function getPlanningBlockers(task: PersonalQueueTaskRecord): PlanningBlocker[] {
     const status = edge.fromTask?.status;
     return taskId && status ? [{ taskId, status }] : [];
   });
-  if (edgeBlockers.length > 0) return edgeBlockers;
+  const hiddenBlockers = Array.from(
+    { length: Math.max(0, task.hiddenUnresolvedBlockerCount ?? 0) },
+    (_, index) => ({
+      status: TaskStatus.ACTIVE,
+      taskId: `private-blocker:${task.id}:${index}`,
+    }),
+  );
+  if (edgeBlockers.length > 0 || hiddenBlockers.length > 0) {
+    return [...edgeBlockers, ...hiddenBlockers];
+  }
   return (task.blockerStatuses ?? []).map((status, index) => ({
     status,
     taskId: `unresolved-blocker:${task.id}:${index}`,
@@ -901,6 +917,147 @@ function filterCurrentPersonalTasks(
   return tasks.filter((task) => !supersededTaskIds.has(task.id));
 }
 
+type BuiltPersonalQueueRow = PersonalQueueTaskRecord & PersonalQueueRow;
+
+type StructuralUnlockAttribution = {
+  downstreamTaskIds: Set<string>;
+  priority: number;
+};
+
+function unresolvedBlockers(row: BuiltPersonalQueueRow) {
+  return row.blockers.filter(
+    (blocker) => blocker.status !== TaskStatus.VERIFIED,
+  );
+}
+
+function collectStructuralBlockerFrontier(
+  row: BuiltPersonalQueueRow,
+  rowsById: ReadonlyMap<string, BuiltPersonalQueueRow>,
+  closureIds: Set<string>,
+  frontierIds: Set<string>,
+  visiting: Set<string>,
+): boolean {
+  if (visiting.has(row.id)) return false;
+  visiting.add(row.id);
+
+  const blockers = unresolvedBlockers(row);
+  if (blockers.length === 0) {
+    frontierIds.add(row.id);
+    visiting.delete(row.id);
+    return true;
+  }
+
+  for (const blocker of blockers) {
+    const blockerRow = rowsById.get(blocker.taskId);
+    if (!blockerRow) return false;
+    closureIds.add(blockerRow.id);
+    if (
+      !collectStructuralBlockerFrontier(
+        blockerRow,
+        rowsById,
+        closureIds,
+        frontierIds,
+        visiting,
+      )
+    ) {
+      return false;
+    }
+  }
+
+  visiting.delete(row.id);
+  return true;
+}
+
+function computeStructuralUnlockAttributions(
+  rows: BuiltPersonalQueueRow[],
+  ranking: {
+    computeTaskPriority: (
+      task: TaskPriorityInput,
+      options?: { buybackRate?: number },
+    ) => TaskPriorityResult;
+  },
+  buybackRate: number,
+) {
+  const rowsById = new Map(rows.map((row) => [row.id, row]));
+  const attributions = new Map<string, StructuralUnlockAttribution>();
+
+  for (const downstream of rows) {
+    if (
+      downstream.realEv <= 0 ||
+      downstream.hours == null ||
+      downstream.hours <= 0 ||
+      unresolvedBlockers(downstream).length === 0
+    ) {
+      continue;
+    }
+
+    const closureIds = new Set<string>();
+    const frontierIds = new Set<string>();
+    // Attribute only complete, visible dependency plans. A private or missing
+    // blocker still gates execution, but cannot safely expose or borrow EV.
+    let completeGraph = true;
+    for (const blocker of unresolvedBlockers(downstream)) {
+      const blockerRow = rowsById.get(blocker.taskId);
+      if (!blockerRow) {
+        completeGraph = false;
+        break;
+      }
+      closureIds.add(blockerRow.id);
+      if (
+        !collectStructuralBlockerFrontier(
+          blockerRow,
+          rowsById,
+          closureIds,
+          frontierIds,
+          new Set([downstream.id]),
+        )
+      ) {
+        completeGraph = false;
+        break;
+      }
+    }
+    if (!completeGraph || frontierIds.size === 0) continue;
+
+    let totalHours = downstream.hours;
+    let totalCashCost = downstream.cashCost;
+    for (const taskId of closureIds) {
+      const blockerRow = rowsById.get(taskId);
+      if (!blockerRow || blockerRow.hours == null || blockerRow.hours <= 0) {
+        completeGraph = false;
+        break;
+      }
+      totalHours += blockerRow.hours;
+      totalCashCost += blockerRow.cashCost;
+    }
+    if (!completeGraph) continue;
+
+    const planScore = ranking.computeTaskPriority(
+      {
+        estimatedEffortHours: totalHours,
+        selectedImpactFrame: {
+          estimatedCashCostUsdBase: totalCashCost,
+          estimatedEffortHoursBase: totalHours,
+          expectedEconomicValueUsdBase: downstream.realEv,
+        } as TaskPriorityInput["selectedImpactFrame"],
+      } as TaskPriorityInput,
+      { buybackRate },
+    );
+    if (!planScore.valid || planScore.priority <= 0) continue;
+
+    for (const frontierId of frontierIds) {
+      const current = attributions.get(frontierId) ?? {
+        downstreamTaskIds: new Set<string>(),
+        priority: 0,
+      };
+      current.downstreamTaskIds.add(downstream.id);
+      current.priority += planScore.priority;
+      attributions.set(frontierId, current);
+    }
+  }
+
+  return attributions;
+}
+
 export function buildPersonalQueueRows(
   tasks: unknown[],
   ranking: {
@@ -934,122 +1091,143 @@ export function buildPersonalQueueRows(
     buybackRate,
     DEFAULT_PERSONAL_BUYBACK_RATE,
   );
-  const filtered = options?.requireUnblocked
-    ? currentTasks.filter((task) => {
-        const sourceTask = task as PersonalQueueTaskRecord;
-        if (!isTaskTimeAvailable(sourceTask, now)) return false;
-        if (
+  const baseRows = currentTasks.map((task) => {
+    const sourceTask = task as PersonalQueueTaskRecord;
+    const marginalImpactFrame = getMarginalImpactFrame(sourceTask);
+    const capability = assessQueueTaskCapability(
+      sourceTask,
+      options?.executorProfiles ?? [],
+    );
+    const effort = resolveQueueEffortEstimate(
+      sourceTask,
+      marginalImpactFrame,
+      options?.executorProfiles ?? [],
+    );
+    const score = ranking.computeTaskPriority(
+      {
+        ...sourceTask,
+        estimatedEffortHours: effort.hours,
+        selectedImpactFrame: marginalImpactFrame,
+      } as TaskPriorityInput,
+      { buybackRate: parsedBuybackRate },
+    );
+    const summary = summarizeTask(sourceTask);
+    const context = getTaskContext(sourceTask);
+    const hours = effort.hours;
+    const value = firstFiniteNumber([context.value, context.grossValue]);
+    const pSuccess = firstFiniteNumber([
+      context.p_success,
+      context.pSuccess,
+      marginalImpactFrame?.successProbabilityBase,
+    ]);
+    const cashCost =
+      firstFiniteNumber(
+        [
+          context.cash_cost,
+          context.cashCost,
+          marginalImpactFrame?.estimatedCashCostUsdBase,
+        ],
+        0,
+      ) ?? 0;
+    const deadline = computeDeadlineSummary(sourceTask, hours, now);
+    const impactEstimateStatus = getTaskImpactEstimateStatus(sourceTask);
+    return {
+      ...summary,
+      activeChildTaskCount:
+        sourceTask.activeChildTaskCount ?? sourceTask.childTasks?.length ?? 0,
+      activeExecutionAttemptCount: sourceTask.activeExecutionAttemptCount ?? 0,
+      assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
+      assigneePersonId: sourceTask.assigneePersonId ?? null,
+      blockers: getPlanningBlockers(sourceTask),
+      contextJson: sourceTask.contextJson,
+      createdByUserId: sourceTask.createdByUserId ?? null,
+      blockersCount: score.blockersCount,
+      blockersResolved: score.blockersResolved,
+      blockersResolvedPercent:
+        score.blockersCount > 0
+          ? (score.unblockedBlockers / score.blockersCount) * 100
+          : 100,
+      capabilityReasons: capability.reasons,
+      capabilityStatus: capability.status,
+      availableAt: deadline.availableAt,
+      buybackRate: score.buybackRate,
+      cashCost,
+      deadlinePolicy: deadline.deadlinePolicy,
+      deadlineRationale: deadline.deadlineRationale,
+      deadlineOverrideEligible: isDeadlineOverrideEligible(deadline),
+      deadlineStatus: deadline.deadlineStatus,
+      dueAt: deadline.dueAt,
+      evMath: score.evMath,
+      executionEligible: isExecutableWorkItem(sourceTask),
+      effortEstimateSource: effort.source,
+      hours,
+      latestStartAt: deadline.latestStartAt,
+      executorType: getTaskExecutorType(sourceTask),
+      hasMarginalEstimate: hasMarginalEstimate(sourceTask),
+      hasStructuralUnlockEstimate: false,
+      ...impactEstimateStatus,
+      priority: score.priority,
+      pSuccess,
+      realEv: score.realEv,
+      rooted:
+        options?.rootedTaskIds?.has(sourceTask.id) ??
+        sourceTask.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID,
+      timeUntilDueHours: deadline.timeUntilDueHours,
+      structuralUnlockPriority: 0,
+      unblockedBlockers: score.unblockedBlockers,
+      unlocksTaskIds: [],
+      unresolvedBlockers: Math.max(
+        0,
+        score.blockersCount - score.unblockedBlockers,
+      ),
+      valid: score.valid,
+      value,
+      validationNotes: score.validationNotes,
+    } as PersonalQueueTaskRecord & PersonalQueueRow;
+  });
+  const structuralUnlockAttributions = computeStructuralUnlockAttributions(
+    baseRows,
+    ranking,
+    parsedBuybackRate,
+  );
+  const enrichedRows = baseRows.map((row) => {
+    const structural = structuralUnlockAttributions.get(row.id);
+    if (!structural || structural.priority <= 0) return row;
+    return {
+      ...row,
+      evMath: `${row.evMath}, structuralUnlockPriority=${structural.priority.toFixed(4)}`,
+      hasStructuralUnlockEstimate: true,
+      priority: row.priority + structural.priority,
+      structuralUnlockPriority: structural.priority,
+      unlocksTaskIds: Array.from(structural.downstreamTaskIds).sort(),
+      validationNotes: row.validationNotes.filter(
+        (note) => note !== "Missing expected economic value estimate.",
+      ),
+    };
+  });
+  const filteredRows = options?.requireUnblocked
+    ? enrichedRows.filter((row) => {
+        if (!isTaskTimeAvailable(row, now)) return false;
+        return !(
           ranking.isTaskBlocked?.({
-            blockerStatuses: sourceTask.blockerStatuses ?? undefined,
-          }) ??
-          false
-        ) {
-          return false;
-        }
-        return true;
+            blockerStatuses: row.blockers.map(
+              (blocker) => blocker.status as TaskStatus,
+            ),
+          }) ?? false
+        );
       })
-    : currentTasks;
+    : enrichedRows;
 
-  const ranked = filtered
-    .map((task) => {
-      const sourceTask = task as PersonalQueueTaskRecord;
-      const marginalImpactFrame = getMarginalImpactFrame(sourceTask);
-      const capability = assessQueueTaskCapability(
-        sourceTask,
-        options?.executorProfiles ?? [],
-      );
-      const effort = resolveQueueEffortEstimate(
-        sourceTask,
-        marginalImpactFrame,
-        options?.executorProfiles ?? [],
-      );
-      const score = ranking.computeTaskPriority(
-        {
-          ...sourceTask,
-          estimatedEffortHours: effort.hours,
-          selectedImpactFrame: marginalImpactFrame,
-        } as TaskPriorityInput,
-        { buybackRate: parsedBuybackRate },
-      );
-      const summary = summarizeTask(sourceTask);
-      const context = getTaskContext(sourceTask);
-      const hours = effort.hours;
-      const value = firstFiniteNumber([context.value, context.grossValue]);
-      const pSuccess = firstFiniteNumber([
-        context.p_success,
-        context.pSuccess,
-        marginalImpactFrame?.successProbabilityBase,
-      ]);
-      const cashCost =
-        firstFiniteNumber(
-          [
-            context.cash_cost,
-            context.cashCost,
-            marginalImpactFrame?.estimatedCashCostUsdBase,
-          ],
-          0,
-        ) ?? 0;
-      const deadline = computeDeadlineSummary(sourceTask, hours, now);
-      const impactEstimateStatus = getTaskImpactEstimateStatus(sourceTask);
-      return {
-        ...summary,
-        activeChildTaskCount:
-          sourceTask.activeChildTaskCount ?? sourceTask.childTasks?.length ?? 0,
-        activeExecutionAttemptCount:
-          sourceTask.activeExecutionAttemptCount ?? 0,
-        assigneeOrganizationId: sourceTask.assigneeOrganizationId ?? null,
-        assigneePersonId: sourceTask.assigneePersonId ?? null,
-        blockers: getPlanningBlockers(sourceTask),
-        contextJson: sourceTask.contextJson,
-        createdByUserId: sourceTask.createdByUserId ?? null,
-        blockersCount: score.blockersCount,
-        blockersResolved: score.blockersResolved,
-        blockersResolvedPercent:
-          score.blockersCount > 0
-            ? (score.unblockedBlockers / score.blockersCount) * 100
-            : 100,
-        capabilityReasons: capability.reasons,
-        capabilityStatus: capability.status,
-        availableAt: deadline.availableAt,
-        buybackRate: score.buybackRate,
-        cashCost,
-        deadlinePolicy: deadline.deadlinePolicy,
-        deadlineRationale: deadline.deadlineRationale,
-        deadlineOverrideEligible: isDeadlineOverrideEligible(deadline),
-        deadlineStatus: deadline.deadlineStatus,
-        dueAt: deadline.dueAt,
-        evMath: score.evMath,
-        executionEligible: isExecutableWorkItem(sourceTask),
-        effortEstimateSource: effort.source,
-        hours,
-        latestStartAt: deadline.latestStartAt,
-        executorType: getTaskExecutorType(sourceTask),
-        hasMarginalEstimate: hasMarginalEstimate(sourceTask),
-        ...impactEstimateStatus,
-        priority: score.priority,
-        pSuccess,
-        realEv: score.realEv,
-        rooted:
-          options?.rootedTaskIds?.has(sourceTask.id) ??
-          sourceTask.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID,
-        timeUntilDueHours: deadline.timeUntilDueHours,
-        unblockedBlockers: score.unblockedBlockers,
-        unresolvedBlockers: Math.max(
-          0,
-          score.blockersCount - score.unblockedBlockers,
-        ),
-        valid: score.valid,
-        value,
-        validationNotes: score.validationNotes,
-      } as PersonalQueueTaskRecord & PersonalQueueRow;
-    })
+  const ranked = filteredRows
     .filter(
       (row) =>
         !options?.requireExecutable ||
         (isAtomicExecutionRecord(row) &&
           row.capabilityStatus === "eligible" &&
           row.rooted &&
-          ((row.hasMarginalEstimate && row.valid && row.priority > 0) ||
+          (((row.hasMarginalEstimate || row.hasStructuralUnlockEstimate) &&
+            row.valid &&
+            row.priority > 0) ||
             isDeadlineLaneGuardrail(row))),
     )
     .sort((left, right) =>
