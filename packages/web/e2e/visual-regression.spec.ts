@@ -80,6 +80,7 @@ const VISUAL_REVIEW_CSS = `
     visibility: hidden !important;
   }
 `;
+
 const OPTIONAL_ROUTE_SKIP_STATUSES = new Set([401, 403, 404]);
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 const REVIEW_AFTER_ROOT = path.resolve(
@@ -242,11 +243,6 @@ async function openVisualRoute(
   siteVariant?: string,
 ) {
   const errors: string[] = [];
-  // Capture the settled UI, not whichever IntersectionObserver/Framer Motion
-  // frame happens to be visible when a full-page screenshot starts. Without
-  // this, long pages can intermittently lose off-screen ScrollReveal content
-  // even when the PR changes no UI code.
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => {
     Object.defineProperty(window, "__OPTIMITRON_VISUAL_REVIEW__", {
       value: true,
@@ -256,7 +252,7 @@ async function openVisualRoute(
 
   page.on("pageerror", (error) => {
     if (!isIgnoredVisualPageError(error)) {
-      errors.push(error.stack ?? error.message);
+      errors.push(error.stack || error.message || error.name || String(error));
     }
   });
 
