@@ -18,4 +18,16 @@ describe("next.config legislation tracing", () => {
     expect(includes["/legislation"] ?? []).toContain(expectedContentGlob);
     expect(includes["/legislation/*"] ?? []).toContain(expectedContentGlob);
   });
+
+  it("includes rendered logged-out page snapshots in the MCP server trace", () => {
+    const configPath = fileURLToPath(
+      new URL("../../next.config.js", import.meta.url),
+    );
+    const config = require(configPath) as NextConfigWithTracing;
+    const includes = config.outputFileTracingIncludes ?? {};
+
+    expect(includes["/api/mcp"] ?? []).toContain(
+      "./src/app/**/page.logged-out.md",
+    );
+  });
 });
