@@ -54,6 +54,55 @@ test("new routes show their after-only screenshot", async ({
   );
 });
 
+test("screenshots open in a keyboard-friendly lightbox", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.route("**/assets/after/default/home.png", (route) =>
+    route.fulfill({
+      body: ONE_PIXEL_PNG,
+      contentType: "image/png",
+      status: 200,
+    }),
+  );
+  await page.route("**/assets/before/default/home.png", (route) =>
+    route.fulfill({
+      body: ONE_PIXEL_PNG,
+      contentType: "image/png",
+      status: 200,
+    }),
+  );
+
+  await page.goto(`${pathToFileURL(SMOKE_HTML)}#route=home`);
+  await page.getByRole("button", { name: "Zoom after" }).click();
+
+  const lightbox = page.getByRole("dialog");
+  await expect(lightbox).toBeVisible();
+  await expect(page.locator("#shot-lightbox-title")).toHaveText(
+    "After — Desktop",
+  );
+  await expect(page.locator("#shot-lightbox-image")).toHaveAttribute(
+    "src",
+    "assets/after/default/home.png",
+  );
+
+  await page.getByRole("button", { name: "Actual pixels" }).click();
+  await expect(page.locator("#shot-lightbox-image")).toHaveClass(/actual-size/);
+  await expect(page.getByRole("button", { name: "Fit width" })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(lightbox).toBeHidden();
+
+  await page.getByRole("button", { name: "Full page" }).click();
+  const afterImage = page.getByRole("button", {
+    name: "Open After — this PR full size",
+  });
+  await afterImage.focus();
+  await afterImage.press("Enter");
+  await expect(lightbox).toBeVisible();
+});
+
 test("collapsed variant routes remain available while filtering", async ({
   page,
 }, testInfo) => {

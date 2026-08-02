@@ -256,6 +256,8 @@ assert(html.includes('id="review-data"'), "JSON island present");
 assert(html.includes('id="noise"'), "noise select present");
 assert(html.includes('id="export-btn"'), "export button present");
 assert(html.includes('id="copy-review-btn"'), "copy PR comment button present");
+assert(html.includes('id="shot-lightbox"'), "screenshot lightbox present");
+assert(html.includes("Zoom after"), "screenshot zoom action present");
 assert(
   html.includes("data-live-toggle"),
   "live-compare toggle keyword in client JS",
