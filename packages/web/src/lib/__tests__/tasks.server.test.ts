@@ -153,6 +153,13 @@ function lastTaskFindManyArgs() {
   return calls.at(-1)?.[0] ?? {};
 }
 
+function firstTaskFindManyArgs() {
+  const calls = mocks.prisma.taskFindMany.mock.calls as Array<
+    [Record<string, unknown>]
+  >;
+  return calls[0]?.[0] ?? {};
+}
+
 function mockTask(overrides: Record<string, unknown> = {}) {
   return {
     _count: { childTasks: 0, executionAttempts: 0 },
@@ -174,6 +181,7 @@ function mockTask(overrides: Record<string, unknown> = {}) {
     dueAt: null,
     estimatedEffortHours: null,
     id: "task_1",
+    impactStatement: null,
     incomingEdges: [],
     interestTags: [],
     isPublic: true,
@@ -957,27 +965,65 @@ describe("tasks server", () => {
     ]);
   });
 
-  it("searchTasks ignores request-framing words but requires every distinctive term", async () => {
+  it("searchTasks ignores request-framing words and accepts any distinctive term", async () => {
     await searchTasks("find secret grant memo task", { userId: null });
 
-    const args = lastTaskFindManyArgs();
-    const filters = (args.where as { AND: unknown[] }).AND;
-    expect(filters[0]).toEqual(
-      expect.objectContaining({ deletedAt: null, isPublic: true }),
+    const args = mocks.prisma.taskFindMany.mock.calls.map(
+      (call) => call[0] as { take: number; where: { AND: unknown[] } },
     );
-    expect(filters.slice(1)).toHaveLength(3);
-    for (const term of ["secret", "grant", "memo"]) {
-      expect(filters.slice(1)).toContainEqual(
+    expect(args).toHaveLength(4);
+    for (const [index, term] of ["secret", "grant", "memo"].entries()) {
+      expect(args[index]?.where.AND[0]).toEqual(
+        expect.objectContaining({ deletedAt: null, isPublic: true }),
+      );
+      expect(args[index]?.where.AND[1]).toEqual(
         expect.objectContaining({
           OR: expect.arrayContaining([
             { title: { contains: term, mode: "insensitive" } },
           ]),
         }),
       );
+      expect(args[index]?.take).toBe(21);
     }
-    expect(JSON.stringify(filters.slice(1))).not.toContain('"find"');
-    expect(JSON.stringify(filters.slice(1))).not.toContain('"task"');
-    expect(args.take).toBe(64);
+    expect(JSON.stringify(args.slice(0, 3))).not.toContain('"find"');
+    expect(JSON.stringify(args.slice(0, 3))).not.toContain('"task"');
+  });
+
+  it("finds the reported securities-counsel task from a longer natural query", async () => {
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        description: "Have independent counsel review the offering documents.",
+        id: "cms0wpz59001b04jwyofp05lw",
+        impactStatement: "Verify the EOS equity structure before financing.",
+        title: "Get securities counsel to review the EOS equity structure",
+      }),
+    ]);
+
+    const results = await searchTasks(
+      "EOS securities counsel stock purchase agreement lawyer review offering",
+      { userId: "user-a" },
+    );
+
+    expect(results[0]?.id).toBe("cms0wpz59001b04jwyofp05lw");
+  });
+
+  it("uses the bounded fallback to find a misspelled title", async () => {
+    mocks.prisma.taskFindMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        mockTask({
+          id: "securities-counsel",
+          title: "Get securities counsel to review the equity structure",
+        }),
+      ]);
+
+    const results = await searchTasks("securites counsl", {
+      userId: "user-a",
+    });
+
+    expect(results[0]?.id).toBe("securities-counsel");
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledTimes(3);
   });
 
   it.each([
@@ -1050,10 +1096,10 @@ describe("tasks server", () => {
     );
   });
 
-  it("searchTasks with a user searches public tasks plus that user's created private tasks", async () => {
+  it("searchTasks includes every private task the authenticated person can access", async () => {
     await searchTasks("secret grant memo", { userId: "user-a" });
 
-    const args = lastTaskFindManyArgs();
+    const args = firstTaskFindManyArgs();
     const [visibility] = (args.where as { AND: unknown[] }).AND as Array<{
       OR?: unknown[];
       deletedAt?: unknown;
@@ -1063,8 +1109,24 @@ describe("tasks server", () => {
       expect.arrayContaining([
         { isPublic: true },
         { createdByUserId: "user-a" },
+        { assigneePersonId: "person_admin" },
+        {
+          claims: {
+            some: {
+              deletedAt: null,
+              status: {
+                in: ["CLAIMED", "IN_PROGRESS", "COMPLETED", "VERIFIED"],
+              },
+              userId: "user-a",
+            },
+          },
+        },
       ]),
     );
+    expect(mocks.prisma.userFindUnique).toHaveBeenCalledWith({
+      select: { personId: true },
+      where: { id: "user-a" },
+    });
   });
 
   it("records the creator on private tasks created by the creator", async () => {
