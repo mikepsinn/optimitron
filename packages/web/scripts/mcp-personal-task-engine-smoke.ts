@@ -127,8 +127,11 @@ async function createTask(input: {
 }
 
 async function getMyQueue() {
-  const body = await callTool<{ queue: QueueRow[] }>("getMyQueue", { maxResults: 20 });
-  return body.queue;
+  const body = await callTool<{ deadlineLane: QueueRow[]; evLane: QueueRow[] }>(
+    "getMyQueue",
+    { maxResults: 20 },
+  );
+  return [...body.deadlineLane, ...body.evLane];
 }
 
 async function getAIQueue() {

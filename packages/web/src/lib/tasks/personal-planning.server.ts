@@ -42,7 +42,7 @@ export const DEFAULT_PERSONAL_BUYBACK_RATE = 1000;
 
 const AI_EXECUTOR_TYPE = "AI Agent";
 const MS_PER_HOUR = 60 * 60 * 1000;
-export const REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS = 24;
+export const PERSONAL_DEADLINE_LANE_LIMIT = 500;
 
 type DeadlinePolicy = "NONE" | "SOFT" | "EXPIRES" | "REQUIRED";
 type DeadlineStatus =
@@ -872,24 +872,24 @@ function computeDeadlineSummary(
   };
 }
 
-function isRequiredPersonalGuardrail(task: PersonalQueueRow) {
+function isDeadlineLaneGuardrail(task: PersonalQueueRow) {
   return (
-    task.deadlinePolicy === "REQUIRED" &&
-    task.deadlineOverrideEligible &&
-    task.hours != null &&
-    task.hours > 0
+    (task.deadlinePolicy === "REQUIRED" || task.deadlinePolicy === "EXPIRES") &&
+    (task.deadlineStatus === "start_now" ||
+      task.deadlineStatus === "missed" ||
+      task.deadlineStatus === "expired")
   );
 }
 
-function isRequiredDeadlineOverrideEligible(
+function isDeadlineOverrideEligible(
   deadline: ReturnType<typeof computeDeadlineSummary>,
 ) {
   return (
-    deadline.deadlinePolicy === "REQUIRED" &&
+    (deadline.deadlinePolicy === "REQUIRED" ||
+      deadline.deadlinePolicy === "EXPIRES") &&
     (deadline.deadlineStatus === "start_now" ||
-      (deadline.deadlineStatus === "missed" &&
-        deadline.timeUntilDueHours != null &&
-        deadline.timeUntilDueHours >= -REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS))
+      deadline.deadlineStatus === "missed" ||
+      deadline.deadlineStatus === "expired")
   );
 }
 
@@ -946,11 +946,7 @@ export function buildPersonalQueueRows(
         ) {
           return false;
         }
-        const deadline = computeDeadlineSummary(sourceTask, null, now);
-        return !(
-          deadline.deadlinePolicy === "EXPIRES" &&
-          deadline.deadlineStatus === "expired"
-        );
+        return true;
       })
     : currentTasks;
 
@@ -1019,7 +1015,7 @@ export function buildPersonalQueueRows(
         cashCost,
         deadlinePolicy: deadline.deadlinePolicy,
         deadlineRationale: deadline.deadlineRationale,
-        deadlineOverrideEligible: isRequiredDeadlineOverrideEligible(deadline),
+        deadlineOverrideEligible: isDeadlineOverrideEligible(deadline),
         deadlineStatus: deadline.deadlineStatus,
         dueAt: deadline.dueAt,
         evMath: score.evMath,
@@ -1054,7 +1050,7 @@ export function buildPersonalQueueRows(
           row.capabilityStatus === "eligible" &&
           row.rooted &&
           ((row.hasMarginalEstimate && row.valid && row.priority > 0) ||
-            isRequiredPersonalGuardrail(row))),
+            isDeadlineLaneGuardrail(row))),
     )
     .sort((left, right) =>
       compareExecutionTasks(
@@ -1322,6 +1318,37 @@ export interface PersonalQueueRequest {
 
 export type PersonalQueueResult = Awaited<ReturnType<typeof loadPersonalQueue>>;
 
+export function isPersonalDeadlineLaneRow(row: PersonalQueueRow) {
+  return isDeadlineLaneGuardrail(row);
+}
+
+function deadlineThresholdTime(row: PersonalQueueRow) {
+  if (row.deadlineStatus !== "start_now") {
+    return parseTaskDate(row.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  }
+  return (
+    parseTaskDate(row.latestStartAt)?.getTime() ??
+    parseTaskDate(row.dueAt)?.getTime() ??
+    Number.POSITIVE_INFINITY
+  );
+}
+
+export function comparePersonalDeadlineLaneRows(
+  left: PersonalQueueRow,
+  right: PersonalQueueRow,
+) {
+  const thresholdDifference =
+    deadlineThresholdTime(left) - deadlineThresholdTime(right);
+  if (thresholdDifference !== 0) return thresholdDifference;
+
+  const leftDueAt =
+    parseTaskDate(left.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  const rightDueAt =
+    parseTaskDate(right.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  if (leftDueAt !== rightDueAt) return leftDueAt - rightDueAt;
+  return left.id.localeCompare(right.id);
+}
+
 async function loadPersonId(userId: string): Promise<string | null> {
   const prisma = await getPrisma();
   const user = await prisma.user.findUnique({
@@ -1374,15 +1401,42 @@ export async function loadPersonalQueue(request: PersonalQueueRequest) {
     limit: selfTasks.length,
     rootedTaskIds: graph.rootedTaskIds,
   });
-  const queue = buildPersonalQueueRows(planningTasks, ranking, buybackRate, {
-    executorProfiles,
-    limit: maxResults,
-    requireExecutable: true,
-    requireUnblocked: true,
-    rootedTaskIds: graph.rootedTaskIds,
-  });
+  const executableRows = buildPersonalQueueRows(
+    planningTasks,
+    ranking,
+    buybackRate,
+    {
+      executorProfiles,
+      limit: selfTasks.length,
+      requireExecutable: true,
+      requireUnblocked: true,
+      rootedTaskIds: graph.rootedTaskIds,
+    },
+  );
+  const allDeadlineRows = executableRows
+    .filter(isPersonalDeadlineLaneRow)
+    .sort(comparePersonalDeadlineLaneRows);
+  const deadlineLane = allDeadlineRows.slice(0, PERSONAL_DEADLINE_LANE_LIMIT);
+  // Overflow remains deadline work even though the separately generous lane
+  // cap bounds the response. Do not silently relabel it as EV work.
+  const deadlineTaskIds = new Set(allDeadlineRows.map((row) => row.id));
+  const evLane = executableRows
+    .filter((row) => !deadlineTaskIds.has(row.id))
+    .slice(0, maxResults);
 
-  return { buybackRate, queue, ...summarizeCapabilityWork(allRows) };
+  return {
+    buybackRate,
+    deadlineLane,
+    evLane,
+    queueAudit: {
+      activeCreatedTasks: currentPersonalTasks.filter(
+        (task) => task.createdByUserId === request.userId,
+      ).length,
+      activePersonalTasks: currentPersonalTasks.length,
+      unblockedTasks: executableRows.length,
+    },
+    ...summarizeCapabilityWork(allRows),
+  };
 }
 
 export interface PersonalQueueAuditIssue {
@@ -1582,21 +1636,17 @@ export async function loadPersonalQueueAudit(request: {
       }
       if (row.deadlineStatus === "missed") {
         issues.push({
-          code: row.deadlineOverrideEligible
-            ? "REQUIRED_DEADLINE_MISSED"
-            : "REQUIRED_DEADLINE_OVERDUE",
-          message: row.deadlineOverrideEligible
-            ? `Task ${task.id} is past its required deadline and inside the ${REQUIRED_DEADLINE_OVERRIDE_GRACE_HOURS}-hour remediation window.`
-            : `Task ${task.id} is past its required deadline; it remains ranked by expected value but no longer overrides the queue.`,
-          severity: row.deadlineOverrideEligible ? "high" : "medium",
+          code: "REQUIRED_DEADLINE_MISSED",
+          message: `Task ${task.id} is past its required deadline and remains in the deadline lane until it is resolved.`,
+          severity: "high",
           taskId: task.id,
         });
       }
       if (row.deadlineStatus === "expired") {
         issues.push({
           code: "EXPIRING_TASK_EXPIRED",
-          message: `Task ${task.id} is past its expiring opportunity deadline.`,
-          severity: "medium",
+          message: `Task ${task.id} is past its expiring deadline and remains in the deadline lane until it is resolved.`,
+          severity: "high",
           taskId: task.id,
         });
       }

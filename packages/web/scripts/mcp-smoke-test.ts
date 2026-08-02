@@ -339,8 +339,14 @@ async function runSignerReminderScenario() {
   let queueMsg = "no response";
   if (queueText) {
     try {
-      const parsed = JSON.parse(queueText) as { queue?: Array<{ id: string }> };
-      const ids = (parsed.queue ?? []).map((t) => t.id);
+      const parsed = JSON.parse(queueText) as {
+        deadlineLane?: Array<{ id: string }>;
+        evLane?: Array<{ id: string }>;
+      };
+      const ids = [
+        ...(parsed.deadlineLane ?? []),
+        ...(parsed.evLane ?? []),
+      ].map((task) => task.id);
       inQueueOk = ids.includes(reminderTaskId);
       queueMsg = `queue size ${ids.length}, includes reminder: ${inQueueOk}`;
     } catch (e) {
@@ -385,9 +391,13 @@ async function runSignerReminderScenario() {
   if (queueText2) {
     try {
       const parsed = JSON.parse(queueText2) as {
-        queue?: Array<{ id: string }>;
+        deadlineLane?: Array<{ id: string }>;
+        evLane?: Array<{ id: string }>;
       };
-      const ids = (parsed.queue ?? []).map((t) => t.id);
+      const ids = [
+        ...(parsed.deadlineLane ?? []),
+        ...(parsed.evLane ?? []),
+      ].map((task) => task.id);
       removedOk = !ids.includes(reminderTaskId);
       removedMsg = `still present: ${ids.includes(reminderTaskId)}`;
     } catch (e) {
