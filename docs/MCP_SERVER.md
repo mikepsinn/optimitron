@@ -362,6 +362,43 @@ Example impact frame for a subjective but useful outreach task:
 }
 ```
 
+## Food And Health Tracking
+
+Use the existing health-tracking tools for food as well as medications,
+symptoms, sleep, activity, labs, and vital signs. When `variableName` is new,
+provide `categoryName` so the server does not guess the wrong kind of variable.
+Once the variable exists, its name or `globalVariableId` is enough.
+
+Create a daily food reminder:
+
+```json
+{
+  "variableName": "Greek yogurt",
+  "categoryName": "Food",
+  "defaultValue": 1,
+  "unitAbbreviation": "servings",
+  "reminderStartTime": "08:00"
+}
+```
+
+Record it later:
+
+```json
+{
+  "variableName": "Greek yogurt",
+  "value": 1,
+  "unitAbbreviation": "servings",
+  "startTime": "2026-08-01T08:15:00-05:00"
+}
+```
+
+`serving`, `servings`, and the UCUM code `{serving}` resolve to the seeded
+`servings` unit. Use servings for simple behavior or adherence tracking. Use a
+specific mass, volume, energy, or nutrient unit such as `g`, `mL`, or `kcal`
+when the quantity matters. Common categories include `Food`, `Drink`,
+`Nutrient`, `Treatment`, `Symptom`, `Emotion`, `Sleep`, `Activity`,
+`Vital Sign`, and `Biomarker`.
+
 ## Naming Boundaries
 
 Model ownership (Task / TaskCommunicationEndpoint / TaskComment /
