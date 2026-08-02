@@ -303,11 +303,12 @@ function hasUsableEstimate(task: ExecutionPlanningTask) {
   );
 }
 
-function isRequiredGuardrail(task: ExecutionPlanningTask) {
+function isDeadlineGuardrail(task: ExecutionPlanningTask) {
   return (
-    task.deadlinePolicy === "REQUIRED" &&
-    (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") &&
-    task.deadlineOverrideEligible !== false &&
+    (task.deadlinePolicy === "REQUIRED" || task.deadlinePolicy === "EXPIRES") &&
+    (task.deadlineStatus === "start_now" ||
+      task.deadlineStatus === "missed" ||
+      task.deadlineStatus === "expired") &&
     taskMinutes(task) != null
   );
 }
@@ -320,11 +321,7 @@ function isRequiredInWindow(
   if (task.deadlinePolicy !== "REQUIRED" || taskMinutes(task) == null) {
     return false;
   }
-  if (
-    task.deadlineStatus === "start_now" ||
-    (task.deadlineStatus === "missed" &&
-      task.deadlineOverrideEligible !== false)
-  ) {
+  if (task.deadlineStatus === "start_now" || task.deadlineStatus === "missed") {
     return true;
   }
   const dueAt = asDate(task.dueAt);
@@ -332,7 +329,7 @@ function isRequiredInWindow(
 }
 
 function isSchedulable(task: ExecutionPlanningTask) {
-  return hasUsableEstimate(task) || isRequiredGuardrail(task);
+  return hasUsableEstimate(task) || isDeadlineGuardrail(task);
 }
 
 function unresolvedBlockers(
@@ -350,12 +347,11 @@ function unresolvedBlockers(
 
 function deadlineRank(task: ExecutionPlanningTask) {
   if (task.deadlinePolicy === "REQUIRED") {
-    if (
-      task.deadlineStatus === "missed" &&
-      task.deadlineOverrideEligible !== false
-    )
-      return 0;
+    if (task.deadlineStatus === "missed") return 0;
     if (task.deadlineStatus === "start_now") return 1;
+  }
+  if (task.deadlinePolicy === "EXPIRES" && task.deadlineStatus === "expired") {
+    return 0;
   }
   if (
     task.deadlinePolicy === "EXPIRES" &&
@@ -440,8 +436,8 @@ function compareRequiredReservations(
   left: ExecutionPlanningTask,
   right: ExecutionPlanningTask,
 ) {
-  const leftIsImmediate = isRequiredGuardrail(left);
-  const rightIsImmediate = isRequiredGuardrail(right);
+  const leftIsImmediate = isDeadlineGuardrail(left);
+  const rightIsImmediate = isDeadlineGuardrail(right);
   if (leftIsImmediate !== rightIsImmediate) return leftIsImmediate ? -1 : 1;
 
   const leftDueAt = asDate(left.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
@@ -492,7 +488,7 @@ function planHumanChecklist(input: {
         const estimatedMinutes = taskMinutes(task)!;
         const bounds = taskSchedulingBounds(task, input.now, completionTimes);
         const slot =
-          bounds.notAfter == null || isRequiredGuardrail(task)
+          bounds.notAfter == null || isDeadlineGuardrail(task)
             ? findPlanningSlot(
                 freeIntervals,
                 estimatedMinutes,
@@ -565,7 +561,7 @@ function planHumanChecklist(input: {
           slot:
             requiredInWindow &&
             bounds.notAfter != null &&
-            !isRequiredGuardrail(task)
+            !isDeadlineGuardrail(task)
               ? findLatestPlanningSlot(
                   freeIntervals,
                   estimatedMinutes,
