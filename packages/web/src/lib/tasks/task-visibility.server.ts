@@ -85,6 +85,11 @@ const VIEWABLE_CLAIM_STATUSES = [
   TaskClaimStatus.VERIFIED,
 ] as const;
 
+const EXECUTABLE_CLAIM_STATUSES = [
+  TaskClaimStatus.CLAIMED,
+  TaskClaimStatus.IN_PROGRESS,
+] as const;
+
 const DOCUMENT_REVIEW_SCHEMA_WHERE: Prisma.TaskWhereInput = {
   contextJson: {
     equals: "optimitron.review-request.v1",
@@ -168,7 +173,13 @@ export function getTaskAccessWhere(input: {
       claims: {
         some: {
           deletedAt: null,
-          status: { in: [...VIEWABLE_CLAIM_STATUSES] },
+          status: {
+            in: [
+              ...(input.action === "EXECUTE"
+                ? EXECUTABLE_CLAIM_STATUSES
+                : VIEWABLE_CLAIM_STATUSES),
+            ],
+          },
           userId,
         },
       },

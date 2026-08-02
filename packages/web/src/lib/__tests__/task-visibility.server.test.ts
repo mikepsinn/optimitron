@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Prisma } from "@optimitron/db";
+import { Prisma, TaskClaimStatus } from "@optimitron/db";
 import {
   DOCUMENT_REVIEW_CONTEXT_KEY,
   DOCUMENT_REVIEW_TASK_KEY_PREFIX,
@@ -273,6 +273,22 @@ describe("getTaskVisibilityWhere", () => {
         },
       ],
     });
+  });
+
+  it("keeps completed claims readable without making them executable", () => {
+    const readable = JSON.stringify(
+      getTaskAccessWhere({ action: "READ", userId: "reviewer_user" }),
+    );
+    const executable = JSON.stringify(
+      getTaskAccessWhere({ action: "EXECUTE", userId: "reviewer_user" }),
+    );
+
+    expect(readable).toContain(TaskClaimStatus.COMPLETED);
+    expect(readable).toContain(TaskClaimStatus.VERIFIED);
+    expect(executable).toContain(TaskClaimStatus.CLAIMED);
+    expect(executable).toContain(TaskClaimStatus.IN_PROGRESS);
+    expect(executable).not.toContain(TaskClaimStatus.COMPLETED);
+    expect(executable).not.toContain(TaskClaimStatus.VERIFIED);
   });
 
   it.each(["EXECUTE", "MANAGE", "VERIFY"] as const)(

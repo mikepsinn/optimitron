@@ -354,6 +354,7 @@ function visibleCopyFromSnapshot(snapshot: string) {
 
 async function readLoggedOutPageSnapshot(url: URL) {
   if (url.hostname.toLowerCase() === MANUAL_HOST) return null;
+  const requestedSite = getKnownSite(url.hostname.toLowerCase());
 
   for (const snapshotPath of snapshotPaths(url.pathname)) {
     try {
@@ -367,6 +368,26 @@ async function readLoggedOutPageSnapshot(url: URL) {
       const metadataTitle = snapshot
         .match(/^- Page title:\s*(.+)$/m)?.[1]
         ?.trim();
+      const canonicalUrl = snapshot
+        .match(/^- Canonical:\s*(.+)$/m)?.[1]
+        ?.trim();
+      let snapshotSite: ReturnType<typeof getKnownSite> = null;
+      if (canonicalUrl && canonicalUrl !== "[missing]") {
+        try {
+          snapshotSite = getKnownSite(
+            new URL(canonicalUrl).hostname.toLowerCase(),
+          );
+        } catch {
+          snapshotSite = null;
+        }
+      }
+      if (
+        requestedSite &&
+        snapshotSite &&
+        requestedSite.key !== snapshotSite.key
+      ) {
+        continue;
+      }
       return {
         content,
         lastModified: fileStats.mtime.toUTCString(),

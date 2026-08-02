@@ -766,23 +766,25 @@ describe("tasks server", () => {
   it("searchTasks ignores request-framing words and accepts any distinctive term", async () => {
     await searchTasks("find secret grant memo task", { userId: null });
 
-    const args = firstTaskFindManyArgs();
-    const filters = (args.where as { AND: unknown[] }).AND;
-    expect(filters[0]).toEqual(
-      expect.objectContaining({ deletedAt: null, isPublic: true }),
+    const args = mocks.prisma.taskFindMany.mock.calls.map(
+      (call) => call[0] as { take: number; where: { AND: unknown[] } },
     );
-    expect(filters.slice(1)).toHaveLength(1);
-    const termFilter = filters[1] as { OR: unknown[] };
-    for (const term of ["secret", "grant", "memo"]) {
-      expect(termFilter.OR).toEqual(
-        expect.arrayContaining([
-          { title: { contains: term, mode: "insensitive" } },
-        ]),
+    expect(args).toHaveLength(4);
+    for (const [index, term] of ["secret", "grant", "memo"].entries()) {
+      expect(args[index]?.where.AND[0]).toEqual(
+        expect.objectContaining({ deletedAt: null, isPublic: true }),
       );
+      expect(args[index]?.where.AND[1]).toEqual(
+        expect.objectContaining({
+          OR: expect.arrayContaining([
+            { title: { contains: term, mode: "insensitive" } },
+          ]),
+        }),
+      );
+      expect(args[index]?.take).toBe(21);
     }
-    expect(JSON.stringify(termFilter)).not.toContain('"find"');
-    expect(JSON.stringify(termFilter)).not.toContain('"task"');
-    expect(args.take).toBe(64);
+    expect(JSON.stringify(args.slice(0, 3))).not.toContain('"find"');
+    expect(JSON.stringify(args.slice(0, 3))).not.toContain('"task"');
   });
 
   it("finds the reported securities-counsel task from a longer natural query", async () => {
@@ -804,19 +806,22 @@ describe("tasks server", () => {
   });
 
   it("uses the bounded fallback to find a misspelled title", async () => {
-    mocks.prisma.taskFindMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
-      mockTask({
-        id: "securities-counsel",
-        title: "Get securities counsel to review the equity structure",
-      }),
-    ]);
+    mocks.prisma.taskFindMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        mockTask({
+          id: "securities-counsel",
+          title: "Get securities counsel to review the equity structure",
+        }),
+      ]);
 
     const results = await searchTasks("securites counsl", {
       userId: "user-a",
     });
 
     expect(results[0]?.id).toBe("securities-counsel");
-    expect(mocks.prisma.taskFindMany).toHaveBeenCalledTimes(2);
+    expect(mocks.prisma.taskFindMany).toHaveBeenCalledTimes(3);
   });
 
   it.each([

@@ -1814,16 +1814,21 @@ export async function searchTasks(
   const distinctiveTerms = queryTerms.filter(
     (term) => !taskSearchIntentTerms.has(term),
   );
-  const candidateTerms =
-    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms;
+  const candidateTerms = (
+    distinctiveTerms.length > 0 ? distinctiveTerms : queryTerms
+  ).slice(0, 8);
 
   // Prisma cannot order substring matches by relevance. Pull any literal
   // match into a bounded candidate set, then rank it in memory. Requiring
   // every word here made natural-language agent queries fail whenever they
   // included one reasonable synonym that was not copied into the task.
   const candidateLimit = Math.min(Math.max(limit * 4, 64), 500);
-  const anyTermMatches: Prisma.TaskWhereInput = {
-    OR: candidateTerms.flatMap((term) => [
+  const perTermLimit = Math.max(
+    limit,
+    Math.floor(candidateLimit / candidateTerms.length),
+  );
+  const matchesTerm = (term: string): Prisma.TaskWhereInput => ({
+    OR: [
       { title: { contains: term, mode: "insensitive" as const } },
       { description: { contains: term, mode: "insensitive" as const } },
       { impactStatement: { contains: term, mode: "insensitive" as const } },
@@ -1856,8 +1861,8 @@ export async function searchTasks(
           },
         },
       },
-    ]),
-  };
+    ],
+  });
 
   const viewer = options?.userId
     ? await prisma.user.findUnique({
@@ -1886,17 +1891,24 @@ export async function searchTasks(
         select: taskSearchSelect,
       })
     : Promise.resolve(null);
-  const [exactTaskKeyMatch, candidates] = await Promise.all([
+  const [exactTaskKeyMatch, candidateGroups] = await Promise.all([
     exactTaskKeyPromise,
-    prisma.task.findMany({
-      where: {
-        AND: [...accessFilters, anyTermMatches],
-      },
-      orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
-      select: taskSearchSelect,
-      take: candidateLimit,
-    }),
+    Promise.all(
+      candidateTerms.map((term) =>
+        prisma.task.findMany({
+          where: {
+            AND: [...accessFilters, matchesTerm(term)],
+          },
+          orderBy: [{ verifiedAt: "desc" }, { createdAt: "desc" }],
+          select: taskSearchSelect,
+          take: perTermLimit,
+        }),
+      ),
+    ),
   ]);
+  const candidates = Array.from(
+    new Map(candidateGroups.flat().map((task) => [task.id, task])).values(),
+  );
   let tasks = exactTaskKeyMatch
     ? [
         exactTaskKeyMatch,

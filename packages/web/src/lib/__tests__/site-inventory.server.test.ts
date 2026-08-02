@@ -93,7 +93,7 @@ describe("site inventory", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const result = await getPageContent({
-      url: "https://optimitron.com/invest",
+      url: "https://warondisease.org/invest",
     });
 
     expect(fetchMock).not.toHaveBeenCalled();
@@ -102,6 +102,41 @@ describe("site inventory", () => {
       "YOUR PLANET MAY BE ELIGIBLE FOR OPTIMIZATION",
     );
     expect(result.content).not.toContain("Booting Earth Optimization System");
+  });
+
+  it("does not serve the War on Disease home snapshot for another site variant", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Optimitron</title></head><body><main><h1>Optimize Earth</h1><p>Every job required to optimize it.</p></main></body></html>",
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({ url: "https://optimitron.com/" });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.title).toBe("Optimitron");
+    expect(result.content).toContain("Optimize Earth");
+    expect(result.content).not.toContain("TAKE 30 SECONDS");
+  });
+
+  it("does not serve a non-root snapshot captured for another site variant", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Compute</title></head><body><main><h1>Optimitron compute</h1></main></body></html>",
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getPageContent({
+      url: "https://optimitron.com/invest",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.content).toContain("Optimitron compute");
+    expect(result.content).not.toContain("QUANTIFY ANYTHING");
   });
 
   it("rejects a loading shell when no rendered snapshot exists", async () => {
@@ -129,11 +164,12 @@ describe("site inventory", () => {
   });
 
   it("does not let an encoded '..' segment traverse to another route's snapshot", async () => {
-    const fetchMock = vi.fn(async () =>
-      new Response(
-        "<html><head><title>Fallback</title></head><body><main><h1>Fallback</h1></main></body></html>",
-        { headers: { "content-type": "text/html" } },
-      ),
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          "<html><head><title>Fallback</title></head><body><main><h1>Fallback</h1></main></body></html>",
+          { headers: { "content-type": "text/html" } },
+        ),
     );
     vi.stubGlobal("fetch", fetchMock);
 
