@@ -25,6 +25,11 @@ import {
 const DEMO_EMAIL = "demo@thinkbynumbers.org";
 const FIXTURE_PREFIX = "visual_document_review_";
 const FIXTURE_RUNNER_ENV = "OPTIMITRON_VISUAL_FIXTURE_RUNNER";
+// A fixed offset from seed time, not a hardcoded calendar date: once a
+// hardcoded date passes, the seeded owner task becomes overdue and the
+// task page's "Overdue task" label and delay-cost section change the
+// task-management-owner screenshot with no code change.
+const MANAGEMENT_DUE_AT = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
 const WEB_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -247,7 +252,7 @@ async function seedTaskManagementStates(input: {
       deletedAt: null,
       description:
         "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
-      dueAt: new Date("2026-09-15T00:00:00.000Z"),
+      dueAt: MANAGEMENT_DUE_AT,
       estimatedEffortHours: 2,
       isPublic: false,
       status: TaskStatus.ACTIVE,
@@ -259,7 +264,7 @@ async function seedTaskManagementStates(input: {
       createdByUserId: input.demo.user.id,
       description:
         "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
-      dueAt: new Date("2026-09-15T00:00:00.000Z"),
+      dueAt: MANAGEMENT_DUE_AT,
       estimatedEffortHours: 2,
       id: ids.managementOwnerTask,
       isPublic: false,
