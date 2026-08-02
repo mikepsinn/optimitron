@@ -12,6 +12,7 @@ describe("developer OpenAPI document", () => {
     expect(doc.paths).toHaveProperty("/api/mcp/oauth/token");
     expect(doc.paths).toHaveProperty("/api/mcp/tools");
     expect(doc.paths).toHaveProperty("/api/tasks");
+    expect(doc.paths).toHaveProperty("/api/tasks/{id}/release");
     expect(doc.paths).toHaveProperty("/api/documents");
     expect(doc.paths).toHaveProperty("/api/collections/{id}/records");
     expect(doc.paths).toHaveProperty("/api/collections/{id}/records/batch");
@@ -58,6 +59,16 @@ describe("developer OpenAPI document", () => {
       { OptimitronOAuth: ["tasks:personal"] },
       { OptimitronOAuth: ["tasks:admin"] },
     ]);
+    expect(
+      doc.paths["/api/tasks/{id}/complete"].post.requestBody,
+    ).toMatchObject({
+      required: true,
+      content: {
+        "application/json": {
+          schema: { required: ["completionEvidence"] },
+        },
+      },
+    });
     expect(doc.paths["/api/documents"].post.security).toEqual([
       { OptimitronOAuth: ["tasks:personal"] },
       { OptimitronOAuth: ["tasks:admin"] },

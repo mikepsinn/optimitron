@@ -198,6 +198,28 @@ test.describe("route visual regression", () => {
       if ("openContentShare" in route && route.openContentShare) {
         await openContentShare(page);
       }
+      if ("openAddStep" in route && route.openAddStep) {
+        const dialog = page.getByRole("dialog", { name: "Add step" });
+        await expect(async () => {
+          await page
+            .getByRole("button", { name: "Add Step", exact: true })
+            .click();
+          await expect(dialog).toBeVisible({ timeout: 1_000 });
+        }).toPass({ timeout: 15_000 });
+        await expect(
+          dialog.getByText("Who should do it?", { exact: true }),
+        ).toBeVisible();
+        await expect(dialog.getByText("Me", { exact: true })).toBeVisible();
+        await expect(
+          dialog.getByPlaceholder("Search people or choose..."),
+        ).toHaveCount(0);
+        await expect(
+          dialog.getByText("Anyone who can help", { exact: true }),
+        ).toHaveCount(0);
+      }
+      if ("openTaskManagement" in route && route.openTaskManagement) {
+        await page.locator("[data-task-management] > summary").click();
+      }
 
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
