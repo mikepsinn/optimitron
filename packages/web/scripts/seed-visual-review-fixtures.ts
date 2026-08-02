@@ -226,9 +226,10 @@ async function loadDemoActor() {
     );
   }
   if (!user.isAdmin) {
-    throw new Error(
-      "Visual review fixtures require the managed demo user to be an admin.",
-    );
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isAdmin: true },
+    });
   }
   return { person: user.person, user: { id: user.id } };
 }
