@@ -75,6 +75,19 @@ function queue(tasks: PersonalQueueTaskRecord[]) {
   });
 }
 
+// Omits requireExecutable so non-atomic rows (e.g. containers) survive the
+// filter, letting tests inspect the structural-unlock fields callers like
+// getExecutionPlan's "all rows" view surface for those rows.
+function queueAllRows(tasks: PersonalQueueTaskRecord[]) {
+  return buildPersonalQueueRows(tasks, ranking, 1_000, {
+    executorProfiles: [{ executorKind: "human" }],
+    limit: tasks.length,
+    now: new Date("2026-08-02T12:00:00.000Z"),
+    requireUnblocked: true,
+    rootedTaskIds: new Set(tasks.map((entry) => entry.id)),
+  });
+}
+
 describe("personal queue blocker semantics", () => {
   it("gates the exact blocked task and ranks its zero-delta blocker by the remaining plan", () => {
     const rows = queue([
@@ -157,6 +170,35 @@ describe("personal queue blocker semantics", () => {
     ]);
 
     expect(rows).toEqual([]);
+  });
+
+  it("does not attribute structural unlock priority to a non-executable container blocker", () => {
+    const rows = queueAllRows([
+      task({
+        activeChildTaskCount: 1,
+        estimatedEffortHours: 4,
+        id: "container-blocker",
+      }),
+      task({
+        estimatedEffortHours: 2,
+        id: "container-blocker-child",
+        parentTaskId: "container-blocker",
+      }),
+      task({
+        blockerIds: ["container-blocker"],
+        blockerStatuses: [TaskStatus.ACTIVE],
+        estimatedEffortHours: 9,
+        expectedValue: 1_000,
+        id: "blocked",
+      }),
+    ]);
+
+    const containerRow = rows.find((row) => row.id === "container-blocker");
+    expect(containerRow).toMatchObject({
+      hasStructuralUnlockEstimate: false,
+      structuralUnlockPriority: 0,
+      unlocksTaskIds: [],
+    });
   });
 
   it("does not lend an unpublished public estimate to a blocker", () => {

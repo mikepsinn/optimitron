@@ -942,6 +942,14 @@ function collectStructuralBlockerFrontier(
 
   const blockers = unresolvedBlockers(row);
   if (blockers.length === 0) {
+    // A blocker with zero remaining edges is only a real frontier if it can
+    // actually be offered as executable work. A container task (has active
+    // children) can never be claimed atomically, so attributing priority to
+    // it would strand the boost on a row `getMyQueue` filters out.
+    if (!isAtomicExecutionRecord(row)) {
+      visiting.delete(row.id);
+      return false;
+    }
     frontierIds.add(row.id);
     visiting.delete(row.id);
     return true;
