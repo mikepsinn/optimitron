@@ -162,11 +162,11 @@ system SHALL do at target state; FEATURES.md says how much of it exists.
 - Scheduled ratings (mood, energy, symptoms) and medication reminders appear
   IN the task queue as recurring atomic tasks — not in a separate reminder
   app. Completing one writes a `Measurement`.
-- Implementation decision (recorded in ROADMAP.md): revive the currently
-  unused `TrackingReminder` model with a scheduler, or spawn recurring tasks
-  from the existing `TaskTrigger` cron engine (OPT-TASK-03). Either way, the
-  requirement is the same: routine health actions are tasks with cached EV,
-  not re-estimated each morning.
+- `TrackingReminder` now supports the MCP create, edit, list, due-query, and
+  response workflow. The remaining implementation decision is whether its
+  schedules or the existing `TaskTrigger` cron engine (OPT-TASK-03) spawn the
+  recurring queue tasks. Either way, routine health actions are tasks with
+  cached EV, not re-estimated each morning.
 
 ### 3.5 Change-from-baseline outcomes (OPT-HEALTH-07)
 

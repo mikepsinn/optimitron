@@ -8623,6 +8623,27 @@ describe("MCP server tool dispatch", () => {
       id: "nof1-1",
     };
 
+    const EXISTING_TRACKING_REMINDER = {
+      active: true,
+      createdAt: new Date("2026-07-01T08:00:00.000Z"),
+      defaultValue: 1,
+      deletedAt: null,
+      globalVariable: TRACKING_VARIABLE,
+      globalVariableId: "gv-vitd",
+      id: "reminder-1",
+      instructions: "Daily",
+      lastTracked: new Date("2026-07-15T08:00:00.000Z"),
+      nOf1Variable: { ...NOF1_VARIABLE, subjectId: "subject-1" },
+      nOf1VariableId: "nof1-1",
+      reminderEndTime: null,
+      reminderFrequency: 86_400,
+      reminderStartTime: "08:00",
+      startTrackingDate: null,
+      stopTrackingDate: null,
+      updatedAt: new Date("2026-07-15T08:00:00.000Z"),
+      userId: "user-1",
+    };
+
     beforeEach(() => {
       mocks.userFindUniqueOrThrow.mockResolvedValue({
         email: "user@example.com",
@@ -8692,7 +8713,7 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
 
-    it("upsertTrackingReminder defaults reminderFrequency to 86400 when omitted", async () => {
+    it("upsertTrackingReminder keeps no-ID creation idempotent and defaults reminderFrequency to 86400", async () => {
       mocks.trackingReminderUpsert.mockResolvedValue({
         active: true,
         globalVariableId: "gv-vitd",
@@ -8731,6 +8752,155 @@ describe("MCP server tool dispatch", () => {
         reminderStartTime: "08:00",
         userId: "user-1",
       });
+    });
+
+    it("upsertTrackingReminder edits a schedule in place by owned reminder ID", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+      mocks.trackingReminderUpdate.mockResolvedValue({
+        ...EXISTING_TRACKING_REMINDER,
+        instructions: "Every week",
+        reminderFrequency: 604_800,
+        reminderStartTime: "09:15",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          instructions: "Every week",
+          reminderFrequency: 604_800,
+          reminderStartTime: "09:15",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            id: "reminder-1",
+            userId: "user-1",
+          },
+        }),
+      );
+      expect(mocks.trackingReminderUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: {
+            instructions: "Every week",
+            reminderFrequency: 604_800,
+            reminderStartTime: "09:15",
+          },
+          where: { id: "reminder-1" },
+        }),
+      );
+      expect(mocks.trackingReminderUpsert).not.toHaveBeenCalled();
+      const body = parseToolBody(result) as {
+        result: { reminder: { id: string }; subjectId: string };
+      };
+      expect(body.result).toMatchObject({
+        reminder: { id: "reminder-1" },
+        subjectId: "subject-1",
+      });
+    });
+
+    it("upsertTrackingReminder patches active and nullable fields without replacing omitted fields", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+      mocks.trackingReminderUpdate.mockResolvedValue({
+        ...EXISTING_TRACKING_REMINDER,
+        active: false,
+        defaultValue: null,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          active: false,
+          defaultValue: null,
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const updateCall = mocks.trackingReminderUpdate.mock.calls[0]![0] as {
+        data: Record<string, unknown>;
+      };
+      expect(updateCall.data).toEqual({ active: false, defaultValue: null });
+    });
+
+    it("upsertTrackingReminder hides missing and foreign reminder IDs behind the same not-found response", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          active: false,
+          trackingReminderId: "foreign-or-missing-reminder",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "TrackingReminder not found: foreign-or-missing-reminder",
+      );
+      expect(mocks.trackingReminderFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            id: "foreign-or-missing-reminder",
+            userId: "user-1",
+          },
+        }),
+      );
+      expect(mocks.trackingReminderUpdate).not.toHaveBeenCalled();
+    });
+
+    it("upsertTrackingReminder rejects an in-place schedule collision cleanly", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+      mocks.trackingReminderUpdate.mockRejectedValue(
+        Object.assign(new Error("Unique constraint failed"), { code: "P2002" }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          reminderStartTime: "09:00",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "Another tracking reminder already uses this variable, start time, and frequency.",
+      );
+      expect(mocks.transaction).toHaveBeenCalledTimes(1);
+      expect(mocks.trackingReminderUpsert).not.toHaveBeenCalled();
+    });
+
+    it("upsertTrackingReminder keeps the tracked variable immutable during ID-based edits", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          trackingReminderId: "reminder-1",
+          variableName: "Mood",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "tracked variable cannot be changed",
+      );
+      expect(mocks.transaction).not.toHaveBeenCalled();
     });
 
     it("upsertTrackingReminder rejects an invalid reminderStartTime with no write", async () => {
@@ -8939,6 +9109,69 @@ describe("MCP server tool dispatch", () => {
       };
       expect(body.result.measurement).not.toBeNull();
       expect(body.result.measurement?.value).toBe(3);
+    });
+
+    it("respondToTrackingReminder updates the same local-date response after the reminder time changes", async () => {
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: TRACKING_VARIABLE,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "09:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue({
+        id: "notification-at-old-time",
+        notifyAt: new Date("2026-07-01T13:00:00.000Z"),
+        status: NotificationStatus.TRACKED,
+        trackedValue: 3,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationUpdate.mockResolvedValue({
+        id: "notification-at-old-time",
+        notifyAt: new Date("2026-07-01T13:00:00.000Z"),
+        status: NotificationStatus.SKIPPED,
+        trackedValue: null,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "SKIPPED",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.trackingReminderNotificationFindFirst).toHaveBeenCalledWith({
+        where: {
+          deletedAt: null,
+          notifyAt: {
+            gte: new Date("2026-07-01T05:00:00.000Z"),
+            lt: new Date("2026-07-02T05:00:00.000Z"),
+          },
+          trackingReminderId: "reminder-1",
+          userId: "user-1",
+        },
+      });
+      expect(mocks.trackingReminderNotificationUpdate).toHaveBeenCalledWith({
+        data: {
+          receivedAt: expect.any(Date),
+          status: NotificationStatus.SKIPPED,
+          trackedValue: null,
+        },
+        where: { id: "notification-at-old-time" },
+      });
+      expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
     });
 
     it("respondToTrackingReminder SKIPPED writes the notification but no Measurement", async () => {
