@@ -312,7 +312,10 @@ export function CreateTaskDialog({
       : null;
 
     if (!fixedAssigneePerson) {
-      if (taskMode === "self" && !currentPersonId) {
+      // Add Step (parentTaskId set) creates work implicitly for the current
+      // user without an explicit assignee — the server rejects any assignee
+      // on a parented task — so self mode does not need currentPersonId here.
+      if (taskMode === "self" && !currentPersonId && !parentTaskId) {
         setError("Choose who should do it.");
         return;
       }
@@ -372,7 +375,7 @@ export function CreateTaskDialog({
               : undefined,
           assigneePersonId: fixedAssigneePerson
             ? fixedAssigneePerson.id
-            : taskMode === "self"
+            : taskMode === "self" && !parentTaskId
               ? currentPersonId
               : selectedAssignee?.id,
           claimPolicy: taskMode === "open" ? "OPEN_SINGLE" : undefined,
