@@ -54,9 +54,24 @@ async function CurrentPriority() {
     expectedHealthyYears != null ||
     expectedEconomicValue != null ||
     Boolean(task?.impactStatement);
-  const primaryEndpoint = task?.communicationEndpoints[0] ?? null;
+  // decorateTask() attaches primaryEndpoint at runtime (it already prefers
+  // isPrimary endpoints and falls back to mailto: for email-only contacts),
+  // but its declared return type omits the field, so it's read via a cast
+  // matching the shape decorateTask actually returns.
+  const primaryEndpoint =
+    (
+      task as {
+        primaryEndpoint?: {
+          email?: string | null;
+          instructions?: string | null;
+          kind?: string | null;
+          label?: string | null;
+          url?: string | null;
+        } | null;
+      } | null
+    )?.primaryEndpoint ?? null;
   const actionHref = primaryEndpoint?.url ?? ROUTES.tasks;
-  const actionLabel = primaryEndpoint?.label ?? "Open the task list";
+  const actionLabel = primaryEndpoint?.label?.trim() || "Open the task list";
 
   return (
     <section className="border-y border-foreground bg-background py-14 sm:py-20">
