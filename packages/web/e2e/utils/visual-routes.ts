@@ -281,9 +281,8 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     name: "variant-optimitron-home",
     path: ROUTES.home,
     required: true,
-    requiredSelector:
-      'main > section:first-child a[href="/tasks/1-pct-treaty"]',
-    requiredText: /Current highest-value program/,
+    requiredSelector: 'main a[href="/tasks"]:has-text("See your next tasks")',
+    requiredText: /The decentralized to-do list for humanity/,
     siteVariant: "optimitron",
   },
   {
