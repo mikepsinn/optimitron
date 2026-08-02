@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { forceAnimationsComplete } from "./utils/audit-helpers";
 
 const WEB_ROOT = path.resolve(__dirname, "..");
 const SMOKE_SCRIPT = path.join(
@@ -24,6 +25,27 @@ test.beforeAll(({}, workerInfo) => {
     cwd: WEB_ROOT,
     stdio: "inherit",
   });
+});
+
+test("animation normalization stays applied through later Framer updates", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.setContent(
+    '<div id="reveal" style="opacity: 0; transform: translateY(30px)">Text</div>',
+  );
+  const reveal = page.locator("#reveal");
+
+  await forceAnimationsComplete(page);
+  await reveal.evaluate((element) => {
+    element.style.opacity = "0";
+    element.style.transform = "translateY(30px)";
+  });
+
+  await expect(reveal).toHaveAttribute("data-visual-force-visible", "");
+  await expect(reveal).toHaveCSS("opacity", "1");
+  await expect(reveal).toHaveCSS("transform", "none");
 });
 
 test("new routes show their after-only screenshot", async ({
@@ -52,6 +74,81 @@ test("new routes show their after-only screenshot", async ({
   await expect(page.getByText("No screenshots for this viewport.")).toHaveCount(
     0,
   );
+});
+
+test("screenshots open in a keyboard-friendly lightbox", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.route("**/assets/after/default/home.png", (route) =>
+    route.fulfill({
+      body: ONE_PIXEL_PNG,
+      contentType: "image/png",
+      status: 200,
+    }),
+  );
+  await page.route("**/assets/before/default/home.png", (route) =>
+    route.fulfill({
+      body: ONE_PIXEL_PNG,
+      contentType: "image/png",
+      status: 200,
+    }),
+  );
+
+  await page.goto(`${pathToFileURL(SMOKE_HTML)}#route=home`);
+  await page.getByRole("button", { name: "Zoom after" }).click();
+
+  const lightbox = page.getByRole("dialog");
+  await expect(lightbox).toBeVisible();
+  await expect(page.locator("#shot-lightbox-title")).toHaveText(
+    "After — Desktop",
+  );
+  await expect(page.locator("#shot-lightbox-image")).toHaveAttribute(
+    "src",
+    "assets/after/default/home.png",
+  );
+
+  await page.getByRole("button", { name: "Actual pixels" }).click();
+  await expect(page.locator("#shot-lightbox-image")).toHaveClass(/actual-size/);
+  await expect(page.getByRole("button", { name: "Fit width" })).toBeVisible();
+
+  const stage = page.locator("#shot-lightbox-stage");
+  await page.locator("#shot-lightbox-image").evaluate((image) => {
+    image.style.width = "2000px";
+    image.style.height = "2000px";
+  });
+  await stage.evaluate((element) => element.scrollTo(120, 160));
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        left: element.scrollLeft,
+        top: element.scrollTop,
+      })),
+    )
+    .toEqual({ left: 120, top: 160 });
+
+  await page.getByRole("button", { name: "Close" }).click();
+  await page.getByRole("button", { name: "Zoom after" }).click();
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        left: element.scrollLeft,
+        top: element.scrollTop,
+      })),
+    )
+    .toEqual({ left: 0, top: 0 });
+
+  await page.keyboard.press("Escape");
+  await expect(lightbox).toBeHidden();
+
+  await page.getByRole("button", { name: "Full page" }).click();
+  const afterImage = page.getByRole("button", {
+    name: "Open After — this PR full size",
+  });
+  await afterImage.focus();
+  await afterImage.press("Enter");
+  await expect(lightbox).toBeVisible();
 });
 
 test("collapsed variant routes remain available while filtering", async ({

@@ -398,6 +398,34 @@ const CSS = `
   .single-shot figcaption { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); margin-bottom: 4px; }
   .single-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: #fff; }
 
+  /* ---------- screenshot lightbox ---------- */
+  img.zoomable-shot { cursor: zoom-in; }
+  img.zoomable-shot:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .zoom-btn { margin-left: auto; }
+  .shot-lightbox {
+    width: min(96vw, 1800px); max-width: none; height: 94vh; max-height: none;
+    padding: 0; border: 1px solid var(--ink); border-radius: 6px;
+    background: var(--panel); color: var(--ink);
+  }
+  .shot-lightbox[open] { display: flex; flex-direction: column; }
+  .shot-lightbox::backdrop { background: rgba(0,0,0,.78); }
+  .shot-lightbox-bar {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .shot-lightbox-title {
+    flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; font-size: 13px;
+  }
+  .shot-lightbox-stage {
+    flex: 1 1 auto; min-height: 0; overflow: auto; background: #20242a;
+  }
+  .shot-lightbox-image {
+    display: block; width: 100%; height: auto; margin: 0 auto; cursor: zoom-in;
+    background: #fff;
+  }
+  .shot-lightbox-image.actual-size { width: auto; max-width: none; cursor: zoom-out; }
+
   /* ---------- copy diff ---------- */
   .tbl-scroll { overflow-x: auto; margin-bottom: 10px; }
   .meta-table { border-collapse: collapse; font-size: 12px; width: 100%; }
@@ -536,6 +564,7 @@ const CLIENT_JS = `
   var fullWells = null;         // linked-scroll wells for the current full-page render
   var verdicts = {};            // routeName -> { v, note, ts, commit }
   var reviewStatus = "";        // visible confirmation after a route verdict
+  var lightbox = null;           // native dialog for full-size screenshot inspection
   var storeKey = "visualReview:" + (meta.commitSha || meta.shortSha || "unknown");
   var MOBILE_MQ = "(max-width: 700px)";
   var STRIP_CONTEXT_PX = 16;    // extra context cropped around each hunk band
@@ -1024,6 +1053,30 @@ const CLIENT_JS = `
           function (val) { cmpMode = val; renderPane(true); }
         ));
       }
+      if (pair.beforeRelPath) {
+        var zoomBefore = el("button", {
+          type: "button",
+          class: "context-btn zoom-btn",
+          text: "\uD83D\uDD0D Zoom before",
+          title: "Open the baseline screenshot in a lightbox"
+        });
+        zoomBefore.addEventListener("click", function () {
+          openLightbox(pair.beforeRelPath, "Before \u2014 " + (pair.projectLabel || pair.projectName));
+        });
+        toolbar.appendChild(zoomBefore);
+      }
+      if (pair.afterRelPath) {
+        var zoomAfter = el("button", {
+          type: "button",
+          class: "context-btn" + (pair.beforeRelPath ? "" : " zoom-btn"),
+          text: "\uD83D\uDD0D Zoom after",
+          title: "Open the PR screenshot in a lightbox"
+        });
+        zoomAfter.addEventListener("click", function () {
+          openLightbox(pair.afterRelPath, "After \u2014 " + (pair.projectLabel || pair.projectName));
+        });
+        toolbar.appendChild(zoomAfter);
+      }
       content.appendChild(toolbar);
 
       var info = el("p", { class: "vp-info" });
@@ -1230,8 +1283,69 @@ const CLIENT_JS = `
     return wrap;
   }
 
-  function lazyImg(src, cls, alt) {
-    return el("img", { src: src, loading: "lazy", alt: alt || "", class: cls || "" });
+  function lazyImg(src, cls, alt, zoomable) {
+    var label = alt || "Screenshot";
+    var attrs = {
+      src: src,
+      loading: "lazy",
+      alt: alt || "",
+      class: cls || ""
+    };
+    if (zoomable !== false) {
+      attrs.class = (attrs.class + " zoomable-shot").trim();
+      attrs.role = "button";
+      attrs.tabindex = "0";
+      attrs.title = "Open full-size screenshot";
+      attrs["aria-label"] = "Open " + label + " full size";
+    }
+    return el("img", attrs);
+  }
+
+  function openLightbox(src, label) {
+    if (!lightbox || !src) return;
+    var image = document.getElementById("shot-lightbox-image");
+    var title = document.getElementById("shot-lightbox-title");
+    var size = document.getElementById("shot-lightbox-size");
+    var stage = document.getElementById("shot-lightbox-stage");
+    image.classList.remove("actual-size");
+    image.src = src;
+    image.alt = label || "Full-size screenshot";
+    title.textContent = label || "Screenshot";
+    size.textContent = "Actual pixels";
+    if (!lightbox.open) lightbox.showModal();
+    stage.scrollTo(0, 0);
+  }
+
+  function wireLightbox() {
+    lightbox = document.getElementById("shot-lightbox");
+    var image = document.getElementById("shot-lightbox-image");
+    var size = document.getElementById("shot-lightbox-size");
+    var close = document.getElementById("shot-lightbox-close");
+    var stage = document.getElementById("shot-lightbox-stage");
+
+    function toggleSize() {
+      var actual = image.classList.toggle("actual-size");
+      size.textContent = actual ? "Fit width" : "Actual pixels";
+      stage.scrollTo(0, 0);
+    }
+    size.addEventListener("click", toggleSize);
+    image.addEventListener("click", toggleSize);
+    close.addEventListener("click", function () { lightbox.close(); });
+    lightbox.addEventListener("click", function (event) {
+      if (event.target === lightbox) lightbox.close();
+    });
+
+    var pane = document.getElementById("pane");
+    function activateImage(target) {
+      if (!(target instanceof HTMLImageElement) || !target.classList.contains("zoomable-shot")) return false;
+      openLightbox(target.getAttribute("src"), target.getAttribute("alt") || "Screenshot");
+      return true;
+    }
+    pane.addEventListener("click", function (event) { activateImage(event.target); });
+    pane.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (activateImage(event.target)) event.preventDefault();
+    });
   }
 
   function buildSingleScreenshot(relPath, label) {
@@ -1270,7 +1384,8 @@ const CLIENT_JS = `
     }
     var shift = (y0 / imgH) * 100;
     return '<div class="strip" style="aspect-ratio:' + imgW + '/' + (y1 - y0) + '">' +
-      '<img loading="lazy" src="' + esc(relPath) + '" alt="' + esc(alt || "") + '"' +
+      '<img loading="lazy" class="zoomable-shot" role="button" tabindex="0" title="Open full-size screenshot"' +
+      ' aria-label="Open ' + esc(alt || "screenshot") + ' full size" src="' + esc(relPath) + '" alt="' + esc(alt || "") + '"' +
       ' style="transform:translateY(-' + shift.toFixed(4) + '%)"></div>';
   }
   function clampBand(y0, y1, imgH, pad) {
@@ -1512,8 +1627,8 @@ const CLIENT_JS = `
     var isNarrowVp = (pair.beforeWidth || 1000) <= 500;
     var scroll = el("div", { class: "cmp-scroll", "data-cmp-scroll": "" });
     var stage = el("div", { class: "cmp-stage" + (isNarrowVp && !isMobile() ? " vp-narrow" : "") + (cmpMode === "swipe" ? " mode-swipe" : "") });
-    var imgB = lazyImg(pair.beforeRelPath, "img-base", "Before");
-    var imgA = lazyImg(pair.afterRelPath, "img-top", "After");
+    var imgB = lazyImg(pair.beforeRelPath, "img-base", "Before", false);
+    var imgA = lazyImg(pair.afterRelPath, "img-top", "After", false);
     var deadNote = function (which) {
       stage.innerHTML = "";
       stage.appendChild(el("div", { class: "img-missing", text: which + " image unavailable \\u2014 overlay compare needs both. Try Hunks." }));
@@ -1601,8 +1716,8 @@ const CLIENT_JS = `
 
     var scroll = el("div", { class: "cmp-scroll", "data-cmp-scroll": "" });
     var stage = el("div", { class: "cmp-stage" });
-    var imgA = lazyImg(pair.afterRelPath, "", "After");
-    var imgD = lazyImg(pair.diffRelPath, "img-top" + (overlayStyle === "blend" ? " blend" : ""), "Pixel diff overlay");
+    var imgA = lazyImg(pair.afterRelPath, "", "After", false);
+    var imgD = lazyImg(pair.diffRelPath, "img-top" + (overlayStyle === "blend" ? " blend" : ""), "Pixel diff overlay", false);
     if (overlayStyle === "tint") imgD.style.opacity = "0.55";
     imgD.addEventListener("error", function () {
       stage.innerHTML = "";
@@ -1950,6 +2065,7 @@ const CLIENT_JS = `
 
   /* ---------------- keyboard ---------------- */
   function onKey(e) {
+    if (lightbox && lightbox.open) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var tag = (e.target && e.target.tagName) || "";
     if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT" || (e.target && e.target.isContentEditable)) return;
@@ -1983,6 +2099,7 @@ const CLIENT_JS = `
     }
     loadVerdicts();
     wireHeader();
+    wireLightbox();
     renderRail();
     updateReviewedChip();
 
@@ -2144,6 +2261,16 @@ ${renderCoverageFailureHtml(coverage)}
   <nav class="rail" id="rail" aria-label="Routes"></nav>
   <main class="pane" id="pane"><p style="color:var(--dim);padding:16px 20px">Loading…</p></main>
 </div>
+<dialog class="shot-lightbox" id="shot-lightbox" aria-labelledby="shot-lightbox-title">
+  <div class="shot-lightbox-bar">
+    <strong class="shot-lightbox-title" id="shot-lightbox-title">Screenshot</strong>
+    <button type="button" class="hbtn" id="shot-lightbox-size">Actual pixels</button>
+    <button type="button" class="hbtn" id="shot-lightbox-close">Close</button>
+  </div>
+  <div class="shot-lightbox-stage" id="shot-lightbox-stage">
+    <img class="shot-lightbox-image" id="shot-lightbox-image" alt="">
+  </div>
+</dialog>
 <script type="application/json" id="review-data">${jsonIsland(input)}</script>
 <script>${CLIENT_JS}</script>
 </body>

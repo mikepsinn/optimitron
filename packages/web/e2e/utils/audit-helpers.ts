@@ -52,6 +52,10 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
           transition-delay: 0s !important;
         }
         .opacity-0 { opacity: 1 !important; }
+        [data-visual-force-visible] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
       `,
     });
   });
@@ -66,7 +70,9 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
         const htmlEl = el as HTMLElement;
         const inlineOpacity = Number.parseFloat(htmlEl.style.opacity);
         if (Number.isFinite(inlineOpacity) && inlineOpacity < 1) {
+          htmlEl.dataset.visualForceVisible = "";
           htmlEl.style.opacity = "1";
+          htmlEl.style.transform = "none";
         }
       }
     });
