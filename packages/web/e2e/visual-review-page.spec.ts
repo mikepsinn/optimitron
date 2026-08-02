@@ -91,6 +91,32 @@ test("screenshots open in a keyboard-friendly lightbox", async ({
   await expect(page.locator("#shot-lightbox-image")).toHaveClass(/actual-size/);
   await expect(page.getByRole("button", { name: "Fit width" })).toBeVisible();
 
+  const stage = page.locator("#shot-lightbox-stage");
+  await page.locator("#shot-lightbox-image").evaluate((image) => {
+    image.style.width = "2000px";
+    image.style.height = "2000px";
+  });
+  await stage.evaluate((element) => element.scrollTo(120, 160));
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        left: element.scrollLeft,
+        top: element.scrollTop,
+      })),
+    )
+    .toEqual({ left: 120, top: 160 });
+
+  await page.getByRole("button", { name: "Close" }).click();
+  await page.getByRole("button", { name: "Zoom after" }).click();
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        left: element.scrollLeft,
+        top: element.scrollTop,
+      })),
+    )
+    .toEqual({ left: 0, top: 0 });
+
   await page.keyboard.press("Escape");
   await expect(lightbox).toBeHidden();
 

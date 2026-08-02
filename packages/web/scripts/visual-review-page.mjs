@@ -1306,12 +1306,14 @@ const CLIENT_JS = `
     var image = document.getElementById("shot-lightbox-image");
     var title = document.getElementById("shot-lightbox-title");
     var size = document.getElementById("shot-lightbox-size");
+    var stage = document.getElementById("shot-lightbox-stage");
     image.classList.remove("actual-size");
     image.src = src;
     image.alt = label || "Full-size screenshot";
     title.textContent = label || "Screenshot";
     size.textContent = "Actual pixels";
     if (!lightbox.open) lightbox.showModal();
+    stage.scrollTo(0, 0);
   }
 
   function wireLightbox() {
