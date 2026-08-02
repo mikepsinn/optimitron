@@ -314,12 +314,27 @@ function sectionsFromMarkdown(markdown: string) {
 }
 
 function snapshotPaths(pathname: string) {
-  const segments = pathname
-    .split("/")
-    .filter(Boolean)
-    .map((segment) => decodeURIComponent(segment));
-  if (segments.some((segment) => segment === "." || segment === "..")) {
-    return [];
+  const rawSegments = pathname.split("/").filter(Boolean);
+  const segments: string[] = [];
+  for (const rawSegment of rawSegments) {
+    let segment: string;
+    try {
+      segment = decodeURIComponent(rawSegment);
+    } catch {
+      return [];
+    }
+    // Reject segments that are (or, once decoded, resolve to) "." / ".." or
+    // that contain a path separator — otherwise a value like "%2e%2e%2fsecret"
+    // decodes to "../secret" and can traverse outside src/app when joined.
+    if (
+      segment === "." ||
+      segment === ".." ||
+      segment.includes("/") ||
+      segment.includes("\\")
+    ) {
+      return [];
+    }
+    segments.push(segment);
   }
 
   const relativePath = path.join(...segments, "page.logged-out.md");

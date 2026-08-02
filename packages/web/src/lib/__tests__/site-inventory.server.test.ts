@@ -127,4 +127,25 @@ describe("site inventory", () => {
       getPageContent({ url: "https://example.com/vote" }),
     ).rejects.toThrow("URL is not an allowed Optimitron property route");
   });
+
+  it("does not let an encoded '..' segment traverse to another route's snapshot", async () => {
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        "<html><head><title>Fallback</title></head><body><main><h1>Fallback</h1></main></body></html>",
+        { headers: { "content-type": "text/html" } },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    // "%2e%2e%2Fvote" decodes to "../vote", which (pre-fix) escaped the
+    // "invest" segment and resolved to the unrelated vote snapshot instead
+    // of being rejected. The fix must reject the whole snapshot lookup and
+    // fall through to a live fetch instead of serving the wrong page.
+    const result = await getPageContent({
+      url: "https://optimitron.com/invest/%2e%2e%2Fvote",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.title).toBe("Fallback");
+  });
 });
