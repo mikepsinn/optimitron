@@ -1,4 +1,7 @@
-import { TaskStatus } from "@optimitron/db/enums";
+import {
+  TaskImpactPublicationStatus,
+  TaskStatus,
+} from "@optimitron/db/enums";
 import { describe, expect, it } from "vitest";
 import {
   buildPersonalQueueRows,
@@ -16,7 +19,9 @@ function task(input: {
   expectedValue?: number;
   hiddenUnresolvedBlockerCount?: number;
   id: string;
+  isPublic?: boolean;
   parentTaskId?: string;
+  publicationStatus?: TaskImpactPublicationStatus;
 }) {
   const blockerIds = input.blockerIds ?? [];
   const blockerStatuses = input.blockerStatuses ?? [];
@@ -36,7 +41,15 @@ function task(input: {
       },
       probabilityDeltaBase: 0,
     })),
-    isPublic: false,
+    impact:
+      input.publicationStatus == null
+        ? undefined
+        : {
+            currentSet: {
+              publicationStatus: input.publicationStatus,
+            },
+          },
+    isPublic: input.isPublic ?? false,
     marginalImpactFrame:
       input.expectedValue == null
         ? null
@@ -140,6 +153,23 @@ describe("personal queue blocker semantics", () => {
         expectedValue: 1_000,
         hiddenUnresolvedBlockerCount: 1,
         id: "blocked-by-private-task",
+      }),
+    ]);
+
+    expect(rows).toEqual([]);
+  });
+
+  it("does not lend an unpublished public estimate to a blocker", () => {
+    const rows = queue([
+      task({ estimatedEffortHours: 1, id: "blocker" }),
+      task({
+        blockerIds: ["blocker"],
+        blockerStatuses: [TaskStatus.ACTIVE],
+        estimatedEffortHours: 9,
+        expectedValue: 1_000,
+        id: "blocked-draft",
+        isPublic: true,
+        publicationStatus: TaskImpactPublicationStatus.DRAFT,
       }),
     ]);
 

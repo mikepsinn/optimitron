@@ -983,6 +983,7 @@ function computeStructuralUnlockAttributions(
 
   for (const downstream of rows) {
     if (
+      !downstream.hasMarginalEstimate ||
       downstream.realEv <= 0 ||
       downstream.hours == null ||
       downstream.hours <= 0 ||
