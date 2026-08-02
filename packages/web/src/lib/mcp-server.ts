@@ -6745,7 +6745,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "deleteTask",
     description:
-      "Delete a task by soft delete. Non-admin callers need MANAGE access and cannot delete public tasks; admins may delete any task within the client boundary.",
+      "Delete a task by soft delete. Admins may delete any task within the client boundary. Non-admin callers may delete only a private task they have MANAGE access to; a public task is always rejected for non-admin callers with 'Deleting public tasks requires an admin user.', even though they can look one up by ID without MANAGE access.",
     inputSchema: {
       type: "object" as const,
       properties: {

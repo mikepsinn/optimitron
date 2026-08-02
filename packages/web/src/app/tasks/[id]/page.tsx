@@ -653,8 +653,7 @@ export default async function TaskDetailPage({
               />
             ) : null}
             {userId &&
-            (viewer?.isAdmin ||
-              (!task.isPublic && task.createdByUserId === userId)) ? (
+            (viewer?.isAdmin || (!task.isPublic && canManageTask)) ? (
               <TaskDeleteButton taskId={task.id} taskTitle={task.title} />
             ) : null}
           </section>
