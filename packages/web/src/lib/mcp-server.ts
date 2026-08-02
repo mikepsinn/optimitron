@@ -6946,7 +6946,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "deleteTask",
     description:
-      "Delete a task by soft delete. Non-admin deletes are scoped to the authenticated creator; admins may delete PUBLIC and non-owned tasks.",
+      "Delete a task by soft delete. Admins may delete any task within the client boundary. Non-admin callers may delete only a private task they have MANAGE access to; a public task is always rejected for non-admin callers with 'Deleting public tasks requires an admin user.', even though they can look one up by ID without MANAGE access.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -14218,18 +14218,23 @@ export function createMcpServer(
             if (!taskId) return err("taskId is required");
 
             const personId = await loadSessionPersonId(userId);
+            const isAdminDeleter = hasAdminTaskWriteAccess(scopes, isAdmin);
             const existing = await prisma.task.findFirst({
               where: {
                 deletedAt: null,
                 id: taskId,
-                OR: [
-                  { isPublic: true },
-                  getTaskAccessWhere({
-                    action: "MANAGE",
-                    personId,
-                    userId,
-                  }),
-                ],
+                ...(!isAdminDeleter
+                  ? {
+                      OR: [
+                        { isPublic: true },
+                        getTaskAccessWhere({
+                          action: "MANAGE" as const,
+                          personId,
+                          userId,
+                        }),
+                      ],
+                    }
+                  : {}),
               },
               select: {
                 createdByUserId: true,
@@ -14238,7 +14243,6 @@ export function createMcpServer(
               },
             });
             if (!existing) return err("Task not found");
-            const isAdminDeleter = hasAdminTaskWriteAccess(scopes, isAdmin);
             if (existing.isPublic && !isAdminDeleter) {
               return err("Deleting public tasks requires an admin user.");
             }
@@ -14277,10 +14281,10 @@ export function createMcpServer(
 
             const prisma = await getPrisma();
             const personId = await loadSessionPersonId(userId);
-            // Same access model as deleteTask: the caller must have MANAGE
-            // access to each task (or it's public), and admin is required to
-            // merge a public task. Admin status alone does NOT grant implicit
-            // access to another user's private task (task-visibility.server.ts).
+            // Merging remains narrower than deletion: the caller must have
+            // MANAGE access to each task (or it's public), and admin is
+            // required to merge a public task. Admin status alone does not
+            // grant implicit access to another user's private task.
             const isAdminMerger = hasAdminTaskWriteAccess(scopes, isAdmin);
             for (const id of [duplicateTaskId, canonicalTaskId]) {
               const existing = await prisma.task.findFirst({

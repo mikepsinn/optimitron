@@ -447,7 +447,7 @@ export function getDeveloperOpenApiDocument(origin: string) {
         },
         delete: {
           tags: ["Tasks"],
-          summary: "Delete a task created by the authenticated user",
+          summary: "Soft-delete a manageable task (admins may delete any task)",
           security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           responses: {
@@ -493,16 +493,18 @@ export function getDeveloperOpenApiDocument(origin: string) {
       "/api/tasks/{id}/complete": {
         post: {
           tags: ["Tasks"],
-          summary: "Complete a task claim",
+          summary: "Complete an active claim or a simple personal task",
           security: taskPersonalOrAdminSecurity,
           parameters: [{ $ref: "#/components/parameters/taskId" }],
           requestBody: {
+            required: true,
             content: {
               "application/json": {
                 schema: {
                   type: "object",
+                  required: ["completionEvidence"],
                   properties: {
-                    completionEvidence: { type: "string" },
+                    completionEvidence: { type: "string", minLength: 1 },
                     actualCashCostUsd: { type: "number" },
                     actualEffortSeconds: { type: "number" },
                   },
@@ -512,7 +514,30 @@ export function getDeveloperOpenApiDocument(origin: string) {
           },
           responses: {
             "200": {
-              description: "Completed task claim",
+              description: "Completed claim or personal task",
+              content: {
+                "application/json": {
+                  schema: successEnvelope({
+                    type: "object",
+                    additionalProperties: true,
+                  }),
+                },
+              },
+            },
+            "400": errorResponse,
+            "401": unauthorizedResponse,
+          },
+        },
+      },
+      "/api/tasks/{id}/release": {
+        post: {
+          tags: ["Tasks"],
+          summary: "Release the authenticated user's active task claim",
+          security: taskPersonalOrAdminSecurity,
+          parameters: [{ $ref: "#/components/parameters/taskId" }],
+          responses: {
+            "200": {
+              description: "Released task claim",
               content: {
                 "application/json": {
                   schema: successEnvelope({
