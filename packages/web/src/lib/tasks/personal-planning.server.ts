@@ -661,13 +661,15 @@ function getPlanningBlockers(task: PersonalQueueTaskRecord): PlanningBlocker[] {
     const status = edge.fromTask?.status;
     return taskId && status ? [{ taskId, status }] : [];
   });
-  const hiddenBlockers = Array.from(
-    { length: Math.max(0, task.hiddenUnresolvedBlockerCount ?? 0) },
-    (_, index) => ({
-      status: TaskStatus.ACTIVE,
-      taskId: `private-blocker:${task.id}:${index}`,
-    }),
-  );
+  const hasHiddenBlockers = (task.hiddenUnresolvedBlockerCount ?? 0) > 0;
+  const hiddenBlockers = hasHiddenBlockers
+    ? [
+        {
+          status: TaskStatus.ACTIVE,
+          taskId: `private-blocker:${task.id}`,
+        },
+      ]
+    : [];
   if (edgeBlockers.length > 0 || hiddenBlockers.length > 0) {
     return [...edgeBlockers, ...hiddenBlockers];
   }
