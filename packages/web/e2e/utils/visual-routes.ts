@@ -21,7 +21,9 @@ export type VisualRoute = {
   name: string;
   openCreateTask?: boolean;
   openContentShare?: boolean;
+  openAddStep?: boolean;
   openMenu?: boolean;
+  openTaskManagement?: boolean;
   path: string;
   required: boolean;
   requiredSelector?: string;
@@ -34,6 +36,8 @@ export type VisualRoute = {
 type DocumentReviewFixtureManifest = {
   activeReviewTaskId: string;
   managerTaskId: string;
+  managementClaimTaskId: string;
+  managementOwnerTaskId: string;
   staleReviewTaskId: string;
   version: 1;
 };
@@ -49,6 +53,8 @@ function isDocumentReviewFixtureManifest(
   return (
     candidate.version === 1 &&
     isNonEmptyString(candidate.managerTaskId) &&
+    isNonEmptyString(candidate.managementClaimTaskId) &&
+    isNonEmptyString(candidate.managementOwnerTaskId) &&
     isNonEmptyString(candidate.activeReviewTaskId) &&
     isNonEmptyString(candidate.staleReviewTaskId)
   );
@@ -73,6 +79,14 @@ const DOCUMENT_REVIEW_REVIEWER_FILE =
   "packages/web/src/components/tasks/document-review-reviewer-panel.tsx";
 const TASK_COMMENT_FEED_FILE =
   "packages/web/src/components/tasks/task-comment-feed.tsx";
+const TASK_COMPLETE_FORM_FILE =
+  "packages/web/src/components/tasks/TaskCompleteForm.tsx";
+const TASK_DELETE_BUTTON_FILE =
+  "packages/web/src/components/tasks/TaskDeleteButton.tsx";
+const TASK_MANAGEMENT_CONTROLS_FILE =
+  "packages/web/src/components/tasks/TaskManagementControls.tsx";
+const CREATE_TASK_DIALOG_FILE =
+  "packages/web/src/components/tasks/CreateTaskDialog.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
 const OPTIMITRON_HOME_LANDING_FILES = [
@@ -369,6 +383,42 @@ function loadDocumentReviewRoutes(): VisualRoute[] {
   }
 
   return [
+    {
+      authenticated: true,
+      covers: [
+        TASK_DETAIL_PAGE_FILE,
+        TASK_MANAGEMENT_CONTROLS_FILE,
+        TASK_COMPLETE_FORM_FILE,
+        TASK_DELETE_BUTTON_FILE,
+      ],
+      name: "task-management-owner",
+      openTaskManagement: true,
+      path: `/tasks/${manifest.managementOwnerTaskId}`,
+      required: true,
+      requiredSelector: "[data-task-management][open]",
+    },
+    {
+      authenticated: true,
+      covers: [
+        TASK_DETAIL_PAGE_FILE,
+        TASK_COMPLETE_FORM_FILE,
+        TASK_DELETE_BUTTON_FILE,
+      ],
+      name: "task-management-claimant-admin",
+      path: `/tasks/${manifest.managementClaimTaskId}`,
+      required: true,
+      requiredSelector: "#complete",
+      requiredText: /^Release Task$/,
+    },
+    {
+      authenticated: true,
+      covers: [CREATE_TASK_DIALOG_FILE, TASK_MANAGEMENT_CONTROLS_FILE],
+      name: "task-management-add-step",
+      openAddStep: true,
+      path: `/tasks/${manifest.managementOwnerTaskId}`,
+      required: true,
+      requiredSelector: '[role="dialog"]',
+    },
     {
       authenticated: true,
       covers: [

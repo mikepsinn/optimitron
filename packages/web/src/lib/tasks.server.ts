@@ -738,7 +738,7 @@ function taskDetailSelectForViewer(input: {
     childTasks: {
       ...taskDetailSelect.childTasks,
       where: {
-        AND: [taskDetailSelect.childTasks.where, taskAccess],
+        AND: [{ deletedAt: null }, taskAccess],
       },
       select: listSelect,
     },
@@ -2231,60 +2231,142 @@ export async function updateTaskCreatedByUser(
     select: { personId: true },
   });
   if (!actor) throw new Error("Task not found.");
-  const existingTask = await prisma.task.findFirst({
-    where: {
-      deletedAt: null,
-      id: taskId,
-      AND: [
-        getTaskAccessWhere({
-          action: "MANAGE",
-          personId: actor.personId,
-          userId: creatorUserId,
-        }),
-        // Delegated clients only reach tasks inside their grant boundary,
-        // matching the MCP updateTask handler.
-        ...(options?.clientAccessBoundary
-          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
-          : []),
-      ],
-    },
-    select: {
-      assigneeOrganizationId: true,
-      assigneePersonId: true,
-      claimPolicy: true,
-      id: true,
-      isPublic: true,
-      maxClaims: true,
-    },
+  const taskAccessWhere = getTaskAccessWhere({
+    action: "MANAGE",
+    personId: actor.personId,
+    userId: creatorUserId,
   });
-
-  if (!existingTask) {
-    throw new Error("Task not found.");
-  }
-
-  if (existingTask.isPublic && input.isPublic === false) {
-    throw new Error("Public tasks can't be unpublished. Ask an admin.");
-  }
-
-  const shouldUpdateClaimSettings =
-    input.claimPolicy !== undefined || input.maxClaims !== undefined;
-  const claimSettings = resolveTaskClaimSettings({
-    assigneeOrganizationId: existingTask.assigneeOrganizationId,
-    assigneePersonId: existingTask.assigneePersonId,
-    currentClaimPolicy: existingTask.claimPolicy,
-    currentMaxClaims: existingTask.maxClaims,
-    requestedClaimPolicy: input.claimPolicy,
-    requestedMaxClaims: input.maxClaims,
-  });
-
-  const title = input.title == null ? undefined : input.title.trim();
-  if (title !== undefined && !title) {
-    throw new Error("Title is required.");
-  }
-
-  const shouldUpdateEndpoint = input.primaryEndpoint !== undefined;
 
   return prisma.$transaction(async (tx) => {
+    // Lock the row before reading the archive-eligibility relations so a
+    // concurrent claim/execution start (which also locks this row, see
+    // claimTask) can't slip in between the read and the write below.
+    await lockTaskForUpdate(tx, taskId);
+    const checkedAt = new Date();
+    const existingTask = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        AND: [
+          taskAccessWhere,
+          // Delegated clients only reach tasks inside their grant boundary,
+          // matching the MCP updateTask handler.
+          ...(options?.clientAccessBoundary
+            ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+            : []),
+        ],
+      },
+      select: {
+        agentLeases: {
+          where: { expiresAt: { gte: checkedAt }, released: false },
+          select: { id: true },
+          take: 1,
+        },
+        assigneeOrganizationId: true,
+        assigneePersonId: true,
+        // Scoped to work this actor can see/manage: an unrelated stranger's
+        // private child grafted onto a public parent must not be able to
+        // block the manager from archiving it.
+        childTasks: {
+          where: {
+            AND: [
+              {
+                deletedAt: null,
+                status: { in: [TaskStatus.DRAFT, TaskStatus.ACTIVE] },
+              },
+              taskAccessWhere,
+            ],
+          },
+          select: { id: true },
+          take: 1,
+        },
+        claimPolicy: true,
+        claims: {
+          where: {
+            deletedAt: null,
+            status: { in: [...ACTIVE_CLAIM_STATUSES] },
+          },
+          select: { id: true },
+          take: 1,
+        },
+        executionAttempts: {
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                status: {
+                  in: [
+                    TaskExecutionAttemptStatus.QUEUED,
+                    TaskExecutionAttemptStatus.RUNNING,
+                  ],
+                },
+              },
+              {
+                status: TaskExecutionAttemptStatus.COMPLETED,
+                verifications: {
+                  some: {
+                    deletedAt: null,
+                    result: TaskVerificationResult.PENDING,
+                  },
+                },
+              },
+            ],
+          },
+          select: { id: true },
+          take: 1,
+        },
+        id: true,
+        isPublic: true,
+        maxClaims: true,
+        status: true,
+      },
+    });
+
+    if (!existingTask) {
+      throw new Error("Task not found.");
+    }
+
+    if (existingTask.isPublic && input.isPublic === false) {
+      throw new Error("Public tasks can't be unpublished. Ask an admin.");
+    }
+    if (
+      input.status === TaskStatus.STALE &&
+      existingTask.status !== TaskStatus.DRAFT &&
+      existingTask.status !== TaskStatus.ACTIVE &&
+      existingTask.status !== TaskStatus.STALE
+    ) {
+      throw new Error("Only draft or active tasks can be archived.");
+    }
+    if (
+      input.status === TaskStatus.STALE &&
+      (existingTask.agentLeases.length > 0 ||
+        existingTask.childTasks.length > 0 ||
+        existingTask.claims.length > 0 ||
+        existingTask.executionAttempts.length > 0)
+    ) {
+      throw new Error(
+        "Finish or release active work before archiving this task.",
+      );
+    }
+
+    const shouldUpdateClaimSettings =
+      input.claimPolicy !== undefined || input.maxClaims !== undefined;
+    const claimSettings = resolveTaskClaimSettings({
+      assigneeOrganizationId: existingTask.assigneeOrganizationId,
+      assigneePersonId: existingTask.assigneePersonId,
+      currentClaimPolicy: existingTask.claimPolicy,
+      currentMaxClaims: existingTask.maxClaims,
+      requestedClaimPolicy: input.claimPolicy,
+      requestedMaxClaims: input.maxClaims,
+    });
+
+    const title = input.title == null ? undefined : input.title.trim();
+    if (title !== undefined && !title) {
+      throw new Error("Title is required.");
+    }
+
+    const shouldUpdateEndpoint = input.primaryEndpoint !== undefined;
+
     await tx.task.update({
       where: { id: taskId },
       data: {
@@ -2294,8 +2376,11 @@ export async function updateTaskCreatedByUser(
           : undefined,
         description:
           input.description == null ? undefined : input.description.trim(),
-        dueAt: input.dueAt ?? undefined,
-        estimatedEffortHours: input.estimatedEffortHours ?? undefined,
+        dueAt: input.dueAt === undefined ? undefined : input.dueAt,
+        estimatedEffortHours:
+          input.estimatedEffortHours === undefined
+            ? undefined
+            : input.estimatedEffortHours,
         interestTags: input.interestTags?.filter(Boolean) ?? undefined,
         isPublic: input.isPublic ?? undefined,
         maxClaims: shouldUpdateClaimSettings
@@ -2327,8 +2412,10 @@ export async function updateTaskCreatedByUser(
   });
 }
 
-// Soft-delete a task the user created. Mirrors the MCP deleteTask handler:
-// creator-scoped, refuses public tasks (those need admin), sets deletedAt.
+// Soft-delete without removing related history. Ordinary users stay inside the
+// normal MANAGE boundary and may only delete private tasks. Platform admins may
+// delete any task by ID, including public tasks, without gaining read access to
+// unrelated private task content.
 export async function deleteTaskCreatedByUser(
   taskId: string,
   creatorUserId: string,
@@ -2336,7 +2423,7 @@ export async function deleteTaskCreatedByUser(
 ) {
   const actor = await prisma.user.findUnique({
     where: { id: creatorUserId },
-    select: { personId: true },
+    select: { isAdmin: true, personId: true },
   });
   if (!actor) throw new Error("Task not found.");
   const existing = await prisma.task.findFirst({
@@ -2344,11 +2431,15 @@ export async function deleteTaskCreatedByUser(
       deletedAt: null,
       id: taskId,
       AND: [
-        getTaskAccessWhere({
-          action: "MANAGE",
-          personId: actor.personId,
-          userId: creatorUserId,
-        }),
+        ...(actor.isAdmin
+          ? []
+          : [
+              getTaskAccessWhere({
+                action: "MANAGE",
+                personId: actor.personId,
+                userId: creatorUserId,
+              }),
+            ]),
         ...(options?.clientAccessBoundary
           ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
           : []),
@@ -2361,7 +2452,7 @@ export async function deleteTaskCreatedByUser(
     throw new Error("Task not found.");
   }
 
-  if (existing.isPublic) {
+  if (existing.isPublic && !actor.isAdmin) {
     throw new Error("Public tasks can't be self-deleted. Ask an admin.");
   }
 
@@ -2390,6 +2481,132 @@ function isSelfExecutorContext(contextJson: unknown) {
   );
 }
 
+function selfCompletionTaskSelect(checkedAt: Date) {
+  return {
+    agentLeases: {
+      where: { expiresAt: { gte: checkedAt }, released: false },
+      select: { id: true },
+      take: 1,
+    },
+    applicationPolicy: true,
+    applications: { select: { id: true }, take: 1 },
+    assigneeOrganizationId: true,
+    assigneePersonId: true,
+    childTasks: { select: { id: true }, take: 1 },
+    claimPolicy: true,
+    claims: { select: { id: true }, take: 1 },
+    compensationCadence: true,
+    compensationCurrency: true,
+    compensationKind: true,
+    compensationMaxAmountMinorUnits: true,
+    compensationMinAmountMinorUnits: true,
+    compensationPaymentRails: true,
+    completedAt: true,
+    completionEvidence: true,
+    contextJson: true,
+    createdByUserId: true,
+    executionAttempts: { select: { id: true }, take: 1 },
+    executionMode: true,
+    id: true,
+    incomingEdges: {
+      where: {
+        deletedAt: null,
+        edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
+        fromTask: {
+          deletedAt: null,
+          status: { not: TaskStatus.VERIFIED },
+        },
+      },
+      select: { id: true },
+      take: 1,
+    },
+    isPublic: true,
+    managers: { select: { id: true }, take: 1 },
+    ownerOrganizationId: true,
+    payouts: { select: { id: true }, take: 1 },
+    status: true,
+    taskKey: true,
+    verifiedAt: true,
+    verifiedByUserId: true,
+  } satisfies Prisma.TaskSelect;
+}
+
+type SelfCompletionTask = Prisma.TaskGetPayload<{
+  select: ReturnType<typeof selfCompletionTaskSelect>;
+}>;
+
+function isSimpleSelfTask(
+  task: SelfCompletionTask,
+  userId: string,
+  personId: string | null,
+) {
+  return (
+    !task.isPublic &&
+    task.ownerOrganizationId === null &&
+    task.createdByUserId === userId &&
+    task.assigneeOrganizationId === null &&
+    (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
+      task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) &&
+    (task.assigneePersonId === null ||
+      (personId !== null && task.assigneePersonId === personId)) &&
+    task.applicationPolicy === TaskApplicationPolicy.CLOSED &&
+    (task.compensationKind === TaskCompensationKind.UNSPECIFIED ||
+      task.compensationKind === TaskCompensationKind.VOLUNTEER) &&
+    task.compensationCadence === null &&
+    task.compensationCurrency === null &&
+    task.compensationMinAmountMinorUnits === null &&
+    task.compensationMaxAmountMinorUnits === null &&
+    task.compensationPaymentRails.length === 0 &&
+    task.executionMode !== TaskExecutionMode.AGENT_ONLY &&
+    isSelfExecutorContext(task.contextJson)
+  );
+}
+
+function isSelfTaskReadyToComplete(
+  task: SelfCompletionTask,
+  userId: string,
+  personId: string | null,
+) {
+  return (
+    isSimpleSelfTask(task, userId, personId) &&
+    task.status === TaskStatus.ACTIVE &&
+    !isReservedPlanningRootTask(task) &&
+    task.childTasks.length === 0 &&
+    task.incomingEdges.length === 0 &&
+    task.agentLeases.length === 0 &&
+    task.applications.length === 0 &&
+    task.claims.length === 0 &&
+    task.executionAttempts.length === 0 &&
+    task.managers.length === 0 &&
+    task.payouts.length === 0
+  );
+}
+
+/** Exact server-side preflight for the task page's simple Mark Done action. */
+export async function canCompleteSelfTask(taskId: string, userId: string) {
+  const actor = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { personId: true },
+  });
+  if (!actor) return false;
+
+  const checkedAt = new Date();
+  const task = await prisma.task.findFirst({
+    where: {
+      deletedAt: null,
+      id: taskId,
+      ...getTaskAccessWhere({
+        action: "VERIFY",
+        personId: actor.personId,
+        userId,
+      }),
+    },
+    select: selfCompletionTaskSelect(checkedAt),
+  });
+
+  return task ? isSelfTaskReadyToComplete(task, userId, actor.personId) : false;
+}
+
 async function lockTaskForUpdate(tx: Prisma.TransactionClient, taskId: string) {
   await tx.$queryRaw<Array<{ id: string }>>`
     SELECT "id"
@@ -2409,6 +2626,10 @@ export async function completeSelfTask(
   taskId: string,
   userId: string,
   completionEvidence: string,
+  actuals?: {
+    actualCashCostUsd?: number | null;
+    actualEffortSeconds?: number | null;
+  },
 ) {
   const evidence = completionEvidence.trim();
   if (!evidence) throw new Error("Completion evidence is required.");
@@ -2440,95 +2661,13 @@ export async function completeSelfTask(
         id: taskId,
         ...taskAccess,
       },
-      select: {
-        agentLeases: {
-          where: { expiresAt: { gte: checkedAt }, released: false },
-          select: { id: true },
-          take: 1,
-        },
-        applicationPolicy: true,
-        applications: {
-          select: { id: true },
-          take: 1,
-        },
-        assigneeOrganizationId: true,
-        assigneePersonId: true,
-        childTasks: {
-          select: { id: true },
-          take: 1,
-        },
-        claimPolicy: true,
-        claims: {
-          select: { id: true },
-          take: 1,
-        },
-        compensationCadence: true,
-        compensationCurrency: true,
-        compensationKind: true,
-        compensationMaxAmountMinorUnits: true,
-        compensationMinAmountMinorUnits: true,
-        compensationPaymentRails: true,
-        completedAt: true,
-        completionEvidence: true,
-        contextJson: true,
-        createdByUserId: true,
-        executionAttempts: {
-          select: { id: true },
-          take: 1,
-        },
-        executionMode: true,
-        id: true,
-        incomingEdges: {
-          where: {
-            deletedAt: null,
-            edgeType: { in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON] },
-            fromTask: {
-              deletedAt: null,
-              status: { not: TaskStatus.VERIFIED },
-            },
-          },
-          select: { id: true },
-          take: 1,
-        },
-        isPublic: true,
-        managers: {
-          select: { id: true },
-          take: 1,
-        },
-        ownerOrganizationId: true,
-        payouts: {
-          select: { id: true },
-          take: 1,
-        },
-        status: true,
-        taskKey: true,
-        verifiedAt: true,
-        verifiedByUserId: true,
-      },
+      select: selfCompletionTaskSelect(checkedAt),
     });
     if (!task) throw new Error("Task not found");
 
-    const eligible =
-      !task.isPublic &&
-      task.ownerOrganizationId === null &&
-      task.createdByUserId === userId &&
-      task.assigneeOrganizationId === null &&
-      (task.claimPolicy === TaskClaimPolicy.OPEN_SINGLE ||
-        task.claimPolicy === TaskClaimPolicy.ASSIGNED_ONLY) &&
-      (task.assigneePersonId === null ||
-        (actor.personId !== null &&
-          task.assigneePersonId === actor.personId)) &&
-      task.applicationPolicy === TaskApplicationPolicy.CLOSED &&
-      (task.compensationKind === TaskCompensationKind.UNSPECIFIED ||
-        task.compensationKind === TaskCompensationKind.VOLUNTEER) &&
-      task.compensationCadence === null &&
-      task.compensationCurrency === null &&
-      task.compensationMinAmountMinorUnits === null &&
-      task.compensationMaxAmountMinorUnits === null &&
-      task.compensationPaymentRails.length === 0 &&
-      task.executionMode !== TaskExecutionMode.AGENT_ONLY &&
-      isSelfExecutorContext(task.contextJson);
-    if (!eligible) throw new Error(SIMPLE_SELF_COMPLETION_ERROR);
+    if (!isSimpleSelfTask(task, userId, actor.personId)) {
+      throw new Error(SIMPLE_SELF_COMPLETION_ERROR);
+    }
 
     if (task.status === TaskStatus.VERIFIED) {
       return {
@@ -2575,6 +2714,11 @@ export async function completeSelfTask(
         status: TaskStatus.ACTIVE,
       },
       data: {
+        // Self-completed tasks have no claim row, so actuals are recorded
+        // directly on the task (see the Task.actualCashCostUsd/
+        // actualEffortSeconds schema comments).
+        actualCashCostUsd: actuals?.actualCashCostUsd ?? null,
+        actualEffortSeconds: actuals?.actualEffortSeconds ?? null,
         completedAt,
         completionEvidence: evidence,
         status: TaskStatus.VERIFIED,
@@ -2589,6 +2733,8 @@ export async function completeSelfTask(
     const completedTask = await tx.task.findUniqueOrThrow({
       where: { id: task.id },
       select: {
+        actualCashCostUsd: true,
+        actualEffortSeconds: true,
         completedAt: true,
         completionEvidence: true,
         id: true,
@@ -2749,11 +2895,8 @@ export async function completeTaskClaim(
         userId,
       },
     },
-    select: {
-      claimedAt: true,
-      id: true,
-      startedAt: true,
-      status: true,
+    include: {
+      task: { select: { status: true } },
     },
   });
 
@@ -2765,7 +2908,11 @@ export async function completeTaskClaim(
     claim.status === TaskClaimStatus.COMPLETED ||
     claim.status === TaskClaimStatus.VERIFIED
   ) {
-    return claim;
+    // Idempotent retry: return the same shape the update path below returns,
+    // including completionEvidence and actuals, instead of a partial record.
+    const { task, ...completedClaim } = claim;
+    void task;
+    return completedClaim;
   }
 
   if (
@@ -2773,6 +2920,9 @@ export async function completeTaskClaim(
     claim.status !== TaskClaimStatus.IN_PROGRESS
   ) {
     throw new Error("Only active claims can be completed.");
+  }
+  if (claim.task.status !== TaskStatus.ACTIVE) {
+    throw new Error("The task is no longer active.");
   }
 
   return prisma.taskClaim.update({
@@ -2785,6 +2935,106 @@ export async function completeTaskClaim(
       startedAt: claim.startedAt ?? claim.claimedAt,
       status: TaskClaimStatus.COMPLETED,
     },
+  });
+}
+
+/**
+ * One web action for both ordinary personal tasks and claimed work. The server
+ * chooses the lifecycle from durable claim state so the browser never has to
+ * guess which completion operation is valid.
+ */
+export async function completeTaskForUser(
+  taskId: string,
+  userId: string,
+  completionEvidence: string,
+  actuals?: {
+    actualCashCostUsd?: number | null;
+    actualEffortSeconds?: number | null;
+  },
+) {
+  const claim = await prisma.taskClaim.findFirst({
+    where: { deletedAt: null, taskId, userId },
+    select: { status: true },
+  });
+
+  if (
+    claim &&
+    (claim.status === TaskClaimStatus.CLAIMED ||
+      claim.status === TaskClaimStatus.IN_PROGRESS ||
+      claim.status === TaskClaimStatus.COMPLETED ||
+      claim.status === TaskClaimStatus.VERIFIED)
+  ) {
+    return {
+      kind: "claim" as const,
+      value: await completeTaskClaim(
+        taskId,
+        userId,
+        completionEvidence,
+        actuals,
+      ),
+    };
+  }
+  if (claim) {
+    throw new Error("Only active claims can be completed.");
+  }
+
+  return {
+    kind: "self" as const,
+    value: await completeSelfTask(taskId, userId, completionEvidence, actuals),
+  };
+}
+
+/** Release an active claim while retaining its history for accountability. */
+export async function abandonTaskClaim(taskId: string, userId: string) {
+  return prisma.$transaction(async (tx) => {
+    const claim = await tx.taskClaim.findFirst({
+      where: { deletedAt: null, taskId, userId },
+      select: {
+        abandonedAt: true,
+        id: true,
+        status: true,
+      },
+    });
+
+    if (!claim) {
+      throw new Error("No claim exists for this task and user.");
+    }
+    if (claim.status === TaskClaimStatus.ABANDONED) {
+      return claim;
+    }
+    if (
+      claim.status !== TaskClaimStatus.CLAIMED &&
+      claim.status !== TaskClaimStatus.IN_PROGRESS
+    ) {
+      throw new Error("Only active claims can be released.");
+    }
+
+    const abandonedAt = new Date();
+    const update = await tx.taskClaim.updateMany({
+      where: {
+        deletedAt: null,
+        id: claim.id,
+        status: {
+          in: [TaskClaimStatus.CLAIMED, TaskClaimStatus.IN_PROGRESS],
+        },
+      },
+      data: {
+        abandonedAt,
+        status: TaskClaimStatus.ABANDONED,
+      },
+    });
+    if (update.count !== 1) {
+      throw new Error("Claim is no longer active.");
+    }
+
+    return tx.taskClaim.findUniqueOrThrow({
+      where: { id: claim.id },
+      select: {
+        abandonedAt: true,
+        id: true,
+        status: true,
+      },
+    });
   });
 }
 

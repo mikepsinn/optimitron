@@ -11,6 +11,7 @@ import { authorizeOwnerSend } from "@/lib/email/outbound-authorization.server";
 import { McpScope } from "@/lib/mcp-scopes";
 import { prisma } from "@/lib/prisma";
 import { createTask, listTasks } from "@/lib/tasks.server";
+import { canUserManageTask } from "@/lib/tasks/task-visibility.server";
 
 export const runtime = "nodejs";
 
@@ -202,6 +203,14 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+    if (parentTaskId && assigneeTargetCount > 0) {
+      return NextResponse.json(
+        {
+          error: "Add Step currently creates work only on your own task list.",
+        },
+        { status: 400 },
+      );
+    }
 
     if (!assigneePersonId && assigneePersonIdentifier) {
       const identifier = normalizeAssigneePersonIdentifier(
@@ -248,7 +257,12 @@ export async function POST(request: Request) {
     if (parentTaskId) {
       const parent = await prisma.task.findFirst({
         where: { id: parentTaskId, deletedAt: null },
-        select: { id: true, isPublic: true },
+        select: {
+          id: true,
+          isPublic: true,
+          ownerOrganizationId: true,
+          status: true,
+        },
       });
       if (!parent) {
         return NextResponse.json(
@@ -256,17 +270,33 @@ export async function POST(request: Request) {
           { status: 404 },
         );
       }
-      if (!parent.isPublic) {
+      if (!parent.isPublic && !(await canUserManageTask(parent.id, userId))) {
         return NextResponse.json(
-          { error: "Cannot add a subtask to a private task." },
-          { status: 403 },
+          { error: "Parent task not found." },
+          { status: 404 },
+        );
+      }
+      if (parent.ownerOrganizationId) {
+        return NextResponse.json(
+          {
+            error: "Organization-owned task steps are not supported here yet.",
+          },
+          { status: 400 },
+        );
+      }
+      if (
+        parent.status !== TaskStatus.DRAFT &&
+        parent.status !== TaskStatus.ACTIVE
+      ) {
+        return NextResponse.json(
+          { error: "Steps can only be added to draft or active tasks." },
+          { status: 400 },
         );
       }
     }
 
-    // Subtasks created through the public REST API are always private. The
-    // parent-task creator promotes them to public via the existing admin
-    // disclosure on /tasks/[id]. Honoring a client-supplied `isPublic: true`
+    // Subtasks created through the REST API are always private. An authorized
+    // manager can publish them later. Honoring a client-supplied `isPublic: true`
     // here would let any caller graft a public subtask onto someone else's
     // tree.
     const taskInput = {
