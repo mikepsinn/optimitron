@@ -313,6 +313,18 @@ const taskListSelect = {
           ],
         },
       },
+      incomingEdges: {
+        where: {
+          deletedAt: null,
+          edgeType: {
+            in: [TaskEdgeType.BLOCKS, TaskEdgeType.DEPENDS_ON],
+          },
+          fromTask: {
+            deletedAt: null,
+            status: { not: TaskStatus.VERIFIED },
+          },
+        },
+      },
     },
   },
   assigneeOrganization: {
@@ -1109,6 +1121,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
   activeChildTaskCount: number;
   activeExecutionAttemptCount: number;
   blockerStatuses: TaskStatus[];
+  hiddenUnresolvedBlockerCount: number;
   directImpactFrame: TaskImpactSelection["selectedFrame"];
   marginalImpactFrame: TaskImpactSelection["selectedFrame"];
   impact: {
@@ -1241,9 +1254,20 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
       ? task.childTasks.map((childTask) => decorateTask(childTask, options))
       : undefined;
 
-  const blockerStatuses = task.incomingEdges.map(
+  const visibleBlockerStatuses = task.incomingEdges.map(
     (edge) => edge.fromTask.status as TaskStatus,
   );
+  const visibleUnresolvedBlockerCount = visibleBlockerStatuses.filter(
+    (status) => status !== TaskStatus.VERIFIED,
+  ).length;
+  const hiddenUnresolvedBlockerCount = Math.max(
+    0,
+    task._count.incomingEdges - visibleUnresolvedBlockerCount,
+  );
+  const blockerStatuses = [
+    ...visibleBlockerStatuses,
+    ...Array<TaskStatus>(hiddenUnresolvedBlockerCount).fill(TaskStatus.ACTIVE),
+  ];
   const normalizedSourceArtifacts = task.sourceArtifacts.map((entry) => ({
     ...entry,
     sourceArtifact: normalizeSourceArtifact(entry.sourceArtifact),
@@ -1272,6 +1296,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     activeChildTaskCount: task._count.childTasks,
     activeExecutionAttemptCount: task._count.executionAttempts,
     blockerStatuses,
+    hiddenUnresolvedBlockerCount,
     ...(decoratedChildTasks ? { childTasks: decoratedChildTasks } : {}),
     contextJson: normalizeTaskContextJson(task.contextJson),
     directImpactFrame: directImpactSelection.selectedFrame,
@@ -1303,6 +1328,7 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     activeChildTaskCount: number;
     activeExecutionAttemptCount: number;
     blockerStatuses: TaskStatus[];
+    hiddenUnresolvedBlockerCount: number;
     directImpactFrame: TaskImpactSelection["selectedFrame"];
     marginalImpactFrame: TaskImpactSelection["selectedFrame"];
     impact: {

@@ -4,6 +4,7 @@ import {
   TaskClaimPolicy,
   TaskClaimStatus,
   TaskCompensationKind,
+  TaskEdgeType,
   TaskExecutionMode,
   TaskStatus,
 } from "@optimitron/db";
@@ -162,7 +163,7 @@ function firstTaskFindManyArgs() {
 
 function mockTask(overrides: Record<string, unknown> = {}) {
   return {
-    _count: { childTasks: 0, executionAttempts: 0 },
+    _count: { childTasks: 0, executionAttempts: 0, incomingEdges: 0 },
     actualCashCostUsd: null,
     actualEffortSeconds: null,
     assigneeAffiliationSnapshot: null,
@@ -787,6 +788,65 @@ describe("tasks server", () => {
         { createdByUserId: "user-a" },
       ]),
     );
+  });
+
+  it("decorates an accessible zero-delta BLOCKS edge as a real queue blocker", async () => {
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        _count: { childTasks: 0, executionAttempts: 0, incomingEdges: 1 },
+        id: "blocked",
+        incomingEdges: [
+          {
+            edgeType: TaskEdgeType.BLOCKS,
+            fromTask: {
+              id: "blocker",
+              status: TaskStatus.ACTIVE,
+            },
+            probabilityDeltaBase: 0,
+            timeDeltaDaysBase: null,
+          },
+        ],
+      }),
+    ]);
+
+    const [blocked] = await listTasks({
+      userId: "user-a",
+      visibility: "personal",
+    });
+
+    expect(blocked).toMatchObject({
+      blockerStatuses: [TaskStatus.ACTIVE],
+      id: "blocked",
+      incomingEdges: [
+        {
+          edgeType: TaskEdgeType.BLOCKS,
+          fromTask: { id: "blocker", status: TaskStatus.ACTIVE },
+          probabilityDeltaBase: 0,
+        },
+      ],
+    });
+  });
+
+  it("gates a visible task without exposing its inaccessible blocker", async () => {
+    mocks.prisma.taskFindMany.mockResolvedValue([
+      mockTask({
+        _count: { childTasks: 0, executionAttempts: 0, incomingEdges: 1 },
+        id: "blocked-by-private-task",
+        incomingEdges: [],
+      }),
+    ]);
+
+    const [blocked] = await listTasks({
+      userId: "user-a",
+      visibility: "personal",
+    });
+
+    expect(blocked).toMatchObject({
+      blockerStatuses: [TaskStatus.ACTIVE],
+      hiddenUnresolvedBlockerCount: 1,
+      id: "blocked-by-private-task",
+      incomingEdges: [],
+    });
   });
 
   it("gets only public assigned tasks for a person profile and splits open from verified", async () => {

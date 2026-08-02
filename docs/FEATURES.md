@@ -40,9 +40,9 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal / org
 - **Status:** implemented
-- **Summary:** Directed edges (DEPENDS_ON / BLOCKS / INCREASES_PROBABILITY_OF / ACCELERATES) with probability/time-delta triples; blocked tasks are excluded from execution queues.
+- **Summary:** Directed edges (DEPENDS_ON / BLOCKS / INCREASES_PROBABILITY_OF / ACCELERATES) with probability/time-delta triples; blocked tasks are excluded from execution queues and their remaining plan priority flows to the executable blocker frontier.
 - **Evidence:** packages/db/prisma/schema.prisma (`model TaskEdge`, `enum TaskEdgeType`); `getBlockers` tool in packages/web/src/lib/mcp-server.ts; `isTaskBlocked` in packages/web/src/lib/tasks/rank-tasks.ts; packages/web/src/lib/tasks/marginal-impact.ts + test
-- **Acceptance:** A task with an unverified DEPENDS_ON blocker does not appear in getMyQueue; verifying the blocker makes it appear.
+- **Acceptance:** A task with an unverified zero-delta BLOCKS edge does not appear in getMyQueue; its executable blocker carries the remaining plan priority, and verifying the blocker makes the target appear.
 - **Roadmap:** shipped — maintain
 - **Notes:** Managed/seed data contains zero edges; the graph is populated only at runtime by explicit MCP calls.
 
