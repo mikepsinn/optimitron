@@ -10,6 +10,7 @@ START HERE (in order):
 1. getMe — your identity, granted scopes, and personal/organization planning roots (created on first call).
 2. getQueueAudit — data-health check of the personal queue; repair high-severity issues before trusting rankings.
 3. getNextAction or getMyQueue — the user's own ranked next actions. getAIQueue — tasks marked for autonomous agent execution. getNextTask — best public task for an anonymous agent.
+PERSONAL QUEUES: getMyQueue returns {deadlineLane, evLane}. deadlineLane is unblocked REQUIRED/EXPIRES work past due or latest-start, sorted most-overdue first and never truncated by maxResults. getNextAction always selects it before evLane. Do not merge the lanes and re-sort by expected value.
 
 DISCOVERY: call listTasks or searchTasks with paginated=true to receive {tasks, nextCursor}. Repeat the same call with cursor=nextCursor until nextCursor is null before claiming an inventory is complete. Copy cursors verbatim and never reuse one with different filters. Paginated inventory uses immutable task-ID order, not priority or relevance order. Calls with neither paginated=true nor cursor retain the legacy one-page array response.
 

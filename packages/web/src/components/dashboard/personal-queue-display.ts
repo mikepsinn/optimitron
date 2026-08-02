@@ -41,10 +41,11 @@ export function toPersonalQueueDisplayData(
   queue: PersonalQueueResult,
   audit: PersonalQueueAuditResult,
 ): PersonalQueueDisplayData {
+  const rows = [...queue.deadlineLane, ...queue.evLane];
   return {
     buybackRate: queue.buybackRate,
     issues: audit.issues,
-    rows: queue.queue.map((row: PersonalQueueRow) => ({
+    rows: rows.map((row: PersonalQueueRow) => ({
       blockersCount: row.blockersCount,
       blockersResolved: row.blockersResolved,
       cashCost: row.cashCost,

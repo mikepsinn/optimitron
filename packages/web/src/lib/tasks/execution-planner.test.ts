@@ -185,7 +185,7 @@ describe("buildExecutionPlan", () => {
     expect(result.nextAction?.id).toBe("file-taxes");
   });
 
-  it("does not let an indefinitely overdue required task override current value", () => {
+  it("never decays an overdue required task back to expected-value ranking", () => {
     const result = plan([
       task("old-required", {
         deadlineOverrideEligible: false,
@@ -196,7 +196,7 @@ describe("buildExecutionPlan", () => {
       task("current-high-value", { priority: 1_000_000 }),
     ]);
 
-    expect(result.nextAction?.id).toBe("current-high-value");
+    expect(result.nextAction?.id).toBe("old-required");
   });
 
   it("schedules required health guardrails even while their EV needs review", () => {
