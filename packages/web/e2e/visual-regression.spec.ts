@@ -242,6 +242,11 @@ async function openVisualRoute(
   siteVariant?: string,
 ) {
   const errors: string[] = [];
+  // Capture the settled UI, not whichever IntersectionObserver/Framer Motion
+  // frame happens to be visible when a full-page screenshot starts. Without
+  // this, long pages can intermittently lose off-screen ScrollReveal content
+  // even when the PR changes no UI code.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => {
     Object.defineProperty(window, "__OPTIMITRON_VISUAL_REVIEW__", {
       value: true,
