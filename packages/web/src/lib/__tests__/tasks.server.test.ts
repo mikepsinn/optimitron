@@ -1362,7 +1362,11 @@ describe("tasks server", () => {
   });
 
   it("blocks creators from unpublishing public tasks", async () => {
-    mocks.prisma.taskFindFirst.mockResolvedValue({
+    // The eligibility read now happens inside the row-locked transaction
+    // (archive-atomicity fix), so it resolves through mocks.tx, and the
+    // transaction is entered (then rolled back by the thrown error) instead
+    // of never being opened.
+    mocks.tx.taskFindFirst.mockResolvedValue({
       claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
       id: "task_public",
       isPublic: true,
@@ -1374,11 +1378,11 @@ describe("tasks server", () => {
       }),
     ).rejects.toThrow("Public tasks can't be unpublished. Ask an admin.");
 
-    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
   });
 
   it("does not archive verified work", async () => {
-    mocks.prisma.taskFindFirst.mockResolvedValue({
+    mocks.tx.taskFindFirst.mockResolvedValue({
       agentLeases: [],
       assigneeOrganizationId: null,
       assigneePersonId: null,
@@ -1397,11 +1401,11 @@ describe("tasks server", () => {
         status: TaskStatus.STALE,
       }),
     ).rejects.toThrow("Only draft or active tasks can be archived.");
-    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
   });
 
   it("does not archive a task while work is active", async () => {
-    mocks.prisma.taskFindFirst.mockResolvedValue({
+    mocks.tx.taskFindFirst.mockResolvedValue({
       agentLeases: [],
       assigneeOrganizationId: null,
       assigneePersonId: null,
@@ -1420,7 +1424,36 @@ describe("tasks server", () => {
         status: TaskStatus.STALE,
       }),
     ).rejects.toThrow("Finish or release active work before archiving");
-    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+    expect(mocks.tx.taskUpdate).not.toHaveBeenCalled();
+  });
+
+  it("locks the task row before reading archive eligibility, closing the claim-during-archive race", async () => {
+    mocks.tx.taskFindFirst.mockResolvedValue({
+      agentLeases: [],
+      assigneeOrganizationId: null,
+      assigneePersonId: null,
+      childTasks: [],
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      claims: [],
+      executionAttempts: [],
+      id: "task_lockable",
+      isPublic: false,
+      maxClaims: null,
+      status: TaskStatus.ACTIVE,
+    });
+    mocks.tx.taskUpdate.mockResolvedValue({});
+    mocks.tx.taskFindUniqueOrThrow.mockResolvedValue(
+      mockTask({ id: "task_lockable", status: TaskStatus.STALE }),
+    );
+
+    await updateTaskCreatedByUser("task_lockable", "user_creator", {
+      status: TaskStatus.STALE,
+    });
+
+    expect(mocks.tx.queryRaw).toHaveBeenCalledOnce();
+    const lockOrder = mocks.tx.queryRaw.mock.invocationCallOrder[0];
+    const readOrder = mocks.tx.taskFindFirst.mock.invocationCallOrder[0];
+    expect(lockOrder).toBeLessThan(readOrder);
   });
 
   describe("getTaskDetailData visibility", () => {

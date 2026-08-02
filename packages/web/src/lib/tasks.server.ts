@@ -2093,128 +2093,142 @@ export async function updateTaskCreatedByUser(
     select: { personId: true },
   });
   if (!actor) throw new Error("Task not found.");
-  const checkedAt = new Date();
-  const existingTask = await prisma.task.findFirst({
-    where: {
-      deletedAt: null,
-      id: taskId,
-      AND: [
-        getTaskAccessWhere({
-          action: "MANAGE",
-          personId: actor.personId,
-          userId: creatorUserId,
-        }),
-        // Delegated clients only reach tasks inside their grant boundary,
-        // matching the MCP updateTask handler.
-        ...(options?.clientAccessBoundary
-          ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
-          : []),
-      ],
-    },
-    select: {
-      agentLeases: {
-        where: { expiresAt: { gte: checkedAt }, released: false },
-        select: { id: true },
-        take: 1,
-      },
-      assigneeOrganizationId: true,
-      assigneePersonId: true,
-      childTasks: {
-        where: {
-          deletedAt: null,
-          status: { in: [TaskStatus.DRAFT, TaskStatus.ACTIVE] },
-        },
-        select: { id: true },
-        take: 1,
-      },
-      claimPolicy: true,
-      claims: {
-        where: {
-          deletedAt: null,
-          status: { in: [...ACTIVE_CLAIM_STATUSES] },
-        },
-        select: { id: true },
-        take: 1,
-      },
-      executionAttempts: {
-        where: {
-          deletedAt: null,
-          OR: [
-            {
-              status: {
-                in: [
-                  TaskExecutionAttemptStatus.QUEUED,
-                  TaskExecutionAttemptStatus.RUNNING,
-                ],
-              },
-            },
-            {
-              status: TaskExecutionAttemptStatus.COMPLETED,
-              verifications: {
-                some: {
-                  deletedAt: null,
-                  result: TaskVerificationResult.PENDING,
-                },
-              },
-            },
-          ],
-        },
-        select: { id: true },
-        take: 1,
-      },
-      id: true,
-      isPublic: true,
-      maxClaims: true,
-      status: true,
-    },
+  const taskAccessWhere = getTaskAccessWhere({
+    action: "MANAGE",
+    personId: actor.personId,
+    userId: creatorUserId,
   });
-
-  if (!existingTask) {
-    throw new Error("Task not found.");
-  }
-
-  if (existingTask.isPublic && input.isPublic === false) {
-    throw new Error("Public tasks can't be unpublished. Ask an admin.");
-  }
-  if (
-    input.status === TaskStatus.STALE &&
-    existingTask.status !== TaskStatus.DRAFT &&
-    existingTask.status !== TaskStatus.ACTIVE &&
-    existingTask.status !== TaskStatus.STALE
-  ) {
-    throw new Error("Only draft or active tasks can be archived.");
-  }
-  if (
-    input.status === TaskStatus.STALE &&
-    (existingTask.agentLeases.length > 0 ||
-      existingTask.childTasks.length > 0 ||
-      existingTask.claims.length > 0 ||
-      existingTask.executionAttempts.length > 0)
-  ) {
-    throw new Error(
-      "Finish or release active work before archiving this task.",
-    );
-  }
-
-  const shouldUpdateClaimSettings =
-    input.claimPolicy !== undefined || input.maxClaims !== undefined;
-  const claimSettings = resolveTaskClaimSettings({
-    assigneeOrganizationId: existingTask.assigneeOrganizationId,
-    assigneePersonId: existingTask.assigneePersonId,
-    currentClaimPolicy: existingTask.claimPolicy,
-    currentMaxClaims: existingTask.maxClaims,
-    requestedClaimPolicy: input.claimPolicy,
-    requestedMaxClaims: input.maxClaims,
-  });
-
-  const title = input.title == null ? undefined : input.title.trim();
-  if (title !== undefined && !title) {
-    throw new Error("Title is required.");
-  }
-
-  const shouldUpdateEndpoint = input.primaryEndpoint !== undefined;
 
   return prisma.$transaction(async (tx) => {
+    // Lock the row before reading the archive-eligibility relations so a
+    // concurrent claim/execution start (which also locks this row, see
+    // claimTask) can't slip in between the read and the write below.
+    await lockTaskForUpdate(tx, taskId);
+    const checkedAt = new Date();
+    const existingTask = await tx.task.findFirst({
+      where: {
+        deletedAt: null,
+        id: taskId,
+        AND: [
+          taskAccessWhere,
+          // Delegated clients only reach tasks inside their grant boundary,
+          // matching the MCP updateTask handler.
+          ...(options?.clientAccessBoundary
+            ? [getTaskClientAccessWhere(options.clientAccessBoundary)]
+            : []),
+        ],
+      },
+      select: {
+        agentLeases: {
+          where: { expiresAt: { gte: checkedAt }, released: false },
+          select: { id: true },
+          take: 1,
+        },
+        assigneeOrganizationId: true,
+        assigneePersonId: true,
+        // Scoped to work this actor can see/manage: an unrelated stranger's
+        // private child grafted onto a public parent must not be able to
+        // block the manager from archiving it.
+        childTasks: {
+          where: {
+            AND: [
+              {
+                deletedAt: null,
+                status: { in: [TaskStatus.DRAFT, TaskStatus.ACTIVE] },
+              },
+              taskAccessWhere,
+            ],
+          },
+          select: { id: true },
+          take: 1,
+        },
+        claimPolicy: true,
+        claims: {
+          where: {
+            deletedAt: null,
+            status: { in: [...ACTIVE_CLAIM_STATUSES] },
+          },
+          select: { id: true },
+          take: 1,
+        },
+        executionAttempts: {
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                status: {
+                  in: [
+                    TaskExecutionAttemptStatus.QUEUED,
+                    TaskExecutionAttemptStatus.RUNNING,
+                  ],
+                },
+              },
+              {
+                status: TaskExecutionAttemptStatus.COMPLETED,
+                verifications: {
+                  some: {
+                    deletedAt: null,
+                    result: TaskVerificationResult.PENDING,
+                  },
+                },
+              },
+            ],
+          },
+          select: { id: true },
+          take: 1,
+        },
+        id: true,
+        isPublic: true,
+        maxClaims: true,
+        status: true,
+      },
+    });
+
+    if (!existingTask) {
+      throw new Error("Task not found.");
+    }
+
+    if (existingTask.isPublic && input.isPublic === false) {
+      throw new Error("Public tasks can't be unpublished. Ask an admin.");
+    }
+    if (
+      input.status === TaskStatus.STALE &&
+      existingTask.status !== TaskStatus.DRAFT &&
+      existingTask.status !== TaskStatus.ACTIVE &&
+      existingTask.status !== TaskStatus.STALE
+    ) {
+      throw new Error("Only draft or active tasks can be archived.");
+    }
+    if (
+      input.status === TaskStatus.STALE &&
+      (existingTask.agentLeases.length > 0 ||
+        existingTask.childTasks.length > 0 ||
+        existingTask.claims.length > 0 ||
+        existingTask.executionAttempts.length > 0)
+    ) {
+      throw new Error(
+        "Finish or release active work before archiving this task.",
+      );
+    }
+
+    const shouldUpdateClaimSettings =
+      input.claimPolicy !== undefined || input.maxClaims !== undefined;
+    const claimSettings = resolveTaskClaimSettings({
+      assigneeOrganizationId: existingTask.assigneeOrganizationId,
+      assigneePersonId: existingTask.assigneePersonId,
+      currentClaimPolicy: existingTask.claimPolicy,
+      currentMaxClaims: existingTask.maxClaims,
+      requestedClaimPolicy: input.claimPolicy,
+      requestedMaxClaims: input.maxClaims,
+    });
+
+    const title = input.title == null ? undefined : input.title.trim();
+    if (title !== undefined && !title) {
+      throw new Error("Title is required.");
+    }
+
+    const shouldUpdateEndpoint = input.primaryEndpoint !== undefined;
+
     await tx.task.update({
       where: { id: taskId },
       data: {
