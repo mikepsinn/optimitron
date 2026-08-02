@@ -8617,6 +8617,22 @@ describe("MCP server tool dispatch", () => {
       variableCategoryId: "cat-treatment",
     };
 
+    const FOOD_UNIT = {
+      abbreviatedName: "servings",
+      id: "unit-servings",
+      name: "Servings",
+      ucumCode: "{serving}",
+    };
+
+    const FOOD_VARIABLE = {
+      defaultUnit: FOOD_UNIT,
+      defaultUnitId: "unit-servings",
+      id: "gv-greek-yogurt",
+      name: "Greek yogurt",
+      variableCategory: { id: "cat-food", name: "Food" },
+      variableCategoryId: "cat-food",
+    };
+
     const NOF1_VARIABLE = {
       defaultUnitId: "unit-iu",
       fillingType: "NONE",
@@ -8713,6 +8729,80 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
 
+    it("recordMeasurement matches unit names case-insensitively", async () => {
+      const gramsUnit = {
+        abbreviatedName: "g",
+        id: "unit-grams",
+        name: "Grams",
+        ucumCode: "g",
+      };
+      mocks.globalVariableFindFirst.mockResolvedValue(FOOD_VARIABLE);
+      mocks.unitFindFirst.mockImplementation(
+        (args: {
+          where: {
+            name?: { equals?: string; mode?: string };
+          };
+        }) => {
+          const { where } = args;
+          return where.name?.equals === "grams" &&
+            where.name.mode === "insensitive"
+            ? gramsUnit
+            : null;
+        },
+      );
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-greek-yogurt",
+        id: "measurement-food-1",
+        subjectId: "subject-1",
+        unitId: "unit-grams",
+        value: 150,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: {
+          unitName: "grams",
+          value: 150,
+          variableName: "Greek yogurt",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+      expect(mocks.unitFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            name: { equals: "grams", mode: "insensitive" },
+          },
+        }),
+      );
+    });
+
+    it("recordMeasurement requires a category when creating a new variable", async () => {
+      mocks.globalVariableFindFirst.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: {
+          unitAbbreviation: "serving",
+          value: 1,
+          variableName: "Greek yogurt",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain(
+        "categoryName is required when creating the new tracking variable",
+      );
+      expect(mocks.variableCategoryFindFirst).not.toHaveBeenCalled();
+      expect(mocks.globalVariableUpsert).not.toHaveBeenCalled();
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+    });
+
     it("upsertTrackingReminder keeps no-ID creation idempotent and defaults reminderFrequency to 86400", async () => {
       mocks.trackingReminderUpsert.mockResolvedValue({
         active: true,
@@ -8752,6 +8842,74 @@ describe("MCP server tool dispatch", () => {
         reminderStartTime: "08:00",
         userId: "user-1",
       });
+    });
+
+    it("upsertTrackingReminder creates a Food variable from the serving alias", async () => {
+      mocks.globalVariableFindFirst.mockResolvedValue(null);
+      const foodCategory = {
+        combinationOperation: "SUM",
+        defaultUnit: FOOD_UNIT,
+        defaultUnitId: "unit-servings",
+        durationOfAction: 86_400,
+        id: "cat-food",
+        name: "Food",
+        onsetDelay: 1_800,
+        outcome: false,
+        predictorOnly: true,
+      };
+      mocks.variableCategoryFindFirst.mockImplementation(
+        (args: {
+          where: {
+            name?: { equals?: string; mode?: string };
+          };
+        }) =>
+          args.where.name?.equals === "food" &&
+          args.where.name.mode === "insensitive"
+            ? foodCategory
+            : null,
+      );
+      mocks.unitFindFirst.mockImplementation(
+        (args: { where: { abbreviatedName?: string } }) =>
+          args.where.abbreviatedName === "servings" ? FOOD_UNIT : null,
+      );
+      mocks.globalVariableUpsert.mockResolvedValue(FOOD_VARIABLE);
+      mocks.trackingReminderUpsert.mockResolvedValue({
+        active: true,
+        globalVariableId: "gv-greek-yogurt",
+        id: "reminder-food-1",
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          categoryName: "food",
+          defaultValue: 1,
+          reminderStartTime: "08:00",
+          unitAbbreviation: "serving",
+          variableName: "Greek yogurt",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.unitFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { abbreviatedName: "servings", deletedAt: null },
+        }),
+      );
+      expect(mocks.globalVariableUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            defaultUnitId: "unit-servings",
+            name: "Greek yogurt",
+            variableCategoryId: "cat-food",
+          }),
+        }),
+      );
+      expect(mocks.trackingReminderUpsert).toHaveBeenCalledTimes(1);
     });
 
     it("upsertTrackingReminder edits a schedule in place by owned reminder ID", async () => {
