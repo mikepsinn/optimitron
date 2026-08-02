@@ -1323,6 +1323,9 @@ export function isPersonalDeadlineLaneRow(row: PersonalQueueRow) {
 }
 
 function deadlineThresholdTime(row: PersonalQueueRow) {
+  if (row.deadlineStatus !== "start_now") {
+    return parseTaskDate(row.dueAt)?.getTime() ?? Number.POSITIVE_INFINITY;
+  }
   return (
     parseTaskDate(row.latestStartAt)?.getTime() ??
     parseTaskDate(row.dueAt)?.getTime() ??
@@ -1414,6 +1417,8 @@ export async function loadPersonalQueue(request: PersonalQueueRequest) {
     .filter(isPersonalDeadlineLaneRow)
     .sort(comparePersonalDeadlineLaneRows);
   const deadlineLane = allDeadlineRows.slice(0, PERSONAL_DEADLINE_LANE_LIMIT);
+  // Overflow remains deadline work even though the separately generous lane
+  // cap bounds the response. Do not silently relabel it as EV work.
   const deadlineTaskIds = new Set(allDeadlineRows.map((row) => row.id));
   const evLane = executableRows
     .filter((row) => !deadlineTaskIds.has(row.id))

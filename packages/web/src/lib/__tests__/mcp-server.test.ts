@@ -3599,6 +3599,35 @@ describe("MCP server tool dispatch", () => {
       ).toEqual(["soft", "none"]);
     });
 
+    it("sorts missed deadlines by due time rather than estimated latest start", async () => {
+      const now = Date.now();
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(now - 24 * 60 * 60 * 1000).toISOString(),
+          estimatedEffortHours: 1_000,
+          id: "recent-long-task",
+        }),
+        makeCreatedTask({
+          deadlinePolicy: "REQUIRED",
+          dueAt: new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedEffortHours: 1,
+          id: "older-short-task",
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getMyQueue", arguments: {} }),
+      );
+
+      expect(
+        (body.deadlineLane as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["older-short-task", "recent-long-task"]);
+    });
+
     it("splits self-executed tasks from AI-agent-executed tasks", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
