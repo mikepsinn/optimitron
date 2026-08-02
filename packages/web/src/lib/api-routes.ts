@@ -20,6 +20,7 @@ export const API_ROUTES = {
     claim: (id: string) => `/api/tasks/${id}/claim`,
     communications: (id: string) => `/api/tasks/${id}/communications`,
     complete: (id: string) => `/api/tasks/${id}/complete`,
+    release: (id: string) => `/api/tasks/${id}/release`,
     comments: (id: string, query?: string) =>
       `/api/tasks/${id}/comments${query ? `?${query}` : ""}`,
     attachmentPresign: (id: string) => `/api/tasks/${id}/attachments/presign`,

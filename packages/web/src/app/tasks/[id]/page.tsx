@@ -18,6 +18,7 @@ import { type TaskCardTask } from "@/components/tasks/task-card";
 import { TaskCommentFeed } from "@/components/tasks/task-comment-feed";
 import { TaskDescription } from "@/components/tasks/task-description";
 import { TaskImpactTraceDisclosure } from "@/components/tasks/task-impact-trace-disclosure";
+import { TaskManagementControls } from "@/components/tasks/TaskManagementControls";
 import { TaskDocumentsList } from "@/components/documents/task-documents-list";
 import { SortableTaskList } from "@/components/tasks/task-list-controls";
 import { StripeConnectStatusPanel } from "@/components/tasks/StripeConnectStatusPanel";
@@ -44,7 +45,11 @@ import {
 import { getSignInPath, getTaskPath, tasksLink, ROUTES } from "@/lib/routes";
 import { canTaskAcceptMoreClaims } from "@/lib/tasks/rank-tasks";
 import { getPersonHref } from "@/lib/person-href";
-import { getTaskAncestors, getTaskDetailData } from "@/lib/tasks.server";
+import {
+  canCompleteSelfTask,
+  getTaskAncestors,
+  getTaskDetailData,
+} from "@/lib/tasks.server";
 import {
   getTaskActivityTimeline,
   getTaskCommentFeed,
@@ -55,7 +60,10 @@ import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communic
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
-import { TASK_NOT_FOUND_MESSAGE } from "@/lib/tasks/task-visibility.server";
+import {
+  canUserManageTask,
+  TASK_NOT_FOUND_MESSAGE,
+} from "@/lib/tasks/task-visibility.server";
 import { getStripeConnectStatus } from "@/lib/stripe-connect.server";
 import { getWishoniaUserId } from "@/lib/wishonia.server";
 
@@ -470,6 +478,18 @@ export default async function TaskDetailPage({
   const reviewableClaims = task.claims.filter(
     (claim) => claim.status === TaskClaimStatus.COMPLETED,
   );
+  const viewerHasReleasableClaim =
+    viewerClaim?.status === TaskClaimStatus.CLAIMED ||
+    viewerClaim?.status === TaskClaimStatus.IN_PROGRESS;
+  const viewerCanCompleteClaim =
+    viewerHasReleasableClaim && task.status === TaskStatus.ACTIVE;
+  const shouldCheckSelfCompletion =
+    Boolean(userId) &&
+    !viewerHasReleasableClaim &&
+    !task.isPublic &&
+    task.status === TaskStatus.ACTIVE &&
+    !showDocumentReviewManager &&
+    !isAssignedDocumentReviewer;
   const delayStats = getTaskDelayStats(task);
   const targetLabel = getAssigneeLabel(task) ?? task.title;
   const shareText = buildTaskShareText({
@@ -486,15 +506,37 @@ export default async function TaskDetailPage({
   const assigneeLabel = getAssigneeLabel(task);
   const dueLabel = formatDueDate(task.dueAt);
   const effortLabel = formatEffortHours(task.estimatedEffortHours);
-  const fundingStatus = task.isPublic
-    ? await getTaskFundingStatus(task.id).catch(() => null)
-    : null;
   const showTaskFunding = task.isPublic && task.status === TaskStatus.ACTIVE;
   const isPaidTask = isFixedStripePaidTask(task);
-  const stripeConnectStatus =
+  const [
+    canManageTask,
+    fundingStatus,
+    stripeConnectStatus,
+    canShowSelfCompletion,
+    externalActionRequests,
+  ] = await Promise.all([
+    userId ? canUserManageTask(task.id, userId) : Promise.resolve(false),
+    task.isPublic
+      ? getTaskFundingStatus(task.id).catch(() => null)
+      : Promise.resolve(null),
     isPaidTask && userId
-      ? await getStripeConnectStatus(userId).catch(() => null)
-      : null;
+      ? getStripeConnectStatus(userId).catch(() => null)
+      : Promise.resolve(null),
+    shouldCheckSelfCompletion && userId
+      ? canCompleteSelfTask(task.id, userId)
+      : Promise.resolve(false),
+    userId
+      ? listExternalActionRequestsForHuman({
+          actorUserId: userId,
+          operation: OUTBOUND_MESSAGE_OPERATION,
+          statuses: [
+            ExternalActionRequestStatus.PENDING,
+            ExternalActionRequestStatus.APPROVED,
+          ],
+          taskId: task.id,
+        })
+      : Promise.resolve([]),
+  ]);
   const requiresPayoutSetup =
     isPaidTask &&
     !task.viewerHasClaim &&
@@ -510,24 +552,12 @@ export default async function TaskDetailPage({
     task.impact.selectedFrame?.estimatedCashCostUsdBase ?? null;
   const hasRealFundingCost =
     fundingFrameCashCostUsd != null && fundingFrameCashCostUsd > 0;
-  const outboundApprovals = userId
-    ? (
-        await listExternalActionRequestsForHuman({
-          actorUserId: userId,
-          operation: OUTBOUND_MESSAGE_OPERATION,
-          statuses: [
-            ExternalActionRequestStatus.PENDING,
-            ExternalActionRequestStatus.APPROVED,
-          ],
-          taskId: task.id,
-        })
-      ).filter(
-        (request): request is typeof request & { status: ApprovableStatus } =>
-          (request.status === ExternalActionRequestStatus.PENDING ||
-            request.status === ExternalActionRequestStatus.APPROVED) &&
-          request.expiresAt > new Date(),
-      )
-    : [];
+  const outboundApprovals = externalActionRequests.filter(
+    (request): request is typeof request & { status: ApprovableStatus } =>
+      (request.status === ExternalActionRequestStatus.PENDING ||
+        request.status === ExternalActionRequestStatus.APPROVED) &&
+      request.expiresAt > new Date(),
+  );
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -622,10 +652,31 @@ export default async function TaskDetailPage({
                 variant="icon"
               />
             ) : null}
-            {!task.isPublic && userId && task.createdByUserId === userId ? (
+            {userId &&
+            (viewer?.isAdmin ||
+              (!task.isPublic && task.createdByUserId === userId)) ? (
               <TaskDeleteButton taskId={task.id} taskTitle={task.title} />
             ) : null}
           </section>
+
+          {canManageTask &&
+          !isAssignedDocumentReviewer &&
+          (task.status === TaskStatus.DRAFT ||
+            task.status === TaskStatus.ACTIVE) ? (
+            <TaskManagementControls
+              canAddStep={task.ownerOrganizationId == null}
+              canArchive={
+                task.activeClaimCount === 0 &&
+                task.activeChildTaskCount === 0 &&
+                task.activeExecutionAttemptCount === 0
+              }
+              description={task.description}
+              dueAt={getDisplayDate(task.dueAt)?.toISOString() ?? null}
+              estimatedEffortHours={task.estimatedEffortHours}
+              taskId={task.id}
+              title={task.title}
+            />
+          ) : null}
 
           {viewerClaim ? (
             <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-muted-foreground">
@@ -633,11 +684,13 @@ export default async function TaskDetailPage({
             </p>
           ) : null}
 
-          {viewerClaim &&
-          (viewerClaim.status === TaskClaimStatus.CLAIMED ||
-            viewerClaim.status === TaskClaimStatus.IN_PROGRESS) ? (
+          {viewerHasReleasableClaim || canShowSelfCompletion ? (
             <div className="mt-5">
-              <TaskCompleteForm taskId={task.id} />
+              <TaskCompleteForm
+                canComplete={viewerCanCompleteClaim || canShowSelfCompletion}
+                canRelease={viewerHasReleasableClaim}
+                taskId={task.id}
+              />
             </div>
           ) : null}
         </header>

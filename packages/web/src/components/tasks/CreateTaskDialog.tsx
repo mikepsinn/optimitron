@@ -42,6 +42,7 @@ interface CreateTaskDialogProps {
   initialTaskMode?: TaskMode;
   onOpenChange: (open: boolean) => void;
   open: boolean;
+  parentTaskId?: string;
   submitLabel?: string;
 }
 
@@ -114,6 +115,7 @@ export function CreateTaskDialog({
   initialTaskMode,
   onOpenChange,
   open,
+  parentTaskId,
   submitLabel = "Create task",
 }: CreateTaskDialogProps) {
   const pathname = usePathname();
@@ -376,6 +378,7 @@ export function CreateTaskDialog({
           claimPolicy: taskMode === "open" ? "OPEN_SINGLE" : undefined,
           description: description.trim(),
           isPublic: fixedAssigneePerson ? true : taskMode !== "self",
+          parentTaskId,
           title: trimmedTitle,
         }),
       });

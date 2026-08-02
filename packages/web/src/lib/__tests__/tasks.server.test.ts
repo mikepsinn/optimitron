@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   prisma: {
     taskCreate: vi.fn(),
     taskFindFirst: vi.fn(),
+    taskUpdate: vi.fn(),
+    taskClaimFindFirst: vi.fn(),
     taskClaimFindUnique: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
@@ -30,8 +32,10 @@ const mocks = vi.hoisted(() => ({
   },
   tx: {
     queryRaw: vi.fn(),
+    taskClaimFindFirst: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
+    taskClaimUpdateMany: vi.fn(),
     taskFindUniqueOrThrow: vi.fn(),
     taskFindFirst: vi.fn(),
     taskUpdate: vi.fn(),
@@ -48,6 +52,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     $transaction: mocks.prisma.transaction,
     taskClaim: {
+      findFirst: mocks.prisma.taskClaimFindFirst,
       findUnique: mocks.prisma.taskClaimFindUnique,
       findUniqueOrThrow: mocks.prisma.taskClaimFindUniqueOrThrow,
       update: mocks.prisma.taskClaimUpdate,
@@ -56,6 +61,7 @@ vi.mock("@/lib/prisma", () => ({
       create: mocks.prisma.taskCreate,
       findFirst: mocks.prisma.taskFindFirst,
       findMany: mocks.prisma.taskFindMany,
+      update: mocks.prisma.taskUpdate,
     },
     person: {
       findFirst: mocks.prisma.personFindFirst,
@@ -92,9 +98,13 @@ vi.mock("@/lib/tasks/planning-branch.server", async (importActual) => ({
 }));
 
 import {
+  abandonTaskClaim,
+  canCompleteSelfTask,
   completeSelfTask,
   completeTaskClaim,
+  completeTaskForUser,
   createTask,
+  deleteTaskCreatedByUser,
   getTaskDetailData,
   getPersonTaskProfileData,
   listTasks,
@@ -114,8 +124,10 @@ function createTransactionClient() {
     },
     user: { findUnique: mocks.tx.userFindUnique },
     taskClaim: {
+      findFirst: mocks.tx.taskClaimFindFirst,
       findUniqueOrThrow: mocks.tx.taskClaimFindUniqueOrThrow,
       update: mocks.tx.taskClaimUpdate,
+      updateMany: mocks.tx.taskClaimUpdateMany,
     },
   };
 }
@@ -421,6 +433,7 @@ describe("tasks server", () => {
       id: "claim_1",
       startedAt: null,
       status: TaskClaimStatus.CLAIMED,
+      task: { status: TaskStatus.ACTIVE },
     });
     mocks.prisma.taskClaimUpdate.mockResolvedValue({
       id: "claim_1",
@@ -452,6 +465,195 @@ describe("tasks server", () => {
       completeTaskClaim("task_1", "user_1", "same evidence"),
     ).resolves.toEqual(completedClaim);
     expect(mocks.prisma.taskClaimUpdate).not.toHaveBeenCalled();
+  });
+
+  it("uses claim completion when the viewer has an active claim", async () => {
+    const claimedAt = new Date("2026-04-09T18:00:00.000Z");
+    mocks.prisma.taskClaimFindFirst.mockResolvedValue({
+      status: TaskClaimStatus.CLAIMED,
+    });
+    mocks.prisma.taskClaimFindUnique.mockResolvedValue({
+      claimedAt,
+      id: "claim_1",
+      startedAt: null,
+      status: TaskClaimStatus.CLAIMED,
+      task: { status: TaskStatus.ACTIVE },
+    });
+    mocks.prisma.taskClaimUpdate.mockResolvedValue({
+      id: "claim_1",
+      status: TaskClaimStatus.COMPLETED,
+    });
+
+    await expect(
+      completeTaskForUser("task_1", "user_1", "Finished the requested work."),
+    ).resolves.toMatchObject({
+      kind: "claim",
+      value: { id: "claim_1", status: TaskClaimStatus.COMPLETED },
+    });
+    expect(mocks.tx.taskFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("keeps wrapper retries idempotent after a claim was completed", async () => {
+    const completedClaim = {
+      claimedAt: new Date("2026-04-09T18:00:00.000Z"),
+      id: "claim_1",
+      startedAt: new Date("2026-04-09T18:05:00.000Z"),
+      status: TaskClaimStatus.COMPLETED,
+    };
+    mocks.prisma.taskClaimFindFirst.mockResolvedValue({
+      status: TaskClaimStatus.COMPLETED,
+    });
+    mocks.prisma.taskClaimFindUnique.mockResolvedValue(completedClaim);
+
+    await expect(
+      completeTaskForUser("task_1", "user_1", "Retry after lost response."),
+    ).resolves.toEqual({ kind: "claim", value: completedClaim });
+    expect(mocks.tx.taskFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("rejects active claim completion after the task is archived", async () => {
+    mocks.prisma.taskClaimFindUnique.mockResolvedValue({
+      claimedAt: new Date("2026-04-09T18:00:00.000Z"),
+      id: "claim_1",
+      startedAt: null,
+      status: TaskClaimStatus.CLAIMED,
+      task: { status: TaskStatus.STALE },
+    });
+
+    await expect(
+      completeTaskClaim("task_1", "user_1", "Late completion."),
+    ).rejects.toThrow("The task is no longer active.");
+    expect(mocks.prisma.taskClaimUpdate).not.toHaveBeenCalled();
+  });
+
+  it("uses narrow self-completion only when no claim exists", async () => {
+    mocks.prisma.taskClaimFindFirst.mockResolvedValue(null);
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.tx.taskFindFirst.mockResolvedValue(eligibleSelfTask());
+    mocks.tx.taskUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.taskFindUniqueOrThrow.mockResolvedValue({
+      id: "task_1",
+      status: TaskStatus.VERIFIED,
+    });
+
+    await expect(
+      completeTaskForUser("task_1", "user_1", "Finished my personal task."),
+    ).resolves.toMatchObject({
+      kind: "self",
+      value: { task: { id: "task_1", status: TaskStatus.VERIFIED } },
+    });
+    expect(mocks.prisma.taskClaimUpdate).not.toHaveBeenCalled();
+  });
+
+  it("does not advertise self-completion for a task with child history", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.prisma.taskFindFirst.mockResolvedValue(
+      eligibleSelfTask({ childTasks: [{ id: "child_1" }] }),
+    );
+
+    await expect(canCompleteSelfTask("task_1", "user_1")).resolves.toBe(false);
+  });
+
+  it("rejects non-active claim completion instead of changing workflows", async () => {
+    mocks.prisma.taskClaimFindFirst.mockResolvedValue({
+      status: TaskClaimStatus.ABANDONED,
+    });
+
+    await expect(
+      completeTaskForUser("task_1", "user_1", "Trying again."),
+    ).rejects.toThrow("Only active claims can be completed.");
+    expect(mocks.tx.taskFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("releases an active claim without deleting its history", async () => {
+    mocks.tx.taskClaimFindFirst.mockResolvedValue({
+      abandonedAt: null,
+      id: "claim_1",
+      status: TaskClaimStatus.IN_PROGRESS,
+    });
+    mocks.tx.taskClaimUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.tx.taskClaimFindUniqueOrThrow.mockResolvedValue({
+      abandonedAt: new Date("2026-08-01T12:00:00.000Z"),
+      id: "claim_1",
+      status: TaskClaimStatus.ABANDONED,
+    });
+
+    await expect(abandonTaskClaim("task_1", "user_1")).resolves.toMatchObject({
+      id: "claim_1",
+      status: TaskClaimStatus.ABANDONED,
+    });
+    expect(mocks.tx.taskClaimFindFirst).toHaveBeenCalledWith({
+      select: { abandonedAt: true, id: true, status: true },
+      where: { deletedAt: null, taskId: "task_1", userId: "user_1" },
+    });
+    expect(mocks.tx.taskClaimUpdateMany).toHaveBeenCalledWith({
+      data: expect.objectContaining({ status: TaskClaimStatus.ABANDONED }),
+      where: expect.objectContaining({
+        deletedAt: null,
+        id: "claim_1",
+      }),
+    });
+  });
+
+  it("does not release work already submitted for verification", async () => {
+    mocks.tx.taskClaimFindFirst.mockResolvedValue({
+      abandonedAt: null,
+      id: "claim_1",
+      status: TaskClaimStatus.COMPLETED,
+    });
+
+    await expect(abandonTaskClaim("task_1", "user_1")).rejects.toThrow(
+      "Only active claims can be released.",
+    );
+    expect(mocks.tx.taskClaimUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["private", false],
+    ["public", true],
+  ])("allows an admin to soft-delete any %s task", async (label, isPublic) => {
+    const taskId = `${label}_task_by_someone_else`;
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      isAdmin: true,
+      personId: "person_admin",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({ id: taskId, isPublic });
+    mocks.prisma.taskUpdate.mockResolvedValue({});
+
+    await expect(
+      deleteTaskCreatedByUser(taskId, "admin_user"),
+    ).resolves.toEqual({
+      deleted: true,
+      id: taskId,
+    });
+    expect(mocks.prisma.taskFindFirst).toHaveBeenCalledWith({
+      select: { id: true, isPublic: true },
+      where: {
+        AND: [],
+        deletedAt: null,
+        id: taskId,
+      },
+    });
+    expect(mocks.prisma.taskUpdate).toHaveBeenCalledWith({
+      data: { deletedAt: expect.any(Date) },
+      where: { id: taskId },
+    });
+  });
+
+  it("keeps ordinary users from deleting public tasks", async () => {
+    mocks.prisma.userFindUnique.mockResolvedValue({
+      isAdmin: false,
+      personId: "person_1",
+    });
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      id: "public_task",
+      isPublic: true,
+    });
+
+    await expect(
+      deleteTaskCreatedByUser("public_task", "user_1"),
+    ).rejects.toThrow("Public tasks can't be self-deleted. Ask an admin.");
+    expect(mocks.prisma.taskUpdate).not.toHaveBeenCalled();
   });
 
   it("rejects claim verification before completion evidence has been submitted", async () => {
@@ -1175,6 +1377,52 @@ describe("tasks server", () => {
     expect(mocks.prisma.transaction).not.toHaveBeenCalled();
   });
 
+  it("does not archive verified work", async () => {
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      agentLeases: [],
+      assigneeOrganizationId: null,
+      assigneePersonId: null,
+      childTasks: [],
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      claims: [],
+      executionAttempts: [],
+      id: "task_verified",
+      isPublic: false,
+      maxClaims: null,
+      status: TaskStatus.VERIFIED,
+    });
+
+    await expect(
+      updateTaskCreatedByUser("task_verified", "user_creator", {
+        status: TaskStatus.STALE,
+      }),
+    ).rejects.toThrow("Only draft or active tasks can be archived.");
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
+  it("does not archive a task while work is active", async () => {
+    mocks.prisma.taskFindFirst.mockResolvedValue({
+      agentLeases: [],
+      assigneeOrganizationId: null,
+      assigneePersonId: null,
+      childTasks: [],
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      claims: [{ id: "claim_active" }],
+      executionAttempts: [],
+      id: "task_active",
+      isPublic: false,
+      maxClaims: null,
+      status: TaskStatus.ACTIVE,
+    });
+
+    await expect(
+      updateTaskCreatedByUser("task_active", "user_creator", {
+        status: TaskStatus.STALE,
+      }),
+    ).rejects.toThrow("Finish or release active work before archiving");
+    expect(mocks.prisma.transaction).not.toHaveBeenCalled();
+  });
+
   describe("getTaskDetailData visibility", () => {
     // Regression for the 404-on-own-task bug: a private task assigned to
     // the viewer's Person but created by a different user (or the system,
@@ -1220,6 +1468,44 @@ describe("tasks server", () => {
       // base where with isPublic: true (no OR clause).
       expect(args?.where).toMatchObject({ isPublic: true });
       expect(args?.where).not.toHaveProperty("OR");
+    });
+
+    it("includes private child steps only through the viewer access filter", async () => {
+      mocks.prisma.userFindUniqueOrThrow.mockResolvedValue({
+        availableHoursPerWeek: null,
+        id: "user_manager",
+        interestTags: [],
+        isAdmin: false,
+        personId: "person_manager",
+        skillTags: [],
+      });
+      mocks.prisma.taskFindFirst.mockResolvedValue(null);
+      mocks.countTaskCommunications.mockResolvedValue(0);
+
+      await getTaskDetailData("task_parent", "user_manager");
+
+      const args = mocks.prisma.taskFindFirst.mock.calls[0]?.[0] as
+        | {
+            select?: {
+              childTasks?: { where?: { AND?: Array<Record<string, unknown>> } };
+            };
+          }
+        | undefined;
+      const childFilters = args?.select?.childTasks?.where?.AND ?? [];
+      expect(childFilters).toContainEqual({ deletedAt: null });
+      expect(childFilters).not.toContainEqual({
+        deletedAt: null,
+        isPublic: true,
+      });
+      expect(childFilters).toContainEqual(
+        expect.objectContaining({
+          OR: expect.arrayContaining([
+            { isPublic: true },
+            { createdByUserId: "user_manager" },
+            { assigneePersonId: "person_manager" },
+          ]),
+        }),
+      );
     });
   });
 });

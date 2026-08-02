@@ -1,7 +1,13 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ContentVisibility, TaskExecutionAttemptStatus } from "@optimitron/db";
+import {
+  ContentVisibility,
+  TaskClaimPolicy,
+  TaskClaimStatus,
+  TaskExecutionAttemptStatus,
+  TaskStatus,
+} from "@optimitron/db";
 import { createDocument, updateDocument } from "@/lib/documents.server";
 import { prisma } from "@/lib/prisma";
 import { postComment } from "@/lib/tasks/task-comments.server";
@@ -36,6 +42,8 @@ const ids = {
   fixtureManagerPerson: `${FIXTURE_PREFIX}manager_person`,
   fixtureManagerUser: `${FIXTURE_PREFIX}manager_user`,
   managerTask: `${FIXTURE_PREFIX}manager_task`,
+  managementClaimTask: `${FIXTURE_PREFIX}management_claim_task`,
+  managementOwnerTask: `${FIXTURE_PREFIX}management_owner_task`,
   staleTask: `${FIXTURE_PREFIX}stale_task`,
 };
 
@@ -208,6 +216,7 @@ async function loadDemoActor() {
     where: { email: DEMO_EMAIL },
     select: {
       id: true,
+      isAdmin: true,
       person: { select: { id: true } },
     },
   });
@@ -216,7 +225,90 @@ async function loadDemoActor() {
       `Visual review fixtures require the managed demo user (${DEMO_EMAIL}). Run managed-data sync first.`,
     );
   }
+  if (!user.isAdmin) {
+    throw new Error(
+      "Visual review fixtures require the managed demo user to be an admin.",
+    );
+  }
   return { person: user.person, user: { id: user.id } };
+}
+
+async function seedTaskManagementStates(input: {
+  demo: Awaited<ReturnType<typeof loadDemoActor>>;
+  fixtureManager: Awaited<ReturnType<typeof ensureFixtureManager>>;
+}) {
+  const ownerTask = await prisma.task.upsert({
+    where: { id: ids.managementOwnerTask },
+    update: {
+      assigneePersonId: input.demo.person.id,
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: input.demo.user.id,
+      deletedAt: null,
+      description:
+        "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
+      dueAt: new Date("2026-09-15T00:00:00.000Z"),
+      estimatedEffortHours: 2,
+      isPublic: false,
+      status: TaskStatus.ACTIVE,
+      title: "Finish the EOS filing checklist",
+    },
+    create: {
+      assigneePersonId: input.demo.person.id,
+      claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
+      createdByUserId: input.demo.user.id,
+      description:
+        "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
+      dueAt: new Date("2026-09-15T00:00:00.000Z"),
+      estimatedEffortHours: 2,
+      id: ids.managementOwnerTask,
+      isPublic: false,
+      status: TaskStatus.ACTIVE,
+      title: "Finish the EOS filing checklist",
+    },
+  });
+  const claimTask = await prisma.task.upsert({
+    where: { id: ids.managementClaimTask },
+    update: {
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      createdByUserId: input.fixtureManager.user.id,
+      deletedAt: null,
+      description:
+        "Check the public filing instructions and leave the exact official source link with your completion note.",
+      isPublic: true,
+      status: TaskStatus.ACTIVE,
+      title: "Verify the EOS filing instructions",
+    },
+    create: {
+      claimPolicy: TaskClaimPolicy.OPEN_SINGLE,
+      createdByUserId: input.fixtureManager.user.id,
+      description:
+        "Check the public filing instructions and leave the exact official source link with your completion note.",
+      id: ids.managementClaimTask,
+      isPublic: true,
+      status: TaskStatus.ACTIVE,
+      title: "Verify the EOS filing instructions",
+    },
+  });
+  await prisma.taskClaim.upsert({
+    where: {
+      taskId_userId: { taskId: claimTask.id, userId: input.demo.user.id },
+    },
+    update: {
+      abandonedAt: null,
+      completedAt: null,
+      completionEvidence: null,
+      deletedAt: null,
+      status: TaskClaimStatus.CLAIMED,
+      verifiedAt: null,
+      verifiedByUserId: null,
+    },
+    create: {
+      status: TaskClaimStatus.CLAIMED,
+      taskId: claimTask.id,
+      userId: input.demo.user.id,
+    },
+  });
+  return { claimTaskId: claimTask.id, ownerTaskId: ownerTask.id };
 }
 
 async function ensureAuthorityTask(input: {
@@ -480,6 +572,10 @@ async function main() {
     demo,
     fixtureManager,
   });
+  const taskManagement = await seedTaskManagementStates({
+    demo,
+    fixtureManager,
+  });
 
   await mkdir(path.dirname(FIXTURE_MANIFEST_PATH), { recursive: true });
   await writeFile(
@@ -488,6 +584,8 @@ async function main() {
       {
         activeReviewTaskId,
         managerTaskId,
+        managementClaimTaskId: taskManagement.claimTaskId,
+        managementOwnerTaskId: taskManagement.ownerTaskId,
         staleReviewTaskId,
         version: 1,
       },

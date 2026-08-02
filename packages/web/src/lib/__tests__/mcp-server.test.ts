@@ -5963,10 +5963,14 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 
-    it("does not let platform admins delete another user's private task", async () => {
-      mocks.taskFindFirst.mockResolvedValue(null);
+    it("lets platform admins delete another user's private task", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "other-user",
+        isPublic: false,
+        ownerOrganizationId: null,
+      });
 
-      const client = await setup("mike", [McpScope.TASKS_PERSONAL], {
+      const client = await setup("mike", [McpScope.TASKS_ADMIN], {
         isAdmin: true,
       });
       const result = await client.callTool({
@@ -5974,8 +5978,38 @@ describe("MCP server tool dispatch", () => {
         arguments: { taskId: "other-task" },
       });
 
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            id: "other-task",
+          },
+        }),
+      );
+      expect(mocks.taskUpdate).toHaveBeenCalledWith({
+        where: { id: "other-task" },
+        data: { deletedAt: expect.any(Date) },
+      });
+    });
+
+    it("does not let non-admin users delete public tasks", async () => {
+      mocks.taskFindFirst.mockResolvedValue({
+        createdByUserId: "other-user",
+        isPublic: true,
+        ownerOrganizationId: null,
+      });
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "deleteTask",
+        arguments: { taskId: "public-task" },
+      });
+
       expect(result.isError).toBe(true);
-      expect(parseToolBody(result).message).toBe("Task not found");
+      expect(parseToolBody(result).message).toBe(
+        "Deleting public tasks requires an admin user.",
+      );
       expect(mocks.taskUpdate).not.toHaveBeenCalled();
     });
 

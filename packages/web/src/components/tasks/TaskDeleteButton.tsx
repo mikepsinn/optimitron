@@ -25,11 +25,13 @@ export function TaskDeleteButton({ taskId, taskTitle }: TaskDeleteButtonProps) {
     setBusy(true);
     setError(null);
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, { method: "DELETE" });
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
       if (!response.ok) {
-        const body = (await response.json().catch(() => null)) as
-          | { error?: string }
-          | null;
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
         throw new Error(body?.error ?? "Failed to delete task.");
       }
       router.push(ROUTES.tasks);
@@ -46,13 +48,13 @@ export function TaskDeleteButton({ taskId, taskTitle }: TaskDeleteButtonProps) {
         type="button"
         onClick={() => void handleDelete()}
         disabled={busy}
-        className="inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground hover:text-brutal-red disabled:opacity-50"
+        className="inline-flex min-h-10 w-fit items-center gap-2 border border-foreground bg-background px-3 py-2 text-xs font-black uppercase tracking-wide text-foreground hover:bg-foreground hover:text-background disabled:opacity-50"
       >
         <Trash2 className="h-3.5 w-3.5" />
         {busy ? "Deleting..." : "Delete"}
       </button>
       {error ? (
-        <p className="text-xs font-bold text-brutal-red">{error}</p>
+        <p className="text-xs font-bold text-destructive">{error}</p>
       ) : null}
     </div>
   );
