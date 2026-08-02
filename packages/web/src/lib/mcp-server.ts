@@ -2984,24 +2984,43 @@ async function resolveTrackingUnit(
     });
   }
   if (input.unitAbbreviation) {
+    const normalizedAbbreviation = normalizeTrackingUnitAlias(
+      input.unitAbbreviation,
+      "servings",
+    );
     return db.unit.findFirst({
       select: TRACKING_UNIT_SELECT,
-      where: { abbreviatedName: input.unitAbbreviation, deletedAt: null },
+      where: { abbreviatedName: normalizedAbbreviation, deletedAt: null },
     });
   }
   if (input.unitName) {
+    const normalizedName = normalizeTrackingUnitAlias(
+      input.unitName,
+      "Servings",
+    );
     return db.unit.findFirst({
       select: TRACKING_UNIT_SELECT,
-      where: { deletedAt: null, name: input.unitName },
+      where: {
+        deletedAt: null,
+        name: { equals: normalizedName, mode: "insensitive" },
+      },
     });
   }
   return null;
 }
 
+function normalizeTrackingUnitAlias(value: string, servingUnit: string) {
+  const normalized = value.trim().toLowerCase();
+  return normalized === "serving" ||
+    normalized === "servings" ||
+    normalized === "{serving}"
+    ? servingUnit
+    : value;
+}
+
 async function resolveTrackingVariable(
   db: TrackingDbClient,
   input: TrackingVariableArgs,
-  defaultCategoryName: string,
 ) {
   if (input.globalVariableId) {
     const variable = await db.globalVariable.findFirst({
@@ -3040,7 +3059,12 @@ async function resolveTrackingVariable(
     return { unit: requestedUnit ?? existing.defaultUnit, variable: existing };
   }
 
-  const categoryName = input.categoryName ?? defaultCategoryName;
+  if (!input.categoryName) {
+    throw new Error(
+      `categoryName is required when creating the new tracking variable "${input.variableName}". Use Food for foods, Drink for beverages, Nutrient for nutrients, Treatment for medications, Symptom for symptoms, or another seeded category.`,
+    );
+  }
+  const categoryName = input.categoryName;
   const category = await db.variableCategory.findFirst({
     select: {
       combinationOperation: true,
@@ -3053,7 +3077,10 @@ async function resolveTrackingVariable(
       outcome: true,
       predictorOnly: true,
     },
-    where: { deletedAt: null, name: categoryName },
+    where: {
+      deletedAt: null,
+      name: { equals: categoryName, mode: "insensitive" },
+    },
   });
   if (!category?.defaultUnitId) {
     throw new Error(
@@ -3141,11 +3168,7 @@ async function recordTrackingMeasurementWithTx(
   input: RecordTrackingMeasurementArgs,
 ) {
   const subject = await trackingUserSubject(tx, input.userId);
-  const { unit, variable } = await resolveTrackingVariable(
-    tx,
-    input,
-    input.categoryName ?? "Symptom",
-  );
+  const { unit, variable } = await resolveTrackingVariable(tx, input);
   const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
     defaultUnitId: unit.id,
     fillingType: input.fillingType,
@@ -3345,11 +3368,7 @@ async function upsertTrackingReminderForUser(
   return prisma.$transaction(async (tx) => {
     const subject = await trackingUserSubject(tx, userId);
     const variableArgs = parseTrackingVariableArgs(input);
-    const { unit, variable } = await resolveTrackingVariable(
-      tx,
-      variableArgs,
-      variableArgs.categoryName ?? "Treatment",
-    );
+    const { unit, variable } = await resolveTrackingVariable(tx, variableArgs);
     const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
       defaultUnitId: unit.id,
       fillingType: variableArgs.fillingType,
@@ -4850,15 +4869,19 @@ const TRACKING_TOOL_DEFINITIONS = [
         categoryName: {
           type: "string",
           description:
-            "Variable category such as Treatment, Food, Symptom, Emotion, Sleep, Activity, Vital Sign, or Lab Result.",
+            "Required when variableName does not already exist. Examples: Treatment, Food, Drink, Nutrient, Symptom, Emotion, Sleep, Activity, Vital Sign, or Biomarker.",
         },
         value: { type: "number" },
         unitId: { type: "string" },
         unitAbbreviation: {
           type: "string",
-          description: "Short unit such as mg, IU, serving, count, or 1-5.",
+          description:
+            "Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings.",
         },
-        unitName: { type: "string" },
+        unitName: {
+          type: "string",
+          description: "Full unit name; matched case-insensitively.",
+        },
         startTime: { type: "string", description: "ISO date/time." },
         duration: { type: "number", description: "Duration in seconds." },
         note: { type: "string" },
@@ -4877,7 +4900,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "upsertTrackingReminder",
     description:
-      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
+      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
     inputSchema: {
       type: "object" as const,
       anyOf: [
@@ -4892,15 +4915,26 @@ const TRACKING_TOOL_DEFINITIONS = [
         },
         globalVariableId: { type: "string" },
         variableName: { type: "string" },
-        categoryName: { type: "string" },
+        categoryName: {
+          type: "string",
+          description:
+            "Required when variableName does not already exist. Examples: Treatment, Food, Drink, Nutrient, Symptom, Emotion, Sleep, Activity, Vital Sign, or Biomarker.",
+        },
         defaultValue: {
           type: ["number", "null"],
           description:
             "Pre-filled value, such as a normal medication dose or symptom rating. Pass null to clear it when editing.",
         },
         unitId: { type: "string" },
-        unitAbbreviation: { type: "string" },
-        unitName: { type: "string" },
+        unitAbbreviation: {
+          type: "string",
+          description:
+            "Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings.",
+        },
+        unitName: {
+          type: "string",
+          description: "Full unit name; matched case-insensitively.",
+        },
         reminderStartTime: {
           type: "string",
           description: "Local wall-clock time in HH:mm, for example 08:00.",
