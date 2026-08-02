@@ -8825,7 +8825,7 @@ describe("MCP server tool dispatch", () => {
 
     it("upsertTrackingReminder creates a Food variable from the serving alias", async () => {
       mocks.globalVariableFindFirst.mockResolvedValue(null);
-      mocks.variableCategoryFindFirst.mockResolvedValue({
+      const foodCategory = {
         combinationOperation: "SUM",
         defaultUnit: FOOD_UNIT,
         defaultUnitId: "unit-servings",
@@ -8835,7 +8835,18 @@ describe("MCP server tool dispatch", () => {
         onsetDelay: 1_800,
         outcome: false,
         predictorOnly: true,
-      });
+      };
+      mocks.variableCategoryFindFirst.mockImplementation(
+        (args: {
+          where: {
+            name?: { equals?: string; mode?: string };
+          };
+        }) =>
+          args.where.name?.equals === "food" &&
+          args.where.name.mode === "insensitive"
+            ? foodCategory
+            : null,
+      );
       mocks.unitFindFirst.mockImplementation(
         (args: { where: { abbreviatedName?: string } }) =>
           args.where.abbreviatedName === "servings" ? FOOD_UNIT : null,
@@ -8854,7 +8865,7 @@ describe("MCP server tool dispatch", () => {
       const result = await client.callTool({
         name: "upsertTrackingReminder",
         arguments: {
-          categoryName: "Food",
+          categoryName: "food",
           defaultValue: 1,
           reminderStartTime: "08:00",
           unitAbbreviation: "serving",

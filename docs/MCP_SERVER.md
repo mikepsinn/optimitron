@@ -396,8 +396,8 @@ Record it later:
 `servings` unit. Use servings for simple behavior or adherence tracking. Use a
 specific mass, volume, energy, or nutrient unit such as `g`, `mL`, or `kcal`
 when the quantity matters. Common categories include `Food`, `Drink`,
-`Nutrient`, `Treatment`, `Symptom`, `Emotion`, `Sleep`, `Activity`, `Vital
-Sign`, and `Biomarker`.
+`Nutrient`, `Treatment`, `Symptom`, `Emotion`, `Sleep`, `Activity`,
+`Vital Sign`, and `Biomarker`.
 
 ## Naming Boundaries
 

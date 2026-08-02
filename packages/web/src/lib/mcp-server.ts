@@ -3076,7 +3076,10 @@ async function resolveTrackingVariable(
       outcome: true,
       predictorOnly: true,
     },
-    where: { deletedAt: null, name: categoryName },
+    where: {
+      deletedAt: null,
+      name: { equals: categoryName, mode: "insensitive" },
+    },
   });
   if (!category?.defaultUnitId) {
     throw new Error(
