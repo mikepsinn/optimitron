@@ -44,8 +44,9 @@ Minimum question for Mike:
 5. Preserve user-supplied sharp language unless it creates a concrete legal,
    factual, or conversion problem. If changing it, explain why.
 6. Use parameter/citation components for major numeric claims where available.
-7. Validate the changed copy, then commit and push promptly. Show it in the
-   handoff; wait for pre-commit review only when Mike explicitly requests it.
+7. When the task authorizes copy changes, validate them, then commit and push
+   promptly. Show them in the handoff; wait for pre-commit review only when Mike
+   explicitly requests it.
 
 ## Review Smells
 
