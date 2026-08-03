@@ -185,6 +185,9 @@ test.describe("route visual regression", () => {
       ).toBeLessThan(400);
 
       await normalizeVisualPage(page);
+      if ("authenticated" in route && route.authenticated) {
+        await waitForAuthenticatedVisualSession(page);
+      }
       if ("openMenu" in route && route.openMenu) {
         await openSideMenu(page, {
           expectSettings: "expectSettings" in route && route.expectSettings,
@@ -339,6 +342,16 @@ async function waitForVisualIdle(page: Page) {
     { timeout: 10_000 },
   );
   await forceAnimationsComplete(page);
+}
+
+async function waitForAuthenticatedVisualSession(page: Page) {
+  await page.waitForFunction(
+    () =>
+      document.documentElement.dataset.visualAuthState === "authenticated",
+    undefined,
+    { timeout: 15_000 },
+  );
+  await waitForPaint(page);
 }
 
 async function waitForVisualImages(page: Page) {

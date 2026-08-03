@@ -1,9 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import type { State } from "wagmi";
 import { usePathname, useSearchParams } from "next/navigation";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { AuthPostSigninSync } from "@/components/auth/AuthPostSigninSync";
 import { SignupLandingUrlCapture } from "@/components/auth/SignupLandingUrlCapture";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -13,6 +13,26 @@ import { DeclarationSigningPopup } from "@/components/declaration/DeclarationSig
 
 const ENABLE_DECLARATION_POPUP =
   process.env.NEXT_PUBLIC_ENABLE_DECLARATION_POPUP === "true";
+
+function VisualReviewSessionReadiness() {
+  const { status } = useSession();
+
+  useEffect(() => {
+    const visualReviewWindow = window as Window & {
+      __OPTIMITRON_VISUAL_REVIEW__?: boolean;
+    };
+    if (!visualReviewWindow.__OPTIMITRON_VISUAL_REVIEW__) {
+      return;
+    }
+
+    document.documentElement.dataset.visualAuthState = status;
+    return () => {
+      delete document.documentElement.dataset.visualAuthState;
+    };
+  }, [status]);
+
+  return null;
+}
 
 export function Providers({
   children,
@@ -29,6 +49,7 @@ export function Providers({
 
   return (
     <SessionProvider>
+      <VisualReviewSessionReadiness />
       <ThemeProvider>
         <Web3Provider initialState={initialState}>
           <WishPointProvider>

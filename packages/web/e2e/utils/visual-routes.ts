@@ -119,6 +119,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, ["packages/web/src/app/game/page.tsx"]],
+  [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
 ]);
@@ -130,11 +131,15 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
+  [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
 ]);
 
-const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([ROUTES.employees]);
+const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
+  ROUTES.employees,
+  ROUTES.profile,
+]);
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
@@ -286,6 +291,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
 )
   .filter(({ path }) => ALL_PAGE_PATHS.includes(path))
   .map(({ name, path }) => ({
+    covers: VISUAL_COVERS_BY_PATH.get(path),
     name: publicRouteHasScreenshot(path) ? `${name}-auth` : name,
     path: VISUAL_PATH_OVERRIDE_BY_PATH.get(path) ?? path,
     required: true,
