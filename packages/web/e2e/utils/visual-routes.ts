@@ -111,7 +111,9 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ROUTES.eos,
     [
       "packages/web/src/components/eos-retro/AgencyBooths.tsx",
+      "packages/web/src/components/eos-retro/OptimizedPublicAdministration.tsx",
       "packages/web/src/components/eos-retro/DfdaOutcomeLabel.tsx",
+      "packages/web/src/components/eos-retro/eos-retro.css",
       "packages/web/src/components/eos-retro/EosRetroLandingPage.tsx",
       "packages/web/src/components/eos-retro/MachineDiagram.tsx",
     ],

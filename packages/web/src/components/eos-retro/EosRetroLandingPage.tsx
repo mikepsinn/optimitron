@@ -24,7 +24,7 @@ import {
 } from "@optimitron/data/parameters";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { AgencyBooths } from "@/components/eos-retro/AgencyBooths";
+import { OptimizedPublicAdministration } from "@/components/eos-retro/OptimizedPublicAdministration";
 import { BudgetFrontierExhibit } from "@/components/eos-retro/BudgetFrontierExhibit";
 import { CollapseClock } from "@/components/eos-retro/CollapseClock";
 import { DeathCounter } from "@/components/eos-retro/DeathCounter";
@@ -86,8 +86,8 @@ function MachinePart({
   letter: string;
   title: string;
   intro?: ReactNode;
-  stepInsideHref: string;
-  stepInsideLabel: string;
+  stepInsideHref?: string;
+  stepInsideLabel?: string;
 }) {
   return (
     <div className="er-exhibit" id={id}>
@@ -96,11 +96,13 @@ function MachinePart({
       </h3>
       {intro ? <p className="er-body mt-4 max-w-3xl">{intro}</p> : null}
       <div className="mt-6">{children}</div>
-      <p className="mt-6">
-        <Link className="er-link er-mono text-sm" href={stepInsideHref}>
-          {stepInsideLabel}
-        </Link>
-      </p>
+      {stepInsideHref && stepInsideLabel ? (
+        <p className="mt-6">
+          <Link className="er-link er-mono text-sm" href={stepInsideHref}>
+            {stepInsideLabel}
+          </Link>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -190,8 +192,8 @@ const SYSTEMS = [
   },
   {
     emoji: agenciesLink.emoji ?? "🏛️",
-    name: "Optimized Government Agencies",
-    desc: agenciesLink.tagline ?? "",
+    name: "Optimized Public Administration",
+    desc: "Public systems designed to produce the greatest health and wealth per dollar spent.",
     anchor: "#system-agencies",
   },
   {
@@ -321,13 +323,11 @@ export function EosRetroLandingPage() {
 
         <MachinePart
           id="system-agencies"
-          intro="Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each entry shows what the old way costs and the lines that replace it."
+          intro="These aren’t agencies with better paperwork. They’re the public systems of the future, designed to maximize the health and wealth of the citizenry per dollar spent. A continually learning FDA ranks treatments using real-world outcomes and gives every doctor useful evidence about benefits and harms. The other systems redesign money, taxes, education, housing, social insurance, and more around measurable results."
           letter="E"
-          stepInsideHref={ROUTES.agencies}
-          stepInsideLabel="Explore the optimized agencies"
-          title="Optimized government agencies"
+          title="Optimized public administration"
         >
-          <AgencyBooths />
+          <OptimizedPublicAdministration />
         </MachinePart>
 
         <div className="er-exhibit" id="system-you">

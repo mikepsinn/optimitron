@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { BOOTHS } from "./AgencyBooths";
+import { FEATURED_PUBLIC_SYSTEMS } from "./OptimizedPublicAdministration";
 import { POLICY_ROW_LIMIT, topDistinctPolicies } from "./PolicyGradeTable";
 
-describe("AgencyBooths", () => {
-  it("every booth code anchor still exists in its agency's replacement code", () => {
+describe("OptimizedPublicAdministration", () => {
+  it("every featured system's code anchor still exists in its agency's replacement code", () => {
     // Guards against dataset edits silently degrading the code chips to
     // the first-lines fallback.
-    for (const booth of BOOTHS) {
+    for (const system of FEATURED_PUBLIC_SYSTEMS) {
       expect(
-        booth.agency.replacementCode.includes(booth.codeAnchor),
-        `anchor "${booth.codeAnchor}" missing from ${booth.agency.id} replacementCode`,
+        system.agency.replacementCode.includes(system.codeAnchor),
+        `anchor "${system.codeAnchor}" missing from ${system.agency.id} replacementCode`,
       ).toBe(true);
     }
   });

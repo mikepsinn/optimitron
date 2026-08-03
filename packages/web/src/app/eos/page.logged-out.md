@@ -25,7 +25,7 @@
 - [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](#system-obg)
 - [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](#system-wishocracy)
 - [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#system-dfda)
-- [🏛️OPTIMIZED GOVERNMENT AGENCIES 22 agencies. No bureaucracy. Just code.](#system-agencies)
+- [🏛️OPTIMIZED PUBLIC ADMINISTRATION Public systems designed to produce the greatest health and wealth per dollar spent.](#system-agencies)
 - [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#system-you)
 #### PART A · LAWS GRADED LIKE HOMEWORK
 - 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. But sure, let the humans keep guessing.
@@ -81,59 +81,74 @@
 - 62% effective · 96% safe · 88% confidence
 - Demonstration built from published statin trial aggregates. The live labels update continuously as real-world data arrives.
 - [Explore the Decentralized FDA](/agencies/dfda)
-#### PART E · OPTIMIZED GOVERNMENT AGENCIES
-- Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each entry shows what the old way costs and the lines that replace it.
+#### PART E · OPTIMIZED PUBLIC ADMINISTRATION
+- These aren’t agencies with better paperwork. They’re the public systems of the future, designed to maximize the health and wealth of the citizenry per dollar spent. A continually learning FDA ranks treatments using real-world outcomes and gives every doctor useful evidence about benefits and harms. The other systems redesign money, taxes, education, housing, social insurance, and more around measurable results.
 - 🧾
 - AUTOMATED REVENUE SERVICE
+- Six lines of computer code replace 74,000 pages of tax code
+- OPTIMIZES FOR Revenue per Dollar of Overhead
 - Replaces Internal Revenue Service
 - $212B+
 - recovered every year, mostly from paperwork
-- [Open the agency](/agencies/dtreasury/dirs)
+- [Explore this system](/agencies/dtreasury/dirs)
 - 🏦
 - ALGORITHMIC RESERVE
+- 0% inflation anchored to productivity — new money via UBI, not banks
+- OPTIMIZES FOR Median Real After-Tax Income
 - Replaces Federal Reserve System
 - 96%
 - of the dollar's purchasing power lost since 1913, no longer confiscatable
-- [Open the agency](/agencies/dtreasury/dfed)
+- [Explore this system](/agencies/dtreasury/dfed)
 - 🍞
 - UNIVERSAL SECURITY ADMINISTRATION
+- UBI replaces 83 welfare programs with one for-loop
+- OPTIMIZES FOR Poverty Rate
 - Replaces Social Security Administration + Welfare Bureaucracy
 - $1.1 TRILLION
 - in annual admin overhead deleted by one for-loop
-- [Open the agency](/agencies/dtreasury/dssa)
+- [Explore this system](/agencies/dtreasury/dssa)
 - 🌐
 - DECENTRALIZED CENSUS BUREAU
+- citizenCount() returns in 50ms — no $14B survey needed
+- OPTIMIZES FOR Real-Time Population Count
 - Replaces United States Census Bureau
 - $1.4B
 - a year saved by one view function that never undercounts
-- [Open the agency](/agencies/dcensus)
+- [Explore this system](/agencies/dcensus)
 - 💀
 - DEPARTMENT OF PEACE
+- We don't have one
+- OPTIMIZES FOR Years Without Armed Conflict
 - Replaces Department of Defense (née Department of War)
 - $2.72T
 - in annual global military spending on a negative-sum game
-- [Open the agency](/agencies/ddod)
+- [Explore this system](/agencies/ddod)
 - 🧬
 - DECENTRALIZED INSTITUTES OF HEALTH
+- 97% clinical trials, 3% overhead — the exact mirror of your NIH
+- OPTIMIZES FOR Patients in Clinical Trials
 - Replaces National Institutes of Health + FDA
 - $45.5B
 - a year redirected from grant paperwork to actual trials
-- [Open the agency](/agencies/dih)
+- [Explore this system](/agencies/dih)
 - 📚
 - LEARNING FREEDOM NETWORK
+- Portable student funding, open outcomes, and schools that compete to teach
+- OPTIMIZES FOR Mastery Growth per Student
 - Replaces Department of Education
 - $10B+
 - a year of compliance churn; money follows the child instead
-- [Open the agency](/agencies/dedu)
+- [Explore this system](/agencies/dedu)
 - 🏠
 - HOUSING ABUNDANCE EXCHANGE
+- Legalize building, tax land rents, and keep homelessness near zero
+- OPTIMIZES FOR Homes Added in High-Demand Areas
 - Replaces Department of Housing and Urban Development
 - $25B+
 - a year of scarcity management replaced by permission to build
-- [Open the agency](/agencies/dhome)
-- The letter chip is the Earth agency's current report-card grade, computed from its spending trend against its outcome trend.
-- [SEE ALL 22 DEPARTMENTS](/agencies)
-- [Explore the optimized agencies](/agencies)
+- [Explore this system](/agencies/dhome)
+- The grade chip is the Earth agency's current report-card grade, computed from its spending trend against its outcome trend.
+- [EXPLORE ALL 22 AGENCIES OF THE FUTURE](/agencies)
 #### PART F · THE HUMAN OPTIMIZATION SYSTEM
 - The same engine, pointed at one human: you.
 - OPTIMITRON // NEXT BEST ACTION
