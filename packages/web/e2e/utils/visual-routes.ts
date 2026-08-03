@@ -126,6 +126,7 @@ const PRESIDENT_TASK_LIST_SELECTOR =
 
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
+  [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
