@@ -70,9 +70,8 @@
 - When UI or route/page changes are ready for review and a local dev server is available, also list direct local dev URLs for every edited page or relevant state, such as `http://127.0.0.1:3001/path`, so the human can open the live pages themselves.
 - In PR bodies and handoffs, do not give only the preview root. List each changed/reviewed preview page with the right auth query param (`?logout=1` or `?login=demo`) so the human can open the exact state.
 - If a change creates or alters generated user-facing artifacts such as tasks, emails, notifications, share templates, receipts, auth callback states, or post-submit success states, include a concrete preview of those artifacts in the review. Prefer a local page link, seeded example, or screenshot in `packages/web/output/playwright/review/latest.html`; if no preview surface exists, say that and consider adding a safe preview route or fixture before calling the work done.
-- Before committing UI changes, tell the human which screenshots you captured, summarize anything you noticed, provide the local HTML review file path in chat, and explicitly ask them to review the screenshots unless they explicitly waived screenshots for that change.
+- Capture and inspect screenshots before committing, then commit and push promptly so CI starts. Report the screenshots and local HTML review path after the push; wait for pre-commit human review only when explicitly requested.
 - For iterative UI work, show the current screenshots directly in chat after each visual pass so the human can criticize without opening a separate review URL. The human is the visual validator.
-- Do not commit UI changes until the human explicitly approves the screenshot/HTML review, unless they explicitly waive review or explicitly instruct you to commit immediately despite the screenshot-review rule.
 - If screenshots cannot be captured, state exactly why and do not commit the UI change until the human accepts that limitation.
 - Reuse an existing dev server for screenshot checks when available; do not disrupt a running server unless a clean run is genuinely needed.
 
@@ -104,7 +103,7 @@ Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones be
 Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
 
 - Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
-- Treat the human owner as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
+- When copy strategy is unclear, ask the shortest missing question with a recommended default. Otherwise validate, commit, and push promptly; wait for pre-commit copy review only when explicitly requested.
 - Internal development text—PRs, CI, logs, tests, and developer tooling—does not require copy approval.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
@@ -122,9 +121,9 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
 - **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
-- Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
+- Commit and push checked user-facing copy promptly unless the human explicitly requests pre-commit review.
 - For copy approval, show each change as Before → After; label additions New and unchanged relocations Moved unchanged.
-- When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
+- When you finish editing user-facing copy, include the changed copy in the handoff.
 
 ## Critical Architecture Rules
 

@@ -39,13 +39,13 @@ Minimum question for Mike:
 ```
 
 4. If audience, desired action, motivation, or source anchor is unclear, ask Mike
-   one short question with a recommended default. Treat him as the copy merge
-   gate, not as a person who should rewrite drafts from scratch.
+   one short question with a recommended default. Do not ask him to rewrite
+   drafts from scratch.
 5. Preserve user-supplied sharp language unless it creates a concrete legal,
    factual, or conversion problem. If changing it, explain why.
 6. Use parameter/citation components for major numeric claims where available.
-7. After editing, show the changed copy and ask Mike to approve it before commit.
-   Do not set `COPY_REVIEW_APPROVED=1` unless he explicitly approved the copy.
+7. Validate the changed copy, then commit and push promptly. Show it in the
+   handoff; wait for pre-commit review only when Mike explicitly requests it.
 
 ## Review Smells
 
