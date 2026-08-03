@@ -107,6 +107,15 @@ const OPTIMITRON_GAME_LANDING_FILES = [
 ];
 
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
+  [
+    ROUTES.eos,
+    [
+      "packages/web/src/components/eos-retro/AgencyBooths.tsx",
+      "packages/web/src/components/eos-retro/DfdaOutcomeLabel.tsx",
+      "packages/web/src/components/eos-retro/EosRetroLandingPage.tsx",
+      "packages/web/src/components/eos-retro/MachineDiagram.tsx",
+    ],
+  ],
   [ROUTES.game, ["packages/web/src/app/game/page.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
