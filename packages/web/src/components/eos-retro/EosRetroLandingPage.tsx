@@ -72,7 +72,7 @@ function Section({
   );
 }
 
-function Exhibit({
+function MachinePart({
   children,
   id,
   letter,
@@ -92,7 +92,7 @@ function Exhibit({
   return (
     <div className="er-exhibit" id={id}>
       <h3 className="er-exhibit-title">
-        Exhibit {letter} · <em>{title}</em>
+        Part {letter} · <em>{title}</em>
       </h3>
       {intro ? <p className="er-body mt-4 max-w-3xl">{intro}</p> : null}
       <div className="mt-6">{children}</div>
@@ -163,42 +163,42 @@ function AtomOrnament() {
   );
 }
 
-const PAVILIONS = [
+const SYSTEMS = [
   {
     emoji: AGENCIES.dcbo.emoji,
     name: AGENCIES.dcbo.dName,
     desc: AGENCIES.dcbo.tagline,
-    anchor: "#exhibit-opg",
+    anchor: "#system-opg",
   },
   {
     emoji: AGENCIES.domb.emoji,
     name: AGENCIES.domb.dName,
     desc: AGENCIES.domb.tagline,
-    anchor: "#exhibit-obg",
+    anchor: "#system-obg",
   },
   {
     emoji: wishocracyLink.emoji ?? "🗳️",
     name: wishocracyLink.label,
     desc: wishocracyLink.tagline ?? "",
-    anchor: "#exhibit-wishocracy",
+    anchor: "#system-wishocracy",
   },
   {
     emoji: AGENCIES.dfda.emoji,
     name: AGENCIES.dfda.dName,
     desc: AGENCIES.dfda.tagline,
-    anchor: "#exhibit-dfda",
+    anchor: "#system-dfda",
   },
   {
     emoji: agenciesLink.emoji ?? "🏛️",
-    name: "The Department Store",
+    name: "Optimized Government Agencies",
     desc: agenciesLink.tagline ?? "",
-    anchor: "#exhibit-agencies",
+    anchor: "#system-agencies",
   },
   {
     emoji: "🧠",
     name: "The Human Optimization System",
     desc: "The same engine, pointed at one human: you.",
-    anchor: "#exhibit-you",
+    anchor: "#system-you",
   },
 ];
 
@@ -232,7 +232,7 @@ export function EosRetroLandingPage() {
               upgraded over 300 planets. Yours is next.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <a className="er-btn er-btn-solid" href="#exhibits">
+              <a className="er-btn er-btn-solid" href="#systems">
                 Tour the machine
               </a>
             </div>
@@ -240,9 +240,9 @@ export function EosRetroLandingPage() {
 
           <p className="pb-6 text-center">
             <a
-              aria-label="Continue to the exhibits"
+              aria-label="Continue to the systems"
               className="er-down"
-              href="#exhibits"
+              href="#systems"
             >
               ▼
             </a>
@@ -250,14 +250,14 @@ export function EosRetroLandingPage() {
         </div>
       </header>
 
-      {/* ── 2 · The Exhibits ─────────────────────────────────── */}
+      {/* ── 2 · Inside The Machine ───────────────────────────── */}
       <Section
-        deck="Six pavilions from the government of the future, running on real data. Pick a booth or walk the hall in order. The gift shop comes at the end, as is traditional."
-        id="exhibits"
-        title="The exhibits"
+        deck="Six working systems for measuring outcomes, choosing priorities, and turning better decisions into better laws, budgets, treatments, and daily actions."
+        id="systems"
+        title="Inside the machine"
       >
         <div className="er-pavilion-grid">
-          {PAVILIONS.map((p) => (
+          {SYSTEMS.map((p) => (
             <a className="er-pavilion" href={p.anchor} key={p.anchor}>
               <div aria-hidden="true" className="er-pavilion-emoji">
                 {p.emoji}
@@ -268,41 +268,41 @@ export function EosRetroLandingPage() {
           ))}
         </div>
 
-        <Exhibit
-          id="exhibit-opg"
+        <MachinePart
+          id="system-opg"
           intro={AGENCIES.dcbo.wishoniaQuote}
           letter="A"
           stepInsideHref={ROUTES.opg}
-          stepInsideLabel="Step inside the Policy Generator"
+          stepInsideLabel="Explore the Policy Generator"
           title="Laws graded like homework"
         >
           <PolicyGradeTable />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-obg"
+        <MachinePart
+          id="system-obg"
           intro={AGENCIES.domb.wishoniaQuote}
           letter="B"
           stepInsideHref={ROUTES.obg}
-          stepInsideLabel="Step inside the Budget Generator"
+          stepInsideLabel="Explore the Budget Generator"
           title="The budget, solved like an equation"
         >
           <BudgetFrontierExhibit />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-wishocracy"
-          intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This booth is live. Drag it."
+        <MachinePart
+          id="system-wishocracy"
+          intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it."
           letter="C"
           stepInsideHref={ROUTES.vote}
-          stepInsideLabel="Step inside and cast the vote that counts"
+          stepInsideLabel="Use Wishocracy"
           title="The ninety-second legislature"
         >
           <WishocracyBooth />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-dfda"
+        <MachinePart
+          id="system-dfda"
           intro={
             <>
               Earth&apos;s current system makes a treatment wait{" "}
@@ -313,26 +313,26 @@ export function EosRetroLandingPage() {
           }
           letter="D"
           stepInsideHref={ROUTES.dfda}
-          stepInsideLabel="Step inside the Decentralized FDA"
+          stepInsideLabel="Explore the Decentralized FDA"
           title="Medicine without the waiting room"
         >
           <DfdaOutcomeLabel />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-agencies"
-          intro="Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each booth shows what the old way costs and the lines that replace it."
+        <MachinePart
+          id="system-agencies"
+          intro="Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each entry shows what the old way costs and the lines that replace it."
           letter="E"
           stepInsideHref={ROUTES.agencies}
-          stepInsideLabel="Step inside the department store"
-          title="The department store"
+          stepInsideLabel="Explore the optimized agencies"
+          title="Optimized government agencies"
         >
           <AgencyBooths />
-        </Exhibit>
+        </MachinePart>
 
-        <div className="er-exhibit" id="exhibit-you">
+        <div className="er-exhibit" id="system-you">
           <h3 className="er-exhibit-title">
-            Exhibit F · <em>The Human Optimization System</em>
+            Part F · <em>The Human Optimization System</em>
           </h3>
           <p className="er-body mt-4 max-w-3xl">
             The same engine, pointed at one human: you.

@@ -89,12 +89,8 @@ const CREATE_TASK_DIALOG_FILE =
   "packages/web/src/components/tasks/CreateTaskDialog.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
-const OPTIMITRON_HOME_LANDING_FILES = [
-  "packages/web/src/app/page.tsx",
-  "packages/web/src/components/site/OptimitronLandingPage.tsx",
-];
 const OPTIMITRON_GAME_LANDING_FILES = [
-  "packages/web/src/app/game/page.tsx",
+  "packages/web/src/app/page.tsx",
   "packages/web/src/components/animations/CollapseCountdownTimer.tsx",
   "packages/web/src/components/animations/LiveDeathTicker.tsx",
   "packages/web/src/components/animations/ScrollReveal.tsx",
@@ -111,7 +107,7 @@ const OPTIMITRON_GAME_LANDING_FILES = [
 ];
 
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
-  [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
+  [ROUTES.game, ["packages/web/src/app/game/page.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
 ]);
@@ -291,12 +287,11 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
 // review matrix. Disallowed routes redirect to production, so exclude them.
 const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   {
-    covers: OPTIMITRON_HOME_LANDING_FILES,
+    covers: OPTIMITRON_GAME_LANDING_FILES,
     name: "variant-optimitron-home",
     path: ROUTES.home,
     required: true,
-    requiredSelector: 'main a[href="/tasks"]:has-text("See your next tasks")',
-    requiredText: /The decentralized to-do list for humanity/,
+    requiredSelector: "#vote",
     siteVariant: "optimitron",
   },
   {

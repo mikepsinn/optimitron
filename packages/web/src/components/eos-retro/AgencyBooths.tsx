@@ -129,7 +129,7 @@ export function AgencyBooths() {
                 {excerptCode(agency.replacementCode, codeAnchor, extraLines)}
               </code>
               <Link className="er-link er-mono mt-auto text-xs" href={boothHref(agency.id)}>
-                Visit the booth
+                Open the agency
               </Link>
             </div>
           );

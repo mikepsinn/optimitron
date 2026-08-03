@@ -50,13 +50,17 @@ function Gear({ cx, cy }: { cx: number; cy: number }) {
   );
 }
 
-export function MachineDiagram() {
+export function MachineDiagram({
+  fitWidth = false,
+}: { fitWidth?: boolean } = {}) {
   return (
     <figure className="m-0">
       <div className="overflow-x-auto">
         <svg
           aria-label="Machine schematic, left to right: money pours into an intake hopper, moves along a conveyor through three stages labeled shares, board seats, and lobbying redirect, and exits down a chute as better laws. A return conveyor labeled value increases loops the output back to the intake."
-          className="mx-auto block h-auto w-full min-w-[760px]"
+          className={`mx-auto block h-auto w-full ${
+            fitWidth ? "min-w-0" : "min-w-[760px]"
+          }`}
           role="img"
           viewBox="0 0 960 460"
         >

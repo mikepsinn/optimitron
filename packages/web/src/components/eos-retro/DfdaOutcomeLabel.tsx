@@ -109,7 +109,7 @@ export function DfdaOutcomeLabel() {
           ))}
         </div>
         <p className="er-caption mt-4">
-          Exhibit sample typeset from published statin trial aggregates. The
+          Demonstration built from published statin trial aggregates. The
           live labels update continuously as real-world data arrives.
         </p>
       </div>

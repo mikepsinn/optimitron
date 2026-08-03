@@ -234,16 +234,6 @@ export const homeLink: NavItem = {
   cta: "End War and Disease",
 };
 
-export const optimitronHomeLink: NavItem = {
-  href: ROUTES.home,
-  label: "Optimitron",
-  emoji: "",
-  description:
-    "Optimitron ranks laws, budgets, and tasks by how much they improve healthy life and real income—then finds the person, organization, AI agent, or dollar best placed to get each one done.",
-  tagline: "What’s the highest-value thing you can do right now?",
-  cta: "See Earth’s Top Task",
-};
-
 export function getBudgetCategoryPath(name: string): string {
   return `${ROUTES.obg}/${slugify(name)}`;
 }

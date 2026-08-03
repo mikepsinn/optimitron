@@ -67,11 +67,6 @@ const VISUAL_REVIEW_CSS = `
     display: none !important;
   }
 
-  /* Local variant controls are capture scaffolding, not product UI. */
-  details:has(#dev-site-variant) {
-    display: none !important;
-  }
-
   /* Person/leader avatar photos load non-deterministically between runs — a
      real photo in one run, the initials fallback in another — so they were the
      dominant residual pixel-diff noise (e.g. the treaty signer list). The box
