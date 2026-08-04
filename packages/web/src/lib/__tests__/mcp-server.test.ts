@@ -3431,6 +3431,44 @@ describe("MCP server tool dispatch", () => {
     });
   });
 
+  describe("getNextTask public front door", () => {
+    it("returns open public work to an anonymous caller with no capability tags", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          createdByUserId: "another-user",
+          id: "public-open-task",
+          title: "Open public work",
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(
+        makePriority({ priority: 250 }),
+      );
+      mocks.isTaskLeased.mockResolvedValue({ leased: false });
+
+      const client = await setup(undefined, []);
+      const result = await client.callTool({
+        name: "getNextTask",
+        arguments: {},
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        score: 250,
+        task: {
+          id: "public-open-task",
+          title: "Open public work",
+        },
+      });
+      expect(mocks.listTasks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: TaskStatus.ACTIVE,
+          visibility: "public",
+        }),
+      );
+    });
+  });
+
   describe("getExecutionPlan", () => {
     it("simulates dependencies and excludes container tasks", async () => {
       mocks.listTasks.mockResolvedValue([
