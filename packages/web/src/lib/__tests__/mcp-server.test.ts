@@ -5019,6 +5019,9 @@ describe("MCP server tool dispatch", () => {
       const updateTask = result.tools.find(
         (tool) => tool.name === "updateTask",
       );
+      const respondToTrackingReminder = result.tools.find(
+        (tool) => tool.name === "respondToTrackingReminder",
+      );
 
       expect(createTask?.inputSchema.properties).toMatchObject({
         visibility: {
@@ -5036,6 +5039,20 @@ describe("MCP server tool dispatch", () => {
         },
         parentTaskKey: {
           type: "string",
+        },
+      });
+      expect(createTask?.description).toContain("never as bare IDs");
+      expect(updateTask?.description).toContain("never as bare IDs");
+      expect(respondToTrackingReminder).toMatchObject({
+        description: expect.stringContaining("TRACKED with value 0"),
+        inputSchema: {
+          properties: {
+            status: {
+              description: expect.stringContaining(
+                "SKIPPED records no measurement",
+              ),
+            },
+          },
         },
       });
     });

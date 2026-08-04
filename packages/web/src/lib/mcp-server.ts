@@ -5008,7 +5008,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "respondToTrackingReminder",
     description:
-      "Answer a due tracking reminder. Use TRACKED when the user took/logged it, SKIPPED when they skipped it, or SNOOZED when they want to delay it. Pass value to record a different dosage or rating.",
+      "Answer a due tracking reminder. TRACKED records a measurement; use TRACKED with value 0 when the value was definitely zero so analysis counts it. SKIPPED dismisses the occurrence without a measurement and leaves a gap. SNOOZED defers it.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5016,6 +5016,8 @@ const TRACKING_TOOL_DEFINITIONS = [
         status: {
           type: "string",
           enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          description:
+            "TRACKED records a measurement (including value 0); SKIPPED records no measurement and leaves a gap; SNOOZED defers.",
         },
         value: {
           type: "number",
@@ -6724,7 +6726,7 @@ const TASK_TOOL_DEFINITIONS = [
       "Create an ACTIVE task. Visibility defaults to PRIVATE; admin organization assignments default PUBLIC. Only admins may create PUBLIC tasks. " +
       "Required: title, description, one parentTaskId or parentTaskKey, taskKey, category, hours, value, p_success, acceptanceCriteria, and impactStatement. Call getMe first: personalRoot is the caller's private Optimize-{name} root and organizationRoots lists accessible organization roots. Choose the closest parent; use personalRoot.taskKey only for personal work. Never guess or default. Optimize Earth is reserved. " +
       "For Optimitron code or documentation improvements, search for duplicate work and set parentTaskKey='optimitron:dev'. " +
-      "Estimate instead of omitting numbers. Use testable acceptance criteria and one sentence explaining impact. " +
+      "Estimate instead of omitting numbers. Use testable acceptance criteria and one sentence explaining impact. Reference tasks as titled Markdown links to https://optimitron.com/tasks/<id>, never as bare IDs. " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
       "taskKey is the idempotency key: retrying the same create returns the existing task instead of creating a duplicate. The response includes a writeReceipt and a missingFields[] array for soft-recommended metadata.",
     inputSchema: {
@@ -7375,7 +7377,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update task metadata, estimates, ancestry, dependencies, deadline, or executor. Reparent with exactly one of parentTaskId or parentTaskKey. Completion and verification use the execution tools. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
+      "Update task metadata, estimates, ancestry, dependencies, deadline, or executor. Reparent with exactly one of parentTaskId or parentTaskKey. Reference tasks in descriptions as titled Markdown links to https://optimitron.com/tasks/<id>, never as bare IDs. Completion and verification use the execution tools. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
     inputSchema: {
       type: "object" as const,
       properties: {
