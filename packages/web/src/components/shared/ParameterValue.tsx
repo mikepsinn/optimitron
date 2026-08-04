@@ -68,6 +68,7 @@ export function ParameterValue({
         </button>
       </Dialog.Trigger>
       <Dialog.Content
+        aria-describedby={undefined}
         size="screen"
         className="!w-[95vw] !max-w-[900px] max-h-[90vh] !grid-cols-[minmax(0,1fr)] overflow-hidden border-2 border-foreground bg-background shadow-none"
       >
