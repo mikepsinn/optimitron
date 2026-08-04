@@ -165,19 +165,12 @@ describe("compileGeneratedParameterCatalog", () => {
     expect(catalog.parameters.map(({ key }) => key).sort()).toEqual(
       Object.keys(parameters).sort(),
     );
-    const expectedCitationKeys = new Set(Object.keys(citations));
-    for (const parameter of Object.values(parameters)) {
-      if (
-        parameter.sourceRef &&
-        parameter.sourceRef === parameter.sourceUrl &&
-        /^https?:\/\//i.test(parameter.sourceRef)
-      ) {
-        expectedCitationKeys.add(parameter.sourceRef);
+    expect(catalog.citations).toMatchObject(citations);
+    for (const parameter of catalog.parameters) {
+      if (parameter.sourceRef) {
+        expect(catalog.citations).toHaveProperty(parameter.sourceRef);
       }
     }
-    expect(Object.keys(catalog.citations).sort()).toEqual(
-      [...expectedCitationKeys].sort(),
-    );
     expect(snapshots).toEqual([
       "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
       "DESTRUCTIVE_ECONOMY_25PCT_YEAR",

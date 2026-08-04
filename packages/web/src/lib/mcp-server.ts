@@ -2905,7 +2905,7 @@ function reminderNotifyAt(
   );
 }
 
-function reminderOccursWithinRange(
+function reminderOccurrenceWithinRange(
   reminder: {
     createdAt: Date;
     reminderFrequency: number;
@@ -2916,18 +2916,24 @@ function reminderOccursWithinRange(
 ) {
   const anchorDate = reminder.startTrackingDate ?? reminder.createdAt;
   const anchorDateKey = getZonedDateKey(anchorDate, range.timeZone);
-  if (reminder.reminderFrequency <= 0) return false;
+  if (reminder.reminderFrequency <= 0) return null;
 
   const frequencyDays = reminder.reminderFrequency / 86_400;
   if (Number.isInteger(frequencyDays)) {
     const anchorParts = parseZonedDateKey(anchorDateKey);
     const targetParts = parseZonedDateKey(range.dateKey);
-    if (!anchorParts || !targetParts) return false;
+    if (!anchorParts || !targetParts) return null;
     const daysSinceAnchor =
       (Date.UTC(targetParts.year, targetParts.month - 1, targetParts.day) -
         Date.UTC(anchorParts.year, anchorParts.month - 1, anchorParts.day)) /
       86_400_000;
-    return daysSinceAnchor >= 0 && daysSinceAnchor % frequencyDays === 0;
+    return daysSinceAnchor >= 0 && daysSinceAnchor % frequencyDays === 0
+      ? reminderNotifyAt(
+          range.dateKey,
+          reminder.reminderStartTime,
+          range.timeZone,
+        )
+      : null;
   }
 
   const anchor = reminderNotifyAt(
@@ -2935,7 +2941,7 @@ function reminderOccursWithinRange(
     reminder.reminderStartTime,
     range.timeZone,
   );
-  if (range.end <= anchor) return false;
+  if (range.end <= anchor) return null;
 
   const frequencyMilliseconds = reminder.reminderFrequency * 1_000;
   const firstOccurrenceIndex = Math.max(
@@ -2947,7 +2953,11 @@ function reminderOccursWithinRange(
   const firstOccurrence = new Date(
     anchor.getTime() + firstOccurrenceIndex * frequencyMilliseconds,
   );
-  return firstOccurrence < range.end;
+  return firstOccurrence < range.end ? firstOccurrence : null;
+}
+
+enum TrackingReminderDerivedStatus {
+  OVERDUE = "OVERDUE",
 }
 
 function cleanNumber(value: number | null | undefined) {
@@ -3487,9 +3497,18 @@ async function listDueTrackingRemindersForUser(
       ],
     },
   });
-  const dueReminders = reminders.filter((reminder) =>
-    reminderOccursWithinRange(reminder, { dateKey, end, start, timeZone }),
-  );
+  const occurrenceByReminderId = new Map<string, Date>();
+  const dueReminders = reminders.filter((reminder) => {
+    const occurrence = reminderOccurrenceWithinRange(reminder, {
+      dateKey,
+      end,
+      start,
+      timeZone,
+    });
+    if (!occurrence) return false;
+    occurrenceByReminderId.set(reminder.id, occurrence);
+    return true;
+  });
   if (dueReminders.length === 0) return { dateKey, reminders: [] };
 
   const notifications = await prisma.trackingReminderNotification.findMany({
@@ -3516,8 +3535,12 @@ async function listDueTrackingRemindersForUser(
       const notification =
         existingNotification === undefined ? null : existingNotification;
       const notifyAt =
-        notification?.notifyAt ??
-        reminderNotifyAt(dateKey, reminder.reminderStartTime, timeZone);
+        notification?.notifyAt ?? occurrenceByReminderId.get(reminder.id);
+      if (!notifyAt) {
+        throw new Error(
+          `Missing scheduled occurrence for tracking reminder ${reminder.id}.`,
+        );
+      }
       const status = notification?.status ?? NotificationStatus.PENDING;
       const isOverdue =
         (status === NotificationStatus.PENDING ||
@@ -3526,7 +3549,9 @@ async function listDueTrackingRemindersForUser(
       return {
         dateKey,
         defaultValue: cleanNumber(reminder.defaultValue),
-        derivedStatus: isOverdue ? "OVERDUE" : status,
+        derivedStatus: isOverdue
+          ? TrackingReminderDerivedStatus.OVERDUE
+          : status,
         globalVariable: reminder.globalVariable,
         instructions: reminder.instructions,
         isOverdue,

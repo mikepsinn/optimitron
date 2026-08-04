@@ -85,7 +85,11 @@ describe("parameter catalog authorization", () => {
   });
 
   it("rejects dangling citation references before bootstrap writes", async () => {
-    const db = { $transaction: vi.fn() };
+    const db = {
+      $transaction: vi.fn(() => {
+        throw new Error("transaction must not start");
+      }),
+    };
 
     await expect(
       bootstrapGeneratedParameterCatalog(
@@ -96,7 +100,6 @@ describe("parameter catalog authorization", () => {
         db as never,
       ),
     ).rejects.toThrow("references missing citation MISSING");
-    expect(db.$transaction).not.toHaveBeenCalled();
   });
 
   it("returns the complete recursive parameter dependency trace", async () => {

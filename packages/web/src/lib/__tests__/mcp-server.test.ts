@@ -9477,46 +9477,98 @@ describe("MCP server tool dispatch", () => {
       const now = vi
         .spyOn(Date, "now")
         .mockReturnValue(new Date("2026-08-03T10:00:00.000Z").getTime());
-      mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
-      mocks.trackingReminderFindMany.mockResolvedValue([
-        {
-          active: true,
-          createdAt: new Date("2026-08-01T09:00:00.000Z"),
-          defaultValue: 1,
-          deletedAt: null,
-          globalVariable: TRACKING_VARIABLE,
-          globalVariableId: "gv-vitd",
-          id: "reminder-1",
-          instructions: "Daily",
-          nOf1Variable: NOF1_VARIABLE,
-          reminderEndTime: null,
-          reminderFrequency: 24 * 60 * 60,
-          reminderStartTime: "09:00",
-          startTrackingDate: null,
-          stopTrackingDate: null,
-          userId: "user-1",
-        },
-      ]);
-      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
-
-      const client = await setup("user-1", ALL_SCOPES);
-      const result = await client.callTool({
-        name: "listDueTrackingReminders",
-        arguments: { dateKey: "2026-08-03" },
-      });
-
-      expect(result.isError).toBeFalsy();
-      expect(parseToolBody(result)).toMatchObject({
-        reminders: [
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
           {
-            derivedStatus: "OVERDUE",
-            isOverdue: true,
-            overdueSince: "2026-08-03T09:00:00.000Z",
-            status: NotificationStatus.PENDING,
+            active: true,
+            createdAt: new Date("2026-08-01T09:00:00.000Z"),
+            defaultValue: 1,
+            deletedAt: null,
+            globalVariable: TRACKING_VARIABLE,
+            globalVariableId: "gv-vitd",
+            id: "reminder-1",
+            instructions: "Daily",
+            nOf1Variable: NOF1_VARIABLE,
+            reminderEndTime: null,
+            reminderFrequency: 24 * 60 * 60,
+            reminderStartTime: "09:00",
+            startTrackingDate: null,
+            stopTrackingDate: null,
+            userId: "user-1",
           },
-        ],
-      });
-      now.mockRestore();
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "listDueTrackingReminders",
+          arguments: { dateKey: "2026-08-03" },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          reminders: [
+            {
+              derivedStatus: "OVERDUE",
+              isOverdue: true,
+              overdueSince: "2026-08-03T09:00:00.000Z",
+              status: NotificationStatus.PENDING,
+            },
+          ],
+        });
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("uses the anchored occurrence time for fractional-day reminders", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-02T12:00:00.000Z").getTime());
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          {
+            active: true,
+            createdAt: new Date("2026-08-01T09:00:00.000Z"),
+            defaultValue: 1,
+            deletedAt: null,
+            globalVariable: TRACKING_VARIABLE,
+            globalVariableId: "gv-vitd",
+            id: "reminder-36-hour",
+            instructions: "Every 36 hours",
+            nOf1Variable: NOF1_VARIABLE,
+            reminderEndTime: null,
+            reminderFrequency: 36 * 60 * 60,
+            reminderStartTime: "09:00",
+            startTrackingDate: null,
+            stopTrackingDate: null,
+            userId: "user-1",
+          },
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "listDueTrackingReminders",
+          arguments: { dateKey: "2026-08-02" },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          reminders: [
+            {
+              derivedStatus: NotificationStatus.PENDING,
+              isOverdue: false,
+              notifyAt: "2026-08-02T21:00:00.000Z",
+              overdueSince: null,
+            },
+          ],
+        });
+      } finally {
+        now.mockRestore();
+      }
     });
 
     it("respondToTrackingReminder TRACKED records the notification and a Measurement via the same write path", async () => {
