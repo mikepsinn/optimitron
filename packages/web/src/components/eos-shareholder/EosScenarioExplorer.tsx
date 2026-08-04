@@ -32,20 +32,27 @@ const scenarios = [
 
 type ScenarioId = (typeof scenarios)[number]["id"];
 
-function money(value: number) {
+export function formatScenarioMoney(value: number) {
   const absolute = Math.abs(value);
   const sign = value < 0 ? "-" : "";
-  const compact = (divisor: number, suffix: string) => {
+  const units = [
+    { divisor: 1_000_000_000_000, suffix: "T" },
+    { divisor: 1_000_000_000, suffix: "B" },
+    { divisor: 1_000_000, suffix: "M" },
+    { divisor: 1_000, suffix: "K" },
+  ] as const;
+  const compact = (unitIndex: number): string => {
+    const { divisor, suffix } = units[unitIndex];
     const scaled = absolute / divisor;
     const digits =
       scaled < 100 && Math.abs(scaled - Math.round(scaled)) >= 0.05 ? 1 : 0;
-    return `${sign}$${scaled.toFixed(digits)}${suffix}`;
+    const rounded = Number(scaled.toFixed(digits));
+    if (rounded >= 1_000 && unitIndex > 0) return compact(unitIndex - 1);
+    return `${sign}$${rounded.toFixed(digits)}${suffix}`;
   };
 
-  if (absolute >= 1_000_000_000_000) return compact(1_000_000_000_000, "T");
-  if (absolute >= 1_000_000_000) return compact(1_000_000_000, "B");
-  if (absolute >= 1_000_000) return compact(1_000_000, "M");
-  if (absolute >= 1_000) return compact(1_000, "K");
+  const unitIndex = units.findIndex(({ divisor }) => absolute >= divisor);
+  if (unitIndex >= 0) return compact(unitIndex);
 
   return `${sign}$${Math.round(absolute)
     .toString()
@@ -161,7 +168,7 @@ export function EosScenarioExplorer() {
                   Your number now
                 </p>
                 <p className="mt-2 break-words font-mono text-4xl font-black tracking-[-0.06em] sm:text-5xl">
-                  {money(safeAmount)}
+                  {formatScenarioMoney(safeAmount)}
                 </p>
               </div>
               <span
@@ -175,7 +182,7 @@ export function EosScenarioExplorer() {
                   Scaled by the GDP gap
                 </p>
                 <p className="mt-2 break-words font-mono text-4xl font-black tracking-[-0.06em] sm:text-5xl">
-                  {money(outcome)}
+                  {formatScenarioMoney(outcome)}
                 </p>
               </div>
             </div>
