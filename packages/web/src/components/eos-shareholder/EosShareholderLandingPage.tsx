@@ -165,13 +165,13 @@ export function EosShareholderLandingPage() {
               <li className="border-b border-foreground py-6">
                 <span className="mr-3 font-mono text-sm text-muted-foreground">
                   01
-                </span>
+                </span>{" "}
                 Maximize median health-adjusted life expectancy.
               </li>
               <li className="py-6">
                 <span className="mr-3 font-mono text-sm text-muted-foreground">
                   02
-                </span>
+                </span>{" "}
                 Maximize median after-tax, inflation-adjusted income.
               </li>
             </ol>

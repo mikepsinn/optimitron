@@ -47,7 +47,7 @@ function SpendingGrid() {
           ))}
         </div>
         <p className="mt-3 text-xs font-black uppercase tracking-[0.12em]">
-          Military capacity / 604 units
+          Military capacity / {spendingRatio} units
         </p>
       </div>
       <div>
@@ -136,7 +136,7 @@ export function StatusQuoEvidence() {
               <SpendingGrid />
             </div>
             <p className="mt-6 max-w-xl text-sm font-bold leading-6 text-muted-foreground">
-              Governments spend about 604 dollars on military capacity for each
+              Governments spend about {spendingRatio} dollars on military capacity for each
               dollar they spend on government-funded clinical trials. Apparently
               the diseases were expected to surrender.
             </p>
