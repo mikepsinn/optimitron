@@ -18,7 +18,6 @@
 
 - Project agents: `.claude/agents/voice-critic.md`, `cold-stranger-ux.md`, `pr-comment-triager.md`, `test-auditor.md`.
 - Project skills: `.claude/skills/qa-editorial`, `.claude/skills/verify-slide`.
-- Use gstack for generic review, investigation, QA, design review, and shipping when installed. See `SETUP.md` if its binaries are missing.
 - The remaining hooks are advisory except the snapshot hand-edit safety gate. Do not add hooks unless the human owner asks.
 
 ## Local Runtime

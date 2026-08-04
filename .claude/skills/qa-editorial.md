@@ -1,23 +1,12 @@
 ---
 name: qa-editorial
-description: Project-specific editorial audit that runs AFTER gstack's auto-fix chain (/design-review, /qa, /cso). Fires voice-critic, cold-stranger-ux, and test-auditor in parallel and consolidates findings. Catches Wishonia-voice violations, manual-quote-overlay opportunities, and parameter-citation gaps that gstack's generic skills can't see.
+description: Project-specific editorial audit. Fires voice-critic, cold-stranger-ux, and test-auditor in parallel and consolidates findings. Catches Wishonia-voice violations, manual-quote-overlay opportunities, and parameter-citation gaps.
 user_invocable: true
 ---
 
-# /qa-editorial — project-specific layer on top of gstack's auto-fix chain
+# /qa-editorial — project-specific editorial quality gate
 
-When the user types `/qa-editorial`, run the project's editorial + UX critics over the current branch state and report a single consolidated punch list. This is **NOT** the gstack `/qa` (functional browser bug-hunt + auto-fix). This is the Wishonia-voice / treaty-editorial / project-specific layer that gstack can't do because gstack is generic.
-
-## Where this fits in the pre-merge chain
-
-Run the gstack chain FIRST, then this:
-
-1. `/review` (gstack) — diff vs base, structural issues
-2. `/design-review` (gstack) — visual slop, auto-fix + commit
-3. `/qa` (gstack) — functional bug-hunt, auto-fix + commit
-4. `/cso` (gstack) — OWASP + STRIDE security
-5. **`/qa-editorial` (this skill)** — Wishonia voice, manual-search, parameter-coverage, cold-stranger-UX
-6. `/ship` (gstack) — open PR
+When the user types `/qa-editorial`, run the project's editorial + UX critics over the current branch state and report a single consolidated punch list. This is the Wishonia-voice / treaty-editorial / project-specific layer.
 
 ## What to fire (in parallel)
 
@@ -31,8 +20,6 @@ Skip rules:
 - No `.tsx` / `.md` content changed → skip `voice-critic`.
 - No UI changed → skip `cold-stranger-ux`.
 - No test files changed → skip `test-auditor`.
-
-Visual slop, OWASP/STRIDE, and root-cause analysis are NOT this skill's job — gstack's `/design-review`, `/cso`, and `/investigate` already cover those (and auto-fix). Run those first.
 
 ## Scope each invocation
 
@@ -77,16 +64,14 @@ For everything else — yes, run it before committing.
 
 - Doesn't write code.
 - Doesn't commit.
-- Doesn't auto-fix findings — surfaces them and waits for the user's call. (gstack's `/design-review` and `/qa` DO auto-fix; this skill is the editorial layer that runs after.)
-- Doesn't replicate gstack's generic checks — voice, manual-search, and cold-stranger UX are the differentiated value here.
+- Doesn't auto-fix findings — surfaces them and waits for the user's call.
 
 ## Standard pre-commit ritual
 
 1. Make the change.
 2. Run `pnpm --filter @optimitron/web copy:preview -- --routes=$(node packages/web/scripts/affected-routes.mjs)` to regenerate affected snapshots.
-3. Run gstack's chain: `/review` → `/design-review` (auto-fixes visual slop) → `/qa` (auto-fixes functional bugs) → `/cso` (security).
-4. Run `/qa-editorial` — the project-specific layer.
-5. Fix any deal-breakers; mark hand-waves intentional with a one-line comment in the commit.
-6. Commit with `qa-passed:` line.
+3. Run `/qa-editorial` — the project-specific editorial layer.
+4. Fix any deal-breakers; mark hand-waves intentional with a one-line comment in the commit.
+5. Commit with `qa-passed:` line.
 
 If `/qa-editorial` returns "SHIP" verdict and the pre-commit hooks pass, the change is ready.
