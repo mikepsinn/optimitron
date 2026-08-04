@@ -5034,6 +5034,9 @@ describe("MCP server tool dispatch", () => {
         maxClaims: {
           type: ["integer", "null"],
         },
+        parentTaskKey: {
+          type: "string",
+        },
       });
     });
 
@@ -5332,6 +5335,11 @@ describe("MCP server tool dispatch", () => {
       });
 
       it("rejects a task without an explicit parent", async () => {
+        mocks.taskUpdate.mockResolvedValueOnce({
+          id: "personal-project",
+          taskKey: "planner:person:person-1",
+          title: "Optimize Test User's life",
+        });
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
           name: "createTask",
@@ -5349,7 +5357,18 @@ describe("MCP server tool dispatch", () => {
         });
 
         expect(result.isError).toBe(true);
-        expect(parseToolBody(result).message).toContain("parentTaskId");
+        expect(parseToolBody(result)).toMatchObject({
+          details: {
+            personalRoot: {
+              id: "personal-project",
+              taskKey: "planner:person:person-1",
+              title: "Optimize Test User's life",
+            },
+          },
+          message: expect.stringContaining(
+            'parentTaskKey="planner:person:person-1"',
+          ),
+        });
         expect(mocks.taskCreate).not.toHaveBeenCalled();
       });
 
@@ -6585,6 +6604,47 @@ describe("MCP server tool dispatch", () => {
         }),
       );
       expect(mocks.taskCreate).not.toHaveBeenCalled();
+    });
+
+    it("updateTask resolves parentTaskKey and persists the resolved parent ID", async () => {
+      mocks.getTaskDetailData
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "personal-task",
+            isPublic: false,
+            ownerOrganizationId: null,
+          }),
+        })
+        .mockResolvedValueOnce({
+          task: makeCreatedTask({
+            id: "personal-task",
+            isPublic: false,
+            ownerOrganizationId: null,
+            parentTaskId: "personal-project",
+          }),
+        });
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", [McpScope.TASKS_PERSONAL]);
+      const result = await client.callTool({
+        name: "updateTask",
+        arguments: {
+          parentTaskKey: "planner:person:person-1",
+          taskId: "personal-task",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.taskUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ parentTaskId: "personal-project" }),
+          where: { id: "personal-task" },
+        }),
+      );
+      expect(parseToolBody(result)).toMatchObject({
+        id: "personal-task",
+        parentTaskId: "personal-project",
+      });
     });
 
     it("rejects updateTask when a non-admin user targets a public task", async () => {
@@ -9394,6 +9454,52 @@ describe("MCP server tool dispatch", () => {
       expect(
         (parseToolBody(result) as { reminders: unknown[] }).reminders,
       ).toHaveLength(1);
+    });
+
+    it("listDueTrackingReminders marks unanswered past reminders overdue", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T10:00:00.000Z").getTime());
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        {
+          active: true,
+          createdAt: new Date("2026-08-01T09:00:00.000Z"),
+          defaultValue: 1,
+          deletedAt: null,
+          globalVariable: TRACKING_VARIABLE,
+          globalVariableId: "gv-vitd",
+          id: "reminder-1",
+          instructions: "Daily",
+          nOf1Variable: NOF1_VARIABLE,
+          reminderEndTime: null,
+          reminderFrequency: 24 * 60 * 60,
+          reminderStartTime: "09:00",
+          startTrackingDate: null,
+          stopTrackingDate: null,
+          userId: "user-1",
+        },
+      ]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listDueTrackingReminders",
+        arguments: { dateKey: "2026-08-03" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        reminders: [
+          {
+            derivedStatus: "OVERDUE",
+            isOverdue: true,
+            overdueSince: "2026-08-03T09:00:00.000Z",
+            status: NotificationStatus.PENDING,
+          },
+        ],
+      });
+      now.mockRestore();
     });
 
     it("respondToTrackingReminder TRACKED records the notification and a Measurement via the same write path", async () => {

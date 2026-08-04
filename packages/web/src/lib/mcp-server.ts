@@ -3515,20 +3515,29 @@ async function listDueTrackingRemindersForUser(
       const existingNotification = byReminderId.get(reminder.id);
       const notification =
         existingNotification === undefined ? null : existingNotification;
+      const notifyAt =
+        notification?.notifyAt ??
+        reminderNotifyAt(dateKey, reminder.reminderStartTime, timeZone);
+      const status = notification?.status ?? NotificationStatus.PENDING;
+      const isOverdue =
+        (status === NotificationStatus.PENDING ||
+          status === NotificationStatus.SENT) &&
+        notifyAt.getTime() < Date.now();
       return {
         dateKey,
         defaultValue: cleanNumber(reminder.defaultValue),
+        derivedStatus: isOverdue ? "OVERDUE" : status,
         globalVariable: reminder.globalVariable,
         instructions: reminder.instructions,
+        isOverdue,
         notification,
-        notifyAt:
-          notification?.notifyAt ??
-          reminderNotifyAt(dateKey, reminder.reminderStartTime, timeZone),
+        notifyAt,
+        overdueSince: isOverdue ? notifyAt : null,
         reminderEndTime: reminder.reminderEndTime,
         reminderFrequency: reminder.reminderFrequency,
         reminderId: reminder.id,
         reminderStartTime: reminder.reminderStartTime,
-        status: notification?.status ?? NotificationStatus.PENDING,
+        status,
       };
     })
     .filter((reminder) => {
@@ -4980,7 +4989,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listDueTrackingReminders",
     description:
-      "List medication, food, symptom, and other tracking reminders due for a date. Use this to answer what the user is supposed to take or track today.",
+      "List medication, food, symptom, and other tracking reminders due for a date. Each result includes derivedStatus, isOverdue, and overdueSince so callers never need to compare notifyAt with the current time themselves. Use this to answer what the user is supposed to take or track today.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -6712,10 +6721,10 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "createTask",
     description:
-      "Create a task. Visibility defaults to PRIVATE; admin callers get PUBLIC by default when assigneeOrganizationId is set so leader/president/treaty-activation tasks land on the public Earth feed. PUBLIC tasks and PUBLIC organization-assigned defaults are admin-only; pass visibility='PRIVATE' or 'PUBLIC' to override. Non-admin callers requesting PUBLIC get rejected. Tasks default to ACTIVE so they appear in the relevant queue immediately. " +
-      "Required: title, description, one of parentTaskId or parentTaskKey, taskKey, category, hours, value, p_success, acceptanceCriteria, impactStatement. Call searchTasks or listTasks first and choose the closest existing parent; Optimize Earth itself is reserved for managed top-level branches. Every required field is load-bearing — a task that omits one either fails validation or lands at score 0 and never surfaces. " +
+      "Create an ACTIVE task. Visibility defaults to PRIVATE; admin organization assignments default PUBLIC. Only admins may create PUBLIC tasks. " +
+      "Required: title, description, one parentTaskId or parentTaskKey, taskKey, category, hours, value, p_success, acceptanceCriteria, and impactStatement. Call getMe first: personalRoot is the caller's private Optimize-{name} root and organizationRoots lists accessible organization roots. Choose the closest parent; use personalRoot.taskKey only for personal work. Never guess or default. Optimize Earth is reserved. " +
       "For Optimitron code or documentation improvements, search for duplicate work and set parentTaskKey='optimitron:dev'. " +
-      "Estimate, don't omit: a calibrated guess with p_success<1 beats no number. State acceptance criteria as a checklist of testable conditions; state impact in one sentence (why this matters). " +
+      "Estimate instead of omitting numbers. Use testable acceptance criteria and one sentence explaining impact. " +
       "Use depends_on for true prerequisites; executor_type='Self' for user work and 'AI Agent' only for autonomous assistant work; deadline_policy='REQUIRED' for must-do legal/health/safety tasks and 'EXPIRES' for opportunities that vanish after due_at. " +
       "taskKey is the idempotency key: retrying the same create returns the existing task instead of creating a duplicate. The response includes a writeReceipt and a missingFields[] array for soft-recommended metadata.",
     inputSchema: {
@@ -6729,12 +6738,12 @@ const TASK_TOOL_DEFINITIONS = [
         parentTaskId: {
           type: "string",
           description:
-            "Existing parent task ID. Provide this or parentTaskKey, not both. Search the accessible task tree first and choose the closest objective or task; do not use Optimize Earth directly.",
+            "Existing parent task ID. Provide this or parentTaskKey, not both. Call getMe for personalRoot and organizationRoots, then choose the closest objective or task; do not use Optimize Earth directly.",
         },
         parentTaskKey: {
           type: "string",
           description:
-            "Exact stable key of the existing parent task. Provide this or parentTaskId, not both. For Optimitron development work use 'optimitron:dev'.",
+            "Exact stable key of the existing parent task. Provide this or parentTaskId, not both. For personal work use getMe.personalRoot.taskKey; for Optimitron development work use 'optimitron:dev'.",
         },
         taskKey: {
           type: "string",
@@ -7366,7 +7375,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "updateTask",
     description:
-      "Update task metadata, estimates, ancestry, dependencies, deadline, or executor. Completion and verification use the execution tools. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
+      "Update task metadata, estimates, ancestry, dependencies, deadline, or executor. Reparent with exactly one of parentTaskId or parentTaskKey. Completion and verification use the execution tools. Passing depends_on replaces the blocker set idempotently, so keep it complete.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7386,7 +7395,12 @@ const TASK_TOOL_DEFINITIONS = [
         parentTaskId: {
           type: "string",
           description:
-            "Existing rooted parent task ID. Search first; cannot be Optimize Earth or create a hierarchy cycle.",
+            "Existing rooted parent task ID. Provide this or parentTaskKey, not both. Search first; cannot be Optimize Earth or create a hierarchy cycle.",
+        },
+        parentTaskKey: {
+          type: "string",
+          description:
+            "Exact stable key of the existing rooted parent task. Provide this or parentTaskId, not both. Call getMe for personalRoot and organizationRoots.",
         },
         impactStatement: { type: "string" },
         category: {
@@ -11315,6 +11329,26 @@ export function createMcpServer(
               validationMissingFields.length > 0 ||
               invalidFields.length > 0
             ) {
+              let personalRoot: {
+                id: string;
+                taskKey: string | null;
+                title: string;
+              } | null = null;
+              if (
+                !requestedParentTaskId &&
+                !parentTaskKey &&
+                scopes?.includes(McpScope.TASKS_PERSONAL)
+              ) {
+                try {
+                  personalRoot = await ensureExecutionPlanningBranch({
+                    prisma,
+                    userId,
+                  });
+                } catch {
+                  // Preserve the original validation error when the optional
+                  // planning-root suggestion cannot be loaded.
+                }
+              }
               const parts = [
                 validationMissingFields.length > 0
                   ? `Missing required fields: ${validationMissingFields.join(", ")}.`
@@ -11322,12 +11356,18 @@ export function createMcpServer(
                 invalidFields.length > 0
                   ? `Invalid fields: ${invalidFields.join(", ")}.`
                   : null,
+                validationMissingFields.includes(
+                  "parentTaskId or parentTaskKey",
+                ) && personalRoot?.taskKey
+                  ? `For personal work, retry with parentTaskKey=${JSON.stringify(personalRoot.taskKey)} (${personalRoot.title}). Call getMe for organization roots or a more specific objective.`
+                  : null,
               ].filter((part): part is string => part != null);
               return err(parts.join(" "), {
                 code: "INVALID_ARGUMENT",
                 details: {
                   invalidFields,
                   missingFields: validationMissingFields,
+                  ...(personalRoot ? { personalRoot } : {}),
                 },
               });
             }
@@ -13789,12 +13829,28 @@ export function createMcpServer(
             ) {
               return err("Task not found");
             }
-            if (a.parentTaskId !== undefined) {
-              const parentTaskId = requiredString(
-                a.parentTaskId,
-                "parentTaskId",
-              );
-              if (typeof parentTaskId !== "string") return parentTaskId;
+            const parentPatchProvided =
+              a.parentTaskId !== undefined || a.parentTaskKey !== undefined;
+            if (parentPatchProvided) {
+              const parentTaskId =
+                a.parentTaskId !== undefined
+                  ? requiredString(a.parentTaskId, "parentTaskId")
+                  : null;
+              if (parentTaskId !== null && typeof parentTaskId !== "string") {
+                return parentTaskId;
+              }
+              const parentTaskKey =
+                a.parentTaskKey !== undefined
+                  ? requiredString(a.parentTaskKey, "parentTaskKey")
+                  : null;
+              if (parentTaskKey !== null && typeof parentTaskKey !== "string") {
+                return parentTaskKey;
+              }
+              if (parentTaskId && parentTaskKey) {
+                return err(
+                  "Provide exactly one of parentTaskId or parentTaskKey when reparenting.",
+                );
+              }
               let parentTask: Awaited<
                 ReturnType<typeof validateExplicitTaskParent>
               >;
@@ -13802,6 +13858,7 @@ export function createMcpServer(
                 parentTask = await validateExplicitTaskParent({
                   clientAccessBoundary: taskClientBoundary,
                   parentTaskId,
+                  parentTaskKey,
                   prisma,
                   taskId: existingTask.id,
                   userId,
@@ -13826,7 +13883,7 @@ export function createMcpServer(
                   "A private task cannot be moved across organization ownership boundaries.",
                 );
               }
-              updates.parentTaskId = parentTaskId;
+              updates.parentTaskId = parentTask.id;
             }
             const dependencyPatchProvided =
               Array.isArray(a.depends_on) ||

@@ -213,7 +213,27 @@ export async function compileGeneratedParameterCatalog(
   rawCitations: unknown = {},
 ): Promise<CompiledGeneratedParameterCatalog> {
   const parameterEntries = GeneratedParametersSchema.parse(rawParameters);
-  const citations = GeneratedCitationsSchema.parse(rawCitations);
+  const citations = { ...GeneratedCitationsSchema.parse(rawCitations) };
+  for (const [key, entry] of Object.entries(parameterEntries)) {
+    if (
+      entry.sourceRef &&
+      !Object.prototype.hasOwnProperty.call(citations, entry.sourceRef)
+    ) {
+      if (
+        entry.sourceUrl === entry.sourceRef &&
+        /^https?:\/\//i.test(entry.sourceRef)
+      ) {
+        citations[entry.sourceRef] = {
+          title: entry.displayName ?? key,
+          URL: entry.sourceUrl,
+        };
+        continue;
+      }
+      throw new Error(
+        `Generated parameter ${key} references missing citation ${entry.sourceRef}.`,
+      );
+    }
+  }
   const catalogContentHash = await sha256CanonicalJson({
     citations,
     parameters: parameterEntries,

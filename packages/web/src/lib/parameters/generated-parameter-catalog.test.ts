@@ -55,6 +55,29 @@ describe("compileGeneratedParameterCatalog", () => {
     ).rejects.toThrow("missing input MISSING");
   });
 
+  it("rejects dangling citation references", async () => {
+    await expect(
+      compileGeneratedParameterCatalog(
+        { INPUT: { sourceRef: "MISSING", value: 1 } },
+        {},
+      ),
+    ).rejects.toThrow(
+      "Generated parameter INPUT references missing citation MISSING",
+    );
+  });
+
+  it("turns a self-contained source URL into a traceable citation", async () => {
+    const url = "https://example.org/source#method";
+    const catalog = await compileGeneratedParameterCatalog({
+      INPUT: { sourceRef: url, sourceUrl: url, value: 1 },
+    });
+
+    expect(catalog.citations[url]).toEqual({
+      title: "INPUT",
+      URL: url,
+    });
+  });
+
   it("rejects unsupported uncertainty distributions", async () => {
     await expect(
       compileGeneratedParameterCatalog({
@@ -142,8 +165,18 @@ describe("compileGeneratedParameterCatalog", () => {
     expect(catalog.parameters.map(({ key }) => key).sort()).toEqual(
       Object.keys(parameters).sort(),
     );
+    const expectedCitationKeys = new Set(Object.keys(citations));
+    for (const parameter of Object.values(parameters)) {
+      if (
+        parameter.sourceRef &&
+        parameter.sourceRef === parameter.sourceUrl &&
+        /^https?:\/\//i.test(parameter.sourceRef)
+      ) {
+        expectedCitationKeys.add(parameter.sourceRef);
+      }
+    }
     expect(Object.keys(catalog.citations).sort()).toEqual(
-      Object.keys(citations).sort(),
+      [...expectedCitationKeys].sort(),
     );
     expect(snapshots).toEqual([
       "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
