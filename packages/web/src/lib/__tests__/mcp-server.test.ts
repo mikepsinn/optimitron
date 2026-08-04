@@ -3433,16 +3433,50 @@ describe("MCP server tool dispatch", () => {
 
   describe("getNextTask public front door", () => {
     it("returns open public work to an anonymous caller with no capability tags", async () => {
-      mocks.listTasks.mockResolvedValue([
+      const candidates = [
         makeCreatedTask({
           createdByUserId: "another-user",
           id: "public-open-task",
           title: "Open public work",
         }),
+        makeCreatedTask({
+          createdByUserId: "another-user",
+          id: "private-active-task",
+          title: "Private work",
+        }),
+        makeCreatedTask({
+          createdByUserId: "another-user",
+          id: "public-verified-task",
+          status: TaskStatus.VERIFIED,
+          title: "Finished public work",
+        }),
+      ];
+      const publicTaskIds = new Set([
+        "public-open-task",
+        "public-verified-task",
       ]);
+      mocks.listTasks.mockImplementation(
+        async ({
+          status,
+          visibility,
+        }: {
+          status?: TaskStatus;
+          visibility?: string;
+        }) => {
+          const filtered = candidates.filter(
+            (task) =>
+              (visibility !== "public" || publicTaskIds.has(task.id)) &&
+              (!status || task.status === status),
+          );
+          return filtered;
+        },
+      );
       mocks.isTaskBlocked.mockReturnValue(false);
-      mocks.computeTaskPriority.mockReturnValue(
-        makePriority({ priority: 250 }),
+      mocks.computeTaskPriority.mockImplementation(
+        (task: { id: string }) =>
+          makePriority({
+            priority: task.id === "public-open-task" ? 250 : 1_000,
+          }),
       );
       mocks.isTaskLeased.mockResolvedValue({ leased: false });
 
@@ -3460,12 +3494,6 @@ describe("MCP server tool dispatch", () => {
           title: "Open public work",
         },
       });
-      expect(mocks.listTasks).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: TaskStatus.ACTIVE,
-          visibility: "public",
-        }),
-      );
     });
   });
 
