@@ -53,7 +53,7 @@ function SpendingGrid() {
       <div>
         <div
           aria-hidden="true"
-          className="aspect-square w-full border-2 border-foreground bg-background"
+          className="aspect-square w-full border border-foreground bg-background"
         />
         <p className="mt-3 text-center text-xs font-black uppercase tracking-[0.12em]">
           Trials / 1
@@ -221,11 +221,11 @@ export function OwnershipLoop() {
           </li>
         ))}
       </ol>
-      <div className="mt-7 grid border-2 border-foreground bg-foreground text-background md:grid-cols-[12rem_1fr]">
-        <p className="p-5 text-xs font-black uppercase tracking-[0.14em] md:border-r md:border-background/50">
+      <div className="mt-7 grid border border-foreground bg-background text-foreground md:grid-cols-[12rem_1fr]">
+        <p className="p-5 text-xs font-black uppercase tracking-[0.14em] md:border-r md:border-foreground">
           EOS enters here
         </p>
-        <p className="border-t border-background/50 p-5 text-lg font-black leading-7 md:border-t-0">
+        <p className="border-t border-foreground p-5 text-lg font-black leading-7 md:border-t-0">
           Coordinate the owners. Elect directors. Redirect lobbying and capital
           toward survival, health, and long-run growth.
         </p>

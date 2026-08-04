@@ -119,7 +119,7 @@ export function EosShareholderLandingPage() {
             className="grid border-y-2 border-foreground md:grid-cols-2"
           >
             <a
-              className="group grid min-h-40 gap-5 p-6 hover:bg-foreground hover:text-background md:border-r-2 md:border-foreground"
+              className="group grid min-h-40 gap-5 p-6 hover:bg-muted md:border-r md:border-foreground"
               href="#class-a"
             >
               <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground group-hover:text-background/65">
@@ -130,7 +130,7 @@ export function EosShareholderLandingPage() {
               </span>
             </a>
             <a
-              className="group grid min-h-40 gap-5 border-t-2 border-foreground p-6 hover:bg-foreground hover:text-background md:border-t-0"
+              className="group grid min-h-40 gap-5 border-t border-foreground p-6 hover:bg-muted md:border-t-0"
               href="#class-b"
             >
               <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground group-hover:text-background/65">
@@ -202,8 +202,8 @@ export function EosShareholderLandingPage() {
 
           <OwnershipLoop />
 
-          <details className="mt-10 border-2 border-foreground">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 text-lg font-black uppercase tracking-[0.06em] marker:hidden hover:bg-foreground hover:text-background [&::-webkit-details-marker]:hidden">
+          <details className="mt-10 border border-foreground">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 text-lg font-black uppercase tracking-[0.06em] marker:hidden hover:bg-muted [&::-webkit-details-marker]:hidden">
               Read the three portfolio risks
               <span aria-hidden="true" className="font-mono text-2xl">
                 +
@@ -280,20 +280,20 @@ export function EosShareholderLandingPage() {
         </div>
       </section>
 
-      <section className="border-t border-foreground bg-foreground text-background">
+      <section className="border-t border-foreground bg-background text-foreground">
         <div className={sectionInnerClassName}>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-background/65">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
             The correction
           </p>
           <h2 className="mt-4 max-w-5xl text-4xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl">
             This is not charity. It is portfolio optimization at the level of
             the planet.
           </h2>
-          <p className="mt-8 max-w-3xl text-lg font-semibold leading-8 text-background/75">
+          <p className="mt-8 max-w-3xl text-lg font-semibold leading-8 text-muted-foreground">
             Earth Optimization Services coordinates strategically significant
             stakes across key companies. The model estimates that taking{" "}
             <ParameterValue
-              className="text-background decoration-background/40"
+              className="text-foreground decoration-foreground/40"
               param={INFLUENCE_ACTIVIST_STAKE_FRACTION}
               presentation="inline"
               valueOverride="5%"
@@ -301,7 +301,7 @@ export function EosShareholderLandingPage() {
             activist stakes across major Western defense companies would use
             only about{" "}
             <ParameterValue
-              className="text-background decoration-background/40"
+              className="text-foreground decoration-foreground/40"
               figures={2}
               param={DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS}
               presentation="inline"
@@ -532,28 +532,28 @@ export function EosShareholderLandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-foreground bg-foreground text-background">
+      <section className="border-y border-foreground bg-background text-foreground">
         <div className={sectionInnerClassName}>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-background/65">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
             Your governance share
           </p>
           <h2 className="mt-4 max-w-5xl text-4xl font-black leading-[0.95] tracking-[-0.04em] sm:text-6xl">
             Sign-up is a click. A governance share should require a choice.
           </h2>
-          <p className="mt-7 max-w-3xl text-lg font-semibold leading-8 text-background/75">
+          <p className="mt-7 max-w-3xl text-lg font-semibold leading-8 text-muted-foreground">
             Complete your first wishocratic allocation to show how you want
             resources allocated. EOS plans for that act—not passive
             registration—to activate the Class A voting share.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="inline-flex min-h-12 items-center justify-center border border-background bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground hover:bg-foreground hover:text-background"
+              className="inline-flex min-h-12 items-center justify-center border border-foreground bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background hover:bg-background hover:text-foreground"
               href={ROUTES.wishocracy}
             >
               Make your first allocation
             </Link>
             <Link
-              className="inline-flex min-h-12 items-center justify-center border border-background bg-foreground px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-background hover:bg-background hover:text-foreground"
+              className="inline-flex min-h-12 items-center justify-center border border-foreground bg-background px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-foreground hover:bg-muted"
               href={ROUTES.fund}
             >
               Review the economic thesis

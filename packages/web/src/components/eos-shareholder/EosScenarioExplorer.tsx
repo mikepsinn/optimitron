@@ -74,12 +74,12 @@ export function EosScenarioExplorer() {
   return (
     <div
       aria-label="Explore modeled outcomes"
-      className="mt-12 border-2 border-foreground"
+      className="mt-12 border border-foreground"
       id="scenario-explorer"
       role="region"
     >
       <div className="grid min-w-0 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.28fr)]">
-        <section className="min-w-0 border-b-2 border-foreground p-5 sm:p-7 lg:border-b-0 lg:border-r-2">
+        <section className="min-w-0 border-b border-foreground p-5 sm:p-7 lg:border-b-0 lg:border-r">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
             Try your own number
           </p>
@@ -89,10 +89,10 @@ export function EosScenarioExplorer() {
           >
             Your net worth or annual income
           </label>
-          <div className="mt-3 flex border-2 border-foreground focus-within:outline focus-within:outline-2 focus-within:outline-offset-2">
+          <div className="mt-3 flex border border-foreground focus-within:outline focus-within:outline-2 focus-within:outline-offset-2">
             <span
               aria-hidden="true"
-              className="flex items-center border-r-2 border-foreground px-4 text-2xl font-black"
+              className="flex items-center border-r border-foreground px-4 text-2xl font-black"
             >
               $
             </span>
@@ -118,11 +118,11 @@ export function EosScenarioExplorer() {
                 return (
                   <button
                     aria-pressed={active}
-                    className={`grid min-h-16 min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center border-2 border-foreground px-4 py-3 text-left first:mt-0 ${
-                      index > 0 ? "-mt-0.5" : ""
+                    className={`grid min-h-16 min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center border border-foreground px-4 py-3 text-left first:mt-0 ${
+                      index > 0 ? "-mt-px" : ""
                     } ${
                       active
-                        ? "bg-foreground text-background"
+                        ? "bg-muted text-foreground"
                         : "bg-background text-foreground hover:bg-muted"
                     }`}
                     key={option.id}
@@ -133,9 +133,7 @@ export function EosScenarioExplorer() {
                       <span className="block font-black">{option.label}</span>
                       <span
                         className={`block text-xs font-bold ${
-                          active
-                            ? "text-background/70"
-                            : "text-muted-foreground"
+                          active ? "text-foreground" : "text-muted-foreground"
                         }`}
                       >
                         {option.note}
