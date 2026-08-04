@@ -287,9 +287,6 @@ const PUBLIC_CONTACT_URL = `${OPTIMITRON_CANONICAL_ORIGIN}${ROUTES.eos}`;
 const ORGANIZATION_SAME_AS = ["https://github.com/mikepsinn/optimitron"];
 const EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME =
   EARTH_OPTIMIZATION_SERVICES.legalName;
-const getEarthOptimizationServicesFooterNotice = (productName: string) =>
-  `${productName} is operated by ${EARTH_OPTIMIZATION_SERVICES.legalName}, a ${EARTH_OPTIMIZATION_SERVICES.legalForm}.`;
-
 /// Public-facing campaign brand for sites operated by the campaign.
 /// Distinct from `EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME` (the legal entity, used
 /// in compliance surfaces). Legacy campaign domains redirect into the War on
@@ -515,7 +512,7 @@ const WAR_ON_DISEASE_UI: SiteVariantUiConfig = {
     brandHref: ROUTES.home,
     brandLabel: INTERNATIONAL_CAMPAIGN_ORG_NAME,
     brandDescription: WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION,
-    bottomText: `© {year} ${INTERNATIONAL_CAMPAIGN_ORG_NAME}.`,
+    bottomText: `© {year} ${NONPROFIT.legalName}.`,
     columns: [
       {
         title: "Do Something",
@@ -616,8 +613,7 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     secondaryColor: "#00d9ff",
     orgName: EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME,
   },
-  footerComplianceNotice:
-    getEarthOptimizationServicesFooterNotice("Optimitron"),
+  footerComplianceNotice: null,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "optimizeEarth",
@@ -720,7 +716,7 @@ const DFDA_CONFIG: SiteConfig = {
     secondaryColor: "#ffffff",
     orgName: "DFDA",
   },
-  footerComplianceNotice: getEarthOptimizationServicesFooterNotice("DFDA"),
+  footerComplianceNotice: null,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "dfda",
@@ -832,7 +828,7 @@ const DIH_CONFIG: SiteConfig = {
     secondaryColor: "#00d4ff",
     orgName: "Decentralized Institutes of Health",
   },
-  footerComplianceNotice: getEarthOptimizationServicesFooterNotice("DIH"),
+  footerComplianceNotice: null,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "dih",
@@ -959,7 +955,7 @@ const WAR_ON_DISEASE_CONFIG: SiteConfig = {
     secondaryColor: "#00d4ff",
     orgName: INTERNATIONAL_CAMPAIGN_ORG_NAME,
   },
-  footerComplianceNotice: `${INTERNATIONAL_CAMPAIGN_ORG_NAME} is operated by ${NONPROFIT.legalName}, a Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3).`,
+  footerComplianceNotice: null,
   sameAs: ORGANIZATION_SAME_AS,
   initiative: {
     key: "warOnDisease",
