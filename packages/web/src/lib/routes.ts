@@ -73,6 +73,7 @@ export const ROUTES = {
   eos: "/eos",
   services: "/services",
   invest: "/invest",
+  eosShareholders: "/eos/shareholders",
   // Optimized Governance
   agencies: "/agencies",
   dfda: "/agencies/dfda",
@@ -1152,6 +1153,19 @@ export const investLink: NavItem = {
   cta: "See the pitch",
 };
 
+export const eosShareholdersLink: NavItem = {
+  href: ROUTES.eosShareholders,
+  label: "Earth Optimization Services Shareholder Thesis",
+  emoji: "↗",
+  description:
+    "Why universal shareholders should treat nuclear war, preventable disease, and broken government spending as portfolio risks — and how Earth Optimization Services plans to correct them.",
+  tagline: "Portfolio optimization at the level of the planet",
+  copyPreview: true,
+  reviewName: "eos-shareholders",
+  screenshot: true,
+  cta: "Read the Thesis",
+};
+
 export const earthOptimizationPrizePaperLink: NavItem = {
   label: "Prize Rulebook",
   href: "https://prize.warondisease.org",
@@ -1895,6 +1909,7 @@ export const routeReviewNavItems = [
   donateLink,
   eosLink,
   investLink,
+  eosShareholdersLink,
   joinLink,
   foundationsLink,
   signatoriesLink,
