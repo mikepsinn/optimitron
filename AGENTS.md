@@ -53,6 +53,7 @@
 - **Do not blindly comply with bot reviewers** (Codex, Copilot, CodeRabbit, Vercel Agent Review). For every comment ask: does this point at a real bug that hits a real path? If yes, fix and mark resolved. If it's AI slop, hypothetical, stylistic, "for symmetry", "for consistency", or extract-this-constant nagging, mark the thread resolved with a one-line reason ("hypothetical, no triggering path", "stylistic, current shape is intentional", "already addressed in commit X"). Adding code to silence a bot adds maintenance surface forever in exchange for one-time review noise. Stay in the driver's seat.
 - **Never write worthless tests.** A test exists to catch a bug or guard a regression in code that ships. Tests added "for symmetry", "for documentation", "for consistency", or because a reviewer asked are pure cost. Skip them. Mock-and-assert-the-mock tests (mock `foo`, assert `foo` was called) test nothing — test the boundary, not the wiring. See `CLAUDE.md` "Testing Rules" for the full list.
 - Never merge pull requests. Once checks are green and there are no unresolved valid review complaints, report that the pull request is ready and let the human review the diff and merge it.
+- Hyperlink every pull request mention to its GitHub URL.
 
 ## UI Verification
 
