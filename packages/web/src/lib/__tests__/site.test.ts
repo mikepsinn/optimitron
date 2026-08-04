@@ -192,6 +192,13 @@ describe("site variant registry", () => {
     expect(warSite.ui.nav.desktopBrandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.nav.menuTitle).toBe(INTERNATIONAL_CAMPAIGN_NAME);
     expect(warSite.ui.footer.brandLabel).toBe(INTERNATIONAL_CAMPAIGN_NAME);
+    expect(warSite.ui.footer.bottomText).toBe(
+      "© {year} Accelerated Medicine Foundation Inc.",
+    );
+    expect(warSite.footerComplianceNotice).toBeNull();
+    expect(getSiteConfig("optimitron").footerComplianceNotice).toBeNull();
+    expect(getSiteConfig("dfda").footerComplianceNotice).toBeNull();
+    expect(getSiteConfig("dih").footerComplianceNotice).toBeNull();
     expect(warSite.description).toBe(WAR_ON_DISEASE_APOCALYPSE_DESCRIPTION);
     expect(warSite.ui.footer.brandDescription).toBe(warSite.description);
     expect(warSite.rootMetadata.description).toBe(warSite.description);
