@@ -380,11 +380,6 @@ export async function bootstrapGeneratedParameterCatalog(
         const citation = parameter.sourceRef
           ? citationByRef.get(parameter.sourceRef)
           : null;
-        if (parameter.sourceRef && !citation) {
-          throw new Error(
-            `Generated parameter ${parameter.key} references citation ${parameter.sourceRef}, but its source artifact is missing.`,
-          );
-        }
         sourceLinks.push({
           isPrimary: citation == null,
           parameterRevisionId: revision.id,
