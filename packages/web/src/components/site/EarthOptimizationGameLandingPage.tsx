@@ -21,8 +21,6 @@ import { TLDRSection } from "@/components/landing/TLDRSection";
 import TreatyVoteSection from "@/components/landing/TreatyVoteSection";
 import { WhyPlaySection } from "@/components/landing/WhyPlaySection";
 import { WishocracyPreview } from "@/components/landing/WishocracyPreview";
-import { MachineDiagram } from "@/components/eos-retro/MachineDiagram";
-import "@/components/eos-retro/eos-retro.css";
 import { PoliticianScorecardTable } from "@/components/shared/PoliticianScorecardTable";
 import { ProgramTaskSection } from "@/components/tasks/ProgramTaskSection";
 import type { TaskCardTask } from "@/components/tasks/task-card";
@@ -31,7 +29,6 @@ import { Container } from "@/components/ui/container";
 import { GameCTA } from "@/components/ui/game-cta";
 import { SectionContainer } from "@/components/ui/section-container";
 import { SectionHeader } from "@/components/ui/section-header";
-import { ROUTES } from "@/lib/routes";
 import { getTaskDetailData } from "@/lib/tasks.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
 
@@ -162,175 +159,11 @@ async function PresidentManagementSection() {
   );
 }
 
-const exampleLeafTasks = [
-  {
-    executor: "Any eligible voter",
-    task: "Vote for the 1% Treaty",
-  },
-  {
-    executor: "Someone who already voted",
-    task: "Recruit two more voters",
-  },
-  {
-    executor: "Authorized governments only",
-    task: "Ratify the treaty",
-  },
-] as const;
-
-function EarthOptimizationTaskSystemSection() {
-  return (
-    <SectionContainer
-      bgColor="background"
-      borderPosition="both"
-      id="decentralized-to-do-list"
-      padding="lg"
-    >
-      <Container size="lg">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-              The decentralized to-do list for humanity
-            </p>
-            <h2 className="mt-4 text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
-              One planet. One task tree.
-            </h2>
-            <p className="mt-6 max-w-2xl text-lg font-bold leading-8">
-              Optimitron starts with the two outcomes that count: median healthy
-              life expectancy and median real after-tax income. It decomposes
-              every mission until each leaf is work a human or AI agent can
-              actually finish.
-            </p>
-            <p className="mt-5 max-w-2xl leading-7 text-muted-foreground">
-              Blocked, unavailable, or impossible work stays out of the
-              actionable queue. Legally required deadlines go first. Everything
-              else is ranked by expected value per hour and routed to a capable
-              executor.
-            </p>
-            <div className="mt-8">
-              <GameCTA href={ROUTES.tasksTree} variant="outline">
-                Open the task tree
-              </GameCTA>
-            </div>
-          </div>
-
-          <div
-            className="border border-foreground"
-            aria-label="Example task decomposition"
-          >
-            <div className="bg-foreground px-5 py-4 text-background">
-              <p className="text-xs font-black uppercase tracking-[0.16em]">
-                Root goal
-              </p>
-              <p className="mt-1 text-2xl font-black uppercase">
-                Optimize Earth
-              </p>
-            </div>
-            <div className="ml-5 border-l border-foreground sm:ml-8">
-              {[
-                ["Outcome", "Make the median human healthier and wealthier"],
-                ["Mission", "End war and disease"],
-                ["Program", "Pass the 1% Treaty"],
-              ].map(([label, title]) => (
-                <div
-                  className="grid gap-1 border-b border-foreground/20 px-5 py-4 sm:grid-cols-[6rem_1fr]"
-                  key={label}
-                >
-                  <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-                    {label}
-                  </span>
-                  <span className="font-black uppercase">{title}</span>
-                </div>
-              ))}
-              <div className="px-5 py-4">
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-                  Executable leaves
-                </p>
-                <ul className="mt-3 divide-y divide-foreground/20 border-y border-foreground/20">
-                  {exampleLeafTasks.map(({ executor, task }) => (
-                    <li
-                      className="grid gap-1 py-3 sm:grid-cols-[minmax(0,1fr)_12rem] sm:items-baseline"
-                      key={task}
-                    >
-                      <span className="font-bold">{task}</span>
-                      <span className="text-sm text-muted-foreground sm:text-right">
-                        {executor}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <p className="border-t border-foreground bg-foreground px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-background">
-              Deadlines first · then expected value per hour · routed to the
-              right executor
-            </p>
-          </div>
-        </div>
-      </Container>
-    </SectionContainer>
-  );
-}
-
-function LovingTakeoverSection() {
-  return (
-    <SectionContainer
-      bgColor="background"
-      borderPosition="both"
-      id="loving-takeover"
-      padding="lg"
-    >
-      <Container size="lg">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-            From recommendation to power
-          </p>
-          <h2 className="mt-4 text-4xl font-black uppercase leading-none sm:text-5xl md:text-6xl">
-            The Loving Takeover
-          </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-lg font-bold leading-8">
-            Calculating better laws is not enough. The plan is to buy voting
-            shares in the companies whose lobbying writes government budgets,
-            use shareholder rights to redirect that lobbying toward
-            Optimitron&apos;s highest-value recommendations, and keep the
-            shares.
-          </p>
-          <p className="mx-auto mt-4 max-w-3xl leading-7 text-muted-foreground">
-            Better policy grows the economy those companies sell into. The value
-            increase funds the next turn of the machine. Greed and altruism
-            finally point at the same button.
-          </p>
-        </div>
-
-        <div className="eos-retro mt-12 border border-foreground p-4 sm:p-8">
-          <MachineDiagram fitWidth />
-        </div>
-
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <GameCTA href="/tasks/loving-takeover#funding">
-            Fund the Loving Takeover
-          </GameCTA>
-          <GameCTA
-            external
-            href="https://manual.warondisease.org/knowledge/appendix/loving-takeover.html"
-            variant="outline"
-          >
-            Read the analysis
-          </GameCTA>
-        </div>
-      </Container>
-    </SectionContainer>
-  );
-}
-
-export function EarthOptimizationGameLandingPage({
-  earthOptimizationServices = false,
-}: {
-  earthOptimizationServices?: boolean;
-}) {
+export function EarthOptimizationGameLandingPage() {
   return (
     <div>
       {/* ── 1. Hero — Game name + objective ── */}
-      <HeroSection earthOptimizationServices={earthOptimizationServices} />
+      <HeroSection />
 
       {/* ── 2. Vote — The core game action ── */}
       <TreatyVoteSection />
@@ -343,10 +176,6 @@ export function EarthOptimizationGameLandingPage({
 
       {/* ── 5. Demo video — show, don't tell ── */}
       <DemoVideoSection />
-
-      {earthOptimizationServices ? (
-        <EarthOptimizationTaskSystemSection />
-      ) : null}
 
       {/* ── 6. What happens if nobody plays — stakes ── */}
       <WhyPlaySection />
@@ -422,8 +251,6 @@ export function EarthOptimizationGameLandingPage({
 
       {/* ── 17. Optimized Governance — the agencies ── */}
       <OptimizedGovernanceSection />
-
-      {earthOptimizationServices ? <LovingTakeoverSection /> : null}
 
       {/* ── 18. The Armory — player tools ── */}
       <ArmorySection />

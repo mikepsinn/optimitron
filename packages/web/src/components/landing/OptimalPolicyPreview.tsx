@@ -51,15 +51,17 @@ function effectColor(value: number): string {
   return "text-muted-foreground";
 }
 
-export function OptimalPolicyPreview() {
+export function OptimalPolicyPreview({
+  subtitle = "I ran causal inference on decades of data across dozens of countries. Most of your policies fail.",
+  title = "Every Policy Graded A Through F",
+}: {
+  subtitle?: string;
+  title?: string;
+}) {
   return (
     <SectionContainer bgColor="cyan" borderPosition="top" padding="lg">
       <Container>
-        <SectionHeader
-          title="Every Policy Graded A Through F"
-          subtitle="I ran causal inference on decades of data across dozens of countries. Most of your policies fail."
-          size="lg"
-        />
+        <SectionHeader title={title} subtitle={subtitle} size="lg" />
 
         <div className="space-y-3 md:hidden">
           {PREVIEW_POLICIES.map((p) => {

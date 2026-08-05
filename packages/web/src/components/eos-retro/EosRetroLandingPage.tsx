@@ -22,6 +22,7 @@ import {
   US_TOTAL_LOBBYING_ANNUAL,
   WISHONIA_TRAJECTORY_GDP_YEAR_20,
 } from "@optimitron/data/parameters";
+import { EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_EMAIL } from "@optimitron/db/system-identities";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { OptimizedPublicAdministration } from "@/components/eos-retro/OptimizedPublicAdministration";
@@ -49,6 +50,7 @@ const PITCH_URL =
   "https://manual.warondisease.org/knowledge/economics/eos-pitch.html";
 const STUDIES_URL = "https://studies.dfda.earth";
 const AUDIT_URL = "/dysfunction-tax";
+const CONTACT_URL = `mailto:${EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_EMAIL}`;
 
 function Section({
   children,
@@ -607,21 +609,20 @@ export function EosRetroLandingPage() {
       </Section>
 
       {/* ── 7 · The Deal ─────────────────────────────────────── */}
-      <Section id="the-deal" title="The deal: get rich fixing the room">
+      <Section id="the-deal" title="Why this pays for itself">
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
             <p className="er-body text-lg">
               Earth Optimization Services Inc. is a Delaware public benefit
-              corporation. Investors receive non-voting equity: a share of the
-              profit, never the steering wheel.
+              corporation.
             </p>
             <p className="er-body">
               Concentrated power has a terrible track record. Every genocide and
               every unjust war was started by a small group that had the power
               to start one; none was ever started by a public vote. So the
               decisions here get made one civic vote per human, and those votes
-              are not for sale. You cannot buy the steering wheel, no matter how
-              many shares you own.
+              are not for sale. Nobody buys the steering wheel, no matter how
+              many shares they hold.
             </p>
             <div className="er-panel-soft p-6">
               <p className="er-card-title">The floor</p>
@@ -629,8 +630,7 @@ export function EosRetroLandingPage() {
                 Part of every dollar buys shares of public companies at market
                 price. Part funds the campaign that makes them worth more. The
                 floor is the portfolio: real companies, real earnings, dividend
-                histories through every war and recession in living memory. The
-                exact split lives in the offering documents.
+                histories through every war and recession in living memory.
               </p>
             </div>
             <div className="er-panel-soft p-6">
@@ -672,7 +672,7 @@ export function EosRetroLandingPage() {
                   }
                 />
                 <PriceRow
-                  label="Return, trial savings alone"
+                  label="Treaty return, trial savings alone"
                   value={
                     <>
                       <ParameterValue
@@ -684,7 +684,7 @@ export function EosRetroLandingPage() {
                   }
                 />
                 <PriceRow
-                  label="Return, existing drugs alone"
+                  label="Treaty return, existing drugs alone"
                   value={
                     <>
                       <ParameterValue param={TREATY_ROI_EXISTING_DRUGS_ONLY} />
@@ -700,14 +700,12 @@ export function EosRetroLandingPage() {
             >
               All returns are projections from a published model, not
               guarantees. The model, its 670 parameters, and every derivation
-              chain are public. Equity is illiquid until an exit or listing; do
-              not invest money you need. Full terms are in the offering
-              documents.
+              chain are public.
             </p>
             <div className="flex flex-wrap items-center gap-6">
-              <Link className="er-btn er-btn-solid" href={ROUTES.fund}>
-                Request the offering documents
-              </Link>
+              <a className="er-btn er-btn-solid" href={CONTACT_URL}>
+                Ask us anything
+              </a>
               <a
                 className="er-link er-mono text-sm"
                 href={PITCH_URL}
@@ -725,12 +723,13 @@ export function EosRetroLandingPage() {
       <Section id="your-move" title="Your move">
         <div className="grid gap-5 md:grid-cols-3">
           <div className="er-panel er-ticked flex h-full flex-col p-6">
-            <p className="er-card-title">Invest</p>
+            <p className="er-card-title">Ask</p>
             <p className="er-body mt-3 flex-1">
-              Non-voting equity in the machine you just toured.
+              Something here is wrong, missing, or too good to be true. Tell us
+              which and a human will answer.
             </p>
-            <a className="er-btn mt-6" href="#the-deal">
-              Reread the deal
+            <a className="er-btn mt-6" href={CONTACT_URL}>
+              Email us
             </a>
           </div>
           <div className="er-panel er-ticked flex h-full flex-col p-6">

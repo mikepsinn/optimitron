@@ -252,11 +252,11 @@
 - Fig. 1 · The Four Earths on offer. Red line: growth rates already measured, left running — extraction load passes 25% of output around 2033 and 35% around 2037. Hover it for the historical company it keeps.
 - The red line is not a prophecy. It is the current trend line, extended, using growth rates already measured: the destructive economy runs at [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of world output today and crosses 35% around [2037](https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html). Whole-Earth output at 2045: [$188 trillion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) if the luck holds, [$322 trillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) with the 1% redirect, [$10.7 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) once the stupidity stops.
 - Every decision is locally sensible. The aggregate output does not have to be extinction.
-### THE DEAL: GET RICH FIXING THE ROOM
-- Earth Optimization Services Inc. is a Delaware public benefit corporation. Investors receive non-voting equity: a share of the profit, never the steering wheel.
-- Concentrated power has a terrible track record. Every genocide and every unjust war was started by a small group that had the power to start one; none was ever started by a public vote. So the decisions here get made one civic vote per human, and those votes are not for sale. You cannot buy the steering wheel, no matter how many shares you own.
+### WHY THIS PAYS FOR ITSELF
+- Earth Optimization Services Inc. is a Delaware public benefit corporation.
+- Concentrated power has a terrible track record. Every genocide and every unjust war was started by a small group that had the power to start one; none was ever started by a public vote. So the decisions here get made one civic vote per human, and those votes are not for sale. Nobody buys the steering wheel, no matter how many shares they hold.
 - THE FLOOR
-- Part of every dollar buys shares of public companies at market price. Part funds the campaign that makes them worth more. The floor is the portfolio: real companies, real earnings, dividend histories through every war and recession in living memory. The exact split lives in the offering documents.
+- Part of every dollar buys shares of public companies at market price. Part funds the campaign that makes them worth more. The floor is the portfolio: real companies, real earnings, dividend histories through every war and recession in living memory.
 - THE UPSIDE
 - Win one board fight and three things happen: the stock goes up, which funds the next fight; the redirected lobbying gets better policy passed, which grows the whole economy; and a bigger economy makes every company worth more, including the ones already in the portfolio. Each feeds the other two. The model pricing all of it is public.
 - THE ARITHMETIC
@@ -266,17 +266,17 @@
 - [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Trial capacity per research dollar
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Return, trial savings alone
+- Treaty return, trial savings alone
 - [637](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)x
-- Return, existing drugs alone
+- Treaty return, existing drugs alone
 - [290,000](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html):1
-- All returns are projections from a published model, not guarantees. The model, its 670 parameters, and every derivation chain are public. Equity is illiquid until an exit or listing; do not invest money you need. Full terms are in the offering documents.
-- [REQUEST THE OFFERING DOCUMENTS](/fund)
+- All returns are projections from a published model, not guarantees. The model, its 670 parameters, and every derivation chain are public.
+- [ASK US ANYTHING](mailto:wishonia@optimitron.com)
 - [Who the hell is telling you all this →](https://manual.warondisease.org/knowledge/economics/eos-pitch.html)
 ### YOUR MOVE
-- INVEST
-- Non-voting equity in the machine you just toured.
-- [REREAD THE DEAL](#the-deal)
+- ASK
+- Something here is wrong, missing, or too good to be true. Tell us which and a human will answer.
+- [EMAIL US](mailto:wishonia@optimitron.com)
 - BUILD
 - Every module needs engineers, researchers, lawyers, organizers. The Earth Optimization Prize pays cash for completed work.
 - [CLAIM A TASK](/tasks)

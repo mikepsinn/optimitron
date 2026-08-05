@@ -635,14 +635,12 @@ const OPTIMITRON_CONFIG: SiteConfig = {
   rootMetadata: {
     // TODO(copy): Mike copy gate. Source: EOS .qmd title.
     title: "Optimitron — Earth Optimization Services",
-    // TODO(copy): Mike copy gate. Source: EOS .qmd "How the Products Fit Together".
     description:
-      "Calculates the policies that maximize two numbers: median health-adjusted life expectancy and median after-tax inflation-adjusted income.",
+      "Are your governments wasting trillions on excess mass-murder capacity while everyone you love is slowly tortured and murdered by horrible diseases? Earth Optimization Services can help. Call today!",
     // TODO(copy): Mike copy gate. Source: EOS .qmd title.
     openGraphTitle: "Optimitron — Earth Optimization Services",
-    // TODO(copy): Mike copy gate. Source: EOS .qmd "The Standard Package" and "How the Products Fit Together".
     openGraphDescription:
-      "Four products, one machine: prove what works, fund it, buy the government, spend the money where humans want it.",
+      "Are your governments wasting trillions on excess mass-murder capacity while you and everyone you love are slowly tortured and murdered by horrible diseases? Earth Optimization Services repairs your government and maximizes the health and wealth of your civilization. Call today!",
     openGraphImage: {
       url: "/og-image.jpg",
       width: 1200,
@@ -652,9 +650,8 @@ const OPTIMITRON_CONFIG: SiteConfig = {
     },
     // TODO(copy): Mike copy gate. Source: EOS .qmd title.
     twitterTitle: "Optimitron — Earth Optimization Services",
-    // TODO(copy): Mike copy gate. Source: manual Optimocracy/OPG snippets.
     twitterDescription:
-      "Maximize Median Health and Wealth through public policy.",
+      "Are your governments wasting trillions on excess mass-murder capacity while everyone you love dies slowly of horrible disease? Earth Optimization Services can help. Call today!",
     twitterImage: "/twitter-image.jpg",
     keywords: [
       "Optimitron",

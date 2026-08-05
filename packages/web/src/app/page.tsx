@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationServicesLandingPage } from "@/components/site/EarthOptimizationServicesLandingPage";
-import { EarthOptimizationGameLandingPage } from "@/components/site/EarthOptimizationGameLandingPage";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
+import { OptimitronLandingPage } from "@/components/site/OptimitronLandingPage";
 import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
 import {
@@ -89,7 +89,7 @@ export default async function Home() {
   }
 
   if (site.pageVariants.home === "optimitronLanding") {
-    return <EarthOptimizationGameLandingPage earthOptimizationServices />;
+    return <OptimitronLandingPage />;
   }
 
   if (site.pageVariants.home === "eosLanding") {

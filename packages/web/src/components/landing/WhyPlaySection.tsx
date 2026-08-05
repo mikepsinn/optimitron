@@ -10,13 +10,23 @@ import { LiveDeathTicker } from "@/components/animations/LiveDeathTicker";
 import { CTA } from "@/lib/messaging";
 import { ROUTES } from "@/lib/routes";
 
-export function WhyPlaySection() {
+export function WhyPlaySection({
+  ctaHref = "#vote",
+  ctaLabel = CTA.playNow,
+  punchline = "Right now, doing nothing means you lose. Vote and you stop.",
+  title = "What Happens If Nobody Plays",
+}: {
+  ctaHref?: string;
+  ctaLabel?: string;
+  punchline?: string;
+  title?: string;
+}) {
   return (
     <SectionContainer bgColor="foreground" borderPosition="both" padding="lg">
       <Container>
         <div id="stakes">
           <SectionHeader
-            title="What Happens If Nobody Plays"
+            title={title}
             size="lg"
             className="text-background [&_p]:text-background"
           />
@@ -41,10 +51,10 @@ export function WhyPlaySection() {
         {/* Punchline */}
         <div className="text-center">
           <p className="text-xl sm:text-2xl font-black text-background mb-6">
-            Right now, doing nothing means you lose. Vote and you stop.
+            {punchline}
           </p>
-          <GameCTA href="#vote" variant="primary" size="lg">
-            {CTA.playNow}
+          <GameCTA href={ctaHref} variant="primary" size="lg">
+            {ctaLabel}
           </GameCTA>
         </div>
       </Container>

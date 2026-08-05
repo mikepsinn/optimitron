@@ -36,15 +36,17 @@ const agencies: { item: NavItem; bgColor: BrutalCardBgColor }[] = [
   { item: departmentOfWarLink, bgColor: "red" },
 ];
 
-export function OptimizedGovernanceSection() {
+export function OptimizedGovernanceSection({
+  subtitle = "Every agency redesigned around one question: what does the data say actually works?",
+  title = "Optimized Governance",
+}: {
+  subtitle?: string;
+  title?: string;
+}) {
   return (
     <SectionContainer bgColor="background" borderPosition="top" padding="lg">
       <Container>
-        <SectionHeader
-          title="Optimized Governance"
-          subtitle="Every agency redesigned around one question: what does the data say actually works?"
-          size="lg"
-        />
+        <SectionHeader title={title} subtitle={subtitle} size="lg" />
         <NavItemCardGrid columns={3}>
           {agencies.map(({ item, bgColor }) => (
             <NavItemCard key={item.href} item={item} bgColor={bgColor} />
