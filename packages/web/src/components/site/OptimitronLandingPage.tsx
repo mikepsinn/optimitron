@@ -69,10 +69,6 @@ function NowOfferingSection() {
             the economy they sell into, which is their fiduciary duty to their
             own shareholders.
           </p>
-          <p className="text-muted-foreground">
-            Every number below is published, with its math shown. The controls
-            work. Drag them.
-          </p>
         </div>
       </Container>
     </SectionContainer>
@@ -84,7 +80,7 @@ function ContactSection({
   heading,
   showPitchLink = false,
 }: {
-  body: string;
+  body?: string;
   heading: string;
   showPitchLink?: boolean;
 }) {
@@ -94,7 +90,9 @@ function ContactSection({
         <h2 className="text-4xl font-black uppercase leading-none sm:text-5xl">
           {heading}
         </h2>
-        <p className="mx-auto mt-6 text-lg font-bold leading-8">{body}</p>
+        {body ? (
+          <p className="mx-auto mt-6 text-lg font-bold leading-8">{body}</p>
+        ) : null}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <a
             className={`${treatyPrimaryButtonClass} inline-flex items-center justify-center`}
@@ -159,7 +157,7 @@ export function OptimitronLandingPage() {
       <WhyPlaySection
         ctaHref="#the-machine"
         ctaLabel="See the repair"
-        punchline="All of it is fixable, and the arithmetic for fixing it is on this page."
+        punchline="All of it is fixable."
         title="What Happens If Nobody Calls"
       />
       <GovernmentReportCardPreview
@@ -170,7 +168,7 @@ export function OptimitronLandingPage() {
       {/* The machine itself. */}
       <div id="the-machine">
         <EarthOptimizationTaskSystemSection />
-        <OptimalPolicyPreview subtitle="Every policy gets a grade for what it did to how long people live and how much they keep. The ones that work are easy to find." />
+        <OptimalPolicyPreview subtitle="Every policy gets a grade for what it did to how long people live and how much they keep." />
         <WishocracyPreview />
         <OutcomeLabelsSection />
         <ComparativeEffectivenessSection />
@@ -180,17 +178,14 @@ export function OptimitronLandingPage() {
       {/* How a recommendation turns into actual power. */}
       <LovingTakeoverSection />
 
-      <ContactSection
-        body="Then you probably have a question, a correction, or a skill we could use. We would love to hear from you."
-        heading="Still Reading?"
-      />
+      <ContactSection heading="Talk To A Human" />
 
       {/* The futures on offer, then the thirty-second action between them. */}
       <PleaseSelectAnEarthSection />
       <TreatyVoteSection />
 
       <ContactSection
-        body="That was the whole pitch. Earth Optimization Services is a Delaware public benefit corporation, and every number above is a published parameter you are welcome to check. If you want the math, want to build a piece of this, or want to tell us we have it backwards, write to us. A human answers."
+        body="Earth Optimization Services is a Delaware public benefit corporation. If you want the math, want to build a piece of this, or want to tell us we have it backwards, write to us. A human answers."
         heading="Call Today!"
         showPitchLink
       />
