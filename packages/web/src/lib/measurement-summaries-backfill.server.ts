@@ -67,6 +67,14 @@ interface SummaryAggregateRow {
 
 const DEFAULT_BATCH_SIZE = 500;
 
+/** Falls back to the default for anything that isn't a finite positive integer. */
+function sanitizeBatchSize(batchSize: number | undefined): number {
+  if (batchSize === undefined || !Number.isFinite(batchSize)) {
+    return DEFAULT_BATCH_SIZE;
+  }
+  return Math.max(1, Math.floor(batchSize));
+}
+
 /**
  * Floats round-trip through Postgres unchanged, so exact comparison is what
  * tells us a row actually drifted. Dates compare by epoch because Prisma hands
@@ -266,7 +274,7 @@ async function backfillNOf1Variables(
 export async function backfillMeasurementSummaries(
   options: BackfillOptions = {},
 ): Promise<BackfillResult> {
-  const batchSize = Math.max(1, options.batchSize ?? DEFAULT_BATCH_SIZE);
+  const batchSize = sanitizeBatchSize(options.batchSize);
   const dryRun = options.dryRun ?? false;
   return {
     globalVariables: await backfillGlobalVariables(

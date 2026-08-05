@@ -17,8 +17,13 @@ import { prisma } from "../src/lib/prisma";
 
 function parseArgs(argv: string[]) {
   const batchArg = argv.find((arg) => arg.startsWith("--batch="));
+  const parsedBatch = batchArg ? Number(batchArg.split("=")[1]) : NaN;
+  const batchSize =
+    Number.isFinite(parsedBatch) && parsedBatch > 0
+      ? Math.floor(parsedBatch)
+      : 500;
   return {
-    batchSize: batchArg ? Number(batchArg.split("=")[1]) || 500 : 500,
+    batchSize,
     dryRun: argv.includes("--dry-run"),
   };
 }
