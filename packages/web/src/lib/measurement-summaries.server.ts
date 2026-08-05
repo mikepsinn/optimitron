@@ -74,6 +74,98 @@ async function aggregateMeasurements(
 }
 
 /**
+ * Take a row lock on the variable whose summary we are about to rewrite.
+ *
+ * Aggregate-then-update is a read-then-write race: without the lock, two
+ * transactions refreshing the same variable can both read, then write in the
+ * opposite order, and the loser's older numbers win — leaving the cache stale
+ * until some later write happens to correct it. Locking *before* the aggregate
+ * serializes refreshers of the same variable, and under READ COMMITTED the
+ * aggregate that follows sees a snapshot taken after the previous holder
+ * committed.
+ *
+ * Returns false when the row is gone, so the caller can skip rather than fail
+ * on a missing-record update.
+ */
+async function lockVariableRow(
+  tx: Prisma.TransactionClient,
+  table: "GlobalVariable" | "NOf1Variable",
+  id: string,
+): Promise<boolean> {
+  const rows = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+    SELECT "id"
+    FROM ${Prisma.raw(`"${table}"`)}
+    WHERE "id" = ${id}
+    FOR UPDATE
+  `);
+  return rows.length > 0;
+}
+
+/** Recompute and persist one GlobalVariable's cached statistics. */
+export async function refreshGlobalVariableSummary(
+  tx: Prisma.TransactionClient,
+  globalVariableId: string,
+) {
+  if (!(await lockVariableRow(tx, "GlobalVariable", globalVariableId))) return;
+
+  const summary = await aggregateMeasurements(
+    tx,
+    Prisma.sql`m."globalVariableId" = ${globalVariableId}`,
+  );
+  const nOf1VariableCount = await tx.nOf1Variable.count({
+    where: {
+      deletedAt: null,
+      globalVariableId,
+    },
+  });
+
+  await tx.globalVariable.update({
+    where: { id: globalVariableId },
+    data: {
+      earliestMeasurementStartAt: summary.earliestStartTime,
+      latestMeasurementStartAt: summary.latestStartTime,
+      maximumRecordedValue: summary.maximumRecordedValue,
+      mean: summary.mean,
+      median: summary.median,
+      minimumRecordedValue: summary.minimumRecordedValue,
+      numberOfMeasurements: summary.count,
+      numberOfNOf1Variables: nOf1VariableCount,
+      numberOfUniqueValues: summary.uniqueCount,
+      standardDeviation: summary.standardDeviation,
+      variance: summary.variance,
+    },
+  });
+}
+
+/** Recompute and persist one NOf1Variable's cached statistics. */
+export async function refreshNOf1VariableSummary(
+  tx: Prisma.TransactionClient,
+  nOf1VariableId: string,
+) {
+  if (!(await lockVariableRow(tx, "NOf1Variable", nOf1VariableId))) return;
+
+  const summary = await aggregateMeasurements(
+    tx,
+    Prisma.sql`m."nOf1VariableId" = ${nOf1VariableId}`,
+  );
+
+  await tx.nOf1Variable.update({
+    where: { id: nOf1VariableId },
+    data: {
+      earliestMeasurementStartAt: summary.earliestStartTime,
+      latestMeasurementStartAt: summary.latestStartTime,
+      maximumRecordedValue: summary.maximumRecordedValue,
+      mean: summary.mean,
+      median: summary.median,
+      minimumRecordedValue: summary.minimumRecordedValue,
+      numberOfMeasurements: summary.count,
+      standardDeviation: summary.standardDeviation,
+      variance: summary.variance,
+    },
+  });
+}
+
+/**
  * Recompute the cached measurement statistics on a GlobalVariable and one of
  * its NOf1Variables, and persist them.
  *
@@ -87,58 +179,17 @@ async function aggregateMeasurements(
  * replaces its value, and the previous value is not available to subtract.
  * Median and unique-value count could not be maintained incrementally anyway
  * without storing extra state.
+ *
+ * The two refreshes run in a fixed order — GlobalVariable, then NOf1Variable —
+ * so concurrent transactions always take the two row locks the same way and
+ * cannot deadlock against each other.
  */
 export async function refreshMeasurementSummaries(
   tx: Prisma.TransactionClient,
   input: { globalVariableId: string; nOf1VariableId: string },
 ) {
-  const { globalVariableId, nOf1VariableId } = input;
-  const [globalSummary, nOf1Summary, nOf1VariableCount] = await Promise.all([
-    aggregateMeasurements(
-      tx,
-      Prisma.sql`m."globalVariableId" = ${globalVariableId}`,
-    ),
-    aggregateMeasurements(tx, Prisma.sql`m."nOf1VariableId" = ${nOf1VariableId}`),
-    tx.nOf1Variable.count({
-      where: {
-        deletedAt: null,
-        globalVariableId,
-      },
-    }),
-  ]);
-
-  await Promise.all([
-    tx.globalVariable.update({
-      where: { id: globalVariableId },
-      data: {
-        earliestMeasurementStartAt: globalSummary.earliestStartTime,
-        latestMeasurementStartAt: globalSummary.latestStartTime,
-        maximumRecordedValue: globalSummary.maximumRecordedValue,
-        mean: globalSummary.mean,
-        median: globalSummary.median,
-        minimumRecordedValue: globalSummary.minimumRecordedValue,
-        numberOfMeasurements: globalSummary.count,
-        numberOfNOf1Variables: nOf1VariableCount,
-        numberOfUniqueValues: globalSummary.uniqueCount,
-        standardDeviation: globalSummary.standardDeviation,
-        variance: globalSummary.variance,
-      },
-    }),
-    tx.nOf1Variable.update({
-      where: { id: nOf1VariableId },
-      data: {
-        earliestMeasurementStartAt: nOf1Summary.earliestStartTime,
-        latestMeasurementStartAt: nOf1Summary.latestStartTime,
-        maximumRecordedValue: nOf1Summary.maximumRecordedValue,
-        mean: nOf1Summary.mean,
-        median: nOf1Summary.median,
-        minimumRecordedValue: nOf1Summary.minimumRecordedValue,
-        numberOfMeasurements: nOf1Summary.count,
-        standardDeviation: nOf1Summary.standardDeviation,
-        variance: nOf1Summary.variance,
-      },
-    }),
-  ]);
+  await refreshGlobalVariableSummary(tx, input.globalVariableId);
+  await refreshNOf1VariableSummary(tx, input.nOf1VariableId);
 }
 
 /**

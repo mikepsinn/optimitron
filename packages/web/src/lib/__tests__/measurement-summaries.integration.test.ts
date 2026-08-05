@@ -251,6 +251,14 @@ describe("refreshMeasurementSummaries", () => {
 describe("backfillMeasurementSummaries", () => {
   const values = [2, 4, 4, 9];
 
+  // Scoped to this suite's fixtures: an unscoped run would rewrite rows owned
+  // by other test files sharing this database, and its counts would depend on
+  // whatever they had seeded.
+  const scope = {
+    globalVariableIds: [GLOBAL_VARIABLE_ID],
+    nOf1VariableIds: [OWN_NOF1_ID, OTHER_NOF1_ID],
+  };
+
   beforeEach(async () => {
     await cleanup();
     await seedCatalog();
@@ -264,10 +272,10 @@ describe("backfillMeasurementSummaries", () => {
   afterAll(cleanup);
 
   it("reports stale rows without writing on a dry run", async () => {
-    const result = await backfillMeasurementSummaries({ dryRun: true });
+    const result = await backfillMeasurementSummaries({ ...scope, dryRun: true });
 
-    expect(result.globalVariables.changed).toBeGreaterThanOrEqual(1);
-    expect(result.nOf1Variables.changed).toBeGreaterThanOrEqual(1);
+    expect(result.globalVariables.changed).toBe(1);
+    expect(result.nOf1Variables.changed).toBe(1);
 
     const nOf1Variable = await prisma.nOf1Variable.findUniqueOrThrow({
       where: { id: OWN_NOF1_ID },
@@ -277,7 +285,7 @@ describe("backfillMeasurementSummaries", () => {
   });
 
   it("reconciles stale rows and is idempotent", async () => {
-    await backfillMeasurementSummaries();
+    await backfillMeasurementSummaries(scope);
 
     const nOf1Variable = await prisma.nOf1Variable.findUniqueOrThrow({
       where: { id: OWN_NOF1_ID },
@@ -293,13 +301,13 @@ describe("backfillMeasurementSummaries", () => {
     expect(globalVariable.numberOfNOf1Variables).toBe(2);
 
     // A second pass has nothing left to correct.
-    const second = await backfillMeasurementSummaries({ dryRun: true });
+    const second = await backfillMeasurementSummaries({ ...scope, dryRun: true });
     expect(second.globalVariables.changed).toBe(0);
     expect(second.nOf1Variables.changed).toBe(0);
   });
 
   it("agrees with the write path's refresh", async () => {
-    await backfillMeasurementSummaries();
+    await backfillMeasurementSummaries(scope);
     const backfilled = await prisma.nOf1Variable.findUniqueOrThrow({
       where: { id: OWN_NOF1_ID },
     });

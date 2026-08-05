@@ -1,6 +1,8 @@
 import {
   buildGlobalVariableSummaryQuery,
   buildNOf1VariableSummaryQuery,
+  refreshGlobalVariableSummary,
+  refreshNOf1VariableSummary,
 } from "@/lib/measurement-summaries.server";
 import { prisma } from "@/lib/prisma";
 
@@ -17,11 +19,25 @@ import { prisma } from "@/lib/prisma";
  * write path uses — so a reconciled row and a freshly written one cannot
  * disagree. Recomputing from `Measurement` rather than adjusting what is
  * already stored makes it idempotent: a second run changes nothing.
+ *
+ * Safe to run against a live database. Drift is *detected* with a cheap
+ * batched read, but each correction is *written* through the same locked
+ * refresh the write path uses, inside its own transaction. Writing the
+ * batch-read values directly would race: a measurement committed between the
+ * read and the write would be clobbered by the older aggregate, leaving the
+ * row stale again.
  */
 
 export interface BackfillOptions {
   batchSize?: number;
   dryRun?: boolean;
+  /**
+   * Restrict the walk to specific rows instead of the whole table. Used to
+   * reconcile a single variable under investigation, and to keep tests from
+   * rewriting rows belonging to other suites sharing the database.
+   */
+  globalVariableIds?: string[];
+  nOf1VariableIds?: string[];
 }
 
 export interface BackfillTableSummary {
@@ -72,8 +88,16 @@ function isSameValue(current: unknown, computed: unknown): boolean {
 async function forEachIdBatch(
   loadIds: (cursor: string | null, take: number) => Promise<{ id: string }[]>,
   batchSize: number,
+  explicitIds: string[] | undefined,
   handle: (ids: string[]) => Promise<void>,
 ) {
+  if (explicitIds) {
+    for (let index = 0; index < explicitIds.length; index += batchSize) {
+      await handle(explicitIds.slice(index, index + batchSize));
+    }
+    return;
+  }
+
   let cursor: string | null = null;
   for (;;) {
     const rows = await loadIds(cursor, batchSize);
@@ -87,6 +111,7 @@ async function forEachIdBatch(
 async function backfillGlobalVariables(
   batchSize: number,
   dryRun: boolean,
+  explicitIds: string[] | undefined,
 ): Promise<BackfillTableSummary> {
   const summary: BackfillTableSummary = { changed: 0, examined: 0 };
 
@@ -99,6 +124,7 @@ async function backfillGlobalVariables(
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       }),
     batchSize,
+    explicitIds,
     async (ids) => {
       const computed = await prisma.$queryRaw<SummaryAggregateRow[]>(
         buildGlobalVariableSummaryQuery(ids),
@@ -150,7 +176,11 @@ async function backfillGlobalVariables(
 
         summary.changed += 1;
         if (dryRun) continue;
-        await prisma.globalVariable.update({ where: { id: row.id }, data });
+        // Recompute under the row lock rather than writing `data`, which was
+        // read outside any transaction and may already be out of date.
+        await prisma.$transaction((tx) =>
+          refreshGlobalVariableSummary(tx, row.id),
+        );
       }
     },
   );
@@ -161,6 +191,7 @@ async function backfillGlobalVariables(
 async function backfillNOf1Variables(
   batchSize: number,
   dryRun: boolean,
+  explicitIds: string[] | undefined,
 ): Promise<BackfillTableSummary> {
   const summary: BackfillTableSummary = { changed: 0, examined: 0 };
 
@@ -173,6 +204,7 @@ async function backfillNOf1Variables(
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       }),
     batchSize,
+    explicitIds,
     async (ids) => {
       const computed = await prisma.$queryRaw<SummaryAggregateRow[]>(
         buildNOf1VariableSummaryQuery(ids),
@@ -219,7 +251,11 @@ async function backfillNOf1Variables(
 
         summary.changed += 1;
         if (dryRun) continue;
-        await prisma.nOf1Variable.update({ where: { id: row.id }, data });
+        // Recompute under the row lock rather than writing `data`, which was
+        // read outside any transaction and may already be out of date.
+        await prisma.$transaction((tx) =>
+          refreshNOf1VariableSummary(tx, row.id),
+        );
       }
     },
   );
@@ -233,7 +269,15 @@ export async function backfillMeasurementSummaries(
   const batchSize = Math.max(1, options.batchSize ?? DEFAULT_BATCH_SIZE);
   const dryRun = options.dryRun ?? false;
   return {
-    globalVariables: await backfillGlobalVariables(batchSize, dryRun),
-    nOf1Variables: await backfillNOf1Variables(batchSize, dryRun),
+    globalVariables: await backfillGlobalVariables(
+      batchSize,
+      dryRun,
+      options.globalVariableIds,
+    ),
+    nOf1Variables: await backfillNOf1Variables(
+      batchSize,
+      dryRun,
+      options.nOf1VariableIds,
+    ),
   };
 }
