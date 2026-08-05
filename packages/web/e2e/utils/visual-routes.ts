@@ -89,21 +89,49 @@ const CREATE_TASK_DIALOG_FILE =
   "packages/web/src/components/tasks/CreateTaskDialog.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
-const OPTIMITRON_GAME_LANDING_FILES = [
-  "packages/web/src/app/page.tsx",
+// Sections rendered by both optimitron.com/ and /game. Either capture proves
+// they render, so both cover lists include them.
+const SHARED_LANDING_SECTION_FILES = [
   "packages/web/src/components/animations/CollapseCountdownTimer.tsx",
   "packages/web/src/components/animations/LiveDeathTicker.tsx",
   "packages/web/src/components/animations/ScrollReveal.tsx",
+  "packages/web/src/components/dfda/ComparativeEffectivenessSection.tsx",
   "packages/web/src/components/dfda/OutcomeLabel.tsx",
-  "packages/web/src/components/landing/DecisionMatrixSection.tsx",
+  "packages/web/src/components/dfda/OutcomeLabelsSection.tsx",
+  "packages/web/src/components/landing/GovernmentReportCardPreview.tsx",
   "packages/web/src/components/landing/HeroSection.tsx",
-  "packages/web/src/components/landing/InvisibleGraveyardSection.tsx",
+  "packages/web/src/components/landing/OptimalPolicyPreview.tsx",
+  "packages/web/src/components/landing/OptimizedGovernanceSection.tsx",
+  "packages/web/src/components/landing/PleaseSelectAnEarthSection.tsx",
   "packages/web/src/components/landing/TreatyVoteFlow.tsx",
   "packages/web/src/components/landing/TreatyVoteSection.tsx",
+  "packages/web/src/components/landing/WhyPlaySection.tsx",
   "packages/web/src/components/landing/WishocracyPreview.tsx",
+];
+
+// optimitron.com/ renders OptimitronLandingPage, not the game page.
+const OPTIMITRON_HOME_FILES = [
+  "packages/web/src/app/page.tsx",
+  "packages/web/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
+  "packages/web/src/components/landing/LovingTakeoverSection.tsx",
+  "packages/web/src/components/site/OptimitronLandingPage.tsx",
+  ...SHARED_LANDING_SECTION_FILES,
+];
+
+// /game keeps the original game ordering and its game-only sections.
+const OPTIMITRON_GAME_LANDING_FILES = [
+  "packages/web/src/app/game/page.tsx",
+  "packages/web/src/components/landing/ArmorySection.tsx",
+  "packages/web/src/components/landing/DecisionMatrixSection.tsx",
+  "packages/web/src/components/landing/DemoVideoSection.tsx",
+  "packages/web/src/components/landing/FinalCTASection.tsx",
+  "packages/web/src/components/landing/HowToWinSection.tsx",
+  "packages/web/src/components/landing/InvisibleGraveyardSection.tsx",
+  "packages/web/src/components/landing/TLDRSection.tsx",
   POLITICIAN_SCORECARD_TABLE_FILE,
   "packages/web/src/components/site/EarthOptimizationGameLandingPage.tsx",
   "packages/web/src/components/tasks/TasksRootIntro.tsx",
+  ...SHARED_LANDING_SECTION_FILES,
 ];
 
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
@@ -118,7 +146,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "packages/web/src/components/eos-retro/MachineDiagram.tsx",
     ],
   ],
-  [ROUTES.game, ["packages/web/src/app/game/page.tsx"]],
+  [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
@@ -305,7 +333,7 @@ const AUTHENTICATED_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
 // review matrix. Disallowed routes redirect to production, so exclude them.
 const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   {
-    covers: OPTIMITRON_GAME_LANDING_FILES,
+    covers: OPTIMITRON_HOME_FILES,
     name: "variant-optimitron-home",
     path: ROUTES.home,
     required: true,
