@@ -27,9 +27,12 @@ const ROUTES_TO_SMOKE = [
     path: "/",
     expectedH1: "PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE",
     expectedH1ByHost: {
-      // Kept in sync with `HeroSection` on the Optimitron game homepage.
-      "optimitron.com": "Play the Earth Optimization Game!",
-      "www.optimitron.com": "Play the Earth Optimization Game!",
+      // Kept in sync with the `HeroSection` headline that
+      // `OptimitronLandingPage` passes. optimitron.com/ stopped rendering the
+      // game page in #179; `/game` still has the "Play the Earth Optimization
+      // Game!" heading.
+      "optimitron.com": "Earth Optimization Services",
+      "www.optimitron.com": "Earth Optimization Services",
     },
     source: "warondisease landing action heading",
   },
