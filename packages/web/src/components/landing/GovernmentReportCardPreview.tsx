@@ -5,13 +5,19 @@ import { GameCTA } from "@/components/ui/game-cta";
 import { GovernmentLeaderboard } from "@/components/shared/GovernmentLeaderboard";
 import { ROUTES } from "@/lib/routes";
 
-export function GovernmentReportCardPreview() {
+export function GovernmentReportCardPreview({
+  subtitle = "Every government ranked by body count. The data they hope you never see.",
+  title = "Worst Players: Governments",
+}: {
+  subtitle?: string;
+  title?: string;
+}) {
   return (
     <SectionContainer bgColor="background" borderPosition="top" padding="lg">
       <Container>
         <SectionHeader
-          title="Worst Players: Governments"
-          subtitle="Every government ranked by body count. The data they hope you never see."
+          title={title}
+          subtitle={subtitle}
           size="lg"
         />
         <GovernmentLeaderboard limit={10} compact />

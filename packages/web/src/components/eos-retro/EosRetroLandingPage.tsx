@@ -22,9 +22,10 @@ import {
   US_TOTAL_LOBBYING_ANNUAL,
   WISHONIA_TRAJECTORY_GDP_YEAR_20,
 } from "@optimitron/data/parameters";
+import { EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_EMAIL } from "@optimitron/db/system-identities";
 import { AGENCIES } from "@optimitron/data/datasets/wishonia-agencies";
 import { ParameterValue } from "@/components/shared/ParameterValue";
-import { AgencyBooths } from "@/components/eos-retro/AgencyBooths";
+import { OptimizedPublicAdministration } from "@/components/eos-retro/OptimizedPublicAdministration";
 import { BudgetFrontierExhibit } from "@/components/eos-retro/BudgetFrontierExhibit";
 import { CollapseClock } from "@/components/eos-retro/CollapseClock";
 import { DeathCounter } from "@/components/eos-retro/DeathCounter";
@@ -49,6 +50,7 @@ const PITCH_URL =
   "https://manual.warondisease.org/knowledge/economics/eos-pitch.html";
 const STUDIES_URL = "https://studies.dfda.earth";
 const AUDIT_URL = "/dysfunction-tax";
+const CONTACT_URL = `mailto:${EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_EMAIL}`;
 
 function Section({
   children,
@@ -72,7 +74,7 @@ function Section({
   );
 }
 
-function Exhibit({
+function MachinePart({
   children,
   id,
   letter,
@@ -86,21 +88,23 @@ function Exhibit({
   letter: string;
   title: string;
   intro?: ReactNode;
-  stepInsideHref: string;
-  stepInsideLabel: string;
+  stepInsideHref?: string;
+  stepInsideLabel?: string;
 }) {
   return (
     <div className="er-exhibit" id={id}>
       <h3 className="er-exhibit-title">
-        Exhibit {letter} · <em>{title}</em>
+        Part {letter} · <em>{title}</em>
       </h3>
       {intro ? <p className="er-body mt-4 max-w-3xl">{intro}</p> : null}
       <div className="mt-6">{children}</div>
-      <p className="mt-6">
-        <Link className="er-link er-mono text-sm" href={stepInsideHref}>
-          {stepInsideLabel}
-        </Link>
-      </p>
+      {stepInsideHref && stepInsideLabel ? (
+        <p className="mt-6">
+          <Link className="er-link er-mono text-sm" href={stepInsideHref}>
+            {stepInsideLabel}
+          </Link>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -163,42 +167,42 @@ function AtomOrnament() {
   );
 }
 
-const PAVILIONS = [
+const SYSTEMS = [
   {
     emoji: AGENCIES.dcbo.emoji,
     name: AGENCIES.dcbo.dName,
     desc: AGENCIES.dcbo.tagline,
-    anchor: "#exhibit-opg",
+    anchor: "#system-opg",
   },
   {
     emoji: AGENCIES.domb.emoji,
     name: AGENCIES.domb.dName,
     desc: AGENCIES.domb.tagline,
-    anchor: "#exhibit-obg",
+    anchor: "#system-obg",
   },
   {
     emoji: wishocracyLink.emoji ?? "🗳️",
     name: wishocracyLink.label,
     desc: wishocracyLink.tagline ?? "",
-    anchor: "#exhibit-wishocracy",
+    anchor: "#system-wishocracy",
   },
   {
     emoji: AGENCIES.dfda.emoji,
     name: AGENCIES.dfda.dName,
     desc: AGENCIES.dfda.tagline,
-    anchor: "#exhibit-dfda",
+    anchor: "#system-dfda",
   },
   {
     emoji: agenciesLink.emoji ?? "🏛️",
-    name: "The Department Store",
-    desc: agenciesLink.tagline ?? "",
-    anchor: "#exhibit-agencies",
+    name: "Optimized Public Administration",
+    desc: "Public systems designed to produce the greatest health and wealth per dollar spent.",
+    anchor: "#system-agencies",
   },
   {
     emoji: "🧠",
     name: "The Human Optimization System",
     desc: "The same engine, pointed at one human: you.",
-    anchor: "#exhibit-you",
+    anchor: "#system-you",
   },
 ];
 
@@ -232,7 +236,7 @@ export function EosRetroLandingPage() {
               upgraded over 300 planets. Yours is next.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <a className="er-btn er-btn-solid" href="#exhibits">
+              <a className="er-btn er-btn-solid" href="#systems">
                 Tour the machine
               </a>
             </div>
@@ -240,9 +244,9 @@ export function EosRetroLandingPage() {
 
           <p className="pb-6 text-center">
             <a
-              aria-label="Continue to the exhibits"
+              aria-label="Continue to the systems"
               className="er-down"
-              href="#exhibits"
+              href="#systems"
             >
               ▼
             </a>
@@ -250,14 +254,14 @@ export function EosRetroLandingPage() {
         </div>
       </header>
 
-      {/* ── 2 · The Exhibits ─────────────────────────────────── */}
+      {/* ── 2 · Inside The Machine ───────────────────────────── */}
       <Section
-        deck="Six pavilions from the government of the future, running on real data. Pick a booth or walk the hall in order. The gift shop comes at the end, as is traditional."
-        id="exhibits"
-        title="The exhibits"
+        deck="Six working systems for measuring outcomes, choosing priorities, and turning better decisions into better laws, budgets, treatments, and daily actions."
+        id="systems"
+        title="Inside the machine"
       >
         <div className="er-pavilion-grid">
-          {PAVILIONS.map((p) => (
+          {SYSTEMS.map((p) => (
             <a className="er-pavilion" href={p.anchor} key={p.anchor}>
               <div aria-hidden="true" className="er-pavilion-emoji">
                 {p.emoji}
@@ -268,41 +272,41 @@ export function EosRetroLandingPage() {
           ))}
         </div>
 
-        <Exhibit
-          id="exhibit-opg"
+        <MachinePart
+          id="system-opg"
           intro={AGENCIES.dcbo.wishoniaQuote}
           letter="A"
           stepInsideHref={ROUTES.opg}
-          stepInsideLabel="Step inside the Policy Generator"
+          stepInsideLabel="Explore the Policy Generator"
           title="Laws graded like homework"
         >
           <PolicyGradeTable />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-obg"
+        <MachinePart
+          id="system-obg"
           intro={AGENCIES.domb.wishoniaQuote}
           letter="B"
           stepInsideHref={ROUTES.obg}
-          stepInsideLabel="Step inside the Budget Generator"
+          stepInsideLabel="Explore the Budget Generator"
           title="The budget, solved like an equation"
         >
           <BudgetFrontierExhibit />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-wishocracy"
-          intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This booth is live. Drag it."
+        <MachinePart
+          id="system-wishocracy"
+          intro="Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it."
           letter="C"
           stepInsideHref={ROUTES.vote}
-          stepInsideLabel="Step inside and cast the vote that counts"
+          stepInsideLabel="Use Wishocracy"
           title="The ninety-second legislature"
         >
           <WishocracyBooth />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-dfda"
+        <MachinePart
+          id="system-dfda"
           intro={
             <>
               Earth&apos;s current system makes a treatment wait{" "}
@@ -313,26 +317,24 @@ export function EosRetroLandingPage() {
           }
           letter="D"
           stepInsideHref={ROUTES.dfda}
-          stepInsideLabel="Step inside the Decentralized FDA"
+          stepInsideLabel="Explore the Decentralized FDA"
           title="Medicine without the waiting room"
         >
           <DfdaOutcomeLabel />
-        </Exhibit>
+        </MachinePart>
 
-        <Exhibit
-          id="exhibit-agencies"
-          intro="Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each booth shows what the old way costs and the lines that replace it."
+        <MachinePart
+          id="system-agencies"
+          intro="These aren’t agencies with better paperwork. They’re the public systems of the future, designed to maximize the health and wealth of the citizenry per dollar spent. A continually learning FDA ranks treatments using real-world outcomes and gives every doctor useful evidence about benefits and harms. The other systems redesign money, taxes, education, housing, social insurance, and more around measurable results."
           letter="E"
-          stepInsideHref={ROUTES.agencies}
-          stepInsideLabel="Step inside the department store"
-          title="The department store"
+          title="Optimized public administration"
         >
-          <AgencyBooths />
-        </Exhibit>
+          <OptimizedPublicAdministration />
+        </MachinePart>
 
-        <div className="er-exhibit" id="exhibit-you">
+        <div className="er-exhibit" id="system-you">
           <h3 className="er-exhibit-title">
-            Exhibit F · <em>The Human Optimization System</em>
+            Part F · <em>The Human Optimization System</em>
           </h3>
           <p className="er-body mt-4 max-w-3xl">
             The same engine, pointed at one human: you.
@@ -607,21 +609,20 @@ export function EosRetroLandingPage() {
       </Section>
 
       {/* ── 7 · The Deal ─────────────────────────────────────── */}
-      <Section id="the-deal" title="The deal: get rich fixing the room">
+      <Section id="the-deal" title="Why this pays for itself">
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
             <p className="er-body text-lg">
               Earth Optimization Services Inc. is a Delaware public benefit
-              corporation. Investors receive non-voting equity: a share of the
-              profit, never the steering wheel.
+              corporation.
             </p>
             <p className="er-body">
               Concentrated power has a terrible track record. Every genocide and
               every unjust war was started by a small group that had the power
               to start one; none was ever started by a public vote. So the
               decisions here get made one civic vote per human, and those votes
-              are not for sale. You cannot buy the steering wheel, no matter how
-              many shares you own.
+              are not for sale. Nobody buys the steering wheel, no matter how
+              many shares they hold.
             </p>
             <div className="er-panel-soft p-6">
               <p className="er-card-title">The floor</p>
@@ -629,8 +630,7 @@ export function EosRetroLandingPage() {
                 Part of every dollar buys shares of public companies at market
                 price. Part funds the campaign that makes them worth more. The
                 floor is the portfolio: real companies, real earnings, dividend
-                histories through every war and recession in living memory. The
-                exact split lives in the offering documents.
+                histories through every war and recession in living memory.
               </p>
             </div>
             <div className="er-panel-soft p-6">
@@ -672,7 +672,7 @@ export function EosRetroLandingPage() {
                   }
                 />
                 <PriceRow
-                  label="Return, trial savings alone"
+                  label="Treaty return, trial savings alone"
                   value={
                     <>
                       <ParameterValue
@@ -684,7 +684,7 @@ export function EosRetroLandingPage() {
                   }
                 />
                 <PriceRow
-                  label="Return, existing drugs alone"
+                  label="Treaty return, existing drugs alone"
                   value={
                     <>
                       <ParameterValue param={TREATY_ROI_EXISTING_DRUGS_ONLY} />
@@ -700,14 +700,12 @@ export function EosRetroLandingPage() {
             >
               All returns are projections from a published model, not
               guarantees. The model, its 670 parameters, and every derivation
-              chain are public. Equity is illiquid until an exit or listing; do
-              not invest money you need. Full terms are in the offering
-              documents.
+              chain are public.
             </p>
             <div className="flex flex-wrap items-center gap-6">
-              <Link className="er-btn er-btn-solid" href={ROUTES.fund}>
-                Request the offering documents
-              </Link>
+              <a className="er-btn er-btn-solid" href={CONTACT_URL}>
+                Ask us anything
+              </a>
               <a
                 className="er-link er-mono text-sm"
                 href={PITCH_URL}
@@ -725,12 +723,13 @@ export function EosRetroLandingPage() {
       <Section id="your-move" title="Your move">
         <div className="grid gap-5 md:grid-cols-3">
           <div className="er-panel er-ticked flex h-full flex-col p-6">
-            <p className="er-card-title">Invest</p>
+            <p className="er-card-title">Ask</p>
             <p className="er-body mt-3 flex-1">
-              Non-voting equity in the machine you just toured.
+              Something here is wrong, missing, or too good to be true. Tell us
+              which and a human will answer.
             </p>
-            <a className="er-btn mt-6" href="#the-deal">
-              Reread the deal
+            <a className="er-btn mt-6" href={CONTACT_URL}>
+              Email us
             </a>
           </div>
           <div className="er-panel er-ticked flex h-full flex-col p-6">
