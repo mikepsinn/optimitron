@@ -36,7 +36,10 @@ function NowOfferingSection() {
   return (
     <SectionContainer bgColor="background" borderPosition="bottom" padding="lg">
       <Container className="max-w-3xl">
-        <SectionHeader size="lg" title="Now Offering" />
+        <SectionHeader
+          size="lg"
+          title="Your planet may be eligible for optimization"
+        />
         <div className="space-y-5 text-lg font-bold leading-8">
           <p>
             You spend{" "}
@@ -48,15 +51,19 @@ function NowOfferingSection() {
             currently based on vibes and bribery.
           </p>
           <p>
-            Earth Optimization Services handles the repair. We run causal
-            inference on outcome data from the World Bank, the IMF, the WHO, the
-            OECD, and Eurostat, for every country that reports any, to find
-            which laws and budgets actually raise median healthy life expectancy
-            and median after-tax income. Then, through shareholder activism, we
-            make the case to the boards of the corporations whose lobbying
-            writes your government&apos;s budget: enacting those policies grows
-            the economy they sell into, which is their fiduciary duty to their
-            own shareholders.
+            We&apos;re Earth Optimization Services. We buy controlling shares of
+            the companies that control your government, and we use the
+            scientific method and real evidence to calculate optimal public
+            policies and budgets that maximize the general welfare.
+          </p>
+        </div>
+        <div className="mt-8 space-y-3">
+          <p className="border-2 border-foreground px-4 py-3 text-sm font-black uppercase tracking-[0.12em] sm:text-base">
+            Maximize median health-adjusted life expectancy
+          </p>
+          <p className="border-2 border-foreground px-4 py-3 text-sm font-black uppercase tracking-[0.12em] sm:text-base">
+            Maximize median after-tax, inflation-adjusted income, for you, the
+            citizen
           </p>
         </div>
       </Container>
