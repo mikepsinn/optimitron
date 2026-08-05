@@ -5,6 +5,7 @@ import {
   Valence,
   type Prisma,
 } from "@optimitron/db";
+import { refreshMeasurementSummaries } from "@/lib/measurement-summaries.server";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { ensureSubjectForUser } from "@/lib/subject.server";
 import {
@@ -16,7 +17,6 @@ import {
   dailyCheckInInputSchema,
   getUtcDayBounds,
   profileSnapshotInputSchema,
-  summarizeNumericValues,
   type CheckInPageData,
   type ProfilePageData,
 } from "@/lib/profile";
@@ -687,83 +687,8 @@ async function upsertDailyMeasurement(
     });
   }
 
-  await refreshMeasurementSummaries(tx, nOf1Variable.id, input.globalVariableId);
-}
-
-async function refreshMeasurementSummaries(
-  tx: Prisma.TransactionClient,
-  nOf1VariableId: string,
-  globalVariableId: string,
-) {
-  const [globalMeasurements, nOf1Measurements, nOf1VariableCount] = await Promise.all([
-    tx.measurement.findMany({
-      where: {
-        deletedAt: null,
-        globalVariableId,
-      },
-      orderBy: [{ startTime: "asc" }],
-      select: {
-        startTime: true,
-        value: true,
-      },
-    }),
-    tx.measurement.findMany({
-      where: {
-        deletedAt: null,
-        nOf1VariableId,
-      },
-      orderBy: [{ startTime: "asc" }],
-      select: {
-        startTime: true,
-        value: true,
-      },
-    }),
-    tx.nOf1Variable.count({
-      where: {
-        deletedAt: null,
-        globalVariableId,
-      },
-    }),
-  ]);
-  const globalSummary = summarizeNumericValues(
-    globalMeasurements.map((measurement) => measurement.value),
-  );
-  const nOf1Summary = summarizeNumericValues(
-    nOf1Measurements.map((measurement) => measurement.value),
-  );
-
-  await Promise.all([
-    tx.globalVariable.update({
-      where: { id: globalVariableId },
-      data: {
-        earliestMeasurementStartAt: globalMeasurements[0]?.startTime ?? null,
-        latestMeasurementStartAt:
-          globalMeasurements[globalMeasurements.length - 1]?.startTime ?? null,
-        maximumRecordedValue: globalSummary.max,
-        mean: globalSummary.mean,
-        median: globalSummary.median,
-        minimumRecordedValue: globalSummary.min,
-        numberOfMeasurements: globalSummary.count,
-        numberOfNOf1Variables: nOf1VariableCount,
-        numberOfUniqueValues: globalSummary.uniqueCount,
-        standardDeviation: globalSummary.standardDeviation,
-        variance: globalSummary.variance,
-      },
-    }),
-    tx.nOf1Variable.update({
-      where: { id: nOf1VariableId },
-      data: {
-        earliestMeasurementStartAt: nOf1Measurements[0]?.startTime ?? null,
-        latestMeasurementStartAt:
-          nOf1Measurements[nOf1Measurements.length - 1]?.startTime ?? null,
-        maximumRecordedValue: nOf1Summary.max,
-        mean: nOf1Summary.mean,
-        median: nOf1Summary.median,
-        minimumRecordedValue: nOf1Summary.min,
-        numberOfMeasurements: nOf1Summary.count,
-        standardDeviation: nOf1Summary.standardDeviation,
-        variance: nOf1Summary.variance,
-      },
-    }),
-  ]);
+  await refreshMeasurementSummaries(tx, {
+    globalVariableId: input.globalVariableId,
+    nOf1VariableId: nOf1Variable.id,
+  });
 }
