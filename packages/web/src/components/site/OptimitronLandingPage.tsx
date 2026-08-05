@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { EARTH_OPTIMIZATION_SERVICES_PUBLIC_CONTACT_EMAIL } from "@optimitron/db/system-identities";
-import {
-  GLOBAL_GOVERNMENT_EXPENSE_ANNUAL,
-  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
-  POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL,
-} from "@optimitron/data/parameters";
+import { GLOBAL_GOVERNMENT_EXPENSE_ANNUAL } from "@optimitron/data/parameters";
 import { ComparativeEffectivenessSection } from "@/components/dfda/ComparativeEffectivenessSection";
 import { OutcomeLabelsSection } from "@/components/dfda/OutcomeLabelsSection";
 import { EarthOptimizationTaskSystemSection } from "@/components/landing/EarthOptimizationTaskSystemSection";
@@ -14,6 +10,7 @@ import { LovingTakeoverSection } from "@/components/landing/LovingTakeoverSectio
 import { OptimalPolicyPreview } from "@/components/landing/OptimalPolicyPreview";
 import { OptimizedGovernanceSection } from "@/components/landing/OptimizedGovernanceSection";
 import { PleaseSelectAnEarthSection } from "@/components/landing/PleaseSelectAnEarthSection";
+import { TheBillSection } from "@/components/landing/TheBillSection";
 import {
   treatyPrimaryButtonClass,
   treatySecondaryButtonClass,
@@ -48,15 +45,7 @@ function NowOfferingSection() {
               param={GLOBAL_GOVERNMENT_EXPENSE_ANNUAL}
             />{" "}
             on governments to promote the general welfare. Public policy is
-            currently based on vibes and bribery. The gap between the welfare
-            you paid for and the welfare you got is{" "}
-            <ParameterValue
-              figures={1}
-              param={POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL}
-            />{" "}
-            a year, billed to you as the political dysfunction tax:{" "}
-            <ParameterValue param={POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL} />{" "}
-            for every person alive. No statement mailed.
+            currently based on vibes and bribery.
           </p>
           <p>
             Earth Optimization Services handles the repair. We run causal
@@ -146,20 +135,14 @@ export function OptimitronLandingPage() {
           { href: "#the-machine", label: "See how it works" },
         ]}
         body={HERO_BODY}
-        eyebrow="Earth Optimization Services"
-        headlineLines={["The Earth", "Optimization Machine"]}
+        headlineLines={["Earth Optimization", "Services"]}
       />
 
-      {/* The offer, before any demonstration of it. */}
+      {/* The bill comes first, so the point of the page is unmissable. */}
+      <TheBillSection />
+
+      {/* Then the offer, then who has been sending the bill. */}
       <NowOfferingSection />
-
-      {/* The bill: what the current arrangement costs, and who is billing. */}
-      <WhyPlaySection
-        ctaHref="#the-machine"
-        ctaLabel="See the repair"
-        punchline="All of it is fixable."
-        title="What Happens If Nobody Calls"
-      />
       <GovernmentReportCardPreview
         subtitle="Every government on Earth, graded on what it actually delivered. Yours is in here."
         title="Your Current Provider, Rated"
@@ -180,7 +163,13 @@ export function OptimitronLandingPage() {
 
       <ContactSection heading="Talk To A Human" />
 
-      {/* The futures on offer, then the thirty-second action between them. */}
+      {/* Timeline and the futures it leads to belong together, then the
+          thirty-second action that moves between them. */}
+      <WhyPlaySection
+        punchline="All of it is fixable."
+        showCta={false}
+        title="What Happens If Nobody Calls"
+      />
       <PleaseSelectAnEarthSection />
       <TreatyVoteSection />
 

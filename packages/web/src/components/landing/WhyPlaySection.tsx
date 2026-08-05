@@ -14,11 +14,14 @@ export function WhyPlaySection({
   ctaHref = "#vote",
   ctaLabel = CTA.playNow,
   punchline = "Right now, doing nothing means you lose. Vote and you stop.",
+  showCta = true,
   title = "What Happens If Nobody Plays",
 }: {
   ctaHref?: string;
   ctaLabel?: string;
   punchline?: string;
+  /** Hide when the real action already sits directly below this section. */
+  showCta?: boolean;
   title?: string;
 }) {
   return (
@@ -53,9 +56,11 @@ export function WhyPlaySection({
           <p className="text-xl sm:text-2xl font-black text-background mb-6">
             {punchline}
           </p>
-          <GameCTA href={ctaHref} variant="primary" size="lg">
-            {ctaLabel}
-          </GameCTA>
+          {showCta ? (
+            <GameCTA href={ctaHref} variant="primary" size="lg">
+              {ctaLabel}
+            </GameCTA>
+          ) : null}
         </div>
       </Container>
     </SectionContainer>
