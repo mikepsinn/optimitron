@@ -17,17 +17,17 @@
 - EARTH OPTIMIZATION SERVICES
 ## LIVE ON A PLANET WITHOUT WAR AND DISEASE.
 - Now accepting applications. Earth Optimization Services has upgraded over 300 planets. Yours is next.
-- [TOUR THE MACHINE](#exhibits)
-- [▼](#exhibits)
-### THE EXHIBITS
-- Six pavilions from the government of the future, running on real data. Pick a booth or walk the hall in order. The gift shop comes at the end, as is traditional.
-- [📋OPTIMAL POLICY GENERATOR Grade every policy A–F by what actually happened](#exhibit-opg)
-- [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](#exhibit-obg)
-- [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](#exhibit-wishocracy)
-- [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#exhibit-dfda)
-- [🏛️THE DEPARTMENT STORE 22 agencies. No bureaucracy. Just code.](#exhibit-agencies)
-- [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#exhibit-you)
-#### EXHIBIT A · LAWS GRADED LIKE HOMEWORK
+- [TOUR THE MACHINE](#systems)
+- [▼](#systems)
+### INSIDE THE MACHINE
+- Six working systems for measuring outcomes, choosing priorities, and turning better decisions into better laws, budgets, treatments, and daily actions.
+- [📋OPTIMAL POLICY GENERATOR Grade every policy A–F by what actually happened](#system-opg)
+- [💰OPTIMAL BUDGET GENERATOR Find the cheapest high performer per budget category](#system-obg)
+- [🗳️WISHOCRACY Pick between two things, ten times — outperform Congress](#system-wishocracy)
+- [💊DECENTRALIZED FDA Real-time Outcome Labels & Treatment Rankings](#system-dfda)
+- [🏛️OPTIMIZED PUBLIC ADMINISTRATION Public systems designed to produce the greatest health and wealth per dollar spent.](#system-agencies)
+- [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#system-you)
+#### PART A · LAWS GRADED LIKE HOMEWORK
 - 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. But sure, let the humans keep guessing.
 | POLICY | HEALTH | INCOME | GRADE | VERDICT |
 | --- | --- | --- | --- | --- |
@@ -37,8 +37,8 @@
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
 | Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
 - Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
-- [Step inside the Policy Generator](/opg)
-#### EXHIBIT B · THE BUDGET, SOLVED LIKE AN EQUATION
+- [Explore the Policy Generator](/opg)
+#### PART B · THE BUDGET, SOLVED LIKE AN EQUATION
 - 535 politicians decide how to spend $6.8 trillion. None of them asked you. The eigenvector asks everyone and costs nothing.
 - Fig. 2 · OECD countries grouped into ten health-spending deciles. Past the gold point, every extra dollar buys less life. The dot on the far right is the decile the United States lives in.
 - MILITARY: WHAT YOU PAY VS THE EFFICIENT FLOOR
@@ -48,17 +48,17 @@
 - $377
 - Source: OECD efficient frontier (28 countries, rank 27/28). The generator's verdict: major decrease, closing 81% of the gap.
 - Run every category this way and the whole government costs $8.7K per person instead of $21.8K, for equal or better outcomes. A 2.5x markup, currently billed to you.
-- [Step inside the Budget Generator](/obg)
-#### EXHIBIT C · THE NINETY-SECOND LEGISLATURE
-- Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This booth is live. Drag it.
+- [Explore the Budget Generator](/obg)
+#### PART C · THE NINETY-SECOND LEGISLATURE
+- Your legislature allocates your money by seniority and donor gratitude. Wishocracy asks the eight billion owners instead: two options, one handle. This control is live. Drag it.
 - One live pair from the ballot. Of the money available for both, drag the handle to split it. Your drag stays on this page.
 - PRAGMATIC CLINICAL TRIALS
 - $2B/yr today · ROI 45:1
 - BOMBING IRAN
 - $37B/yr today · Negative ROI
 - LOCK IN MY SPLIT
-- [Step inside and cast the vote that counts](/vote)
-#### EXHIBIT D · MEDICINE WITHOUT THE WAITING ROOM
+- [Use Wishocracy](/vote)
+#### PART D · MEDICINE WITHOUT THE WAITING ROOM
 - Earth's current system makes a treatment wait [8.2](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years after it is proven safe. Just sitting there. Being safe. The replacement is a label that updates as fast as the data arrives.
 - OUTCOME LABEL
 - Lipid-lowering agent
@@ -79,62 +79,77 @@
 - 84% effective · 89% safe · 91% confidence
 - Ezetimibe 10mg
 - 62% effective · 96% safe · 88% confidence
-- Exhibit sample typeset from published statin trial aggregates. The live labels update continuously as real-world data arrives.
-- [Step inside the Decentralized FDA](/agencies/dfda)
-#### EXHIBIT E · THE DEPARTMENT STORE
-- Every federal agency you have heard of, rebuilt as code you can read in one sitting. Each booth shows what the old way costs and the lines that replace it.
+- Demonstration built from published statin trial aggregates. The live labels update continuously as real-world data arrives.
+- [Explore the Decentralized FDA](/agencies/dfda)
+#### PART E · OPTIMIZED PUBLIC ADMINISTRATION
+- These aren’t agencies with better paperwork. They’re the public systems of the future, designed to maximize the health and wealth of the citizenry per dollar spent. A continually learning FDA ranks treatments using real-world outcomes and gives every doctor useful evidence about benefits and harms. The other systems redesign money, taxes, education, housing, social insurance, and more around measurable results.
 - 🧾
 - AUTOMATED REVENUE SERVICE
+- Six lines of computer code replace 74,000 pages of tax code
+- OPTIMIZES FOR Revenue per Dollar of Overhead
 - Replaces Internal Revenue Service
 - $212B+
 - recovered every year, mostly from paperwork
-- [Visit the booth](/agencies/dtreasury/dirs)
+- [Explore this system](/agencies/dtreasury/dirs)
 - 🏦
 - ALGORITHMIC RESERVE
+- 0% inflation anchored to productivity — new money via UBI, not banks
+- OPTIMIZES FOR Median Real After-Tax Income
 - Replaces Federal Reserve System
 - 96%
 - of the dollar's purchasing power lost since 1913, no longer confiscatable
-- [Visit the booth](/agencies/dtreasury/dfed)
+- [Explore this system](/agencies/dtreasury/dfed)
 - 🍞
 - UNIVERSAL SECURITY ADMINISTRATION
+- UBI replaces 83 welfare programs with one for-loop
+- OPTIMIZES FOR Poverty Rate
 - Replaces Social Security Administration + Welfare Bureaucracy
 - $1.1 TRILLION
 - in annual admin overhead deleted by one for-loop
-- [Visit the booth](/agencies/dtreasury/dssa)
+- [Explore this system](/agencies/dtreasury/dssa)
 - 🌐
 - DECENTRALIZED CENSUS BUREAU
+- citizenCount() returns in 50ms — no $14B survey needed
+- OPTIMIZES FOR Real-Time Population Count
 - Replaces United States Census Bureau
 - $1.4B
 - a year saved by one view function that never undercounts
-- [Visit the booth](/agencies/dcensus)
+- [Explore this system](/agencies/dcensus)
 - 💀
 - DEPARTMENT OF PEACE
+- We don't have one
+- OPTIMIZES FOR Years Without Armed Conflict
 - Replaces Department of Defense (née Department of War)
 - $2.72T
 - in annual global military spending on a negative-sum game
-- [Visit the booth](/agencies/ddod)
+- [Explore this system](/agencies/ddod)
 - 🧬
 - DECENTRALIZED INSTITUTES OF HEALTH
+- 97% clinical trials, 3% overhead — the exact mirror of your NIH
+- OPTIMIZES FOR Patients in Clinical Trials
 - Replaces National Institutes of Health + FDA
 - $45.5B
 - a year redirected from grant paperwork to actual trials
-- [Visit the booth](/agencies/dih)
+- [Explore this system](/agencies/dih)
 - 📚
 - LEARNING FREEDOM NETWORK
+- Portable student funding, open outcomes, and schools that compete to teach
+- OPTIMIZES FOR Mastery Growth per Student
 - Replaces Department of Education
 - $10B+
 - a year of compliance churn; money follows the child instead
-- [Visit the booth](/agencies/dedu)
+- [Explore this system](/agencies/dedu)
 - 🏠
 - HOUSING ABUNDANCE EXCHANGE
+- Legalize building, tax land rents, and keep homelessness near zero
+- OPTIMIZES FOR Homes Added in High-Demand Areas
 - Replaces Department of Housing and Urban Development
 - $25B+
 - a year of scarcity management replaced by permission to build
-- [Visit the booth](/agencies/dhome)
-- The letter chip is the Earth agency's current report-card grade, computed from its spending trend against its outcome trend.
-- [SEE ALL 22 DEPARTMENTS](/agencies)
-- [Step inside the department store](/agencies)
-#### EXHIBIT F · THE HUMAN OPTIMIZATION SYSTEM
+- [Explore this system](/agencies/dhome)
+- The grade chip is the Earth agency's current report-card grade, computed from its spending trend against its outcome trend.
+- [EXPLORE ALL 22 AGENCIES OF THE FUTURE](/agencies)
+#### PART F · THE HUMAN OPTIMIZATION SYSTEM
 - The same engine, pointed at one human: you.
 - OPTIMITRON // NEXT BEST ACTION
 - OPERATOR: YOU
@@ -237,11 +252,11 @@
 - Fig. 1 · The Four Earths on offer. Red line: growth rates already measured, left running — extraction load passes 25% of output around 2033 and 35% around 2037. Hover it for the historical company it keeps.
 - The red line is not a prophecy. It is the current trend line, extended, using growth rates already measured: the destructive economy runs at [11.5%](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) of world output today and crosses 35% around [2037](https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html). Whole-Earth output at 2045: [$188 trillion](https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html) if the luck holds, [$322 trillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) with the 1% redirect, [$10.7 quadrillion](https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html) once the stupidity stops.
 - Every decision is locally sensible. The aggregate output does not have to be extinction.
-### THE DEAL: GET RICH FIXING THE ROOM
-- Earth Optimization Services Inc. is a Delaware public benefit corporation. Investors receive non-voting equity: a share of the profit, never the steering wheel.
-- Concentrated power has a terrible track record. Every genocide and every unjust war was started by a small group that had the power to start one; none was ever started by a public vote. So the decisions here get made one civic vote per human, and those votes are not for sale. You cannot buy the steering wheel, no matter how many shares you own.
+### WHY THIS PAYS FOR ITSELF
+- Earth Optimization Services Inc. is a Delaware public benefit corporation.
+- Concentrated power has a terrible track record. Every genocide and every unjust war was started by a small group that had the power to start one; none was ever started by a public vote. So the decisions here get made one civic vote per human, and those votes are not for sale. Nobody buys the steering wheel, no matter how many shares they hold.
 - THE FLOOR
-- Part of every dollar buys shares of public companies at market price. Part funds the campaign that makes them worth more. The floor is the portfolio: real companies, real earnings, dividend histories through every war and recession in living memory. The exact split lives in the offering documents.
+- Part of every dollar buys shares of public companies at market price. Part funds the campaign that makes them worth more. The floor is the portfolio: real companies, real earnings, dividend histories through every war and recession in living memory.
 - THE UPSIDE
 - Win one board fight and three things happen: the stock goes up, which funds the next fight; the redirected lobbying gets better policy passed, which grows the whole economy; and a bigger economy makes every company worth more, including the ones already in the portfolio. Each feeds the other two. The model pricing all of it is public.
 - THE ARITHMETIC
@@ -251,17 +266,17 @@
 - [$27.2 billion/year](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
 - Trial capacity per research dollar
 - [12.3x](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)
-- Return, trial savings alone
+- Treaty return, trial savings alone
 - [637](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html)x
-- Return, existing drugs alone
+- Treaty return, existing drugs alone
 - [290,000](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html):1
-- All returns are projections from a published model, not guarantees. The model, its 670 parameters, and every derivation chain are public. Equity is illiquid until an exit or listing; do not invest money you need. Full terms are in the offering documents.
-- [REQUEST THE OFFERING DOCUMENTS](/fund)
+- All returns are projections from a published model, not guarantees. The model, its 670 parameters, and every derivation chain are public.
+- [ASK US ANYTHING](mailto:wishonia@optimitron.com)
 - [Who the hell is telling you all this →](https://manual.warondisease.org/knowledge/economics/eos-pitch.html)
 ### YOUR MOVE
-- INVEST
-- Non-voting equity in the machine you just toured.
-- [REREAD THE DEAL](#the-deal)
+- ASK
+- Something here is wrong, missing, or too good to be true. Tell us which and a human will answer.
+- [EMAIL US](mailto:wishonia@optimitron.com)
 - BUILD
 - Every module needs engineers, researchers, lawyers, organizers. The Earth Optimization Prize pays cash for completed work.
 - [CLAIM A TASK](/tasks)

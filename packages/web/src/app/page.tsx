@@ -4,17 +4,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOptionalReferendumSiteContent } from "@/content/referendum-sites";
 import { EarthOptimizationServicesLandingPage } from "@/components/site/EarthOptimizationServicesLandingPage";
-import { EarthOptimizationGameLandingPage } from "@/components/site/EarthOptimizationGameLandingPage";
 import { OnePercentTreatyLandingPage } from "@/components/site/OnePercentTreatyLandingPage";
+import { OptimitronLandingPage } from "@/components/site/OptimitronLandingPage";
 import { SiteVariantLandingPage } from "@/components/site/SiteVariantLandingPage";
 import { authOptions } from "@/lib/auth";
-import {
-  getRootSiteMetadata,
-  getRouteMetadata,
-  getSiteMetadata,
-} from "@/lib/metadata";
+import { getRootSiteMetadata, getSiteMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
-import { gameLink, ROUTES } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
 import { getSiteFromHeaders } from "@/lib/site";
 
 const NEXT_AUTH_SESSION_COOKIE_PATTERN =
@@ -35,12 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
     }
   }
 
-  if (site.pageVariants.home === "optimitronLanding") {
-    return getRouteMetadata(gameLink, {
-      alternates: { canonical: ROUTES.home },
-    });
-  }
-
+  // optimitron.com/ is Earth Optimization Services, not the game. It used to
+  // borrow /game's metadata because it rendered the game page; now that it has
+  // its own landing page, it uses the site's own root metadata.
   return getRootSiteMetadata(site);
 }
 
@@ -89,7 +82,7 @@ export default async function Home() {
   }
 
   if (site.pageVariants.home === "optimitronLanding") {
-    return <EarthOptimizationGameLandingPage />;
+    return <OptimitronLandingPage />;
   }
 
   if (site.pageVariants.home === "eosLanding") {

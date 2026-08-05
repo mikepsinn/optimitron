@@ -775,27 +775,27 @@ html:has(.eos-retro) {
   white-space: pre;
 }
 
-/* ── Agency booths ──────────────────────────────────────────── */
+/* ── Optimized public administration ────────────────────────── */
 
-.er-booth-grid {
+.er-public-system-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.9rem;
 }
 
 @media (min-width: 640px) {
-  .er-booth-grid {
+  .er-public-system-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  .er-booth-grid {
+  .er-public-system-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.er-booth {
+.er-public-system {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
@@ -804,7 +804,32 @@ html:has(.eos-retro) {
   padding: 1.1rem;
 }
 
-.er-booth-stat {
+.er-public-system-purpose {
+  min-height: 3.9em;
+  color: var(--er-cream-soft);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.er-public-system-outcome {
+  border-left: 2px solid var(--er-cyan);
+  padding-left: 0.65rem;
+  color: var(--er-cream);
+  font-family: var(--er-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.er-public-system-outcome span {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--er-cyan);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.er-public-system-stat {
   font-family: var(--er-font-display);
   font-size: 1.5rem;
   text-transform: uppercase;
