@@ -114,6 +114,9 @@ const OPTIMITRON_HOME_FILES = [
   "packages/web/src/app/page.tsx",
   "packages/web/src/components/landing/EarthOptimizationTaskSystemSection.tsx",
   "packages/web/src/components/landing/LovingTakeoverSection.tsx",
+  "packages/web/src/components/landing/TheBillSection.tsx",
+  "packages/web/src/components/invest/GiantNumber.tsx",
+  "packages/web/src/components/invest/WarheadGrid.tsx",
   "packages/web/src/components/site/OptimitronLandingPage.tsx",
   ...SHARED_LANDING_SECTION_FILES,
 ];
