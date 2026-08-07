@@ -420,7 +420,7 @@ async function smokeRoute({ route, target, bypassSecret }) {
       expectedH1,
       bypassSecret,
       attempt,
-      overrideHeaderSiteKey: target.overrideHeaderSiteKey,
+      overrideSiteKey: target.overrideSiteKey,
     });
     attempts.push(attemptResult);
 
@@ -458,7 +458,7 @@ async function fetchAndAssert({
   expectedH1,
   bypassSecret,
   attempt,
-  overrideHeaderSiteKey = null,
+  overrideSiteKey = null,
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -472,10 +472,14 @@ async function fetchAndAssert({
     headers["x-vercel-protection-bypass"] = bypassSecret;
   }
 
-  // Honoured only for *.vercel.app hosts on VERCEL_ENV=preview; production
-  // hosts ignore it, so sending it there would silently do nothing.
-  if (overrideHeaderSiteKey) {
-    headers["x-optimitron-site-key"] = overrideHeaderSiteKey;
+  // The middleware only accepts the variant override from the ?site= query
+  // param or this cookie (kept in sync with SITE_VARIANT_OVERRIDE_COOKIE in
+  // src/lib/site.ts) — an incoming x-optimitron-site-key header is stripped
+  // before the app sees it. Honoured only for *.vercel.app hosts on
+  // VERCEL_ENV=preview; production hosts ignore it, so sending it there
+  // would silently do nothing.
+  if (overrideSiteKey) {
+    headers.cookie = `optimitron_site_key=${overrideSiteKey}`;
   }
 
   try {
@@ -501,7 +505,7 @@ async function fetchAndAssert({
       durationMs: Date.now() - attemptStartedAt,
       status: response.status,
       finalUrl: response.url,
-      expectedH1: route.expectedH1,
+      expectedH1,
       h1Texts,
       missingExpectedH1: !hasExpectedH1,
       matchedErrorMarker,
@@ -512,7 +516,7 @@ async function fetchAndAssert({
             statusOk,
             matchedErrorMarker,
             hasExpectedH1,
-            expectedH1: route.expectedH1,
+            expectedH1,
             h1Texts,
           }),
     };
@@ -523,7 +527,7 @@ async function fetchAndAssert({
       durationMs: Date.now() - attemptStartedAt,
       status: null,
       finalUrl: url.href,
-      expectedH1: route.expectedH1,
+      expectedH1,
       h1Texts: [],
       missingExpectedH1: true,
       matchedErrorMarker: null,
@@ -575,7 +579,7 @@ const SITE_KEY_BY_PRODUCTION_HOST = {
 };
 
 // Variants worth smoking on a preview deployment. warOnDisease is the default
-// a *.vercel.app host already serves, so it needs no override header.
+// a *.vercel.app host already serves, so it needs no override cookie.
 const PREVIEW_SITE_KEYS = ["warOnDisease", "optimitron"];
 
 function resolveSiteKey(target) {
@@ -615,7 +619,7 @@ function resolveTargets() {
 
   // Production has one host per site, so the host selects the variant. Preview
   // has one host for all of them, so fan out over the variants explicitly and
-  // let the override header select each one. Without this, a preview only ever
+  // let the override cookie select each one. Without this, a preview only ever
   // exercises warOnDisease and per-variant regressions reach production
   // unseen — which is how the optimitron.com heading broke in #179.
   if (environment === "Preview") {
@@ -625,7 +629,7 @@ function resolveTargets() {
       baseUrl,
       siteKey,
       // warOnDisease is already the default for a *.vercel.app host.
-      overrideHeaderSiteKey: siteKey === "warOnDisease" ? null : siteKey,
+      overrideSiteKey: siteKey === "warOnDisease" ? null : siteKey,
     }));
   }
 
@@ -633,7 +637,7 @@ function resolveTargets() {
     environment,
     baseUrl: normalizeTargetUrl(rawUrl, environment),
     siteKey: null,
-    overrideHeaderSiteKey: null,
+    overrideSiteKey: null,
   }));
 }
 
