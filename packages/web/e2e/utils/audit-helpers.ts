@@ -83,8 +83,10 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
         }
         return count;
       });
-      if (forced === 0) break;
-      await page.waitForTimeout(100);
+      if (forced === 0 && pass > 0) break;
+      if (pass < 4) {
+        await page.waitForTimeout(100);
+      }
     }
   });
 

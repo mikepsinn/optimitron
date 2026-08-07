@@ -110,12 +110,14 @@ export function LiveDeathTicker({
   // Automation (screenshots, copy previews, e2e) must capture a deterministic
   // frame: the live count's digit width varies with capture timing, shifting
   // this centered row between runs. Serve the static fallback there, same as
-  // reduced motion. Effect-set state (not a render-time check) so the server
-  // and hydration renders match.
-  const [isAutomation, setIsAutomation] = useState(false);
-  useEffect(() => {
-    if (navigator.webdriver) setIsAutomation(true);
-  }, []);
+  // reduced motion. Lazy-initialized (not effect-set) so it's already correct
+  // on the first client render the ticker-starting effect below observes —
+  // an effect-set value lags a render, letting the interval start briefly
+  // under automation before tearing back down. hasHydrated still gates the
+  // rendered output, so server and first-client-render HTML still match.
+  const [isAutomation] = useState(
+    () => typeof navigator !== "undefined" && navigator.webdriver === true,
+  );
 
   useEffect(() => {
     if (prefersReducedMotion || isAutomation) return;
