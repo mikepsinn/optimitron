@@ -34,7 +34,12 @@ export function ScrollReveal({
   const prefersReducedMotion = useReducedMotion();
   const hasHydrated = useHydrated();
   const { x, y } = offsets[direction];
-  const shouldAnimate = hasHydrated && !prefersReducedMotion;
+  // Automation (screenshots, copy previews, e2e) must capture the settled
+  // content, never a scroll-position-dependent fade frame. Render-time check
+  // so below-fold content is never faded out in the first place; markup is
+  // identical either way, only motion props change.
+  const isAutomation = typeof navigator !== "undefined" && navigator.webdriver;
+  const shouldAnimate = hasHydrated && !prefersReducedMotion && !isAutomation;
 
   return (
     <motion.div
