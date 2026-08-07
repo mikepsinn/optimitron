@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
     measurementFindMany: vi.fn(),
     measurementUpdate: vi.fn(),
     nOf1VariableCount: vi.fn(),
+    queryRaw: vi.fn(),
     nOf1VariableUpdate: vi.fn(),
     nOf1VariableUpsert: vi.fn(),
     personFindFirst: vi.fn(),
@@ -86,6 +87,7 @@ const NULL_NEW_CENSUS_FIELDS = {
 
 function createTransactionClient() {
   return {
+    $queryRaw: mocks.tx.queryRaw,
     globalVariable: {
       update: mocks.tx.globalVariableUpdate,
       upsert: mocks.tx.globalVariableUpsert,
@@ -159,6 +161,21 @@ function mockCatalogDefaults() {
   });
   mocks.tx.measurementFindMany.mockResolvedValue([
     { startTime: new Date("2026-03-12T10:00:00.000Z"), value: 4 },
+  ]);
+  // refreshMeasurementSummaries aggregates in Postgres; one row per scope.
+  mocks.tx.queryRaw.mockResolvedValue([
+    {
+      count: 1,
+      earliestStartTime: new Date("2026-03-12T10:00:00.000Z"),
+      latestStartTime: new Date("2026-03-12T10:00:00.000Z"),
+      maximumRecordedValue: 4,
+      mean: 4,
+      median: 4,
+      minimumRecordedValue: 4,
+      standardDeviation: 0,
+      uniqueCount: 1,
+      variance: 0,
+    },
   ]);
   mocks.tx.globalVariableUpdate.mockResolvedValue(undefined);
   mocks.tx.nOf1VariableUpdate.mockResolvedValue(undefined);
