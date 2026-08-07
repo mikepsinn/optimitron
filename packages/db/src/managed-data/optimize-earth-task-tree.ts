@@ -98,14 +98,14 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: null,
     title: "Optimize Earth",
     description: [
-      "The root task for civilization: increase median healthy life years and median after-tax income by forcing public resources toward welfare-maximizing work.",
+      "This is the root task. There are two goals. Increase the median number of healthy life years. Increase the median income after tax.",
       "",
-      "Current cost of delay: humanity is losing about $101 trillion per year to the [Political Dysfunction Tax](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html) — the gap between realized welfare and what a non-dysfunctional government would produce. That is the burn rate every child task below this one is fighting against.",
+      "Humanity loses approximately $101 trillion each year to the [Political Dysfunction Tax](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html). This is the difference between the welfare that governments produce and the welfare that governments can produce.",
       "",
-      "The current bottleneck is ending war and disease. Everything below this task should either help humans vote, recruit two more humans, register plaintiffs, summon jurors, remind leaders, or make the 1% Treaty credible enough to pass.",
+      "Each task below this task decreases that loss. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
     ].join("\n"),
     impactStatement:
-      "Every task below exists to move humanity from delay to welfare.",
+      "Each task below this task increases median healthy life years, increases median income, or increases the probability that humanity survives to have both.",
     // Overdue — `getTaskDelayStats` multiplies the per-day delay rates by
     // `currentDelayDays`, which is zero when `dueAt` is null. Without this the
     // root row shows $0 wasted / 0 deaths-from-delay even though the per-day
