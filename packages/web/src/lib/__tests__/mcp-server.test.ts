@@ -145,12 +145,16 @@ const mocks = vi.hoisted(() => ({
   userFindUniqueOrThrow: vi.fn(),
   globalVariableFindFirst: vi.fn(),
   globalVariableFindMany: vi.fn(),
+  globalVariableUpdate: vi.fn(),
   globalVariableUpsert: vi.fn(),
   variableCategoryFindFirst: vi.fn(),
   unitFindFirst: vi.fn(),
+  nOf1VariableCount: vi.fn(),
+  nOf1VariableUpdate: vi.fn(),
   nOf1VariableUpsert: vi.fn(),
   measurementUpsert: vi.fn(),
   measurementFindMany: vi.fn(),
+  queryRaw: vi.fn(),
   trackingReminderUpsert: vi.fn(),
   trackingReminderFindMany: vi.fn(),
   trackingReminderFindFirst: vi.fn(),
@@ -439,9 +443,11 @@ vi.mock("../prisma", () => ({
     taskSourceArtifact: {
       upsert: mocks.taskSourceArtifactUpsert,
     },
+    $queryRaw: mocks.queryRaw,
     globalVariable: {
       findFirst: mocks.globalVariableFindFirst,
       findMany: mocks.globalVariableFindMany,
+      update: mocks.globalVariableUpdate,
       upsert: mocks.globalVariableUpsert,
     },
     variableCategory: {
@@ -451,6 +457,8 @@ vi.mock("../prisma", () => ({
       findFirst: mocks.unitFindFirst,
     },
     nOf1Variable: {
+      count: mocks.nOf1VariableCount,
+      update: mocks.nOf1VariableUpdate,
       upsert: mocks.nOf1VariableUpsert,
     },
     measurement: {
@@ -753,9 +761,11 @@ beforeEach(() => {
     user: {
       findUniqueOrThrow: mocks.userFindUniqueOrThrow,
     },
+    $queryRaw: mocks.queryRaw,
     globalVariable: {
       findFirst: mocks.globalVariableFindFirst,
       findMany: mocks.globalVariableFindMany,
+      update: mocks.globalVariableUpdate,
       upsert: mocks.globalVariableUpsert,
     },
     variableCategory: {
@@ -765,6 +775,8 @@ beforeEach(() => {
       findFirst: mocks.unitFindFirst,
     },
     nOf1Variable: {
+      count: mocks.nOf1VariableCount,
+      update: mocks.nOf1VariableUpdate,
       upsert: mocks.nOf1VariableUpsert,
     },
     measurement: {
@@ -791,6 +803,25 @@ beforeEach(() => {
     async (callback: (tx: unknown) => Promise<unknown>) =>
       callback(transactionClient),
   );
+  // refreshMeasurementSummaries aggregates in Postgres and writes the cached
+  // statistics back onto both variables after every measurement write.
+  mocks.queryRaw.mockResolvedValue([
+    {
+      count: 1,
+      earliestStartTime: new Date("2026-03-12T10:00:00.000Z"),
+      latestStartTime: new Date("2026-03-12T10:00:00.000Z"),
+      maximumRecordedValue: 7,
+      mean: 7,
+      median: 7,
+      minimumRecordedValue: 7,
+      standardDeviation: 0,
+      uniqueCount: 1,
+      variance: 0,
+    },
+  ]);
+  mocks.nOf1VariableCount.mockResolvedValue(1);
+  mocks.globalVariableUpdate.mockResolvedValue(undefined);
+  mocks.nOf1VariableUpdate.mockResolvedValue(undefined);
   mocks.listTasks.mockResolvedValue([]);
   mocks.searchTasks.mockResolvedValue([]);
   mocks.claimTask.mockResolvedValue({
@@ -9047,6 +9078,70 @@ describe("MCP server tool dispatch", () => {
       };
       expect(body.result.measurement.subjectId).toBe("subject-1");
       expect(body.result.measurement.value).toBe(5000);
+    });
+
+    it("recordMeasurement refreshes the cached statistics on both variables", async () => {
+      // The MCP write path used to return straight after the upsert, leaving
+      // GlobalVariable/NOf1Variable summary columns stale for every
+      // measurement recorded through MCP.
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        startTime: new Date("2026-07-01T08:00:00.000Z"),
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 5000,
+      });
+      mocks.queryRaw.mockResolvedValue([
+        {
+          count: 3,
+          earliestStartTime: new Date("2026-06-01T08:00:00.000Z"),
+          latestStartTime: new Date("2026-07-01T08:00:00.000Z"),
+          maximumRecordedValue: 5000,
+          mean: 4000,
+          median: 4200,
+          minimumRecordedValue: 2800,
+          standardDeviation: 900,
+          uniqueCount: 3,
+          variance: 810000,
+        },
+      ]);
+      mocks.nOf1VariableCount.mockResolvedValue(4);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: {
+          startTime: "2026-07-01T08:00:00.000Z",
+          unitAbbreviation: "IU",
+          value: 5000,
+          variableName: "Vitamin D",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.globalVariableUpdate).toHaveBeenCalledTimes(1);
+      expect(mocks.globalVariableUpdate.mock.calls[0]![0]).toEqual({
+        where: { id: "gv-vitd" },
+        data: {
+          earliestMeasurementStartAt: new Date("2026-06-01T08:00:00.000Z"),
+          latestMeasurementStartAt: new Date("2026-07-01T08:00:00.000Z"),
+          maximumRecordedValue: 5000,
+          mean: 4000,
+          median: 4200,
+          minimumRecordedValue: 2800,
+          numberOfMeasurements: 3,
+          numberOfNOf1Variables: 4,
+          numberOfUniqueValues: 3,
+          standardDeviation: 900,
+          variance: 810000,
+        },
+      });
+      expect(mocks.nOf1VariableUpdate).toHaveBeenCalledTimes(1);
+      expect(mocks.nOf1VariableUpdate.mock.calls[0]![0]).toMatchObject({
+        where: { id: "nof1-1" },
+        data: { numberOfMeasurements: 3 },
+      });
     });
 
     it("recordMeasurement rejects a missing value with no write", async () => {

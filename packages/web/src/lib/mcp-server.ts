@@ -122,6 +122,7 @@ import { stringifyJsonSafe } from "./json-safe";
 import { normalizeTaskTextLineBreaks } from "./task-text";
 import { slugify } from "./slugify";
 import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
+import { refreshMeasurementSummaries } from "./measurement-summaries.server";
 import { ensureSubjectForUser } from "./subject.server";
 import {
   getStartOfZonedDayUtc,
@@ -3246,6 +3247,10 @@ async function recordTrackingMeasurementWithTx(
         subjectId: subject.id,
       },
     },
+  });
+  await refreshMeasurementSummaries(tx, {
+    globalVariableId: variable.id,
+    nOf1VariableId: nOf1Variable.id,
   });
   return {
     globalVariable: variable,
