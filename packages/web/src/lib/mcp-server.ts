@@ -322,6 +322,7 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   getTaskTreeAudit: [McpScope.TASKS_ADMIN],
   [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
+  listMeasurements: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
@@ -2764,6 +2765,29 @@ const TRACKING_REMINDER_INCLUDE = {
   },
 } satisfies Prisma.TrackingReminderInclude;
 
+const TRACKING_MEASUREMENT_SELECT = {
+  createdAt: true,
+  duration: true,
+  globalVariable: { select: TRACKING_VARIABLE_SELECT },
+  globalVariableId: true,
+  id: true,
+  latitude: true,
+  longitude: true,
+  nOf1VariableId: true,
+  note: true,
+  originalUnit: { select: TRACKING_UNIT_SELECT },
+  originalValue: true,
+  sourceName: true,
+  startTime: true,
+  subjectId: true,
+  unit: { select: TRACKING_UNIT_SELECT },
+  updatedAt: true,
+  value: true,
+} satisfies Prisma.MeasurementSelect;
+
+const DEFAULT_MEASUREMENT_PAGE_SIZE = 100;
+const MAX_MEASUREMENT_PAGE_SIZE = 500;
+
 interface TrackingVariableArgs {
   categoryName?: string | null;
   combinationOperation?: CombinationOperation;
@@ -3446,6 +3470,105 @@ async function upsertTrackingReminderForUser(
     });
     return { reminder, subjectId: subject.id };
   });
+}
+
+async function listMeasurementsForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const limit = parsePositiveInteger(
+    input.limit,
+    "limit",
+    DEFAULT_MEASUREMENT_PAGE_SIZE,
+  );
+  if (limit > MAX_MEASUREMENT_PAGE_SIZE) {
+    throw new Error(`limit must be ${MAX_MEASUREMENT_PAGE_SIZE} or less.`);
+  }
+  const cursor = optionalString(input.cursor);
+  const startTimeAfter = parseOptionalDateValue(
+    input.startTimeAfter,
+    "startTimeAfter",
+  );
+  const startTimeBefore = parseOptionalDateValue(
+    input.startTimeBefore,
+    "startTimeBefore",
+  );
+  if (
+    startTimeAfter &&
+    startTimeBefore &&
+    startTimeAfter.getTime() > startTimeBefore.getTime()
+  ) {
+    throw new Error("startTimeAfter must be at or before startTimeBefore.");
+  }
+  const globalVariableId = optionalString(input.globalVariableId);
+  const variableName = optionalString(input.variableName);
+
+  const prisma = await getPrisma();
+  // Read-only variable lookup: unlike recordMeasurement this must never create
+  // a GlobalVariable, and an unknown name is an error rather than an empty page.
+  let variable: Prisma.GlobalVariableGetPayload<{
+    select: typeof TRACKING_VARIABLE_SELECT;
+  }> | null = null;
+  if (globalVariableId) {
+    variable = await prisma.globalVariable.findFirst({
+      select: TRACKING_VARIABLE_SELECT,
+      where: { deletedAt: null, id: globalVariableId },
+    });
+    if (!variable) {
+      throw new Error(`GlobalVariable not found: ${globalVariableId}`);
+    }
+  } else if (variableName) {
+    // Case-insensitive matches can be ambiguous: recordMeasurement looks up
+    // and creates variables by exact-case name, so "Vitamin D" and "vitamin d"
+    // can both exist despite the DB unique constraint being case-sensitive.
+    const matches = await prisma.globalVariable.findMany({
+      select: TRACKING_VARIABLE_SELECT,
+      where: {
+        deletedAt: null,
+        name: { equals: variableName, mode: "insensitive" as const },
+      },
+      take: 2,
+    });
+    if (matches.length === 0) {
+      throw new Error(`GlobalVariable not found: ${variableName}`);
+    }
+    if (matches.length > 1) {
+      throw new Error(
+        `Multiple variables match "${variableName}" case-insensitively. Use globalVariableId to disambiguate.`,
+      );
+    }
+    variable = matches[0] ?? null;
+  }
+
+  const rows = await prisma.measurement.findMany({
+    orderBy: [{ startTime: "desc" }, { id: "desc" }],
+    select: TRACKING_MEASUREMENT_SELECT,
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    where: {
+      deletedAt: null,
+      subject: { userId },
+      ...(variable ? { globalVariableId: variable.id } : {}),
+      ...(startTimeAfter || startTimeBefore
+        ? {
+            startTime: {
+              ...(startTimeAfter ? { gte: startTimeAfter } : {}),
+              ...(startTimeBefore ? { lte: startTimeBefore } : {}),
+            },
+          }
+        : {}),
+    },
+  });
+
+  const measurements = rows.slice(0, limit);
+  return {
+    measurements,
+    nextCursor:
+      rows.length > limit
+        ? (measurements[measurements.length - 1]?.id ?? null)
+        : null,
+    variable,
+  };
 }
 
 async function listTrackingRemindersForUser(
@@ -4934,6 +5057,41 @@ const TRACKING_TOOL_DEFINITIONS = [
         longitude: { type: "number" },
       },
       required: ["value"],
+    },
+  },
+  {
+    name: "listMeasurements",
+    description:
+      "List the authenticated user's own recorded measurements, newest first. Covers everything logged through recordMeasurement or a tracking-reminder response. Filter by globalVariableId or variableName for one variable, or omit both to see every variable. Use this to review logged doses, foods, symptoms, moods, sleep, activity, labs, and vitals, or to check whether a reminder was actually answered.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        globalVariableId: { type: "string" },
+        variableName: {
+          type: "string",
+          description:
+            "Variable name, matched case-insensitively. An unknown variable is an error, not an empty result.",
+        },
+        startTimeAfter: {
+          type: "string",
+          description:
+            "ISO date/time. Only measurements at or after this time.",
+        },
+        startTimeBefore: {
+          type: "string",
+          description:
+            "ISO date/time. Only measurements at or before this time.",
+        },
+        limit: {
+          type: "number",
+          description: `Page size. Default ${DEFAULT_MEASUREMENT_PAGE_SIZE}, maximum ${MAX_MEASUREMENT_PAGE_SIZE}.`,
+        },
+        cursor: {
+          type: "string",
+          description:
+            "nextCursor from the previous page. Repeat the same filters until nextCursor is null.",
+        },
+      },
     },
   },
   {
@@ -9283,6 +9441,15 @@ export function createMcpServer(
             return ok({
               result: await recordTrackingMeasurement(a, userId),
             });
+          }
+
+          case "listMeasurements": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool lists your personal tracking measurements.",
+              );
+            return ok(await listMeasurementsForUser(a, userId));
           }
 
           case "upsertTrackingReminder": {

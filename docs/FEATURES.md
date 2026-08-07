@@ -176,9 +176,9 @@ verified against `feature/private-execution-system` (2026-07-17).
 
 - **Layer:** personal
 - **Status:** implemented
-- **Summary:** Personal health-variable reminders can be created, edited in place, listed, queried by due date, and answered as tracked, skipped, or snoozed through MCP. Answering a tracked reminder writes a `Measurement`; reminders are queried on demand rather than delivered by a scheduler or UI.
-- **Evidence:** `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, and `respondToTrackingReminder` in packages/web/src/lib/mcp-server.ts
-- **Acceptance:** An authenticated caller can preserve a reminder's ID and response history while changing its schedule, and a tracked response writes a measurement.
+- **Summary:** Personal health-variable reminders can be created, edited in place, listed, queried by due date, and answered as tracked, skipped, or snoozed through MCP. Answering a tracked reminder writes a `Measurement`; `listMeasurements` reads those measurements back for one variable or all of them. Reminders are queried on demand rather than delivered by a scheduler or UI.
+- **Evidence:** `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, and `listMeasurements` in packages/web/src/lib/mcp-server.ts
+- **Acceptance:** An authenticated caller can preserve a reminder's ID and response history while changing its schedule, a tracked response writes a measurement, and `listMeasurements` returns that measurement scoped to the caller's own subject.
 - **Roadmap:** shipped MCP workflow — task-queue or push delivery remains in OPT-HEALTH-06.
 
 ### OPT-HEALTH-05 — Wearable/app health importers

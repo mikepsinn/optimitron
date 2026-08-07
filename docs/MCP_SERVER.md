@@ -410,6 +410,23 @@ Record it later:
 }
 ```
 
+Read back what has been logged with `listMeasurements`. Omit the variable
+filter to see every variable, or pass `variableName` / `globalVariableId` for
+one. Results are newest first and cover both direct `recordMeasurement` calls
+and measurements written by answering a tracking reminder:
+
+```json
+{
+  "variableName": "Greek yogurt",
+  "startTimeAfter": "2026-07-01T00:00:00Z",
+  "limit": 50
+}
+```
+
+An unknown variable name is an error rather than an empty page, so a typo does
+not read as "nothing logged". Pages return `nextCursor`; repeat the same call
+with `cursor` set until it is null.
+
 `serving`, `servings`, and the UCUM code `{serving}` resolve to the seeded
 `servings` unit. Use servings for simple behavior or adherence tracking. Use a
 specific mass, volume, energy, or nutrient unit such as `g`, `mL`, or `kcal`
@@ -460,7 +477,7 @@ disagree, those sources win.
 - Collections (structured records): `createCollection`, `updateCollection`, `getCollection`, `listCollections`, `createCollectionRecord`, `updateCollectionRecord`, `queryCollectionRecords`, `upsertCollectionRecordsBatch`, `saveCollectionView`.
 - Reviewed form responses: `findReviewedAnswers`, `prepareFormResponses`, `proposeFormSubmission`. Applications, surveys, RFPs, intake forms, and questionnaires can reuse person- or organization-owned text and narrative answers. Accepted answers are immutable document-revision artifacts; unresolved questions become private atomic tasks; the prepared text-response payload remains a pending external action until human approval. The normalized data model preserves typed free-form surveys; these MCP tools currently handle narrative fields only, not signatures, file uploads, or one-time typed controls.
 - Content: `searchContent`, `exportContent`, `manageContentAccess`, `manageContentFiles`, `reportContent`.
-- Health tracking (companion-loop stage 1): `recordMeasurement` and the reminder tools use `tasks:personal`; `recordInterventionExperience` uses `earthdata:write`. To reschedule or disable a reminder without replacing it, call `listTrackingReminders`, then pass its `trackingReminderId` and only the changed fields to `upsertTrackingReminder`.
+- Health tracking (companion-loop stage 1): `recordMeasurement`, `listMeasurements`, and the reminder tools use `tasks:personal`; `recordInterventionExperience` uses `earthdata:write`. `listMeasurements` reads back the caller's own measurements for any variable (or all variables), newest first, with cursor pagination. To reschedule or disable a reminder without replacing it, call `listTrackingReminders`, then pass its `trackingReminderId` and only the changed fields to `upsertTrackingReminder`.
 - Task templates: `getTaskTemplate`, `listTaskTemplates`, `previewTaskTemplate`.
 - Knowledge: `searchManual`, `askWishonia`, `searchRepo`, `getFileContent`, `listRepoFiles`, `listSitePages`, `getPageContent`.
 
