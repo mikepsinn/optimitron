@@ -3206,13 +3206,17 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("rejects anonymous calls to getMyQueue / getAIQueue / getQueueAudit with the same structured error", async () => {
+    it("rejects anonymous calls to getMyQueue / getAIQueue / getQueueAudit / listMeasurements with the same structured error", async () => {
       const client = await setup(undefined, ALL_SCOPES);
 
       for (const tool of [
         "getMyQueue",
         "getAIQueue",
         "getQueueAudit",
+        // Without the dispatch guard, listMeasurementsForUser would run with
+        // userId undefined, and Prisma would drop the `subject.userId` filter
+        // and return every user's measurements.
+        "listMeasurements",
       ] as const) {
         const result = await client.callTool({ name: tool, arguments: {} });
         expect(result.isError, `${tool} should error`).toBe(true);
