@@ -1031,6 +1031,23 @@ function buildParentInheritedImpactFrame(
     return null;
   }
 
+  // Never split a planning root's estimate across its children. The Optimize
+  // Earth root carries the entire cost of civilizational dysfunction, and
+  // person/organization roots carry that owner's whole portfolio, so an equal
+  // share is not an approximation of anything: with five missions under the
+  // root it hands an empty DRAFT stub the same EV and delay rates as an active
+  // campaign, and the /tasks "deaths from delay" and "wasted by delay"
+  // rankings inherit that fiction. A mission's value has to come from a real
+  // descendant roll-up or not at all.
+  if (
+    isReservedPlanningRootTask({
+      id: parentTask.id,
+      taskKey: parentTask.taskKey,
+    })
+  ) {
+    return null;
+  }
+
   const parentFrame = selectImpactFrame(
     parentTask.currentImpactEstimateSet,
     options?.frameKey ?? DEFAULT_TASK_IMPACT_FRAME,
