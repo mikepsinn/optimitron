@@ -540,6 +540,80 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       return { count };
     },
   };
+
+  edges: Array<{
+    id: string;
+    fromTaskId: string;
+    toTaskId: string;
+    edgeType: string;
+    calculationVersion: string | null;
+    probabilityDeltaBase: number | null;
+    timeDeltaDaysBase: number | null;
+    notes: string | null;
+    deletedAt: Date | null;
+  }> = [];
+
+  taskEdge = {
+    findMany: async (args: unknown) => {
+      const { where } = args as {
+        where: { calculationVersion?: string };
+      };
+      return this.edges.filter(
+        (edge) =>
+          !("calculationVersion" in where) ||
+          edge.calculationVersion === where.calculationVersion,
+      );
+    },
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          fromTaskId_toTaskId_edgeType: {
+            fromTaskId: string;
+            toTaskId: string;
+            edgeType: string;
+          };
+        };
+        create: Record<string, unknown>;
+        update: Record<string, unknown>;
+      };
+      const key = where.fromTaskId_toTaskId_edgeType;
+      const existing = this.edges.find(
+        (edge) =>
+          edge.fromTaskId === key.fromTaskId &&
+          edge.toTaskId === key.toTaskId &&
+          edge.edgeType === key.edgeType,
+      );
+      if (existing) {
+        Object.assign(existing, update);
+        return existing;
+      }
+      const edge = {
+        id: `edge-${this.edges.length + 1}`,
+        calculationVersion: null,
+        deletedAt: null,
+        notes: null,
+        probabilityDeltaBase: null,
+        timeDeltaDaysBase: null,
+        ...(create as Record<string, never>),
+      } as (typeof this.edges)[number];
+      this.edges.push(edge);
+      return edge;
+    },
+    updateMany: async (args: unknown) => {
+      const { where, data } = args as {
+        where: { id: { in: string[] } };
+        data: { deletedAt: Date };
+      };
+      let count = 0;
+      for (const edge of this.edges) {
+        if (where.id.in.includes(edge.id)) {
+          Object.assign(edge, data);
+          count += 1;
+        }
+      }
+      return { count };
+    },
+  };
 }
 
 class TransactionalFakeManagedTaskClient extends FakeManagedTaskClient {
@@ -999,6 +1073,119 @@ describe("syncManagedTasks", () => {
     expect(client.endpoints[0]).toMatchObject({
       deletedAt: now,
       isPrimary: false,
+    });
+  });
+
+  describe("managed task edges", () => {
+    const rootWithEdge: ManagedTaskRecord[] = [
+      {
+        id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+        parentTaskId: null,
+        title: "Root",
+        description: "Root.",
+      },
+      {
+        id: "mission-a",
+        taskKey: "mission:a",
+        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        title: "Mission A",
+        description: "A.",
+      },
+      {
+        id: "engine",
+        taskKey: "program:engine",
+        parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        title: "Engine",
+        description: "Serves A as well as its own parent.",
+        edges: [{ toTaskId: "mission-a" }],
+      },
+    ];
+
+    const run = (client: FakeManagedTaskClient, records: ManagedTaskRecord[]) =>
+      syncManagedTasks(client, {
+        apply: true,
+        collectionKey: "test-collection",
+        createdByUserId: "creator",
+        records,
+      });
+
+    it("creates a declared edge and defaults to INCREASES_PROBABILITY_OF", async () => {
+      const client = new FakeManagedTaskClient({ tasks: [] });
+      const result = await run(client, rootWithEdge);
+
+      expect(result.edgeUpserted).toEqual([
+        "engine->mission-a:INCREASES_PROBABILITY_OF",
+      ]);
+      expect(client.edges).toHaveLength(1);
+      expect(client.edges[0]).toMatchObject({
+        fromTaskId: "engine",
+        toTaskId: "mission-a",
+        edgeType: "INCREASES_PROBABILITY_OF",
+        calculationVersion: "managed-task-edges-v1",
+        // Null until a delta can be sourced -- an invented number would feed
+        // the EV engine silently.
+        probabilityDeltaBase: null,
+        deletedAt: null,
+      });
+    });
+
+    it("is idempotent across runs", async () => {
+      const client = new FakeManagedTaskClient({ tasks: [] });
+      await run(client, rootWithEdge);
+      const second = await run(client, rootWithEdge);
+
+      expect(second.edgeUpserted).toEqual([]);
+      expect(second.edgeRetired).toEqual([]);
+      expect(client.edges).toHaveLength(1);
+    });
+
+    it("retires an edge that is no longer declared", async () => {
+      const client = new FakeManagedTaskClient({ tasks: [] });
+      await run(client, rootWithEdge);
+
+      const withoutEdge = rootWithEdge.map((record) =>
+        record.id === "engine" ? { ...record, edges: [] } : record,
+      );
+      const result = await run(client, withoutEdge);
+
+      expect(result.edgeRetired).toHaveLength(1);
+      expect(client.edges[0]?.deletedAt).toBeInstanceOf(Date);
+    });
+
+    // Runtime edges (MCP addDependency, agent proposals) carry a different
+    // calculationVersion, so undeclaring a managed edge must not touch them.
+    it("leaves edges it does not own alone", async () => {
+      const client = new FakeManagedTaskClient({ tasks: [] });
+      client.edges.push({
+        id: "runtime-edge",
+        fromTaskId: "engine",
+        toTaskId: "mission-a",
+        edgeType: "BLOCKS",
+        calculationVersion: null,
+        probabilityDeltaBase: null,
+        timeDeltaDaysBase: null,
+        notes: null,
+        deletedAt: null,
+      });
+
+      const result = await run(client, rootWithEdge);
+
+      expect(result.edgeRetired).toEqual([]);
+      expect(
+        client.edges.find((edge) => edge.id === "runtime-edge")?.deletedAt,
+      ).toBeNull();
+    });
+
+    it("rejects a self-edge", async () => {
+      const client = new FakeManagedTaskClient({ tasks: [] });
+      const records = rootWithEdge.map((record) =>
+        record.id === "engine"
+          ? { ...record, edges: [{ toTaskId: "engine" }] }
+          : record,
+      );
+
+      await expect(run(client, records)).rejects.toThrow(/edge to itself/);
     });
   });
 });

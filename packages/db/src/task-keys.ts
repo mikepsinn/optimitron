@@ -55,6 +55,22 @@ export function isReservedPlanningRootTask(input: {
 export const END_WAR_AND_DISEASE_TASK_ID = "end-war-and-disease";
 export const END_WAR_AND_DISEASE_TASK_KEY = "program:end-war-and-disease";
 
+// Top-level mission layer: peer nodes directly under the Optimize Earth root.
+// `end-war-and-disease` above is the legacy combined node — demoted under
+// `end-war` until its runtime children are re-homed, then retired.
+
+export const END_WAR_TASK_ID = "end-war";
+export const END_WAR_TASK_KEY = "mission:end-war";
+export const END_DISEASE_TASK_ID = "end-disease";
+export const END_DISEASE_TASK_KEY = "mission:end-disease";
+export const END_POVERTY_TASK_ID = "end-poverty";
+export const END_POVERTY_TASK_KEY = "mission:end-poverty";
+export const PREVENT_EXTINCTION_TASK_ID = "prevent-extinction";
+export const PREVENT_EXTINCTION_TASK_KEY = "mission:prevent-extinction";
+export const MINIMIZE_ANIMAL_SUFFERING_TASK_ID = "minimize-animal-suffering";
+export const MINIMIZE_ANIMAL_SUFFERING_TASK_KEY =
+  "mission:minimize-animal-suffering";
+
 export const COURT_OF_HUMANITY_TASK_ID = "court-of-humanity";
 export const COURT_OF_HUMANITY_TASK_KEY = "program:court-of-humanity:establish";
 export const COURT_OF_HUMANITY_CHARTER_TASK_ID =

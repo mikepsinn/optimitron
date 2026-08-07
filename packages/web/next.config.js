@@ -30,6 +30,18 @@ const nextConfig = {
     // workers, so halving the pool costs seconds against a 420s budget that
     // currently finishes with ~135s to spare.
     cpus: 2,
+    // Third round of the same fight, 2026-08-07. With the worker pool already
+    // pinned, previews still OOM-killed intermittently -- this time during
+    // compilation, before static generation started. The heap ceiling is the
+    // remaining term: NODE_OPTIONS applies to every process, Next runs the
+    // server/edge/client compilations in parallel, and 2 x 5120 MB does not
+    // fit an 8 GB container. `build` now caps the heap at 3584 MB, so two
+    // concurrent compilations peak near 7 GB and leave room for overhead.
+    // Read the next failure's signature before tuning further: a kernel
+    // SIGKILL with Vercel's "OOM event detected" means total RSS is still too
+    // high (lower this further, or buy Enhanced Builds), whereas a Node
+    // "JavaScript heap out of memory" error means one process needs a bigger
+    // ceiling and this went one step too far.
     // `import { Foo } from "lucide-react"` defeats tree-shaking under Next.js
     // App Router unless the package is in this allow-list. With 83 files
     // importing icons + 44MB of lucide source on disk, this is the single

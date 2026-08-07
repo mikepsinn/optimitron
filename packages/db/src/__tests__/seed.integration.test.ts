@@ -11,7 +11,10 @@ import {
   setManagedSeedDataClient,
   syncManagedTreatyAccountabilityData,
 } from "../managed-data/managed-seed-data.js";
-import { END_WAR_AND_DISEASE_TASK_ID } from "../task-keys.js";
+import {
+  SHIRT_SEED_TASK_ID,
+  TREATY_PARENT_TASK_ID,
+} from "../task-keys.js";
 import {
   PersonConditionStatus,
   PersonLifeStatus,
@@ -235,16 +238,19 @@ describeIfDatabase("syncManagedData", () => {
         taskKey: teachAisTaskKey,
         title: "Teach the AIs how to end war and disease",
         descriptionSnippet: "get the correct answer into model training data",
+        expectedParentTaskId: TREATY_PARENT_TASK_ID,
       },
       {
         taskKey: "wishonia-coordinates-eod:2026-q3",
         title: "Wishonia coordinates Earth Optimization Missions",
         descriptionSnippet: "This task tracks the build + the AI credits that power it.",
+        expectedParentTaskId: TREATY_PARENT_TASK_ID,
       },
       {
         taskKey: "distribute-tshirts:2026-08-06",
         title: "Distribute t-shirts to 8 billion humans by August 6",
         descriptionSnippet: "The shirt is the conversation device",
+        expectedParentTaskId: SHIRT_SEED_TASK_ID,
       },
     ] as const;
     const grantTargets = [
@@ -352,7 +358,7 @@ describeIfDatabase("syncManagedData", () => {
         category: "OTHER",
         claimPolicy: "ASSIGNED_ONLY",
         isPublic: true,
-        parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+        parentTaskId: target.expectedParentTaskId,
         status: "ACTIVE",
         taskKey: target.taskKey,
         title: target.title,

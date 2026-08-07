@@ -13,6 +13,7 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskExecutionMode,
+  TaskStatus,
 } from "../generated/prisma/client.js";
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
@@ -35,8 +36,18 @@ import {
   COURT_OF_HUMANITY_TASK_KEY,
   DFDA_CREATE_TASK_ID,
   DFDA_CREATE_TASK_KEY,
+  END_DISEASE_TASK_ID,
+  END_DISEASE_TASK_KEY,
+  END_POVERTY_TASK_ID,
+  END_POVERTY_TASK_KEY,
   END_WAR_AND_DISEASE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_KEY,
+  END_WAR_TASK_ID,
+  END_WAR_TASK_KEY,
+  MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+  MINIMIZE_ANIMAL_SUFFERING_TASK_KEY,
+  PREVENT_EXTINCTION_TASK_ID,
+  PREVENT_EXTINCTION_TASK_KEY,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_KEY,
   HUMANITY_V_GOVERNMENT_CASE_NAME,
@@ -87,14 +98,14 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: null,
     title: "Optimize Earth",
     description: [
-      "The root task for civilization: increase median healthy life years and median after-tax income by forcing public resources toward welfare-maximizing work.",
+      "This is the root task. There are two goals. Increase the median number of healthy life years. Increase the median income after tax.",
       "",
-      "Current cost of delay: humanity is losing about $101 trillion per year to the [Political Dysfunction Tax](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html) — the gap between realized welfare and what a non-dysfunctional government would produce. That is the burn rate every child task below this one is fighting against.",
+      "Humanity loses approximately $101 trillion each year to the [Political Dysfunction Tax](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html). This is the difference between the welfare that governments produce and the welfare that governments can produce.",
       "",
-      "The current bottleneck is ending war and disease. Everything below this task should either help humans vote, recruit two more humans, register plaintiffs, summon jurors, remind leaders, or make the 1% Treaty credible enough to pass.",
+      "Each task below this task decreases that loss. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
     ].join("\n"),
     impactStatement:
-      "Every task below exists to move humanity from delay to welfare.",
+      "Each task below this task increases median healthy life years, increases median income, or increases the probability that humanity survives to have both.",
     // Overdue — `getTaskDelayStats` multiplies the per-day delay rates by
     // `currentDelayDays`, which is zero when `dueAt` is null. Without this the
     // root row shows $0 wasted / 0 deaths-from-delay even though the per-day
@@ -110,11 +121,130 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
         "Open the root task and choose the highest-leverage child task you can complete.",
     },
   },
+  // Mission layer: the deliberate set of peer nodes directly under the root.
+  // Missions carry no economics scalars — their EV is the roll-up of the
+  // strategies beneath them, and the sync skips impact writes without scalars,
+  // so an empty mission cannot inflate any ranking.
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    id: END_WAR_TASK_ID,
+    taskKey: END_WAR_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End War",
+    description: [
+      "This is a mission task. The goal is the end of war.",
+      "",
+      "Governments keep 12,241 nuclear warheads. Approximately 100 warheads are sufficient to end civilization. Governments thus keep 122 times more destructive capacity than necessary.",
+      "",
+      "Add a task below this task if the task decreases that capacity, or decreases the money that pays for it. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "These three tasks have the highest value now: the 1% Treaty, the Court of Humanity, and the Loving Takeover. If your task has a higher value, your task becomes the first task.",
+    ].join("\n"),
+    impactStatement:
+      "Governments keep 122 times more destructive capacity than civilization can survive. Each task below this task decreases that capacity, or decreases the money that pays for it.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -980,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: END_DISEASE_TASK_ID,
+    taskKey: END_DISEASE_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End Disease",
+    description: [
+      "This is a mission task. The goal is the end of disease.",
+      "",
+      "6,650 diseases have no approved treatment. Medical researchers add approximately 15 new treatments each year. A test of all the possible treatments thus needs approximately 443 years.",
+      "",
+      "Add a task below this task if the task decreases that time. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "Some tasks apply to this task and to the End War task at the same time. The 1% Treaty is an example. Money that pays for weapons is not available for medical tests.",
+    ].join("\n"),
+    impactStatement:
+      "Disease causes more lost healthy life years than any other condition. Each task below this task decreases the time to a treatment.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -970,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    id: END_POVERTY_TASK_ID,
+    taskKey: END_POVERTY_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End Poverty",
+    description: [
+      "This is a mission task. The goal is an increase of the median income of each person.",
+      "",
+      "Add a task below this task if the task increases the median real income after tax. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "Some tasks apply to this task and to the other mission tasks at the same time. The 1% Treaty, the Loving Takeover, and better public budgets are examples. War decreases income. Disease decreases income.",
+    ].join("\n"),
+    impactStatement:
+      "The median income is one of the two measurements of Earth optimization. Each task below this task increases it.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -960,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: PREVENT_EXTINCTION_TASK_ID,
+    taskKey: PREVENT_EXTINCTION_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "Prevent Extinction",
+    description: [
+      "This is a mission task. The goal is the survival of humanity.",
+      "",
+      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "",
+      "Toby Ord estimates the probability of an existential catastrophe in this century at approximately 1 in 6. The largest part is unaligned artificial intelligence at approximately 1 in 10. Engineered pandemics are approximately 1 in 30. Nuclear war is approximately 1 in 1,000.",
+      "",
+      "An extinction event sets the value of every other mission task to zero. This task therefore multiplies the other mission tasks. It does not compete with them.",
+      "",
+      "Add a task below this task if the task decreases one of these probabilities. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
+    ].join("\n"),
+    impactStatement:
+      "An extinction event sets the value of all other work to zero. Each task below this task decreases the probability of that event.",
+    interestTags: [],
+    // DRAFT + no economics scalars, same rule as the animal-suffering stub: a
+    // mission with nothing under it stays visible as intent without entering
+    // active queues or EV roll-ups.
+    status: TaskStatus.DRAFT,
+    sortOrder: -955,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OTHER,
+    id: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    taskKey: MINIMIZE_ANIMAL_SUFFERING_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "Minimize Animal Suffering",
+    description: [
+      "This is a mission task. The goal is a decrease of the suffering of animals.",
+      "",
+      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "",
+      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. Persons give approximately $260 million each year to decrease this suffering. This is approximately 0.3 cents for each land animal.",
+      "",
+      "Add a task below this task. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
+    ].join("\n"),
+    impactStatement:
+      "This task has no expected value now. Add tasks and data below it before you compare this task to other tasks.",
+    interestTags: [],
+    // DRAFT + no economics scalars: the stub stays visible as intent without
+    // entering active queues or EV roll-ups.
+    status: TaskStatus.DRAFT,
+    sortOrder: -950,
+  },
   {
     ...defaultTaskFields,
     id: END_WAR_AND_DISEASE_TASK_ID,
     taskKey: END_WAR_AND_DISEASE_TASK_KEY,
-    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    // Legacy combined node, demoted off the root under End War. Its runtime
+    // children (end-dementia, cognitron-labs, gov-tomorrow, ...) are re-homed
+    // via MCP after this deploys; retire the node once they are moved.
+    parentTaskId: END_WAR_TASK_ID,
     title: "End War and Disease",
     description: [
       "Run the international campaign to end war on disease.",
@@ -136,7 +266,13 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.LEGAL,
     id: COURT_OF_HUMANITY_TASK_ID,
     taskKey: COURT_OF_HUMANITY_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
+    // The court's whole purpose is to force the treaty settlement, so it
+    // inherits the treaty's mission set.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+    ],
     title: "Establish the Court of Humanity",
     description: [
       "Make the Court of Humanity legible as the institution where humans can judge governments that spend public resources against the general welfare.",
@@ -297,7 +433,18 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.GOVERNANCE,
     id: TREATY_PARENT_TASK_ID,
     taskKey: TREATY_PARENT_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
+    // The treaty serves every mission. It cuts military spending (End War),
+    // funds pragmatic trials with the proceeds (End Disease), pays a peace
+    // dividend (End Poverty), and takes a bite out of the nuclear arsenal
+    // (Prevent Extinction). End War is the roll-up parent because that is
+    // where the treaty acts; the rest are edges so the value is claimed once.
+    // Deltas stay null until they can be sourced from the parameter catalog.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+      { toTaskId: PREVENT_EXTINCTION_TASK_ID },
+    ],
     title: TREATY_PARENT_TASK_TITLE,
     description:
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
@@ -361,7 +508,13 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: LOVING_TAKEOVER_TASK_ID,
     taskKey: LOVING_TAKEOVER_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
+    // Redirects contractor lobbying toward the treaty, and the shareholder
+    // case is explicitly an income argument.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+    ],
     title: "The Loving Takeover",
     description: [
       "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
@@ -457,7 +610,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: EARTH_OPTIMIZATION_PRIZE_TASK_ID,
     taskKey: EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Funds the treaty referendum — serves the missions through the treaty.
+    parentTaskId: TREATY_PARENT_TASK_ID,
     title: "Fund the referendum: the Earth Optimization Prize",
     description: [
       "Deposit, earn yield, fund the vote of all humanity.",
@@ -483,7 +637,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: EOS_CAPITALIZE_TASK_ID,
     taskKey: EOS_CAPITALIZE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Capital for the whole machine; primary under End War (the campaign it
+    // funds first), edged to the other missions via TaskEdge after deploy.
+    parentTaskId: END_WAR_TASK_ID,
     title: "Capitalize Earth Optimization Services",
     description: [
       "Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget.",
@@ -543,7 +699,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     isPublic: false,
     id: TASK_GRAPH_STEWARD_TASK_ID,
     taskKey: TASK_GRAPH_STEWARD_TASK_KEY,
-    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    // Operational agent work, not a mission — lives under the dev program so
+    // the root keeps only missions + org/personal/dev containers.
+    parentTaskId: OPTIMITRON_DEV_TASK_ID,
     title: "Steward the Optimize Earth task graph",
     description: [
       "Continuously keep the Optimize Earth task tree coherent, complete, and routable.",
@@ -598,7 +756,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.RESEARCH,
     id: DFDA_CREATE_TASK_ID,
     taskKey: DFDA_CREATE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_DISEASE_TASK_ID,
+    // Cheaper trials mean less disease, and disease is a drag on income.
+    edges: [{ toTaskId: END_POVERTY_TASK_ID }],
     title: "Fund the decentralized FDA directly",
     description: [
       "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
@@ -622,7 +782,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.OUTREACH,
     id: SHIRT_SEED_TASK_ID,
     taskKey: SHIRT_SEED_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Campaign tactic whose payoff is treaty votes — hangs under the treaty.
+    parentTaskId: TREATY_PARENT_TASK_ID,
     title: "Seed the shirt cascade",
     description: [
       "Fund a seed of visible wearers — athletes, public figures, anyone with an audience — to wear the War on Disease shirt on Earth Optimization Day, triggering the cascade where everyone else writes the message on a shirt they already own for the cost of a marker.",

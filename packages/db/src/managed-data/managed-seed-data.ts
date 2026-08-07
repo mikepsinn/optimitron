@@ -45,11 +45,11 @@ import {
 import {
   COURT_OF_HUMANITY_TASK_ID,
   COURT_OF_HUMANITY_TASK_KEY,
-  END_WAR_AND_DISEASE_TASK_ID,
   LOVING_TAKEOVER_TASK_ID,
   LOVING_TAKEOVER_TASK_KEY,
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   REFERRAL_INVITATION_TASK_KEY_PREFIX,
+  SHIRT_SEED_TASK_ID,
   TREATY_PARENT_TASK_ID,
   TREATY_PARENT_TASK_KEY,
   USER_TREATY_TASK_KEY_PREFIX,
@@ -1623,10 +1623,14 @@ export async function syncManagedTreatyAccountabilityData() {
     "Grant credits + alignment-feedback partnership for the International Campaign to End War and Disease";
   const ALIGNMENT_FUNDER_GRANT_TASK_TITLE =
     "Grant for /fix-ai mass-feedback alignment intervention";
+  // Campaign tactics whose payoff is treaty votes hang under the treaty; the
+  // shirt-distribution tracker hangs under the shirt-seed mechanism. (These
+  // previously sat flat under the retired-in-progress End War and Disease node.)
   const intermediateParentTasks = [
     {
       id: TEACH_AIS_TASK_KEY,
       taskKey: TEACH_AIS_TASK_KEY,
+      parentTaskId: TREATY_PARENT_TASK_ID,
       title: "Teach the AIs how to end war and disease",
       description:
         "When humans ask frontier AI models how to end war and disease, the current models give wrong, vague, or refusal answers. This task tracks the work to fix that — through grant requests to the labs, mass thumbs-down feedback on wrong answers, alignment-grant outreach, and engineering partnerships to get the correct answer into model training data.",
@@ -1635,6 +1639,7 @@ export async function syncManagedTreatyAccountabilityData() {
     {
       id: "wishonia-coordinates-eod:2026-q3",
       taskKey: "wishonia-coordinates-eod:2026-q3",
+      parentTaskId: TREATY_PARENT_TASK_ID,
       title: "Wishonia coordinates Earth Optimization Missions",
       description:
         "Pair humans for one hour. The campaign's Wishonia AI tells each pair what to do in their hour to optimize Earth, ranked by impact-per-minute, using the campaign's parameter catalog + manual. This task tracks the build + the AI credits that power it.",
@@ -1643,6 +1648,7 @@ export async function syncManagedTreatyAccountabilityData() {
     {
       id: "distribute-tshirts:2026-08-06",
       taskKey: "distribute-tshirts:2026-08-06",
+      parentTaskId: SHIRT_SEED_TASK_ID,
       title: "Distribute t-shirts to 8 billion humans by August 6",
       description:
         "One t-shirt per human on Earth Optimization Day. The shirt is the conversation device; the conversation triggers the treaty vote; the treaty redirects 1% of military spending to clinical trials. This task tracks shirt distribution: bulk print orders, foundation funding for distribution, individual pledges to buy and wear.",
@@ -1728,7 +1734,6 @@ export async function syncManagedTreatyAccountabilityData() {
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       dueAt: LAB_GRANT_DUE_AT,
       isPublic: true,
-      parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
       status: "ACTIVE",
     } satisfies Omit<Prisma.TaskUncheckedCreateInput, "createdByUserId">;
 

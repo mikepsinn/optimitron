@@ -397,7 +397,7 @@ export const CHILDHOOD_VACCINATION_ANNUAL_BENEFIT: Parameter = {
   sourceRef: "childhood-vaccination-economic-benefits",
   sourceUrl: "https://www.cdc.gov/mmwr/volumes/73/wr/mm7331a2.htm",
   confidence: "high",
-  confidenceInterval: [8881369332.997551, 23098070204.486595],
+  confidenceInterval: [8881369333.0, 23098070204.5],
   stdError: 4500000000.0,
   distribution: "lognormal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -430,7 +430,7 @@ export const CHRONIC_DISEASE_DISABILITY_WEIGHT: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "medium",
-  confidenceInterval: [0.2363571227683438, 0.4648472742290111],
+  confidenceInterval: [0.236357122768, 0.464847274229],
   stdError: 0.07,
   peerReviewed: true,
   distribution: "normal",
@@ -935,7 +935,7 @@ export const EFFICACY_LAG_YEARS: Parameter = {
   sourceUrl: "https://go.bio.org/rs/490-EHZ-999/images/ClinicalDevelopmentSuccessRates2011_2020.pdf",
   confidence: "medium",
   formula: "TOTAL_TIME_TO_MARKET - PHASE_1_DURATION",
-  confidenceInterval: [4.8429762807029855, 11.47494853001451],
+  confidenceInterval: [4.8429762807, 11.47494853],
   stdError: 2.0,
   peerReviewed: true,
   distribution: "normal",
@@ -1251,7 +1251,7 @@ export const GLOBAL_ANNUAL_DALY_BURDEN: Parameter = {
   sourceRef: "ihme-gbd-2021",
   sourceUrl: "https://vizhub.healthdata.org/gbd-results/",
   confidence: "high",
-  confidenceInterval: [2632672911.176821, 3121851291.068878],
+  confidenceInterval: [2632672911.18, 3121851291.07],
   stdError: 150000000.0,
   peerReviewed: true,
   distribution: "normal",
@@ -1270,7 +1270,7 @@ export const GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "high",
-  confidenceInterval: [46636893.58211727, 63216786.583999656],
+  confidenceInterval: [46636893.5821, 63216786.584],
   stdError: 5000000.0,
   distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -1646,7 +1646,7 @@ export const GLOBAL_DISEASE_DEATHS_DAILY: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "high",
-  confidenceInterval: [137409.05928536973, 162269.6857120004],
+  confidenceInterval: [137409.059285, 162269.685712],
   stdError: 7500.0,
   peerReviewed: true,
   distribution: "normal",
@@ -1713,7 +1713,7 @@ export const GLOBAL_GDP_PER_CAPITA_1900: Parameter = {
   sourceRef: "maddison-project-2020",
   sourceUrl: "https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2020",
   confidence: "medium",
-  confidenceInterval: [2313.603302772775, 3962.791913577894],
+  confidenceInterval: [2313.60330277, 3962.79191358],
   stdError: 500.0,
   distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -1765,7 +1765,7 @@ export const GLOBAL_HALE_CURRENT: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "high",
-  confidenceInterval: [60.81999268845462, 65.80343543325759],
+  confidenceInterval: [60.8199926885, 65.8034354333],
   stdError: 1.5,
   peerReviewed: true,
   distribution: "normal",
@@ -1815,7 +1815,7 @@ export const GLOBAL_LIFE_EXPECTANCY_2024: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "high",
-  confidenceInterval: [70.07635756619386, 76.64311937134995],
+  confidenceInterval: [70.0763575662, 76.6431193713],
   stdError: 2.0,
   peerReviewed: true,
   distribution: "normal",
@@ -2126,7 +2126,7 @@ export const GLOBAL_YLD_PROPORTION_OF_DALYS: Parameter = {
   sourceRef: "ihme-gbd-2021",
   sourceUrl: "https://vizhub.healthdata.org/gbd-results/",
   confidence: "high",
-  confidenceInterval: [0.33994915304252754, 0.4394859756318045],
+  confidenceInterval: [0.339949153043, 0.439485975632],
   stdError: 0.03,
   peerReviewed: true,
   distribution: "normal",
@@ -2791,7 +2791,7 @@ export const PHASE_2_3_CLINICAL_TRIAL_COST_PCT: Parameter = {
   sourceRef: "global-clinical-trials-market-2024",
   sourceUrl: "https://www.globenewswire.com/news-release/2024/04/19/2866012/0/en/Global-Clinical-Trials-Market-Research-Report-2024-An-83-16-Billion-Market-by-2030-AI-Machine-Learning-and-Blockchain-will-Transform-the-Clinical-Trials-Landscape.html",
   confidence: "high",
-  confidenceInterval: [0.6086205764628275, 0.771407087627539],
+  confidenceInterval: [0.608620576463, 0.771407087628],
   stdError: 0.05,
   distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -3115,7 +3115,7 @@ export const REGULATORY_DELAY_MEAN_AGE_OF_DEATH: Parameter = {
   sourceRef: "who-global-health-estimates-2024",
   sourceUrl: "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates",
   confidence: "medium",
-  confidenceInterval: [57.07648727810517, 66.94117008832698],
+  confidenceInterval: [57.0764872781, 66.9411700883],
   stdError: 3.0,
   peerReviewed: true,
   distribution: "normal",
@@ -3299,7 +3299,7 @@ export const STANDARD_ECONOMIC_QALY_VALUE_USD: Parameter = {
   sourceRef: "qaly-value",
   sourceUrl: "https://icer.org/wp-content/uploads/2024/02/Reference-Case-4.3.25.pdf",
   confidence: "high",
-  confidenceInterval: [100383.76953012965, 198679.3124086564],
+  confidenceInterval: [100383.76953, 198679.312409],
   stdError: 30000.0,
   distribution: "normal",
   validationMin: 100_000,
@@ -3319,7 +3319,7 @@ export const STANDARD_QALYS_PER_LIFE_SAVED: Parameter = {
   sourceRef: "qaly-value",
   sourceUrl: "https://icer.org/wp-content/uploads/2024/02/Reference-Case-4.3.25.pdf",
   confidence: "high",
-  confidenceInterval: [23.366102126615246, 46.395935125669816],
+  confidenceInterval: [23.3661021266, 46.3959351257],
   stdError: 7.0,
   distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -4138,7 +4138,7 @@ export const US_TOTAL_LOBBYING_ANNUAL: Parameter = {
 };
 
 export const US_VOTE_DECISIVE_PROBABILITY: Parameter = {
-  value: 1.6666666666666667e-08,
+  value: 1.66666666667e-08,
   parameterName: "US_VOTE_DECISIVE_PROBABILITY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_vote_decisive_probability",
   unit: "probability",
@@ -4311,7 +4311,7 @@ export const ADDITIONAL_DRUGS_FROM_COST_ELIMINATION: Parameter = {
   confidence: "medium",
   formula: "CURRENT_APPROVALS × VALLEY_OF_DEATH_PCT",
   latex: "\\begin{gathered}\nDrugs_{new} \\\\\n= Drugs_{ann,curr} \\times Attrition_{valley} \\\\\n= 50 \\times 40\\% \\\\\n= 20\n\\end{gathered}",
-  confidenceInterval: [13.070666318568255, 27.466007495286444],
+  confidenceInterval: [13.0706663186, 27.4660074953],
   inputs: ["CURRENT_DRUG_APPROVALS_PER_YEAR", "VALLEY_OF_DEATH_ATTRITION_PCT"],
   computeExpr: "(CURRENT_DRUG_APPROVALS_PER_YEAR * VALLEY_OF_DEATH_ATTRITION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -4319,7 +4319,7 @@ export const ADDITIONAL_DRUGS_FROM_COST_ELIMINATION: Parameter = {
 };
 
 export const APOCALYPSE_MARKUP: Parameter = {
-  value: 2719248427416.0605,
+  value: 2719248427420.0,
   parameterName: "APOCALYPSE_MARKUP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-apocalypse_markup",
   unit: "USD",
@@ -4336,7 +4336,7 @@ export const APOCALYPSE_MARKUP: Parameter = {
 };
 
 export const APOCALYPSE_MARKUP_MULTIPLIER: Parameter = {
-  value: 3619.078260869565,
+  value: 3619.07826087,
   parameterName: "APOCALYPSE_MARKUP_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-apocalypse_markup_multiplier",
   unit: "x",
@@ -4346,7 +4346,7 @@ export const APOCALYPSE_MARKUP_MULTIPLIER: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / PRICE_OF_APOCALYPSE",
   latex: "\\begin{gathered}\nM_{apocalypse,x} = \\frac{Spending_{mil}}{P_{apocalypse}} = \\frac{\\$2.72T}{\\$752M} = 3{,}620\n\\\\[0.5em]\n\\text{where } P_{apocalypse} = \\frac{S_{nuke}}{Overkill_{winter}} = \\frac{\\$92B}{122} = \\$752M\n\\\\[0.5em]\n\\text{where } Overkill_{winter} = \\frac{W_{global}}{W_{winter}} = \\frac{12{,}200}{100} = 122\n\\end{gathered}",
-  confidenceInterval: [1258.6489497229195, 5859.786529997165],
+  confidenceInterval: [1258.64894972, 5859.78653],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "PRICE_OF_APOCALYPSE"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / PRICE_OF_APOCALYPSE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -4364,7 +4364,7 @@ export const AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX: Parameter = {
   confidence: "high",
   formula: "TRANSACTIONS × ALL_IN_COST_PER_TRANSACTION",
   latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Automated_{annual} \\times Cost_{all} \\\\\n= 500B \\times \\$0.0003 \\\\\n= \\$150M\n\\end{gathered}",
-  confidenceInterval: [50000000.0, 364641188.53458035],
+  confidenceInterval: [50000000.0, 364641188.535],
   inputs: ["AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME", "AUTOMATED_REVENUE_SERVICE_ALL_IN_COST_PER_TRANSACTION"],
   computeExpr: "(AUTOMATED_REVENUE_SERVICE_ANNUAL_TRANSACTION_VOLUME * AUTOMATED_REVENUE_SERVICE_ALL_IN_COST_PER_TRANSACTION)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
@@ -4372,7 +4372,7 @@ export const AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX: Parameter = {
 };
 
 export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
-  value: 1666.1791044776119,
+  value: 1666.17910448,
   parameterName: "AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-automated_revenue_service_savings_per_american_annual",
   unit: "USD",
@@ -4382,7 +4382,7 @@ export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = 
   confidence: "high",
   formula: "(TAX_COMPLIANCE_BURDEN + IRS_BUDGET − ARS_BUDGET) / US_POPULATION",
   latex: "\\begin{gathered}\nSavings_{ann} = (\\text{TAX\\_COMPLIANCE\\_BURDEN} + \\text{IRS\\_BUDGET} − \\text{ARS\\_BUDGET}) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\end{gathered}",
-  confidenceInterval: [1418.398731450049, 1917.2332431165862],
+  confidenceInterval: [1418.39873145, 1917.23324312],
   inputs: ["US_GOV_WASTE_TAX_COMPLIANCE", "IRS_ANNUAL_OPERATING_BUDGET", "AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX", "US_POPULATION_2024"],
   computeExpr: "(((US_GOV_WASTE_TAX_COMPLIANCE + IRS_ANNUAL_OPERATING_BUDGET) - AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX) / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/automated-revenue-service.html",
@@ -4390,7 +4390,7 @@ export const AUTOMATED_REVENUE_SERVICE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = 
 };
 
 export const BEST_PRACTICE_LIFE_EXPECTANCY_GAIN: Parameter = {
-  value: 10.699999999999989,
+  value: 10.7,
   parameterName: "BEST_PRACTICE_LIFE_EXPECTANCY_GAIN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-best_practice_life_expectancy_gain",
   unit: "years",
@@ -4400,7 +4400,7 @@ export const BEST_PRACTICE_LIFE_EXPECTANCY_GAIN: Parameter = {
   confidence: "high",
   formula: "max(SWITZERLAND_LIFE_EXPECTANCY, SINGAPORE_LIFE_EXPECTANCY) - GLOBAL_LIFE_EXPECTANCY_2024",
   latex: "\\begin{gathered}\n\\Delta LE_{best} \\\\\n= \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [7.456880628650036, 14.023642433806133],
+  confidenceInterval: [7.45688062865, 14.0236424338],
   inputs: ["SWITZERLAND_LIFE_EXPECTANCY", "SINGAPORE_LIFE_EXPECTANCY", "GLOBAL_LIFE_EXPECTANCY_2024"],
   computeExpr: "(Math.max(SWITZERLAND_LIFE_EXPECTANCY, SINGAPORE_LIFE_EXPECTANCY) - GLOBAL_LIFE_EXPECTANCY_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -4418,7 +4418,7 @@ export const BULLETS_PER_PERSON_ANNUAL: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_BULLETS_PURCHASABLE_ANNUAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nn_{bullets/person} = \\frac{N_{bullets,yr}}{Pop_{global}} = \\frac{6.8T}{8B} = 850\n\\\\[0.5em]\n\\text{where } N_{bullets,yr} = \\frac{Spending_{mil}}{c_{bullet}} = \\frac{\\$2.72T}{\\$0.4} = 6.8T\n\\end{gathered}",
-  confidenceInterval: [583.5669497340577, 1270.8061967355488],
+  confidenceInterval: [583.566949734, 1270.80619674],
   inputs: ["GLOBAL_BULLETS_PURCHASABLE_ANNUAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_BULLETS_PURCHASABLE_ANNUAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -4436,7 +4436,7 @@ export const CELL_THERAPY_DISEASE_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "CELL_APPROACHES × DISEASES",
   latex: "\\begin{gathered}\nCombos_{cell} \\\\\n= N_{cell} \\times N_{diseases,trial} \\\\\n= 500 \\times 1{,}000 \\\\\n= 500{,}000\n\\end{gathered}",
-  confidenceInterval: [314340.2877407204, 827736.924374607],
+  confidenceInterval: [314340.287741, 827736.924375],
   inputs: ["CELL_THERAPY_APPROACHES", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(CELL_THERAPY_APPROACHES * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -4444,7 +4444,7 @@ export const CELL_THERAPY_DISEASE_COMBINATIONS: Parameter = {
 };
 
 export const CHAIN_ENGAGE_PROBABILITY: Parameter = {
-  value: 0.09999999999999998,
+  value: 0.1,
   parameterName: "CHAIN_ENGAGE_PROBABILITY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chain_engage_probability",
   unit: "rate",
@@ -4454,7 +4454,7 @@ export const CHAIN_ENGAGE_PROBABILITY: Parameter = {
   confidence: "high",
   formula: "1 - CHAIN_DISMISS_PROBABILITY",
   latex: "P_{engage} = 1 - P_{dismiss} = 1 - 90\\% = 10\\%",
-  confidenceInterval: [0.03918652791994644, 0.18181839099166636],
+  confidenceInterval: [0.0391865279199, 0.181818390992],
   inputs: ["CHAIN_DISMISS_PROBABILITY"],
   computeExpr: "(1.0 - CHAIN_DISMISS_PROBABILITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -4462,7 +4462,7 @@ export const CHAIN_ENGAGE_PROBABILITY: Parameter = {
 };
 
 export const CHAIN_EXPECTED_ENGAGED_IMPLEMENTERS: Parameter = {
-  value: 3.478910443764937,
+  value: 3.47891044376,
   parameterName: "CHAIN_EXPECTED_ENGAGED_IMPLEMENTERS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chain_expected_engaged_implementers",
   unit: "people",
@@ -4472,7 +4472,7 @@ export const CHAIN_EXPECTED_ENGAGED_IMPLEMENTERS: Parameter = {
   confidence: "high",
   formula: "P_reach x CHAIN_ENGAGE_PROBABILITY x CHAIN_IMPLEMENTER_COUNT",
   latex: "E[N_{engaged}] = P_{reach} \\times P_{engage} \\times N_{impl}",
-  confidenceInterval: [0.12018096977249705, 12.288337984109111],
+  confidenceInterval: [0.120180969772, 12.2883379841],
   inputs: ["CHAIN_IMPLEMENTER_ORBIT_SIZE", "CHAIN_EFFECTIVE_R", "CHAIN_INITIAL_AUDIENCE", "CHAIN_ENGAGE_PROBABILITY", "CHAIN_IMPLEMENTER_COUNT"],
   computeExpr: "(((1.0 - Math.pow((1.0 - (CHAIN_IMPLEMENTER_ORBIT_SIZE / 5000000000.0)), (CHAIN_INITIAL_AUDIENCE * (((1.0 + CHAIN_EFFECTIVE_R) + Math.pow(CHAIN_EFFECTIVE_R, 2.0)) + Math.pow(CHAIN_EFFECTIVE_R, 3.0))))) * CHAIN_ENGAGE_PROBABILITY) * CHAIN_IMPLEMENTER_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -4497,7 +4497,7 @@ export const CHAIN_IMPLEMENTER_COUNT: Parameter = {
 };
 
 export const CHAIN_P_AT_LEAST_ONE_ENGAGES: Parameter = {
-  value: 0.9692217015578317,
+  value: 0.969221701558,
   parameterName: "CHAIN_P_AT_LEAST_ONE_ENGAGES",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chain_p_at_least_one_engages",
   unit: "percent",
@@ -4507,7 +4507,7 @@ export const CHAIN_P_AT_LEAST_ONE_ENGAGES: Parameter = {
   confidence: "high",
   formula: "1 - CHAIN_P_NO_IMPLEMENTER_ENGAGES",
   latex: "\\begin{gathered}\nP_{reach} = 1 - P_{none} = 1 - 3.08\\% = 96.9\\%\n\\\\[0.5em]\n\\text{where } P_{none} = \\left(1 - P_{reach} \\cdot P_{engage}\\right)^{N_{impl}}\n\\\\[0.5em]\n\\text{where } P_{engage} = 1 - P_{dismiss} = 1 - 90\\% = 10\\%\n\\\\[0.5em]\n\\text{where } N_{impl} = N_{billionaire} + N_{leader} = 2{,}780 + 195 = 2{,}980\n\\end{gathered}",
-  confidenceInterval: [0.11324220518268487, 0.9999955105369664],
+  confidenceInterval: [0.113242205183, 0.999995510537],
   inputs: ["CHAIN_P_NO_IMPLEMENTER_ENGAGES"],
   computeExpr: "(1.0 - CHAIN_P_NO_IMPLEMENTER_ENGAGES)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -4515,7 +4515,7 @@ export const CHAIN_P_AT_LEAST_ONE_ENGAGES: Parameter = {
 };
 
 export const CHAIN_P_ENCOUNTER_DIRECT_10YR: Parameter = {
-  value: 0.011689887243833796,
+  value: 0.0116898872438,
   parameterName: "CHAIN_P_ENCOUNTER_DIRECT_10YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chain_p_encounter_direct_10yr",
   unit: "rate",
@@ -4525,7 +4525,7 @@ export const CHAIN_P_ENCOUNTER_DIRECT_10YR: Parameter = {
   confidence: "high",
   formula: "1 - (1 - CHAIN_IMPLEMENTER_ORBIT_SIZE / 5B)^(CHAIN_INITIAL_AUDIENCE x cascade_multiplier)",
   latex: "\\begin{gathered}\nP_{reach} \\\\\n= 1 - \\left(1 - \\frac{O_{impl}}{N}\\right)^{N_0 \\cdot \\sum_{i=0}^{3} R_{eff}^i}\n\\end{gathered}",
-  confidenceInterval: [0.00048462410731555663, 0.041446323970525646],
+  confidenceInterval: [0.000484624107316, 0.0414463239705],
   inputs: ["CHAIN_IMPLEMENTER_ORBIT_SIZE", "CHAIN_EFFECTIVE_R", "CHAIN_INITIAL_AUDIENCE"],
   computeExpr: "(1.0 - Math.pow((1.0 - (CHAIN_IMPLEMENTER_ORBIT_SIZE / 5000000000.0)), (CHAIN_INITIAL_AUDIENCE * (((1.0 + CHAIN_EFFECTIVE_R) + Math.pow(CHAIN_EFFECTIVE_R, 2.0)) + Math.pow(CHAIN_EFFECTIVE_R, 3.0)))))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -4533,7 +4533,7 @@ export const CHAIN_P_ENCOUNTER_DIRECT_10YR: Parameter = {
 };
 
 export const CHAIN_P_NO_IMPLEMENTER_ENGAGES: Parameter = {
-  value: 0.030778298442168252,
+  value: 0.0307782984422,
   parameterName: "CHAIN_P_NO_IMPLEMENTER_ENGAGES",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chain_p_no_implementer_engages",
   unit: "rate",
@@ -4543,7 +4543,7 @@ export const CHAIN_P_NO_IMPLEMENTER_ENGAGES: Parameter = {
   confidence: "high",
   formula: "(1 - P_reach x CHAIN_ENGAGE_PROBABILITY)^CHAIN_IMPLEMENTER_COUNT",
   latex: "\\begin{gathered}\nP_{none} \\\\\n= \\left(1 - P_{reach} \\cdot P_{engage}\\right)^{N_{impl}}\n\\end{gathered}",
-  confidenceInterval: [4.4894630335827985e-06, 0.886757794817315],
+  confidenceInterval: [4.48946303358e-06, 0.886757794817],
   inputs: ["CHAIN_IMPLEMENTER_ORBIT_SIZE", "CHAIN_EFFECTIVE_R", "CHAIN_INITIAL_AUDIENCE", "CHAIN_ENGAGE_PROBABILITY", "CHAIN_IMPLEMENTER_COUNT"],
   computeExpr: "Math.pow((1.0 - ((1.0 - Math.pow((1.0 - (CHAIN_IMPLEMENTER_ORBIT_SIZE / 5000000000.0)), (CHAIN_INITIAL_AUDIENCE * (((1.0 + CHAIN_EFFECTIVE_R) + Math.pow(CHAIN_EFFECTIVE_R, 2.0)) + Math.pow(CHAIN_EFFECTIVE_R, 3.0))))) * CHAIN_ENGAGE_PROBABILITY)), CHAIN_IMPLEMENTER_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -4551,7 +4551,7 @@ export const CHAIN_P_NO_IMPLEMENTER_ENGAGES: Parameter = {
 };
 
 export const CHRONIC_DISEASE_TREATED_PATIENTS_ANNUAL: Parameter = {
-  value: 981917808.2191781,
+  value: 981917808.219,
   parameterName: "CHRONIC_DISEASE_TREATED_PATIENTS_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-chronic_disease_treated_patients_annual",
   unit: "people",
@@ -4563,7 +4563,7 @@ export const CHRONIC_DISEASE_TREATED_PATIENTS_ANNUAL: Parameter = {
   confidence: "low",
   formula: "GLOBAL_CHRONIC_THERAPY_DAYS ÷ 365 ÷ 2.5 × 0.70",
   latex: "\\begin{gathered}\nN_{treated} \\\\\n= DOT_{chronic} \\times 0.000767 \\\\\n= 1.28T \\times 0.000767 \\\\\n= 982M\n\\end{gathered}",
-  confidenceInterval: [830530629.0276641, 1150660527.8654659],
+  confidenceInterval: [830530629.028, 1150660527.87],
   inputs: ["GLOBAL_CHRONIC_THERAPY_DAYS_ANNUAL"],
   computeExpr: "(((GLOBAL_CHRONIC_THERAPY_DAYS_ANNUAL / 365.0) / 2.5) * 0.7)",
   validationMin: 500_000_000,
@@ -4583,7 +4583,7 @@ export const CLINICAL_TRIAL_COST_PER_APPROVED_DRUG: Parameter = {
   confidence: "high",
   formula: "TOTAL_TRIAL_SPENDING / NEW_DRUGS",
   latex: "\\begin{gathered}\nCost_{trial,drug} \\\\\n= \\frac{Spending_{trials}}{Drugs_{ann,curr}} \\\\\n= \\frac{\\$60B}{50} \\\\\n= \\$1.2B\n\\end{gathered}",
-  confidenceInterval: [944326168.5772825, 1537437739.009429],
+  confidenceInterval: [944326168.577, 1537437739.01],
   inputs: ["GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL", "CURRENT_DRUG_APPROVALS_PER_YEAR"],
   computeExpr: "(GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL / CURRENT_DRUG_APPROVALS_PER_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -4591,7 +4591,7 @@ export const CLINICAL_TRIAL_COST_PER_APPROVED_DRUG: Parameter = {
 };
 
 export const CLINICAL_TRIAL_COST_PER_PARTICIPANT_ANNUAL: Parameter = {
-  value: 31578.947368421053,
+  value: 31578.9473684,
   parameterName: "CLINICAL_TRIAL_COST_PER_PARTICIPANT_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-clinical_trial_cost_per_participant_annual",
   unit: "USD",
@@ -4601,7 +4601,7 @@ export const CLINICAL_TRIAL_COST_PER_PARTICIPANT_ANNUAL: Parameter = {
   confidence: "high",
   formula: "TOTAL_SPENDING / PARTICIPANTS",
   latex: "\\begin{gathered}\nCost_{trial,pt,ann} \\\\\n= \\frac{Spending_{trials}}{Slots_{curr}} \\\\\n= \\frac{\\$60B}{1.9M} \\\\\n= \\$31.6K\n\\end{gathered}",
-  confidenceInterval: [24255.983543883547, 42052.743108122886],
+  confidenceInterval: [24255.9835439, 42052.7431081],
   inputs: ["GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL", "CURRENT_TRIAL_SLOTS_AVAILABLE"],
   computeExpr: "(GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL / CURRENT_TRIAL_SLOTS_AVAILABLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -4619,7 +4619,7 @@ export const COMBINATION_THERAPY_DISEASE_SPACE: Parameter = {
   confidence: "high",
   formula: "DRUG_PAIRS × DISEASES",
   latex: "\\begin{gathered}\nSpace_{combo} = N_{combo} \\times N_{diseases,trial} = 45.1M \\times 1{,}000 = 45.1B\n\\\\[0.5em]\n\\text{where } N_{combo} = \\frac{N_{safe} \\cdot (N_{safe} - 1)}{2}\n\\end{gathered}",
-  confidenceInterval: [24979567160.576622, 72641695336.53656],
+  confidenceInterval: [24979567160.6, 72641695336.5],
   inputs: ["COMBINATION_THERAPY_PAIRS", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(COMBINATION_THERAPY_PAIRS * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -4637,7 +4637,7 @@ export const COMBINATION_THERAPY_PAIRS: Parameter = {
   confidence: "high",
   formula: "SAFE_COMPOUNDS_COUNT × (SAFE_COMPOUNDS_COUNT - 1) ÷ 2",
   latex: "N_{combo} = \\frac{N_{safe} \\cdot (N_{safe} - 1)}{2}",
-  confidenceInterval: [26208269.463346966, 68906476.46762912],
+  confidenceInterval: [26208269.4633, 68906476.4676],
   inputs: ["SAFE_COMPOUNDS_COUNT"],
   computeExpr: "Math.trunc(((SAFE_COMPOUNDS_COUNT * (SAFE_COMPOUNDS_COUNT - 1.0)) / 2.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -4645,7 +4645,7 @@ export const COMBINATION_THERAPY_PAIRS: Parameter = {
 };
 
 export const CONTRIBUTION_DALYS_PER_PCT_POINT: Parameter = {
-  value: 5652436733.509989,
+  value: 5652436733.51,
   parameterName: "CONTRIBUTION_DALYS_PER_PCT_POINT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_dalys_per_pct_point",
   unit: "DALYs",
@@ -4655,7 +4655,7 @@ export const CONTRIBUTION_DALYS_PER_PCT_POINT: Parameter = {
   confidence: "high",
   formula: "TOTAL_TIMELINE_SHIFT_DALYS × 0.01",
   latex: "\\begin{gathered}\nDALYs_{pp} = DALYs_{max} \\times 0.01 = 565B \\times 0.01 = 5.65B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [3094178391.065174, 10843984429.175596],
+  confidenceInterval: [3094178391.07, 10843984429.2],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4663,7 +4663,7 @@ export const CONTRIBUTION_DALYS_PER_PCT_POINT: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY: Parameter = {
-  value: 5188.787768822889,
+  value: 5188.78776882,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_treaty",
   unit: "USD",
@@ -4673,7 +4673,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA × 0.01",
   latex: "\\begin{gathered}\nEV_{pp,treaty} = \\Delta Y_{lifetime,treaty} \\times 0.01 = \\$519K \\times 0.01 = \\$5.19K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [2217.0282258384545, 8609.297648531914],
+  confidenceInterval: [2217.02822584, 8609.29764853],
   inputs: ["TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA"],
   computeExpr: "(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4681,7 +4681,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY_INCOME_PLUS_HEALTH: Parameter = {
-  value: 29338.787768822905,
+  value: 29338.7877688,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_TREATY_INCOME_PLUS_HEALTH",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_treaty_income_plus_health",
   unit: "USD",
@@ -4691,7 +4691,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY_INCOME_PLUS_HEALTH: Parameter 
   confidence: "high",
   formula: "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH × 0.01",
   latex: "\\begin{gathered}\nEV_{pp,treaty,income+health} = Upside_{income+health,treaty} \\times 0.01 = \\$2.93M \\times 0.01 = \\$29.3K\n\\\\[0.5em]\n\\text{where } Upside_{income+health,treaty} = \\Delta Y_{lifetime,treaty} + Value_{HALE,treaty} = \\$519K + \\$2.42M = \\$2.93M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 16.1 \\times \\$150K = \\$2.42M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [12865.564589105727, 49121.84646547883],
+  confidenceInterval: [12865.5645891, 49121.8464655],
   inputs: ["TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH"],
   computeExpr: "(TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4699,7 +4699,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_TREATY_INCOME_PLUS_HEALTH: Parameter 
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA: Parameter = {
-  value: 364453.79709081916,
+  value: 364453.797091,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_wishonia",
   unit: "USD",
@@ -4709,7 +4709,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA × 0.01",
   latex: "\\begin{gathered}\nEV_{pp,wish} = \\Delta Y_{lifetime,wish} \\times 0.01 = \\$36.4M \\times 0.01 = \\$364K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$37.3M - \\$904K = \\$36.4M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [134597.09067458726, 969785.2136720506],
+  confidenceInterval: [134597.090675, 969785.213672],
   inputs: ["WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA"],
   computeExpr: "(WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4717,7 +4717,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA: Parameter = {
 };
 
 export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_INCOME_PLUS_HEALTH: Parameter = {
-  value: 404653.79709081916,
+  value: 404653.797091,
   parameterName: "CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_INCOME_PLUS_HEALTH",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_ev_per_pct_point_wishonia_income_plus_health",
   unit: "USD",
@@ -4727,7 +4727,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_INCOME_PLUS_HEALTH: Paramete
   confidence: "high",
   formula: "WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH × 0.01",
   latex: "\\begin{gathered}\nEV_{pp,wish,income+health} = Upside_{income+health,wish} \\times 0.01 = \\$40.5M \\times 0.01 = \\$405K\n\\\\[0.5em]\n\\text{where } Upside_{income+health,wish} = \\Delta Y_{lifetime,wish} + Value_{HALE,wish} = \\$36.4M + \\$4.02M = \\$40.5M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$37.3M - \\$904K = \\$36.4M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,wish} = \\Delta HALE_{wish,15} \\times Value_{QALY} = 26.8 \\times \\$150K = \\$4.02M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\times \\Delta_{HALE} + \\Delta HALE_{wish,extra,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [172760.92959121088, 1011219.739637052],
+  confidenceInterval: [172760.929591, 1011219.73964],
   inputs: ["WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH"],
   computeExpr: "(WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4735,7 +4735,7 @@ export const CONTRIBUTION_EV_PER_PCT_POINT_WISHONIA_INCOME_PLUS_HEALTH: Paramete
 };
 
 export const CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT: Parameter = {
-  value: 107455177.4859972,
+  value: 107455177.486,
   parameterName: "CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_lives_saved_per_pct_point",
   unit: "lives",
@@ -4745,7 +4745,7 @@ export const CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT: Parameter = {
   confidence: "high",
   formula: "TOTAL_TIMELINE_SHIFT_LIVES_SAVED × 0.01",
   latex: "\\begin{gathered}\nLives_{pp} = Lives_{max} \\times 0.01 = 10.7B \\times 0.01 = 107M\n\\\\[0.5em]\n\\text{where } Lives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [62356964.26716688, 203129820.88986674],
+  confidenceInterval: [62356964.2672, 203129820.89],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4753,7 +4753,7 @@ export const CONTRIBUTION_LIVES_SAVED_PER_PCT_POINT: Parameter = {
 };
 
 export const CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT: Parameter = {
-  value: 19310984856363.527,
+  value: 19310984856400.0,
   parameterName: "CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-contribution_suffering_hours_per_pct_point",
   unit: "hours",
@@ -4763,7 +4763,7 @@ export const CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT: Parameter = {
   confidence: "high",
   formula: "TOTAL_TIMELINE_SHIFT_SUFFERING_HOURS × 0.01",
   latex: "\\begin{gathered}\nHours_{pp} = Hours_{suffer,max} \\times 0.01 = 1930T \\times 0.01 = 19.3T\n\\\\[0.5em]\n\\text{where } Hours_{suffer,max} = DALYs_{max} \\times Pct_{YLD} \\times 8760 = 565B \\times 0.39 \\times 8760 = 1930T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [10374130316399.514, 37452149449848.69],
+  confidenceInterval: [10374130316400.0, 37452149449800.0],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS * 0.01)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -4771,7 +4771,7 @@ export const CONTRIBUTION_SUFFERING_HOURS_PER_PCT_POINT: Parameter = {
 };
 
 export const CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE: Parameter = {
-  value: 2.5718410065633592,
+  value: 2.57184100656,
   parameterName: "CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-conventional_retirement_horizon_multiple",
   unit: "x",
@@ -4781,7 +4781,7 @@ export const CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE: Parameter = {
   confidence: "high",
   formula: "(1 + CONVENTIONAL_RETIREMENT_RETURN) ^ (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR)",
   latex: "\\begin{gathered}\nM_{retire} = (1 + r_{retire})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [2.152667250419853, 3.070741122892158],
+  confidenceInterval: [2.15266725042, 3.07074112289],
   inputs: ["CONVENTIONAL_RETIREMENT_RETURN", "DESTRUCTIVE_ECONOMY_50PCT_YEAR", "DESTRUCTIVE_ECONOMY_BASE_YEAR"],
   computeExpr: "Math.pow((1.0 + CONVENTIONAL_RETIREMENT_RETURN), (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/earth-optimization-prize-treasury.html",
@@ -4799,7 +4799,7 @@ export const CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS * VALUE_OF_STATISTICAL_LIFE",
   latex: "\\begin{gathered}\nV_{neverdev,VSL} \\\\\n= Deaths_{neverdev} \\times VSL \\\\\n= 300M \\times \\$10M \\\\\n= \\$3000T\n\\end{gathered}",
-  confidenceInterval: [1704220826717851.2, 4500000000000000.0],
+  confidenceInterval: [1704220826720000.0, 4500000000000000.0],
   inputs: ["CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_DEATHS * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4807,7 +4807,7 @@ export const CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL: Parameter = {
-  value: 1016116666666666.6,
+  value: 1016116666670000.0,
   parameterName: "CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_efficacy_lag_deaths_vsl",
   unit: "USD",
@@ -4817,7 +4817,7 @@ export const CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL: Parameter = {
   confidence: "high",
   formula: "EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL * VALUE_OF_STATISTICAL_LIFE",
   latex: "\\begin{gathered}\nV_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\end{gathered}",
-  confidenceInterval: [404756226543858.8, 1888123493973966.8],
+  confidenceInterval: [404756226544000.0, 1888123493970000.0],
   inputs: ["EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4825,7 +4825,7 @@ export const CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA: Parameter = {
-  value: 10598318.87533123,
+  value: 10598318.8753,
   parameterName: "CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_forward_settlement_value_per_capita",
   unit: "USD/person",
@@ -4835,7 +4835,7 @@ export const CORPORATE_DAMAGES_FORWARD_SETTLEMENT_VALUE_PER_CAPITA: Parameter = 
   confidence: "high",
   formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nV_{settlement,pc} = \\frac{Value_{max}}{Pop_{global}} = \\frac{\\$84800T}{8B} = \\$10.6M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [5364323.201973655, 21447999.550951],
+  confidenceInterval: [5364323.20197, 21447999.551],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "GLOBAL_POPULATION_2024"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/court-of-humanity.html",
@@ -4870,7 +4870,7 @@ export const CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION: Parameter = {
   confidence: "high",
   formula: "WAR_PROPERTY_DESTRUCTION_SINCE_1900 + WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900",
   latex: "\\begin{gathered}\nD_{property+env} \\\\\n= D_{property} + D_{env} \\\\\n= \\$45T + \\$5T \\\\\n= \\$50T\n\\end{gathered}",
-  confidenceInterval: [36098104284979.14, 63611521838534.58],
+  confidenceInterval: [36098104285000.0, 63611521838500.0],
   inputs: ["WAR_PROPERTY_DESTRUCTION_SINCE_1900", "WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900"],
   computeExpr: "(WAR_PROPERTY_DESTRUCTION_SINCE_1900 + WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4878,7 +4878,7 @@ export const CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA: Parameter = {
-  value: 913218.9708806707,
+  value: 913218.970881,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_base_ask_per_capita",
   unit: "USD/person",
@@ -4888,7 +4888,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,ask,pc} = \\frac{D_{corp,ask}}{Pop_{global}} = \\frac{\\$7310T}{8B} = \\$913K\n\\\\[0.5em]\n\\text{where } D_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [490901.17878172814, 1274871.6634085476],
+  confidenceInterval: [490901.178782, 1274871.66341],
   inputs: ["CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4896,7 +4896,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_PER_CAPITA: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL: Parameter = {
-  value: 7305751767045366.0,
+  value: 7305751767050000.0,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_base_ask_total",
   unit: "USD",
@@ -4906,7 +4906,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL",
   latex: "\\begin{gathered}\nD_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [3916642550338957.0, 1.0201972648091636e+16],
+  confidenceInterval: [3916642550340000.0, 1.02019726481e+16],
   inputs: ["CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL", "CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL"],
   computeExpr: "(CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_DRUGS_NEVER_DEVELOPED_VSL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4914,7 +4914,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE: Parameter = {
-  value: 1.783085302091402e+16,
+  value: 1.78308530209e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_aging_intake_exposure",
   unit: "USD",
@@ -4924,7 +4924,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE: Parameter
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE",
   latex: "\\begin{gathered}\nD_{corp,aging,gross} = N_{plaintiffs,aging} \\times VSL = 1.78B \\times \\$10M = \\$17800T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,aging} = T_{post,aging} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 35 \\times 55M \\times 92.6\\% = 1.78B\n\\\\[0.5em]\n\\text{where } T_{post,aging} = Y_{plead,end} - Y_{aging,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [-1.6364976108491646e+16, 3.97949155427526e+16],
+  confidenceInterval: [-1.63649761085e+16, 3.97949155428e+16],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4932,7 +4932,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_AGING_INTAKE_EXPOSURE: Parameter
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE: Parameter = {
-  value: 3.0011409759876064e+16,
+  value: 3.00114097599e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_disease_daly_exposure",
   unit: "USD",
@@ -4942,7 +4942,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE: Parameter
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS * STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nD_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [1806467465478499.2, 4.8554660944597176e+16],
+  confidenceInterval: [1806467465480000.0, 4.85546609446e+16],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4950,7 +4950,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE: Parameter
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE: Parameter = {
-  value: 3.820897075910147e+16,
+  value: 3.82089707591e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_medical_misallocation_exposure",
   unit: "USD",
@@ -4960,7 +4960,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE: 
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE",
   latex: "\\begin{gathered}\nD_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [2438082692630886.0, 6.879444200682581e+16],
+  confidenceInterval: [2438082692630000.0, 6.87944420068e+16],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4968,7 +4968,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE: 
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA: Parameter = {
-  value: 5314340.315768355,
+  value: 5314340.31577,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_per_capita",
   unit: "USD/person",
@@ -4978,7 +4978,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA: Pa
   confidence: "low",
   formula: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,plead,gross,pc} = \\frac{D_{corp,plead,gross}}{Pop_{global}} = \\frac{\\$42500T}{8B} = \\$5.31M\n\\\\[0.5em]\n\\text{where } D_{corp,plead,gross} = D_{corp,floor} + D_{corp,med,gross} = \\$4310T + \\$38200T = \\$42500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [719051.0672218482, 9232081.555794401],
+  confidenceInterval: [719051.067222, 9232081.55579],
   inputs: ["CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -4986,7 +4986,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_PER_CAPITA: Pa
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Parameter = {
-  value: 4.251472252614684e+16,
+  value: 4.25147225261e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_total",
   unit: "USD",
@@ -4996,7 +4996,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Paramet
   confidence: "low",
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE",
   latex: "\\begin{gathered}\nD_{corp,plead,gross} = D_{corp,floor} + D_{corp,med,gross} = \\$4310T + \\$38200T = \\$42500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [5745108618347242.0, 7.408205530372059e+16],
+  confidenceInterval: [5745108618350000.0, 7.40820553037e+16],
   inputs: ["CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL", "CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE"],
   computeExpr: "(CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5004,7 +5004,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_TOTAL: Paramet
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Parameter = {
-  value: 7.252613228602291e+16,
+  value: 7.2526132286e+16,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_with_dalys",
   unit: "USD",
@@ -5014,7 +5014,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Pa
   confidence: "low",
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE + CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE",
   latex: "\\begin{gathered}\nD_{corp,plead,DALY} = D_{corp,floor} + D_{corp,med,gross} + D_{corp,DALY,gross} = \\$4310T + \\$38200T + \\$30000T = \\$72500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } D_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\end{gathered}",
-  confidenceInterval: [8547337297342968.0, 1.1298434653811923e+17],
+  confidenceInterval: [8547337297340000.0, 1.12984346538e+17],
   inputs: ["CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL", "CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE", "CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE"],
   computeExpr: "((CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL + CORPORATE_DAMAGES_PROSECUTOR_GROSS_MEDICAL_MISALLOCATION_EXPOSURE) + CORPORATE_DAMAGES_PROSECUTOR_GROSS_DISEASE_DALY_EXPOSURE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5022,7 +5022,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS: Pa
 };
 
 export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER_CAPITA: Parameter = {
-  value: 9065766.535752865,
+  value: 9065766.53575,
   parameterName: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_prosecutor_gross_pleading_exposure_with_dalys_per_capita",
   unit: "USD/person",
@@ -5032,7 +5032,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER
   confidence: "low",
   formula: "CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,plead,DALY,pc} = \\frac{D_{corp,plead,DALY}}{Pop_{global}} = \\frac{\\$72500T}{8B} = \\$9.07M\n\\\\[0.5em]\n\\text{where } D_{corp,plead,DALY} = D_{corp,floor} + D_{corp,med,gross} + D_{corp,DALY,gross} = \\$4310T + \\$38200T + \\$30000T = \\$72500T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } D_{corp,med,gross} = N_{plaintiffs,disease} \\times VSL = 3.82B \\times \\$10M = \\$38200T\n\\\\[0.5em]\n\\text{where } N_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } D_{corp,DALY,gross} = DALYs_{post,disease} \\times Value_{QALY} = 200B \\times \\$150K = \\$30000T\n\\\\[0.5em]\n\\text{where } DALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\end{gathered}",
-  confidenceInterval: [1060152.768278059, 14108642.598292673],
+  confidenceInterval: [1060152.76828, 14108642.5983],
   inputs: ["CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5040,7 +5040,7 @@ export const CORPORATE_DAMAGES_PROSECUTOR_GROSS_PLEADING_EXPOSURE_WITH_DALYS_PER
 };
 
 export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA: Parameter = {
-  value: 9132189.708806708,
+  value: 9132189.70881,
   parameterName: "CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_state_farm_ceiling_exposure_per_capita",
   unit: "USD/person",
@@ -5050,7 +5050,7 @@ export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA: Parameter
   confidence: "high",
   formula: "CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,StateFarm,pc} = \\frac{D_{corp,StateFarm}}{Pop_{global}} = \\frac{\\$73100T}{8B} = \\$9.13M\n\\\\[0.5em]\n\\text{where } D_{corp,StateFarm} = D_{corp,ask} \\times m_{StateFarm} = \\$7310T \\times 10 = \\$73100T\n\\\\[0.5em]\n\\text{where } D_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [4909011.787817282, 12748716.634085476],
+  confidenceInterval: [4909011.78782, 12748716.6341],
   inputs: ["CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5058,7 +5058,7 @@ export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_PER_CAPITA: Parameter
 };
 
 export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL: Parameter = {
-  value: 7.305751767045366e+16,
+  value: 7.30575176705e+16,
   parameterName: "CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_state_farm_ceiling_exposure_total",
   unit: "USD",
@@ -5068,7 +5068,7 @@ export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL * CORPORATE_DAMAGES_STATE_FARM_CEILING_MULTIPLIER",
   latex: "\\begin{gathered}\nD_{corp,StateFarm} = D_{corp,ask} \\times m_{StateFarm} = \\$7310T \\times 10 = \\$73100T\n\\\\[0.5em]\n\\text{where } D_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [3.9166425503389576e+16, 1.0201972648091635e+17],
+  confidenceInterval: [3.91664255034e+16, 1.02019726481e+17],
   inputs: ["CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL", "CORPORATE_DAMAGES_STATE_FARM_CEILING_MULTIPLIER"],
   computeExpr: "(CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL * CORPORATE_DAMAGES_STATE_FARM_CEILING_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5076,7 +5076,7 @@ export const CORPORATE_DAMAGES_STATE_FARM_CEILING_EXPOSURE_TOTAL: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA: Parameter = {
-  value: 538218.9708806707,
+  value: 538218.970881,
   parameterName: "CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_strict_floor_per_capita",
   unit: "USD/person",
@@ -5086,7 +5086,7 @@ export const CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,floor,pc} = \\frac{D_{corp,floor}}{Pop_{global}} = \\frac{\\$4310T}{8B} = \\$538K\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\end{gathered}",
-  confidenceInterval: [270511.96744545765, 743608.3315879538],
+  confidenceInterval: [270511.967445, 743608.331588],
   inputs: ["CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5094,7 +5094,7 @@ export const CORPORATE_DAMAGES_STRICT_FLOOR_PER_CAPITA: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL: Parameter = {
-  value: 4305751767045365.5,
+  value: 4305751767050000.0,
   parameterName: "CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_strict_floor_total",
   unit: "USD",
@@ -5104,7 +5104,7 @@ export const CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_WAR_DEATHS_VSL + CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL + CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION + WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE + CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT",
   latex: "\\begin{gathered}\nD_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\end{gathered}",
-  confidenceInterval: [2161538442879293.2, 5938501024355791.0],
+  confidenceInterval: [2161538442880000.0, 5938501024360000.0],
   inputs: ["CORPORATE_DAMAGES_WAR_DEATHS_VSL", "CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL", "CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION", "WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE", "CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT"],
   computeExpr: "((((CORPORATE_DAMAGES_WAR_DEATHS_VSL + CORPORATE_DAMAGES_EFFICACY_LAG_DEATHS_VSL) + CORPORATE_DAMAGES_PROPERTY_ENVIRONMENTAL_DESTRUCTION) + WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE) + CORPORATE_DAMAGES_PENTAGON_FCA_PENALTY_INCREMENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5112,7 +5112,7 @@ export const CORPORATE_DAMAGES_STRICT_FLOOR_TOTAL: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA: Parameter = {
-  value: 2739656.912642012,
+  value: 2739656.91264,
   parameterName: "CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_treble_exposure_per_capita",
   unit: "USD/person",
@@ -5122,7 +5122,7 @@ export const CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nD_{corp,treble,pc} = \\frac{D_{corp,treble}}{Pop_{global}} = \\frac{\\$21900T}{8B} = \\$2.74M\n\\\\[0.5em]\n\\text{where } D_{corp,treble} = D_{corp,ask} \\times m_{FCA} = \\$7310T \\times 3 = \\$21900T\n\\\\[0.5em]\n\\text{where } D_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [1472703.5363451845, 3824614.9902256425],
+  confidenceInterval: [1472703.53635, 3824614.99023],
   inputs: ["CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5130,7 +5130,7 @@ export const CORPORATE_DAMAGES_TREBLE_EXPOSURE_PER_CAPITA: Parameter = {
 };
 
 export const CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL: Parameter = {
-  value: 2.1917255301136096e+16,
+  value: 2.19172553011e+16,
   parameterName: "CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-corporate_damages_treble_exposure_total",
   unit: "USD",
@@ -5140,7 +5140,7 @@ export const CORPORATE_DAMAGES_TREBLE_EXPOSURE_TOTAL: Parameter = {
   confidence: "high",
   formula: "CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL * CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER",
   latex: "\\begin{gathered}\nD_{corp,treble} = D_{corp,ask} \\times m_{FCA} = \\$7310T \\times 3 = \\$21900T\n\\\\[0.5em]\n\\text{where } D_{corp,ask} = D_{corp,floor} + V_{neverdev,VSL} = \\$4310T + \\$3000T = \\$7310T\n\\\\[0.5em]\n\\text{where } D_{corp,floor} = V_{war,VSL} + V_{lag,VSL} + D_{property+env} + Spending_{mil,excess1900} + Penalty_{pentagon,FCA} = \\$3100T + \\$1020T + \\$50T + \\$135T + \\$4.92T = \\$4310T\n\\\\[0.5em]\n\\text{where } V_{war,VSL} = Deaths_{war,1900} \\times VSL = 310M \\times \\$10M = \\$3100T\n\\\\[0.5em]\n\\text{where } V_{lag,VSL} = Deaths_{lag,total} \\times VSL = 102M \\times \\$10M = \\$1020T\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } D_{property+env} = D_{property} + D_{env} = \\$45T + \\$5T = \\$50T\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\\\[0.5em]\n\\text{where } Penalty_{pentagon,FCA} = Exposure_{pentagon,FCA} - Funds_{pentagon,unaccounted} = \\$7.38T - \\$2.46T = \\$4.92T\n\\\\[0.5em]\n\\text{where } Exposure_{pentagon,FCA} = Funds_{pentagon,unaccounted} \\times m_{FCA} = \\$2.46T \\times 3 = \\$7.38T\n\\\\[0.5em]\n\\text{where } V_{neverdev,VSL} = Deaths_{neverdev} \\times VSL = 300M \\times \\$10M = \\$3000T\n\\end{gathered}",
-  confidenceInterval: [1.1749927651016872e+16, 3.0605917944274904e+16],
+  confidenceInterval: [1.1749927651e+16, 3.06059179443e+16],
   inputs: ["CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL", "CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER"],
   computeExpr: "(CORPORATE_DAMAGES_PROSECUTOR_BASE_ASK_TOTAL * CORPORATE_ANALOG_FALSE_CLAIMS_TREBLE_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5158,7 +5158,7 @@ export const CORPORATE_DAMAGES_WAR_DEATHS_VSL: Parameter = {
   confidence: "high",
   formula: "WAR_DEATHS_SINCE_1900 * VALUE_OF_STATISTICAL_LIFE",
   latex: "\\begin{gathered}\nV_{war,VSL} \\\\\n= Deaths_{war,1900} \\times VSL \\\\\n= 310M \\times \\$10M \\\\\n= \\$3100T\n\\end{gathered}",
-  confidenceInterval: [1430962615096808.0, 4210977921082954.5],
+  confidenceInterval: [1430962615100000.0, 4210977921080000.0],
   inputs: ["WAR_DEATHS_SINCE_1900", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(WAR_DEATHS_SINCE_1900 * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -5166,7 +5166,7 @@ export const CORPORATE_DAMAGES_WAR_DEATHS_VSL: Parameter = {
 };
 
 export const CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS: Parameter = {
-  value: 37777.77777777778,
+  value: 37777.7777778,
   parameterName: "CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-cumulative_military_in_govt_trial_years",
   unit: "years",
@@ -5176,7 +5176,7 @@ export const CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS: Parameter = {
   confidence: "high",
   formula: "CUMULATIVE_MILITARY_SPENDING_FED_ERA / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL",
   latex: "\\begin{gathered}\nYears_{mil \\to trials,gov} \\\\\n= \\frac{Spending_{mil,cum,fed}}{Spending_{trials,gov}} \\\\\n= \\frac{\\$170T}{\\$4.5B} \\\\\n= 37{,}800\n\\end{gathered}",
-  confidenceInterval: [28333.333333333332, 55502.221700172435],
+  confidenceInterval: [28333.3333333, 55502.2217002],
   inputs: ["CUMULATIVE_MILITARY_SPENDING_FED_ERA", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(CUMULATIVE_MILITARY_SPENDING_FED_ERA / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/declaration-of-optimization.html",
@@ -5184,7 +5184,7 @@ export const CUMULATIVE_MILITARY_IN_GOVT_TRIAL_YEARS: Parameter = {
 };
 
 export const CURRENT_COMBINATION_EXPLORATION_YEARS: Parameter = {
-  value: 13672803.030303031,
+  value: 13672803.0303,
   parameterName: "CURRENT_COMBINATION_EXPLORATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_combination_exploration_years",
   unit: "years",
@@ -5194,7 +5194,7 @@ export const CURRENT_COMBINATION_EXPLORATION_YEARS: Parameter = {
   confidence: "high",
   formula: "COMBINATION_SPACE ÷ CURRENT_TRIALS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{explore,combo} = \\frac{Space_{combo}}{Trials_{ann,curr}} = \\frac{45.1B}{3{,}300} = 13.7M\n\\\\[0.5em]\n\\text{where } Space_{combo} = N_{combo} \\times N_{diseases,trial} = 45.1M \\times 1{,}000 = 45.1B\n\\\\[0.5em]\n\\text{where } N_{combo} = \\frac{N_{safe} \\cdot (N_{safe} - 1)}{2}\n\\end{gathered}",
-  confidenceInterval: [7448498.040164443, 22621314.46466435],
+  confidenceInterval: [7448498.04016, 22621314.4647],
   inputs: ["COMBINATION_THERAPY_DISEASE_SPACE", "CURRENT_TRIALS_PER_YEAR"],
   computeExpr: "(COMBINATION_THERAPY_DISEASE_SPACE / CURRENT_TRIALS_PER_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -5202,7 +5202,7 @@ export const CURRENT_COMBINATION_EXPLORATION_YEARS: Parameter = {
 };
 
 export const CURRENT_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
-  value: 2878.787878787879,
+  value: 2878.78787879,
   parameterName: "CURRENT_KNOWN_SAFE_EXPLORATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_known_safe_exploration_years",
   unit: "years",
@@ -5212,7 +5212,7 @@ export const CURRENT_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
   confidence: "high",
   formula: "DRUG_DISEASE_COMBINATIONS ÷ CURRENT_TRIALS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{explore,safe} = \\frac{N_{combos}}{Trials_{ann,curr}} = \\frac{9.5M}{3{,}300} = 2{,}880\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\end{gathered}",
-  confidenceInterval: [1975.7419326711247, 4040.5395026087817],
+  confidenceInterval: [1975.74193267, 4040.53950261],
   inputs: ["DRUG_DISEASE_COMBINATIONS_POSSIBLE", "CURRENT_TRIALS_PER_YEAR"],
   computeExpr: "(DRUG_DISEASE_COMBINATIONS_POSSIBLE / CURRENT_TRIALS_PER_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -5220,7 +5220,7 @@ export const CURRENT_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
 };
 
 export const CURRENT_PATIENT_PARTICIPATION_RATE: Parameter = {
-  value: 0.0007916666666666666,
+  value: 0.000791666666667,
   parameterName: "CURRENT_PATIENT_PARTICIPATION_RATE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_patient_participation_rate",
   unit: "rate",
@@ -5232,7 +5232,7 @@ export const CURRENT_PATIENT_PARTICIPATION_RATE: Parameter = {
   confidence: "high",
   formula: "CURRENT_TRIAL_SLOTS / DISEASE_PATIENTS",
   latex: "\\begin{gathered}\nRate_{part} \\\\\n= \\frac{Slots_{curr}}{N_{patients}} \\\\\n= \\frac{1.9M}{2.4B} \\\\\n= 0.0792\\%\n\\end{gathered}",
-  confidenceInterval: [0.000631493041681894, 0.0009748547625173146],
+  confidenceInterval: [0.000631493041682, 0.000974854762517],
   inputs: ["CURRENT_TRIAL_SLOTS_AVAILABLE", "CURRENT_DISEASE_PATIENTS_GLOBAL"],
   computeExpr: "(CURRENT_TRIAL_SLOTS_AVAILABLE / CURRENT_DISEASE_PATIENTS_GLOBAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem.html",
@@ -5240,7 +5240,7 @@ export const CURRENT_PATIENT_PARTICIPATION_RATE: Parameter = {
 };
 
 export const CURRENT_TOTAL_EXPLORATION_YEARS: Parameter = {
-  value: 15606.060606060606,
+  value: 15606.0606061,
   parameterName: "CURRENT_TOTAL_EXPLORATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_total_exploration_years",
   unit: "years",
@@ -5250,7 +5250,7 @@ export const CURRENT_TOTAL_EXPLORATION_YEARS: Parameter = {
   confidence: "high",
   formula: "TOTAL_COMBINATIONS ÷ CURRENT_TRIALS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{explore,total} = \\frac{N_{testable}}{Trials_{ann,curr}} = \\frac{51.5M}{3{,}300} = 15{,}600\n\\\\[0.5em]\n\\text{where } N_{testable} = N_{combos} + N_{emerging} = 9.5M + 42M = 51.5M\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\\\[0.5em]\n\\text{where } N_{emerging} = Combos_{gene} + Combos_{mRNA} + Combos_{epi} + Combos_{cell} = 20M + 20M + 1.5M + 500{,}000 = 42M\n\\\\[0.5em]\n\\text{where } Combos_{gene} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{mRNA} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{epi} = N_{epi} \\times N_{diseases,trial} = 1{,}500 \\times 1{,}000 = 1.5M\n\\\\[0.5em]\n\\text{where } Combos_{cell} = N_{cell} \\times N_{diseases,trial} = 500 \\times 1{,}000 = 500{,}000\n\\end{gathered}",
-  confidenceInterval: [12070.211840054119, 20053.152715364875],
+  confidenceInterval: [12070.2118401, 20053.1527154],
   inputs: ["TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS", "CURRENT_TRIALS_PER_YEAR"],
   computeExpr: "(TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS / CURRENT_TRIALS_PER_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -5258,7 +5258,7 @@ export const CURRENT_TOTAL_EXPLORATION_YEARS: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
-  value: 18713.96507272838,
+  value: 18713.9650727,
   parameterName: "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_avg_income_year_15",
   unit: "USD",
@@ -5276,7 +5276,7 @@ export const CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
-  value: 20482.705503629928,
+  value: 20482.7055036,
   parameterName: "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_avg_income_year_20",
   unit: "USD",
@@ -5294,7 +5294,7 @@ export const CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 903907.9767348965,
+  value: 903907.976735,
   parameterName: "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_cumulative_lifetime_income",
   unit: "USD",
@@ -5304,14 +5304,14 @@ export const CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
   confidence: "high",
   formula: "GLOBAL_AVG_INCOME_2025 * (1+g_pc,base) * ((1+g_pc,base)^T - 1) / g_pc,base, where g_pc,base is implied by CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20",
   latex: "\\begin{gathered}\nY_{cum,earth} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [815233.3784855307, 1026700.953535974],
+  confidenceInterval: [815233.378486, 1026700.95354],
   inputs: ["GLOBAL_AVG_INCOME_2025", "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_AVG_REMAINING_YEARS"],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
   manualPageTitle: "Your Personal Benefits",
 };
 
 export const CURRENT_TRAJECTORY_GDP_YEAR_15: Parameter = {
-  value: 166554289147282.6,
+  value: 166554289147000.0,
   parameterName: "CURRENT_TRAJECTORY_GDP_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_gdp_year_15",
   unit: "USD",
@@ -5328,7 +5328,7 @@ export const CURRENT_TRAJECTORY_GDP_YEAR_15: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_GDP_YEAR_20: Parameter = {
-  value: 188440890633395.34,
+  value: 188440890633000.0,
   parameterName: "CURRENT_TRAJECTORY_GDP_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_gdp_year_20",
   unit: "USD",
@@ -5345,7 +5345,7 @@ export const CURRENT_TRAJECTORY_GDP_YEAR_20: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
-  value: 2774.150149846233,
+  value: 2774.15014985,
   parameterName: "CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_median_after_tax_income_year_15",
   unit: "USD",
@@ -5355,7 +5355,7 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
   confidence: "high",
   formula: "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP * ((1+GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR)/(1+GDP_BASELINE_GROWTH_RATE))^15) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL)^15 * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{base,15} = \\bar{y}_{base,15} \\times (1 - s_{mil} \\times \\left(\\frac{1+g_{mil,10yr}}{1+g_{base}}\\right)^{15}) \\times \\rho_{med} \\times (1 - e_{med})^{15} \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,15} = \\frac{GDP_{base,15}}{Pop_{2040}} = \\frac{\\$167T}{8.9B} = \\$18.7K\n\\\\[0.5em]\n\\text{where } GDP_{base,15} = GDP_{global} \\times (1 + g_{base})^{15}\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [2215.7597085010916, 3366.9801549204203],
+  confidenceInterval: [2215.7597085, 3366.98015492],
   inputs: ["CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15", "GLOBAL_MILITARY_SHARE_OF_GDP", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR", "GDP_BASELINE_GROWTH_RATE", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "((((CURRENT_TRAJECTORY_AVG_INCOME_YEAR_15 * (1.0 - (GLOBAL_MILITARY_SHARE_OF_GDP * Math.pow(((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR) / (1.0 + GDP_BASELINE_GROWTH_RATE)), 15.0)))) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * Math.pow((1.0 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL), 15.0)) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -5363,7 +5363,7 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
 };
 
 export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
-  value: 3032.5877137851235,
+  value: 3032.58771379,
   parameterName: "CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-current_trajectory_median_after_tax_income_year_20",
   unit: "USD",
@@ -5373,7 +5373,7 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
   confidence: "high",
   formula: "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP * ((1+GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR)/(1+GDP_BASELINE_GROWTH_RATE))^20) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL)^20 * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{base,20} = \\bar{y}_{base,20} \\times (1 - s_{mil} \\times \\left(\\frac{1+g_{mil,10yr}}{1+g_{base}}\\right)^{20}) \\times \\rho_{med} \\times (1 - e_{med})^{20} \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [2401.5300461557567, 3716.1655113319393],
+  confidenceInterval: [2401.53004616, 3716.16551133],
   inputs: ["CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_MILITARY_SHARE_OF_GDP", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR", "GDP_BASELINE_GROWTH_RATE", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "((((CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20 * (1.0 - (GLOBAL_MILITARY_SHARE_OF_GDP * Math.pow(((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_10YR) / (1.0 + GDP_BASELINE_GROWTH_RATE)), 20.0)))) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * Math.pow((1.0 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL), 20.0)) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -5381,7 +5381,7 @@ export const CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
 };
 
 export const DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
-  value: 1391.044776119403,
+  value: 1391.04477612,
   parameterName: "DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-decentralized_congress_savings_per_citizen_annual",
   unit: "USD",
@@ -5391,7 +5391,7 @@ export const DECENTRALIZED_CONGRESS_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "(TARIFFS + CORPORATE_WELFARE + AG_SUBSIDIES + FOSSIL_SUBSIDIES) / US_POPULATION",
   latex: "\\begin{gathered}\nSavings_{ann} \\\\\n= (\\text{TARIFFS} + \\text{CORPORATE\\_WELFARE} \\\\\n+ \\text{AG\\_SUBSIDIES} \\\\\n+ \\text{FOSSIL\\_SUBSIDIES}) / \\text{US\\_POPULATION}\n\\end{gathered}",
-  confidenceInterval: [1132.043625354657, 1669.3541664195172],
+  confidenceInterval: [1132.04362535, 1669.35416642],
   inputs: ["US_GOV_WASTE_TARIFFS", "US_GOV_WASTE_CORPORATE_WELFARE", "US_GOV_WASTE_AGRICULTURAL_SUBSIDIES", "US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES", "US_POPULATION_2024"],
   computeExpr: "((((US_GOV_WASTE_TARIFFS + US_GOV_WASTE_CORPORATE_WELFARE) + US_GOV_WASTE_AGRICULTURAL_SUBSIDIES) + US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES) / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/decentralized-congress.html",
@@ -5416,7 +5416,7 @@ export const DEFENSE_TAKEOVER_COST_ACTIVIST: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS: Parameter = {
-  value: 0.00015868852459016393,
+  value: 0.00015868852459,
   parameterName: "DEFENSE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_cost_activist_pct_investable_assets",
   unit: "rate",
@@ -5443,7 +5443,7 @@ export const DEFENSE_TAKEOVER_COST_PER_HUMAN: Parameter = {
   confidence: "high",
   formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nC_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$873B}{8B} = \\$109\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
-  confidenceInterval: [106.88798971135063, 111.44491158653862],
+  confidenceInterval: [106.887989711, 111.444911587],
   inputs: ["DEFENSE_TAKEOVER_COST_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -5468,7 +5468,7 @@ export const DEFENSE_TAKEOVER_COST_TOTAL: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS: Parameter = {
-  value: 0.028114086956521737,
+  value: 0.0281140869565,
   parameterName: "DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_pct_annual_savings",
   unit: "rate",
@@ -5478,7 +5478,7 @@ export const DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS: Parameter = {
   confidence: "high",
   formula: "DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_ANNUAL_SAVINGS",
   latex: "\\begin{gathered}\nC_{takeover}/S_{annual} = \\frac{C_{takeover}}{S_{annual}} = \\frac{\\$873B}{\\$31.1T} = 2.81\\%\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\end{gathered}",
-  confidenceInterval: [0.025696016318021157, 0.03100730189969515],
+  confidenceInterval: [0.025696016318, 0.0310073018997],
   inputs: ["DEFENSE_TAKEOVER_COST_TOTAL", "GLOBAL_ANNUAL_SAVINGS"],
   computeExpr: "(DEFENSE_TAKEOVER_COST_TOTAL / GLOBAL_ANNUAL_SAVINGS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -5486,7 +5486,7 @@ export const DEFENSE_TAKEOVER_PCT_ANNUAL_SAVINGS: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS: Parameter = {
-  value: 0.002862106229508197,
+  value: 0.00286210622951,
   parameterName: "DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_pct_investable_assets",
   unit: "rate",
@@ -5503,7 +5503,7 @@ export const DEFENSE_TAKEOVER_PCT_INVESTABLE_ASSETS: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_ROI_INCOME_ONLY: Parameter = {
-  value: 4755.2166271890455,
+  value: 4755.21662719,
   parameterName: "DEFENSE_TAKEOVER_ROI_INCOME_ONLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_roi_income_only",
   unit: "x",
@@ -5513,7 +5513,7 @@ export const DEFENSE_TAKEOVER_ROI_INCOME_ONLY: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA / DEFENSE_TAKEOVER_COST_PER_HUMAN",
   latex: "\\begin{gathered}\nROI_{takeover,income} = \\frac{\\Delta Y_{lifetime,treaty}}{C_{takeover,pp}} = \\frac{\\$519K}{\\$109} = 4{,}760\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } C_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$873B}{8B} = \\$109\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
-  confidenceInterval: [2038.5830847177303, 7891.560923856291],
+  confidenceInterval: [2038.58308472, 7891.56092386],
   inputs: ["TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA", "DEFENSE_TAKEOVER_COST_PER_HUMAN"],
   computeExpr: "(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA / DEFENSE_TAKEOVER_COST_PER_HUMAN)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -5521,7 +5521,7 @@ export const DEFENSE_TAKEOVER_ROI_INCOME_ONLY: Parameter = {
 };
 
 export const DEFENSE_TAKEOVER_ROI_INCOME_PLUS_HEALTH: Parameter = {
-  value: 26887.261078231877,
+  value: 26887.2610782,
   parameterName: "DEFENSE_TAKEOVER_ROI_INCOME_PLUS_HEALTH",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-defense_takeover_roi_income_plus_health",
   unit: "x",
@@ -5531,7 +5531,7 @@ export const DEFENSE_TAKEOVER_ROI_INCOME_PLUS_HEALTH: Parameter = {
   confidence: "high",
   formula: "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH / DEFENSE_TAKEOVER_COST_PER_HUMAN",
   latex: "\\begin{gathered}\nROI_{takeover,income+health} = \\frac{Upside_{income+health,treaty}}{C_{takeover,pp}} = \\frac{\\$2.93M}{\\$109} = 26{,}900\n\\\\[0.5em]\n\\text{where } Upside_{income+health,treaty} = \\Delta Y_{lifetime,treaty} + Value_{HALE,treaty} = \\$519K + \\$2.42M = \\$2.93M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 16.1 \\times \\$150K = \\$2.42M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\\\[0.5em]\n\\text{where } C_{takeover,pp} = \\frac{C_{takeover}}{Pop_{global}} = \\frac{\\$873B}{8B} = \\$109\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
-  confidenceInterval: [11793.955655431939, 45149.04428052037],
+  confidenceInterval: [11793.9556554, 45149.0442805],
   inputs: ["TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH", "DEFENSE_TAKEOVER_COST_PER_HUMAN"],
   computeExpr: "(TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH / DEFENSE_TAKEOVER_COST_PER_HUMAN)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -5539,7 +5539,7 @@ export const DEFENSE_TAKEOVER_ROI_INCOME_PLUS_HEALTH: Parameter = {
 };
 
 export const DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
-  value: 2095.5223880597014,
+  value: 2095.52238806,
   parameterName: "DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-department_of_peace_savings_per_american_annual",
   unit: "USD",
@@ -5549,7 +5549,7 @@ export const DEPARTMENT_OF_PEACE_SAVINGS_PER_AMERICAN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "MILITARY_OVERSPEND / US_POPULATION",
   latex: "\\begin{gathered}\nSavings_{ann} = \\frac{W_{military}}{Pop_{US}} = \\frac{\\$702B}{335M} = \\$2.1K\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [1999.2330852276832, 2180.0598732513095],
+  confidenceInterval: [1999.23308523, 2180.05987325],
   inputs: ["US_GOV_WASTE_MILITARY_OVERSPEND", "US_POPULATION_2024"],
   computeExpr: "(US_GOV_WASTE_MILITARY_OVERSPEND / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/department-of-peace.html",
@@ -5615,7 +5615,7 @@ export const DFDA_ANNUAL_OPEX: Parameter = {
   confidence: "high",
   formula: "PLATFORM_MAINTENANCE + STAFF + INFRASTRUCTURE + REGULATORY + COMMUNITY",
   latex: "\\begin{gathered}\nOPEX_{trial} \\\\\n= Cost_{platform} + Cost_{staff} + Cost_{infra} \\\\\n+ Cost_{regulatory} + Cost_{community} \\\\\n= \\$15M + \\$10M + \\$8M + \\$5M + \\$2M \\\\\n= \\$40M\n\\end{gathered}",
-  confidenceInterval: [33531961.844661754, 47078165.624719016],
+  confidenceInterval: [33531961.8447, 47078165.6247],
   inputs: ["DFDA_OPEX_PLATFORM_MAINTENANCE", "DFDA_OPEX_STAFF", "DFDA_OPEX_INFRASTRUCTURE", "DFDA_OPEX_REGULATORY", "DFDA_OPEX_COMMUNITY"],
   computeExpr: "(((((0.0 + DFDA_OPEX_PLATFORM_MAINTENANCE) + DFDA_OPEX_STAFF) + DFDA_OPEX_INFRASTRUCTURE) + DFDA_OPEX_REGULATORY) + DFDA_OPEX_COMMUNITY)",
   validationMin: 25_000_000,
@@ -5625,7 +5625,7 @@ export const DFDA_ANNUAL_OPEX: Parameter = {
 };
 
 export const DFDA_BENEFIT_RD_ONLY_ANNUAL: Parameter = {
-  value: 58640487804.878044,
+  value: 58640487804.9,
   parameterName: "DFDA_BENEFIT_RD_ONLY_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_benefit_rd_only_annual",
   unit: "USD/year",
@@ -5635,7 +5635,7 @@ export const DFDA_BENEFIT_RD_ONLY_ANNUAL: Parameter = {
   confidence: "high",
   formula: "TRIAL_SPENDING × COST_REDUCTION_PCT",
   latex: "\\begin{gathered}\nBenefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [48092082505.71534, 73087936427.72623],
+  confidenceInterval: [48092082505.7, 73087936427.7],
   inputs: ["GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL", "DFDA_TRIAL_COST_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL * DFDA_TRIAL_COST_REDUCTION_PCT)",
   validationMin: 25_000_000_000,
@@ -5645,7 +5645,7 @@ export const DFDA_BENEFIT_RD_ONLY_ANNUAL: Parameter = {
 };
 
 export const DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER: Parameter = {
-  value: 17.259078805733385,
+  value: 17.2590788057,
   parameterName: "DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_combined_treatment_speedup_multiplier",
   unit: "multiplier",
@@ -5655,7 +5655,7 @@ export const DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER: Parameter = {
   confidence: "medium",
   formula: "PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER × VALLEY_OF_DEATH_RESCUE_MULTIPLIER",
   latex: "\\begin{gathered}\nk_{speedup} = k_{capacity} \\times k_{rescue} = 12.3 \\times 1.4 = 17.3\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{rescue} = Attrition_{valley} + 1 = 40\\% + 1 = 1.4\n\\end{gathered}",
-  confidenceInterval: [6.859547807353251, 70.81597247477352],
+  confidenceInterval: [6.85954780735, 70.8159724748],
   inputs: ["DFDA_TRIAL_CAPACITY_MULTIPLIER", "DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_MULTIPLIER * DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5663,7 +5663,7 @@ export const DFDA_COMBINED_TREATMENT_SPEEDUP_MULTIPLIER: Parameter = {
 };
 
 export const DFDA_DIRECT_FUNDING_COST_PER_DALY: Parameter = {
-  value: 0.8415122325165139,
+  value: 0.841512232517,
   parameterName: "DFDA_DIRECT_FUNDING_COST_PER_DALY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_direct_funding_cost_per_daly",
   unit: "USD/DALY",
@@ -5673,7 +5673,7 @@ export const DFDA_DIRECT_FUNDING_COST_PER_DALY: Parameter = {
   confidence: "medium",
   formula: "NPV_DIRECT_FUNDING ÷ DALYS_TIMELINE_SHIFT",
   latex: "\\begin{gathered}\nCost_{direct,DALY} = \\frac{NPV_{direct}}{DALYs_{max}} = \\frac{\\$476B}{565B} = \\$0.842\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\end{gathered}",
-  confidenceInterval: [0.2636819636285897, 1.4922459522638583],
+  confidenceInterval: [0.263681963629, 1.49224595226],
   inputs: ["DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV", "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS"],
   computeExpr: "(DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV / DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -5681,7 +5681,7 @@ export const DFDA_DIRECT_FUNDING_COST_PER_DALY: Parameter = {
 };
 
 export const DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV: Parameter = {
-  value: 475659465477.4342,
+  value: 475659465477.0,
   parameterName: "DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_direct_funding_queue_clearance_npv",
   unit: "USD",
@@ -5691,7 +5691,7 @@ export const DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV: Parameter = {
   confidence: "high",
   formula: "ANNUAL_FUNDING × [(1 - (1 + r)^-T) / r] where T = exploration time",
   latex: "\\begin{gathered}\nNPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [155522542260.985, 694735386930.992],
+  confidenceInterval: [155522542261.0, 694735386931.0],
   inputs: ["DFDA_ANNUAL_TRIAL_FUNDING", "NPV_DISCOUNT_RATE_STANDARD", "DFDA_QUEUE_CLEARANCE_YEARS"],
   computeExpr: "((DFDA_ANNUAL_TRIAL_FUNDING * (1.0 - Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), (-DFDA_QUEUE_CLEARANCE_YEARS)))) / NPV_DISCOUNT_RATE_STANDARD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5699,7 +5699,7 @@ export const DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV: Parameter = {
 };
 
 export const DFDA_DIRECT_FUNDING_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
-  value: 178250.5282798208,
+  value: 178250.52828,
   parameterName: "DFDA_DIRECT_FUNDING_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_direct_funding_roi_trial_capacity_plus_efficacy_lag",
   unit: "ratio",
@@ -5709,7 +5709,7 @@ export const DFDA_DIRECT_FUNDING_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter
   confidence: "high",
   formula: "ECONOMIC_VALUE ÷ DIRECT_FUNDING_NPV",
   latex: "\\begin{gathered}\nROI_{direct,max} = \\frac{Value_{max}}{NPV_{direct}} = \\frac{\\$84800T}{\\$476B} = 178{,}000\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\end{gathered}",
-  confidenceInterval: [92043.93288140852, 574644.6567700113],
+  confidenceInterval: [92043.9328814, 574644.65677],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / DFDA_DIRECT_FUNDING_QUEUE_CLEARANCE_NPV)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -5717,7 +5717,7 @@ export const DFDA_DIRECT_FUNDING_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter
 };
 
 export const DFDA_DIRECT_FUNDING_VS_BED_NETS_MULTIPLIER: Parameter = {
-  value: 105.76198011269368,
+  value: 105.761980113,
   parameterName: "DFDA_DIRECT_FUNDING_VS_BED_NETS_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_direct_funding_vs_bed_nets_multiplier",
   unit: "x",
@@ -5727,7 +5727,7 @@ export const DFDA_DIRECT_FUNDING_VS_BED_NETS_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "BED_NETS_COST_PER_DALY ÷ DIRECT_FUNDING_COST_PER_DALY",
   latex: "\\begin{gathered}\nk_{direct,nets} = \\frac{Cost_{nets}}{Cost_{direct,DALY}} = \\frac{\\$89}{\\$0.842} = 106\n\\\\[0.5em]\n\\text{where } Cost_{direct,DALY} = \\frac{NPV_{direct}}{DALYs_{max}} = \\frac{\\$476B}{565B} = \\$0.842\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\end{gathered}",
-  confidenceInterval: [58.95024642588531, 339.24501743871855],
+  confidenceInterval: [58.9502464259, 339.245017439],
   inputs: ["BED_NETS_COST_PER_DALY", "DFDA_DIRECT_FUNDING_COST_PER_DALY"],
   computeExpr: "(BED_NETS_COST_PER_DALY / DFDA_DIRECT_FUNDING_COST_PER_DALY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5745,7 +5745,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_DALYS: Parameter = {
   confidence: "medium",
   formula: "YLL + YLD",
   latex: "\\begin{gathered}\nDALYs_{lag} = YLL_{lag} + YLD_{lag} = 7.9B + 873M = 8.77B\n\\\\[0.5em]\n\\text{where } YLL_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60))\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\\\[0.5em]\n\\text{where } YLD_{lag} = Deaths_{lag} \\times T_{suffering} \\times DW_{chronic} = 416M \\times 6 \\times 0.35 = 873M\n\\end{gathered}",
-  confidenceInterval: [4883424064.587652, 13216346121.079237],
+  confidenceInterval: [4883424064.59, 13216346121.1],
   inputs: ["DFDA_EFFICACY_LAG_ELIMINATION_YLL", "DFDA_EFFICACY_LAG_ELIMINATION_YLD"],
   computeExpr: "(DFDA_EFFICACY_LAG_ELIMINATION_YLL + DFDA_EFFICACY_LAG_ELIMINATION_YLD)",
   validationMin: 4_000_000_000,
@@ -5765,7 +5765,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED: Parameter = {
   confidence: "medium",
   formula: "ANNUAL_DEATHS × EFFICACY_LAG_YEARS × EVENTUALLY_AVOIDABLE_DEATH_PCT",
   latex: "\\begin{gathered}\nDeaths_{lag} \\\\\n= T_{lag} \\times Deaths_{disease,daily} \\times 338 \\\\\n= 8.2 \\times 150{,}000 \\times 338 \\\\\n= 416M\n\\end{gathered}",
-  confidenceInterval: [243655120.09118062, 586678561.906714],
+  confidenceInterval: [243655120.091, 586678561.907],
   inputs: ["EFFICACY_LAG_YEARS", "GLOBAL_DISEASE_DEATHS_DAILY"],
   computeExpr: "Math.trunc((((GLOBAL_DISEASE_DEATHS_DAILY * EFFICACY_LAG_YEARS) * 365.0) * 0.9262780790085205))",
   validationMin: 250_000_000,
@@ -5775,7 +5775,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED: Parameter = {
 };
 
 export const DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE: Parameter = {
-  value: 1316173298595000.0,
+  value: 1316173298600000.0,
   parameterName: "DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_efficacy_lag_elimination_economic_value",
   unit: "USD",
@@ -5785,7 +5785,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_ECONOMIC_VALUE: Parameter = {
   confidence: "medium",
   formula: "DALYS_TOTAL × VSLY",
   latex: "\\begin{gathered}\nValue_{lag} = DALYs_{lag} \\times Value_{QALY} = 8.77B \\times \\$150K = \\$1320T\n\\\\[0.5em]\n\\text{where } DALYs_{lag} = YLL_{lag} + YLD_{lag} = 7.9B + 873M = 8.77B\n\\\\[0.5em]\n\\text{where } YLL_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60))\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\\\[0.5em]\n\\text{where } YLD_{lag} = Deaths_{lag} \\times T_{suffering} \\times DW_{chronic} = 416M \\times 6 \\times 0.35 = 873M\n\\end{gathered}",
-  confidenceInterval: [676151838589383.2, 2135283883186806.5],
+  confidenceInterval: [676151838589000.0, 2135283883190000.0],
   inputs: ["DFDA_EFFICACY_LAG_ELIMINATION_DALYS", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(DFDA_EFFICACY_LAG_ELIMINATION_DALYS * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5803,7 +5803,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_YLD: Parameter = {
   confidence: "medium",
   formula: "DEATHS_TOTAL × SUFFERING_PERIOD × DISABILITY_WEIGHT",
   latex: "\\begin{gathered}\nYLD_{lag} = Deaths_{lag} \\times T_{suffering} \\times DW_{chronic} = 416M \\times 6 \\times 0.35 = 873M\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\end{gathered}",
-  confidenceInterval: [418489232.5413821, 1495402463.0776439],
+  confidenceInterval: [418489232.541, 1495402463.08],
   inputs: ["DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED", "REGULATORY_DELAY_SUFFERING_PERIOD_YEARS", "CHRONIC_DISEASE_DISABILITY_WEIGHT"],
   computeExpr: "((DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED * REGULATORY_DELAY_SUFFERING_PERIOD_YEARS) * CHRONIC_DISEASE_DISABILITY_WEIGHT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -5821,7 +5821,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_YLL: Parameter = {
   confidence: "medium",
   formula: "DEATHS_TOTAL × (REMAINING_LIFE_EXPECTANCY_AT_60 - (MEAN_AGE_OF_DEATH - 60))",
   latex: "\\begin{gathered}\nYLL_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60))\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\end{gathered}",
-  confidenceInterval: [4344745145.384363, 11999937406.38536],
+  confidenceInterval: [4344745145.38, 11999937406.4],
   inputs: ["DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED", "GLOBAL_LIFE_EXPECTANCY_REMAINING_AT_AGE_60", "REGULATORY_DELAY_MEAN_AGE_OF_DEATH"],
   computeExpr: "(DFDA_EFFICACY_LAG_ELIMINATION_DEATHS_AVERTED * (GLOBAL_LIFE_EXPECTANCY_REMAINING_AT_AGE_60 - (REGULATORY_DELAY_MEAN_AGE_OF_DEATH - 60.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -5829,7 +5829,7 @@ export const DFDA_EFFICACY_LAG_ELIMINATION_YLL: Parameter = {
 };
 
 export const DFDA_FIRST_TREATMENTS_PER_YEAR: Parameter = {
-  value: 184.91870149000056,
+  value: 184.91870149,
   parameterName: "DFDA_FIRST_TREATMENTS_PER_YEAR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_first_treatments_per_year",
   unit: "diseases/year",
@@ -5839,7 +5839,7 @@ export const DFDA_FIRST_TREATMENTS_PER_YEAR: Parameter = {
   confidence: "low",
   formula: "NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR × PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER",
   latex: "\\begin{gathered}\nTreatments_{trial,ann} = Treatments_{new,ann} \\times k_{capacity} = 15 \\times 12.3 = 185\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [63.81406565520341, 816.2174326966558],
+  confidenceInterval: [63.8140656552, 816.217432697],
   inputs: ["NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR", "DFDA_TRIAL_CAPACITY_MULTIPLIER"],
   computeExpr: "(NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR * DFDA_TRIAL_CAPACITY_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5847,7 +5847,7 @@ export const DFDA_FIRST_TREATMENTS_PER_YEAR: Parameter = {
 };
 
 export const DFDA_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
-  value: 233.51785316399287,
+  value: 233.517853164,
   parameterName: "DFDA_KNOWN_SAFE_EXPLORATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_known_safe_exploration_years",
   unit: "years",
@@ -5857,7 +5857,7 @@ export const DFDA_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
   confidence: "high",
   formula: "DRUG_DISEASE_COMBINATIONS ÷ TREATY_SCALE_TRIALS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{safe,trial} = \\frac{N_{combos}}{Capacity_{trials}} = \\frac{9.5M}{40{,}700} = 234\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\\\[0.5em]\n\\text{where } Capacity_{trials} = Trials_{ann,curr} \\times k_{capacity} = 3{,}300 \\times 12.3 = 40{,}700\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [53.66511988253669, 597.8074447248639],
+  confidenceInterval: [53.6651198825, 597.807444725],
   inputs: ["DRUG_DISEASE_COMBINATIONS_POSSIBLE", "DFDA_TRIALS_PER_YEAR_CAPACITY"],
   computeExpr: "(DRUG_DISEASE_COMBINATIONS_POSSIBLE / DFDA_TRIALS_PER_YEAR_CAPACITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -5865,7 +5865,7 @@ export const DFDA_KNOWN_SAFE_EXPLORATION_YEARS: Parameter = {
 };
 
 export const DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL: Parameter = {
-  value: 565.8947368421053,
+  value: 565.894736842,
   parameterName: "DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_max_trial_capacity_multiplier_physical",
   unit: "x",
@@ -5875,7 +5875,7 @@ export const DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL: Parameter = {
   confidence: "medium",
   formula: "WILLING_TRIAL_PARTICIPANTS_GLOBAL ÷ CURRENT_TRIAL_SLOTS_AVAILABLE",
   latex: "\\begin{gathered}\nk_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\end{gathered}",
-  confidenceInterval: [449.96455858304637, 718.0337008178902],
+  confidenceInterval: [449.964558583, 718.033700818],
   inputs: ["WILLING_TRIAL_PARTICIPANTS_GLOBAL", "CURRENT_TRIAL_SLOTS_AVAILABLE"],
   computeExpr: "(WILLING_TRIAL_PARTICIPANTS_GLOBAL / CURRENT_TRIAL_SLOTS_AVAILABLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -5883,7 +5883,7 @@ export const DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL: Parameter = {
 };
 
 export const DFDA_NET_SAVINGS_RD_ONLY_ANNUAL: Parameter = {
-  value: 58600487804.878044,
+  value: 58600487804.9,
   parameterName: "DFDA_NET_SAVINGS_RD_ONLY_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_net_savings_rd_only_annual",
   unit: "USD/year",
@@ -5893,7 +5893,7 @@ export const DFDA_NET_SAVINGS_RD_ONLY_ANNUAL: Parameter = {
   confidence: "high",
   formula: "GROSS_SAVINGS - ANNUAL_OPEX",
   latex: "\\begin{gathered}\nSavings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [48053513726.39374, 73044979598.4833],
+  confidenceInterval: [48053513726.4, 73044979598.5],
   inputs: ["DFDA_BENEFIT_RD_ONLY_ANNUAL", "DFDA_ANNUAL_OPEX"],
   computeExpr: "(DFDA_BENEFIT_RD_ONLY_ANNUAL - DFDA_ANNUAL_OPEX)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5911,7 +5911,7 @@ export const DFDA_NPV_ANNUAL_OPEX_TOTAL: Parameter = {
   confidence: "high",
   formula: "TRIAL_PLATFORM_OPEX + DIH_OPEX",
   latex: "\\begin{gathered}\nOPEX_{total} \\\\\n= OPEX_{ann} + OPEX_{DIH,ann} \\\\\n= \\$18.9M + \\$21.1M \\\\\n= \\$40M\n\\end{gathered}",
-  confidenceInterval: [31063360.195655596, 49637669.94549314],
+  confidenceInterval: [31063360.1957, 49637669.9455],
   inputs: ["DFDA_NPV_ANNUAL_OPEX", "DIH_NPV_ANNUAL_OPEX_INITIATIVES"],
   computeExpr: "(DFDA_NPV_ANNUAL_OPEX + DIH_NPV_ANNUAL_OPEX_INITIATIVES)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -5919,7 +5919,7 @@ export const DFDA_NPV_ANNUAL_OPEX_TOTAL: Parameter = {
 };
 
 export const DFDA_NPV_BENEFIT_RD_ONLY: Parameter = {
-  value: 389352903335.6751,
+  value: 389352903336.0,
   parameterName: "DFDA_NPV_BENEFIT_RD_ONLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_npv_benefit_rd_only",
   unit: "USD",
@@ -5929,7 +5929,7 @@ export const DFDA_NPV_BENEFIT_RD_ONLY: Parameter = {
   confidence: "high",
   formula: "SUM[Savings × adoption(t) / (1+r)^t] for t=1..10",
   latex: "\\begin{gathered}\nNPV_{RD} \\\\\n= \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\end{gathered}",
-  confidenceInterval: [319276780547.4594, 485324882882.58234],
+  confidenceInterval: [319276780547.0, 485324882883.0],
   inputs: ["DFDA_NET_SAVINGS_RD_ONLY_ANNUAL", "NPV_DISCOUNT_RATE_STANDARD"],
   computeExpr: "((((((((((0.0 + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(1.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 1.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(2.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 2.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(3.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 3.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(4.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 4.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(5.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 5.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(6.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 6.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(7.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 7.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(8.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 8.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(9.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 9.0))) + ((DFDA_NET_SAVINGS_RD_ONLY_ANNUAL * (Math.min(10.0, 5.0) / 5.0)) / Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), 10.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5937,7 +5937,7 @@ export const DFDA_NPV_BENEFIT_RD_ONLY: Parameter = {
 };
 
 export const DFDA_NPV_NET_BENEFIT_RD_ONLY: Parameter = {
-  value: 388741518712.06226,
+  value: 388741518712.0,
   parameterName: "DFDA_NPV_NET_BENEFIT_RD_ONLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_npv_net_benefit_rd_only",
   unit: "USD",
@@ -5947,7 +5947,7 @@ export const DFDA_NPV_NET_BENEFIT_RD_ONLY: Parameter = {
   confidence: "high",
   formula: "NPV_BENEFIT - NPV_COST",
   latex: "\\begin{gathered}\nNPV_{net,RD} = NPV_{RD} - Cost_{platform,total} = \\$389B - \\$611M = \\$389B\n\\\\[0.5em]\n\\text{where } NPV_{RD} = \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\\\[0.5em]\n\\text{where } Savings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{platform,total} = PV_{OPEX} + Cost_{upfront,total} = \\$342M + \\$270M = \\$611M\n\\\\[0.5em]\n\\text{where } PV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{upfront,total} = Cost_{upfront} + Cost_{DIH,init} = \\$40M + \\$230M = \\$270M\n\\end{gathered}",
-  confidenceInterval: [318612416647.29364, 484714772780.273],
+  confidenceInterval: [318612416647.0, 484714772780.0],
   inputs: ["DFDA_NPV_BENEFIT_RD_ONLY", "DFDA_NPV_TOTAL_COST"],
   computeExpr: "(DFDA_NPV_BENEFIT_RD_ONLY - DFDA_NPV_TOTAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -5955,7 +5955,7 @@ export const DFDA_NPV_NET_BENEFIT_RD_ONLY: Parameter = {
 };
 
 export const DFDA_NPV_PV_ANNUAL_OPEX: Parameter = {
-  value: 341634623.61287224,
+  value: 341634623.613,
   parameterName: "DFDA_NPV_PV_ANNUAL_OPEX",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_npv_pv_annual_opex",
   unit: "USD",
@@ -5965,7 +5965,7 @@ export const DFDA_NPV_PV_ANNUAL_OPEX: Parameter = {
   confidence: "high",
   formula: "OPEX × [(1 - (1 + r)^-T) / r]",
   latex: "\\begin{gathered}\nPV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [264976763.26077095, 423419392.9799882],
+  confidenceInterval: [264976763.261, 423419392.98],
   inputs: ["DFDA_NPV_ANNUAL_OPEX_TOTAL", "NPV_DISCOUNT_RATE_STANDARD", "NPV_TIME_HORIZON_YEARS"],
   computeExpr: "((DFDA_NPV_ANNUAL_OPEX_TOTAL * (1.0 - Math.pow((1.0 + NPV_DISCOUNT_RATE_STANDARD), (-NPV_TIME_HORIZON_YEARS)))) / NPV_DISCOUNT_RATE_STANDARD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -5973,7 +5973,7 @@ export const DFDA_NPV_PV_ANNUAL_OPEX: Parameter = {
 };
 
 export const DFDA_NPV_TOTAL_COST: Parameter = {
-  value: 611384623.6128722,
+  value: 611384623.613,
   parameterName: "DFDA_NPV_TOTAL_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_npv_total_cost",
   unit: "USD",
@@ -5983,7 +5983,7 @@ export const DFDA_NPV_TOTAL_COST: Parameter = {
   confidence: "high",
   formula: "UPFRONT + PV_OPEX",
   latex: "\\begin{gathered}\nCost_{platform,total} = PV_{OPEX} + Cost_{upfront,total} = \\$342M + \\$270M = \\$611M\n\\\\[0.5em]\n\\text{where } PV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{upfront,total} = Cost_{upfront} + Cost_{DIH,init} = \\$40M + \\$230M = \\$270M\n\\end{gathered}",
-  confidenceInterval: [499122407.7082175, 729098551.5691642],
+  confidenceInterval: [499122407.708, 729098551.569],
   inputs: ["DFDA_NPV_PV_ANNUAL_OPEX", "DFDA_NPV_UPFRONT_COST_TOTAL"],
   computeExpr: "(DFDA_NPV_UPFRONT_COST_TOTAL + DFDA_NPV_PV_ANNUAL_OPEX)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -6001,7 +6001,7 @@ export const DFDA_NPV_UPFRONT_COST_TOTAL: Parameter = {
   confidence: "high",
   formula: "TRIAL_PLATFORM_BUILD + DIH_INITIATIVES",
   latex: "\\begin{gathered}\nCost_{upfront,total} \\\\\n= Cost_{upfront} + Cost_{DIH,init} \\\\\n= \\$40M + \\$230M \\\\\n= \\$270M\n\\end{gathered}",
-  confidenceInterval: [196177765.4074869, 362705392.5711628],
+  confidenceInterval: [196177765.407, 362705392.571],
   inputs: ["DFDA_NPV_UPFRONT_COST", "DIH_NPV_UPFRONT_COST_INITIATIVES"],
   computeExpr: "(DFDA_NPV_UPFRONT_COST + DIH_NPV_UPFRONT_COST_INITIATIVES)",
   validationMin: 150_000_000,
@@ -6011,7 +6011,7 @@ export const DFDA_NPV_UPFRONT_COST_TOTAL: Parameter = {
 };
 
 export const DFDA_OPEX_PCT_OF_TREATY_FUNDING: Parameter = {
-  value: 0.0014705882352941176,
+  value: 0.00147058823529,
   parameterName: "DFDA_OPEX_PCT_OF_TREATY_FUNDING",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_opex_pct_of_treaty_funding",
   unit: "rate",
@@ -6021,7 +6021,7 @@ export const DFDA_OPEX_PCT_OF_TREATY_FUNDING: Parameter = {
   confidence: "high",
   formula: "TRIAL_PLATFORM_OPEX / TREATY_FUNDING",
   latex: "\\begin{gathered}\nOPEX_{pct} = \\frac{OPEX_{trial}}{Funding_{treaty}} = \\frac{\\$40M}{\\$27.2B} = 0.147\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [0.0012327927148772704, 0.0017308149126734932],
+  confidenceInterval: [0.00123279271488, 0.00173081491267],
   inputs: ["DFDA_ANNUAL_OPEX", "TREATY_ANNUAL_FUNDING"],
   computeExpr: "(DFDA_ANNUAL_OPEX / TREATY_ANNUAL_FUNDING)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6029,7 +6029,7 @@ export const DFDA_OPEX_PCT_OF_TREATY_FUNDING: Parameter = {
 };
 
 export const DFDA_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
-  value: 23423035.52206674,
+  value: 23423035.5221,
   parameterName: "DFDA_PATIENTS_FUNDABLE_ANNUALLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_patients_fundable_annually",
   unit: "patients/year",
@@ -6039,7 +6039,7 @@ export const DFDA_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
   confidence: "high",
   formula: "REFERENCE_TRIAL_SUBSIDIES / PRAGMATIC_TRIAL_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nN_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [9231458.856089607, 93920792.67191431],
+  confidenceInterval: [9231458.85609, 93920792.6719],
   inputs: ["DFDA_TRIAL_SUBSIDIES_ANNUAL", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(DFDA_TRIAL_SUBSIDIES_ANNUAL / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -6047,7 +6047,7 @@ export const DFDA_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
 };
 
 export const DFDA_QUEUE_CLEARANCE_YEARS: Parameter = {
-  value: 35.9617493872549,
+  value: 35.9617493873,
   parameterName: "DFDA_QUEUE_CLEARANCE_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_queue_clearance_years",
   unit: "years",
@@ -6057,7 +6057,7 @@ export const DFDA_QUEUE_CLEARANCE_YEARS: Parameter = {
   confidence: "low",
   formula: "STATUS_QUO_QUEUE_CLEARANCE_YEARS ÷ PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER",
   latex: "\\begin{gathered}\nT_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [8.147362721662773, 105.71746986550488],
+  confidenceInterval: [8.14736272166, 105.717469866],
   inputs: ["STATUS_QUO_QUEUE_CLEARANCE_YEARS", "DFDA_TRIAL_CAPACITY_MULTIPLIER"],
   computeExpr: "(STATUS_QUO_QUEUE_CLEARANCE_YEARS / DFDA_TRIAL_CAPACITY_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6065,7 +6065,7 @@ export const DFDA_QUEUE_CLEARANCE_YEARS: Parameter = {
 };
 
 export const DFDA_RD_SAVINGS_DAILY: Parameter = {
-  value: 160658870.698296,
+  value: 160658870.698,
   parameterName: "DFDA_RD_SAVINGS_DAILY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_rd_savings_daily",
   unit: "USD/day",
@@ -6075,7 +6075,7 @@ export const DFDA_RD_SAVINGS_DAILY: Parameter = {
   confidence: "high",
   formula: "ANNUAL_RD_SAVINGS ÷ DAYS_PER_YEAR",
   latex: "\\begin{gathered}\nSavings_{RD,daily} = Benefit_{RD,ann} \\times 0.00274 = \\$58.6B \\times 0.00274 = \\$161M\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [131759130.15264475, 200240921.71979788],
+  confidenceInterval: [131759130.153, 200240921.72],
   inputs: ["DFDA_BENEFIT_RD_ONLY_ANNUAL"],
   computeExpr: "(DFDA_BENEFIT_RD_ONLY_ANNUAL / 365.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/health-dividend.html",
@@ -6083,7 +6083,7 @@ export const DFDA_RD_SAVINGS_DAILY: Parameter = {
 };
 
 export const DFDA_ROI_RD_ONLY: Parameter = {
-  value: 636.8379057930197,
+  value: 636.837905793,
   parameterName: "DFDA_ROI_RD_ONLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_roi_rd_only",
   unit: "ratio",
@@ -6093,7 +6093,7 @@ export const DFDA_ROI_RD_ONLY: Parameter = {
   confidence: "high",
   formula: "NPV_BENEFIT ÷ NPV_TOTAL_COST",
   latex: "\\begin{gathered}\nROI_{RD} = \\frac{NPV_{RD}}{Cost_{platform,total}} = \\frac{\\$389B}{\\$611M} = 637\n\\\\[0.5em]\n\\text{where } NPV_{RD} = \\sum_{t=1}^{10} \\frac{Savings_{RD,ann} \\cdot \\frac{\\min(t,5)}{5}}{(1+r)^t}\n\\\\[0.5em]\n\\text{where } Savings_{RD,ann} = Benefit_{RD,ann} - OPEX_{trial} = \\$58.6B - \\$40M = \\$58.6B\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{platform,total} = PV_{OPEX} + Cost_{upfront,total} = \\$342M + \\$270M = \\$611M\n\\\\[0.5em]\n\\text{where } PV_{OPEX} = \\frac{T_{horizon}}{OPEX_{total} \\times r_{discount}} = \\frac{10}{\\$40M \\times 3\\%} = \\$342M\n\\\\[0.5em]\n\\text{where } OPEX_{total} = OPEX_{ann} + OPEX_{DIH,ann} = \\$18.9M + \\$21.1M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{upfront,total} = Cost_{upfront} + Cost_{DIH,init} = \\$40M + \\$230M = \\$270M\n\\end{gathered}",
-  confidenceInterval: [478.834602301671, 854.4590305810763],
+  confidenceInterval: [478.834602302, 854.459030581],
   inputs: ["DFDA_NPV_BENEFIT_RD_ONLY", "DFDA_NPV_TOTAL_COST"],
   computeExpr: "(DFDA_NPV_BENEFIT_RD_ONLY / DFDA_NPV_TOTAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6111,7 +6111,7 @@ export const DFDA_STORAGE_COST_TOTAL_PER_PATIENT_ANNUAL: Parameter = {
   confidence: "high",
   formula: "MONTHLY_COST × 12",
   latex: "\\begin{gathered}\nCost_{infra,annual} = Cost_{infra,monthly} \\times 12 = \\$0.72 \\times 12 = \\$8.64\n\\\\[0.5em]\n\\text{where } Cost_{infra,monthly} = Cost_{storage,raw} + Cost_{compute} + Cost_{database} + Cost_{backup} = \\$0.02 + \\$0.2 + \\$0.3 + \\$0.2 = \\$0.72\n\\end{gathered}",
-  confidenceInterval: [5.883767727965169, 12.057019568862726],
+  confidenceInterval: [5.88376772797, 12.0570195689],
   inputs: ["DFDA_STORAGE_COST_TOTAL_PER_PATIENT_MONTHLY"],
   computeExpr: "(DFDA_STORAGE_COST_TOTAL_PER_PATIENT_MONTHLY * 12.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dfda.html",
@@ -6129,7 +6129,7 @@ export const DFDA_STORAGE_COST_TOTAL_PER_PATIENT_MONTHLY: Parameter = {
   confidence: "high",
   formula: "RAW + COMPUTE + DATABASE + BACKUP",
   latex: "\\begin{gathered}\nCost_{infra,monthly} \\\\\n= Cost_{storage,raw} + Cost_{compute} + Cost_{database} \\\\\n+ Cost_{backup} \\\\\n= \\$0.02 + \\$0.2 + \\$0.3 + \\$0.2 \\\\\n= \\$0.72\n\\end{gathered}",
-  confidenceInterval: [0.49031397733043075, 1.0047516307385607],
+  confidenceInterval: [0.49031397733, 1.00475163074],
   inputs: ["DFDA_STORAGE_COST_RAW_PER_PATIENT_MONTHLY", "DFDA_STORAGE_COST_COMPUTE_PER_PATIENT_MONTHLY", "DFDA_STORAGE_COST_DATABASE_PER_PATIENT_MONTHLY", "DFDA_STORAGE_COST_BACKUP_PER_PATIENT_MONTHLY"],
   computeExpr: "(((DFDA_STORAGE_COST_RAW_PER_PATIENT_MONTHLY + DFDA_STORAGE_COST_COMPUTE_PER_PATIENT_MONTHLY) + DFDA_STORAGE_COST_DATABASE_PER_PATIENT_MONTHLY) + DFDA_STORAGE_COST_BACKUP_PER_PATIENT_MONTHLY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dfda.html",
@@ -6137,7 +6137,7 @@ export const DFDA_STORAGE_COST_TOTAL_PER_PATIENT_MONTHLY: Parameter = {
 };
 
 export const DFDA_TOTAL_EXPLORATION_YEARS: Parameter = {
-  value: 1265.9125724153298,
+  value: 1265.91257242,
   parameterName: "DFDA_TOTAL_EXPLORATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_total_exploration_years",
   unit: "years",
@@ -6147,7 +6147,7 @@ export const DFDA_TOTAL_EXPLORATION_YEARS: Parameter = {
   confidence: "high",
   formula: "TOTAL_COMBINATIONS ÷ TREATY_SCALE_TRIALS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{explore,trial} = \\frac{N_{testable}}{Capacity_{trials}} = \\frac{51.5M}{40{,}700} = 1{,}270\n\\\\[0.5em]\n\\text{where } N_{testable} = N_{combos} + N_{emerging} = 9.5M + 42M = 51.5M\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\\\[0.5em]\n\\text{where } N_{emerging} = Combos_{gene} + Combos_{mRNA} + Combos_{epi} + Combos_{cell} = 20M + 20M + 1.5M + 500{,}000 = 42M\n\\\\[0.5em]\n\\text{where } Combos_{gene} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{mRNA} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{epi} = N_{epi} \\times N_{diseases,trial} = 1{,}500 \\times 1{,}000 = 1.5M\n\\\\[0.5em]\n\\text{where } Combos_{cell} = N_{cell} \\times N_{diseases,trial} = 500 \\times 1{,}000 = 500{,}000\n\\\\[0.5em]\n\\text{where } Capacity_{trials} = Trials_{ann,curr} \\times k_{capacity} = 3{,}300 \\times 12.3 = 40{,}700\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [301.2949812653266, 3209.806208391382],
+  confidenceInterval: [301.294981265, 3209.80620839],
   inputs: ["TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS", "DFDA_TRIALS_PER_YEAR_CAPACITY"],
   computeExpr: "(TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS / DFDA_TRIALS_PER_YEAR_CAPACITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -6155,7 +6155,7 @@ export const DFDA_TOTAL_EXPLORATION_YEARS: Parameter = {
 };
 
 export const DFDA_TRIALS_PER_YEAR_CAPACITY: Parameter = {
-  value: 40682.114327800125,
+  value: 40682.1143278,
   parameterName: "DFDA_TRIALS_PER_YEAR_CAPACITY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trials_per_year_capacity",
   unit: "trials/year",
@@ -6165,7 +6165,7 @@ export const DFDA_TRIALS_PER_YEAR_CAPACITY: Parameter = {
   confidence: "high",
   formula: "CURRENT_TRIALS × PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER",
   latex: "\\begin{gathered}\nCapacity_{trials} = Trials_{ann,curr} \\times k_{capacity} = 3{,}300 \\times 12.3 = 40{,}700\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [16040.506410773705, 169071.46443721245],
+  confidenceInterval: [16040.5064108, 169071.464437],
   inputs: ["CURRENT_TRIALS_PER_YEAR", "DFDA_TRIAL_CAPACITY_MULTIPLIER"],
   computeExpr: "(CURRENT_TRIALS_PER_YEAR * DFDA_TRIAL_CAPACITY_MULTIPLIER)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -6173,7 +6173,7 @@ export const DFDA_TRIALS_PER_YEAR_CAPACITY: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_DALYS_AVERTED: Parameter = {
-  value: 543368690237.1337,
+  value: 543368690237.0,
   parameterName: "DFDA_TRIAL_CAPACITY_DALYS_AVERTED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_dalys_averted",
   unit: "DALYs",
@@ -6183,7 +6183,7 @@ export const DFDA_TRIAL_CAPACITY_DALYS_AVERTED: Parameter = {
   confidence: "low",
   formula: "GLOBAL_ANNUAL_DALY_BURDEN × EVENTUALLY_AVOIDABLE_DALY_PCT × TREATMENT_ACCELERATION_YEARS",
   latex: "\\begin{gathered}\nDALYs_{capacity} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel} = 2.88B \\times 92.6\\% \\times 204 = 543B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [289130017386.7707, 1062519307948.7119],
+  confidenceInterval: [289130017387.0, 1062519307950.0],
   inputs: ["GLOBAL_ANNUAL_DALY_BURDEN", "EVENTUALLY_AVOIDABLE_DALY_PCT", "DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS"],
   computeExpr: "((GLOBAL_ANNUAL_DALY_BURDEN * EVENTUALLY_AVOIDABLE_DALY_PCT) * DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6191,7 +6191,7 @@ export const DFDA_TRIAL_CAPACITY_DALYS_AVERTED: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE: Parameter = {
-  value: 8.150530353557006e+16,
+  value: 8.15053035356e+16,
   parameterName: "DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_economic_value",
   unit: "USD",
@@ -6201,7 +6201,7 @@ export const DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE: Parameter = {
   confidence: "low",
   formula: "TRIAL_CAPACITY_DALYS_AVERTED × STANDARD_QALY_VALUE",
   latex: "\\begin{gathered}\nValue_{capacity} = DALYs_{capacity} \\times Value_{QALY} = 543B \\times \\$150K = \\$81500T\n\\\\[0.5em]\n\\text{where } DALYs_{capacity} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel} = 2.88B \\times 92.6\\% \\times 204 = 543B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [4.031622389407436e+16, 1.6804890435983437e+17],
+  confidenceInterval: [4.03162238941e+16, 1.6804890436e+17],
   inputs: ["DFDA_TRIAL_CAPACITY_DALYS_AVERTED", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_DALYS_AVERTED * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6209,7 +6209,7 @@ export const DFDA_TRIAL_CAPACITY_ECONOMIC_VALUE: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_LIVES_SAVED: Parameter = {
-  value: 10329665205.028845,
+  value: 10329665205.0,
   parameterName: "DFDA_TRIAL_CAPACITY_LIVES_SAVED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_lives_saved",
   unit: "deaths",
@@ -6219,7 +6219,7 @@ export const DFDA_TRIAL_CAPACITY_LIVES_SAVED: Parameter = {
   confidence: "low",
   formula: "ANNUAL_DEATHS × TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS × AVOIDABLE_PCT",
   latex: "\\begin{gathered}\nLives_{capacity} = Deaths_{disease,daily} \\times T_{accel} \\times 338 = 150{,}000 \\times 204 \\times 338 = 10.3B\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [5840094637.468375, 19868263388.42882],
+  confidenceInterval: [5840094637.47, 19868263388.4],
   inputs: ["GLOBAL_DISEASE_DEATHS_DAILY", "DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS"],
   computeExpr: "(((GLOBAL_DISEASE_DEATHS_DAILY * DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS) * 365.0) * 0.9262780790085205)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6227,7 +6227,7 @@ export const DFDA_TRIAL_CAPACITY_LIVES_SAVED: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
-  value: 12.327913432666705,
+  value: 12.3279134327,
   parameterName: "DFDA_TRIAL_CAPACITY_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_multiplier",
   unit: "x",
@@ -6237,7 +6237,7 @@ export const DFDA_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "PATIENTS_FUNDABLE_AT_REFERENCE_FUNDING ÷ CURRENT_TRIAL_SLOTS",
   latex: "\\begin{gathered}\nk_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [4.9246163609222675, 50.75891196438465],
+  confidenceInterval: [4.92461636092, 50.7589119644],
   inputs: ["CURRENT_TRIAL_SLOTS_AVAILABLE", "DFDA_PATIENTS_FUNDABLE_ANNUALLY"],
   computeExpr: "(DFDA_PATIENTS_FUNDABLE_ANNUALLY / CURRENT_TRIAL_SLOTS_AVAILABLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6245,7 +6245,7 @@ export const DFDA_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS: Parameter = {
-  value: 565243673350.9989,
+  value: 565243673351.0,
   parameterName: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_dalys",
   unit: "DALYs",
@@ -6255,7 +6255,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS: Parameter = {
   confidence: "low",
   formula: "GLOBAL_ANNUAL_DALY_BURDEN × EVENTUALLY_AVOIDABLE_DALY_PCT × TIMELINE_SHIFT",
   latex: "\\begin{gathered}\nDALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [309417839106.5174, 1084398442917.5596],
+  confidenceInterval: [309417839107.0, 1084398442920.0],
   inputs: ["GLOBAL_ANNUAL_DALY_BURDEN", "EVENTUALLY_AVOIDABLE_DALY_PCT", "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS"],
   computeExpr: "((GLOBAL_ANNUAL_DALY_BURDEN * EVENTUALLY_AVOIDABLE_DALY_PCT) * DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6263,7 +6263,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE: Parameter = {
-  value: 8.478655100264984e+16,
+  value: 8.47865510026e+16,
   parameterName: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_economic_value",
   unit: "USD",
@@ -6273,7 +6273,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE: Parameter = {
   confidence: "low",
   formula: "DALYS × STANDARD_QALY_VALUE",
   latex: "\\begin{gathered}\nValue_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [4.287343349416812e+16, 1.7182530612064253e+17],
+  confidenceInterval: [4.28734334942e+16, 1.71825306121e+17],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6281,7 +6281,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED: Parameter = {
-  value: 10745517748.59972,
+  value: 10745517748.6,
   parameterName: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_lives_saved",
   unit: "deaths",
@@ -6291,7 +6291,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED: Parameter = {
   confidence: "low",
   formula: "ANNUAL_DEATHS × TOTAL_TIMELINE_SHIFT_YEARS × AVOIDABLE_PCT",
   latex: "\\begin{gathered}\nLives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [6235696426.716688, 20312982088.986675],
+  confidenceInterval: [6235696426.72, 20312982089.0],
   inputs: ["GLOBAL_DISEASE_DEATHS_DAILY", "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS"],
   computeExpr: "(((GLOBAL_DISEASE_DEATHS_DAILY * DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS) * 365.0) * 0.9262780790085205)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6299,7 +6299,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS: Parameter = {
-  value: 1931098485636352.8,
+  value: 1931098485640000.0,
   parameterName: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_suffering_hours",
   unit: "hours",
@@ -6309,7 +6309,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS: Parameter = 
   confidence: "low",
   formula: "TOTAL_TIMELINE_SHIFT_DALYS × GLOBAL_YLD_PROPORTION × HOURS_PER_YEAR",
   latex: "\\begin{gathered}\nHours_{suffer,max} = DALYs_{max} \\times Pct_{YLD} \\times 8760 = 565B \\times 0.39 \\times 8760 = 1930T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [1037413031639951.2, 3745214944984868.5],
+  confidenceInterval: [1037413031640000.0, 3745214944980000.0],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS", "GLOBAL_YLD_PROPORTION_OF_DALYS"],
   computeExpr: "((DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS * GLOBAL_YLD_PROPORTION_OF_DALYS) * 8760.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -6317,7 +6317,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS: Parameter = 
 };
 
 export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS: Parameter = {
-  value: 211.8857919730392,
+  value: 211.885791973,
   parameterName: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_plus_efficacy_lag_years",
   unit: "years",
@@ -6327,7 +6327,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS: Parameter = {
   confidence: "low",
   formula: "TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS + EFFICACY_LAG_YEARS",
   latex: "\\begin{gathered}\nT_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [124.41448688661136, 398.0070865002508],
+  confidenceInterval: [124.414486887, 398.0070865],
   inputs: ["DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS", "EFFICACY_LAG_YEARS"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS + EFFICACY_LAG_YEARS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6335,7 +6335,7 @@ export const DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS: Parameter = {
 };
 
 export const DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS: Parameter = {
-  value: 203.68579197303922,
+  value: 203.685791973,
   parameterName: "DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_capacity_treatment_acceleration_years",
   unit: "years",
@@ -6345,7 +6345,7 @@ export const DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS: Parameter = {
   confidence: "low",
   formula: "STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT × (1 - 1/PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER)",
   latex: "\\begin{gathered}\nT_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [116.21129937776517, 389.635764722448],
+  confidenceInterval: [116.211299378, 389.635764722],
   inputs: ["STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT", "DFDA_TRIAL_CAPACITY_MULTIPLIER"],
   computeExpr: "(STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT * (1.0 - (1.0 / DFDA_TRIAL_CAPACITY_MULTIPLIER)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6353,7 +6353,7 @@ export const DFDA_TRIAL_CAPACITY_TREATMENT_ACCELERATION_YEARS: Parameter = {
 };
 
 export const DFDA_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
-  value: 44.13347685683531,
+  value: 44.1334768568,
   parameterName: "DFDA_TRIAL_COST_REDUCTION_FACTOR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_cost_reduction_factor",
   unit: "multiplier",
@@ -6363,7 +6363,7 @@ export const DFDA_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
   confidence: "high",
   formula: "TRADITIONAL_PHASE3_COST / PRAGMATIC_TRIAL_COST",
   latex: "\\begin{gathered}\nk_{reduce} \\\\\n= \\frac{Cost_{P3,pt}}{Cost_{pragmatic,pt}} \\\\\n= \\frac{\\$41K}{\\$929} \\\\\n= 44.1\n\\end{gathered}",
-  confidenceInterval: [12.751701016848756, 210.2539910518858],
+  confidenceInterval: [12.7517010168, 210.253991052],
   inputs: ["TRADITIONAL_PHASE3_COST_PER_PATIENT", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(TRADITIONAL_PHASE3_COST_PER_PATIENT / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6371,7 +6371,7 @@ export const DFDA_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
 };
 
 export const DFDA_TRIAL_COST_REDUCTION_PCT: Parameter = {
-  value: 0.9773414634146341,
+  value: 0.977341463415,
   parameterName: "DFDA_TRIAL_COST_REDUCTION_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dfda_trial_cost_reduction_pct",
   unit: "percentage",
@@ -6381,7 +6381,7 @@ export const DFDA_TRIAL_COST_REDUCTION_PCT: Parameter = {
   confidence: "high",
   formula: "1 - (PRAGMATIC_TRIAL_COST / TRADITIONAL_COST)",
   latex: "\\begin{gathered}\nReduce_{pct} \\\\\n= 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} \\\\\n= 1 - \\frac{\\$929}{\\$41K} \\\\\n= 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [0.9215790340091814, 0.9952438476895992],
+  confidenceInterval: [0.921579034009, 0.99524384769],
   inputs: ["DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT", "TRADITIONAL_PHASE3_COST_PER_PATIENT"],
   computeExpr: "(1.0 - (DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT / TRADITIONAL_PHASE3_COST_PER_PATIENT))",
   validationMin: 0.9,
@@ -6418,7 +6418,7 @@ export const DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER: Parameter = {
   confidence: "medium",
   formula: "1 + VALLEY_OF_DEATH_ATTRITION_PCT",
   latex: "k_{rescue} = Attrition_{valley} + 1 = 40\\% + 1 = 1.4",
-  confidenceInterval: [1.264710080702658, 1.5354638862931196],
+  confidenceInterval: [1.2647100807, 1.53546388629],
   inputs: ["VALLEY_OF_DEATH_ATTRITION_PCT"],
   computeExpr: "(1.0 + VALLEY_OF_DEATH_ATTRITION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6426,7 +6426,7 @@ export const DFDA_VALLEY_OF_DEATH_RESCUE_MULTIPLIER: Parameter = {
 };
 
 export const DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE: Parameter = {
-  value: 1669537.1367061357,
+  value: 1669537.13671,
   parameterName: "DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dih_nih_same_budget_patients_fundable",
   unit: "patients",
@@ -6436,7 +6436,7 @@ export const DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE: Parameter = {
   confidence: "high",
   formula: "NIH_BUDGET × TRIALS_PCT / PRAGMATIC_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nFundable \\\\\n= \\text{NIH\\_BUDGET} \\times \\text{TRIALS\\_PCT} / \\text{PRAGMATIC\\_COST\\_PER\\_PATIENT}\n\\end{gathered}",
-  confidenceInterval: [627174.4596503446, 7129318.283884521],
+  confidenceInterval: [627174.45965, 7129318.28388],
   inputs: ["NIH_ANNUAL_BUDGET", "NIH_CLINICAL_TRIALS_SPENDING_PCT", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "((NIH_ANNUAL_BUDGET * NIH_CLINICAL_TRIALS_SPENDING_PCT) / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dih.html",
@@ -6444,7 +6444,7 @@ export const DIH_NIH_SAME_BUDGET_PATIENTS_FUNDABLE: Parameter = {
 };
 
 export const DIH_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
-  value: 23379978.471474703,
+  value: 23379978.4715,
   parameterName: "DIH_PATIENTS_FUNDABLE_ANNUALLY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dih_patients_fundable_annually",
   unit: "patients/year",
@@ -6454,7 +6454,7 @@ export const DIH_PATIENTS_FUNDABLE_ANNUALLY: Parameter = {
   confidence: "high",
   formula: "ONE_PERCENT_TREATY_TRIAL_SUBSIDIES ÷ PRAGMATIC_TRIAL_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nN_{fundable,ann} = \\frac{Subsidies_{trial,ann}}{Cost_{pragmatic,pt}} = \\frac{\\$21.7B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ann} = Treasury_{RD,ann} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.7B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Treasury_{RD,ann} = Funding_{treaty} - Payout_{bond,ann} - Funding_{political,ann} = \\$27.2B - \\$2.72B - \\$2.72B = \\$21.8B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{political,ann} = Funding_{treaty} \\times Pct_{political} = \\$27.2B \\times 10\\% = \\$2.72B\n\\end{gathered}",
-  confidenceInterval: [9214487.283468926, 93748156.8214569],
+  confidenceInterval: [9214487.28347, 93748156.8215],
   inputs: ["DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6513,7 +6513,7 @@ export const DIH_TREASURY_TRIAL_SUBSIDIES_ANNUAL: Parameter = {
 };
 
 export const DIH_TREASURY_TRIAL_SUBSIDIES_PCT: Parameter = {
-  value: 0.7985294117647059,
+  value: 0.798529411765,
   parameterName: "DIH_TREASURY_TRIAL_SUBSIDIES_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-dih_treasury_trial_subsidies_pct",
   unit: "rate",
@@ -6542,7 +6542,7 @@ export const DISEASES_WITHOUT_EFFECTIVE_TREATMENT: Parameter = {
   confidence: "medium",
   formula: "RARE_DISEASES_COUNT_GLOBAL × 0.95",
   latex: "\\begin{gathered}\nN_{untreated} \\\\\n= N_{rare} \\times 0.95 \\\\\n= 7{,}000 \\times 0.95 \\\\\n= 6{,}650\n\\end{gathered}",
-  confidenceInterval: [5700.0, 8232.204270373322],
+  confidenceInterval: [5700.0, 8232.20427037],
   inputs: ["RARE_DISEASES_COUNT_GLOBAL"],
   computeExpr: "(RARE_DISEASES_COUNT_GLOBAL * 0.95)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6550,7 +6550,7 @@ export const DISEASES_WITHOUT_EFFECTIVE_TREATMENT: Parameter = {
 };
 
 export const DISEASE_VS_TERRORISM_DEATHS_RATIO: Parameter = {
-  value: 18357.81041388518,
+  value: 18357.8104139,
   parameterName: "DISEASE_VS_TERRORISM_DEATHS_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-disease_vs_terrorism_deaths_ratio",
   unit: "ratio",
@@ -6560,7 +6560,7 @@ export const DISEASE_VS_TERRORISM_DEATHS_RATIO: Parameter = {
   confidence: "high",
   formula: "ANNUAL_DISEASE_DEATHS ÷ 911_DEATHS",
   latex: "\\begin{gathered}\nRatio_{dis:terror} \\\\\n= \\frac{Deaths_{curable,ann}}{Deaths_{9/11}} \\\\\n= \\frac{55M}{3{,}000} \\\\\n= 18{,}400\n\\end{gathered}",
-  confidenceInterval: [15566.386375873588, 21100.39605607465],
+  confidenceInterval: [15566.3863759, 21100.3960561],
   inputs: ["GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES", "TERRORISM_DEATHS_911"],
   computeExpr: "(GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES / TERRORISM_DEATHS_911)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6568,7 +6568,7 @@ export const DISEASE_VS_TERRORISM_DEATHS_RATIO: Parameter = {
 };
 
 export const DISEASE_VS_WAR_DEATHS_RATIO: Parameter = {
-  value: 224.8569092395748,
+  value: 224.85690924,
   parameterName: "DISEASE_VS_WAR_DEATHS_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-disease_vs_war_deaths_ratio",
   unit: "ratio",
@@ -6578,7 +6578,7 @@ export const DISEASE_VS_WAR_DEATHS_RATIO: Parameter = {
   confidence: "high",
   formula: "ANNUAL_DISEASE_DEATHS ÷ WAR_DEATHS",
   latex: "\\begin{gathered}\nRatio_{dis:war} = \\frac{Deaths_{curable,ann}}{Deaths_{conflict}} = \\frac{55M}{245{,}000} = 225\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
-  confidenceInterval: [175.27589108113241, 288.43583520384414],
+  confidenceInterval: [175.275891081, 288.435835204],
   inputs: ["GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES", "GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL"],
   computeExpr: "(GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES / GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6596,7 +6596,7 @@ export const DIVIDEND_COVERAGE_FACTOR: Parameter = {
   confidence: "high",
   formula: "TREATY_FUNDING ÷ TRIAL_PLATFORM_OPEX",
   latex: "\\begin{gathered}\nk_{coverage} = \\frac{Funding_{treaty}}{OPEX_{trial}} = \\frac{\\$27.2B}{\\$40M} = 680\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [577.7625283348925, 811.1663769526177],
+  confidenceInterval: [577.762528335, 811.166376953],
   inputs: ["DFDA_ANNUAL_OPEX", "TREATY_ANNUAL_FUNDING"],
   computeExpr: "(TREATY_ANNUAL_FUNDING / DFDA_ANNUAL_OPEX)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -6616,7 +6616,7 @@ export const DRUGS_APPROVED_SINCE_1962: Parameter = {
   confidence: "medium",
   formula: "APPROVALS_PER_YEAR × 62",
   latex: "\\begin{gathered}\nN_{drugs,62} \\\\\n= Drugs_{ann,curr} \\times 62 \\\\\n= 50 \\times 62 \\\\\n= 3{,}100\n\\end{gathered}",
-  confidenceInterval: [2790.0, 3493.296739366098],
+  confidenceInterval: [2790.0, 3493.29673937],
   inputs: ["CURRENT_DRUG_APPROVALS_PER_YEAR"],
   computeExpr: "(CURRENT_DRUG_APPROVALS_PER_YEAR * 62.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6624,7 +6624,7 @@ export const DRUGS_APPROVED_SINCE_1962: Parameter = {
 };
 
 export const DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER: Parameter = {
-  value: 13.402061855670103,
+  value: 13.4020618557,
   parameterName: "DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-drug_cost_increase_1980s_to_current_multiplier",
   unit: "x",
@@ -6636,7 +6636,7 @@ export const DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "PHARMA_DRUG_DEVELOPMENT_COST_CURRENT ÷ DRUG_DEVELOPMENT_COST_1980S",
   latex: "\\begin{gathered}\nk_{cost,80s} \\\\\n= \\frac{Cost_{dev,curr}}{Cost_{dev,80s}} \\\\\n= \\frac{\\$2.6B}{\\$194M} \\\\\n= 13.4\n\\end{gathered}",
-  confidenceInterval: [9.152143530517138, 19.183033669779867],
+  confidenceInterval: [9.15214353052, 19.1830336698],
   inputs: ["DRUG_DEVELOPMENT_COST_1980S", "PHARMA_DRUG_DEVELOPMENT_COST_CURRENT"],
   computeExpr: "(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT / DRUG_DEVELOPMENT_COST_1980S)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6644,7 +6644,7 @@ export const DRUG_COST_INCREASE_1980S_TO_CURRENT_MULTIPLIER: Parameter = {
 };
 
 export const DRUG_COST_INCREASE_PRE1962_TO_CURRENT_MULTIPLIER: Parameter = {
-  value: 105.26315789473684,
+  value: 105.263157895,
   parameterName: "DRUG_COST_INCREASE_PRE1962_TO_CURRENT_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-drug_cost_increase_pre1962_to_current_multiplier",
   unit: "x",
@@ -6656,7 +6656,7 @@ export const DRUG_COST_INCREASE_PRE1962_TO_CURRENT_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "PHARMA_DRUG_DEVELOPMENT_COST_CURRENT ÷ PRE_1962_DRUG_DEVELOPMENT_COST_2024_USD",
   latex: "\\begin{gathered}\nk_{cost,pre62} \\\\\n= \\frac{Cost_{dev,curr}}{Cost_{pre62,24}} \\\\\n= \\frac{\\$2.6B}{\\$24.7M} \\\\\n= 105\n\\end{gathered}",
-  confidenceInterval: [72.79921509607935, 148.83891088125506],
+  confidenceInterval: [72.7992150961, 148.838910881],
   inputs: ["PHARMA_DRUG_DEVELOPMENT_COST_CURRENT", "PRE_1962_DRUG_DEVELOPMENT_COST_2024_USD"],
   computeExpr: "(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT / PRE_1962_DRUG_DEVELOPMENT_COST_2024_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/drug-development-cost-analysis.html",
@@ -6674,7 +6674,7 @@ export const DRUG_DISEASE_COMBINATIONS_POSSIBLE: Parameter = {
   confidence: "high",
   formula: "SAFE_COMPOUNDS × DISEASES",
   latex: "\\begin{gathered}\nN_{combos} \\\\\n= N_{safe} \\times N_{diseases,trial} \\\\\n= 9{,}500 \\times 1{,}000 \\\\\n= 9.5M\n\\end{gathered}",
-  confidenceInterval: [6675351.737735795, 12759539.26857128],
+  confidenceInterval: [6675351.73774, 12759539.2686],
   inputs: ["SAFE_COMPOUNDS_COUNT", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(SAFE_COMPOUNDS_COUNT * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -6682,7 +6682,7 @@ export const DRUG_DISEASE_COMBINATIONS_POSSIBLE: Parameter = {
 };
 
 export const DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
-  value: 268.65671641791045,
+  value: 268.656716418,
   parameterName: "DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-drug_treatment_admin_savings_per_citizen_annual",
   unit: "USD",
@@ -6692,7 +6692,7 @@ export const DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "DRUG_WAR_ANNUAL_COST / US_POPULATION",
   latex: "\\begin{gathered}\nSavings_{ann} \\\\\n= \\frac{W_{drugs}}{Pop_{US}} \\\\\n= \\frac{\\$90B}{335M} \\\\\n= \\$269\n\\end{gathered}",
-  confidenceInterval: [178.58285450142273, 434.4776966020446],
+  confidenceInterval: [178.582854501, 434.477696602],
   inputs: ["US_GOV_WASTE_DRUG_WAR", "US_POPULATION_2024"],
   computeExpr: "(US_GOV_WASTE_DRUG_WAR / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/drug-treatment-administration.html",
@@ -6700,7 +6700,7 @@ export const DRUG_TREATMENT_ADMIN_SAVINGS_PER_CITIZEN_ANNUAL: Parameter = {
 };
 
 export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
-  value: 6670.732881383013,
+  value: 6670.73288138,
   parameterName: "EARTH_OPTIMIZATION_POINT_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-earth_optimization_point_value",
   unit: "USD",
@@ -6710,7 +6710,7 @@ export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
   confidence: "high",
   formula: "PRIZE_POOL_SIZE / GLOBAL_REGISTERED_VOTERS",
   latex: "\\begin{gathered}\nV_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [530.5646591611574, 26504.433879906428],
+  confidenceInterval: [530.564659161, 26504.4338799],
   inputs: ["PRIZE_POOL_SIZE", "GLOBAL_REGISTERED_VOTERS"],
   computeExpr: "(PRIZE_POOL_SIZE / GLOBAL_REGISTERED_VOTERS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -6718,7 +6718,7 @@ export const EARTH_OPTIMIZATION_POINT_VALUE: Parameter = {
 };
 
 export const EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT: Parameter = {
-  value: 13341.465762766025,
+  value: 13341.4657628,
   parameterName: "EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-earth_optimization_two_points_payout",
   unit: "USD",
@@ -6728,7 +6728,7 @@ export const EARTH_OPTIMIZATION_TWO_POINTS_PAYOUT: Parameter = {
   confidence: "high",
   formula: "2 × EARTH_OPTIMIZATION_POINT_VALUE",
   latex: "\\begin{gathered}\nV_{2claims} = V_{vote} \\times 2 = \\$6.67K \\times 2 = \\$13.3K\n\\\\[0.5em]\n\\text{where } V_{vote} = \\frac{Pool}{N_{voters,global}} = \\frac{\\$27.5T}{4.13B} = \\$6.67K\n\\\\[0.5em]\n\\text{where } Pool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [1061.1293183223147, 53008.867759812856],
+  confidenceInterval: [1061.12931832, 53008.8677598],
   inputs: ["EARTH_OPTIMIZATION_POINT_VALUE"],
   computeExpr: "(2.0 * EARTH_OPTIMIZATION_POINT_VALUE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -6746,7 +6746,7 @@ export const EFFICACY_LAG_CUMULATIVE_EXCESS_COST: Parameter = {
   confidence: "medium",
   formula: "PHASE_2_3_COST × DRUGS_APPROVED",
   latex: "\\begin{gathered}\nCost_{eff,cumul} = Cost_{P2+P3} \\times N_{drugs,62} = \\$1.56B \\times 3{,}100 = \\$4.84T\n\\\\[0.5em]\n\\text{where } N_{drugs,62} = Drugs_{ann,curr} \\times 62 = 50 \\times 62 = 3{,}100\n\\end{gathered}",
-  confidenceInterval: [3752100223270.7974, 6051910080821.11],
+  confidenceInterval: [3752100223270.0, 6051910080820.0],
   inputs: ["PHARMA_PHASE_2_3_COST_BARRIER", "DRUGS_APPROVED_SINCE_1962"],
   computeExpr: "(PHARMA_PHASE_2_3_COST_BARRIER * DRUGS_APPROVED_SINCE_1962)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6754,7 +6754,7 @@ export const EFFICACY_LAG_CUMULATIVE_EXCESS_COST: Parameter = {
 };
 
 export const EFFICACY_LAG_DEATHS_911_EQUIVALENTS: Parameter = {
-  value: 34132.236031799344,
+  value: 34132.2360318,
   parameterName: "EFFICACY_LAG_DEATHS_911_EQUIVALENTS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-efficacy_lag_deaths_911_equivalents",
   unit: "9/11s",
@@ -6764,7 +6764,7 @@ export const EFFICACY_LAG_DEATHS_911_EQUIVALENTS: Parameter = {
   confidence: "medium",
   formula: "EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL ÷ SEPT_11_DEATHS",
   latex: "\\begin{gathered}\nN_{9/11,equiv} = \\frac{Deaths_{lag,total}}{N_{9/11}} = \\frac{102M}{2{,}980} = 34{,}100\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\end{gathered}",
-  confidenceInterval: [17055.27036972377, 56925.62052604455],
+  confidenceInterval: [17055.2703697, 56925.620526],
   inputs: ["EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL", "SEPT_11_DEATHS"],
   computeExpr: "(EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL / SEPT_11_DEATHS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6772,7 +6772,7 @@ export const EFFICACY_LAG_DEATHS_911_EQUIVALENTS: Parameter = {
 };
 
 export const EFFICACY_LAG_TREATMENT_DELAY_YLD_ANNUAL: Parameter = {
-  value: 2012931506.849315,
+  value: 2012931506.85,
   parameterName: "EFFICACY_LAG_TREATMENT_DELAY_YLD_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-efficacy_lag_treatment_delay_yld_annual",
   unit: "DALYs",
@@ -6782,7 +6782,7 @@ export const EFFICACY_LAG_TREATMENT_DELAY_YLD_ANNUAL: Parameter = {
   confidence: "low",
   formula: "PATIENTS × EFFICACY_LAG × DISABILITY_REDUCTION",
   latex: "\\begin{gathered}\nYLD_{treat\\_delay} = N_{treated} \\times T_{lag} \\times \\Delta DW_{treat} = 982M \\times 8.2 \\times 0.25 = 2.01B\n\\\\[0.5em]\n\\text{where } N_{treated} = DOT_{chronic} \\times 0.000767 = 1.28T \\times 0.000767 = 982M\n\\end{gathered}",
-  confidenceInterval: [1023729867.6755825, 3239836647.961091],
+  confidenceInterval: [1023729867.68, 3239836647.96],
   inputs: ["CHRONIC_DISEASE_TREATED_PATIENTS_ANNUAL", "EFFICACY_LAG_YEARS", "TREATMENT_DISABILITY_REDUCTION"],
   computeExpr: "((CHRONIC_DISEASE_TREATED_PATIENTS_ANNUAL * EFFICACY_LAG_YEARS) * TREATMENT_DISABILITY_REDUCTION)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6800,7 +6800,7 @@ export const EMERGING_MODALITY_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "GENE + MRNA + EPIGENETIC + CELL",
   latex: "\\begin{gathered}\nN_{emerging} = Combos_{gene} + Combos_{mRNA} + Combos_{epi} + Combos_{cell} = 20M + 20M + 1.5M + 500{,}000 = 42M\n\\\\[0.5em]\n\\text{where } Combos_{gene} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{mRNA} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{epi} = N_{epi} \\times N_{diseases,trial} = 1{,}500 \\times 1{,}000 = 1.5M\n\\\\[0.5em]\n\\text{where } Combos_{cell} = N_{cell} \\times N_{diseases,trial} = 500 \\times 1{,}000 = 500{,}000\n\\end{gathered}",
-  confidenceInterval: [34277576.08040958, 50014503.13209924],
+  confidenceInterval: [34277576.0804, 50014503.1321],
   inputs: ["GENE_THERAPY_DISEASE_COMBINATIONS", "MRNA_THERAPEUTIC_COMBINATIONS", "EPIGENETIC_DISEASE_COMBINATIONS", "CELL_THERAPY_DISEASE_COMBINATIONS"],
   computeExpr: "Math.trunc((((GENE_THERAPY_DISEASE_COMBINATIONS + MRNA_THERAPEUTIC_COMBINATIONS) + EPIGENETIC_DISEASE_COMBINATIONS) + CELL_THERAPY_DISEASE_COMBINATIONS))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -6808,7 +6808,7 @@ export const EMERGING_MODALITY_COMBINATIONS: Parameter = {
 };
 
 export const EOS_EQUITY_VALUE_V: Parameter = {
-  value: 74066666666666.67,
+  value: 74066666666700.0,
   parameterName: "EOS_EQUITY_VALUE_V",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-eos_equity_value_v",
   unit: "USD",
@@ -6818,7 +6818,7 @@ export const EOS_EQUITY_VALUE_V: Parameter = {
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL * EOS_SOCIAL_VALUE_CAPTURE_PCT / NPV_DISCOUNT_RATE_STANDARD",
   latex: "\\begin{gathered}\nV_{EOS} = O_{total} \\times \\frac{\\phi_{capture}}{r_{discount}}\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [27217553273570.227, 152517846536480.97],
+  confidenceInterval: [27217553273600.0, 152517846536000.0],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL", "EOS_SOCIAL_VALUE_CAPTURE_PCT", "NPV_DISCOUNT_RATE_STANDARD"],
   computeExpr: "((POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL * EOS_SOCIAL_VALUE_CAPTURE_PCT) / NPV_DISCOUNT_RATE_STANDARD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/earth-optimization-fund.html",
@@ -6836,7 +6836,7 @@ export const EPIGENETIC_DISEASE_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "EPIGENETIC_TARGETS × DISEASES",
   latex: "\\begin{gathered}\nCombos_{epi} \\\\\n= N_{epi} \\times N_{diseases,trial} \\\\\n= 1{,}500 \\times 1{,}000 \\\\\n= 1.5M\n\\end{gathered}",
-  confidenceInterval: [993988.943881422, 2101755.741800073],
+  confidenceInterval: [993988.943881, 2101755.7418],
   inputs: ["EPIGENETIC_TARGETS_COUNT", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(EPIGENETIC_TARGETS_COUNT * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -6844,7 +6844,7 @@ export const EPIGENETIC_DISEASE_COMBINATIONS: Parameter = {
 };
 
 export const ETHYL_SHAREHOLDER_COUNTERFACTUAL_WEALTH_GAIN: Parameter = {
-  value: 0.23180677289426121,
+  value: 0.231806772894,
   parameterName: "ETHYL_SHAREHOLDER_COUNTERFACTUAL_WEALTH_GAIN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-ethyl_shareholder_counterfactual_wealth_gain",
   unit: "percent",
@@ -6854,7 +6854,7 @@ export const ETHYL_SHAREHOLDER_COUNTERFACTUAL_WEALTH_GAIN: Parameter = {
   confidence: "high",
   formula: "(1 + LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS * NATIONAL_IQ_GDP_GROWTH_EFFECT_PER_POINT) ** LEADED_GASOLINE_ERA_YEARS - 1",
   latex: "\\begin{gathered}\n\\Delta W_{Ethyl} \\\\\n= (1 + \\Delta IQ_{lead} \\times \\beta_{IQ})^{T_{lead}} - 1\n\\end{gathered}",
-  confidenceInterval: [0.08411436704851476, 0.524175274767577],
+  confidenceInterval: [0.0841143670485, 0.524175274768],
   inputs: ["LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS", "NATIONAL_IQ_GDP_GROWTH_EFFECT_PER_POINT", "LEADED_GASOLINE_ERA_YEARS"],
   computeExpr: "(Math.pow((1.0 + (LEADED_GASOLINE_US_AVG_IQ_LOSS_POINTS * NATIONAL_IQ_GDP_GROWTH_EFFECT_PER_POINT)), LEADED_GASOLINE_ERA_YEARS) - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/i-am-retarded.html",
@@ -6862,7 +6862,7 @@ export const ETHYL_SHAREHOLDER_COUNTERFACTUAL_WEALTH_GAIN: Parameter = {
 };
 
 export const EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL: Parameter = {
-  value: 101611666.66666666,
+  value: 101611666.667,
   parameterName: "EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-existing_drugs_efficacy_lag_deaths_total",
   unit: "deaths",
@@ -6872,7 +6872,7 @@ export const EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL: Parameter = {
   confidence: "medium",
   formula: "PHARMA_LIVES_SAVED_ANNUAL × EFFICACY_LAG_YEARS",
   latex: "\\begin{gathered}\nDeaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\end{gathered}",
-  confidenceInterval: [50773539.89066766, 169467572.30603462],
+  confidenceInterval: [50773539.8907, 169467572.306],
   inputs: ["PHARMA_LIVES_SAVED_ANNUAL", "EFFICACY_LAG_YEARS"],
   computeExpr: "(PHARMA_LIVES_SAVED_ANNUAL * EFFICACY_LAG_YEARS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6890,7 +6890,7 @@ export const EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS: Parameter = {
   confidence: "medium",
   formula: "DEATHS_TOTAL × (REMAINING_LIFE_EXPECTANCY_AT_60 - (MEAN_AGE_OF_DEATH - 60)) × VSLY",
   latex: "\\begin{gathered}\nLoss_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60)) \\times \\text{VSLY}\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\end{gathered}",
-  confidenceInterval: [122958411417713.97, 527211853028909.2],
+  confidenceInterval: [122958411418000.0, 527211853029000.0],
   inputs: ["GLOBAL_LIFE_EXPECTANCY_REMAINING_AT_AGE_60", "EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL", "REGULATORY_DELAY_MEAN_AGE_OF_DEATH", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "((EXISTING_DRUGS_EFFICACY_LAG_DEATHS_TOTAL * (GLOBAL_LIFE_EXPECTANCY_REMAINING_AT_AGE_60 - (REGULATORY_DELAY_MEAN_AGE_OF_DEATH - 60.0))) * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -6898,7 +6898,7 @@ export const EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS: Parameter = {
 };
 
 export const EXPLORATION_RATIO: Parameter = {
-  value: 0.0034210526315789475,
+  value: 0.00342105263158,
   parameterName: "EXPLORATION_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-exploration_ratio",
   unit: "percentage",
@@ -6908,7 +6908,7 @@ export const EXPLORATION_RATIO: Parameter = {
   confidence: "high",
   formula: "TESTED / POSSIBLE",
   latex: "\\begin{gathered}\nRatio_{explore} = \\frac{N_{tested}}{N_{combos}} = \\frac{32{,}500}{9.5M} = 0.342\\%\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\end{gathered}",
-  confidenceInterval: [0.001969900859513901, 0.0056890560034959905],
+  confidenceInterval: [0.00196990085951, 0.0056890560035],
   inputs: ["TESTED_RELATIONSHIPS_ESTIMATE", "DRUG_DISEASE_COMBINATIONS_POSSIBLE"],
   computeExpr: "(TESTED_RELATIONSHIPS_ESTIMATE / DRUG_DISEASE_COMBINATIONS_POSSIBLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -6928,7 +6928,7 @@ export const FDA_TO_OXFORD_RECOVERY_TRIAL_TIME_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "EFFICACY_LAG_YEARS × MONTHS_PER_YEAR ÷ OXFORD_RECOVERY_TRIAL_DURATION_MONTHS",
   latex: "\\begin{gathered}\nk_{FDA:RECOVERY} \\\\\n= T_{lag} \\times \\text{MONTHS\\_PER\\_YEAR} / T_{RECOVERY}\n\\end{gathered}",
-  confidenceInterval: [19.371905122811942, 45.89979412005804],
+  confidenceInterval: [19.3719051228, 45.8997941201],
   inputs: ["EFFICACY_LAG_YEARS", "OXFORD_RECOVERY_TRIAL_DURATION_MONTHS"],
   computeExpr: "((EFFICACY_LAG_YEARS * 12.0) / OXFORD_RECOVERY_TRIAL_DURATION_MONTHS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/fda-is-unsafe-and-ineffective.html",
@@ -6953,7 +6953,7 @@ export const FULL_CORPORATE_TAKEOVER_COST_ACTIVIST: Parameter = {
 };
 
 export const FULL_CORPORATE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS: Parameter = {
-  value: 0.002898032786885246,
+  value: 0.00289803278689,
   parameterName: "FULL_CORPORATE_TAKEOVER_COST_ACTIVIST_PCT_INVESTABLE_ASSETS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_corporate_takeover_cost_activist_pct_investable_assets",
   unit: "rate",
@@ -6997,7 +6997,7 @@ export const FULL_INFLUENCE_COST_PER_HUMAN: Parameter = {
   confidence: "high",
   formula: "FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nC_{influence,pp} = \\frac{C_{influence}}{Pop_{global}} = \\frac{\\$1.71T}{8B} = \\$214\n\\\\[0.5em]\n\\text{where } C_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\end{gathered}",
-  confidenceInterval: [209.19132084045313, 218.10970829082635],
+  confidenceInterval: [209.19132084, 218.109708291],
   inputs: ["FULL_INFLUENCE_COST_ACTIVIST", "GLOBAL_POPULATION_2024"],
   computeExpr: "(FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -7005,7 +7005,7 @@ export const FULL_INFLUENCE_COST_PER_HUMAN: Parameter = {
 };
 
 export const FULL_INFLUENCE_PCT_ANNUAL_SAVINGS: Parameter = {
-  value: 0.05502229951690821,
+  value: 0.0550222995169,
   parameterName: "FULL_INFLUENCE_PCT_ANNUAL_SAVINGS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_pct_annual_savings",
   unit: "rate",
@@ -7015,7 +7015,7 @@ export const FULL_INFLUENCE_PCT_ANNUAL_SAVINGS: Parameter = {
   confidence: "high",
   formula: "FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_ANNUAL_SAVINGS",
   latex: "\\begin{gathered}\nC_{influence}/S_{annual} = \\frac{C_{influence}}{S_{annual}} = \\frac{\\$1.71T}{\\$31.1T} = 5.5\\%\n\\\\[0.5em]\n\\text{where } C_{influence} = C_{takeover} + f_{activist} \\times MarketCap_{sectors} = \\$873B + 0.05 \\times \\$16.7T = \\$1.71T\n\\\\[0.5em]\n\\text{where } C_{takeover} = (MarketCap_{US} + MarketCap_{allied}) \\times f_{control} \\times m_{premium}\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\end{gathered}",
-  confidenceInterval: [0.050289874553921574, 0.06068463311558671],
+  confidenceInterval: [0.0502898745539, 0.0606846331156],
   inputs: ["FULL_INFLUENCE_COST_ACTIVIST", "GLOBAL_ANNUAL_SAVINGS"],
   computeExpr: "(FULL_INFLUENCE_COST_ACTIVIST / GLOBAL_ANNUAL_SAVINGS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/loving-takeover.html",
@@ -7023,7 +7023,7 @@ export const FULL_INFLUENCE_PCT_ANNUAL_SAVINGS: Parameter = {
 };
 
 export const FULL_INFLUENCE_PCT_INVESTABLE_ASSETS: Parameter = {
-  value: 0.005601450491803279,
+  value: 0.0056014504918,
   parameterName: "FULL_INFLUENCE_PCT_INVESTABLE_ASSETS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-full_influence_pct_investable_assets",
   unit: "rate",
@@ -7050,7 +7050,7 @@ export const GENE_THERAPY_DISEASE_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "GENES × DISEASES",
   latex: "\\begin{gathered}\nCombos_{gene} \\\\\n= N_{genes} \\times N_{diseases,trial} \\\\\n= 20{,}000 \\times 1{,}000 \\\\\n= 20M\n\\end{gathered}",
-  confidenceInterval: [16305469.334976457, 23794439.362736847],
+  confidenceInterval: [16305469.335, 23794439.3627],
   inputs: ["HUMAN_PROTEIN_CODING_GENES", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(HUMAN_PROTEIN_CODING_GENES * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -7068,7 +7068,7 @@ export const GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL: Parameter = {
   confidence: "high",
   formula: "COMBAT + TERROR + STATE_VIOLENCE",
   latex: "\\begin{gathered}\nDeaths_{conflict} \\\\\n= Deaths_{combat} + Deaths_{state} + Deaths_{terror} \\\\\n= 234{,}000 + 2{,}700 + 8{,}300 \\\\\n= 245{,}000\n\\end{gathered}",
-  confidenceInterval: [198383.24728086818, 297452.2194966839],
+  confidenceInterval: [198383.247281, 297452.219497],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_ACTIVE_COMBAT", "GLOBAL_ANNUAL_CONFLICT_DEATHS_STATE_VIOLENCE", "GLOBAL_ANNUAL_CONFLICT_DEATHS_TERROR_ATTACKS"],
   computeExpr: "((GLOBAL_ANNUAL_CONFLICT_DEATHS_ACTIVE_COMBAT + GLOBAL_ANNUAL_CONFLICT_DEATHS_TERROR_ATTACKS) + GLOBAL_ANNUAL_CONFLICT_DEATHS_STATE_VIOLENCE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7086,7 +7086,7 @@ export const GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST: Parameter = {
   confidence: "high",
   formula: "DIRECT_COSTS + INDIRECT_COSTS",
   latex: "\\begin{gathered}\nCost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [9957859575912.42, 12869937308757.088],
+  confidenceInterval: [9957859575910.0, 12869937308800.0],
   inputs: ["GLOBAL_ANNUAL_WAR_DIRECT_COSTS_TOTAL", "GLOBAL_ANNUAL_WAR_INDIRECT_COSTS_TOTAL"],
   computeExpr: "(GLOBAL_ANNUAL_WAR_DIRECT_COSTS_TOTAL + GLOBAL_ANNUAL_WAR_INDIRECT_COSTS_TOTAL)",
   validationMin: 8_000_000_000_000,
@@ -7106,7 +7106,7 @@ export const GLOBAL_ANNUAL_HUMAN_COST_ACTIVE_COMBAT: Parameter = {
   confidence: "high",
   formula: "COMBAT_DEATHS × VSL ",
   latex: "\\begin{gathered}\nCost_{combat,human} \\\\\n= Deaths_{combat} \\times VSL \\\\\n= 234{,}000 \\times \\$10M \\\\\n= \\$2.34T\n\\end{gathered}",
-  confidenceInterval: [1270346845722.8945, 3554147057841.0576],
+  confidenceInterval: [1270346845720.0, 3554147057840.0],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_ACTIVE_COMBAT", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(GLOBAL_ANNUAL_CONFLICT_DEATHS_ACTIVE_COMBAT * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7124,7 +7124,7 @@ export const GLOBAL_ANNUAL_HUMAN_COST_STATE_VIOLENCE: Parameter = {
   confidence: "high",
   formula: "STATE_DEATHS × VSL ",
   latex: "\\begin{gathered}\nCost_{state,human} \\\\\n= Deaths_{state} \\times VSL \\\\\n= 2{,}700 \\times \\$10M \\\\\n= \\$27B\n\\end{gathered}",
-  confidenceInterval: [12164225511.582016, 48163823860.44316],
+  confidenceInterval: [12164225511.6, 48163823860.4],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_STATE_VIOLENCE", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(GLOBAL_ANNUAL_CONFLICT_DEATHS_STATE_VIOLENCE * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7142,7 +7142,7 @@ export const GLOBAL_ANNUAL_HUMAN_COST_TERROR_ATTACKS: Parameter = {
   confidence: "high",
   formula: "TERROR_DEATHS × VSL ",
   latex: "\\begin{gathered}\nCost_{terror,human} \\\\\n= Deaths_{terror} \\times VSL \\\\\n= 8{,}300 \\times \\$10M \\\\\n= \\$83B\n\\end{gathered}",
-  confidenceInterval: [43229024609.01674, 131973932099.28983],
+  confidenceInterval: [43229024609.0, 131973932099.0],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_TERROR_ATTACKS", "VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(GLOBAL_ANNUAL_CONFLICT_DEATHS_TERROR_ATTACKS * VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7160,7 +7160,7 @@ export const GLOBAL_ANNUAL_HUMAN_LIFE_LOSSES_CONFLICT: Parameter = {
   confidence: "high",
   formula: "COMBAT_COST + TERROR_COST + STATE_VIOLENCE_COST",
   latex: "\\begin{gathered}\nLoss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\end{gathered}",
-  confidenceInterval: [1337091495804.0884, 3711364470105.1885],
+  confidenceInterval: [1337091495800.0, 3711364470110.0],
   inputs: ["GLOBAL_ANNUAL_HUMAN_COST_ACTIVE_COMBAT", "GLOBAL_ANNUAL_HUMAN_COST_STATE_VIOLENCE", "GLOBAL_ANNUAL_HUMAN_COST_TERROR_ATTACKS"],
   computeExpr: "((GLOBAL_ANNUAL_HUMAN_COST_ACTIVE_COMBAT + GLOBAL_ANNUAL_HUMAN_COST_TERROR_ATTACKS) + GLOBAL_ANNUAL_HUMAN_COST_STATE_VIOLENCE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7178,7 +7178,7 @@ export const GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT: Parameter = {
   confidence: "high",
   formula: "TRANSPORT + ENERGY + COMMS + WATER + EDUCATION + HEALTHCARE",
   latex: "\\begin{gathered}\nDamage_{infra,total} \\\\\n= Damage_{comms} + Damage_{edu} + Damage_{energy} \\\\\n+ Damage_{health} + Damage_{transport} + Damage_{water} \\\\\n= \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B \\\\\n= \\$1.88T\n\\end{gathered}",
-  confidenceInterval: [1651881703569.7668, 2104132302183.2659],
+  confidenceInterval: [1651881703570.0, 2104132302180.0],
   inputs: ["GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_COMMUNICATIONS_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_EDUCATION_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_ENERGY_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_HEALTHCARE_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_TRANSPORTATION_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_WATER_CONFLICT"],
   computeExpr: "(((((GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_TRANSPORTATION_CONFLICT + GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_ENERGY_CONFLICT) + GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_COMMUNICATIONS_CONFLICT) + GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_WATER_CONFLICT) + GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_EDUCATION_CONFLICT) + GLOBAL_ANNUAL_INFRASTRUCTURE_DAMAGE_HEALTHCARE_CONFLICT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7186,7 +7186,7 @@ export const GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT: Parameter = {
 };
 
 export const GLOBAL_ANNUAL_SAVINGS: Parameter = {
-  value: 31050000000000.004,
+  value: 31050000000000.0,
   parameterName: "GLOBAL_ANNUAL_SAVINGS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_annual_savings",
   unit: "USD",
@@ -7196,7 +7196,7 @@ export const GLOBAL_ANNUAL_SAVINGS: Parameter = {
   confidence: "high",
   formula: "GLOBAL_SAVINGS_RATE_PCT × GLOBAL_GDP_2025",
   latex: "\\begin{gathered}\nS_{annual} \\\\\n= s_{global} \\times GDP_{global} \\\\\n= 27\\% \\times \\$115T \\\\\n= \\$31.1T\n\\end{gathered}",
-  confidenceInterval: [28152801002292.594, 33971896234662.227],
+  confidenceInterval: [28152801002300.0, 33971896234700.0],
   inputs: ["GLOBAL_SAVINGS_RATE_PCT", "GLOBAL_GDP_2025"],
   computeExpr: "(GLOBAL_SAVINGS_RATE_PCT * GLOBAL_GDP_2025)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -7204,7 +7204,7 @@ export const GLOBAL_ANNUAL_SAVINGS: Parameter = {
 };
 
 export const GLOBAL_ANNUAL_SAVINGS_PER_CAPITA: Parameter = {
-  value: 3881.2500000000005,
+  value: 3881.25,
   parameterName: "GLOBAL_ANNUAL_SAVINGS_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_annual_savings_per_capita",
   unit: "USD/person/year",
@@ -7214,7 +7214,7 @@ export const GLOBAL_ANNUAL_SAVINGS_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_SAVINGS / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nS_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\end{gathered}",
-  confidenceInterval: [3517.9222536543098, 4249.882351368142],
+  confidenceInterval: [3517.92225365, 4249.88235137],
   inputs: ["GLOBAL_ANNUAL_SAVINGS", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_ANNUAL_SAVINGS / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -7232,7 +7232,7 @@ export const GLOBAL_ANNUAL_TRADE_DISRUPTION_CONFLICT: Parameter = {
   confidence: "high",
   formula: "SHIPPING + SUPPLY_CHAIN + ENERGY_PRICE + CURRENCY",
   latex: "\\begin{gathered}\nDisruption_{trade} \\\\\n= Disruption_{currency} + Disruption_{energy} \\\\\n+ Disruption_{shipping} + Disruption_{supply} \\\\\n= \\$57.4B + \\$125B + \\$247B + \\$187B \\\\\n= \\$616B\n\\end{gathered}",
-  confidenceInterval: [526075324104.8029, 715798886296.2134],
+  confidenceInterval: [526075324105.0, 715798886296.0],
   inputs: ["GLOBAL_ANNUAL_TRADE_DISRUPTION_CURRENCY_CONFLICT", "GLOBAL_ANNUAL_TRADE_DISRUPTION_ENERGY_PRICE_CONFLICT", "GLOBAL_ANNUAL_TRADE_DISRUPTION_SHIPPING_CONFLICT", "GLOBAL_ANNUAL_TRADE_DISRUPTION_SUPPLY_CHAIN_CONFLICT"],
   computeExpr: "(((GLOBAL_ANNUAL_TRADE_DISRUPTION_SHIPPING_CONFLICT + GLOBAL_ANNUAL_TRADE_DISRUPTION_SUPPLY_CHAIN_CONFLICT) + GLOBAL_ANNUAL_TRADE_DISRUPTION_ENERGY_PRICE_CONFLICT) + GLOBAL_ANNUAL_TRADE_DISRUPTION_CURRENCY_CONFLICT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -7250,7 +7250,7 @@ export const GLOBAL_ANNUAL_WAR_DIRECT_COSTS_TOTAL: Parameter = {
   confidence: "high",
   formula: "MILITARY + INFRASTRUCTURE + HUMAN_LIFE + TRADE",
   latex: "\\begin{gathered}\nCost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\end{gathered}",
-  confidenceInterval: [6520392239758.999, 8949105519089.084],
+  confidenceInterval: [6520392239760.0, 8949105519090.0],
   inputs: ["GLOBAL_ANNUAL_HUMAN_LIFE_LOSSES_CONFLICT", "GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT", "GLOBAL_ANNUAL_TRADE_DISRUPTION_CONFLICT", "GLOBAL_MILITARY_SPENDING_ANNUAL_2024"],
   computeExpr: "(((GLOBAL_MILITARY_SPENDING_ANNUAL_2024 + GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT) + GLOBAL_ANNUAL_HUMAN_LIFE_LOSSES_CONFLICT) + GLOBAL_ANNUAL_TRADE_DISRUPTION_CONFLICT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7268,7 +7268,7 @@ export const GLOBAL_ANNUAL_WAR_INDIRECT_COSTS_TOTAL: Parameter = {
   confidence: "high",
   formula: "OPPORTUNITY + VETERANS + REFUGEES + ENVIRONMENT + MENTAL_HEALTH + LOST_CAPITAL",
   latex: "\\begin{gathered}\nCost_{war,indirect} \\\\\n= Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} \\\\\n+ Cost_{psych} + Cost_{refugee} + Cost_{vet} \\\\\n= \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B \\\\\n= \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [2981301229639.053, 4562165112847.497],
+  confidenceInterval: [2981301229640.0, 4562165112850.0],
   inputs: ["GLOBAL_ANNUAL_ENVIRONMENTAL_DAMAGE_CONFLICT", "GLOBAL_ANNUAL_LOST_ECONOMIC_GROWTH_MILITARY_SPENDING", "GLOBAL_ANNUAL_LOST_HUMAN_CAPITAL_CONFLICT", "GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT", "GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS", "GLOBAL_ANNUAL_VETERAN_HEALTHCARE_COSTS"],
   computeExpr: "(((((GLOBAL_ANNUAL_LOST_ECONOMIC_GROWTH_MILITARY_SPENDING + GLOBAL_ANNUAL_VETERAN_HEALTHCARE_COSTS) + GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS) + GLOBAL_ANNUAL_ENVIRONMENTAL_DAMAGE_CONFLICT) + GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT) + GLOBAL_ANNUAL_LOST_HUMAN_CAPITAL_CONFLICT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7286,7 +7286,7 @@ export const GLOBAL_AVG_HOURLY_INCOME: Parameter = {
   confidence: "high",
   formula: "GLOBAL_AVG_INCOME_2025 / ANNUAL_WORKING_HOURS",
   latex: "\\begin{gathered}\n\\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [7.040624224923272, 7.340784931773243],
+  confidenceInterval: [7.04062422492, 7.34078493177],
   inputs: ["GLOBAL_AVG_INCOME_2025", "ANNUAL_WORKING_HOURS"],
   computeExpr: "(GLOBAL_AVG_INCOME_2025 / ANNUAL_WORKING_HOURS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -7304,7 +7304,7 @@ export const GLOBAL_AVG_INCOME_2025: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 ÷ GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\n\\bar{y}_{0} \\\\\n= \\frac{GDP_{global}}{Pop_{global}} \\\\\n= \\frac{\\$115T}{8B} \\\\\n= \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [14081.248449846544, 14681.569863546487],
+  confidenceInterval: [14081.2484498, 14681.5698635],
   inputs: ["GLOBAL_GDP_2025", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_GDP_2025 / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -7312,7 +7312,7 @@ export const GLOBAL_AVG_INCOME_2025: Parameter = {
 };
 
 export const GLOBAL_AVG_REMAINING_YEARS: Parameter = {
-  value: 42.900000000000006,
+  value: 42.9,
   parameterName: "GLOBAL_AVG_REMAINING_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_avg_remaining_years",
   unit: "years",
@@ -7322,7 +7322,7 @@ export const GLOBAL_AVG_REMAINING_YEARS: Parameter = {
   confidence: "high",
   formula: "GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_MEDIAN_AGE_2024",
   latex: "\\begin{gathered}\nT_{remaining} \\\\\n= LE_{global} - Age_{median} \\\\\n= 73.4 - 30.5 \\\\\n= 42.9\n\\end{gathered}",
-  confidenceInterval: [39.57635756619386, 46.143119371349954],
+  confidenceInterval: [39.5763575662, 46.1431193713],
   inputs: ["GLOBAL_LIFE_EXPECTANCY_2024", "GLOBAL_MEDIAN_AGE_2024"],
   computeExpr: "(GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_MEDIAN_AGE_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -7340,7 +7340,7 @@ export const GLOBAL_BULLETS_PURCHASABLE_ANNUAL: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / BULLET_COST_556_NATO",
   latex: "\\begin{gathered}\nN_{bullets,yr} \\\\\n= \\frac{Spending_{mil}}{c_{bullet}} \\\\\n= \\frac{\\$2.72T}{\\$0.4} \\\\\n= 6.8T\n\\end{gathered}",
-  confidenceInterval: [4664927105287.118, 10163949539164.232],
+  confidenceInterval: [4664927105290.0, 10163949539200.0],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "BULLET_COST_556_NATO"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / BULLET_COST_556_NATO)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -7358,7 +7358,7 @@ export const GLOBAL_COORDINATION_ACTIVATION_BUDGET: Parameter = {
   confidence: "high",
   formula: "GLOBAL_REGISTERED_VOTERS × GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT + GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST",
   latex: "\\begin{gathered}\nB_{activate} = C_{ops} + N_{voters,global} \\times C_{activate,pp} = \\$4B + 4.13B \\times \\$6.5 = \\$30.8B\n\\\\[0.5em]\n\\text{where } C_{activate,pp} = R_{activate} + C_{verify,pp} = \\$5 + \\$1.5 = \\$6.5\n\\end{gathered}",
-  confidenceInterval: [20437510992.555267, 41938447267.10135],
+  confidenceInterval: [20437510992.6, 41938447267.1],
   inputs: ["GLOBAL_REGISTERED_VOTERS", "GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT", "GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST"],
   computeExpr: "((GLOBAL_REGISTERED_VOTERS * GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT) + GLOBAL_COORDINATION_PLATFORM_AND_OPERATIONS_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -7376,7 +7376,7 @@ export const GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT: Parameter = {
   confidence: "high",
   formula: "GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT + GLOBAL_COORDINATION_VERIFICATION_AND_PAYMENT_COST_PER_PARTICIPANT",
   latex: "\\begin{gathered}\nC_{activate,pp} \\\\\n= R_{activate} + C_{verify,pp} \\\\\n= \\$5 + \\$1.5 \\\\\n= \\$6.5\n\\end{gathered}",
-  confidenceInterval: [3.9998666300660695, 9.139289657195699],
+  confidenceInterval: [3.99986663007, 9.1392896572],
   inputs: ["GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT", "GLOBAL_COORDINATION_VERIFICATION_AND_PAYMENT_COST_PER_PARTICIPANT"],
   computeExpr: "(GLOBAL_COORDINATION_ACTIVATION_REWARD_PER_VERIFIED_PARTICIPANT + GLOBAL_COORDINATION_VERIFICATION_AND_PAYMENT_COST_PER_PARTICIPANT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html",
@@ -7394,7 +7394,7 @@ export const GLOBAL_COORDINATION_TARGET_PCT: Parameter = {
   confidence: "high",
   formula: "GLOBAL_REGISTERED_VOTERS / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nR_{humanity,majority} \\\\\n= \\frac{N_{voters,global}}{Pop_{global}} \\\\\n= \\frac{4.13B}{8B} \\\\\n= 51.6\\%\n\\end{gathered}",
-  confidenceInterval: [0.5054730444214296, 0.5270227169305878],
+  confidenceInterval: [0.505473044421, 0.527022716931],
   inputs: ["GLOBAL_REGISTERED_VOTERS", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_REGISTERED_VOTERS / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/global-referendum.html",
@@ -7402,7 +7402,7 @@ export const GLOBAL_COORDINATION_TARGET_PCT: Parameter = {
 };
 
 export const GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL: Parameter = {
-  value: 16071.42857142857,
+  value: 16071.4285714,
   parameterName: "GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_cost_per_life_saved_med_research_annual",
   unit: "USD/life",
@@ -7412,7 +7412,7 @@ export const GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL: Parameter = {
   confidence: "high",
   formula: "(RESEARCH_SPENDING × 1B) ÷ LIVES_SAVED",
   latex: "\\begin{gathered}\nCost_{life,RD} \\\\\n= \\frac{Spending_{RD}}{Lives_{RD,ann}} \\\\\n= \\frac{\\$67.5B}{4.2M} \\\\\n= \\$16.1K\n\\end{gathered}",
-  confidenceInterval: [11647.144581394623, 22390.53430936459],
+  confidenceInterval: [11647.1445814, 22390.5343094],
   inputs: ["GLOBAL_ANNUAL_LIVES_SAVED_BY_MED_RESEARCH", "GLOBAL_MED_RESEARCH_SPENDING"],
   computeExpr: "(GLOBAL_MED_RESEARCH_SPENDING / GLOBAL_ANNUAL_LIVES_SAVED_BY_MED_RESEARCH)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -7437,7 +7437,7 @@ export const GLOBAL_DESTRUCTIVE_ECONOMY_ANNUAL_2025: Parameter = {
 };
 
 export const GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP: Parameter = {
-  value: 0.11495652173913043,
+  value: 0.114956521739,
   parameterName: "GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_destructive_economy_pct_gdp",
   unit: "percent",
@@ -7454,7 +7454,7 @@ export const GLOBAL_DESTRUCTIVE_ECONOMY_PCT_GDP: Parameter = {
 };
 
 export const GLOBAL_DISEASE_DEATHS_PER_MINUTE: Parameter = {
-  value: 104.16666666666667,
+  value: 104.166666667,
   parameterName: "GLOBAL_DISEASE_DEATHS_PER_MINUTE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_disease_deaths_per_minute",
   unit: "deaths/minute",
@@ -7464,7 +7464,7 @@ export const GLOBAL_DISEASE_DEATHS_PER_MINUTE: Parameter = {
   confidence: "high",
   formula: "GLOBAL_DISEASE_DEATHS_DAILY / 1440",
   latex: "\\begin{gathered}\nDeaths_{disease,min} \\\\\n= Deaths_{disease,daily} \\times 0.000694 \\\\\n= 150{,}000 \\times 0.000694 \\\\\n= 104\n\\end{gathered}",
-  confidenceInterval: [95.42295783706231, 112.68728174444473],
+  confidenceInterval: [95.4229578371, 112.687281744],
   inputs: ["GLOBAL_DISEASE_DEATHS_DAILY"],
   computeExpr: "(GLOBAL_DISEASE_DEATHS_DAILY / 1440.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/questions.html",
@@ -7472,7 +7472,7 @@ export const GLOBAL_DISEASE_DEATHS_PER_MINUTE: Parameter = {
 };
 
 export const GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL: Parameter = {
-  value: 400152130131680.9,
+  value: 400152130132000.0,
   parameterName: "GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_disease_economic_burden_annual",
   unit: "USD/year",
@@ -7482,7 +7482,7 @@ export const GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_DALY_BURDEN × EVENTUALLY_AVOIDABLE_DALY_PCT × STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nBurden_{disease} \\\\\n= DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} \\\\\n= 2.88B \\times 92.6\\% \\times \\$150K \\\\\n= \\$400T\n\\end{gathered}",
-  confidenceInterval: [251944013945312.84, 544272263829645.25],
+  confidenceInterval: [251944013945000.0, 544272263830000.0],
   inputs: ["GLOBAL_ANNUAL_DALY_BURDEN", "EVENTUALLY_AVOIDABLE_DALY_PCT", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "((GLOBAL_ANNUAL_DALY_BURDEN * EVENTUALLY_AVOIDABLE_DALY_PCT) * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -7500,7 +7500,7 @@ export const GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL: Parameter = {
   confidence: "high",
   formula: "GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL + GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL",
   latex: "\\begin{gathered}\nCost_{disease,market} \\\\\n= Cost_{medical,direct} + Loss_{productivity} \\\\\n= \\$9.9T + \\$5T \\\\\n= \\$14.9T\n\\end{gathered}",
-  confidenceInterval: [11924462024252.91, 18328394950626.133],
+  confidenceInterval: [11924462024300.0, 18328394950600.0],
   inputs: ["GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL", "GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL"],
   computeExpr: "(GLOBAL_DISEASE_DIRECT_MEDICAL_COST_ANNUAL + GLOBAL_DISEASE_PRODUCTIVITY_LOSS_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
@@ -7508,7 +7508,7 @@ export const GLOBAL_DISEASE_TOTAL_MARKET_COST_ANNUAL: Parameter = {
 };
 
 export const GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY: Parameter = {
-  value: 138941.7118512781,
+  value: 138941.711851,
   parameterName: "GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_eventually_avoidable_disease_deaths_daily",
   unit: "deaths/day",
@@ -7518,7 +7518,7 @@ export const GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_DISEASE_DEATHS_DAILY × EVENTUALLY_AVOIDABLE_DEATH_PCT",
   latex: "\\begin{gathered}\nDeaths_{avoid,daily} \\\\\n= Deaths_{disease,daily} \\times Pct_{avoid,death} \\\\\n= 150{,}000 \\times 92.6\\% \\\\\n= 139{,}000\n\\end{gathered}",
-  confidenceInterval: [95672.50666696663, 157290.95119782313],
+  confidenceInterval: [95672.506667, 157290.951198],
   inputs: ["GLOBAL_DISEASE_DEATHS_DAILY", "EVENTUALLY_AVOIDABLE_DEATH_PCT"],
   computeExpr: "(GLOBAL_DISEASE_DEATHS_DAILY * EVENTUALLY_AVOIDABLE_DEATH_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/where-am-i-wrong.html",
@@ -7543,7 +7543,7 @@ export const GLOBAL_GOVERNMENT_EXPENSE_ANNUAL: Parameter = {
 };
 
 export const GLOBAL_HALE_GAP: Parameter = {
-  value: 10.100000000000009,
+  value: 10.1,
   parameterName: "GLOBAL_HALE_GAP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_hale_gap",
   unit: "years",
@@ -7553,7 +7553,7 @@ export const GLOBAL_HALE_GAP: Parameter = {
   confidence: "high",
   formula: "GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_HALE_CURRENT",
   latex: "\\Delta_{HALE} = LE_{global} - HALE_{0} = 73.4 - 63.3 = 10.1",
-  confidenceInterval: [6.16060699848186, 14.15805955518859],
+  confidenceInterval: [6.16060699848, 14.1580595552],
   inputs: ["GLOBAL_LIFE_EXPECTANCY_2024", "GLOBAL_HALE_CURRENT"],
   computeExpr: "(GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_HALE_CURRENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -7571,7 +7571,7 @@ export const GLOBAL_INDUSTRY_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
   confidence: "high",
   formula: "TOTAL_CLINICAL_TRIALS - GOVT_CLINICAL_TRIALS",
   latex: "\\begin{gathered}\nSpending_{trials,industry} \\\\\n= Spending_{trials} - Spending_{trials,gov} \\\\\n= \\$60B - \\$4.5B \\\\\n= \\$55.5B\n\\end{gathered}",
-  confidenceInterval: [45009083226.00565, 70346503740.93391],
+  confidenceInterval: [45009083226.0, 70346503740.9],
   inputs: ["GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL - GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -7579,7 +7579,7 @@ export const GLOBAL_INDUSTRY_CLINICAL_TRIALS_SPENDING_ANNUAL: Parameter = {
 };
 
 export const GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025: Parameter = {
-  value: 2138.201739130435,
+  value: 2138.20173913,
   parameterName: "GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_median_after_tax_income_2025",
   unit: "USD",
@@ -7589,7 +7589,7 @@ export const GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025: Parameter = {
   confidence: "high",
   formula: "GLOBAL_AVG_INCOME_2025 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{0} = \\bar{y}_{0} \\times (1 - s_{mil}) \\times \\rho_{med} \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\end{gathered}",
-  confidenceInterval: [1709.7574968580254, 2565.9293210723577],
+  confidenceInterval: [1709.75749686, 2565.92932107],
   inputs: ["GLOBAL_AVG_INCOME_2025", "GLOBAL_MILITARY_SHARE_OF_GDP", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "(((GLOBAL_AVG_INCOME_2025 * (1.0 - GLOBAL_MILITARY_SHARE_OF_GDP)) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -7597,7 +7597,7 @@ export const GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025: Parameter = {
 };
 
 export const GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO: Parameter = {
-  value: 0.2031304347826087,
+  value: 0.203130434783,
   parameterName: "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_median_to_mean_income_ratio",
   unit: "ratio",
@@ -7607,7 +7607,7 @@ export const GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO: Parameter = {
   confidence: "high",
   formula: "GALLUP_GLOBAL_MEDIAN_INCOME_PER_CAPITA ÷ GLOBAL_AVG_INCOME_2025",
   latex: "\\begin{gathered}\n\\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [0.16278079688934774, 0.24386852628711342],
+  confidenceInterval: [0.162780796889, 0.243868526287],
   inputs: ["GALLUP_GLOBAL_MEDIAN_INCOME_PER_CAPITA", "GLOBAL_AVG_INCOME_2025"],
   computeExpr: "(GALLUP_GLOBAL_MEDIAN_INCOME_PER_CAPITA / GLOBAL_AVG_INCOME_2025)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -7615,7 +7615,7 @@ export const GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO: Parameter = {
 };
 
 export const GLOBAL_MILITARY_SHARE_OF_GDP: Parameter = {
-  value: 0.02365217391304348,
+  value: 0.023652173913,
   parameterName: "GLOBAL_MILITARY_SHARE_OF_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_military_share_of_gdp",
   unit: "percent",
@@ -7642,7 +7642,7 @@ export const GLOBAL_MILITARY_SPENDING_PER_CAPITA_ANNUAL: Parameter = {
   confidence: "high",
   formula: "MILITARY_SPENDING ÷ POPULATION",
   latex: "\\begin{gathered}\nSpending_{mil,pc} \\\\\n= \\frac{Spending_{mil}}{Pop_{global}} \\\\\n= \\frac{\\$2.72T}{8B} \\\\\n= \\$340\n\\end{gathered}",
-  confidenceInterval: [333.05213724854434, 347.2510437290995],
+  confidenceInterval: [333.052137249, 347.251043729],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem.html",
@@ -7667,7 +7667,7 @@ export const GLOBAL_MILITARY_SPENDING_POST_TREATY_ANNUAL_2024: Parameter = {
 };
 
 export const GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR: Parameter = {
-  value: 0.027589264230032606,
+  value: 0.02758926423,
   parameterName: "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_military_spending_real_cagr_20yr",
   unit: "percent",
@@ -7694,7 +7694,7 @@ export const GLOBAL_POLITICAL_REFORM_INVESTMENT: Parameter = {
   confidence: "low",
   formula: "US_POLITICAL_REFORM × GLOBAL_RATIO",
   latex: "\\begin{gathered}\nCost_{global,reform} = Cost_{US,total} \\times \\rho_{global/US} = \\$25.5B \\times 5 = \\$128B\n\\\\[0.5em]\n\\text{where } Cost_{US,total} = (Cost_{campaign} + Cost_{lobby} \\times 2) \\times \\mu_{effort} + Cost_{career}\n\\\\[0.5em]\n\\text{where } Cost_{US,congress} = N_{congress} \\times V_{post-office} = 535 \\times \\$10M = \\$5.35B\n\\end{gathered}",
-  confidenceInterval: [71699363255.38586, 205706800800.16714],
+  confidenceInterval: [71699363255.4, 205706800800.0],
   inputs: ["US_POLITICAL_REFORM_INVESTMENT_TOTAL", "GLOBAL_TO_US_POLITICAL_COST_RATIO"],
   computeExpr: "(US_POLITICAL_REFORM_INVESTMENT_TOTAL * GLOBAL_TO_US_POLITICAL_COST_RATIO)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-of-change-analysis.html",
@@ -7702,7 +7702,7 @@ export const GLOBAL_POLITICAL_REFORM_INVESTMENT: Parameter = {
 };
 
 export const GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL: Parameter = {
-  value: 411509230131680.9,
+  value: 411509230132000.0,
   parameterName: "GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_total_health_and_war_cost_annual",
   unit: "USD/year",
@@ -7712,7 +7712,7 @@ export const GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL: Parameter = {
   confidence: "high",
   formula: "WAR_TOTAL_COSTS + DISEASE_WELFARE_BURDEN",
   latex: "\\begin{gathered}\nCost_{health+war} = Cost_{war,total} + Burden_{disease} = \\$11.4T + \\$400T = \\$412T\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Burden_{disease} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} = 2.88B \\times 92.6\\% \\times \\$150K = \\$400T\n\\end{gathered}",
-  confidenceInterval: [263510883775677.9, 555878388235290.0],
+  confidenceInterval: [263510883776000.0, 555878388235000.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST + GLOBAL_DISEASE_ECONOMIC_BURDEN_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -7720,7 +7720,7 @@ export const GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL: Parameter = {
 };
 
 export const GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE: Parameter = {
-  value: 3219900482223735.0,
+  value: 3219900482220000.0,
   parameterName: "GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_war_cost_lifetime_cumulative_baseline",
   unit: "USD",
@@ -7730,7 +7730,7 @@ export const GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE: Parameter = {
   confidence: "high",
   formula: "C × ((1 + g)^80 - 1) / g",
   latex: "\\begin{gathered}\nCost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [2823195785050465.5, 3648811522893713.0],
+  confidenceInterval: [2823195785050000.0, 3648811522890000.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * ((Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 80.0) - 1.0) / GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7748,7 +7748,7 @@ export const GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_TREATY: Parameter = {
   confidence: "high",
   formula: "C × (1 - TREATY_REDUCTION_PCT) × 80",
   latex: "\\begin{gathered}\nCost_{war,cum,treaty} = C \\times (1 - Reduce_{treaty}) \\times 80\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [788662478412263.8, 1019299034853561.2],
+  confidenceInterval: [788662478412000.0, 1019299034850000.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "TREATY_REDUCTION_PCT"],
   computeExpr: "((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT)) * 80.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7756,7 +7756,7 @@ export const GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_TREATY: Parameter = {
 };
 
 export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_ABOLITION_COMPOUNDED: Parameter = {
-  value: 244281227.625377,
+  value: 244281227.625,
   parameterName: "GLOBAL_WAR_COST_LIFETIME_PER_PERSON_ABOLITION_COMPOUNDED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_war_cost_lifetime_per_person_abolition_compounded",
   unit: "USD",
@@ -7766,7 +7766,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_ABOLITION_COMPOUNDED: Parameter
   confidence: "high",
   formula: "[Σ_{t=0..79} C(1+g)^t × (1+r)^(79-t)] / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nFV_{pp,abolition} = [Σ_{t=0..79} C(1+g)^t \\times (1+r)^{79-t}] / Pop_{global}\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [213917447.5600726, 276843943.919824],
+  confidenceInterval: [213917447.56, 276843943.92],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR", "PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE", "GLOBAL_POPULATION_2024"],
   computeExpr: "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((0.0 + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 0.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 79.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 1.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 78.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 2.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 77.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 3.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 76.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 4.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 75.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 5.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 74.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 6.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 73.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 7.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 72.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 8.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 71.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 9.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 70.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 10.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 69.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 11.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 68.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 12.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 67.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 13.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 66.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 14.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 65.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 15.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 64.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 16.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 63.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 17.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 62.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 18.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 61.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 19.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 60.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 20.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 59.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 21.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 58.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 22.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 57.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 23.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 56.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 24.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 55.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 25.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 54.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 26.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 53.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 27.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 52.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 28.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 51.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 29.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 50.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 30.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 49.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 31.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 48.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 32.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 47.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 33.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 46.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 34.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 45.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 35.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 44.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 36.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 43.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 37.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 42.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 38.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 41.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 39.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 40.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 40.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 39.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 41.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 38.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 42.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 37.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 43.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 36.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 44.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 35.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 45.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 34.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 46.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 33.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 47.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 32.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 48.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 31.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 49.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 30.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 50.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 29.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 51.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 28.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 52.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 27.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 53.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 26.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 54.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 25.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 55.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 24.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 56.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 23.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 57.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 22.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 58.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 21.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 59.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 20.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 60.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 19.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 61.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 18.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 62.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 17.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 63.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 16.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 64.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 15.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 65.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 14.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 66.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 13.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 67.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 12.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 68.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 11.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 69.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 10.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 70.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 9.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 71.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 8.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 72.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 7.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 73.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 6.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 74.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 5.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 75.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 4.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 76.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 3.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 77.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 2.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 78.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 1.0))) + ((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 79.0)) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 0.0))) / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7774,7 +7774,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_ABOLITION_COMPOUNDED: Parameter
 };
 
 export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_BASELINE: Parameter = {
-  value: 402487.5602779669,
+  value: 402487.560278,
   parameterName: "GLOBAL_WAR_COST_LIFETIME_PER_PERSON_BASELINE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_war_cost_lifetime_per_person_baseline",
   unit: "USD",
@@ -7784,7 +7784,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_BASELINE: Parameter = {
   confidence: "high",
   formula: "GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nCost_{war,pp,baseline} = \\frac{Cost_{war,cum,baseline}}{Pop_{global}} = \\frac{\\$3220T}{8B} = \\$402K\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [352458.97691894183, 456139.1992711798],
+  confidenceInterval: [352458.976919, 456139.199271],
   inputs: ["GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE", "GLOBAL_POPULATION_2024"],
   computeExpr: "(GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
@@ -7802,7 +7802,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_FLAT: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST × 80 / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nCost_{war,pp,flat} = Cost_{war,total} \\times \\frac{80}{Pop_{global}}\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [99454.29975529216, 128710.02762085375],
+  confidenceInterval: [99454.2997553, 128710.027621],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_POPULATION_2024"],
   computeExpr: "((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * 80.0) / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7810,7 +7810,7 @@ export const GLOBAL_WAR_COST_LIFETIME_PER_PERSON_FLAT: Parameter = {
 };
 
 export const GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP: Parameter = {
-  value: 85.06497145786949,
+  value: 85.0649714579,
   parameterName: "GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_war_cost_years_until_exceeds_gdp",
   unit: "years",
@@ -7820,7 +7820,7 @@ export const GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP: Parameter = {
   confidence: "high",
   formula: "log(GLOBAL_GDP_2025 / GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST) / log(1 + g_{mil,20yr})",
   latex: "\\begin{gathered}\nT_{GDP} = log\\left(\\frac{GDP_{global}}{Cost_{war,total}}\\right) / log(1 + g_{mil,20yr})\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [80.47013126439502, 89.89607010684884],
+  confidenceInterval: [80.4701312644, 89.8960701068],
   inputs: ["GLOBAL_GDP_2025", "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR"],
   computeExpr: "(Math.log((GLOBAL_GDP_2025 / GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST)) / Math.log((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7828,7 +7828,7 @@ export const GLOBAL_WAR_COST_YEARS_UNTIL_EXCEEDS_GDP: Parameter = {
 };
 
 export const GLOBAL_WAR_COST_YEAR_80_BASELINE: Parameter = {
-  value: 100191785198480.03,
+  value: 100191785198000.0,
   parameterName: "GLOBAL_WAR_COST_YEAR_80_BASELINE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-global_war_cost_year_80_baseline",
   unit: "USD/year",
@@ -7838,7 +7838,7 @@ export const GLOBAL_WAR_COST_YEAR_80_BASELINE: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST × (1 + g_{mil,20yr})^80",
   latex: "\\begin{gathered}\nCost_{war,yr80} = Cost_{war,total} \\times (1 + g_{mil,20yr})^{80}\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [87847754062784.03, 113537962539459.39],
+  confidenceInterval: [87847754062800.0, 113537962539000.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 80.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -7856,7 +7856,7 @@ export const GOV_REPLACEMENT_SUITE_ANNUAL_OPEX: Parameter = {
   confidence: "high",
   formula: "ARS + USA + AEC + DCB + AMA + TSC operating costs",
   latex: "\\begin{gathered}\nCost_{opex,ann} = Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{net,ann} + Cost_{opex,ann} = \\$150M + \\$100M + \\$7M + \\$15M + \\$7.5M + \\$20M = \\$300M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Pop_{US} \\times Cost_{ann} = 335M \\times \\$0.3 = \\$100M\n\\end{gathered}",
-  confidenceInterval: [151751511.35413864, 542848635.6730552],
+  confidenceInterval: [151751511.354, 542848635.673],
   inputs: ["AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX", "UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX", "ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX", "DECENTRALIZED_CENSUS_BUREAU_ANNUAL_OPEX", "ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX", "TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX"],
   computeExpr: "(((((AUTOMATED_REVENUE_SERVICE_ANNUAL_OPEX + UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX) + ALIGNED_ELECTION_COMMISSION_ANNUAL_OPEX) + DECENTRALIZED_CENSUS_BUREAU_ANNUAL_OPEX) + ALGORITHMIC_MONETARY_AUTHORITY_ANNUAL_OPEX) + TRANSPARENT_SECURITIES_COMMISSION_ANNUAL_OPEX)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/earth-optimization-services.html",
@@ -7864,7 +7864,7 @@ export const GOV_REPLACEMENT_SUITE_ANNUAL_OPEX: Parameter = {
 };
 
 export const GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL: Parameter = {
-  value: 0.8955223880597015,
+  value: 0.89552238806,
   parameterName: "GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-gov_replacement_suite_opex_per_citizen_annual",
   unit: "USD",
@@ -7874,7 +7874,7 @@ export const GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "SUITE_ANNUAL_OPEX / US_POPULATION",
   latex: "\\begin{gathered}\nCost_{opex,ann} = \\frac{Cost_{opex,ann}}{Pop_{US}} = \\frac{\\$300M}{335M} = \\$0.896\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{opex,ann} + Cost_{net,ann} + Cost_{opex,ann} = \\$150M + \\$100M + \\$7M + \\$15M + \\$7.5M + \\$20M = \\$300M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Automated_{annual} \\times Cost_{all} = 500B \\times \\$0.0003 = \\$150M\n\\\\[0.5em]\n\\text{where } Cost_{opex,ann} = Pop_{US} \\times Cost_{ann} = 335M \\times \\$0.3 = \\$100M\n\\end{gathered}",
-  confidenceInterval: [0.4523593166109013, 1.6179828925625888],
+  confidenceInterval: [0.452359316611, 1.61798289256],
   inputs: ["GOV_REPLACEMENT_SUITE_ANNUAL_OPEX", "US_POPULATION_2024"],
   computeExpr: "(GOV_REPLACEMENT_SUITE_ANNUAL_OPEX / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/earth-optimization-services.html",
@@ -7882,7 +7882,7 @@ export const GOV_REPLACEMENT_SUITE_OPEX_PER_CITIZEN_ANNUAL: Parameter = {
 };
 
 export const HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO: Parameter = {
-  value: 7.166666666666667,
+  value: 7.16666666667,
   parameterName: "HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-healthcare_vs_military_multiplier_ratio",
   unit: "x",
@@ -7892,7 +7892,7 @@ export const HEALTHCARE_VS_MILITARY_MULTIPLIER_RATIO: Parameter = {
   confidence: "high",
   formula: "ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING",
   latex: "\\begin{gathered}\nr_{health/mil} \\\\\n= \\frac{k_{health}}{k_{mil}} \\\\\n= \\frac{4.3}{0.6} \\\\\n= 7.17\n\\end{gathered}",
-  confidenceInterval: [4.666266289074791, 11.074842364598574],
+  confidenceInterval: [4.66626628907, 11.0748423646],
   inputs: ["ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT", "ECONOMIC_MULTIPLIER_MILITARY_SPENDING"],
   computeExpr: "(ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -7910,7 +7910,7 @@ export const HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR: Parameter = {
   confidence: "high",
   formula: "HUMAN_LAUGHS_PER_DAY_AVERAGE × 365",
   latex: "L_{year} = L_{day} \\times 365 = 17 \\times 365 = 6{,}200",
-  confidenceInterval: [1847.9197054221424, 14225.322119807379],
+  confidenceInterval: [1847.91970542, 14225.3221198],
   inputs: ["HUMAN_LAUGHS_PER_DAY_AVERAGE"],
   computeExpr: "(HUMAN_LAUGHS_PER_DAY_AVERAGE * 365.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -7918,7 +7918,7 @@ export const HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR: Parameter = {
 };
 
 export const IAB_MECHANISM_BENEFIT_COST_RATIO: Parameter = {
-  value: 229.61531707317073,
+  value: 229.615317073,
   parameterName: "IAB_MECHANISM_BENEFIT_COST_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-iab_mechanism_benefit_cost_ratio",
   unit: "ratio",
@@ -7930,7 +7930,7 @@ export const IAB_MECHANISM_BENEFIT_COST_RATIO: Parameter = {
   confidence: "high",
   formula: "TREATY_PEACE_PLUS_RD_BENEFITS ÷ IAB_MECHANISM_COST",
   latex: "\\begin{gathered}\nBCR_{IAB} = \\frac{Benefit_{peace+RD}}{Cost_{IAB,ann}} = \\frac{\\$172B}{\\$750M} = 230\n\\\\[0.5em]\n\\text{where } Benefit_{peace+RD} = Benefit_{peace,soc} + Benefit_{RD,ann} = \\$114B + \\$58.6B = \\$172B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [204.19988524856137, 256.4992872597656],
+  confidenceInterval: [204.199885249, 256.49928726],
   inputs: ["TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS", "IAB_MECHANISM_ANNUAL_COST"],
   computeExpr: "(TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS / IAB_MECHANISM_ANNUAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/incentive-alignment-bonds-paper.html",
@@ -7955,7 +7955,7 @@ export const IAB_POLITICAL_INCENTIVE_FUNDING_ANNUAL: Parameter = {
 };
 
 export const IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT: Parameter = {
-  value: 13.737373737373737,
+  value: 13.7373737374,
   parameterName: "IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-iab_vs_defense_lobby_ratio_at_1pct",
   unit: "x",
@@ -7972,7 +7972,7 @@ export const IAB_VS_DEFENSE_LOBBY_RATIO_AT_1PCT: Parameter = {
 };
 
 export const IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL: Parameter = {
-  value: 310.0716417910448,
+  value: 310.071641791,
   parameterName: "IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-immigration_dividend_per_citizen_annual",
   unit: "USD",
@@ -7982,7 +7982,7 @@ export const IMMIGRATION_DIVIDEND_PER_CITIZEN_ANNUAL: Parameter = {
   confidence: "high",
   formula: "(ENTRY_FEES + SURGE_FISCAL_SURPLUS / 10 years) / US_POPULATION",
   latex: "\\begin{gathered}\nDividend_{ann} = (\\text{ENTRY\\_FEES} + \\text{SURGE\\_FISCAL\\_SURPLUS} / 10 years) / \\text{US\\_POPULATION}\n\\\\[0.5em]\n\\text{where } Ratio_{ann} = Ratio_{ann} \\times US = 2M \\times \\$6.94K = \\$13.9B\n\\end{gathered}",
-  confidenceInterval: [283.93996549660704, 359.00471261829466],
+  confidenceInterval: [283.939965497, 359.004712618],
   inputs: ["IMMIGRATION_ENTRY_REVENUE_ANNUAL", "CBO_IMMIGRATION_SURGE_DEFICIT_REDUCTION_2024_2034", "US_POPULATION_2024"],
   computeExpr: "((IMMIGRATION_ENTRY_REVENUE_ANNUAL + (CBO_IMMIGRATION_SURGE_DEFICIT_REDUCTION_2024_2034 / 10.0)) / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
@@ -8000,7 +8000,7 @@ export const IMMIGRATION_ENTRY_REVENUE_ANNUAL: Parameter = {
   confidence: "high",
   formula: "ENTRANTS × SMUGGLER_FEE",
   latex: "\\begin{gathered}\nRatio_{ann} \\\\\n= Ratio_{ann} \\times US \\\\\n= 2M \\times \\$6.94K \\\\\n= \\$13.9B\n\\end{gathered}",
-  confidenceInterval: [5163202230.897675, 30178171484.400955],
+  confidenceInterval: [5163202230.9, 30178171484.4],
   inputs: ["IMMIGRATION_PRICED_ENTRY_ANNUAL_VOLUME", "US_SMUGGLER_FEE_AVG"],
   computeExpr: "(IMMIGRATION_PRICED_ENTRY_ANNUAL_VOLUME * US_SMUGGLER_FEE_AVG)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/immigration-revenue-service.html",
@@ -8008,7 +8008,7 @@ export const IMMIGRATION_ENTRY_REVENUE_ANNUAL: Parameter = {
 };
 
 export const INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
-  value: 12.333333333333334,
+  value: 12.3333333333,
   parameterName: "INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-industry_vs_government_clinical_trials_spending_ratio",
   unit: "ratio",
@@ -8020,7 +8020,7 @@ export const INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = 
   confidence: "high",
   formula: "(TOTAL - GOVT) / GOVT",
   latex: "\\begin{gathered}\nRatio_{ind:gov} \\\\\n= \\frac{Spending_{trials}}{Spending_{trials,gov}} - 1 \\\\\n= \\frac{\\$60B}{\\$4.5B} - 1 \\\\\n= 12.3\n\\end{gathered}",
-  confidenceInterval: [8.23280431702055, 19.274593011344518],
+  confidenceInterval: [8.23280431702, 19.2745930113],
   inputs: ["GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "((GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL - GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL) / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/global-government-medical-research-spending.html",
@@ -8028,7 +8028,7 @@ export const INDUSTRY_VS_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = 
 };
 
 export const LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE: Parameter = {
-  value: 3.8802531645569616,
+  value: 3.88025316456,
   parameterName: "LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-life_expectancy_gain_1883_1962_years_per_decade",
   unit: "years/decade",
@@ -8040,7 +8040,7 @@ export const LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE: Parameter = {
   confidence: "high",
   formula: "(life_exp_1962 - life_exp_1880) / 7.9 decades",
   latex: "\\begin{gathered}\n\\Delta LE_{pre62} \\\\\n= \\frac{LE_{US,1962} - LE_{US,1880}}{7.9} \\\\\n= \\frac{70.1 - 39.4}{7.9} \\\\\n= 3.88\n\\end{gathered}",
-  confidenceInterval: [3.822672943638258, 3.9386155943669943],
+  confidenceInterval: [3.82267294364, 3.93861559437],
   peerReviewed: true,
   inputs: ["US_LIFE_EXPECTANCY_1962", "US_LIFE_EXPECTANCY_1880"],
   computeExpr: "((US_LIFE_EXPECTANCY_1962 - US_LIFE_EXPECTANCY_1880) / 7.9)",
@@ -8049,7 +8049,7 @@ export const LIFE_EXPECTANCY_GAIN_1883_1962_YEARS_PER_DECADE: Parameter = {
 };
 
 export const LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE: Parameter = {
-  value: 1.5435087719298248,
+  value: 1.54350877193,
   parameterName: "LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-life_expectancy_gain_1962_2019_years_per_decade",
   unit: "years/decade",
@@ -8061,7 +8061,7 @@ export const LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE: Parameter = {
   confidence: "high",
   formula: "(life_exp_2019 - life_exp_1962) / 5.7 decades",
   latex: "\\begin{gathered}\n\\Delta LE_{post62} \\\\\n= \\frac{LE_{US,2019} - LE_{US,1962}}{5.7} \\\\\n= \\frac{78.9 - 70.1}{5.7} \\\\\n= 1.54\n\\end{gathered}",
-  confidenceInterval: [1.494347974455527, 1.5930701240500609],
+  confidenceInterval: [1.49434797446, 1.59307012405],
   peerReviewed: true,
   inputs: ["US_LIFE_EXPECTANCY_2019", "US_LIFE_EXPECTANCY_1962"],
   computeExpr: "((US_LIFE_EXPECTANCY_2019 - US_LIFE_EXPECTANCY_1962) / 5.7)",
@@ -8071,7 +8071,7 @@ export const LIFE_EXPECTANCY_GAIN_1962_2019_YEARS_PER_DECADE: Parameter = {
 };
 
 export const LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA: Parameter = {
-  value: 23433737.049071178,
+  value: 23433737.0491,
   parameterName: "LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-lost_prosperity_lifetime_damages_per_capita",
   unit: "USD/person",
@@ -8081,7 +8081,7 @@ export const LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA × GLOBAL_LIFE_EXPECTANCY_2024",
   latex: "\\begin{gathered}\nD_{prosperity,life,pc} = GDP_{pc,lost} \\times LE_{global} = \\$319K \\times 73.4 = \\$23.4M\n\\\\[0.5em]\n\\text{where } GDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [7806172.126985428, 66540191.69289716],
+  confidenceInterval: [7806172.12699, 66540191.6929],
   inputs: ["WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA", "GLOBAL_LIFE_EXPECTANCY_2024"],
   computeExpr: "(WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA * GLOBAL_LIFE_EXPECTANCY_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -8089,7 +8089,7 @@ export const LOST_PROSPERITY_LIFETIME_DAMAGES_PER_CAPITA: Parameter = {
 };
 
 export const LOST_PROSPERITY_LIFETIME_DAMAGES_TOTAL: Parameter = {
-  value: 1.874698963925694e+17,
+  value: 1.87469896393e+17,
   parameterName: "LOST_PROSPERITY_LIFETIME_DAMAGES_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-lost_prosperity_lifetime_damages_total",
   unit: "USD",
@@ -8099,7 +8099,7 @@ export const LOST_PROSPERITY_LIFETIME_DAMAGES_TOTAL: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL × GLOBAL_LIFE_EXPECTANCY_2024",
   latex: "\\begin{gathered}\nD_{prosperity,life} = GDP_{lost,total} \\times LE_{global} = \\$2550T \\times 73.4 = \\$187000T\n\\\\[0.5em]\n\\text{where } GDP_{lost,total} = GDP_{pc,lost} \\times Pop_{global} = \\$319K \\times 8B = \\$2550T\n\\\\[0.5em]\n\\text{where } GDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [6.250127424554007e+16, 5.3213617039758144e+17],
+  confidenceInterval: [6.25012742455e+16, 5.32136170398e+17],
   inputs: ["WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL", "GLOBAL_LIFE_EXPECTANCY_2024"],
   computeExpr: "(WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL * GLOBAL_LIFE_EXPECTANCY_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -8107,7 +8107,7 @@ export const LOST_PROSPERITY_LIFETIME_DAMAGES_TOTAL: Parameter = {
 };
 
 export const LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA: Parameter = {
-  value: 10642024.091312978,
+  value: 10642024.0913,
   parameterName: "LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-lost_prosperity_npv_perpetuity_per_capita",
   unit: "USD/person",
@@ -8117,7 +8117,7 @@ export const LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA / NPV_DISCOUNT_RATE_STANDARD",
   latex: "\\begin{gathered}\nD_{prosperity,NPV,pc} = \\frac{GDP_{pc,lost}}{r_{discount}} = \\frac{\\$319K}{3\\%} = \\$10.6M\n\\\\[0.5em]\n\\text{where } GDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [3544448.4758989443, 30228806.58055969],
+  confidenceInterval: [3544448.4759, 30228806.5806],
   inputs: ["WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA", "NPV_DISCOUNT_RATE_STANDARD"],
   computeExpr: "(WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA / NPV_DISCOUNT_RATE_STANDARD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -8125,7 +8125,7 @@ export const LOST_PROSPERITY_NPV_PERPETUITY_PER_CAPITA: Parameter = {
 };
 
 export const LOST_PROSPERITY_NPV_PERPETUITY_TOTAL: Parameter = {
-  value: 8.513619273050382e+16,
+  value: 8.51361927305e+16,
   parameterName: "LOST_PROSPERITY_NPV_PERPETUITY_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-lost_prosperity_npv_perpetuity_total",
   unit: "USD",
@@ -8135,7 +8135,7 @@ export const LOST_PROSPERITY_NPV_PERPETUITY_TOTAL: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL / NPV_DISCOUNT_RATE_STANDARD",
   latex: "\\begin{gathered}\nD_{prosperity,NPV} = \\frac{GDP_{lost,total}}{r_{discount}} = \\frac{\\$2550T}{3\\%} = \\$85100T\n\\\\[0.5em]\n\\text{where } GDP_{lost,total} = GDP_{pc,lost} \\times Pop_{global} = \\$319K \\times 8B = \\$2550T\n\\\\[0.5em]\n\\text{where } GDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [2.8372858541795516e+16, 2.4145284287926138e+17],
+  confidenceInterval: [2.83728585418e+16, 2.41452842879e+17],
   inputs: ["WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL", "NPV_DISCOUNT_RATE_STANDARD"],
   computeExpr: "(WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL / NPV_DISCOUNT_RATE_STANDARD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -8153,7 +8153,7 @@ export const MECHANISM_COURT_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_COURT_OF_HUMANITY_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{court} = P_{court} \\times Benefit_{peace,soc} = 0.1 \\times \\$114B = \\$11.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [9957859575.91242, 12869937308.757088],
+  confidenceInterval: [9957859575.91, 12869937308.8],
   inputs: ["MECHANISM_COURT_OF_HUMANITY_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_COURT_OF_HUMANITY_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8171,7 +8171,7 @@ export const MECHANISM_DFDA_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_DFDA_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{dFDA} = P_{dFDA} \\times Benefit_{peace,soc} = 0.7 \\times \\$114B = \\$79.5B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [69705017031.38693, 90089561161.2996],
+  confidenceInterval: [69705017031.4, 90089561161.3],
   inputs: ["MECHANISM_DFDA_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_DFDA_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8189,7 +8189,7 @@ export const MECHANISM_IAB_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_IAB_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{IAB} = P_{IAB} \\times Benefit_{peace,soc} = 0.6 \\times \\$114B = \\$68.1B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [59747157455.47452, 77219623852.54251],
+  confidenceInterval: [59747157455.5, 77219623852.5],
   inputs: ["MECHANISM_IAB_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_IAB_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8207,7 +8207,7 @@ export const MECHANISM_IAB_NET_COST: Parameter = {
   confidence: "high",
   formula: "TREATY_CAMPAIGN_TOTAL_COST * MECHANISM_IAB_ADMIN_RATE",
   latex: "\\begin{gathered}\nC_{IAB,net} = Cost_{campaign} \\times r_{IAB,admin} = \\$1B \\times 0.05 = \\$50M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [33584169.693843514, 73778917.59930237],
+  confidenceInterval: [33584169.6938, 73778917.5993],
   inputs: ["TREATY_CAMPAIGN_TOTAL_COST", "MECHANISM_IAB_ADMIN_RATE"],
   computeExpr: "(TREATY_CAMPAIGN_TOTAL_COST * MECHANISM_IAB_ADMIN_RATE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8225,7 +8225,7 @@ export const MECHANISM_LOVING_TAKEOVER_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_LOVING_TAKEOVER_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{takeover} = P_{takeover} \\times Benefit_{peace,soc} = 0.95 \\times \\$114B = \\$108B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [94599665971.16798, 122264404433.19234],
+  confidenceInterval: [94599665971.2, 122264404433.0],
   inputs: ["MECHANISM_LOVING_TAKEOVER_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_LOVING_TAKEOVER_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8260,7 +8260,7 @@ export const MECHANISM_REFERENDUM_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_REFERENDUM_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{referendum} = P_{referendum} \\times Benefit_{peace,soc} = 0.3 \\times \\$114B = \\$34.1B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [29873578727.73726, 38609811926.271255],
+  confidenceInterval: [29873578727.7, 38609811926.3],
   inputs: ["MECHANISM_REFERENDUM_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_REFERENDUM_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8278,7 +8278,7 @@ export const MECHANISM_SHIRT_CASCADE_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_SHIRT_CASCADE_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{shirt} = P_{shirt} \\times Benefit_{peace,soc} = 0.25 \\times \\$114B = \\$28.4B\n\\\\[0.5em]\n\\text{where } P_{shirt} = P_{cascade,shirt} = 25\\% = 0.25\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [6361758232.92724, 57842488950.305374],
+  confidenceInterval: [6361758232.93, 57842488950.3],
   inputs: ["MECHANISM_SHIRT_CASCADE_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_SHIRT_CASCADE_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8296,7 +8296,7 @@ export const MECHANISM_SHIRT_CASCADE_P_SUCCESS: Parameter = {
   confidence: "low",
   formula: "SHIRT_CASCADE_PROBABILITY_GIVEN_SEED",
   latex: "P_{shirt} = P_{cascade,shirt} = 25\\% = 0.25",
-  confidenceInterval: [0.05526571885183439, 0.5088070799161755],
+  confidenceInterval: [0.0552657188518, 0.508807079916],
   inputs: ["SHIRT_CASCADE_PROBABILITY_GIVEN_SEED"],
   computeExpr: "SHIRT_CASCADE_PROBABILITY_GIVEN_SEED",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8314,7 +8314,7 @@ export const MECHANISM_TREATY_CAMPAIGN_EV: Parameter = {
   confidence: "high",
   formula: "MECHANISM_TREATY_CAMPAIGN_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{campaign} = P_{campaign} \\times Benefit_{peace,soc} = 0.4 \\times \\$114B = \\$45.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [39831438303.64968, 51479749235.02835],
+  confidenceInterval: [39831438303.6, 51479749235.0],
   inputs: ["MECHANISM_TREATY_CAMPAIGN_P_SUCCESS", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(MECHANISM_TREATY_CAMPAIGN_P_SUCCESS * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/proof/wishonias-wager.html",
@@ -8322,7 +8322,7 @@ export const MECHANISM_TREATY_CAMPAIGN_EV: Parameter = {
 };
 
 export const MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN: Parameter = {
-  value: 0.00016403034259620457,
+  value: 0.000164030342596,
   parameterName: "MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-medical_research_pct_of_disease_burden",
   unit: "rate",
@@ -8332,7 +8332,7 @@ export const MEDICAL_RESEARCH_PCT_OF_DISEASE_BURDEN: Parameter = {
   confidence: "high",
   formula: "MED_RESEARCH ÷ TOTAL_BURDEN",
   latex: "\\begin{gathered}\nPct_{RD:burden} = \\frac{Spending_{RD}}{Cost_{health+war}} = \\frac{\\$67.5B}{\\$412T} = 0.0164\\%\n\\\\[0.5em]\n\\text{where } Cost_{health+war} = Cost_{war,total} + Burden_{disease} = \\$11.4T + \\$400T = \\$412T\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Burden_{disease} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times Value_{QALY} = 2.88B \\times 92.6\\% \\times \\$150K = \\$400T\n\\end{gathered}",
-  confidenceInterval: [0.00011585714525850428, 0.0002637563034894304],
+  confidenceInterval: [0.000115857145259, 0.000263756303489],
   inputs: ["GLOBAL_MED_RESEARCH_SPENDING", "GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL"],
   computeExpr: "(GLOBAL_MED_RESEARCH_SPENDING / GLOBAL_TOTAL_HEALTH_AND_WAR_COST_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -8357,7 +8357,7 @@ export const MEDICAL_TOOLCHAIN_OBSERVED_ANCHOR_COSTS: Parameter = {
 };
 
 export const MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
-  value: 45.333333333333336,
+  value: 45.3333333333,
   parameterName: "MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-military_to_clinical_trials_spending_ratio",
   unit: "ratio",
@@ -8367,7 +8367,7 @@ export const MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
   confidence: "high",
   formula: "MILITARY_SPENDING / TOTAL_CLINICAL_TRIALS",
   latex: "\\begin{gathered}\nRatio_{mil:trials} \\\\\n= \\frac{Spending_{mil}}{Spending_{trials}} \\\\\n= \\frac{\\$2.72T}{\\$60B} \\\\\n= 45.3\n\\end{gathered}",
-  confidenceInterval: [36.266666666666666, 54.4],
+  confidenceInterval: [36.2666666667, 54.4],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / GLOBAL_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -8375,7 +8375,7 @@ export const MILITARY_TO_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
 };
 
 export const MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = {
-  value: 604.4444444444445,
+  value: 604.444444444,
   parameterName: "MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-military_to_government_clinical_trials_spending_ratio",
   unit: "ratio",
@@ -8385,7 +8385,7 @@ export const MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = 
   confidence: "high",
   formula: "MILITARY_SPENDING / GOVT_CLINICAL_TRIALS_SPENDING",
   latex: "\\begin{gathered}\nRatio_{mil:gov} \\\\\n= \\frac{Spending_{mil}}{Spending_{trials,gov}} \\\\\n= \\frac{\\$2.72T}{\\$4.5B} \\\\\n= 604\n\\end{gathered}",
-  confidenceInterval: [453.3333333333333, 888.035547202759],
+  confidenceInterval: [453.333333333, 888.035547203],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
@@ -8393,7 +8393,7 @@ export const MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO: Parameter = 
 };
 
 export const MILITARY_VS_MEDICAL_RESEARCH_RATIO: Parameter = {
-  value: 40.2962962962963,
+  value: 40.2962962963,
   parameterName: "MILITARY_VS_MEDICAL_RESEARCH_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-military_vs_medical_research_ratio",
   unit: "ratio",
@@ -8403,7 +8403,7 @@ export const MILITARY_VS_MEDICAL_RESEARCH_RATIO: Parameter = {
   confidence: "high",
   formula: "MILITARY_SPENDING ÷ MEDICAL_RESEARCH",
   latex: "\\begin{gathered}\nRatio_{mil:RD} \\\\\n= \\frac{Spending_{mil}}{Spending_{RD}} \\\\\n= \\frac{\\$2.72T}{\\$67.5B} \\\\\n= 40.3\n\\end{gathered}",
-  confidenceInterval: [34.259476196140994, 47.9341909820133],
+  confidenceInterval: [34.2594761961, 47.934190982],
   inputs: ["GLOBAL_MED_RESEARCH_SPENDING", "GLOBAL_MILITARY_SPENDING_ANNUAL_2024"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 / GLOBAL_MED_RESEARCH_SPENDING)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -8411,7 +8411,7 @@ export const MILITARY_VS_MEDICAL_RESEARCH_RATIO: Parameter = {
 };
 
 export const MISALLOCATION_FACTOR_DEATH_VS_SAVING: Parameter = {
-  value: 2889.0596892886347,
+  value: 2889.05968929,
   parameterName: "MISALLOCATION_FACTOR_DEATH_VS_SAVING",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-misallocation_factor_death_vs_saving",
   unit: "x",
@@ -8421,7 +8421,7 @@ export const MISALLOCATION_FACTOR_DEATH_VS_SAVING: Parameter = {
   confidence: "high",
   formula: "COST_PER_DEATH ÷ COST_PER_LIFE_SAVED",
   latex: "\\begin{gathered}\nk_{misalloc} = \\frac{Cost_{war,total}}{Deaths_{conflict} \\times Cost_{life,RD}} = \\frac{\\$11.4T}{245{,}000 \\times \\$16.1K} = 2{,}890\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Cost_{life,RD} = \\frac{Spending_{RD}}{Lives_{RD,ann}} = \\frac{\\$67.5B}{4.2M} = \\$16.1K\n\\end{gathered}",
-  confidenceInterval: [1968.4054369008738, 4190.285687355618],
+  confidenceInterval: [1968.4054369, 4190.28568736],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL", "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL"],
   computeExpr: "((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST / GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL) / GLOBAL_COST_PER_LIFE_SAVED_MED_RESEARCH_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html",
@@ -8439,7 +8439,7 @@ export const MRNA_THERAPEUTIC_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "PROTEINS × DISEASES",
   latex: "\\begin{gathered}\nCombos_{mRNA} \\\\\n= N_{genes} \\times N_{diseases,trial} \\\\\n= 20{,}000 \\times 1{,}000 \\\\\n= 20M\n\\end{gathered}",
-  confidenceInterval: [16305469.334976457, 23794439.362736847],
+  confidenceInterval: [16305469.335, 23794439.3627],
   inputs: ["HUMAN_PROTEIN_CODING_GENES", "TRIAL_RELEVANT_DISEASES_COUNT"],
   computeExpr: "(HUMAN_PROTEIN_CODING_GENES * TRIAL_RELEVANT_DISEASES_COUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -8447,7 +8447,7 @@ export const MRNA_THERAPEUTIC_COMBINATIONS: Parameter = {
 };
 
 export const NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT: Parameter = {
-  value: 0.022658536585365853,
+  value: 0.0226585365854,
   parameterName: "NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-nih_traditional_trial_max_efficiency_pct",
   unit: "percent",
@@ -8457,7 +8457,7 @@ export const NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT: Parameter = {
   confidence: "medium",
   formula: "PRAGMATIC_TRIAL_COST ÷ TRADITIONAL_PHASE3_COST",
   latex: "\\begin{gathered}\n\\eta_{NIH,max} \\\\\n= \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} \\\\\n= \\frac{\\$929}{\\$41K} \\\\\n= 2.27\\%\n\\end{gathered}",
-  confidenceInterval: [0.0047561523104008305, 0.07842096599081838],
+  confidenceInterval: [0.0047561523104, 0.0784209659908],
   inputs: ["DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT", "TRADITIONAL_PHASE3_COST_PER_PATIENT"],
   computeExpr: "(DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT / TRADITIONAL_PHASE3_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html",
@@ -8465,7 +8465,7 @@ export const NIH_TRADITIONAL_TRIAL_MAX_EFFICIENCY_PCT: Parameter = {
 };
 
 export const NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO: Parameter = {
-  value: 37829.26829268293,
+  value: 37829.2682927,
   parameterName: "NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-nih_trial_patients_fundable_status_quo",
   unit: "patients",
@@ -8475,7 +8475,7 @@ export const NIH_TRIAL_PATIENTS_FUNDABLE_STATUS_QUO: Parameter = {
   confidence: "high",
   formula: "NIH_BUDGET × TRIALS_PCT / TRADITIONAL_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nFundable \\\\\n= \\text{NIH\\_BUDGET} \\times \\text{TRIALS\\_PCT} / \\text{TRADITIONAL\\_COST\\_PER\\_PATIENT}\n\\end{gathered}",
-  confidenceInterval: [16065.854955513865, 91338.50930674645],
+  confidenceInterval: [16065.8549555, 91338.5093067],
   inputs: ["NIH_ANNUAL_BUDGET", "NIH_CLINICAL_TRIALS_SPENDING_PCT", "TRADITIONAL_PHASE3_COST_PER_PATIENT"],
   computeExpr: "((NIH_ANNUAL_BUDGET * NIH_CLINICAL_TRIALS_SPENDING_PCT) / TRADITIONAL_PHASE3_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/dih.html",
@@ -8493,7 +8493,7 @@ export const NUCLEAR_WINTER_OVERKILL_FACTOR: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_WARHEAD_COUNT / NUCLEAR_WINTER_WARHEAD_THRESHOLD",
   latex: "\\begin{gathered}\nOverkill_{winter} \\\\\n= \\frac{W_{global}}{W_{winter}} \\\\\n= \\frac{12{,}200}{100} \\\\\n= 122\n\\end{gathered}",
-  confidenceInterval: [42.571949770039915, 198.19866204402177],
+  confidenceInterval: [42.57194977, 198.198662044],
   inputs: ["GLOBAL_WARHEAD_COUNT", "NUCLEAR_WINTER_WARHEAD_THRESHOLD"],
   computeExpr: "(GLOBAL_WARHEAD_COUNT / NUCLEAR_WINTER_WARHEAD_THRESHOLD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -8511,7 +8511,7 @@ export const NUCLEAR_WINTER_SPARE_APOCALYPSES: Parameter = {
   confidence: "medium",
   formula: "NUCLEAR_WINTER_OVERKILL_FACTOR - 1",
   latex: "\\begin{gathered}\nOverkill_{spare} = Overkill_{winter} - 1 = 122 - 1 = 121\n\\\\[0.5em]\n\\text{where } Overkill_{winter} = \\frac{W_{global}}{W_{winter}} = \\frac{12{,}200}{100} = 122\n\\end{gathered}",
-  confidenceInterval: [41.571949770039915, 197.19866204402177],
+  confidenceInterval: [41.57194977, 197.198662044],
   inputs: ["NUCLEAR_WINTER_OVERKILL_FACTOR"],
   computeExpr: "(NUCLEAR_WINTER_OVERKILL_FACTOR - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -8529,7 +8529,7 @@ export const PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT: Parameter = {
   confidence: "high",
   formula: "TOTAL_WAR_COST × 1% × ε (baseline ε=1.0)",
   latex: "\\begin{gathered}\nBenefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [99578595759.1242, 128699373087.57088],
+  confidenceInterval: [99578595759.1, 128699373088.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * TREATY_REDUCTION_PCT)",
   validationMin: 70_000_000_000,
@@ -8550,7 +8550,7 @@ export const PEACE_DIVIDEND_CONFLICT_REDUCTION: Parameter = {
   confidence: "low",
   formula: "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT - TREATY_ANNUAL_FUNDING",
   latex: "\\begin{gathered}\nSavings_{conflict} = Benefit_{peace,soc} - Funding_{treaty} = \\$114B - \\$27.2B = \\$86.4B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [72378595759.1242, 101499373087.57088],
+  confidenceInterval: [72378595759.1, 101499373088.0],
   inputs: ["PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "TREATY_ANNUAL_FUNDING"],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
   manualPageTitle: "Peace Dividend",
@@ -8567,7 +8567,7 @@ export const PEACE_DIVIDEND_DIRECT_COSTS: Parameter = {
   confidence: "high",
   formula: "DIRECT_COSTS × 1%",
   latex: "\\begin{gathered}\nSavings_{direct} = Cost_{war,direct} \\times Reduce_{treaty} = \\$7.66T \\times 1\\% = \\$76.6B\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\end{gathered}",
-  confidenceInterval: [65203922397.58999, 89491055190.89084],
+  confidenceInterval: [65203922397.6, 89491055190.9],
   inputs: ["GLOBAL_ANNUAL_WAR_DIRECT_COSTS_TOTAL", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_WAR_DIRECT_COSTS_TOTAL * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8585,7 +8585,7 @@ export const PEACE_DIVIDEND_ENVIRONMENTAL: Parameter = {
   confidence: "high",
   formula: "ENVIRONMENTAL_DAMAGE × 1%",
   latex: "\\begin{gathered}\nSavings_{env} \\\\\n= Damage_{env} \\times Reduce_{treaty} \\\\\n= \\$100B \\times 1\\% \\\\\n= \\$1B\n\\end{gathered}",
-  confidenceInterval: [734116596.2767913, 1317321321.2040021],
+  confidenceInterval: [734116596.277, 1317321321.2],
   inputs: ["GLOBAL_ANNUAL_ENVIRONMENTAL_DAMAGE_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_ENVIRONMENTAL_DAMAGE_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8603,7 +8603,7 @@ export const PEACE_DIVIDEND_HUMAN_CASUALTIES: Parameter = {
   confidence: "high",
   formula: "HUMAN_LIFE_LOSSES × 1%",
   latex: "\\begin{gathered}\nSavings_{casualties} = Loss_{life,conflict} \\times Reduce_{treaty} = \\$2.45T \\times 1\\% = \\$24.5B\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\end{gathered}",
-  confidenceInterval: [13370914958.040884, 37113644701.05189],
+  confidenceInterval: [13370914958.0, 37113644701.1],
   inputs: ["GLOBAL_ANNUAL_HUMAN_LIFE_LOSSES_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_HUMAN_LIFE_LOSSES_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8621,7 +8621,7 @@ export const PEACE_DIVIDEND_INDIRECT_COSTS: Parameter = {
   confidence: "high",
   formula: "INDIRECT_COSTS × 1%",
   latex: "\\begin{gathered}\nSavings_{indirect} = Cost_{war,indirect} \\times Reduce_{treaty} = \\$3.7T \\times 1\\% = \\$37B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [29813012296.390533, 45621651128.474976],
+  confidenceInterval: [29813012296.4, 45621651128.5],
   inputs: ["GLOBAL_ANNUAL_WAR_INDIRECT_COSTS_TOTAL", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_WAR_INDIRECT_COSTS_TOTAL * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8639,7 +8639,7 @@ export const PEACE_DIVIDEND_INFRASTRUCTURE: Parameter = {
   confidence: "high",
   formula: "INFRASTRUCTURE_DESTRUCTION × 1%",
   latex: "\\begin{gathered}\nSavings_{infra} = Damage_{infra,total} \\times Reduce_{treaty} = \\$1.88T \\times 1\\% = \\$18.8B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\end{gathered}",
-  confidenceInterval: [16518817035.69767, 21041323021.83266],
+  confidenceInterval: [16518817035.7, 21041323021.8],
   inputs: ["GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_INFRASTRUCTURE_DESTRUCTION_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8647,7 +8647,7 @@ export const PEACE_DIVIDEND_INFRASTRUCTURE: Parameter = {
 };
 
 export const PEACE_DIVIDEND_LIFETIME_PER_PERSON: Parameter = {
-  value: 290052.27027796686,
+  value: 290052.270278,
   parameterName: "PEACE_DIVIDEND_LIFETIME_PER_PERSON",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-peace_dividend_lifetime_per_person",
   unit: "USD",
@@ -8657,7 +8657,7 @@ export const PEACE_DIVIDEND_LIFETIME_PER_PERSON: Parameter = {
   confidence: "high",
   formula: "PEACE_DIVIDEND_LIFETIME_TOTAL / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nSavings_{pp,LT} = \\frac{Savings_{LT}}{Pop_{global}} = \\frac{\\$2320T}{8B} = \\$290K\n\\\\[0.5em]\n\\text{where } Savings_{LT} = Cost_{war,cum,baseline} - Cost_{war,cum,treaty} = \\$3220T - \\$899T = \\$2320T\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,treaty} = C \\times (1 - Reduce_{treaty}) \\times 80\n\\end{gathered}",
-  confidenceInterval: [253999.2201612026, 328716.2719265346],
+  confidenceInterval: [253999.220161, 328716.271927],
   inputs: ["PEACE_DIVIDEND_LIFETIME_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(PEACE_DIVIDEND_LIFETIME_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
@@ -8665,7 +8665,7 @@ export const PEACE_DIVIDEND_LIFETIME_PER_PERSON: Parameter = {
 };
 
 export const PEACE_DIVIDEND_LIFETIME_PER_PERSON_COMPOUNDED: Parameter = {
-  value: 53682432.6589155,
+  value: 53682432.6589,
   parameterName: "PEACE_DIVIDEND_LIFETIME_PER_PERSON_COMPOUNDED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-peace_dividend_lifetime_per_person_compounded",
   unit: "USD",
@@ -8675,7 +8675,7 @@ export const PEACE_DIVIDEND_LIFETIME_PER_PERSON_COMPOUNDED: Parameter = {
   confidence: "high",
   formula: "[Σ_{t=0..79} (C(1+g)^t - C(1-p)) × (1+r)^(79-t)] / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nFV_{pp,treaty} = [Σ_{t=0..79} (C(1+g)^t - C(1-p)) \\times (1+r)^{79-t}] / Pop_{global}\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\end{gathered}",
-  confidenceInterval: [47009789.02407367, 60838307.22881403],
+  confidenceInterval: [47009789.0241, 60838307.2288],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR", "TREATY_REDUCTION_PCT", "PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE", "GLOBAL_POPULATION_2024"],
   computeExpr: "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((0.0 + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 0.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 79.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 1.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 78.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 2.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 77.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 3.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 76.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 4.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 75.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 5.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 74.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 6.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 73.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 7.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 72.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 8.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 71.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 9.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 70.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 10.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 69.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 11.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 68.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 12.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 67.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 13.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 66.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 14.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 65.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 15.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 64.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 16.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 63.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 17.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 62.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 18.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 61.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 19.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 60.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 20.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 59.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 21.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 58.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 22.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 57.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 23.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 56.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 24.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 55.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 25.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 54.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 26.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 53.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 27.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 52.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 28.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 51.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 29.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 50.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 30.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 49.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 31.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 48.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 32.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 47.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 33.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 46.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 34.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 45.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 35.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 44.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 36.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 43.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 37.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 42.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 38.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 41.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 39.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 40.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 40.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 39.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 41.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 38.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 42.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 37.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 43.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 36.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 44.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 35.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 45.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 34.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 46.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 33.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 47.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 32.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 48.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 31.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 49.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 30.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 50.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 29.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 51.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 28.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 52.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 27.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 53.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 26.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 54.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 25.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 55.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 24.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 56.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 23.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 57.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 22.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 58.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 21.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 59.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 20.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 60.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 19.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 61.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 18.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 62.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 17.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 63.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 16.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 64.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 15.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 65.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 14.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 66.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 13.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 67.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 12.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 68.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 11.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 69.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 10.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 70.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 9.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 71.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 8.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 72.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 7.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 73.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 6.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 74.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 5.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 75.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 4.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 76.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 3.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 77.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 2.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 78.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 1.0))) + (((GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * Math.pow((1.0 + GLOBAL_MILITARY_SPENDING_REAL_CAGR_20YR), 79.0)) - (GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (1.0 - TREATY_REDUCTION_PCT))) * Math.pow((1.0 + PEACE_DIVIDEND_INVESTMENT_REAL_RETURN_RATE), 0.0))) / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8683,7 +8683,7 @@ export const PEACE_DIVIDEND_LIFETIME_PER_PERSON_COMPOUNDED: Parameter = {
 };
 
 export const PEACE_DIVIDEND_LIFETIME_TOTAL: Parameter = {
-  value: 2320418162223735.0,
+  value: 2320418162220000.0,
   parameterName: "PEACE_DIVIDEND_LIFETIME_TOTAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-peace_dividend_lifetime_total",
   unit: "USD",
@@ -8693,7 +8693,7 @@ export const PEACE_DIVIDEND_LIFETIME_TOTAL: Parameter = {
   confidence: "high",
   formula: "GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE - GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_TREATY",
   latex: "\\begin{gathered}\nSavings_{LT} = Cost_{war,cum,baseline} - Cost_{war,cum,treaty} = \\$3220T - \\$899T = \\$2320T\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,baseline} = C \\times ((1 + g)^{80} - 1) / g\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{mil,20yr} = \\left(\\frac{Spending_{mil}}{Spending_{mil,2005}}\\right)^{\\frac{1}{19}} - 1\n\\\\[0.5em]\n\\text{where } Cost_{war,cum,treaty} = C \\times (1 - Reduce_{treaty}) \\times 80\n\\end{gathered}",
-  confidenceInterval: [2034533306638201.8, 2629512488040151.5],
+  confidenceInterval: [2034533306640000.0, 2629512488040000.0],
   inputs: ["GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE", "GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_TREATY"],
   computeExpr: "(GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_BASELINE - GLOBAL_WAR_COST_LIFETIME_CUMULATIVE_TREATY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8711,7 +8711,7 @@ export const PEACE_DIVIDEND_LOST_ECONOMIC_GROWTH: Parameter = {
   confidence: "high",
   formula: "LOST_ECONOMIC_GROWTH × 1%",
   latex: "\\begin{gathered}\nSavings_{growth} \\\\\n= Loss_{growth,mil} \\times Reduce_{treaty} \\\\\n= \\$2.72T \\times 1\\% \\\\\n= \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [20140454797.55504, 35661854073.05874],
+  confidenceInterval: [20140454797.6, 35661854073.1],
   inputs: ["GLOBAL_ANNUAL_LOST_ECONOMIC_GROWTH_MILITARY_SPENDING", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_LOST_ECONOMIC_GROWTH_MILITARY_SPENDING * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8729,7 +8729,7 @@ export const PEACE_DIVIDEND_LOST_HUMAN_CAPITAL: Parameter = {
   confidence: "high",
   formula: "LOST_HUMAN_CAPITAL × 1%",
   latex: "\\begin{gathered}\nSavings_{capital} \\\\\n= Loss_{capital,conflict} \\times Reduce_{treaty} \\\\\n= \\$300B \\times 1\\% \\\\\n= \\$3B\n\\end{gathered}",
-  confidenceInterval: [2209156561.053833, 3958014276.211635],
+  confidenceInterval: [2209156561.05, 3958014276.21],
   inputs: ["GLOBAL_ANNUAL_LOST_HUMAN_CAPITAL_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_LOST_HUMAN_CAPITAL_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8747,7 +8747,7 @@ export const PEACE_DIVIDEND_PTSD: Parameter = {
   confidence: "high",
   formula: "PTSD_COSTS × 1%",
   latex: "\\begin{gathered}\nSavings_{PTSD} \\\\\n= Cost_{psych} \\times Reduce_{treaty} \\\\\n= \\$232B \\times 1\\% \\\\\n= \\$2.32B\n\\end{gathered}",
-  confidenceInterval: [1698970435.9272082, 3049668241.877552],
+  confidenceInterval: [1698970435.93, 3049668241.88],
   inputs: ["GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_PSYCHOLOGICAL_IMPACT_COSTS_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8765,7 +8765,7 @@ export const PEACE_DIVIDEND_REFUGEE_SUPPORT: Parameter = {
   confidence: "high",
   formula: "REFUGEE_SUPPORT × 1%",
   latex: "\\begin{gathered}\nSavings_{refugee} \\\\\n= Cost_{refugee} \\times Reduce_{treaty} \\\\\n= \\$150B \\times 1\\% \\\\\n= \\$1.5B\n\\end{gathered}",
-  confidenceInterval: [1103689474.0913777, 1970717679.0362873],
+  confidenceInterval: [1103689474.09, 1970717679.04],
   inputs: ["GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_REFUGEE_SUPPORT_COSTS * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8773,7 +8773,7 @@ export const PEACE_DIVIDEND_REFUGEE_SUPPORT: Parameter = {
 };
 
 export const PEACE_DIVIDEND_SHARE_OF_80YR_BASELINE_WAR_COST: Parameter = {
-  value: 0.7206490309356401,
+  value: 0.720649030936,
   parameterName: "PEACE_DIVIDEND_SHARE_OF_80YR_BASELINE_WAR_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-peace_dividend_share_of_80yr_baseline_war_cost",
   unit: "percent",
@@ -8801,7 +8801,7 @@ export const PEACE_DIVIDEND_TRADE_DISRUPTION: Parameter = {
   confidence: "high",
   formula: "TRADE_DISRUPTION × 1%",
   latex: "\\begin{gathered}\nSavings_{trade} = Disruption_{trade} \\times Reduce_{treaty} = \\$616B \\times 1\\% = \\$6.16B\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\end{gathered}",
-  confidenceInterval: [5260753241.048029, 7157988862.962133],
+  confidenceInterval: [5260753241.05, 7157988862.96],
   inputs: ["GLOBAL_ANNUAL_TRADE_DISRUPTION_CONFLICT", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_TRADE_DISRUPTION_CONFLICT * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8819,7 +8819,7 @@ export const PEACE_DIVIDEND_VETERAN_HEALTHCARE: Parameter = {
   confidence: "high",
   formula: "VETERAN_HEALTHCARE × 1%",
   latex: "\\begin{gathered}\nSavings_{vet} \\\\\n= Cost_{vet} \\times Reduce_{treaty} \\\\\n= \\$200B \\times 1\\% \\\\\n= \\$2B\n\\end{gathered}",
-  confidenceInterval: [1471820240.0061655, 2660349490.265329],
+  confidenceInterval: [1471820240.01, 2660349490.27],
   inputs: ["GLOBAL_ANNUAL_VETERAN_HEALTHCARE_COSTS", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_VETERAN_HEALTHCARE_COSTS * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8827,7 +8827,7 @@ export const PEACE_DIVIDEND_VETERAN_HEALTHCARE: Parameter = {
 };
 
 export const PEACE_TRAJECTORY_TOTAL_DIFFERENTIAL_20YR: Parameter = {
-  value: 16329436000000.002,
+  value: 16329436000000.0,
   parameterName: "PEACE_TRAJECTORY_TOTAL_DIFFERENTIAL_20YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-peace_trajectory_total_differential_20yr",
   unit: "USD",
@@ -8837,7 +8837,7 @@ export const PEACE_TRAJECTORY_TOTAL_DIFFERENTIAL_20YR: Parameter = {
   confidence: "high",
   formula: "TREATY_CUMULATIVE_20YR_WITH_RATCHET + WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR",
   latex: "\\begin{gathered}\nV_{peace,20yr} = Fund_{20yr,ratchet} + Savings_{war,20yr} = \\$3.16T + \\$13.2T = \\$16.3T\n\\\\[0.5em]\n\\text{where } Fund_{20yr,ratchet} = \\text{GLOBAL\\_MILITARY} \\times (0.01 \\times 3 + \\min\\left(0.02, s_{ratchet}\\right) \\times 4 + \\min\\left(0.05, s_{ratchet}\\right) \\times 5 + s_{ratchet} \\times 8)\n\\\\[0.5em]\n\\text{where } Savings_{war,20yr} = Cost_{war,total} \\times (0.01 \\times 3 + \\min\\left(0.02, s_{ratchet}\\right) \\times 4 + \\min\\left(0.05, s_{ratchet}\\right) \\times 5 + s_{ratchet} \\times 8)\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [6054249616893.466, 24936412680343.61],
+  confidenceInterval: [6054249616890.0, 24936412680300.0],
   inputs: ["TREATY_CUMULATIVE_20YR_WITH_RATCHET", "WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR"],
   computeExpr: "(TREATY_CUMULATIVE_20YR_WITH_RATCHET + WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -8845,7 +8845,7 @@ export const PEACE_TRAJECTORY_TOTAL_DIFFERENTIAL_20YR: Parameter = {
 };
 
 export const PENTAGON_UNACCOUNTED_CLINICAL_TRIAL_YEARS: Parameter = {
-  value: 546.6666666666666,
+  value: 546.666666667,
   parameterName: "PENTAGON_UNACCOUNTED_CLINICAL_TRIAL_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-pentagon_unaccounted_clinical_trial_years",
   unit: "years",
@@ -8855,7 +8855,7 @@ export const PENTAGON_UNACCOUNTED_CLINICAL_TRIAL_YEARS: Parameter = {
   confidence: "high",
   formula: "PENTAGON_UNACCOUNTED_FUNDS / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL",
   latex: "\\begin{gathered}\nYears_{pentagon,trials} \\\\\n= \\frac{Funds_{pentagon,unaccounted}}{Spending_{trials,gov}} \\\\\n= \\frac{\\$2.46T}{\\$4.5B} \\\\\n= 547\n\\end{gathered}",
-  confidenceInterval: [410.0, 803.149796367201],
+  confidenceInterval: [410.0, 803.149796367],
   inputs: ["PENTAGON_UNACCOUNTED_FUNDS", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(PENTAGON_UNACCOUNTED_FUNDS / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html",
@@ -8890,7 +8890,7 @@ export const PERSONAL_LIFETIME_WEALTH: Parameter = {
   confidence: "low",
   formula: "LIFE_EXTENSION_YEARS × STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nWealth_{lifetime} \\\\\n= T_{extend} \\times Value_{QALY} \\\\\n= 20 \\times \\$150K \\\\\n= \\$3M\n\\end{gathered}",
-  confidenceInterval: [378265.14813703, 9349408.132804237],
+  confidenceInterval: [378265.148137, 9349408.1328],
   inputs: ["LIFE_EXTENSION_YEARS", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(LIFE_EXTENSION_YEARS * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -8898,7 +8898,7 @@ export const PERSONAL_LIFETIME_WEALTH: Parameter = {
 };
 
 export const PER_CAPITA_CHRONIC_DISEASE_COST: Parameter = {
-  value: 12238.805970149253,
+  value: 12238.8059701,
   parameterName: "PER_CAPITA_CHRONIC_DISEASE_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-per_capita_chronic_disease_cost",
   unit: "USD/person/year",
@@ -8908,7 +8908,7 @@ export const PER_CAPITA_CHRONIC_DISEASE_COST: Parameter = {
   confidence: "high",
   formula: "US_CHRONIC_DISEASE_SPENDING ÷ US_POPULATION",
   latex: "\\begin{gathered}\nCost_{chronic,pc} \\\\\n= \\frac{Spending_{chronic,US}}{Pop_{US}} \\\\\n= \\frac{\\$4.1T}{335M} \\\\\n= \\$12.2K\n\\end{gathered}",
-  confidenceInterval: [10225.672392829836, 14456.389227876789],
+  confidenceInterval: [10225.6723928, 14456.3892279],
   inputs: ["US_CHRONIC_DISEASE_SPENDING_ANNUAL", "US_POPULATION_2024"],
   computeExpr: "(US_CHRONIC_DISEASE_SPENDING_ANNUAL / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
@@ -8916,7 +8916,7 @@ export const PER_CAPITA_CHRONIC_DISEASE_COST: Parameter = {
 };
 
 export const PER_CAPITA_MENTAL_HEALTH_COST: Parameter = {
-  value: 1044.7761194029852,
+  value: 1044.7761194,
   parameterName: "PER_CAPITA_MENTAL_HEALTH_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-per_capita_mental_health_cost",
   unit: "USD/person/year",
@@ -8926,7 +8926,7 @@ export const PER_CAPITA_MENTAL_HEALTH_COST: Parameter = {
   confidence: "high",
   formula: "US_MENTAL_HEALTH_COST ÷ US_POPULATION",
   latex: "\\begin{gathered}\nCost_{mental,pc} \\\\\n= \\frac{Cost_{mental,US}}{Pop_{US}} \\\\\n= \\frac{\\$350B}{335M} \\\\\n= \\$1.04K\n\\end{gathered}",
-  confidenceInterval: [821.4545362787826, 1290.8790088855662],
+  confidenceInterval: [821.454536279, 1290.87900889],
   inputs: ["US_MENTAL_HEALTH_COST_ANNUAL", "US_POPULATION_2024"],
   computeExpr: "(US_MENTAL_HEALTH_COST_ANNUAL / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
@@ -8934,7 +8934,7 @@ export const PER_CAPITA_MENTAL_HEALTH_COST: Parameter = {
 };
 
 export const PHARMA_LIVES_SAVED_ANNUAL: Parameter = {
-  value: 12391666.666666666,
+  value: 12391666.6667,
   parameterName: "PHARMA_LIVES_SAVED_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-pharma_lives_saved_annual",
   unit: "deaths",
@@ -8946,7 +8946,7 @@ export const PHARMA_LIVES_SAVED_ANNUAL: Parameter = {
   confidence: "low",
   formula: "PHARMA_LIFE_YEARS_SAVED_ANNUAL ÷ AVG_LIFE_EXTENSION_PER_BENEFICIARY",
   latex: "\\begin{gathered}\nLives_{saved,annual} \\\\\n= \\frac{LY_{saved,annual}}{T_{ext}} \\\\\n= \\frac{149M}{12} \\\\\n= 12.4M\n\\end{gathered}",
-  confidenceInterval: [7724804.622624174, 18601068.29172305],
+  confidenceInterval: [7724804.62262, 18601068.2917],
   inputs: ["PHARMA_LIFE_YEARS_SAVED_ANNUAL", "AVG_LIFE_EXTENSION_PER_BENEFICIARY"],
   computeExpr: "(PHARMA_LIFE_YEARS_SAVED_ANNUAL / AVG_LIFE_EXTENSION_PER_BENEFICIARY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -8954,7 +8954,7 @@ export const PHARMA_LIVES_SAVED_ANNUAL: Parameter = {
 };
 
 export const PHARMA_VS_DEFENSE_NET_MARGIN_RATIO: Parameter = {
-  value: 3.7154308617234473,
+  value: 3.71543086172,
   parameterName: "PHARMA_VS_DEFENSE_NET_MARGIN_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-pharma_vs_defense_net_margin_ratio",
   unit: "x",
@@ -8971,7 +8971,7 @@ export const PHARMA_VS_DEFENSE_NET_MARGIN_RATIO: Parameter = {
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
-  value: 0.518396307387133,
+  value: 0.518396307387,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_efficiency_score",
   unit: "percent",
@@ -8983,7 +8983,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED / POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE",
   latex: "\\begin{gathered}\nE_{gov} = \\frac{W_{real}}{W_{max}} = \\frac{\\$109T}{\\$210T} = 51.8\\%\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } W_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [0.4026586240692923, 0.6457660335743484],
+  confidenceInterval: [0.402658624069, 0.645766033574],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED", "POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE"],
   computeExpr: "(POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED / POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -8991,7 +8991,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_EFFICIENCY_SCORE: Parameter = {
 };
 
 export const POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_PCT_GDP: Parameter = {
-  value: 0.8782608695652174,
+  value: 0.878260869565,
   parameterName: "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_PCT_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_opportunity_cost_pct_gdp",
   unit: "percent",
@@ -9003,7 +9003,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_PCT_GDP: Parameter = 
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL / GLOBAL_GDP_2025",
   latex: "\\begin{gathered}\nO_{\\%GDP} = \\frac{O_{total}}{GDP_{global}} = \\frac{\\$101T}{\\$115T} = 87.8\\%\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [0.5184658913090529, 1.402645957612717],
+  confidenceInterval: [0.518465891309, 1.40264595761],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL", "GLOBAL_GDP_2025"],
   computeExpr: "(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL / GLOBAL_GDP_2025)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/optimocracy.html",
@@ -9023,7 +9023,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL: Parameter = {
   confidence: "low",
   formula: "HEALTH + SCIENCE + LEAD + MIGRATION",
   latex: "\\begin{gathered}\nO_{total} \\\\\n= O_{health} + O_{science} + O_{lead} + O_{migration} \\\\\n= \\$34T + \\$4T + \\$6T + \\$57T \\\\\n= \\$101T\n\\end{gathered}",
-  confidenceInterval: [59623577500541.08, 161304285125462.47],
+  confidenceInterval: [59623577500500.0, 161304285125000.0],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_HEALTH_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST"],
   computeExpr: "(((POLITICAL_DYSFUNCTION_GLOBAL_HEALTH_OPPORTUNITY_COST + POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html",
@@ -9041,7 +9041,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED: Parameter =
   confidence: "medium",
   formula: "GLOBAL_GDP_2025 - POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL",
   latex: "\\begin{gathered}\nW_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [108072534372270.11, 109331296808188.38],
+  confidenceInterval: [108072534372000.0, 109331296808000.0],
   inputs: ["GLOBAL_GDP_2025", "POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL"],
   computeExpr: "(GLOBAL_GDP_2025 - POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -9059,7 +9059,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_THEORETICAL_MAX_WELFARE: Parameter = {
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED + POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL",
   latex: "\\begin{gathered}\nW_{max} = W_{real} + O_{total} = \\$109T + \\$101T = \\$210T\n\\\\[0.5em]\n\\text{where } W_{real} = GDP_{global} - W_{waste} = \\$115T - \\$6.28T = \\$109T\n\\\\[0.5em]\n\\text{where } W_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [168454189795958.1, 270078068606313.3],
+  confidenceInterval: [168454189796000.0, 270078068606000.0],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED", "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL"],
   computeExpr: "(POLITICAL_DYSFUNCTION_GLOBAL_REALIZED_WELFARE_ADJUSTED + POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -9077,7 +9077,7 @@ export const POLITICAL_DYSFUNCTION_GLOBAL_WASTE_TOTAL: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL + POLITICAL_DYSFUNCTION_GLOBAL_FOSSIL_FUEL_SUBSIDIES",
   latex: "\\begin{gathered}\nW_{waste} = W_{total,US} + W_{ff,global} = \\$4.98T + \\$1.3T = \\$6.28T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [5668703191811.627, 6927465627729.877],
+  confidenceInterval: [5668703191810.0, 6927465627730.0],
   inputs: ["US_GOV_WASTE_TOTAL", "POLITICAL_DYSFUNCTION_GLOBAL_FOSSIL_FUEL_SUBSIDIES"],
   computeExpr: "(US_GOV_WASTE_TOTAL + POLITICAL_DYSFUNCTION_GLOBAL_FOSSIL_FUEL_SUBSIDIES)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -9095,7 +9095,7 @@ export const POLITICAL_DYSFUNCTION_TAX_PER_HOUSEHOLD_OF_FOUR_ANNUAL: Parameter =
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL × 4",
   latex: "\\begin{gathered}\nT_{pd,hh4} = T_{pd,pc} \\times 4 = \\$12.6K \\times 4 = \\$50.5K\n\\\\[0.5em]\n\\text{where } T_{pd,pc} = \\frac{O_{total}}{Pop_{global}} = \\frac{\\$101T}{8B} = \\$12.6K\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [29798.22425910399, 80307.68711111347],
+  confidenceInterval: [29798.2242591, 80307.6871111],
   inputs: ["POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL"],
   computeExpr: "(POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL * 4.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -9113,7 +9113,7 @@ export const POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL: Parameter = {
   confidence: "low",
   formula: "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL ÷ GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nT_{pd,pc} = \\frac{O_{total}}{Pop_{global}} = \\frac{\\$101T}{8B} = \\$12.6K\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [7449.556064775998, 20076.921777778367],
+  confidenceInterval: [7449.55606478, 20076.9217778],
   inputs: ["POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL", "GLOBAL_POPULATION_2024"],
   computeExpr: "(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9121,7 +9121,7 @@ export const POLITICAL_DYSFUNCTION_TAX_PER_PERSON_ANNUAL: Parameter = {
 };
 
 export const POST_WW2_MILITARY_CUT_PCT: Parameter = {
-  value: 0.876056338028169,
+  value: 0.876056338028,
   parameterName: "POST_WW2_MILITARY_CUT_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-post_ww2_military_cut_pct",
   unit: "percent",
@@ -9150,7 +9150,7 @@ export const PRAGMATIC_TRIAL_COST_PER_QALY: Parameter = {
   confidence: "medium",
   formula: "TRIAL_COST ÷ TOTAL_QALYS_GENERATED",
   latex: "\\begin{gathered}\nCost_{pragmatic,QALY} = \\frac{Cost_{RECOVERY}}{QALY_{RECOVERY}} = \\frac{\\$20M}{5M} = \\$4\n\\\\[0.5em]\n\\text{where } QALY_{RECOVERY} = Lives_{RECOVERY} \\times QALY_{COVID} = 1M \\times 5 = 5M\n\\end{gathered}",
-  confidenceInterval: [1.9107891883438548, 9.80089352888417],
+  confidenceInterval: [1.91078918834, 9.80089352888],
   inputs: ["RECOVERY_TRIAL_TOTAL_COST", "RECOVERY_TRIAL_TOTAL_QALYS_GENERATED"],
   computeExpr: "(RECOVERY_TRIAL_TOTAL_COST / RECOVERY_TRIAL_TOTAL_QALYS_GENERATED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9158,7 +9158,7 @@ export const PRAGMATIC_TRIAL_COST_PER_QALY: Parameter = {
 };
 
 export const PRICE_OF_APOCALYPSE: Parameter = {
-  value: 751572583.9392207,
+  value: 751572583.939,
   parameterName: "PRICE_OF_APOCALYPSE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-price_of_apocalypse",
   unit: "USD",
@@ -9168,7 +9168,7 @@ export const PRICE_OF_APOCALYPSE: Parameter = {
   confidence: "medium",
   formula: "GLOBAL_NUCLEAR_WEAPONS_SPENDING / NUCLEAR_WINTER_OVERKILL_FACTOR",
   latex: "\\begin{gathered}\nP_{apocalypse} = \\frac{S_{nuke}}{Overkill_{winter}} = \\frac{\\$92B}{122} = \\$752M\n\\\\[0.5em]\n\\text{where } Overkill_{winter} = \\frac{W_{global}}{W_{winter}} = \\frac{12{,}200}{100} = 122\n\\end{gathered}",
-  confidenceInterval: [464180737.07764626, 2161047368.1100683],
+  confidenceInterval: [464180737.078, 2161047368.11],
   inputs: ["GLOBAL_NUCLEAR_WEAPONS_SPENDING", "NUCLEAR_WINTER_OVERKILL_FACTOR"],
   computeExpr: "(GLOBAL_NUCLEAR_WEAPONS_SPENDING / NUCLEAR_WINTER_OVERKILL_FACTOR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/extinction-surplus.html",
@@ -9176,7 +9176,7 @@ export const PRICE_OF_APOCALYPSE: Parameter = {
 };
 
 export const PRIZE_POOL_ANNUAL_RETURN: Parameter = {
-  value: 0.15800000000000003,
+  value: 0.158,
   parameterName: "PRIZE_POOL_ANNUAL_RETURN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_annual_return",
   unit: "percent",
@@ -9186,7 +9186,7 @@ export const PRIZE_POOL_ANNUAL_RETURN: Parameter = {
   confidence: "high",
   formula: "VENTURE_GROSS_RETURN + SCALE_COMPRESSION_FACTOR + WISHOCRATIC_CROWD_ALPHA + HOME_BIAS_ALPHA",
   latex: "\\begin{gathered}\nr_{pool} \\\\\n= r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} \\\\\n+ \\alpha_{home} \\\\\n= 17\\% + -2.5\\% + 0.5\\% + 0.8\\% \\\\\n= 15.8\\%\n\\end{gathered}",
-  confidenceInterval: [0.11842667752828524, 0.19839949738372434],
+  confidenceInterval: [0.118426677528, 0.198399497384],
   inputs: ["VENTURE_GROSS_RETURN", "SCALE_COMPRESSION_FACTOR", "WISHOCRATIC_CROWD_ALPHA", "HOME_BIAS_ALPHA"],
   computeExpr: "(((VENTURE_GROSS_RETURN + SCALE_COMPRESSION_FACTOR) + WISHOCRATIC_CROWD_ALPHA) + HOME_BIAS_ALPHA)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9194,7 +9194,7 @@ export const PRIZE_POOL_ANNUAL_RETURN: Parameter = {
 };
 
 export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
-  value: 9.028765862436396,
+  value: 9.02876586244,
   parameterName: "PRIZE_POOL_HORIZON_MULTIPLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_horizon_multiple",
   unit: "x",
@@ -9204,7 +9204,7 @@ export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
   confidence: "high",
   formula: "(1 + PRIZE_POOL_ANNUAL_RETURN) ^ (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR)",
   latex: "\\begin{gathered}\nM_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [5.359357951428758, 15.101645567208687],
+  confidenceInterval: [5.35935795143, 15.1016455672],
   inputs: ["PRIZE_POOL_ANNUAL_RETURN", "DESTRUCTIVE_ECONOMY_50PCT_YEAR", "DESTRUCTIVE_ECONOMY_BASE_YEAR"],
   computeExpr: "Math.pow((1.0 + PRIZE_POOL_ANNUAL_RETURN), (DESTRUCTIVE_ECONOMY_50PCT_YEAR - DESTRUCTIVE_ECONOMY_BASE_YEAR))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9212,7 +9212,7 @@ export const PRIZE_POOL_HORIZON_MULTIPLE: Parameter = {
 };
 
 export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
-  value: 2281981017443.791,
+  value: 2281981017440.0,
   parameterName: "PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_retirement_equivalent_principal",
   unit: "USD",
@@ -9222,7 +9222,7 @@ export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
   confidence: "high",
   formula: "GLOBAL_REGISTERED_VOTERS × RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET / PRIZE_POOL_HORIZON_MULTIPLE",
   latex: "\\begin{gathered}\nP_{retire-eq} = N_{voters,global} \\times \\frac{V_{claim,target}}{M_{pool}}\n\\\\[0.5em]\n\\text{where } V_{claim,target} = V_{2claims,target} \\times 0.5 = \\$9.98K \\times 0.5 = \\$4.99K\n\\\\[0.5em]\n\\text{where } V_{2claims,target} = S_{annual,pc} \\times M_{retire} = \\$3.88K \\times 2.57 = \\$9.98K\n\\\\[0.5em]\n\\text{where } S_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\\\[0.5em]\n\\text{where } M_{retire} = (1 + r_{retire})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\end{gathered}",
-  confidenceInterval: [1318350497195.7002, 3960929257377.449],
+  confidenceInterval: [1318350497200.0, 3960929257380.0],
   inputs: ["GLOBAL_REGISTERED_VOTERS", "RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET", "PRIZE_POOL_HORIZON_MULTIPLE"],
   computeExpr: "((GLOBAL_REGISTERED_VOTERS * RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET) / PRIZE_POOL_HORIZON_MULTIPLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9230,7 +9230,7 @@ export const PRIZE_POOL_RETIREMENT_EQUIVALENT_PRINCIPAL: Parameter = {
 };
 
 export const PRIZE_POOL_SIZE: Parameter = {
-  value: 27537735880431.008,
+  value: 27537735880400.0,
   parameterName: "PRIZE_POOL_SIZE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_pool_size",
   unit: "USD",
@@ -9240,7 +9240,7 @@ export const PRIZE_POOL_SIZE: Parameter = {
   confidence: "high",
   formula: "GLOBAL_INVESTABLE_ASSETS × PRIZE_POOL_PARTICIPATION_RATE × PRIZE_POOL_HORIZON_MULTIPLE",
   latex: "\\begin{gathered}\nPool = Assets_{invest} \\times R_{pool} \\times M_{pool} = \\$305T \\times 1\\% \\times 9.03 = \\$27.5T\n\\\\[0.5em]\n\\text{where } M_{pool} = (1 + r_{pool})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } r_{pool} = r_{VC,gross} + \\Delta r_{scale} + \\alpha_{crowd} + \\alpha_{home} = 17\\% + -2.5\\% + 0.5\\% + 0.8\\% = 15.8\\%\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [2190246515828.3643, 109414079805559.45],
+  confidenceInterval: [2190246515830.0, 109414079806000.0],
   inputs: ["GLOBAL_INVESTABLE_ASSETS", "PRIZE_POOL_PARTICIPATION_RATE", "PRIZE_POOL_HORIZON_MULTIPLE"],
   computeExpr: "((GLOBAL_INVESTABLE_ASSETS * PRIZE_POOL_PARTICIPATION_RATE) * PRIZE_POOL_HORIZON_MULTIPLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -9258,7 +9258,7 @@ export const PRIZE_TARGET_HALE_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_PROJECTED_HALE_YEAR_15",
   latex: "\\begin{gathered}\nHALE^{*}_{15} = HALE_{treaty,15} = 79.4 = 79.4\n\\\\[0.5em]\n\\text{where } HALE_{treaty,15} = HALE_{0} + \\Delta HALE_{treaty,15} = 63.3 + 16.1 = 79.4\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [70.24020270953231, 90.73499843052598],
+  confidenceInterval: [70.2402027095, 90.7349984305],
   inputs: ["TREATY_PROJECTED_HALE_YEAR_15"],
   computeExpr: "TREATY_PROJECTED_HALE_YEAR_15",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html",
@@ -9266,7 +9266,7 @@ export const PRIZE_TARGET_HALE_YEAR_15: Parameter = {
 };
 
 export const PRIZE_TARGET_MEDIAN_INCOME_YEAR_15: Parameter = {
-  value: 4381.418260557408,
+  value: 4381.41826056,
   parameterName: "PRIZE_TARGET_MEDIAN_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-prize_target_median_income_year_15",
   unit: "USD",
@@ -9276,7 +9276,7 @@ export const PRIZE_TARGET_MEDIAN_INCOME_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15",
   latex: "\\begin{gathered}\n\\tilde{m}^{*}_{15} = \\tilde{m}_{treaty,15} = \\$4.38K = \\$4.38K\n\\\\[0.5em]\n\\text{where } \\tilde{m}_{treaty,15} = \\bar{y}_{treaty,15} \\times (1 - s_{mil} \\times (1 - s_{ratchet})) \\times \\rho_{med} \\times (1 - e_{med})^{15} \\times (1 + r_{relief} \\times f_{cure,15,treaty}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,15} = \\frac{GDP_{treaty,15}}{Pop_{2040}} = \\frac{\\$238T}{8.9B} = \\$26.7K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,15} + g_{peace,treaty,15} + g_{cyber,treaty,15} + g_{health,treaty,15})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [3291.811145265844, 5410.7653011627235],
+  confidenceInterval: [3291.81114527, 5410.76530116],
   inputs: ["TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15"],
   computeExpr: "TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html",
@@ -9296,7 +9296,7 @@ export const RECOVERY_TRIAL_COST_REDUCTION_FACTOR: Parameter = {
   confidence: "high",
   formula: "TRADITIONAL_PHASE3_COST / RECOVERY_COST",
   latex: "\\begin{gathered}\nk_{RECOVERY} \\\\\n= \\frac{Cost_{P3,pt}}{Cost_{RECOVERY,pt}} \\\\\n= \\frac{\\$41K}{\\$500} \\\\\n= 82\n\\end{gathered}",
-  confidenceInterval: [21.381874403948053, 195.12679984167949],
+  confidenceInterval: [21.3818744039, 195.126799842],
   inputs: ["TRADITIONAL_PHASE3_COST_PER_PATIENT", "RECOVERY_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(TRADITIONAL_PHASE3_COST_PER_PATIENT / RECOVERY_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9314,7 +9314,7 @@ export const RECOVERY_TRIAL_TOTAL_QALYS_GENERATED: Parameter = {
   confidence: "medium",
   formula: "LIVES_SAVED × QALYS_PER_DEATH_AVERTED",
   latex: "\\begin{gathered}\nQALY_{RECOVERY} \\\\\n= Lives_{RECOVERY} \\times QALY_{COVID} \\\\\n= 1M \\times 5 \\\\\n= 5M\n\\end{gathered}",
-  confidenceInterval: [2096831.7775222813, 10051840.469377978],
+  confidenceInterval: [2096831.77752, 10051840.4694],
   inputs: ["RECOVERY_TRIAL_GLOBAL_LIVES_SAVED", "QALYS_PER_COVID_DEATH_AVERTED"],
   computeExpr: "(RECOVERY_TRIAL_GLOBAL_LIVES_SAVED * QALYS_PER_COVID_DEATH_AVERTED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9322,7 +9322,7 @@ export const RECOVERY_TRIAL_TOTAL_QALYS_GENERATED: Parameter = {
 };
 
 export const RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT: Parameter = {
-  value: 9981.95790672404,
+  value: 9981.95790672,
   parameterName: "RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-retirement_equivalent_2_claims_target_payout",
   unit: "USD",
@@ -9332,7 +9332,7 @@ export const RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_SAVINGS_PER_CAPITA × CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE",
   latex: "\\begin{gathered}\nV_{2claims,target} = S_{annual,pc} \\times M_{retire} = \\$3.88K \\times 2.57 = \\$9.98K\n\\\\[0.5em]\n\\text{where } S_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\\\[0.5em]\n\\text{where } M_{retire} = (1 + r_{retire})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [8198.052848143107, 12087.626781614854],
+  confidenceInterval: [8198.05284814, 12087.6267816],
   inputs: ["GLOBAL_ANNUAL_SAVINGS_PER_CAPITA", "CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE"],
   computeExpr: "(GLOBAL_ANNUAL_SAVINGS_PER_CAPITA * CONVENTIONAL_RETIREMENT_HORIZON_MULTIPLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9340,7 +9340,7 @@ export const RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT: Parameter = {
 };
 
 export const RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET: Parameter = {
-  value: 4990.97895336202,
+  value: 4990.97895336,
   parameterName: "RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-retirement_equivalent_claim_value_target",
   unit: "USD",
@@ -9350,7 +9350,7 @@ export const RETIREMENT_EQUIVALENT_CLAIM_VALUE_TARGET: Parameter = {
   confidence: "high",
   formula: "RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT / 2",
   latex: "\\begin{gathered}\nV_{claim,target} = V_{2claims,target} \\times 0.5 = \\$9.98K \\times 0.5 = \\$4.99K\n\\\\[0.5em]\n\\text{where } V_{2claims,target} = S_{annual,pc} \\times M_{retire} = \\$3.88K \\times 2.57 = \\$9.98K\n\\\\[0.5em]\n\\text{where } S_{annual,pc} = \\frac{S_{annual}}{Pop_{global}} = \\frac{\\$31.1T}{8B} = \\$3.88K\n\\\\[0.5em]\n\\text{where } S_{annual} = s_{global} \\times GDP_{global} = 27\\% \\times \\$115T = \\$31.1T\n\\\\[0.5em]\n\\text{where } M_{retire} = (1 + r_{retire})^{Y_{50\\%} - Y_0}\n\\\\[0.5em]\n\\text{where } Y_{50\\%} = Y_0 + \\frac{\\ln\\left(0.50 / \\text{DESTRUCTIVE\\_PCT\\_GDP}\\right)}{\\ln\\left(1 + \\text{DESTRUCTIVE\\_GROWTH} - \\text{GDP\\_GROWTH}\\right)}\n\\\\[0.5em]\n\\text{where } r_{destruct:GDP} = \\frac{Cost_{destruct}}{GDP_{global}} = \\frac{\\$13.2T}{\\$115T} = 11.5\\%\n\\\\[0.5em]\n\\text{where } Cost_{destruct} = Spending_{mil} + Cost_{cyber} = \\$2.72T + \\$10.5T = \\$13.2T\n\\end{gathered}",
-  confidenceInterval: [4099.026424071553, 6043.813390807427],
+  confidenceInterval: [4099.02642407, 6043.81339081],
   inputs: ["RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT"],
   computeExpr: "(RETIREMENT_EQUIVALENT_2_CLAIMS_TARGET_PAYOUT / 2.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -9368,7 +9368,7 @@ export const SE_BOT_ANNUAL_BELIEF_CHANGES: Parameter = {
   confidence: "low",
   formula: "SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL * DAYS_PER_YEAR * SE_BOT_PEOPLE_PERSUADED_PER_POST",
   latex: "\\begin{gathered}\nN_{belief,annual} = V_{posts} \\times N_{persuaded} \\times 365 = 100{,}000 \\times 0.12 \\times 365 = 4.38M\n\\\\[0.5em]\n\\text{where } N_{persuaded} = P_{target} + M_{obs} \\times P_{obs} = 2\\% + 20 \\times 0.5\\% = 0.12\n\\end{gathered}",
-  confidenceInterval: [32253.548952863825, 14327087.330940574],
+  confidenceInterval: [32253.5489529, 14327087.3309],
   inputs: ["SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL", "SE_BOT_PEOPLE_PERSUADED_PER_POST"],
   computeExpr: "((SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL * 365.0) * SE_BOT_PEOPLE_PERSUADED_PER_POST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9386,7 +9386,7 @@ export const SE_BOT_ANNUAL_EV_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT",
   latex: "\\begin{gathered}\nEV_{bot} = \\alpha_{bot} \\times Benefit_{peace,soc} = 0.01\\% \\times \\$114B = \\$11.4M\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [104607.85206231728, 29193133.994841855],
+  confidenceInterval: [104607.852062, 29193133.9948],
   inputs: ["SE_BOT_OUTCOME_ATTRIBUTION_FRACTION", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT"],
   computeExpr: "(SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9404,7 +9404,7 @@ export const SE_BOT_ANNUAL_OPERATIONAL_COST_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_COST_PER_POST_USD * SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL * DAYS_PER_YEAR",
   latex: "\\begin{gathered}\nC_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\end{gathered}",
-  confidenceInterval: [8607.689949944706, 1153851.2949935254],
+  confidenceInterval: [8607.68994994, 1153851.29499],
   inputs: ["SE_BOT_COST_PER_POST_USD", "SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL"],
   computeExpr: "((SE_BOT_COST_PER_POST_USD * SE_BOT_RELEVANT_POSTS_PER_DAY_GLOBAL) * 365.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9412,7 +9412,7 @@ export const SE_BOT_ANNUAL_OPERATIONAL_COST_USD: Parameter = {
 };
 
 export const SE_BOT_AUM_1T_BREAKEVEN_ATTRIBUTION_FRACTION: Parameter = {
-  value: 0.0014783703586302842,
+  value: 0.00147837035863,
   parameterName: "SE_BOT_AUM_1T_BREAKEVEN_ATTRIBUTION_FRACTION",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_breakeven_attribution_fraction",
   unit: "rate",
@@ -9422,7 +9422,7 @@ export const SE_BOT_AUM_1T_BREAKEVEN_ATTRIBUTION_FRACTION: Parameter = {
   confidence: "low",
   formula: "SE_BOT_ANNUAL_OPERATIONAL_COST_USD * SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD / (PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION * SE_BOT_REFERENCE_AUM_USD)",
   latex: "\\begin{gathered}\n\\alpha_{breakeven,1T} = C_{annual} \\times M_{equity} / (Benefit_{peace,soc} \\times f_{equity} \\times AUM_{ref})\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [4.168467347087524e-05, 0.007229954273517135],
+  confidenceInterval: [4.16846734709e-05, 0.00722995427352],
   inputs: ["SE_BOT_ANNUAL_OPERATIONAL_COST_USD", "SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION", "SE_BOT_REFERENCE_AUM_USD"],
   computeExpr: "((SE_BOT_ANNUAL_OPERATIONAL_COST_USD * SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD) / ((PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION) * SE_BOT_REFERENCE_AUM_USD))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9430,7 +9430,7 @@ export const SE_BOT_AUM_1T_BREAKEVEN_ATTRIBUTION_FRACTION: Parameter = {
 };
 
 export const SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD: Parameter = {
-  value: 19751.478260869564,
+  value: 19751.4782609,
   parameterName: "SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_expected_portfolio_gain_usd",
   unit: "USD",
@@ -9440,7 +9440,7 @@ export const SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION / SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD * SE_BOT_REFERENCE_AUM_USD",
   latex: "\\begin{gathered}\nG_{1T} = \\alpha_{bot} \\times Benefit_{peace,soc} \\times \\frac{f_{equity}}{M_{equity}} \\times AUM_{ref}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [105.20520644581401, 47987.167973524454],
+  confidenceInterval: [105.205206446, 47987.1679735],
   inputs: ["SE_BOT_OUTCOME_ATTRIBUTION_FRACTION", "PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION", "SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD", "SE_BOT_REFERENCE_AUM_USD"],
   computeExpr: "((((SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT) * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION) / SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD) * SE_BOT_REFERENCE_AUM_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9448,7 +9448,7 @@ export const SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD: Parameter = {
 };
 
 export const SE_BOT_AUM_1T_PORTFOLIO_ROI: Parameter = {
-  value: 0.0676420488385944,
+  value: 0.0676420488386,
   parameterName: "SE_BOT_AUM_1T_PORTFOLIO_ROI",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_portfolio_roi",
   unit: "ratio",
@@ -9458,7 +9458,7 @@ export const SE_BOT_AUM_1T_PORTFOLIO_ROI: Parameter = {
   confidence: "low",
   formula: "SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD",
   latex: "\\begin{gathered}\nROI_{1T} = \\frac{G_{1T}}{C_{annual}} = \\frac{\\$19.8K}{\\$292K} = 0.0676\n\\\\[0.5em]\n\\text{where } G_{1T} = \\alpha_{bot} \\times Benefit_{peace,soc} \\times \\frac{f_{equity}}{M_{equity}} \\times AUM_{ref}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\end{gathered}",
-  confidenceInterval: [0.00029935558410074505, 1.0544623696569047],
+  confidenceInterval: [0.000299355584101, 1.05446236966],
   inputs: ["SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD", "SE_BOT_ANNUAL_OPERATIONAL_COST_USD"],
   computeExpr: "(SE_BOT_AUM_1T_EXPECTED_PORTFOLIO_GAIN_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9466,7 +9466,7 @@ export const SE_BOT_AUM_1T_PORTFOLIO_ROI: Parameter = {
 };
 
 export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_BREAKEVEN_ATTRIBUTION_FRACTION: Parameter = {
-  value: 1.662376237623762e-06,
+  value: 1.66237623762e-06,
   parameterName: "SE_BOT_AUM_1T_UNIVERSAL_OWNER_BREAKEVEN_ATTRIBUTION_FRACTION",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_universal_owner_breakeven_attribution_fraction",
   unit: "rate",
@@ -9476,7 +9476,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_BREAKEVEN_ATTRIBUTION_FRACTION: Param
   confidence: "low",
   formula: "SE_BOT_ANNUAL_OPERATIONAL_COST_USD * SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD / (POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION * SE_BOT_REFERENCE_AUM_USD)",
   latex: "\\begin{gathered}\n\\alpha_{breakeven,UO} = C_{annual} \\times M_{equity} / (O_{total} \\times f_{equity} \\times AUM_{ref})\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [4.695207746001827e-08, 8.773413188088003e-06],
+  confidenceInterval: [4.695207746e-08, 8.77341318809e-06],
   inputs: ["SE_BOT_ANNUAL_OPERATIONAL_COST_USD", "SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD", "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL", "SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION", "SE_BOT_REFERENCE_AUM_USD"],
   computeExpr: "((SE_BOT_ANNUAL_OPERATIONAL_COST_USD * SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD) / ((POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION) * SE_BOT_REFERENCE_AUM_USD))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9484,7 +9484,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_BREAKEVEN_ATTRIBUTION_FRACTION: Param
 };
 
 export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD: Parameter = {
-  value: 17565217.391304348,
+  value: 17565217.3913,
   parameterName: "SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_universal_owner_portfolio_gain_usd",
   unit: "USD",
@@ -9494,7 +9494,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION / SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD * SE_BOT_REFERENCE_AUM_USD",
   latex: "\\begin{gathered}\nG_{UO,1T} = \\alpha_{bot} \\times O_{total} \\times \\frac{f_{equity}}{M_{equity}} \\times AUM_{ref}\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [81721.23358126835, 40892141.567865916],
+  confidenceInterval: [81721.2335813, 40892141.5679],
   inputs: ["SE_BOT_OUTCOME_ATTRIBUTION_FRACTION", "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL", "SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION", "SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD", "SE_BOT_REFERENCE_AUM_USD"],
   computeExpr: "((((SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL) * SE_BOT_EQUITY_UPLIFT_CAPTURE_FRACTION) / SE_BOT_GLOBAL_EQUITY_MARKET_CAP_USD) * SE_BOT_REFERENCE_AUM_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9502,7 +9502,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD: Parameter = {
 };
 
 export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_ROI: Parameter = {
-  value: 60.15485407980941,
+  value: 60.1548540798,
   parameterName: "SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_ROI",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_aum_1t_universal_owner_portfolio_roi",
   unit: "ratio",
@@ -9512,7 +9512,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_ROI: Parameter = {
   confidence: "low",
   formula: "SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD",
   latex: "\\begin{gathered}\nROI_{UO,1T} = \\frac{G_{UO,1T}}{C_{annual}} = \\frac{\\$17.6M}{\\$292K} = 60.2\n\\\\[0.5em]\n\\text{where } G_{UO,1T} = \\alpha_{bot} \\times O_{total} \\times \\frac{f_{equity}}{M_{equity}} \\times AUM_{ref}\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\end{gathered}",
-  confidenceInterval: [0.25040911641189684, 934.4706476791326],
+  confidenceInterval: [0.250409116412, 934.470647679],
   inputs: ["SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD", "SE_BOT_ANNUAL_OPERATIONAL_COST_USD"],
   computeExpr: "(SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_GAIN_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9520,7 +9520,7 @@ export const SE_BOT_AUM_1T_UNIVERSAL_OWNER_PORTFOLIO_ROI: Parameter = {
 };
 
 export const SE_BOT_COST_PER_BELIEF_CHANGE_USD: Parameter = {
-  value: 0.06666666666666667,
+  value: 0.0666666666667,
   parameterName: "SE_BOT_COST_PER_BELIEF_CHANGE_USD",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_cost_per_belief_change_usd",
   unit: "USD/person",
@@ -9530,7 +9530,7 @@ export const SE_BOT_COST_PER_BELIEF_CHANGE_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_COST_PER_POST_USD / SE_BOT_PEOPLE_PERSUADED_PER_POST",
   latex: "\\begin{gathered}\nC_{belief} = \\frac{C_{post}}{N_{persuaded}} = \\frac{\\$0.008}{0.12} = \\$0.0667\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\\\[0.5em]\n\\text{where } N_{persuaded} = P_{target} + M_{obs} \\times P_{obs} = 2\\% + 20 \\times 0.5\\% = 0.12\n\\end{gathered}",
-  confidenceInterval: [0.011864479499159954, 1.4355239140362535],
+  confidenceInterval: [0.0118644794992, 1.43552391404],
   inputs: ["SE_BOT_COST_PER_POST_USD", "SE_BOT_PEOPLE_PERSUADED_PER_POST"],
   computeExpr: "(SE_BOT_COST_PER_POST_USD / SE_BOT_PEOPLE_PERSUADED_PER_POST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9548,7 +9548,7 @@ export const SE_BOT_COST_PER_POST_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_LLM_COST_PER_POST_USD + SE_BOT_PLATFORM_OVERHEAD_PER_POST_USD",
   latex: "\\begin{gathered}\nC_{post} \\\\\n= C_{llm} + C_{platform} \\\\\n= \\$0.006 + \\$0.002 \\\\\n= \\$0.008\n\\end{gathered}",
-  confidenceInterval: [0.0025, 0.022500017412398907],
+  confidenceInterval: [0.0025, 0.0225000174124],
   inputs: ["SE_BOT_LLM_COST_PER_POST_USD", "SE_BOT_PLATFORM_OVERHEAD_PER_POST_USD"],
   computeExpr: "(SE_BOT_LLM_COST_PER_POST_USD + SE_BOT_PLATFORM_OVERHEAD_PER_POST_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9556,7 +9556,7 @@ export const SE_BOT_COST_PER_POST_USD: Parameter = {
 };
 
 export const SE_BOT_PEOPLE_PERSUADED_PER_POST: Parameter = {
-  value: 0.12000000000000001,
+  value: 0.12,
   parameterName: "SE_BOT_PEOPLE_PERSUADED_PER_POST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_people_persuaded_per_post",
   unit: "people/post",
@@ -9566,7 +9566,7 @@ export const SE_BOT_PEOPLE_PERSUADED_PER_POST: Parameter = {
   confidence: "low",
   formula: "SE_BOT_TARGET_BELIEF_CHANGE_RATE + SE_BOT_OBSERVER_MULTIPLIER * SE_BOT_OBSERVER_BELIEF_CHANGE_RATE",
   latex: "\\begin{gathered}\nN_{persuaded} \\\\\n= P_{target} + M_{obs} \\times P_{obs} \\\\\n= 2\\% + 20 \\times 0.5\\% \\\\\n= 0.12\n\\end{gathered}",
-  confidenceInterval: [0.005541112320915957, 0.43676617953713204],
+  confidenceInterval: [0.00554111232092, 0.436766179537],
   inputs: ["SE_BOT_TARGET_BELIEF_CHANGE_RATE", "SE_BOT_OBSERVER_MULTIPLIER", "SE_BOT_OBSERVER_BELIEF_CHANGE_RATE"],
   computeExpr: "(SE_BOT_TARGET_BELIEF_CHANGE_RATE + (SE_BOT_OBSERVER_MULTIPLIER * SE_BOT_OBSERVER_BELIEF_CHANGE_RATE))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9584,7 +9584,7 @@ export const SE_BOT_POLITICAL_DYSFUNCTION_ANNUAL_EV_USD: Parameter = {
   confidence: "low",
   formula: "SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL",
   latex: "\\begin{gathered}\nEV_{SE,PDT} = \\alpha_{bot} \\times O_{total} = 0.01\\% \\times \\$101T = \\$10.1B\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\end{gathered}",
-  confidenceInterval: [71023295.30739173, 25366838518.093105],
+  confidenceInterval: [71023295.3074, 25366838518.1],
   inputs: ["SE_BOT_OUTCOME_ATTRIBUTION_FRACTION", "POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL"],
   computeExpr: "(SE_BOT_OUTCOME_ATTRIBUTION_FRACTION * POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9592,7 +9592,7 @@ export const SE_BOT_POLITICAL_DYSFUNCTION_ANNUAL_EV_USD: Parameter = {
 };
 
 export const SE_BOT_POLITICAL_DYSFUNCTION_ROI: Parameter = {
-  value: 34589.04109589041,
+  value: 34589.0410959,
   parameterName: "SE_BOT_POLITICAL_DYSFUNCTION_ROI",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_political_dysfunction_roi",
   unit: "ratio",
@@ -9602,7 +9602,7 @@ export const SE_BOT_POLITICAL_DYSFUNCTION_ROI: Parameter = {
   confidence: "low",
   formula: "SE_BOT_POLITICAL_DYSFUNCTION_ANNUAL_EV_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD",
   latex: "\\begin{gathered}\nROI_{SE,PDT} = \\frac{EV_{SE,PDT}}{C_{annual}} = \\frac{\\$10.1B}{\\$292K} = 34{,}600\n\\\\[0.5em]\n\\text{where } EV_{SE,PDT} = \\alpha_{bot} \\times O_{total} = 0.01\\% \\times \\$101T = \\$10.1B\n\\\\[0.5em]\n\\text{where } O_{total} = O_{health} + O_{science} + O_{lead} + O_{migration} = \\$34T + \\$4T + \\$6T + \\$57T = \\$101T\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\end{gathered}",
-  confidenceInterval: [170.40667741916042, 536455.2937486497],
+  confidenceInterval: [170.406677419, 536455.293749],
   inputs: ["SE_BOT_POLITICAL_DYSFUNCTION_ANNUAL_EV_USD", "SE_BOT_ANNUAL_OPERATIONAL_COST_USD"],
   computeExpr: "(SE_BOT_POLITICAL_DYSFUNCTION_ANNUAL_EV_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9610,7 +9610,7 @@ export const SE_BOT_POLITICAL_DYSFUNCTION_ROI: Parameter = {
 };
 
 export const SE_BOT_ROI: Parameter = {
-  value: 38.89417808219178,
+  value: 38.8941780822,
   parameterName: "SE_BOT_ROI",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-se_bot_roi",
   unit: "ratio",
@@ -9620,7 +9620,7 @@ export const SE_BOT_ROI: Parameter = {
   confidence: "low",
   formula: "SE_BOT_ANNUAL_EV_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD",
   latex: "\\begin{gathered}\nROI_{bot} = \\frac{EV_{bot}}{C_{annual}} = \\frac{\\$11.4M}{\\$292K} = 38.9\n\\\\[0.5em]\n\\text{where } EV_{bot} = \\alpha_{bot} \\times Benefit_{peace,soc} = 0.01\\% \\times \\$114B = \\$11.4M\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } C_{annual} = C_{post} \\times V_{posts} \\times 365 = \\$0.008 \\times 100{,}000 \\times 365 = \\$292K\n\\\\[0.5em]\n\\text{where } C_{post} = C_{llm} + C_{platform} = \\$0.006 + \\$0.002 = \\$0.008\n\\end{gathered}",
-  confidenceInterval: [0.2066191808195078, 606.6388342671968],
+  confidenceInterval: [0.20661918082, 606.638834267],
   inputs: ["SE_BOT_ANNUAL_EV_USD", "SE_BOT_ANNUAL_OPERATIONAL_COST_USD"],
   computeExpr: "(SE_BOT_ANNUAL_EV_USD / SE_BOT_ANNUAL_OPERATIONAL_COST_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/special-education.html",
@@ -9628,7 +9628,7 @@ export const SE_BOT_ROI: Parameter = {
 };
 
 export const SHARING_BREAKEVEN_ONE_IN_TREATY: Parameter = {
-  value: 8663019.579252128,
+  value: 8663019.57925,
   parameterName: "SHARING_BREAKEVEN_ONE_IN_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_breakeven_one_in_treaty",
   unit: "ratio",
@@ -9638,7 +9638,7 @@ export const SHARING_BREAKEVEN_ONE_IN_TREATY: Parameter = {
   confidence: "high",
   formula: "1 / SHARING_BREAKEVEN_PROBABILITY_TREATY",
   latex: "\\begin{gathered}\nN_{breakeven} = P_{breakeven} = 1\\text{ in }8.66M = 8.66M\n\\\\[0.5em]\n\\text{where } P_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$519K} = 1\\text{ in }8.66M\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [3713876.0568477893, 14376789.146331815],
+  confidenceInterval: [3713876.05685, 14376789.1463],
   inputs: ["SHARING_BREAKEVEN_PROBABILITY_TREATY"],
   computeExpr: "(1.0 / SHARING_BREAKEVEN_PROBABILITY_TREATY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -9646,7 +9646,7 @@ export const SHARING_BREAKEVEN_ONE_IN_TREATY: Parameter = {
 };
 
 export const SHARING_BREAKEVEN_PROBABILITY_TREATY: Parameter = {
-  value: 1.1543319172393344e-07,
+  value: 1.15433191724e-07,
   parameterName: "SHARING_BREAKEVEN_PROBABILITY_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_breakeven_probability_treaty",
   unit: "probability",
@@ -9656,7 +9656,7 @@ export const SHARING_BREAKEVEN_PROBABILITY_TREATY: Parameter = {
   confidence: "high",
   formula: "SHARING_OPPORTUNITY_COST / TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
   latex: "\\begin{gathered}\nP_{breakeven} = \\frac{C_{share}}{\\Delta Y_{lifetime,treaty}} = \\frac{\\$0.0599}{\\$519K} = 1\\text{ in }8.66M\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [6.955656022857783e-08, 2.692604927412795e-07],
+  confidenceInterval: [6.95565602286e-08, 2.69260492741e-07],
   inputs: ["SHARING_OPPORTUNITY_COST", "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA"],
   computeExpr: "(SHARING_OPPORTUNITY_COST / TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -9664,7 +9664,7 @@ export const SHARING_BREAKEVEN_PROBABILITY_TREATY: Parameter = {
 };
 
 export const SHARING_OPPORTUNITY_COST: Parameter = {
-  value: 0.059895833333333336,
+  value: 0.0598958333333,
   parameterName: "SHARING_OPPORTUNITY_COST",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_opportunity_cost",
   unit: "USD",
@@ -9674,7 +9674,7 @@ export const SHARING_OPPORTUNITY_COST: Parameter = {
   confidence: "high",
   formula: "(SHARING_TIME_MINUTES / 60) * GLOBAL_AVG_HOURLY_INCOME",
   latex: "\\begin{gathered}\nC_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [0.05867186854102727, 0.06117320776477703],
+  confidenceInterval: [0.058671868541, 0.0611732077648],
   inputs: ["SHARING_TIME_MINUTES", "GLOBAL_AVG_HOURLY_INCOME"],
   computeExpr: "((SHARING_TIME_MINUTES / 60.0) * GLOBAL_AVG_HOURLY_INCOME)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -9682,7 +9682,7 @@ export const SHARING_OPPORTUNITY_COST: Parameter = {
 };
 
 export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
-  value: 8663019.579252128,
+  value: 8663019.57925,
   parameterName: "SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-sharing_upside_downside_ratio_treaty",
   unit: "x",
@@ -9692,7 +9692,7 @@ export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA / SHARING_OPPORTUNITY_COST",
   latex: "\\begin{gathered}\nk_{upside:downside} = \\frac{\\Delta Y_{lifetime,treaty}}{C_{share}} = \\frac{\\$519K}{\\$0.0599} = 8.66M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } C_{share} = t_{share} \\times \\bar{w}_{hour} \\times 0.0167 = 0.5 \\times \\$7.19 \\times 0.0167 = \\$0.0599\n\\\\[0.5em]\n\\text{where } \\bar{w}_{hour} = \\frac{\\bar{y}_{0}}{H_{work}} = \\frac{\\$14.4K}{2{,}000} = \\$7.19\n\\end{gathered}",
-  confidenceInterval: [3713876.0568477893, 14376789.146331815],
+  confidenceInterval: [3713876.05685, 14376789.1463],
   inputs: ["TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA", "SHARING_OPPORTUNITY_COST"],
   computeExpr: "(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA / SHARING_OPPORTUNITY_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -9700,7 +9700,7 @@ export const SHARING_UPSIDE_DOWNSIDE_RATIO_TREATY: Parameter = {
 };
 
 export const SHIRT_INDUCED_LAUGHS_GAINED: Parameter = {
-  value: 3507336993142948.0,
+  value: 3507336993140000.0,
   parameterName: "SHIRT_INDUCED_LAUGHS_GAINED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_induced_laughs_gained",
   unit: "laughs",
@@ -9710,7 +9710,7 @@ export const SHIRT_INDUCED_LAUGHS_GAINED: Parameter = {
   confidence: "high",
   formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS × HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR",
   latex: "\\begin{gathered}\nL_{shirt} = DALYs_{max} \\times L_{year} = 565B \\times 6{,}200 = 3510T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } L_{year} = L_{day} \\times 365 = 17 \\times 365 = 6{,}200\n\\end{gathered}",
-  confidenceInterval: [970551315209844.2, 9713934749019696.0],
+  confidenceInterval: [970551315210000.0, 9713934749020000.0],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS", "HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS * HUMAN_LAUGHS_PER_HEALTHY_LIFE_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -9718,7 +9718,7 @@ export const SHIRT_INDUCED_LAUGHS_GAINED: Parameter = {
 };
 
 export const SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR: Parameter = {
-  value: 423932755.0132492,
+  value: 423932755.013,
   parameterName: "SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_program_expected_value_per_dollar",
   unit: "ratio",
@@ -9728,7 +9728,7 @@ export const SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR: Parameter = {
   confidence: "high",
   formula: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE × SHIRT_CASCADE_PROBABILITY_GIVEN_SEED) / SHIRT_SEED_PROGRAM_TOTAL_USD",
   latex: "\\begin{gathered}\nEV_{shirt} = (Value_{max} \\times P_{cascade,shirt}) / C_{seed,total}\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } C_{seed,total} = N_{seed,shirt} \\times C_{seed,wearer} = 1M \\times \\$50 = \\$50M\n\\end{gathered}",
-  confidenceInterval: [74113474.27997847, 8212721232.944018],
+  confidenceInterval: [74113474.28, 8212721232.94],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "SHIRT_CASCADE_PROBABILITY_GIVEN_SEED", "SHIRT_SEED_PROGRAM_TOTAL_USD"],
   computeExpr: "((DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE * SHIRT_CASCADE_PROBABILITY_GIVEN_SEED) / SHIRT_SEED_PROGRAM_TOTAL_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -9736,7 +9736,7 @@ export const SHIRT_PROGRAM_EXPECTED_VALUE_PER_DOLLAR: Parameter = {
 };
 
 export const SHIRT_PROGRAM_ROI_RATIO: Parameter = {
-  value: 1695731020.0529969,
+  value: 1695731020.05,
   parameterName: "SHIRT_PROGRAM_ROI_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_program_roi_ratio",
   unit: "ratio",
@@ -9746,7 +9746,7 @@ export const SHIRT_PROGRAM_ROI_RATIO: Parameter = {
   confidence: "high",
   formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / SHIRT_SEED_PROGRAM_TOTAL_USD",
   latex: "\\begin{gathered}\nROI_{shirt} = \\frac{Value_{max}}{C_{seed,total}} = \\frac{\\$84800T}{\\$50M} = 1.7B\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } C_{seed,total} = N_{seed,shirt} \\times C_{seed,wearer} = 1M \\times \\$50 = \\$50M\n\\end{gathered}",
-  confidenceInterval: [447129377.94529676, 31122525895.4172],
+  confidenceInterval: [447129377.945, 31122525895.4],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "SHIRT_SEED_PROGRAM_TOTAL_USD"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / SHIRT_SEED_PROGRAM_TOTAL_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -9764,7 +9764,7 @@ export const SHIRT_SEED_PROGRAM_TOTAL_USD: Parameter = {
   confidence: "high",
   formula: "SHIRT_SEED_WEARERS_THRESHOLD × SHIRT_SEED_COST_PER_WEARER_USD",
   latex: "\\begin{gathered}\nC_{seed,total} \\\\\n= N_{seed,shirt} \\times C_{seed,wearer} \\\\\n= 1M \\times \\$50 \\\\\n= \\$50M\n\\end{gathered}",
-  confidenceInterval: [3185347.222732526, 167612047.87930748],
+  confidenceInterval: [3185347.22273, 167612047.879],
   inputs: ["SHIRT_SEED_WEARERS_THRESHOLD", "SHIRT_SEED_COST_PER_WEARER_USD"],
   computeExpr: "(SHIRT_SEED_WEARERS_THRESHOLD * SHIRT_SEED_COST_PER_WEARER_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -9772,7 +9772,7 @@ export const SHIRT_SEED_PROGRAM_TOTAL_USD: Parameter = {
 };
 
 export const SHIRT_VALUE_PER_WEARER_USD: Parameter = {
-  value: 10598318.87533123,
+  value: 10598318.8753,
   parameterName: "SHIRT_VALUE_PER_WEARER_USD",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-shirt_value_per_wearer_usd",
   unit: "USD",
@@ -9782,7 +9782,7 @@ export const SHIRT_VALUE_PER_WEARER_USD: Parameter = {
   confidence: "high",
   formula: "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nV_{wearer} = \\frac{Value_{max}}{Pop_{global}} = \\frac{\\$84800T}{8B} = \\$10.6M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [5364323.201973655, 21447999.550951],
+  confidenceInterval: [5364323.20197, 21447999.551],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "GLOBAL_POPULATION_2024"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/joke.html",
@@ -9790,7 +9790,7 @@ export const SHIRT_VALUE_PER_WEARER_USD: Parameter = {
 };
 
 export const STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT: Parameter = {
-  value: 221.66666666666666,
+  value: 221.666666667,
   parameterName: "STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-status_quo_avg_years_to_first_treatment",
   unit: "years",
@@ -9801,7 +9801,7 @@ export const STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT: Parameter = {
   confidence: "low",
   formula: "STATUS_QUO_QUEUE_CLEARANCE_YEARS ÷ 2",
   latex: "\\begin{gathered}\nT_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [127.71197181792319, 420.4156065275045],
+  confidenceInterval: [127.711971818, 420.415606528],
   inputs: ["STATUS_QUO_QUEUE_CLEARANCE_YEARS"],
   computeExpr: "(STATUS_QUO_QUEUE_CLEARANCE_YEARS / 2.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9809,7 +9809,7 @@ export const STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT: Parameter = {
 };
 
 export const STATUS_QUO_QUEUE_CLEARANCE_YEARS: Parameter = {
-  value: 443.3333333333333,
+  value: 443.333333333,
   parameterName: "STATUS_QUO_QUEUE_CLEARANCE_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-status_quo_queue_clearance_years",
   unit: "years",
@@ -9820,7 +9820,7 @@ export const STATUS_QUO_QUEUE_CLEARANCE_YEARS: Parameter = {
   confidence: "low",
   formula: "DISEASES_WITHOUT_EFFECTIVE_TREATMENT ÷ NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR",
   latex: "\\begin{gathered}\nT_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [255.42394363584637, 840.831213055009],
+  confidenceInterval: [255.423943636, 840.831213055],
   inputs: ["DISEASES_WITHOUT_EFFECTIVE_TREATMENT", "NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR"],
   computeExpr: "(DISEASES_WITHOUT_EFFECTIVE_TREATMENT / NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9838,7 +9838,7 @@ export const THALIDOMIDE_DALYS_PER_EVENT: Parameter = {
   confidence: "medium",
   formula: "YLL + YLD",
   latex: "\\begin{gathered}\nDALY_{thal} = YLD_{thal} + YLL_{thal} = 13{,}000 + 28{,}800 = 41{,}800\n\\\\[0.5em]\n\\text{where } YLD_{thal} = DW_{thal} \\times N_{thal,survive} \\times LE_{thal} = 0.4 \\times 540 \\times 60 = 13{,}000\n\\\\[0.5em]\n\\text{where } N_{thal,survive} = N_{thal,US,prevent} \\times (1 - Rate_{thal,mort}) = 900 \\times (1 - 40\\%) = 540\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\\\[0.5em]\n\\text{where } YLL_{thal} = Deaths_{thal} \\times 80 = 360 \\times 80 = 28{,}800\n\\\\[0.5em]\n\\text{where } Deaths_{thal} = Rate_{thal,mort} \\times N_{thal,US,prevent} = 40\\% \\times 900 = 360\n\\end{gathered}",
-  confidenceInterval: [30378.69423135261, 54467.449939585866],
+  confidenceInterval: [30378.6942314, 54467.4499396],
   inputs: ["THALIDOMIDE_YLD_PER_EVENT", "THALIDOMIDE_YLL_PER_EVENT"],
   computeExpr: "(THALIDOMIDE_YLL_PER_EVENT + THALIDOMIDE_YLD_PER_EVENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9856,7 +9856,7 @@ export const THALIDOMIDE_DEATHS_PER_EVENT: Parameter = {
   confidence: "medium",
   formula: "US_CASES × MORTALITY_RATE",
   latex: "\\begin{gathered}\nDeaths_{thal} = Rate_{thal,mort} \\times N_{thal,US,prevent} = 40\\% \\times 900 = 360\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\end{gathered}",
-  confidenceInterval: [260.91379347147733, 471.8552904992137],
+  confidenceInterval: [260.913793471, 471.855290499],
   inputs: ["THALIDOMIDE_MORTALITY_RATE", "THALIDOMIDE_US_CASES_PREVENTED"],
   computeExpr: "(THALIDOMIDE_US_CASES_PREVENTED * THALIDOMIDE_MORTALITY_RATE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9874,7 +9874,7 @@ export const THALIDOMIDE_SURVIVORS_PER_EVENT: Parameter = {
   confidence: "medium",
   formula: "US_CASES × (1 - MORTALITY_RATE)",
   latex: "\\begin{gathered}\nN_{thal,survive} = N_{thal,US,prevent} \\times (1 - Rate_{thal,mort}) = 900 \\times (1 - 40\\%) = 540\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\end{gathered}",
-  confidenceInterval: [395.8582320274061, 704.1738451195735],
+  confidenceInterval: [395.858232027, 704.17384512],
   inputs: ["THALIDOMIDE_MORTALITY_RATE", "THALIDOMIDE_US_CASES_PREVENTED"],
   computeExpr: "(THALIDOMIDE_US_CASES_PREVENTED * (1.0 - THALIDOMIDE_MORTALITY_RATE))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9892,7 +9892,7 @@ export const THALIDOMIDE_US_CASES_PREVENTED: Parameter = {
   confidence: "medium",
   formula: "WORLDWIDE_CASES × US_POPULATION_SHARE",
   latex: "\\begin{gathered}\nN_{thal,US,prevent} \\\\\n= N_{thal,global} \\times Pct_{US,1960} \\\\\n= 15{,}000 \\times 6\\% \\\\\n= 900\n\\end{gathered}",
-  confidenceInterval: [665.6755082833782, 1165.575213432612],
+  confidenceInterval: [665.675508283, 1165.57521343],
   inputs: ["THALIDOMIDE_CASES_WORLDWIDE", "THALIDOMIDE_US_POPULATION_SHARE_1960"],
   computeExpr: "Math.trunc((THALIDOMIDE_CASES_WORLDWIDE * THALIDOMIDE_US_POPULATION_SHARE_1960))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9910,7 +9910,7 @@ export const THALIDOMIDE_YLD_PER_EVENT: Parameter = {
   confidence: "medium",
   formula: "SURVIVORS × LIFESPAN × DISABILITY_WEIGHT",
   latex: "\\begin{gathered}\nYLD_{thal} = DW_{thal} \\times N_{thal,survive} \\times LE_{thal} = 0.4 \\times 540 \\times 60 = 13{,}000\n\\\\[0.5em]\n\\text{where } N_{thal,survive} = N_{thal,US,prevent} \\times (1 - Rate_{thal,mort}) = 900 \\times (1 - 40\\%) = 540\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\end{gathered}",
-  confidenceInterval: [8780.487911280188, 17930.918655211728],
+  confidenceInterval: [8780.48791128, 17930.9186552],
   inputs: ["THALIDOMIDE_DISABILITY_WEIGHT", "THALIDOMIDE_SURVIVORS_PER_EVENT", "THALIDOMIDE_SURVIVOR_LIFESPAN"],
   computeExpr: "((THALIDOMIDE_SURVIVORS_PER_EVENT * THALIDOMIDE_SURVIVOR_LIFESPAN) * THALIDOMIDE_DISABILITY_WEIGHT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9928,7 +9928,7 @@ export const THALIDOMIDE_YLL_PER_EVENT: Parameter = {
   confidence: "medium",
   formula: "DEATHS × 80 years",
   latex: "\\begin{gathered}\nYLL_{thal} = Deaths_{thal} \\times 80 = 360 \\times 80 = 28{,}800\n\\\\[0.5em]\n\\text{where } Deaths_{thal} = Rate_{thal,mort} \\times N_{thal,US,prevent} = 40\\% \\times 900 = 360\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\end{gathered}",
-  confidenceInterval: [20873.103477718185, 37748.4232399371],
+  confidenceInterval: [20873.1034777, 37748.4232399],
   inputs: ["THALIDOMIDE_DEATHS_PER_EVENT"],
   computeExpr: "(THALIDOMIDE_DEATHS_PER_EVENT * 80.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -9946,7 +9946,7 @@ export const THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION: Parameter = {
   confidence: "high",
   formula: "GLOBAL_POPULATION_2024 × GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT",
   latex: "\\begin{gathered}\nN_{activism} \\\\\n= Pop_{global} \\times Threshold_{activism} \\\\\n= 8B \\times 3.5\\% \\\\\n= 280M\n\\end{gathered}",
-  confidenceInterval: [88031224.26052758, 628167372.9231651],
+  confidenceInterval: [88031224.2605, 628167372.923],
   inputs: ["GLOBAL_POPULATION_2024", "GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT"],
   computeExpr: "(GLOBAL_POPULATION_2024 * GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/campaign-budget.html",
@@ -9964,7 +9964,7 @@ export const TOTAL_RESEARCH_FUNDING_WITH_TREATY: Parameter = {
   confidence: "high",
   formula: "GLOBAL_MED_RESEARCH_SPENDING + TREATY_ANNUAL_FUNDING",
   latex: "\\begin{gathered}\nFunding_{RD,total} = Spending_{RD} + Funding_{treaty} = \\$67.5B + \\$27.2B = \\$94.7B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [83944464549.65633, 106594091855.85791],
+  confidenceInterval: [83944464549.7, 106594091856.0],
   inputs: ["GLOBAL_MED_RESEARCH_SPENDING", "TREATY_ANNUAL_FUNDING"],
   computeExpr: "(GLOBAL_MED_RESEARCH_SPENDING + TREATY_ANNUAL_FUNDING)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -9982,7 +9982,7 @@ export const TOTAL_TESTABLE_THERAPEUTIC_COMBINATIONS: Parameter = {
   confidence: "high",
   formula: "KNOWN_SAFE + EMERGING_MODALITIES",
   latex: "\\begin{gathered}\nN_{testable} = N_{combos} + N_{emerging} = 9.5M + 42M = 51.5M\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\\\[0.5em]\n\\text{where } N_{emerging} = Combos_{gene} + Combos_{mRNA} + Combos_{epi} + Combos_{cell} = 20M + 20M + 1.5M + 500{,}000 = 42M\n\\\\[0.5em]\n\\text{where } Combos_{gene} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{mRNA} = N_{genes} \\times N_{diseases,trial} = 20{,}000 \\times 1{,}000 = 20M\n\\\\[0.5em]\n\\text{where } Combos_{epi} = N_{epi} \\times N_{diseases,trial} = 1{,}500 \\times 1{,}000 = 1.5M\n\\\\[0.5em]\n\\text{where } Combos_{cell} = N_{cell} \\times N_{diseases,trial} = 500 \\times 1{,}000 = 500{,}000\n\\end{gathered}",
-  confidenceInterval: [41854069.67832171, 61593274.72054099],
+  confidenceInterval: [41854069.6783, 61593274.7205],
   inputs: ["DRUG_DISEASE_COMBINATIONS_POSSIBLE", "EMERGING_MODALITY_COMBINATIONS"],
   computeExpr: "(DRUG_DISEASE_COMBINATIONS_POSSIBLE + EMERGING_MODALITY_COMBINATIONS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html",
@@ -10007,7 +10007,7 @@ export const TREATY_ANNUAL_FUNDING: Parameter = {
 };
 
 export const TREATY_BENEFIT_MULTIPLIER_VS_VACCINES: Parameter = {
-  value: 11.480765853658538,
+  value: 11.4807658537,
   parameterName: "TREATY_BENEFIT_MULTIPLIER_VS_VACCINES",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_benefit_multiplier_vs_vaccines",
   unit: "x",
@@ -10017,7 +10017,7 @@ export const TREATY_BENEFIT_MULTIPLIER_VS_VACCINES: Parameter = {
   confidence: "high",
   formula: "TREATY_CONSERVATIVE_BENEFIT ÷ CHILDHOOD_VACCINATION_BENEFIT",
   latex: "\\begin{gathered}\nk_{treaty:vax} = \\frac{Benefit_{peace+RD}}{Benefit_{vax,ann}} = \\frac{\\$172B}{\\$15B} = 11.5\n\\\\[0.5em]\n\\text{where } Benefit_{peace+RD} = Benefit_{peace,soc} + Benefit_{RD,ann} = \\$114B + \\$58.6B = \\$172B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [7.306780593596599, 19.418484613426227],
+  confidenceInterval: [7.3067805936, 19.4184846134],
   inputs: ["CHILDHOOD_VACCINATION_ANNUAL_BENEFIT", "TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS"],
   computeExpr: "(TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS / CHILDHOOD_VACCINATION_ANNUAL_BENEFIT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10035,7 +10035,7 @@ export const TREATY_CAMPAIGN_ANNUAL_COST_AMORTIZED: Parameter = {
   confidence: "high",
   formula: "TOTAL_COST ÷ DURATION",
   latex: "\\begin{gathered}\nCost_{camp,amort} = \\frac{Cost_{campaign}}{T_{campaign}} = \\frac{\\$1B}{4} = \\$250M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [167920848.46921757, 368894587.9965118],
+  confidenceInterval: [167920848.469, 368894587.997],
   inputs: ["TREATY_CAMPAIGN_DURATION_YEARS", "TREATY_CAMPAIGN_TOTAL_COST"],
   computeExpr: "(TREATY_CAMPAIGN_TOTAL_COST / TREATY_CAMPAIGN_DURATION_YEARS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -10053,7 +10053,7 @@ export const TREATY_CAMPAIGN_TOTAL_COST: Parameter = {
   confidence: "high",
   formula: "REFERENDUM + LOBBYING + RESERVE",
   latex: "\\begin{gathered}\nCost_{campaign} \\\\\n= Budget_{viral,base} + Budget_{lobby,treaty} \\\\\n+ Budget_{reserve} \\\\\n= \\$250M + \\$650M + \\$100M \\\\\n= \\$1B\n\\end{gathered}",
-  confidenceInterval: [671683393.8768703, 1475578351.9860473],
+  confidenceInterval: [671683393.877, 1475578351.99],
   inputs: ["TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE", "TREATY_CAMPAIGN_BUDGET_LOBBYING", "TREATY_CAMPAIGN_BUDGET_RESERVE"],
   computeExpr: "((TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE + TREATY_CAMPAIGN_BUDGET_LOBBYING) + TREATY_CAMPAIGN_BUDGET_RESERVE)",
   validationMin: 500_000_000,
@@ -10063,7 +10063,7 @@ export const TREATY_CAMPAIGN_TOTAL_COST: Parameter = {
 };
 
 export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
-  value: 0.001769148505584477,
+  value: 0.00176914850558,
   parameterName: "TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cost_per_daly_trial_capacity_plus_efficacy_lag",
   unit: "USD/DALY",
@@ -10073,7 +10073,7 @@ export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = 
   confidence: "high",
   formula: "CAMPAIGN_COST ÷ DALYS_TIMELINE_SHIFT",
   latex: "\\begin{gathered}\nCost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [0.0008091074545090181, 0.003539850252606732],
+  confidenceInterval: [0.000809107454509, 0.00353985025261],
   inputs: ["TREATY_CAMPAIGN_TOTAL_COST", "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS"],
   computeExpr: "(TREATY_CAMPAIGN_TOTAL_COST / DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_DALYS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10081,7 +10081,7 @@ export const TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = 
 };
 
 export const TREATY_CUMULATIVE_20YR_WITH_RATCHET: Parameter = {
-  value: 3155200000000.0005,
+  value: 3155200000000.0,
   parameterName: "TREATY_CUMULATIVE_20YR_WITH_RATCHET",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cumulative_20yr_with_ratchet",
   unit: "USD",
@@ -10091,7 +10091,7 @@ export const TREATY_CUMULATIVE_20YR_WITH_RATCHET: Parameter = {
   confidence: "high",
   formula: "GLOBAL_MILITARY × (0.01×3 + min(0.02, TREATY_RATCHET_TERMINAL_SHARE)×4 + min(0.05, TREATY_RATCHET_TERMINAL_SHARE)×5 + TREATY_RATCHET_TERMINAL_SHARE×8)",
   latex: "\\begin{gathered}\nFund_{20yr,ratchet} \\\\\n= \\text{GLOBAL\\_MILITARY} \\times (0.01 \\times 3 \\\\\n+ \\min\\left(0.02, s_{ratchet}\\right) \\times 4 \\\\\n+ \\min\\left(0.05, s_{ratchet}\\right) \\times 5 \\\\\n+ s_{ratchet} \\times 8)\n\\end{gathered}",
-  confidenceInterval: [1187746350278.5852, 4812359937720.156],
+  confidenceInterval: [1187746350280.0, 4812359937720.0],
   inputs: ["GLOBAL_MILITARY_SPENDING_ANNUAL_2024", "TREATY_RATCHET_TERMINAL_SHARE"],
   computeExpr: "(GLOBAL_MILITARY_SPENDING_ANNUAL_2024 * (((0.03 + (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) * 4.0)) + (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) * 5.0)) + (TREATY_RATCHET_TERMINAL_SHARE * 8.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -10099,7 +10099,7 @@ export const TREATY_CUMULATIVE_20YR_WITH_RATCHET: Parameter = {
 };
 
 export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
-  value: 0.004017391304347827,
+  value: 0.00401739130435,
   parameterName: "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cybercrime_recovery_gdp_growth_bonus_year_15",
   unit: "rate",
@@ -10109,7 +10109,7 @@ export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
   confidence: "high",
   formula: "(GLOBAL_CYBERCRIME_COST_ANNUAL_2025 ÷ GLOBAL_GDP_2025) × TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
   latex: "\\begin{gathered}\ng_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\end{gathered}",
-  confidenceInterval: [0.0018932174802183937, 0.00540807059990902],
+  confidenceInterval: [0.00189321748022, 0.00540807059991],
   inputs: ["GLOBAL_CYBERCRIME_COST_ANNUAL_2025", "GLOBAL_GDP_2025", "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15", "PEACE_DIVIDEND_CONFLICT_ELASTICITY"],
   computeExpr: "(((GLOBAL_CYBERCRIME_COST_ANNUAL_2025 / GLOBAL_GDP_2025) * TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15) * PEACE_DIVIDEND_CONFLICT_ELASTICITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10117,7 +10117,7 @@ export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
 };
 
 export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
-  value: 0.005295652173913044,
+  value: 0.00529565217391,
   parameterName: "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_cybercrime_recovery_gdp_growth_bonus_year_20",
   unit: "rate",
@@ -10127,7 +10127,7 @@ export const TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
   confidence: "high",
   formula: "(GLOBAL_CYBERCRIME_COST_ANNUAL_2025 ÷ GLOBAL_GDP_2025) × TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
   latex: "\\begin{gathered}\ng_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\end{gathered}",
-  confidenceInterval: [0.0019935001083639936, 0.00807701076503543],
+  confidenceInterval: [0.00199350010836, 0.00807701076504],
   inputs: ["GLOBAL_CYBERCRIME_COST_ANNUAL_2025", "GLOBAL_GDP_2025", "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20", "PEACE_DIVIDEND_CONFLICT_ELASTICITY"],
   computeExpr: "(((GLOBAL_CYBERCRIME_COST_ANNUAL_2025 / GLOBAL_GDP_2025) * TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20) * PEACE_DIVIDEND_CONFLICT_ELASTICITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10145,7 +10145,7 @@ export const TREATY_DISEASE_CURE_FRACTION_15YR: Parameter = {
   confidence: "high",
   formula: "min(1.0, (3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(0.01/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 4×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(min(0.02, TREATY_RATCHET_TERMINAL_SHARE)/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 5×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(min(0.05, TREATY_RATCHET_TERMINAL_SHARE)/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(TREATY_RATCHET_TERMINAL_SHARE/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) ÷ STATUS_QUO_QUEUE_CLEARANCE_YEARS)",
   latex: "\\begin{gathered}\nf_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.4953433326168179, 1.0],
+  confidenceInterval: [0.495343332617, 1.0],
   inputs: ["DFDA_TRIAL_CAPACITY_MULTIPLIER", "DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL", "TREATY_RATCHET_TERMINAL_SHARE", "STATUS_QUO_QUEUE_CLEARANCE_YEARS"],
   computeExpr: "Math.min(1.0, (((((3.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * 1.0), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) + (4.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) + (5.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) + (3.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (TREATY_RATCHET_TERMINAL_SHARE / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) / STATUS_QUO_QUEUE_CLEARANCE_YEARS))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10163,7 +10163,7 @@ export const TREATY_DISEASE_CURE_FRACTION_20YR: Parameter = {
   confidence: "high",
   formula: "min(1.0, (3×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(0.01/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 4×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(min(0.02, TREATY_RATCHET_TERMINAL_SHARE)/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 5×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(min(0.05, TREATY_RATCHET_TERMINAL_SHARE)/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL) + 8×min(DFDA_TRIAL_CAPACITY_MULTIPLIER×(TREATY_RATCHET_TERMINAL_SHARE/0.01), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) ÷ STATUS_QUO_QUEUE_CLEARANCE_YEARS)",
   latex: "\\begin{gathered}\nf_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.7828067231862692, 1.0],
+  confidenceInterval: [0.782806723186, 1.0],
   inputs: ["DFDA_TRIAL_CAPACITY_MULTIPLIER", "DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL", "TREATY_RATCHET_TERMINAL_SHARE", "STATUS_QUO_QUEUE_CLEARANCE_YEARS"],
   computeExpr: "Math.min(1.0, (((((3.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * 1.0), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL)) + (4.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) + (5.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) + (8.0 * Math.min((DFDA_TRIAL_CAPACITY_MULTIPLIER * (TREATY_RATCHET_TERMINAL_SHARE / 0.01)), DFDA_MAX_TRIAL_CAPACITY_MULTIPLIER_PHYSICAL))) / STATUS_QUO_QUEUE_CLEARANCE_YEARS))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10171,7 +10171,7 @@ export const TREATY_DISEASE_CURE_FRACTION_20YR: Parameter = {
 };
 
 export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15: Parameter = {
-  value: 0.044000000000000004,
+  value: 0.044,
   parameterName: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_effective_reallocation_share_year_15",
   unit: "rate",
@@ -10181,7 +10181,7 @@ export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15: Parameter = {
   confidence: "high",
   formula: "(0.01×3 + min(0.02, TREATY_RATCHET_TERMINAL_SHARE)×4 + min(0.05, TREATY_RATCHET_TERMINAL_SHARE)×5 + TREATY_RATCHET_TERMINAL_SHARE×3) / 15",
   latex: "\\begin{gathered}\n\\bar{s}_{treaty,15} \\\\\n= s_{ratchet} \\times 0.212 \\\\\n= 10\\% \\times 0.212 \\\\\n= 4.4\\%\n\\end{gathered}",
-  confidenceInterval: [0.020735239069058598, 0.059231249427574975],
+  confidenceInterval: [0.0207352390691, 0.0592312494276],
   inputs: ["TREATY_RATCHET_TERMINAL_SHARE"],
   computeExpr: "((((0.03 + (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) * 4.0)) + (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) * 5.0)) + (TREATY_RATCHET_TERMINAL_SHARE * 3.0)) / 15.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10189,7 +10189,7 @@ export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15: Parameter = {
 };
 
 export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20: Parameter = {
-  value: 0.05800000000000001,
+  value: 0.058,
   parameterName: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_effective_reallocation_share_year_20",
   unit: "rate",
@@ -10199,7 +10199,7 @@ export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20: Parameter = {
   confidence: "high",
   formula: "(0.01×3 + min(0.02, TREATY_RATCHET_TERMINAL_SHARE)×4 + min(0.05, TREATY_RATCHET_TERMINAL_SHARE)×5 + TREATY_RATCHET_TERMINAL_SHARE×8) / 20",
   latex: "\\begin{gathered}\n\\bar{s}_{treaty,20} \\\\\n= s_{ratchet} \\times 0.409 \\\\\n= 10\\% \\times 0.409 \\\\\n= 5.8\\%\n\\end{gathered}",
-  confidenceInterval: [0.02183357261541517, 0.08846249885514994],
+  confidenceInterval: [0.0218335726154, 0.0884624988551],
   inputs: ["TREATY_RATCHET_TERMINAL_SHARE"],
   computeExpr: "((((0.03 + (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) * 4.0)) + (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) * 5.0)) + (TREATY_RATCHET_TERMINAL_SHARE * 8.0)) / 20.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10207,7 +10207,7 @@ export const TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20: Parameter = {
 };
 
 export const TREATY_EXPECTED_COST_PER_DALY: Parameter = {
-  value: 0.1769148505584477,
+  value: 0.176914850558,
   parameterName: "TREATY_EXPECTED_COST_PER_DALY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_expected_cost_per_daly",
   unit: "USD/DALY",
@@ -10217,7 +10217,7 @@ export const TREATY_EXPECTED_COST_PER_DALY: Parameter = {
   confidence: "low",
   formula: "CONDITIONAL_COST_PER_DALY ÷ POLITICAL_SUCCESS_PROBABILITY",
   latex: "\\begin{gathered}\nE[Cost_{DALY}] = \\frac{Cost_{treaty,DALY}}{P_{success}} = \\frac{\\$0.00177}{1\\%} = \\$0.177\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [0.030039389095049846, 2.9152668524765826],
+  confidenceInterval: [0.030039389095, 2.91526685248],
   inputs: ["TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG", "POLITICAL_SUCCESS_PROBABILITY"],
   computeExpr: "(TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG / POLITICAL_SUCCESS_PROBABILITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10225,7 +10225,7 @@ export const TREATY_EXPECTED_COST_PER_DALY: Parameter = {
 };
 
 export const TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
-  value: 847865.5100264985,
+  value: 847865.510026,
   parameterName: "TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_expected_roi_trial_capacity_plus_efficacy_lag",
   unit: "ratio",
@@ -10236,7 +10236,7 @@ export const TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
   confidence: "low",
   formula: "TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG × POLITICAL_SUCCESS_PROBABILITY",
   latex: "\\begin{gathered}\nE[ROI_{max}] = ROI_{max} \\times P_{success} = 84.8M \\times 1\\% = 848{,}000\n\\\\[0.5em]\n\\text{where } ROI_{max} = \\frac{Value_{max}}{Cost_{campaign}} = \\frac{\\$84800T}{\\$1B} = 84.8M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [47788.384757037245, 4949530.481328109],
+  confidenceInterval: [47788.384757, 4949530.48133],
   inputs: ["TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG", "POLITICAL_SUCCESS_PROBABILITY"],
   computeExpr: "(TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG * POLITICAL_SUCCESS_PROBABILITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10244,7 +10244,7 @@ export const TREATY_EXPECTED_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
 };
 
 export const TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER: Parameter = {
-  value: 503.06686928238906,
+  value: 503.066869282,
   parameterName: "TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_expected_vs_bed_nets_multiplier",
   unit: "x",
@@ -10254,7 +10254,7 @@ export const TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER: Parameter = {
   confidence: "low",
   formula: "BED_NETS_COST_PER_DALY ÷ TREATY_EXPECTED_COST_PER_DALY",
   latex: "\\begin{gathered}\nE[k_{nets}] = \\frac{Cost_{nets}}{E[Cost_{DALY}]} = \\frac{\\$89}{\\$0.177} = 503\n\\\\[0.5em]\n\\text{where } E[Cost_{DALY}] = \\frac{Cost_{treaty,DALY}}{P_{success}} = \\frac{\\$0.00177}{1\\%} = \\$0.177\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [30.52866072610053, 2967.8249987351983],
+  confidenceInterval: [30.5286607261, 2967.82499874],
   inputs: ["BED_NETS_COST_PER_DALY", "TREATY_EXPECTED_COST_PER_DALY"],
   computeExpr: "(BED_NETS_COST_PER_DALY / TREATY_EXPECTED_COST_PER_DALY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -10262,7 +10262,7 @@ export const TREATY_EXPECTED_VS_BED_NETS_MULTIPLIER: Parameter = {
 };
 
 export const TREATY_HALE_GAIN_YEAR_15: Parameter = {
-  value: 16.10000000000001,
+  value: 16.1,
   parameterName: "TREATY_HALE_GAIN_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_hale_gain_year_15",
   unit: "years",
@@ -10272,7 +10272,7 @@ export const TREATY_HALE_GAIN_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_DISEASE_CURE_FRACTION_15YR × GLOBAL_HALE_GAP + TREATY_LONGEVITY_HALE_GAIN_YEAR_15",
   latex: "\\begin{gathered}\n\\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [6.529863154778496, 27.384883027849046],
+  confidenceInterval: [6.52986315478, 27.3848830278],
   inputs: ["TREATY_DISEASE_CURE_FRACTION_15YR", "GLOBAL_HALE_CURRENT", "GLOBAL_LIFE_EXPECTANCY_2024", "TREATY_LONGEVITY_HALE_GAIN_YEAR_15"],
   computeExpr: "((TREATY_DISEASE_CURE_FRACTION_15YR * (GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_HALE_CURRENT)) + TREATY_LONGEVITY_HALE_GAIN_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10280,7 +10280,7 @@ export const TREATY_HALE_GAIN_YEAR_15: Parameter = {
 };
 
 export const TREATY_HALE_VALUE_PER_CAPITA: Parameter = {
-  value: 2415000.0000000014,
+  value: 2415000.0,
   parameterName: "TREATY_HALE_VALUE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_hale_value_per_capita",
   unit: "USD/person",
@@ -10290,7 +10290,7 @@ export const TREATY_HALE_VALUE_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "TREATY_HALE_GAIN_YEAR_15 × STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nValue_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 16.1 \\times \\$150K = \\$2.42M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [893314.1075467657, 4326988.005487934],
+  confidenceInterval: [893314.107547, 4326988.00549],
   inputs: ["TREATY_HALE_GAIN_YEAR_15", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(TREATY_HALE_GAIN_YEAR_15 * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -10298,7 +10298,7 @@ export const TREATY_HALE_VALUE_PER_CAPITA: Parameter = {
 };
 
 export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
-  value: 0.00818112618391198,
+  value: 0.00818112618391,
   parameterName: "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_health_recovery_gdp_growth_bonus_year_15",
   unit: "rate",
@@ -10308,7 +10308,7 @@ export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
   confidence: "high",
   formula: "((1 + TREATY_DISEASE_CURE_FRACTION_15YR × DISEASE_BURDEN_GDP_DRAG_PCT)^(1/15)) - 1",
   latex: "\\begin{gathered}\ng_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.004169081074580716, 0.00818112618391198],
+  confidenceInterval: [0.00416908107458, 0.00818112618391],
   inputs: ["TREATY_DISEASE_CURE_FRACTION_15YR", "DISEASE_BURDEN_GDP_DRAG_PCT"],
   computeExpr: "(Math.pow((1.0 + (TREATY_DISEASE_CURE_FRACTION_15YR * DISEASE_BURDEN_GDP_DRAG_PCT)), 0.06666666666666667) - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10316,7 +10316,7 @@ export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
 };
 
 export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
-  value: 0.006129591164554027,
+  value: 0.00612959116455,
   parameterName: "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_health_recovery_gdp_growth_bonus_year_20",
   unit: "rate",
@@ -10326,7 +10326,7 @@ export const TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
   confidence: "high",
   formula: "((1 + TREATY_DISEASE_CURE_FRACTION_20YR × DISEASE_BURDEN_GDP_DRAG_PCT)^(1 ÷ TREATY_HEALTH_RECOVERY_ANNUALIZATION_YEARS)) - 1",
   latex: "\\begin{gathered}\ng_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.004857425475002864, 0.006129591164554027],
+  confidenceInterval: [0.004857425475, 0.00612959116455],
   inputs: ["TREATY_DISEASE_CURE_FRACTION_20YR", "DISEASE_BURDEN_GDP_DRAG_PCT", "TREATY_HEALTH_RECOVERY_ANNUALIZATION_YEARS"],
   computeExpr: "(Math.pow((1.0 + (TREATY_DISEASE_CURE_FRACTION_20YR * DISEASE_BURDEN_GDP_DRAG_PCT)), (1.0 / TREATY_HEALTH_RECOVERY_ANNUALIZATION_YEARS)) - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10344,7 +10344,7 @@ export const TREATY_LIVES_SAVED_ANNUAL_GLOBAL: Parameter = {
   confidence: "high",
   formula: "TOTAL_DEATHS × REDUCTION_PCT",
   latex: "\\begin{gathered}\nLives_{treaty,ann} = Deaths_{conflict} \\times Reduce_{treaty} = 245{,}000 \\times 1\\% = 2{,}450\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
-  confidenceInterval: [1983.8324728086818, 2974.5221949668394],
+  confidenceInterval: [1983.83247281, 2974.52219497],
   inputs: ["GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL", "TREATY_REDUCTION_PCT"],
   computeExpr: "(GLOBAL_ANNUAL_CONFLICT_DEATHS_TOTAL * TREATY_REDUCTION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10362,7 +10362,7 @@ export const TREATY_LONGEVITY_HALE_GAIN_YEAR_15: Parameter = {
   confidence: "high",
   formula: "LIFE_EXTENSION_YEARS × HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15 × TREATY_DISEASE_CURE_FRACTION_15YR",
   latex: "\\begin{gathered}\n\\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.6829866704367682, 17.317427748752888],
+  confidenceInterval: [0.682986670437, 17.3174277488],
   inputs: ["LIFE_EXTENSION_YEARS", "HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15", "TREATY_DISEASE_CURE_FRACTION_15YR"],
   computeExpr: "((LIFE_EXTENSION_YEARS * HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15) * TREATY_DISEASE_CURE_FRACTION_15YR)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10370,7 +10370,7 @@ export const TREATY_LONGEVITY_HALE_GAIN_YEAR_15: Parameter = {
 };
 
 export const TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS: Parameter = {
-  value: 172211487804.87805,
+  value: 172211487805.0,
   parameterName: "TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_peace_plus_rd_annual_benefits",
   unit: "USD/year",
@@ -10380,7 +10380,7 @@ export const TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS: Parameter = {
   confidence: "high",
   formula: "PEACE_DIVIDEND + PRAGMATIC_TRIAL_RD_SAVINGS",
   latex: "\\begin{gathered}\nBenefit_{peace+RD} = Benefit_{peace,soc} + Benefit_{RD,ann} = \\$114B + \\$58.6B = \\$172B\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } Benefit_{RD,ann} = Spending_{trials} \\times Reduce_{pct} = \\$60B \\times 97.7\\% = \\$58.6B\n\\\\[0.5em]\n\\text{where } Reduce_{pct} = 1 - \\frac{Cost_{pragmatic,pt}}{Cost_{P3,pt}} = 1 - \\frac{\\$929}{\\$41K} = 97.7\\%\n\\end{gathered}",
-  confidenceInterval: [153149913936.42102, 192374465444.82422],
+  confidenceInterval: [153149913936.0, 192374465445.0],
   inputs: ["PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "DFDA_BENEFIT_RD_ONLY_ANNUAL"],
   computeExpr: "(PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT + DFDA_BENEFIT_RD_ONLY_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10388,7 +10388,7 @@ export const TREATY_PEACE_PLUS_RD_ANNUAL_BENEFITS: Parameter = {
 };
 
 export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
-  value: 0.004345325217391305,
+  value: 0.00434532521739,
   parameterName: "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_peace_recovery_gdp_growth_bonus_year_15",
   unit: "rate",
@@ -10398,7 +10398,7 @@ export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
   confidence: "high",
   formula: "(PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT ÷ GLOBAL_GDP_2025) × (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 ÷ TREATY_REDUCTION_PCT) × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
   latex: "\\begin{gathered}\ng_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\end{gathered}",
-  confidenceInterval: [0.0020037001332480846, 0.0059210039393811885],
+  confidenceInterval: [0.00200370013325, 0.00592100393938],
   inputs: ["PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "GLOBAL_GDP_2025", "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15", "TREATY_REDUCTION_PCT", "PEACE_DIVIDEND_CONFLICT_ELASTICITY"],
   computeExpr: "(((PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT / GLOBAL_GDP_2025) * (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 / TREATY_REDUCTION_PCT)) * PEACE_DIVIDEND_CONFLICT_ELASTICITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10406,7 +10406,7 @@ export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
 };
 
 export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
-  value: 0.005727928695652175,
+  value: 0.00572792869565,
   parameterName: "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_peace_recovery_gdp_growth_bonus_year_20",
   unit: "rate",
@@ -10416,7 +10416,7 @@ export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
   confidence: "high",
   formula: "(PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT ÷ GLOBAL_GDP_2025) × (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 ÷ TREATY_REDUCTION_PCT) × PEACE_DIVIDEND_CONFLICT_ELASTICITY",
   latex: "\\begin{gathered}\ng_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\end{gathered}",
-  confidenceInterval: [0.0021109282680983046, 0.008769453415974354],
+  confidenceInterval: [0.0021109282681, 0.00876945341597],
   inputs: ["PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT", "GLOBAL_GDP_2025", "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20", "TREATY_REDUCTION_PCT", "PEACE_DIVIDEND_CONFLICT_ELASTICITY"],
   computeExpr: "(((PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT / GLOBAL_GDP_2025) * (TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 / TREATY_REDUCTION_PCT)) * PEACE_DIVIDEND_CONFLICT_ELASTICITY)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10424,7 +10424,7 @@ export const TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
 };
 
 export const TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH: Parameter = {
-  value: 2933878.7768822904,
+  value: 2933878.77688,
   parameterName: "TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_personal_upside_income_plus_health",
   unit: "USD/person",
@@ -10434,7 +10434,7 @@ export const TREATY_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + TREATY_HALE_VALUE_PER_CAPITA",
   latex: "\\begin{gathered}\nUpside_{income+health,treaty} = \\Delta Y_{lifetime,treaty} + Value_{HALE,treaty} = \\$519K + \\$2.42M = \\$2.93M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,treaty} = \\Delta HALE_{treaty,15} \\times Value_{QALY} = 16.1 \\times \\$150K = \\$2.42M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [1286556.4589105726, 4912184.646547883],
+  confidenceInterval: [1286556.45891, 4912184.64655],
   inputs: ["TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA", "TREATY_HALE_VALUE_PER_CAPITA"],
   computeExpr: "(TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + TREATY_HALE_VALUE_PER_CAPITA)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10452,7 +10452,7 @@ export const TREATY_PROJECTED_HALE_YEAR_15: Parameter = {
   confidence: "high",
   formula: "GLOBAL_HALE_CURRENT + TREATY_HALE_GAIN_YEAR_15",
   latex: "\\begin{gathered}\nHALE_{treaty,15} = HALE_{0} + \\Delta HALE_{treaty,15} = 63.3 + 16.1 = 79.4\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,15} = f_{cure,15,treaty} \\times \\Delta_{HALE} + \\Delta HALE_{treaty,longevity,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{treaty,longevity,15} = T_{extend} \\times \\rho_{HALE,15} \\times f_{cure,15,treaty} = 20 \\times 30\\% \\times 100\\% = 6\n\\end{gathered}",
-  confidenceInterval: [70.24020270953231, 90.73499843052598],
+  confidenceInterval: [70.2402027095, 90.7349984305],
   inputs: ["GLOBAL_HALE_CURRENT", "TREATY_HALE_GAIN_YEAR_15"],
   computeExpr: "(GLOBAL_HALE_CURRENT + TREATY_HALE_GAIN_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/earth-optimization-prize-protocol.html",
@@ -10470,7 +10470,7 @@ export const TREATY_QALYS_GAINED_ANNUAL_GLOBAL: Parameter = {
   confidence: "high",
   formula: "LIVES_SAVED × QALYS_PER_LIFE",
   latex: "\\begin{gathered}\nQALY_{treaty,ann} = QALY_{life} \\times Lives_{treaty,ann} = 35 \\times 2{,}450 = 85{,}600\n\\\\[0.5em]\n\\text{where } Lives_{treaty,ann} = Deaths_{conflict} \\times Reduce_{treaty} = 245{,}000 \\times 1\\% = 2{,}450\n\\\\[0.5em]\n\\text{where } Deaths_{conflict} = Deaths_{combat} + Deaths_{state} + Deaths_{terror} = 234{,}000 + 2{,}700 + 8{,}300 = 245{,}000\n\\end{gathered}",
-  confidenceInterval: [54358.80812624854, 120404.48767542581],
+  confidenceInterval: [54358.8081262, 120404.487675],
   inputs: ["STANDARD_QALYS_PER_LIFE_SAVED", "TREATY_LIVES_SAVED_ANNUAL_GLOBAL"],
   computeExpr: "(TREATY_LIVES_SAVED_ANNUAL_GLOBAL * STANDARD_QALYS_PER_LIFE_SAVED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10478,7 +10478,7 @@ export const TREATY_QALYS_GAINED_ANNUAL_GLOBAL: Parameter = {
 };
 
 export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
-  value: 0.008066666666666668,
+  value: 0.00806666666667,
   parameterName: "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_redirect_gdp_growth_bonus_year_15",
   unit: "rate",
@@ -10488,7 +10488,7 @@ export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 × ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT ÷ 0.30) × (RD_SPILLOVER_MULTIPLIER ÷ 2.0))",
   latex: "\\begin{gathered}\ng_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\end{gathered}",
-  confidenceInterval: [0.0034158190365080558, 0.012361257651866134],
+  confidenceInterval: [0.00341581903651, 0.0123612576519],
   inputs: ["TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15", "MILITARY_REDIRECT_GDP_BOOST_AT_30PCT", "RD_SPILLOVER_MULTIPLIER"],
   computeExpr: "(TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_15 * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10496,7 +10496,7 @@ export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15: Parameter = {
 };
 
 export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
-  value: 0.010633333333333337,
+  value: 0.0106333333333,
   parameterName: "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_redirect_gdp_growth_bonus_year_20",
   unit: "rate",
@@ -10506,7 +10506,7 @@ export const TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20: Parameter = {
   confidence: "high",
   formula: "TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 × ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT ÷ 0.30) × (RD_SPILLOVER_MULTIPLIER ÷ 2.0))",
   latex: "\\begin{gathered}\ng_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\end{gathered}",
-  confidenceInterval: [0.0036337907404370303, 0.017878401268824097],
+  confidenceInterval: [0.00363379074044, 0.0178784012688],
   inputs: ["TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20", "MILITARY_REDIRECT_GDP_BOOST_AT_30PCT", "RD_SPILLOVER_MULTIPLIER"],
   computeExpr: "(TREATY_EFFECTIVE_REALLOCATION_SHARE_YEAR_20 * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10524,7 +10524,7 @@ export const TREATY_ROI_EXISTING_DRUGS_ONLY: Parameter = {
   confidence: "high",
   formula: "HISTORICAL_PROGRESS_TOTAL ÷ CAMPAIGN_COST",
   latex: "\\begin{gathered}\nROI_{drugs} = \\frac{Loss_{lag}}{Cost_{campaign}} = \\frac{\\$290T}{\\$1B} = 290{,}000\n\\\\[0.5em]\n\\text{where } Loss_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60)) \\times \\text{VSLY}\n\\\\[0.5em]\n\\text{where } Deaths_{lag,total} = Lives_{saved,annual} \\times T_{lag} = 12.4M \\times 8.2 = 102M\n\\\\[0.5em]\n\\text{where } Lives_{saved,annual} = \\frac{LY_{saved,annual}}{T_{ext}} = \\frac{149M}{12} = 12.4M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [116521.98227298341, 600110.6431801819],
+  confidenceInterval: [116521.982273, 600110.64318],
   inputs: ["EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS", "TREATY_CAMPAIGN_TOTAL_COST"],
   computeExpr: "(EXISTING_DRUGS_EFFICACY_LAG_ECONOMIC_LOSS / TREATY_CAMPAIGN_TOTAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10532,7 +10532,7 @@ export const TREATY_ROI_EXISTING_DRUGS_ONLY: Parameter = {
 };
 
 export const TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
-  value: 84786551.00264984,
+  value: 84786551.0026,
   parameterName: "TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_roi_trial_capacity_plus_efficacy_lag",
   unit: "ratio",
@@ -10542,7 +10542,7 @@ export const TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG: Parameter = {
   confidence: "medium",
   formula: "TOTAL_TIMELINE_SHIFT_ECONOMIC_VALUE ÷ CAMPAIGN_COST",
   latex: "\\begin{gathered}\nROI_{max} = \\frac{Value_{max}}{Cost_{campaign}} = \\frac{\\$84800T}{\\$1B} = 84.8M\n\\\\[0.5em]\n\\text{where } Value_{max} = DALYs_{max} \\times Value_{QALY} = 565B \\times \\$150K = \\$84800T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [39647180.12279288, 194492841.3310951],
+  confidenceInterval: [39647180.1228, 194492841.331],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE", "TREATY_CAMPAIGN_TOTAL_COST"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / TREATY_CAMPAIGN_TOTAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10560,7 +10560,7 @@ export const TREATY_TOTAL_ANNUAL_COSTS: Parameter = {
   confidence: "high",
   formula: "CAMPAIGN_ANNUAL + TRIAL_PLATFORM_OPEX",
   latex: "\\begin{gathered}\nCost_{treaty,ann} = OPEX_{trial} + Cost_{camp,amort} = \\$40M + \\$250M = \\$290M\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } Cost_{camp,amort} = \\frac{Cost_{campaign}}{T_{campaign}} = \\frac{\\$1B}{4} = \\$250M\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [206997998.6262079, 408811903.53967863],
+  confidenceInterval: [206997998.626, 408811903.54],
   inputs: ["DFDA_ANNUAL_OPEX", "TREATY_CAMPAIGN_ANNUAL_COST_AMORTIZED"],
   computeExpr: "(TREATY_CAMPAIGN_ANNUAL_COST_AMORTIZED + DFDA_ANNUAL_OPEX)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10568,7 +10568,7 @@ export const TREATY_TOTAL_ANNUAL_COSTS: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
-  value: 26713.475276465226,
+  value: 26713.4752765,
   parameterName: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_avg_income_year_15",
   unit: "USD",
@@ -10578,7 +10578,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_15 / GLOBAL_POPULATION_2040_PROJECTED",
   latex: "\\begin{gathered}\n\\bar{y}_{treaty,15} = \\frac{GDP_{treaty,15}}{Pop_{2040}} = \\frac{\\$238T}{8.9B} = \\$26.7K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,15} + g_{peace,treaty,15} + g_{cyber,treaty,15} + g_{health,treaty,15})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [22882.126279745335, 29273.870690765114],
+  confidenceInterval: [22882.1262797, 29273.8706908],
   inputs: ["TREATY_TRAJECTORY_GDP_YEAR_15", "GLOBAL_POPULATION_2040_PROJECTED"],
   computeExpr: "(TREATY_TRAJECTORY_GDP_YEAR_15 / GLOBAL_POPULATION_2040_PROJECTED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10586,7 +10586,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
-  value: 34971.65644108407,
+  value: 34971.6564411,
   parameterName: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_avg_income_year_20",
   unit: "USD",
@@ -10596,7 +10596,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_20 / GLOBAL_POPULATION_2045_PROJECTED",
   latex: "\\begin{gathered}\n\\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [26586.703616707582, 43903.172067939595],
+  confidenceInterval: [26586.7036167, 43903.1720679],
   inputs: ["TREATY_TRAJECTORY_GDP_YEAR_20", "GLOBAL_POPULATION_2045_PROJECTED"],
   computeExpr: "(TREATY_TRAJECTORY_GDP_YEAR_20 / GLOBAL_POPULATION_2045_PROJECTED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -10604,7 +10604,7 @@ export const TREATY_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_CAGR_YEAR_20: Parameter = {
-  value: 0.05278650536745255,
+  value: 0.0527865053675,
   parameterName: "TREATY_TRAJECTORY_CAGR_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_cagr_year_20",
   unit: "rate",
@@ -10614,7 +10614,7 @@ export const TREATY_TRAJECTORY_CAGR_YEAR_20: Parameter = {
   confidence: "high",
   formula: "(TREATY_TRAJECTORY_GDP_YEAR_20 ÷ GLOBAL_GDP_2025)^(1/20) - 1",
   latex: "\\begin{gathered}\ng_{treaty,CAGR} = \\left(\\frac{GDP_{treaty,20}}{GDP_{global}}\\right)^{\\frac{1}{20}} - 1\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.038455101191334495, 0.06482758760617294],
+  confidenceInterval: [0.0384551011913, 0.0648275876062],
   inputs: ["TREATY_TRAJECTORY_GDP_YEAR_20", "GLOBAL_GDP_2025"],
   computeExpr: "(Math.pow((TREATY_TRAJECTORY_GDP_YEAR_20 / GLOBAL_GDP_2025), 0.05) - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10622,7 +10622,7 @@ export const TREATY_TRAJECTORY_CAGR_YEAR_20: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 1422786.7536171854,
+  value: 1422786.75362,
   parameterName: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_cumulative_lifetime_income",
   unit: "USD",
@@ -10632,14 +10632,14 @@ export const TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
   confidence: "high",
   formula: "Phase 1: y0*(1+g_pc,treaty)*((1+g_pc,treaty)^20-1)/g_pc,treaty + Phase 2: y20*(1+g_pc,base)*((1+g_pc,base)^(T-20)-1)/g_pc,base",
   latex: "\\begin{gathered}\nY_{cum,treaty} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} \\\\\n+ \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [1113572.9255244583, 1815600.998567859],
+  confidenceInterval: [1113572.92552, 1815600.99857],
   inputs: ["GLOBAL_AVG_INCOME_2025", "TREATY_TRAJECTORY_AVG_INCOME_YEAR_20", "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_AVG_REMAINING_YEARS"],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
   manualPageTitle: "Recruitment & Propaganda Plan",
 };
 
 export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Parameter = {
-  value: 1.4274620676403007,
+  value: 1.42746206764,
   parameterName: "TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_vs_current_trajectory_multiplier_year_15",
   unit: "x",
@@ -10649,7 +10649,7 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Par
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_15 / CURRENT_TRAJECTORY_GDP_YEAR_15",
   latex: "\\begin{gathered}\nk_{treaty:base,15} = \\frac{GDP_{treaty,15}}{GDP_{base,15}} = \\frac{\\$238T}{\\$167T} = 1.43\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,15} + g_{peace,treaty,15} + g_{cyber,treaty,15} + g_{health,treaty,15})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,15} = GDP_{global} \\times (1 + g_{base})^{15}\n\\end{gathered}",
-  confidenceInterval: [1.222729987515642, 1.564279433941316],
+  confidenceInterval: [1.22272998752, 1.56427943394],
   inputs: ["TREATY_TRAJECTORY_GDP_YEAR_15", "CURRENT_TRAJECTORY_GDP_YEAR_15"],
   computeExpr: "(TREATY_TRAJECTORY_GDP_YEAR_15 / CURRENT_TRAJECTORY_GDP_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -10657,7 +10657,7 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Par
 };
 
 export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Parameter = {
-  value: 1.7073748599708383,
+  value: 1.70737485997,
   parameterName: "TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_vs_current_trajectory_multiplier_year_20",
   unit: "x",
@@ -10667,7 +10667,7 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Par
   confidence: "high",
   formula: "TREATY_TRAJECTORY_GDP_YEAR_20 ÷ CURRENT_TRAJECTORY_GDP_YEAR_20",
   latex: "\\begin{gathered}\nk_{treaty:base,20} = \\frac{GDP_{treaty,20}}{GDP_{base,20}} = \\frac{\\$322T}{\\$188T} = 1.71\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\end{gathered}",
-  confidenceInterval: [1.2980074146941138, 2.143426416991599],
+  confidenceInterval: [1.29800741469, 2.14342641699],
   inputs: ["TREATY_TRAJECTORY_GDP_YEAR_20", "CURRENT_TRAJECTORY_GDP_YEAR_20"],
   computeExpr: "(TREATY_TRAJECTORY_GDP_YEAR_20 / CURRENT_TRAJECTORY_GDP_YEAR_20)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -10675,7 +10675,7 @@ export const TREATY_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Par
 };
 
 export const TREATY_TRAJECTORY_GDP_YEAR_15: Parameter = {
-  value: 237749929960540.5,
+  value: 237749929961000.0,
   parameterName: "TREATY_TRAJECTORY_GDP_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_year_15",
   unit: "USD",
@@ -10685,7 +10685,7 @@ export const TREATY_TRAJECTORY_GDP_YEAR_15: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 × (1 + GDP_BASELINE_GROWTH_RATE + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15 + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15 + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15 + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15)^15",
   latex: "\\begin{gathered}\nGDP_{treaty,15} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,15} + g_{peace,treaty,15} + g_{cyber,treaty,15} + g_{health,treaty,15})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [203650923889733.5, 260537449147809.5],
+  confidenceInterval: [203650923890000.0, 260537449148000.0],
   inputs: ["GLOBAL_GDP_2025", "GDP_BASELINE_GROWTH_RATE", "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15", "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15", "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15", "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15"],
   computeExpr: "(GLOBAL_GDP_2025 * Math.pow((((((1.0 + GDP_BASELINE_GROWTH_RATE) + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_15) + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_15) + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_15) + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_15), 15.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10693,7 +10693,7 @@ export const TREATY_TRAJECTORY_GDP_YEAR_15: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_GDP_YEAR_20: Parameter = {
-  value: 321739239257973.44,
+  value: 321739239258000.0,
   parameterName: "TREATY_TRAJECTORY_GDP_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_gdp_year_20",
   unit: "USD",
@@ -10703,7 +10703,7 @@ export const TREATY_TRAJECTORY_GDP_YEAR_20: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 × (1 + GDP_BASELINE_GROWTH_RATE + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20 + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20 + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20 + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20)^20",
   latex: "\\begin{gathered}\nGDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [244597673273709.72, 403909183025044.25],
+  confidenceInterval: [244597673274000.0, 403909183025000.0],
   inputs: ["GLOBAL_GDP_2025", "GDP_BASELINE_GROWTH_RATE", "TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20", "TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20", "TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20", "TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20"],
   computeExpr: "(GLOBAL_GDP_2025 * Math.pow((((((1.0 + GDP_BASELINE_GROWTH_RATE) + TREATY_REDIRECT_GDP_GROWTH_BONUS_YEAR_20) + TREATY_PEACE_RECOVERY_GDP_GROWTH_BONUS_YEAR_20) + TREATY_CYBERCRIME_RECOVERY_GDP_GROWTH_BONUS_YEAR_20) + TREATY_HEALTH_RECOVERY_GDP_GROWTH_BONUS_YEAR_20), 20.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -10711,7 +10711,7 @@ export const TREATY_TRAJECTORY_GDP_YEAR_20: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
-  value: 518878.77688228886,
+  value: 518878.776882,
   parameterName: "TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_lifetime_income_gain_per_capita",
   unit: "USD",
@@ -10721,7 +10721,7 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   latex: "\\begin{gathered}\n\\Delta Y_{lifetime,treaty} = Y_{cum,treaty} - Y_{cum,earth} = \\$1.42M - \\$904K = \\$519K\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [221702.82258384544, 860929.7648531914],
+  confidenceInterval: [221702.822584, 860929.764853],
   inputs: ["TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME", "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME"],
   computeExpr: "(TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -10729,7 +10729,7 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
-  value: 1.574039382589129,
+  value: 1.57403938259,
   parameterName: "TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_lifetime_income_multiplier",
   unit: "x",
@@ -10739,7 +10739,7 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   latex: "\\begin{gathered}\nk_{lifetime,treaty:earth} = \\frac{Y_{cum,treaty}}{Y_{cum,earth}} = \\frac{\\$1.42M}{\\$904K} = 1.57\n\\\\[0.5em]\n\\text{where } Y_{cum,treaty} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,treaty})((1+g_{pc,treaty})^{20}-1)}{g_{pc,treaty}} + \\bar{y}_{treaty,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [1.2449976245924124, 1.9232845478387173],
+  confidenceInterval: [1.24499762459, 1.92328454784],
   inputs: ["TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME", "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME"],
   computeExpr: "(TREATY_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html",
@@ -10747,7 +10747,7 @@ export const TREATY_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
-  value: 4381.418260557408,
+  value: 4381.41826056,
   parameterName: "TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_median_after_tax_income_year_15",
   unit: "USD",
@@ -10757,7 +10757,7 @@ export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_15 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP * (1 - TREATY_RATCHET_TERMINAL_SHARE)) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL)^15 * (1 + MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * TREATY_DISEASE_CURE_FRACTION_15YR) * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{treaty,15} = \\bar{y}_{treaty,15} \\times (1 - s_{mil} \\times (1 - s_{ratchet})) \\times \\rho_{med} \\times (1 - e_{med})^{15} \\times (1 + r_{relief} \\times f_{cure,15,treaty}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,15} = \\frac{GDP_{treaty,15}}{Pop_{2040}} = \\frac{\\$238T}{8.9B} = \\$26.7K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,15} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,15} + g_{peace,treaty,15} + g_{cyber,treaty,15} + g_{health,treaty,15})^{15}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,15} = \\bar{s}_{treaty,15} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 4.4\\% \\times 5.5\\% \\times 2 \\times 1.67 = 0.807\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,15} = s_{ratchet} \\times 0.212 = 10\\% \\times 0.212 = 4.4\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,15} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,15}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,15} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,15} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,15} = \\frac{f_{cure,15,treaty} - d_{disease}}{-7.22} = \\frac{100\\% - 13\\%}{-7.22} = 0.818\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 3 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [3291.811145265844, 5410.7653011627235],
+  confidenceInterval: [3291.81114527, 5410.76530116],
   inputs: ["TREATY_TRAJECTORY_AVG_INCOME_YEAR_15", "GLOBAL_MILITARY_SHARE_OF_GDP", "TREATY_RATCHET_TERMINAL_SHARE", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL", "MEDIAN_HEALTH_BURDEN_RELIEF_SHARE", "TREATY_DISEASE_CURE_FRACTION_15YR", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "(((((TREATY_TRAJECTORY_AVG_INCOME_YEAR_15 * (1.0 - (GLOBAL_MILITARY_SHARE_OF_GDP * (1.0 - TREATY_RATCHET_TERMINAL_SHARE)))) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * Math.pow((1.0 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL), 15.0)) * (1.0 + (MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * TREATY_DISEASE_CURE_FRACTION_15YR))) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -10765,7 +10765,7 @@ export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_15: Parameter = {
 };
 
 export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
-  value: 5735.886197775944,
+  value: 5735.88619778,
   parameterName: "TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_trajectory_median_after_tax_income_year_20",
   unit: "USD",
@@ -10775,7 +10775,7 @@ export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_AVG_INCOME_YEAR_20 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP * (1 - TREATY_RATCHET_TERMINAL_SHARE)) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL)^20 * (1 + MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * TREATY_DISEASE_CURE_FRACTION_20YR) * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{treaty,20} = \\bar{y}_{treaty,20} \\times (1 - s_{mil} \\times (1 - s_{ratchet})) \\times \\rho_{med} \\times (1 - e_{med})^{20} \\times (1 + r_{relief} \\times f_{cure,20,treaty}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [3967.1075840750073, 7767.546577547389],
+  confidenceInterval: [3967.10758408, 7767.54657755],
   inputs: ["TREATY_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_MILITARY_SHARE_OF_GDP", "TREATY_RATCHET_TERMINAL_SHARE", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL", "MEDIAN_HEALTH_BURDEN_RELIEF_SHARE", "TREATY_DISEASE_CURE_FRACTION_20YR", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "(((((TREATY_TRAJECTORY_AVG_INCOME_YEAR_20 * (1.0 - (GLOBAL_MILITARY_SHARE_OF_GDP * (1.0 - TREATY_RATCHET_TERMINAL_SHARE)))) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * Math.pow((1.0 - GLOBAL_MEDIAN_SHARE_EROSION_RATE_ANNUAL), 20.0)) * (1.0 + (MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * TREATY_DISEASE_CURE_FRACTION_20YR))) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -10783,7 +10783,7 @@ export const TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
 };
 
 export const TREATY_VS_BED_NETS_MULTIPLIER: Parameter = {
-  value: 50306.6869282389,
+  value: 50306.6869282,
   parameterName: "TREATY_VS_BED_NETS_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_vs_bed_nets_multiplier",
   unit: "x",
@@ -10793,7 +10793,7 @@ export const TREATY_VS_BED_NETS_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "BED_NETS_COST_PER_DALY ÷ TREATY_COST_PER_DALY",
   latex: "\\begin{gathered}\nk_{treaty:nets} = \\frac{Cost_{nets}}{Cost_{treaty,DALY}} = \\frac{\\$89}{\\$0.00177} = 50{,}300\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [25003.839138854804, 111064.89950887734],
+  confidenceInterval: [25003.8391389, 111064.899509],
   inputs: ["BED_NETS_COST_PER_DALY", "TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG"],
   computeExpr: "(BED_NETS_COST_PER_DALY / TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10801,7 +10801,7 @@ export const TREATY_VS_BED_NETS_MULTIPLIER: Parameter = {
 };
 
 export const TREATY_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
-  value: 1.8914164202745185,
+  value: 1.89141642027,
   parameterName: "TREATY_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_vs_current_median_income_multiplier_year_20",
   unit: "x",
@@ -10811,7 +10811,7 @@ export const TREATY_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
   confidence: "high",
   formula: "TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20 / CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20",
   latex: "\\begin{gathered}\nk_{med,treaty:base} = \\frac{\\tilde{m}_{treaty,20}}{\\tilde{m}_{base,20}} = \\frac{\\$5.74K}{\\$3.03K} = 1.89\n\\\\[0.5em]\n\\text{where } \\tilde{m}_{treaty,20} = \\bar{y}_{treaty,20} \\times (1 - s_{mil} \\times (1 - s_{ratchet})) \\times \\rho_{med} \\times (1 - e_{med})^{20} \\times (1 + r_{relief} \\times f_{cure,20,treaty}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{treaty,20} = \\frac{GDP_{treaty,20}}{Pop_{2045}} = \\frac{\\$322T}{9.2B} = \\$35K\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\tilde{m}_{base,20} = \\bar{y}_{base,20} \\times (1 - s_{mil} \\times \\left(\\frac{1+g_{mil,10yr}}{1+g_{base}}\\right)^{20}) \\times \\rho_{med} \\times (1 - e_{med})^{20} \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\end{gathered}",
-  confidenceInterval: [1.4168752504356648, 2.385980475889108],
+  confidenceInterval: [1.41687525044, 2.38598047589],
   inputs: ["TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20", "CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20"],
   computeExpr: "(TREATY_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20 / CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -10819,7 +10819,7 @@ export const TREATY_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
 };
 
 export const TREATY_VS_DIRECT_FUNDING_LEVERAGE: Parameter = {
-  value: 475.6594654774342,
+  value: 475.659465477,
   parameterName: "TREATY_VS_DIRECT_FUNDING_LEVERAGE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-treaty_vs_direct_funding_leverage",
   unit: "x",
@@ -10829,7 +10829,7 @@ export const TREATY_VS_DIRECT_FUNDING_LEVERAGE: Parameter = {
   confidence: "high",
   formula: "DIRECT_PRAGMATIC_TRIAL_FUNDING_COST_PER_DALY ÷ TREATY_COST_PER_DALY",
   latex: "\\begin{gathered}\nLeverage_{treaty} = \\frac{Cost_{direct,DALY}}{Cost_{treaty,DALY}} = \\frac{\\$0.842}{\\$0.00177} = 476\n\\\\[0.5em]\n\\text{where } Cost_{direct,DALY} = \\frac{NPV_{direct}}{DALYs_{max}} = \\frac{\\$476B}{565B} = \\$0.842\n\\\\[0.5em]\n\\text{where } NPV_{direct} = \\frac{T_{queue,trial}}{Funding_{trial,ref} \\times r_{discount}} = \\frac{36}{\\$21.8B \\times 3\\%} = \\$476B\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } Cost_{treaty,DALY} = \\frac{Cost_{campaign}}{DALYs_{max}} = \\frac{\\$1B}{565B} = \\$0.00177\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [149.21434540247873, 830.4175771781782],
+  confidenceInterval: [149.214345402, 830.417577178],
   inputs: ["DFDA_DIRECT_FUNDING_COST_PER_DALY", "TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG"],
   computeExpr: "(DFDA_DIRECT_FUNDING_COST_PER_DALY / TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10837,7 +10837,7 @@ export const TREATY_VS_DIRECT_FUNDING_LEVERAGE: Parameter = {
 };
 
 export const TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR: Parameter = {
-  value: 246.5582686533341,
+  value: 246.558268653,
   parameterName: "TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-trial_capacity_cumulative_years_20yr",
   unit: "years",
@@ -10847,7 +10847,7 @@ export const TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR: Parameter = {
   confidence: "high",
   formula: "PRAGMATIC_TRIAL_CAPACITY_MULTIPLIER × 20 YEARS",
   latex: "\\begin{gathered}\nCapacity_{20yr} = k_{capacity} \\times 20 = 12.3 \\times 20 = 247\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [98.49232721844535, 1015.178239287693],
+  confidenceInterval: [98.4923272184, 1015.17823929],
   inputs: ["DFDA_TRIAL_CAPACITY_MULTIPLIER"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_MULTIPLIER * 20.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html",
@@ -10855,7 +10855,7 @@ export const TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR: Parameter = {
 };
 
 export const TYPE_II_ERROR_COST_RATIO: Parameter = {
-  value: 3388.9849281995425,
+  value: 3388.9849282,
   parameterName: "TYPE_II_ERROR_COST_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-type_ii_error_cost_ratio",
   unit: "ratio",
@@ -10865,7 +10865,7 @@ export const TYPE_II_ERROR_COST_RATIO: Parameter = {
   confidence: "medium",
   formula: "TYPE_II_COST ÷ TYPE_I_BENEFIT",
   latex: "\\begin{gathered}\nRatio_{TypeII} = \\frac{DALYs_{lag}}{DALY_{TypeI}} = \\frac{8.77B}{2.59M} = 3{,}390\n\\\\[0.5em]\n\\text{where } DALYs_{lag} = YLL_{lag} + YLD_{lag} = 7.9B + 873M = 8.77B\n\\\\[0.5em]\n\\text{where } YLL_{lag} = \\text{DEATHS\\_TOTAL} \\times (REMAINING_LIFE_EXPECTANCY_AT_60 - (\\text{MEAN\\_AGE\\_OF\\_DEATH} - 60))\n\\\\[0.5em]\n\\text{where } Deaths_{lag} = T_{lag} \\times Deaths_{disease,daily} \\times 338 = 8.2 \\times 150{,}000 \\times 338 = 416M\n\\\\[0.5em]\n\\text{where } YLD_{lag} = Deaths_{lag} \\times T_{suffering} \\times DW_{chronic} = 416M \\times 6 \\times 0.35 = 873M\n\\\\[0.5em]\n\\text{where } DALY_{TypeI} = DALY_{thal} \\times 62 = 41{,}800 \\times 62 = 2.59M\n\\\\[0.5em]\n\\text{where } DALY_{thal} = YLD_{thal} + YLL_{thal} = 13{,}000 + 28{,}800 = 41{,}800\n\\\\[0.5em]\n\\text{where } YLD_{thal} = DW_{thal} \\times N_{thal,survive} \\times LE_{thal} = 0.4 \\times 540 \\times 60 = 13{,}000\n\\\\[0.5em]\n\\text{where } N_{thal,survive} = N_{thal,US,prevent} \\times (1 - Rate_{thal,mort}) = 900 \\times (1 - 40\\%) = 540\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\\\[0.5em]\n\\text{where } YLL_{thal} = Deaths_{thal} \\times 80 = 360 \\times 80 = 28{,}800\n\\\\[0.5em]\n\\text{where } Deaths_{thal} = Rate_{thal,mort} \\times N_{thal,US,prevent} = 40\\% \\times 900 = 360\n\\end{gathered}",
-  confidenceInterval: [1810.8336154119809, 5734.443691815757],
+  confidenceInterval: [1810.83361541, 5734.44369182],
   inputs: ["DFDA_EFFICACY_LAG_ELIMINATION_DALYS", "TYPE_I_ERROR_BENEFIT_DALYS"],
   computeExpr: "(DFDA_EFFICACY_LAG_ELIMINATION_DALYS / TYPE_I_ERROR_BENEFIT_DALYS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -10883,7 +10883,7 @@ export const TYPE_I_ERROR_BENEFIT_DALYS: Parameter = {
   confidence: "low",
   formula: "THALIDOMIDE_DALYS_PER_EVENT × 62 years",
   latex: "\\begin{gathered}\nDALY_{TypeI} = DALY_{thal} \\times 62 = 41{,}800 \\times 62 = 2.59M\n\\\\[0.5em]\n\\text{where } DALY_{thal} = YLD_{thal} + YLL_{thal} = 13{,}000 + 28{,}800 = 41{,}800\n\\\\[0.5em]\n\\text{where } YLD_{thal} = DW_{thal} \\times N_{thal,survive} \\times LE_{thal} = 0.4 \\times 540 \\times 60 = 13{,}000\n\\\\[0.5em]\n\\text{where } N_{thal,survive} = N_{thal,US,prevent} \\times (1 - Rate_{thal,mort}) = 900 \\times (1 - 40\\%) = 540\n\\\\[0.5em]\n\\text{where } N_{thal,US,prevent} = N_{thal,global} \\times Pct_{US,1960} = 15{,}000 \\times 6\\% = 900\n\\\\[0.5em]\n\\text{where } YLL_{thal} = Deaths_{thal} \\times 80 = 360 \\times 80 = 28{,}800\n\\\\[0.5em]\n\\text{where } Deaths_{thal} = Rate_{thal,mort} \\times N_{thal,US,prevent} = 40\\% \\times 900 = 360\n\\end{gathered}",
-  confidenceInterval: [1883479.0423438617, 3376981.896254324],
+  confidenceInterval: [1883479.04234, 3376981.89625],
   inputs: ["THALIDOMIDE_DALYS_PER_EVENT"],
   computeExpr: "(THALIDOMIDE_DALYS_PER_EVENT * 62.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
@@ -10891,7 +10891,7 @@ export const TYPE_I_ERROR_BENEFIT_DALYS: Parameter = {
 };
 
 export const UNEXPLORED_RATIO: Parameter = {
-  value: 0.996578947368421,
+  value: 0.996578947368,
   parameterName: "UNEXPLORED_RATIO",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-unexplored_ratio",
   unit: "percentage",
@@ -10901,7 +10901,7 @@ export const UNEXPLORED_RATIO: Parameter = {
   confidence: "high",
   formula: "1 - EXPLORATION_RATIO",
   latex: "\\begin{gathered}\nRatio_{unexplored} = 1 - \\frac{N_{tested}}{N_{combos}} = 1 - \\frac{32{,}500}{9.5M} = 99.7\\%\n\\\\[0.5em]\n\\text{where } N_{combos} = N_{safe} \\times N_{diseases,trial} = 9{,}500 \\times 1{,}000 = 9.5M\n\\end{gathered}",
-  confidenceInterval: [0.9943109439965041, 0.9980300991404861],
+  confidenceInterval: [0.994310943997, 0.99803009914],
   inputs: ["TESTED_RELATIONSHIPS_ESTIMATE", "DRUG_DISEASE_COMBINATIONS_POSSIBLE"],
   computeExpr: "(1.0 - (TESTED_RELATIONSHIPS_ESTIMATE / DRUG_DISEASE_COMBINATIONS_POSSIBLE))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html",
@@ -10919,7 +10919,7 @@ export const UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX: Parameter = {
   confidence: "high",
   formula: "POPULATION × ALL_IN_COST_PER_CITIZEN",
   latex: "\\begin{gathered}\nCost_{opex,ann} \\\\\n= Pop_{US} \\times Cost_{ann} \\\\\n= 335M \\times \\$0.3 \\\\\n= \\$100M\n\\end{gathered}",
-  confidenceInterval: [33502610.72389832, 250250471.63982713],
+  confidenceInterval: [33502610.7239, 250250471.64],
   inputs: ["US_POPULATION_2024", "UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL"],
   computeExpr: "(US_POPULATION_2024 * UNIVERSAL_SECURITY_ADMIN_ALL_IN_COST_PER_CITIZEN_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/solution/universal-security-administration.html",
@@ -10927,7 +10927,7 @@ export const UNIVERSAL_SECURITY_ADMIN_ANNUAL_OPEX: Parameter = {
 };
 
 export const US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT: Parameter = {
-  value: 0.9672686230248307,
+  value: 0.967268623025,
   parameterName: "US_1939_MILITARY_SPENDING_PCT_LOWER_THAN_CURRENT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_1939_military_spending_pct_lower_than_current",
   unit: "percent",
@@ -10961,7 +10961,7 @@ export const US_CONGRESS_FULL_ADVOCACY_COST: Parameter = {
 };
 
 export const US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT: Parameter = {
-  value: 0.7923250564334086,
+  value: 0.792325056433,
   parameterName: "US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_defense_first_principles_cut_pct",
   unit: "percent",
@@ -10971,7 +10971,7 @@ export const US_DEFENSE_FIRST_PRINCIPLES_CUT_PCT: Parameter = {
   confidence: "medium",
   formula: "1 - (US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL / US_MILITARY_SPENDING_2024_ANNUAL)",
   latex: "\\begin{gathered}\nCut_{FP} = 1 - \\frac{D_{optimal}}{Spending_{US,2024}} = 1 - \\frac{\\$184B}{\\$886B} = 79.2\\%\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [0.757175929247832, 0.822107712881769],
+  confidenceInterval: [0.757175929248, 0.822107712882],
   inputs: ["US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL", "US_MILITARY_SPENDING_2024_ANNUAL"],
   computeExpr: "(1.0 - (US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL / US_MILITARY_SPENDING_2024_ANNUAL))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
@@ -10989,7 +10989,7 @@ export const US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL: Parameter = {
   confidence: "medium",
   formula: "Nuclear + HomelandAirMissile + CoastGuard + NationalGuard + Cyber + MobilizationHedge",
   latex: "\\begin{gathered}\nD_{optimal} \\\\\n= D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} \\\\\n+ D_{hedge} \\\\\n= \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B \\\\\n= \\$184B\n\\end{gathered}",
-  confidenceInterval: [157612566386.75262, 215142126686.42087],
+  confidenceInterval: [157612566387.0, 215142126686.0],
   inputs: ["US_DEFENSE_FP_NUCLEAR_DETERRENT", "US_DEFENSE_FP_HOMELAND_AIR_MISSILE", "US_DEFENSE_FP_COAST_GUARD", "US_DEFENSE_FP_NATIONAL_GUARD", "US_DEFENSE_FP_CYBER", "US_DEFENSE_FP_MOBILIZATION_HEDGE"],
   computeExpr: "(((((US_DEFENSE_FP_NUCLEAR_DETERRENT + US_DEFENSE_FP_HOMELAND_AIR_MISSILE) + US_DEFENSE_FP_COAST_GUARD) + US_DEFENSE_FP_NATIONAL_GUARD) + US_DEFENSE_FP_CYBER) + US_DEFENSE_FP_MOBILIZATION_HEDGE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/eisenhower-curve.html",
@@ -10997,7 +10997,7 @@ export const US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL: Parameter = {
 };
 
 export const US_FEDERAL_SPENDING_PER_CAPITA: Parameter = {
-  value: 20298.507462686568,
+  value: 20298.5074627,
   parameterName: "US_FEDERAL_SPENDING_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_federal_spending_per_capita",
   unit: "USD/person",
@@ -11007,7 +11007,7 @@ export const US_FEDERAL_SPENDING_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "US_FEDERAL_SPENDING_2024 / US_POPULATION_2024",
   latex: "\\begin{gathered}\nSpend_{fed,pc} \\\\\n= \\frac{Spending_{US,fed}}{Pop_{US}} \\\\\n= \\frac{\\$6.8T}{335M} \\\\\n= \\$20.3K\n\\end{gathered}",
-  confidenceInterval: [20052.438664005276, 20553.342948960668],
+  confidenceInterval: [20052.438664, 20553.342949],
   inputs: ["US_FEDERAL_SPENDING_2024", "US_POPULATION_2024"],
   computeExpr: "(US_FEDERAL_SPENDING_2024 / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html",
@@ -11015,7 +11015,7 @@ export const US_FEDERAL_SPENDING_PER_CAPITA: Parameter = {
 };
 
 export const US_FED_DISCRETIONARY_EFFICIENCY: Parameter = {
-  value: 0.35411764705882354,
+  value: 0.354117647059,
   parameterName: "US_FED_DISCRETIONARY_EFFICIENCY",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_fed_discretionary_efficiency",
   unit: "percent",
@@ -11025,7 +11025,7 @@ export const US_FED_DISCRETIONARY_EFFICIENCY: Parameter = {
   confidence: "medium",
   formula: "1 - (CAT1 / DISCRETIONARY)",
   latex: "\\begin{gathered}\nE_{US,disc} = 1 - \\frac{W_{cat1}}{Spending_{US,disc}} = 1 - \\frac{\\$1.1T}{\\$1.7T} = 35.4\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [0.3105714452719395, 0.39460627942629456],
+  confidenceInterval: [0.310571445272, 0.394606279426],
   inputs: ["US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING", "US_FED_DISCRETIONARY_SPENDING_2024"],
   computeExpr: "(1.0 - (US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING / US_FED_DISCRETIONARY_SPENDING_2024))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11033,7 +11033,7 @@ export const US_FED_DISCRETIONARY_EFFICIENCY: Parameter = {
 };
 
 export const US_FED_DISCRETIONARY_WASTE_PCT: Parameter = {
-  value: 0.6458823529411765,
+  value: 0.645882352941,
   parameterName: "US_FED_DISCRETIONARY_WASTE_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_fed_discretionary_waste_pct",
   unit: "percent",
@@ -11043,7 +11043,7 @@ export const US_FED_DISCRETIONARY_WASTE_PCT: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING / US_FED_DISCRETIONARY_SPENDING_2024",
   latex: "\\begin{gathered}\nW_{US,\\%disc} = \\frac{W_{cat1}}{Spending_{US,disc}} = \\frac{\\$1.1T}{\\$1.7T} = 64.6\\%\n\\\\[0.5em]\n\\text{where } W_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [0.6053937205737054, 0.6894285547280605],
+  confidenceInterval: [0.605393720574, 0.689428554728],
   inputs: ["US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING", "US_FED_DISCRETIONARY_SPENDING_2024"],
   computeExpr: "(US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING / US_FED_DISCRETIONARY_SPENDING_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11051,7 +11051,7 @@ export const US_FED_DISCRETIONARY_WASTE_PCT: Parameter = {
 };
 
 export const US_GOVERNANCE_EFFICIENCY_GDP: Parameter = {
-  value: 0.8268241834607366,
+  value: 0.826824183461,
   parameterName: "US_GOVERNANCE_EFFICIENCY_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_governance_efficiency_gdp",
   unit: "percent",
@@ -11061,7 +11061,7 @@ export const US_GOVERNANCE_EFFICIENCY_GDP: Parameter = {
   confidence: "medium",
   formula: "1 - (US_GOV_WASTE_TOTAL / US_GDP)",
   latex: "\\begin{gathered}\nE_{US,GDP} = 1 - \\frac{W_{total,US}}{GDP_{US}} = 1 - \\frac{\\$4.98T}{\\$28.8T} = 82.7\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [0.8050423286748402, 0.8474744297933989],
+  confidenceInterval: [0.805042328675, 0.847474429793],
   inputs: ["US_GOV_WASTE_TOTAL", "US_GDP_2024"],
   computeExpr: "(1.0 - (US_GOV_WASTE_TOTAL / US_GDP_2024))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11079,7 +11079,7 @@ export const US_GOV_WASTE_CATEGORY_1_DIRECT_SPENDING: Parameter = {
   confidence: "medium",
   formula: "Military + Corporate + Drug War + Fossil + Agriculture",
   latex: "\\begin{gathered}\nW_{cat1} = W_{military} + W_{corporate} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$702B + \\$181B + \\$90B + \\$50B + \\$75B = \\$1.1T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [1029169324975.2993, 1172028543037.703],
+  confidenceInterval: [1029169324980.0, 1172028543040.0],
   inputs: ["US_GOV_WASTE_MILITARY_OVERSPEND", "US_GOV_WASTE_CORPORATE_WELFARE", "US_GOV_WASTE_DRUG_WAR", "US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES", "US_GOV_WASTE_AGRICULTURAL_SUBSIDIES"],
   computeExpr: "((((US_GOV_WASTE_MILITARY_OVERSPEND + US_GOV_WASTE_CORPORATE_WELFARE) + US_GOV_WASTE_DRUG_WAR) + US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES) + US_GOV_WASTE_AGRICULTURAL_SUBSIDIES)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11097,7 +11097,7 @@ export const US_GOV_WASTE_CATEGORY_2_COMPLIANCE: Parameter = {
   confidence: "medium",
   formula: "Tax Compliance + Regulatory Red Tape",
   latex: "\\begin{gathered}\nW_{cat2} \\\\\n= W_{tax} + W_{regulatory} \\\\\n= \\$546B + \\$580B \\\\\n= \\$1.13T\n\\end{gathered}",
-  confidenceInterval: [855974290256.7675, 1488932657560.1143],
+  confidenceInterval: [855974290257.0, 1488932657560.0],
   inputs: ["US_GOV_WASTE_TAX_COMPLIANCE", "US_GOV_WASTE_REGULATORY_RED_TAPE"],
   computeExpr: "(US_GOV_WASTE_TAX_COMPLIANCE + US_GOV_WASTE_REGULATORY_RED_TAPE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11115,7 +11115,7 @@ export const US_GOV_WASTE_CATEGORY_3_GDP_LOSS: Parameter = {
   confidence: "medium",
   formula: "Housing/Zoning + Tariffs",
   latex: "\\begin{gathered}\nW_{cat3} \\\\\n= W_{housing} + W_{tariffs} \\\\\n= \\$1.4T + \\$160B \\\\\n= \\$1.56T\n\\end{gathered}",
-  confidenceInterval: [1114251999807.2551, 2095723110542.4907],
+  confidenceInterval: [1114251999810.0, 2095723110540.0],
   inputs: ["US_GOV_WASTE_HOUSING_ZONING", "US_GOV_WASTE_TARIFFS"],
   computeExpr: "(US_GOV_WASTE_HOUSING_ZONING + US_GOV_WASTE_TARIFFS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11133,7 +11133,7 @@ export const US_GOV_WASTE_CATEGORY_4_SYSTEM: Parameter = {
   confidence: "high",
   formula: "Healthcare Inefficiency",
   latex: "W_{cat4} = W_{health} = \\$1.2T = \\$1.2T",
-  confidenceInterval: [1000000000000.0, 1441436369325.5142],
+  confidenceInterval: [1000000000000.0, 1441436369330.0],
   inputs: ["US_GOV_WASTE_HEALTHCARE_INEFFICIENCY"],
   computeExpr: "US_GOV_WASTE_HEALTHCARE_INEFFICIENCY",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11151,7 +11151,7 @@ export const US_GOV_WASTE_MILITARY_OVERSPEND: Parameter = {
   confidence: "medium",
   formula: "US_MILITARY_SPENDING_2024_ANNUAL - US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL",
   latex: "\\begin{gathered}\nW_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [670857873313.5792, 728387433613.2473],
+  confidenceInterval: [670857873314.0, 728387433613.0],
   inputs: ["US_MILITARY_SPENDING_2024_ANNUAL", "US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL"],
   computeExpr: "(US_MILITARY_SPENDING_2024_ANNUAL - US_DEFENSE_FIRST_PRINCIPLES_OPTIMAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11159,7 +11159,7 @@ export const US_GOV_WASTE_MILITARY_OVERSPEND: Parameter = {
 };
 
 export const US_GOV_WASTE_PCT_GDP: Parameter = {
-  value: 0.17317581653926337,
+  value: 0.173175816539,
   parameterName: "US_GOV_WASTE_PCT_GDP",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_pct_gdp",
   unit: "percent",
@@ -11169,7 +11169,7 @@ export const US_GOV_WASTE_PCT_GDP: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / US_GDP",
   latex: "\\begin{gathered}\nW_{US,\\%GDP} = \\frac{W_{total,US}}{GDP_{US}} = \\frac{\\$4.98T}{\\$28.8T} = 17.3\\%\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [0.15252557020660104, 0.19495767132515984],
+  confidenceInterval: [0.152525570207, 0.194957671325],
   inputs: ["US_GOV_WASTE_TOTAL", "US_GDP_2024"],
   computeExpr: "(US_GOV_WASTE_TOTAL / US_GDP_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/optimocracy-paper.html",
@@ -11177,7 +11177,7 @@ export const US_GOV_WASTE_PCT_GDP: Parameter = {
 };
 
 export const US_GOV_WASTE_PER_CAPITA_ANNUAL: Parameter = {
-  value: 14877.611940298508,
+  value: 14877.6119403,
   parameterName: "US_GOV_WASTE_PER_CAPITA_ANNUAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_per_capita_annual",
   unit: "USD",
@@ -11187,7 +11187,7 @@ export const US_GOV_WASTE_PER_CAPITA_ANNUAL: Parameter = {
   confidence: "high",
   formula: "US_GOV_WASTE_TOTAL / US_POPULATION",
   latex: "\\begin{gathered}\nUS_{annual} = \\frac{W_{total,US}}{Pop_{US}} = \\frac{\\$4.98T}{335M} = \\$14.9K\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [13109.54482834179, 16752.943713715737],
+  confidenceInterval: [13109.5448283, 16752.9437137],
   inputs: ["US_GOV_WASTE_TOTAL", "US_POPULATION_2024"],
   computeExpr: "(US_GOV_WASTE_TOTAL / US_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11205,7 +11205,7 @@ export const US_GOV_WASTE_QALY_EQUIVALENTS: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / QALY_THRESHOLD",
   latex: "\\begin{gathered}\nW_{US,QALY} = \\frac{W_{total,US}}{QALY_{threshold}} = \\frac{\\$4.98T}{\\$100K} = 49.8M\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [43896859.10545978, 56108817.807381],
+  confidenceInterval: [43896859.1055, 56108817.8074],
   inputs: ["US_GOV_WASTE_TOTAL", "MEDICAL_QALY_THRESHOLD"],
   computeExpr: "(US_GOV_WASTE_TOTAL / MEDICAL_QALY_THRESHOLD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11223,7 +11223,7 @@ export const US_GOV_WASTE_RAW_TOTAL: Parameter = {
   confidence: "medium",
   formula: "SUM(all 10 components)",
   latex: "\\begin{gathered}\nW_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [4389685910545.978, 5610881780738.1],
+  confidenceInterval: [4389685910550.0, 5610881780740.0],
   inputs: ["US_GOV_WASTE_HEALTHCARE_INEFFICIENCY", "US_GOV_WASTE_HOUSING_ZONING", "US_GOV_WASTE_MILITARY_OVERSPEND", "US_GOV_WASTE_REGULATORY_RED_TAPE", "US_GOV_WASTE_TAX_COMPLIANCE", "US_GOV_WASTE_CORPORATE_WELFARE", "US_GOV_WASTE_TARIFFS", "US_GOV_WASTE_DRUG_WAR", "US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES", "US_GOV_WASTE_AGRICULTURAL_SUBSIDIES"],
   computeExpr: "(((((((((US_GOV_WASTE_HEALTHCARE_INEFFICIENCY + US_GOV_WASTE_HOUSING_ZONING) + US_GOV_WASTE_MILITARY_OVERSPEND) + US_GOV_WASTE_REGULATORY_RED_TAPE) + US_GOV_WASTE_TAX_COMPLIANCE) + US_GOV_WASTE_CORPORATE_WELFARE) + US_GOV_WASTE_TARIFFS) + US_GOV_WASTE_DRUG_WAR) + US_GOV_WASTE_FOSSIL_FUEL_SUBSIDIES) + US_GOV_WASTE_AGRICULTURAL_SUBSIDIES)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11241,7 +11241,7 @@ export const US_GOV_WASTE_RECOVERABLE: Parameter = {
   confidence: "low",
   formula: "US_GOV_WASTE_TOTAL x 0.50",
   latex: "\\begin{gathered}\nW_{US,recoverable} = W_{total,US} \\times 0.5 = \\$4.98T \\times 0.5 = \\$2.49T\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [2194842955272.989, 2805440890369.05],
+  confidenceInterval: [2194842955270.0, 2805440890370.0],
   inputs: ["US_GOV_WASTE_TOTAL"],
   computeExpr: "(US_GOV_WASTE_TOTAL * 0.5)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11259,7 +11259,7 @@ export const US_GOV_WASTE_TOTAL: Parameter = {
   confidence: "medium",
   formula: "SUM(all components)",
   latex: "\\begin{gathered}\nW_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [4389685910545.978, 5610881780738.1],
+  confidenceInterval: [4389685910550.0, 5610881780740.0],
   inputs: ["US_GOV_WASTE_RAW_TOTAL", "US_GOV_WASTE_OVERLAP_DISCOUNT"],
   computeExpr: "(US_GOV_WASTE_RAW_TOTAL * US_GOV_WASTE_OVERLAP_DISCOUNT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11267,7 +11267,7 @@ export const US_GOV_WASTE_TOTAL: Parameter = {
 };
 
 export const US_GOV_WASTE_VSL_EQUIVALENTS: Parameter = {
-  value: 363795.6204379562,
+  value: 363795.620438,
   parameterName: "US_GOV_WASTE_VSL_EQUIVALENTS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_vsl_equivalents",
   unit: "people",
@@ -11277,7 +11277,7 @@ export const US_GOV_WASTE_VSL_EQUIVALENTS: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / DOT_VSL",
   latex: "\\begin{gathered}\nW_{US,VSL} = \\frac{W_{total,US}}{VSL_{DOT}} = \\frac{\\$4.98T}{\\$13.7M} = 364{,}000\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [320415.0299668597, 409553.4146524161],
+  confidenceInterval: [320415.029967, 409553.414652],
   inputs: ["US_GOV_WASTE_TOTAL", "DOT_VALUE_OF_STATISTICAL_LIFE"],
   computeExpr: "(US_GOV_WASTE_TOTAL / DOT_VALUE_OF_STATISTICAL_LIFE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11285,7 +11285,7 @@ export const US_GOV_WASTE_VSL_EQUIVALENTS: Parameter = {
 };
 
 export const US_GOV_WASTE_VS_TREATY_MULTIPLIER: Parameter = {
-  value: 183.23529411764707,
+  value: 183.235294118,
   parameterName: "US_GOV_WASTE_VS_TREATY_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_gov_waste_vs_treaty_multiplier",
   unit: "ratio",
@@ -11295,7 +11295,7 @@ export const US_GOV_WASTE_VS_TREATY_MULTIPLIER: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_TOTAL / TREATY_ANNUAL_FUNDING",
   latex: "\\begin{gathered}\nk_{waste:treaty} = \\frac{W_{total,US}}{Funding_{treaty}} = \\frac{\\$4.98T}{\\$27.2B} = 183\n\\\\[0.5em]\n\\text{where } W_{total,US} = W_{raw,US} \\times \\delta_{overlap} = \\$4.98T \\times 1 = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{raw,US} = W_{health} + W_{housing} + W_{military} + W_{regulatory} + W_{tax} + W_{corporate} + W_{tariffs} + W_{drugs} + W_{fossil} + W_{agriculture} = \\$1.2T + \\$1.4T + \\$702B + \\$580B + \\$546B + \\$181B + \\$160B + \\$90B + \\$50B + \\$75B = \\$4.98T\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\end{gathered}",
-  confidenceInterval: [161.38551141713154, 206.28241840948897],
+  confidenceInterval: [161.385511417, 206.282418409],
   inputs: ["US_GOV_WASTE_TOTAL", "TREATY_ANNUAL_FUNDING"],
   computeExpr: "(US_GOV_WASTE_TOTAL / TREATY_ANNUAL_FUNDING)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/us-efficiency-audit.html",
@@ -11313,7 +11313,7 @@ export const US_MAJOR_DISEASES_TOTAL_ANNUAL_COST: Parameter = {
   confidence: "high",
   formula: "DIABETES + ALZHEIMERS + HEART + CANCER",
   latex: "\\begin{gathered}\nCost_{disease,US} \\\\\n= Cost_{ALZ,US} + Cost_{cancer,US} + Cost_{diabetes,US} \\\\\n+ Cost_{heart,US} \\\\\n= \\$355B + \\$208B + \\$327B + \\$363B \\\\\n= \\$1.25T\n\\end{gathered}",
-  confidenceInterval: [1177394930253.4158, 1329089231537.2205],
+  confidenceInterval: [1177394930250.0, 1329089231540.0],
   inputs: ["US_ALZHEIMERS_ANNUAL_COST", "US_CANCER_ANNUAL_COST", "US_DIABETES_ANNUAL_COST", "US_HEART_DISEASE_ANNUAL_COST"],
   computeExpr: "(((US_DIABETES_ANNUAL_COST + US_ALZHEIMERS_ANNUAL_COST) + US_HEART_DISEASE_ANNUAL_COST) + US_CANCER_ANNUAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html",
@@ -11321,7 +11321,7 @@ export const US_MAJOR_DISEASES_TOTAL_ANNUAL_COST: Parameter = {
 };
 
 export const US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE: Parameter = {
-  value: 755651237.8902045,
+  value: 755651237.89,
   parameterName: "US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_military_overspend_patients_fundable",
   unit: "patients/year",
@@ -11331,7 +11331,7 @@ export const US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE: Parameter = {
   confidence: "medium",
   formula: "US_GOV_WASTE_MILITARY_OVERSPEND / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nN_{fundable,overspend} = \\frac{W_{military}}{Cost_{pragmatic,pt}} = \\frac{\\$702B}{\\$929} = 756M\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [297936110.2800162, 3041858754.455645],
+  confidenceInterval: [297936110.28, 3041858754.46],
   inputs: ["US_GOV_WASTE_MILITARY_OVERSPEND", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(US_GOV_WASTE_MILITARY_OVERSPEND / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-benefit-of-hegemony.html",
@@ -11339,7 +11339,7 @@ export const US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE: Parameter = {
 };
 
 export const US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
-  value: 397.7111778369498,
+  value: 397.711177837,
   parameterName: "US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_military_overspend_trial_capacity_multiplier",
   unit: "x",
@@ -11349,7 +11349,7 @@ export const US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
   confidence: "medium",
   formula: "US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE / CURRENT_TRIAL_SLOTS_AVAILABLE",
   latex: "\\begin{gathered}\nk_{capacity,overspend} = \\frac{N_{fundable,overspend}}{Slots_{curr}} = \\frac{756M}{1.9M} = 398\n\\\\[0.5em]\n\\text{where } N_{fundable,overspend} = \\frac{W_{military}}{Cost_{pragmatic,pt}} = \\frac{\\$702B}{\\$929} = 756M\n\\\\[0.5em]\n\\text{where } W_{military} = Spending_{US,2024} - D_{optimal} = \\$886B - \\$184B = \\$702B\n\\\\[0.5em]\n\\text{where } D_{optimal} = D_{nuclear} + D_{air} + D_{cg} + D_{guard} + D_{cyber} + D_{hedge} = \\$30B + \\$35B + \\$14B + \\$30B + \\$15B + \\$60B = \\$184B\n\\end{gathered}",
-  confidenceInterval: [158.36645234934966, 1634.301660236891],
+  confidenceInterval: [158.366452349, 1634.30166024],
   inputs: ["US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE", "CURRENT_TRIAL_SLOTS_AVAILABLE"],
   computeExpr: "(US_MILITARY_OVERSPEND_PATIENTS_FUNDABLE / CURRENT_TRIAL_SLOTS_AVAILABLE)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-benefit-of-hegemony.html",
@@ -11357,7 +11357,7 @@ export const US_MILITARY_OVERSPEND_TRIAL_CAPACITY_MULTIPLIER: Parameter = {
 };
 
 export const US_MILITARY_SPENDING_CURRENT_VS_PREWAR_MULTIPLIER: Parameter = {
-  value: 30.551724137931036,
+  value: 30.5517241379,
   parameterName: "US_MILITARY_SPENDING_CURRENT_VS_PREWAR_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_military_spending_current_vs_prewar_multiplier",
   unit: "x",
@@ -11384,7 +11384,7 @@ export const US_POLITICAL_REFORM_INVESTMENT_TOTAL: Parameter = {
   confidence: "low",
   formula: "(CAMPAIGN + LOBBYING×2) × EFFORT_MULTIPLIER + CONGRESS_CAREER",
   latex: "\\begin{gathered}\nCost_{US,total} \\\\\n= (Cost_{campaign} \\\\\n+ Cost_{lobby} \\times 2) \\times \\mu_{effort} + Cost_{career}\n\\end{gathered}",
-  confidenceInterval: [17493915363.950916, 36268768515.951706],
+  confidenceInterval: [17493915364.0, 36268768516.0],
   inputs: ["US_TOTAL_FEDERAL_CAMPAIGN_SPENDING_2024", "US_TOTAL_LOBBYING_ANNUAL", "US_POLITICAL_EFFORT_MULTIPLIER", "US_CONGRESS_FULL_ADVOCACY_COST"],
   computeExpr: "(((US_TOTAL_FEDERAL_CAMPAIGN_SPENDING_2024 + (US_TOTAL_LOBBYING_ANNUAL * 2.0)) * US_POLITICAL_EFFORT_MULTIPLIER) + US_CONGRESS_FULL_ADVOCACY_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/cost-of-change-analysis.html",
@@ -11409,7 +11409,7 @@ export const US_SENATE_TREATY_ADVOCACY_COST: Parameter = {
 };
 
 export const US_VOTE_EXPECTED_VALUE: Parameter = {
-  value: 0.0003383084577114428,
+  value: 0.000338308457711,
   parameterName: "US_VOTE_EXPECTED_VALUE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-us_vote_expected_value",
   unit: "USD",
@@ -11419,7 +11419,7 @@ export const US_VOTE_EXPECTED_VALUE: Parameter = {
   confidence: "high",
   formula: "US_VOTE_DECISIVE_PROBABILITY x US_FEDERAL_SPENDING_PER_CAPITA",
   latex: "\\begin{gathered}\nEV_{vote} = P_{decisive} \\times Spend_{fed,pc} = 1\\text{ in }60M \\times \\$20.3K = \\$0.000338\n\\\\[0.5em]\n\\text{where } Spend_{fed,pc} = \\frac{Spending_{US,fed}}{Pop_{US}} = \\frac{\\$6.8T}{335M} = \\$20.3K\n\\end{gathered}",
-  confidenceInterval: [0.0003342073110667546, 0.00034255571581601115],
+  confidenceInterval: [0.000334207311067, 0.000342555715816],
   inputs: ["US_VOTE_DECISIVE_PROBABILITY", "US_FEDERAL_SPENDING_PER_CAPITA"],
   computeExpr: "(US_VOTE_DECISIVE_PROBABILITY * US_FEDERAL_SPENDING_PER_CAPITA)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/unrepresentative-democracy.html",
@@ -11454,7 +11454,7 @@ export const VICTORY_BOND_ANNUAL_RETURN_PCT: Parameter = {
   confidence: "high",
   formula: "PAYOUT ÷ CAMPAIGN_COST",
   latex: "\\begin{gathered}\nr_{bond} = \\frac{Payout_{bond,ann}}{Cost_{campaign}} = \\frac{\\$2.72B}{\\$1B} = 272\\%\n\\\\[0.5em]\n\\text{where } Payout_{bond,ann} = Funding_{treaty} \\times Pct_{bond} = \\$27.2B \\times 10\\% = \\$2.72B\n\\\\[0.5em]\n\\text{where } Funding_{treaty} = Spending_{mil} \\times Reduce_{treaty} = \\$2.72T \\times 1\\% = \\$27.2B\n\\\\[0.5em]\n\\text{where } Cost_{campaign} = Budget_{viral,base} + Budget_{lobby,treaty} + Budget_{reserve} = \\$250M + \\$650M + \\$100M = \\$1B\n\\end{gathered}",
-  confidenceInterval: [1.8433450155330258, 4.049526942608436],
+  confidenceInterval: [1.84334501553, 4.04952694261],
   inputs: ["VICTORY_BOND_ANNUAL_PAYOUT", "TREATY_CAMPAIGN_TOTAL_COST"],
   computeExpr: "(VICTORY_BOND_ANNUAL_PAYOUT / TREATY_CAMPAIGN_TOTAL_COST)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -11462,7 +11462,7 @@ export const VICTORY_BOND_ANNUAL_RETURN_PCT: Parameter = {
 };
 
 export const VOTER_LIVES_SAVED: Parameter = {
-  value: 2.6029909969470952,
+  value: 2.60299099695,
   parameterName: "VOTER_LIVES_SAVED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-voter_lives_saved",
   unit: "lives",
@@ -11472,7 +11472,7 @@ export const VOTER_LIVES_SAVED: Parameter = {
   confidence: "high",
   formula: "TOTAL_TIMELINE_SHIFT_LIVES_SAVED ÷ GLOBAL_REGISTERED_VOTERS",
   latex: "\\begin{gathered}\nLives_{voter} = \\frac{Lives_{max}}{N_{voters,global}} = \\frac{10.7B}{4.13B} = 2.6\n\\\\[0.5em]\n\\text{where } Lives_{max} = Deaths_{disease,daily} \\times T_{accel,max} \\times 338 = 150{,}000 \\times 212 \\times 338 = 10.7B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [1.510533232384627, 4.920610689575209],
+  confidenceInterval: [1.51053323238, 4.92061068958],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED", "GLOBAL_REGISTERED_VOTERS"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED / GLOBAL_REGISTERED_VOTERS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
@@ -11480,7 +11480,7 @@ export const VOTER_LIVES_SAVED: Parameter = {
 };
 
 export const VOTER_SUFFERING_HOURS_PREVENTED: Parameter = {
-  value: 467788.7180433564,
+  value: 467788.718043,
   parameterName: "VOTER_SUFFERING_HOURS_PREVENTED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-voter_suffering_hours_prevented",
   unit: "hours",
@@ -11490,7 +11490,7 @@ export const VOTER_SUFFERING_HOURS_PREVENTED: Parameter = {
   confidence: "high",
   formula: "TOTAL_TIMELINE_SHIFT_SUFFERING_HOURS ÷ GLOBAL_REGISTERED_VOTERS",
   latex: "\\begin{gathered}\nHours_{suffer,voter} = \\frac{Hours_{suffer,max}}{N_{voters,global}} = \\frac{1930T}{4.13B} = 468{,}000\n\\\\[0.5em]\n\\text{where } Hours_{suffer,max} = DALYs_{max} \\times Pct_{YLD} \\times 8760 = 565B \\times 0.39 \\times 8760 = 1930T\n\\\\[0.5em]\n\\text{where } DALYs_{max} = DALYs_{global,ann} \\times Pct_{avoid,DALY} \\times T_{accel,max} = 2.88B \\times 92.6\\% \\times 212 = 565B\n\\\\[0.5em]\n\\text{where } T_{accel,max} = T_{accel} + T_{lag} = 204 + 8.2 = 212\n\\\\[0.5em]\n\\text{where } T_{accel} = T_{first,SQ} \\times \\left(1 - \\frac{1}{k_{capacity}}\\right) = 222 \\times \\left(1 - \\frac{1}{12.3}\\right) = 204\n\\\\[0.5em]\n\\text{where } T_{first,SQ} = T_{queue,SQ} \\times 0.5 = 443 \\times 0.5 = 222\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [251302.62167463073, 907239.7451204911],
+  confidenceInterval: [251302.621675, 907239.74512],
   inputs: ["DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS", "GLOBAL_REGISTERED_VOTERS"],
   computeExpr: "(DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS / GLOBAL_REGISTERED_VOTERS)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/nonprofit-coalition-strategy.html",
@@ -11508,7 +11508,7 @@ export const WAR_CHILDREN_KILLED_SINCE_1900: Parameter = {
   confidence: "high",
   formula: "WAR_DEATHS_SINCE_1900 × WAR_CHILD_DEATH_PCT",
   latex: "\\begin{gathered}\nDeaths_{war,child} \\\\\n= Deaths_{war,1900} \\times Pct_{war,child} \\\\\n= 310M \\times 33\\% \\\\\n= 102M\n\\end{gathered}",
-  confidenceInterval: [60219045.3235168, 120221034.49233094],
+  confidenceInterval: [60219045.3235, 120221034.492],
   inputs: ["WAR_DEATHS_SINCE_1900", "WAR_CHILD_DEATH_PCT"],
   computeExpr: "(WAR_DEATHS_SINCE_1900 * WAR_CHILD_DEATH_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11526,7 +11526,7 @@ export const WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST × 20",
   latex: "\\begin{gathered}\nCost_{war,20yr} = Cost_{war,total} \\times 20 = \\$11.4T \\times 20 = \\$227T\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [199157191518248.4, 257398746175141.75],
+  confidenceInterval: [199157191518000.0, 257398746175000.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * 20.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -11534,7 +11534,7 @@ export const WAR_COSTS_CUMULATIVE_20YR_CURRENT_TRAJECTORY: Parameter = {
 };
 
 export const WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR: Parameter = {
-  value: 13174236000000.002,
+  value: 13174236000000.0,
   parameterName: "WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_costs_saved_peace_trajectory_20yr",
   unit: "USD",
@@ -11544,7 +11544,7 @@ export const WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR: Parameter = {
   confidence: "high",
   formula: "GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST × (0.01×3 + min(0.02, TREATY_RATCHET_TERMINAL_SHARE)×4 + min(0.05, TREATY_RATCHET_TERMINAL_SHARE)×5 + TREATY_RATCHET_TERMINAL_SHARE×8)",
   latex: "\\begin{gathered}\nSavings_{war,20yr} = Cost_{war,total} \\times (0.01 \\times 3 + \\min\\left(0.02, s_{ratchet}\\right) \\times 4 + \\min\\left(0.05, s_{ratchet}\\right) \\times 5 + s_{ratchet} \\times 8)\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\end{gathered}",
-  confidenceInterval: [4855135016626.101, 20169742856741.016],
+  confidenceInterval: [4855135016630.0, 20169742856700.0],
   inputs: ["GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST", "TREATY_RATCHET_TERMINAL_SHARE"],
   computeExpr: "(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST * (((0.03 + (Math.min(0.02, TREATY_RATCHET_TERMINAL_SHARE) * 4.0)) + (Math.min(0.05, TREATY_RATCHET_TERMINAL_SHARE) * 5.0)) + (TREATY_RATCHET_TERMINAL_SHARE * 8.0)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html",
@@ -11552,7 +11552,7 @@ export const WAR_COSTS_SAVED_PEACE_TRAJECTORY_20YR: Parameter = {
 };
 
 export const WAR_COUNTERFACTUAL_GDP_PER_CAPITA: Parameter = {
-  value: 333635.72273938934,
+  value: 333635.722739,
   parameterName: "WAR_COUNTERFACTUAL_GDP_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_counterfactual_gdp_per_capita",
   unit: "USD/person",
@@ -11562,7 +11562,7 @@ export const WAR_COUNTERFACTUAL_GDP_PER_CAPITA: Parameter = {
   confidence: "low",
   formula: "GLOBAL_GDP_PER_CAPITA_1900 × (1 + ACTUAL_CAGR + WAR_COUNTERFACTUAL_ANNUAL_GROWTH_BOOST)^124",
   latex: "\\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}",
-  confidenceInterval: [120623.75425408334, 921184.9276046626],
+  confidenceInterval: [120623.754254, 921184.927605],
   inputs: ["GLOBAL_GDP_PER_CAPITA_1900", "WAR_COUNTERFACTUAL_ANNUAL_GROWTH_BOOST", "GLOBAL_AVG_INCOME_2025"],
   computeExpr: "(GLOBAL_GDP_PER_CAPITA_1900 * Math.pow((((1.0 + Math.pow((GLOBAL_AVG_INCOME_2025 / GLOBAL_GDP_PER_CAPITA_1900), 0.008064516129032258)) - 1.0) + WAR_COUNTERFACTUAL_ANNUAL_GROWTH_BOOST), 124.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11570,7 +11570,7 @@ export const WAR_COUNTERFACTUAL_GDP_PER_CAPITA: Parameter = {
 };
 
 export const WAR_COUNTERFACTUAL_INCOME_MULTIPLE: Parameter = {
-  value: 23.209441581870564,
+  value: 23.2094415819,
   parameterName: "WAR_COUNTERFACTUAL_INCOME_MULTIPLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_counterfactual_income_multiple",
   unit: "x",
@@ -11580,7 +11580,7 @@ export const WAR_COUNTERFACTUAL_INCOME_MULTIPLE: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_GDP_PER_CAPITA / GLOBAL_AVG_INCOME_2025",
   latex: "\\begin{gathered}\nM_{war,income} = \\frac{GDP_{pc,peace}}{\\bar{y}_{0}} = \\frac{\\$334K}{\\$14.4K} = 23.2\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [8.401615271772743, 63.98769814241601],
+  confidenceInterval: [8.40161527177, 63.9876981424],
   inputs: ["WAR_COUNTERFACTUAL_GDP_PER_CAPITA", "GLOBAL_AVG_INCOME_2025"],
   computeExpr: "(WAR_COUNTERFACTUAL_GDP_PER_CAPITA / GLOBAL_AVG_INCOME_2025)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11588,7 +11588,7 @@ export const WAR_COUNTERFACTUAL_INCOME_MULTIPLE: Parameter = {
 };
 
 export const WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL: Parameter = {
-  value: 2554085781915114.5,
+  value: 2554085781920000.0,
   parameterName: "WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_counterfactual_lost_gdp_global",
   unit: "USD/year",
@@ -11598,7 +11598,7 @@ export const WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL: Parameter = {
   confidence: "low",
   formula: "WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA × GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nGDP_{lost,total} = GDP_{pc,lost} \\times Pop_{global} = \\$319K \\times 8B = \\$2550T\n\\\\[0.5em]\n\\text{where } GDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [851185756253865.4, 7243585286377841.0],
+  confidenceInterval: [851185756254000.0, 7243585286380000.0],
   inputs: ["WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA", "GLOBAL_POPULATION_2024"],
   computeExpr: "(WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA * GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11606,7 +11606,7 @@ export const WAR_COUNTERFACTUAL_LOST_GDP_GLOBAL: Parameter = {
 };
 
 export const WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA: Parameter = {
-  value: 319260.72273938934,
+  value: 319260.722739,
   parameterName: "WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_counterfactual_lost_gdp_per_capita",
   unit: "USD/person/year",
@@ -11616,7 +11616,7 @@ export const WAR_COUNTERFACTUAL_LOST_GDP_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "WAR_COUNTERFACTUAL_GDP_PER_CAPITA - GLOBAL_AVG_INCOME_2025",
   latex: "\\begin{gathered}\nGDP_{pc,lost} = GDP_{pc,peace} - \\bar{y}_{0} = \\$334K - \\$14.4K = \\$319K\n\\\\[0.5em]\n\\text{where } \\begin{gathered}\nGDP_{pc,peace} \\\\\n= GDP_{pc,1900} \\times \\left(1 + \\left(\\frac{\\bar{y}_{0}}{GDP_{pc,1900}}\\right)^{1/124} - 1 + g_{war,penalty}\\right)^{124} \\\\[0.5em]\n= \\$3.15K \\times \\left(1 + \\left(\\frac{\\$14.4K}{\\$3.15K}\\right)^{1/124} - 1 + 2.6\\%\\right)^{124} \\\\[0.5em]\n= \\$334K\n\\end{gathered}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [106333.45427696833, 906864.1974167905],
+  confidenceInterval: [106333.454277, 906864.197417],
   inputs: ["WAR_COUNTERFACTUAL_GDP_PER_CAPITA", "GLOBAL_AVG_INCOME_2025"],
   computeExpr: "(WAR_COUNTERFACTUAL_GDP_PER_CAPITA - GLOBAL_AVG_INCOME_2025)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11634,7 +11634,7 @@ export const WAR_LIFE_YEARS_LOST_SINCE_1900: Parameter = {
   confidence: "high",
   formula: "WAR_DEATHS_SINCE_1900 × WAR_AVG_YEARS_LIFE_LOST_PER_DEATH",
   latex: "\\begin{gathered}\nYLL_{war,total} \\\\\n= Deaths_{war,1900} \\times YLL_{war} \\\\\n= 310M \\times 27 \\\\\n= 8.37B\n\\end{gathered}",
-  confidenceInterval: [4919448225.065358, 10384730566.748802],
+  confidenceInterval: [4919448225.07, 10384730566.7],
   inputs: ["WAR_DEATHS_SINCE_1900", "WAR_AVG_YEARS_LIFE_LOST_PER_DEATH"],
   computeExpr: "(WAR_DEATHS_SINCE_1900 * WAR_AVG_YEARS_LIFE_LOST_PER_DEATH)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11642,7 +11642,7 @@ export const WAR_LIFE_YEARS_LOST_SINCE_1900: Parameter = {
 };
 
 export const WAR_MEDICAL_TOOLCHAIN_PRIZE_OVERPAY_MULTIPLE: Parameter = {
-  value: 341.1513859275053,
+  value: 341.151385928,
   parameterName: "WAR_MEDICAL_TOOLCHAIN_PRIZE_OVERPAY_MULTIPLE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_medical_toolchain_prize_overpay_multiple",
   unit: "x",
@@ -11669,7 +11669,7 @@ export const WAR_QALY_VALUE_LOST_SINCE_1900: Parameter = {
   confidence: "high",
   formula: "WAR_LIFE_YEARS_LOST_SINCE_1900 × STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nV_{war,QALY} = YLL_{war,total} \\times Value_{QALY} = 8.37B \\times \\$150K = \\$1260T\n\\\\[0.5em]\n\\text{where } YLL_{war,total} = Deaths_{war,1900} \\times YLL_{war} = 310M \\times 27 = 8.37B\n\\end{gathered}",
-  confidenceInterval: [644040083363499.5, 1713196156477088.0],
+  confidenceInterval: [644040083363000.0, 1713196156480000.0],
   inputs: ["WAR_LIFE_YEARS_LOST_SINCE_1900", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(WAR_LIFE_YEARS_LOST_SINCE_1900 * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11687,7 +11687,7 @@ export const WAR_TOTAL_COST_SINCE_1900: Parameter = {
   confidence: "low",
   formula: "CUMULATIVE_MILITARY_SPENDING_FED_ERA + WAR_PROPERTY_DESTRUCTION_SINCE_1900 + WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900 + WAR_QALY_VALUE_LOST_SINCE_1900",
   latex: "\\begin{gathered}\nC_{war,hist} = Spending_{mil,cum,fed} + D_{property} + D_{env} + V_{war,QALY} = \\$170T + \\$45T + \\$5T + \\$1260T = \\$1480T\n\\\\[0.5em]\n\\text{where } V_{war,QALY} = YLL_{war,total} \\times Value_{QALY} = 8.37B \\times \\$150K = \\$1260T\n\\\\[0.5em]\n\\text{where } YLL_{war,total} = Deaths_{war,1900} \\times YLL_{war} = 310M \\times 27 = 8.37B\n\\end{gathered}",
-  confidenceInterval: [861973341709604.6, 1932351083204031.5],
+  confidenceInterval: [861973341710000.0, 1932351083200000.0],
   inputs: ["CUMULATIVE_MILITARY_SPENDING_FED_ERA", "WAR_PROPERTY_DESTRUCTION_SINCE_1900", "WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900", "WAR_QALY_VALUE_LOST_SINCE_1900"],
   computeExpr: "(((CUMULATIVE_MILITARY_SPENDING_FED_ERA + WAR_PROPERTY_DESTRUCTION_SINCE_1900) + WAR_ENVIRONMENTAL_DESTRUCTION_SINCE_1900) + WAR_QALY_VALUE_LOST_SINCE_1900)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11748,7 +11748,7 @@ export const WAR_TRIAL_REDIRECT_DISEASE_PLEADING_CUTOFF_YEAR: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE: Parameter = {
-  value: 134715100378699.22,
+  value: 134715100379000.0,
   parameterName: "WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_excess_military_spending_above_1900_freeze",
   unit: "USD",
@@ -11760,14 +11760,14 @@ export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE: Para
   confidence: "low",
   formula: "for t=1900..2024: sum max(0, MILITARY_SPENDING_YEAR - WAR_TRIAL_REDIRECT_1900_FREEZE_BASELINE_ANNUAL)",
   latex: "\\begin{gathered}\nSpending_{mil,excess1900} \\\\\n= \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) \\\\\n= \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) \\\\\n= \\$135T\n\\end{gathered}",
-  confidenceInterval: [132439463556858.14, 136344046254837.72],
+  confidenceInterval: [132439463557000.0, 136344046255000.0],
   inputs: ["WAR_TRIAL_REDIRECT_1900_FREEZE_BASELINE_ANNUAL"],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
   manualPageTitle: "The Cost of War",
 };
 
 export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_TRIAL_YEARS: Parameter = {
-  value: 29936.68897304427,
+  value: 29936.688973,
   parameterName: "WAR_TRIAL_REDIRECT_EXCESS_MILITARY_TRIAL_YEARS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_excess_military_trial_years",
   unit: "years",
@@ -11777,7 +11777,7 @@ export const WAR_TRIAL_REDIRECT_EXCESS_MILITARY_TRIAL_YEARS: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL",
   latex: "\\begin{gathered}\nYears_{excess1900 \\to trials,gov} = \\frac{Spending_{mil,excess1900}}{Spending_{trials,gov}} = \\frac{\\$135T}{\\$4.5B} = 29{,}900\n\\\\[0.5em]\n\\text{where } Spending_{mil,excess1900} = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - Spending_{mil,1900}\\right) = \\sum_{t=1900}^{2024} \\max\\left(0, Spending_{mil,t} - \\$66.1B\\right) = \\$135T\n\\end{gathered}",
-  confidenceInterval: [22458.83473347191, 43916.679157044564],
+  confidenceInterval: [22458.8347335, 43916.679157],
   inputs: ["WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE", "GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL"],
   computeExpr: "(WAR_TRIAL_REDIRECT_EXCESS_MILITARY_SPENDING_ABOVE_1900_FREEZE / GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11838,7 +11838,7 @@ export const WAR_TRIAL_REDIRECT_NONAGING_DISEASE_CONTROL_YEAR: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED: Parameter = {
-  value: 161463939720.12918,
+  value: 161463939720.0,
   parameterName: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_patient_slots_funded",
   unit: "patient-slots",
@@ -11848,7 +11848,7 @@ export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT",
   latex: "\\begin{gathered}\nN_{slots,war} = \\frac{B_{trials,net}}{Cost_{pragmatic,pt}} = \\frac{\\$150T}{\\$929} = 161B\n\\\\[0.5em]\n\\text{where } B_{trials,net} = Spending_{mil,cum,fed} - C_{tool,prize} = \\$170T - \\$20T = \\$150T\n\\end{gathered}",
-  confidenceInterval: [63643397327.54487, 647384439215.2678],
+  confidenceInterval: [63643397327.5, 647384439215.0],
   inputs: ["WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET", "DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT"],
   computeExpr: "(WAR_TRIAL_REDIRECT_NET_TRIAL_BUDGET / DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11856,7 +11856,7 @@ export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN: Parameter = {
-  value: 20.18299246501615,
+  value: 20.182992465,
   parameterName: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_patient_slots_per_living_human",
   unit: "patient-slots/person",
@@ -11866,7 +11866,7 @@ export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED / GLOBAL_POPULATION_2024",
   latex: "\\begin{gathered}\nN_{slots,pc} = \\frac{N_{slots,war}}{Pop_{global}} = \\frac{161B}{8B} = 20.2\n\\\\[0.5em]\n\\text{where } N_{slots,war} = \\frac{B_{trials,net}}{Cost_{pragmatic,pt}} = \\frac{\\$150T}{\\$929} = 161B\n\\\\[0.5em]\n\\text{where } B_{trials,net} = Spending_{mil,cum,fed} - C_{tool,prize} = \\$170T - \\$20T = \\$150T\n\\end{gathered}",
-  confidenceInterval: [7.990615100262892, 81.17002738797103],
+  confidenceInterval: [7.99061510026, 81.170027388],
   inputs: ["WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED", "GLOBAL_POPULATION_2024"],
   computeExpr: "(WAR_TRIAL_REDIRECT_PATIENT_SLOTS_FUNDED / GLOBAL_POPULATION_2024)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/problem/cost-of-war.html",
@@ -11874,7 +11874,7 @@ export const WAR_TRIAL_REDIRECT_PATIENT_SLOTS_PER_LIVING_HUMAN: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS: Parameter = {
-  value: 1783085302.091402,
+  value: 1783085302.09,
   parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_aging_plaintiffs",
   unit: "plaintiffs",
@@ -11884,7 +11884,7 @@ export const WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_PLAINTIFFS: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES * EVENTUALLY_AVOIDABLE_DEATH_PCT",
   latex: "\\begin{gathered}\nN_{plaintiffs,aging} = T_{post,aging} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 35 \\times 55M \\times 92.6\\% = 1.78B\n\\\\[0.5em]\n\\text{where } T_{post,aging} = Y_{plead,end} - Y_{aging,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{aging,plead} = Y_{disease,plead} + T_{aging,lag} = 1{,}950 + 40 = 1{,}990\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [-1715712039.9038577, 3414385789.9942017],
+  confidenceInterval: [-1715712039.9, 3414385789.99],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS", "GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES", "EVENTUALLY_AVOIDABLE_DEATH_PCT"],
   computeExpr: "((WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES) * EVENTUALLY_AVOIDABLE_DEATH_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -11910,7 +11910,7 @@ export const WAR_TRIAL_REDIRECT_POST_CUTOFF_AGING_YEARS: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS: Parameter = {
-  value: 200076065065.84042,
+  value: 200076065066.0,
   parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_disease_dalys",
   unit: "DALYs",
@@ -11920,7 +11920,7 @@ export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DALY_BURDEN * EVENTUALLY_AVOIDABLE_DALY_PCT",
   latex: "\\begin{gathered}\nDALYs_{post,disease} = T_{post,disease} \\times DALYs_{global,ann} \\times Pct_{avoid,DALY} = 75 \\times 2.88B \\times 92.6\\% = 200B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [13465602325.314978, 289242429855.33044],
+  confidenceInterval: [13465602325.3, 289242429855.0],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS", "GLOBAL_ANNUAL_DALY_BURDEN", "EVENTUALLY_AVOIDABLE_DALY_PCT"],
   computeExpr: "((WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DALY_BURDEN) * EVENTUALLY_AVOIDABLE_DALY_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -11928,7 +11928,7 @@ export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_DALYS: Parameter = {
 };
 
 export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS: Parameter = {
-  value: 3820897075.910147,
+  value: 3820897075.91,
   parameterName: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-war_trial_redirect_post_cutoff_disease_plaintiffs",
   unit: "plaintiffs",
@@ -11938,7 +11938,7 @@ export const WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_PLAINTIFFS: Parameter = {
   confidence: "low",
   formula: "WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES * EVENTUALLY_AVOIDABLE_DEATH_PCT",
   latex: "\\begin{gathered}\nN_{plaintiffs,disease} = T_{post,disease} \\times Deaths_{curable,ann} \\times Pct_{avoid,death} = 75 \\times 55M \\times 92.6\\% = 3.82B\n\\\\[0.5em]\n\\text{where } T_{post,disease} = Y_{plead,end} - Y_{disease,plead} + 1\n\\\\[0.5em]\n\\text{where } Y_{disease,plead} = Y_{redirect,start} + T_{tool,bootstrap} + T_{queue,trial} = 1{,}900 + 14 + 36 = 1{,}950\n\\\\[0.5em]\n\\text{where } T_{queue,trial} = \\frac{T_{queue,SQ}}{k_{capacity}} = \\frac{443}{12.3} = 36\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\end{gathered}",
-  confidenceInterval: [245074141.78372982, 5679963197.72763],
+  confidenceInterval: [245074141.784, 5679963197.73],
   inputs: ["WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS", "GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES", "EVENTUALLY_AVOIDABLE_DEATH_PCT"],
   computeExpr: "((WAR_TRIAL_REDIRECT_POST_CUTOFF_DISEASE_YEARS * GLOBAL_ANNUAL_DEATHS_CURABLE_DISEASES) * EVENTUALLY_AVOIDABLE_DEATH_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/humanity-v-government.html",
@@ -11974,7 +11974,7 @@ export const WILLING_TRIAL_PARTICIPANTS_GLOBAL: Parameter = {
   confidence: "medium",
   formula: "CURRENT_DISEASE_PATIENTS_GLOBAL × PATIENT_WILLINGNESS_TRIAL_PARTICIPATION_PCT",
   latex: "\\begin{gathered}\nN_{willing} \\\\\n= N_{patients} \\times Pct_{willing} \\\\\n= 2.4B \\times 44.8\\% \\\\\n= 1.08B\n\\end{gathered}",
-  confidenceInterval: [911322211.1033654, 1251932458.8315134],
+  confidenceInterval: [911322211.103, 1251932458.83],
   inputs: ["CURRENT_DISEASE_PATIENTS_GLOBAL", "PATIENT_WILLINGNESS_TRIAL_PARTICIPATION_PCT"],
   computeExpr: "(CURRENT_DISEASE_PATIENTS_GLOBAL * PATIENT_WILLINGNESS_TRIAL_PARTICIPATION_PCT)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -12018,7 +12018,7 @@ export const WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL: Parameter = {
 };
 
 export const WISHONIA_EXTRA_HALE_GAIN_YEAR_15: Parameter = {
-  value: 16.69999999999999,
+  value: 16.7,
   parameterName: "WISHONIA_EXTRA_HALE_GAIN_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_extra_hale_gain_year_15",
   unit: "years",
@@ -12028,7 +12028,7 @@ export const WISHONIA_EXTRA_HALE_GAIN_YEAR_15: Parameter = {
   confidence: "high",
   formula: "WISHONIA_DISEASE_CURE_FRACTION_15YR × (BEST_PRACTICE_LIFE_EXPECTANCY_GAIN + LIFE_EXTENSION_YEARS × HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15)",
   latex: "\\begin{gathered}\n\\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [9.995811816007562, 29.02606853944804],
+  confidenceInterval: [9.99581181601, 29.0260685394],
   inputs: ["WISHONIA_DISEASE_CURE_FRACTION_15YR", "BEST_PRACTICE_LIFE_EXPECTANCY_GAIN", "LIFE_EXTENSION_YEARS", "HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15"],
   computeExpr: "(WISHONIA_DISEASE_CURE_FRACTION_15YR * (BEST_PRACTICE_LIFE_EXPECTANCY_GAIN + (LIFE_EXTENSION_YEARS * HALE_LONGEVITY_REALIZATION_SHARE_YEAR_15)))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -12036,7 +12036,7 @@ export const WISHONIA_EXTRA_HALE_GAIN_YEAR_15: Parameter = {
 };
 
 export const WISHONIA_HALE_GAIN_YEAR_15: Parameter = {
-  value: 26.799999999999997,
+  value: 26.8,
   parameterName: "WISHONIA_HALE_GAIN_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_hale_gain_year_15",
   unit: "years",
@@ -12046,7 +12046,7 @@ export const WISHONIA_HALE_GAIN_YEAR_15: Parameter = {
   confidence: "high",
   formula: "WISHONIA_DISEASE_CURE_FRACTION_15YR × GLOBAL_HALE_GAP + WISHONIA_EXTRA_HALE_GAIN_YEAR_15",
   latex: "\\begin{gathered}\n\\Delta HALE_{wish,15} = f_{cure,15,wish} \\times \\Delta_{HALE} + \\Delta HALE_{wish,extra,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [20.58241025528879, 39.15917589270146],
+  confidenceInterval: [20.5824102553, 39.1591758927],
   inputs: ["WISHONIA_DISEASE_CURE_FRACTION_15YR", "GLOBAL_HALE_CURRENT", "GLOBAL_LIFE_EXPECTANCY_2024", "WISHONIA_EXTRA_HALE_GAIN_YEAR_15"],
   computeExpr: "((WISHONIA_DISEASE_CURE_FRACTION_15YR * (GLOBAL_LIFE_EXPECTANCY_2024 - GLOBAL_HALE_CURRENT)) + WISHONIA_EXTRA_HALE_GAIN_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -12054,7 +12054,7 @@ export const WISHONIA_HALE_GAIN_YEAR_15: Parameter = {
 };
 
 export const WISHONIA_HALE_VALUE_PER_CAPITA: Parameter = {
-  value: 4019999.9999999995,
+  value: 4020000.0,
   parameterName: "WISHONIA_HALE_VALUE_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_hale_value_per_capita",
   unit: "USD/person",
@@ -12064,7 +12064,7 @@ export const WISHONIA_HALE_VALUE_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "WISHONIA_HALE_GAIN_YEAR_15 × STANDARD_ECONOMIC_QALY_VALUE_USD",
   latex: "\\begin{gathered}\nValue_{HALE,wish} = \\Delta HALE_{wish,15} \\times Value_{QALY} = 26.8 \\times \\$150K = \\$4.02M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\times \\Delta_{HALE} + \\Delta HALE_{wish,extra,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [2465930.5054669804, 6288928.026166532],
+  confidenceInterval: [2465930.50547, 6288928.02617],
   inputs: ["WISHONIA_HALE_GAIN_YEAR_15", "STANDARD_ECONOMIC_QALY_VALUE_USD"],
   computeExpr: "(WISHONIA_HALE_GAIN_YEAR_15 * STANDARD_ECONOMIC_QALY_VALUE_USD)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -12072,7 +12072,7 @@ export const WISHONIA_HALE_VALUE_PER_CAPITA: Parameter = {
 };
 
 export const WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE: Parameter = {
-  value: 0.876056338028169,
+  value: 0.876056338028,
   parameterName: "WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_military_reallocation_physical_max_share",
   unit: "rate",
@@ -12089,7 +12089,7 @@ export const WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE: Parameter = {
 };
 
 export const WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH: Parameter = {
-  value: 40465379.70908192,
+  value: 40465379.7091,
   parameterName: "WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_personal_upside_income_plus_health",
   unit: "USD/person",
@@ -12099,7 +12099,7 @@ export const WISHONIA_PERSONAL_UPSIDE_INCOME_PLUS_HEALTH: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + WISHONIA_HALE_VALUE_PER_CAPITA",
   latex: "\\begin{gathered}\nUpside_{income+health,wish} = \\Delta Y_{lifetime,wish} + Value_{HALE,wish} = \\$36.4M + \\$4.02M = \\$40.5M\n\\\\[0.5em]\n\\text{where } \\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$37.3M - \\$904K = \\$36.4M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } Value_{HALE,wish} = \\Delta HALE_{wish,15} \\times Value_{QALY} = 26.8 \\times \\$150K = \\$4.02M\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\times \\Delta_{HALE} + \\Delta HALE_{wish,extra,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [17276092.959121086, 101121973.9637052],
+  confidenceInterval: [17276092.9591, 101121973.964],
   inputs: ["WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA", "WISHONIA_HALE_VALUE_PER_CAPITA"],
   computeExpr: "(WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA + WISHONIA_HALE_VALUE_PER_CAPITA)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/call-to-action/your-personal-benefits.html",
@@ -12117,7 +12117,7 @@ export const WISHONIA_PROJECTED_HALE_YEAR_15: Parameter = {
   confidence: "high",
   formula: "GLOBAL_HALE_CURRENT + WISHONIA_HALE_GAIN_YEAR_15",
   latex: "\\begin{gathered}\nHALE_{wish,15} = HALE_{0} + \\Delta HALE_{wish,15} = 63.3 + 26.8 = 90.1\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,15} = f_{cure,15,wish} \\times \\Delta_{HALE} + \\Delta HALE_{wish,extra,15}\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\Delta HALE_{wish,extra,15} = f_{cure,15,wish} \\times (\\Delta LE_{best} + T_{extend} \\times \\rho_{HALE,15})\n\\\\[0.5em]\n\\text{where } \\Delta LE_{best} = \\max\\left(LE_{CH}, LE_{SG}\\right) - LE_{global}\n\\end{gathered}",
-  confidenceInterval: [84.9047947247837, 102.25883403795622],
+  confidenceInterval: [84.9047947248, 102.258834038],
   inputs: ["GLOBAL_HALE_CURRENT", "WISHONIA_HALE_GAIN_YEAR_15"],
   computeExpr: "(GLOBAL_HALE_CURRENT + WISHONIA_HALE_GAIN_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -12125,7 +12125,7 @@ export const WISHONIA_PROJECTED_HALE_YEAR_15: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
-  value: 503789.8257135314,
+  value: 503789.825714,
   parameterName: "WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_avg_income_year_15",
   unit: "USD",
@@ -12135,7 +12135,7 @@ export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_15 / GLOBAL_POPULATION_2040_PROJECTED",
   latex: "\\begin{gathered}\n\\bar{y}_{wish,15} = \\frac{GDP_{wish,15}}{Pop_{2040}} = \\frac{\\$4480T}{8.9B} = \\$504K\n\\\\[0.5em]\n\\text{where } GDP_{wish,15}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{12}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [223451.85343735354, 1079859.2002005558],
+  confidenceInterval: [223451.853437, 1079859.2002],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_15", "GLOBAL_POPULATION_2040_PROJECTED"],
   computeExpr: "(WISHONIA_TRAJECTORY_GDP_YEAR_15 / GLOBAL_POPULATION_2040_PROJECTED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -12143,7 +12143,7 @@ export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_15: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
-  value: 1161818.358400575,
+  value: 1161818.3584,
   parameterName: "WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_avg_income_year_20",
   unit: "USD",
@@ -12153,7 +12153,7 @@ export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_20 / GLOBAL_POPULATION_2045_PROJECTED",
   latex: "\\begin{gathered}\n\\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [429663.5441855804, 3041381.1240374753],
+  confidenceInterval: [429663.544186, 3041381.12404],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_20", "GLOBAL_POPULATION_2045_PROJECTED"],
   computeExpr: "(WISHONIA_TRAJECTORY_GDP_YEAR_20 / GLOBAL_POPULATION_2045_PROJECTED)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -12161,7 +12161,7 @@ export const WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_CAGR_YEAR_20: Parameter = {
-  value: 0.2543288493473528,
+  value: 0.254328849347,
   parameterName: "WISHONIA_TRAJECTORY_CAGR_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_cagr_year_20",
   unit: "rate",
@@ -12171,7 +12171,7 @@ export const WISHONIA_TRAJECTORY_CAGR_YEAR_20: Parameter = {
   confidence: "high",
   formula: "(WISHONIA_TRAJECTORY_GDP_YEAR_20 ÷ GLOBAL_GDP_2025)^(1/20) - 1",
   latex: "\\begin{gathered}\ng_{wish,CAGR} = \\left(\\frac{GDP_{wish,20}}{GDP_{global}}\\right)^{\\frac{1}{20}} - 1\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\end{gathered}",
-  confidenceInterval: [0.1934684001290923, 0.3161580417331437],
+  confidenceInterval: [0.193468400129, 0.316158041733],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_20", "GLOBAL_GDP_2025"],
   computeExpr: "(Math.pow((WISHONIA_TRAJECTORY_GDP_YEAR_20 / GLOBAL_GDP_2025), 0.05) - 1.0)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -12179,7 +12179,7 @@ export const WISHONIA_TRAJECTORY_CAGR_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
-  value: 37349287.68581682,
+  value: 37349287.6858,
   parameterName: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_cumulative_lifetime_income",
   unit: "USD",
@@ -12189,14 +12189,14 @@ export const WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME: Parameter = {
   confidence: "high",
   formula: "Phase 1: y0*(1+g_pc,wish)*((1+g_pc,wish)^20-1)/g_pc,wish + Phase 2: y20*(1+g_pc,base)*((1+g_pc,base)^(T-20)-1)/g_pc,base",
   latex: "\\begin{gathered}\nY_{cum,wish} \\\\\n= \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} \\\\\n+ \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [14370660.309913196, 97853173.45365392],
+  confidenceInterval: [14370660.3099, 97853173.4537],
   inputs: ["GLOBAL_AVG_INCOME_2025", "WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20", "CURRENT_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_AVG_REMAINING_YEARS"],
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
   manualPageTitle: "The Earth Optimization Prize",
 };
 
 export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: Parameter = {
-  value: 26.92052826622498,
+  value: 26.9205282662,
   parameterName: "WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_gdp_vs_current_trajectory_multiplier_year_15",
   unit: "x",
@@ -12206,7 +12206,7 @@ export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: P
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_15 / CURRENT_TRAJECTORY_GDP_YEAR_15",
   latex: "\\begin{gathered}\nk_{wish:base,15} = \\frac{GDP_{wish,15}}{GDP_{base,15}} = \\frac{\\$4480T}{\\$167T} = 26.9\n\\\\[0.5em]\n\\text{where } GDP_{wish,15}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{12}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,15,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{15}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,15} = GDP_{global} \\times (1 + g_{base})^{15}\n\\end{gathered}",
-  confidenceInterval: [11.940379955233913, 57.70338867278431],
+  confidenceInterval: [11.9403799552, 57.7033886728],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_15", "CURRENT_TRAJECTORY_GDP_YEAR_15"],
   computeExpr: "(WISHONIA_TRAJECTORY_GDP_YEAR_15 / CURRENT_TRAJECTORY_GDP_YEAR_15)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -12214,7 +12214,7 @@ export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_15: P
 };
 
 export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: Parameter = {
-  value: 56.721918800945424,
+  value: 56.7219188009,
   parameterName: "WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_gdp_vs_current_trajectory_multiplier_year_20",
   unit: "x",
@@ -12224,7 +12224,7 @@ export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: P
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_20 ÷ CURRENT_TRAJECTORY_GDP_YEAR_20",
   latex: "\\begin{gathered}\nk_{wish:base,20} = \\frac{GDP_{wish,20}}{GDP_{base,20}} = \\frac{\\$10700T}{\\$188T} = 56.7\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\end{gathered}",
-  confidenceInterval: [20.976894097776086, 148.48532209275206],
+  confidenceInterval: [20.9768940978, 148.485322093],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_20", "CURRENT_TRAJECTORY_GDP_YEAR_20"],
   computeExpr: "(WISHONIA_TRAJECTORY_GDP_YEAR_20 / CURRENT_TRAJECTORY_GDP_YEAR_20)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/treaty-feasibility.html",
@@ -12232,7 +12232,7 @@ export const WISHONIA_TRAJECTORY_GDP_VS_CURRENT_TRAJECTORY_MULTIPLIER_YEAR_20: P
 };
 
 export const WISHONIA_TRAJECTORY_GDP_YEAR_15: Parameter = {
-  value: 4483729448850429.5,
+  value: 4483729448850000.0,
   parameterName: "WISHONIA_TRAJECTORY_GDP_YEAR_15",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_gdp_year_15",
   unit: "USD",
@@ -12242,7 +12242,7 @@ export const WISHONIA_TRAJECTORY_GDP_YEAR_15: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 * (1 + g_ramp)^3 * (1 + g_full)^12, where years 1-3 use 50% of military and non-health reallocation intensity, and years 4-15 use 100%; both include disease-burden recovery",
   latex: "GDP_{wish,15}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{12}",
-  confidenceInterval: [1988721495592446.5, 9610746881784948.0],
+  confidenceInterval: [1988721495590000.0, 9610746881780000.0],
   inputs: ["GLOBAL_GDP_2025", "GDP_BASELINE_GROWTH_RATE", "WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE", "MILITARY_REDIRECT_GDP_BOOST_AT_30PCT", "RD_SPILLOVER_MULTIPLIER", "WISHONIA_DISEASE_CURE_FRACTION_15YR", "DISEASE_BURDEN_GDP_DRAG_PCT", "POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST", "ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT", "ECONOMIC_MULTIPLIER_MILITARY_SPENDING"],
   computeExpr: "((GLOBAL_GDP_2025 * Math.pow(((((1.0 + GDP_BASELINE_GROWTH_RATE) + ((0.5 * WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE) * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))) + (Math.pow((1.0 + (WISHONIA_DISEASE_CURE_FRACTION_15YR * DISEASE_BURDEN_GDP_DRAG_PCT)), 0.06666666666666667) - 1.0)) + (Math.pow((1.0 + ((0.5 * (((POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST + POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST) / GLOBAL_GDP_2025)) * ((ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING) - 1.0))), 0.06666666666666667) - 1.0)), 3.0)) * Math.pow(((((1.0 + GDP_BASELINE_GROWTH_RATE) + (WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))) + (Math.pow((1.0 + (WISHONIA_DISEASE_CURE_FRACTION_15YR * DISEASE_BURDEN_GDP_DRAG_PCT)), 0.06666666666666667) - 1.0)) + (Math.pow((1.0 + ((((POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST + POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST) / GLOBAL_GDP_2025) * ((ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING) - 1.0))), 0.06666666666666667) - 1.0)), 12.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-protocol-v1.html",
@@ -12250,7 +12250,7 @@ export const WISHONIA_TRAJECTORY_GDP_YEAR_15: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_GDP_YEAR_20: Parameter = {
-  value: 1.0688728897285288e+16,
+  value: 1.06887288973e+16,
   parameterName: "WISHONIA_TRAJECTORY_GDP_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_gdp_year_20",
   unit: "USD",
@@ -12260,7 +12260,7 @@ export const WISHONIA_TRAJECTORY_GDP_YEAR_20: Parameter = {
   confidence: "high",
   formula: "GLOBAL_GDP_2025 × (1 + g_ramp)^3 × (1 + g_full)^17, where years 1-3 use 50% of military and non-health reallocation intensity, and years 4-20 use 100%; both include disease-burden recovery",
   latex: "GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}",
-  confidenceInterval: [3952904606507339.5, 2.7980706341144772e+16],
+  confidenceInterval: [3952904606510000.0, 2.79807063411e+16],
   inputs: ["GLOBAL_GDP_2025", "GDP_BASELINE_GROWTH_RATE", "WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE", "MILITARY_REDIRECT_GDP_BOOST_AT_30PCT", "RD_SPILLOVER_MULTIPLIER", "WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL", "DISEASE_BURDEN_GDP_DRAG_PCT", "POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST", "POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST", "ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT", "ECONOMIC_MULTIPLIER_MILITARY_SPENDING"],
   computeExpr: "((GLOBAL_GDP_2025 * Math.pow(((((1.0 + GDP_BASELINE_GROWTH_RATE) + ((0.5 * WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE) * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))) + (Math.pow((1.0 + (WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL * DISEASE_BURDEN_GDP_DRAG_PCT)), 0.05) - 1.0)) + (Math.pow((1.0 + ((0.5 * (((POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST + POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST) / GLOBAL_GDP_2025)) * ((ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING) - 1.0))), 0.05) - 1.0)), 3.0)) * Math.pow(((((1.0 + GDP_BASELINE_GROWTH_RATE) + (WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE * ((MILITARY_REDIRECT_GDP_BOOST_AT_30PCT / 0.3) * (RD_SPILLOVER_MULTIPLIER / 2.0)))) + (Math.pow((1.0 + (WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL * DISEASE_BURDEN_GDP_DRAG_PCT)), 0.05) - 1.0)) + (Math.pow((1.0 + ((((POLITICAL_DYSFUNCTION_GLOBAL_SCIENCE_OPPORTUNITY_COST + POLITICAL_DYSFUNCTION_GLOBAL_LEAD_OPPORTUNITY_COST) + POLITICAL_DYSFUNCTION_GLOBAL_MIGRATION_OPPORTUNITY_COST) / GLOBAL_GDP_2025) * ((ECONOMIC_MULTIPLIER_HEALTHCARE_INVESTMENT / ECONOMIC_MULTIPLIER_MILITARY_SPENDING) - 1.0))), 0.05) - 1.0)), 17.0))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/political-dysfunction-tax.html",
@@ -12268,7 +12268,7 @@ export const WISHONIA_TRAJECTORY_GDP_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
-  value: 36445379.70908192,
+  value: 36445379.7091,
   parameterName: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_lifetime_income_gain_per_capita",
   unit: "USD",
@@ -12278,7 +12278,7 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   latex: "\\begin{gathered}\n\\Delta Y_{lifetime,wish} = Y_{cum,wish} - Y_{cum,earth} = \\$37.3M - \\$904K = \\$36.4M\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [13459709.067458726, 96978521.36720507],
+  confidenceInterval: [13459709.0675, 96978521.3672],
   inputs: ["WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME", "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME"],
   computeExpr: "(WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME - CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -12286,7 +12286,7 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_GAIN_PER_CAPITA: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
-  value: 41.31978989800511,
+  value: 41.319789898,
   parameterName: "WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_lifetime_income_multiplier",
   unit: "x",
@@ -12296,7 +12296,7 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME",
   latex: "\\begin{gathered}\nk_{lifetime,wish:earth} = \\frac{Y_{cum,wish}}{Y_{cum,earth}} = \\frac{\\$37.3M}{\\$904K} = 41.3\n\\\\[0.5em]\n\\text{where } Y_{cum,wish} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,wish})((1+g_{pc,wish})^{20}-1)}{g_{pc,wish}} + \\bar{y}_{wish,20} \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}-20}-1)}{g_{pc,base}}\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\\\[0.5em]\n\\text{where } T_{remaining} = LE_{global} - Age_{median} = 73.4 - 30.5 = 42.9\n\\\\[0.5em]\n\\text{where } Y_{cum,earth} = \\bar{y}_0 \\cdot \\frac{(1+g_{pc,base})((1+g_{pc,base})^{T_{remaining}}-1)}{g_{pc,base}}\n\\end{gathered}",
-  confidenceInterval: [15.940797863008127, 105.542958256474],
+  confidenceInterval: [15.940797863, 105.542958256],
   inputs: ["WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME", "CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME"],
   computeExpr: "(WISHONIA_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME / CURRENT_TRAJECTORY_CUMULATIVE_LIFETIME_INCOME)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html",
@@ -12304,7 +12304,7 @@ export const WISHONIA_TRAJECTORY_LIFETIME_INCOME_MULTIPLIER: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
-  value: 194129.77945170147,
+  value: 194129.779452,
   parameterName: "WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_median_after_tax_income_year_20",
   unit: "USD",
@@ -12314,7 +12314,7 @@ export const WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20 * (1 - GLOBAL_MILITARY_SHARE_OF_GDP*(1-WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE)) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO * (1 + MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL) * (1 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN)",
   latex: "\\begin{gathered}\n\\tilde{m}_{wish,20} = \\bar{y}_{wish,20} \\times (1 - s_{mil} \\times (1-s_{mil,max})) \\times \\rho_{med} \\times (1 + r_{relief} \\times f_{cure,20,wish}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\end{gathered}",
-  confidenceInterval: [70137.19137190594, 507535.3411211986],
+  confidenceInterval: [70137.1913719, 507535.341121],
   inputs: ["WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20", "GLOBAL_MILITARY_SHARE_OF_GDP", "WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE", "GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO", "MEDIAN_HEALTH_BURDEN_RELIEF_SHARE", "WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL", "GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN"],
   computeExpr: "((((WISHONIA_TRAJECTORY_AVG_INCOME_YEAR_20 * (1.0 - (GLOBAL_MILITARY_SHARE_OF_GDP * (1.0 - WISHONIA_MILITARY_REALLOCATION_PHYSICAL_MAX_SHARE)))) * GLOBAL_MEDIAN_TO_MEAN_INCOME_RATIO) * (1.0 + (MEDIAN_HEALTH_BURDEN_RELIEF_SHARE * WISHONIA_DISEASE_CURE_FRACTION_20YR_FULL))) * (1.0 - GLOBAL_EFFECTIVE_TAX_RATE_MEDIAN))",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -12322,7 +12322,7 @@ export const WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20: Parameter = {
 };
 
 export const WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20: Parameter = {
-  value: 33.22171371430069,
+  value: 33.2217137143,
   parameterName: "WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_trajectory_vs_treaty_trajectory_gdp_multiplier_year_20",
   unit: "x",
@@ -12332,7 +12332,7 @@ export const WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20: Pa
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_GDP_YEAR_20 ÷ TREATY_TRAJECTORY_GDP_YEAR_20",
   latex: "\\begin{gathered}\nk_{wish,full:core,20} = \\frac{GDP_{wish,20}}{GDP_{treaty,20}} = \\frac{\\$10700T}{\\$322T} = 33.2\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } GDP_{treaty,20} = GDP_{global} \\times (1 + g_{base} + g_{redirect,treaty,20} + g_{peace,treaty,20} + g_{cyber,treaty,20} + g_{health,treaty,20})^{20}\n\\\\[0.5em]\n\\text{where } g_{redirect,treaty,20} = \\bar{s}_{treaty,20} \\times \\Delta g_{30\\%} \\times m_{spillover} \\times 1.67 = 5.8\\% \\times 5.5\\% \\times 2 \\times 1.67 = 1.06\\%\n\\\\[0.5em]\n\\text{where } \\bar{s}_{treaty,20} = s_{ratchet} \\times 0.409 = 10\\% \\times 0.409 = 5.8\\%\n\\\\[0.5em]\n\\text{where } g_{peace,treaty,20} = \\left(\\frac{Benefit_{peace,soc}}{GDP_{global}}\\right) \\times \\left(\\frac{\\bar{s}_{treaty,20}}{Reduce_{treaty}}\\right) \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } Benefit_{peace,soc} = Cost_{war,total} \\times Reduce_{treaty} = \\$11.4T \\times 1\\% = \\$114B\n\\\\[0.5em]\n\\text{where } Cost_{war,total} = Cost_{war,direct} + Cost_{war,indirect} = \\$7.66T + \\$3.7T = \\$11.4T\n\\\\[0.5em]\n\\text{where } Cost_{war,direct} = Loss_{life,conflict} + Damage_{infra,total} + Disruption_{trade} + Spending_{mil} = \\$2.45T + \\$1.88T + \\$616B + \\$2.72T = \\$7.66T\n\\\\[0.5em]\n\\text{where } Loss_{life,conflict} = Cost_{combat,human} + Cost_{state,human} + Cost_{terror,human} = \\$2.34T + \\$27B + \\$83B = \\$2.45T\n\\\\[0.5em]\n\\text{where } Cost_{combat,human} = Deaths_{combat} \\times VSL = 234{,}000 \\times \\$10M = \\$2.34T\n\\\\[0.5em]\n\\text{where } Cost_{state,human} = Deaths_{state} \\times VSL = 2{,}700 \\times \\$10M = \\$27B\n\\\\[0.5em]\n\\text{where } Cost_{terror,human} = Deaths_{terror} \\times VSL = 8{,}300 \\times \\$10M = \\$83B\n\\\\[0.5em]\n\\text{where } Damage_{infra,total} = Damage_{comms} + Damage_{edu} + Damage_{energy} + Damage_{health} + Damage_{transport} + Damage_{water} = \\$298B + \\$234B + \\$422B + \\$166B + \\$487B + \\$268B = \\$1.88T\n\\\\[0.5em]\n\\text{where } Disruption_{trade} = Disruption_{currency} + Disruption_{energy} + Disruption_{shipping} + Disruption_{supply} = \\$57.4B + \\$125B + \\$247B + \\$187B = \\$616B\n\\\\[0.5em]\n\\text{where } Cost_{war,indirect} = Damage_{env} + Loss_{growth,mil} + Loss_{capital,conflict} + Cost_{psych} + Cost_{refugee} + Cost_{vet} = \\$100B + \\$2.72T + \\$300B + \\$232B + \\$150B + \\$200B = \\$3.7T\n\\\\[0.5em]\n\\text{where } g_{cyber,treaty,20} = \\left(\\frac{Cost_{cyber}}{GDP_{global}}\\right) \\times \\bar{s}_{treaty,20} \\times \\varepsilon_{conflict}\n\\\\[0.5em]\n\\text{where } g_{health,treaty,20} = ((1 + f_{cure,20,treaty} \\times d_{disease})^{\\frac{1}{H_{health,treaty}}}) - 1\n\\\\[0.5em]\n\\text{where } f_{cure,20,treaty} = \\min\\left(1.0, (3 \\times min(k_{capacity} \\times \\left(\\frac{0.01}{0.01}\\right), k_{capacity,max}) + 4 \\times min(k_{capacity} \\times (min(0.02, s_{ratchet})/0.01), k_{capacity,max}) + 5 \\times min(k_{capacity} \\times (min(0.05, s_{ratchet})/0.01), k_{capacity,max}) + 8 \\times min(k_{capacity} \\times \\left(\\frac{s_{ratchet}}{0.01}\\right), k_{capacity,max})) / T_{queue,SQ}\\right)\n\\\\[0.5em]\n\\text{where } T_{queue,SQ} = \\frac{N_{untreated}}{Treatments_{new,ann}} = \\frac{6{,}650}{15} = 443\n\\end{gathered}",
-  confidenceInterval: [12.723191033548, 83.35451791192327],
+  confidenceInterval: [12.7231910335, 83.3545179119],
   inputs: ["WISHONIA_TRAJECTORY_GDP_YEAR_20", "TREATY_TRAJECTORY_GDP_YEAR_20"],
   computeExpr: "(WISHONIA_TRAJECTORY_GDP_YEAR_20 / TREATY_TRAJECTORY_GDP_YEAR_20)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -12340,7 +12340,7 @@ export const WISHONIA_TRAJECTORY_VS_TREATY_TRAJECTORY_GDP_MULTIPLIER_YEAR_20: Pa
 };
 
 export const WISHONIA_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
-  value: 64.01456372366505,
+  value: 64.0145637237,
   parameterName: "WISHONIA_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-wishonia_vs_current_median_income_multiplier_year_20",
   unit: "x",
@@ -12350,7 +12350,7 @@ export const WISHONIA_VS_CURRENT_MEDIAN_INCOME_MULTIPLIER_YEAR_20: Parameter = {
   confidence: "high",
   formula: "WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20 / CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20",
   latex: "\\begin{gathered}\nk_{med,wish:base} = \\frac{\\tilde{m}_{wish,20}}{\\tilde{m}_{base,20}} = \\frac{\\$194K}{\\$3.03K} = 64\n\\\\[0.5em]\n\\text{where } \\tilde{m}_{wish,20} = \\bar{y}_{wish,20} \\times (1 - s_{mil} \\times (1-s_{mil,max})) \\times \\rho_{med} \\times (1 + r_{relief} \\times f_{cure,20,wish}) \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{wish,20} = \\frac{GDP_{wish,20}}{Pop_{2045}} = \\frac{\\$10700T}{9.2B} = \\$1.16M\n\\\\[0.5em]\n\\text{where } GDP_{wish,20}=GDP_0(1+g_{ramp})^{3}(1+g_{full})^{17}\n\\\\[0.5em]\n\\text{where } s_{mil,max} = Cut_{WW2} = 87.6\\% = 87.6\\%\n\\\\[0.5em]\n\\text{where } Cut_{WW2} = 1 - \\frac{Spending_{US,1947}}{Spending_{US,1945}} = 1 - \\frac{\\$176B}{\\$1.42T} = 87.6\\%\n\\\\[0.5em]\n\\text{where } f_{cure,20,wish} = \\min\\left(1.0, Treatments_{new,ann} \\times min(\\text{TRIAL\\_CAPACITY\\_MULTIPLIER} \\times \\left(\\frac{s_{mil,max}}{0.01}\\right), \\text{MAX\\_TRIAL\\_CAPACITY\\_MULTIPLIER\\_PHYSICAL}) \\times \\frac{20}{N_{untreated}}\\right)\n\\\\[0.5em]\n\\text{where } k_{capacity} = \\frac{N_{fundable,ref}}{Slots_{curr}} = \\frac{23.4M}{1.9M} = 12.3\n\\\\[0.5em]\n\\text{where } N_{fundable,ref} = \\frac{Subsidies_{trial,ref}}{Cost_{pragmatic,pt}} = \\frac{\\$21.8B}{\\$929} = 23.4M\n\\\\[0.5em]\n\\text{where } Subsidies_{trial,ref} = Funding_{trial,ref} - OPEX_{trial} = \\$21.8B - \\$40M = \\$21.8B\n\\\\[0.5em]\n\\text{where } OPEX_{trial} = Cost_{platform} + Cost_{staff} + Cost_{infra} + Cost_{regulatory} + Cost_{community} = \\$15M + \\$10M + \\$8M + \\$5M + \\$2M = \\$40M\n\\\\[0.5em]\n\\text{where } k_{capacity,max} = \\frac{N_{willing}}{Slots_{curr}} = \\frac{1.08B}{1.9M} = 566\n\\\\[0.5em]\n\\text{where } N_{willing} = N_{patients} \\times Pct_{willing} = 2.4B \\times 44.8\\% = 1.08B\n\\\\[0.5em]\n\\text{where } N_{untreated} = N_{rare} \\times 0.95 = 7{,}000 \\times 0.95 = 6{,}650\n\\\\[0.5em]\n\\text{where } s_{mil} = \\frac{Spending_{mil}}{GDP_{global}} = \\frac{\\$2.72T}{\\$115T} = 2.37\\%\n\\\\[0.5em]\n\\text{where } \\rho_{med} = \\frac{\\tilde{y}_{gallup}}{\\bar{y}_{0}} = \\frac{\\$2.92K}{\\$14.4K} = 0.203\n\\\\[0.5em]\n\\text{where } \\bar{y}_{0} = \\frac{GDP_{global}}{Pop_{global}} = \\frac{\\$115T}{8B} = \\$14.4K\n\\\\[0.5em]\n\\text{where } \\tilde{m}_{base,20} = \\bar{y}_{base,20} \\times (1 - s_{mil} \\times \\left(\\frac{1+g_{mil,10yr}}{1+g_{base}}\\right)^{20}) \\times \\rho_{med} \\times (1 - e_{med})^{20} \\times (1 - \\tau_{med})\n\\\\[0.5em]\n\\text{where } \\bar{y}_{base,20} = \\frac{GDP_{base,20}}{Pop_{2045}} = \\frac{\\$188T}{9.2B} = \\$20.5K\n\\\\[0.5em]\n\\text{where } GDP_{base,20} = GDP_{global} \\times (1 + g_{base})^{20}\n\\end{gathered}",
-  confidenceInterval: [23.672757026891833, 169.39956523706965],
+  confidenceInterval: [23.6727570269, 169.399565237],
   inputs: ["WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20", "CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20"],
   computeExpr: "(WISHONIA_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20 / CURRENT_TRAJECTORY_MEDIAN_AFTER_TAX_INCOME_YEAR_20)",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/economics/gdp-trajectories.html",
@@ -13542,7 +13542,7 @@ export const EPIGENETIC_TARGETS_COUNT: Parameter = {
 };
 
 export const EVENTUALLY_AVOIDABLE_DALY_PCT: Parameter = {
-  value: 0.9262780790085205,
+  value: 0.926278079009,
   parameterName: "EVENTUALLY_AVOIDABLE_DALY_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-eventually_avoidable_daly_pct",
   unit: "percentage",
@@ -13558,7 +13558,7 @@ export const EVENTUALLY_AVOIDABLE_DALY_PCT: Parameter = {
 };
 
 export const EVENTUALLY_AVOIDABLE_DEATH_PCT: Parameter = {
-  value: 0.9262780790085205,
+  value: 0.926278079009,
   parameterName: "EVENTUALLY_AVOIDABLE_DEATH_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-eventually_avoidable_death_pct",
   unit: "percentage",
@@ -13587,7 +13587,7 @@ export const FAMILY_OFFICE_INVESTMENT_MIN: Parameter = {
 };
 
 export const FUNDAMENTALLY_UNAVOIDABLE_DEATH_PCT: Parameter = {
-  value: 0.07372192099147949,
+  value: 0.0737219209915,
   parameterName: "FUNDAMENTALLY_UNAVOIDABLE_DEATH_PCT",
   calculationsUrl: "https://manual.WarOnDisease.org/calculations.html#sec-fundamentally_unavoidable_death_pct",
   unit: "percentage",
@@ -14132,7 +14132,7 @@ export const PHARMA_PHASE_2_3_COST_BARRIER: Parameter = {
   sourceType: "definition",
   sourceRef: "drug-development-cost",
   confidence: "high",
-  confidenceInterval: [1233011279.054031, 1888884246.759464],
+  confidenceInterval: [1233011279.05, 1888884246.76],
   stdError: 200000000.0,
   distribution: "normal",
   manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/invisible-graveyard.html",
