@@ -3501,24 +3501,38 @@ async function listMeasurementsForUser(
   const prisma = await getPrisma();
   // Read-only variable lookup: unlike recordMeasurement this must never create
   // a GlobalVariable, and an unknown name is an error rather than an empty page.
-  const variableWhere = globalVariableId
-    ? { deletedAt: null, id: globalVariableId }
-    : variableName
-      ? {
-          deletedAt: null,
-          name: { equals: variableName, mode: "insensitive" as const },
-        }
-      : null;
-  const variable = variableWhere
-    ? await prisma.globalVariable.findFirst({
-        select: TRACKING_VARIABLE_SELECT,
-        where: variableWhere,
-      })
-    : null;
-  if (variableWhere && !variable) {
-    throw new Error(
-      `GlobalVariable not found: ${globalVariableId ?? variableName}`,
-    );
+  let variable: Prisma.GlobalVariableGetPayload<{
+    select: typeof TRACKING_VARIABLE_SELECT;
+  }> | null = null;
+  if (globalVariableId) {
+    variable = await prisma.globalVariable.findFirst({
+      select: TRACKING_VARIABLE_SELECT,
+      where: { deletedAt: null, id: globalVariableId },
+    });
+    if (!variable) {
+      throw new Error(`GlobalVariable not found: ${globalVariableId}`);
+    }
+  } else if (variableName) {
+    // Case-insensitive matches can be ambiguous: recordMeasurement looks up
+    // and creates variables by exact-case name, so "Vitamin D" and "vitamin d"
+    // can both exist despite the DB unique constraint being case-sensitive.
+    const matches = await prisma.globalVariable.findMany({
+      select: TRACKING_VARIABLE_SELECT,
+      where: {
+        deletedAt: null,
+        name: { equals: variableName, mode: "insensitive" as const },
+      },
+      take: 2,
+    });
+    if (matches.length === 0) {
+      throw new Error(`GlobalVariable not found: ${variableName}`);
+    }
+    if (matches.length > 1) {
+      throw new Error(
+        `Multiple variables match "${variableName}" case-insensitively. Use globalVariableId to disambiguate.`,
+      );
+    }
+    variable = matches[0] ?? null;
   }
 
   const rows = await prisma.measurement.findMany({

@@ -144,6 +144,7 @@ const mocks = vi.hoisted(() => ({
   ensureSubjectForUser: vi.fn(),
   userFindUniqueOrThrow: vi.fn(),
   globalVariableFindFirst: vi.fn(),
+  globalVariableFindMany: vi.fn(),
   globalVariableUpsert: vi.fn(),
   variableCategoryFindFirst: vi.fn(),
   unitFindFirst: vi.fn(),
@@ -440,6 +441,7 @@ vi.mock("../prisma", () => ({
     },
     globalVariable: {
       findFirst: mocks.globalVariableFindFirst,
+      findMany: mocks.globalVariableFindMany,
       upsert: mocks.globalVariableUpsert,
     },
     variableCategory: {
@@ -753,6 +755,7 @@ beforeEach(() => {
     },
     globalVariable: {
       findFirst: mocks.globalVariableFindFirst,
+      findMany: mocks.globalVariableFindMany,
       upsert: mocks.globalVariableUpsert,
     },
     variableCategory: {
@@ -9155,6 +9158,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("listMeasurements scopes the query to the caller's own subject and applies the time window", async () => {
+      mocks.globalVariableFindMany.mockResolvedValue([TRACKING_VARIABLE]);
       mocks.measurementFindMany.mockResolvedValue([
         measurementRow("measurement-2", "2026-07-02T08:00:00.000Z"),
         measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
@@ -9171,8 +9175,9 @@ describe("MCP server tool dispatch", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mocks.globalVariableFindFirst).toHaveBeenCalledWith(
+      expect(mocks.globalVariableFindMany).toHaveBeenCalledWith(
         expect.objectContaining({
+          take: 2,
           where: {
             deletedAt: null,
             name: { equals: "vitamin d", mode: "insensitive" },
@@ -9218,6 +9223,7 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBeFalsy();
       expect(mocks.globalVariableFindFirst).not.toHaveBeenCalled();
+      expect(mocks.globalVariableFindMany).not.toHaveBeenCalled();
       const call = mocks.measurementFindMany.mock.calls[0]![0] as {
         where: Record<string, unknown>;
       };
@@ -9262,7 +9268,7 @@ describe("MCP server tool dispatch", () => {
     });
 
     it("listMeasurements rejects an unknown variable instead of returning an empty page", async () => {
-      mocks.globalVariableFindFirst.mockResolvedValue(null);
+      mocks.globalVariableFindMany.mockResolvedValue([]);
 
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
@@ -9274,6 +9280,53 @@ describe("MCP server tool dispatch", () => {
       const body = parseToolBody(result);
       expect(body.message).toContain("GlobalVariable not found: Nonexistent");
       expect(mocks.measurementFindMany).not.toHaveBeenCalled();
+    });
+
+    it("listMeasurements rejects a case-insensitive variable name collision instead of picking arbitrarily", async () => {
+      mocks.globalVariableFindMany.mockResolvedValue([
+        TRACKING_VARIABLE,
+        { ...TRACKING_VARIABLE, id: "gv-vitd-lower", name: "vitamin d" },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: { variableName: "vitamin d" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain(
+        'Multiple variables match "vitamin d" case-insensitively',
+      );
+      expect(mocks.measurementFindMany).not.toHaveBeenCalled();
+    });
+
+    it("listMeasurements selects a variable by globalVariableId without the case-insensitive name lookup", async () => {
+      mocks.globalVariableFindFirst.mockResolvedValue(TRACKING_VARIABLE);
+      mocks.measurementFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: { globalVariableId: "gv-vitd" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.globalVariableFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { deletedAt: null, id: "gv-vitd" },
+        }),
+      );
+      expect(mocks.globalVariableFindMany).not.toHaveBeenCalled();
+      const call = mocks.measurementFindMany.mock.calls[0]![0] as {
+        where: Record<string, unknown>;
+      };
+      expect(call.where).toEqual({
+        deletedAt: null,
+        globalVariableId: "gv-vitd",
+        subject: { userId: "user-1" },
+      });
     });
 
     it("listMeasurements rejects a limit above the maximum page size with no query", async () => {
