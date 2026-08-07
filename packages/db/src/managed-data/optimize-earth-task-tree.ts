@@ -46,6 +46,8 @@ import {
   END_WAR_TASK_KEY,
   MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
   MINIMIZE_ANIMAL_SUFFERING_TASK_KEY,
+  PREVENT_EXTINCTION_TASK_ID,
+  PREVENT_EXTINCTION_TASK_KEY,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_KEY,
   HUMANITY_V_GOVERNMENT_CASE_NAME,
@@ -183,6 +185,33 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "The median income is one of the two measurements of Earth optimization. Each task below this task increases it.",
     // TODO(param): mission EV is the child roll-up; do not add scalars here.
     sortOrder: -960,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: PREVENT_EXTINCTION_TASK_ID,
+    taskKey: PREVENT_EXTINCTION_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "Prevent Extinction",
+    description: [
+      "This is a mission task. The goal is the survival of humanity.",
+      "",
+      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "",
+      "Toby Ord estimates the probability of an existential catastrophe in this century at approximately 1 in 6. The largest part is unaligned artificial intelligence at approximately 1 in 10. Engineered pandemics are approximately 1 in 30. Nuclear war is approximately 1 in 1,000.",
+      "",
+      "An extinction event sets the value of every other mission task to zero. This task therefore multiplies the other mission tasks. It does not compete with them.",
+      "",
+      "Add a task below this task if the task decreases one of these probabilities. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
+    ].join("\n"),
+    impactStatement:
+      "An extinction event sets the value of all other work to zero. Each task below this task decreases the probability of that event.",
+    interestTags: [],
+    // DRAFT + no economics scalars, same rule as the animal-suffering stub: a
+    // mission with nothing under it stays visible as intent without entering
+    // active queues or EV roll-ups.
+    status: TaskStatus.DRAFT,
+    sortOrder: -955,
   },
   {
     ...defaultTaskFields,

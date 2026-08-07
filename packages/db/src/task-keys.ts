@@ -65,6 +65,8 @@ export const END_DISEASE_TASK_ID = "end-disease";
 export const END_DISEASE_TASK_KEY = "mission:end-disease";
 export const END_POVERTY_TASK_ID = "end-poverty";
 export const END_POVERTY_TASK_KEY = "mission:end-poverty";
+export const PREVENT_EXTINCTION_TASK_ID = "prevent-extinction";
+export const PREVENT_EXTINCTION_TASK_KEY = "mission:prevent-extinction";
 export const MINIMIZE_ANIMAL_SUFFERING_TASK_ID = "minimize-animal-suffering";
 export const MINIMIZE_ANIMAL_SUFFERING_TASK_KEY =
   "mission:minimize-animal-suffering";

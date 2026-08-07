@@ -9,6 +9,7 @@ import {
   LOVING_TAKEOVER_TASK_ID,
   MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
   OPTIMITRON_DEV_TASK_ID,
+  PREVENT_EXTINCTION_TASK_ID,
   TASK_GRAPH_STEWARD_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "../task-keys.js";
@@ -92,6 +93,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
         END_WAR_TASK_ID,
         END_DISEASE_TASK_ID,
         END_POVERTY_TASK_ID,
+        PREVENT_EXTINCTION_TASK_ID,
         MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
         OPTIMITRON_DEV_TASK_ID,
       ].sort(),
@@ -105,6 +107,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     END_WAR_TASK_ID,
     END_DISEASE_TASK_ID,
     END_POVERTY_TASK_ID,
+    PREVENT_EXTINCTION_TASK_ID,
     MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
   ])("mission %s carries no direct economics scalars", (id) => {
     const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
@@ -113,12 +116,20 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(mission?.successProbabilityBase).toBeUndefined();
   });
 
-  it("the animal-suffering mission is a DRAFT stub", () => {
-    const stub = OPTIMIZE_EARTH_TASK_TREE.find(
-      (t) => t.id === MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
-    );
-    expect(stub?.status).toBe("DRAFT");
-  });
+  // A mission with nothing under it is DRAFT so it stays out of active queues
+  // until real work exists. Flip to ACTIVE in the same commit that adds the
+  // first child, not before.
+  it.each([MINIMIZE_ANIMAL_SUFFERING_TASK_ID, PREVENT_EXTINCTION_TASK_ID])(
+    "empty mission %s is a DRAFT stub",
+    (id) => {
+      const stub = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(stub?.status).toBe("DRAFT");
+      const children = OPTIMIZE_EARTH_TASK_TREE.filter(
+        (t) => t.parentTaskId === id && !t.retired,
+      );
+      expect(children).toHaveLength(0);
+    },
+  );
 
   // The legacy combined node stays alive (demoted under End War) until its
   // runtime children are re-homed via MCP; retiring it earlier would orphan
