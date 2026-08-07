@@ -2,8 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   COURT_OF_HUMANITY_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
+  END_DISEASE_TASK_ID,
+  END_POVERTY_TASK_ID,
   END_WAR_AND_DISEASE_TASK_ID,
+  END_WAR_TASK_ID,
   LOVING_TAKEOVER_TASK_ID,
+  MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+  OPTIMITRON_DEV_TASK_ID,
   TASK_GRAPH_STEWARD_TASK_ID,
   TREATY_PARENT_TASK_ID,
 } from "../task-keys.js";
@@ -64,15 +69,66 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     },
   );
 
-  it("dFDA is an active child of End War and Disease (un-retired)", () => {
+  it("dFDA is an active child of End Disease (un-retired)", () => {
     const dfda = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "dfda");
     expect(dfda?.retired ?? false).toBe(false);
-    expect(dfda?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
+    expect(dfda?.parentTaskId).toBe(END_DISEASE_TASK_ID);
   });
 
-  it("the shirt seed is a child of End War and Disease", () => {
+  it("the shirt seed is a child of the 1% Treaty", () => {
     const seed = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === "shirt-seed");
-    expect(seed?.parentTaskId).toBe(END_WAR_AND_DISEASE_TASK_ID);
+    expect(seed?.parentTaskId).toBe(TREATY_PARENT_TASK_ID);
+  });
+
+  // The mission layer is the deliberate set of public peer nodes under the
+  // root. Managed root children must be exactly: missions + the dev program.
+  // (Org/personal planning roots are runtime-created, not managed rows.)
+  it("root's managed children are the mission layer plus the dev program", () => {
+    const rootChildren = OPTIMIZE_EARTH_TASK_TREE.filter(
+      (t) => t.parentTaskId === OPTIMIZE_EARTH_ROOT_TASK_ID && !t.retired,
+    ).map((t) => t.id);
+    expect(rootChildren.sort()).toEqual(
+      [
+        END_WAR_TASK_ID,
+        END_DISEASE_TASK_ID,
+        END_POVERTY_TASK_ID,
+        MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+        OPTIMITRON_DEV_TASK_ID,
+      ].sort(),
+    );
+  });
+
+  // Missions carry no economics scalars: their EV must be the roll-up of the
+  // strategies beneath them, and an empty mission (the animal-suffering stub)
+  // must not inflate any ranking.
+  it.each([
+    END_WAR_TASK_ID,
+    END_DISEASE_TASK_ID,
+    END_POVERTY_TASK_ID,
+    MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+  ])("mission %s carries no direct economics scalars", (id) => {
+    const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+    expect(mission).toBeDefined();
+    expect(mission?.expectedEconomicValueUsdBase).toBeUndefined();
+    expect(mission?.successProbabilityBase).toBeUndefined();
+  });
+
+  it("the animal-suffering mission is a DRAFT stub", () => {
+    const stub = OPTIMIZE_EARTH_TASK_TREE.find(
+      (t) => t.id === MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    );
+    expect(stub?.status).toBe("DRAFT");
+  });
+
+  // The legacy combined node stays alive (demoted under End War) until its
+  // runtime children are re-homed via MCP; retiring it earlier would orphan
+  // them under a soft-deleted parent.
+  it("End War and Disease is demoted under End War, not retired yet", () => {
+    const legacy = OPTIMIZE_EARTH_TASK_TREE.find(
+      (t) => t.id === END_WAR_AND_DISEASE_TASK_ID,
+    );
+    expect(legacy?.retired ?? false).toBe(false);
+    expect(legacy?.parentTaskId).toBe(END_WAR_TASK_ID);
   });
 
   // Regression guard: the optimitron:dev entry adopted a runtime-created row,
@@ -94,7 +150,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(dev?.successProbabilityBase).toBeUndefined();
   });
 
-  it("adopts the live task-graph steward as a private managed root branch", () => {
+  it("adopts the live task-graph steward as a private branch under the dev program", () => {
     const steward = OPTIMIZE_EARTH_TASK_TREE.find(
       (task) => task.taskKey === "optimitron:task-graph-steward",
     );
@@ -102,7 +158,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
       executionMode: "AGENT_ONLY",
       id: TASK_GRAPH_STEWARD_TASK_ID,
       isPublic: false,
-      parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+      parentTaskId: OPTIMITRON_DEV_TASK_ID,
     });
     expect(steward?.contextJson).toMatchObject({
       developmentOwner: "Mike",

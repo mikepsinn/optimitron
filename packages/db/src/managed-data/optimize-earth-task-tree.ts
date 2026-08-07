@@ -13,6 +13,7 @@ import {
   TaskCategory,
   TaskClaimPolicy,
   TaskExecutionMode,
+  TaskStatus,
 } from "../generated/prisma/client.js";
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
@@ -35,8 +36,16 @@ import {
   COURT_OF_HUMANITY_TASK_KEY,
   DFDA_CREATE_TASK_ID,
   DFDA_CREATE_TASK_KEY,
+  END_DISEASE_TASK_ID,
+  END_DISEASE_TASK_KEY,
+  END_POVERTY_TASK_ID,
+  END_POVERTY_TASK_KEY,
   END_WAR_AND_DISEASE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_KEY,
+  END_WAR_TASK_ID,
+  END_WAR_TASK_KEY,
+  MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+  MINIMIZE_ANIMAL_SUFFERING_TASK_KEY,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_ID,
   ENFORCE_ONE_PERCENT_TREATY_SETTLEMENT_TASK_KEY,
   HUMANITY_V_GOVERNMENT_CASE_NAME,
@@ -110,11 +119,89 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
         "Open the root task and choose the highest-leverage child task you can complete.",
     },
   },
+  // Mission layer: the deliberate set of peer nodes directly under the root.
+  // Missions carry no economics scalars — their EV is the roll-up of the
+  // strategies beneath them, and the sync skips impact writes without scalars,
+  // so an empty mission cannot inflate any ranking.
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    id: END_WAR_TASK_ID,
+    taskKey: END_WAR_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End War",
+    description: [
+      "Standing mission node for ending war: dismantle the mass-murder machinery and point what it costs at keeping people alive.",
+      "",
+      "Any organization, funder, or human whose mission is peace can find one shared branch here, with every strategy ranked by expected value. Current dominant strategies: the 1% Treaty, the Court of Humanity, and the Loving Takeover. Better strategies are welcome and rise when the math supports them.",
+    ].join("\n"),
+    impactStatement:
+      "Humanity maintains about 122 apocalypses of destructive capacity; every task under this node exists to point that budget at welfare instead.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -980,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: END_DISEASE_TASK_ID,
+    taskKey: END_DISEASE_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End Disease",
+    description: [
+      "Standing mission node for the eradication of disease. 6,650 diseases have zero approved treatments; at roughly 15 new treatments a year, the backlog outlives everyone reading this.",
+      "",
+      "Any organization, funder, or researcher whose mission is ending disease can find one shared branch here, with every strategy ranked by expected value. Shared engines like the 1% Treaty and the decentralized FDA hang under this mission and under End War at the same time, because most of the money that could cure disease is currently a missile.",
+    ].join("\n"),
+    impactStatement:
+      "Disease destroys more healthy life years than anything else humans tolerate; this branch ranks every strategy that shortens the eradication timeline.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -970,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.GOVERNANCE,
+    id: END_POVERTY_TASK_ID,
+    taskKey: END_POVERTY_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "End Poverty",
+    description: [
+      "Standing mission node for ending poverty: raise median real after-tax income for every human.",
+      "",
+      "Any organization, funder, or human whose mission is prosperity can find one shared branch here, with every strategy ranked by expected value. Strategies with quantified income effects — the 1% Treaty's peace dividend, the Loving Takeover's shareholder math, optimized public budgets — hang under this mission and under the other missions they serve.",
+    ].join("\n"),
+    impactStatement:
+      "Median income is one of the two numbers Earth optimization is scored on; this branch ranks every strategy that raises it.",
+    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    sortOrder: -960,
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.OTHER,
+    id: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    taskKey: MINIMIZE_ANIMAL_SUFFERING_TASK_KEY,
+    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    title: "Minimize Animal Suffering",
+    description: [
+      "Standing mission node for reducing animal suffering.",
+      "",
+      "STUB: nothing is built here yet. No strategies have been cataloged, no expected values estimated, and this node carries no impact numbers, so it cannot inflate any roll-up. It exists because a to-do list for optimizing Earth that ignored animals would be lying about its scope. Propose strategies and they will be ranked.",
+    ].join("\n"),
+    impactStatement:
+      "No impact claimed yet — this node is a placeholder until real work exists beneath it.",
+    interestTags: [],
+    // DRAFT + no economics scalars: the stub stays visible as intent without
+    // entering active queues or EV roll-ups.
+    status: TaskStatus.DRAFT,
+    sortOrder: -950,
+  },
   {
     ...defaultTaskFields,
     id: END_WAR_AND_DISEASE_TASK_ID,
     taskKey: END_WAR_AND_DISEASE_TASK_KEY,
-    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    // Legacy combined node, demoted off the root under End War. Its runtime
+    // children (end-dementia, cognitron-labs, gov-tomorrow, ...) are re-homed
+    // via MCP after this deploys; retire the node once they are moved.
+    parentTaskId: END_WAR_TASK_ID,
     title: "End War and Disease",
     description: [
       "Run the international campaign to end war on disease.",
@@ -136,7 +223,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.LEGAL,
     id: COURT_OF_HUMANITY_TASK_ID,
     taskKey: COURT_OF_HUMANITY_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
     title: "Establish the Court of Humanity",
     description: [
       "Make the Court of Humanity legible as the institution where humans can judge governments that spend public resources against the general welfare.",
@@ -297,7 +384,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.GOVERNANCE,
     id: TREATY_PARENT_TASK_ID,
     taskKey: TREATY_PARENT_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
     title: TREATY_PARENT_TASK_TITLE,
     description:
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
@@ -361,7 +448,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: LOVING_TAKEOVER_TASK_ID,
     taskKey: LOVING_TAKEOVER_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_WAR_TASK_ID,
     title: "The Loving Takeover",
     description: [
       "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
@@ -457,7 +544,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: EARTH_OPTIMIZATION_PRIZE_TASK_ID,
     taskKey: EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Funds the treaty referendum — serves the missions through the treaty.
+    parentTaskId: TREATY_PARENT_TASK_ID,
     title: "Fund the referendum: the Earth Optimization Prize",
     description: [
       "Deposit, earn yield, fund the vote of all humanity.",
@@ -483,7 +571,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: EOS_CAPITALIZE_TASK_ID,
     taskKey: EOS_CAPITALIZE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Capital for the whole machine; primary under End War (the campaign it
+    // funds first), edged to the other missions via TaskEdge after deploy.
+    parentTaskId: END_WAR_TASK_ID,
     title: "Capitalize Earth Optimization Services",
     description: [
       "Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget.",
@@ -543,7 +633,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     isPublic: false,
     id: TASK_GRAPH_STEWARD_TASK_ID,
     taskKey: TASK_GRAPH_STEWARD_TASK_KEY,
-    parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+    // Operational agent work, not a mission — lives under the dev program so
+    // the root keeps only missions + org/personal/dev containers.
+    parentTaskId: OPTIMITRON_DEV_TASK_ID,
     title: "Steward the Optimize Earth task graph",
     description: [
       "Continuously keep the Optimize Earth task tree coherent, complete, and routable.",
@@ -598,7 +690,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.RESEARCH,
     id: DFDA_CREATE_TASK_ID,
     taskKey: DFDA_CREATE_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    parentTaskId: END_DISEASE_TASK_ID,
     title: "Fund the decentralized FDA directly",
     description: [
       "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
@@ -622,7 +714,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.OUTREACH,
     id: SHIRT_SEED_TASK_ID,
     taskKey: SHIRT_SEED_TASK_KEY,
-    parentTaskId: END_WAR_AND_DISEASE_TASK_ID,
+    // Campaign tactic whose payoff is treaty votes — hangs under the treaty.
+    parentTaskId: TREATY_PARENT_TASK_ID,
     title: "Seed the shirt cascade",
     description: [
       "Fund a seed of visible wearers — athletes, public figures, anyone with an audience — to wear the War on Disease shirt on Earth Optimization Day, triggering the cascade where everyone else writes the message on a shirt they already own for the cost of a marker.",
