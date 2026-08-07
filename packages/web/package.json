@@ -12,7 +12,7 @@
     "dev": "pnpm run kill-port && pnpm run ensure-env && pnpm run guard:local-dev-db && pnpm run build:workspace-deps && cross-env NODE_OPTIONS=--max-old-space-size=6144 pnpm exec next dev --port 3001 --turbopack",
     "dev:fast": "pnpm run ensure-env && pnpm run guard:local-dev-db && cross-env NODE_OPTIONS=--max-old-space-size=6144 pnpm exec next dev --port 3001 --turbopack",
     "dev:watch": "node scripts/dev-watcher.mjs",
-    "build": "pnpm run ensure-env && pnpm run validate:content && pnpm run build:workspace-deps && cross-env NODE_OPTIONS=--max-old-space-size=5120 next build",
+    "build": "pnpm run ensure-env && pnpm run validate:content && pnpm run build:workspace-deps && cross-env NODE_OPTIONS=--max-old-space-size=3584 next build",
     "build:vercel": "node scripts/run-with-timeout.mjs 420 pnpm run build",
     "build:fast": "pnpm run ensure-env && pnpm run validate:content && next build",
     "start": "pnpm run ensure-env && next start",
