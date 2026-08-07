@@ -26,10 +26,12 @@ const ROUTES_TO_SMOKE = [
   {
     path: "/",
     expectedH1: "PLEASE TAKE 30 SECONDS TO END WAR AND DISEASE",
-    expectedH1ByHost: {
-      // Kept in sync with `HeroSection` on the Optimitron game homepage.
-      "optimitron.com": "Play the Earth Optimization Game!",
-      "www.optimitron.com": "Play the Earth Optimization Game!",
+    expectedH1BySiteKey: {
+      // Kept in sync with the `HeroSection` headline that
+      // `OptimitronLandingPage` passes. optimitron.com/ stopped rendering the
+      // game page in #179; `/game` still has the "Play the Earth Optimization
+      // Game!" heading.
+      optimitron: "Earth Optimization Services",
     },
     source: "warondisease landing action heading",
   },
@@ -196,10 +198,19 @@ async function main() {
       ),
     ),
   );
+  // Demo login is not variant-specific, so run it once per distinct host
+  // rather than once per variant target.
+  const demoLoginTargets = [
+    ...new Map(
+      targets.map((target) => [target.baseUrl.href, target]),
+    ).values(),
+  ];
   const demoLoginResults =
     environment === "Preview"
       ? await Promise.all(
-          targets.map((target) => smokeDemoLogin({ target, bypassSecret })),
+          demoLoginTargets.map((target) =>
+            smokeDemoLogin({ target, bypassSecret }),
+          ),
         )
       : [];
   const routeResults = [...pageResults, ...demoLoginResults];
@@ -398,7 +409,7 @@ function getLocationPathname(location) {
 
 async function smokeRoute({ route, target, bypassSecret }) {
   const url = new URL(route.path, target.baseUrl);
-  const expectedH1 = resolveExpectedH1(route, target.baseUrl.hostname);
+  const expectedH1 = resolveExpectedH1(route, target);
   const attempts = [];
   const startedAt = Date.now();
 
@@ -409,6 +420,7 @@ async function smokeRoute({ route, target, bypassSecret }) {
       expectedH1,
       bypassSecret,
       attempt,
+      overrideSiteKey: target.overrideSiteKey,
     });
     attempts.push(attemptResult);
 
@@ -446,6 +458,7 @@ async function fetchAndAssert({
   expectedH1,
   bypassSecret,
   attempt,
+  overrideSiteKey = null,
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -457,6 +470,16 @@ async function fetchAndAssert({
 
   if (bypassSecret) {
     headers["x-vercel-protection-bypass"] = bypassSecret;
+  }
+
+  // The middleware only accepts the variant override from the ?site= query
+  // param or this cookie (kept in sync with SITE_VARIANT_OVERRIDE_COOKIE in
+  // src/lib/site.ts) — an incoming x-optimitron-site-key header is stripped
+  // before the app sees it. Honoured only for *.vercel.app hosts on
+  // VERCEL_ENV=preview; production hosts ignore it, so sending it there
+  // would silently do nothing.
+  if (overrideSiteKey) {
+    headers.cookie = `optimitron_site_key=${overrideSiteKey}`;
   }
 
   try {
@@ -482,7 +505,7 @@ async function fetchAndAssert({
       durationMs: Date.now() - attemptStartedAt,
       status: response.status,
       finalUrl: response.url,
-      expectedH1: route.expectedH1,
+      expectedH1,
       h1Texts,
       missingExpectedH1: !hasExpectedH1,
       matchedErrorMarker,
@@ -493,7 +516,7 @@ async function fetchAndAssert({
             statusOk,
             matchedErrorMarker,
             hasExpectedH1,
-            expectedH1: route.expectedH1,
+            expectedH1,
             h1Texts,
           }),
     };
@@ -504,7 +527,7 @@ async function fetchAndAssert({
       durationMs: Date.now() - attemptStartedAt,
       status: null,
       finalUrl: url.href,
-      expectedH1: route.expectedH1,
+      expectedH1,
       h1Texts: [],
       missingExpectedH1: true,
       matchedErrorMarker: null,
@@ -527,6 +550,9 @@ function summarizeRouteResult({
   return {
     path: route.path,
     targetUrl: target.baseUrl.href,
+    // Preview runs several variants against one host, so the hostname alone
+    // no longer identifies a check.
+    siteKey: resolveSiteKey(target),
     url: url.href,
     source: route.source,
     ok: Boolean(finalAttempt?.ok),
@@ -542,10 +568,31 @@ function summarizeRouteResult({
   };
 }
 
-function resolveExpectedH1(route, hostname) {
-  return (
-    route.expectedH1ByHost?.[String(hostname).toLowerCase()] ?? route.expectedH1
-  );
+// Production resolves a site variant from the hostname; preview cannot, because
+// every preview deployment answers on one *.vercel.app host. Both paths map to
+// the same site key so per-variant expectations live in exactly one table.
+const SITE_KEY_BY_PRODUCTION_HOST = {
+  "optimitron.com": "optimitron",
+  "www.optimitron.com": "optimitron",
+  "warondisease.org": "warOnDisease",
+  "www.warondisease.org": "warOnDisease",
+};
+
+// Variants worth smoking on a preview deployment. warOnDisease is the default
+// a *.vercel.app host already serves, so it needs no override cookie.
+const PREVIEW_SITE_KEYS = ["warOnDisease", "optimitron"];
+
+function resolveSiteKey(target) {
+  if (target.siteKey) {
+    return target.siteKey;
+  }
+  const hostname = String(target.baseUrl.hostname).toLowerCase();
+  return SITE_KEY_BY_PRODUCTION_HOST[hostname] ?? "warOnDisease";
+}
+
+function resolveExpectedH1(route, target) {
+  const siteKey = resolveSiteKey(target);
+  return route.expectedH1BySiteKey?.[siteKey] ?? route.expectedH1;
 }
 
 function resolveTargets() {
@@ -570,9 +617,27 @@ function resolveTargets() {
     throw new Error(`${environment} URL list did not contain any URLs.`);
   }
 
+  // Production has one host per site, so the host selects the variant. Preview
+  // has one host for all of them, so fan out over the variants explicitly and
+  // let the override cookie select each one. Without this, a preview only ever
+  // exercises warOnDisease and per-variant regressions reach production
+  // unseen — which is how the optimitron.com heading broke in #179.
+  if (environment === "Preview") {
+    const baseUrl = normalizeTargetUrl(rawUrls[0], environment);
+    return PREVIEW_SITE_KEYS.map((siteKey) => ({
+      environment,
+      baseUrl,
+      siteKey,
+      // warOnDisease is already the default for a *.vercel.app host.
+      overrideSiteKey: siteKey === "warOnDisease" ? null : siteKey,
+    }));
+  }
+
   return rawUrls.map((rawUrl) => ({
     environment,
     baseUrl: normalizeTargetUrl(rawUrl, environment),
+    siteKey: null,
+    overrideSiteKey: null,
   }));
 }
 
@@ -611,11 +676,22 @@ function formatResultTarget(result) {
     return "";
   }
 
+  let host;
   try {
-    return `${new URL(result.targetUrl).hostname} `;
+    host = new URL(result.targetUrl).hostname;
   } catch {
-    return `${result.targetUrl} `;
+    host = result.targetUrl;
   }
+
+  // On production the host already names the site. On preview every variant
+  // shares one host, so name the variant too.
+  const hostNamesTheSite = Object.hasOwn(
+    SITE_KEY_BY_PRODUCTION_HOST,
+    String(host).toLowerCase(),
+  );
+  return hostNamesTheSite || !result.siteKey
+    ? `${host} `
+    : `${host} [${result.siteKey}] `;
 }
 
 function extractH1Texts(html) {
