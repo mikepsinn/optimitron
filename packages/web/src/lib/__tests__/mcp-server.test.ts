@@ -149,6 +149,7 @@ const mocks = vi.hoisted(() => ({
   unitFindFirst: vi.fn(),
   nOf1VariableUpsert: vi.fn(),
   measurementUpsert: vi.fn(),
+  measurementFindMany: vi.fn(),
   trackingReminderUpsert: vi.fn(),
   trackingReminderFindMany: vi.fn(),
   trackingReminderFindFirst: vi.fn(),
@@ -451,6 +452,7 @@ vi.mock("../prisma", () => ({
       upsert: mocks.nOf1VariableUpsert,
     },
     measurement: {
+      findMany: mocks.measurementFindMany,
       upsert: mocks.measurementUpsert,
     },
     trackingReminder: {
@@ -3472,11 +3474,10 @@ describe("MCP server tool dispatch", () => {
         },
       );
       mocks.isTaskBlocked.mockReturnValue(false);
-      mocks.computeTaskPriority.mockImplementation(
-        (task: { id: string }) =>
-          makePriority({
-            priority: task.id === "public-open-task" ? 250 : 1_000,
-          }),
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "public-open-task" ? 250 : 1_000,
+        }),
       );
       mocks.isTaskLeased.mockResolvedValue({ leased: false });
 
@@ -9131,6 +9132,193 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.variableCategoryFindFirst).not.toHaveBeenCalled();
       expect(mocks.globalVariableUpsert).not.toHaveBeenCalled();
       expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+    });
+
+    const measurementRow = (id: string, startTime: string) => ({
+      createdAt: new Date(startTime),
+      duration: null,
+      globalVariable: TRACKING_VARIABLE,
+      globalVariableId: "gv-vitd",
+      id,
+      latitude: null,
+      longitude: null,
+      nOf1VariableId: "nof1-1",
+      note: null,
+      originalUnit: TRACKING_UNIT,
+      originalValue: 5000,
+      sourceName: "mcp",
+      startTime: new Date(startTime),
+      subjectId: "subject-1",
+      unit: TRACKING_UNIT,
+      updatedAt: new Date(startTime),
+      value: 5000,
+    });
+
+    it("listMeasurements scopes the query to the caller's own subject and applies the time window", async () => {
+      mocks.measurementFindMany.mockResolvedValue([
+        measurementRow("measurement-2", "2026-07-02T08:00:00.000Z"),
+        measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: {
+          startTimeAfter: "2026-07-01T00:00:00.000Z",
+          startTimeBefore: "2026-07-03T00:00:00.000Z",
+          variableName: "vitamin d",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.globalVariableFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            name: { equals: "vitamin d", mode: "insensitive" },
+          },
+        }),
+      );
+      const call = mocks.measurementFindMany.mock.calls[0]![0] as {
+        orderBy: unknown;
+        take: number;
+        where: Record<string, unknown>;
+      };
+      expect(call.where).toEqual({
+        deletedAt: null,
+        globalVariableId: "gv-vitd",
+        startTime: {
+          gte: new Date("2026-07-01T00:00:00.000Z"),
+          lte: new Date("2026-07-03T00:00:00.000Z"),
+        },
+        subject: { userId: "user-1" },
+      });
+      expect(call.orderBy).toEqual([{ startTime: "desc" }, { id: "desc" }]);
+      expect(call.take).toBe(101);
+
+      const body = parseToolBody(result) as {
+        measurements: { id: string }[];
+        nextCursor: string | null;
+      };
+      expect(body.measurements.map((m) => m.id)).toEqual([
+        "measurement-2",
+        "measurement-1",
+      ]);
+      expect(body.nextCursor).toBeNull();
+    });
+
+    it("listMeasurements returns every variable when no variable filter is given", async () => {
+      mocks.measurementFindMany.mockResolvedValue([]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: {},
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.globalVariableFindFirst).not.toHaveBeenCalled();
+      const call = mocks.measurementFindMany.mock.calls[0]![0] as {
+        where: Record<string, unknown>;
+      };
+      expect(call.where).toEqual({
+        deletedAt: null,
+        subject: { userId: "user-1" },
+      });
+    });
+
+    it("listMeasurements trims an overfetched page and returns the last kept row as nextCursor", async () => {
+      mocks.measurementFindMany.mockResolvedValue([
+        measurementRow("measurement-3", "2026-07-03T08:00:00.000Z"),
+        measurementRow("measurement-2", "2026-07-02T08:00:00.000Z"),
+        measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: { cursor: "measurement-4", limit: 2 },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const call = mocks.measurementFindMany.mock.calls[0]![0] as {
+        cursor: { id: string };
+        skip: number;
+        take: number;
+      };
+      expect(call.take).toBe(3);
+      expect(call.cursor).toEqual({ id: "measurement-4" });
+      expect(call.skip).toBe(1);
+
+      const body = parseToolBody(result) as {
+        measurements: { id: string }[];
+        nextCursor: string | null;
+      };
+      expect(body.measurements.map((m) => m.id)).toEqual([
+        "measurement-3",
+        "measurement-2",
+      ]);
+      expect(body.nextCursor).toBe("measurement-2");
+    });
+
+    it("listMeasurements rejects an unknown variable instead of returning an empty page", async () => {
+      mocks.globalVariableFindFirst.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: { variableName: "Nonexistent" },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain("GlobalVariable not found: Nonexistent");
+      expect(mocks.measurementFindMany).not.toHaveBeenCalled();
+    });
+
+    it("listMeasurements rejects a limit above the maximum page size with no query", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: { limit: 501 },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain("limit must be 500 or less");
+      expect(mocks.measurementFindMany).not.toHaveBeenCalled();
+    });
+
+    it("listMeasurements rejects an inverted time window with no query", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: {
+          startTimeAfter: "2026-07-03T00:00:00.000Z",
+          startTimeBefore: "2026-07-01T00:00:00.000Z",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain(
+        "startTimeAfter must be at or before startTimeBefore",
+      );
+      expect(mocks.measurementFindMany).not.toHaveBeenCalled();
+    });
+
+    it("listMeasurements rejects a caller lacking TASKS_PERSONAL scope", async () => {
+      const client = await setup("user-1", []);
+
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: {},
+      });
+
+      expect(result.isError).toBe(true);
+      const body = parseToolBody(result);
+      expect(body.message).toContain("Insufficient scope");
+      expect(mocks.measurementFindMany).not.toHaveBeenCalled();
     });
 
     it("upsertTrackingReminder keeps no-ID creation idempotent and defaults reminderFrequency to 86400", async () => {
