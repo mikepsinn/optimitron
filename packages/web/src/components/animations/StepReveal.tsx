@@ -15,6 +15,10 @@ export function StepReveal({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const prefersReducedMotion = useReducedMotion();
+  // Automation (screenshots, copy previews, e2e) must capture every step
+  // settled, never a stagger frame. Keep the motion.div wrappers so the DOM
+  // shape matches the server render; only the motion props change.
+  const isAutomation = typeof navigator !== "undefined" && navigator.webdriver;
 
   if (prefersReducedMotion) {
     return <div className={className}>{children}</div>;
@@ -27,17 +31,17 @@ export function StepReveal({
       {items.map((child, i) => (
         <motion.div
           key={i}
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          initial={isAutomation ? false : { opacity: 0, y: 20, scale: 0.95 }}
           animate={
-            isInView
+            isInView || isAutomation
               ? { opacity: 1, y: 0, scale: 1 }
               : { opacity: 0, y: 20, scale: 0.95 }
           }
-          transition={{
-            duration: 0.4,
-            delay: i * staggerDelay,
-            ease: "easeOut",
-          }}
+          transition={
+            isAutomation
+              ? { duration: 0 }
+              : { duration: 0.4, delay: i * staggerDelay, ease: "easeOut" }
+          }
         >
           {child}
         </motion.div>
