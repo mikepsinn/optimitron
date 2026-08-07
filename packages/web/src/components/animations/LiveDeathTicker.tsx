@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useReducedMotion } from "framer-motion";
 import {
   DEATHS_PER_SECOND,
@@ -107,9 +107,20 @@ export function LiveDeathTicker({
   ];
   const prefersReducedMotion = useReducedMotion();
   const hasHydrated = useHydrated();
+  // Automation (screenshots, copy previews, e2e) must capture a deterministic
+  // frame: the live count's digit width varies with capture timing, shifting
+  // this centered row between runs. Serve the static fallback there, same as
+  // reduced motion. Lazy-initialized (not effect-set) so it's already correct
+  // on the first client render the ticker-starting effect below observes —
+  // an effect-set value lags a render, letting the interval start briefly
+  // under automation before tearing back down. hasHydrated still gates the
+  // rendered output, so server and first-client-render HTML still match.
+  const [isAutomation] = useState(
+    () => typeof navigator !== "undefined" && navigator.webdriver === true,
+  );
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isAutomation) return;
 
     activeTickerRefs.add(refs);
     startTickerLoop();
@@ -122,9 +133,9 @@ export function LiveDeathTicker({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isAutomation]);
 
-  if (!hasHydrated || prefersReducedMotion) {
+  if (!hasHydrated || prefersReducedMotion || isAutomation) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 text-center ${className}`}>
         {counters.map((c) => (

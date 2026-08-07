@@ -137,6 +137,23 @@ const OPTIMITRON_GAME_LANDING_FILES = [
   ...SHARED_LANDING_SECTION_FILES,
 ];
 
+// /invest renders EosInvestLandingPage, the only page with the scroll-driven
+// investor sections. StepReveal ships nowhere else, so without this list a
+// change to it has no registered visual state.
+const INVEST_LANDING_FILES = [
+  "packages/web/src/app/invest/page.tsx",
+  "packages/web/src/components/animations/ScrollReveal.tsx",
+  "packages/web/src/components/animations/StepReveal.tsx",
+  "packages/web/src/components/invest/EosInvestLandingPage.tsx",
+  "packages/web/src/components/invest/GiantNumber.tsx",
+  "packages/web/src/components/invest/OptimitronLoop.tsx",
+  "packages/web/src/components/invest/ProgressSpine.tsx",
+  "packages/web/src/components/invest/ShareClassCards.tsx",
+  "packages/web/src/components/invest/StickyRiskSteps.tsx",
+  "packages/web/src/components/invest/WarheadGrid.tsx",
+  "packages/web/src/components/landing/TreatyVoteFlow.tsx",
+];
+
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [
     ROUTES.eos,
@@ -150,6 +167,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
+  [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
@@ -162,6 +180,9 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
+  // Last section of the page: proves the capture rendered the whole pitch,
+  // not just the hero.
+  [ROUTES.invest, "#claim"],
   [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],

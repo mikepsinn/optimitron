@@ -63,19 +63,31 @@ export async function forceAnimationsComplete(page: Page): Promise<void> {
   // Framer Motion sets opacity via inline styles while animating, which CSS
   // overrides can't reliably normalize. Force any inline opacity below 1 up to
   // 1 so audits measure the settled UI state rather than a transient frame.
+  // Elements can hydrate and start a fade after a scan completes, so rescan
+  // until a pass finds nothing new (bounded — a scan that races hydration was
+  // the main source of blank sections in visual-review diffs).
   await retryAfterNavigation(page, async () => {
-    await page.evaluate(() => {
-      const all = document.querySelectorAll("*");
-      for (const el of all) {
-        const htmlEl = el as HTMLElement;
-        const inlineOpacity = Number.parseFloat(htmlEl.style.opacity);
-        if (Number.isFinite(inlineOpacity) && inlineOpacity < 1) {
-          htmlEl.dataset.visualForceVisible = "";
-          htmlEl.style.opacity = "1";
-          htmlEl.style.transform = "none";
+    for (let pass = 0; pass < 5; pass++) {
+      const forced = await page.evaluate(() => {
+        let count = 0;
+        const all = document.querySelectorAll("*");
+        for (const el of all) {
+          const htmlEl = el as HTMLElement;
+          const inlineOpacity = Number.parseFloat(htmlEl.style.opacity);
+          if (Number.isFinite(inlineOpacity) && inlineOpacity < 1) {
+            htmlEl.dataset.visualForceVisible = "";
+            htmlEl.style.opacity = "1";
+            htmlEl.style.transform = "none";
+            count++;
+          }
         }
+        return count;
+      });
+      if (forced === 0 && pass > 0) break;
+      if (pass < 4) {
+        await page.waitForTimeout(100);
       }
-    });
+    }
   });
 
   await waitForPaint(page);
