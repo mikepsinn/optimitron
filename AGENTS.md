@@ -127,6 +127,14 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - For copy approval, show each change as Before → After; label additions New and unchanged relocations Moved unchanged.
 - When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
 
+## Task Writing — Simplified Technical English
+
+Write task titles, descriptions, acceptance criteria, and agent instructions in ASD-STE100: active voice, one instruction per sentence, under 20 words per sentence, simple tenses, no `-ing` verb forms, one term per concept, no metaphors. Tasks are executed by agents and by non-native readers, so ambiguity costs them time.
+
+Persuasion surfaces are excluded. Landing pages, emails, share copy, and the manual keep the voice in `docs/h2ewd.md`. STE is for the instruction layer only.
+
+STE removes figurative language, not facts. Keep every number and citation; expect the word count to rise, not fall.
+
 ## Critical Architecture Rules
 
 ### 1. Type System — Single Source of Truth
