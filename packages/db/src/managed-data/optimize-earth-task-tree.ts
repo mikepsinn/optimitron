@@ -131,12 +131,16 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     title: "End War",
     description: [
-      "Standing mission node for ending war: dismantle the mass-murder machinery and point what it costs at keeping people alive.",
+      "This is a mission task. The goal is the end of war.",
       "",
-      "Any organization, funder, or human whose mission is peace can find one shared branch here, with every strategy ranked by expected value. Current dominant strategies: the 1% Treaty, the Court of Humanity, and the Loving Takeover. Better strategies are welcome and rise when the math supports them.",
+      "Governments keep 12,241 nuclear warheads. Approximately 100 warheads are sufficient to end civilization. Governments thus keep 122 times more destructive capacity than necessary.",
+      "",
+      "Add a task below this task if the task decreases that capacity, or decreases the money that pays for it. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "These three tasks have the highest value now: the 1% Treaty, the Court of Humanity, and the Loving Takeover. If your task has a higher value, your task becomes the first task.",
     ].join("\n"),
     impactStatement:
-      "Humanity maintains about 122 apocalypses of destructive capacity; every task under this node exists to point that budget at welfare instead.",
+      "Governments keep 122 times more destructive capacity than civilization can survive. Each task below this task decreases that capacity, or decreases the money that pays for it.",
     // TODO(param): mission EV is the child roll-up; do not add scalars here.
     sortOrder: -980,
   },
@@ -148,12 +152,16 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     title: "End Disease",
     description: [
-      "Standing mission node for the eradication of disease. 6,650 diseases have zero approved treatments; at roughly 15 new treatments a year, the backlog outlives everyone reading this.",
+      "This is a mission task. The goal is the end of disease.",
       "",
-      "Any organization, funder, or researcher whose mission is ending disease can find one shared branch here, with every strategy ranked by expected value. Shared engines like the 1% Treaty and the decentralized FDA hang under this mission and under End War at the same time, because most of the money that could cure disease is currently a missile.",
+      "6,650 diseases have no approved treatment. Medical researchers add approximately 15 new treatments each year. A test of all the possible treatments thus needs approximately 443 years.",
+      "",
+      "Add a task below this task if the task decreases that time. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "Some tasks apply to this task and to the End War task at the same time. The 1% Treaty is an example. Money that pays for weapons is not available for medical tests.",
     ].join("\n"),
     impactStatement:
-      "Disease destroys more healthy life years than anything else humans tolerate; this branch ranks every strategy that shortens the eradication timeline.",
+      "Disease causes more lost healthy life years than any other condition. Each task below this task decreases the time to a treatment.",
     // TODO(param): mission EV is the child roll-up; do not add scalars here.
     sortOrder: -970,
   },
@@ -165,12 +173,14 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     title: "End Poverty",
     description: [
-      "Standing mission node for ending poverty: raise median real after-tax income for every human.",
+      "This is a mission task. The goal is an increase of the median income of each person.",
       "",
-      "Any organization, funder, or human whose mission is prosperity can find one shared branch here, with every strategy ranked by expected value. Strategies with quantified income effects — the 1% Treaty's peace dividend, the Loving Takeover's shareholder math, optimized public budgets — hang under this mission and under the other missions they serve.",
+      "Add a task below this task if the task increases the median real income after tax. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
+      "",
+      "Some tasks apply to this task and to the other mission tasks at the same time. The 1% Treaty, the Loving Takeover, and better public budgets are examples. War decreases income. Disease decreases income.",
     ].join("\n"),
     impactStatement:
-      "Median income is one of the two numbers Earth optimization is scored on; this branch ranks every strategy that raises it.",
+      "The median income is one of the two measurements of Earth optimization. Each task below this task increases it.",
     // TODO(param): mission EV is the child roll-up; do not add scalars here.
     sortOrder: -960,
   },
@@ -182,12 +192,16 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
     title: "Minimize Animal Suffering",
     description: [
-      "Standing mission node for reducing animal suffering.",
+      "This is a mission task. The goal is a decrease of the suffering of animals.",
       "",
-      "STUB: nothing is built here yet. No strategies have been cataloged, no expected values estimated, and this node carries no impact numbers, so it cannot inflate any roll-up. It exists because a to-do list for optimizing Earth that ignored animals would be lying about its scope. Propose strategies and they will be ranked.",
+      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "",
+      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. Persons give approximately $260 million each year to decrease this suffering. This is approximately 0.3 cents for each land animal.",
+      "",
+      "Add a task below this task. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
     ].join("\n"),
     impactStatement:
-      "No impact claimed yet — this node is a placeholder until real work exists beneath it.",
+      "This task has no expected value now. Add tasks and data below it before you compare this task to other tasks.",
     interestTags: [],
     // DRAFT + no economics scalars: the stub stays visible as intent without
     // entering active queues or EV roll-ups.
