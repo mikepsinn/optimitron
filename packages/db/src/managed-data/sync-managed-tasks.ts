@@ -5,10 +5,12 @@ import {
   TaskCommunicationEndpointVerificationStatus,
   TaskCompensationKind,
   TaskDeadlinePolicy,
+  TaskEdgeType,
   TaskExecutionMode,
   TaskRemotePolicy,
   TaskStatus,
   type Prisma,
+  type TaskEdgeType as TaskEdgeTypeValue,
   type TaskCategory as TaskCategoryValue,
   type TaskClaimPolicy as TaskClaimPolicyValue,
   type TaskCompensationCadence as TaskCompensationCadenceValue,
@@ -35,10 +37,33 @@ export interface ManagedTaskPrimaryEndpoint {
   url?: string | null;
 }
 
+/**
+ * A causal edge owned by a managed collection.
+ *
+ * `parentTaskId` is the roll-up parent and there is only one; an edge is how a
+ * task declares the other missions it serves without double-counting its value
+ * into each of them. Declared here rather than created at runtime because an
+ * edge carrying a probability delta is a quantified claim that belongs in a
+ * pull request where a human can argue with the number.
+ *
+ * Leave the deltas null until they can be sourced. A null delta is an honest
+ * structural claim; an invented one silently feeds the EV engine.
+ */
+export interface ManagedTaskEdgeRecord {
+  /** Downstream task this one serves. Must exist in the DB or the same collection. */
+  toTaskId: string;
+  edgeType?: TaskEdgeTypeValue;
+  probabilityDeltaBase?: number | null;
+  timeDeltaDaysBase?: number | null;
+  notes?: string | null;
+}
+
 export interface ManagedTaskRecord {
   id: string;
   taskKey: string;
   parentTaskId: string | null;
+  /** Causal edges from this task to other tasks it serves. */
+  edges?: ManagedTaskEdgeRecord[];
   title: string;
   description: string;
   impactStatement?: string | null;
@@ -191,6 +216,22 @@ export interface ManagedTaskClient {
     update(args: unknown): Promise<unknown>;
     updateMany(args: unknown): Promise<{ count: number }>;
   };
+  taskEdge: {
+    findMany(args: unknown): Promise<ManagedTaskEdgeRow[]>;
+    upsert(args: unknown): Promise<unknown>;
+    updateMany(args: unknown): Promise<{ count: number }>;
+  };
+}
+
+interface ManagedTaskEdgeRow {
+  id: string;
+  fromTaskId: string;
+  toTaskId: string;
+  edgeType: TaskEdgeTypeValue;
+  probabilityDeltaBase: number | null;
+  timeDeltaDaysBase: number | null;
+  notes: string | null;
+  deletedAt: Date | null;
 }
 
 export type ManagedIdentityClient = WishoniaUserClient;
@@ -217,6 +258,12 @@ export interface SyncManagedTasksOptions {
 }
 
 const MANAGED_TASK_IMPACT_CALCULATION_VERSION = "managed-task-tree-v1";
+/**
+ * Stamped on every edge this sync owns. Edges created at runtime (MCP
+ * addDependency, agent proposals) carry a different value or none, so
+ * retirement only ever touches rows this collection declared.
+ */
+const MANAGED_TASK_EDGE_CALCULATION_VERSION = "managed-task-edges-v1";
 const MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY = "status-quo";
 const MANAGED_TASK_IMPACT_FRAME_SLUG = "one-year";
 const MANAGED_TASK_IMPACT_FRAME_YEARS = 1;
@@ -231,6 +278,8 @@ export interface SyncManagedTasksResult {
   missingRetired: string[];
   endpointUpdated: string[];
   endpointRetired: string[];
+  edgeUpserted: string[];
+  edgeRetired: string[];
 }
 
 function clean(value?: string | null) {
@@ -824,6 +873,143 @@ async function syncManagedTaskImpactEstimate(
   });
 }
 
+function buildManagedEdgeKey(edge: {
+  fromTaskId: string;
+  toTaskId: string;
+  edgeType: TaskEdgeTypeValue;
+}) {
+  return `${edge.fromTaskId}->${edge.toTaskId}:${edge.edgeType}`;
+}
+
+/**
+ * Reconcile declared edges after every task upsert, so both endpoints exist.
+ * Runs as a second pass rather than inline with each record because an edge
+ * may point at a task declared later in the same collection.
+ */
+async function syncManagedTaskEdges(
+  client: ManagedTaskClient,
+  options: {
+    apply: boolean;
+    now: Date;
+    records: ManagedTaskRecord[];
+    result: SyncManagedTasksResult;
+  },
+) {
+  const declared = new Map<
+    string,
+    {
+      fromTaskId: string;
+      toTaskId: string;
+      edgeType: TaskEdgeTypeValue;
+      probabilityDeltaBase: number | null;
+      timeDeltaDaysBase: number | null;
+      notes: string | null;
+    }
+  >();
+
+  for (const record of options.records) {
+    if (record.retired || !record.edges?.length) {
+      continue;
+    }
+    for (const edge of record.edges) {
+      const edgeType = edge.edgeType ?? TaskEdgeType.INCREASES_PROBABILITY_OF;
+      if (edge.toTaskId === record.id) {
+        throw new Error(
+          `Managed task ${record.id} declares an edge to itself; edges must point at a different task.`,
+        );
+      }
+      const key = buildManagedEdgeKey({
+        edgeType,
+        fromTaskId: record.id,
+        toTaskId: edge.toTaskId,
+      });
+      if (declared.has(key)) {
+        throw new Error(`Duplicate managed task edge: ${key}`);
+      }
+      declared.set(key, {
+        edgeType,
+        fromTaskId: record.id,
+        notes: clean(edge.notes),
+        probabilityDeltaBase: edge.probabilityDeltaBase ?? null,
+        timeDeltaDaysBase: edge.timeDeltaDaysBase ?? null,
+        toTaskId: edge.toTaskId,
+      });
+    }
+  }
+
+  const existing = await client.taskEdge.findMany({
+    where: { calculationVersion: MANAGED_TASK_EDGE_CALCULATION_VERSION },
+    select: {
+      id: true,
+      fromTaskId: true,
+      toTaskId: true,
+      edgeType: true,
+      probabilityDeltaBase: true,
+      timeDeltaDaysBase: true,
+      notes: true,
+      deletedAt: true,
+    },
+  });
+  const existingByKey = new Map(
+    existing.map((row) => [buildManagedEdgeKey(row), row]),
+  );
+
+  for (const [key, edge] of declared) {
+    const current = existingByKey.get(key);
+    const unchanged =
+      current?.deletedAt === null &&
+      current.probabilityDeltaBase === edge.probabilityDeltaBase &&
+      current.timeDeltaDaysBase === edge.timeDeltaDaysBase &&
+      current.notes === edge.notes;
+    if (unchanged) {
+      continue;
+    }
+
+    options.result.edgeUpserted.push(key);
+    if (!options.apply) {
+      continue;
+    }
+
+    await client.taskEdge.upsert({
+      where: {
+        fromTaskId_toTaskId_edgeType: {
+          edgeType: edge.edgeType,
+          fromTaskId: edge.fromTaskId,
+          toTaskId: edge.toTaskId,
+        },
+      },
+      create: {
+        ...edge,
+        calculationVersion: MANAGED_TASK_EDGE_CALCULATION_VERSION,
+      },
+      update: {
+        calculationVersion: MANAGED_TASK_EDGE_CALCULATION_VERSION,
+        deletedAt: null,
+        notes: edge.notes,
+        probabilityDeltaBase: edge.probabilityDeltaBase,
+        timeDeltaDaysBase: edge.timeDeltaDaysBase,
+      },
+    });
+  }
+
+  // Removing an edge from the array is deletion here, unlike tasks, because an
+  // undeclared managed edge is an assertion nobody is making any more.
+  const staleIds = existing
+    .filter((row) => row.deletedAt === null)
+    .filter((row) => !declared.has(buildManagedEdgeKey(row)))
+    .map((row) => row.id);
+
+  if (staleIds.length > 0) {
+    options.result.edgeRetired.push(...staleIds);
+    if (options.apply) {
+      await client.taskEdge.updateMany({
+        where: { id: { in: staleIds } },
+        data: { deletedAt: options.now },
+      });
+    }
+  }
+}
+
 export async function syncManagedTasks(
   client: ManagedTaskClient,
   options: SyncManagedTasksOptions,
@@ -931,6 +1117,8 @@ export async function syncManagedTasks(
     missingRetired: [],
     endpointUpdated: [],
     endpointRetired: [],
+    edgeUpserted: [],
+    edgeRetired: [],
   };
   const now = options.now ?? new Date();
 
@@ -1087,6 +1275,13 @@ export async function syncManagedTasks(
     }
   }
 
+  await syncManagedTaskEdges(client, {
+    apply: options.apply,
+    now,
+    records,
+    result,
+  });
+
   return result;
 }
 
@@ -1108,6 +1303,8 @@ export function formatManagedTasksResult(result: SyncManagedTasksResult) {
     `  missing retired: ${result.missingRetired.length}`,
     `  endpoint updates: ${result.endpointUpdated.length}`,
     `  endpoint retired: ${result.endpointRetired.length}`,
+    `  edges upserted: ${result.edgeUpserted.length}`,
+    `  edges retired: ${result.edgeRetired.length}`,
   ];
 
   for (const [label, values] of [

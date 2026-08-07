@@ -267,6 +267,12 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: COURT_OF_HUMANITY_TASK_ID,
     taskKey: COURT_OF_HUMANITY_TASK_KEY,
     parentTaskId: END_WAR_TASK_ID,
+    // The court's whole purpose is to force the treaty settlement, so it
+    // inherits the treaty's mission set.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+    ],
     title: "Establish the Court of Humanity",
     description: [
       "Make the Court of Humanity legible as the institution where humans can judge governments that spend public resources against the general welfare.",
@@ -428,6 +434,17 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: TREATY_PARENT_TASK_ID,
     taskKey: TREATY_PARENT_TASK_KEY,
     parentTaskId: END_WAR_TASK_ID,
+    // The treaty serves every mission. It cuts military spending (End War),
+    // funds pragmatic trials with the proceeds (End Disease), pays a peace
+    // dividend (End Poverty), and takes a bite out of the nuclear arsenal
+    // (Prevent Extinction). End War is the roll-up parent because that is
+    // where the treaty acts; the rest are edges so the value is claimed once.
+    // Deltas stay null until they can be sourced from the parameter catalog.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+      { toTaskId: PREVENT_EXTINCTION_TASK_ID },
+    ],
     title: TREATY_PARENT_TASK_TITLE,
     description:
       "Ratify the treaty that redirects one percent of military spending into pragmatic clinical trials and disease eradication.",
@@ -492,6 +509,12 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: LOVING_TAKEOVER_TASK_ID,
     taskKey: LOVING_TAKEOVER_TASK_KEY,
     parentTaskId: END_WAR_TASK_ID,
+    // Redirects contractor lobbying toward the treaty, and the shareholder
+    // case is explicitly an income argument.
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+    ],
     title: "The Loving Takeover",
     description: [
       "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
@@ -734,6 +757,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: DFDA_CREATE_TASK_ID,
     taskKey: DFDA_CREATE_TASK_KEY,
     parentTaskId: END_DISEASE_TASK_ID,
+    // Cheaper trials mean less disease, and disease is a drag on income.
+    edges: [{ toTaskId: END_POVERTY_TASK_ID }],
     title: "Fund the decentralized FDA directly",
     description: [
       "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
