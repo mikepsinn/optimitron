@@ -4,6 +4,15 @@
 
 `warondisease` · `dfda` · `wishocracy` · thin satellites. See `apps/README.md`.
 
+**One tip PR into `main`** for brand apps + site-kit (stacked per-app PRs are superseded).
+
+## Product split
+
+| App | After sign-in |
+|---|---|
+| warondisease | Full campaign dashboard (referrals, treaty, badges, orgs) via site-kit |
+| wishocracy | Allocation results + edit pairs/categories only — **not** WoD gamification |
+
 ## Canonical mappings (existing schema — no DIH compatibility tables)
 
 | Product need | Use |
@@ -25,6 +34,7 @@
 | DIH `Vote` / `Campaign*` / `Donation` tables | Parallel to ReferendumVote / TaskFunding — do not recreate |
 | DIH `WishocraticPairAllocation` / `WishocraticCategorySelection` | Use Optimitron Wishocratic* models |
 | Extra `User.name` / `User.username` columns | Live on `Person` |
+| Wishocracy WoD dashboard clone | Wishocracy is allocations-only product |
 
 ## Intentionally deferred
 
@@ -33,3 +43,5 @@
 | Cron drip emails | Auth-gated no-op until EmailLog template mapping |
 | militaryAllocationPercent | Not on ReferendumVote |
 | Crowdfunding Campaign UI | Retired; TaskFunding on optimitron web |
+| Mapping donate → `TaskFundingPayment` | Still verify-only Stripe |
+| Global rename `/u/[username]` → `/people/{handle}` | Separate SEO PR |

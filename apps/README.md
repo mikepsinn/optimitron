@@ -3,13 +3,15 @@
 Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 **`packages/web` remains the main optimitron multi-site product.**
 
+**Landing this work:** one tip branch/PR into `main` (not a stack of per-app PRs). Shared shell lives in `@optimitron/site-kit`; apps stay thin wrappers.
+
 ## Deployables
 
 | App | Port | Domain | Owns |
 |-----|------|--------|------|
-| `@apps/warondisease` | 3010 | warondisease.org | Campaign: home, full dashboard (scores/badges), soldiers, orgs, institutes |
+| `@apps/warondisease` | 3010 | warondisease.org | Campaign: home, **full** dashboard (referrals/scores/badges), soldiers, orgs, institutes |
 | `@apps/dfda` | 3011 | dfda.earth | Clinical encyclopedia |
-| `@apps/wishocracy` | 3013 | wishocracy.org | Wishocracy allocation |
+| `@apps/wishocracy` | 3013 | wishocracy.org | Wishocracy **allocations only** (pairbars + edit) — not the WoD campaign dashboard |
 | `@apps/trialabundancesurvey` | 3014 | trialabundancesurvey.org | **Survey host** + `/embed` + lite participant home + `embed.js` |
 | `@apps/curedao` | 3015 | curedao.org | Landing + product links (**no donate**) |
 | `@apps/acceleratedmedicine` | 3016 | acceleratedmedicine.org | Case + **donate** + embedded survey |
@@ -25,9 +27,18 @@ Satellite apps should stay thin: routes + brand `public/` + config. Shared UI/li
 | `@optimitron/db` | Schema + client + `TREATY_REFERENDUM_SLUG` |
 | `@optimitron/neobrutalist-ui` | Shared UI primitives (`cn`, shadcn-style) |
 | `@optimitron/impact-params` | Treaty model params |
-| `@optimitron/site-kit` | Shared shell: landing, auth helpers, layout, site lib |
+| `@optimitron/site-kit` | Shared shell: landing, auth/middleware factories, auth API cores, **WoD dashboard suite**, site lib |
 | `@optimitron/survey-embed` | `<SurveyEmbed />` + `embed.js` for partners |
 | `@optimitron/chat-ui` | Health chat |
+
+### site-kit surfaces
+
+| Shared | App-local |
+|--------|-----------|
+| `createAuthMiddleware` / `createLandingMiddleware` | Brand `middleware.ts` wrappers |
+| NextAuth + signup/complete-signup handlers | Brand welcome copy + email injection (WoD) |
+| Full campaign `components/dashboard/*` + `dashboard-actions` | **warondisease only** consumes |
+| Auth helpers, layout, landing, site-config | Wishocracy RAPPA UI + alloc APIs stay in `apps/wishocracy` |
 
 ## Dev
 
@@ -36,6 +47,7 @@ pnpm install
 pnpm db:up && pnpm db:deploy && pnpm db:generate
 
 pnpm dev:warondisease            # :3010
+pnpm dev:wishocracy              # :3013 — allocations product
 pnpm dev:trialabundancesurvey    # :3014  — set NEXT_PUBLIC_SURVEY_ORIGIN=http://localhost:3014 for embeds
 pnpm dev:acceleratedmedicine     # :3016
 pnpm dev:curedao                 # :3015

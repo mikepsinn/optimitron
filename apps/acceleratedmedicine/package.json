@@ -75,7 +75,7 @@
     "lucide-react": "^0.454.0",
     "nanoid": "latest",
     "next": "14.2.35",
-    "next-auth": "latest",
+    "next-auth": "4.24.15",
     "next-themes": "latest",
     "nodemailer": "latest",
     "pg": "^8.20.0",

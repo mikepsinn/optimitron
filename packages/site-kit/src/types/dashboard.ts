@@ -1,11 +1,8 @@
-import type { EnabledProviders } from "../lib/auth-utils"
+import type { EnabledProviders } from "@/lib/auth-utils"
 
 export interface DashboardUser {
   id: string
   name: string
-  /** Canonical public identifier from Person.handle */
-  handle: string | null
-  /** @deprecated Prefer `handle`. Alias for gradual UI migration. */
   username: string | null
   email: string
   bio: string
@@ -16,23 +13,10 @@ export interface DashboardUser {
   organization: string | null
   organizationId: string | null
   image: string | null
-  weeklyDigest: boolean
-  /** Prefer newsletterSubscribed — maps to User.newsletterSubscribed */
   newsletterSubscribed: boolean
   website: string | null
   headline: string | null
   coverImage: string | null
-  person: {
-    id: string
-    handle: string | null
-    displayName: string
-    image: string | null
-    bio: string | null
-    headline: string | null
-    website: string | null
-    coverImage: string | null
-    isPublic: boolean
-  } | null
 }
 
 export interface DashboardStats {
@@ -71,35 +55,6 @@ export interface DashboardProgress {
   target: number
 }
 
-export interface DashboardCampaign {
-  id: string
-  slug: string
-  title: string
-  status: string
-  goalAmount: number
-  currentAmount: number
-  backerCount: number
-  currency: string
-}
-
-export interface DashboardPledgedCampaign {
-  id: string
-  amount: number
-  currency: string
-  createdAt: Date
-  campaign: {
-    id: string
-    slug: string
-    title: string
-    status: string
-  }
-}
-
-export interface DashboardCampaigns {
-  created: DashboardCampaign[]
-  pledged: DashboardPledgedCampaign[]
-}
-
 export interface DashboardOrganization {
   id: string
   name: string
@@ -121,8 +76,6 @@ export interface DashboardAllocation {
 export interface DashboardPublicRecruit {
   id: string
   name: string | null
-  handle: string | null
-  /** @deprecated Prefer `handle` */
   username: string | null
   image: string | null
   depth: number
@@ -164,7 +117,6 @@ export interface DashboardData {
   activities: DashboardActivity[]
   globalProgress: DashboardProgress
   allocation: DashboardAllocation
-  campaigns: DashboardCampaigns
   organizations: DashboardOrganizations
 }
 
@@ -175,3 +127,4 @@ export interface LeaderboardEntry {
   image: string | null
   referrals: number
 }
+

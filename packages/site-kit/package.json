@@ -10,16 +10,26 @@
     "./components/theme-provider": "./src/components/theme-provider.tsx",
     "./components/sentry-404-reporter": "./src/components/sentry-404-reporter.tsx",
     "./components/*": "./src/components/*",
-    "./lib/*": "./src/lib/*",
+    "./types/dashboard": "./src/types/dashboard.ts",
     "./types/*": "./src/types/*",
+    "./lib/*": "./src/lib/*",
+    "./lib/create-middleware": "./src/lib/create-middleware.ts",
+    "./lib/auth-api-signup": "./src/lib/auth-api-signup.ts",
+    "./lib/auth-api-complete-signup": "./src/lib/auth-api-complete-signup.ts",
+    "./lib/auth-api-nextauth": "./src/lib/auth-api-nextauth.ts",
+    "./lib/dashboard-actions": "./src/lib/dashboard-actions.ts",
     "./hooks/*": "./src/hooks/*"
   },
   "peerDependencies": {
-    "next": ">=14",
-    "next-auth": ">=4",
+    "next": "14.2.35",
+    "next-auth": "4.24.15",
     "react": ">=18",
     "react-dom": ">=18",
     "@sentry/nextjs": "*"
+  },
+  "peerDependenciesMeta": {
+    "next": { "optional": false },
+    "next-auth": { "optional": false }
   },
   "dependencies": {
     "@auth/prisma-adapter": "latest",

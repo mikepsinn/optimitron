@@ -1,8 +1,6 @@
-import { getDashboardData } from "../actions"
-import { DashboardSettingsClient } from "./settings-client"
+import { redirect } from "next/navigation"
 
-export default async function DashboardSettingsPage() {
-  const data = await getDashboardData()
-
-  return <DashboardSettingsClient initialData={data} />
+/** Settings belongs on WoD campaign accounts — Wishocracy is allocations only. */
+export default function WishocracySettingsRedirect() {
+  redirect("/dashboard")
 }
