@@ -7521,8 +7521,8 @@ export const GLOBAL_EVENTUALLY_AVOIDABLE_DISEASE_DEATHS_DAILY: Parameter = {
   confidenceInterval: [95672.506667, 157290.951198],
   inputs: ["GLOBAL_DISEASE_DEATHS_DAILY", "EVENTUALLY_AVOIDABLE_DEATH_PCT"],
   computeExpr: "(GLOBAL_DISEASE_DEATHS_DAILY * EVENTUALLY_AVOIDABLE_DEATH_PCT)",
-  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/where-am-i-wrong.html",
-  manualPageTitle: "Where Am I Wrong?",
+  manualPageUrl: "https://manual.WarOnDisease.org/knowledge/appendix/bombs-vs-biotech-roi.html",
+  manualPageTitle: "Bombs vs. Biotechnology: The ROI",
 };
 
 export const GLOBAL_GOVERNMENT_EXPENSE_ANNUAL: Parameter = {

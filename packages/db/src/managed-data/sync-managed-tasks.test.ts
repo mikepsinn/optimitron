@@ -473,6 +473,28 @@ class FakeManagedTaskClient implements ManagedTaskClient {
       }
       return { id: frame.id };
     },
+    updateMany: async (args: unknown) => {
+      const { where, data } = args as {
+        where: {
+          deletedAt: null;
+          taskImpactEstimateSetId: string;
+          NOT: { frameSlug: string };
+        };
+        data: { deletedAt: Date };
+      };
+      let count = 0;
+      for (const frame of this.impactFrameEstimates) {
+        if (
+          frame.taskImpactEstimateSetId === where.taskImpactEstimateSetId &&
+          frame.deletedAt === null &&
+          frame.frameSlug !== where.NOT.frameSlug
+        ) {
+          Object.assign(frame, data);
+          count += 1;
+        }
+      }
+      return { count };
+    },
   };
 
   taskCommunicationEndpoint = {

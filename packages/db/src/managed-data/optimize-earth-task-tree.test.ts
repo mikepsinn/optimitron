@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  END_DISEASE_LIFETIME_VALUE_USD,
+  END_WAR_LIFETIME_VALUE_USD,
+} from "@optimitron/data/parameters";
+import {
   COURT_OF_HUMANITY_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   END_DISEASE_TASK_ID,
@@ -100,20 +104,52 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     );
   });
 
-  // Missions carry no economics scalars: their EV must be the roll-up of the
-  // strategies beneath them, and an empty mission (the animal-suffering stub)
-  // must not inflate any ranking.
+  // A mission states the value IF ACHIEVED, so it must never carry a
+  // probability -- multiplying by one would silently turn "what ending war is
+  // worth" into "what we expect to get", which nobody has estimated.
   it.each([
     END_WAR_TASK_ID,
     END_DISEASE_TASK_ID,
     END_POVERTY_TASK_ID,
     PREVENT_EXTINCTION_TASK_ID,
     MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
-  ])("mission %s carries no direct economics scalars", (id) => {
+  ])("mission %s states no success probability", (id) => {
     const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
     expect(mission).toBeDefined();
-    expect(mission?.expectedEconomicValueUsdBase).toBeUndefined();
     expect(mission?.successProbabilityBase).toBeUndefined();
+  });
+
+  // Sourced or blank, never invented. A blank is honest; a made-up number gets
+  // ranked against real ones. See docs/EXPECTED_VALUE_METHODOLOGY.md.
+  it("gives a mission a value only where a sourced parameter exists", () => {
+    const valued = new Map([
+      [END_WAR_TASK_ID, END_WAR_LIFETIME_VALUE_USD],
+      [END_DISEASE_TASK_ID, END_DISEASE_LIFETIME_VALUE_USD],
+    ]);
+    for (const id of [
+      END_WAR_TASK_ID,
+      END_DISEASE_TASK_ID,
+      END_POVERTY_TASK_ID,
+      PREVENT_EXTINCTION_TASK_ID,
+      MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    ]) {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(mission?.expectedEconomicValueUsdBase).toBe(valued.get(id));
+    }
+  });
+
+  // The peace dividend must not be summed across the mechanisms that share it.
+  // Every mechanism carrying it is an alternative route to the same outcome, so
+  // End War's own value has to come from the whole cost of war instead.
+  it("does not derive End War from the mechanisms beneath it", () => {
+    const mechanismTotal = OPTIMIZE_EARTH_TASK_TREE.filter(
+      (t) => t.parentTaskId === END_WAR_TASK_ID,
+    ).reduce((sum, t) => sum + (t.expectedEconomicValueUsdBase ?? 0), 0);
+    const endWar = OPTIMIZE_EARTH_TASK_TREE.find(
+      (t) => t.id === END_WAR_TASK_ID,
+    );
+    expect(endWar?.expectedEconomicValueUsdBase).toBe(END_WAR_LIFETIME_VALUE_USD);
+    expect(endWar?.expectedEconomicValueUsdBase).not.toBe(mechanismTotal);
   });
 
   // A mission with nothing under it is DRAFT so it stays out of active queues

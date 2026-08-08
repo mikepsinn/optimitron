@@ -1,4 +1,6 @@
 export * from "./parameters-calculations-citations";
+export * from "./mission-value-horizon";
+export * from "./expected-value-methodology";
 export * from "./format-parameter";
 export * from "./earth-optimization-prize";
 export * from "./military-spending";

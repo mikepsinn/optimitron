@@ -1,0 +1,135 @@
+import {
+  DISEASE_BURDEN_GDP_DRAG_PCT,
+  GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST,
+  GLOBAL_GDP_2025,
+  GLOBAL_LIFE_EXPECTANCY_2024,
+} from "./parameters-calculations-citations";
+import {
+  END_DISEASE_LIFETIME_VALUE_USD,
+  END_WAR_LIFETIME_VALUE_USD,
+  MISSION_VALUE_HORIZON_YEARS,
+} from "./mission-value-horizon";
+
+function usdShort(value: number) {
+  const units: Array<[number, string]> = [
+    [1e12, "T"],
+    [1e9, "B"],
+    [1e6, "M"],
+  ];
+  for (const [size, suffix] of units) {
+    if (Math.abs(value) >= size) {
+      return `$${(value / size).toFixed(value / size >= 100 ? 0 : 1)}${suffix}`;
+    }
+  }
+  return `$${value.toFixed(0)}`;
+}
+
+/**
+ * The expected-value rules, as markdown, with every figure interpolated from
+ * the parameter catalog so the prose cannot drift from the numbers it
+ * describes.
+ *
+ * Single source for all three audiences: the /methodology page renders it,
+ * docs/EXPECTED_VALUE_METHODOLOGY.md points at it, and the MCP tools that
+ * write estimates quote its rule so agents estimate consistently.
+ */
+export const EXPECTED_VALUE_METHODOLOGY_MARKDOWN = `# How we put a number on a task
+
+Every task in the tree carries an expected value, and the queue ranks work by
+it. That only means something if every number is computed the same way. These
+are the rules.
+
+## The one-line rule
+
+**Conditional value = the annual welfare effect × ${MISSION_VALUE_HORIZON_YEARS} years, undiscounted.
+Probability is carried separately. A goal's value is never summed from the tasks beneath it.**
+
+## The frame
+
+| Field | Value | Why |
+| --- | --- | --- |
+| Horizon | **${MISSION_VALUE_HORIZON_YEARS} years** | Global life expectancy at birth ([WHO, 2024](${GLOBAL_LIFE_EXPECTANCY_2024.sourceUrl})). One human lifetime is a span a reader can feel, and it is a *measured* number rather than a chosen one. |
+| Discount rate | **0** | See below. |
+| Probability | 0–1, stated separately | Never folded into the value. |
+
+### Why no discount rate
+
+A discount rate does one of two jobs: it prices uncertainty, or it prices
+impatience.
+
+Uncertainty is already priced here — every estimate carries an explicit
+probability of success — so discounting for risk would charge for it twice.
+
+That leaves pure time preference, which is a contested ethical position rather
+than a measurement. It is also the most-attacked parameter in this field: the
+Copenhagen Consensus rankings are criticised primarily because their discount
+rates structurally penalise long-horizon problems, making climate look weak
+against near-term health spending. Choosing zero does not make us right. It
+makes the choice **visible and uniform** instead of buried inside each estimate,
+and anyone who disagrees can apply their own rate to a stated undiscounted
+number — which they cannot do to a pre-discounted one.
+
+### Why no growth curve
+
+The form is deliberately flat: annual effect × horizon. No compounding. A
+reader can check the arithmetic in their head, and a growth assumption cannot
+hide in the same slot as a measurement.
+
+## A goal's value is written, not derived
+
+This is the rule that is easiest to get wrong, and it is worth being concrete.
+
+Six mechanisms sit under End War — the Court of Humanity, the 1% Treaty, the
+Loving Takeover, the Earth Optimization Prize, the decentralized FDA, and the
+shirt cascade. Every one of them carries the *same* peace-dividend value and
+differs only in its probability of success. They are **alternative routes to one
+outcome**, not parts of it.
+
+So adding them up would count the same dividend six times. Splitting the
+parent's value across them is the same error inverted — it hands a task a number
+nobody estimated.
+
+A goal's value is a fact about the world, not about our task list. The value of
+ending disease does not change when someone adds a subtask. What a task earns
+for advancing a goal is credit for moving its **probability**, recorded on the
+link between them.
+
+## Worked example: ending war
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Annual cost of war | direct + indirect, global | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
+| × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_WAR_LIFETIME_VALUE_USD)}** |
+| × probability | probability war actually ends | the ranked expected value |
+
+Note this uses the *whole* cost of war, not the peace dividend. The dividend is
+what a one percent redirection buys, which is what the treaty asks for. The
+mission is the whole quantity.
+
+## Worked example: ending disease
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Share of GDP lost to disease | ${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}% | of ${usdShort(GLOBAL_GDP_2025.value)} |
+| Annual drag | productivity + diverted medical cost | ${usdShort(DISEASE_BURDEN_GDP_DRAG_PCT.value * GLOBAL_GDP_2025.value)}/year |
+| × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_LIFETIME_VALUE_USD)}** |
+
+That is economic drag only. It does not price the suffering itself, which
+belongs in the health fields on the same horizon and the same zero discount.
+
+## Writing an estimate
+
+1. Find or add a **sourced annual parameter**. Never hand-type a number onto a
+   task.
+2. Multiply by the ${MISSION_VALUE_HORIZON_YEARS}-year horizon.
+3. State the probability separately.
+4. Put the chain in the task description so a reader can check it without
+   reading code.
+
+If no defensible parameter exists, **leave the estimate blank and say so**. A
+blank is honest. An invented number gets ranked against real ones, and the
+ranking is what the whole system is for.
+`;
+
+/** Compact form for MCP tool descriptions, where space is tight. */
+export const EXPECTED_VALUE_RULE_SUMMARY = `Conditional value = annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, with successProbability stated separately -- never folded into the value. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no sourced parameter exists, leave the estimate null rather than inventing one. Full rules: /methodology`;

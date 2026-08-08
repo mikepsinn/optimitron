@@ -20,6 +20,7 @@ import {
   type TaskRemotePolicy as TaskRemotePolicyValue,
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
+import { MISSION_VALUE_HORIZON_YEARS } from "@optimitron/data/parameters";
 import {
   upsertWishoniaUser,
   type WishoniaUserClient,
@@ -208,6 +209,7 @@ export interface ManagedTaskClient {
     upsert(args: unknown): Promise<ManagedTaskImpactEstimateSetRow>;
   };
   taskImpactFrameEstimate: {
+    updateMany(args: unknown): Promise<{ count: number }>;
     upsert(args: unknown): Promise<ManagedTaskImpactFrameRow>;
   };
   taskCommunicationEndpoint: {
@@ -265,8 +267,19 @@ const MANAGED_TASK_IMPACT_CALCULATION_VERSION = "managed-task-tree-v1";
  */
 const MANAGED_TASK_EDGE_CALCULATION_VERSION = "managed-task-edges-v1";
 const MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY = "status-quo";
-const MANAGED_TASK_IMPACT_FRAME_SLUG = "one-year";
-const MANAGED_TASK_IMPACT_FRAME_YEARS = 1;
+/**
+ * One frame for every managed estimate, so the queue never ranks a one-year
+ * number against a lifetime one. Horizon is one human lifetime, measured
+ * (GLOBAL_LIFE_EXPECTANCY_2024) rather than chosen, and values are
+ * undiscounted. Full rules: docs/EXPECTED_VALUE_METHODOLOGY.md.
+ *
+ * Declared values must therefore already be lifetime figures -- multiply the
+ * annual parameter by MISSION_VALUE_HORIZON_YEARS at the declaration site so
+ * the arithmetic is visible in the diff rather than hidden here.
+ */
+const MANAGED_TASK_IMPACT_FRAME_SLUG = "lifetime";
+const MANAGED_TASK_IMPACT_FRAME_KEY = "LIFETIME" as const;
+const MANAGED_TASK_IMPACT_FRAME_YEARS = MISSION_VALUE_HORIZON_YEARS;
 
 export interface SyncManagedTasksResult {
   collectionKey: string;
@@ -778,12 +791,16 @@ function buildManagedTaskImpactData(
     },
     frame: {
       adoptionRampYears: 0,
+      // Zero on purpose, and uniform. Uncertainty is already priced by
+      // successProbabilityBase, so discounting for risk would charge twice;
+      // what is left is pure time preference, an ethical choice rather than a
+      // measurement. See docs/EXPECTED_VALUE_METHODOLOGY.md.
       annualDiscountRate: 0,
       benefitDurationYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
       estimatedEffortHoursBase: record.estimatedEffortHours ?? null,
       evaluationHorizonYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
       expectedEconomicValueUsdBase,
-      frameKey: "ONE_YEAR" as const,
+      frameKey: MANAGED_TASK_IMPACT_FRAME_KEY,
       successProbabilityBase,
       timeToImpactStartDays: 0,
     },
@@ -870,6 +887,20 @@ async function syncManagedTaskImpactEstimate(
     select: {
       id: true,
     },
+  });
+
+  // Retire frames this collection wrote under a previous slug. Without this,
+  // changing MANAGED_TASK_IMPACT_FRAME_SLUG leaves the old frame in the same
+  // estimate set, and selectImpactFrame falls back to the earliest frame when
+  // neither matches the requested key -- so a stale one-year number would win
+  // over the lifetime one it was replaced by.
+  await client.taskImpactFrameEstimate.updateMany({
+    where: {
+      deletedAt: null,
+      taskImpactEstimateSetId: estimateSet.id,
+      NOT: { frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG },
+    },
+    data: { deletedAt: new Date() },
   });
 }
 

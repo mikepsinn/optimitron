@@ -7,6 +7,7 @@
  */
 
 import { createHash, randomUUID } from "node:crypto";
+import { EXPECTED_VALUE_RULE_SUMMARY } from "@optimitron/data/parameters";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
@@ -7878,7 +7879,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "proposeTaskImpact",
     description:
-      "Create an immutable task-impact draft with materialized values, formulas or inert calculation code, exact parameter revision inputs, assumptions, and sources. Public drafts require admin review before use.",
+      `Create an immutable task-impact draft with materialized values, formulas or inert calculation code, exact parameter revision inputs, assumptions, and sources. Public drafts require admin review before use. METHOD: ${EXPECTED_VALUE_RULE_SUMMARY}`,
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -7951,7 +7952,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "setTaskImpact",
     description:
-      "Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused.",
+      `Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused. METHOD: ${EXPECTED_VALUE_RULE_SUMMARY}`,
     inputSchema: {
       type: "object" as const,
       properties: {
