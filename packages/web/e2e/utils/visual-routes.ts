@@ -172,10 +172,6 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
-  [
-    ROUTES.dashboard,
-    ["packages/web/src/components/dashboard/PersonalQueueSection.tsx"],
-  ],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
@@ -190,7 +186,6 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
-  [ROUTES.dashboard, "#what-next"],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -406,6 +401,19 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     name: "variant-optimitron-tasks",
     path: ROUTES.tasks,
     required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    // PersonalQueueSection only exists on the optimitron dashboard. The
+    // default site (warOnDisease) renders TreatyTaskDashboardClient instead,
+    // so registering this against the default variant asserted a selector
+    // that can never appear.
+    authenticated: true,
+    covers: ["packages/web/src/components/dashboard/PersonalQueueSection.tsx"],
+    name: "variant-optimitron-dashboard",
+    path: ROUTES.dashboard,
+    required: true,
+    requiredSelector: "#what-next",
     siteVariant: "optimitron",
   },
   {
