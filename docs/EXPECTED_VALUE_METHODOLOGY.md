@@ -39,6 +39,23 @@ Conditional value and expected value are distinct: `expectedEconomicValueUsd*`
 fields hold conditional × probability, and the MCP write path expects the caller
 to have done that multiplication already. `/methodology` spells this out.
 
+## Where the numbers and the analysis live
+
+- `packages/data/src/parameters/parameters-calculations-citations.ts` is
+  **generated** from `dih_models/parameters.py` upstream and compiled into the
+  database catalog. Never hand-edit it; the next regeneration wins.
+- New or corrected parameters go in through `proposeParameterBundle` — an
+  immutable revision with formula, inputs and provenance, held for human
+  review. That is the reusable, versioned home for research.
+- Per-task reasoning goes in `setTaskImpact`'s `assumptions`, `sourceUrls` and
+  `estimateNotes`, which render under "Estimate calculation and sources" on the
+  task page. Not the description: prose there is not attached to the number, so
+  nothing can tell you when it goes stale.
+
+Known gap: `setTaskImpact` cannot yet link an estimate to the parameter
+revisions it used, so agent-written estimates carry citations as text while
+managed ones carry a traceable dependency with staleness detection.
+
 ## Known inconsistency
 
 `GLOBAL_WAR_COST_LIFETIME_*` use an 80-year "lifespan" and compound at SIPRI's

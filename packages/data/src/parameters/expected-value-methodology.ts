@@ -169,17 +169,39 @@ belongs in the health fields on the same horizon and the same zero discount.
 
 ## Writing an estimate
 
-1. Find or add a **sourced annual parameter**. Never hand-type a number onto a
-   task.
-2. Multiply by the ${MISSION_VALUE_HORIZON_YEARS}-year horizon.
-3. State the probability separately.
-4. Put the chain in the task description so a reader can check it without
-   reading code.
+The instruction is **research the number**, not "use one that happens to exist".
+Missing evidence is a research task, not a reason to guess.
 
-If no defensible parameter exists, **leave the estimate blank and say so**. A
-blank is honest. An invented number gets ranked against real ones, and the
-ranking is what the whole system is for.
+1. **Look for the number first.** \`searchParameters\` covers the whole catalog,
+   which already holds the manual's sourced economics.
+2. **If nothing fits, add one** with \`proposeParameterBundle\`: an immutable
+   revision carrying its formula, inputs and provenance, held for human review.
+   That is where the research belongs — it is reusable, versioned, and every
+   estimate built on it moves when it is corrected.
+3. **Never hand-edit \`parameters-calculations-citations.ts\`.** It is generated
+   from \`dih_models/parameters.py\` upstream and compiled into the catalog, so
+   an edit there is overwritten on the next regeneration.
+4. **Multiply by the ${MISSION_VALUE_HORIZON_YEARS}-year horizon**, then record the probability in its
+   own field.
+5. **Write the reasoning into the estimate, not the description.**
+   \`setTaskImpact\` takes \`assumptions\`, \`sourceUrls\` and \`estimateNotes\`, and
+   they render under "Estimate calculation and sources" on the task. Prose in a
+   description is not attached to the number, so nothing can tell you it went
+   stale.
+
+Leave the estimate null only when you have looked and there is genuinely
+nothing defensible — and say so in \`estimateNotes\`, because a stated gap is a
+research lead. A blank is honest. An invented number gets ranked against real
+ones, and the ranking is what the whole system is for.
+
+### A known gap
+
+\`setTaskImpact\` cannot yet link an estimate to the specific parameter revisions
+it used. Managed estimates carry that chain and get staleness detection for
+free; an agent-written one carries \`sourceUrls\` and \`assumptions\` as text
+instead. Prefer promoting a number into a parameter when it is reusable — that
+is the difference between a citation and a dependency.
 `;
 
 /** Compact form for MCP tool descriptions, where space is tight. */
-export const EXPECTED_VALUE_RULE_SUMMARY = `Derive the CONDITIONAL value (worth if it works) as annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, on the LIFETIME frame. Then supply expectedEconomicValueUsd* ALREADY MULTIPLIED by success probability -- these fields hold probability-weighted value and nothing downstream multiplies again -- and record successProbabilityBase in its own field so the conditional value stays recoverable. Do not file a conditional value as though it were weighted. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no sourced parameter exists, leave the estimate null rather than inventing one. Full rules: /methodology`;
+export const EXPECTED_VALUE_RULE_SUMMARY = `Derive the CONDITIONAL value (worth if it works) as annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, on the LIFETIME frame. Then supply expectedEconomicValueUsd* ALREADY MULTIPLIED by success probability -- these fields hold probability-weighted value and nothing downstream multiplies again -- and record successProbabilityBase in its own field so the conditional value stays recoverable. Do not file a conditional value as though it were weighted. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no parameter fits, RESEARCH the number and add one with proposeParameterBundle (never hand-edit parameters-calculations-citations.ts -- it is generated upstream and overwritten). Record the reasoning in this tool's assumptions, sourceUrls and estimateNotes fields, not in the task description, so it renders with the number. Leave the estimate null only when nothing defensible exists after looking, and say so in estimateNotes. Full rules: /methodology`;
