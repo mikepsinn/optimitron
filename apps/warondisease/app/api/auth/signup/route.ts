@@ -26,13 +26,14 @@ export async function POST(req: Request) {
     // Generate referral code
     const referralCode = nanoid(8).toUpperCase()
 
-    // Create user (display name lives on Person)
+    // Create user (display name lives on Person).
+    // Do not mark emailVerified here: nothing has proven mailbox ownership yet.
+    // Verification happens through the NextAuth email magic-link flow.
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         referralCode,
-        emailVerified: new Date(), // Mark email as verified immediately for credentials signup
       },
     })
 

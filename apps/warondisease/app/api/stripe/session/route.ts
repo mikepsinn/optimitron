@@ -24,7 +24,11 @@ export async function GET(req: NextRequest) {
 
     log.info("Session retrieved successfully", { sessionId, paymentStatus: session.payment_status })
 
-    // Return relevant session data
+    // Return only what the donate/success page renders. Do not forward the
+    // full Stripe session: customer_details includes billing name/address/
+    // phone, and metadata may carry other fields — anyone who obtains this
+    // session_id (forwarded URL, browser history, logs) should not get more
+    // than the donor's own receipt summary.
     return NextResponse.json(
       {
         id: session.id,
@@ -33,8 +37,9 @@ export async function GET(req: NextRequest) {
         customer_email: session.customer_email || session.customer_details?.email,
         payment_status: session.payment_status,
         mode: session.mode,
-        metadata: session.metadata,
-        customer_details: session.customer_details,
+        metadata: {
+          donorName: session.metadata?.donorName ?? null,
+        },
       },
       { status: 200 }
     )

@@ -4,6 +4,7 @@ import { sendWeeklyUpdate } from "@/lib/email"
 import { createLogger } from "@/lib/logger"
 import { buildUserReferralUrl, getBaseUrl } from "@/lib/url"
 import { getReferralVoteCount } from "@/lib/referral.server"
+import { calculateUserRank } from "@/lib/user"
 import { env } from "@/lib/env"
 import { GLOBAL_COORDINATION_TARGET_PCT, GLOBAL_POPULATION_2024 } from "@/lib/parameters-calculations-citations"
 
@@ -92,14 +93,8 @@ export async function GET(request: Request) {
           },
         })
 
-        // Calculate rank (simplified - you might want to optimize this)
-        const rank = await prisma.user.count({
-          where: {
-            referrals: {
-              some: {},
-            },
-          },
-        })
+        // Calculate this user's actual rank from their own referral total.
+        const rank = await calculateUserRank(totalReferrals)
 
         const totalShares = await prisma.shareAttempt.count({
           where: {
