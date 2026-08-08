@@ -43,7 +43,13 @@ to have done that multiplication already. `/methodology` spells this out.
 
 - `packages/data/src/parameters/parameters-calculations-citations.ts` is
   **generated** from `dih_models/parameters.py` upstream and compiled into the
-  database catalog. Never hand-edit it; the next regeneration wins.
+  database catalog by `bootstrap:parameters`, which runs on every production
+  deploy. Never hand-edit it; the next regeneration wins.
+- That bootstrap only **creates keys that do not exist**. It will not rewrite an
+  existing parameter whose upstream value changed, because published revisions
+  are immutable and a value change is a reviewed event — corrections go through
+  `proposeParameterBundle` and `reviewParameterRevision`, not a deploy job
+  silently moving numbers under whoever already cited them.
 - New or corrected parameters go in through `proposeParameterBundle` — an
   immutable revision with formula, inputs and provenance, held for human
   review. That is the reusable, versioned home for research.

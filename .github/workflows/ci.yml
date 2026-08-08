@@ -1391,6 +1391,21 @@ jobs:
           MANAGED_DATA_ALLOW_REMOTE_APPLY: "1"
         run: pnpm db:sync:managed-data -- --apply
 
+      - name: Bootstrap the parameter catalog (creates missing keys only)
+        # Compiles the generated parameter catalog into
+        # ParameterDefinition/ParameterRevision so estimates can link parameters
+        # instead of citing loose numbers. Idempotent: creates keys that do not
+        # exist and skips ones that do, in a single transaction.
+        #
+        # It deliberately does NOT update an existing parameter whose upstream
+        # value changed. Published revisions are immutable and a value change is
+        # a reviewed event, so corrections go through proposeParameterBundle and
+        # reviewParameterRevision rather than a deploy job rewriting numbers
+        # under whoever already cited them.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm --filter @optimitron/web bootstrap:parameters -- --apply
+
       - name: Deploy production artifact
         id: deploy
         env:
