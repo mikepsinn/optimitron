@@ -19,7 +19,9 @@ export function PersonalQueueSection({
   const severitySummary = summarizeIssueSeverities(issues);
 
   return (
-    <section className="mb-10">
+    // id is the visual review's activation selector for the dashboard state;
+    // it proves the ranked queue rendered rather than an empty shell.
+    <section className="mb-10" id="what-next">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <h2 className="text-base font-semibold uppercase tracking-wide">
           What next

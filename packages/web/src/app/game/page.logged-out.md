@@ -79,7 +79,7 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀[deaths] HUMANS TERMINATED🔥[governance waste] BURNED BY MISALIGNED GOVERNMENTS💣[destruction spend] SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀~150,000 humans terminated/day🔥$101T/yr governance waste💣$13.2T/yr military + cybercrime](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
@@ -222,13 +222,13 @@
 | 1 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
 | 2 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
 | 3 | [John Kennedy Louisiana](/governments/US/politicians/K000393) | $2.7T | $0 | -$2.7T | ∞ |
-| 4 | [Tommy Tuberville Alabama](/governments/US/politicians/T000278) | $2.6T | $0 | -$2.6T | ∞ |
-| 5 | [Rick Scott Florida](/governments/US/politicians/S001217) | $2.6T | $0 | -$2.6T | ∞ |
-| 6 | [Tim Scott South Carolina](/governments/US/politicians/S001184) | $2.6T | $0 | -$2.6T | ∞ |
-| 7 | [Roger Marshall Kansas](/governments/US/politicians/M001198) | $2.6T | $0 | -$2.6T | ∞ |
-| 8 | [Pete Ricketts Nebraska](/governments/US/politicians/R000618) | $1.9T | $0 | -$1.9T | ∞ |
-| 9 | [Eric Schmitt Missouri](/governments/US/politicians/S001227) | $1.8T | $0 | -$1.8T | ∞ |
-| 10 | [Cynthia M. Lummis Wyoming](/governments/US/politicians/L000571) | $895B | $0 | -$895B | ∞ |
+| 4 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
+| 5 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
+| 6 | [Ann Wagner Missouri](/governments/US/politicians/W000812) | $2.7T | $0 | -$2.7T | ∞ |
+| 7 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
+| 8 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
+| 9 | [Pete Sessions Texas](/governments/US/politicians/S000250) | $2.7T | $0 | -$2.7T | ∞ |
+| 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
 - [SEE ALL POLITICIANS](/governments/US/politicians)
 ### PRESIDENT MANAGEMENT SYSTEM
 - You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
@@ -261,7 +261,7 @@
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [money]
 - RATE: [$9.90 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
-### ↳ 202 employees have overdue tasks
+### ↳ 206 employees have overdue tasks
 - 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
 - ASSIGNEE
 - TASK
@@ -290,7 +290,9 @@
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-dz)
-- [SEE ALL 202 OVERDUE TASKS](/tasks/1-pct-treaty#subtasks)
+- ← PREV
+- PAGE 1 / 21
+- NEXT →
 ### OPTIMIZED GOVERNANCE
 - Every agency redesigned around one question: what does the data say actually works?
 - [🗳️WISHOCRACY Pick between two things. Do it ten times. Congratulations, you've just outperformed Congress. START VOTING →](/agencies/dcongress/wishocracy)

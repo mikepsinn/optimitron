@@ -13,7 +13,9 @@ export const metadata: Metadata = getRouteMetadata(methodologyLink);
  */
 export default function MethodologyPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    // id is the visual review's activation selector: it proves the markdown
+    // actually rendered rather than an empty shell.
+    <main className="mx-auto max-w-3xl px-4 py-10" id="methodology">
       <RichMarkdown markdown={EXPECTED_VALUE_METHODOLOGY_MARKDOWN} />
     </main>
   );

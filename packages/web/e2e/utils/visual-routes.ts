@@ -172,6 +172,10 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
+  [
+    ROUTES.dashboard,
+    ["packages/web/src/components/dashboard/PersonalQueueSection.tsx"],
+  ],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
@@ -185,6 +189,8 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
+  [ROUTES.methodology, "#methodology"],
+  [ROUTES.dashboard, "#what-next"],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -324,7 +330,12 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     // Required, and asserted on #also-serves rather than something always
     // present: this is the state that proves a task renders under every goal
     // it serves, so a capture without that section would be worthless.
-    covers: [TASK_DEPENDENCIES_SECTION_FILE],
+    covers: [
+      TASK_DEPENDENCIES_SECTION_FILE,
+      // The estimate disclosure renders on this page (collapsed by default);
+      // the capture proves it mounts, not that the dialog inside it opens.
+      "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx",
+    ],
     name: "task-one-percent-treaty",
     path: "/tasks/1-pct-treaty",
     required: true,

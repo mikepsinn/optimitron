@@ -4,6 +4,7 @@ import { DM_Sans, Space_Mono, Source_Serif_4, Press_Start_2P, VT323, Creepster, 
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { HydrationSentinel } from "@/components/HydrationSentinel";
 import { SiteStructuredData } from "@/components/site/SiteStructuredData";
 import { SiteChrome } from "@/components/site/SiteChrome";
 import { getRootLayoutMetadata } from "@/lib/metadata";
@@ -86,6 +87,10 @@ export default async function RootLayout({
             <SiteChrome>{children}</SiteChrome>
           </RequestSiteOriginProvider>
         </Providers>
+        {/* Last child of body: its effect runs after the tree above it has
+            mounted, so [data-hydrated] means hydration-gated content is
+            actually present. Capture tooling waits on this. */}
+        <HydrationSentinel />
       </body>
     </html>
   );

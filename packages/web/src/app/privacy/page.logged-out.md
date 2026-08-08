@@ -14,9 +14,9 @@
 ## Visible Page Copy
 
 ## PRIVACY POLICY
-- Last updated May 23, 2026
+- Last updated July 16, 2026
 ### 1. WHO WE ARE
-- International Campaign to End War and Disease is operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
+- International Campaign to End War and Disease is operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease, a Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3). This policy explains what we collect when you use warondisease.org, why we collect it, when it may be public, and how to contact us.
 ### 2. INFORMATION WE COLLECT
 - We collect information you give us directly, information created by your use of the site, and limited technical data needed to keep the site working.
 - Account and contact details, such as your name, email address, display name, organization, profile URL, and sign-in provider.
@@ -60,6 +60,8 @@
 ### 12. CHANGES AND CONTACT
 - We may update this policy by posting a new version here. The date above shows when it was last changed.
 - Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease
-- Email: hello@warondisease.org
-- Website: warondisease.org
+- Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3)
+- Operates the International Campaign to End War and Disease and related public education and advocacy programs.
+- Email: [hello@warondisease.org](mailto:hello@warondisease.org)
+- Website: [warondisease.org](https://warondisease.org)
 - See also: [Terms of Service](/terms)

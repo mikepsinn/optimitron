@@ -1,12 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { X } from "lucide-react";
 import { EXPECTED_VALUE_METHODOLOGY_MARKDOWN } from "@optimitron/data/parameters";
 import { Dialog } from "@/components/retroui/Dialog";
-import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { methodologyLink } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+
+/**
+ * Loaded only when the dialog opens. RichMarkdown drags in react-markdown,
+ * remark-gfm/math, rehype-katex and KaTeX's stylesheet; importing it eagerly
+ * put that whole stack into the task tree, the dashboard and every task page
+ * at once, which was enough to OOM the Vercel build container. The trigger is
+ * a button -- it has no business shipping a math typesetter.
+ */
+const RichMarkdown = dynamic(
+  () =>
+    import("@/components/markdown/rich-markdown").then((m) => m.RichMarkdown),
+  {
+    ssr: false,
+    loading: () => <p className="text-sm text-muted-foreground">Loading…</p>,
+  },
+);
 
 /**
  * The "why is this number what it is" affordance for expected-value figures,
