@@ -101,7 +101,7 @@ export async function getReferralTreeStats(
     Array<{ total: bigint; max_depth: number | null }>
   >`
     WITH RECURSIVE tree AS (
-      SELECT v."userId" AS voter_id, 1 AS depth
+      SELECT v."userId" AS voter_id, 1 AS depth, ARRAY[${userId}, v."userId"] AS visited
       FROM "ReferendumVote" v
       WHERE v."referredByUserId" = ${userId}
         AND v."referendumId" = ${referendumId}
@@ -109,12 +109,13 @@ export async function getReferralTreeStats(
 
       UNION ALL
 
-      SELECT v."userId" AS voter_id, t.depth + 1
+      SELECT v."userId" AS voter_id, t.depth + 1, t.visited || v."userId"
       FROM "ReferendumVote" v
       INNER JOIN tree t ON v."referredByUserId" = t.voter_id
       WHERE v."referendumId" = ${referendumId}
         AND v."deletedAt" IS NULL
         AND t.depth < 20
+        AND NOT (v."userId" = ANY(t.visited))
     )
     SELECT COUNT(*)::bigint AS total, COALESCE(MAX(depth), 0)::int AS max_depth
     FROM tree
