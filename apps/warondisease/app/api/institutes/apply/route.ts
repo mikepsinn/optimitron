@@ -77,11 +77,11 @@ export async function POST(request: NextRequest) {
     const organization = await prisma.organization.create({
       data: {
         name,
-        type: "INSTITUTE",
+        type: "RESEARCH_CENTER",
         // category left null - can be set later by admin or user
         website: website || null,
         description: description || "Partner institute for the Global Clinical Trial Abundance Survey",
-        contactEmail: userEmail,
+        contactEmail: userEmail ?? "",
         slug,
         status: "APPROVED", // Auto-approved for authenticated users
         creatorId: userId,
@@ -93,6 +93,20 @@ export async function POST(request: NextRequest) {
       name: organization.name,
       slug: organization.slug,
     })
+
+    if (!userEmail) {
+      return NextResponse.json(
+        {
+          success: true,
+          organization: {
+            id: organization.id,
+            name: organization.name,
+            slug: organization.slug,
+          },
+        },
+        { status: 201 },
+      )
+    }
 
     // Send welcome email with survey links (non-blocking)
     sendPartnerWelcomeEmail({

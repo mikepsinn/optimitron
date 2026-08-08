@@ -58,10 +58,14 @@ export async function POST(req: NextRequest) {
       where: { id: userId },
       select: {
         id: true,
-        name: true,
         email: true,
-        username: true,
         referralCode: true,
+        person: {
+          select: {
+            handle: true,
+            displayName: true,
+          },
+        },
       },
     })
 
@@ -114,7 +118,13 @@ export async function POST(req: NextRequest) {
 
     for (const item of cleaned) {
       const inviteToken = createReferralInviteToken()
-      const referralUrl = buildUserInviteReferralUrl(user, inviteToken)
+      const referralUrl = buildUserInviteReferralUrl(
+        {
+          handle: user.person?.handle,
+          referralCode: user.referralCode,
+        },
+        inviteToken,
+      )
       const messageText = (
         item.messageText ||
         buildDefaultReferralInvitationMessage(item.recipientName, referralUrl)
@@ -149,7 +159,7 @@ export async function POST(req: NextRequest) {
 
       let emailSent = false
       if (action === "send" && emailContact) {
-        const senderName = user.name || "Someone who voted"
+        const senderName = user.person?.displayName || "Someone who voted"
         const result = await sendReferralInviteEmail({
           to: emailContact,
           recipientName: invitation.recipientName,

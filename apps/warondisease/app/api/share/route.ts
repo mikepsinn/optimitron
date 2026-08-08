@@ -1,23 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-utils"
 import { prisma } from "@/lib/prisma"
-import { ActivityType } from "@optimitron/db"
+import { ShareSource } from "@optimitron/db"
+import { nanoid } from "nanoid"
 
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await requireAuth()
     const { platform } = await req.json()
 
-    const description = platform
-      ? `Shared referral link via ${platform}`
-      : "Shared referral link"
-
-    await prisma.activity.create({
+    await prisma.shareAttempt.create({
       data: {
+        id: nanoid(),
         userId,
-        type: ActivityType.SHARED_LINK,
-        description,
-        metadata: platform ? JSON.stringify({ platform }) : undefined,
+        source: ShareSource.IN_APP,
+        surface: "share_api",
+        channel: typeof platform === "string" ? platform : "unknown",
       },
     })
 
@@ -31,4 +29,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to log share intent" }, { status: 500 })
   }
 }
-

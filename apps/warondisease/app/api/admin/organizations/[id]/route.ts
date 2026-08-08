@@ -81,7 +81,7 @@ export async function PATCH(
     await prisma.activity.create({
       data: {
         userId: admin.id,
-        type: "JOINED_ORG", // Reusing existing activity type
+        type: "JOINED_ORGANIZATION",
         description: `Admin ${body.status === OrgStatus.APPROVED ? "approved" : body.status === OrgStatus.REJECTED ? "rejected" : "updated"} organization: ${organization.name}`,
         metadata: JSON.stringify({
           organizationId: id,
@@ -154,7 +154,7 @@ export async function DELETE(
     await prisma.activity.create({
       data: {
         userId: admin.id,
-        type: "JOINED_ORG", // Reusing existing activity type
+        type: "JOINED_ORGANIZATION",
         description: `Admin deleted organization: ${organization.name}`,
         metadata: JSON.stringify({
           organizationId: id,

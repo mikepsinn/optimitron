@@ -5,6 +5,7 @@ import { EmailLogStatus } from "@optimitron/db"
 import { sendVoteConfirmedImpactEmail } from "@/lib/email"
 import { getBaseUrl } from "@/lib/url"
 import { createLogger } from "@/lib/logger"
+import { ensurePersonForUser } from "@/lib/person.server"
 
 const log = createLogger("complete-signup-api")
 
@@ -19,27 +20,38 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        name: true,
         email: true,
-        emailNotifications: true,
+        newsletterSubscribed: true,
+        person: {
+          select: {
+            displayName: true,
+          },
+        },
       },
     })
 
-    const updateData: Record<string, unknown> = {}
-    if (name && !user?.name) {
-      updateData.name = name
+    if (typeof name === "string" && name.trim() && !user?.person?.displayName) {
+      await ensurePersonForUser(userId, { displayName: name.trim() })
+      const person = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { personId: true },
+      })
+      if (person?.personId) {
+        await prisma.person.update({
+          where: { id: person.personId },
+          data: { displayName: name.trim() },
+        })
+      }
     }
+
     if (typeof newsletterSubscribed === "boolean") {
-      updateData.newsletterSubscribed = newsletterSubscribed
-    }
-    if (Object.keys(updateData).length > 0) {
       await prisma.user.update({
         where: { id: userId },
-        data: updateData,
+        data: { newsletterSubscribed },
       })
     }
 
-    if (user?.email && user?.emailNotifications !== false) {
+    if (user?.email && user.newsletterSubscribed !== false) {
       sendVoteConfirmedImpactEmail({
         to: user.email,
         dashboardUrl: `${getBaseUrl()}/dashboard`,

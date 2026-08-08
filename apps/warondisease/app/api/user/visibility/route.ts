@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-utils"
 import { prisma } from "@/lib/prisma"
+import { ensurePersonForUser } from "@/lib/person.server"
 
 // PATCH /api/user/visibility — toggle the current user's profile publicity.
 // Used by the post-vote public-profile prompt (components/landing/treaty-vote-section.tsx).
@@ -19,13 +20,17 @@ export async function PATCH(req: NextRequest) {
       )
     }
 
-    const user = await prisma.user.update({
-      where: { id: userId },
+    const person = await ensurePersonForUser(userId)
+    const updated = await prisma.person.update({
+      where: { id: person.id },
       data: { isPublic },
       select: { id: true, isPublic: true },
     })
 
-    return NextResponse.json({ success: true, user }, { status: 200 })
+    return NextResponse.json(
+      { success: true, user: { id: userId, isPublic: updated.isPublic } },
+      { status: 200 },
+    )
   } catch (error) {
     if (error instanceof Error && error.message.includes("Unauthorized")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

@@ -26,15 +26,19 @@ export async function POST(req: Request) {
     // Generate referral code
     const referralCode = nanoid(8).toUpperCase()
 
-    // Create user
+    // Create user (display name lives on Person)
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        name: name || email.split("@")[0],
         referralCode,
         emailVerified: new Date(), // Mark email as verified immediately for credentials signup
       },
+    })
+
+    const { ensurePersonForUser } = await import("@/lib/person.server")
+    await ensurePersonForUser(user.id, {
+      displayName: name || email.split("@")[0],
     })
 
     // Create welcome notification

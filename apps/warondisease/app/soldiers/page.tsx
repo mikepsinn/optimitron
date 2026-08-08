@@ -9,17 +9,27 @@ import { countTreatyVotes } from "@/lib/treaty-votes.server"
 export default async function SoldiersPage() {
   const publicUsers = await prisma.user.findMany({
     where: {
-      isPublic: true,
       deletedAt: null,
+      person: {
+        isPublic: true,
+      },
     },
     select: {
       id: true,
-      name: true,
-      username: true,
-      location: true,
-      bio: true,
-      image: true,
+      city: true,
+      countryCode: true,
+      referralCode: true,
       createdAt: true,
+      person: {
+        select: {
+          handle: true,
+          displayName: true,
+          image: true,
+          bio: true,
+          countryCode: true,
+          isPublic: true,
+        },
+      },
       badges: {
         select: {
           type: true,
@@ -36,27 +46,30 @@ export default async function SoldiersPage() {
       const referralCount = await countTreatyVotes({ referredByUserId: user.id })
       const inverseKills = Math.round(referralCount * IMPACT_PER_VOTE.lives)
 
-      const displayName = user.name || user.username || "Anonymous"
+      const displayName = user.person?.displayName || user.person?.handle || "Anonymous"
       const avatar = displayName
         .split(" ")
-        .map((word) => word[0])
+        .map((word: string) => word[0])
         .join("")
         .toUpperCase()
         .slice(0, 2)
 
       const badges = user.badges.map((badge) => getBadgeName(badge.type as BadgeType))
+      const location =
+        [user.city, user.countryCode ?? user.person?.countryCode].filter(Boolean).join(", ") ||
+        "Unknown"
 
       return {
         id: user.id,
         name: displayName,
-        username: user.username,
-        location: user.location || "Unknown",
-        story: user.bio || "Fighting to eradicate preventable disease.",
+        username: user.person?.handle ?? null,
+        location,
+        story: user.person?.bio || "Fighting to eradicate preventable disease.",
         inverseKills,
         referrals: referralCount,
         joinDate: user.createdAt.toISOString(),
         badges,
-        avatar: user.image || avatar,
+        avatar: user.person?.image || avatar,
       }
     }),
   )

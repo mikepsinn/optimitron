@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        weeklyDigest: false,
+        newsletterSubscribed: false,
       },
     })
 

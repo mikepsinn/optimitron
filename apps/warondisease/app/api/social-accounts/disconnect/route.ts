@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     await prisma.activity.create({
       data: {
         userId,
-        type: ActivityType.PROFILE_UPDATED,
+        type: ActivityType.UPDATED_PROFILE,
         description: "", // Description will be generated from type and metadata
         metadata: JSON.stringify({ platform }),
       },

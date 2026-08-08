@@ -363,7 +363,7 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
                 <OrganizationEmailSignatureCard
                   surveyLink={surveyLink}
                   organizationName={organization.name}
-                  userName={user.name || "Team Member"}
+                  userName={user.person?.displayName || user.email || "Team Member"}
                 />
               </div>
             </>

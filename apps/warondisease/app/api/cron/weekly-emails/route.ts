@@ -37,24 +37,20 @@ export async function GET(request: Request) {
 
     logger.info("Starting weekly email cron job")
 
-    // Get all users who have weekly digest enabled and email notifications on
+    // Get all users who have newsletter subscribed
     const users = await prisma.user.findMany({
       where: {
-        emailNotifications: true,
-        weeklyDigest: true,
-        email: {
-          not: null as any,
-        },
+        newsletterSubscribed: true,
+        deletedAt: null,
       },
       select: {
         id: true,
         email: true,
-        name: true,
-        username: true,
         referralCode: true,
-        _count: {
+        person: {
           select: {
-            referrals: true,
+            handle: true,
+            displayName: true,
           },
         },
       },
@@ -105,20 +101,25 @@ export async function GET(request: Request) {
           },
         })
 
-        const totalShares = await prisma.activity.count({
+        const totalShares = await prisma.shareAttempt.count({
           where: {
             userId: user.id,
-            type: "SHARED_LINK",
           },
         })
         const reach = totalReferrals * 265 // Average social media impressions per referral
 
         // Generate links
-        const referralLink = buildUserReferralUrl(user, baseUrl)
+        const referralLink = buildUserReferralUrl(
+          {
+            handle: user.person?.handle,
+            referralCode: user.referralCode,
+          },
+          baseUrl,
+        )
         // Send email
         const result = await sendWeeklyUpdate({
           to: user.email!,
-          userName: user.name || "Warrior",
+          userName: user.person?.displayName || "Warrior",
           userEmail: user.email!,
           stats: {
             referrals: totalReferrals,

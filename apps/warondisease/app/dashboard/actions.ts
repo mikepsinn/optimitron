@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { requireAuth, getCurrentUser, getEnabledProviders } from "@/lib/auth-utils"
 import { calculateUserRank } from "@/lib/user"
-import { SocialPlatform, ActivityType, type ReferralInvitationStatus } from "@optimitron/db"
+import { SocialPlatform, type ReferralInvitationStatus } from "@optimitron/db"
 import {
   getActivityDescription,
   getActivityEmoji,
@@ -17,6 +17,12 @@ import { GLOBAL_COORDINATION_TARGET_PCT, GLOBAL_POPULATION_2024 } from "@/lib/pa
 import { validateUsername } from "@/lib/username"
 import { buildUserInviteReferralUrl } from "@/lib/url"
 import { countTreatyVotes, getUserTreatyVote } from "@/lib/treaty-votes.server"
+import { ensurePersonForUser } from "@/lib/person.server"
+import {
+  getUserDisplayAvatar,
+  getUserDisplayHandle,
+  getUserDisplayName,
+} from "@/lib/user-display"
 
 function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
@@ -62,6 +68,19 @@ export async function getDashboardData() {
   const userWithDashboardData = await prisma.user.findUnique({
     where: { id: user.id },
     include: {
+      person: {
+        select: {
+          handle: true,
+          displayName: true,
+          image: true,
+          bio: true,
+          headline: true,
+          website: true,
+          coverImage: true,
+          isPublic: true,
+          countryCode: true,
+        },
+      },
       badges: true,
       socialAccounts: true,
       organizationMemberships: {
@@ -107,10 +126,9 @@ export async function getDashboardData() {
     0,
   )
 
-  const shareCount = await prisma.activity.count({
+  const shareCount = await prisma.shareAttempt.count({
     where: {
       userId: userWithDashboardData.id,
-      type: ActivityType.SHARED_LINK,
     },
   })
 
@@ -135,27 +153,34 @@ export async function getDashboardData() {
   const enabledProviders = getEnabledProviders()
   const primaryMembership = userWithDashboardData.organizationMemberships[0]
   const socials = userWithDashboardData.socialAccounts
+  const person = userWithDashboardData.person
+  const handle = getUserDisplayHandle(userWithDashboardData)
+  const location =
+    [userWithDashboardData.city, userWithDashboardData.countryCode ?? person?.countryCode]
+      .filter(Boolean)
+      .join(", ") || ""
 
   return {
     user: {
       id: userWithDashboardData.id,
-      name: userWithDashboardData.name || "User",
-      username: userWithDashboardData.username || null,
+      name: getUserDisplayName(userWithDashboardData) || "User",
+      username: handle,
+      handle,
       email: userWithDashboardData.email,
-      bio: userWithDashboardData.bio || "",
-      location: userWithDashboardData.location || "",
-      country: userWithDashboardData.country || null,
-      isPublic: userWithDashboardData.isPublic,
+      bio: person?.bio || "",
+      location,
+      country: userWithDashboardData.countryCode || person?.countryCode || null,
+      isPublic: person?.isPublic ?? false,
       referralCode: userWithDashboardData.referralCode,
       organization: primaryMembership?.organization.name || null,
       organizationId: primaryMembership?.organizationId ?? null,
-      image: userWithDashboardData.image || null,
-      weeklyDigest: userWithDashboardData.weeklyDigest,
-      emailNotifications: userWithDashboardData.emailNotifications,
+      image: getUserDisplayAvatar(userWithDashboardData),
+      weeklyDigest: userWithDashboardData.newsletterSubscribed,
+      emailNotifications: userWithDashboardData.newsletterSubscribed,
       newsletterSubscribed: userWithDashboardData.newsletterSubscribed,
-      website: userWithDashboardData.website || null,
-      headline: userWithDashboardData.headline || null,
-      coverImage: userWithDashboardData.coverImage || null,
+      website: person?.website || null,
+      headline: person?.headline || null,
+      coverImage: person?.coverImage || null,
     },
     stats: {
       referrals: referralCount,
@@ -180,7 +205,13 @@ export async function getDashboardData() {
             ? ("IN_PERSON" as const)
             : null,
       inviteToken: c.inviteToken,
-      referralUrl: buildUserInviteReferralUrl(userWithDashboardData, c.inviteToken),
+      referralUrl: buildUserInviteReferralUrl(
+        {
+          handle: person?.handle,
+          referralCode: userWithDashboardData.referralCode,
+        },
+        c.inviteToken,
+      ),
       messageText: c.messageText,
       status: mapInvitationStatus(c.status),
       votedAt: c.convertedAt,
@@ -217,7 +248,6 @@ export async function getDashboardData() {
       current: (totalVotes / GLOBAL_POPULATION_2024.value) * 100,
       target: GLOBAL_COORDINATION_TARGET_PCT.value * 100,
     },
-    // militaryAllocationPercent is DIH-only; ReferendumVote has no allocation column
     allocation: {
       user: null as number | null,
       average: 50,
@@ -278,13 +308,17 @@ export async function getTopReferrers() {
   const users = await prisma.user.findMany({
     where: {
       id: { in: userIds },
-      isPublic: true,
+      person: { isPublic: true },
     },
     select: {
       id: true,
-      name: true,
-      username: true,
-      image: true,
+      person: {
+        select: {
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
     },
   })
   const byId = new Map(users.map((u) => [u.id, u]))
@@ -295,8 +329,8 @@ export async function getTopReferrers() {
       if (!u) return null
       return {
         userId: u.id,
-        name: u.username || u.name || "Anonymous User",
-        image: u.image,
+        name: getUserDisplayHandle(u) || getUserDisplayName(u) || "Anonymous User",
+        image: getUserDisplayAvatar(u),
         referrals: row._count._all,
       }
     })
@@ -311,6 +345,8 @@ export async function getTopReferrers() {
 
 export async function updateUserProfile(data: {
   name?: string
+  handle?: string | null
+  /** @deprecated Prefer `handle` */
   username?: string | null
   bio?: string
   organization?: string
@@ -326,28 +362,29 @@ export async function updateUserProfile(data: {
 }) {
   const { userId } = await requireAuth()
 
-  let normalizedUsername: string | null | undefined = undefined
+  const handleInput =
+    "handle" in data ? data.handle : "username" in data ? data.username : undefined
 
-  if ("username" in data) {
-    const raw = (data.username ?? "").trim()
+  let normalizedHandle: string | null | undefined = undefined
+
+  if (handleInput !== undefined) {
+    const raw = (handleInput ?? "").trim()
 
     if (raw === "") {
-      normalizedUsername = null
+      normalizedHandle = null
     } else {
-      const handle = raw
-
-      const usernameValidationError = validateUsername(handle)
+      const usernameValidationError = validateUsername(raw)
       if (usernameValidationError) {
         throw new Error(usernameValidationError)
       }
 
-      const existingHandle = await prisma.user.findFirst({
+      const existingHandle = await prisma.person.findFirst({
         where: {
-          username: {
-            equals: handle,
+          handle: {
+            equals: raw,
             mode: "insensitive",
           },
-          NOT: { id: userId },
+          user: { NOT: { id: userId } },
         },
         select: { id: true },
       })
@@ -356,28 +393,54 @@ export async function updateUserProfile(data: {
         throw new Error("That handle is already taken. Please choose another.")
       }
 
-      normalizedUsername = handle
+      normalizedHandle = raw.toLowerCase()
     }
   }
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      name: data.name,
-      bio: data.bio,
-      country: data.country,
-      isPublic: data.isPublic,
-      weeklyDigest: data.weeklyDigest,
-      emailNotifications: data.emailNotifications,
-      newsletterSubscribed: data.newsletterSubscribed,
-      website: data.website,
-      headline: data.headline,
-      coverImage: data.coverImage,
-      ...(normalizedUsername !== undefined ? { username: normalizedUsername } : {}),
-    },
+  await ensurePersonForUser(userId, {
+    displayName: typeof data.name === "string" ? data.name : undefined,
   })
 
-  // Org membership via OrganizationMember (no User.organizationId on optimitron)
+  const userRecord = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: { personId: true },
+  })
+
+  if (userRecord.personId) {
+    await prisma.person.update({
+      where: { id: userRecord.personId },
+      data: {
+        ...(typeof data.name === "string" ? { displayName: data.name } : {}),
+        ...(normalizedHandle !== undefined ? { handle: normalizedHandle } : {}),
+        ...(typeof data.bio === "string" ? { bio: data.bio } : {}),
+        ...(data.website !== undefined ? { website: data.website } : {}),
+        ...(data.headline !== undefined ? { headline: data.headline } : {}),
+        ...(data.coverImage !== undefined ? { coverImage: data.coverImage } : {}),
+        ...(typeof data.isPublic === "boolean" ? { isPublic: data.isPublic } : {}),
+        ...(data.country !== undefined ? { countryCode: data.country } : {}),
+      },
+    })
+  }
+
+  const newsletterSubscribed =
+    typeof data.newsletterSubscribed === "boolean"
+      ? data.newsletterSubscribed
+      : typeof data.weeklyDigest === "boolean"
+        ? data.weeklyDigest
+        : typeof data.emailNotifications === "boolean"
+          ? data.emailNotifications
+          : undefined
+
+  if (newsletterSubscribed !== undefined || data.country !== undefined) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(newsletterSubscribed !== undefined ? { newsletterSubscribed } : {}),
+        ...(data.country !== undefined ? { countryCode: data.country } : {}),
+      },
+    })
+  }
+
   if (data.organizationId !== undefined) {
     await prisma.organizationMember.deleteMany({ where: { userId } })
     if (data.organizationId) {
@@ -404,6 +467,10 @@ export async function createOrganization(data: {
   description?: string
 }) {
   const { userId, userEmail } = await requireAuth()
+
+  if (!userEmail) {
+    throw new Error("Authenticated user is missing an email address")
+  }
 
   const organization = await createOrganizationLogic(data, {
     id: userId,

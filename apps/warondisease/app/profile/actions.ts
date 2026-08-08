@@ -2,212 +2,164 @@
 
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth-utils"
-import { revalidatePath } from "next/cache"
+import { ensurePersonForUser } from "@/lib/person.server"
+import type { Prisma } from "@optimitron/db"
 
-// Skills Management
-export async function addUserSkill(skillId: string) {
-  const { userId } = await requireAuth()
-
-  // Verify skill exists
-  const skill = await prisma.skill.findUnique({ where: { id: skillId } })
-  if (!skill) {
-    throw new Error("Skill not found")
-  }
-
-  await prisma.userSkill.create({
-    data: {
-      userId,
-      skillId,
-      endorsements: 0,
-    },
-  })
-
-  revalidatePath("/profile/edit")
-  return { success: true }
+type ProfileLink = {
+  id: string
+  title: string
+  url: string
+  description: string | null
+  imageUrl: string | null
+  order: number
 }
 
-export async function removeUserSkill(skillId: string) {
-  const { userId } = await requireAuth()
+function parsePersonLinks(links: Prisma.JsonValue | null | undefined): ProfileLink[] {
+  if (!links) return []
 
-  await prisma.userSkill.delete({
-    where: {
-      userId_skillId: {
-        userId,
-        skillId,
-      },
-    },
-  })
-
-  revalidatePath("/profile/edit")
-  return { success: true }
-}
-
-export async function searchSkills(query: string) {
-  if (!query || query.length < 2) {
-    return []
-  }
-
-  const skills = await prisma.skill.findMany({
-    where: {
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { slug: { contains: query, mode: "insensitive" } },
-      ],
-    },
-    take: 10,
-    orderBy: { name: "asc" },
-  })
-
-  return skills
-}
-
-export async function createSkill(data: { name: string; category?: string }) {
-  const { userId } = await requireAuth()
-
-  // Create slug from name
-  const slug = data.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-
-  // Check if skill already exists
-  const existing = await prisma.skill.findFirst({
-    where: {
-      OR: [{ name: data.name }, { slug }],
-    },
-  })
-
-  if (existing) {
-    // Add existing skill to user
-    await prisma.userSkill.create({
-      data: { userId, skillId: existing.id, endorsements: 0 },
+  if (Array.isArray(links)) {
+    return links.flatMap((item, index) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return []
+      const record = item as Record<string, unknown>
+      const url = typeof record.url === "string" ? record.url : null
+      if (!url) return []
+      return [
+        {
+          id: typeof record.id === "string" ? record.id : `link-${index}`,
+          title:
+            typeof record.title === "string"
+              ? record.title
+              : typeof record.name === "string"
+                ? record.name
+                : url,
+          url,
+          description: typeof record.description === "string" ? record.description : null,
+          imageUrl:
+            typeof record.imageUrl === "string"
+              ? record.imageUrl
+              : typeof record.image === "string"
+                ? record.image
+                : null,
+          order: typeof record.order === "number" ? record.order : index,
+        },
+      ]
     })
-    revalidatePath("/profile/edit")
-    return { success: true, skill: existing }
   }
 
-  // Create new skill
-  const skill = await prisma.skill.create({
-    data: {
-      name: data.name,
-      slug,
-      category: data.category,
-    },
-  })
+  if (typeof links === "object") {
+    return Object.entries(links as Record<string, unknown>).flatMap(([key, value], index) => {
+      const url =
+        typeof value === "string"
+          ? value
+          : value && typeof value === "object" && !Array.isArray(value) && typeof (value as { url?: unknown }).url === "string"
+            ? ((value as { url: string }).url)
+            : null
+      if (!url) return []
+      return [
+        {
+          id: key,
+          title: key,
+          url,
+          description: null,
+          imageUrl: null,
+          order: index,
+        },
+      ]
+    })
+  }
 
-  // Add to user
-  await prisma.userSkill.create({
-    data: { userId, skillId: skill.id, endorsements: 0 },
-  })
-
-  revalidatePath("/profile/edit")
-  return { success: true, skill }
+  return []
 }
 
-// Links Management
-export async function addUserLink(data: {
+// Skills Management — tables removed; stubbed no-ops
+export async function addUserSkill(_skillId: string) {
+  await requireAuth()
+  return { success: true }
+}
+
+export async function removeUserSkill(_skillId: string) {
+  await requireAuth()
+  return { success: true }
+}
+
+export async function searchSkills(_query: string) {
+  return [] as Array<{ id: string; name: string; slug: string; category: string | null }>
+}
+
+export async function createSkill(_data: { name: string; category?: string }) {
+  await requireAuth()
+  return {
+    success: true,
+    skill: { id: "", name: "", slug: "", category: null as string | null },
+  }
+}
+
+// Links Management — UserLink removed; Person.links is Json (read-only here for now)
+export async function addUserLink(_data: {
   title: string
   url: string
   description?: string
   imageUrl?: string
 }) {
-  const { userId } = await requireAuth()
-
-  // Get current max order
-  const maxOrder = await prisma.userLink.findFirst({
-    where: { userId },
-    orderBy: { order: "desc" },
-    select: { order: true },
-  })
-
-  const link = await prisma.userLink.create({
-    data: {
-      userId,
-      title: data.title,
-      url: data.url,
-      description: data.description,
-      imageUrl: data.imageUrl,
-      order: (maxOrder?.order ?? -1) + 1,
+  await requireAuth()
+  return {
+    success: true,
+    link: {
+      id: "",
+      title: "",
+      url: "",
+      description: null as string | null,
+      imageUrl: null as string | null,
+      order: 0,
     },
-  })
-
-  revalidatePath("/profile/edit")
-  return { success: true, link }
+  }
 }
 
 export async function updateUserLink(
-  linkId: string,
-  data: {
+  _linkId: string,
+  _data: {
     title?: string
     url?: string
     description?: string
     imageUrl?: string
-  }
+  },
 ) {
-  const { userId } = await requireAuth()
-
-  // Verify ownership
-  const link = await prisma.userLink.findUnique({ where: { id: linkId } })
-  if (!link || link.userId !== userId) {
-    throw new Error("Link not found or unauthorized")
-  }
-
-  await prisma.userLink.update({
-    where: { id: linkId },
-    data,
-  })
-
-  revalidatePath("/profile/edit")
+  await requireAuth()
   return { success: true }
 }
 
-export async function deleteUserLink(linkId: string) {
-  const { userId } = await requireAuth()
-
-  // Verify ownership
-  const link = await prisma.userLink.findUnique({ where: { id: linkId } })
-  if (!link || link.userId !== userId) {
-    throw new Error("Link not found or unauthorized")
-  }
-
-  await prisma.userLink.delete({ where: { id: linkId } })
-
-  revalidatePath("/profile/edit")
+export async function deleteUserLink(_linkId: string) {
+  await requireAuth()
   return { success: true }
 }
 
-export async function reorderUserLinks(linkIds: string[]) {
-  const { userId } = await requireAuth()
-
-  // Update order for each link
-  await Promise.all(
-    linkIds.map((linkId, index) =>
-      prisma.userLink.updateMany({
-        where: { id: linkId, userId }, // Verify ownership
-        data: { order: index },
-      })
-    )
-  )
-
-  revalidatePath("/profile/edit")
+export async function reorderUserLinks(_linkIds: string[]) {
+  await requireAuth()
   return { success: true }
 }
 
-// Get profile data
+// Get profile data from Person-owned identity fields
 export async function getProfileData() {
   const { userId } = await requireAuth()
+
+  await ensurePersonForUser(userId)
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
-      userSkills: {
-        include: {
-          skill: true,
+      person: {
+        select: {
+          handle: true,
+          displayName: true,
+          image: true,
+          bio: true,
+          headline: true,
+          website: true,
+          coverImage: true,
+          isPublic: true,
+          links: true,
+          countryCode: true,
         },
-        orderBy: { createdAt: "desc" },
-      },
-      userLinks: {
-        orderBy: { order: "asc" },
       },
       organizationMemberships: {
         include: {
@@ -228,40 +180,36 @@ export async function getProfileData() {
     throw new Error("User not found")
   }
 
+  const person = user.person
   const membership = user.organizationMemberships[0]
+  const location =
+    [user.city, user.countryCode ?? person?.countryCode].filter(Boolean).join(", ") || ""
 
   return {
     user: {
       id: user.id,
-      name: user.name || "",
-      username: user.username || "",
+      name: person?.displayName || "",
+      username: person?.handle || "",
       email: user.email,
-      bio: user.bio || "",
-      headline: user.headline || "",
-      website: user.website || "",
-      coverImage: user.coverImage || "",
-      location: user.location || "",
-      country: user.country || "",
-      image: user.image,
-      isPublic: user.isPublic,
+      bio: person?.bio || "",
+      headline: person?.headline || "",
+      website: person?.website || "",
+      coverImage: person?.coverImage || "",
+      location,
+      country: user.countryCode || person?.countryCode || "",
+      image: person?.image ?? null,
+      isPublic: person?.isPublic ?? false,
       organization: membership?.organization.name || null,
       organizationId: membership?.organizationId ?? null,
     },
-    skills: user.userSkills.map((us) => ({
-      id: us.skill.id,
-      name: us.skill.name,
-      slug: us.skill.slug,
-      category: us.skill.category,
-      endorsements: us.endorsements,
-      addedAt: us.createdAt,
-    })),
-    links: user.userLinks.map((link) => ({
-      id: link.id,
-      title: link.title,
-      url: link.url,
-      description: link.description,
-      imageUrl: link.imageUrl,
-      order: link.order,
-    })),
+    skills: [] as Array<{
+      id: string
+      name: string
+      slug: string
+      category: string | null
+      endorsements: number
+      addedAt: Date
+    }>,
+    links: parsePersonLinks(person?.links),
   }
 }

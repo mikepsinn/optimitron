@@ -174,8 +174,6 @@ export async function POST(req: NextRequest) {
       const badgeMilestones = [
         { count: 1, type: BadgeType.FIRST_RECRUIT, name: "First Recruit" },
         { count: 10, type: BadgeType.TEN_RECRUITS, name: "Ten Recruits" },
-        { count: 50, type: BadgeType.FIFTY_RECRUITS, name: "Fifty Recruits" },
-        { count: 100, type: BadgeType.HUNDRED_RECRUITS, name: "Hundred Recruits" },
       ]
 
       for (const milestone of badgeMilestones) {
@@ -235,9 +233,12 @@ async function findReferralInvitation(inviteToken: unknown) {
         select: {
           id: true,
           email: true,
-          name: true,
-          emailNotifications: true,
-          referralAlerts: true,
+          newsletterSubscribed: true,
+          person: {
+            select: {
+              displayName: true,
+            },
+          },
         },
       },
     },
@@ -259,8 +260,12 @@ async function markReferralInvitationConverted({
       referrer: {
         select: {
           email: true,
-          emailNotifications: true,
-          referralAlerts: true,
+          newsletterSubscribed: true,
+          person: {
+            select: {
+              displayName: true,
+            },
+          },
         },
       },
     },
@@ -283,11 +288,7 @@ async function markReferralInvitationConverted({
     },
   })
 
-  if (
-    invitation.referrer.email &&
-    invitation.referrer.emailNotifications &&
-    invitation.referrer.referralAlerts
-  ) {
+  if (invitation.referrer.email && invitation.referrer.newsletterSubscribed) {
     const confirmedVotes = await getReferralVoteCount(referrerUserId)
     const pendingInvitations = await prisma.referralInvitation.count({
       where: {

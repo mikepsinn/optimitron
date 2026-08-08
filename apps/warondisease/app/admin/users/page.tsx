@@ -33,14 +33,18 @@ async function getUsers(filter?: UserAdminFilter) {
     select: {
       id: true,
       email: true,
-      name: true,
-      username: true,
       isAdmin: true,
       emailVerified: true,
       newsletterSubscribed: true,
-      isPublic: true,
       createdAt: true,
       updatedAt: true,
+      person: {
+        select: {
+          handle: true,
+          displayName: true,
+          isPublic: true,
+        },
+      },
       organizationMemberships: {
         select: {
           organization: {
@@ -65,8 +69,18 @@ async function getUsers(filter?: UserAdminFilter) {
     ],
   }).then((users) =>
     users.map((u) => ({
-      ...u,
+      id: u.id,
+      email: u.email,
+      name: u.person?.displayName ?? null,
+      username: u.person?.handle ?? null,
+      isAdmin: u.isAdmin,
+      emailVerified: u.emailVerified,
+      newsletterSubscribed: u.newsletterSubscribed,
+      isPublic: u.person?.isPublic ?? false,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
       organization: u.organizationMemberships[0]?.organization ?? null,
+      _count: u._count,
     })),
   )
 }

@@ -42,8 +42,16 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.OR = [
         { email: { contains: search, mode: "insensitive" } },
-        { name: { contains: search, mode: "insensitive" } },
-        { username: { contains: search, mode: "insensitive" } },
+        {
+          person: {
+            displayName: { contains: search, mode: "insensitive" },
+          },
+        },
+        {
+          person: {
+            handle: { contains: search, mode: "insensitive" },
+          },
+        },
         {
           organizationMemberships: {
             some: {
@@ -62,14 +70,18 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           email: true,
-          name: true,
-          username: true,
           isAdmin: true,
           emailVerified: true,
           newsletterSubscribed: true,
-          isPublic: true,
           createdAt: true,
           updatedAt: true,
+          person: {
+            select: {
+              handle: true,
+              displayName: true,
+              isPublic: true,
+            },
+          },
           organizationMemberships: {
             select: {
               organization: {
@@ -99,8 +111,18 @@ export async function GET(request: NextRequest) {
     ])
 
     const users = usersRaw.map((u) => ({
-      ...u,
+      id: u.id,
+      email: u.email,
+      name: u.person?.displayName ?? null,
+      username: u.person?.handle ?? null,
+      isAdmin: u.isAdmin,
+      emailVerified: u.emailVerified,
+      newsletterSubscribed: u.newsletterSubscribed,
+      isPublic: u.person?.isPublic ?? false,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
       organization: u.organizationMemberships[0]?.organization ?? null,
+      _count: u._count,
     }))
 
     return NextResponse.json({

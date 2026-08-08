@@ -88,19 +88,24 @@ export async function PATCH(
       select: {
         id: true,
         email: true,
-        name: true,
-        username: true,
         isAdmin: true,
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        person: {
+          select: {
+            handle: true,
+            displayName: true,
+            isPublic: true,
+          },
+        },
       },
     })
 
     await prisma.activity.create({
       data: {
         userId: admin.id,
-        type: ActivityType.PROFILE_UPDATED,
+        type: ActivityType.UPDATED_PROFILE,
         description: `Admin ${body.isAdmin ? "granted" : "revoked"} admin access for ${targetUser.email}`,
         metadata: JSON.stringify({
           action: body.isAdmin ? "grant_admin" : "revoke_admin",
