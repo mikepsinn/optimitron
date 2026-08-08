@@ -288,7 +288,7 @@ describe("tasks route", () => {
     );
   });
 
-  it("keeps Add Step self-only instead of creating dead-end assigned work", async () => {
+  it("keeps Add subtask self-only instead of creating dead-end assigned work", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
 
     const response = await POST(
@@ -309,7 +309,7 @@ describe("tasks route", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "Add Step currently creates work only on your own task list.",
+      error: "Add subtask currently creates work only on your own task list.",
     });
     expect(mocks.personUpsert).not.toHaveBeenCalled();
     expect(mocks.taskFindFirst).not.toHaveBeenCalled();
@@ -360,7 +360,7 @@ describe("tasks route", () => {
         ownerOrganizationId: null,
         status: TaskStatus.VERIFIED,
       },
-      "Steps can only be added to draft or active tasks.",
+      "Subtasks can only be added to draft or active tasks.",
     ],
   ])("rejects steps on %s parents", async (_kind, parent, error) => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });

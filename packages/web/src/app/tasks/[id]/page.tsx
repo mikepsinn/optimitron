@@ -875,7 +875,7 @@ export default async function TaskDetailPage({
         {!isAssignedDocumentReviewer && task.childTasks.length > 0 ? (
           <section id="subtasks" className="border-b border-foreground py-8">
             <h2 className="mb-4 text-base font-semibold">
-              Steps ({task.childTasks.length})
+              Subtasks ({task.childTasks.length})
             </h2>
             <SortableTaskList
               tasks={task.childTasks as unknown as TaskCardTask[]}

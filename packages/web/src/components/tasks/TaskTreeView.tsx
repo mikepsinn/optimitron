@@ -30,6 +30,11 @@ function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
       <span className="text-xs text-muted-foreground">
         {formatEvLabel(node)}
       </span>
+      {node.alsoServes && node.alsoServes.length > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          also serves: {node.alsoServes.join(", ")}
+        </span>
+      ) : null}
     </span>
   );
 }

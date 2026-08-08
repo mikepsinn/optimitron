@@ -99,7 +99,7 @@ export function TaskManagementControls({
           type="button"
           variant="outline"
         >
-          Add Step
+          Add subtask
         </Button>
       ) : null}
 
@@ -213,11 +213,11 @@ export function TaskManagementControls({
         <CreateTaskDialog
           allowedTaskModes={stepTaskModes}
           callbackUrl={`/tasks/${taskId}`}
-          dialogTitle="Add step"
+          dialogTitle="Add subtask"
           onOpenChange={setStepOpen}
           open={stepOpen}
           parentTaskId={taskId}
-          submitLabel="Add step"
+          submitLabel="Add subtask"
         />
       ) : null}
     </div>

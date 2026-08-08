@@ -312,7 +312,7 @@ export function CreateTaskDialog({
       : null;
 
     if (!fixedAssigneePerson) {
-      // Add Step (parentTaskId set) creates work implicitly for the current
+      // Add subtask (parentTaskId set) creates work implicitly for the current
       // user without an explicit assignee — the server rejects any assignee
       // on a parented task — so self mode does not need currentPersonId here.
       if (taskMode === "self" && !currentPersonId && !parentTaskId) {

@@ -144,6 +144,91 @@ describe("TaskDependenciesSection", () => {
     expect(html).not.toContain("Private hidden blocker");
   });
 
+  // Regression: getDependencyEdgeLabel used to fall through to "blocks this"
+  // for every non-DEPENDS_ON type. Harmless while the queries only returned
+  // blocking edges; the moment value edges reach this component it makes the
+  // 1% Treaty claim it blocks the missions it actually advances.
+  it("labels a value edge as raising the odds, never as blocking", () => {
+    const html = renderToStaticMarkup(
+      <TaskDependenciesSection
+        task={{
+          incomingEdges: [],
+          outgoingEdges: [],
+          valueEdgesOut: [
+            {
+              edgeType: TaskEdgeType.INCREASES_PROBABILITY_OF,
+              probabilityDeltaBase: null,
+              toTask: relatedTask({ id: "end_disease", title: "End Disease" }),
+            },
+          ],
+        }}
+        viewer={null}
+      />,
+    );
+
+    expect(html).toContain("End Disease");
+    expect(html).toContain("raises its odds");
+    expect(html).not.toContain("blocks this");
+    expect(html).not.toContain("unlocks");
+    // Seeded edges carry no delta yet; render the relationship without
+    // inventing a number for it.
+    expect(html).not.toContain("pp success");
+  });
+
+  it("labels an accelerating edge on its own terms", () => {
+    const html = renderToStaticMarkup(
+      <TaskDependenciesSection
+        task={{
+          incomingEdges: [],
+          outgoingEdges: [],
+          valueEdgesIn: [
+            {
+              edgeType: TaskEdgeType.ACCELERATES,
+              timeDeltaDaysBase: 30,
+              fromTask: relatedTask({ id: "treaty", title: "Ratify" }),
+            },
+          ],
+        }}
+        viewer={null}
+      />,
+    );
+
+    expect(html).toContain("brings this forward");
+    expect(html).toContain("30 days faster");
+    expect(html).not.toContain("blocks this");
+  });
+
+  it("keeps value edges out of the blocking group", () => {
+    const html = renderToStaticMarkup(
+      <TaskDependenciesSection
+        task={{
+          incomingEdges: [
+            {
+              edgeType: TaskEdgeType.BLOCKS,
+              fromTask: relatedTask({ id: "blk", title: "Real blocker" }),
+            },
+          ],
+          outgoingEdges: [],
+          valueEdgesOut: [
+            {
+              edgeType: TaskEdgeType.INCREASES_PROBABILITY_OF,
+              toTask: relatedTask({ id: "end_war", title: "End War" }),
+            },
+          ],
+        }}
+        viewer={null}
+      />,
+    );
+
+    const blockingGroup = html.slice(
+      html.indexOf("Blocking this task"),
+      html.indexOf("Goals this serves"),
+    );
+    expect(blockingGroup).toContain("Real blocker");
+    expect(blockingGroup).not.toContain("End War");
+    expect(html).toContain("Also serves");
+  });
+
   it("renders nothing when no related tasks are visible", () => {
     const html = renderToStaticMarkup(
       <TaskDependenciesSection

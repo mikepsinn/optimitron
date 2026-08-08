@@ -46,6 +46,21 @@ export type TaskDependenciesSectionTask = {
       toTask: RelatedTaskLink;
     }
   >;
+  /**
+   * Causal edges, loaded separately from the blocking ones. A task has a single
+   * parentTaskId, so these are how it shows up under every other goal it serves
+   * without its value being counted once per goal.
+   */
+  valueEdgesIn?: Array<
+    TaskDependencyEdge & {
+      fromTask: RelatedTaskLink;
+    }
+  >;
+  valueEdgesOut?: Array<
+    TaskDependencyEdge & {
+      toTask: RelatedTaskLink;
+    }
+  >;
 };
 
 export type TaskDependenciesViewer = {
@@ -135,14 +150,36 @@ function formatTaskStatus(status: TaskStatus) {
   }
 }
 
+/**
+ * Exhaustive on purpose. This used to fall through to "blocks this"/"unlocks"
+ * for anything that was not DEPENDS_ON, which was harmless only while the
+ * queries filtered to blocking edges. Now that value edges reach this
+ * component, a fallthrough would have the 1% Treaty claim it *blocks* End
+ * Poverty. The `never` check makes a new TaskEdgeType a compile error instead
+ * of a quiet lie.
+ */
 function getDependencyEdgeLabel(
   edgeType: TaskEdgeType,
   direction: "incoming" | "outgoing",
 ) {
-  if (edgeType === TaskEdgeType.DEPENDS_ON) {
-    return direction === "incoming" ? "depends on" : "needed by";
+  switch (edgeType) {
+    case TaskEdgeType.DEPENDS_ON:
+      return direction === "incoming" ? "depends on" : "needed by";
+    case TaskEdgeType.BLOCKS:
+      return direction === "incoming" ? "blocks this" : "unlocks";
+    case TaskEdgeType.INCREASES_PROBABILITY_OF:
+      return direction === "incoming"
+        ? "raises this task's odds"
+        : "raises its odds";
+    case TaskEdgeType.ACCELERATES:
+      return direction === "incoming"
+        ? "brings this forward"
+        : "brings it forward";
+    default: {
+      const unhandled: never = edgeType;
+      return String(unhandled).toLowerCase().replace(/_/g, " ");
+    }
   }
-  return direction === "incoming" ? "blocks this" : "unlocks";
 }
 
 function formatProbabilityDelta(value: number | null | undefined) {
@@ -236,51 +273,112 @@ export function TaskDependenciesSection({
   const unlockedTasks = task.outgoingEdges.filter((edge) =>
     canSeeRelatedTask(edge.toTask, viewer),
   );
+  const servedBy = (task.valueEdgesIn ?? []).filter((edge) =>
+    canSeeRelatedTask(edge.fromTask, viewer),
+  );
+  const alsoServes = (task.valueEdgesOut ?? []).filter((edge) =>
+    canSeeRelatedTask(edge.toTask, viewer),
+  );
 
-  if (blockers.length === 0 && unlockedTasks.length === 0) {
+  const hasDependencies = blockers.length > 0 || unlockedTasks.length > 0;
+  const hasValueEdges = servedBy.length > 0 || alsoServes.length > 0;
+
+  if (!hasDependencies && !hasValueEdges) {
     return null;
   }
 
   return (
-    <section id="dependencies" className="border-b border-foreground py-6">
-      <h2 className="text-xl font-black">Dependencies</h2>
-      <div className="mt-4 grid gap-6 lg:grid-cols-2">
-        {blockers.length > 0 ? (
-          <div>
-            <h3 className="text-sm font-black uppercase text-muted-foreground">
-              Blocking this task
-            </h3>
-            <ul className="mt-3 space-y-3">
-              {blockers.map((edge) => (
-                <RelatedTaskCard
-                  key={`${edge.fromTask.id}-${edge.edgeType}`}
-                  direction="incoming"
-                  edge={edge}
-                  task={edge.fromTask}
-                />
-              ))}
-            </ul>
-          </div>
-        ) : null}
+    <>
+      {hasDependencies ? (
+        <section id="dependencies" className="border-b border-foreground py-6">
+          <h2 className="text-xl font-black">Dependencies</h2>
+          <div className="mt-4 grid gap-6 lg:grid-cols-2">
+            {blockers.length > 0 ? (
+              <div>
+                <h3 className="text-sm font-black uppercase text-muted-foreground">
+                  Blocking this task
+                </h3>
+                <ul className="mt-3 space-y-3">
+                  {blockers.map((edge) => (
+                    <RelatedTaskCard
+                      key={`${edge.fromTask.id}-${edge.edgeType}`}
+                      direction="incoming"
+                      edge={edge}
+                      task={edge.fromTask}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
-        {unlockedTasks.length > 0 ? (
-          <div>
-            <h3 className="text-sm font-black uppercase text-muted-foreground">
-              Tasks this unlocks
-            </h3>
-            <ul className="mt-3 space-y-3">
-              {unlockedTasks.map((edge) => (
-                <RelatedTaskCard
-                  key={`${edge.toTask.id}-${edge.edgeType}`}
-                  direction="outgoing"
-                  edge={edge}
-                  task={edge.toTask}
-                />
-              ))}
-            </ul>
+            {unlockedTasks.length > 0 ? (
+              <div>
+                <h3 className="text-sm font-black uppercase text-muted-foreground">
+                  Tasks this unlocks
+                </h3>
+                <ul className="mt-3 space-y-3">
+                  {unlockedTasks.map((edge) => (
+                    <RelatedTaskCard
+                      key={`${edge.toTask.id}-${edge.edgeType}`}
+                      direction="outgoing"
+                      edge={edge}
+                      task={edge.toTask}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
-        ) : null}
-      </div>
-    </section>
+        </section>
+      ) : null}
+
+      {hasValueEdges ? (
+        <section id="also-serves" className="border-b border-foreground py-6">
+          <h2 className="text-xl font-black">Goals this serves</h2>
+          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+            A task has one parent, but it can advance several goals. These
+            links carry the effect, not the value, so nothing here is counted
+            twice.
+          </p>
+          <div className="mt-4 grid gap-6 lg:grid-cols-2">
+            {alsoServes.length > 0 ? (
+              <div>
+                <h3 className="text-sm font-black uppercase text-muted-foreground">
+                  Also serves
+                </h3>
+                <ul className="mt-3 space-y-3">
+                  {alsoServes.map((edge) => (
+                    <RelatedTaskCard
+                      key={`${edge.toTask.id}-${edge.edgeType}`}
+                      direction="outgoing"
+                      edge={edge}
+                      task={edge.toTask}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {servedBy.length > 0 ? (
+              <div>
+                <h3 className="text-sm font-black uppercase text-muted-foreground">
+                  Served by
+                </h3>
+                <ul className="mt-3 space-y-3">
+                  {servedBy.map((edge) => (
+                    <RelatedTaskCard
+                      key={`${edge.fromTask.id}-${edge.edgeType}`}
+                      direction="incoming"
+                      edge={edge}
+                      task={edge.fromTask}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+    </>
   );
 }

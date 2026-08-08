@@ -34,6 +34,21 @@ const taskTreeSelect = {
     },
   },
   isPublic: true,
+  // Titles of the other goals this task serves. Rendered as a flat chip on the
+  // node, never as extra tree nodes: buildTaskTree and countTaskTreeNodes both
+  // assume one path per task, so nesting an edged task under a second parent
+  // would render it twice and inflate visibleTaskCount.
+  outgoingEdges: {
+    where: {
+      deletedAt: null,
+      edgeType: {
+        in: [TaskEdgeType.INCREASES_PROBABILITY_OF, TaskEdgeType.ACCELERATES],
+      },
+    },
+    select: {
+      toTask: { select: { id: true, isPublic: true, title: true } },
+    },
+  },
   parentTaskId: true,
   sortOrder: true,
   status: true,
@@ -66,7 +81,14 @@ export async function getTaskTreePageData(
     select: taskTreeSelect,
   });
 
+  const visibleTaskIds = new Set(tasks.map((task) => task.id));
+
   const flatTasks = tasks.map((task) => ({
+    // Only name goals the viewer can already see in this tree, so the chip
+    // cannot leak a private task's title.
+    alsoServes: task.outgoingEdges
+      .filter((edge) => visibleTaskIds.has(edge.toTask.id))
+      .map((edge) => edge.toTask.title),
     blockerStatuses: task.incomingEdges.map((edge) => edge.fromTask.status),
     createdAt: task.createdAt,
     dueAt: task.dueAt,
