@@ -9,6 +9,12 @@ import type { TaskImpactFrameSummary } from "@/lib/tasks/impact";
  * task's own EV numbers, so the server query stays lean for ~100 nodes.
  */
 export interface TaskTreeFlatTask {
+  /**
+   * Titles of other goals this task advances via a value edge. Display only —
+   * the task still appears exactly once in the tree, under its single
+   * parentTaskId, so nothing here affects counts or roll-ups.
+   */
+  alsoServes?: string[];
   blockerStatuses: TaskStatus[];
   createdAt: Date | string;
   dueAt: Date | string | null;
