@@ -35,7 +35,16 @@ const heapMb = generatesSourceMaps
   ? SOURCEMAP_BUILD_HEAP_MB
   : PLAIN_BUILD_HEAP_MB;
 
-const nodeOptions = [process.env.NODE_OPTIONS, `--max-old-space-size=${heapMb}`]
+// Drop any inherited ceiling so this script deterministically sets it. Node
+// takes the last occurrence, so appending would usually win anyway, but "our
+// value is applied because it happens to be last" is not a property worth
+// relying on when the whole point of this file is to control that number.
+const inheritedNodeOptions = (process.env.NODE_OPTIONS ?? "")
+  .split(/\s+/)
+  .filter((flag) => flag && !flag.startsWith("--max-old-space-size"))
+  .join(" ");
+
+const nodeOptions = [inheritedNodeOptions, `--max-old-space-size=${heapMb}`]
   .filter(Boolean)
   .join(" ");
 
@@ -49,13 +58,27 @@ const child = spawn("next", ["build", ...process.argv.slice(2)], {
   env: { ...process.env, NODE_OPTIONS: nodeOptions },
 });
 
+// `shell: true` means the shell is our direct child, so when something kills
+// `next` underneath it we are handed the shell's 128+N exit code with a null
+// signal -- including the OOM case this diagnostic exists for. Map those back.
+const SIGNAL_EXIT_CODES = new Map([
+  [130, "SIGINT"],
+  [137, "SIGKILL"],
+  [143, "SIGTERM"],
+]);
+
 child.on("exit", (code, signal) => {
-  // A signal here is the kernel OOM killer, not a build error. Surface it as a
-  // failure but make the distinction visible, because the fix is the opposite
-  // of the one for a heap error.
-  if (signal) {
+  const terminatingSignal = signal ?? SIGNAL_EXIT_CODES.get(code ?? -1) ?? null;
+  if (terminatingSignal) {
+    // Deliberately does not assert OOM. Several things here send signals --
+    // scripts/run-with-timeout.mjs sends SIGTERM then SIGKILL when a build
+    // exceeds its budget, and CI cancels jobs the same way. Saying "out of
+    // memory" would send someone to tune the heap for a timeout.
     console.error(
-      `[next-build] terminated by ${signal} — this is the container running out of memory, not the heap. Lower the ceiling or reduce parallelism.`,
+      `[next-build] terminated by ${terminatingSignal}, not a heap error -- raising --max-old-space-size will not help.`,
+    );
+    console.error(
+      "[next-build] check, in order: the platform build log for an OOM report (then lower the ceiling or reduce parallelism), scripts/run-with-timeout.mjs firing on the build budget, or a cancelled CI job.",
     );
     process.exit(1);
   }
