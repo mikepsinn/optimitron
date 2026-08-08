@@ -87,6 +87,10 @@ const TASK_MANAGEMENT_CONTROLS_FILE =
   "packages/web/src/components/tasks/TaskManagementControls.tsx";
 const CREATE_TASK_DIALOG_FILE =
   "packages/web/src/components/tasks/CreateTaskDialog.tsx";
+const TASK_DEPENDENCIES_SECTION_FILE =
+  "packages/web/src/components/tasks/TaskDependenciesSection.tsx";
+const TASK_TREE_VIEW_FILE =
+  "packages/web/src/components/tasks/TaskTreeView.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
 // Sections rendered by both optimitron.com/ and /game. Either capture proves
@@ -312,9 +316,21 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     required: false,
   },
   {
+    // Required, and asserted on #also-serves rather than something always
+    // present: this is the state that proves a task renders under every goal
+    // it serves, so a capture without that section would be worthless.
+    covers: [TASK_DEPENDENCIES_SECTION_FILE],
     name: "task-one-percent-treaty",
     path: "/tasks/1-pct-treaty",
-    required: false,
+    required: true,
+    requiredSelector: "#also-serves",
+  },
+  {
+    covers: [TASK_TREE_VIEW_FILE],
+    name: "tasks-tree",
+    path: "/tasks/tree",
+    required: true,
+    requiredSelector: "#task-tree",
   },
   {
     name: "task-signer-canada",

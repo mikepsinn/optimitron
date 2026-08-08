@@ -76,7 +76,9 @@ function TaskTreeNodeView({
 
 export function TaskTreeView({ root }: { root: TaskTreeNode }) {
   return (
-    <ul className="text-sm">
+    // id is the visual review's activation selector for the tasks-tree state;
+    // it proves the tree actually rendered rather than an empty shell.
+    <ul className="text-sm" id="task-tree">
       <TaskTreeNodeView depth={0} node={root} />
     </ul>
   );
