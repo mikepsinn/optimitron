@@ -82,14 +82,13 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       email: smokeEmail,
-      name: "Smoke Voter",
     },
   })
   ok(`User ${user.id}`)
 
   const person = await prisma.person.create({
     data: {
-      displayName: "Smoke Person",
+      displayName: "Smoke Voter",
       email: smokeEmail,
       createdByUserId: user.id,
       sourceRef: `smoke:user:${user.id}`,
