@@ -8073,6 +8073,36 @@ const TASK_TOOL_DEFINITIONS = [
           description:
             "Short explanation of the calculation and what would change the estimate",
         },
+        formulaText: {
+          type: "string",
+          description:
+            "The arithmetic behind the number, in plain text, so a reader can check it without running anything",
+        },
+        formulaLatex: {
+          type: "string",
+          description: "Same formula as LaTeX, rendered on the task page",
+        },
+        parameterInputs: {
+          type: "array",
+          description:
+            "Catalog parameters this estimate is built from. Prefer this over citing a number in sourceUrls: a linked parameter is a dependency, so the estimate is flagged stale when the parameter is corrected, and getTaskImpactTrace can show the whole chain. Search with searchParameters; add a missing one with proposeParameterBundle.",
+          items: {
+            type: "object",
+            properties: {
+              parameterKey: { type: "string" },
+              revisionId: {
+                type: "string",
+                description:
+                  "Pin a specific revision. Omit to bind the parameter's current one.",
+              },
+              symbol: {
+                type: "string",
+                description: "Name for this input inside formulaText/formulaLatex",
+              },
+            },
+            required: ["parameterKey", "symbol"],
+          },
+        },
         calculationVersion: {
           type: "string",
           description: "Version tag for the calculation method",

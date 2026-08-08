@@ -52,9 +52,10 @@ to have done that multiplication already. `/methodology` spells this out.
   task page. Not the description: prose there is not attached to the number, so
   nothing can tell you when it goes stale.
 
-Known gap: `setTaskImpact` cannot yet link an estimate to the parameter
-revisions it used, so agent-written estimates carry citations as text while
-managed ones carry a traceable dependency with staleness detection.
+Both `setTaskImpact` and `proposeTaskImpact` accept `parameterInputs`, so an
+agent-written estimate can carry the same traceable dependency the managed sync
+does — link the parameter rather than citing its number in `sourceUrls`, and
+staleness detection follows for free.
 
 ## Known inconsistency
 
