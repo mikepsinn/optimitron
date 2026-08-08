@@ -21,6 +21,22 @@ interface LatexProps {
   className?: string
 }
 
+/**
+ * KaTeX safety, checked 2026-08-08 and recorded so it is not re-litigated.
+ *
+ * react-katex@3.1.0 hardcodes its KaTeX options to {displayMode, errorColor,
+ * throwOnError} and exposes no `settings` prop, so `trust` stays at KaTeX's
+ * default of false and cannot be raised from here. That default is the control
+ * that refuses \href, \url and the \html* commands -- the only KaTeX inputs
+ * that can emit markup or a URL.
+ *
+ * This matters because task impact estimates now accept an agent-written
+ * `formulaLatex`. Today nothing renders it through this component (the impact
+ * trace prints it as escaped text in a <code> block), but if that changes,
+ * re-check `trust` before upgrading or replacing react-katex -- a version with
+ * a settings pass-through would make it reachable.
+ */
+
 export function Latex({ children, block = false, className = '' }: LatexProps) {
   useEnsureKatexStyles()
   if (block) {
