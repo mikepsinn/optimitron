@@ -519,8 +519,11 @@ async function extractPage(
  * that fired too early recorded the page with those sections simply absent --
  * indistinguishable, in a diff, from someone having deleted the copy.
  *
- * Warns rather than throws: a page that never hydrates should still produce a
- * snapshot, and the warning says the capture may be incomplete.
+ * Throws on timeout rather than warning. Letting an unhydrated page through
+ * would write exactly the snapshot this function exists to prevent -- one
+ * missing whole sections, which reads in review as deleted copy. The caller
+ * retries and then refuses to write, the same contract the global-loader check
+ * already uses: no snapshot beats a misleading one.
  */
 async function waitForHydration(
   page: import("@playwright/test").Page,
@@ -533,8 +536,8 @@ async function waitForHydration(
       { timeout: 15_000 },
     );
   } catch {
-    console.warn(
-      `  ${route}: no hydration signal within 15s — capture may be missing hydration-gated copy`,
+    throw new Error(
+      `No hydration signal within 15s on ${route}; snapshot NOT written because hydration-gated copy would be missing. Fix the slow render or add a route-specific readiness signal.`,
     );
   }
 }

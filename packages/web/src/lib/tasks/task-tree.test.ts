@@ -203,8 +203,10 @@ describe("buildTaskTree", () => {
   });
 
   it("keeps hasEvEstimate true for a mission with a real value but no effort hours", () => {
-    // The mission nodes are exactly this shape: a sourced conditional value
-    // and no hours, because nobody executes "End War" directly. evValid is
+    // The mission nodes are exactly this shape: a sourced probability-weighted
+    // expected value (successProbabilityBase stays its own field, and nothing
+    // downstream multiplies by it again) and no hours, because nobody executes
+    // "End War" directly. evValid is
     // false (priority has nothing to divide by), but the tree label reads
     // hasEvEstimate — otherwise an $834T sourced estimate renders as
     // "no direct estimate", which is the opposite of the truth.

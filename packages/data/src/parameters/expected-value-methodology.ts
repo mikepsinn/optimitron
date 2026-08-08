@@ -10,6 +10,34 @@ import {
   MISSION_VALUE_HORIZON_YEARS,
 } from "./mission-value-horizon";
 
+/**
+ * Best available provenance link for a parameter, or null.
+ *
+ * Not every parameter carries `sourceUrl` -- a calculated one like the war
+ * cost has a derivation (`calculationsUrl`) rather than a single citation.
+ * Reaching straight for `sourceUrl` published "(undefined)" as the href on a
+ * public page, so this resolves in order of usefulness and the caller renders
+ * plain text when there is nothing to link.
+ */
+function provenanceUrl(param: {
+  calculationsUrl?: string;
+  manualPageUrl?: string;
+  sourceUrl?: string;
+}): string | null {
+  return (
+    param.calculationsUrl ?? param.sourceUrl ?? param.manualPageUrl ?? null
+  );
+}
+
+/** Markdown link when the parameter has provenance, plain text when it does not. */
+function citedText(
+  label: string,
+  param: { calculationsUrl?: string; manualPageUrl?: string; sourceUrl?: string },
+) {
+  const url = provenanceUrl(param);
+  return url ? `[${label}](${url})` : label;
+}
+
 function usdShort(value: number) {
   const units: Array<[number, string]> = [
     [1e12, "T"],
@@ -49,7 +77,7 @@ Record it with a separate success probability. A goal's value is never summed fr
 
 | Field | Value | Why |
 | --- | --- | --- |
-| Horizon | **${MISSION_VALUE_HORIZON_YEARS} years** | Global life expectancy at birth ([WHO, 2024](${GLOBAL_LIFE_EXPECTANCY_2024.sourceUrl})). One human lifetime is a span a reader can feel, and it is a *measured* number rather than a chosen one. |
+| Horizon | **${MISSION_VALUE_HORIZON_YEARS} years** | Global life expectancy at birth (${citedText("WHO, 2024", GLOBAL_LIFE_EXPECTANCY_2024)}). One human lifetime is a span a reader can feel, and it is a *measured* number rather than a chosen one. |
 | Discount rate | **0** | See below. |
 | Probability | 0–1, recorded as its own field | So the conditional value stays recoverable. |
 
@@ -120,7 +148,7 @@ link between them.
 
 | Step | Source | Value |
 | --- | --- | --- |
-| Annual cost of war | [direct + indirect, global](${GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.sourceUrl}) | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
+| Annual cost of war | ${citedText("direct + indirect, global", GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST)} | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
 | × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_WAR_LIFETIME_VALUE_USD)}** |
 | × probability | probability war actually ends | the ranked expected value |
 
@@ -132,7 +160,7 @@ mission is the whole quantity.
 
 | Step | Source | Value |
 | --- | --- | --- |
-| Share of GDP lost to disease | [${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}%](${DISEASE_BURDEN_GDP_DRAG_PCT.sourceUrl}) | of [${usdShort(GLOBAL_GDP_2025.value)}](${GLOBAL_GDP_2025.sourceUrl}) |
+| Share of GDP lost to disease | ${citedText(`${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}%`, DISEASE_BURDEN_GDP_DRAG_PCT)} | of ${citedText(usdShort(GLOBAL_GDP_2025.value), GLOBAL_GDP_2025)} |
 | Annual drag | productivity + diverted medical cost | ${usdShort(DISEASE_BURDEN_GDP_DRAG_PCT.value * GLOBAL_GDP_2025.value)}/year |
 | × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_LIFETIME_VALUE_USD)}** |
 

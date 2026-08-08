@@ -20,7 +20,7 @@
 ### The frame
 | FIELD | VALUE | WHY |
 | --- | --- | --- |
-| Horizon | 73.4 years | Global life expectancy at birth ([WHO, 2024](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates)). One human lifetime is a span a reader can feel, and it is a measured number rather than a chosen one. |
+| Horizon | 73.4 years | Global life expectancy at birth ([WHO, 2024](https://manual.WarOnDisease.org/calculations.html#sec-global_life_expectancy_2024)). One human lifetime is a span a reader can feel, and it is a measured number rather than a chosen one. |
 | Discount rate | 0 | See below. |
 | Probability | 0–1, recorded as its own field | So the conditional value stays recoverable. |
 #### Conditional value and expected value are two different numbers
@@ -44,14 +44,14 @@
 ### Worked example: ending war
 | STEP | SOURCE | VALUE |
 | --- | --- | --- |
-| Annual cost of war | [direct + indirect, global](undefined) | $11.4T/year |
+| Annual cost of war | [direct + indirect, global](https://manual.WarOnDisease.org/calculations.html#sec-global_annual_direct_indirect_war_cost) | $11.4T/year |
 | × one lifetime | 73.4 years | $834T |
 | × probability | probability war actually ends | the ranked expected value |
 - Note this uses the whole cost of war, not the peace dividend. The dividend is what a one percent redirection buys, which is what the treaty asks for. The mission is the whole quantity.
 ### Worked example: ending disease
 | STEP | SOURCE | VALUE |
 | --- | --- | --- |
-| Share of GDP lost to disease | [13%](undefined) | of [$115T](https://manual.warondisease.org/knowledge/appendix/political-dysfunction-tax.html) |
+| Share of GDP lost to disease | [13%](https://manual.WarOnDisease.org/calculations.html#sec-disease_burden_gdp_drag_pct) | of [$115T](https://manual.WarOnDisease.org/calculations.html#sec-global_gdp_2025) |
 | Annual drag | productivity + diverted medical cost | $14.9T/year |
 | × one lifetime | 73.4 years | $1097T |
 - That is economic drag only. It does not price the suffering itself, which belongs in the health fields on the same horizon and the same zero discount.

@@ -1145,10 +1145,12 @@ describe("syncManagedTasks", () => {
       ],
     });
 
+    const now = new Date("2026-08-08T00:00:00.000Z");
     await syncManagedTasks(client, {
       apply: true,
       collectionKey: "test-tree",
       createdByUserId: "creator",
+      now,
       records: [
         {
           ...activeRecord,
@@ -1166,7 +1168,9 @@ describe("syncManagedTasks", () => {
     );
 
     expect(staleFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
-    expect(staleFrame?.deletedAt).toBeInstanceOf(Date);
+    // Pinned: retirement must stamp the sync's own timestamp, not a fresh
+    // wall-clock read, so one run marks every frame it retires identically.
+    expect(staleFrame?.deletedAt).toEqual(now);
     expect(lifetimeFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
     expect(lifetimeFrame?.deletedAt).toBeNull();
   });

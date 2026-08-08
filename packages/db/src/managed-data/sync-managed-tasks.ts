@@ -811,6 +811,7 @@ async function syncManagedTaskImpactEstimate(
   client: ManagedTaskClient,
   collectionKey: string,
   record: ManagedTaskRecord,
+  now: Date,
 ) {
   if (!hasManagedTaskImpact(record)) {
     return;
@@ -900,7 +901,7 @@ async function syncManagedTaskImpactEstimate(
       taskImpactEstimateSetId: estimateSet.id,
       NOT: { frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG },
     },
-    data: { deletedAt: new Date() },
+    data: { deletedAt: now },
   });
 }
 
@@ -1253,7 +1254,12 @@ export async function syncManagedTasks(
         update: buildTaskUpdateData(options.collectionKey, record),
       });
 
-      await syncManagedTaskImpactEstimate(client, options.collectionKey, record);
+      await syncManagedTaskImpactEstimate(
+        client,
+        options.collectionKey,
+        record,
+        now,
+      );
 
       if (record.primaryEndpoint !== undefined) {
         const endpointAction = await upsertPrimaryEndpoint(
