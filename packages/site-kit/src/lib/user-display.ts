@@ -20,7 +20,7 @@ export interface UserForDisplay {
   id: string
   email?: string | null
   person?: {
-    id: string
+    id?: string
     handle?: string | null
     displayName?: string | null
     image?: string | null

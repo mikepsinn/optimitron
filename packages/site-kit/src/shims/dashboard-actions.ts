@@ -4,6 +4,17 @@ export async function updateUserProfile(_data: {
   handle?: string | null
   /** @deprecated Prefer `handle` */
   username?: string | null
+  bio?: string
+  organization?: string
+  organizationId?: string | null
+  country?: string | null
+  isPublic?: boolean
+  weeklyDigest?: boolean
+  emailNotifications?: boolean
+  newsletterSubscribed?: boolean
+  website?: string | null
+  headline?: string | null
+  coverImage?: string | null
 }): Promise<{ success: boolean }> {
   return { success: true }
 }

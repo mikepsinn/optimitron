@@ -1,6 +1,69 @@
 import "server-only"
+import type { Prisma } from "@optimitron/db"
 import { prisma } from "./prisma"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
+
+export type PublicProfileLink = {
+  id: string
+  title: string
+  url: string
+  description: string | null
+  imageUrl: string | null
+}
+
+/** Person.links is Json — normalize object or array shapes into a display list. */
+export function parsePersonLinks(
+  links: Prisma.JsonValue | null | undefined,
+): PublicProfileLink[] {
+  if (!links) return []
+
+  if (Array.isArray(links)) {
+    return links.flatMap((item, index) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return []
+      const record = item as Record<string, unknown>
+      const url = typeof record.url === "string" ? record.url : null
+      if (!url) return []
+      return [
+        {
+          id: typeof record.id === "string" ? record.id : `link-${index}`,
+          title:
+            typeof record.title === "string"
+              ? record.title
+              : typeof record.name === "string"
+                ? record.name
+                : url,
+          url,
+          description: typeof record.description === "string" ? record.description : null,
+          imageUrl:
+            typeof record.imageUrl === "string"
+              ? record.imageUrl
+              : typeof record.image === "string"
+                ? record.image
+                : null,
+        },
+      ]
+    })
+  }
+
+  if (typeof links === "object") {
+    return Object.entries(links as Record<string, unknown>).flatMap(([key, value]) => {
+      const url =
+        typeof value === "string"
+          ? value
+          : value &&
+              typeof value === "object" &&
+              !Array.isArray(value) &&
+              typeof (value as { url?: unknown }).url === "string"
+            ? (value as { url: string }).url
+            : null
+      if (!url) return []
+      return [{ id: key, title: key, url, description: null, imageUrl: null }]
+    })
+  }
+
+  return []
+}
+
 
 const USERNAME_ALIASES: Record<string, string> = {
   mikepsinn: "WarOnDisease",
@@ -124,7 +187,7 @@ export async function getPublicUserProfile(handleOrUsername: string) {
       category: string | null
       endorsements: number
     }>,
-    links: person.links,
+    links: parsePersonLinks(person.links),
     joinedAt: user.createdAt,
   }
 }
