@@ -210,3 +210,32 @@ test("keeps backend-only changes outside the visual coverage contract", () => {
     true,
   );
 });
+
+// Deleting a component reports it via `git diff --name-only` exactly like an
+// edit, but there is nothing left to screenshot. Before this, removing dead UI
+// blocked the pull request with a demand that could never be satisfied.
+test("does not demand a visual state for a deleted UI source", () => {
+  const deleted = "packages/web/src/components/tasks/blocks/TaskUnlocks.tsx";
+  const kept = "packages/web/src/components/tasks/TaskTreeView.tsx";
+  const fileExists = (filePath) => filePath !== deleted;
+
+  assert.deepEqual(getChangedUiFiles([deleted, kept], fileExists), [kept]);
+
+  const coverage = buildVisualCoverage({
+    afterCaptures: [{ projectName: "default", routeName: "tree" }],
+    changedFiles: [deleted, kept],
+    fileExists,
+    routes: [
+      {
+        activationSelector: "#task-tree",
+        covers: [kept],
+        name: "tree",
+        required: true,
+        requiredProjects: ["default"],
+      },
+    ],
+  });
+
+  assert.equal(coverage.complete, true);
+  assert.deepEqual(coverage.uncoveredUiFiles, []);
+});

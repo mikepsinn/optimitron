@@ -1,7 +1,6 @@
 import { TaskImpactFrameKey } from "@optimitron/db";
 import { describe, expect, it } from "vitest";
 import {
-  computeParentContributionShare,
   DEFAULT_TASK_IMPACT_FRAME,
   deriveImpactRatios,
   getNormalizedImpactComponents,
@@ -244,46 +243,4 @@ describe("impact helpers", () => {
     expect(merged?.frameSlug).toBe("aggregated");
   });
 
-  describe("computeParentContributionShare", () => {
-    const frame = (
-      hale: number | null,
-      income: number | null,
-    ): TaskImpactFrameSummary => ({
-      ...baseEstimateSet.frames[1]!,
-      medianHealthyLifeYearsEffectBase: hale,
-      medianIncomeGrowthEffectPpPerYearBase: income,
-    });
-
-    it("returns ratios when child consumes part of parent target", () => {
-      const parent = frame(21.7, 9.4);
-      const child = frame(10.85, 4.7);
-      const share = computeParentContributionShare(parent, child);
-      expect(share.haleShare).toBeCloseTo(0.5);
-      expect(share.incomeShare).toBeCloseTo(0.5);
-    });
-
-    it("allows shares greater than 1 when a child overshoots the parent", () => {
-      const parent = frame(10, 2);
-      const child = frame(15, 3);
-      const share = computeParentContributionShare(parent, child);
-      expect(share.haleShare).toBe(1.5);
-      expect(share.incomeShare).toBe(1.5);
-    });
-
-    it("returns null for a metric when either side is missing or zero", () => {
-      expect(
-        computeParentContributionShare(frame(null, 2), frame(5, 1)),
-      ).toEqual({ haleShare: null, incomeShare: 0.5 });
-      expect(
-        computeParentContributionShare(frame(0, 2), frame(5, 1)),
-      ).toEqual({ haleShare: null, incomeShare: 0.5 });
-      expect(
-        computeParentContributionShare(frame(10, 2), frame(5, null)),
-      ).toEqual({ haleShare: 0.5, incomeShare: null });
-      expect(computeParentContributionShare(null, frame(5, 1))).toEqual({
-        haleShare: null,
-        incomeShare: null,
-      });
-    });
-  });
 });
