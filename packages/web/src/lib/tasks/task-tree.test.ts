@@ -4,6 +4,48 @@ import { TaskImpactFrameKey } from "@optimitron/db/enums";
 import { buildTaskTree, countTaskTreeNodes } from "./task-tree";
 import type { TaskTreeFlatTask } from "./task-tree";
 
+const IMPACT_FRAME_FIXTURE: NonNullable<
+  TaskTreeFlatTask["selectedImpactFrame"]
+> = {
+  annualDiscountRate: 0.03,
+  adoptionRampYears: 0,
+  benefitDurationYears: 1,
+  customFrameLabel: null,
+  delayDalysLostPerDayBase: null,
+  delayDalysLostPerDayHigh: null,
+  delayDalysLostPerDayLow: null,
+  delayEconomicValueUsdLostPerDayBase: null,
+  delayEconomicValueUsdLostPerDayHigh: null,
+  delayEconomicValueUsdLostPerDayLow: null,
+  estimatedCashCostUsdBase: 0,
+  estimatedCashCostUsdHigh: null,
+  estimatedCashCostUsdLow: null,
+  estimatedEffortHoursBase: 10,
+  estimatedEffortHoursHigh: null,
+  estimatedEffortHoursLow: null,
+  evaluationHorizonYears: 1,
+  expectedDalysAvertedBase: null,
+  expectedDalysAvertedHigh: null,
+  expectedDalysAvertedLow: null,
+  expectedEconomicValueUsdBase: 1000,
+  expectedEconomicValueUsdHigh: null,
+  expectedEconomicValueUsdLow: null,
+  frameKey: TaskImpactFrameKey.TWENTY_YEAR,
+  frameSlug: "test-frame",
+  medianHealthyLifeYearsEffectBase: null,
+  medianHealthyLifeYearsEffectHigh: null,
+  medianHealthyLifeYearsEffectLow: null,
+  medianIncomeGrowthEffectPpPerYearBase: null,
+  medianIncomeGrowthEffectPpPerYearHigh: null,
+  medianIncomeGrowthEffectPpPerYearLow: null,
+  metrics: [],
+  successProbabilityBase: null,
+  successProbabilityHigh: null,
+  successProbabilityLow: null,
+  summaryStatsJson: null,
+  timeToImpactStartDays: 0,
+};
+
 function flatTask(
   id: string,
   parentTaskId: string | null,
@@ -121,45 +163,7 @@ describe("buildTaskTree", () => {
         flatTask("root", null),
         flatTask("estimated", "root", {
           estimatedEffortHours: 10,
-          selectedImpactFrame: {
-            annualDiscountRate: 0.03,
-            adoptionRampYears: 0,
-            benefitDurationYears: 1,
-            customFrameLabel: null,
-            delayDalysLostPerDayBase: null,
-            delayDalysLostPerDayHigh: null,
-            delayDalysLostPerDayLow: null,
-            delayEconomicValueUsdLostPerDayBase: null,
-            delayEconomicValueUsdLostPerDayHigh: null,
-            delayEconomicValueUsdLostPerDayLow: null,
-            estimatedCashCostUsdBase: 0,
-            estimatedCashCostUsdHigh: null,
-            estimatedCashCostUsdLow: null,
-            estimatedEffortHoursBase: 10,
-            estimatedEffortHoursHigh: null,
-            estimatedEffortHoursLow: null,
-            evaluationHorizonYears: 1,
-            expectedDalysAvertedBase: null,
-            expectedDalysAvertedHigh: null,
-            expectedDalysAvertedLow: null,
-            expectedEconomicValueUsdBase: 1000,
-            expectedEconomicValueUsdHigh: null,
-            expectedEconomicValueUsdLow: null,
-            frameKey: TaskImpactFrameKey.TWENTY_YEAR,
-            frameSlug: "test-frame",
-            medianHealthyLifeYearsEffectBase: null,
-            medianHealthyLifeYearsEffectHigh: null,
-            medianHealthyLifeYearsEffectLow: null,
-            medianIncomeGrowthEffectPpPerYearBase: null,
-            medianIncomeGrowthEffectPpPerYearHigh: null,
-            medianIncomeGrowthEffectPpPerYearLow: null,
-            metrics: [],
-            successProbabilityBase: null,
-            successProbabilityHigh: null,
-            successProbabilityLow: null,
-            summaryStatsJson: null,
-            timeToImpactStartDays: 0,
-          },
+          selectedImpactFrame: IMPACT_FRAME_FIXTURE,
         }),
         flatTask("unestimated", "root"),
       ],
@@ -196,6 +200,33 @@ describe("buildTaskTree", () => {
     );
     expect(effortOnly?.evValid).toBe(false);
     expect(effortOnly?.realEv).toBe(0);
+  });
+
+  it("keeps hasEvEstimate true for a mission with a real value but no effort hours", () => {
+    // The mission nodes are exactly this shape: a sourced conditional value
+    // and no hours, because nobody executes "End War" directly. evValid is
+    // false (priority has nothing to divide by), but the tree label reads
+    // hasEvEstimate — otherwise an $834T sourced estimate renders as
+    // "no direct estimate", which is the opposite of the truth.
+    const tree = buildTaskTree(
+      [
+        flatTask("root", null),
+        flatTask("mission", "root", {
+          estimatedEffortHours: null,
+          selectedImpactFrame: {
+            ...IMPACT_FRAME_FIXTURE,
+            estimatedEffortHoursBase: null,
+            expectedEconomicValueUsdBase: 833_611_140_000_000,
+          },
+        }),
+      ],
+      "root",
+    );
+
+    const mission = tree?.children.find((child) => child.id === "mission");
+    expect(mission?.hasEvEstimate).toBe(true);
+    expect(mission?.evValid).toBe(false);
+    expect(mission?.realEv).toBe(833_611_140_000_000);
   });
 });
 

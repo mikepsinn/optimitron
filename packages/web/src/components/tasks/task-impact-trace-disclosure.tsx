@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { ExpectedValueExplainer } from "@/components/shared/ExpectedValueExplainer";
 import type {
   PublicParameterTraceNode,
   PublicTaskImpactTrace,
@@ -132,8 +133,9 @@ function TraceBody({ trace }: { trace: PublicTaskImpactTrace }) {
         <dl className="mt-2 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
           {frame?.expectedEconomicValueUsdBase != null ? (
             <div>
-              <dt className="text-xs font-bold text-muted-foreground">
+              <dt className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
                 Expected value
+                <ExpectedValueExplainer />
               </dt>
               <dd className="font-black">
                 ${formatTraceNumber(frame.expectedEconomicValueUsdBase)}

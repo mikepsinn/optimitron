@@ -127,9 +127,12 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   // Mission layer: the deliberate set of peer nodes directly under the root.
   //
   // A mission's value is WRITTEN from sourced parameters, never rolled up from
-  // the tasks beneath it. The six mechanisms under End War all carry the same
+  // the tasks beneath it. Six mechanisms across the tree all carry the same
   // peace dividend and differ only in probability -- they are alternative routes
-  // to one outcome, so summing them would count that dividend six times.
+  // to one outcome, so summing them would count that dividend six times. They
+  // hang under different parents (the dFDA under End Disease, the shirt seed
+  // under the treaty), which is why "sum the children" is wrong at every level,
+  // not just this one.
   //
   // A mission states the value IF ACHIEVED and omits successProbabilityBase,
   // because no one has a defensible probability that war or disease ends. A

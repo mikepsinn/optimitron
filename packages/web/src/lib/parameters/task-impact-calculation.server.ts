@@ -8,7 +8,10 @@ import {
   TaskImpactPublicationStatus,
 } from "@optimitron/db/enums";
 import { Prisma, type PrismaClient } from "@optimitron/db";
-import { sha256CanonicalJson } from "@optimitron/data/parameters";
+import {
+  MISSION_VALUE_HORIZON_YEARS,
+  sha256CanonicalJson,
+} from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma as defaultPrisma } from "../prisma";
 import { getSourceArtifactVisibilityWhere } from "../source-artifact-visibility.server";
@@ -37,7 +40,10 @@ const TaskImpactParameterInputSchema = z
 
 export const DirectTaskImpactFrameSchema = z.object({
   adoptionRampYears: z.number().finite().nonnegative().default(0),
-  annualDiscountRate: z.number().finite().gt(-1).default(0.03),
+  // Mission default: undiscounted. Uncertainty is priced by successProbability,
+  // so discounting for risk would charge for it twice. See
+  // docs/EXPECTED_VALUE_METHODOLOGY.md.
+  annualDiscountRate: z.number().finite().gt(-1).default(0),
   benefitDurationYears: z.number().finite().positive().optional(),
   delayDalysLostPerDayBase: NullableFiniteNumber,
   delayDalysLostPerDayHigh: NullableFiniteNumber,
@@ -81,7 +87,14 @@ export const DirectTaskImpactFrameSchema = z.object({
     .nonnegative()
     .nullable()
     .optional(),
-  evaluationHorizonYears: z.number().finite().positive().default(5),
+  // Mission default: one human lifetime, matching the LIFETIME frame default
+  // below. An omitted horizon must never silently become a shorter frame than
+  // the value the caller was told to compute.
+  evaluationHorizonYears: z
+    .number()
+    .finite()
+    .positive()
+    .default(MISSION_VALUE_HORIZON_YEARS),
   expectedDalysAvertedBase: NullableFiniteNumber,
   expectedDalysAvertedHigh: NullableFiniteNumber,
   expectedDalysAvertedLow: NullableFiniteNumber,
@@ -141,7 +154,7 @@ export const DirectTaskImpactInputSchema = z
     frame: DirectTaskImpactFrameSchema.default({}),
     frameKey: z
       .nativeEnum(TaskImpactFrameKey)
-      .default(TaskImpactFrameKey.FIVE_YEAR),
+      .default(TaskImpactFrameKey.LIFETIME),
     metrics: z.array(DirectTaskImpactMetricSchema).max(100).default([]),
     methodologyKey: z.string().min(1).nullable().optional(),
     parameterInputs: z

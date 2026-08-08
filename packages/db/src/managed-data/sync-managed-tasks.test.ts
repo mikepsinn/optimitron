@@ -1098,6 +1098,79 @@ describe("syncManagedTasks", () => {
     });
   });
 
+  // Changing the managed frame slug (one-year -> lifetime) left the old frame
+  // alive in the same estimate set, and selectImpactFrame falls back to the
+  // earliest frame when none matches the requested key -- so the superseded
+  // one-year number silently outranked the lifetime one.
+  it("retires a stale frame left in the estimate set under a previous slug", async () => {
+    const estimateSetId = "estimate-set-existing";
+    const client = new FakeManagedTaskClient({
+      tasks: [
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+        }),
+      ],
+      impactEstimateSets: [
+        {
+          id: estimateSetId,
+          calculationVersion: "managed-task-tree-v1",
+          counterfactualKey: "status-quo",
+          deletedAt: null,
+          estimateKind: "FORECAST",
+          isCurrent: true,
+          methodologyKey: "test-tree",
+          parameterSetHash: `managed-test-tree-${OPTIMIZE_EARTH_ROOT_TASK_ID}`,
+          publicationStatus: "PUBLISHED",
+          sourceSystem: "PARAMETER_CATALOG",
+          taskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        },
+      ],
+      impactFrameEstimates: [
+        {
+          id: "impact-frame-one-year",
+          adoptionRampYears: 0,
+          annualDiscountRate: 0,
+          benefitDurationYears: 1,
+          deletedAt: null,
+          estimatedEffortHoursBase: null,
+          evaluationHorizonYears: 1,
+          expectedEconomicValueUsdBase: 1_000,
+          frameKey: "ONE_YEAR",
+          frameSlug: "one-year",
+          successProbabilityBase: 0.5,
+          taskImpactEstimateSetId: estimateSetId,
+          timeToImpactStartDays: 0,
+        },
+      ],
+    });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        {
+          ...activeRecord,
+          expectedEconomicValueUsdBase: 2_000,
+          successProbabilityBase: 0.5,
+        },
+      ],
+    });
+
+    const staleFrame = client.impactFrameEstimates.find(
+      (frame) => frame.frameSlug === "one-year",
+    );
+    const lifetimeFrame = client.impactFrameEstimates.find(
+      (frame) => frame.frameSlug === "lifetime",
+    );
+
+    expect(staleFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
+    expect(staleFrame?.deletedAt).toBeInstanceOf(Date);
+    expect(lifetimeFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
+    expect(lifetimeFrame?.deletedAt).toBeNull();
+  });
+
   describe("managed task edges", () => {
     const rootWithEdge: ManagedTaskRecord[] = [
       {

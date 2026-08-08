@@ -1,6 +1,13 @@
 import { TaskImpactFrameKey } from "@optimitron/db/enums";
 
-export const DEFAULT_TASK_IMPACT_FRAME = TaskImpactFrameKey.TWENTY_YEAR;
+/**
+ * Frame preferred when a reader does not ask for one. LIFETIME is the standard
+ * mission frame that every new estimate is written on, so an estimate set that
+ * carries both a legacy frame and a lifetime frame must show the lifetime one.
+ * Sets holding a single legacy frame still fall back to it in
+ * `selectImpactFrame`.
+ */
+export const DEFAULT_TASK_IMPACT_FRAME = TaskImpactFrameKey.LIFETIME;
 
 export interface TaskImpactMetricSummary {
   baseValue: number | null;

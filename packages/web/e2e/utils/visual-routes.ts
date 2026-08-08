@@ -171,6 +171,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
+  [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
@@ -199,6 +200,10 @@ const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
+  // Deep in the page rather than the heading: the whole point of the page is
+  // the reasoning below the rule, so a capture that stops at the title is a
+  // capture of nothing.
+  [ROUTES.methodology, /Why no discount rate/],
 ]);
 
 // The calendar server-renders the requested date, and freezeClock only
@@ -326,7 +331,13 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     requiredSelector: "#also-serves",
   },
   {
-    covers: [TASK_TREE_VIEW_FILE],
+    covers: [
+      TASK_TREE_VIEW_FILE,
+      "packages/web/src/app/tasks/tree/page.tsx",
+      // The explainer's trigger renders inline in this page's header, so this
+      // capture really does prove it shows up.
+      "packages/web/src/components/shared/ExpectedValueExplainer.tsx",
+    ],
     name: "tasks-tree",
     path: "/tasks/tree",
     required: true,

@@ -14,17 +14,30 @@ it describes:
 
 ## The short version
 
-> Conditional value = annual welfare effect × 73.4 years (one human lifetime),
-> undiscounted, with probability stated separately. **A goal's value is written
-> from sourced parameters, never summed from its subtasks.**
+> Conditional value = annual welfare effect × one human lifetime
+> (`MISSION_VALUE_HORIZON_YEARS`, which tracks `GLOBAL_LIFE_EXPECTANCY_2024`),
+> undiscounted, with success probability recorded in its own field.
+> **A goal's value is written from sourced parameters, never summed from its
+> subtasks.**
+
+The horizon is deliberately not repeated here — read it from the constant or
+from `/methodology`, both of which come from the catalog. A number copied into
+prose is a number that goes stale.
 
 Zero discount rate because probability already prices uncertainty, and what
 remains is time preference — an ethical choice rather than a measurement, better
 made visible and uniform than buried per estimate.
 
 No summing because sibling tasks are usually *alternative routes to one
-outcome*: the six mechanisms under End War all carry the same peace dividend and
-differ only in probability, so adding them counts it six times.
+outcome*: six mechanisms across the tree (the Court, the treaty, the Loving
+Takeover, the prize, the dFDA, the shirt cascade) all carry the same peace
+dividend and differ only in probability, so adding them counts it six times.
+They sit under different parents — the dFDA under End Disease, the shirt seed
+under the treaty — because they reach that dividend by different arguments.
+
+Conditional value and expected value are distinct: `expectedEconomicValueUsd*`
+fields hold conditional × probability, and the MCP write path expects the caller
+to have done that multiplication already. `/methodology` spells this out.
 
 ## Known inconsistency
 

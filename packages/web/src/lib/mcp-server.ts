@@ -7,7 +7,11 @@
  */
 
 import { createHash, randomUUID } from "node:crypto";
-import { EXPECTED_VALUE_RULE_SUMMARY } from "@optimitron/data/parameters";
+import {
+  EXPECTED_VALUE_RULE_SUMMARY,
+  MISSION_VALUE_HORIZON_YEARS,
+} from "@optimitron/data/parameters";
+import { DEFAULT_TASK_IMPACT_FRAME } from "@/lib/tasks/impact";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
@@ -1826,8 +1830,8 @@ async function attachProposalImpactEstimate(input: {
       estimateNotes: "Created with the MCP task proposal.",
       frame: {
         adoptionRampYears: 0,
-        annualDiscountRate: 0.03,
-        benefitDurationYears: 20,
+        annualDiscountRate: 0,
+        benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
         delayDalysLostPerDayBase: parseFiniteNumber(
           impact.delayDalysLostPerDay,
         ),
@@ -1844,7 +1848,7 @@ async function attachProposalImpactEstimate(input: {
           impact.estimatedCashCostUsdLow,
         ),
         estimatedEffortHoursBase: input.estimatedEffortHours,
-        evaluationHorizonYears: 20,
+        evaluationHorizonYears: MISSION_VALUE_HORIZON_YEARS,
         expectedDalysAvertedBase: parseFiniteNumber(
           impact.expectedDalysAvertedBase,
         ),
@@ -1888,7 +1892,7 @@ async function attachProposalImpactEstimate(input: {
         successProbabilityLow: parseFiniteNumber(impact.successProbabilityLow),
         timeToImpactStartDays: 0,
       },
-      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
+      frameKey: TaskImpactFrameKey.LIFETIME,
       sourceUrls: input.sourceUrls,
       taskId: input.taskId,
     },
@@ -2058,18 +2062,22 @@ async function attachDirectTaskImpactEstimate(input: {
     {
       assumptions: ["Values supplied through MCP task creation or update."],
       calculationVersion: "mcp-direct-v2",
+      // createTask/updateTask is the highest-volume estimate writer, so a
+      // five-year frame here reintroduced the incomparability that
+      // setTaskImpact was standardized to remove: two tasks estimated through
+      // two tools ranked against each other on different horizons.
       frame: {
         adoptionRampYears: 0,
-        annualDiscountRate: 0.03,
-        benefitDurationYears: 5,
+        annualDiscountRate: 0,
+        benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
         estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
         estimatedEffortHoursBase: input.estimatedEffortHours,
-        evaluationHorizonYears: 5,
+        evaluationHorizonYears: MISSION_VALUE_HORIZON_YEARS,
         expectedEconomicValueUsdBase: input.expectedEconomicValueUsdBase,
         successProbabilityBase: input.successProbabilityBase,
         timeToImpactStartDays: input.timeToImpactStartDays,
       },
-      frameKey: TaskImpactFrameKey.FIVE_YEAR,
+      frameKey: TaskImpactFrameKey.LIFETIME,
       taskId: input.taskId,
     },
     input.actor,
@@ -7966,7 +7974,8 @@ const TASK_TOOL_DEFINITIONS = [
             "TWENTY_YEAR",
             "LIFETIME",
           ],
-          description: "Time horizon for evaluation (default: FIVE_YEAR)",
+          description:
+            "Time horizon for evaluation (default: LIFETIME, the standard mission frame)",
         },
         frame: {
           type: "object",
@@ -7975,7 +7984,7 @@ const TASK_TOOL_DEFINITIONS = [
           properties: {
             evaluationHorizonYears: {
               type: "number",
-              description: "Years covered by this estimate",
+              description: `Years covered by this estimate. Defaults to ${MISSION_VALUE_HORIZON_YEARS}, one human lifetime; leave it unset unless the frameKey is not LIFETIME.`,
             },
             successProbabilityLow: {
               type: "number",
@@ -13989,8 +13998,7 @@ export function createMcpServer(
               if (adminVisibleTask) {
                 const selectedImpactFrame =
                   adminVisibleTask.currentImpactEstimateSet?.frames.find(
-                    (frame) =>
-                      frame.frameKey === TaskImpactFrameKey.TWENTY_YEAR,
+                    (frame) => frame.frameKey === DEFAULT_TASK_IMPACT_FRAME,
                   ) ??
                   adminVisibleTask.currentImpactEstimateSet?.frames[0] ??
                   null;
@@ -14832,7 +14840,7 @@ export function createMcpServer(
                   frameKey: enumValue(
                     TaskImpactFrameKey,
                     a.frameKey,
-                    TaskImpactFrameKey.FIVE_YEAR,
+                    TaskImpactFrameKey.LIFETIME,
                   ),
                 },
                 { isAdmin, userId },

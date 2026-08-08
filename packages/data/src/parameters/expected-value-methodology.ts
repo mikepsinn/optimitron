@@ -18,7 +18,8 @@ function usdShort(value: number) {
   ];
   for (const [size, suffix] of units) {
     if (Math.abs(value) >= size) {
-      return `$${(value / size).toFixed(value / size >= 100 ? 0 : 1)}${suffix}`;
+      const scaled = value / size;
+      return `$${scaled.toFixed(Math.abs(scaled) >= 100 ? 0 : 1)}${suffix}`;
     }
   }
   return `$${value.toFixed(0)}`;
@@ -42,7 +43,7 @@ are the rules.
 ## The one-line rule
 
 **Conditional value = the annual welfare effect × ${MISSION_VALUE_HORIZON_YEARS} years, undiscounted.
-Probability is carried separately. A goal's value is never summed from the tasks beneath it.**
+Record it with a separate success probability. A goal's value is never summed from the tasks beneath it.**
 
 ## The frame
 
@@ -50,7 +51,27 @@ Probability is carried separately. A goal's value is never summed from the tasks
 | --- | --- | --- |
 | Horizon | **${MISSION_VALUE_HORIZON_YEARS} years** | Global life expectancy at birth ([WHO, 2024](${GLOBAL_LIFE_EXPECTANCY_2024.sourceUrl})). One human lifetime is a span a reader can feel, and it is a *measured* number rather than a chosen one. |
 | Discount rate | **0** | See below. |
-| Probability | 0–1, stated separately | Never folded into the value. |
+| Probability | 0–1, recorded as its own field | So the conditional value stays recoverable. |
+
+### Conditional value and expected value are two different numbers
+
+Both are stored, and confusing them is the easiest way to publish a wrong estimate.
+
+- **Conditional value** — what the task is worth *if it works*. This is the number
+  you derive: annual effect × ${MISSION_VALUE_HORIZON_YEARS}.
+- **Success probability** — the odds it works, recorded in its own field.
+- **Expected value** — the two multiplied. This is what the queue ranks on, and it
+  is what the \`expectedEconomicValueUsd\` fields hold.
+
+So probability *is* reflected in the expected value — that is what makes it
+"expected". What must never happen is probability being quietly baked into the
+conditional value and then applied a second time, or a conditional value being
+filed as though it were already probability-weighted. Keep both numbers, and the
+reader can always recover either one.
+
+When a task states a value but no probability, its expected value equals its
+conditional value. That is a deliberate signal, not a claim of certainty: it means
+the number is a ceiling nobody has discounted yet.
 
 ### Why no discount rate
 
@@ -79,10 +100,11 @@ hide in the same slot as a measurement.
 
 This is the rule that is easiest to get wrong, and it is worth being concrete.
 
-Six mechanisms sit under End War — the Court of Humanity, the 1% Treaty, the
-Loving Takeover, the Earth Optimization Prize, the decentralized FDA, and the
-shirt cascade. Every one of them carries the *same* peace-dividend value and
-differs only in its probability of success. They are **alternative routes to one
+Six mechanisms in the tree — the Court of Humanity, the 1% Treaty, the Loving
+Takeover, the Earth Optimization Prize, the decentralized FDA, and the shirt
+cascade — all carry the *same* peace-dividend value and differ only in their
+probability of success. They hang under different parents, because they reach
+that dividend by different arguments, but they are **alternative routes to one
 outcome**, not parts of it.
 
 So adding them up would count the same dividend six times. Splitting the
@@ -98,7 +120,7 @@ link between them.
 
 | Step | Source | Value |
 | --- | --- | --- |
-| Annual cost of war | direct + indirect, global | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
+| Annual cost of war | [direct + indirect, global](${GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.sourceUrl}) | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
 | × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_WAR_LIFETIME_VALUE_USD)}** |
 | × probability | probability war actually ends | the ranked expected value |
 
@@ -110,7 +132,7 @@ mission is the whole quantity.
 
 | Step | Source | Value |
 | --- | --- | --- |
-| Share of GDP lost to disease | ${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}% | of ${usdShort(GLOBAL_GDP_2025.value)} |
+| Share of GDP lost to disease | [${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}%](${DISEASE_BURDEN_GDP_DRAG_PCT.sourceUrl}) | of [${usdShort(GLOBAL_GDP_2025.value)}](${GLOBAL_GDP_2025.sourceUrl}) |
 | Annual drag | productivity + diverted medical cost | ${usdShort(DISEASE_BURDEN_GDP_DRAG_PCT.value * GLOBAL_GDP_2025.value)}/year |
 | × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_LIFETIME_VALUE_USD)}** |
 
@@ -132,4 +154,4 @@ ranking is what the whole system is for.
 `;
 
 /** Compact form for MCP tool descriptions, where space is tight. */
-export const EXPECTED_VALUE_RULE_SUMMARY = `Conditional value = annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, with successProbability stated separately -- never folded into the value. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no sourced parameter exists, leave the estimate null rather than inventing one. Full rules: /methodology`;
+export const EXPECTED_VALUE_RULE_SUMMARY = `Derive the CONDITIONAL value (worth if it works) as annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, on the LIFETIME frame. Then supply expectedEconomicValueUsd* ALREADY MULTIPLIED by success probability -- these fields hold probability-weighted value and nothing downstream multiplies again -- and record successProbabilityBase in its own field so the conditional value stays recoverable. Do not file a conditional value as though it were weighted. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no sourced parameter exists, leave the estimate null rather than inventing one. Full rules: /methodology`;

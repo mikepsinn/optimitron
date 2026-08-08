@@ -5,6 +5,7 @@ import { getRouteMetadata } from "@/lib/metadata";
 import { taskTreeLink } from "@/lib/routes";
 import { getTaskTreePageData } from "@/lib/tasks/task-tree.server";
 import { TaskTreeView } from "@/components/tasks/TaskTreeView";
+import { ExpectedValueExplainer } from "@/components/shared/ExpectedValueExplainer";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getRouteMetadata(taskTreeLink);
@@ -27,7 +28,11 @@ export default async function TaskTreePage() {
           </h1>
           <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
             {visibleTaskCount} tasks nested under Optimize Earth, each with its
-            own expected-value math. Click any task to open its page.
+            own expected-value math. Click any task to open its page, or read{" "}
+            <ExpectedValueExplainer className="font-bold text-foreground">
+              how every number here is calculated
+            </ExpectedValueExplainer>
+            .
           </p>
         </header>
 

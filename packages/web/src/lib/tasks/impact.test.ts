@@ -61,7 +61,7 @@ const baseEstimateSet: TaskImpactEstimateSetSummary = {
     {
       annualDiscountRate: 0.03,
       adoptionRampYears: 1,
-      benefitDurationYears: 20,
+      benefitDurationYears: 73.4,
       customFrameLabel: null,
       delayDalysLostPerDayBase: 5,
       delayDalysLostPerDayHigh: 8,
@@ -75,15 +75,15 @@ const baseEstimateSet: TaskImpactEstimateSetSummary = {
       estimatedEffortHoursBase: 10,
       estimatedEffortHoursHigh: 12,
       estimatedEffortHoursLow: 8,
-      evaluationHorizonYears: 20,
+      evaluationHorizonYears: 73.4,
       expectedDalysAvertedBase: 500,
       expectedDalysAvertedHigh: 700,
       expectedDalysAvertedLow: 350,
       expectedEconomicValueUsdBase: 5_000_000,
       expectedEconomicValueUsdHigh: 7_000_000,
       expectedEconomicValueUsdLow: 3_500_000,
-      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
-      frameSlug: "twenty-year",
+      frameKey: TaskImpactFrameKey.LIFETIME,
+      frameSlug: "lifetime",
       medianHealthyLifeYearsEffectBase: 0.2,
       medianHealthyLifeYearsEffectHigh: 0.25,
       medianHealthyLifeYearsEffectLow: 0.1,
@@ -147,11 +147,11 @@ const baseEstimateSet: TaskImpactEstimateSetSummary = {
 };
 
 describe("impact helpers", () => {
-  it("defaults to the twenty-year frame and exposes metric lookups", () => {
+  it("defaults to the lifetime frame and exposes metric lookups", () => {
     const selection = selectImpactFrame(baseEstimateSet);
 
-    expect(DEFAULT_TASK_IMPACT_FRAME).toBe(TaskImpactFrameKey.TWENTY_YEAR);
-    expect(selection.selectedFrame?.frameKey).toBe(TaskImpactFrameKey.TWENTY_YEAR);
+    expect(DEFAULT_TASK_IMPACT_FRAME).toBe(TaskImpactFrameKey.LIFETIME);
+    expect(selection.selectedFrame?.frameKey).toBe(TaskImpactFrameKey.LIFETIME);
     expect(selection.metricsByKey.opg_policy_impact_score?.baseValue).toBe(0.9);
   });
 
@@ -192,14 +192,14 @@ describe("impact helpers", () => {
   it("scales an impact frame summary for inherited child value", () => {
     const scaled = scaleImpactFrameSummary(baseEstimateSet.frames[1], 0.25, {
       estimatedEffortHoursBase: 0.25,
-      frameSlug: "twenty-year-child-share",
+      frameSlug: "lifetime-child-share",
       metrics: [],
     });
 
     expect(scaled.expectedEconomicValueUsdBase).toBe(1_250_000);
     expect(scaled.delayEconomicValueUsdLostPerDayBase).toBe(12_500);
     expect(scaled.estimatedEffortHoursBase).toBe(0.25);
-    expect(scaled.frameSlug).toBe("twenty-year-child-share");
+    expect(scaled.frameSlug).toBe("lifetime-child-share");
   });
 
   it("keeps success probability unscaled when inheriting a parent share", () => {
