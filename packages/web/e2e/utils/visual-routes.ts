@@ -171,6 +171,23 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
+  [
+    ROUTES.home,
+    [
+      // The root layout wraps every route, so any required capture
+      // exercises it; the home page is the one every reviewer looks at.
+      "packages/web/src/app/layout.tsx",
+      // Renders null by design -- no screenshot can show it. It is listed
+      // here because it executes on every page in this capture, and a
+      // regression (no data-hydrated) breaks copy snapshots everywhere.
+      "packages/web/src/components/HydrationSentinel.tsx",
+    ],
+  ],
+  [
+    ROUTES.signatories,
+    // DashboardShareCard -> HumanityManagerPromotion renders here.
+    ["packages/web/src/lib/humanity-manager-promotion-content.tsx"],
+  ],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
