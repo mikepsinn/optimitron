@@ -13,7 +13,7 @@
 | Referral share ID | `User.referralCode` (fallback when no handle) |
 | Referrals | `ReferralInvitation` + `referredByUserId` on `ReferendumVote` |
 | Org affiliation | `OrganizationMember` |
-| Wishocracy pairs | `WishocraticItem` + `WishocraticAllocation` + `WishocraticItemInclusion` (jurisdiction `US`) |
+| Wishocracy pairs | `WishocraticItem` + `WishocraticAllocation` + `WishocraticItemInclusion` (jurisdiction `US`) — catalog in `@optimitron/data`, DIH aliases in `@optimitron/data/wishocratic-dih-aliases`, ensure via `@optimitron/db` |
 | Fundraising | `Task` + `TaskFunding*` when donate is wired |
 | Stripe webhook | Verify-only until `TaskFundingPayment` metadata |
 | Email prefs | `User.newsletterSubscribed` + `User.unsubscribedScopes` |

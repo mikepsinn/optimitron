@@ -25,6 +25,8 @@ export {
   type WishoniaUserClient,
 } from './system-users.js';
 
+export { ensureWishocraticItemsExist } from './wishocracy-catalog.js';
+
 // FillingType case conversion utilities
 export {
   fillingTypeToPrisma,
