@@ -1,0 +1,51 @@
+{
+  "name": "@optimitron/site-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared neobrutalist shell: landing, layout, auth helpers, site-config",
+  "type": "module",
+  "exports": {
+    "./components/layout": "./src/components/layout.tsx",
+    "./components/providers": "./src/components/providers.tsx",
+    "./components/theme-provider": "./src/components/theme-provider.tsx",
+    "./components/sentry-404-reporter": "./src/components/sentry-404-reporter.tsx",
+    "./components/*": "./src/components/*",
+    "./lib/*": "./src/lib/*",
+    "./types/*": "./src/types/*",
+    "./hooks/*": "./src/hooks/*"
+  },
+  "peerDependencies": {
+    "next": ">=14",
+    "next-auth": ">=4",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "@sentry/nextjs": "*"
+  },
+  "dependencies": {
+    "@auth/prisma-adapter": "latest",
+    "@neondatabase/serverless": "^1.1.0",
+    "@optimitron/db": "workspace:^",
+    "@optimitron/impact-params": "workspace:^",
+    "@optimitron/neobrutalist-ui": "workspace:^",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@t3-oss/env-nextjs": "^0.13.11",
+    "bcryptjs": "latest",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.454.0",
+    "nanoid": "latest",
+    "next-themes": "latest",
+    "pg": "^8.20.0",
+    "pino": "^10.3.1",
+    "react-icons": "^5.5.0",
+    "resend": "^4.0.0",
+    "slugify": "^1.6.9",
+    "zod": "^3.22.4",
+    "stripe": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.3.3"
+  }
+}

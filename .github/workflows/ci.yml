@@ -140,8 +140,10 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
+      # Brand apps under apps/* land in stacked PRs; exclude them from
+      # recursive package filters so unfinished brands are not built here.
       - name: Build
-        run: pnpm --filter '!@optimitron/web' run build
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run build
 
       # Dropped the dry-run managed-data check that used to live here:
       # the same script runs with `--apply` against a freshly-migrated
@@ -152,13 +154,13 @@ jobs:
       # diff before pushing.
 
       - name: Typecheck
-        run: pnpm --filter '!@optimitron/web' run typecheck
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run typecheck
 
       - name: Lint
-        run: pnpm --filter '!@optimitron/web' run lint
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run lint
 
       - name: Test
-        run: pnpm --filter '!@optimitron/web' run test
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run test
 
   web-static-validate:
     name: web-static-validate
@@ -425,7 +427,7 @@ jobs:
     #
     # `queue: max` is load-bearing, not decoration. The default `queue: single`
     # allows exactly one pending member and cancels it when a newer one
-    # arrives, so a burst of three PRs would cancel the middle one outright —
+    # arrives, so a burst of three PRs would cancel the middle one outright ΓÇö
     # worse than the bug this job is fixing, because the canceled run never
     # publishes at all and leaves a canceled check on the PR. `max` holds up
     # to 100 waiters in FIFO order. It may not be combined with
@@ -767,7 +769,7 @@ jobs:
         # succeeded and was then overwritten minutes later by the next one.
         #
         # Re-materialise existing pr-* directories into the publish dir so the
-        # orphan commit contains them too — but only for PRs that are still
+        # orphan commit contains them too ΓÇö but only for PRs that are still
         # OPEN. Because every publish rebuilds the branch from scratch,
         # pruning is simply declining to carry a directory forward: merged and
         # closed PRs' pages drop off on the next publish with no separate
@@ -781,8 +783,8 @@ jobs:
         # The `|| true` on each cp is required, not sloppiness. Since coreutils
         # 9.2 `cp -n` exits non-zero whenever it skips a file, and 9.5 also
         # prints a diagnostic per skip. ubuntu-latest ships 9.4. Skipping is
-        # the normal case here — this PR's own directory already exists in
-        # gh-pages from its previous run — so under `set -e` a bare cp would
+        # the normal case here ΓÇö this PR's own directory already exists in
+        # gh-pages from its previous run ΓÇö so under `set -e` a bare cp would
         # fail the step on every re-push and block the publish entirely.
         shell: bash
         env:
@@ -794,7 +796,7 @@ jobs:
           # git exit non-zero, but only the first is safe to continue from.
           # Treating a transient network or GitHub error as an absent branch
           # would let the force_orphan publish below run with nothing carried
-          # forward, deleting every other PR's page — the exact bug this step
+          # forward, deleting every other PR's page ΓÇö the exact bug this step
           # exists to prevent. `ls-remote --exit-code` separates the two: 2
           # means no matching ref, anything else non-zero is a real failure.
           ls_remote_status=0
@@ -903,7 +905,7 @@ jobs:
               state: available ? 'success' : 'failure',
               context: 'Visual review',
               description: available
-                ? `Ready · ${shortSha}`
+                ? `Ready ┬╖ ${shortSha}`
                 : `Not live after Pages wait (${publishOutcome})`,
               target_url: process.env.VISUAL_REVIEW_URL,
             });
