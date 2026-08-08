@@ -206,7 +206,7 @@ export async function POST(request: Request) {
     if (parentTaskId && assigneeTargetCount > 0) {
       return NextResponse.json(
         {
-          error: "Add Step currently creates work only on your own task list.",
+          error: "Add subtask currently creates work only on your own task list.",
         },
         { status: 400 },
       );
@@ -289,7 +289,7 @@ export async function POST(request: Request) {
         parent.status !== TaskStatus.ACTIVE
       ) {
         return NextResponse.json(
-          { error: "Steps can only be added to draft or active tasks." },
+          { error: "Subtasks can only be added to draft or active tasks." },
           { status: 400 },
         );
       }

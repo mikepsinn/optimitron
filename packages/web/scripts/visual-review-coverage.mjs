@@ -1,4 +1,17 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 const WEB_PREFIX = "packages/web/";
+
+const REPO_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../..",
+);
+
+function defaultFileExists(repoRelativePath) {
+  return existsSync(path.join(REPO_ROOT, repoRelativePath));
+}
 
 export function buildChangedFileDiscoveryArgs(baselineRef) {
   return ["diff", "--name-only", baselineRef, "--"];
@@ -55,10 +68,19 @@ export function isVisualUiSourceFile(filePath) {
   return /^(?:postcss|tailwind)\.config\.[cm]?[jt]s$/.test(webRelative);
 }
 
-export function getChangedUiFiles(changedFiles) {
+/**
+ * `git diff --name-only` lists deletions alongside edits, and a deleted
+ * component can never be screenshotted -- demanding a required visual state
+ * for one is unsatisfiable, so removing dead UI would block a pull request
+ * forever. Drop paths that no longer exist in the working tree.
+ *
+ * `fileExists` is injectable so the unit tests do not need real files.
+ */
+export function getChangedUiFiles(changedFiles, fileExists = defaultFileExists) {
   if (!Array.isArray(changedFiles)) return [];
   return [...new Set(changedFiles.map(normalizeRepoPath))]
     .filter(isVisualUiSourceFile)
+    .filter((filePath) => fileExists(filePath))
     .sort((a, b) => a.localeCompare(b));
 }
 
@@ -69,10 +91,11 @@ export function getChangedUiFiles(changedFiles) {
 export function buildVisualCoverage({
   afterCaptures = [],
   changedFiles,
+  fileExists = defaultFileExists,
   routes = [],
 }) {
   const analysisAvailable = Array.isArray(changedFiles);
-  const changedUiFiles = getChangedUiFiles(changedFiles);
+  const changedUiFiles = getChangedUiFiles(changedFiles, fileExists);
   const blockingIssues = [];
   if (!analysisAvailable) {
     blockingIssues.push(

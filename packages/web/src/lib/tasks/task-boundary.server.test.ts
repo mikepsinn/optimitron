@@ -215,11 +215,14 @@ describe.sequential("task client access boundaries and parent scoping", () => {
     const childForCreator = creatorTasks.find((task) => task.id === child.id);
     expect(childForCreator?.parentTask?.id).toBe(parent.id);
     expect(childForCreator?.directImpactFrame).toBeNull();
-    expect(childForCreator?.selectedImpactFrame?.customFrameLabel).toBe(
-      `Inherited from parent task ${parentTitle}`,
-    );
-    expect(
-      childForCreator?.selectedImpactFrame?.expectedEconomicValueUsdBase,
-    ).toBe(240_000);
+
+    // A child no longer borrows a slice of its parent's estimate, even when
+    // the viewer can see that parent. Siblings are usually alternative routes
+    // to the same outcome rather than components of it, so splitting the
+    // parent's value across them described nothing real: it gave an unestimated
+    // task a number nobody had estimated. A task's value is now written or
+    // absent. This is the accessible-parent counterpart of the leak assertions
+    // above, which stay green for a different reason.
+    expect(childForCreator?.selectedImpactFrame).toBeNull();
   });
 });

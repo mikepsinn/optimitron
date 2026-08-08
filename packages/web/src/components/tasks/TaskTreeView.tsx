@@ -30,6 +30,11 @@ function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
       <span className="text-xs text-muted-foreground">
         {formatEvLabel(node)}
       </span>
+      {node.alsoServes && node.alsoServes.length > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          also serves: {node.alsoServes.join(", ")}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -71,7 +76,9 @@ function TaskTreeNodeView({
 
 export function TaskTreeView({ root }: { root: TaskTreeNode }) {
   return (
-    <ul className="text-sm">
+    // id is the visual review's activation selector for the tasks-tree state;
+    // it proves the tree actually rendered rather than an empty shell.
+    <ul className="text-sm" id="task-tree">
       <TaskTreeNodeView depth={0} node={root} />
     </ul>
   );

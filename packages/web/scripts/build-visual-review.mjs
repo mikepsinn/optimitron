@@ -158,7 +158,7 @@ const routeOrder = [
   "task-signer-canada",
   "task-management-owner",
   "task-management-claimant-admin",
-  "task-management-add-step",
+  "task-management-add-subtask",
   "document-review-manager",
   "document-review-reviewer",
   "document-review-stale",

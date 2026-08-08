@@ -577,6 +577,107 @@ const taskSearchSelect = {
   verifiedAt: true,
 } satisfies Prisma.TaskSelect;
 
+/**
+ * Display fields for the counterpart of a value edge.
+ *
+ * Deliberately excludes `currentImpactEstimateSet`. The blocking-edge selects
+ * include it because `buildAnnotatedDownstreamMarginalImpactFrame` reads them
+ * into `marginalImpactFrame`, which drives ranking and the personal-queue
+ * gate. Value edges are for showing a task under every goal it serves; they
+ * must not be able to move a number. Omitting the estimate set makes that
+ * structural rather than a rule someone has to remember.
+ */
+const valueEdgeTaskSelect = {
+  assigneePersonId: true,
+  claims: {
+    where: { deletedAt: null },
+    select: { status: true, userId: true },
+  },
+  createdByUserId: true,
+  deletedAt: true,
+  dueAt: true,
+  estimatedEffortHours: true,
+  id: true,
+  isPublic: true,
+  status: true,
+  taskKey: true,
+  title: true,
+} satisfies Prisma.TaskSelect;
+
+const VALUE_EDGE_TYPES = [
+  TaskEdgeType.INCREASES_PROBABILITY_OF,
+  TaskEdgeType.ACCELERATES,
+] as const;
+
+/**
+ * Value edges are fetched by `loadTaskValueEdges` in a query of their own
+ * rather than as a second select on the Task relations, because Prisma cannot
+ * alias `outgoingEdges`/`incomingEdges` to apply a different filter. That turns
+ * out to be the safer shape anyway: a separate query has no way to widen the
+ * blocking-edge selects that feed the valuation path.
+ */
+export async function loadTaskValueEdges(
+  taskId: string,
+  viewer: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    personId?: string | null;
+    userId?: string | null;
+  } = {},
+) {
+  // Filter at the query, not at render. getTaskDetailData is serialized
+  // straight out of GET /api/tasks/[id], so filtering in the component would
+  // protect the rendered page and leak the same rows through the API -- a
+  // private task's title, key, due date, assignee and claim user ids, to
+  // anyone who can see the public task on the other end of the edge. Applying
+  // the canonical predicate here covers every caller at once.
+  const viewerAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: viewer.personId,
+    userId: viewer.userId,
+  });
+  const counterpartAccess = viewer.clientAccessBoundary
+    ? {
+        AND: [
+          viewerAccess,
+          getTaskClientAccessWhere(viewer.clientAccessBoundary),
+        ],
+      }
+    : viewerAccess;
+
+  const [outgoing, incoming] = await Promise.all([
+    prisma.taskEdge.findMany({
+      where: {
+        deletedAt: null,
+        fromTaskId: taskId,
+        edgeType: { in: [...VALUE_EDGE_TYPES] },
+        toTask: { AND: [{ deletedAt: null }, counterpartAccess] },
+      },
+      select: {
+        edgeType: true,
+        probabilityDeltaBase: true,
+        timeDeltaDaysBase: true,
+        toTask: { select: valueEdgeTaskSelect },
+      },
+    }),
+    prisma.taskEdge.findMany({
+      where: {
+        deletedAt: null,
+        toTaskId: taskId,
+        edgeType: { in: [...VALUE_EDGE_TYPES] },
+        fromTask: { AND: [{ deletedAt: null }, counterpartAccess] },
+      },
+      select: {
+        edgeType: true,
+        probabilityDeltaBase: true,
+        timeDeltaDaysBase: true,
+        fromTask: { select: valueEdgeTaskSelect },
+      },
+    }),
+  ]);
+
+  return { valueEdgesIn: incoming, valueEdgesOut: outgoing };
+}
+
 const taskDetailSelect = {
   ...taskListSelect,
   childTasks: {
@@ -1020,62 +1121,6 @@ function fuzzyTaskSearchScore(
   return Number(score.toFixed(3));
 }
 
-function buildParentInheritedImpactFrame(
-  task: TaskListItem | TaskDetailItem,
-  options?: {
-    frameKey?: TaskImpactFrameKey | string | null;
-  },
-) {
-  const parentTask = task.parentTask;
-  if (!parentTask?.currentImpactEstimateSet) {
-    return null;
-  }
-
-  // Never split a planning root's estimate across its children. The Optimize
-  // Earth root carries the entire cost of civilizational dysfunction, and
-  // person/organization roots carry that owner's whole portfolio, so an equal
-  // share is not an approximation of anything: with five missions under the
-  // root it hands an empty DRAFT stub the same EV and delay rates as an active
-  // campaign, and the /tasks "deaths from delay" and "wasted by delay"
-  // rankings inherit that fiction. A mission's value has to come from a real
-  // descendant roll-up or not at all.
-  if (
-    isReservedPlanningRootTask({
-      id: parentTask.id,
-      taskKey: parentTask.taskKey,
-    })
-  ) {
-    return null;
-  }
-
-  const parentFrame = selectImpactFrame(
-    parentTask.currentImpactEstimateSet,
-    options?.frameKey ?? DEFAULT_TASK_IMPACT_FRAME,
-  ).selectedFrame;
-
-  if (!parentFrame) {
-    return null;
-  }
-
-  const siblingCount = Math.max(parentTask.childTasks.length, 1);
-  const inheritedShare = 1 / siblingCount;
-
-  return scaleImpactFrameSummary(parentFrame, inheritedShare, {
-    customFrameLabel: `Inherited from parent task ${parentTask.title}`,
-    estimatedCashCostUsdBase: null,
-    estimatedCashCostUsdHigh: null,
-    estimatedCashCostUsdLow: null,
-    estimatedEffortHoursBase:
-      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursBase,
-    estimatedEffortHoursHigh:
-      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursHigh,
-    estimatedEffortHoursLow:
-      task.estimatedEffortHours ?? parentFrame.estimatedEffortHoursLow,
-    frameSlug: `${parentFrame.frameSlug}-parent-share`,
-    metrics: [],
-  });
-}
-
 function buildAnnotatedDownstreamMarginalImpactFrame(
   task: TaskListItem | TaskDetailItem,
   options?: {
@@ -1161,10 +1206,6 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
     task.currentImpactEstimateSet,
     options?.frameKey ?? DEFAULT_TASK_IMPACT_FRAME,
   );
-  const inheritedParentFrame =
-    directImpactSelection.selectedFrame == null
-      ? buildParentInheritedImpactFrame(task, options)
-      : null;
   const downstreamMarginalFrame = buildAnnotatedDownstreamMarginalImpactFrame(
     task,
     options,
@@ -1214,7 +1255,6 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
   const selectedImpactFrame = sumImpactFrameSummaries(
     [
       directImpactSelection.selectedFrame,
-      inheritedParentFrame,
       downstreamMarginalFrame,
     ].filter((frame): frame is NonNullable<typeof frame> => frame != null),
     directImpactSelection.selectedFrame
@@ -1233,7 +1273,6 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
         }
       : {
           customFrameLabel:
-            inheritedParentFrame?.customFrameLabel ??
             downstreamMarginalFrame?.customFrameLabel ??
             null,
           estimatedCashCostUsdBase: task.actualCashCostUsd ?? null,
@@ -1241,25 +1280,20 @@ function decorateTask<T extends TaskListItem | TaskDetailItem>(
           estimatedCashCostUsdLow: null,
           estimatedEffortHoursBase:
             task.estimatedEffortHours ??
-            inheritedParentFrame?.estimatedEffortHoursBase ??
             downstreamMarginalFrame?.estimatedEffortHoursBase ??
             null,
           estimatedEffortHoursHigh:
             task.estimatedEffortHours ??
-            inheritedParentFrame?.estimatedEffortHoursHigh ??
             downstreamMarginalFrame?.estimatedEffortHoursHigh ??
             null,
           estimatedEffortHoursLow:
             task.estimatedEffortHours ??
-            inheritedParentFrame?.estimatedEffortHoursLow ??
             downstreamMarginalFrame?.estimatedEffortHoursLow ??
             null,
           frameKey:
-            inheritedParentFrame?.frameKey ??
             downstreamMarginalFrame?.frameKey ??
             DEFAULT_TASK_IMPACT_FRAME,
           frameSlug:
-            inheritedParentFrame?.frameSlug ??
             downstreamMarginalFrame?.frameSlug ??
             "effective-impact",
           metrics: [],
@@ -1645,7 +1679,7 @@ export async function getTaskDetailData(
     return null;
   }
 
-  const [taskCommunicationCount, canSeeInternal, visibleParent] =
+  const [taskCommunicationCount, canSeeInternal, visibleParent, valueEdges] =
     await Promise.all([
       countTaskCommunications(normalizedTaskId),
       canUserViewInternalTaskContent(normalizedTaskId, userId),
@@ -1659,6 +1693,11 @@ export async function getTaskDetailData(
             select: { id: true },
           })
         : Promise.resolve(null),
+      loadTaskValueEdges(normalizedTaskId, {
+        clientAccessBoundary: options?.clientAccessBoundary,
+        personId: viewer?.personId ?? null,
+        userId,
+      }),
     ]);
 
   const viewerClaim =
@@ -1686,17 +1725,25 @@ export async function getTaskDetailData(
 
   return {
     taskCommunicationCount,
-    task: decorateTask(
-      {
-        ...task,
-        parentTask: visibleParent ? task.parentTask : null,
-        referralInvitations: canSeeInternal ? task.referralInvitations : [],
-      },
-      {
-        frameKey: options?.frameKey,
-        userId: viewer?.id ?? null,
-      },
-    ),
+    task: {
+      // Attached after decorateTask so value edges cannot reach the impact
+      // math. Already filtered to what this viewer may read by
+      // loadTaskValueEdges; TaskDependenciesSection filters again on render,
+      // which is belt-and-braces rather than the boundary.
+      ...decorateTask(
+        {
+          ...task,
+          parentTask: visibleParent ? task.parentTask : null,
+          referralInvitations: canSeeInternal ? task.referralInvitations : [],
+        },
+        {
+          frameKey: options?.frameKey,
+          userId: viewer?.id ?? null,
+        },
+      ),
+      valueEdgesIn: valueEdges.valueEdgesIn,
+      valueEdgesOut: valueEdges.valueEdgesOut,
+    },
     viewer,
     viewerClaim,
   };

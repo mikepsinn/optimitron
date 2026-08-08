@@ -315,32 +315,6 @@ export function scaleImpactFrameSummary(
   };
 }
 
-export interface ParentContributionShare {
-  haleShare: number | null;
-  incomeShare: number | null;
-}
-
-export function computeParentContributionShare(
-  parent: TaskImpactFrameSummary | null | undefined,
-  child: TaskImpactFrameSummary | null | undefined,
-): ParentContributionShare {
-  const parentHale = parent?.medianHealthyLifeYearsEffectBase ?? null;
-  const childHale = child?.medianHealthyLifeYearsEffectBase ?? null;
-  const parentIncome = parent?.medianIncomeGrowthEffectPpPerYearBase ?? null;
-  const childIncome = child?.medianIncomeGrowthEffectPpPerYearBase ?? null;
-
-  return {
-    haleShare:
-      parentHale != null && parentHale !== 0 && childHale != null
-        ? childHale / parentHale
-        : null,
-    incomeShare:
-      parentIncome != null && parentIncome !== 0 && childIncome != null
-        ? childIncome / parentIncome
-        : null,
-  };
-}
-
 export function sumImpactFrameSummaries(
   frames: TaskImpactFrameSummary[],
   overrides?: Partial<TaskImpactFrameSummary>,

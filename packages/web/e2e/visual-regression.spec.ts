@@ -201,11 +201,11 @@ test.describe("route visual regression", () => {
       if ("openContentShare" in route && route.openContentShare) {
         await openContentShare(page);
       }
-      if ("openAddStep" in route && route.openAddStep) {
-        const dialog = page.getByRole("dialog", { name: "Add step" });
+      if ("openAddSubtask" in route && route.openAddSubtask) {
+        const dialog = page.getByRole("dialog", { name: "Add subtask" });
         await expect(async () => {
           await page
-            .getByRole("button", { name: "Add Step", exact: true })
+            .getByRole("button", { name: "Add subtask", exact: true })
             .click();
           await expect(dialog).toBeVisible({ timeout: 1_000 });
         }).toPass({ timeout: 15_000 });
