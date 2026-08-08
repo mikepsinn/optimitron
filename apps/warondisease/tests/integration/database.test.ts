@@ -1,16 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { getPrismaClient, cleanDatabase, seedTestData } from '../utils/db-test-utils'
+import {
+  VotePosition,
+  PersonLifeStatus,
+} from '@optimitron/db'
+import {
+  getPrismaClient,
+  cleanDatabase,
+  seedTestData,
+  ensureTreatyReferendum,
+} from '../utils/db-test-utils'
 
 describe('Database Integration Tests', () => {
   const prisma = getPrismaClient()
 
   beforeEach(async () => {
-    // Clean database before each test
     await cleanDatabase()
+    await ensureTreatyReferendum()
   })
 
   afterEach(async () => {
-    // Clean up after each test
     await cleanDatabase()
   })
 
@@ -19,27 +27,23 @@ describe('Database Integration Tests', () => {
       const user = await prisma.user.create({
         data: {
           email: 'integration@test.com',
-          name: 'Integration Test User',
           referralCode: 'INT_TEST_123',
         },
       })
 
       expect(user).toBeDefined()
       expect(user.email).toBe('integration@test.com')
-      expect(user.name).toBe('Integration Test User')
+      expect(user.referralCode).toBe('INT_TEST_123')
     })
 
     it('should find user by email', async () => {
-      // Create a user first
       await prisma.user.create({
         data: {
           email: 'find@test.com',
-          name: 'Find Test User',
           referralCode: 'FIND_TEST_123',
         },
       })
 
-      // Find the user
       const found = await prisma.user.findUnique({
         where: { email: 'find@test.com' },
       })
@@ -49,40 +53,34 @@ describe('Database Integration Tests', () => {
     })
 
     it('should update user data', async () => {
-      // Create a user
       const user = await prisma.user.create({
         data: {
           email: 'update@test.com',
-          name: 'Original Name',
           referralCode: 'UPDATE_TEST_123',
+          newsletterSubscribed: true,
         },
       })
 
-      // Update the user
       const updated = await prisma.user.update({
         where: { id: user.id },
-        data: { name: 'Updated Name' },
+        data: { newsletterSubscribed: false },
       })
 
-      expect(updated.name).toBe('Updated Name')
+      expect(updated.newsletterSubscribed).toBe(false)
     })
 
     it('should delete a user', async () => {
-      // Create a user
       const user = await prisma.user.create({
         data: {
           email: 'delete@test.com',
-          name: 'Delete Test User',
           referralCode: 'DELETE_TEST_123',
         },
       })
 
-      // Delete the user
       await prisma.user.delete({
         where: { id: user.id },
       })
 
-      // Try to find the deleted user
       const found = await prisma.user.findUnique({
         where: { email: 'delete@test.com' },
       })
@@ -92,40 +90,23 @@ describe('Database Integration Tests', () => {
   })
 
   describe('Data relationships', () => {
-    it('should create a vote for a user', async () => {
-      const { testUser } = await seedTestData()
+    it('should create a ReferendumVote for a user via Person', async () => {
+      const { testUser, testPerson, referendum } = await seedTestData()
 
       const vote = await prisma.referendumVote.create({
         data: {
           userId: testUser.id,
-          answer: 'YES',
-          ipAddress: '127.0.0.1',
-          fingerprint: 'test-fingerprint-123',
+          personId: testPerson.id,
+          referendumId: referendum.id,
+          answer: VotePosition.YES,
         },
       })
 
       expect(vote).toBeDefined()
       expect(vote.userId).toBe(testUser.id)
-      expect(vote.answer).toBe('YES')
-    })
-
-    it('should create a donation for a user', async () => {
-      const { testUser } = await seedTestData()
-
-      const donation = await prisma.donation.create({
-        data: {
-          userId: testUser.id,
-          amount: 10000, // $100 in cents
-          frequency: 'ONE_TIME',
-          status: 'COMPLETED',
-          stripePaymentId: 'pi_test_integration',
-        },
-      })
-
-      expect(donation).toBeDefined()
-      expect(donation.userId).toBe(testUser.id)
-      expect(donation.amount).toBe(10000)
-      expect(donation.frequency).toBe('ONE_TIME')
+      expect(vote.personId).toBe(testPerson.id)
+      expect(vote.referendumId).toBe(referendum.id)
+      expect(vote.answer).toBe(VotePosition.YES)
     })
   })
 
@@ -133,20 +114,16 @@ describe('Database Integration Tests', () => {
     it('should rollback transaction on error', async () => {
       try {
         await prisma.$transaction(async (tx) => {
-          // Create a user
           await tx.user.create({
             data: {
               email: 'transaction@test.com',
-              name: 'Transaction Test',
               referralCode: 'TX_TEST_123',
             },
           })
 
-          // Force an error by trying to create duplicate
           await tx.user.create({
             data: {
               email: 'transaction@test.com', // Duplicate email
-              name: 'Duplicate User',
               referralCode: 'TX_TEST_456',
             },
           })
@@ -156,7 +133,6 @@ describe('Database Integration Tests', () => {
         console.debug("Transaction rolled back as expected:", error)
       }
 
-      // Verify no user was created
       const user = await prisma.user.findUnique({
         where: { email: 'transaction@test.com' },
       })
@@ -165,21 +141,37 @@ describe('Database Integration Tests', () => {
     })
 
     it('should commit successful transaction', async () => {
+      const referendum = await ensureTreatyReferendum()
+
       const result = await prisma.$transaction(async (tx) => {
         const user = await tx.user.create({
           data: {
             email: 'success@test.com',
-            name: 'Success User',
             referralCode: 'SUCCESS_123',
           },
         })
 
-        const vote = await tx.vote.create({
+        const person = await tx.person.create({
+          data: {
+            displayName: 'Success User',
+            email: 'success@test.com',
+            createdByUserId: user.id,
+            sourceRef: `test:user:${user.id}`,
+            lifeStatus: PersonLifeStatus.LIVING,
+          },
+        })
+
+        await tx.user.update({
+          where: { id: user.id },
+          data: { personId: person.id },
+        })
+
+        const vote = await tx.referendumVote.create({
           data: {
             userId: user.id,
-            answer: 'YES',
-            ipAddress: '127.0.0.1',
-            fingerprint: 'test-fingerprint',
+            personId: person.id,
+            referendumId: referendum.id,
+            answer: VotePosition.YES,
           },
         })
 
@@ -189,14 +181,14 @@ describe('Database Integration Tests', () => {
       expect(result.user).toBeDefined()
       expect(result.vote).toBeDefined()
 
-      // Verify data was committed
       const user = await prisma.user.findUnique({
         where: { id: result.user.id },
-        include: { votes: true },
+        include: { referendumVotes: true },
       })
 
       expect(user).toBeDefined()
-      expect(user?.votes?.id).toBe(result.vote.id)
+      expect(user?.referendumVotes).toHaveLength(1)
+      expect(user?.referendumVotes[0]?.id).toBe(result.vote.id)
     })
   })
 })

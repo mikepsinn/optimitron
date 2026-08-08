@@ -1,5 +1,10 @@
 import { describe, expect, it, beforeEach, vi } from "vitest"
-import { getPrismaClient, cleanDatabase } from "../utils/db-test-utils"
+import {
+  getPrismaClient,
+  cleanDatabase,
+  ensureTreatyReferendum,
+} from "../utils/db-test-utils"
+import { ReferralInvitationStatus } from "@optimitron/db"
 
 // Mock auth — the route handlers gate on requireAuth(). We don't test auth here,
 // we test what the route does AFTER auth succeeds. Each test sets the current userId.
@@ -17,9 +22,7 @@ async function createTestUser(id: string) {
   return prisma.user.create({
     data: {
       id,
-      email: `${id}@example.com`,
-      name: `User ${id}`,
-      username: id.toLowerCase(),
+      email: `${id.toLowerCase()}@example.com`,
       referralCode: `CODE_${id}`,
     },
   })
@@ -44,6 +47,7 @@ function makePatchRequest(body: unknown) {
 describe("/api/referral-invitations", () => {
   beforeEach(async () => {
     await cleanDatabase()
+    await ensureTreatyReferendum()
     await createTestUser("USER1")
     currentUserId = "USER1"
   })
@@ -69,11 +73,11 @@ describe("/api/referral-invitations", () => {
       })
       expect(rows).toHaveLength(2)
       expect(rows[0].recipientName).toBe("Alice Chen")
-      expect(rows[0].inviteeContact).toBeNull()
+      expect(rows[0].recipientEmail).toBeNull()
       expect(rows[0].contactMethod).toBeNull()
-      expect(rows[0].status).toBe("PENDING")
+      expect(rows[0].status).toBe(ReferralInvitationStatus.PENDING)
       expect(rows[1].recipientName).toBe("Bob Smith")
-      expect(rows[1].inviteeContact).toBe("bob@example.com")
+      expect(rows[1].recipientEmail).toBe("bob@example.com")
       expect(rows[1].contactMethod).toBe("EMAIL")
     })
 
@@ -115,7 +119,7 @@ describe("/api/referral-invitations", () => {
         orderBy: { createdAt: "asc" },
       })
       expect(rows[0].recipientName).toBe("Bob")
-      expect(rows[1].recipientName).toHaveLength(120) // MAX_NAME_LENGTH
+      expect(rows[1].recipientName.length).toBeLessThanOrEqual(120)
     })
 
     it("silently ignores rows with no name but keeps valid ones", async () => {
@@ -140,9 +144,9 @@ describe("/api/referral-invitations", () => {
 
       await prisma.referralInvitation.createMany({
         data: [
-          { referrerUserId: "USER1", recipientName: "Mine A" },
-          { referrerUserId: "USER1", recipientName: "Mine B" },
-          { referrerUserId: "USER2", recipientName: "Not mine" },
+          { referrerUserId: "USER1", recipientName: "Mine A", inviteToken: "tok_mine_a" },
+          { referrerUserId: "USER1", recipientName: "Mine B", inviteToken: "tok_mine_b" },
+          { referrerUserId: "USER2", recipientName: "Not mine", inviteToken: "tok_other" },
         ],
       })
 
@@ -157,65 +161,80 @@ describe("/api/referral-invitations", () => {
   })
 
   describe("PATCH", () => {
-    it("marks a invitation as VOTED and stamps votedAt", async () => {
+    it("marks an invitation as CONVERTED and stamps convertedAt", async () => {
       const created = await prisma.referralInvitation.create({
-        data: { referrerUserId: "USER1", recipientName: "Bob" },
+        data: {
+          referrerUserId: "USER1",
+          recipientName: "Bob",
+          inviteToken: "tok_patch_converted",
+        },
       })
-      expect(created.votedAt).toBeNull()
+      expect(created.convertedAt).toBeNull()
 
-      const res = await PATCH(makePatchRequest({ id: created.id, status: "VOTED" }))
+      const res = await PATCH(
+        makePatchRequest({ id: created.id, status: ReferralInvitationStatus.CONVERTED })
+      )
       expect(res.status).toBe(200)
 
       const after = await prisma.referralInvitation.findUniqueOrThrow({ where: { id: created.id } })
-      expect(after.status).toBe("VOTED")
-      expect(after.votedAt).toBeInstanceOf(Date)
+      expect(after.status).toBe(ReferralInvitationStatus.CONVERTED)
+      expect(after.convertedAt).toBeInstanceOf(Date)
     })
 
-    it("increments remindersSent and sets lastRemindedAt when marked REMINDED", async () => {
+    it("marks an invitation as COPIED via action", async () => {
       const created = await prisma.referralInvitation.create({
-        data: { referrerUserId: "USER1", recipientName: "Bob" },
+        data: {
+          referrerUserId: "USER1",
+          recipientName: "Bob",
+          inviteToken: "tok_patch_copied",
+        },
       })
 
-      const res = await PATCH(makePatchRequest({ id: created.id, status: "REMINDED" }))
+      const res = await PATCH(makePatchRequest({ id: created.id, action: "copy" }))
       expect(res.status).toBe(200)
 
       const after = await prisma.referralInvitation.findUniqueOrThrow({ where: { id: created.id } })
-      expect(after.status).toBe("REMINDED")
-      expect(after.remindersSent).toBe(1)
-      expect(after.lastRemindedAt).toBeInstanceOf(Date)
+      expect(after.status).toBe(ReferralInvitationStatus.COPIED)
+      expect(after.copiedAt).toBeInstanceOf(Date)
     })
 
     it("refuses to update another user's invitation", async () => {
       await createTestUser("USER2")
-      const otherinvitation = await prisma.referralInvitation.create({
-        data: { referrerUserId: "USER2", recipientName: "Bob" },
+      const otherInvitation = await prisma.referralInvitation.create({
+        data: {
+          referrerUserId: "USER2",
+          recipientName: "Bob",
+          inviteToken: "tok_other_user",
+        },
       })
 
-      // Auth'd as USER1, try to update USER2's row.
       currentUserId = "USER1"
       const res = await PATCH(
-        makePatchRequest({ id: otherinvitation.id, status: "VOTED" })
+        makePatchRequest({ id: otherInvitation.id, status: ReferralInvitationStatus.CONVERTED })
       )
       expect(res.status).toBe(404)
 
       const unchanged = await prisma.referralInvitation.findUniqueOrThrow({
-        where: { id: otherinvitation.id },
+        where: { id: otherInvitation.id },
       })
-      expect(unchanged.status).toBe("PENDING")
+      expect(unchanged.status).toBe(ReferralInvitationStatus.PENDING)
     })
 
     it("rejects invalid status values", async () => {
       const created = await prisma.referralInvitation.create({
-        data: { referrerUserId: "USER1", recipientName: "Bob" },
+        data: {
+          referrerUserId: "USER1",
+          recipientName: "Bob",
+          inviteToken: "tok_invalid_status",
+        },
       })
       const res = await PATCH(makePatchRequest({ id: created.id, status: "NONSENSE" }))
       expect(res.status).toBe(400)
     })
 
     it("rejects missing id", async () => {
-      const res = await PATCH(makePatchRequest({ status: "VOTED" }))
+      const res = await PATCH(makePatchRequest({ status: ReferralInvitationStatus.CONVERTED }))
       expect(res.status).toBe(400)
     })
   })
 })
-

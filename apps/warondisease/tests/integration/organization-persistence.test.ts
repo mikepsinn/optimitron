@@ -11,8 +11,6 @@ describe("Organization Persistence Flow", () => {
     const user = await prisma.user.create({
       data: {
         email,
-        name: "Integration Test User",
-        username: `inttest${Date.now()}`,
         referralCode: `INTCODE${Date.now()}`,
       },
     })
@@ -27,35 +25,49 @@ describe("Organization Persistence Flow", () => {
         creatorId: user.id,
         status: "APPROVED",
         description: "Test Description",
-        type: "INSTITUTE",
+        type: "NONPROFIT",
       },
     })
 
     expect(org.id).toBeDefined()
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
+    await prisma.organizationMember.create({
       data: {
-        organization: {
-          connect: { id: org.id },
+        organizationId: org.id,
+        userId: user.id,
+        role: "MEMBER",
+      },
+    })
+
+    const membership = await prisma.organizationMember.findUnique({
+      where: {
+        organizationId_userId: {
+          organizationId: org.id,
+          userId: user.id,
         },
       },
       include: {
         organization: true,
+        user: true,
       },
     })
 
-    expect(updatedUser.organizationId).toBe(org.id)
-    expect(updatedUser.organization?.name).toBe(org.name)
+    expect(membership).toBeDefined()
+    expect(membership?.organizationId).toBe(org.id)
+    expect(membership?.userId).toBe(user.id)
+    expect(membership?.organization.name).toBe(org.name)
 
     const fetchedUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
-        organization: true,
+        organizationMemberships: {
+          include: { organization: true },
+        },
       },
     })
 
     expect(fetchedUser).toBeDefined()
-    expect(fetchedUser?.organizationId).toBe(org.id)
+    expect(fetchedUser?.organizationMemberships).toHaveLength(1)
+    expect(fetchedUser?.organizationMemberships[0]?.organizationId).toBe(org.id)
   })
 })

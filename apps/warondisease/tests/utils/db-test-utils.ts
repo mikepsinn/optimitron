@@ -1,4 +1,10 @@
-import { PrismaClient } from "@optimitron/db"
+import {
+  PrismaClient,
+  PersonLifeStatus,
+  ReferendumKind,
+  ReferendumStatus,
+  TREATY_REFERENDUM_SLUG,
+} from "@optimitron/db"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { Pool } from "pg"
 import { execSync } from "child_process"
@@ -93,28 +99,25 @@ export async function setupTestDatabase(): Promise<void> {
 }
 
 /**
- * Clean all data from the database between tests
+ * Clean mutable app data between tests.
+ * Leaves Referendum rows (treaty seed) so vote helpers keep working.
  */
 export async function cleanDatabase() {
   const prisma = getPrismaClient()
 
-  // Get all table names from Prisma schema
   const tables = [
     "EmailLog",
     "Notification",
-    "Comment",
-    "Report",
-    "SurveyResponse",
-    "Survey",
     "Activity",
-    "Donation",
     "Badge",
     "SocialAccount",
-    "Vote",
     "ReferralInvitation",
-    "Article",
+    "ReferendumVote",
+    "OrganizationMember",
+    "OrganizationName",
     "Session",
     "Account",
+    "Person",
     "User",
     "Organization",
   ]
@@ -173,35 +176,75 @@ export async function disconnectDatabase() {
 }
 
 /**
- * Seed test data
+ * Ensure the 1% Treaty referendum exists for vote tests.
+ */
+export async function ensureTreatyReferendum() {
+  const prisma = getPrismaClient()
+
+  return prisma.referendum.upsert({
+    where: { slug: TREATY_REFERENDUM_SLUG },
+    update: {
+      deletedAt: null,
+      status: ReferendumStatus.ACTIVE,
+    },
+    create: {
+      slug: TREATY_REFERENDUM_SLUG,
+      title: "1% Treaty",
+      question: "Should we adopt the 1% Treaty? (test fixture)",
+      description: "Test referendum fixture",
+      kind: ReferendumKind.TREATY,
+      status: ReferendumStatus.ACTIVE,
+    },
+  })
+}
+
+/**
+ * Seed test data aligned with Optimitron schema (User has no name; votes use Person).
  */
 export async function seedTestData() {
   const prisma = getPrismaClient()
 
-  // Create test user
+  const referendum = await ensureTreatyReferendum()
+
   const testUser = await prisma.user.create({
     data: {
       email: "test@example.com",
-      name: "Test User",
       password: "$2a$10$K7L1OJ0TfPKg5W3gqWFzOemFz7B9xDhKGqzvZ/FqBhGZWgHVqr/Eu", // password: "password123"
       referralCode: "TEST123",
       emailVerified: new Date(),
     },
   })
 
-  // Create test organization
+  const testPerson = await prisma.person.create({
+    data: {
+      displayName: "Test User",
+      email: "test@example.com",
+      createdByUserId: testUser.id,
+      sourceRef: `test:user:${testUser.id}`,
+      lifeStatus: PersonLifeStatus.LIVING,
+      isPublic: true,
+    },
+  })
+
+  await prisma.user.update({
+    where: { id: testUser.id },
+    data: { personId: testPerson.id },
+  })
+
   const testOrg = await prisma.organization.create({
     data: {
       name: "Test Organization",
+      slug: "test-organization",
       description: "Test organization for testing",
-      type: "DIVISION",
-      category: "NONPROFIT",
+      type: "NONPROFIT",
       contactEmail: "test@testorg.com",
     },
   })
 
   return {
-    testUser,
+    testUser: { ...testUser, personId: testPerson.id },
+    testPerson,
     testOrg,
+    referendum,
   }
 }

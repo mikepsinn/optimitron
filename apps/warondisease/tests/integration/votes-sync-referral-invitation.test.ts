@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { cleanDatabase, getPrismaClient } from "../utils/db-test-utils"
+import {
+  cleanDatabase,
+  getPrismaClient,
+  ensureTreatyReferendum,
+} from "../utils/db-test-utils"
+import { ReferralInvitationStatus } from "@optimitron/db"
 
 let currentUserId = ""
 vi.mock("@/lib/auth-utils", () => ({
@@ -14,13 +19,11 @@ import { POST } from "@/app/api/votes/sync/route"
 
 const prisma = getPrismaClient()
 
-async function createUser(id: string, email = `${id}@example.com`) {
+async function createUser(id: string, email = `${id.toLowerCase()}@example.com`) {
   return prisma.user.create({
     data: {
       id,
       email,
-      name: `User ${id}`,
-      username: id.toLowerCase(),
       referralCode: `CODE_${id}`,
       emailVerified: new Date(),
     },
@@ -38,9 +41,10 @@ function makeRequest(body: unknown) {
 describe("/api/votes/sync referral invitations", () => {
   beforeEach(async () => {
     await cleanDatabase()
+    await ensureTreatyReferendum()
   })
 
-  it("attaches a verified vote to the invite token and marks the invitation voted", async () => {
+  it("attaches a verified vote to the invite token and marks the invitation converted", async () => {
     await createUser("REFERRER")
     await createUser("VOTER")
     currentUserId = "VOTER"
@@ -49,11 +53,9 @@ describe("/api/votes/sync referral invitations", () => {
       data: {
         referrerUserId: "REFERRER",
         recipientName: "Voter",
-        inviteeContact: "voter@example.com",
+        recipientEmail: "voter@example.com",
         contactMethod: "EMAIL",
         inviteToken: "invite_token_123",
-        recipientEmailStep: 1,
-        nextRecipientEmailAt: new Date(),
       },
     })
 
@@ -68,13 +70,13 @@ describe("/api/votes/sync referral invitations", () => {
 
     expect(res.status).toBe(200)
 
-    const vote = await prisma.referendumVote.findUniqueOrThrow({ where: { userId: "VOTER" } })
+    const vote = await prisma.referendumVote.findFirstOrThrow({
+      where: { userId: "VOTER", deletedAt: null },
+    })
     expect(vote.referredByUserId).toBe("REFERRER")
-    expect(vote.referralInvitationId).toBe(invitation.id)
 
     const after = await prisma.referralInvitation.findUniqueOrThrow({ where: { id: invitation.id } })
-    expect(after.status).toBe("VOTED")
+    expect(after.status).toBe(ReferralInvitationStatus.CONVERTED)
     expect(after.convertedVoteId).toBe(vote.id)
-    expect(after.nextRecipientEmailAt).toBeNull()
   })
 })
