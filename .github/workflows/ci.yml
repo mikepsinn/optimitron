@@ -25,6 +25,7 @@ jobs:
     outputs:
       web: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+      brand_apps: ${{ steps.manual.outputs.brand_apps_changed || steps.filter.outputs.brand_apps_changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -36,7 +37,9 @@ jobs:
         id: manual
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
-        run: echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+          echo "brand_apps_changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Detect web-impacting changes
         id: filter
@@ -76,6 +79,12 @@ jobs:
               - 'packages/db/src/managed-data/**'
               - 'packages/web/src/**'
               - 'packages/web/public/**'
+            brand_apps_changed:
+              - 'apps/**'
+              - 'packages/db/**'
+              - 'pnpm-workspace.yaml'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
 
   leak-scan:
     name: leak-scan
@@ -140,8 +149,9 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
-      # Brand apps under apps/* land in stacked PRs; exclude them from
-      # recursive package filters so unfinished brands are not built here.
+      # Brand apps under apps/* are validated in apps-warondisease-validate
+      # (they are Next entrypoints, not library packages). Exclude them here
+      # so recursive package filters do not `next build` unfinished brands.
       - name: Build
         run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run build
 
@@ -161,6 +171,94 @@ jobs:
 
       - name: Test
         run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run test
+
+  apps-warondisease-validate:
+    name: apps-warondisease-validate
+    # Gates schema-aligned War-on-Disease app (apps/warondisease).
+    # Uses the SAME Postgres pattern as web CI (one DB schema for all apps).
+    # Do not replace packages/web deploy/smoke — that stays the optimitron.com project.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: true
+      NODE_ENV: test
+      # Match other optimitron CI Postgres services (shared schema, not per-app DBs)
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+      NEXTAUTH_URL: http://127.0.0.1:3010
+      NEXT_PUBLIC_SITE_VARIANT: warondisease.org
+      SKIP_DB_TEST_SETUP: "1"
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test -d test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Skip brand-app validation
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') != true }}
+        shell: bash
+        run: echo "No apps/* or packages/db changes; skipping warondisease validation."
+
+      - name: Checkout
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply database migrations
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm db:deploy
+
+      - name: Generate Prisma client
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm db:generate
+
+      - name: Typecheck @apps/warondisease
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm --filter @apps/warondisease run typecheck
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+
+      - name: Treaty DB smoke (ReferendumVote path)
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm smoke:warondisease-db
+
+      - name: Unit tests @apps/warondisease (no full UI suite yet)
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm --filter @apps/warondisease run test:unit
+        continue-on-error: true
+        # Flip continue-on-error off once unit fixtures match Prisma 7 models.
 
   web-static-validate:
     name: web-static-validate
@@ -427,7 +525,7 @@ jobs:
     #
     # `queue: max` is load-bearing, not decoration. The default `queue: single`
     # allows exactly one pending member and cancels it when a newer one
-    # arrives, so a burst of three PRs would cancel the middle one outright ΓÇö
+    # arrives, so a burst of three PRs would cancel the middle one outright —
     # worse than the bug this job is fixing, because the canceled run never
     # publishes at all and leaves a canceled check on the PR. `max` holds up
     # to 100 waiters in FIFO order. It may not be combined with
@@ -769,7 +867,7 @@ jobs:
         # succeeded and was then overwritten minutes later by the next one.
         #
         # Re-materialise existing pr-* directories into the publish dir so the
-        # orphan commit contains them too ΓÇö but only for PRs that are still
+        # orphan commit contains them too — but only for PRs that are still
         # OPEN. Because every publish rebuilds the branch from scratch,
         # pruning is simply declining to carry a directory forward: merged and
         # closed PRs' pages drop off on the next publish with no separate
@@ -783,8 +881,8 @@ jobs:
         # The `|| true` on each cp is required, not sloppiness. Since coreutils
         # 9.2 `cp -n` exits non-zero whenever it skips a file, and 9.5 also
         # prints a diagnostic per skip. ubuntu-latest ships 9.4. Skipping is
-        # the normal case here ΓÇö this PR's own directory already exists in
-        # gh-pages from its previous run ΓÇö so under `set -e` a bare cp would
+        # the normal case here — this PR's own directory already exists in
+        # gh-pages from its previous run — so under `set -e` a bare cp would
         # fail the step on every re-push and block the publish entirely.
         shell: bash
         env:
@@ -796,7 +894,7 @@ jobs:
           # git exit non-zero, but only the first is safe to continue from.
           # Treating a transient network or GitHub error as an absent branch
           # would let the force_orphan publish below run with nothing carried
-          # forward, deleting every other PR's page ΓÇö the exact bug this step
+          # forward, deleting every other PR's page — the exact bug this step
           # exists to prevent. `ls-remote --exit-code` separates the two: 2
           # means no matching ref, anything else non-zero is a real failure.
           ls_remote_status=0
@@ -905,7 +1003,7 @@ jobs:
               state: available ? 'success' : 'failure',
               context: 'Visual review',
               description: available
-                ? `Ready ┬╖ ${shortSha}`
+                ? `Ready · ${shortSha}`
                 : `Not live after Pages wait (${publishOutcome})`,
               target_url: process.env.VISUAL_REVIEW_URL,
             });
