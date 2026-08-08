@@ -2,17 +2,29 @@ import type { Person } from "@optimitron/db"
 import { PersonLifeStatus } from "@optimitron/db"
 import { prisma } from "./prisma"
 
+export interface EnsurePersonOptions {
+  /** Display name for a freshly-created Person (from OAuth profile or signup). */
+  displayName?: string | null
+  /** Avatar image URL for a freshly-created Person (from OAuth profile). */
+  image?: string | null
+}
+
 /**
  * Ensure the signed-in user has a Person row (required for ReferendumVote).
  * SELF votes require Person.lifeStatus = LIVING (DB trigger).
+ *
+ * Person owns every public-display field — this helper does NOT read
+ * name / image / bio off User (those columns do not exist).
  */
-export async function ensurePersonForUser(userId: string): Promise<Person> {
+export async function ensurePersonForUser(
+  userId: string,
+  options: EnsurePersonOptions = {},
+): Promise<Person> {
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: userId },
     select: {
       id: true,
       email: true,
-      name: true,
       personId: true,
     },
   })
@@ -51,13 +63,17 @@ export async function ensurePersonForUser(userId: string): Promise<Person> {
     return byEmail
   }
 
+  const displayName = (
+    options.displayName?.trim() ||
+    email ||
+    `Person ${userId.slice(0, 8)}`
+  ).slice(0, 200)
+
   const person = await prisma.person.create({
     data: {
-      displayName: (user.name?.trim() || email || `Person ${userId.slice(0, 8)}`).slice(
-        0,
-        200,
-      ),
+      displayName,
       email: email || null,
+      image: options.image ?? null,
       createdByUserId: userId,
       sourceRef: `user:${userId}`,
       lifeStatus: PersonLifeStatus.LIVING,

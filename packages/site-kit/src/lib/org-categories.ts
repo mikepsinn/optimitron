@@ -17,8 +17,9 @@ export const ORG_CATEGORY_LABELS: Partial<Record<OrgType, string>> = {
   [OrgType.FOUNDATION]: "NONPROFIT / FOUNDATION",
   [OrgType.COMPANY]: "BIOTECH / PHARMA COMPANY",
   [OrgType.OTHER]: "OTHER",
-  [OrgType.DIVISION]: "DIH DIVISION",
-  [OrgType.INSTITUTE]: "INSTITUTE",
+  [OrgType.INTERGOVERNMENTAL]: "INTERGOVERNMENTAL",
+  [OrgType.MEDIA]: "MEDIA",
+  [OrgType.POLITICAL_PARTY]: "POLITICAL PARTY",
 }
 
 export type OrgCategory = OrgType

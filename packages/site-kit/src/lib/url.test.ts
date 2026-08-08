@@ -4,13 +4,13 @@ import { buildInviteReferralUrl, buildReferralUrl, buildUserInviteReferralUrl, b
 describe("referral URL builders", () => {
   it("uses the clean /vote identifier path for generic referral URLs", () => {
     expect(buildReferralUrl("alice", "https://warondisease.org")).toBe("https://warondisease.org/vote/alice")
-    expect(buildUserReferralUrl({ username: "alice", referralCode: "CODE123" }, "https://warondisease.org")).toBe(
+    expect(buildUserReferralUrl({ handle: "alice", referralCode: "CODE123" }, "https://warondisease.org")).toBe(
       "https://warondisease.org/vote/alice"
     )
   })
 
-  it("falls back to referralCode when no username exists", () => {
-    expect(buildUserReferralUrl({ username: null, referralCode: "CODE123" }, "https://warondisease.org")).toBe(
+  it("falls back to referralCode when no handle exists", () => {
+    expect(buildUserReferralUrl({ handle: null, referralCode: "CODE123" }, "https://warondisease.org")).toBe(
       "https://warondisease.org/vote/CODE123"
     )
   })
@@ -19,7 +19,7 @@ describe("referral URL builders", () => {
     expect(buildInviteReferralUrl("alice", "tok_123", "https://warondisease.org")).toBe(
       "https://warondisease.org/vote/alice?invite=tok_123"
     )
-    expect(buildUserInviteReferralUrl({ username: null, referralCode: "CODE123" }, "tok 123", "https://warondisease.org")).toBe(
+    expect(buildUserInviteReferralUrl({ handle: null, referralCode: "CODE123" }, "tok 123", "https://warondisease.org")).toBe(
       "https://warondisease.org/vote/CODE123?invite=tok%20123"
     )
   })

@@ -308,31 +308,20 @@ enum InterventionRankingRunStatus {
 /// Type of activity event for the audit log
 enum ActivityType {
   VOTED_REFERENDUM
-  VOTED
   SUBMITTED_COMPARISON
   DEPOSITED_PRIZE
   DONATED
   RECRUITED_VOTER
-  RECRUITED
   CONTACTED_ASSIGNEE
   VERIFIED_PERSONHOOD
   TRACKED_MEASUREMENT
   UPDATED_PROFILE
-  PROFILE_UPDATED
   EARNED_BADGE
   CREATED_SURVEY
   COMPLETED_SURVEY
   JOINED_ORGANIZATION
-  JOINED_ORG
-  SHARED_LINK
-  CONNECTED_SOCIAL
   UNSUBSCRIBED
   CONTENT_ACCESS_CHANGED
-  CAMPAIGN_CREATED
-  CAMPAIGN_PLEDGED
-  CAMPAIGN_UPDATED
-  CAMPAIGN_COMPLETED
-  COMPLETED_WISHOCRATIC_ALLOCATION
 }
 
 /// Channel from which a share was produced. Both channels use the same template catalog
@@ -389,8 +378,6 @@ enum NotificationChannel {
 
 /// Type of organization
 enum OrgType {
-  DIVISION
-  INSTITUTE
   UNIVERSITY
   RESEARCH_CENTER
   NONPROFIT
@@ -448,14 +435,9 @@ enum BadgeType {
   HUNDRED_COMPARISONS
   FIRST_RECRUIT
   TEN_RECRUITS
-  FIFTY_RECRUITS
-  HUNDRED_RECRUITS
   VERIFIED_HUMAN
   EARLY_ADOPTER
   DEPOSITOR
-  SOCIAL_WARRIOR
-  GENEROUS_DONOR
-  MONTHLY_SUPPORTER
 }
 
 /// Reason a wish was granted — maps to a specific user action
@@ -1966,23 +1948,7 @@ model User {
   isAdmin Boolean @default(false)
 
   /// Phone number for SMS notifications
-  phoneNumber        String?
-  /// Campaign-app profile fields (dih-neobrutalist cutover)
-  name               String?
-  username           String? @unique
-  image              String?
-  bio                String?
-  isPublic           Boolean @default(false)
-  website            String?
-  headline           String?
-  coverImage         String?
-  address            String?
-  phoneVerified      Boolean @default(false)
-  emailNotifications Boolean @default(true)
-  referralAlerts     Boolean @default(true)
-  weeklyDigest       Boolean @default(true)
-  country            String?
-  location           String?
+  phoneNumber String?
 
   /// When this record was created
   createdAt DateTime @default(now())
@@ -2101,18 +2067,6 @@ model User {
   createdParameterDefinitions        ParameterDefinition[]            @relation("UserCreatedParameterDefinitions")
   proposedParameterRevisions         ParameterRevision[]              @relation("UserProposedParameterRevisions")
   reviewedParameterRevisions         ParameterRevision[]              @relation("UserReviewedParameterRevisions")
-  // Campaign-app (dih-neobrutalist) relations
-  treatyVotes                        Vote?                            @relation("UserTreatyVotes")
-  treatyReferralVotes                Vote[]                           @relation("UserTreatyReferrals")
-  createdCampaigns                   Campaign[]                       @relation("CampaignCreator")
-  campaignPledges                    CampaignPledge[]
-  campaignTeamMembers                CampaignTeamMember[]
-  campaignUpdates                    CampaignUpdate[]
-  donations                          Donation[]
-  userSkills                         UserSkill[]
-  userLinks                          UserLink[]
-  wishocraticCategorySelections      WishocraticCategorySelection[]   @relation("UserWishocraticCategorySelections")
-  wishocraticPairAllocations         WishocraticPairAllocation[]      @relation("UserWishocraticPairAllocations")
 
   @@index([email])
   @@index([referralCode])
@@ -5726,9 +5680,6 @@ model Organization {
   linkedCollectionRecords     CollectionRecord[]               @relation("CollectionRecordOrganization")
   targetedCollectionRelations CollectionRelation[]             @relation("CollectionRelationOrganizationTarget")
   ownedSourceArtifacts        SourceArtifact[]                 @relation("SourceArtifactOwnerOrganization")
-  campaigns                   Campaign[]
-  treatyVotes                 Vote[]                           @relation("OrganizationTreatyVotes")
-  donations                   Donation[]
 
   @@index([slug])
   @@index([type])
@@ -10945,379 +10896,4 @@ model ContentReport {
   @@index([reviewedByUserId])
   @@index([status, createdAt])
   @@index([deletedAt])
-}
-
-// ============================================================================
-// Campaign apps compatibility (ported from dih-neobrutalist)
-// Treaty vote + crowdfunding; parallel to ReferendumVote / TaskFunding.
-// ============================================================================
-
-/// 1% Treaty-style YES/NO vote used by campaign apps (warondisease, survey, …)
-/// Prefer ReferendumVote for optimitron product surfaces over time.
-model Vote {
-  id                        String        @id @default(cuid())
-  answer                    VotePosition
-  militaryAllocationPercent Int?
-  userId                    String?       @unique
-  referredByUserId          String?
-  referralInvitationId      String?       @unique
-  organizationId            String?
-  sourceUrl                 String?
-  sourceReferrer            String?
-  ipAddress                 String?
-  fingerprint               String?
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
-  referrer                  User?         @relation("UserTreatyReferrals", fields: [referredByUserId], references: [id])
-  user                      User?         @relation("UserTreatyVotes", fields: [userId], references: [id], onDelete: Cascade)
-  organization              Organization? @relation("OrganizationTreatyVotes", fields: [organizationId], references: [id])
-
-  @@index([userId])
-  @@index([referredByUserId])
-  @@index([referralInvitationId])
-  @@index([organizationId])
-  @@index([sourceUrl])
-  @@index([createdAt])
-  @@index([ipAddress])
-  @@index([fingerprint])
-}
-
-enum CampaignType {
-  DONATION
-  REWARD
-  EQUITY
-  PRE_ORDER
-}
-
-enum CampaignStatus {
-  DRAFT
-  ACTIVE
-  FUNDED
-  CANCELLED
-  FAILED
-  COMPLETED
-}
-
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum FulfillmentStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  DELAYED
-}
-
-enum ShippingStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  RETURNED
-  LOST
-}
-
-enum TeamMemberRole {
-  CREATOR
-  CO_CREATOR
-  MANAGER
-  VIEWER
-}
-
-enum DonationFrequency {
-  ONE_TIME
-  MONTHLY
-}
-
-enum DonationStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-model Campaign {
-  id                      String                @id @default(cuid())
-  slug                    String                @unique
-  title                   String
-  description             String
-  story                   String
-  type                    CampaignType
-  creatorId               String
-  organizationId          String?
-  goalAmount              Int
-  currentAmount           Int                   @default(0)
-  currency                String                @default("USD")
-  startDate               DateTime              @default(now())
-  endDate                 DateTime?
-  status                  CampaignStatus        @default(DRAFT)
-  videoUrl                String?
-  coverImageUrl           String?
-  images                  String?
-  category                String
-  tags                    String?
-  viewCount               Int                   @default(0)
-  backerCount             Int                   @default(0)
-  featured                Boolean               @default(false)
-  trending                Boolean               @default(false)
-  refundPolicy            String
-  riskDisclosure          String
-  processingFeePercentage Float                 @default(5.0)
-  complianceData          String?
-  flexibleFunding         Boolean               @default(false)
-  createdAt               DateTime              @default(now())
-  updatedAt               DateTime              @updatedAt
-  deletedAt               DateTime?
-  creator                 User                  @relation("CampaignCreator", fields: [creatorId], references: [id], onDelete: Cascade)
-  organization            Organization?         @relation(fields: [organizationId], references: [id])
-  pledges                 CampaignPledge[]
-  rewards                 CampaignReward[]
-  stretchGoals            CampaignStretchGoal[]
-  teamMembers             CampaignTeamMember[]
-  updates                 CampaignUpdate[]
-
-  @@index([creatorId])
-  @@index([organizationId])
-  @@index([slug])
-  @@index([status])
-  @@index([type])
-  @@index([category])
-  @@index([featured])
-  @@index([trending])
-  @@index([endDate])
-  @@index([createdAt])
-  @@index([deletedAt])
-}
-
-model CampaignReward {
-  id                String           @id @default(cuid())
-  campaignId        String
-  title             String
-  description       String
-  amount            Int
-  currency          String           @default("USD")
-  estimatedDelivery DateTime?
-  shippingEnabled   Boolean          @default(true)
-  shippingFee       Int              @default(0)
-  shippingRegions   String?
-  maxBackers        Int?
-  currentBackers    Int              @default(0)
-  unlimited         Boolean          @default(false)
-  isActive          Boolean          @default(true)
-  digital           Boolean          @default(false)
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  campaign          Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  pledges           CampaignPledge[]
-
-  @@index([campaignId])
-  @@index([isActive])
-  @@index([createdAt])
-}
-
-model CampaignPledge {
-  id                    String            @id @default(cuid())
-  campaignId            String
-  userId                String
-  rewardId              String?
-  amount                Int
-  currency              String            @default("USD")
-  paymentStatus         PaymentStatus     @default(PENDING)
-  stripePaymentIntentId String?
-  stripeSubscriptionId  String?
-  shippingAddress       String?
-  shippingStatus        ShippingStatus    @default(PENDING)
-  trackingNumber        String?
-  deliveryDate          DateTime?
-  fulfillmentStatus     FulfillmentStatus @default(PENDING)
-  fulfillmentNotes      String?
-  isRecurring           Boolean           @default(false)
-  isAnonymous           Boolean           @default(false)
-  refundedAt            DateTime?
-  refundReason          String?
-  sourceUrl             String?
-  sourceReferrer        String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  campaign              Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  reward                CampaignReward?   @relation(fields: [rewardId], references: [id])
-  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([campaignId])
-  @@index([userId])
-  @@index([rewardId])
-  @@index([paymentStatus])
-  @@index([fulfillmentStatus])
-  @@index([shippingStatus])
-  @@index([sourceUrl])
-  @@index([createdAt])
-}
-
-model CampaignStretchGoal {
-  id           String    @id @default(cuid())
-  campaignId   String
-  title        String
-  description  String
-  targetAmount Int
-  currency     String    @default("USD")
-  achieved     Boolean   @default(false)
-  achievedAt   DateTime?
-  order        Int       @default(0)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  campaign     Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-
-  @@index([campaignId])
-  @@index([achieved])
-  @@index([order])
-  @@index([createdAt])
-}
-
-model CampaignTeamMember {
-  id          String         @id @default(cuid())
-  campaignId  String
-  userId      String
-  role        TeamMemberRole
-  permissions String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  campaign    Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([campaignId, userId])
-  @@index([campaignId])
-  @@index([userId])
-  @@index([role])
-  @@index([createdAt])
-}
-
-model CampaignUpdate {
-  id         String   @id @default(cuid())
-  campaignId String
-  authorId   String
-  title      String
-  content    String
-  isPublic   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-
-  @@index([campaignId])
-  @@index([authorId])
-  @@index([isPublic])
-  @@index([createdAt])
-}
-
-model Donation {
-  id                    String            @id @default(cuid())
-  userId                String?
-  email                 String
-  amount                Int
-  currency              String            @default("USD")
-  frequency             DonationFrequency @default(ONE_TIME)
-  status                DonationStatus    @default(PENDING)
-  stripeSessionId       String?           @unique
-  stripePaymentIntentId String?
-  stripeSubscriptionId  String?
-  message               String?
-  isAnonymous           Boolean           @default(false)
-  organizationId        String?
-  sourceUrl             String?
-  sourceReferrer        String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  user                  User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  organization          Organization?     @relation(fields: [organizationId], references: [id])
-
-  @@index([userId])
-  @@index([email])
-  @@index([status])
-  @@index([organizationId])
-  @@index([createdAt])
-}
-
-model Skill {
-  id        String      @id @default(cuid())
-  name      String      @unique
-  slug      String      @unique
-  category  String?
-  createdAt DateTime    @default(now())
-  users     UserSkill[]
-
-  @@index([slug])
-  @@index([category])
-  @@index([createdAt])
-}
-
-model UserSkill {
-  userId       String
-  skillId      String
-  endorsements Int      @default(0)
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skill        Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
-  @@id([userId, skillId])
-  @@index([userId])
-  @@index([skillId])
-  @@index([endorsements])
-  @@index([createdAt])
-}
-
-model UserLink {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  url         String
-  description String?
-  imageUrl    String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([order])
-  @@index([createdAt])
-}
-
-/// Pairwise category selection flags (dih wishocracy UI)
-model WishocraticCategorySelection {
-  id         String   @id @default(cuid())
-  userId     String
-  categoryId String
-  selected   Boolean
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  user       User     @relation("UserWishocraticCategorySelections", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, categoryId])
-  @@index([userId])
-  @@index([categoryId])
-  @@index([selected])
-}
-
-/// String-keyed pairwise budget allocation from dih-neobrutalist wishocracy
-model WishocraticPairAllocation {
-  id          String   @id @default(cuid())
-  userId      String
-  categoryA   String
-  categoryB   String
-  allocationA Int
-  allocationB Int
-  createdAt   DateTime @default(now())
-  user        User     @relation("UserWishocraticPairAllocations", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, categoryA, categoryB])
-  @@index([userId])
-  @@index([categoryA])
-  @@index([categoryB])
-  @@index([createdAt])
 }

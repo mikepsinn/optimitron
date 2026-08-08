@@ -1,4 +1,4 @@
-
+import { OrgType } from "@optimitron/db"
 import { prisma } from "./prisma"
 import { generateSlug, makeSlugUnique } from "./slug"
 import { sendPartnerWelcomeEmail } from "./email"
@@ -66,7 +66,7 @@ export async function createOrganizationLogic(
     const organization = await prisma.organization.create({
         data: {
             name: data.name,
-            type: "INSTITUTE",
+            type: OrgType.RESEARCH_CENTER,
             website: data.website || null,
             description: data.description || "Partner institute for the Global Clinical Trial Abundance Survey",
             contactEmail: user.email,

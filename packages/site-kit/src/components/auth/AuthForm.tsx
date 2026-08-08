@@ -236,7 +236,7 @@ export function AuthForm({
                       id="auth-name"
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                       className={`border-4 border-black ${buttonHeight} ${textSize}`}
                       disabled={isLoading}
                       placeholder="Enter your name (optional)"
@@ -252,7 +252,7 @@ export function AuthForm({
                     id="auth-email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     required
                     className={`border-4 border-black ${buttonHeight} ${textSize}`}
                     disabled={isLoading}

@@ -54,9 +54,7 @@ export function VoteOrShareButton({
         // Try to get from cache first
         const cachedStatus = storage.getVoteStatusCache()
         const sessionReferralIdentifier =
-          getUsernameOrReferralCode(
-            session.user as { username?: string | null; referralCode?: string | null }
-          ) || undefined
+          getUsernameOrReferralCode(session.user) || undefined
 
         if (cachedStatus) {
           setVoteStatus({

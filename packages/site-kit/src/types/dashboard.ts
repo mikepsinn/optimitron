@@ -3,6 +3,9 @@ import type { EnabledProviders } from "../lib/auth-utils"
 export interface DashboardUser {
   id: string
   name: string
+  /** Canonical public identifier from Person.handle */
+  handle: string | null
+  /** @deprecated Prefer `handle`. Alias for gradual UI migration. */
   username: string | null
   email: string
   bio: string
@@ -14,11 +17,22 @@ export interface DashboardUser {
   organizationId: string | null
   image: string | null
   weeklyDigest: boolean
-  emailNotifications: boolean
+  /** Prefer newsletterSubscribed — maps to User.newsletterSubscribed */
   newsletterSubscribed: boolean
   website: string | null
   headline: string | null
   coverImage: string | null
+  person: {
+    id: string
+    handle: string | null
+    displayName: string
+    image: string | null
+    bio: string | null
+    headline: string | null
+    website: string | null
+    coverImage: string | null
+    isPublic: boolean
+  } | null
 }
 
 export interface DashboardStats {
@@ -107,6 +121,8 @@ export interface DashboardAllocation {
 export interface DashboardPublicRecruit {
   id: string
   name: string | null
+  handle: string | null
+  /** @deprecated Prefer `handle` */
   username: string | null
   image: string | null
   depth: number
@@ -159,4 +175,3 @@ export interface LeaderboardEntry {
   image: string | null
   referrals: number
 }
-

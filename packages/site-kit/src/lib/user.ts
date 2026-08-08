@@ -47,35 +47,45 @@ export async function calculateUserRank(referralCount: number): Promise<number> 
   return Number(usersWithReferrals[0]?.count ?? 0) + 1
 }
 
-export async function getPublicUserProfile(username: string) {
-  const effectiveUsername = resolveUsernameAlias(username)
+export async function getPublicUserProfile(handleOrUsername: string) {
+  const effectiveHandle = resolveUsernameAlias(handleOrUsername)
 
   const user = await prisma.user.findFirst({
     where: {
-      username: {
-        equals: effectiveUsername,
-        mode: "insensitive",
+      person: {
+        handle: {
+          equals: effectiveHandle,
+          mode: "insensitive",
+        },
       },
     },
     include: {
       badges: true,
-      userSkills: {
-        include: {
-          skill: true,
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+          bio: true,
+          headline: true,
+          website: true,
+          coverImage: true,
+          isPublic: true,
+          links: true,
+          countryCode: true,
         },
-        orderBy: { createdAt: "desc" },
-      },
-      userLinks: {
-        orderBy: { order: "asc" },
       },
     },
   })
 
-  if (!user) {
+  if (!user || !user.person) {
     return null
   }
 
-  if (!user.isPublic) {
+  const person = user.person
+
+  if (!person.isPublic) {
     return { isPrivate: true as const }
   }
 
@@ -88,30 +98,33 @@ export async function getPublicUserProfile(username: string) {
   })
 
   const rank = await calculateUserRank(referralCount)
+  const handle = person.handle
 
   return {
     isPrivate: false as const,
     id: user.id,
-    name: user.name || "Anonymous Soldier",
-    username: user.username,
-    image: user.image,
-    bio: user.bio,
-    headline: user.headline,
-    website: user.website,
-    coverImage: user.coverImage,
-    location: user.location,
-    isPublic: user.isPublic,
+    name: person.displayName || "Anonymous Soldier",
+    handle,
+    /** @deprecated Prefer `handle` */
+    username: handle,
+    image: person.image,
+    bio: person.bio,
+    headline: person.headline,
+    website: person.website,
+    coverImage: person.coverImage,
+    location: person.countryCode,
+    isPublic: person.isPublic,
     referralCode: user.referralCode,
     referralCount,
     rank,
     badges: user.badges,
-    skills: user.userSkills.map((us) => ({
-      id: us.skill.id,
-      name: us.skill.name,
-      category: us.skill.category,
-      endorsements: us.endorsements,
-    })),
-    links: user.userLinks,
+    skills: [] as Array<{
+      id: string
+      name: string
+      category: string | null
+      endorsements: number
+    }>,
+    links: person.links,
     joinedAt: user.createdAt,
   }
 }

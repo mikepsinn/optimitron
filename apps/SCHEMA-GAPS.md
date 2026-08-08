@@ -2,17 +2,29 @@
 
 ## Deployables
 
-`warondisease` · `dfda` · `wishocracy` only. See `apps/README.md`.
+`warondisease` · `dfda` · `wishocracy` · thin satellites. See `apps/README.md`.
 
-## Canonical mappings
+## Canonical mappings (existing schema — no DIH compatibility tables)
 
 | Product need | Use |
 |---|---|
 | 1% Treaty YES/NO | `Referendum` slug `one-percent-treaty` (managed seed) + `ReferendumVote` — constant: `TREATY_REFERENDUM_SLUG` from `@optimitron/db` |
-| Referrals | `ReferralInvitation` + `referredByUserId` on vote |
+| Public profile / handle | `Person.handle`, `Person.displayName`, `Person.image`, … via `User.personId` |
+| Referral share ID | `User.referralCode` (fallback when no handle) |
+| Referrals | `ReferralInvitation` + `referredByUserId` on `ReferendumVote` |
 | Org affiliation | `OrganizationMember` |
-| Fundraising | Task + TaskFunding* when reintroduced (not crowdfunding “Campaign*” product UI) |
-| Stripe webhook | Verify-only on warondisease until TaskFundingPayment metadata |
+| Wishocracy pairs | `WishocraticItem` + `WishocraticAllocation` + `WishocraticItemInclusion` (jurisdiction `US`) |
+| Fundraising | `Task` + `TaskFunding*` when donate is wired |
+| Stripe webhook | Verify-only until `TaskFundingPayment` metadata |
+| Email prefs | `User.newsletterSubscribed` + `User.unsubscribedScopes` |
+
+## Intentionally not added
+
+| Surface | Why |
+|---|---|
+| DIH `Vote` / `Campaign*` / `Donation` tables | Parallel to ReferendumVote / TaskFunding — do not recreate |
+| DIH `WishocraticPairAllocation` / `WishocraticCategorySelection` | Use Optimitron Wishocratic* models |
+| Extra `User.name` / `User.username` columns | Live on `Person` |
 
 ## Intentionally deferred
 
@@ -20,5 +32,4 @@
 |---|---|
 | Cron drip emails | Auth-gated no-op until EmailLog template mapping |
 | militaryAllocationPercent | Not on ReferendumVote |
-| Compatibility Vote/Campaign tables | Do not write from apps |
-| Shared UI package | Not yet — extract when two apps share a component |
+| Crowdfunding Campaign UI | Retired; TaskFunding on optimitron web |

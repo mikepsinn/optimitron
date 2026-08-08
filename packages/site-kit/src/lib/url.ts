@@ -46,7 +46,14 @@ export function buildInviteReferralUrl(
 }
 
 export function buildUserReferralUrl(
-  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  user:
+    | {
+        handle?: string | null
+        username?: string | null
+        referralCode?: string | null
+      }
+    | null
+    | undefined,
   baseUrl: string = getBaseUrl(),
 ): string {
   const identifier = getUsernameOrReferralCode(user)
@@ -54,7 +61,14 @@ export function buildUserReferralUrl(
 }
 
 export function buildUserInviteReferralUrl(
-  user: { username?: string | null; referralCode?: string | null } | null | undefined,
+  user:
+    | {
+        handle?: string | null
+        username?: string | null
+        referralCode?: string | null
+      }
+    | null
+    | undefined,
   inviteToken?: string | null,
   baseUrl: string = getBaseUrl(),
 ): string {

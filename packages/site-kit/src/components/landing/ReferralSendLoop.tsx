@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, type ChangeEvent } from "react"
 import { useRouter } from "next/navigation"
 import { Copy, Mail, UserRound } from "lucide-react"
 import { Button } from "@optimitron/neobrutalist-ui/ui/button"
@@ -24,6 +24,8 @@ interface ReferralSendLoopProps {
   isAuthenticated: boolean
   user: {
     name?: string | null
+    handle?: string | null
+    /** @deprecated Prefer `handle` */
     username?: string | null
     referralCode?: string | null
   } | null
@@ -56,7 +58,8 @@ export function ReferralSendLoop({
   const [sentCount, setSentCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [isWorking, setIsWorking] = useState(false)
-  const [handle, setHandle] = useState(user?.username || "")
+  const existingHandle = user?.handle || user?.username || ""
+  const [handle, setHandle] = useState(existingHandle)
   const [handleSaved, setHandleSaved] = useState(false)
   const [handleError, setHandleError] = useState<string | null>(null)
   const [savingHandle, setSavingHandle] = useState(false)
@@ -71,11 +74,11 @@ export function ReferralSendLoop({
 
   const effectiveReferralUrl = useMemo(() => {
     const cleanHandle = handle.trim()
-    if (isAuthenticated && (handleSaved || user?.username) && cleanHandle) {
+    if (isAuthenticated && (handleSaved || existingHandle) && cleanHandle) {
       return `${getBaseUrl()}/vote/${cleanHandle}`
     }
     return referralUrl
-  }, [handle, handleSaved, isAuthenticated, referralUrl, user?.username])
+  }, [handle, handleSaved, isAuthenticated, referralUrl, existingHandle])
 
   const messagePreview = activeName
     ? buildDefaultReferralInvitationMessage(activeName, effectiveReferralUrl)
@@ -96,7 +99,7 @@ export function ReferralSendLoop({
     setSavingHandle(true)
     setHandleError(null)
     try {
-      await updateUserProfile({ username: normalized })
+      await updateUserProfile({ handle: normalized })
       setHandle(normalized)
       setHandleSaved(true)
       router.refresh()
@@ -327,7 +330,7 @@ function NameAndContactStep({
 }) {
   return (
     <div className="space-y-5">
-      {!user?.username && (
+      {!(user?.handle || user?.username) && (
         <div className="border-4 border-primary bg-brutal-yellow p-4">
           <div className="mb-2 flex items-center gap-2">
             <UserRound className="h-4 w-4" />
@@ -336,7 +339,7 @@ function NameAndContactStep({
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               value={handle}
-              onChange={(event) => onHandleChange(event.target.value)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => onHandleChange(event.target.value)}
               placeholder="your_handle"
               className="h-11 border-4 border-primary bg-background font-bold"
             />
@@ -362,7 +365,7 @@ function NameAndContactStep({
           First name:
           <Input
             value={recipientName}
-            onChange={(event) => onNameChange(event.target.value)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => onNameChange(event.target.value)}
             className="h-12 border-4 border-primary bg-background text-base font-bold"
           />
         </label>
@@ -370,7 +373,7 @@ function NameAndContactStep({
           {alt || sentCount === 0 ? "Their email (optional — we'll nudge them so you don't have to):" : "Their email (optional):"}
           <Input
             value={inviteeEmail}
-            onChange={(event) => onEmailChange(event.target.value)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => onEmailChange(event.target.value)}
             className="h-12 border-4 border-primary bg-background text-base font-bold"
           />
         </label>

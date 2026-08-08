@@ -1,6 +1,5 @@
 /// <reference path="../types/next-auth.d.ts" />
 import type { NextAuthOptions } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
@@ -9,16 +8,41 @@ import DiscordProvider from "next-auth/providers/discord"
 import EmailProvider from "next-auth/providers/email"
 import { prisma } from "./prisma"
 import { compare, hash } from "bcryptjs"
-import { nanoid } from "nanoid"
 import { getEmailFrom } from "./email-utils"
 import { sendSignupConfirmationEmail } from "./email"
-import { SocialPlatform, BadgeType, NotificationType, ActivityType } from "@optimitron/db"
+import { SocialPlatform, NotificationType } from "@optimitron/db"
 import { env } from "./env"
 import { getSiteConfig, DOMAIN_TO_VARIANT } from "./site-config"
+import { createAuthAdapter } from "./auth-adapter"
+import { ensurePersonForUser } from "./person.server"
 
+const personIdentitySelect = {
+  id: true,
+  handle: true,
+  displayName: true,
+  image: true,
+  isPublic: true,
+} as const
+
+/** Map NextAuth OAuth provider ids to SocialPlatform (wallet/social enum). */
+function oauthProviderToSocialPlatform(
+  provider: string,
+): SocialPlatform | null {
+  switch (provider) {
+    case "github":
+      return SocialPlatform.GITHUB
+    case "twitter":
+      return SocialPlatform.TWITTER
+    case "discord":
+      return SocialPlatform.DISCORD
+    default:
+      // google / email / credentials are not SocialPlatform values
+      return null
+  }
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: createAuthAdapter(),
   session: {
     strategy: "jwt", // Stateless JWT sessions for better scalability
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -43,28 +67,44 @@ export const authOptions: NextAuthOptions = {
 
         // DEV MODE BYPASS: Allow test users to login/signup automatically
         if (process.env.NODE_ENV === "development" && credentials.email.startsWith("test")) {
-          const name = credentials.email.split("@")[0]
-          // Upsert the test user so strict password check is skipped and user exists
+          const displayName = credentials.email.split("@")[0]
           const user = await prisma.user.upsert({
             where: { email: credentials.email },
             update: {},
             create: {
               email: credentials.email,
-              name: name,
-              username: name,
-              // No password needed for this flow
-            }
+            },
+            include: {
+              person: { select: personIdentitySelect },
+            },
           })
+
+          await ensurePersonForUser(user.id, {
+            displayName,
+            image: null,
+          })
+
+          const withPerson = await prisma.user.findUniqueOrThrow({
+            where: { id: user.id },
+            include: { person: { select: personIdentitySelect } },
+          })
+
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
+            id: withPerson.id,
+            email: withPerson.email,
+            name: withPerson.person?.displayName ?? displayName,
+            image: withPerson.person?.image ?? null,
+            handle: withPerson.person?.handle ?? null,
+            personId: withPerson.personId,
+            referralCode: withPerson.referralCode,
           }
         }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          include: {
+            person: { select: personIdentitySelect },
+          },
         })
 
         if (!user || !user.password) {
@@ -80,8 +120,11 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-          image: user.image,
+          name: user.person?.displayName ?? null,
+          image: user.person?.image ?? null,
+          handle: user.person?.handle ?? null,
+          personId: user.personId,
+          referralCode: user.referralCode,
         }
       },
     }),
@@ -105,10 +148,12 @@ export const authOptions: NextAuthOptions = {
 
             const userName = emailLocalPart.charAt(0).toUpperCase() + emailLocalPart.slice(1)
 
-            // Try to get user name from database if user exists
+            // Try to get display name from Person if user exists
             const existingUser = await prisma.user.findUnique({
               where: { email: identifier },
-              select: { name: true },
+              select: {
+                person: { select: { displayName: true } },
+              },
             })
 
             const config = getSiteConfig()
@@ -117,7 +162,7 @@ export const authOptions: NextAuthOptions = {
             await sendSignupConfirmationEmail({
               to: identifier,
               url,
-              userName: existingUser?.name || userName,
+              userName: existingUser?.person?.displayName || userName,
               orgName,
             })
           },
@@ -172,72 +217,67 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
       }
 
-      // If signing in/linking via OAuth, create/update social account record
+      // Link OAuth providers that exist on SocialPlatform (github/twitter/discord).
+      // Google is auth-only — it is not a SocialPlatform value in the restored schema.
       if (account && account.provider !== "credentials" && account.provider !== "email") {
         const userId = user?.id || (token.id as string)
+        const platform = oauthProviderToSocialPlatform(account.provider)
 
-        // NextAuth provider names match Prisma SocialPlatform enum (both lowercase)
-        const platform = account.provider as SocialPlatform
-
-        await prisma.socialAccount.upsert({
-          where: {
-            userId_platform: {
+        if (platform && userId) {
+          await prisma.socialAccount.upsert({
+            where: {
+              userId_platform: {
+                userId,
+                platform,
+              },
+            },
+            create: {
               userId,
               platform,
+              accountId: account.providerAccountId,
+              username:
+                (profile as { username?: string; login?: string } | undefined)?.username ||
+                (profile as { username?: string; login?: string } | undefined)?.login ||
+                user?.email?.split("@")[0] ||
+                "",
             },
-          },
-          create: {
-            userId,
-            platform,
-            accountId: account.providerAccountId,
-            username: (profile as any)?.username || (profile as any)?.login || user?.email?.split("@")[0] || "",
-          },
-          update: {
-            accountId: account.providerAccountId,
-            username: (profile as any)?.username || (profile as any)?.login || user?.email?.split("@")[0] || "",
-          },
-        })
-
-        // Check for social warrior badge (3+ social accounts connected)
-        const socialAccountCount = await prisma.socialAccount.count({
-          where: { userId },
-        })
-
-        if (socialAccountCount >= 3) {
-          const existingBadge = await prisma.badge.findFirst({
-            where: {
-              userId,
-              type: BadgeType.SOCIAL_WARRIOR,
+            update: {
+              accountId: account.providerAccountId,
+              username:
+                (profile as { username?: string; login?: string } | undefined)?.username ||
+                (profile as { username?: string; login?: string } | undefined)?.login ||
+                user?.email?.split("@")[0] ||
+                "",
             },
           })
+        }
+      }
 
-          if (!existingBadge) {
-            await prisma.badge.create({
-              data: {
-                userId,
-                type: BadgeType.SOCIAL_WARRIOR,
-              },
-            })
+      // Enrich token with Person-owned identity when we know the user id
+      const identityUserId = user?.id ?? (typeof token.id === "string" ? token.id : undefined)
+      if (identityUserId) {
+        const identity = await prisma.user.findUnique({
+          where: { id: identityUserId },
+          select: {
+            id: true,
+            email: true,
+            personId: true,
+            referralCode: true,
+            isAdmin: true,
+            person: { select: personIdentitySelect },
+          },
+        })
 
-            await prisma.notification.create({
-              data: {
-                userId,
-                type: NotificationType.BADGE_EARNED,
-                title: "Social Warrior Service Medal Earned!",
-                message: "You've connected 3+ social accounts for identity verification! Thank you for your service in the War on Disease! 🫡",
-                link: "/dashboard",
-              },
-            })
-
-            await prisma.activity.create({
-              data: {
-                userId,
-                type: ActivityType.EARNED_BADGE,
-                description: "", // Description will be generated from type and metadata
-                metadata: JSON.stringify({ badgeType: BadgeType.SOCIAL_WARRIOR }),
-              },
-            })
-          }
+        if (identity) {
+          token.id = identity.id
+          token.email = identity.email
+          token.name = identity.person?.displayName ?? null
+          token.picture = identity.person?.image ?? null
+          token.personId = identity.personId
+          token.referralCode = identity.referralCode
+          token.handle = identity.person?.handle ?? null
+          token.isPublic = identity.person?.isPublic ?? false
+          token.isAdmin = identity.isAdmin
         }
       }
 
@@ -246,22 +286,16 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
-
-        // Fetch full user data
-        const user = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          include: {
-            socialAccounts: true,
-            badges: true,
-          },
-        })
-
-        if (user) {
-          session.user.referralCode = user.referralCode
-          session.user.username = user.username
-          session.user.isPublic = user.isPublic
-          session.user.isAdmin = user.isAdmin
-        }
+        session.user.name = (token.name as string | null | undefined) ?? session.user.name ?? null
+        session.user.image =
+          (token.picture as string | null | undefined) ?? session.user.image ?? null
+        session.user.referralCode = token.referralCode as string | undefined
+        session.user.handle = (token.handle as string | null | undefined) ?? null
+        // Deprecated alias for gradual UI migration
+        session.user.username = session.user.handle
+        session.user.isPublic = Boolean(token.isPublic)
+        session.user.isAdmin = Boolean(token.isAdmin)
+        session.user.personId = (token.personId as string | null | undefined) ?? null
       }
       return session
     },
@@ -289,18 +323,15 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async createUser({ user }) {
-      // Generate unique referral code
-      const referralCode = nanoid(8).toUpperCase()
-
+      // Referral code + Person are created in the auth adapter.
+      // Mark email verified and send welcome notification here.
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          referralCode,
-          emailVerified: new Date(), // Mark email as verified on signup
+          emailVerified: new Date(),
         },
       })
 
-      // Create welcome notification
       await prisma.notification.create({
         data: {
           userId: user.id,

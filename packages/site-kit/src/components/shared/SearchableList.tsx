@@ -3,7 +3,7 @@
 import { Input } from "@optimitron/neobrutalist-ui/ui/input"
 import { Skeleton } from "@optimitron/neobrutalist-ui/ui/skeleton"
 import { Search } from "lucide-react"
-import { ReactNode } from "react"
+import { type ChangeEvent, type ReactNode } from "react"
 
 interface SearchableListProps<T> {
   /** All items (unfiltered) */
@@ -84,7 +84,7 @@ export function SearchableList<T>({
           placeholder={searchPlaceholder}
           className="pl-12 h-12 w-full border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold text-lg"
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
           aria-label={`Search ${itemLabel}`}
         />
       </div>

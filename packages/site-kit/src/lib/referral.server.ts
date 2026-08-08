@@ -4,9 +4,9 @@ import { countTreatyVotes } from "./treaty-votes.server"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
 
 /**
- * Finds a user by username (handle) or referral code.
+ * Finds a user by Person.handle or referral code.
  */
-export async function findUserByUsernameOrReferralCode(
+export async function findUserByHandleOrReferralCode(
   identifier: string | null | undefined,
 ) {
   if (!identifier) return null
@@ -17,11 +17,40 @@ export async function findUserByUsernameOrReferralCode(
   return prisma.user.findFirst({
     where: {
       OR: [
-        { referralCode: identifier },
-        { username: normalizedHandle },
+        {
+          referralCode: {
+            equals: identifier,
+            mode: "insensitive",
+          },
+        },
+        {
+          person: {
+            handle: {
+              equals: normalizedHandle,
+              mode: "insensitive",
+            },
+          },
+        },
       ],
     },
+    include: {
+      person: {
+        select: {
+          id: true,
+          handle: true,
+          displayName: true,
+          image: true,
+        },
+      },
+    },
   })
+}
+
+/** @deprecated Prefer findUserByHandleOrReferralCode */
+export async function findUserByUsernameOrReferralCode(
+  identifier: string | null | undefined,
+) {
+  return findUserByHandleOrReferralCode(identifier)
 }
 
 export async function getReferralVoteCount(userId: string): Promise<number> {
@@ -35,6 +64,8 @@ export interface ReferralTreeStats {
   publicRecruits: Array<{
     id: string
     name: string | null
+    handle: string | null
+    /** @deprecated Prefer `handle` */
     username: string | null
     image: string | null
     depth: number
@@ -99,7 +130,9 @@ export async function getReferralTreeStats(
       referendumId,
       deletedAt: null,
       user: {
-        OR: [{ person: { isPublic: true } }, { username: { not: null } }],
+        person: {
+          OR: [{ isPublic: true }, { handle: { not: null } }],
+        },
       },
     },
     take: limit,
@@ -108,9 +141,13 @@ export async function getReferralTreeStats(
       user: {
         select: {
           id: true,
-          name: true,
-          username: true,
-          image: true,
+          person: {
+            select: {
+              displayName: true,
+              handle: true,
+              image: true,
+            },
+          },
         },
       },
     },
@@ -120,12 +157,16 @@ export async function getReferralTreeStats(
     directCount,
     totalDownstreamCount,
     maxDepth,
-    publicRecruits: publicRecruits.map((row) => ({
-      id: row.user.id,
-      name: row.user.name,
-      username: row.user.username,
-      image: row.user.image,
-      depth: 1,
-    })),
+    publicRecruits: publicRecruits.map((row) => {
+      const handle = row.user.person?.handle ?? null
+      return {
+        id: row.user.id,
+        name: row.user.person?.displayName ?? null,
+        handle,
+        username: handle,
+        image: row.user.person?.image ?? null,
+        depth: 1,
+      }
+    }),
   }
 }
