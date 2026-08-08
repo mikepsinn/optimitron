@@ -64,9 +64,9 @@ function usdShort(value: number) {
  */
 export const EXPECTED_VALUE_METHODOLOGY_MARKDOWN = `# How we put a number on a task
 
-Every task in the tree carries an expected value, and the queue ranks work by
-it. That only means something if every number is computed the same way. These
-are the rules.
+Tasks in the tree carry an expected value, and the queue ranks work by it. That
+only means something if every number is computed the same way — and if the ones
+nobody can source stay empty rather than guessed. These are the rules.
 
 ## The one-line rule
 
@@ -169,38 +169,27 @@ belongs in the health fields on the same horizon and the same zero discount.
 
 ## Writing an estimate
 
-The instruction is **research the number**, not "use one that happens to exist".
-Missing evidence is a research task, not a reason to guess.
+Research the number. Missing evidence is a research task, not a reason to guess.
 
-1. **Look for the number first.** \`searchParameters\` covers the whole catalog,
-   which already holds the manual's sourced economics.
-2. **If nothing fits, add one** with \`proposeParameterBundle\`: an immutable
-   revision carrying its formula, inputs and provenance, held for human review.
-   That is where the research belongs — it is reusable, versioned, and every
-   estimate built on it moves when it is corrected.
-3. **Never hand-edit \`parameters-calculations-citations.ts\`.** It is generated
-   from \`dih_models/parameters.py\` upstream and compiled into the catalog, so
-   an edit there is overwritten on the next regeneration.
-4. **Multiply by the ${MISSION_VALUE_HORIZON_YEARS}-year horizon**, then record the probability in its
-   own field.
-5. **Write the reasoning into the estimate, not the description.**
-   \`setTaskImpact\` takes \`assumptions\`, \`sourceUrls\` and \`estimateNotes\`, and
-   they render under "Estimate calculation and sources" on the task. Prose in a
-   description is not attached to the number, so nothing can tell you it went
-   stale.
+1. **Look for an existing sourced figure first.** The catalog already holds the
+   economics behind most of these arguments.
+2. **If nothing fits, find a defensible source and add the figure to the
+   catalog** rather than typing it onto one task. A number living on a single
+   task is a citation; one in the catalog is a dependency, and every estimate
+   built on it moves when it is corrected.
+3. **Multiply the annual effect by ${MISSION_VALUE_HORIZON_YEARS} years** to get the conditional value.
+4. **Multiply that by the probability of success.** The stored expected value is
+   the product of the two, so filing a conditional value as-is overstates the
+   task. Record the probability separately and the conditional value stays
+   recoverable.
+5. **Record the sources and assumptions with the estimate**, not in the task's
+   description. They belong beside the number, so a reader can check it and so
+   the system can flag it when an input changes.
 
-Leave the estimate null only when you have looked and there is genuinely
-nothing defensible — and say so in \`estimateNotes\`, because a stated gap is a
-research lead. A blank is honest. An invented number gets ranked against real
-ones, and the ranking is what the whole system is for.
-
-### A known gap
-
-\`setTaskImpact\` cannot yet link an estimate to the specific parameter revisions
-it used. Managed estimates carry that chain and get staleness detection for
-free; an agent-written one carries \`sourceUrls\` and \`assumptions\` as text
-instead. Prefer promoting a number into a parameter when it is reusable — that
-is the difference between a citation and a dependency.
+Leave an estimate empty only when you have looked and there is genuinely
+nothing defensible — and say so, because a stated gap is a research lead. A
+blank is honest. An invented number gets ranked against real ones, and the
+ranking is what the whole system is for.
 `;
 
 /** Compact form for MCP tool descriptions, where space is tight. */
