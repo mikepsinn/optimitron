@@ -32,8 +32,11 @@ export interface TaskTreeFlatTask {
 export interface TaskTreeNode extends TaskTreeFlatTask {
   children: TaskTreeNode[];
   /** False when the priority formula is missing a required input (no direct
-   * EV estimate or no effort-hours estimate) — the raw numbers below are
-   * still returned (as 0), so `priority` is only meaningful when this is true. */
+   * EV estimate or no effort-hours estimate). Only `priority` is unusable when
+   * this is false — it will be 0. `realEv` may still hold the task's real
+   * value, which is the mission case: a sourced estimate with no effort hours
+   * to divide by. Read `hasEvEstimate` to decide whether `realEv` means
+   * anything. */
   evValid: boolean;
   /** True when the task carries a real expected-value number, independent of
    * whether it also carries the effort estimate `priority` needs. The mission
