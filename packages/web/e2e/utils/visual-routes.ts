@@ -21,7 +21,7 @@ export type VisualRoute = {
   name: string;
   openCreateTask?: boolean;
   openContentShare?: boolean;
-  openAddStep?: boolean;
+  openAddSubtask?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
   path: string;
@@ -478,8 +478,8 @@ function loadDocumentReviewRoutes(): VisualRoute[] {
     {
       authenticated: true,
       covers: [CREATE_TASK_DIALOG_FILE, TASK_MANAGEMENT_CONTROLS_FILE],
-      name: "task-management-add-step",
-      openAddStep: true,
+      name: "task-management-add-subtask",
+      openAddSubtask: true,
       path: `/tasks/${manifest.managementOwnerTaskId}`,
       required: true,
       requiredSelector: '[role="dialog"]',
