@@ -116,7 +116,8 @@ export default defineConfig({
   webServer: process.env.SKIP_SERVER
     ? undefined
     : {
-        command: "npx next start --port 3001",
+        // Use package-local next (pnpm exec), never hoisted monorepo next@14 from `npx`.
+        command: "pnpm exec next start --port 3001",
         port: 3001,
         reuseExistingServer: true,
         timeout: 30_000,
