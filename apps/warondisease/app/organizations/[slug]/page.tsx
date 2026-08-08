@@ -14,16 +14,17 @@ import { getOrganizationShareTemplates } from "@/lib/share-copy"
 import { ROUTES } from '@/lib/routes'
 
 interface OrganizationPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export default async function OrganizationPage({ params }: OrganizationPageProps) {
   try {
+    const { slug } = await params
     // URL uses slug; auth check keys on id (immutable DB key) — look up slug first, then gate.
     const org = await prisma.organization.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true },
     })
     if (!org) {

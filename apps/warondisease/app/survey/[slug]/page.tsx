@@ -9,14 +9,15 @@ import { getSiteConfig, getBaseUrl, getPrimaryDomain } from "@/lib/site-config"
 import { ROUTES } from "@/lib/routes"
 
 interface SurveyPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: SurveyPageProps): Promise<Metadata> {
+  const { slug } = await params
   const organization = await prisma.organization.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { name: true, slug: true, status: true },
   })
 
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: SurveyPageProps): Promise<Met
     title: `${organization.name} - Clinical Trial Abundance Survey`,
     description: `Take ${organization.name}'s 2-question Global Clinical Trial Abundance Survey. Take 30 seconds to make suffering optional.`,
     alternates: {
-      canonical: `${primaryDomain}/survey/${params.slug}`,
+      canonical: `${primaryDomain}/survey/${slug}`,
     },
     openGraph: {
       title: `Take the 2-Question Global Clinical Trial Abundance Survey`,
@@ -62,7 +63,7 @@ export async function generateMetadata({ params }: SurveyPageProps): Promise<Met
 }
 
 export default async function SurveyPage({ params }: SurveyPageProps) {
-  const { slug } = params
+  const { slug } = await params
 
   const organization = await prisma.organization.findUnique({
     where: { slug },

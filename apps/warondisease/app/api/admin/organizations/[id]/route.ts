@@ -10,13 +10,13 @@ const log = createLogger("api:admin:organizations")
 // PATCH /api/admin/organizations/[id] - Update organization
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require admin authentication
     const admin = await requireAdmin()
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Find organization
@@ -124,13 +124,13 @@ export async function PATCH(
 // DELETE /api/admin/organizations/[id] - Soft delete organization
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require admin authentication
     const admin = await requireAdmin()
 
-    const { id } = params
+    const { id } = await params
 
     // Find organization
     const organization = await prisma.organization.findUnique({

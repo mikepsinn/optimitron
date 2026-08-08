@@ -23,7 +23,7 @@ export default async function LiteDashboardPage() {
   }
 
   const vote = await getUserTreatyVote(userId).catch(() => null)
-  const headersList = headers()
+  const headersList = await headers()
   const host = headersList.get("host") ?? "trialabundancesurvey.org"
   const proto = host.includes("localhost") ? "http" : "https"
   const surveyUrl = `${proto}://${host}`

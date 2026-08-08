@@ -88,10 +88,13 @@ async function getUsers(filter?: UserAdminFilter) {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: { filter?: string }
+  searchParams: Promise<{ filter?: string }>
 }) {
   const admin = await requireAdmin()
-  const filter = isUserAdminFilter(searchParams.filter) ? searchParams.filter : undefined
+  const resolvedSearchParams = await searchParams
+  const filter = isUserAdminFilter(resolvedSearchParams.filter)
+    ? resolvedSearchParams.filter
+    : undefined
 
   const [users, total, admins, unverified] = await Promise.all([
     getUsers(filter),

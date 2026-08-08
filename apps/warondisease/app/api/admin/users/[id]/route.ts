@@ -8,10 +8,11 @@ const log = createLogger("api:admin:users:id")
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const admin = await requireAdmin()
+    const { id } = await params
     const body = await request.json()
 
     if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -33,7 +34,7 @@ export async function PATCH(
 
     const targetUser = await prisma.user.findFirst({
       where: {
-        id: params.id,
+        id,
         deletedAt: null,
       },
       select: {

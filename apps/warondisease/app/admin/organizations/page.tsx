@@ -43,13 +43,15 @@ async function getOrganizations(status?: OrgStatus) {
 export default async function AdminOrganizationsPage({
   searchParams,
 }: {
-  searchParams: { status?: OrgStatus }
+  searchParams: Promise<{ status?: OrgStatus }>
 }) {
   // Require admin access
   await requireAdmin()
 
+  const resolvedSearchParams = await searchParams
+
   // Fetch organizations
-  const organizations = await getOrganizations(searchParams.status)
+  const organizations = await getOrganizations(resolvedSearchParams.status)
 
   // Count by status
   const [pending, approved, rejected] = await Promise.all([
@@ -68,7 +70,7 @@ export default async function AdminOrganizationsPage({
     <AdminOrganizationsClient
       organizations={organizations}
       counts={{ pending, approved, rejected }}
-      currentFilter={searchParams.status}
+      currentFilter={resolvedSearchParams.status}
     />
   )
 }

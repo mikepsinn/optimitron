@@ -23,11 +23,11 @@ export const dynamic = 'force-dynamic'
 // running. Resolve the variant the same way middleware.ts does: respect
 // NEXT_PUBLIC_SITE_VARIANT in local dev, otherwise derive it from the
 // incoming request's Host header so metadata/icons/nav match this app.
-function resolveRequestSiteConfig() {
+async function resolveRequestSiteConfig() {
   const variant: SiteVariant =
     process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_SITE_VARIANT
       ? (process.env.NEXT_PUBLIC_SITE_VARIANT as SiteVariant)
-      : getSiteVariantForHost(headers().get("host"))
+      : getSiteVariantForHost((await headers()).get("host"))
   return getSiteConfigForVariant(variant)
 }
 
@@ -37,8 +37,8 @@ const _spaceMono = V0_Font_Space_Mono({ subsets: ['latin'], weight: ["400", "700
 const _sourceSerif_4 = V0_Font_Source_Serif_4({ subsets: ['latin'], weight: ["200", "300", "400", "500", "600", "700", "800", "900"], variable: '--v0-font-source-serif-4' })
 const _v0_fontVariables = `${_dmSans.variable} ${_spaceMono.variable} ${_sourceSerif_4.variable}`
 
-export function generateMetadata(): Metadata {
-  const config = resolveRequestSiteConfig()
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await resolveRequestSiteConfig()
   const baseUrl = getBaseUrl()
 
   return {
@@ -78,12 +78,12 @@ export function generateMetadata(): Metadata {
   }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const config = resolveRequestSiteConfig()
+  const config = await resolveRequestSiteConfig()
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
   return (

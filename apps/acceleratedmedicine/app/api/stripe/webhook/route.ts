@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { headers } from "next/headers"
 import Stripe from "stripe"
 import { createLogger } from "@/lib/logger"
 import { env } from "@/lib/env"
@@ -18,7 +17,7 @@ const log = createLogger("stripe-webhook")
  */
 export async function POST(req: NextRequest) {
   const body = await req.text()
-  const signature = headers().get("stripe-signature")
+  const signature = req.headers.get("stripe-signature")
 
   if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) {
     log.warn("Stripe env not configured; ignoring webhook")

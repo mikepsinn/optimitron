@@ -3,15 +3,16 @@ import TreatyVoteSection from "@/components/landing/treaty-vote-section"
 export const dynamic = "force-dynamic"
 
 type EmbedPageProps = {
-  searchParams?: { ref?: string; embed?: string }
+  searchParams?: Promise<{ ref?: string; embed?: string }>
 }
 
 /**
  * Framed survey surface for partners (iframe / embed.js).
  * Referral: ?ref=CODE
  */
-export default function EmbedPage({ searchParams }: EmbedPageProps) {
-  const ref = searchParams?.ref
+export default async function EmbedPage({ searchParams }: EmbedPageProps) {
+  const resolved = (await searchParams) ?? {}
+  const ref = resolved.ref
 
   return (
     <div className="min-h-screen bg-background p-2 sm:p-4" data-embed="1" data-ref={ref ?? ""}>
