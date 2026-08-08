@@ -259,7 +259,7 @@ describe("tasks route", () => {
     await expect(response.json()).resolves.toMatchObject({ success: true });
   });
 
-  it("lets a manager add a step to an accessible private personal task", async () => {
+  it("lets a manager add a subtask to an accessible private personal task", async () => {
     mocks.requireAuth.mockResolvedValue({ userId: "user_1" });
     mocks.taskFindFirst.mockResolvedValue({
       id: "parent_1",
@@ -268,11 +268,11 @@ describe("tasks route", () => {
       status: TaskStatus.ACTIVE,
     });
     mocks.canUserManageTask.mockResolvedValue(true);
-    mocks.createTask.mockResolvedValue({ id: "step_1" });
+    mocks.createTask.mockResolvedValue({ id: "subtask_1" });
 
     const response = await POST(
       new Request("http://localhost/api/tasks", {
-        body: JSON.stringify({ parentTaskId: "parent_1", title: "First step" }),
+        body: JSON.stringify({ parentTaskId: "parent_1", title: "First subtask" }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
       }),
@@ -300,7 +300,7 @@ describe("tasks route", () => {
             lastName: "Reviewer",
           },
           parentTaskId: "parent_1",
-          title: "First step",
+          title: "First subtask",
         }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
@@ -328,7 +328,7 @@ describe("tasks route", () => {
 
     const response = await POST(
       new Request("http://localhost/api/tasks", {
-        body: JSON.stringify({ parentTaskId: "parent_1", title: "First step" }),
+        body: JSON.stringify({ parentTaskId: "parent_1", title: "First subtask" }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
       }),
@@ -368,7 +368,7 @@ describe("tasks route", () => {
 
     const response = await POST(
       new Request("http://localhost/api/tasks", {
-        body: JSON.stringify({ parentTaskId: parent.id, title: "First step" }),
+        body: JSON.stringify({ parentTaskId: parent.id, title: "First subtask" }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
       }),

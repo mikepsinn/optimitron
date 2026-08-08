@@ -604,7 +604,10 @@ const valueEdgeTaskSelect = {
   title: true,
 } satisfies Prisma.TaskSelect;
 
-const VALUE_EDGE_TYPES = ["INCREASES_PROBABILITY_OF", "ACCELERATES"] as const;
+const VALUE_EDGE_TYPES = [
+  TaskEdgeType.INCREASES_PROBABILITY_OF,
+  TaskEdgeType.ACCELERATES,
+] as const;
 
 /**
  * Value edges are fetched by `loadTaskValueEdges` in a query of their own
@@ -613,13 +616,41 @@ const VALUE_EDGE_TYPES = ["INCREASES_PROBABILITY_OF", "ACCELERATES"] as const;
  * out to be the safer shape anyway: a separate query has no way to widen the
  * blocking-edge selects that feed the valuation path.
  */
-export async function loadTaskValueEdges(taskId: string) {
+export async function loadTaskValueEdges(
+  taskId: string,
+  viewer: {
+    clientAccessBoundary?: TaskClientAccessBoundary;
+    personId?: string | null;
+    userId?: string | null;
+  } = {},
+) {
+  // Filter at the query, not at render. getTaskDetailData is serialized
+  // straight out of GET /api/tasks/[id], so filtering in the component would
+  // protect the rendered page and leak the same rows through the API -- a
+  // private task's title, key, due date, assignee and claim user ids, to
+  // anyone who can see the public task on the other end of the edge. Applying
+  // the canonical predicate here covers every caller at once.
+  const viewerAccess = getTaskAccessWhere({
+    action: "READ",
+    personId: viewer.personId,
+    userId: viewer.userId,
+  });
+  const counterpartAccess = viewer.clientAccessBoundary
+    ? {
+        AND: [
+          viewerAccess,
+          getTaskClientAccessWhere(viewer.clientAccessBoundary),
+        ],
+      }
+    : viewerAccess;
+
   const [outgoing, incoming] = await Promise.all([
     prisma.taskEdge.findMany({
       where: {
         deletedAt: null,
         fromTaskId: taskId,
         edgeType: { in: [...VALUE_EDGE_TYPES] },
+        toTask: { AND: [{ deletedAt: null }, counterpartAccess] },
       },
       select: {
         edgeType: true,
@@ -633,6 +664,7 @@ export async function loadTaskValueEdges(taskId: string) {
         deletedAt: null,
         toTaskId: taskId,
         edgeType: { in: [...VALUE_EDGE_TYPES] },
+        fromTask: { AND: [{ deletedAt: null }, counterpartAccess] },
       },
       select: {
         edgeType: true,
@@ -1661,7 +1693,11 @@ export async function getTaskDetailData(
             select: { id: true },
           })
         : Promise.resolve(null),
-      loadTaskValueEdges(normalizedTaskId),
+      loadTaskValueEdges(normalizedTaskId, {
+        clientAccessBoundary: options?.clientAccessBoundary,
+        personId: viewer?.personId ?? null,
+        userId,
+      }),
     ]);
 
   const viewerClaim =
@@ -1691,8 +1727,9 @@ export async function getTaskDetailData(
     taskCommunicationCount,
     task: {
       // Attached after decorateTask so value edges cannot reach the impact
-      // math. Viewer filtering happens in TaskDependenciesSection, which
-      // already owns canSeeRelatedTask for the blocking edges.
+      // math. Already filtered to what this viewer may read by
+      // loadTaskValueEdges; TaskDependenciesSection filters again on render,
+      // which is belt-and-braces rather than the boundary.
       ...decorateTask(
         {
           ...task,

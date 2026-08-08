@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { impactEstimateSetSelect } from "@/lib/tasks.server";
 import { selectImpactFrame } from "@/lib/tasks/impact";
 import { getTaskVisibilityWhere } from "@/lib/tasks/task-visibility.server";
+import { getRootedTaskIds } from "@/lib/tasks/execution-planner-audit";
 import { OPTIMIZE_EARTH_ROOT_TASK_ID } from "@/lib/tasks/task-keys";
 import {
   buildTaskTree,
@@ -81,13 +82,27 @@ export async function getTaskTreePageData(
     select: taskTreeSelect,
   });
 
-  const visibleTaskIds = new Set(tasks.map((task) => task.id));
+  // Visibility alone is not enough: buildTaskTree drops anything that cannot
+  // reach the Optimize Earth root, so a task can be readable and still absent
+  // from the rendered tree. Use the same reachability rule the tree itself
+  // uses, or the chip names goals the reader cannot find.
+  const rootedTaskIds = getRootedTaskIds(
+    // getRootedTaskIds only walks id/parentTaskId; the rest of
+    // ExecutionGraphTask is queue bookkeeping it never reads here. Filled with
+    // inert values rather than re-implementing reachability, so there stays
+    // exactly one definition of "reaches the root".
+    tasks.map((task) => ({
+      activeChildTaskCount: 0,
+      hasMarginalEstimate: false,
+      id: task.id,
+      parentTaskId: task.parentTaskId,
+    })),
+    OPTIMIZE_EARTH_ROOT_TASK_ID,
+  );
 
   const flatTasks = tasks.map((task) => ({
-    // Only name goals the viewer can already see in this tree, so the chip
-    // cannot leak a private task's title.
     alsoServes: task.outgoingEdges
-      .filter((edge) => visibleTaskIds.has(edge.toTask.id))
+      .filter((edge) => rootedTaskIds.has(edge.toTask.id))
       .map((edge) => edge.toTask.title),
     blockerStatuses: task.incomingEdges.map((edge) => edge.fromTask.status),
     createdAt: task.createdAt,

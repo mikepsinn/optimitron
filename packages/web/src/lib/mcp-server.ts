@@ -4151,7 +4151,7 @@ const TASK_CONTEXT_JSON_SCHEMA = {
     blockedBy: {
       type: "object" as const,
       description:
-        "Records an upstream blocker on this task. Stored on the task context; no dedicated card renders it today.",
+        "Records an upstream blocker on this task. Stored on the task context; no dedicated blocker card currently renders it.",
       properties: {
         taskId: { type: "string" },
         summary: { type: "string" },
