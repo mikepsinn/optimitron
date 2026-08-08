@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import type { LeaderboardEntry } from "@/lib/verified-votes.server";
 import { CopyLinkButton } from "@/components/sharing/copy-link-button";
 import { SocialShareButtons } from "@/components/sharing/social-share-buttons";
@@ -147,12 +147,13 @@ export function CitizenDashboard() {
           = {LIVES_SAVED_PER_VOTE.toFixed(1)} lives saved + {SUFFERING_YEARS_PER_VOTE.toLocaleString()} years of
           suffering prevented.
         </p>
-        <a
-          href="/api/auth/signin"
+        <button
+          type="button"
+          onClick={() => void signIn()}
           className="inline-flex min-h-11 items-center justify-center border border-foreground bg-foreground px-5 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
         >
           Sign In
-        </a>
+        </button>
       </div>
     );
   }
