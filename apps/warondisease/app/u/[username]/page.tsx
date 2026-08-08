@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import { Layout } from "@/components/layout"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ExternalLink, Globe, Award, Link as LinkIcon } from "lucide-react"
+import { ExternalLink, Globe, Link as LinkIcon } from "lucide-react"
 import { VoteOrShareButton } from "@/components/shared/VoteOrShareButton"
 import { getPublicUserProfile, resolveUsernameAlias } from "@/lib/user"
 import { getBadgeName, getBadgeDescription } from "@/lib/activity-descriptions"
@@ -141,32 +141,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             <Card className="border-2 border-primary p-6 mb-8">
               <h2 className="font-black text-xl uppercase mb-3">About</h2>
               <p className="font-bold whitespace-pre-wrap">{userData.bio}</p>
-            </Card>
-          )}
-
-          {/* Skills Section */}
-          {userData.skills && userData.skills.length > 0 && (
-            <Card className="border-2 border-primary p-6 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Award className="w-5 h-5" />
-                <h2 className="font-black text-xl uppercase">Skills</h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {userData.skills.map((skill) => (
-                  <Badge
-                    key={skill.id}
-                    variant="secondary"
-                    className="border-2 border-primary bg-brutal-cyan text-white text-sm px-3 py-2 font-bold"
-                  >
-                    {skill.name}
-                    {skill.endorsements > 0 && (
-                      <span className="ml-2 text-xs opacity-80">
-                        ({skill.endorsements})
-                      </span>
-                    )}
-                  </Badge>
-                ))}
-              </div>
             </Card>
           )}
 

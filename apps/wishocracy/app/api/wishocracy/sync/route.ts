@@ -10,6 +10,9 @@ import {
   resolveItemIds,
   resolvePairAllocations,
 } from "@/lib/wishocracy-item-ids"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("wishocracy-sync")
 
 interface ComparisonData {
   categoryA: string
@@ -127,7 +130,7 @@ export async function POST(req: NextRequest) {
       syncedComparisons: createResult.count,
     })
   } catch (error) {
-    console.error("Wishocracy sync error:", error)
+    log.error("Wishocracy sync error", { error })
     return NextResponse.json(
       { error: "Sync failed. Please try again." },
       { status: 500 },

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { hashPassword } from "@/lib/auth"
 import { nanoid } from "nanoid"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("auth-signup")
 
 export async function POST(req: Request) {
   try {
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "User created successfully", userId: user.id }, { status: 201 })
   } catch (error) {
-    console.error("[v0] Signup error:", error)
+    log.error("Signup error", { error })
     return NextResponse.json({ error: "Failed to create user" }, { status: 500 })
   }
 }

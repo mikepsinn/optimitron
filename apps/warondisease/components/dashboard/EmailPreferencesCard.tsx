@@ -7,6 +7,9 @@ import type { DashboardData, DashboardUser } from "@/types/dashboard"
 import { updateUserProfile } from "@/app/dashboard/actions"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("email-preferences")
 
 interface EmailPreferencesCardProps {
   user: DashboardData["user"]
@@ -18,104 +21,44 @@ interface EmailPreferencesCardProps {
 export function EmailPreferencesCard({ user, onUserChange, onRefresh, className }: EmailPreferencesCardProps) {
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const updatePreferences = async (data: Partial<Pick<DashboardUser, "weeklyDigest" | "emailNotifications" | "newsletterSubscribed">>) => {
+  const toggleNewsletter = async () => {
+    const next = !user.newsletterSubscribed
     try {
       setIsUpdating(true)
-      await updateUserProfile(data)
-      onUserChange({ ...user, ...data })
+      await updateUserProfile({ newsletterSubscribed: next })
+      onUserChange({ ...user, newsletterSubscribed: next })
       onRefresh()
     } catch (error) {
-      console.error("Failed to update email preferences:", error)
+      log.error("Failed to update email preferences", { error })
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const toggleEmailNotifications = () => {
-    updatePreferences({ emailNotifications: !user.emailNotifications })
-  }
-
-  const toggleWeeklyDigest = () => {
-    if (!user.emailNotifications) {
-      return
-    }
-
-    updatePreferences({ weeklyDigest: !user.weeklyDigest })
-  }
-
-  const toggleNewsletterSubscribed = () => {
-    if (!user.emailNotifications) {
-      return
-    }
-
-    updatePreferences({ newsletterSubscribed: !user.newsletterSubscribed })
-  }
-
   return (
     <Card className={cn("border-2 border-primary mb-8", className)}>
       <CardHeader>
-        <CardTitle className="text-2xl font-black uppercase">📧 EMAIL PREFERENCES</CardTitle>
-        <CardDescription className="font-bold">Manage how we communicate with you</CardDescription>
+        <CardTitle className="text-2xl font-black uppercase">EMAIL PREFERENCES</CardTitle>
+        <CardDescription className="font-bold">How we email you</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between p-4 border-2 border-primary bg-background">
           <div>
-            <Label className="text-sm font-bold uppercase">Email Notifications</Label>
-            <p className="text-xs text-muted-foreground">Master toggle for all email communications</p>
+            <Label className="text-sm font-bold uppercase">Subscribe for updates</Label>
+            <p className="text-xs text-muted-foreground">
+              Campaign progress, product updates, and impact reports
+            </p>
           </div>
           <Button
-            onClick={toggleEmailNotifications}
-            variant={user.emailNotifications ? "default" : "outline"}
+            onClick={toggleNewsletter}
+            variant={user.newsletterSubscribed ? "default" : "outline"}
             className="border-2 border-primary"
             disabled={isUpdating}
           >
-            {user.emailNotifications ? "ON" : "OFF"}
+            {user.newsletterSubscribed ? "ON" : "OFF"}
           </Button>
         </div>
-
-        <div className="flex items-center justify-between p-4 border-2 border-primary bg-background">
-          <div>
-            <Label className="text-sm font-bold uppercase">Weekly Digest Emails</Label>
-            <p className="text-xs text-muted-foreground">
-              Get your stats, new referrals, and leaderboard position every Monday
-            </p>
-          </div>
-          <Button
-            onClick={toggleWeeklyDigest}
-            variant={user.weeklyDigest && user.emailNotifications ? "default" : "outline"}
-            className="border-2 border-primary"
-            disabled={!user.emailNotifications || isUpdating}
-          >
-            {user.weeklyDigest && user.emailNotifications ? "ON" : "OFF"}
-          </Button>
-        </div>
-
-        <div className="flex items-center justify-between p-4 border-2 border-primary bg-background">
-          <div>
-            <Label className="text-sm font-bold uppercase">Subscribe for Updates</Label>
-            <p className="text-xs text-muted-foreground">
-              Receive updates on campaign progress, new features, and impact reports
-            </p>
-          </div>
-          <Button
-            onClick={toggleNewsletterSubscribed}
-            variant={user.newsletterSubscribed && user.emailNotifications ? "default" : "outline"}
-            className="border-2 border-primary"
-            disabled={!user.emailNotifications || isUpdating}
-          >
-            {user.newsletterSubscribed && user.emailNotifications ? "ON" : "OFF"}
-          </Button>
-        </div>
-
-        {!user.emailNotifications && (
-          <div className="p-4 border-2 border-dashed border-primary bg-brutal-yellow">
-            <p className="text-sm font-bold text-center">
-              ⚠️ Email notifications are disabled. Enable them to receive weekly updates.
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   )
 }
-

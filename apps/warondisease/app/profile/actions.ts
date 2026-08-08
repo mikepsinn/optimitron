@@ -202,14 +202,6 @@ export async function getProfileData() {
       organization: membership?.organization.name || null,
       organizationId: membership?.organizationId ?? null,
     },
-    skills: [] as Array<{
-      id: string
-      name: string
-      slug: string
-      category: string | null
-      endorsements: number
-      addedAt: Date
-    }>,
     links: parsePersonLinks(person?.links),
   }
 }

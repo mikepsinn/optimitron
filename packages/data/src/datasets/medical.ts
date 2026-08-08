@@ -1,5 +1,7 @@
 import conditionsData from "./medical-data/conditions.json";
 import treatmentsData from "./medical-data/treatments.json";
+import referencesData from "./medical-data/references.json";
+import treatmentsIndexData from "./medical-data/treatments/index.json";
 import { medicalNameToSlug } from "./medical-slug";
 
 export { medicalNameToSlug } from "./medical-slug";
@@ -158,8 +160,26 @@ export interface TreatmentWithConditions {
   avgSafetyScore: number;
 }
 
+export interface MedicalReferencesData {
+  metadata: {
+    title: string;
+    description: string;
+  };
+  references: Array<{
+    id: string;
+    title: string;
+    quotes: string[];
+    sources: Array<{ text: string; url: string }>;
+    notes?: string;
+  }>;
+}
+
 export const MEDICAL_CONDITIONS = conditionsData as Condition[];
 export const MEDICAL_TREATMENTS = treatmentsData as TreatmentWithConditions[];
+export const MEDICAL_REFERENCES = referencesData as MedicalReferencesData;
+export const MEDICAL_TREATMENT_CONDITION_SLUGS = (
+  treatmentsIndexData as { conditions: string[] }
+).conditions;
 
 export function getAllConditions(): Condition[] {
   return MEDICAL_CONDITIONS;
@@ -254,4 +274,13 @@ export async function getTreatmentForCondition(
       (treatment) => medicalNameToSlug(treatment.name) === treatmentSlug,
     ) ?? null
   );
+}
+
+/** Condition slugs that have a per-condition treatment evidence file. */
+export function getConditionSlugsWithTreatments(): string[] {
+  return MEDICAL_TREATMENT_CONDITION_SLUGS;
+}
+
+export function getMedicalReferences(): MedicalReferencesData {
+  return MEDICAL_REFERENCES;
 }

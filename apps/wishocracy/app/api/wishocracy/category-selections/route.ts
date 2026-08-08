@@ -5,8 +5,10 @@ import { BudgetCategoryId, BUDGET_CATEGORIES } from "@/lib/wishocracy-data"
 import {
   ensureWishocraticItemsExist,
   resolveItemIds,
-  toClientCategoryId,
 } from "@/lib/wishocracy-item-ids"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("wishocracy-category-selections")
 
 export const runtime = "nodejs"
 
@@ -76,7 +78,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Failed to save category selections:", error)
+    log.error("Failed to save category selections", { error })
     return NextResponse.json(
       { error: "Failed to save category selections" },
       { status: 500 },
@@ -97,27 +99,15 @@ export async function GET() {
       orderBy: { createdAt: "asc" },
     })
 
-    // Collapse Optimitron item ids back to DIH category ids for the client
-    const byCategory = new Map<string, boolean>()
-    for (const row of inclusions) {
-      const categoryId = toClientCategoryId(row.itemId)
-      // If any expanded ICE item is included, treat the DIH category as selected
-      byCategory.set(
-        categoryId,
-        (byCategory.get(categoryId) ?? false) || row.included,
-      )
-    }
-
-    const selections = Array.from(byCategory.entries()).map(
-      ([categoryId, selected]) => ({
-        categoryId,
-        selected,
-      }),
-    )
+    // Client uses Optimitron WishocraticItem ids (same as DB itemAId/itemBId)
+    const selections = inclusions.map((row) => ({
+      categoryId: row.itemId,
+      selected: row.included,
+    }))
 
     return NextResponse.json({ selections })
   } catch (error) {
-    console.error("Failed to fetch category selections:", error)
+    log.error("Failed to fetch category selections", { error })
     return NextResponse.json(
       { error: "Failed to fetch category selections" },
       { status: 500 },
@@ -139,7 +129,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Failed to delete category selections:", error)
+    log.error("Failed to delete category selections", { error })
     return NextResponse.json(
       { error: "Failed to delete category selections" },
       { status: 500 },

@@ -736,6 +736,9 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@14.2.35)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
@@ -1759,6 +1762,9 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@14.2.35)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db

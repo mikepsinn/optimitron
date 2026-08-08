@@ -13,8 +13,6 @@ export interface DashboardUser {
   organization: string | null
   organizationId: string | null
   image: string | null
-  weeklyDigest: boolean
-  emailNotifications: boolean
   newsletterSubscribed: boolean
   website: string | null
   headline: string | null
@@ -55,35 +53,6 @@ export interface DashboardActivity {
 export interface DashboardProgress {
   current: number
   target: number
-}
-
-export interface DashboardCampaign {
-  id: string
-  slug: string
-  title: string
-  status: string
-  goalAmount: number
-  currentAmount: number
-  backerCount: number
-  currency: string
-}
-
-export interface DashboardPledgedCampaign {
-  id: string
-  amount: number
-  currency: string
-  createdAt: Date
-  campaign: {
-    id: string
-    slug: string
-    title: string
-    status: string
-  }
-}
-
-export interface DashboardCampaigns {
-  created: DashboardCampaign[]
-  pledged: DashboardPledgedCampaign[]
 }
 
 export interface DashboardOrganization {
@@ -148,7 +117,6 @@ export interface DashboardData {
   activities: DashboardActivity[]
   globalProgress: DashboardProgress
   allocation: DashboardAllocation
-  campaigns: DashboardCampaigns
   organizations: DashboardOrganizations
 }
 

@@ -20,7 +20,6 @@ import { ImpactLedgerCard } from "@/components/dashboard/ImpactLedgerCard"
 import { ImpactTreeCard } from "@/components/dashboard/ImpactTreeCard"
 import { ReferralInvitationsCard } from "@/components/dashboard/ReferralInvitationsCard"
 import { LeaderboardCard } from "@/components/dashboard/LeaderboardCard"
-import { CampaignsCard } from "@/components/dashboard/CampaignsCard"
 import { OrganizationsCard } from "@/components/dashboard/OrganizationsCard"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { EmailSignatureCard } from "@/components/dashboard/EmailSignatureCard"
@@ -41,7 +40,6 @@ export function DashboardClient({
   const { data: session, status } = useSession()
   const referralLink = buildUserReferralUrl(initialData.user)
   const [openSections, setOpenSections] = useState<string[]>([])
-  const hasCampaigns = initialData.campaigns.created.length > 0 || initialData.campaigns.pledged.length > 0
   const hasOrganizations = initialData.organizations?.created.length > 0
   const hasBadges = initialData.badges.length > 0
   const hasActivity = initialData.activities.length > 0
@@ -151,7 +149,7 @@ export function DashboardClient({
             />
           </div>
 
-          {(showPoliticalContent || hasCampaigns || hasActivity || hasBadges || hasOrganizations || hasLeaderboard) && (
+          {(showPoliticalContent || hasActivity || hasBadges || hasOrganizations || hasLeaderboard) && (
             <div className="mb-8">
               <Accordion type="multiple" value={openSections} onValueChange={setOpenSections} className="space-y-4">
                 <AccordionItem value="goal" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
@@ -186,7 +184,7 @@ export function DashboardClient({
                   </AccordionItem>
                 )}
 
-                {(showPoliticalContent || hasCampaigns) && (
+                {showPoliticalContent && (
                   <AccordionItem value="details" className="mb-4 border-2 border-primary last:border-b-2 bg-background px-6">
                     <AccordionTrigger className="text-lg sm:text-xl font-black uppercase hover:no-underline">
                       <span className="inline-flex items-center gap-2">
@@ -195,13 +193,8 @@ export function DashboardClient({
                       </span>
                     </AccordionTrigger>
                     <AccordionContent className="pt-4 space-y-6">
-                      {showPoliticalContent && (
-                        <>
-                          <StatsOverview stats={initialData.stats} onMetricClick={handleMetricClick} className="mb-0" />
-                          <GlobalProgressCard progress={initialData.globalProgress} className="mb-0" />
-                        </>
-                      )}
-                      {hasCampaigns && <CampaignsCard campaigns={initialData.campaigns} className="mb-0" />}
+                      <StatsOverview stats={initialData.stats} onMetricClick={handleMetricClick} className="mb-0" />
+                      <GlobalProgressCard progress={initialData.globalProgress} className="mb-0" />
                     </AccordionContent>
                   </AccordionItem>
                 )}

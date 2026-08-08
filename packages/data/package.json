@@ -16,7 +16,6 @@
     "./fetchers": "./src/fetchers/index.ts",
     "./fetchers/congress": "./src/fetchers/congress.ts",
     "./wishocratic-items-registry": "./src/wishocratic-items-registry.ts",
-    "./wishocratic-dih-aliases": "./src/wishocratic-dih-aliases.ts",
     "./datasets/agency-historical-trends": "./src/datasets/agency-historical-trends.ts",
     "./datasets/agency-performance": "./src/datasets/agency-performance.ts",
     "./datasets/agency-supplementary": "./src/datasets/agency-supplementary.ts",

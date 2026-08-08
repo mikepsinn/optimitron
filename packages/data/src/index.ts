@@ -59,7 +59,6 @@ export * from './datasets/index';
 
 // Wishocratic items registry (jurisdiction-aware item lookup)
 export * from './wishocratic-items-registry';
-export * from './wishocratic-dih-aliases';
 
 // Jurisdiction registry
 export * from './jurisdictions';

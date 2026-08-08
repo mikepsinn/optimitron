@@ -175,8 +175,6 @@ export async function getDashboardData() {
       organization: primaryMembership?.organization.name || null,
       organizationId: primaryMembership?.organizationId ?? null,
       image: getUserDisplayAvatar(userWithDashboardData),
-      weeklyDigest: userWithDashboardData.newsletterSubscribed,
-      emailNotifications: userWithDashboardData.newsletterSubscribed,
       newsletterSubscribed: userWithDashboardData.newsletterSubscribed,
       website: person?.website || null,
       headline: person?.headline || null,
@@ -251,30 +249,6 @@ export async function getDashboardData() {
     allocation: {
       user: null as number | null,
       average: 50,
-    },
-    campaigns: {
-      created: [] as {
-        id: string
-        slug: string
-        title: string
-        status: string
-        goalAmount: number
-        currentAmount: number
-        backerCount: number
-        currency: string
-      }[],
-      pledged: [] as {
-        id: string
-        amount: number
-        currency: string
-        createdAt: Date
-        campaign: {
-          id: string
-          slug: string
-          title: string
-          status: string
-        }
-      }[],
     },
     organizations: {
       created: userWithDashboardData.createdOrganizations.map((org) => ({
@@ -353,8 +327,6 @@ export async function updateUserProfile(data: {
   organizationId?: string | null
   country?: string | null
   isPublic?: boolean
-  weeklyDigest?: boolean
-  emailNotifications?: boolean
   newsletterSubscribed?: boolean
   website?: string | null
   headline?: string | null
@@ -425,11 +397,7 @@ export async function updateUserProfile(data: {
   const newsletterSubscribed =
     typeof data.newsletterSubscribed === "boolean"
       ? data.newsletterSubscribed
-      : typeof data.weeklyDigest === "boolean"
-        ? data.weeklyDigest
-        : typeof data.emailNotifications === "boolean"
-          ? data.emailNotifications
-          : undefined
+      : undefined
 
   if (newsletterSubscribed !== undefined || data.country !== undefined) {
     await prisma.user.update({

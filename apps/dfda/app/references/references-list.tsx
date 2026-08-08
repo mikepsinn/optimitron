@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
-import referencesData from '@/data/references.json';
-import type { GeneralResearchCitation, GeneralResearchCitationsData } from '@/types/general-research-citation';
+import { MEDICAL_REFERENCES } from '@optimitron/data/datasets/medical';
+import type { GeneralResearchCitation } from '@/types/general-research-citation';
 import { GeneralResearchCitationCard } from '@/components/shared/GeneralResearchCitationCard';
 
 // Define Skeleton component separately
@@ -28,15 +28,8 @@ export function ReferencesList() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load references data from JSON
-    try {
-      const data = referencesData as GeneralResearchCitationsData;
-      setReferences(data.references || []);
-    } catch (err) {
-      console.error('Failed to load references:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    setReferences(MEDICAL_REFERENCES.references || []);
+    setIsLoading(false);
   }, []);
 
   const filteredReferences = useMemo(() => {

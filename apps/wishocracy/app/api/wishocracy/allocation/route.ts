@@ -6,6 +6,9 @@ import {
   isValidPairAllocation,
   resolvePairAllocations,
 } from "@/lib/wishocracy-item-ids"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("wishocracy-allocation")
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Failed to save allocation:", error)
+    log.error("Failed to save allocation", { error })
     return NextResponse.json(
       { error: "Failed to save allocation" },
       { status: 500 },

@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma"
 import { calculateAllocationsFromPairwise } from "@/lib/wishocracy-calculations"
 import { BudgetCategoryId, BUDGET_CATEGORIES } from "@/lib/wishocracy-data"
 import { toClientCategoryId } from "@/lib/wishocracy-item-ids"
+import { createLogger } from "@/lib/logger"
+
+const log = createLogger("wishocracy-average-allocations")
 
 /**
  * GET /api/wishocracy/average-allocations
@@ -88,7 +91,7 @@ export async function GET() {
       totalUsers: allocationsByUser.size,
     })
   } catch (error) {
-    console.error("Failed to calculate average allocations:", error)
+    log.error("Failed to calculate average allocations", { error })
     return NextResponse.json(
       { error: "Failed to fetch average allocations" },
       { status: 500 },
