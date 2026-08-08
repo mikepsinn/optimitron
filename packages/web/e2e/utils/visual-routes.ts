@@ -203,6 +203,13 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
+  // Verified present and visible at both captured widths. NOT "#vote":
+  // that id only exists on the optimitron variant of the home page,
+  // which has its own route entry.
+  [ROUTES.home, "#sign"],
+  // DashboardShareCard's own id -- the component chain that renders the
+  // promotion copy, so the capture proves that copy rendered.
+  [ROUTES.signatories, "#dashboard-share-message"],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
