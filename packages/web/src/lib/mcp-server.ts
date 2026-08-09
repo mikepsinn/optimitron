@@ -161,6 +161,7 @@ import {
   loadHumanPlanningProfiles,
   loadPersonalQueue,
   loadPersonalQueueAudit,
+  summarizeAgentWorkNeedingDecomposition,
   summarizeCapabilityWork,
   summarizeTask,
   type AuthorizedExecutionPlanRequest,
@@ -5635,7 +5636,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "getAIQueue",
     description:
-      "Get the authenticated user's available private AI-agent tasks sorted by computed priority. Use executor_type='AI Agent' for work the assistant can do autonomously; otherwise create normal self-work tasks with executor_type='Self'.",
+      "Get the authenticated user's available private AI-agent tasks that fit one bounded execution attempt, sorted by computed priority. Oversized leaves appear in itemsNeedingDecomposition. Use executor_type='AI Agent' for autonomous work; otherwise use executor_type='Self'.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5761,6 +5762,12 @@ const TASK_TOOL_DEFINITIONS = [
         },
         capabilityExcludedWork: {
           type: "array",
+          items: { type: "object" },
+        },
+        itemsNeedingDecomposition: {
+          type: "array",
+          description:
+            "AI-designated leaf tasks that exceed the bounded execution limit or need an effort estimate.",
           items: { type: "object" },
         },
       },
@@ -9738,6 +9745,7 @@ export function createMcpServer(
               {
                 executorProfiles,
                 limit: maxResults,
+                requireBoundedAgentWork: true,
                 requireExecutable: true,
                 requireUnblocked: true,
                 rootedTaskIds: graph.rootedTaskIds,
@@ -9746,6 +9754,10 @@ export function createMcpServer(
 
             return ok({
               buybackRate,
+              itemsNeedingDecomposition: summarizeAgentWorkNeedingDecomposition(
+                allRows,
+                maxResults,
+              ),
               queue,
               ...summarizeCapabilityWork(allRows),
             });

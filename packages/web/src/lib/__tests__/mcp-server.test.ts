@@ -3779,6 +3779,44 @@ describe("MCP server tool dispatch", () => {
       expect(myQueue[0]?.taskPriority).toBeUndefined();
     });
 
+    it("keeps oversized AI leaves out of getAIQueue and requests decomposition", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 8,
+          id: "bounded-agent-task",
+          title: "Bounded agent task",
+        }),
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 1_000,
+          id: "program-scale-agent-task",
+          title: "Program-scale agent task",
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "program-scale-agent-task" ? 1_000_000 : 1,
+        }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getAIQueue", arguments: {} }),
+      );
+
+      expect(
+        (body.queue as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["bounded-agent-task"]);
+      expect(body.itemsNeedingDecomposition).toEqual([
+        expect.objectContaining({
+          estimatedHours: 1_000,
+          id: "program-scale-agent-task",
+        }),
+      ]);
+    });
+
     it("reports unknown capability evidence instead of executing the task", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({ id: "bookkeeping", skillTags: ["bookkeeping"] }),
@@ -3946,6 +3984,31 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getQueueAudit happy path", () => {
+    it("flags oversized AI leaves for decomposition", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 1_000,
+          id: "program-scale-agent-task",
+        }),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValue([]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getQueueAudit", arguments: {} }),
+      );
+
+      expect(body.issues).toContainEqual(
+        expect.objectContaining({
+          code: "UNBOUNDED_AGENT_TASK",
+          taskId: "program-scale-agent-task",
+        }),
+      );
+    });
+
     it("flags tasks with invalid priority inputs", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({ id: "good" }),
