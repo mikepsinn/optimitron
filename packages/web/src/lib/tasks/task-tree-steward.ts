@@ -11,6 +11,10 @@ import {
   OPTIMIZE_EARTH_ROOT_TASK_ID,
   type ExecutionGraphEdge,
 } from "./execution-planner-audit";
+import {
+  isBoundedAgentTaskEffort,
+  MAX_AGENT_TASK_EFFORT_HOURS,
+} from "./execution-eligibility";
 
 export interface TaskTreeStewardTask {
   activeChildTaskCount: number;
@@ -355,13 +359,10 @@ export function auditTaskTree(input: {
         taskId: task.id,
       });
     }
-    if (
-      agentTask &&
-      (task.estimatedEffortHours == null || task.estimatedEffortHours > 8)
-    ) {
+    if (agentTask && !isBoundedAgentTaskEffort(task.estimatedEffortHours)) {
       addFinding(findings, {
         code: "UNBOUNDED_AGENT_TASK",
-        message: `Agent task ${task.id} is not bounded to an eight-hour-or-smaller deliverable.`,
+        message: `Agent task ${task.id} is not bounded to a ${MAX_AGENT_TASK_EFFORT_HOURS}-hour-or-smaller deliverable.`,
         recommendedAction:
           "Decompose it into independently verifiable child tasks before agent execution.",
         requiresApproval: true,
