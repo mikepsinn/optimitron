@@ -1239,7 +1239,7 @@ export function buildPersonalQueueRows(
       const passesAgentBound =
         !options?.requireBoundedAgentWork ||
         row.executorType !== AI_EXECUTOR_TYPE ||
-        isBoundedAgentTaskEffort(row.hours);
+        isBoundedAgentTaskEffort(row.estimatedEffortHours);
       if (!passesAgentBound) return false;
       return (
         !options?.requireExecutable ||
@@ -1321,7 +1321,7 @@ export function summarizeAgentWorkNeedingDecomposition(
         row.executorType === AI_EXECUTOR_TYPE &&
         isAtomicExecutionRecord(row as unknown as PersonalQueueTaskRecord) &&
         row.rooted &&
-        !isBoundedAgentTaskEffort(row.hours),
+        !isBoundedAgentTaskEffort(row.estimatedEffortHours),
     )
     .sort((left, right) =>
       compareExecutionTasks(
@@ -1331,12 +1331,12 @@ export function summarizeAgentWorkNeedingDecomposition(
     )
     .slice(0, limit)
     .map((row) => ({
-      estimatedHours: row.hours,
+      estimatedHours: row.estimatedEffortHours,
       id: row.id,
       reason:
-        row.hours == null
+        row.estimatedEffortHours == null
           ? "Add a usable effort estimate before autonomous execution."
-          : `Decompose this ${row.hours}-hour task into independently verifiable tasks of ${MAX_AGENT_TASK_EFFORT_HOURS} hours or less.`,
+          : `Decompose this ${row.estimatedEffortHours}-hour task into independently verifiable tasks of ${MAX_AGENT_TASK_EFFORT_HOURS} hours or less.`,
       title: row.title,
     }));
 }
@@ -1811,7 +1811,7 @@ export async function loadPersonalQueueAudit(request: {
     if (
       needsExecutionEstimate &&
       isAIExecutableTask(task) &&
-      !isBoundedAgentTaskEffort(row.hours)
+      !isBoundedAgentTaskEffort(task.estimatedEffortHours)
     ) {
       issues.push({
         code: "UNBOUNDED_AGENT_TASK",

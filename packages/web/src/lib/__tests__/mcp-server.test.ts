@@ -3794,6 +3794,26 @@ describe("MCP server tool dispatch", () => {
           title: "Program-scale agent task",
         }),
       ]);
+      mocks.agentExecutorFindMany.mockResolvedValue([
+        {
+          accessTags: [],
+          capabilityTags: [],
+          id: "agent-1",
+          toolTags: [],
+        },
+      ]);
+      mocks.taskCandidateMatchFindMany.mockResolvedValue([
+        {
+          agentExecutorId: "agent-1",
+          candidateOrganizationId: null,
+          candidatePersonId: null,
+          candidateUserId: null,
+          estimatedDurationSeconds: 3600,
+          status: TaskCandidateMatchStatus.SUGGESTED,
+          taskId: "program-scale-agent-task",
+          updatedAt: new Date("2026-08-08T12:00:00.000Z"),
+        },
+      ]);
       mocks.isTaskBlocked.mockReturnValue(false);
       mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
         makePriority({
@@ -3815,6 +3835,13 @@ describe("MCP server tool dispatch", () => {
           id: "program-scale-agent-task",
         }),
       ]);
+      expect(mocks.computeTaskPriority).toHaveBeenCalledWith(
+        expect.objectContaining({
+          estimatedEffortHours: 1,
+          id: "program-scale-agent-task",
+        }),
+        expect.any(Object),
+      );
     });
 
     it("reports unknown capability evidence instead of executing the task", async () => {
