@@ -9956,6 +9956,23 @@ describe("MCP server tool dispatch", () => {
         });
         expect(parseToolBody(before)).toMatchObject({ notifications: [] });
 
+        now.mockReturnValue(new Date("2026-08-03T10:30:00.000Z").getTime());
+        const atDeferredTime = await client.callTool({
+          name: "listTrackingReminderNotifications",
+          arguments: { dateKey: "2026-08-03" },
+        });
+        expect(parseToolBody(atDeferredTime)).toMatchObject({
+          notifications: [
+            {
+              derivedStatus: NotificationStatus.PENDING,
+              isOverdue: false,
+              notifyAt: "2026-08-03T10:30:00.000Z",
+              reminderId: "reminder-1",
+              status: NotificationStatus.SNOOZED,
+            },
+          ],
+        });
+
         now.mockReturnValue(new Date("2026-08-03T10:31:00.000Z").getTime());
         const after = await client.callTool({
           name: "listTrackingReminderNotifications",
@@ -9974,6 +9991,28 @@ describe("MCP server tool dispatch", () => {
       } finally {
         now.mockRestore();
       }
+    });
+
+    it("rejects a non-array bulk exception value before any read or write", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminderNotifications",
+        arguments: {
+          dateKey: "2026-08-03",
+          defaultStatus: "SKIPPED",
+          except: { trackingReminderId: "reminder-1" },
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "except must be an array of exception entries",
+      );
+      expect(mocks.trackingReminderFindMany).not.toHaveBeenCalled();
+      expect(mocks.transaction).not.toHaveBeenCalled();
+      expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
+      expect(mocks.trackingReminderNotificationUpdate).not.toHaveBeenCalled();
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
 
     it("rejects unknown bulk exception IDs before any response write", async () => {
@@ -10079,6 +10118,71 @@ describe("MCP server tool dispatch", () => {
         ),
       ).toEqual([NotificationStatus.TRACKED, NotificationStatus.SKIPPED]);
       expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+    });
+
+    it("bulk responses leave later notifications untouched", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T10:00:00.000Z").getTime());
+      try {
+        const laterReminder = {
+          ...EXISTING_TRACKING_REMINDER,
+          globalVariable: {
+            ...TRACKING_VARIABLE,
+            id: "gv-magnesium",
+            name: "Magnesium",
+          },
+          globalVariableId: "gv-magnesium",
+          id: "reminder-2",
+          reminderStartTime: "18:00",
+        };
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          EXISTING_TRACKING_REMINDER,
+          laterReminder,
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+        mocks.trackingReminderFindFirst.mockResolvedValue(
+          EXISTING_TRACKING_REMINDER,
+        );
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: {
+            dateKey: "2026-08-03",
+            defaultStatus: "SKIPPED",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          answeredCount: 1,
+          failed: [],
+          results: [
+            { reminderId: "reminder-1", status: NotificationStatus.SKIPPED },
+          ],
+        });
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(
+          mocks.trackingReminderNotificationCreate.mock.calls[0]?.[0],
+        ).toMatchObject({
+          data: expect.objectContaining({
+            trackingReminderId: "reminder-1",
+          }),
+        });
+      } finally {
+        now.mockRestore();
+      }
     });
 
     it("listDueTrackingReminders marks unanswered past reminders overdue", async () => {
@@ -10276,6 +10380,47 @@ describe("MCP server tool dispatch", () => {
           }),
         });
         expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("caps a snooze at the end of its local day", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T23:50:00.000Z").getTime());
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindFirst.mockResolvedValue(
+          EXISTING_TRACKING_REMINDER,
+        );
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            dateKey: "2026-08-03",
+            snoozeMinutes: 45,
+            status: "SNOOZED",
+            trackingReminderId: "reminder-1",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-03T23:59:59.999Z"),
+            status: NotificationStatus.SNOOZED,
+            trackingReminderId: "reminder-1",
+          }),
+        });
       } finally {
         now.mockRestore();
       }

@@ -3675,20 +3675,22 @@ async function listDueTrackingRemindersForUser(
         );
       }
       const status = notification?.status ?? NotificationStatus.PENDING;
+      const now = Date.now();
       const snoozeElapsed =
-        status === NotificationStatus.SNOOZED &&
-        notifyAt.getTime() <= Date.now();
+        status === NotificationStatus.SNOOZED && notifyAt.getTime() <= now;
       const isOverdue =
         (status === NotificationStatus.PENDING ||
           status === NotificationStatus.SENT ||
           snoozeElapsed) &&
-        notifyAt.getTime() < Date.now();
+        notifyAt.getTime() < now;
       return {
         dateKey,
         defaultValue: cleanNumber(reminder.defaultValue),
         derivedStatus: isOverdue
           ? TrackingReminderDerivedStatus.OVERDUE
-          : status,
+          : snoozeElapsed
+            ? NotificationStatus.PENDING
+            : status,
         globalVariable: reminder.globalVariable,
         instructions: reminder.instructions,
         isOverdue,
@@ -3811,6 +3813,9 @@ async function respondToTrackingReminderNotificationsForUser(
 
   const globalSnoozeMinutes =
     input.snoozeMinutes === undefined ? undefined : parseSnoozeMinutes(input);
+  if (input.except !== undefined && !Array.isArray(input.except)) {
+    throw new Error("except must be an array of exception entries.");
+  }
   const exceptions = Array.isArray(input.except) ? input.except : [];
   const overrideById = new Map<
     string,
@@ -3827,9 +3832,7 @@ async function respondToTrackingReminderNotificationsForUser(
       throw new Error("Each except entry must be an object.");
     }
     const entry = raw as Record<string, unknown>;
-    const trackingReminderId = optionalString(
-      entry.trackingReminderId ?? entry.id,
-    );
+    const trackingReminderId = optionalString(entry.trackingReminderId);
     if (!trackingReminderId) {
       throw new Error("Each except entry needs a trackingReminderId.");
     }
@@ -3852,7 +3855,11 @@ async function respondToTrackingReminderNotificationsForUser(
     { dateKey: input.dateKey },
     userId,
   );
-  const dueIds = new Set(due.notifications.map((item) => item.reminderId));
+  const now = Date.now();
+  const dueNotifications = due.notifications.filter(
+    (item) => item.notifyAt.getTime() <= now,
+  );
+  const dueIds = new Set(dueNotifications.map((item) => item.reminderId));
   const unknownExceptionIds = [...overrideById.keys()].filter(
     (id) => !dueIds.has(id),
   );
@@ -3873,7 +3880,7 @@ async function respondToTrackingReminderNotificationsForUser(
   }> = [];
   const failed: Array<{ reminderId: string; error: string }> = [];
 
-  for (const item of due.notifications) {
+  for (const item of dueNotifications) {
     const override = overrideById.get(item.reminderId);
     const status = override?.status ?? defaultStatus;
     try {
@@ -5356,7 +5363,7 @@ const TRACKING_TOOL_DEFINITIONS = [
         compact: {
           type: "boolean",
           description:
-            "Return only id, name, due, and status for each notification.",
+            "Return trackingReminderId as id, plus name, due, and status.",
         },
         includeCompleted: {
           type: "boolean",
@@ -5380,7 +5387,7 @@ const TRACKING_TOOL_DEFINITIONS = [
         compact: {
           type: "boolean",
           description:
-            "Return only id, name, due, and status for each notification.",
+            "Return trackingReminderId as id, plus name, due, and status.",
         },
         includeCompleted: {
           type: "boolean",
@@ -5393,7 +5400,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "respondToTrackingReminderNotifications",
     description:
-      "Answer all due notifications with one default status and optional exceptions. If any exception ID is not due, this tool writes nothing. Valid reminders continue when one response fails.",
+      "Answer notifications whose due time has arrived. Apply one default status and optional exceptions. If any exception ID is not due, this tool writes nothing. Valid reminders continue when one response fails.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5429,7 +5436,8 @@ const TRACKING_TOOL_DEFINITIONS = [
         note: { type: "string" },
         snoozeMinutes: {
           type: "number",
-          description: "Set the snooze duration. The default is 30 minutes.",
+          description:
+            "Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.",
         },
       },
       required: ["defaultStatus"],
@@ -5451,7 +5459,8 @@ const TRACKING_TOOL_DEFINITIONS = [
         },
         snoozeMinutes: {
           type: "number",
-          description: "Set the snooze duration. The default is 30 minutes.",
+          description:
+            "Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.",
         },
         value: {
           type: "number",
