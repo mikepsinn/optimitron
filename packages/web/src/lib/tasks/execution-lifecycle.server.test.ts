@@ -12,6 +12,7 @@ import {
 } from "@optimitron/db";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
+import { acquireLease, getTaskCoordinationContext } from "./agent-lease.server";
 import {
   getTaskAuditTrail,
   startTaskExecution,
@@ -28,6 +29,9 @@ import {
 const TEST_PREFIX = "execution_lifecycle_";
 
 async function cleanup() {
+  await prisma.agentTaskLease.deleteMany({
+    where: { taskId: { startsWith: TEST_PREFIX } },
+  });
   await prisma.externalActionRequest.deleteMany({
     where: { taskId: { startsWith: TEST_PREFIX } },
   });
@@ -211,6 +215,81 @@ describe.sequential("private execution lifecycle boundaries", () => {
         },
       }),
     ).resolves.toBe(1);
+  });
+
+  it("persists the agent run context on the existing execution metadata", async () => {
+    const actor = await createUser("run_context");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "run_context_task",
+    });
+    const runContext = {
+      agentRunId: "run-2026-08-09",
+      baseCommit: "abc123def456",
+      branch: "feature/mcp-agent-coordination",
+      isolationMode: "ISOLATED_WORKTREE" as const,
+      ownedFileGlobs: ["packages/web/src/lib/**", "AGENTS.md"],
+      worktreePath: "C:/worktrees/mcp-agent-coordination",
+    };
+
+    const attempt = await startTaskExecution(
+      { runContext, taskId: task.id },
+      actor.user.id,
+    );
+    await acquireLease(task.id, "agent-run-context", 3_600);
+
+    await expect(
+      prisma.taskExecutionAttempt.findUniqueOrThrow({
+        where: { id: attempt.id },
+        select: { metadata: true },
+      }),
+    ).resolves.toEqual({
+      metadata: {
+        runContext,
+        startedByUserId: actor.user.id,
+      },
+    });
+    await expect(getTaskCoordinationContext(task.id)).resolves.toMatchObject({
+      activeExecution: {
+        id: attempt.id,
+        runContext,
+        status: TaskExecutionAttemptStatus.RUNNING,
+      },
+      activeLease: { agentId: "agent-run-context" },
+    });
+  });
+
+  it("reports a completed attempt with a pending verification as the active execution", async () => {
+    // startTaskExecution's own eligibility check refuses a second start
+    // while a COMPLETED attempt still has a PENDING verification. The
+    // coordination context an agent inspects before editing must agree,
+    // or it can read activeExecution: null and let the agent start
+    // duplicate work that a later startTaskExecution call only rejects
+    // after the fact.
+    const actor = await createUser("pending_verification");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "pending_verification_task",
+    });
+    const { attempt } = await submitCompletedAttempt(task.id, actor.user.id);
+
+    await expect(
+      prisma.taskExecutionAttempt.findUniqueOrThrow({
+        where: { id: attempt.id },
+        select: { status: true },
+      }),
+    ).resolves.toEqual({ status: TaskExecutionAttemptStatus.COMPLETED });
+    await expect(getTaskCoordinationContext(task.id)).resolves.toMatchObject({
+      activeExecution: {
+        id: attempt.id,
+        status: TaskExecutionAttemptStatus.COMPLETED,
+      },
+    });
+    await expect(
+      startTaskExecution({ taskId: task.id }, actor.user.id),
+    ).rejects.toThrow(
+      "Task already has an active or pending-verification attempt",
+    );
   });
 
   it("lets a public claimant contribute to the attempt linked to their claim", async () => {

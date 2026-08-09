@@ -1,4 +1,9 @@
-import { TaskStatus, type Prisma } from "@optimitron/db";
+import {
+  TaskExecutionAttemptStatus,
+  TaskStatus,
+  TaskVerificationResult,
+  type Prisma,
+} from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
 
 /** Default lease duration: 10 minutes. */
@@ -164,4 +169,130 @@ export async function isTaskLeased(taskId: string) {
         expiresAt: activeLease.expiresAt,
       }
     : { leased: false as const };
+}
+
+export async function listActiveTaskLeases(taskIds: readonly string[]) {
+  const uniqueTaskIds = [...new Set(taskIds.filter(Boolean))];
+  if (uniqueTaskIds.length === 0) return [];
+
+  return prisma.agentTaskLease.findMany({
+    where: {
+      taskId: { in: uniqueTaskIds },
+      released: false,
+      expiresAt: { gte: new Date() },
+    },
+    select: { agentId: true, expiresAt: true, taskId: true },
+  });
+}
+
+function readRunContext(metadata: unknown) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const runContext = (metadata as Record<string, unknown>).runContext;
+  if (
+    !runContext ||
+    typeof runContext !== "object" ||
+    Array.isArray(runContext)
+  ) {
+    return null;
+  }
+
+  const source = runContext as Record<string, unknown>;
+  const ownedFileGlobs = Array.isArray(source.ownedFileGlobs)
+    ? source.ownedFileGlobs.filter(
+        (value): value is string => typeof value === "string",
+      )
+    : [];
+  return {
+    agentRunId:
+      typeof source.agentRunId === "string" ? source.agentRunId : null,
+    baseCommit:
+      typeof source.baseCommit === "string" ? source.baseCommit : null,
+    branch: typeof source.branch === "string" ? source.branch : null,
+    isolationMode:
+      typeof source.isolationMode === "string" ? source.isolationMode : null,
+    ownedFileGlobs,
+    worktreePath:
+      typeof source.worktreePath === "string" ? source.worktreePath : null,
+  };
+}
+
+/**
+ * Return the live coordination state after the caller has passed task access
+ * checks. Internal attempt metadata is reduced to the explicit run context.
+ */
+export async function getTaskCoordinationContext(taskId: string) {
+  const now = new Date();
+  const [activeLease, activeExecution] = await Promise.all([
+    prisma.agentTaskLease.findFirst({
+      where: {
+        taskId,
+        released: false,
+        expiresAt: { gte: now },
+      },
+      orderBy: { expiresAt: "desc" },
+      select: {
+        agentId: true,
+        expiresAt: true,
+        lastHeartbeatAt: true,
+      },
+    }),
+    prisma.taskExecutionAttempt.findFirst({
+      where: {
+        deletedAt: null,
+        taskId,
+        // Mirrors startTaskExecution's own eligibility predicate: a
+        // COMPLETED attempt with a pending verification still blocks a new
+        // start, so it must also read as "active" here. Otherwise this
+        // reports activeExecution: null while an agent following the
+        // getTask -> inspect coordination -> edit flow could start
+        // duplicate work that startTaskExecution only rejects afterward.
+        OR: [
+          {
+            status: {
+              in: [
+                TaskExecutionAttemptStatus.QUEUED,
+                TaskExecutionAttemptStatus.RUNNING,
+              ],
+            },
+          },
+          {
+            status: TaskExecutionAttemptStatus.COMPLETED,
+            verifications: {
+              some: {
+                deletedAt: null,
+                result: TaskVerificationResult.PENDING,
+              },
+            },
+          },
+        ],
+      },
+      orderBy: { startedAt: "desc" },
+      select: {
+        agentExecutor: {
+          select: { agentKey: true, displayName: true, id: true },
+        },
+        executorKey: true,
+        id: true,
+        metadata: true,
+        startedAt: true,
+        status: true,
+      },
+    }),
+  ]);
+
+  return {
+    activeExecution: activeExecution
+      ? {
+          agentExecutor: activeExecution.agentExecutor,
+          executorKey: activeExecution.executorKey,
+          id: activeExecution.id,
+          runContext: readRunContext(activeExecution.metadata),
+          startedAt: activeExecution.startedAt,
+          status: activeExecution.status,
+        }
+      : null,
+    activeLease,
+  };
 }
