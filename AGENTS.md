@@ -105,8 +105,7 @@ Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones be
 Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
 
 - Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
-- Treat the human owner as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
-- Internal development text—PRs, CI, logs, tests, and developer tooling—does not require copy approval.
+- Ask the shortest missing question only when strategy is unclear. Include a recommended default.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.
@@ -123,9 +122,8 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
 - **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
-- Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
-- For copy approval, show each change as Before → After; label additions New and unchanged relocations Moved unchanged.
-- When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
+- After verification and screenshots, commit, push, and open or update a normal pull request. Pause only for an explicit hold or unresolved strategic choice.
+- Show copy changes as Before → After in the handoff. Label additions New and unchanged relocations Moved unchanged.
 
 ## Task Writing — Simplified Technical English
 
