@@ -70,6 +70,10 @@
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
 - For fixed/sticky UI in full-page screenshots, verify whether overlap blocks normal viewport use before moving or hiding useful controls.
 - Generate the current screenshot review at `packages/web/output/playwright/review/latest.html` by default, organized by page/viewport with before/after screenshots side by side when both versions are available. This gives the human one stable local file to bookmark and refresh after each UI change.
+- Every changed user-facing route or state must appear in `latest.html` as a before/after screenshot or exact copy diff. If it does not, fix its review flags, `covers` mapping, or fixture before handoff.
+- Before review, inspect every changed or copy-only route in `latest.html`. Fix and rerun until every diff comes from the PR.
+- Stabilize noise with deterministic fixtures, `freezeClock`, `data-volatile`, and hydration, animation, and image readiness. Never mask meaningful content, accept a bad baseline, or widen thresholds.
+- Report the noise found and fixed in the pull request or handoff.
 - Make a branch-specific or timestamped review folder only when it is genuinely useful for a longer audit, multiple competing versions, or preserving a before/after history. Do not create duplicate review HTML files out of habit.
 - If you create a named review folder, also update `packages/web/output/playwright/review/latest.html`. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references.
 - Do not commit screenshot image artifacts to the repo unless the human explicitly asks and the screenshots are confirmed sanitized. Keep local artifacts under `packages/web/output/playwright/` while working.
@@ -112,8 +116,7 @@ Detailed docs live in `docs/` (map: `docs/README.md`). Read the relevant ones be
 Before writing or editing any public-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, or partner copy, read `docs/h2ewd.md` and apply that voice.
 
 - Before changing existing public copy, preserve its strategic job. Identify audience, desired action, motivation, old strategic job, and source/quantitative anchor. Do not replace purpose or motivation with mechanism-only copy.
-- Treat the human owner as the copy merge gate. When strategy is unclear, ask the shortest missing question with a recommended default. Do not set `COPY_REVIEW_APPROVED=1` or bypass the copy gate without explicit approval.
-- Internal development text—PRs, CI, logs, tests, and developer tooling—does not require copy approval.
+- Ask the shortest missing question only when strategy is unclear. Include a recommended default.
 - Be concise. Cut filler, throat-clearing, internal process language, and generic nonprofit/consultant copy.
 - Speak directly to the specific human or organization that should do something.
 - Make the action obvious, then show the value to them for doing it.
@@ -130,9 +133,10 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
 - **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
-- Never commit user-facing copy changes until the human has reviewed and explicitly approved them for commit.
-- For copy approval, show each change as Before → After; label additions New and unchanged relocations Moved unchanged.
-- When you finish editing user-facing copy, output the changed copy in your response and explicitly ask the human to review it before committing.
+- After verification and screenshots, commit the intended changes. Push the branch. Open or update a normal pull request.
+- Pause only for an explicit hold or unresolved strategic choice.
+- The PR review packet is the copy approval surface. Agents leave its checkboxes unchecked for the human reviewer.
+- Show copy changes as Before → After in the PR review or handoff. Label additions New and unchanged relocations Moved unchanged.
 
 ## Task Writing — Simplified Technical English
 

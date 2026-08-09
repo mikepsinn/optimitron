@@ -43,7 +43,6 @@
     "fix:colors": "tsx scripts/fix-colors.ts",
     "extract:copy": "tsx scripts/extract-copy.ts",
     "copy:preview": "node scripts/copy-preview-smart.mjs",
-    "copy:gate": "tsx scripts/copy-review-gate.ts",
     "copy:preview:all": "tsx scripts/render-pages-to-markdown.ts",
     "email:preview-md": "tsx scripts/render-emails-to-markdown.ts",
     "extract:tasks": "tsx scripts/extract-tasks-from-manual.ts",
