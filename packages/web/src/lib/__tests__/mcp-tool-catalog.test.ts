@@ -79,4 +79,43 @@ describe("MCP tool catalog", () => {
   it("tells coding agents how to target the canonical development branch", () => {
     expect(MCP_SERVER_INSTRUCTIONS).toContain("parentTaskKey='optimitron:dev'");
   });
+
+  it("requires the full agent coordination lifecycle before editing", () => {
+    for (const instruction of [
+      "call getTask",
+      "Call acquireLease before editing",
+      "call startTaskExecution",
+      "Call heartbeatLease before expiry",
+      "postTaskComment",
+      "Call releaseLease",
+      "NO_WORKTREE",
+      "SHARED_ONE_PR",
+      "ISOLATED_WORKTREE",
+    ]) {
+      expect(MCP_SERVER_INSTRUCTIONS).toContain(instruction);
+    }
+  });
+
+  it("exposes structured run context on startTaskExecution", () => {
+    const start = getToolDefinitions().find(
+      (tool) => tool.name === "startTaskExecution",
+    );
+    expect(start?.inputSchema).toMatchObject({
+      properties: {
+        runContext: {
+          properties: {
+            agentRunId: { type: "string" },
+            baseCommit: { type: "string" },
+            branch: { type: "string" },
+            isolationMode: {
+              enum: ["NO_WORKTREE", "SHARED_ONE_PR", "ISOLATED_WORKTREE"],
+            },
+            ownedFileGlobs: { type: "array" },
+            worktreePath: { type: "string" },
+          },
+          required: ["isolationMode"],
+        },
+      },
+    });
+  });
 });
