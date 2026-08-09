@@ -2,10 +2,14 @@ import "@testing-library/jest-dom"
 import { beforeAll, afterEach, afterAll } from "vitest"
 import { cleanup } from "@testing-library/react"
 import "./utils/test-env" // Load test environment variables
-import { cleanDatabase, disconnectDatabase, setupTestDatabase } from "./utils/db-test-utils"
 
 let dbAvailable = false
 const shouldSetupDatabase = process.env.SKIP_DB_TEST_SETUP !== "1"
+
+// Lazy-import DB helpers so pure unit tests never need site-kit db-safety resolution.
+let cleanDatabase: (() => Promise<void>) | undefined
+let disconnectDatabase: (() => Promise<void>) | undefined
+let setupTestDatabase: (() => Promise<void>) | undefined
 
 // Setup test database before all tests (skip gracefully if DB unavailable for unit tests)
 beforeAll(async () => {
@@ -13,6 +17,10 @@ beforeAll(async () => {
     return
   }
   try {
+    const dbUtils = await import("./utils/db-test-utils")
+    cleanDatabase = dbUtils.cleanDatabase
+    disconnectDatabase = dbUtils.disconnectDatabase
+    setupTestDatabase = dbUtils.setupTestDatabase
     await setupTestDatabase()
     dbAvailable = true
   } catch (error) {
@@ -28,14 +36,14 @@ beforeAll(async () => {
 afterEach(async () => {
   cleanup()
   // Only clean database if it's available
-  if (dbAvailable) {
+  if (dbAvailable && cleanDatabase) {
     await cleanDatabase()
   }
 })
 
 // Disconnect from database after all tests
 afterAll(async () => {
-  if (dbAvailable) {
+  if (dbAvailable && disconnectDatabase) {
     await disconnectDatabase()
   }
 })

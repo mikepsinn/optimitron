@@ -6,16 +6,9 @@ const mockEnv = vi.hoisted(() => ({
   STRIPE_SECRET_KEY: "sk_test_1234567890" as string | undefined,
   STRIPE_WEBHOOK_SECRET: "whsec_test_1234567890" as string | undefined,
 }))
-const mockHeadersGet = vi.hoisted(() => vi.fn())
 
 vi.mock("@/lib/env", () => ({
   env: mockEnv,
-}))
-
-vi.mock("next/headers", () => ({
-  headers: vi.fn(() => ({
-    get: mockHeadersGet,
-  })),
 }))
 
 vi.mock("stripe", () => ({
@@ -28,10 +21,18 @@ vi.mock("stripe", () => ({
 
 import { POST } from "./route"
 
-function makeRequest(body = JSON.stringify({ id: "evt_test" })) {
+function makeRequest(
+  body = JSON.stringify({ id: "evt_test" }),
+  signature: string | null = "sig_test",
+) {
+  const headers = new Headers()
+  if (signature !== null) {
+    headers.set("stripe-signature", signature)
+  }
   return new Request("http://localhost:3000/api/stripe/webhook", {
     method: "POST",
     body,
+    headers,
   }) as unknown as import("next/server").NextRequest
 }
 
@@ -40,7 +41,6 @@ describe("Stripe Webhook (verify-only)", () => {
     vi.clearAllMocks()
     mockEnv.STRIPE_SECRET_KEY = "sk_test_1234567890"
     mockEnv.STRIPE_WEBHOOK_SECRET = "whsec_test_1234567890"
-    mockHeadersGet.mockReturnValue("sig_test")
   })
 
   it("returns ignored when Stripe env is not configured", async () => {
@@ -57,9 +57,7 @@ describe("Stripe Webhook (verify-only)", () => {
   })
 
   it("returns 400 if signature is missing", async () => {
-    mockHeadersGet.mockReturnValue(null)
-
-    const response = await POST(makeRequest())
+    const response = await POST(makeRequest(undefined, null))
     const data = await response.json()
 
     expect(response.status).toBe(400)

@@ -10,6 +10,7 @@ export default defineConfig({
   // can't express the same way tsc's fallback lookup does.
   plugins: [tsconfigPaths(), react()],
   test: {
+    passWithNoTests: true,
     globals: true,
     environment: "happy-dom",
     setupFiles: ["./tests/setup.ts"],

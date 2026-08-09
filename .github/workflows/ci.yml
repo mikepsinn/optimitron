@@ -172,18 +172,18 @@ jobs:
       - name: Test
         run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run test
 
-  apps-warondisease-validate:
-    name: apps-warondisease-validate
-    # Gates schema-aligned War-on-Disease app (apps/warondisease).
-    # Uses the SAME Postgres pattern as web CI (one DB schema for all apps).
-    # Do not replace packages/web deploy/smoke — that stays the optimitron.com project.
+  apps-brand-validate:
+    name: apps-brand-validate
+    # Gates all apps/* brand packages (shared @optimitron/db schema).
+    # Typecheck every app; unit-test apps with vitest unit suites; WoD DB smoke.
+    # packages/web keeps its own e2e/deploy smoke — not replaced here.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'pull_request' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       CI: true
       NODE_ENV: test
@@ -211,7 +211,7 @@ jobs:
       - name: Skip brand-app validation
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') != true }}
         shell: bash
-        run: echo "No apps/* or packages/db changes; skipping warondisease validation."
+        run: echo "No apps/* or packages/db changes; skipping brand-app validation."
 
       - name: Checkout
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
@@ -244,9 +244,9 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
         run: pnpm db:generate
 
-      - name: Typecheck @apps/warondisease
+      - name: Typecheck all @apps/*
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
-        run: pnpm --filter @apps/warondisease run typecheck
+        run: pnpm typecheck:apps
         env:
           NODE_OPTIONS: --max-old-space-size=6144
 
@@ -254,11 +254,9 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
         run: pnpm smoke:warondisease-db
 
-      - name: Unit tests @apps/warondisease (no full UI suite yet)
+      - name: Unit tests @apps/* (excluding integration/)
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
-        run: pnpm --filter @apps/warondisease run test:unit
-        continue-on-error: true
-        # Flip continue-on-error off once unit fixtures match Prisma 7 models.
+        run: pnpm test:apps:unit
 
   web-static-validate:
     name: web-static-validate

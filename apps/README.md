@@ -67,5 +67,21 @@ Partner snippet (after survey is deployed):
 
 ## CI
 
-Job **`apps-warondisease-validate`**: migrate → typecheck warondisease → DB smoke.  
+Job **`apps-brand-validate`** (on `apps/**` / `packages/db` changes):
+
+1. migrate + `prisma generate`
+2. **`pnpm typecheck:apps`** — all six `@apps/*`
+3. **`pnpm smoke:warondisease-db`** — ReferendumVote path
+4. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
+
+`packages/web` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke. Brand production deploys are not CI-gated yet.
+
+Local:
+
+```bash
+pnpm typecheck:apps
+pnpm test:apps:unit
+pnpm smoke:warondisease-db
+```
+
 Deploy production still **`packages/web` only**. See `DEPLOYMENT.md`.

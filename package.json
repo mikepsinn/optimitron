@@ -46,6 +46,8 @@
     "dev:curedao": "pnpm --filter @apps/curedao dev",
     "dev:acceleratedmedicine": "pnpm --filter @apps/acceleratedmedicine dev",
     "typecheck:warondisease": "pnpm --filter @apps/warondisease run typecheck",
+    "typecheck:apps": "pnpm --filter \"@apps/*\" run typecheck",
+    "test:apps:unit": "pnpm --filter \"@apps/*\" run test:unit",
     "test:warondisease:unit": "pnpm --filter @apps/warondisease run test:unit",
     "smoke:warondisease-db": "pnpm --filter @apps/warondisease exec tsx scripts/smoke-treaty-db.ts"
   },
