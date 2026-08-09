@@ -326,7 +326,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
+  listTrackingReminderNotifications: [McpScope.TASKS_PERSONAL],
   respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
+  respondToTrackingReminderNotifications: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   inspectToolAccess: [],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
@@ -3587,6 +3589,9 @@ async function listTrackingRemindersForUser(
   });
 }
 
+/** Default snooze length when a caller does not name one. */
+const DEFAULT_SNOOZE_MINUTES = 30;
+
 async function listDueTrackingRemindersForUser(
   input: Record<string, unknown>,
   userId: string,
@@ -3637,7 +3642,7 @@ async function listDueTrackingRemindersForUser(
     occurrenceByReminderId.set(reminder.id, occurrence);
     return true;
   });
-  if (dueReminders.length === 0) return { dateKey, reminders: [] };
+  if (dueReminders.length === 0) return { dateKey, notifications: [] };
 
   const notifications = await prisma.trackingReminderNotification.findMany({
     orderBy: [{ notifyAt: "asc" }],
@@ -3670,9 +3675,13 @@ async function listDueTrackingRemindersForUser(
         );
       }
       const status = notification?.status ?? NotificationStatus.PENDING;
+      const snoozeElapsed =
+        status === NotificationStatus.SNOOZED &&
+        notifyAt.getTime() <= Date.now();
       const isOverdue =
         (status === NotificationStatus.PENDING ||
-          status === NotificationStatus.SENT) &&
+          status === NotificationStatus.SENT ||
+          snoozeElapsed) &&
         notifyAt.getTime() < Date.now();
       return {
         dateKey,
@@ -3695,17 +3704,38 @@ async function listDueTrackingRemindersForUser(
     })
     .filter((reminder) => {
       if (input.includeCompleted === true) return true;
+      if (
+        reminder.status === NotificationStatus.SNOOZED &&
+        reminder.notifyAt.getTime() <= Date.now()
+      ) {
+        return true;
+      }
       return (
         reminder.status === NotificationStatus.PENDING ||
         reminder.status === NotificationStatus.SENT
       );
     });
-  return { dateKey, reminders: remindersWithStatus };
+  return { dateKey, notifications: remindersWithStatus };
+}
+
+function toCompactTrackingNotifications(
+  result: Awaited<ReturnType<typeof listDueTrackingRemindersForUser>>,
+) {
+  return {
+    dateKey: result.dateKey,
+    notifications: result.notifications.map((notification) => ({
+      due: notification.notifyAt,
+      id: notification.reminderId,
+      name: notification.globalVariable.name,
+      status: notification.derivedStatus,
+    })),
+  };
 }
 
 async function findOrCreateTrackingNotification(
   tx: Prisma.TransactionClient,
   input: {
+    deferUntil?: Date | null;
     localDayEnd: Date;
     localDayStart: Date;
     notifyAt: Date;
@@ -3727,6 +3757,7 @@ async function findOrCreateTrackingNotification(
     receivedAt: new Date(),
     status: input.status,
     trackedValue: input.trackedValue,
+    ...(input.deferUntil ? { notifyAt: input.deferUntil } : {}),
   };
   if (existing) {
     return tx.trackingReminderNotification.update({
@@ -3737,11 +3768,142 @@ async function findOrCreateTrackingNotification(
   return tx.trackingReminderNotification.create({
     data: {
       ...data,
-      notifyAt: input.notifyAt,
+      notifyAt: input.deferUntil ?? input.notifyAt,
       trackingReminderId: input.trackingReminderId,
       userId: input.userId,
     },
   });
+}
+
+function parseSnoozeMinutes(input: Record<string, unknown>) {
+  const snoozeMinutes =
+    parseOptionalFiniteNumberInput(input, "snoozeMinutes") ??
+    DEFAULT_SNOOZE_MINUTES;
+  if (snoozeMinutes <= 0) {
+    throw new Error("snoozeMinutes must be greater than 0.");
+  }
+  return snoozeMinutes;
+}
+
+function assertTrackingReminderResponseStatus(
+  status: NotificationStatus | undefined,
+  fieldName: string,
+): asserts status is NotificationStatus {
+  if (
+    status !== NotificationStatus.TRACKED &&
+    status !== NotificationStatus.SKIPPED &&
+    status !== NotificationStatus.SNOOZED
+  ) {
+    throw new Error(`${fieldName} must be TRACKED, SKIPPED, or SNOOZED.`);
+  }
+}
+
+async function respondToTrackingReminderNotificationsForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const defaultStatus = parseEnumInput(
+    NotificationStatus,
+    input.defaultStatus,
+    "defaultStatus",
+  );
+  assertTrackingReminderResponseStatus(defaultStatus, "defaultStatus");
+
+  const globalSnoozeMinutes =
+    input.snoozeMinutes === undefined ? undefined : parseSnoozeMinutes(input);
+  const exceptions = Array.isArray(input.except) ? input.except : [];
+  const overrideById = new Map<
+    string,
+    {
+      note: unknown;
+      snoozeMinutes: number | undefined;
+      status: NotificationStatus;
+      value: number | null | undefined;
+    }
+  >();
+
+  for (const raw of exceptions) {
+    if (raw === null || typeof raw !== "object") {
+      throw new Error("Each except entry must be an object.");
+    }
+    const entry = raw as Record<string, unknown>;
+    const trackingReminderId = optionalString(
+      entry.trackingReminderId ?? entry.id,
+    );
+    if (!trackingReminderId) {
+      throw new Error("Each except entry needs a trackingReminderId.");
+    }
+    const status =
+      parseEnumInput(NotificationStatus, entry.status, "status") ??
+      defaultStatus;
+    assertTrackingReminderResponseStatus(status, "status");
+    overrideById.set(trackingReminderId, {
+      note: entry.note,
+      snoozeMinutes:
+        entry.snoozeMinutes === undefined
+          ? undefined
+          : parseSnoozeMinutes(entry),
+      status,
+      value: parseOptionalFiniteNumberInput(entry, "value"),
+    });
+  }
+
+  const due = await listDueTrackingRemindersForUser(
+    { dateKey: input.dateKey },
+    userId,
+  );
+  const dueIds = new Set(due.notifications.map((item) => item.reminderId));
+  const unknownExceptionIds = [...overrideById.keys()].filter(
+    (id) => !dueIds.has(id),
+  );
+
+  if (unknownExceptionIds.length > 0) {
+    return {
+      answeredCount: 0,
+      dateKey: due.dateKey,
+      failed: [],
+      results: [],
+      unknownExceptionIds,
+    };
+  }
+
+  const results: Array<{
+    reminderId: string;
+    status: NotificationStatus;
+  }> = [];
+  const failed: Array<{ reminderId: string; error: string }> = [];
+
+  for (const item of due.notifications) {
+    const override = overrideById.get(item.reminderId);
+    const status = override?.status ?? defaultStatus;
+    try {
+      await respondToTrackingReminderForUser(
+        {
+          dateKey: due.dateKey,
+          note: override?.note ?? input.note,
+          snoozeMinutes: override?.snoozeMinutes ?? globalSnoozeMinutes,
+          status,
+          trackingReminderId: item.reminderId,
+          value: override?.value,
+        },
+        userId,
+      );
+      results.push({ reminderId: item.reminderId, status });
+    } catch (error) {
+      failed.push({
+        error: error instanceof Error ? error.message : String(error),
+        reminderId: item.reminderId,
+      });
+    }
+  }
+
+  return {
+    answeredCount: results.length,
+    dateKey: due.dateKey,
+    failed,
+    results,
+    unknownExceptionIds,
+  };
 }
 
 async function respondToTrackingReminderForUser(
@@ -3751,15 +3913,11 @@ async function respondToTrackingReminderForUser(
   const status =
     parseEnumInput(NotificationStatus, input.status, "status") ??
     NotificationStatus.TRACKED;
-  if (
-    status !== NotificationStatus.TRACKED &&
-    status !== NotificationStatus.SKIPPED &&
-    status !== NotificationStatus.SNOOZED
-  ) {
-    throw new Error("status must be TRACKED, SKIPPED, or SNOOZED.");
-  }
+  assertTrackingReminderResponseStatus(status, "status");
   const trackingReminderId = optionalString(input.trackingReminderId);
   if (!trackingReminderId) throw new Error("trackingReminderId is required.");
+  const snoozeMinutes =
+    status === NotificationStatus.SNOOZED ? parseSnoozeMinutes(input) : null;
   const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
   const prisma = await getPrisma();
   const user = await prisma.user.findUnique({
@@ -3802,7 +3960,17 @@ async function respondToTrackingReminderForUser(
       dateKey,
       timeZone,
     );
+    const deferUntil =
+      snoozeMinutes === null
+        ? null
+        : new Date(
+            Math.min(
+              Date.now() + snoozeMinutes * 60_000,
+              localDayEnd.getTime() - 1,
+            ),
+          );
     const notification = await findOrCreateTrackingNotification(tx, {
+      deferUntil,
       localDayEnd,
       localDayStart,
       notifyAt,
@@ -5175,9 +5343,9 @@ const TRACKING_TOOL_DEFINITIONS = [
     },
   },
   {
-    name: "listDueTrackingReminders",
+    name: "listTrackingReminderNotifications",
     description:
-      "List medication, food, symptom, and other tracking reminders due for a date. Each result includes derivedStatus, isOverdue, and overdueSince so callers never need to compare notifyAt with the current time themselves. Use this to answer what the user is supposed to take or track today.",
+      "List due tracking reminder notifications. A reminder defines a schedule. A notification is one occurrence that you answer. Most pending notifications have no stored row. Use compact mode for voice or chat clients.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5185,12 +5353,86 @@ const TRACKING_TOOL_DEFINITIONS = [
           type: "string",
           description: "Local date in YYYY-MM-DD. Defaults to today.",
         },
+        compact: {
+          type: "boolean",
+          description:
+            "Return only id, name, due, and status for each notification.",
+        },
+        includeCompleted: {
+          type: "boolean",
+          description:
+            "Include completed notifications and snoozes that have not elapsed.",
+        },
+      },
+    },
+  },
+  {
+    name: "listDueTrackingReminders",
+    description:
+      "Deprecated alias for listTrackingReminderNotifications. It keeps the reminders response key for existing callers.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        compact: {
+          type: "boolean",
+          description:
+            "Return only id, name, due, and status for each notification.",
+        },
         includeCompleted: {
           type: "boolean",
           description:
             "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
         },
       },
+    },
+  },
+  {
+    name: "respondToTrackingReminderNotifications",
+    description:
+      "Answer all due notifications with one default status and optional exceptions. If any exception ID is not due, this tool writes nothing. Valid reminders continue when one response fails.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        defaultStatus: {
+          type: "string",
+          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          description:
+            "Apply this status to each notification without an exception.",
+        },
+        except: {
+          type: "array",
+          description:
+            "Override individual notifications by trackingReminderId.",
+          items: {
+            type: "object",
+            properties: {
+              trackingReminderId: { type: "string" },
+              status: {
+                type: "string",
+                enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+              },
+              value: { type: "number" },
+              snoozeMinutes: { type: "number" },
+              note: { type: "string" },
+            },
+            required: ["trackingReminderId"],
+          },
+        },
+        note: { type: "string" },
+        snoozeMinutes: {
+          type: "number",
+          description: "Set the snooze duration. The default is 30 minutes.",
+        },
+      },
+      required: ["defaultStatus"],
     },
   },
   {
@@ -5205,7 +5447,11 @@ const TRACKING_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["TRACKED", "SKIPPED", "SNOOZED"],
           description:
-            "TRACKED records a measurement (including value 0); SKIPPED records no measurement and leaves a gap; SNOOZED defers.",
+            "TRACKED records a measurement. SKIPPED records no measurement. SNOOZED defers the notification.",
+        },
+        snoozeMinutes: {
+          type: "number",
+          description: "Set the snooze duration. The default is 30 minutes.",
         },
         value: {
           type: "number",
@@ -9474,13 +9720,35 @@ export function createMcpServer(
             });
           }
 
+          case "listTrackingReminderNotifications":
           case "listDueTrackingReminders": {
             if (!userId)
               return authRequired(
                 name,
-                "This tool lists your due personal tracking reminders.",
+                "This tool lists your due personal tracking reminder notifications.",
               );
-            return ok(await listDueTrackingRemindersForUser(a, userId));
+            const result =
+              a.compact === true
+                ? toCompactTrackingNotifications(
+                    await listDueTrackingRemindersForUser(a, userId),
+                  )
+                : await listDueTrackingRemindersForUser(a, userId);
+            if (name === "listDueTrackingReminders") {
+              const { notifications, ...rest } = result;
+              return ok({ ...rest, reminders: notifications });
+            }
+            return ok(result);
+          }
+
+          case "respondToTrackingReminderNotifications": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records responses to your tracking reminder notifications.",
+              );
+            return ok(
+              await respondToTrackingReminderNotificationsForUser(a, userId),
+            );
           }
 
           case "respondToTrackingReminder": {
