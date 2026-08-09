@@ -2539,6 +2539,45 @@ describe("MCP server tool dispatch", () => {
       ]);
     });
 
+    it("bounds long search snippets and points agents to getTask", async () => {
+      const taskId = "task-with-long-description";
+      mocks.searchTasks.mockResolvedValue([
+        {
+          id: taskId,
+          snippet: "a".repeat(250),
+          title: "Task with a long description",
+        },
+        {
+          id: "task-with-short-description",
+          snippet: "Short description",
+          title: "Task with a short description",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "searchTasks",
+        arguments: { query: "description" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result) as unknown as Array<
+        Record<string, unknown>
+      >;
+      expect(body[0]).toMatchObject({
+        fullDescriptionHint: `Call getTask with {"taskId":"${taskId}"} to read the full description.`,
+        id: taskId,
+        snippet: `${"a".repeat(199)}…`,
+        snippetTruncated: true,
+      });
+      expect(body[1]).toMatchObject({
+        id: "task-with-short-description",
+        snippet: "Short description",
+      });
+      expect(body[1]).not.toHaveProperty("fullDescriptionHint");
+      expect(body[1]).not.toHaveProperty("snippetTruncated");
+    });
+
     it("does not invent private visibility when listTasks omits isPublic", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
