@@ -63,6 +63,10 @@
 - Inspect the screenshots yourself for layout breakage, overlapping text, missing content, broken styling, and obvious responsive problems.
 - For fixed/sticky UI in full-page screenshots, verify whether overlap blocks normal viewport use before moving or hiding useful controls.
 - Generate the current screenshot review at `packages/web/output/playwright/review/latest.html` by default, organized by page/viewport with before/after screenshots side by side when both versions are available. This gives the human one stable local file to bookmark and refresh after each UI change.
+- Every changed user-facing route or state must appear in `latest.html` as a before/after screenshot or exact copy diff. If it does not, fix its review flags, `covers` mapping, or fixture before handoff.
+- Before review, inspect every changed or copy-only route in `latest.html`. Fix and rerun until every diff comes from the PR.
+- Stabilize noise with deterministic fixtures, `freezeClock`, `data-volatile`, and hydration, animation, and image readiness. Never mask meaningful content, accept a bad baseline, or widen thresholds.
+- Report the noise found and fixed in the pull request or handoff.
 - Make a branch-specific or timestamped review folder only when it is genuinely useful for a longer audit, multiple competing versions, or preserving a before/after history. Do not create duplicate review HTML files out of habit.
 - If you create a named review folder, also update `packages/web/output/playwright/review/latest.html`. Copy referenced screenshot assets beside `latest.html` or rewrite image paths relative to that stable file, then verify the stable page has no broken image references.
 - Do not commit screenshot image artifacts to the repo unless the human explicitly asks and the screenshots are confirmed sanitized. Keep local artifacts under `packages/web/output/playwright/` while working.
@@ -124,7 +128,8 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
 - After verification and screenshots, commit the intended changes. Push the branch. Open or update a normal pull request.
 - Pause only for an explicit hold or unresolved strategic choice.
-- Show copy changes as Before → After in the handoff. Label additions New and unchanged relocations Moved unchanged.
+- The PR review packet is the copy approval surface. Agents leave its checkboxes unchecked for the human reviewer.
+- Show copy changes as Before → After in the PR review or handoff. Label additions New and unchanged relocations Moved unchanged.
 
 ## Task Writing — Simplified Technical English
 

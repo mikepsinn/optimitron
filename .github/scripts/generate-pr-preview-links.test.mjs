@@ -25,6 +25,7 @@ test("generates a review packet with visual-review links and preserved checkboxe
   const visualReviewUrl =
     "https://mikepsinn.github.io/optimitron/pr-123/abcdef123456/latest.html";
   const manifest = {
+    commitSha: "abcdef1234567890abcdef1234567890abcdef12",
     routes: [
       {
         routeName: "home",
@@ -50,15 +51,52 @@ test("generates a review packet with visual-review links and preserved checkboxe
       "packages/web/src/components/landing/TreatyVoteFlow.tsx",
     ]),
     EXISTING_COMMENT_BODY:
-      "- [x] <!-- review-item:visual:home:logged-out --> old label",
+      "- [x] <!-- review-item:author:noise-audited:abcdef123456 --> old author preflight\n- [x] <!-- review-item:scope:no-unrelated-diffs --> old scope\n- [x] <!-- review-item:visual:home:logged-out --> old label",
   });
 
   assert.match(output, /<!-- pr-review-packet -->/);
   assert.match(output, /\[Visual review\]\(https:\/\/mikepsinn\.github\.io\/optimitron\/pr-123\/abcdef123456\/latest\.html\)/);
   assert.match(output, /Cmd\/Ctrl-click review links to keep this PR open/);
+  assert.match(output, /### Agent preflight/);
+  assert.match(output, /It resets for each commit/);
+  assert.match(output, /- \[x\] <!-- review-item:author:noise-audited:abcdef123456 -->/);
+  assert.match(output, /inspected every changed and copy-only route/);
+  assert.match(output, /### Human review checklist/);
+  assert.match(output, /Agents leave these boxes unchecked/);
+  assert.match(output, /- \[x\] <!-- review-item:scope:no-unrelated-diffs -->/);
+  assert.match(output, /investigate and fix unexplained drift before approval/);
   assert.match(output, /- \[x\] <!-- review-item:visual:home:logged-out -->/);
   assert.match(output, /\[Home\]\(https:\/\/mikepsinn\.github\.io\/optimitron\/pr-123\/abcdef123456\/latest\.html#route-home\)/);
   assert.match(output, /\[open page\]\(https:\/\/preview\.example\.vercel\.app\/\?logout=1\)/);
+});
+
+test("resets the agent preflight checkbox for a new commit", () => {
+  const output = runGenerator({
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/222222222222/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      commitSha: "2222222222222222222222222222222222222222",
+      routes: [
+        {
+          routeName: "home",
+          routeLabel: "Home",
+          routePath: "/",
+          authState: "logged-out",
+          changed: true,
+          changedPairs: 1,
+          missingPairs: 0,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+    EXISTING_COMMENT_BODY:
+      "- [x] <!-- review-item:author:noise-audited:111111111111 --> old author preflight",
+  });
+
+  assert.match(output, /- \[ \] <!-- review-item:author:noise-audited:222222222222 -->/);
+  assert.doesNotMatch(output, /author:noise-audited:111111111111/);
 });
 
 test("lists authenticated and logged-out preview states for hybrid routes", () => {
