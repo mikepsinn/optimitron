@@ -67,8 +67,9 @@ so this is worth knowing before changing how formulas render:
   `param.latex` from the generated catalog or a hardcoded string.
 - `react-katex@3.1.0` hardcodes its KaTeX options to
   `{displayMode, errorColor, throwOnError}` and exposes no `settings` prop, so
-  `trust` stays at KaTeX's default of `false` — the control that refuses
-  `\href`, `\url` and the `\html*` commands. It cannot be raised from
+  `trust` stays at KaTeX's default of `false` — the control that refuses the
+  full trust-gated set: `\includegraphics`, `\href`, `\url`, `\htmlClass`,
+  `\htmlId`, `\htmlStyle` and `\htmlData`. It cannot be raised from
   `src/components/ui/latex.tsx`.
 
 Re-check `trust` if you render task `formulaLatex` through `<Latex>`, or upgrade
