@@ -1,4 +1,6 @@
 import {
+  END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_WAR_MISSION_SCENARIO_VALUE_USD,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
@@ -113,6 +115,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     // optimized by now"; child program tasks below set their own dueAt where
     // an explicit deadline is appropriate.
     dueAt: new Date("2024-12-31T00:00:00.000Z"),
+    // treaty-accountability owns the root's win-condition and delay metrics.
+    impactEstimateManagedExternally: true,
     sortOrder: -1000,
     primaryEndpoint: {
       label: "Open the Optimize Earth task tree",
@@ -122,9 +126,10 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     },
   },
   // Mission layer: the deliberate set of peer nodes directly under the root.
-  // Missions carry no economics scalars — their EV is the roll-up of the
-  // strategies beneath them, and the sync skips impact writes without scalars,
-  // so an empty mission cannot inflate any ranking.
+  // Mission values come from sourced scenarios, not child-task rollups. Child
+  // values overlap, so a rollup would count the same outcome more than once.
+  // Missions omit probability; mechanisms use marginal, probability-weighted
+  // values. Missions without sourced scenarios remain blank.
   {
     ...defaultTaskFields,
     category: TaskCategory.GOVERNANCE,
@@ -143,7 +148,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "Governments keep 122 times more destructive capacity than civilization can survive. Each task below this task decreases that capacity, or decreases the money that pays for it.",
-    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    // Whole cost of war, not the Treaty campaign's smaller peace dividend.
+    // This is a probability-free scenario value, not a ranking input.
+    valueIfAchievedUsdBase: END_WAR_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -980,
   },
   {
@@ -164,7 +171,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "Disease causes more lost healthy life years than any other condition. Each task below this task decreases the time to a treatment.",
-    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    // Economic drag only. The scenario does not price pain or suffering.
+    valueIfAchievedUsdBase: END_DISEASE_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -970,
   },
   {
@@ -453,6 +461,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | campaign funded).
     expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_TREATY_CAMPAIGN_P_SUCCESS.value,
+    // treaty-accountability owns the native ~212-year impact model for this
+    // task. The generic tree sync must not overwrite it with its annual frame.
+    impactEstimateManagedExternally: true,
     // Keep the cost-of-delay counters on `/employees` and similar treaty
     // surfaces live by preserving an overdue `dueAt`. The managed-sync
     // overwrites whatever the seed wrote, so we have to set it here too.

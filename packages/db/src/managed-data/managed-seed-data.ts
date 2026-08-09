@@ -87,10 +87,8 @@ import {
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
 } from "@optimitron/data/parameters";
-import {
-  weightSeedImpactFrame,
-  type SeedTaskImpactInput,
-} from "./seed-impact.js";
+import type { SeedTaskImpactInput } from "./seed-impact.js";
+import { buildSeedImpactExpectationFields } from "./managed-seed-impact.js";
 import { GLOBAL_VARIABLE_SEED_DATA } from "./seed-data/global-variables.js";
 import { VARIABLE_CATEGORY_SEED_DATA } from "./seed-data/variable-categories.js";
 import { upsertWishoniaUser } from "../system-users.js";
@@ -1404,6 +1402,10 @@ export async function syncManagedTreatyAccountabilityData() {
     },
     methodologyKey: "earth-optimization-prize-win-condition",
     calculationsUrl: earthOptimizationPrizeWinCondition.manualUrl,
+    // This model covers Treaty-driven disease acceleration, not every outcome
+    // under Optimize Earth. Keep its delay and win-condition fields without
+    // presenting the partial total as the root task's expected or outcome value.
+    omitExpectedValue: true,
   });
 
   await syncTaskImpactEstimate({
@@ -2571,8 +2573,12 @@ async function syncTaskImpactEstimate(input: {
   methodologyKey: string;
   parameterSetHashSuffix?: string;
   calculationsUrl?: string;
+  omitExpectedValue?: boolean;
 }) {
-  const weighted = weightSeedImpactFrame(input.impact);
+  const expectationFields = buildSeedImpactExpectationFields(
+    input.impact,
+    input.omitExpectedValue,
+  );
 
   // Delete old impact estimate sets for this task (cascade deletes frames/metrics)
   await prisma.taskImpactEstimateSet.deleteMany({
@@ -2617,9 +2623,7 @@ async function syncTaskImpactEstimate(input: {
       adoptionRampYears: 5,
       benefitDurationYears: input.impact.benefitDurationYears,
       annualDiscountRate: 0,
-      successProbabilityBase: input.impact.successProbabilityBase,
-      expectedEconomicValueUsdBase: weighted.expectedEconomicValueUsdBase,
-      expectedDalysAvertedBase: weighted.expectedDalysAvertedBase,
+      ...expectationFields,
       delayEconomicValueUsdLostPerDayBase: input.impact.delayEconomicValueUsdLostPerDayBase,
       delayDalysLostPerDayBase: input.impact.delayDalysLostPerDayBase,
       estimatedCashCostUsdBase: input.impact.estimatedCashCostUsdBase,

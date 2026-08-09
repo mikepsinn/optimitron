@@ -1,8 +1,51 @@
 import { describe, expect, it } from "vitest";
+import { VALUE_IF_ACHIEVED_USD_METRIC_KEY } from "@optimitron/data/parameters";
 import { TaskStatus } from "@optimitron/db";
 import { TaskImpactFrameKey } from "@optimitron/db/enums";
 import { buildTaskTree, countTaskTreeNodes } from "./task-tree";
 import type { TaskTreeFlatTask } from "./task-tree";
+
+const IMPACT_FRAME_FIXTURE: NonNullable<
+  TaskTreeFlatTask["selectedImpactFrame"]
+> = {
+  annualDiscountRate: 0.03,
+  adoptionRampYears: 0,
+  benefitDurationYears: 1,
+  customFrameLabel: null,
+  delayDalysLostPerDayBase: null,
+  delayDalysLostPerDayHigh: null,
+  delayDalysLostPerDayLow: null,
+  delayEconomicValueUsdLostPerDayBase: null,
+  delayEconomicValueUsdLostPerDayHigh: null,
+  delayEconomicValueUsdLostPerDayLow: null,
+  estimatedCashCostUsdBase: 0,
+  estimatedCashCostUsdHigh: null,
+  estimatedCashCostUsdLow: null,
+  estimatedEffortHoursBase: 10,
+  estimatedEffortHoursHigh: null,
+  estimatedEffortHoursLow: null,
+  evaluationHorizonYears: 1,
+  expectedDalysAvertedBase: null,
+  expectedDalysAvertedHigh: null,
+  expectedDalysAvertedLow: null,
+  expectedEconomicValueUsdBase: 1000,
+  expectedEconomicValueUsdHigh: null,
+  expectedEconomicValueUsdLow: null,
+  frameKey: TaskImpactFrameKey.TWENTY_YEAR,
+  frameSlug: "test-frame",
+  medianHealthyLifeYearsEffectBase: null,
+  medianHealthyLifeYearsEffectHigh: null,
+  medianHealthyLifeYearsEffectLow: null,
+  medianIncomeGrowthEffectPpPerYearBase: null,
+  medianIncomeGrowthEffectPpPerYearHigh: null,
+  medianIncomeGrowthEffectPpPerYearLow: null,
+  metrics: [],
+  successProbabilityBase: null,
+  successProbabilityHigh: null,
+  successProbabilityLow: null,
+  summaryStatsJson: null,
+  timeToImpactStartDays: 0,
+};
 
 function flatTask(
   id: string,
@@ -62,9 +105,7 @@ describe("buildTaskTree", () => {
       "root",
     );
 
-    expect(tree?.children.map((child) => child.id)).toEqual([
-      "visible-child",
-    ]);
+    expect(tree?.children.map((child) => child.id)).toEqual(["visible-child"]);
   });
 
   it("excludes tasks in a parent-chain cycle instead of infinite-looping", () => {
@@ -121,45 +162,7 @@ describe("buildTaskTree", () => {
         flatTask("root", null),
         flatTask("estimated", "root", {
           estimatedEffortHours: 10,
-          selectedImpactFrame: {
-            annualDiscountRate: 0.03,
-            adoptionRampYears: 0,
-            benefitDurationYears: 1,
-            customFrameLabel: null,
-            delayDalysLostPerDayBase: null,
-            delayDalysLostPerDayHigh: null,
-            delayDalysLostPerDayLow: null,
-            delayEconomicValueUsdLostPerDayBase: null,
-            delayEconomicValueUsdLostPerDayHigh: null,
-            delayEconomicValueUsdLostPerDayLow: null,
-            estimatedCashCostUsdBase: 0,
-            estimatedCashCostUsdHigh: null,
-            estimatedCashCostUsdLow: null,
-            estimatedEffortHoursBase: 10,
-            estimatedEffortHoursHigh: null,
-            estimatedEffortHoursLow: null,
-            evaluationHorizonYears: 1,
-            expectedDalysAvertedBase: null,
-            expectedDalysAvertedHigh: null,
-            expectedDalysAvertedLow: null,
-            expectedEconomicValueUsdBase: 1000,
-            expectedEconomicValueUsdHigh: null,
-            expectedEconomicValueUsdLow: null,
-            frameKey: TaskImpactFrameKey.TWENTY_YEAR,
-            frameSlug: "test-frame",
-            medianHealthyLifeYearsEffectBase: null,
-            medianHealthyLifeYearsEffectHigh: null,
-            medianHealthyLifeYearsEffectLow: null,
-            medianIncomeGrowthEffectPpPerYearBase: null,
-            medianIncomeGrowthEffectPpPerYearHigh: null,
-            medianIncomeGrowthEffectPpPerYearLow: null,
-            metrics: [],
-            successProbabilityBase: null,
-            successProbabilityHigh: null,
-            successProbabilityLow: null,
-            summaryStatsJson: null,
-            timeToImpactStartDays: 0,
-          },
+          selectedImpactFrame: IMPACT_FRAME_FIXTURE,
         }),
         flatTask("unestimated", "root"),
       ],
@@ -196,6 +199,44 @@ describe("buildTaskTree", () => {
     );
     expect(effortOnly?.evValid).toBe(false);
     expect(effortOnly?.realEv).toBe(0);
+  });
+
+  it("separates a mission's value if achieved from task EV and priority", () => {
+    const tree = buildTaskTree(
+      [
+        flatTask("root", null),
+        flatTask("mission", "root", {
+          estimatedEffortHours: 1,
+          selectedImpactFrame: {
+            ...IMPACT_FRAME_FIXTURE,
+            metrics: [
+              {
+                baseValue: 833_611_140_000_000,
+                displayGroup: "mission",
+                highValue: null,
+                lowValue: null,
+                metadataJson: null,
+                metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+                summaryStatsJson: null,
+                unit: "USD",
+                valueJson: null,
+              },
+            ],
+            // The mission metric wins even if malformed legacy data also
+            // carries task EV and effort. Neither value may create priority.
+            expectedEconomicValueUsdBase: 833_611_140_000_000,
+          },
+        }),
+      ],
+      "root",
+    );
+
+    const mission = tree?.children.find((child) => child.id === "mission");
+    expect(mission?.valueIfAchievedUsd).toBe(833_611_140_000_000);
+    expect(mission?.hasEvEstimate).toBe(false);
+    expect(mission?.evValid).toBe(false);
+    expect(mission?.realEv).toBe(0);
+    expect(mission?.priority).toBe(0);
   });
 });
 

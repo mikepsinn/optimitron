@@ -1,7 +1,11 @@
 import type { TaskStatus } from "@optimitron/db";
+import { VALUE_IF_ACHIEVED_USD_METRIC_KEY } from "@optimitron/data/parameters";
 import { getRootedTaskIds } from "@/lib/tasks/execution-planner-audit";
 import { computeTaskPriority } from "@/lib/tasks/rank-tasks";
-import type { TaskImpactFrameSummary } from "@/lib/tasks/impact";
+import {
+  getMetricBaseValue,
+  type TaskImpactFrameSummary,
+} from "@/lib/tasks/impact";
 
 /**
  * Minimal per-task shape the tree builder needs. Deliberately narrower than
@@ -32,11 +36,18 @@ export interface TaskTreeFlatTask {
 export interface TaskTreeNode extends TaskTreeFlatTask {
   children: TaskTreeNode[];
   /** False when the priority formula is missing a required input (no direct
-   * EV estimate or no effort-hours estimate) — the raw numbers below are
-   * still returned (as 0) but should be labeled "no direct estimate". */
+   * EV estimate or no effort-hours estimate). Only `priority` is unusable when
+   * this is false. Read `hasEvEstimate` before treating `realEv` as measured. */
   evValid: boolean;
+  /** True when the task carries a real expected-value number, independent of
+   * whether it also carries the effort estimate `priority` needs. Mission
+   * outcome values use `valueIfAchievedUsd` instead. */
+  hasEvEstimate: boolean;
   priority: number;
   realEv: number;
+  /** Mission outcome value under its stated scenario. This is not expected
+   * value and never enters executable-task priority. */
+  valueIfAchievedUsd: number | null;
 }
 
 function sortSiblings(left: TaskTreeFlatTask, right: TaskTreeFlatTask) {
@@ -92,6 +103,32 @@ export function buildTaskTree(
   }
 
   function toNode(task: TaskTreeFlatTask): TaskTreeNode {
+    const children = (childrenByParentId.get(task.id) ?? [])
+      .slice()
+      .sort(sortSiblings)
+      .map(toNode);
+    const valueIfAchievedUsd = task.selectedImpactFrame
+      ? getMetricBaseValue(
+          task.selectedImpactFrame.metrics,
+          VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+        )
+      : null;
+
+    // A mission outcome is not executable work. Do not run its scenario value
+    // through the task priority formula, even if a malformed frame also carries
+    // an expectedEconomicValueUsd value or effort estimate.
+    if (valueIfAchievedUsd != null) {
+      return {
+        ...task,
+        children,
+        evValid: false,
+        hasEvEstimate: false,
+        priority: 0,
+        realEv: 0,
+        valueIfAchievedUsd,
+      };
+    }
+
     const { priority, realEv, valid } = computeTaskPriority({
       blockerStatuses: task.blockerStatuses,
       dueAt: task.dueAt,
@@ -104,17 +141,15 @@ export function buildTaskTree(
     // missing number isn't rendered as a measured zero.
     const hasDirectEvEstimate =
       task.selectedImpactFrame?.expectedEconomicValueUsdBase != null;
-    const children = (childrenByParentId.get(task.id) ?? [])
-      .slice()
-      .sort(sortSiblings)
-      .map(toNode);
 
     return {
       ...task,
       children,
       evValid: valid && hasDirectEvEstimate,
+      hasEvEstimate: hasDirectEvEstimate,
       priority,
       realEv,
+      valueIfAchievedUsd: null,
     };
   }
 
@@ -126,9 +161,6 @@ export function buildTaskTree(
 export function countTaskTreeNodes(node: TaskTreeNode): number {
   return (
     1 +
-    node.children.reduce(
-      (total, child) => total + countTaskTreeNodes(child),
-      0,
-    )
+    node.children.reduce((total, child) => total + countTaskTreeNodes(child), 0)
   );
 }

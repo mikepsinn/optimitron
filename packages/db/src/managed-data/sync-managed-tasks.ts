@@ -21,6 +21,10 @@ import {
   type TaskStatus as TaskStatusValue,
 } from "../generated/prisma/client.js";
 import {
+  MISSION_VALUE_HORIZON_YEARS,
+  VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+} from "@optimitron/data/parameters";
+import {
   upsertWishoniaUser,
   type WishoniaUserClient,
 } from "../system-users.js";
@@ -70,10 +74,14 @@ export interface ManagedTaskRecord {
   ownerOrganizationId?: string | null;
   category?: TaskCategoryValue;
   estimatedEffortHours?: number | null;
-  /** Gross conditional value (USD) if the task succeeds. Source from `@optimitron/data` parameters — never hand-typed. */
+  /** Gross conditional annual value (USD) if the task succeeds. Source from `@optimitron/data` parameters. */
   expectedEconomicValueUsdBase?: number | null;
   /** Probability 0-1 the task produces the stated value. Source from `@optimitron/data` parameters. */
   successProbabilityBase?: number | null;
+  /** Probability-free mission outcome value under its stated scenario. */
+  valueIfAchievedUsdBase?: number | null;
+  /** Another managed writer owns this task's impact estimate. */
+  impactEstimateManagedExternally?: boolean;
   skillTags?: string[];
   preferredSkillTags?: string[];
   interestTags?: string[];
@@ -196,6 +204,10 @@ interface ManagedTaskImpactFrameRow {
   id: string;
 }
 
+interface ManagedTaskImpactMetricRow {
+  id: string;
+}
+
 export interface ManagedTaskClient {
   task: {
     findMany(args: unknown): Promise<ManagedTaskRow[]>;
@@ -208,7 +220,11 @@ export interface ManagedTaskClient {
     upsert(args: unknown): Promise<ManagedTaskImpactEstimateSetRow>;
   };
   taskImpactFrameEstimate: {
+    updateMany(args: unknown): Promise<{ count: number }>;
     upsert(args: unknown): Promise<ManagedTaskImpactFrameRow>;
+  };
+  taskImpactMetric: {
+    upsert(args: unknown): Promise<ManagedTaskImpactMetricRow>;
   };
   taskCommunicationEndpoint: {
     create(args: unknown): Promise<unknown>;
@@ -267,6 +283,11 @@ const MANAGED_TASK_EDGE_CALCULATION_VERSION = "managed-task-edges-v1";
 const MANAGED_TASK_IMPACT_COUNTERFACTUAL_KEY = "status-quo";
 const MANAGED_TASK_IMPACT_FRAME_SLUG = "one-year";
 const MANAGED_TASK_IMPACT_FRAME_YEARS = 1;
+const MANAGED_MISSION_VALUE_FRAME_SLUG = "lifetime";
+const MANAGED_TASK_IMPACT_FRAME_SLUGS = [
+  MANAGED_TASK_IMPACT_FRAME_SLUG,
+  MANAGED_MISSION_VALUE_FRAME_SLUG,
+] as const;
 
 export interface SyncManagedTasksResult {
   collectionKey: string;
@@ -736,11 +757,17 @@ function findExistingTask(
 }
 
 function hasManagedTaskImpact(record: ManagedTaskRecord) {
+  if (record.impactEstimateManagedExternally) {
+    return false;
+  }
+
   return (
-    record.expectedEconomicValueUsdBase !== null &&
-      record.expectedEconomicValueUsdBase !== undefined ||
-    record.successProbabilityBase !== null &&
-      record.successProbabilityBase !== undefined
+    (record.expectedEconomicValueUsdBase !== null &&
+      record.expectedEconomicValueUsdBase !== undefined) ||
+    (record.successProbabilityBase !== null &&
+      record.successProbabilityBase !== undefined) ||
+    (record.valueIfAchievedUsdBase !== null &&
+      record.valueIfAchievedUsdBase !== undefined)
   );
 }
 
@@ -751,6 +778,18 @@ function buildManagedTaskImpactData(
   const conditionalEconomicValueUsdBase =
     record.expectedEconomicValueUsdBase ?? null;
   const successProbabilityBase = record.successProbabilityBase ?? null;
+  const valueIfAchievedUsdBase = record.valueIfAchievedUsdBase ?? null;
+
+  if (
+    valueIfAchievedUsdBase !== null &&
+    (conditionalEconomicValueUsdBase !== null ||
+      successProbabilityBase !== null)
+  ) {
+    throw new Error(
+      `Managed task ${record.taskKey} cannot combine a probability-free outcome value with expected-value inputs.`,
+    );
+  }
+
   const expectedEconomicValueUsdBase =
     conditionalEconomicValueUsdBase === null
       ? null
@@ -779,14 +818,28 @@ function buildManagedTaskImpactData(
     frame: {
       adoptionRampYears: 0,
       annualDiscountRate: 0,
-      benefitDurationYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      benefitDurationYears:
+        valueIfAchievedUsdBase === null
+          ? MANAGED_TASK_IMPACT_FRAME_YEARS
+          : MISSION_VALUE_HORIZON_YEARS,
       estimatedEffortHoursBase: record.estimatedEffortHours ?? null,
-      evaluationHorizonYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
+      evaluationHorizonYears:
+        valueIfAchievedUsdBase === null
+          ? MANAGED_TASK_IMPACT_FRAME_YEARS
+          : MISSION_VALUE_HORIZON_YEARS,
       expectedEconomicValueUsdBase,
-      frameKey: "ONE_YEAR" as const,
+      frameKey:
+        valueIfAchievedUsdBase === null
+          ? ("ONE_YEAR" as const)
+          : ("LIFETIME" as const),
+      frameSlug:
+        valueIfAchievedUsdBase === null
+          ? MANAGED_TASK_IMPACT_FRAME_SLUG
+          : MANAGED_MISSION_VALUE_FRAME_SLUG,
       successProbabilityBase,
       timeToImpactStartDays: 0,
     },
+    valueIfAchievedUsdBase,
   };
 }
 
@@ -794,6 +847,7 @@ async function syncManagedTaskImpactEstimate(
   client: ManagedTaskClient,
   collectionKey: string,
   record: ManagedTaskRecord,
+  now: Date,
 ) {
   if (!hasManagedTaskImpact(record)) {
     return;
@@ -851,16 +905,15 @@ async function syncManagedTaskImpactEstimate(
     },
   });
 
-  await client.taskImpactFrameEstimate.upsert({
+  const frame = await client.taskImpactFrameEstimate.upsert({
     where: {
       taskImpactEstimateSetId_frameSlug: {
-        frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
+        frameSlug: impactData.frame.frameSlug,
         taskImpactEstimateSetId: estimateSet.id,
       },
     } satisfies Prisma.TaskImpactFrameEstimateWhereUniqueInput,
     create: {
       ...impactData.frame,
-      frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
       taskImpactEstimateSetId: estimateSet.id,
     },
     update: {
@@ -870,6 +923,45 @@ async function syncManagedTaskImpactEstimate(
     select: {
       id: true,
     },
+  });
+
+  if (impactData.valueIfAchievedUsdBase !== null) {
+    await client.taskImpactMetric.upsert({
+      where: {
+        taskImpactFrameEstimateId_metricKey: {
+          metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+          taskImpactFrameEstimateId: frame.id,
+        },
+      } satisfies Prisma.TaskImpactMetricWhereUniqueInput,
+      create: {
+        baseValue: impactData.valueIfAchievedUsdBase,
+        displayGroup: "outcome-value",
+        metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+        taskImpactFrameEstimateId: frame.id,
+        unit: "USD",
+      },
+      update: {
+        baseValue: impactData.valueIfAchievedUsdBase,
+        deletedAt: null,
+        displayGroup: "outcome-value",
+        unit: "USD",
+      },
+      select: { id: true },
+    });
+  }
+
+  // Retire only slugs this writer has declared. Other frames in the estimate
+  // set can carry independent scenarios and belong to their own writers.
+  const supersededFrameSlugs = MANAGED_TASK_IMPACT_FRAME_SLUGS.filter(
+    (frameSlug) => frameSlug !== impactData.frame.frameSlug,
+  );
+  await client.taskImpactFrameEstimate.updateMany({
+    where: {
+      deletedAt: null,
+      frameSlug: { in: supersededFrameSlugs },
+      taskImpactEstimateSetId: estimateSet.id,
+    },
+    data: { deletedAt: now },
   });
 }
 
@@ -1222,7 +1314,12 @@ export async function syncManagedTasks(
         update: buildTaskUpdateData(options.collectionKey, record),
       });
 
-      await syncManagedTaskImpactEstimate(client, options.collectionKey, record);
+      await syncManagedTaskImpactEstimate(
+        client,
+        options.collectionKey,
+        record,
+        now,
+      );
 
       if (record.primaryEndpoint !== undefined) {
         const endpointAction = await upsertPrimaryEndpoint(

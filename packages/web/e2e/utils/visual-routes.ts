@@ -22,6 +22,7 @@ export type VisualRoute = {
   openCreateTask?: boolean;
   openContentShare?: boolean;
   openAddSubtask?: boolean;
+  openTaskImpactTrace?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
   path: string;
@@ -91,6 +92,10 @@ const TASK_DEPENDENCIES_SECTION_FILE =
   "packages/web/src/components/tasks/TaskDependenciesSection.tsx";
 const TASK_TREE_VIEW_FILE =
   "packages/web/src/components/tasks/TaskTreeView.tsx";
+const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
+  "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
+const PERSONAL_QUEUE_SECTION_FILE =
+  "packages/web/src/components/dashboard/PersonalQueueSection.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
 // Sections rendered by both optimitron.com/ and /game. Either capture proves
@@ -171,6 +176,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
+  [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
@@ -184,6 +190,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
+  [ROUTES.methodology, "#methodology"],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -199,6 +206,7 @@ const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
+  [ROUTES.methodology, /Task scenario: probability-weighted expected value/],
 ]);
 
 // The calendar server-renders the requested date, and freezeClock only
@@ -326,7 +334,19 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     requiredSelector: "#also-serves",
   },
   {
-    covers: [TASK_TREE_VIEW_FILE],
+    covers: [TASK_IMPACT_TRACE_DISCLOSURE_FILE],
+    name: "task-one-percent-treaty-impact-trace",
+    openTaskImpactTrace: true,
+    path: "/tasks/1-pct-treaty",
+    required: true,
+    requiredSelector: 'details[open] a[href="/methodology"]',
+    requiredText: /^Estimate$/,
+  },
+  {
+    covers: [
+      TASK_TREE_VIEW_FILE,
+      "packages/web/src/app/tasks/tree/page.tsx",
+    ],
     name: "tasks-tree",
     path: "/tasks/tree",
     required: true,
@@ -384,6 +404,16 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     name: "variant-optimitron-tasks",
     path: ROUTES.tasks,
     required: true,
+    siteVariant: "optimitron",
+  },
+  {
+    authenticated: true,
+    covers: [PERSONAL_QUEUE_SECTION_FILE],
+    name: "variant-optimitron-dashboard-auth",
+    path: ROUTES.dashboard,
+    required: true,
+    requiredSelector: 'a[href="/methodology"]',
+    requiredText: /^What next$/,
     siteVariant: "optimitron",
   },
   {
