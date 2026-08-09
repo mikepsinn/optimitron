@@ -150,8 +150,6 @@ function recommendationForGraphFinding(code: string) {
       return "Prepare a sourced marginal estimate for review.";
     case "UNREVIEWED_PUBLIC_ESTIMATE":
       return "Send the estimate through review before using it on a public task.";
-    case "STALE_ESTIMATE_INPUT":
-      return "Prepare an estimate refresh pinned to current parameter revisions.";
     case "INVALID_VALUE_EDGE":
     case "UNANNOTATED_VALUE_EDGE":
       return "Prepare a sourced correction to the edge contribution.";

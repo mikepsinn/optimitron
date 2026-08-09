@@ -5,8 +5,8 @@ import {
   GLOBAL_LIFE_EXPECTANCY_2024,
 } from "./parameters-calculations-citations";
 import {
-  END_DISEASE_LIFETIME_VALUE_USD,
-  END_WAR_LIFETIME_VALUE_USD,
+  END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_WAR_MISSION_SCENARIO_VALUE_USD,
   MISSION_VALUE_HORIZON_YEARS,
 } from "./mission-value-horizon";
 
@@ -32,13 +32,21 @@ function provenanceUrl(param: {
 /** Markdown link when the parameter has provenance, plain text when it does not. */
 function citedText(
   label: string,
-  param: { calculationsUrl?: string; manualPageUrl?: string; sourceUrl?: string },
+  param: {
+    calculationsUrl?: string;
+    manualPageUrl?: string;
+    sourceUrl?: string;
+  },
 ) {
   const url = provenanceUrl(param);
   return url ? `[${label}](${url})` : label;
 }
 
 function usdShort(value: number) {
+  if (Math.abs(value) >= 1e15) {
+    const scaled = value / 1e15;
+    return `$${scaled.toFixed(Math.abs(scaled) >= 100 ? 0 : 1)} quadrillion`;
+  }
   const units: Array<[number, string]> = [
     [1e12, "T"],
     [1e9, "B"],
@@ -54,143 +62,120 @@ function usdShort(value: number) {
 }
 
 /**
- * The expected-value rules, as markdown, with every figure interpolated from
- * the parameter catalog so the prose cannot drift from the numbers it
- * describes.
- *
- * Single source for all three audiences: the /methodology page renders it,
- * docs/EXPECTED_VALUE_METHODOLOGY.md points at it, and the MCP tools that
- * write estimates quote its rule so agents estimate consistently.
+ * Human-readable methodology. Catalog values are interpolated so the worked
+ * examples use the same current inputs as the mission calculations.
  */
-export const EXPECTED_VALUE_METHODOLOGY_MARKDOWN = `# How we put a number on a task
+export const EXPECTED_VALUE_METHODOLOGY_MARKDOWN = `# Mission value and task expected value
 
-Tasks in the tree carry an expected value, and the queue ranks work by it. That
-only means something if every number is computed the same way — and if the ones
-nobody can source stay empty rather than guessed. These are the rules.
+Optimitron shows two different quantities. They answer different questions.
 
-## The one-line rule
+## Mission outcome: value if achieved
 
-**Conditional value = the annual welfare effect × ${MISSION_VALUE_HORIZON_YEARS} years, undiscounted.
-Record it with a separate success probability. A goal's value is never summed from the tasks beneath it.**
+A mission describes an outcome, such as ending war or ending disease. The
+mission value asks what that outcome would be worth under one stated scenario.
 
-## The frame
+**Mission value is not a forecast. We do not estimate the mission's probability.**
 
-| Field | Value | Why |
-| --- | --- | --- |
-| Horizon | **${MISSION_VALUE_HORIZON_YEARS} years** | Global life expectancy at birth (${citedText("WHO, 2024", GLOBAL_LIFE_EXPECTANCY_2024)}). One human lifetime is a span a reader can feel, and it is a *measured* number rather than a chosen one. |
-| Discount rate | **0** | See below. |
-| Probability | 0–1, recorded as its own field | So the conditional value stays recoverable. |
+The task tree labels this quantity **Value if achieved**. It does not use the
+quantity as task expected value or task priority.
 
-### Conditional value and expected value are two different numbers
+### Mission comparison scenario
 
-Both are stored, and confusing them is the easiest way to publish a wrong estimate.
+The current scenario uses this calculation:
 
-- **Conditional value** — what the task is worth *if it works*. This is the number
-  you derive: annual effect × ${MISSION_VALUE_HORIZON_YEARS}.
-- **Success probability** — the odds it works, recorded in its own field.
-- **Expected value** — the two multiplied. This is what the queue ranks on, and it
-  is what the \`expectedEconomicValueUsd\` fields hold.
+**Value if achieved = current annual outcome value × ${MISSION_VALUE_HORIZON_YEARS} years**
 
-So probability *is* reflected in the expected value — that is what makes it
-"expected". What must never happen is probability being quietly baked into the
-conditional value and then applied a second time, or a conditional value being
-filed as though it were already probability-weighted. Keep both numbers, and the
-reader can always recover either one.
+| Assumption | Current choice |
+| --- | --- |
+| Comparison period | **${MISSION_VALUE_HORIZON_YEARS} years** |
+| Reference for that period | Global life expectancy at birth (${citedText("WHO, 2024", GLOBAL_LIFE_EXPECTANCY_2024)}) |
+| Start of the full effect | Immediately |
+| Annual value | Flat for the full period |
+| Growth | None |
+| Discount rate | **0** |
+| Mission probability | Not estimated |
 
-When a task states a value but no probability, its expected value equals its
-conditional value. That is a deliberate signal, not a claim of certainty: it means
-the number is a ceiling nobody has discounted yet.
+These are chosen scenario assumptions. They are not facts about every task.
+Changing an assumption changes the mission value.
 
-### Why no discount rate
+The ${MISSION_VALUE_HORIZON_YEARS}-year period does not become a default task
+duration. Each task keeps the duration supported by its own evidence.
 
-A discount rate does one of two jobs: it prices uncertainty, or it prices
-impatience.
+## Task scenario: probability-weighted expected value
 
-Uncertainty is already priced here — every estimate carries an explicit
-probability of success — so discounting for risk would charge for it twice.
+A task estimate describes one stated success scenario. Current task-tree
+estimates use this calculation:
 
-That leaves pure time preference, which is a contested ethical position rather
-than a measurement. It is also the most-attacked parameter in this field: the
-Copenhagen Consensus rankings are criticised primarily because their discount
-rates structurally penalise long-horizon problems, making climate look weak
-against near-term health spending. Choosing zero does not make us right. It
-makes the choice **visible and uniform** instead of buried inside each estimate,
-and anyone who disagrees can apply their own rate to a stated undiscounted
-number — which they cannot do to a pre-discounted one.
+**Task scenario expected value = stated outcome value if the task succeeds × P(success | task funded or done)**
 
-### Why no growth curve
+The probability is the stated chance of success if the task gets funded or
+completed.
 
-The form is deliberately flat: annual effect × horizon. No compounding. A
-reader can check the arithmetic in their head, and a growth assumption cannot
-hide in the same slot as a measurement.
+Current task-tree estimates do not subtract the chance of success without the
+task. They do not estimate the value caused by the task alone.
 
-## A goal's value is written, not derived
+Several alternative mechanisms can target the same outcome. Their estimates
+overlap. Do not add them.
 
-This is the rule that is easiest to get wrong, and it is worth being concrete.
+### When a without-task baseline exists
 
-Six mechanisms in the tree — the Court of Humanity, the 1% Treaty, the Loving
-Takeover, the Earth Optimization Prize, the decentralized FDA, and the shirt
-cascade — all carry the *same* peace-dividend value and differ only in their
-probability of success. They hang under different parents, because they reach
-that dividend by different arguments, but they are **alternative routes to one
-outcome**, not parts of it.
+A sourced without-task baseline can support a marginal decision estimate. This
+estimate measures the value caused by the task alone:
 
-So adding them up would count the same dividend six times. Splitting the
-parent's value across them is the same error inverted — it hands a task a number
-nobody estimated.
+**Marginal decision estimate = stated outcome value × [P(success | task funded or done) − P(success | no task funding or work)]**
 
-A goal's value is a fact about the world, not about our task list. The value of
-ending disease does not change when someone adds a subtask. What a task earns
-for advancing a goal is credit for moving its **probability**, recorded on the
-link between them.
+Use this formula only when sources support both probabilities. Call the result
+marginal. Current task-tree estimates do not use this formula.
 
-## Worked example: ending war
+The task record stores the probability-weighted scenario value. The queue uses
+it with task effort and cost.
+
+Use the task's actual effect duration. A one-time benefit stays one-time. A
+five-year estimate stays five-year unless new analysis recalculates it.
+
+Recalculate the value before you change its duration or assumptions.
+
+## Do not add task estimates into a mission
+
+Adding overlapping task estimates can count the same outcome more than once. A
+subtask must not change the mission's value if achieved.
+
+Show mission outcomes and task scenario estimates separately.
+
+## Worked mission scenario: ending war
 
 | Step | Source | Value |
 | --- | --- | --- |
-| Annual cost of war | ${citedText("direct + indirect, global", GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST)} | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
-| × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_WAR_LIFETIME_VALUE_USD)}** |
-| × probability | probability war actually ends | the ranked expected value |
+| Current annual cost of war | ${citedText("direct and indirect global cost", GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST)} | ${usdShort(GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST.value)}/year |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_WAR_MISSION_SCENARIO_VALUE_USD)}** |
 
-Note this uses the *whole* cost of war, not the peace dividend. The dividend is
-what a one percent redirection buys, which is what the treaty asks for. The
-mission is the whole quantity.
+The task tree shows **Value if achieved ${usdShort(END_WAR_MISSION_SCENARIO_VALUE_USD)}**.
+It does not claim that ending war has a known probability.
 
-## Worked example: ending disease
+This scenario uses the whole annual cost of war. The 1% Treaty addresses a
+smaller outcome and needs its own task scenario estimate.
+
+## Worked mission scenario: ending disease
 
 | Step | Source | Value |
 | --- | --- | --- |
 | Share of GDP lost to disease | ${citedText(`${(DISEASE_BURDEN_GDP_DRAG_PCT.value * 100).toFixed(0)}%`, DISEASE_BURDEN_GDP_DRAG_PCT)} | of ${citedText(usdShort(GLOBAL_GDP_2025.value), GLOBAL_GDP_2025)} |
-| Annual drag | productivity + diverted medical cost | ${usdShort(DISEASE_BURDEN_GDP_DRAG_PCT.value * GLOBAL_GDP_2025.value)}/year |
-| × one lifetime | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_LIFETIME_VALUE_USD)}** |
+| Current annual economic drag | Productivity loss and medical cost | ${usdShort(DISEASE_BURDEN_GDP_DRAG_PCT.value * GLOBAL_GDP_2025.value)}/year |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_MISSION_SCENARIO_VALUE_USD)}** |
 
-That is economic drag only. It does not price the suffering itself, which
-belongs in the health fields on the same horizon and the same zero discount.
+This scenario covers economic drag. It does not price pain or suffering.
 
-## Writing an estimate
+## Write a task estimate
 
-Research the number. Missing evidence is a research task, not a reason to guess.
+1. State the outcome and the task scenario.
+2. Estimate P(success | task funded or done).
+3. Use the effect duration supported by the evidence.
+4. Calculate the task scenario expected value.
+5. Record the formula, assumptions, and sources with the estimate.
 
-1. **Look for an existing sourced figure first.** The catalog already holds the
-   economics behind most of these arguments.
-2. **If nothing fits, find a defensible source and add the figure to the
-   catalog** rather than typing it onto one task. A number living on a single
-   task is a citation; one in the catalog is a dependency, and every estimate
-   built on it moves when it is corrected.
-3. **Multiply the annual effect by ${MISSION_VALUE_HORIZON_YEARS} years** to get the conditional value.
-4. **Multiply that by the probability of success.** The stored expected value is
-   the product of the two, so filing a conditional value as-is overstates the
-   task. Record the probability separately and the conditional value stays
-   recoverable.
-5. **Record the sources and assumptions with the estimate**, not in the task's
-   description. They belong beside the number, so a reader can check it and so
-   the system can flag it when an input changes.
+If a sourced without-task baseline exists, record both probabilities. Label the
+result as a marginal decision estimate.
 
-Leave an estimate empty only when you have looked and there is genuinely
-nothing defensible — and say so, because a stated gap is a research lead. A
-blank is honest. An invented number gets ranked against real ones, and the
-ranking is what the whole system is for.
+Leave the value empty when the evidence cannot support an estimate. A missing
+estimate is clearer than a guess that enters the ranking.
 `;
-
-/** Compact form for MCP tool descriptions, where space is tight. */
-export const EXPECTED_VALUE_RULE_SUMMARY = `Derive the CONDITIONAL value (worth if it works) as annual welfare effect x ${MISSION_VALUE_HORIZON_YEARS} years (one human lifetime), undiscounted, on the LIFETIME frame. Then supply expectedEconomicValueUsd* ALREADY MULTIPLIED by success probability -- these fields hold probability-weighted value and nothing downstream multiplies again -- and record successProbabilityBase in its own field so the conditional value stays recoverable. Do not file a conditional value as though it were weighted. A goal's value is written from sourced parameters, never summed from its subtasks (sibling tasks are usually alternative routes to one outcome, so summing double-counts). If no parameter fits, RESEARCH the number and add one with proposeParameterBundle (never hand-edit parameters-calculations-citations.ts -- it is generated upstream and overwritten). Record the reasoning in this tool's assumptions, formulaText and estimateNotes fields, not in the task description, so it renders with the number. Prefer parameterInputs over a bare sourceUrls citation: a linked parameter is a dependency, so this estimate is flagged stale when that parameter is corrected. Leave the estimate null only when nothing defensible exists after looking, and say so in estimateNotes. Full rules: /methodology`;

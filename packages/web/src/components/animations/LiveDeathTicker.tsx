@@ -141,14 +141,9 @@ export function LiveDeathTicker({
         {counters.map((c) => (
           <div key={c.label}>
             <span className="text-3xl mr-2">{c.emoji}</span>
-            {/* Deliberately NOT data-volatile. Every staticFallback is built
-                from fixed parameter constants, so it is already deterministic
-                -- marking it volatile replaced a whole sentence of real copy
-                with a "[deaths]" placeholder, which is how the /game snapshot
-                came to read "💀[deaths]🔥[governance waste]" with the words
-                stripped out. Only the ticking counter below is volatile. */}
             <span
               className={`text-lg font-bold ${surface === "dark" ? c.darkSurfaceColor : c.lightSurfaceColor}`}
+              data-volatile={c.volatileLabel}
             >
               {c.staticFallback}
             </span>

@@ -86,8 +86,6 @@ GET http://localhost:3001/.well-known/oauth-authorization-server
 - PERMISSIONS
 ### SCOPES ARE THE LEASH.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations
-- Manage private tasks for organizations where you have permission
-- Approve exact outbound-action payloads as an authenticated human
 - Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies
 - Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports
 - Admin-only: hide, restore, merge, and resolve Earth-data records and reports

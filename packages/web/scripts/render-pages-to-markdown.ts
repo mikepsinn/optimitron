@@ -232,7 +232,6 @@ async function extractPage(
       ? redirectedFromResponse.status()
       : null;
     await waitForGlobalLoaderToClear(page, route);
-    await waitForHydration(page, route);
     await page.waitForTimeout(settleMs);
     return { status, redirectedFromStatus };
   };
@@ -508,38 +507,6 @@ async function extractPage(
   });
 
   return { bodyMarkdown, metadata, redirectedFromStatus };
-}
-
-/**
- * Blocks until <HydrationSentinel> marks the document hydrated.
- *
- * Without this the snapshot raced React: anything gated on `useHydratedNow`
- * (the treaty overdue clock, "DEAD ALREADY FROM THE DELAY", the cost-of-delay
- * boxes) renders null on the server and on the first client pass, so a capture
- * that fired too early recorded the page with those sections simply absent --
- * indistinguishable, in a diff, from someone having deleted the copy.
- *
- * Throws on timeout rather than warning. Letting an unhydrated page through
- * would write exactly the snapshot this function exists to prevent -- one
- * missing whole sections, which reads in review as deleted copy. The caller
- * retries and then refuses to write, the same contract the global-loader check
- * already uses: no snapshot beats a misleading one.
- */
-async function waitForHydration(
-  page: import("@playwright/test").Page,
-  route: string,
-): Promise<void> {
-  try {
-    await page.waitForFunction(
-      () => document.documentElement.dataset.hydrated === "true",
-      undefined,
-      { timeout: 15_000 },
-    );
-  } catch {
-    throw new Error(
-      `No hydration signal within 15s on ${route}; snapshot NOT written because hydration-gated copy would be missing. Fix the slow render or add a route-specific readiness signal.`,
-    );
-  }
 }
 
 async function waitForGlobalLoaderToClear(

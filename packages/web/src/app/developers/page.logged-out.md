@@ -22,7 +22,6 @@
 /openapi.json
 ```
 - [OPEN OPENAPI](/openapi.json)
-- [MCP TOOL REFERENCE](/developers/tools)
 - [INSTALL MCP](/mcp)
 - WHO USES IT
 ### ONE TO-DO LIST BEATS FIVE HUNDRED HEROIC DUPLICATES.
@@ -102,8 +101,6 @@ POST /api/tasks
 - PERMISSIONS
 ### ASK FOR THE SMALLEST SCOPE THAT WORKS.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations
-- Manage private tasks for organizations where you have permission
-- Approve exact outbound-action payloads as an authenticated human
 - Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies
 - Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports
 - Admin-only: hide, restore, merge, and resolve Earth-data records and reports

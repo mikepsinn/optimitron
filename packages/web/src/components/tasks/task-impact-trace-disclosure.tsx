@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ExpectedValueExplainer } from "@/components/shared/ExpectedValueExplainer";
+import Link from "next/link";
 import type {
   PublicParameterTraceNode,
   PublicTaskImpactTrace,
   PublicTraceSourceArtifact,
 } from "@/lib/parameters/task-impact-trace";
+import { methodologyLink } from "@/lib/routes";
 
 type LoadState = "idle" | "loading" | "loaded" | "error";
 
@@ -66,11 +67,6 @@ function ParameterTraceNode({
       <span className="text-sm font-black">
         {formatTraceNumber(node.value)} {node.unit}
       </span>
-      {node.stale ? (
-        <span className="text-xs font-black uppercase text-foreground">
-          superseded input
-        </span>
-      ) : null}
     </span>
   );
   const details = (
@@ -122,20 +118,18 @@ function TraceBody({ trace }: { trace: PublicTaskImpactTrace }) {
   const formula = trace.estimate.formulaText ?? trace.estimate.formulaLatex;
   return (
     <div className="space-y-5 pb-5 pt-4">
-      {trace.stale ? (
-        <p className="text-sm font-black">
-          This calculation uses an older revision of at least one input.
-        </p>
-      ) : null}
-
       <div>
         <h3 className="text-sm font-black">Estimate</h3>
         <dl className="mt-2 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
           {frame?.expectedEconomicValueUsdBase != null ? (
             <div>
-              <dt className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
-                Expected value
-                <ExpectedValueExplainer />
+              <dt className="text-xs font-bold text-muted-foreground">
+                <Link
+                  className="underline decoration-dotted underline-offset-2"
+                  href={methodologyLink.href}
+                >
+                  Expected value
+                </Link>
               </dt>
               <dd className="font-black">
                 ${formatTraceNumber(frame.expectedEconomicValueUsdBase)}

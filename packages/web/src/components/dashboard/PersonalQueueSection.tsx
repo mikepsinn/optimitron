@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { getTaskPath } from "@/lib/routes";
-import { ExpectedValueExplainer } from "@/components/shared/ExpectedValueExplainer";
+import { getTaskPath, methodologyLink } from "@/lib/routes";
 import {
   deadlineChip,
   formatPriority,
@@ -19,17 +18,20 @@ export function PersonalQueueSection({
   const severitySummary = summarizeIssueSeverities(issues);
 
   return (
-    // id is the visual review's activation selector for the dashboard state;
-    // it proves the ranked queue rendered rather than an empty shell.
-    <section className="mb-10" id="what-next">
+    <section className="mb-10">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <h2 className="text-base font-semibold uppercase tracking-wide">
           What next
         </h2>
         <p className="text-xs text-[var(--treaty-ink-muted)]">
           Ranked by{" "}
-          <ExpectedValueExplainer>expected value</ExpectedValueExplainer> per
-          hour at ${buybackRate.toLocaleString()}
+          <Link
+            className="underline decoration-dotted underline-offset-2"
+            href={methodologyLink.href}
+          >
+            expected value
+          </Link>{" "}
+          per hour at ${buybackRate.toLocaleString()}
           /hr. Required deadlines override the ranking.
         </p>
       </div>

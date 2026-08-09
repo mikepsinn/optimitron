@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  END_DISEASE_LIFETIME_VALUE_USD,
-  END_WAR_LIFETIME_VALUE_USD,
+  END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_WAR_MISSION_SCENARIO_VALUE_USD,
+  PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
 } from "@optimitron/data/parameters";
 import {
   COURT_OF_HUMANITY_TASK_ID,
@@ -46,6 +47,12 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
 
   it("has parentTaskId null (it's the root)", () => {
     expect(root?.parentTaskId).toBeNull();
+  });
+
+  it("leaves the root outcome estimate to treaty-accountability", () => {
+    expect(root?.impactEstimateManagedExternally).toBe(true);
+    expect(root?.expectedEconomicValueUsdBase).toBeUndefined();
+    expect(root?.successProbabilityBase).toBeUndefined();
   });
 
   // The /foundations mechanism comparison ranks the children of End War and
@@ -116,6 +123,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
   ])("mission %s states no success probability", (id) => {
     const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
     expect(mission).toBeDefined();
+    expect(mission?.expectedEconomicValueUsdBase).toBeUndefined();
     expect(mission?.successProbabilityBase).toBeUndefined();
   });
 
@@ -123,8 +131,8 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
   // ranked against real ones. See docs/EXPECTED_VALUE_METHODOLOGY.md.
   it("gives a mission a value only where a sourced parameter exists", () => {
     const valued = new Map([
-      [END_WAR_TASK_ID, END_WAR_LIFETIME_VALUE_USD],
-      [END_DISEASE_TASK_ID, END_DISEASE_LIFETIME_VALUE_USD],
+      [END_WAR_TASK_ID, END_WAR_MISSION_SCENARIO_VALUE_USD],
+      [END_DISEASE_TASK_ID, END_DISEASE_MISSION_SCENARIO_VALUE_USD],
     ]);
     for (const id of [
       END_WAR_TASK_ID,
@@ -134,7 +142,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
       MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
     ]) {
       const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
-      expect(mission?.expectedEconomicValueUsdBase).toBe(valued.get(id));
+      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
     }
   });
 
@@ -148,8 +156,26 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     const endWar = OPTIMIZE_EARTH_TASK_TREE.find(
       (t) => t.id === END_WAR_TASK_ID,
     );
-    expect(endWar?.expectedEconomicValueUsdBase).toBe(END_WAR_LIFETIME_VALUE_USD);
-    expect(endWar?.expectedEconomicValueUsdBase).not.toBe(mechanismTotal);
+    expect(endWar?.valueIfAchievedUsdBase).toBe(
+      END_WAR_MISSION_SCENARIO_VALUE_USD,
+    );
+    expect(endWar?.valueIfAchievedUsdBase).not.toBe(mechanismTotal);
+  });
+
+  it("keeps mechanism inputs on their source-native annual frame", () => {
+    for (const id of fundableMechanismKeys) {
+      const mechanism = OPTIMIZE_EARTH_TASK_TREE.find((task) => task.id === id);
+      expect(mechanism?.expectedEconomicValueUsdBase).toBe(
+        PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+      );
+    }
+  });
+
+  it("leaves the Treaty impact estimate to treaty-accountability", () => {
+    const treaty = OPTIMIZE_EARTH_TASK_TREE.find(
+      (task) => task.id === TREATY_PARENT_TASK_ID,
+    );
+    expect(treaty?.impactEstimateManagedExternally).toBe(true);
   });
 
   // A mission with nothing under it is DRAFT so it stays out of active queues

@@ -242,6 +242,7 @@ export function createOnePercentTreatyCompileConfig(input: {
     frames: [
       {
         adoptionRampYears: 4,
+        annualDiscountRate: 0.03,
         benefitDurationYears: 20,
         canonicalBindings: {
           estimatedCashCostUsd: {

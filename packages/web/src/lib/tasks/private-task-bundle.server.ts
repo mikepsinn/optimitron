@@ -428,9 +428,6 @@ async function attachImpactEstimate(
       counterfactualKey: "task-not-completed",
       estimateNotes: "User-reviewed conversation-to-work import",
       frame: {
-        // Pinned, not inherited: the shared schema defaults now describe the
-        // LIFETIME mission frame, and these conversation-derived estimates are
-        // still written on the five-year frame below.
         estimatedCashCostUsdBase: candidate.estimatedCostUsd.base,
         estimatedCashCostUsdHigh: candidate.estimatedCostUsd.high,
         estimatedCashCostUsdLow: candidate.estimatedCostUsd.low,
@@ -440,7 +437,6 @@ async function attachImpactEstimate(
           candidate.estimatedDurationSeconds.high / secondsPerHour,
         estimatedEffortHoursLow:
           candidate.estimatedDurationSeconds.low / secondsPerHour,
-        evaluationHorizonYears: 5,
         expectedEconomicValueUsdBase: candidate.expectedValueUsd.base,
         expectedEconomicValueUsdHigh: candidate.expectedValueUsd.high,
         expectedEconomicValueUsdLow: candidate.expectedValueUsd.low,

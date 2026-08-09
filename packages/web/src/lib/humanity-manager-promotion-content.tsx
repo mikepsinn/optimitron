@@ -42,11 +42,8 @@ export function createHumanityManagerPromotion({
         <PromoBody>
           <PromoText>
             🥳Congratulations! You&apos;ve been promoted to Humanity Manager at{" "}
-            {/* The legal name already ends in "Inc.", so a bare "." after it
-                rendered "Inc..". Strip one trailing period so the sentence
-                ends with exactly one however the name is spelled. */}
-            {EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME.replace(/\.$/, "")}. You are
-            responsible for getting{" "}
+            {EARTH_OPTIMIZATION_SERVICES_LEGAL_NAME}. You are responsible for
+            getting{" "}
             <ParameterValue
               className="font-black"
               figures={1}

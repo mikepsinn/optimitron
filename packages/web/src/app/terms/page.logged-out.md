@@ -14,9 +14,9 @@
 ## Visible Page Copy
 
 ## TERMS OF SERVICE
-- Last updated July 16, 2026
+- Last updated May 22, 2026
 ### 1. AGREEMENT
-- These terms govern your use of International Campaign to End War and Disease, operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease, a Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3). By using warondisease.org, you agree to these terms. If you do not agree, do not use the site.
+- These terms govern your use of International Campaign to End War and Disease, operated by Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease. By using warondisease.org, you agree to these terms. If you do not agree, do not use the site.
 ### 2. WHAT THE SITE DOES
 - The site supports public campaigns, votes, signatures, referrals, endorsements, organization pages, dashboards, tasks, donations, and related educational materials. Features may change as the project changes.
 ### 3. EARTH OPTIMIZATION MISSIONS
@@ -64,8 +64,6 @@
 - These terms do not limit rights that cannot be waived under applicable law. If part of these terms is unenforceable, the rest remains in effect. We may update these terms by posting a new version here. Continued use of the site means you accept the updated terms.
 ### 15. CONTACT
 - Accelerated Medicine Foundation Inc, dba International Campaign to End War and Disease
-- Wyoming nonprofit corporation recognized by the IRS as tax-exempt under section 501(c)(3)
-- Operates the International Campaign to End War and Disease and related public education and advocacy programs.
-- Email: [hello@warondisease.org](mailto:hello@warondisease.org)
-- Website: [warondisease.org](https://warondisease.org)
+- Email: hello@warondisease.org
+- Website: warondisease.org
 - See also: [Privacy Policy](/privacy)

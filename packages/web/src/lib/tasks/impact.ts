@@ -1,16 +1,6 @@
 import { TaskImpactFrameKey } from "@optimitron/db/enums";
 
-/**
- * Frame preferred when a reader does not ask for one. LIFETIME is the standard
- * frame for estimates written without an explicit one -- the managed sync and
- * the MCP write paths all default to it. Some callers still pin their own
- * frame deliberately (private-task-bundle keeps FIVE_YEAR), so this is the
- * default rather than a guarantee. An estimate set carrying both a legacy
- * frame and a lifetime frame must show the lifetime one.
- * Sets holding a single legacy frame still fall back to it in
- * `selectImpactFrame`.
- */
-export const DEFAULT_TASK_IMPACT_FRAME = TaskImpactFrameKey.LIFETIME;
+export const DEFAULT_TASK_IMPACT_FRAME = TaskImpactFrameKey.TWENTY_YEAR;
 
 export interface TaskImpactMetricSummary {
   baseValue: number | null;

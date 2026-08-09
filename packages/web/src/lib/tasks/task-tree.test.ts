@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { VALUE_IF_ACHIEVED_USD_METRIC_KEY } from "@optimitron/data/parameters";
 import { TaskStatus } from "@optimitron/db";
 import { TaskImpactFrameKey } from "@optimitron/db/enums";
 import { buildTaskTree, countTaskTreeNodes } from "./task-tree";
@@ -104,9 +105,7 @@ describe("buildTaskTree", () => {
       "root",
     );
 
-    expect(tree?.children.map((child) => child.id)).toEqual([
-      "visible-child",
-    ]);
+    expect(tree?.children.map((child) => child.id)).toEqual(["visible-child"]);
   });
 
   it("excludes tasks in a parent-chain cycle instead of infinite-looping", () => {
@@ -202,22 +201,29 @@ describe("buildTaskTree", () => {
     expect(effortOnly?.realEv).toBe(0);
   });
 
-  it("keeps hasEvEstimate true for a mission with a real value but no effort hours", () => {
-    // The mission nodes are exactly this shape: a sourced probability-weighted
-    // expected value (successProbabilityBase stays its own field, and nothing
-    // downstream multiplies by it again) and no hours, because nobody executes
-    // "End War" directly. evValid is
-    // false (priority has nothing to divide by), but the tree label reads
-    // hasEvEstimate — otherwise an $834T sourced estimate renders as
-    // "no direct estimate", which is the opposite of the truth.
+  it("separates a mission's value if achieved from task EV and priority", () => {
     const tree = buildTaskTree(
       [
         flatTask("root", null),
         flatTask("mission", "root", {
-          estimatedEffortHours: null,
+          estimatedEffortHours: 1,
           selectedImpactFrame: {
             ...IMPACT_FRAME_FIXTURE,
-            estimatedEffortHoursBase: null,
+            metrics: [
+              {
+                baseValue: 833_611_140_000_000,
+                displayGroup: "mission",
+                highValue: null,
+                lowValue: null,
+                metadataJson: null,
+                metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+                summaryStatsJson: null,
+                unit: "USD",
+                valueJson: null,
+              },
+            ],
+            // The mission metric wins even if malformed legacy data also
+            // carries task EV and effort. Neither value may create priority.
             expectedEconomicValueUsdBase: 833_611_140_000_000,
           },
         }),
@@ -226,9 +232,11 @@ describe("buildTaskTree", () => {
     );
 
     const mission = tree?.children.find((child) => child.id === "mission");
-    expect(mission?.hasEvEstimate).toBe(true);
+    expect(mission?.valueIfAchievedUsd).toBe(833_611_140_000_000);
+    expect(mission?.hasEvEstimate).toBe(false);
     expect(mission?.evValid).toBe(false);
-    expect(mission?.realEv).toBe(833_611_140_000_000);
+    expect(mission?.realEv).toBe(0);
+    expect(mission?.priority).toBe(0);
   });
 });
 

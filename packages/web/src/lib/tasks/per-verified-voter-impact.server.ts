@@ -9,6 +9,7 @@ import {
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
   GLOBAL_REGISTERED_VOTERS,
+  NPV_DISCOUNT_RATE_STANDARD,
   STANDARD_ECONOMIC_QALY_VALUE_USD,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
@@ -157,6 +158,7 @@ export async function syncPerVerifiedVoterTaskImpactEstimate(
 
   const frameData = {
     adoptionRampYears: DFDA_NPV_ADOPTION_RAMP_YEARS.value,
+    annualDiscountRate: NPV_DISCOUNT_RATE_STANDARD.value,
     benefitDurationYears: impact.benefitDurationYears,
     delayDalysLostPerDayBase: impact.delayDalysLostPerDayBase,
     delayEconomicValueUsdLostPerDayBase:
@@ -179,10 +181,6 @@ export async function syncPerVerifiedVoterTaskImpactEstimate(
     },
     create: {
       ...frameData,
-      // Inert: the column is NOT NULL with no default, so a value is still
-      // required on create. Nothing reads it. Dropped in a follow-up
-      // migration; delete this line with it.
-      annualDiscountRate: 0,
       frameSlug: "lifetime",
       taskImpactEstimateSetId: estimateSet.id,
     },

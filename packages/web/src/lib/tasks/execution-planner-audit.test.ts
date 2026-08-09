@@ -187,25 +187,20 @@ describe("auditExecutionGraph", () => {
     expect(findings[0]?.severity).toBe("high");
   });
 
-  it("audits stale parameter inputs and unpublished estimates", () => {
+  it("audits unpublished estimates", () => {
     const findings = auditExecutionGraph({
       edges: [],
       tasks: [
         graphTask(OPTIMIZE_EARTH_ROOT_TASK_ID, null),
-        graphTask("research", OPTIMIZE_EARTH_ROOT_TASK_ID, {
-          estimateInputsStale: true,
-        }),
+        graphTask("research", OPTIMIZE_EARTH_ROOT_TASK_ID),
         graphTask("treaty", OPTIMIZE_EARTH_ROOT_TASK_ID, {
           estimatePublicationEligible: false,
         }),
       ],
     });
 
-    expect(findings.map((finding) => finding.code)).toEqual(
-      expect.arrayContaining([
-        "STALE_ESTIMATE_INPUT",
-        "UNREVIEWED_PUBLIC_ESTIMATE",
-      ]),
+    expect(findings.map((finding) => finding.code)).toContain(
+      "UNREVIEWED_PUBLIC_ESTIMATE",
     );
   });
 });

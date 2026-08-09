@@ -7,11 +7,6 @@
  */
 
 import { createHash, randomUUID } from "node:crypto";
-import {
-  EXPECTED_VALUE_RULE_SUMMARY,
-  MISSION_VALUE_HORIZON_YEARS,
-} from "@optimitron/data/parameters";
-import { DEFAULT_TASK_IMPACT_FRAME } from "@/lib/tasks/impact";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
@@ -1832,7 +1827,8 @@ async function attachProposalImpactEstimate(input: {
       estimateNotes: "Created with the MCP task proposal.",
       frame: {
         adoptionRampYears: 0,
-        benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
+        annualDiscountRate: 0.03,
+        benefitDurationYears: 20,
         delayDalysLostPerDayBase: parseFiniteNumber(
           impact.delayDalysLostPerDay,
         ),
@@ -1849,7 +1845,7 @@ async function attachProposalImpactEstimate(input: {
           impact.estimatedCashCostUsdLow,
         ),
         estimatedEffortHoursBase: input.estimatedEffortHours,
-        evaluationHorizonYears: MISSION_VALUE_HORIZON_YEARS,
+        evaluationHorizonYears: 20,
         expectedDalysAvertedBase: parseFiniteNumber(
           impact.expectedDalysAvertedBase,
         ),
@@ -1893,7 +1889,7 @@ async function attachProposalImpactEstimate(input: {
         successProbabilityLow: parseFiniteNumber(impact.successProbabilityLow),
         timeToImpactStartDays: 0,
       },
-      frameKey: TaskImpactFrameKey.LIFETIME,
+      frameKey: TaskImpactFrameKey.TWENTY_YEAR,
       sourceUrls: input.sourceUrls,
       taskId: input.taskId,
     },
@@ -2063,21 +2059,18 @@ async function attachDirectTaskImpactEstimate(input: {
     {
       assumptions: ["Values supplied through MCP task creation or update."],
       calculationVersion: "mcp-direct-v2",
-      // createTask/updateTask is the highest-volume estimate writer, so a
-      // five-year frame here reintroduced the incomparability that
-      // setTaskImpact was standardized to remove: two tasks estimated through
-      // two tools ranked against each other on different horizons.
       frame: {
         adoptionRampYears: 0,
-        benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
+        annualDiscountRate: 0.03,
+        benefitDurationYears: 5,
         estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
         estimatedEffortHoursBase: input.estimatedEffortHours,
-        evaluationHorizonYears: MISSION_VALUE_HORIZON_YEARS,
+        evaluationHorizonYears: 5,
         expectedEconomicValueUsdBase: input.expectedEconomicValueUsdBase,
         successProbabilityBase: input.successProbabilityBase,
         timeToImpactStartDays: input.timeToImpactStartDays,
       },
-      frameKey: TaskImpactFrameKey.LIFETIME,
+      frameKey: TaskImpactFrameKey.FIVE_YEAR,
       taskId: input.taskId,
     },
     input.actor,
@@ -3682,22 +3675,22 @@ async function listDueTrackingRemindersForUser(
         );
       }
       const status = notification?.status ?? NotificationStatus.PENDING;
-      // A snooze whose deferred notifyAt has passed is due again -- that is
-      // what makes SNOOZED different from SKIPPED rather than a synonym.
+      const now = Date.now();
       const snoozeElapsed =
-        status === NotificationStatus.SNOOZED &&
-        notifyAt.getTime() <= Date.now();
+        status === NotificationStatus.SNOOZED && notifyAt.getTime() <= now;
       const isOverdue =
         (status === NotificationStatus.PENDING ||
           status === NotificationStatus.SENT ||
           snoozeElapsed) &&
-        notifyAt.getTime() < Date.now();
+        notifyAt.getTime() < now;
       return {
         dateKey,
         defaultValue: cleanNumber(reminder.defaultValue),
         derivedStatus: isOverdue
           ? TrackingReminderDerivedStatus.OVERDUE
-          : status,
+          : snoozeElapsed
+            ? NotificationStatus.PENDING
+            : status,
         globalVariable: reminder.globalVariable,
         instructions: reminder.instructions,
         isOverdue,
@@ -3717,7 +3710,6 @@ async function listDueTrackingRemindersForUser(
         reminder.status === NotificationStatus.SNOOZED &&
         reminder.notifyAt.getTime() <= Date.now()
       ) {
-        // Snooze has run out; it belongs back on the list.
         return true;
       }
       return (
@@ -3728,14 +3720,6 @@ async function listDueTrackingRemindersForUser(
   return { dateKey, notifications: remindersWithStatus };
 }
 
-/**
- * One line per notification, for voice and chat clients.
- *
- * Full mode carries the nested globalVariable with its unit and category for
- * every entry, plus the whole instruction text -- kilobytes of context spent
- * to read out a list of names. Kept as a projection over the full result so
- * the core query has a single return type.
- */
 function toCompactTrackingNotifications(
   result: Awaited<ReturnType<typeof listDueTrackingRemindersForUser>>,
 ) {
@@ -3753,7 +3737,6 @@ function toCompactTrackingNotifications(
 async function findOrCreateTrackingNotification(
   tx: Prisma.TransactionClient,
   input: {
-    /** Snooze target. Moves notifyAt so the occurrence comes back later. */
     deferUntil?: Date | null;
     localDayEnd: Date;
     localDayStart: Date;
@@ -3776,8 +3759,6 @@ async function findOrCreateTrackingNotification(
     receivedAt: new Date(),
     status: input.status,
     trackedValue: input.trackedValue,
-    // Only a snooze moves notifyAt; every other response leaves the occurrence
-    // where it was scheduled so the day's history stays honest.
     ...(input.deferUntil ? { notifyAt: input.deferUntil } : {}),
   };
   if (existing) {
@@ -3789,25 +3770,36 @@ async function findOrCreateTrackingNotification(
   return tx.trackingReminderNotification.create({
     data: {
       ...data,
-      notifyAt: input.notifyAt,
+      notifyAt: input.deferUntil ?? input.notifyAt,
       trackingReminderId: input.trackingReminderId,
       userId: input.userId,
     },
   });
 }
 
-/**
- * Answer every due notification in one call.
- *
- * The spoken form of a morning review is "I did everything except the
- * injection", which was nine round trips before this: one list call, then one
- * respond call per reminder. Callers pass the blanket answer plus the
- * exceptions.
- *
- * Exceptions are applied by reminder id. An id that is not currently due is
- * reported rather than silently ignored, because a voice client that
- * mis-hears a name should not quietly record the wrong thing.
- */
+function parseSnoozeMinutes(input: Record<string, unknown>) {
+  const snoozeMinutes =
+    parseOptionalFiniteNumberInput(input, "snoozeMinutes") ??
+    DEFAULT_SNOOZE_MINUTES;
+  if (snoozeMinutes <= 0) {
+    throw new Error("snoozeMinutes must be greater than 0.");
+  }
+  return snoozeMinutes;
+}
+
+function assertTrackingReminderResponseStatus(
+  status: NotificationStatus | undefined,
+  fieldName: string,
+): asserts status is NotificationStatus {
+  if (
+    status !== NotificationStatus.TRACKED &&
+    status !== NotificationStatus.SKIPPED &&
+    status !== NotificationStatus.SNOOZED
+  ) {
+    throw new Error(`${fieldName} must be TRACKED, SKIPPED, or SNOOZED.`);
+  }
+}
+
 async function respondToTrackingReminderNotificationsForUser(
   input: Record<string, unknown>,
   userId: string,
@@ -3817,65 +3809,94 @@ async function respondToTrackingReminderNotificationsForUser(
     input.defaultStatus,
     "defaultStatus",
   );
-  if (
-    defaultStatus !== NotificationStatus.TRACKED &&
-    defaultStatus !== NotificationStatus.SKIPPED &&
-    defaultStatus !== NotificationStatus.SNOOZED
-  ) {
-    throw new Error("defaultStatus must be TRACKED, SKIPPED, or SNOOZED.");
+  assertTrackingReminderResponseStatus(defaultStatus, "defaultStatus");
+
+  const globalSnoozeMinutes =
+    input.snoozeMinutes === undefined ? undefined : parseSnoozeMinutes(input);
+  if (input.except !== undefined && !Array.isArray(input.except)) {
+    throw new Error("except must be an array of exception entries.");
   }
   const exceptions = Array.isArray(input.except) ? input.except : [];
-  const overrideById = new Map<string, Record<string, unknown>>();
+  const overrideById = new Map<
+    string,
+    {
+      note: unknown;
+      snoozeMinutes: number | undefined;
+      status: NotificationStatus;
+      value: number | null | undefined;
+    }
+  >();
+
   for (const raw of exceptions) {
     if (raw === null || typeof raw !== "object") {
       throw new Error("Each except entry must be an object.");
     }
     const entry = raw as Record<string, unknown>;
-    const id = optionalString(entry.trackingReminderId ?? entry.id);
-    if (!id) {
+    const trackingReminderId = optionalString(entry.trackingReminderId);
+    if (!trackingReminderId) {
       throw new Error("Each except entry needs a trackingReminderId.");
     }
-    overrideById.set(id, entry);
+    const status =
+      parseEnumInput(NotificationStatus, entry.status, "status") ??
+      defaultStatus;
+    assertTrackingReminderResponseStatus(status, "status");
+    overrideById.set(trackingReminderId, {
+      note: entry.note,
+      snoozeMinutes:
+        entry.snoozeMinutes === undefined
+          ? undefined
+          : parseSnoozeMinutes(entry),
+      status,
+      value: parseOptionalFiniteNumberInput(entry, "value"),
+    });
   }
 
   const due = await listDueTrackingRemindersForUser(
     { dateKey: input.dateKey },
     userId,
   );
-  const dueIds = new Set(due.notifications.map((item) => item.reminderId));
-  const unknownIds = [...overrideById.keys()].filter((id) => !dueIds.has(id));
+  const now = Date.now();
+  const dueNotifications = due.notifications.filter(
+    (item) => item.notifyAt.getTime() <= now,
+  );
+  const dueIds = new Set(dueNotifications.map((item) => item.reminderId));
+  const unknownExceptionIds = [...overrideById.keys()].filter(
+    (id) => !dueIds.has(id),
+  );
 
-  const answered: Array<{
+  if (unknownExceptionIds.length > 0) {
+    return {
+      answeredCount: 0,
+      dateKey: due.dateKey,
+      failed: [],
+      results: [],
+      unknownExceptionIds,
+    };
+  }
+
+  const results: Array<{
     reminderId: string;
     status: NotificationStatus;
   }> = [];
   const failed: Array<{ reminderId: string; error: string }> = [];
 
-  // Sequential on purpose: each response opens its own transaction and may
-  // write a measurement, and a shared connection pool does not thank you for
-  // twenty-five at once.
-  for (const item of due.notifications) {
+  for (const item of dueNotifications) {
     const override = overrideById.get(item.reminderId);
-    const status = override
-      ? (parseEnumInput(NotificationStatus, override.status, "status") ??
-        defaultStatus)
-      : defaultStatus;
+    const status = override?.status ?? defaultStatus;
     try {
       await respondToTrackingReminderForUser(
         {
           dateKey: due.dateKey,
           note: override?.note ?? input.note,
-          snoozeMinutes: override?.snoozeMinutes ?? input.snoozeMinutes,
+          snoozeMinutes: override?.snoozeMinutes ?? globalSnoozeMinutes,
           status,
           trackingReminderId: item.reminderId,
           value: override?.value,
         },
         userId,
       );
-      answered.push({ reminderId: item.reminderId, status });
+      results.push({ reminderId: item.reminderId, status });
     } catch (error) {
-      // One reminder without a default value must not abandon the other
-      // twenty-four; report it and keep going.
       failed.push({
         error: error instanceof Error ? error.message : String(error),
         reminderId: item.reminderId,
@@ -3884,11 +3905,11 @@ async function respondToTrackingReminderNotificationsForUser(
   }
 
   return {
-    answeredCount: answered.length,
+    answeredCount: results.length,
     dateKey: due.dateKey,
     failed,
-    results: answered,
-    unknownExceptionIds: unknownIds,
+    results,
+    unknownExceptionIds,
   };
 }
 
@@ -3899,21 +3920,11 @@ async function respondToTrackingReminderForUser(
   const status =
     parseEnumInput(NotificationStatus, input.status, "status") ??
     NotificationStatus.TRACKED;
-  if (
-    status !== NotificationStatus.TRACKED &&
-    status !== NotificationStatus.SKIPPED &&
-    status !== NotificationStatus.SNOOZED
-  ) {
-    throw new Error("status must be TRACKED, SKIPPED, or SNOOZED.");
-  }
+  assertTrackingReminderResponseStatus(status, "status");
   const trackingReminderId = optionalString(input.trackingReminderId);
   if (!trackingReminderId) throw new Error("trackingReminderId is required.");
   const snoozeMinutes =
-    parseOptionalFiniteNumberInput(input, "snoozeMinutes") ??
-    DEFAULT_SNOOZE_MINUTES;
-  if (snoozeMinutes <= 0) {
-    throw new Error("snoozeMinutes must be greater than 0.");
-  }
+    status === NotificationStatus.SNOOZED ? parseSnoozeMinutes(input) : null;
   const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
   const prisma = await getPrisma();
   const user = await prisma.user.findUnique({
@@ -3956,20 +3967,15 @@ async function respondToTrackingReminderForUser(
       dateKey,
       timeZone,
     );
-    // A snooze defers rather than dismisses: push notifyAt forward so the
-    // occurrence comes back. Clamped to the end of the local day because the
-    // due-list looks up notifications inside the day range -- a snooze past
-    // midnight would fall out of that window and read as never answered,
-    // re-surfacing immediately, which is the opposite of a snooze.
     const deferUntil =
-      status === NotificationStatus.SNOOZED
-        ? new Date(
+      snoozeMinutes === null
+        ? null
+        : new Date(
             Math.min(
               Date.now() + snoozeMinutes * 60_000,
               localDayEnd.getTime() - 1,
             ),
-          )
-        : null;
+          );
     const notification = await findOrCreateTrackingNotification(tx, {
       deferUntil,
       localDayEnd,
@@ -5346,7 +5352,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listTrackingReminderNotifications",
     description:
-      "List the tracking reminder notifications due on a date. A TrackingReminder is the recurring rule; a notification is one due occurrence of it, and the occurrence is what you answer. Most are computed on the fly and have no stored row until answered, so `notification` is null for anything still pending. Pass compact:true for a one-line-per-item list -- use that for voice and chat, where the full payload is mostly nested unit and category objects.",
+      "List due tracking reminder notifications. A reminder defines a schedule. A notification is one occurrence that you answer. Most pending notifications have no stored row. Use compact mode for voice or chat clients.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5357,21 +5363,44 @@ const TRACKING_TOOL_DEFINITIONS = [
         compact: {
           type: "boolean",
           description:
-            "Return only {id, name, due, status} per notification. Strongly preferred for voice or chat clients.",
+            "Return trackingReminderId as id, plus name, due, and status.",
         },
         includeCompleted: {
           type: "boolean",
           description:
-            "When true, include notifications already TRACKED, SKIPPED, or still within an unexpired SNOOZE.",
+            "Include completed notifications and snoozes that have not elapsed.",
         },
-        limit: { type: "number" },
+      },
+    },
+  },
+  {
+    name: "listDueTrackingReminders",
+    description:
+      "Deprecated alias for listTrackingReminderNotifications. It keeps the reminders response key for existing callers.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        compact: {
+          type: "boolean",
+          description:
+            "Return trackingReminderId as id, plus name, due, and status.",
+        },
+        includeCompleted: {
+          type: "boolean",
+          description:
+            "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
+        },
       },
     },
   },
   {
     name: "respondToTrackingReminderNotifications",
     description:
-      "Answer every notification due on a date in one call. Give the blanket answer as defaultStatus and list only the exceptions -- this is the tool for \"I did everything except the injection\". Each entry is answered independently: one failure (for example a TRACKED reminder with no value and no defaultValue) is reported in `failed` and the rest still go through. Exception ids that are not due are returned in unknownExceptionIds rather than ignored, so a mis-heard name cannot silently record the wrong thing.",
+      "Answer notifications whose due time has arrived. Apply one default status and optional exceptions. If any exception ID is not due, this tool writes nothing. Valid reminders continue when one response fails.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5380,20 +5409,22 @@ const TRACKING_TOOL_DEFINITIONS = [
           description: "Local date in YYYY-MM-DD. Defaults to today.",
         },
         defaultStatus: {
-          description: "Answer applied to every due notification without an exception.",
-          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
           type: "string",
+          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          description:
+            "Apply this status to each notification without an exception.",
         },
         except: {
           type: "array",
-          description: "Per-notification overrides, keyed by trackingReminderId.",
+          description:
+            "Override individual notifications by trackingReminderId.",
           items: {
             type: "object",
             properties: {
               trackingReminderId: { type: "string" },
               status: {
-                enum: ["TRACKED", "SKIPPED", "SNOOZED"],
                 type: "string",
+                enum: ["TRACKED", "SKIPPED", "SNOOZED"],
               },
               value: { type: "number" },
               snoozeMinutes: { type: "number" },
@@ -5405,29 +5436,11 @@ const TRACKING_TOOL_DEFINITIONS = [
         note: { type: "string" },
         snoozeMinutes: {
           type: "number",
-          description: "Snooze length for any SNOOZED answer. Defaults to 30.",
+          description:
+            "Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.",
         },
       },
       required: ["defaultStatus"],
-    },
-  },
-  {
-    name: "listDueTrackingReminders",
-    description:
-      "DEPRECATED alias for listTrackingReminderNotifications, kept so existing callers keep working; it returns the same data under a `reminders` key instead of `notifications`. Prefer the new name: what this returns are notifications (due occurrences), not reminders (the recurring rules, which listTrackingReminders returns).",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        dateKey: {
-          type: "string",
-          description: "Local date in YYYY-MM-DD. Defaults to today.",
-        },
-        includeCompleted: {
-          type: "boolean",
-          description:
-            "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
-        },
-      },
     },
   },
   {
@@ -5442,12 +5455,12 @@ const TRACKING_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["TRACKED", "SKIPPED", "SNOOZED"],
           description:
-            "TRACKED records a measurement (including value 0); SKIPPED records no measurement and leaves a gap; SNOOZED defers by snoozeMinutes and returns to the due list.",
+            "TRACKED records a measurement. SKIPPED records no measurement. SNOOZED defers the notification.",
         },
         snoozeMinutes: {
           type: "number",
           description:
-            "How long a SNOOZED answer defers the occurrence. Defaults to 30; clamped to the end of the local day.",
+            "Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.",
         },
         value: {
           type: "number",
@@ -8120,7 +8133,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "proposeTaskImpact",
     description:
-      `Create an immutable task-impact draft with materialized values, formulas or inert calculation code, exact parameter revision inputs, assumptions, and sources. Public drafts require admin review before use. METHOD: ${EXPECTED_VALUE_RULE_SUMMARY}`,
+      "Create an immutable task-impact draft with materialized values, formulas or inert calculation code, assumptions, and sources. Public drafts require admin review before use.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -8142,18 +8155,6 @@ const TASK_TOOL_DEFINITIONS = [
         formulaLatex: { type: "string" },
         calculationCode: { type: "string" },
         calculationLanguage: { type: "string" },
-        parameterInputs: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              parameterKey: { type: "string" },
-              revisionId: { type: "string" },
-              symbol: { type: "string" },
-            },
-            required: ["parameterKey", "symbol"],
-          },
-        },
         sourceUrls: { type: "array", items: { type: "string" } },
         calculationSource: {
           type: "object",
@@ -8193,7 +8194,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "setTaskImpact",
     description:
-      `Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused. METHOD: ${EXPECTED_VALUE_RULE_SUMMARY}`,
+      "Create or replace a task impact estimate. Values are USD-equivalent welfare; expectedEconomicValueUsd* fields must already be probability-weighted. Include low/base/high ranges, assumptions, and sourceUrls for subjective or high-value estimates. Negative values represent harm caused.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -8207,8 +8208,7 @@ const TASK_TOOL_DEFINITIONS = [
             "TWENTY_YEAR",
             "LIFETIME",
           ],
-          description:
-            "Time horizon for evaluation (default: LIFETIME, the standard mission frame)",
+          description: "Time horizon for evaluation (default: FIVE_YEAR)",
         },
         frame: {
           type: "object",
@@ -8217,7 +8217,7 @@ const TASK_TOOL_DEFINITIONS = [
           properties: {
             evaluationHorizonYears: {
               type: "number",
-              description: `Years covered by this estimate. Defaults to ${MISSION_VALUE_HORIZON_YEARS}, one human lifetime; leave it unset unless the frameKey is not LIFETIME.`,
+              description: "Years covered by this estimate",
             },
             successProbabilityLow: {
               type: "number",
@@ -8314,27 +8314,6 @@ const TASK_TOOL_DEFINITIONS = [
         formulaLatex: {
           type: "string",
           description: "Same formula as LaTeX, rendered on the task page",
-        },
-        parameterInputs: {
-          type: "array",
-          description:
-            "Catalog parameters this estimate is built from. Prefer this over citing a number in sourceUrls: a linked parameter is a dependency, so the estimate is flagged stale when the parameter is corrected, and getTaskImpactTrace can show the whole chain. Search with searchParameters; add a missing one with proposeParameterBundle.",
-          items: {
-            type: "object",
-            properties: {
-              parameterKey: { type: "string" },
-              revisionId: {
-                type: "string",
-                description:
-                  "Pin a specific revision. Omit to bind the parameter's current one.",
-              },
-              symbol: {
-                type: "string",
-                description: "Name for this input inside formulaText/formulaLatex",
-              },
-            },
-            required: ["parameterKey", "symbol"],
-          },
         },
         calculationVersion: {
           type: "string",
@@ -9754,17 +9733,28 @@ export function createMcpServer(
                 name,
                 "This tool lists your due personal tracking reminder notifications.",
               );
-            const result = await listDueTrackingRemindersForUser(a, userId);
-            if (a.compact === true) {
-              return ok(toCompactTrackingNotifications(result));
-            }
+            const result =
+              a.compact === true
+                ? toCompactTrackingNotifications(
+                    await listDueTrackingRemindersForUser(a, userId),
+                  )
+                : await listDueTrackingRemindersForUser(a, userId);
             if (name === "listDueTrackingReminders") {
-              // Deprecated alias keeps its original response key so existing
-              // callers do not break mid-flight.
               const { notifications, ...rest } = result;
               return ok({ ...rest, reminders: notifications });
             }
             return ok(result);
+          }
+
+          case "respondToTrackingReminderNotifications": {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool records responses to your tracking reminder notifications.",
+              );
+            return ok(
+              await respondToTrackingReminderNotificationsForUser(a, userId),
+            );
           }
 
           case "respondToTrackingReminder": {
@@ -14272,7 +14262,8 @@ export function createMcpServer(
               if (adminVisibleTask) {
                 const selectedImpactFrame =
                   adminVisibleTask.currentImpactEstimateSet?.frames.find(
-                    (frame) => frame.frameKey === DEFAULT_TASK_IMPACT_FRAME,
+                    (frame) =>
+                      frame.frameKey === TaskImpactFrameKey.TWENTY_YEAR,
                   ) ??
                   adminVisibleTask.currentImpactEstimateSet?.frames[0] ??
                   null;
@@ -15114,7 +15105,7 @@ export function createMcpServer(
                   frameKey: enumValue(
                     TaskImpactFrameKey,
                     a.frameKey,
-                    TaskImpactFrameKey.LIFETIME,
+                    TaskImpactFrameKey.FIVE_YEAR,
                   ),
                 },
                 { isAdmin, userId },

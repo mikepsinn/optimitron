@@ -36,8 +36,8 @@
 - WHAT WE OPTIMIZE
 - Earth Optimization Services buys shares in the companies that influence your government, then uses evidence and shareholder power to push public policy toward the general welfare.
 - The scientific target is deliberately boring enough to measure and important enough to organize a civilization around.
-- 01 Maximize median health-adjusted life expectancy.
-- 02 Maximize median after-tax, inflation-adjusted income.
+- 01Maximize median health-adjusted life expectancy.
+- 02Maximize median after-tax, inflation-adjusted income.
 - THE UNIVERSAL-OWNER PROBLEM
 ### A dead planet is bad for the portfolio.
 - The people who quietly own the world's balance sheet are not governments. They are the giant asset managers and index funds behind retirement accounts and major corporate boards.

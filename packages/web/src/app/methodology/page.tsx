@@ -8,8 +8,7 @@ export const metadata: Metadata = getRouteMetadata(methodologyLink);
 
 /**
  * Renders the expected-value rules straight from the parameter catalog, so the
- * page cannot describe numbers the code no longer uses. Same source the MCP
- * tools quote to agents.
+ * page cannot describe numbers the code no longer uses.
  */
 export default function MethodologyPage() {
   return (

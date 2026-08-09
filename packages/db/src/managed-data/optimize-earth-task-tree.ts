@@ -1,7 +1,6 @@
 import {
-  END_DISEASE_LIFETIME_VALUE_USD,
-  END_WAR_LIFETIME_VALUE_USD,
-  MISSION_VALUE_HORIZON_YEARS,
+  END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_WAR_MISSION_SCENARIO_VALUE_USD,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
@@ -116,6 +115,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     // optimized by now"; child program tasks below set their own dueAt where
     // an explicit deadline is appropriate.
     dueAt: new Date("2024-12-31T00:00:00.000Z"),
+    // treaty-accountability owns the root's win-condition and delay metrics.
+    impactEstimateManagedExternally: true,
     sortOrder: -1000,
     primaryEndpoint: {
       label: "Open the Optimize Earth task tree",
@@ -125,24 +126,10 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     },
   },
   // Mission layer: the deliberate set of peer nodes directly under the root.
-  //
-  // A mission's value is WRITTEN from sourced parameters, never rolled up from
-  // the tasks beneath it. Six mechanisms across the tree all carry the same
-  // peace dividend and differ only in probability -- they are alternative routes
-  // to one outcome, so summing them would count that dividend six times. They
-  // hang under different parents (the dFDA under End Disease, the shirt seed
-  // under the treaty), which is why "sum the children" is wrong at every level,
-  // not just this one.
-  //
-  // A mission states the value IF ACHIEVED and omits successProbabilityBase,
-  // because no one has a defensible probability that war or disease ends. A
-  // mechanism states the same kind of value times its own probability.
-  //
-  // Missions with no sourced parameter yet (End Poverty, Prevent Extinction,
-  // Minimize Animal Suffering) carry no value on purpose: a blank is honest,
-  // an invented number gets ranked against real ones.
-  //
-  // Rules: docs/EXPECTED_VALUE_METHODOLOGY.md and /methodology.
+  // Mission values come from sourced scenarios, not child-task rollups. Child
+  // values overlap, so a rollup would count the same outcome more than once.
+  // Missions omit probability; mechanisms use marginal, probability-weighted
+  // values. Missions without sourced scenarios remain blank.
   {
     ...defaultTaskFields,
     category: TaskCategory.GOVERNANCE,
@@ -161,14 +148,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "Governments keep 122 times more destructive capacity than civilization can survive. Each task below this task decreases that capacity, or decreases the money that pays for it.",
-    // Written, not rolled up: the value of ending war is a fact about the world,
-    // and it does not change when someone adds a subtask. Whole cost of war, not
-    // the peace dividend -- the dividend is what a one percent redirection buys,
-    // which is the treaty's ask, whereas the mission is the whole quantity.
-    // No successProbabilityBase: this is the value IF achieved. Nobody has a
-    // defensible probability that war ends, and inventing one would put a
-    // fabricated number into the ranking. docs/EXPECTED_VALUE_METHODOLOGY.md
-    expectedEconomicValueUsdBase: END_WAR_LIFETIME_VALUE_USD,
+    // Whole cost of war, not the Treaty campaign's smaller peace dividend.
+    // This is a probability-free scenario value, not a ranking input.
+    valueIfAchievedUsdBase: END_WAR_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -980,
   },
   {
@@ -189,10 +171,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ].join("\n"),
     impactStatement:
       "Disease causes more lost healthy life years than any other condition. Each task below this task decreases the time to a treatment.",
-    // Economic drag only: the share of GDP disease consumes, over one lifetime.
-    // It does not price the suffering, which belongs in the DALY fields on the
-    // same horizon. Value if achieved, so no probability -- see End War above.
-    expectedEconomicValueUsdBase: END_DISEASE_LIFETIME_VALUE_USD,
+    // Economic drag only. The scenario does not price pain or suffering.
+    valueIfAchievedUsdBase: END_DISEASE_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -970,
   },
   {
@@ -311,8 +291,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "A majority jury needs a court-shaped place to render the verdict.",
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | court funded).
     // The sync multiplies these into the frame's expected value; the donation cost lives on the funding target.
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_COURT_OF_HUMANITY_P_SUCCESS.value,
     sortOrder: -800,
     primaryEndpoint: {
@@ -480,9 +459,11 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "The fastest known settlement is one percent of the war budget pointed at disease.",
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | campaign funded).
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_TREATY_CAMPAIGN_P_SUCCESS.value,
+    // treaty-accountability owns the native ~212-year impact model for this
+    // task. The generic tree sync must not overwrite it with its annual frame.
+    impactEstimateManagedExternally: true,
     // Keep the cost-of-delay counters on `/employees` and similar treaty
     // surfaces live by preserving an overdue `dueAt`. The managed-sync
     // overwrites whatever the seed wrote, so we have to set it here too.
@@ -556,8 +537,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "The best lobbyists money can buy currently block the treaty. So we buy them.",
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | takeover funded).
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_LOVING_TAKEOVER_P_SUCCESS.value,
     sortOrder: -660,
     primaryEndpoint: {
@@ -654,8 +634,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(pass | referendum funded).
     // No funding target: the prize is a dominant assurance contract (depositors refunded with yield),
     // so net cost to a funder is ~zero — presented as a zero-downside row, not in the EV/$ ranking.
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_REFERENDUM_P_SUCCESS.value,
     sortOrder: -620,
     primaryEndpoint: {
@@ -800,8 +779,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.",
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(progress | dFDA funded).
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_DFDA_P_SUCCESS.value,
     sortOrder: -615,
     primaryEndpoint: {
@@ -826,8 +804,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "A small paid seed of visible wearers turns into billions of free ones. The funder buys the spark, not the fire.",
     // Wishonia's Wager: conditional value = annual peace dividend; probability = P(treaty | shirt cascade funded).
-    expectedEconomicValueUsdBase:
-      PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value * MISSION_VALUE_HORIZON_YEARS,
+    expectedEconomicValueUsdBase: PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
     successProbabilityBase: MECHANISM_SHIRT_CASCADE_P_SUCCESS.value,
     sortOrder: -605,
     primaryEndpoint: {

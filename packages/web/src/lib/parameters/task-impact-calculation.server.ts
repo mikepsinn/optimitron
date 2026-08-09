@@ -8,10 +8,7 @@ import {
   TaskImpactPublicationStatus,
 } from "@optimitron/db/enums";
 import { Prisma, type PrismaClient } from "@optimitron/db";
-import {
-  MISSION_VALUE_HORIZON_YEARS,
-  sha256CanonicalJson,
-} from "@optimitron/data/parameters";
+import { sha256CanonicalJson } from "@optimitron/data/parameters";
 import { z } from "zod";
 import { prisma as defaultPrisma } from "../prisma";
 import { getSourceArtifactVisibilityWhere } from "../source-artifact-visibility.server";
@@ -40,6 +37,7 @@ const TaskImpactParameterInputSchema = z
 
 export const DirectTaskImpactFrameSchema = z.object({
   adoptionRampYears: z.number().finite().nonnegative().default(0),
+  annualDiscountRate: z.number().finite().gt(-1).default(0.03),
   benefitDurationYears: z.number().finite().positive().optional(),
   delayDalysLostPerDayBase: NullableFiniteNumber,
   delayDalysLostPerDayHigh: NullableFiniteNumber,
@@ -83,14 +81,7 @@ export const DirectTaskImpactFrameSchema = z.object({
     .nonnegative()
     .nullable()
     .optional(),
-  // Mission default: one human lifetime, matching the LIFETIME frame default
-  // below. An omitted horizon must never silently become a shorter frame than
-  // the value the caller was told to compute.
-  evaluationHorizonYears: z
-    .number()
-    .finite()
-    .positive()
-    .default(MISSION_VALUE_HORIZON_YEARS),
+  evaluationHorizonYears: z.number().finite().positive().default(5),
   expectedDalysAvertedBase: NullableFiniteNumber,
   expectedDalysAvertedHigh: NullableFiniteNumber,
   expectedDalysAvertedLow: NullableFiniteNumber,
@@ -150,7 +141,7 @@ export const DirectTaskImpactInputSchema = z
     frame: DirectTaskImpactFrameSchema.default({}),
     frameKey: z
       .nativeEnum(TaskImpactFrameKey)
-      .default(TaskImpactFrameKey.LIFETIME),
+      .default(TaskImpactFrameKey.FIVE_YEAR),
     metrics: z.array(DirectTaskImpactMetricSchema).max(100).default([]),
     methodologyKey: z.string().min(1).nullable().optional(),
     parameterInputs: z
@@ -541,12 +532,6 @@ async function createDirectTaskImpactWithTransaction(
     },
     create: {
       ...input.frame,
-      // Inert: the column is NOT NULL with no default, so a value is still
-      // required here. Nothing reads it. Mission estimates are undiscounted --
-      // uncertainty is priced by successProbability, so discounting for risk
-      // would charge for it twice (docs/EXPECTED_VALUE_METHODOLOGY.md). The
-      // column is dropped in a follow-up migration; delete this line with it.
-      annualDiscountRate: 0,
       benefitDurationYears:
         input.frame.benefitDurationYears ?? input.frame.evaluationHorizonYears,
       frameKey: input.frameKey,

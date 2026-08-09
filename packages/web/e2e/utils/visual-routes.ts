@@ -171,23 +171,6 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
-  [
-    ROUTES.home,
-    [
-      // The root layout wraps every route, so any required capture
-      // exercises it; the home page is the one every reviewer looks at.
-      "packages/web/src/app/layout.tsx",
-      // Renders null by design -- no screenshot can show it. It is listed
-      // here because it executes on every page in this capture, and a
-      // regression (no data-hydrated) breaks copy snapshots everywhere.
-      "packages/web/src/components/HydrationSentinel.tsx",
-    ],
-  ],
-  [
-    ROUTES.signatories,
-    // DashboardShareCard -> HumanityManagerPromotion renders here.
-    ["packages/web/src/lib/humanity-manager-promotion-content.tsx"],
-  ],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
@@ -203,13 +186,6 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
-  // Verified present and visible at both captured widths. NOT "#vote":
-  // that id only exists on the optimitron variant of the home page,
-  // which has its own route entry.
-  [ROUTES.home, "#sign"],
-  // DashboardShareCard's own id -- the component chain that renders the
-  // promotion copy, so the capture proves that copy rendered.
-  [ROUTES.signatories, "#dashboard-share-message"],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -225,10 +201,7 @@ const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
 
 const REQUIRED_TEXT_BY_PATH = new Map<string, RegExp>([
   [ROUTES.court, /IN WITNESS WHEREOF/],
-  // Deep in the page rather than the heading: the whole point of the page is
-  // the reasoning below the rule, so a capture that stops at the title is a
-  // capture of nothing.
-  [ROUTES.methodology, /Why no discount rate/],
+  [ROUTES.methodology, /Task scenario: probability-weighted expected value/],
 ]);
 
 // The calendar server-renders the requested date, and freezeClock only
@@ -349,12 +322,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     // Required, and asserted on #also-serves rather than something always
     // present: this is the state that proves a task renders under every goal
     // it serves, so a capture without that section would be worthless.
-    covers: [
-      TASK_DEPENDENCIES_SECTION_FILE,
-      // The estimate disclosure renders on this page (collapsed by default);
-      // the capture proves it mounts, not that the dialog inside it opens.
-      "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx",
-    ],
+    covers: [TASK_DEPENDENCIES_SECTION_FILE],
     name: "task-one-percent-treaty",
     path: "/tasks/1-pct-treaty",
     required: true,
@@ -364,9 +332,6 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     covers: [
       TASK_TREE_VIEW_FILE,
       "packages/web/src/app/tasks/tree/page.tsx",
-      // The explainer's trigger renders inline in this page's header, so this
-      // capture really does prove it shows up.
-      "packages/web/src/components/shared/ExpectedValueExplainer.tsx",
     ],
     name: "tasks-tree",
     path: "/tasks/tree",
@@ -425,19 +390,6 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     name: "variant-optimitron-tasks",
     path: ROUTES.tasks,
     required: true,
-    siteVariant: "optimitron",
-  },
-  {
-    // PersonalQueueSection only exists on the optimitron dashboard. The
-    // default site (warOnDisease) renders TreatyTaskDashboardClient instead,
-    // so registering this against the default variant asserted a selector
-    // that can never appear.
-    authenticated: true,
-    covers: ["packages/web/src/components/dashboard/PersonalQueueSection.tsx"],
-    name: "variant-optimitron-dashboard",
-    path: ROUTES.dashboard,
-    required: true,
-    requiredSelector: "#what-next",
     siteVariant: "optimitron",
   },
   {

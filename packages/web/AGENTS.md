@@ -55,30 +55,6 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 - **If screenshot verification is blocked, say why.** Do not commit UI changes without screenshots unless the human explicitly accepts the limitation.
 - **Do not freeze long-form copy in E2E.** Browser tests should assert behavior, route transitions, data contracts, analytics-critical parameters, accessibility roles, and the presence/absence of coarse UI states. Avoid exact prose, magic-number, or paragraph-level assertions unless the wording itself is the contract being tested. Put exact copy parity in focused unit/doc tests, seeded-template tests, or screenshot review instead.
 
-## LaTeX rendering safety
-
-Checked 2026-08-08. Task impact estimates accept an agent-written `formulaLatex`,
-so this is worth knowing before changing how formulas render:
-
-- `formulaText` and `formulaLatex` are printed as escaped text in a `<code>`
-  block by the impact trace. React escapes text children, so no sanitizer is
-  needed and adding one would be cargo cult.
-- Agent input never reaches KaTeX. Every `<Latex>` call site is fed
-  `param.latex` from the generated catalog or a hardcoded string.
-- `react-katex@3.1.0` hardcodes its KaTeX options to
-  `{displayMode, errorColor, throwOnError}` and exposes no `settings` prop, so
-  `trust` stays at KaTeX's default of `false` — the control that refuses the
-  full trust-gated set: `\includegraphics`, `\href`, `\url`, `\htmlClass`,
-  `\htmlId`, `\htmlStyle` and `\htmlData`. It cannot be raised from
-  `src/components/ui/latex.tsx`.
-
-Re-check `trust` if you render task `formulaLatex` through `<Latex>`, or upgrade
-react-katex to a version with a settings pass-through.
-
-Note `InfiniteROICard` and `ParameterEquation` import the LaTeX renderer but are
-not rendered anywhere, so the only live KaTeX surface is the `ParameterValue`
-dialog.
-
 ## Mike UI Complaint Checklist
 
 Before calling a public or authenticated UI "done," inspect it as if the human is about to open the page and ask why it is making the desired action harder.

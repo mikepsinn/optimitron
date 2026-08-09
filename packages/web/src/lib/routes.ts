@@ -710,11 +710,11 @@ export const mcpLink: NavItem = {
 
 export const methodologyLink: NavItem = {
   href: ROUTES.methodology,
-  label: "Expected Value Methodology",
+  label: "Mission Value and Task Expected Value",
   emoji: "=",
   description:
-    "How every task gets its number: one human lifetime, no discount rate, probability stated separately, and a goal's value written from sourced parameters rather than summed from the tasks beneath it.",
-  tagline: "How we put a number on a task",
+    "See how mission outcome values differ from probability-weighted task estimates.",
+  tagline: "Mission outcomes and probability-weighted task estimates",
   copyPreview: true,
   screenshot: true,
   cta: "Read the method",

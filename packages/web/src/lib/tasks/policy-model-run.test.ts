@@ -74,6 +74,7 @@ describe("PolicyModelRunSchema", () => {
     },
     frames: [
       {
+        annualDiscountRate: 0.03,
         adoptionRampYears: 1,
         benefitDurationYears: 20,
         canonical: {
