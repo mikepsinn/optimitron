@@ -431,7 +431,6 @@ async function attachImpactEstimate(
         // Pinned, not inherited: the shared schema defaults now describe the
         // LIFETIME mission frame, and these conversation-derived estimates are
         // still written on the five-year frame below.
-        annualDiscountRate: 0.03,
         estimatedCashCostUsdBase: candidate.estimatedCostUsd.base,
         estimatedCashCostUsdHigh: candidate.estimatedCostUsd.high,
         estimatedCashCostUsdLow: candidate.estimatedCostUsd.low,

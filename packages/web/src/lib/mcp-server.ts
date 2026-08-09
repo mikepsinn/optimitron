@@ -331,7 +331,9 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
+  listTrackingReminderNotifications: [McpScope.TASKS_PERSONAL],
   respondToTrackingReminder: [McpScope.TASKS_PERSONAL],
+  respondToTrackingReminderNotifications: [McpScope.TASKS_PERSONAL],
   getMe: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   inspectToolAccess: [],
   updateMyProfile: [McpScope.TASKS_PERSONAL],
@@ -1830,7 +1832,6 @@ async function attachProposalImpactEstimate(input: {
       estimateNotes: "Created with the MCP task proposal.",
       frame: {
         adoptionRampYears: 0,
-        annualDiscountRate: 0,
         benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
         delayDalysLostPerDayBase: parseFiniteNumber(
           impact.delayDalysLostPerDay,
@@ -2068,7 +2069,6 @@ async function attachDirectTaskImpactEstimate(input: {
       // two tools ranked against each other on different horizons.
       frame: {
         adoptionRampYears: 0,
-        annualDiscountRate: 0,
         benefitDurationYears: MISSION_VALUE_HORIZON_YEARS,
         estimatedCashCostUsdBase: input.estimatedCashCostUsdBase,
         estimatedEffortHoursBase: input.estimatedEffortHours,
@@ -3596,6 +3596,9 @@ async function listTrackingRemindersForUser(
   });
 }
 
+/** Default snooze length when a caller does not name one. */
+const DEFAULT_SNOOZE_MINUTES = 30;
+
 async function listDueTrackingRemindersForUser(
   input: Record<string, unknown>,
   userId: string,
@@ -3646,7 +3649,7 @@ async function listDueTrackingRemindersForUser(
     occurrenceByReminderId.set(reminder.id, occurrence);
     return true;
   });
-  if (dueReminders.length === 0) return { dateKey, reminders: [] };
+  if (dueReminders.length === 0) return { dateKey, notifications: [] };
 
   const notifications = await prisma.trackingReminderNotification.findMany({
     orderBy: [{ notifyAt: "asc" }],
@@ -3679,9 +3682,15 @@ async function listDueTrackingRemindersForUser(
         );
       }
       const status = notification?.status ?? NotificationStatus.PENDING;
+      // A snooze whose deferred notifyAt has passed is due again -- that is
+      // what makes SNOOZED different from SKIPPED rather than a synonym.
+      const snoozeElapsed =
+        status === NotificationStatus.SNOOZED &&
+        notifyAt.getTime() <= Date.now();
       const isOverdue =
         (status === NotificationStatus.PENDING ||
-          status === NotificationStatus.SENT) &&
+          status === NotificationStatus.SENT ||
+          snoozeElapsed) &&
         notifyAt.getTime() < Date.now();
       return {
         dateKey,
@@ -3704,17 +3713,48 @@ async function listDueTrackingRemindersForUser(
     })
     .filter((reminder) => {
       if (input.includeCompleted === true) return true;
+      if (
+        reminder.status === NotificationStatus.SNOOZED &&
+        reminder.notifyAt.getTime() <= Date.now()
+      ) {
+        // Snooze has run out; it belongs back on the list.
+        return true;
+      }
       return (
         reminder.status === NotificationStatus.PENDING ||
         reminder.status === NotificationStatus.SENT
       );
     });
-  return { dateKey, reminders: remindersWithStatus };
+  return { dateKey, notifications: remindersWithStatus };
+}
+
+/**
+ * One line per notification, for voice and chat clients.
+ *
+ * Full mode carries the nested globalVariable with its unit and category for
+ * every entry, plus the whole instruction text -- kilobytes of context spent
+ * to read out a list of names. Kept as a projection over the full result so
+ * the core query has a single return type.
+ */
+function toCompactTrackingNotifications(
+  result: Awaited<ReturnType<typeof listDueTrackingRemindersForUser>>,
+) {
+  return {
+    dateKey: result.dateKey,
+    notifications: result.notifications.map((notification) => ({
+      due: notification.notifyAt,
+      id: notification.reminderId,
+      name: notification.globalVariable.name,
+      status: notification.derivedStatus,
+    })),
+  };
 }
 
 async function findOrCreateTrackingNotification(
   tx: Prisma.TransactionClient,
   input: {
+    /** Snooze target. Moves notifyAt so the occurrence comes back later. */
+    deferUntil?: Date | null;
     localDayEnd: Date;
     localDayStart: Date;
     notifyAt: Date;
@@ -3736,6 +3776,9 @@ async function findOrCreateTrackingNotification(
     receivedAt: new Date(),
     status: input.status,
     trackedValue: input.trackedValue,
+    // Only a snooze moves notifyAt; every other response leaves the occurrence
+    // where it was scheduled so the day's history stays honest.
+    ...(input.deferUntil ? { notifyAt: input.deferUntil } : {}),
   };
   if (existing) {
     return tx.trackingReminderNotification.update({
@@ -3751,6 +3794,102 @@ async function findOrCreateTrackingNotification(
       userId: input.userId,
     },
   });
+}
+
+/**
+ * Answer every due notification in one call.
+ *
+ * The spoken form of a morning review is "I did everything except the
+ * injection", which was nine round trips before this: one list call, then one
+ * respond call per reminder. Callers pass the blanket answer plus the
+ * exceptions.
+ *
+ * Exceptions are applied by reminder id. An id that is not currently due is
+ * reported rather than silently ignored, because a voice client that
+ * mis-hears a name should not quietly record the wrong thing.
+ */
+async function respondToTrackingReminderNotificationsForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const defaultStatus = parseEnumInput(
+    NotificationStatus,
+    input.defaultStatus,
+    "defaultStatus",
+  );
+  if (
+    defaultStatus !== NotificationStatus.TRACKED &&
+    defaultStatus !== NotificationStatus.SKIPPED &&
+    defaultStatus !== NotificationStatus.SNOOZED
+  ) {
+    throw new Error("defaultStatus must be TRACKED, SKIPPED, or SNOOZED.");
+  }
+  const exceptions = Array.isArray(input.except) ? input.except : [];
+  const overrideById = new Map<string, Record<string, unknown>>();
+  for (const raw of exceptions) {
+    if (raw === null || typeof raw !== "object") {
+      throw new Error("Each except entry must be an object.");
+    }
+    const entry = raw as Record<string, unknown>;
+    const id = optionalString(entry.trackingReminderId ?? entry.id);
+    if (!id) {
+      throw new Error("Each except entry needs a trackingReminderId.");
+    }
+    overrideById.set(id, entry);
+  }
+
+  const due = await listDueTrackingRemindersForUser(
+    { dateKey: input.dateKey },
+    userId,
+  );
+  const dueIds = new Set(due.notifications.map((item) => item.reminderId));
+  const unknownIds = [...overrideById.keys()].filter((id) => !dueIds.has(id));
+
+  const answered: Array<{
+    reminderId: string;
+    status: NotificationStatus;
+  }> = [];
+  const failed: Array<{ reminderId: string; error: string }> = [];
+
+  // Sequential on purpose: each response opens its own transaction and may
+  // write a measurement, and a shared connection pool does not thank you for
+  // twenty-five at once.
+  for (const item of due.notifications) {
+    const override = overrideById.get(item.reminderId);
+    const status = override
+      ? (parseEnumInput(NotificationStatus, override.status, "status") ??
+        defaultStatus)
+      : defaultStatus;
+    try {
+      await respondToTrackingReminderForUser(
+        {
+          dateKey: due.dateKey,
+          note: override?.note ?? input.note,
+          snoozeMinutes: override?.snoozeMinutes ?? input.snoozeMinutes,
+          status,
+          trackingReminderId: item.reminderId,
+          value: override?.value,
+        },
+        userId,
+      );
+      answered.push({ reminderId: item.reminderId, status });
+    } catch (error) {
+      // One reminder without a default value must not abandon the other
+      // twenty-four; report it and keep going.
+      failed.push({
+        error: error instanceof Error ? error.message : String(error),
+        reminderId: item.reminderId,
+      });
+    }
+  }
+
+  return {
+    answeredCount: answered.length,
+    dateKey: due.dateKey,
+    failed,
+    results: answered,
+    unknownExceptionIds: unknownIds,
+  };
 }
 
 async function respondToTrackingReminderForUser(
@@ -3769,6 +3908,12 @@ async function respondToTrackingReminderForUser(
   }
   const trackingReminderId = optionalString(input.trackingReminderId);
   if (!trackingReminderId) throw new Error("trackingReminderId is required.");
+  const snoozeMinutes =
+    parseOptionalFiniteNumberInput(input, "snoozeMinutes") ??
+    DEFAULT_SNOOZE_MINUTES;
+  if (snoozeMinutes <= 0) {
+    throw new Error("snoozeMinutes must be greater than 0.");
+  }
   const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
   const prisma = await getPrisma();
   const user = await prisma.user.findUnique({
@@ -3811,7 +3956,22 @@ async function respondToTrackingReminderForUser(
       dateKey,
       timeZone,
     );
+    // A snooze defers rather than dismisses: push notifyAt forward so the
+    // occurrence comes back. Clamped to the end of the local day because the
+    // due-list looks up notifications inside the day range -- a snooze past
+    // midnight would fall out of that window and read as never answered,
+    // re-surfacing immediately, which is the opposite of a snooze.
+    const deferUntil =
+      status === NotificationStatus.SNOOZED
+        ? new Date(
+            Math.min(
+              Date.now() + snoozeMinutes * 60_000,
+              localDayEnd.getTime() - 1,
+            ),
+          )
+        : null;
     const notification = await findOrCreateTrackingNotification(tx, {
+      deferUntil,
       localDayEnd,
       localDayStart,
       notifyAt,
@@ -5184,9 +5344,77 @@ const TRACKING_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "listTrackingReminderNotifications",
+    description:
+      "List the tracking reminder notifications due on a date. A TrackingReminder is the recurring rule; a notification is one due occurrence of it, and the occurrence is what you answer. Most are computed on the fly and have no stored row until answered, so `notification` is null for anything still pending. Pass compact:true for a one-line-per-item list -- use that for voice and chat, where the full payload is mostly nested unit and category objects.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        compact: {
+          type: "boolean",
+          description:
+            "Return only {id, name, due, status} per notification. Strongly preferred for voice or chat clients.",
+        },
+        includeCompleted: {
+          type: "boolean",
+          description:
+            "When true, include notifications already TRACKED, SKIPPED, or still within an unexpired SNOOZE.",
+        },
+        limit: { type: "number" },
+      },
+    },
+  },
+  {
+    name: "respondToTrackingReminderNotifications",
+    description:
+      "Answer every notification due on a date in one call. Give the blanket answer as defaultStatus and list only the exceptions -- this is the tool for \"I did everything except the injection\". Each entry is answered independently: one failure (for example a TRACKED reminder with no value and no defaultValue) is reported in `failed` and the rest still go through. Exception ids that are not due are returned in unknownExceptionIds rather than ignored, so a mis-heard name cannot silently record the wrong thing.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        dateKey: {
+          type: "string",
+          description: "Local date in YYYY-MM-DD. Defaults to today.",
+        },
+        defaultStatus: {
+          description: "Answer applied to every due notification without an exception.",
+          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          type: "string",
+        },
+        except: {
+          type: "array",
+          description: "Per-notification overrides, keyed by trackingReminderId.",
+          items: {
+            type: "object",
+            properties: {
+              trackingReminderId: { type: "string" },
+              status: {
+                enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+                type: "string",
+              },
+              value: { type: "number" },
+              snoozeMinutes: { type: "number" },
+              note: { type: "string" },
+            },
+            required: ["trackingReminderId"],
+          },
+        },
+        note: { type: "string" },
+        snoozeMinutes: {
+          type: "number",
+          description: "Snooze length for any SNOOZED answer. Defaults to 30.",
+        },
+      },
+      required: ["defaultStatus"],
+    },
+  },
+  {
     name: "listDueTrackingReminders",
     description:
-      "List medication, food, symptom, and other tracking reminders due for a date. Each result includes derivedStatus, isOverdue, and overdueSince so callers never need to compare notifyAt with the current time themselves. Use this to answer what the user is supposed to take or track today.",
+      "DEPRECATED alias for listTrackingReminderNotifications, kept so existing callers keep working; it returns the same data under a `reminders` key instead of `notifications`. Prefer the new name: what this returns are notifications (due occurrences), not reminders (the recurring rules, which listTrackingReminders returns).",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5214,7 +5442,12 @@ const TRACKING_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["TRACKED", "SKIPPED", "SNOOZED"],
           description:
-            "TRACKED records a measurement (including value 0); SKIPPED records no measurement and leaves a gap; SNOOZED defers.",
+            "TRACKED records a measurement (including value 0); SKIPPED records no measurement and leaves a gap; SNOOZED defers by snoozeMinutes and returns to the due list.",
+        },
+        snoozeMinutes: {
+          type: "number",
+          description:
+            "How long a SNOOZED answer defers the occurrence. Defaults to 30; clamped to the end of the local day.",
         },
         value: {
           type: "number",
@@ -9514,13 +9747,24 @@ export function createMcpServer(
             });
           }
 
+          case "listTrackingReminderNotifications":
           case "listDueTrackingReminders": {
             if (!userId)
               return authRequired(
                 name,
-                "This tool lists your due personal tracking reminders.",
+                "This tool lists your due personal tracking reminder notifications.",
               );
-            return ok(await listDueTrackingRemindersForUser(a, userId));
+            const result = await listDueTrackingRemindersForUser(a, userId);
+            if (a.compact === true) {
+              return ok(toCompactTrackingNotifications(result));
+            }
+            if (name === "listDueTrackingReminders") {
+              // Deprecated alias keeps its original response key so existing
+              // callers do not break mid-flight.
+              const { notifications, ...rest } = result;
+              return ok({ ...rest, reminders: notifications });
+            }
+            return ok(result);
           }
 
           case "respondToTrackingReminder": {

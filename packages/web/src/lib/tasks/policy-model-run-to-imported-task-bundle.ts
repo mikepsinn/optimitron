@@ -161,7 +161,6 @@ function mapFrame(frame: PolicyModelFrame): ImportedImpactFrameDraft {
   );
 
   return {
-    annualDiscountRate: frame.annualDiscountRate,
     adoptionRampYears: frame.adoptionRampYears,
     benefitDurationYears: frame.benefitDurationYears,
     customFrameLabel: frame.customFrameLabel ?? null,

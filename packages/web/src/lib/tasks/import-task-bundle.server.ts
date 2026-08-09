@@ -247,7 +247,10 @@ async function upsertImpactFrame(
     },
     create: {
       adoptionRampYears: frame.adoptionRampYears,
-      annualDiscountRate: frame.annualDiscountRate,
+      // Inert: the column is NOT NULL with no default, so a value is still
+      // required on create. Nothing reads it and callers can no longer supply
+      // it. Dropped in a follow-up migration; delete this line with it.
+      annualDiscountRate: 0,
       benefitDurationYears: frame.benefitDurationYears,
       customFrameLabel: frame.customFrameLabel,
       delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,
@@ -292,7 +295,6 @@ async function upsertImpactFrame(
     },
     update: {
       adoptionRampYears: frame.adoptionRampYears,
-      annualDiscountRate: frame.annualDiscountRate,
       benefitDurationYears: frame.benefitDurationYears,
       customFrameLabel: frame.customFrameLabel,
       delayDalysLostPerDayBase: frame.delayDalysLostPerDayBase,

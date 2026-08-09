@@ -117,7 +117,6 @@ export const MetricBindingSchema = z.object({
 
 export const FrameCompileConfigSchema = z.object({
   adoptionRampYears: z.number(),
-  annualDiscountRate: z.number(),
   benefitDurationYears: z.number(),
   canonicalBindings: CanonicalBindingsSchema,
   customFrameLabel: z.string().nullish(),
@@ -484,7 +483,6 @@ export function buildPolicyModelRunFromParameterExport(
     }));
 
   const frames = config.frames.map((frameConfig) => ({
-    annualDiscountRate: frameConfig.annualDiscountRate,
     adoptionRampYears: frameConfig.adoptionRampYears,
     benefitDurationYears: frameConfig.benefitDurationYears,
     canonical: {

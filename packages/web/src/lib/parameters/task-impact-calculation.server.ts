@@ -40,10 +40,6 @@ const TaskImpactParameterInputSchema = z
 
 export const DirectTaskImpactFrameSchema = z.object({
   adoptionRampYears: z.number().finite().nonnegative().default(0),
-  // Mission default: undiscounted. Uncertainty is priced by successProbability,
-  // so discounting for risk would charge for it twice. See
-  // docs/EXPECTED_VALUE_METHODOLOGY.md.
-  annualDiscountRate: z.number().finite().gt(-1).default(0),
   benefitDurationYears: z.number().finite().positive().optional(),
   delayDalysLostPerDayBase: NullableFiniteNumber,
   delayDalysLostPerDayHigh: NullableFiniteNumber,
@@ -545,6 +541,12 @@ async function createDirectTaskImpactWithTransaction(
     },
     create: {
       ...input.frame,
+      // Inert: the column is NOT NULL with no default, so a value is still
+      // required here. Nothing reads it. Mission estimates are undiscounted --
+      // uncertainty is priced by successProbability, so discounting for risk
+      // would charge for it twice (docs/EXPECTED_VALUE_METHODOLOGY.md). The
+      // column is dropped in a follow-up migration; delete this line with it.
+      annualDiscountRate: 0,
       benefitDurationYears:
         input.frame.benefitDurationYears ?? input.frame.evaluationHorizonYears,
       frameKey: input.frameKey,

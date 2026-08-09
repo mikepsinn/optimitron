@@ -791,11 +791,6 @@ function buildManagedTaskImpactData(
     },
     frame: {
       adoptionRampYears: 0,
-      // Zero on purpose, and uniform. Uncertainty is already priced by
-      // successProbabilityBase, so discounting for risk would charge twice;
-      // what is left is pure time preference, an ethical choice rather than a
-      // measurement. See docs/EXPECTED_VALUE_METHODOLOGY.md.
-      annualDiscountRate: 0,
       benefitDurationYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
       estimatedEffortHoursBase: record.estimatedEffortHours ?? null,
       evaluationHorizonYears: MANAGED_TASK_IMPACT_FRAME_YEARS,
@@ -878,6 +873,13 @@ async function syncManagedTaskImpactEstimate(
     } satisfies Prisma.TaskImpactFrameEstimateWhereUniqueInput,
     create: {
       ...impactData.frame,
+      // Inert: the column is NOT NULL with no default, so a value is still
+      // required on create. Nothing reads it. Mission estimates are
+      // undiscounted -- uncertainty is already priced by
+      // successProbabilityBase, so discounting for risk would charge twice
+      // (docs/EXPECTED_VALUE_METHODOLOGY.md). The column is dropped in a
+      // follow-up migration; delete this line with it.
+      annualDiscountRate: 0,
       frameSlug: MANAGED_TASK_IMPACT_FRAME_SLUG,
       taskImpactEstimateSetId: estimateSet.id,
     },

@@ -96,7 +96,6 @@ describe("buildPolicyModelRunFromParameterExport", () => {
       frames: [
         {
           adoptionRampYears: 1,
-          annualDiscountRate: 0.03,
           benefitDurationYears: 20,
           canonicalBindings: {
             expectedDalysAverted: {

@@ -2616,6 +2616,8 @@ async function syncTaskImpactEstimate(input: {
       timeToImpactStartDays: 365,
       adoptionRampYears: 5,
       benefitDurationYears: input.impact.benefitDurationYears,
+      // Inert: NOT NULL with no default, so a value is still required here.
+      // Nothing reads it. Dropped in a follow-up migration.
       annualDiscountRate: 0,
       successProbabilityBase: input.impact.successProbabilityBase,
       expectedEconomicValueUsdBase: weighted.expectedEconomicValueUsdBase,

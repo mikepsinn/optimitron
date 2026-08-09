@@ -185,7 +185,6 @@ export const PolicyExecutionHintsSchema = z.object({
 });
 
 export const PolicyModelFrameSchema = z.object({
-  annualDiscountRate: z.number(),
   adoptionRampYears: z.number(),
   benefitDurationYears: z.number(),
   canonical: z.object({

@@ -173,7 +173,6 @@ function buildActivityImpactFrame(activity: LeaderActivityRecord): ImportedImpac
 
   return {
     adoptionRampYears: 0,
-    annualDiscountRate: 0,
     benefitDurationYears: 1,
     customFrameLabel: null,
     delayDalysLostPerDayBase: null,

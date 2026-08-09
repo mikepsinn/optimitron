@@ -54,7 +54,6 @@ describe("buildImportedTaskBundleFromPolicyModelRun", () => {
       },
       frames: [
         {
-          annualDiscountRate: 0.03,
           adoptionRampYears: 4,
           benefitDurationYears: 20,
           canonical: {

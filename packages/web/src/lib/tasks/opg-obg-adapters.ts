@@ -43,7 +43,6 @@ export interface ImportedImpactMetricDraft {
 }
 
 export interface ImportedImpactFrameDraft {
-  annualDiscountRate: number;
   adoptionRampYears: number;
   benefitDurationYears: number;
   customFrameLabel: string | null;
@@ -206,7 +205,6 @@ export function buildOpgRecommendationTaskBundle(input: {
       estimateKind: TaskImpactEstimateKind.FORECAST,
       frames: [
         {
-          annualDiscountRate: 0.03,
           adoptionRampYears: 1,
           benefitDurationYears: policy?.typicalDurationYears ?? 20,
           customFrameLabel: null,
@@ -380,7 +378,6 @@ export function buildObgCategoryTaskBundle(input: {
       estimateKind: TaskImpactEstimateKind.FORECAST,
       frames: [
         {
-          annualDiscountRate: 0.03,
           adoptionRampYears: 1,
           benefitDurationYears: 20,
           customFrameLabel: null,
