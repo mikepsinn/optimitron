@@ -639,8 +639,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Navigation: Ruthlessly simple (don't dilute the ask)
   // Messaging: Emotion-first, evidence links to dih.earth
   "warondisease.org": {
-    name: "WoD",
-    title: "War on Disease",
+    name: "IC2EWD",
+    title: "The International Campaign to End War and Disease",
     domains: [
       "warondisease.org",
       "www.warondisease.org",
