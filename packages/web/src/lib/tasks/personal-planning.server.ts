@@ -1235,19 +1235,23 @@ export function buildPersonalQueueRows(
     : enrichedRows;
 
   const ranked = filteredRows
-    .filter(
-      (row) =>
+    .filter((row) => {
+      const passesAgentBound =
+        !options?.requireBoundedAgentWork ||
+        row.executorType !== AI_EXECUTOR_TYPE ||
+        isBoundedAgentTaskEffort(row.hours);
+      if (!passesAgentBound) return false;
+      return (
         !options?.requireExecutable ||
         (isAtomicExecutionRecord(row) &&
-          (!options.requireBoundedAgentWork ||
-            isBoundedAgentTaskEffort(row.hours)) &&
           row.capabilityStatus === "eligible" &&
           row.rooted &&
           (((row.hasMarginalEstimate || row.hasStructuralUnlockEstimate) &&
             row.valid &&
             row.priority > 0) ||
-            isDeadlineLaneGuardrail(row))),
-    )
+            isDeadlineLaneGuardrail(row)))
+      );
+    })
     .sort((left, right) =>
       compareExecutionTasks(
         toExecutionPlanningTask(left),
