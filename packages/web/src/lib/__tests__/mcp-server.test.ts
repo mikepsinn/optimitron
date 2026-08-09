@@ -3914,6 +3914,82 @@ describe("MCP server tool dispatch", () => {
       expect(myQueue[0]?.taskPriority).toBeUndefined();
     });
 
+    it("keeps oversized AI leaves out of getAIQueue and requests decomposition", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 8,
+          id: "bounded-agent-task",
+          title: "Bounded agent task",
+        }),
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 1_000,
+          id: "program-scale-agent-task",
+          title: "Program-scale agent task",
+        }),
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: null,
+          id: "missing-estimate-agent-task",
+          title: "Missing estimate agent task",
+        }),
+      ]);
+      mocks.agentExecutorFindMany.mockResolvedValue([
+        {
+          accessTags: [],
+          capabilityTags: [],
+          id: "agent-1",
+          toolTags: [],
+        },
+      ]);
+      mocks.taskCandidateMatchFindMany.mockResolvedValue([
+        {
+          agentExecutorId: "agent-1",
+          candidateOrganizationId: null,
+          candidatePersonId: null,
+          candidateUserId: null,
+          estimatedDurationSeconds: 3600,
+          status: TaskCandidateMatchStatus.SUGGESTED,
+          taskId: "program-scale-agent-task",
+          updatedAt: new Date("2026-08-08T12:00:00.000Z"),
+        },
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority: task.id === "program-scale-agent-task" ? 1_000_000 : 1,
+        }),
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getAIQueue", arguments: {} }),
+      );
+
+      expect(
+        (body.queue as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["bounded-agent-task"]);
+      expect(body.itemsNeedingDecomposition).toEqual([
+        expect.objectContaining({
+          estimatedHours: 1_000,
+          id: "program-scale-agent-task",
+        }),
+        expect.objectContaining({
+          estimatedHours: null,
+          id: "missing-estimate-agent-task",
+          reason: "Add a usable effort estimate before autonomous execution.",
+        }),
+      ]);
+      expect(mocks.computeTaskPriority).toHaveBeenCalledWith(
+        expect.objectContaining({
+          estimatedEffortHours: 1,
+          id: "program-scale-agent-task",
+        }),
+        expect.any(Object),
+      );
+    });
+
     it("omits other agents' leases from getAIQueue without truncating the next available task", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({
@@ -4138,6 +4214,32 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("getQueueAudit happy path", () => {
+    it("flags oversized AI leaves for decomposition", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: 1_000,
+          id: "program-scale-agent-task",
+        }),
+      ]);
+      mocks.taskEdgeFindMany.mockResolvedValue([]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockReturnValue(makePriority());
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({ name: "getQueueAudit", arguments: {} }),
+      );
+
+      expect(body.issues).toContainEqual(
+        expect.objectContaining({
+          code: "UNBOUNDED_AGENT_TASK",
+          taskId: "program-scale-agent-task",
+        }),
+      );
+      expect(body.summary).toMatchObject({ unblockedTasks: 0 });
+    });
+
     it("flags tasks with invalid priority inputs", async () => {
       mocks.listTasks.mockResolvedValue([
         makeCreatedTask({ id: "good" }),
