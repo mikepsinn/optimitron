@@ -296,7 +296,6 @@ jobs:
             port: 4016
     env:
       CI: true
-      NODE_ENV: production
       DATABASE_URL: postgresql://test:test@localhost:5432/test
       NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
       NEXTAUTH_URL: http://127.0.0.1:${{ matrix.port }}
@@ -337,9 +336,13 @@ jobs:
 
       - name: Build @apps/${{ matrix.app }}
         run: pnpm --filter "@apps/${{ matrix.app }}" run build
+        env:
+          NODE_ENV: production
 
       - name: Smoke @apps/${{ matrix.app }} homepage
         run: node scripts/smoke-brand-apps.mjs "${{ matrix.app }}"
+        env:
+          NODE_ENV: production
 
   apps-brand-validate:
     name: apps-brand-validate
