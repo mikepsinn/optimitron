@@ -1,9 +1,6 @@
 # @apps/wishocracy
 
-Single-brand Next app (forked from dih-neobrutalist / `apps/warondisease`).
+Pairwise public-priority allocation application for [wishocracy.org](https://wishocracy.org).
 
-- Brand: `wishocracy.org`
-- Port: `3013`
-- Database: transitioning to `@optimitron/db`
-
-`pnpm --filter @apps/wishocracy dev`
+- Local port: `3013`
+- Start: `pnpm --filter @apps/wishocracy dev`

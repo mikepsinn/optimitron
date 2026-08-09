@@ -172,8 +172,8 @@ export async function POST(req: NextRequest) {
 
       const referralCount = await getReferralVoteCount(referrerUserId)
       const badgeMilestones = [
-        { count: 1, type: BadgeType.FIRST_RECRUIT, name: "First Recruit" },
-        { count: 10, type: BadgeType.TEN_RECRUITS, name: "Ten Recruits" },
+        { count: 1, type: BadgeType.FIRST_RECRUIT, name: "First Referral" },
+        { count: 10, type: BadgeType.TEN_RECRUITS, name: "Ten Referrals" },
       ]
 
       for (const milestone of badgeMilestones) {

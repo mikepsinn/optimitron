@@ -44,7 +44,7 @@ export function ImpactTreeCard({
       <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6">
         <div className="border-4 border-primary bg-brutal-yellow p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-3xl sm:text-5xl font-black">{directCount}</div>
-          <div className="text-xs sm:text-sm font-black uppercase mt-1">Direct Recruits</div>
+          <div className="text-xs sm:text-sm font-black uppercase mt-1">Direct Referrals</div>
         </div>
         <div className="border-4 border-primary bg-brutal-pink p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="text-3xl sm:text-5xl font-black">{indirectCount}</div>
@@ -59,7 +59,7 @@ export function ImpactTreeCard({
       {!hasAnyRecruits && (
         <div className="border-4 border-dashed border-primary bg-background p-6 text-center">
           <p className="font-bold text-sm sm:text-base">
-            No recruits yet. Share your referral link — the goal is to get just 2 people to vote.
+            No referrals yet. Share your link — the goal is to help just 2 people vote.
             If everyone gets 2, we reach a majority of humans on Earth.
           </p>
         </div>
@@ -68,8 +68,8 @@ export function ImpactTreeCard({
       {hasAnyRecruits && publicRecruits.length === 0 && (
         <div className="border-4 border-primary bg-background p-4 text-center">
           <p className="font-bold text-sm">
-            Your {totalDownstreamCount} recruits have private profiles. Names appear here only when
-            recruits make their profiles public.
+            The {totalDownstreamCount} people you referred have private profiles. Names appear here only when
+            they make their profiles public.
           </p>
         </div>
       )}
@@ -77,7 +77,7 @@ export function ImpactTreeCard({
       {publicRecruits.length > 0 && (
         <div>
           <div className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] mb-3">
-            Your tree ({publicRecruits.length} public{" "}
+            Your impact chain ({publicRecruits.length} public{" "}
             {totalDownstreamCount > publicRecruits.length &&
               `of ${totalDownstreamCount} total`}
             )
@@ -144,7 +144,7 @@ export function ImpactTreeCard({
         <div>
           <h2 className="text-xl sm:text-2xl font-black uppercase">Your Impact Tree</h2>
           <p className="text-xs sm:text-sm font-bold text-muted-foreground">
-            Every recruit counts — even the ones your recruits recruit.
+            Every referral counts — including referrals made by people you helped vote.
           </p>
         </div>
       </div>

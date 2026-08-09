@@ -379,9 +379,9 @@ export default async function OrganizationPage({ params }: OrganizationPageProps
               </div>
               <p className="text-xl font-bold leading-relaxed">
                 Through your organization's survey page, you've helped{" "}
-                <span className="text-brutal-pink">{totalVotes} people</span> join the movement to
+                <span className="text-brutal-pink">{totalVotes} people</span> support the campaign to
                 make suffering optional and accelerate cures by 8 years. Keep sharing your survey link to
-                grow the movement!
+                save more lives!
               </p>
             </Card>
           )}

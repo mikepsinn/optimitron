@@ -149,7 +149,7 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
-      # Brand apps under apps/* are validated in apps-warondisease-validate
+      # Brand apps under apps/* are validated in the apps-brand jobs.
       # (they are Next entrypoints, not library packages). Exclude them here
       # so recursive package filters do not `next build` unfinished brands.
       - name: Build
@@ -172,8 +172,8 @@ jobs:
       - name: Test
         run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run test
 
-  apps-brand-validate:
-    name: apps-brand-validate
+  apps-brand-static-validate:
+    name: apps-brand-static-validate
     # Gates all apps/* brand packages (shared @optimitron/db schema).
     # Typecheck every app; unit-test apps with vitest unit suites; WoD DB smoke.
     # packages/web keeps its own e2e/deploy smoke — not replaced here.
@@ -244,11 +244,19 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
         run: pnpm db:generate
 
+      - name: Build app dependencies
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm build:app-dependencies
+
       - name: Typecheck all @apps/*
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
         run: pnpm typecheck:apps
         env:
           NODE_OPTIONS: --max-old-space-size=6144
+
+      - name: Lint all @apps/*
+        if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+        run: pnpm lint:apps
 
       - name: Treaty DB smoke (ReferendumVote path)
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
@@ -257,6 +265,110 @@ jobs:
       - name: Unit tests @apps/* (excluding integration/)
         if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
         run: pnpm test:apps:unit
+
+  apps-brand-build:
+    name: apps-brand-build (${{ matrix.app }})
+    if: ${{ fromJSON(needs.changes.outputs.brand_apps || 'false') == true }}
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: warondisease
+            variant: warondisease.org
+            port: 4010
+          - app: dfda
+            variant: dfda
+            port: 4011
+          - app: wishocracy
+            variant: wishocracy.org
+            port: 4013
+          - app: trialabundancesurvey
+            variant: trialabundancesurvey.org
+            port: 4014
+          - app: curedao
+            variant: curedao.org
+            port: 4015
+          - app: acceleratedmedicine
+            variant: acceleratedmedicine.org
+            port: 4016
+    env:
+      CI: true
+      NODE_ENV: production
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+      NEXTAUTH_URL: http://127.0.0.1:${{ matrix.port }}
+      NEXT_PUBLIC_SITE_VARIANT: ${{ matrix.variant }}
+      SKIP_DB_TEST_SETUP: "1"
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: apps/${{ matrix.app }}/.next/cache
+          key: brand-next-${{ runner.os }}-${{ matrix.app }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            brand-next-${{ runner.os }}-${{ matrix.app }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            brand-next-${{ runner.os }}-${{ matrix.app }}-
+
+      - name: Build app dependencies
+        run: pnpm build:app-dependencies
+
+      - name: Build @apps/${{ matrix.app }}
+        run: pnpm --filter "@apps/${{ matrix.app }}" run build
+
+      - name: Smoke @apps/${{ matrix.app }} homepage
+        run: node scripts/smoke-brand-apps.mjs "${{ matrix.app }}"
+
+  apps-brand-validate:
+    name: apps-brand-validate
+    if: ${{ always() }}
+    needs: [changes, apps-brand-static-validate, apps-brand-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify brand-app validation results
+        env:
+          BRAND_APPS_CHANGED: ${{ needs.changes.outputs.brand_apps }}
+          STATIC_RESULT: ${{ needs.apps-brand-static-validate.result }}
+          BUILD_RESULT: ${{ needs.apps-brand-build.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$BRAND_APPS_CHANGED" != "true" ]; then
+            echo "No brand-app changes; validation was skipped."
+            exit 0
+          fi
+          test "$STATIC_RESULT" = "success" || {
+            echo "::error::Brand-app static validation result: $STATIC_RESULT"
+            exit 1
+          }
+          test "$BUILD_RESULT" = "success" || {
+            echo "::error::Brand-app build matrix result: $BUILD_RESULT"
+            exit 1
+          }
+          echo "All brand-app static, build, and smoke checks passed."
 
   web-static-validate:
     name: web-static-validate

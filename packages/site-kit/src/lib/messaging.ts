@@ -183,9 +183,9 @@ export const MESSAGING = {
     },
 
     joinMovement: {
-      short: "Join the movement to make suffering optional",
-      full: `Join the movement to make suffering optional and get cures to patients ${efficacyLagFormatted} years sooner`,
-      withGlobalImpact: `Join the movement to save ${timelineShiftLivesSavedFormatted} lives`,
+      short: "Help make suffering optional",
+      full: `Help get cures to patients ${efficacyLagFormatted} years sooner`,
+      withGlobalImpact: `Help save ${timelineShiftLivesSavedFormatted} lives`,
     },
 
     quickAction: {
@@ -218,10 +218,10 @@ export const MESSAGING = {
   /** Organization/movement descriptions for meta tags and about pages */
   organizationDescription: {
     /** Standard description - aspirational and impact-focused */
-    standard: "A global movement to make suffering optional through pragmatic clinical trials.",
+    standard: "A global campaign to make suffering optional through pragmatic clinical trials.",
 
     /** Full description with impact numbers */
-    withImpactNumbers: `A global movement to make suffering optional through pragmatic clinical trials. Get new cures to patients ${efficacyLagFormatted} years sooner and save ${timelineShiftLivesSavedFormatted} lives.`,
+    withImpactNumbers: `A global campaign to make suffering optional through pragmatic clinical trials. Get new cures to patients ${efficacyLagFormatted} years sooner and save ${timelineShiftLivesSavedFormatted} lives.`,
 
     /** Non-political variant for organizations nervous about advocacy */
     nonPoliticalResearchFraming: "A global research initiative to accelerate medical progress through pragmatic clinical trials.",

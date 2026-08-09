@@ -32,7 +32,7 @@ export function BadgesSection({ badges, showPoliticalContent, frameless = false,
         ))
       ) : (
         <p className="text-center text-muted-foreground py-8 col-span-3">
-          No medals earned yet. Keep recruiting for {showPoliticalContent ? "the movement" : "the study"}.
+          No medals earned yet. Keep helping {showPoliticalContent ? "the campaign" : "the study"}.
         </p>
       )}
     </div>
@@ -50,7 +50,7 @@ export function BadgesSection({ badges, showPoliticalContent, frameless = false,
           MEDALS & SERVICE AWARDS
         </CardTitle>
         <CardDescription className="font-bold space-y-1">
-          <span>Your contributions to {showPoliticalContent ? "the movement" : "the study"}</span>
+          <span>Your contributions to {showPoliticalContent ? "the campaign" : "the study"}</span>
           <span>Thank you for your service in the War on Disease! 🫡</span>
         </CardDescription>
       </CardHeader>
@@ -58,4 +58,3 @@ export function BadgesSection({ badges, showPoliticalContent, frameless = false,
     </Card>
   )
 }
-

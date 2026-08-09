@@ -3,8 +3,8 @@ import { ActivityType, BadgeType, VotePosition } from "@optimitron/db"
 const BADGE_NAMES: Record<BadgeType, string> = {
   [BadgeType.FIRST_COMPARISON]: "First Comparison",
   [BadgeType.HUNDRED_COMPARISONS]: "Hundred Comparisons",
-  [BadgeType.FIRST_RECRUIT]: "First Recruit",
-  [BadgeType.TEN_RECRUITS]: "Ten Recruits",
+  [BadgeType.FIRST_RECRUIT]: "First Referral",
+  [BadgeType.TEN_RECRUITS]: "Ten Referrals",
   [BadgeType.VERIFIED_HUMAN]: "Verified Human",
   [BadgeType.EARLY_ADOPTER]: "Early Adopter",
   [BadgeType.DEPOSITOR]: "Depositor",
@@ -145,8 +145,8 @@ export function getBadgeDescription(type: BadgeType): string {
   const descriptions: Record<BadgeType, string> = {
     [BadgeType.FIRST_COMPARISON]: "Submitted your first comparison",
     [BadgeType.HUNDRED_COMPARISONS]: "Submitted 100 comparisons",
-    [BadgeType.FIRST_RECRUIT]: "Recruited your first person",
-    [BadgeType.TEN_RECRUITS]: "Recruited 10 people",
+    [BadgeType.FIRST_RECRUIT]: "Referred your first voter",
+    [BadgeType.TEN_RECRUITS]: "Referred 10 voters",
     [BadgeType.VERIFIED_HUMAN]: "Verified as a human",
     [BadgeType.EARLY_ADOPTER]: "Joined in first month",
     [BadgeType.DEPOSITOR]: "Deposited prize funds",

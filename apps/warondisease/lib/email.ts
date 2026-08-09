@@ -110,7 +110,7 @@ export async function sendWeeklyUpdate({
 
     const newReferrals = stats.newReferrals
     const subject = newReferrals > 0
-      ? `🎉 Your Weekly Update: +${newReferrals} New Recruit${newReferrals > 1 ? 's' : ''}!`
+      ? `🎉 Your Weekly Update: +${newReferrals} New Referral${newReferrals > 1 ? 's' : ''}!`
       : "📊 Your Weekly War on Disease Update"
 
     const result = await resend.emails.send({
@@ -757,4 +757,3 @@ export async function sendMonthlyScorecardEmail({
     return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
   }
 }
-

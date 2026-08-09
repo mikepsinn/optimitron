@@ -66,7 +66,7 @@ export default async function LiteDashboardPage() {
               Optional: campaign dashboard
             </h2>
             <p className="mb-4 font-medium">
-              Scores, badges, and movement tools live on War on Disease — only if you want
+              Scores, badges, and campaign tools live on War on Disease — only if you want
               that. This site stays the research instrument.
             </p>
             <a

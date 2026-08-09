@@ -1,17 +1,26 @@
-"use client"
+"use client";
 
-import { SessionProvider } from "next-auth/react"
-import type { Session } from "next-auth"
+import { SessionProvider } from "next-auth/react";
+import type { Session } from "next-auth";
 
 interface ProvidersProps {
-  children: React.ReactNode
-  session?: Session | null
+  children: React.ReactNode;
+  session?: Session | null;
+  authEnabled?: boolean;
 }
 
-export function Providers({ children, session }: ProvidersProps) {
+export function Providers({
+  children,
+  session,
+  authEnabled = true,
+}: ProvidersProps) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider
+      session={authEnabled ? session : null}
+      refetchOnWindowFocus={authEnabled}
+      refetchInterval={0}
+    >
       {children}
     </SessionProvider>
-  )
+  );
 }

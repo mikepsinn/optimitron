@@ -26,7 +26,7 @@ export function InstituteBenefits() {
             </div>
             <h3 className="text-xl font-black uppercase mb-3 text-foreground">AMPLIFY YOUR MISSION</h3>
             <p className="font-bold text-foreground">
-              Join a global movement to redirect military spending to cure diseases and save lives.
+              Help redirect military spending to cure diseases and save lives.
             </p>
           </Card>
           <Card className="border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 bg-card">

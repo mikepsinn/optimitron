@@ -27,9 +27,9 @@ export function ReferralGoalCard({ stats, frameless = false, className }: Referr
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
-          { milestone: 1, label: "FIRST RECRUIT", icon: "🎯" },
+          { milestone: 1, label: "FIRST REFERRAL", icon: "🎯" },
           { milestone: 2, label: "GOAL MET", icon: "✅" },
-          { milestone: 5, label: "POWER RECRUITER", icon: "💪" },
+          { milestone: 5, label: "FIVE FRIENDS VOTED", icon: "💪" },
           { milestone: 10, label: "SUPER SPREADER", icon: "🚀" },
         ].map((item) => (
           <div
@@ -52,7 +52,7 @@ export function ReferralGoalCard({ stats, frameless = false, className }: Referr
             ? "You're in the top 50%! Can you reach 5?"
             : stats.referrals < 10
               ? "You're in the top 20%! Can you reach 10?"
-              : "You're a LEGENDARY recruiter! 🏆"}
+              : "Your link is saving lives! 🏆"}
       </p>
     </div>
   )
@@ -76,4 +76,3 @@ export function ReferralGoalCard({ stats, frameless = false, className }: Referr
     </Card>
   )
 }
-

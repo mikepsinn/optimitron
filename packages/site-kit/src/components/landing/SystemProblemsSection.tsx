@@ -1,6 +1,6 @@
 // Remove HeartHandshake, Aperture, DollarSign, Home, Smartphone, Lock, BarChartBig, FastForward, Archive, ListOrdered, Users, TrendingDown, BrainCircuit, FlaskConical, DatabaseZap imports as they are no longer used.
 
-import { getSiteConfig } from "../../lib/site-config"
+import { getSiteConfig } from "../../lib/site-config";
 import {
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
@@ -11,29 +11,39 @@ import {
   CURRENT_DISEASE_PATIENTS_GLOBAL,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   RARE_DISEASES_COUNT_GLOBAL,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/impact-params/parameters";
+import { formatParameter } from "@optimitron/impact-params/format";
 
 export function SystemProblemsSection() {
-  const config = getSiteConfig()
-  const showPoliticalContent = config.showPoliticalContent
+  const config = getSiteConfig();
+  const showPoliticalContent = config.showPoliticalContent;
 
   // Derived values from parameters using formatParameter utility
-  const costReductionFactor = formatParameter(RECOVERY_TRIAL_COST_REDUCTION_FACTOR)
-  const costPerParticipant = formatParameter(TRADITIONAL_PHASE3_COST_PER_PATIENT)
-  const developmentCost = formatParameter(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT)
-  const exclusionRate = formatParameter(ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE)
-  const yearsToMarket = formatParameter(DRUG_DISCOVERY_TO_APPROVAL_YEARS)
-  const untestedCombinations = formatParameter(COMBINATION_THERAPY_DISEASE_SPACE)
-  const peopleSuffering = formatParameter(CURRENT_DISEASE_PATIENTS_GLOBAL)
+  const costReductionFactor = formatParameter(
+    RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
+  );
+  const costPerParticipant = formatParameter(
+    TRADITIONAL_PHASE3_COST_PER_PATIENT,
+  );
+  const developmentCost = formatParameter(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT);
+  const exclusionRate = formatParameter(ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE);
+  const yearsToMarket = formatParameter(DRUG_DISCOVERY_TO_APPROVAL_YEARS);
+  const untestedCombinations = formatParameter(
+    COMBINATION_THERAPY_DISEASE_SPACE,
+  );
+  const peopleSuffering = formatParameter(CURRENT_DISEASE_PATIENTS_GLOBAL);
   // Calculate percentage of diseases without treatment (95% = 6650/7000)
-  const diseasesUntreatedPct = Math.round((DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value / RARE_DISEASES_COUNT_GLOBAL.value) * 100)
-  const diseasesWithTreatmentPct = 100 - diseasesUntreatedPct
+  const diseasesUntreatedPct = Math.round(
+    (DISEASES_WITHOUT_EFFECTIVE_TREATMENT.value /
+      RARE_DISEASES_COUNT_GLOBAL.value) *
+      100,
+  );
+  const diseasesWithTreatmentPct = 100 - diseasesUntreatedPct;
 
   const statistics = [
     {
       emoji: "💰",
-      title: `${costReductionFactor}X Higher Costs Than Necessary`,
+      title: `${costReductionFactor} Higher Costs Than Necessary`,
       description: showPoliticalContent
         ? `Everything costs ${costReductionFactor} times more than it should. Efficiency is for other industries.`
         : `Current clinical trial costs are ${costReductionFactor} times higher than pragmatic trial alternatives.`,
@@ -101,7 +111,7 @@ export function SystemProblemsSection() {
         ? "We haven't cured a major disease in 44 years. But don't worry, we're very busy."
         : "No major disease has been cured in over 44 years, highlighting the need for new research paradigms.",
     },
-  ]
+  ];
 
   return (
     <section
@@ -125,13 +135,16 @@ export function SystemProblemsSection() {
               className="w-full max-w-md flex flex-col items-center gap-4 rounded-lg border bg-card p-5 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] text-center"
             >
               <span className="block text-3xl md:text-4xl">{stat.emoji}</span>
-              <h3 className="text-lg font-semibold text-card-foreground md:text-xl">{stat.title}</h3>
-              <p className="text-sm text-muted-foreground md:text-base">{stat.description}</p>
+              <h3 className="text-lg font-semibold text-card-foreground md:text-xl">
+                {stat.title}
+              </h3>
+              <p className="text-sm text-muted-foreground md:text-base">
+                {stat.description}
+              </p>
             </div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
-

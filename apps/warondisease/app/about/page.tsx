@@ -40,7 +40,7 @@ export default function AboutPage() {
               </h1>
               <p className="text-lg sm:text-xl font-bold mb-8">
                 {showPoliticalContent ? (
-                  <>{config.title.toUpperCase()} IS A GLOBAL MOVEMENT TO MAKE SUFFERING OPTIONAL
+                  <>{config.title.toUpperCase()} IS A GLOBAL CAMPAIGN TO MAKE SUFFERING OPTIONAL
                   BY ACCELERATING CURES THROUGH UBIQUITOUS PRAGMATIC CLINICAL TRIALS.</>
                 ) : (
                   <>{config.title.toUpperCase()} IS A GLOBAL RESEARCH INITIATIVE TO

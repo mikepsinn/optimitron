@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import { Layout } from "@/components/layout"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ExternalLink, Globe, Link as LinkIcon } from "lucide-react"
 import { VoteOrShareButton } from "@/components/shared/VoteOrShareButton"
 import { getPublicUserProfile, resolveUsernameAlias } from "@/lib/user"
@@ -228,7 +227,7 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
   if (userData.isPrivate) {
     return {
       title: "Private Profile",
-      description: "This soldier has chosen to keep their profile private. Join the movement to make suffering optional through pragmatic clinical trials.",
+      description: "This soldier has chosen to keep their profile private. Help make suffering optional through pragmatic clinical trials.",
       robots: {
         index: false,
         follow: false,
@@ -242,20 +241,20 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
 
   return {
     title: `${userDisplayName} - Hero in the War on Disease`,
-    description: `${userDisplayName} has recruited ${referralCount} soldiers and saved ~${livesSaved} lives in the war on disease. Join the movement to make suffering optional.`,
+    description: `${userDisplayName} has told ${referralCount} people and saved ~${livesSaved} lives in the war on disease. Help make suffering optional.`,
     alternates: {
       canonical: `${primaryDomain}/u/${username}`,
     },
     openGraph: {
       title: `${userDisplayName} saved ${livesSaved} lives`,
-      description: `${referralCount} soldiers recruited. Join ${userDisplayName} in the war on disease.`,
+      description: `${referralCount} people voted through ${userDisplayName}'s link. Join them in the war on disease.`,
       type: 'profile',
       url: `${baseUrl}/u/${username}`,
     },
     twitter: {
       card: 'summary_large_image',
       title: `${userDisplayName} saved ${livesSaved} lives`,
-      description: `${referralCount} soldiers recruited in the war on disease.`,
+      description: `${referralCount} people voted through this link in the war on disease.`,
     },
   }
 }

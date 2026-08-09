@@ -105,7 +105,7 @@
  * - "Find treatments" → dfda.earth
  *
  * From dih.earth:
- * - "Join the movement" → warondisease.org
+ * - "Vote on the treaty" → warondisease.org
  * - "For patients" → dfda.earth
  * - "Partner survey" → trialabundancesurvey.org
  *
@@ -120,156 +120,178 @@
  * - user: Individual user profile pages on warondisease.org
  */
 
-import { env } from "./env"
-import type { Metadata } from "next"
-import type { NavItemId, NavItem } from "./nav-items"
-import { getNavItems } from "./nav-items"
-import { WAR_ON_DISEASE_FAQ, DIH_FAQ, WISHOCRACY_FAQ, DFDA_FAQ, SURVEY_FAQ } from "./faq"
-import { createLogger } from "./logger"
-import { MESSAGING } from "./messaging"
+import { env } from "./env";
+import type { Metadata } from "next";
+import type { NavItemId, NavItem } from "./nav-items";
+import { getNavItems } from "./nav-items";
+import {
+  WAR_ON_DISEASE_FAQ,
+  DIH_FAQ,
+  WISHOCRACY_FAQ,
+  DFDA_FAQ,
+  SURVEY_FAQ,
+} from "./faq";
+import { createLogger } from "./logger";
+import { MESSAGING } from "./messaging";
 
 // Re-export variant types and constants (defined in site-variant-types.ts to avoid circular dependencies)
-export type { SiteVariant } from "./site-variant-types"
-export { VARIANTS, SITE_VARIANTS, DEFAULT_VARIANT } from "./site-variant-types"
+export type { SiteVariant } from "./site-variant-types";
+export { VARIANTS, SITE_VARIANTS, DEFAULT_VARIANT } from "./site-variant-types";
 
-import type { SiteVariant } from "./site-variant-types"
-import { DEFAULT_VARIANT, VARIANTS } from "./site-variant-types"
-import { APP_BRAND } from "./app-brand"
+import type { SiteVariant } from "./site-variant-types";
+import {
+  DEFAULT_VARIANT,
+  VARIANTS,
+  getVariantDomain,
+} from "./site-variant-types";
 
 // Create logger for this module
-const logger = createLogger('site-config')
-const INSTITUTE_FOR_ACCELERATED_MEDICINE = 'Institute for Accelerated Medicine'
-const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`
+const logger = createLogger("site-config");
+const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
+const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 
 // ===== INTERFACES =====
 
 export const SITE_FEATURES = {
-  VOTING: 'voting',
-  SURVEY: 'survey',
-  FAQ: 'faq',
-  ADVOCACY: 'advocacy',
-  MOVEMENT: 'movement',
-  TEAM: 'team',
-  RESEARCH: 'research',
-  TRIALS: 'trials',
-  EDUCATION: 'education',
-  CONDITIONS: 'conditions',
-  TREATMENTS: 'treatments',
-  DONATE: 'donate',
-  WISHOCRACY: 'wishocracy',
-  PROFILE: 'profile',
-  REFERRALS: 'referrals',
-  IMPACT: 'impact',
-} as const
+  VOTING: "voting",
+  SURVEY: "survey",
+  FAQ: "faq",
+  ADVOCACY: "advocacy",
+  MOVEMENT: "movement",
+  TEAM: "team",
+  RESEARCH: "research",
+  TRIALS: "trials",
+  EDUCATION: "education",
+  CONDITIONS: "conditions",
+  TREATMENTS: "treatments",
+  DONATE: "donate",
+  WISHOCRACY: "wishocracy",
+  PROFILE: "profile",
+  REFERRALS: "referrals",
+  IMPACT: "impact",
+} as const;
 
-export type SiteFeature = (typeof SITE_FEATURES)[keyof typeof SITE_FEATURES]
+export type SiteFeature = (typeof SITE_FEATURES)[keyof typeof SITE_FEATURES];
 
-export const ALL_SITE_FEATURES = Object.freeze(Object.values(SITE_FEATURES) as SiteFeature[])
+export const ALL_SITE_FEATURES = Object.freeze(
+  Object.values(SITE_FEATURES) as SiteFeature[],
+);
 
 const NON_PUBLIC_SITE_FEATURES = new Set<SiteFeature>([
   SITE_FEATURES.PROFILE,
   SITE_FEATURES.REFERRALS,
   SITE_FEATURES.IMPACT,
-])
+]);
 
 export const ALL_PUBLIC_SITE_FEATURES = Object.freeze(
-  ALL_SITE_FEATURES.filter((feature) => !NON_PUBLIC_SITE_FEATURES.has(feature))
-)
+  ALL_SITE_FEATURES.filter((feature) => !NON_PUBLIC_SITE_FEATURES.has(feature)),
+);
 
-export type SitemapDynamicRouteGroup = 'conditions' | 'treatments' | 'conditionTreatments'
+export type SitemapDynamicRouteGroup =
+  | "conditions"
+  | "treatments"
+  | "conditionTreatments";
 
 export interface SiteRoutingConfig {
   /** Send non-home page requests for this variant to another public variant. */
-  nonLandingPageRedirectTarget?: SiteVariant
+  nonLandingPageRedirectTarget?: SiteVariant;
   /** Disable canonical-route redirects for variants that intentionally expose all pages. */
-  skipCanonicalRedirects?: boolean
+  skipCanonicalRedirects?: boolean;
 }
 
 export interface SiteSitemapConfig {
   /** Only include the homepage in this variant's sitemap. */
-  landingPageOnly?: boolean
+  landingPageOnly?: boolean;
   /** Add every known public static page, even when not present in nav. */
-  includePublicPageRoutes?: boolean
+  includePublicPageRoutes?: boolean;
   /** Dynamic route groups this variant should expose in its sitemap. */
-  dynamicRouteGroups?: readonly SitemapDynamicRouteGroup[]
+  dynamicRouteGroups?: readonly SitemapDynamicRouteGroup[];
 }
 
 /**
  * Navigation section for sidebar (accordion structure)
  */
 export interface NavSection {
-  id: string
-  label: string  // e.g., "FIND TREATMENT", "THE EVIDENCE"
-  items: NavItemId[]
+  id: string;
+  label: string; // e.g., "FIND TREATMENT", "THE EVIDENCE"
+  items: NavItemId[];
 }
 
 /**
  * Footer column section
  */
 export interface FooterSection {
-  id: string
-  label: string  // e.g., "TAKE ACTION", "RESOURCES"
-  items: NavItemId[]
+  id: string;
+  label: string; // e.g., "TAKE ACTION", "RESOURCES"
+  items: NavItemId[];
 }
 
 /**
  * Footer branding (first column)
  */
 export interface FooterBranding {
-  title: string  // e.g., "THE DECENTRALIZED INSTITUTES OF HEALTH"
-  tagline: string  // e.g., "MAKING SUFFERING OPTIONAL THROUGH MATH"
+  title: string; // e.g., "THE DECENTRALIZED INSTITUTES OF HEALTH"
+  tagline: string; // e.g., "MAKING SUFFERING OPTIONAL THROUGH MATH"
 }
 
 /**
  * Contact information (footer contact column)
  */
 export interface ContactInfo {
-  email: string
-  website: string
-  websiteLabel: string  // e.g., "DIH.earth"
+  email: string;
+  website: string;
+  websiteLabel: string; // e.g., "DIH.earth"
 }
 
 /**
  * Impact analysis link for pages/components that point to the detailed economic model
  */
 export interface ImpactAnalysisInfo {
-  url: string
-  label: string
+  url: string;
+  label: string;
 }
 
 /**
  * Default icon configuration for favicons and app icons
  * Used by all variants unless overridden
  */
-export const DEFAULT_ICONS: Metadata['icons'] = {
+export const DEFAULT_ICONS: Metadata["icons"] = {
   icon: [
-    { url: '/assets/dih/dih-icon-32x32.png', sizes: '32x32', type: 'image/png' },
-    { url: '/assets/dih/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+    {
+      url: "/assets/dih/dih-icon-32x32.png",
+      sizes: "32x32",
+      type: "image/png",
+    },
+    {
+      url: "/assets/dih/android-chrome-192x192.png",
+      sizes: "192x192",
+      type: "image/png",
+    },
   ],
   apple: {
-    url: '/assets/dih/apple-touch-icon.png',
-    sizes: '180x180',
-    type: 'image/png',
+    url: "/assets/dih/apple-touch-icon.png",
+    sizes: "180x180",
+    type: "image/png",
   },
   other: [
     {
-      rel: 'icon',
-      url: '/assets/dih/android-chrome-512x512.png',
-      sizes: '512x512',
-      type: 'image/png',
+      rel: "icon",
+      url: "/assets/dih/android-chrome-512x512.png",
+      sizes: "512x512",
+      type: "image/png",
     },
   ],
-}
+};
 
 /**
  * Email branding configuration
  */
 export interface EmailBranding {
-  fromName: string       // e.g. "DIH Team" or "Trial Abundance Survey"
-  primaryColor: string   // e.g. "#FF6B9D" or "#000000"
-  secondaryColor: string // e.g. "#00D4FF" or "#FFFFFF"
-  orgName: string        // e.g. "The Decentralized Institutes of Health"
-  footerText?: string    // Optional override for footer text
+  fromName: string; // e.g. "DIH Team" or "Trial Abundance Survey"
+  primaryColor: string; // e.g. "#FF6B9D" or "#000000"
+  secondaryColor: string; // e.g. "#00D4FF" or "#FFFFFF"
+  orgName: string; // e.g. "The Decentralized Institutes of Health"
+  footerText?: string; // Optional override for footer text
 }
 
 /**
@@ -277,23 +299,23 @@ export interface EmailBranding {
  */
 export interface OgMetadata {
   /** OG image URL (relative to public/) - used for OpenGraph, Facebook, LinkedIn */
-  image: string
+  image: string;
   /** Image width in pixels */
-  width: number
+  width: number;
   /** Image height in pixels */
-  height: number
+  height: number;
   /** Image alt text */
-  alt?: string
+  alt?: string;
   /** Optional override title (defaults to site title) */
-  title?: string
+  title?: string;
   /** Optional override description (defaults to site description) */
-  description?: string
+  description?: string;
   /** Optional Twitter-specific image (1200x675 recommended for summary_large_image) */
   twitterImage?: {
-    url: string
-    width: number
-    height: number
-  }
+    url: string;
+    width: number;
+    height: number;
+  };
 }
 
 /**
@@ -301,136 +323,144 @@ export interface OgMetadata {
  */
 export interface FaqConfig {
   /** Page title (e.g., "Frequently Asked Questions") */
-  title: string
+  title: string;
 
   /** Page subtitle/description */
-  subtitle: string
+  subtitle: string;
 
   /** FAQ sections grouped by category */
   sections: Array<{
-    category: string
+    category: string;
     questions: Array<{
-      q: string
-      a: string
-    }>
-  }>
+      q: string;
+      a: string;
+    }>;
+  }>;
 
   /** CTA section at bottom of FAQ page */
   ctaSection?: {
-    title: string
-    subtitle: string
+    title: string;
+    subtitle: string;
     buttons: Array<{
-      label: string
-      href: string
-      variant?: 'primary' | 'secondary'
-    }>
-  }
+      label: string;
+      href: string;
+      variant?: "primary" | "secondary";
+    }>;
+  };
 }
 
 export interface SiteConfig {
   /** Short name (e.g., "DIH", "dFDA") - used in compact UI */
-  name: string
+  name: string;
 
   /** Full title/organization name (e.g., "Decentralized Institutes of Health") - used in headers, emails, metadata */
-  title: string
+  title: string;
 
   /** Site description - used for both human-readable taglines AND SEO meta descriptions */
-  description: string
+  description: string;
 
   /**
    * Favicon and Apple Touch Icons
    * Required for all site variants - use DEFAULT_ICONS as a starting point
    */
-  icons: Metadata['icons']
+  icons: Metadata["icons"];
 
   /**
    * All domains that should route to this variant
    * Used to auto-generate DOMAIN_TO_VARIANT mapping
    * Example: ['dih.earth', 'www.dih.earth', 'cure.vote']
    */
-  domains?: string[]
+  domains?: string[];
 
   /** Base URL for the site (e.g., "https://dih.earth") - used as fallback when NEXT_PUBLIC_BASE_URL is not set */
-  baseUrl: string
+  baseUrl: string;
 
   /** Domain name (e.g., "dih.earth") - used in UI text */
-  domain: string
+  domain: string;
 
   /** Canonical URL for SEO (e.g., "https://dih.earth") - each variant should canonicalize to itself since content is distinct */
-  canonicalUrl?: string
+  canonicalUrl?: string;
 
   /** Contact email (e.g., "hello@dih.earth") */
-  email: string
+  email: string;
 
   /** Default route when user visits / */
-  defaultRoute: string
+  defaultRoute: string;
 
   /** Features enabled for this variant */
-  enabledFeatures: readonly SiteFeature[]
+  enabledFeatures: readonly SiteFeature[];
 
   /** Whether to show political advocacy content */
-  showPoliticalContent: boolean
+  showPoliticalContent: boolean;
+
+  /** Whether to load the manual's floating promotion bar. */
+  promotionBarEnabled?: boolean;
+
+  /** Whether this app exposes NextAuth API routes. Defaults to true. */
+  authEnabled?: boolean;
+
+  /** Whether this app exposes a local dashboard route. Defaults to true. */
+  dashboardEnabled?: boolean;
 
   /** Routing behavior that applies before page rendering. */
-  routing?: SiteRoutingConfig
+  routing?: SiteRoutingConfig;
 
   /** Sitemap behavior for generated static sitemap XML. */
-  sitemap?: SiteSitemapConfig
+  sitemap?: SiteSitemapConfig;
 
   // ===== NAVIGATION SYSTEM =====
 
   /** Top-level navigation items (shown outside accordion in sidebar) */
-  topLevelNavItems?: NavItemId[]
+  topLevelNavItems?: NavItemId[];
 
   /** Sidebar accordion sections */
-  sidebarSections?: NavSection[]
+  sidebarSections?: NavSection[];
 
   /** Footer branding (first column) */
-  footerBranding?: FooterBranding
+  footerBranding?: FooterBranding;
 
   /** Footer column sections */
-  footerSections?: FooterSection[]
+  footerSections?: FooterSection[];
 
   /** Contact information (footer contact column) */
-  contactInfo?: ContactInfo
+  contactInfo?: ContactInfo;
 
   /** Link to the full impact/economic analysis */
-  impactAnalysis?: ImpactAnalysisInfo
+  impactAnalysis?: ImpactAnalysisInfo;
 
   /** Legal entity name used on privacy policy, terms, and other formal/legal surfaces */
-  legalEntityName?: string
+  legalEntityName?: string;
 
   /** Legal links (bottom of footer) */
-  legalItems?: NavItemId[]
+  legalItems?: NavItemId[];
 
   /** Copyright text (bottom of footer) */
-  copyrightText?: string
+  copyrightText?: string;
 
   /** Optional footer compliance / nonprofit notice shown below copyright */
-  footerComplianceNotice?: string
+  footerComplianceNotice?: string;
 
   /** Email branding configuration */
-  emailBranding: EmailBranding
+  emailBranding: EmailBranding;
 
   /** Open Graph metadata (fallback when pages don't specify their own) */
-  ogMetadata: OgMetadata
+  ogMetadata: OgMetadata;
 
   /** FAQ configuration for this variant */
-  faq?: FaqConfig
+  faq?: FaqConfig;
 
   /**
    * AI prompt for generating favicon/app icon (REQUIRED)
    * Keep concise: simple symbol/letters, bold, transparent background
    */
-  faviconPrompt: string
+  faviconPrompt: string;
 
   /**
    * AI prompt for generating OG/social media images (REQUIRED)
    * Keep concise: 1200x630 landscape, neobrutalist style
    */
-  ogPrompt: string
+  ogPrompt: string;
 }
-
 
 const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // ============================================================================
@@ -441,15 +471,23 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Trust-building, partnerships, funding, legitimacy
   // Navigation: landing focused; non-home public routes redirect to War on Disease.
   // Messaging: Economic model prominence, rigorous methodology, soften military language
-  'dih.earth': {
-    name: 'DIH',
-    title: 'Decentralized Institutes of Health',
-    description: 'A global research initiative to accelerate medical progress through pragmatic clinical trials.',
-    domains: ['dih.earth', 'www.dih.earth', 'cure.vote', 'www.cure.vote', 'localhost', 'localhost:3000'],
-    baseUrl: 'https://dih.earth',
-    domain: 'dih.earth',
-    email: 'hello@dih.earth',
-    defaultRoute: '/',
+  "dih.earth": {
+    name: "DIH",
+    title: "Decentralized Institutes of Health",
+    description:
+      "A global research initiative to accelerate medical progress through pragmatic clinical trials.",
+    domains: [
+      "dih.earth",
+      "www.dih.earth",
+      "cure.vote",
+      "www.cure.vote",
+      "localhost",
+      "localhost:3000",
+    ],
+    baseUrl: "https://dih.earth",
+    domain: "dih.earth",
+    email: "hello@dih.earth",
+    defaultRoute: "/",
     enabledFeatures: [
       SITE_FEATURES.SURVEY,
       SITE_FEATURES.RESEARCH,
@@ -468,91 +506,121 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     icons: {
       icon: [
-        { url: '/assets/dih/favicon.ico', sizes: 'any' },
-        { url: '/assets/dih/dih-icon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/dih/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/dih/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/dih/favicon.ico", sizes: "any" },
+        {
+          url: "/assets/dih/dih-icon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dih/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dih/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/dih/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/dih/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/dih/dih-icon-transparent-1024.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/dih/dih-icon-transparent-1024.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
 
-
     // Navigation system - Optimized for conversion: vote (survey), the plan, and institutes are top-level
-    topLevelNavItems: ['vote', 'thePlan', 'institutes'],
+    topLevelNavItems: ["vote", "thePlan", "institutes"],
     sidebarSections: [
       {
-        id: 'find-treatment',
-        label: 'FIND TREATMENT',
-        items: ['conditions', 'treatments', 'findTrials'],
+        id: "find-treatment",
+        label: "FIND TREATMENT",
+        items: ["conditions", "treatments", "findTrials"],
       },
       {
-        id: 'evidence',
-        label: 'THE EVIDENCE',
-        items: ['research', 'references', 'faq'],
+        id: "evidence",
+        label: "THE EVIDENCE",
+        items: ["research", "references", "faq"],
       },
       {
-        id: 'support',
-        label: 'SUPPORT THE MISSION',
-        items: ['thePlan', 'donate', 'volunteer', /* 'campaigns', */ 'divisions', 'soldiers'],
+        id: "support",
+        label: "SUPPORT THE MISSION",
+        items: [
+          "thePlan",
+          "donate",
+          "volunteer",
+          /* 'campaigns', */ "divisions",
+          "soldiers",
+        ],
       },
     ],
     footerBranding: {
-      title: 'THE DECENTRALIZED INSTITUTES OF HEALTH',
-      tagline: 'MAKING SUFFERING OPTIONAL THROUGH MATH',
+      title: "THE DECENTRALIZED INSTITUTES OF HEALTH",
+      tagline: "MAKING SUFFERING OPTIONAL THROUGH MATH",
     },
     footerSections: [
       {
-        id: 'join',
-        label: 'JOIN THE MOVEMENT',
-        items: ['vote', 'thePlan', 'institutes', 'donate', 'volunteer'],
+        id: "join",
+        label: "VOTE ON THE TREATY",
+        items: ["vote", "thePlan", "institutes", "donate", "volunteer"],
       },
       {
-        id: 'manual',
-        label: 'GET THE MANUAL',
-        items: ['manual', 'listenPodcast', 'buyPaperback', 'readOnline', 'youtubeChannel'],
+        id: "manual",
+        label: "GET THE MANUAL",
+        items: [
+          "manual",
+          "listenPodcast",
+          "buyPaperback",
+          "readOnline",
+          "youtubeChannel",
+        ],
       },
       {
-        id: 'resources',
-        label: 'RESOURCES',
-        items: ['conditions', 'treatments', 'research', 'references', 'about', 'dfdaStudies'],
+        id: "resources",
+        label: "RESOURCES",
+        items: [
+          "conditions",
+          "treatments",
+          "research",
+          "references",
+          "about",
+          "dfdaStudies",
+        ],
       },
     ],
     contactInfo: {
-      email: 'hello@dih.earth',
-      website: 'https://dih.earth',
-      websiteLabel: 'DIH.earth',
+      email: "hello@dih.earth",
+      website: "https://dih.earth",
+      websiteLabel: "DIH.earth",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'DIH Team',
-      primaryColor: '#FF6B9D',
-      secondaryColor: '#00D4FF',
-      orgName: 'The Decentralized Institutes of Health',
+      fromName: "DIH Team",
+      primaryColor: "#FF6B9D",
+      secondaryColor: "#00D4FF",
+      orgName: "The Decentralized Institutes of Health",
     },
     ogMetadata: {
-      image: '/assets/dih/dih-og-social-70s-utopian-1280x640.png',
+      image: "/assets/dih/dih-og-social-70s-utopian-1280x640.png",
       width: 1280,
       height: 640,
-      alt: 'Decentralized Institutes of Health - Making Suffering Optional Through Math',
+      alt: "Decentralized Institutes of Health - Making Suffering Optional Through Math",
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
     faq: DIH_FAQ,
 
@@ -570,42 +638,60 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Convert visitors to votes + referrals (viral growth)
   // Navigation: Ruthlessly simple (don't dilute the ask)
   // Messaging: Emotion-first, evidence links to dih.earth
-  'warondisease.org': {
-    name: 'WoD',
-    title: 'War on Disease',
-    domains: ['warondisease.org', 'www.warondisease.org', 'act.warondisease.org', 'www.act.warondisease.org'],
+  "warondisease.org": {
+    name: "WoD",
+    title: "War on Disease",
+    domains: [
+      "warondisease.org",
+      "www.warondisease.org",
+      "act.warondisease.org",
+      "www.act.warondisease.org",
+    ],
     description: `Click a glowing rectangle. 15 seconds. ${MESSAGING.impact.perVote.combined}.`,
-    baseUrl: 'https://warondisease.org',
-    domain: 'warondisease.org',
-    email: 'hello@warondisease.org',
-    defaultRoute: '/',
+    baseUrl: "https://warondisease.org",
+    domain: "warondisease.org",
+    email: "hello@warondisease.org",
+    defaultRoute: "/",
     enabledFeatures: ALL_PUBLIC_SITE_FEATURES,
     showPoliticalContent: true,
+    promotionBarEnabled: true,
     routing: {
       skipCanonicalRedirects: true,
     },
     sitemap: {
       includePublicPageRoutes: true,
-      dynamicRouteGroups: ['conditions', 'treatments', 'conditionTreatments'],
+      dynamicRouteGroups: ["conditions", "treatments", "conditionTreatments"],
     },
     icons: {
       icon: [
-        { url: '/assets/warondisease/warondisease-favicon.png', sizes: 'any' },
-        { url: '/assets/warondisease/warondisease-favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/warondisease/warondisease-android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/warondisease/warondisease-android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/warondisease/warondisease-favicon.png", sizes: "any" },
+        {
+          url: "/assets/warondisease/warondisease-favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/warondisease/warondisease-android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/warondisease/warondisease-android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/warondisease/warondisease-apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/warondisease/warondisease-apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/warondisease/warondisease-favicon-master.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/warondisease/warondisease-favicon-master.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
@@ -613,65 +699,72 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // Navigation: flat, action-first. No sidebar accordion — every extra label dilutes the CTA.
     // Primary: Vote (core action). Soldiers (viral leaderboard). Campaigns (expected-value crowdfunding).
     // Manual (long-form conversion). Secondary links live in the footer.
-    topLevelNavItems: ['vote', 'soldiers', 'campaigns', 'manual'],
+    topLevelNavItems: ["vote", "soldiers", "manual"],
     sidebarSections: [],
     footerBranding: {
-      title: 'THE WAR ON DISEASE',
-      tagline: 'MAKING SUFFERING OPTIONAL',
+      title: "THE WAR ON DISEASE",
+      tagline: "MAKING SUFFERING OPTIONAL",
     },
     footerSections: [
       {
-        id: 'act',
-        label: 'ACT',
-        items: ['vote', 'campaigns', 'soldiers'],
+        id: "act",
+        label: "ACT",
+        items: ["vote", "campaigns", "soldiers"],
       },
       {
-        id: 'learn',
-        label: 'LEARN',
-        items: ['about', 'faq', 'thePlan', 'manual', 'readOnline', 'listenPodcast'],
+        id: "learn",
+        label: "LEARN",
+        items: [
+          "about",
+          "faq",
+          "thePlan",
+          "manual",
+          "readOnline",
+          "listenPodcast",
+        ],
       },
       {
-        id: 'connect',
-        label: 'CONNECT',
-        items: ['divisions', 'volunteer'],
+        id: "connect",
+        label: "CONNECT",
+        items: ["institutes", "volunteer"],
       },
     ],
     contactInfo: {
-      email: 'hello@warondisease.org',
-      website: 'https://warondisease.org',
-      websiteLabel: 'WarOnDisease.org',
+      email: "hello@warondisease.org",
+      website: "https://warondisease.org",
+      websiteLabel: "WarOnDisease.org",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'DIH Advocacy',
-      primaryColor: '#FF6B9D',
-      secondaryColor: '#00D4FF',
-      orgName: 'The War on Disease',
+      fromName: "DIH Advocacy",
+      primaryColor: "#FF6B9D",
+      secondaryColor: "#00D4FF",
+      orgName: "The War on Disease",
     },
     ogMetadata: {
-      image: '/assets/warondisease/war-on-disease-og-1200x630.png',
+      image: "/assets/warondisease/war-on-disease-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: 'War on Disease - Making Suffering Optional',
+      alt: "War on Disease - Making Suffering Optional",
       twitterImage: {
-        url: '/assets/warondisease/war-on-disease-og-1200x630.png',
+        url: "/assets/warondisease/war-on-disease-og-1200x630.png",
         width: 1200,
         height: 630,
       },
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
     faq: WAR_ON_DISEASE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `White skull inside red circle with diagonal red slash (prohibited sign), thick black outline, magenta (#FF00FF) background.`,
 
-    ogPrompt: `"WAR ON DISEASE" 1950s propaganda poster. Pink/cyan/yellow/black. Heroic medical workers, globe, clock. Global movement. ${MESSAGING.mechanism.pragmaticTrials}. "${MESSAGING.impact.curesArriveXYearsSooner.years} YEARS FASTER • ${MESSAGING.impact.globalImpactAtTippingPoint.totalLivesSaved.toUpperCase()} SAVED • ${MESSAGING.impact.vision.makeSufferingOptional.toUpperCase()}".`,
+    ogPrompt: `"WAR ON DISEASE" 1950s propaganda poster. Pink/cyan/yellow/black. Heroic medical workers, globe, clock. Global campaign. ${MESSAGING.mechanism.pragmaticTrials}. "${MESSAGING.impact.curesArriveXYearsSooner.years} YEARS FASTER • ${MESSAGING.impact.globalImpactAtTippingPoint.totalLivesSaved.toUpperCase()} SAVED • ${MESSAGING.impact.vision.makeSufferingOptional.toUpperCase()}".`,
   },
 
   // ============================================================================
@@ -683,14 +776,15 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Navigation: Treatment-focused (conditions → treatments → trials)
   // Messaging: Medical evidence only (NOT macro-economic policy), no military language
   dfda: {
-    name: 'dFDA',
-    title: 'dFDA',
-    description: 'A decentralized framework for drug assessment for ranking treatments by real-world effectiveness and outcome labels showing the positive and negative effects of every food and drug in the world.',
-    domains: ['dfda.earth', 'www.dfda.earth', 'dfda.dih.earth'],
-    baseUrl: 'https://dfda.earth',
-    domain: 'dfda.earth',
-    email: 'hello@dfda.earth',
-    defaultRoute: '/',
+    name: "dFDA",
+    title: "dFDA",
+    description:
+      "A decentralized framework for drug assessment for ranking treatments by real-world effectiveness and outcome labels showing the positive and negative effects of every food and drug in the world.",
+    domains: ["dfda.earth", "www.dfda.earth", "dfda.dih.earth"],
+    baseUrl: "https://dfda.earth",
+    domain: "dfda.earth",
+    email: "hello@dfda.earth",
+    defaultRoute: "/",
     enabledFeatures: [
       SITE_FEATURES.CONDITIONS,
       SITE_FEATURES.TREATMENTS,
@@ -699,27 +793,40 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       SITE_FEATURES.EDUCATION,
     ],
     showPoliticalContent: false,
+    dashboardEnabled: false,
     sitemap: {
-      dynamicRouteGroups: ['conditions', 'treatments', 'conditionTreatments'],
+      dynamicRouteGroups: ["conditions", "treatments", "conditionTreatments"],
     },
     icons: {
       icon: [
-        { url: '/assets/dfda/favicon.ico', sizes: 'any' },
-        { url: '/assets/dfda/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/dfda/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/dfda/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/dfda/favicon.ico", sizes: "any" },
+        {
+          url: "/assets/dfda/favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dfda/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dfda/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/dfda/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/dfda/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/dfda/android-chrome-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/dfda/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
         },
       ],
     },
@@ -727,69 +834,76 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // Navigation system - TREATMENT-FOCUSED for clinical encyclopedia
     // Priority: Conditions → Treatments → Trials → Studies
     // Research scoped to MEDICAL EVIDENCE (not macro-economic policy)
-    topLevelNavItems: ['conditions', 'treatments'],
+    topLevelNavItems: ["conditions", "treatments"],
     sidebarSections: [
       {
-        id: 'find-treatment',
-        label: 'FIND TREATMENT',
-        items: ['conditions', 'treatments', 'findTrials'],
+        id: "find-treatment",
+        label: "FIND TREATMENT",
+        items: ["conditions", "treatments", "findTrials"],
       },
       {
-        id: 'studies',
-        label: 'STUDIES',
-        items: ['megaStudies', 'observationalStudies'],
+        id: "studies",
+        label: "STUDIES",
+        items: ["megaStudies", "observationalStudies"],
       },
       {
-        id: 'evidence',
-        label: 'MEDICAL EVIDENCE',
-        items: ['research', 'references', 'faq'],
+        id: "evidence",
+        label: "MEDICAL EVIDENCE",
+        items: ["research", "references", "faq"],
       },
       {
-        id: 'studies-tools',
-        label: 'STUDIES & TOOLS',
-        items: ['dfdaStudies', 'dfdaImpact', 'dfdaSpec'],
+        id: "studies-tools",
+        label: "STUDIES & TOOLS",
+        items: ["dfdaStudies", "dfdaImpact", "dfdaSpec"],
       },
     ],
     footerBranding: {
-      title: 'DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT',
-      tagline: 'EVIDENCE-BASED TREATMENT INFORMATION',
+      title: "DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT",
+      tagline: "EVIDENCE-BASED TREATMENT INFORMATION",
     },
     footerSections: [
       {
-        id: 'treatments',
-        label: 'TREATMENTS',
-        items: ['conditions', 'treatments', 'findTrials'],
+        id: "treatments",
+        label: "TREATMENTS",
+        items: ["conditions", "treatments", "findTrials"],
       },
       {
-        id: 'resources',
-        label: 'RESOURCES',
-        items: ['about', 'research', 'faq', 'dfdaImpact', 'dfdaSpec', 'dfdaStudies'],
+        id: "resources",
+        label: "RESOURCES",
+        items: [
+          "about",
+          "research",
+          "faq",
+          "dfdaImpact",
+          "dfdaSpec",
+          "dfdaStudies",
+        ],
       },
     ],
     contactInfo: {
-      email: 'hello@dfda.earth',
-      website: 'https://dfda.earth',
-      websiteLabel: 'dFDA.earth',
+      email: "hello@dfda.earth",
+      website: "https://dfda.earth",
+      websiteLabel: "dFDA.earth",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'dFDA Team',
-      primaryColor: '#2563eb', // Blue for medical credibility
-      secondaryColor: '#ffffff',
-      orgName: 'Decentralized Framework for Drug Assessment',
+      fromName: "dFDA Team",
+      primaryColor: "#2563eb", // Blue for medical credibility
+      secondaryColor: "#ffffff",
+      orgName: "Decentralized Framework for Drug Assessment",
     },
     ogMetadata: {
-      image: '/assets/dfda/dfda-og-1200x630.png',
+      image: "/assets/dfda/dfda-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: 'Decentralized Framework for Drug Assessment - Evidence-Based Treatment Information',
+      alt: "Decentralized Framework for Drug Assessment - Evidence-Based Treatment Information",
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     faq: DFDA_FAQ,
 
     // Image generation prompts
@@ -799,13 +913,13 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   },
 
   user: {
-    name: 'Hero',
-    title: 'Hero in the War on Disease',
-    description: 'View this soldier\'s impact in the war on disease.',
-    baseUrl: 'https://warondisease.org',
-    domain: 'warondisease.org',
-    email: 'hello@warondisease.org',
-    defaultRoute: '/user-profile', // Special route that redirects to user's profile
+    name: "Hero",
+    title: "Hero in the War on Disease",
+    description: "View this soldier's impact in the war on disease.",
+    baseUrl: "https://warondisease.org",
+    domain: "warondisease.org",
+    email: "hello@warondisease.org",
+    defaultRoute: "/user-profile", // Special route that redirects to user's profile
     enabledFeatures: [
       SITE_FEATURES.PROFILE,
       SITE_FEATURES.REFERRALS,
@@ -814,47 +928,59 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     showPoliticalContent: false,
     icons: {
       icon: [
-        { url: '/assets/dih/favicon.ico', sizes: 'any' },
-        { url: '/assets/dih/dih-icon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/dih/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/dih/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/dih/favicon.ico", sizes: "any" },
+        {
+          url: "/assets/dih/dih-icon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dih/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/dih/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/dih/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/dih/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/dih/dih-icon-transparent-1024.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/dih/dih-icon-transparent-1024.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
     emailBranding: {
-      fromName: 'DIH Team',
-      primaryColor: '#FF6B9D',
-      secondaryColor: '#00D4FF',
-      orgName: 'The Decentralized Institutes of Health',
+      fromName: "DIH Team",
+      primaryColor: "#FF6B9D",
+      secondaryColor: "#00D4FF",
+      orgName: "The Decentralized Institutes of Health",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     ogMetadata: {
-      image: '/assets/dih/dih-og-social-1280x640.png',
+      image: "/assets/dih/dih-og-social-1280x640.png",
       width: 1280,
       height: 640,
-      alt: 'Hero in the War on Disease',
+      alt: "Hero in the War on Disease",
     },
 
     // Image generation prompts (uses DIH branding)
     faviconPrompt: `Pink shield with white heart inside, thick black outline, magenta (#FF00FF) background.`,
 
-    ogPrompt: `"HERO IN THE WAR ON DISEASE" neobrutalist profile card. Pink/cyan/black. Soldier avatar, achievement badges, impact stats. "VIEW THIS SOLDIER'S IMPACT • JOIN THE MOVEMENT".`,
+    ogPrompt: `"HERO IN THE WAR ON DISEASE" neobrutalist profile card. Pink/cyan/black. Soldier avatar, achievement badges, impact stats. "VIEW THIS SOLDIER'S IMPACT • VOTE ON THE TREATY".`,
   },
 
   // ============================================================================
@@ -865,15 +991,21 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Collect priority allocation data through pairwise comparisons
   // Navigation: Minimal (wishocracy survey, faq, about)
   // Messaging: No political advocacy, pure values research framing
-  'wishocracy.org': {
-    name: 'Wishocracy',
-    title: 'Wishocracy',
-    description: 'Compare different areas of human concern and discover what matters most to you through pairwise comparisons.',
-    domains: ['wishocracy.org', 'www.wishocracy.org', 'wishocracy.com', 'www.wishocracy.com'],
-    baseUrl: 'https://wishocracy.org',
-    domain: 'wishocracy.org',
-    email: 'hello@wishocracy.org',
-    defaultRoute: '/',
+  "wishocracy.org": {
+    name: "Wishocracy",
+    title: "Wishocracy",
+    description:
+      "Compare different areas of human concern and discover what matters most to you through pairwise comparisons.",
+    domains: [
+      "wishocracy.org",
+      "www.wishocracy.org",
+      "wishocracy.com",
+      "www.wishocracy.com",
+    ],
+    baseUrl: "https://wishocracy.org",
+    domain: "wishocracy.org",
+    email: "hello@wishocracy.org",
+    defaultRoute: "/",
     enabledFeatures: [
       SITE_FEATURES.WISHOCRACY,
       SITE_FEATURES.SURVEY,
@@ -882,64 +1014,76 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     showPoliticalContent: false,
     icons: {
       icon: [
-        { url: '/assets/wishocracy/wishocracy-icon-square.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/wishocracy/wishocracy-icon-square.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/wishocracy/wishocracy-icon-square.png', sizes: '512x512', type: 'image/png' },
+        {
+          url: "/assets/wishocracy/wishocracy-icon-square.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/wishocracy/wishocracy-icon-square.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/wishocracy/wishocracy-icon-square.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/wishocracy/wishocracy-icon-square.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/wishocracy/wishocracy-icon-square.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/wishocracy/wishocracy-icon-square.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/wishocracy/wishocracy-icon-square.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
 
     // Navigation - Minimal for values research focus
-    topLevelNavItems: ['wishocracy', 'faq'],
+    topLevelNavItems: ["wishocracy", "faq"],
     sidebarSections: [], // No sidebar sections - keep it simple
 
     footerBranding: {
-      title: 'WISHOCRACY',
-      tagline: 'DISCOVER YOUR GLOBAL PRIORITIES',
+      title: "WISHOCRACY",
+      tagline: "DISCOVER YOUR GLOBAL PRIORITIES",
     },
     footerSections: [
       {
-        id: 'about',
-        label: 'ABOUT',
-        items: ['about', 'faq'],
+        id: "about",
+        label: "ABOUT",
+        items: ["about", "faq"],
       },
     ],
     contactInfo: {
-      email: 'hello@wishocracy.org',
-      website: 'https://wishocracy.org',
-      websiteLabel: 'Wishocracy.org',
+      email: "hello@wishocracy.org",
+      website: "https://wishocracy.org",
+      websiteLabel: "Wishocracy.org",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'Wishonia',
-      primaryColor: '#FFE66D', // brutal-yellow for wishocracy brand
-      secondaryColor: '#00D9FF', // brutal-cyan
-      orgName: 'Wishocracy',
+      fromName: "Wishonia",
+      primaryColor: "#FFE66D", // brutal-yellow for wishocracy brand
+      secondaryColor: "#00D9FF", // brutal-cyan
+      orgName: "Wishocracy",
     },
     ogMetadata: {
-      image: '/assets/wishocracy/wishocracy-og-1200x630.png',
+      image: "/assets/wishocracy/wishocracy-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: 'Wishocracy - Discover Your Global Priorities',
+      alt: "Wishocracy - Discover Your Global Priorities",
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     faq: WISHOCRACY_FAQ,
 
     // Image generation prompts
@@ -956,15 +1100,16 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Just collect survey data without scaring partners
   // Navigation: Ultra-minimal (vote, faq only - no sidebar clutter)
   // Messaging: No military language, no movement rhetoric, pure research framing
-  'trialabundancesurvey.org': {
-    name: 'Trial Abundance Survey',
-    title: 'Global Clinical Trial Abundance Survey',
-    description: 'A global research initiative to measure public support for accelerating medical progress through pragmatic clinical trials.',
-    domains: ['trialabundancesurvey.org', 'www.trialabundancesurvey.org'],
-    baseUrl: 'https://trialabundancesurvey.org',
-    domain: 'trialabundancesurvey.org',
-    email: 'hello@trialabundancesurvey.org',
-    defaultRoute: '/',
+  "trialabundancesurvey.org": {
+    name: "Trial Abundance Survey",
+    title: "Global Clinical Trial Abundance Survey",
+    description:
+      "A global research initiative to measure public support for accelerating medical progress through pragmatic clinical trials.",
+    domains: ["trialabundancesurvey.org", "www.trialabundancesurvey.org"],
+    baseUrl: "https://trialabundancesurvey.org",
+    domain: "trialabundancesurvey.org",
+    email: "hello@trialabundancesurvey.org",
+    defaultRoute: "/",
     enabledFeatures: [
       SITE_FEATURES.SURVEY,
       SITE_FEATURES.FAQ,
@@ -973,66 +1118,77 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     showPoliticalContent: false,
     icons: {
       icon: [
-        { url: '/assets/survey/favicon.ico', sizes: 'any' },
-        { url: '/assets/survey/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/survey/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/survey/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/survey/favicon.ico", sizes: "any" },
+        {
+          url: "/assets/survey/favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/survey/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/survey/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/survey/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/survey/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/survey/survey-icon-square.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/survey/survey-icon-square.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
 
-
     // Navigation - Ultra-minimal for nervous nonprofits
-    topLevelNavItems: ['vote', 'faq'],
+    topLevelNavItems: ["vote", "faq"],
     sidebarSections: [], // No sidebar sections - keep it simple
 
     footerBranding: {
-      title: 'GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY',
-      tagline: 'AN INDEPENDENT RESEARCH INITIATIVE',
+      title: "GLOBAL CLINICAL TRIAL ABUNDANCE SURVEY",
+      tagline: "AN INDEPENDENT RESEARCH INITIATIVE",
     },
     footerSections: [
       {
-        id: 'about',
-        label: 'ABOUT',
-        items: ['about', 'research', 'faq'],
+        id: "about",
+        label: "ABOUT",
+        items: ["about", "research", "faq"],
       },
     ],
     contactInfo: {
-      email: 'hello@trialabundancesurvey.org',
-      website: 'https://trialabundancesurvey.org',
-      websiteLabel: 'TrialAbundanceSurvey.org',
+      email: "hello@trialabundancesurvey.org",
+      website: "https://trialabundancesurvey.org",
+      websiteLabel: "TrialAbundanceSurvey.org",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'Survey Team',
-      primaryColor: '#000000', // Black/White neutral
-      secondaryColor: '#ffffff',
-      orgName: 'Global Clinical Trial Abundance Survey',
+      fromName: "Survey Team",
+      primaryColor: "#000000", // Black/White neutral
+      secondaryColor: "#ffffff",
+      orgName: "Global Clinical Trial Abundance Survey",
     },
     ogMetadata: {
-      image: '/assets/survey/survey-og-1200x630.png',
+      image: "/assets/survey/survey-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: 'Global Clinical Trial Abundance Survey - An Independent Research Initiative',
+      alt: "Global Clinical Trial Abundance Survey - An Independent Research Initiative",
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     faq: SURVEY_FAQ,
 
     // Image generation prompts
@@ -1052,117 +1208,129 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Optimal resource allocation through decentralized coordination and incentive mechanisms
   // Navigation: Simple and action-focused (governance + advocacy)
   // Messaging: Incentive alignment, decentralized coordination, resource optimization
-  'curedao.org': {
-    name: 'CureDAO',
-    title: 'CureDAO',
+  "curedao.org": {
+    name: "CureDAO",
+    title: "CureDAO",
     description: `A decentralized autonomous organization that aligns incentives and enables mass-scale coordination to optimally allocate resources toward disease eradication. Save ${MESSAGING.impact.timelineShift.livesSaved} lives through collective action.`,
-    domains: ['curedao.org', 'www.curedao.org'],
-    baseUrl: 'https://curedao.org',
-    domain: 'curedao.org',
-    email: 'hello@curedao.org',
-    defaultRoute: '/',
+    domains: ["curedao.org", "www.curedao.org"],
+    baseUrl: "https://curedao.org",
+    domain: "curedao.org",
+    email: "hello@curedao.org",
+    defaultRoute: "/",
     enabledFeatures: [
-      SITE_FEATURES.VOTING,
       SITE_FEATURES.ADVOCACY,
       SITE_FEATURES.MOVEMENT,
       SITE_FEATURES.RESEARCH,
       SITE_FEATURES.TRIALS,
       SITE_FEATURES.CONDITIONS,
       SITE_FEATURES.TREATMENTS,
-      SITE_FEATURES.TEAM,
     ],
     showPoliticalContent: true,
+    authEnabled: false,
+    dashboardEnabled: false,
 
     icons: {
       icon: [
-        { url: '/assets/curedao/curedao-icon-square.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/curedao/curedao-icon-square.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/curedao/curedao-icon-square.png', sizes: '512x512', type: 'image/png' },
+        {
+          url: "/assets/curedao/curedao-icon-square.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/curedao/curedao-icon-square.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/curedao/curedao-icon-square.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/curedao/curedao-icon-square.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/curedao/curedao-icon-square.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/curedao/curedao-icon-square.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/curedao/curedao-icon-square.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
 
     // Navigation - SIMPLIFIED for campaign focus (same as War on Disease)
-    topLevelNavItems: ['vote'],
+    topLevelNavItems: ["vote"],
     sidebarSections: [
       {
-        id: 'join',
-        label: 'JOIN THE MOVEMENT',
-        items: ['vote', 'thePlan', 'volunteer', /* 'campaigns' */],
+        id: "join",
+        label: "VOTE ON THE TREATY",
+        items: ["vote", "thePlan", "volunteer" /* 'campaigns' */],
       },
       {
-        id: 'learn',
-        label: 'LEARN MORE',
-        items: ['about', 'team', 'faq'],
+        id: "learn",
+        label: "LEARN MORE",
+        items: ["about", "faq"],
       },
       {
-        id: 'support',
-        label: 'SUPPORT THE MISSION',
-        items: ['divisions', 'soldiers'],
+        id: "support",
+        label: "SUPPORT THE MISSION",
+        items: ["institutes", "soldiers"],
       },
     ],
 
     footerBranding: {
-      title: 'CUREDAO',
-      tagline: 'MAKING SUFFERING OPTIONAL',
+      title: "CUREDAO",
+      tagline: "MAKING SUFFERING OPTIONAL",
     },
 
     footerSections: [
       {
-        id: 'join',
-        label: 'JOIN THE MOVEMENT',
-        items: ['vote', 'thePlan', 'volunteer'],
+        id: "join",
+        label: "VOTE ON THE TREATY",
+        items: ["vote", "thePlan", "volunteer"],
       },
       {
-        id: 'manual',
-        label: 'GET THE MANUAL',
-        items: ['manual', 'listenPodcast', 'buyPaperback', 'readOnline'],
+        id: "manual",
+        label: "GET THE MANUAL",
+        items: ["manual", "listenPodcast", "buyPaperback", "readOnline"],
       },
       {
-        id: 'learn',
-        label: 'LEARN MORE',
-        items: ['about', 'team', 'faq'],
+        id: "learn",
+        label: "LEARN MORE",
+        items: ["about", "faq"],
       },
     ],
 
     contactInfo: {
-      email: 'hello@curedao.org',
-      website: 'https://curedao.org',
-      websiteLabel: 'CureDAO.org',
+      email: "hello@curedao.org",
+      website: "https://curedao.org",
+      websiteLabel: "CureDAO.org",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
-    legalEntityName: 'CureDAO',
+    legalEntityName: "CureDAO",
 
     emailBranding: {
-      fromName: 'CureDAO',
-      primaryColor: '#7289da',  // Discord blue from their site
-      secondaryColor: '#ffffff',
-      orgName: 'CureDAO',
+      fromName: "CureDAO",
+      primaryColor: "#7289da", // Discord blue from their site
+      secondaryColor: "#ffffff",
+      orgName: "CureDAO",
     },
     ogMetadata: {
-      image: '/assets/curedao/curedao-og-1200x630.png',
+      image: "/assets/curedao/curedao-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: 'CureDAO - Making Suffering Optional',
+      alt: "CureDAO - Making Suffering Optional",
     },
 
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 CureDAO | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 CureDAO | CC BY-NC 4.0",
     faq: WAR_ON_DISEASE_FAQ,
 
     // Image generation prompts
@@ -1181,15 +1349,15 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Navigation: Donation-focused with cross-links to supported projects (dFDA, War on Disease, etc.)
   // Messaging: Bold but professional - "Cures move at the speed of data"
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
-  'acceleratedmedicine.org': {
-    name: 'IAM',
-    title: 'Institute for Accelerated Medicine',
+  "acceleratedmedicine.org": {
+    name: "IAM",
+    title: "Institute for Accelerated Medicine",
     description: `${MESSAGING.impact.diseasesCured.percentWithNoTreatment} of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient ${MESSAGING.impact.curesArriveXYearsSooner.years} years faster, ${MESSAGING.impact.costReduction.multiplier} cheaper.`,
-    domains: ['acceleratedmedicine.org', 'www.acceleratedmedicine.org'],
-    baseUrl: 'https://acceleratedmedicine.org',
-    domain: 'acceleratedmedicine.org',
-    email: 'hello@acceleratedmedicine.org',
-    defaultRoute: '/',
+    domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
+    baseUrl: "https://acceleratedmedicine.org",
+    domain: "acceleratedmedicine.org",
+    email: "hello@acceleratedmedicine.org",
+    defaultRoute: "/",
     // Umbrella site: research, education, movement, donate - NO clinical content (redirects to dfda.earth)
     enabledFeatures: [
       SITE_FEATURES.SURVEY,
@@ -1197,116 +1365,129 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       SITE_FEATURES.EDUCATION,
       SITE_FEATURES.MOVEMENT,
       SITE_FEATURES.DONATE,
-      SITE_FEATURES.TEAM,
     ],
     showPoliticalContent: false,
+    authEnabled: false,
+    dashboardEnabled: false,
     icons: {
       icon: [
-        { url: '/assets/acceleratedmedicine/favicon.ico', sizes: 'any' },
-        { url: '/assets/acceleratedmedicine/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/assets/acceleratedmedicine/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/assets/acceleratedmedicine/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { url: "/assets/acceleratedmedicine/favicon.ico", sizes: "any" },
+        {
+          url: "/assets/acceleratedmedicine/favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          url: "/assets/acceleratedmedicine/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          url: "/assets/acceleratedmedicine/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       apple: {
-        url: '/assets/acceleratedmedicine/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
+        url: "/assets/acceleratedmedicine/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
       },
       other: [
         {
-          rel: 'icon',
-          url: '/assets/acceleratedmedicine/iam-icon-master.png',
-          sizes: '1024x1024',
-          type: 'image/png',
+          rel: "icon",
+          url: "/assets/acceleratedmedicine/iam-icon-master.png",
+          sizes: "1024x1024",
+          type: "image/png",
         },
       ],
     },
 
     // Navigation system - Umbrella/donation focused
     // Donate is prominent, cross-links to other projects
-    topLevelNavItems: ['donate', 'vote', 'about'],
+    topLevelNavItems: ["donate", "vote", "about"],
     sidebarSections: [
       {
-        id: 'support',
-        label: 'SUPPORT THE MISSION',
-        items: ['donate', 'thePlan', 'volunteer'],
+        id: "support",
+        label: "SUPPORT THE MISSION",
+        items: ["donate", "thePlan", "volunteer"],
       },
       {
-        id: 'evidence',
-        label: 'THE EVIDENCE',
-        items: ['research', 'faq'],
+        id: "evidence",
+        label: "THE EVIDENCE",
+        items: ["research", "faq"],
       },
       {
-        id: 'about-us',
-        label: 'ABOUT US',
-        items: ['about', 'team'],
+        id: "about-us",
+        label: "ABOUT US",
+        items: ["about"],
       },
     ],
     footerBranding: {
-      title: 'THE INSTITUTE FOR ACCELERATED MEDICINE',
-      tagline: 'MISSION: TOTAL DISEASE ERADICATION',
+      title: "THE INSTITUTE FOR ACCELERATED MEDICINE",
+      tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     footerSections: [
       {
-        id: 'support',
-        label: 'SUPPORT',
-        items: ['donate', 'thePlan', 'volunteer'],
+        id: "support",
+        label: "SUPPORT",
+        items: ["donate", "thePlan", "volunteer"],
       },
       {
-        id: 'manual',
-        label: 'GET THE MANUAL',
-        items: ['manual', 'listenPodcast', 'buyPaperback', 'readOnline'],
+        id: "manual",
+        label: "GET THE MANUAL",
+        items: ["manual", "listenPodcast", "buyPaperback", "readOnline"],
       },
       {
-        id: 'about',
-        label: 'ABOUT',
-        items: ['about', 'team', 'research', 'faq'],
+        id: "about",
+        label: "ABOUT",
+        items: ["about", "research", "faq"],
       },
     ],
     contactInfo: {
-      email: 'hello@acceleratedmedicine.org',
-      website: 'https://acceleratedmedicine.org',
-      websiteLabel: 'AcceleratedMedicine.org',
+      email: "hello@acceleratedmedicine.org",
+      website: "https://acceleratedmedicine.org",
+      websiteLabel: "AcceleratedMedicine.org",
     },
     impactAnalysis: {
-      url: 'https://impact.warondisease.org',
-      label: 'impact.warondisease.org',
+      url: "https://impact.warondisease.org",
+      label: "impact.warondisease.org",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
-      fromName: 'Institute for Accelerated Medicine',
-      primaryColor: '#FF6B9D',  // Neobrutalist pink
-      secondaryColor: '#00D4FF', // Neobrutalist cyan
-      orgName: 'Institute for Accelerated Medicine',
+      fromName: "Institute for Accelerated Medicine",
+      primaryColor: "#FF6B9D", // Neobrutalist pink
+      secondaryColor: "#00D4FF", // Neobrutalist cyan
+      orgName: "Institute for Accelerated Medicine",
     },
     ogMetadata: {
-      image: '/assets/acceleratedmedicine/iam-og-1200x630.png',
+      image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
       alt: `Institute for Accelerated Medicine - ${MESSAGING.impact.curesArriveXYearsSooner.years} Years Faster. ${MESSAGING.impact.timelineShift.livesSaved} Lives.`,
     },
-    legalItems: ['privacy', 'terms'],
-    copyrightText: '© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0',
+    legalItems: ["privacy", "terms"],
+    copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
-    faq: DIH_FAQ,  // Reuse DIH FAQ initially, can customize later
+    faq: DIH_FAQ, // Reuse DIH FAQ initially, can customize later
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,
 
     ogPrompt: `"INSTITUTE FOR ACCELERATED MEDICINE" neobrutalist. Pink/cyan/black. Fast-forward arrows, DNA, lab beaker, patient. ${MESSAGING.impact.diseasesCured.percentWithNoTreatmentPhrase}. ${MESSAGING.mechanism.pragmaticTrials} from lab to patient. "${MESSAGING.impact.curesArriveXYearsSooner.years} YEARS FASTER • ${MESSAGING.impact.costReduction.multiplier} CHEAPER • ${MESSAGING.impact.timelineShift.livesSaved} LIVES".`,
   },
-}
+};
 
 /**
  * Maps old variant names to new domain-based names for backward compatibility
  */
 function normalizeVariantName(variant: string): SiteVariant {
   const legacyMap: Record<string, SiteVariant> = {
-    '501c3': 'dih.earth',
-    '501c4': 'warondisease.org',
-    'survey': 'trialabundancesurvey.org',
-  }
-  return (legacyMap[variant] as SiteVariant) || (variant as SiteVariant)
+    "501c3": "dih.earth",
+    "501c4": "warondisease.org",
+    survey: "trialabundancesurvey.org",
+  };
+  return (legacyMap[variant] as SiteVariant) || (variant as SiteVariant);
 }
 
 /**
@@ -1319,7 +1500,15 @@ function normalizeVariantName(variant: string): SiteVariant {
  * @returns Current site variant identifier
  */
 export function getSiteVariant(): SiteVariant {
-  return APP_BRAND in siteConfigs ? APP_BRAND : DEFAULT_VARIANT
+  const configuredVariant = process.env.NEXT_PUBLIC_SITE_VARIANT;
+  if (configuredVariant) {
+    const normalizedVariant = normalizeVariantName(configuredVariant);
+    if (normalizedVariant in siteConfigs) {
+      return normalizedVariant;
+    }
+  }
+
+  return DEFAULT_VARIANT;
 }
 
 /**
@@ -1328,8 +1517,8 @@ export function getSiteVariant(): SiteVariant {
  * @returns Current site configuration object
  */
 export function getSiteConfig(): SiteConfig {
-  const variant = getSiteVariant()
-  return siteConfigs[variant] || siteConfigs[DEFAULT_VARIANT]
+  const variant = getSiteVariant();
+  return siteConfigs[variant] || siteConfigs[DEFAULT_VARIANT];
 }
 
 /**
@@ -1342,7 +1531,7 @@ export function getSiteConfig(): SiteConfig {
  * @returns Site configuration object for the specified variant
  */
 export function getSiteConfigForVariant(variant: SiteVariant): SiteConfig {
-  return siteConfigs[variant] || siteConfigs[DEFAULT_VARIANT]
+  return siteConfigs[variant] || siteConfigs[DEFAULT_VARIANT];
 }
 
 /**
@@ -1351,8 +1540,8 @@ export function getSiteConfigForVariant(variant: SiteVariant): SiteConfig {
  * @param prefix - Email prefix (default: 'hello'). Examples: 'hello', 'institutes', 'donations', 'feedback'
  * @returns Email address like "hello@warondisease.org" or "institutes@dih.earth"
  */
-export function getEmail(prefix: string = 'hello'): string {
-  return `${prefix}@${getSiteConfig().domain}`
+export function getEmail(prefix: string = "hello"): string {
+  return `${prefix}@${getSiteConfig().domain}`;
 }
 
 /**
@@ -1362,8 +1551,8 @@ export function getEmail(prefix: string = 'hello'): string {
  * @returns Whether the feature is enabled
  */
 export function isFeatureEnabled(feature: SiteFeature): boolean {
-  const config = getSiteConfig()
-  return config.enabledFeatures.includes(feature)
+  const config = getSiteConfig();
+  return config.enabledFeatures.includes(feature);
 }
 
 /**
@@ -1372,7 +1561,7 @@ export function isFeatureEnabled(feature: SiteFeature): boolean {
  * @returns Username from env or undefined
  */
 export function getProfileUsername(): string | undefined {
-  return env.NEXT_PUBLIC_USERNAME
+  return env.NEXT_PUBLIC_USERNAME;
 }
 
 /**
@@ -1382,21 +1571,21 @@ export function getProfileUsername(): string | undefined {
  * @throws Error if user variant is set but NEXT_PUBLIC_USERNAME is missing
  */
 export function getResolvedDefaultRoute(): string {
-  const config = getSiteConfig()
+  const config = getSiteConfig();
 
   // For user variant, construct the user profile URL
   if (isUserVariant()) {
-    const username = getProfileUsername()
+    const username = getProfileUsername();
     if (!username) {
       throw new Error(
         'NEXT_PUBLIC_SITE_VARIANT is set to "user" but NEXT_PUBLIC_USERNAME is not configured. ' +
-        'Please set NEXT_PUBLIC_USERNAME to the username of the profile to display.'
-      )
+          "Please set NEXT_PUBLIC_USERNAME to the username of the profile to display.",
+      );
     }
-    return `/u/${username}`
+    return `/u/${username}`;
   }
 
-  return config.defaultRoute
+  return config.defaultRoute;
 }
 
 /**
@@ -1409,7 +1598,7 @@ export function getResolvedDefaultRoute(): string {
  *
  * @returns The base URL (e.g., "https://warondisease.org")
  */
-export { getBaseUrl } from "./url"
+export { getBaseUrl } from "./url";
 
 /**
  * Get the primary domain for SEO canonical URLs
@@ -1420,10 +1609,32 @@ export { getBaseUrl } from "./url"
  * @returns The variant's base URL (e.g., "https://warondisease.org", "https://dih.earth")
  */
 export function getPrimaryDomain(): string {
-  return getSiteConfig().baseUrl
+  return getSiteConfig().baseUrl;
 }
 
 // ===== NAVIGATION HELPER FUNCTIONS =====
+
+function resolveNavItems(ids: NavItemId[]): NavItem[] {
+  const currentVariant = getSiteVariant();
+  return getNavItems(ids).map((item) => {
+    if (
+      item.canonicalVariant &&
+      item.allowedVariants &&
+      !item.allowedVariants.includes(currentVariant)
+    ) {
+      return {
+        ...item,
+        path: `https://${getVariantDomain(item.canonicalVariant)}${item.path}`,
+        isExternal: true,
+      };
+    }
+    return item;
+  });
+}
+
+export function getResolvedNavItem(id: NavItemId): NavItem {
+  return resolveNavItems([id])[0];
+}
 
 /**
  * Get top-level navigation items (shown outside accordion)
@@ -1431,8 +1642,10 @@ export function getPrimaryDomain(): string {
  * @returns Array of resolved navigation items
  */
 export function getTopLevelNavItems(): NavItem[] {
-  const config = getSiteConfig()
-  return config.topLevelNavItems ? getNavItems(config.topLevelNavItems) : []
+  const config = getSiteConfig();
+  return config.topLevelNavItems
+    ? resolveNavItems(config.topLevelNavItems)
+    : [];
 }
 
 /**
@@ -1440,14 +1653,16 @@ export function getTopLevelNavItems(): NavItem[] {
  *
  * @returns Array of sections with their resolved nav items
  */
-export function getSidebarSections(): Array<NavSection & { resolvedItems: NavItem[] }> {
-  const config = getSiteConfig()
-  if (!config.sidebarSections) return []
+export function getSidebarSections(): Array<
+  NavSection & { resolvedItems: NavItem[] }
+> {
+  const config = getSiteConfig();
+  if (!config.sidebarSections) return [];
 
-  return config.sidebarSections.map(section => ({
+  return config.sidebarSections.map((section) => ({
     ...section,
-    resolvedItems: getNavItems(section.items),
-  }))
+    resolvedItems: resolveNavItems(section.items),
+  }));
 }
 
 /**
@@ -1455,14 +1670,16 @@ export function getSidebarSections(): Array<NavSection & { resolvedItems: NavIte
  *
  * @returns Array of footer sections with their resolved nav items
  */
-export function getFooterSections(): Array<FooterSection & { resolvedItems: NavItem[] }> {
-  const config = getSiteConfig()
-  if (!config.footerSections) return []
+export function getFooterSections(): Array<
+  FooterSection & { resolvedItems: NavItem[] }
+> {
+  const config = getSiteConfig();
+  if (!config.footerSections) return [];
 
-  return config.footerSections.map(section => ({
+  return config.footerSections.map((section) => ({
     ...section,
-    resolvedItems: getNavItems(section.items),
-  }))
+    resolvedItems: resolveNavItems(section.items),
+  }));
 }
 
 /**
@@ -1471,11 +1688,13 @@ export function getFooterSections(): Array<FooterSection & { resolvedItems: NavI
  * @returns Footer branding or default
  */
 export function getFooterBranding(): FooterBranding {
-  const config = getSiteConfig()
-  return config.footerBranding || {
-    title: config.title.toUpperCase(),
-    tagline: config.description,
-  }
+  const config = getSiteConfig();
+  return (
+    config.footerBranding || {
+      title: config.title.toUpperCase(),
+      tagline: config.description,
+    }
+  );
 }
 
 /**
@@ -1484,12 +1703,14 @@ export function getFooterBranding(): FooterBranding {
  * @returns Contact info or default
  */
 export function getContactInfo(): ContactInfo {
-  const config = getSiteConfig()
-  return config.contactInfo || {
-    email: config.email,
-    website: config.baseUrl,
-    websiteLabel: config.domain,
-  }
+  const config = getSiteConfig();
+  return (
+    config.contactInfo || {
+      email: config.email,
+      website: config.baseUrl,
+      websiteLabel: config.domain,
+    }
+  );
 }
 
 /**
@@ -1498,11 +1719,13 @@ export function getContactInfo(): ContactInfo {
  * @returns Impact analysis link info or a sensible fallback
  */
 export function getImpactAnalysisInfo(): ImpactAnalysisInfo {
-  const config = getSiteConfig()
-  return config.impactAnalysis || {
-    url: `${config.baseUrl}/research`,
-    label: `${config.domain}/research`,
-  }
+  const config = getSiteConfig();
+  return (
+    config.impactAnalysis || {
+      url: `${config.baseUrl}/research`,
+      label: `${config.domain}/research`,
+    }
+  );
 }
 
 /**
@@ -1511,8 +1734,8 @@ export function getImpactAnalysisInfo(): ImpactAnalysisInfo {
  * @returns Legal entity name or a sensible fallback
  */
 export function getLegalEntityName(): string {
-  const config = getSiteConfig()
-  return config.legalEntityName || config.emailBranding.orgName || config.title
+  const config = getSiteConfig();
+  return config.legalEntityName || config.emailBranding.orgName || config.title;
 }
 
 /**
@@ -1521,8 +1744,8 @@ export function getLegalEntityName(): string {
  * @returns Array of resolved legal items
  */
 export function getLegalItems(): NavItem[] {
-  const config = getSiteConfig()
-  return config.legalItems ? getNavItems(config.legalItems) : []
+  const config = getSiteConfig();
+  return config.legalItems ? getNavItems(config.legalItems) : [];
 }
 
 /**
@@ -1531,8 +1754,11 @@ export function getLegalItems(): NavItem[] {
  * @returns Copyright text or default
  */
 export function getCopyrightText(): string {
-  const config = getSiteConfig()
-  return config.copyrightText || `© ${new Date().getFullYear()} ${config.title.toUpperCase()}`
+  const config = getSiteConfig();
+  return (
+    config.copyrightText ||
+    `© ${new Date().getFullYear()} ${config.title.toUpperCase()}`
+  );
 }
 
 // ===== VARIANT HELPER FUNCTIONS (ZERO-PARAMETER) =====
@@ -1542,7 +1768,7 @@ export function getCopyrightText(): string {
  * @returns true if current variant is survey
  */
 export function isSurveyVariant(): boolean {
-  return getSiteVariant() === 'trialabundancesurvey.org'
+  return getSiteVariant() === "trialabundancesurvey.org";
 }
 
 /**
@@ -1550,7 +1776,7 @@ export function isSurveyVariant(): boolean {
  * @returns true if current variant is DIH
  */
 export function isDihVariant(): boolean {
-  return getSiteVariant() === 'dih.earth'
+  return getSiteVariant() === "dih.earth";
 }
 
 /**
@@ -1558,7 +1784,7 @@ export function isDihVariant(): boolean {
  * @returns true if current variant is War on Disease
  */
 export function isWarOnDiseaseVariant(): boolean {
-  return getSiteVariant() === 'warondisease.org'
+  return getSiteVariant() === "warondisease.org";
 }
 
 /**
@@ -1566,7 +1792,7 @@ export function isWarOnDiseaseVariant(): boolean {
  * @returns true if current variant is dFDA
  */
 export function isDfdaVariant(): boolean {
-  return getSiteVariant() === 'dfda'
+  return getSiteVariant() === "dfda";
 }
 
 /**
@@ -1574,7 +1800,7 @@ export function isDfdaVariant(): boolean {
  * @returns true if current variant is user
  */
 export function isUserVariant(): boolean {
-  return getSiteVariant() === 'user'
+  return getSiteVariant() === "user";
 }
 
 /**
@@ -1582,7 +1808,7 @@ export function isUserVariant(): boolean {
  * @returns true if current variant is CureDAO
  */
 export function isCureDAOVariant(): boolean {
-  return getSiteVariant() === 'curedao.org'
+  return getSiteVariant() === "curedao.org";
 }
 
 /**
@@ -1590,7 +1816,7 @@ export function isCureDAOVariant(): boolean {
  * @returns true if current variant is Wishocracy
  */
 export function isWishocracyVariant(): boolean {
-  return getSiteVariant() === 'wishocracy.org'
+  return getSiteVariant() === "wishocracy.org";
 }
 
 /**
@@ -1598,7 +1824,7 @@ export function isWishocracyVariant(): boolean {
  * @returns true if current variant is Accelerated Medicine
  */
 export function isAcceleratedMedicineVariant(): boolean {
-  return getSiteVariant() === 'acceleratedmedicine.org'
+  return getSiteVariant() === "acceleratedmedicine.org";
 }
 
 /**
@@ -1606,7 +1832,7 @@ export function isAcceleratedMedicineVariant(): boolean {
  * @returns true if political content is allowed
  */
 export function allowsPoliticalContent(): boolean {
-  return getSiteConfig().showPoliticalContent
+  return getSiteConfig().showPoliticalContent;
 }
 
 /**
@@ -1614,7 +1840,7 @@ export function allowsPoliticalContent(): boolean {
  * @returns true if variant should avoid political content
  */
 export function isNeutralVariant(): boolean {
-  return isSurveyVariant() || isDihVariant()
+  return isSurveyVariant() || isDihVariant();
 }
 
 // ===== DOMAIN MAPPING =====
@@ -1628,17 +1854,17 @@ export function isNeutralVariant(): boolean {
  * @returns Record mapping each domain to its site variant
  */
 function buildDomainMap(): Record<string, SiteVariant> {
-  const map: Record<string, SiteVariant> = {}
+  const map: Record<string, SiteVariant> = {};
 
   for (const [variant, config] of Object.entries(siteConfigs)) {
     if (config.domains) {
       for (const domain of config.domains) {
-        map[domain] = variant as SiteVariant
+        map[domain] = variant as SiteVariant;
       }
     }
   }
 
-  return map
+  return map;
 }
 
 // ===== DOMAIN MAPPING =====
@@ -1649,7 +1875,7 @@ function buildDomainMap(): Record<string, SiteVariant> {
  * Auto-generated from the domains arrays in each site config.
  * Maps each domain to its corresponding site variant.
  */
-export const DOMAIN_TO_VARIANT: Record<string, SiteVariant> = buildDomainMap()
+export const DOMAIN_TO_VARIANT: Record<string, SiteVariant> = buildDomainMap();
 
 /**
  * Resolve a site variant from a request host header.
@@ -1657,13 +1883,15 @@ export const DOMAIN_TO_VARIANT: Record<string, SiteVariant> = buildDomainMap()
  * Accepts both bare domains and host:port values so local and preview
  * environments can share the same mapping.
  */
-export function getSiteVariantForHost(host: string | null | undefined): SiteVariant {
-  const normalizedHost = (host || '').toLowerCase()
-  const hostWithoutPort = normalizedHost.startsWith('[')
+export function getSiteVariantForHost(
+  host: string | null | undefined,
+): SiteVariant {
+  const normalizedHost = (host || "").toLowerCase();
+  const hostWithoutPort = normalizedHost.startsWith("[")
     ? normalizedHost
-    : normalizedHost.split(':')[0]
+    : normalizedHost.split(":")[0];
 
   return (DOMAIN_TO_VARIANT[normalizedHost] ||
     DOMAIN_TO_VARIANT[hostWithoutPort] ||
-    DEFAULT_VARIANT) as SiteVariant
+    DEFAULT_VARIANT) as SiteVariant;
 }

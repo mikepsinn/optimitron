@@ -2,6 +2,7 @@
   "name": "@apps/acceleratedmedicine",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_SITE_VARIANT=acceleratedmedicine.org next dev --port 3016",
     "build": "next build",

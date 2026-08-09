@@ -110,5 +110,5 @@ export function createCompleteSignupHandler(options: CompleteSignupOptions = {})
     }
   }
 
-  return { POST, dynamic: "force-dynamic" as const }
+  return { POST }
 }

@@ -19,9 +19,8 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 ## Rules
 
 - **Prisma is OK here.** This is the only package that uses Prisma client at runtime.
-- **Follow the design system.** See root `CLAUDE.md` for the War on Disease black-and-white treaty style, approved tokens, and component guidance.
-- **Migrate public UI away from neobrutalist styling.** New or touched treaty/campaign/dashboard surfaces should use simple semantic/treaty tokens: `bg-background`, `text-foreground`, `border-foreground`, `text-muted-foreground`, and `var(--treaty-*)`. Avoid adding `brutal-*` fills, hard shadows, gradients, rounded cards, beige/cream backgrounds, and decorative color.
-- **Use primitives for behavior, not decoration.** Check `src/components/retroui/` and existing domain components before hand-rolling buttons, inputs, checkboxes, dialogs, tables, menus, accordions, or other standard controls. Prefer the RetroUI primitive when it provides the right behavior; if its visual chrome conflicts with the simple black-and-white treaty style, migrate the primitive or its usage instead of duplicating a one-off control.
+- **Follow the product's design system.** Treaty and neobrutalist styles are both supported.
+- **Use shared primitives.** Check `src/components/retroui/` and existing domain components before hand-rolling standard controls.
 - **Metadata from routes.ts.** Use `getRouteMetadata()` — don't hardcode page titles.
 - **Metadata is cold-link copy.** Titles name the page in normal words. Descriptions say what is on the page, who should click, and why now. Do not put in-page workflow steps like "share", "hire two", "sign in", or "click yes/no" in metadata unless that route is exactly that action surface.
 - **Wishonia's voice.** All user-facing copy is in Wishonia's voice. Read `docs/h2ewd.md` before writing or rewriting public copy.

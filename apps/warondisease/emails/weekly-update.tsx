@@ -61,7 +61,7 @@ export const WeeklyUpdateEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your Weekly War on Disease Update - {stats.newReferrals > 0 ? `+${stats.newReferrals} new recruits!` : "Keep recruiting!"}
+        Your Weekly War on Disease Update - {stats.newReferrals > 0 ? `+${stats.newReferrals} new referrals!` : "Keep sharing!"}
       </Preview>
       <Body
         style={{
@@ -370,7 +370,7 @@ export const WeeklyUpdateEmail = ({
                 margin: "0 0 20px 0",
               }}
             >
-              Share this link to recruit more soldiers in the war on disease!
+              Share this link so more people can vote in the war on disease!
             </Text>
             <SocialShareButtons referralLink={referralLink} tweetText="Join me in the War on Disease!" />
           </Section>

@@ -1,10 +1,7 @@
-import {
-  createAuthMiddleware,
-  authMiddlewareMatcher,
-} from "@/lib/create-middleware"
+import { createAuthMiddleware } from "@/lib/create-middleware"
 
 export default createAuthMiddleware()
 
 export const config = {
-  matcher: authMiddlewareMatcher,
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|api/stripe).*)"],
 }

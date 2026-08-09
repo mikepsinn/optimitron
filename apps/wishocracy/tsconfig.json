@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "target": "ES6",
     "skipLibCheck": true,
@@ -23,34 +19,66 @@
       }
     ],
     "paths": {
-      "@optimitron/site-kit": ["../../packages/site-kit/src/components/layout.tsx"],
+      "@optimitron/site-kit": [
+        "../../packages/site-kit/src/components/layout.tsx"
+      ],
       "@optimitron/site-kit/*": ["../../packages/site-kit/src/*"],
-      "@/components/landing/*": ["./components/landing/*", "../../packages/site-kit/src/components/landing/*"],
-      "@/components/auth/*": ["./components/auth/*", "../../packages/site-kit/src/components/auth/*"],
-      "@/components/shared/*": ["./components/shared/*", "../../packages/site-kit/src/components/shared/*"],
-      "@/components/charts/*": ["./components/charts/*", "../../packages/site-kit/src/components/charts/*"],
-      "@/components/sharing/*": ["./components/sharing/*", "../../packages/site-kit/src/components/sharing/*"],
-      "@/components/layout": ["../../packages/site-kit/src/components/layout.tsx"],
-      "@/components/providers": ["../../packages/site-kit/src/components/providers.tsx"],
-      "@/components/theme-provider": ["../../packages/site-kit/src/components/theme-provider.tsx"],
-      "@/components/sentry-404-reporter": ["../../packages/site-kit/src/components/sentry-404-reporter.tsx"],
+      "@/components/landing/*": [
+        "./components/landing/*",
+        "../../packages/site-kit/src/components/landing/*"
+      ],
+      "@/components/auth/*": [
+        "./components/auth/*",
+        "../../packages/site-kit/src/components/auth/*"
+      ],
+      "@/components/shared/*": [
+        "./components/shared/*",
+        "../../packages/site-kit/src/components/shared/*"
+      ],
+      "@/components/charts/*": [
+        "./components/charts/*",
+        "../../packages/site-kit/src/components/charts/*"
+      ],
+      "@/components/sharing/*": [
+        "./components/sharing/*",
+        "../../packages/site-kit/src/components/sharing/*"
+      ],
+      "@/components/layout": [
+        "../../packages/site-kit/src/components/layout.tsx"
+      ],
+      "@/components/providers": [
+        "../../packages/site-kit/src/components/providers.tsx"
+      ],
+      "@/components/theme-provider": [
+        "../../packages/site-kit/src/components/theme-provider.tsx"
+      ],
+      "@/components/sentry-404-reporter": [
+        "../../packages/site-kit/src/components/sentry-404-reporter.tsx"
+      ],
       "@/lib/*": ["./lib/*", "../../packages/site-kit/src/lib/*"],
       "@/*": ["./*"],
-      "@optimitron/db": ["../../packages/db/src/index.ts"],
-      "@optimitron/db/*": ["../../packages/db/src/*"],
-      "@optimitron/neobrutalist-ui": ["../../packages/neobrutalist-ui/src/index.ts"],
+      "@optimitron/neobrutalist-ui": [
+        "../../packages/neobrutalist-ui/src/index.ts"
+      ],
       "@optimitron/neobrutalist-ui/*": ["../../packages/neobrutalist-ui/src/*"],
-      "@optimitron/impact-params": ["../../packages/impact-params/src/index.ts"],
+      "@optimitron/impact-params": [
+        "../../packages/impact-params/src/index.ts"
+      ],
       "@optimitron/impact-params/*": ["../../packages/impact-params/src/*"],
       "@/components/ui/*": ["../../packages/neobrutalist-ui/src/ui/*"],
       "@/lib/utils": ["../../packages/neobrutalist-ui/src/cn.ts"],
-      "@/lib/parameters-calculations-citations": ["../../packages/impact-params/src/parameters-calculations-citations.ts"],
-      "@/lib/format-parameter": ["../../packages/impact-params/src/format-parameter.ts"]
+      "@/lib/parameters-calculations-citations": [
+        "../../packages/impact-params/src/parameters-calculations-citations.ts"
+      ],
+      "@/lib/format-parameter": [
+        "../../packages/impact-params/src/format-parameter.ts"
+      ]
     },
     "baseUrl": "."
   },
   "include": [
     "next-env.d.ts",
+    "../next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
@@ -67,4 +95,3 @@
     "**/*.spec.tsx"
   ]
 }
-

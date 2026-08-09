@@ -1,9 +1,6 @@
-# @apps/warondisease
+# @apps/curedao
 
-Next.js campaign app for **warondisease.org** (forked from dih-neobrutalist).
+CureDAO project directory for [curedao.org](https://curedao.org).
 
-- Single brand: War on Disease (no multi-variant site switch at deploy time).
-- Port: `3010` (`pnpm --filter @apps/warondisease dev`).
-- Database: transitioning to ``@optimitron/db`` (local ``prisma/`` still present during cutover).
-
-Other brand surfaces live in sibling apps under ``apps/``.
+- Local port: `3015`
+- Start: `pnpm --filter @apps/curedao dev`

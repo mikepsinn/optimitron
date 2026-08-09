@@ -16,7 +16,8 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react"
-import { OrgStatus, Prisma } from "@optimitron/db"
+import type { Prisma } from "@optimitron/db"
+import { OrgStatus } from "@optimitron/db/enums"
 import { getSiteConfig } from "@/lib/site-config"
 import Link from "next/link"
 import { cn } from "@/lib/utils"

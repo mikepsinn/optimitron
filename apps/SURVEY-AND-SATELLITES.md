@@ -4,18 +4,19 @@ Decisions for brand apps beyond warondisease / dfda / wishocracy.
 
 ## Origins
 
-| Domain | Role |
-|--------|------|
-| **trialabundancesurvey.org** | Canonical **survey host**: vote UI, `/embed`, `embed.js`, lite participant home, survey-branded email |
-| **acceleratedmedicine.org** | Case for cures + **donations** + embed survey (no need to own the instrument) |
-| **curedao.org** | Landing as today + outbound product links. **No donate. No money ask.** Optional embed later |
-| **warondisease.org** | Campaign: full dashboard (scores, badges, soldiers). May embed or deep-link the survey; not the partner embed origin |
+| Domain                       | Role                                                                                                                 |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **trialabundancesurvey.org** | Canonical **survey host**: vote UI, `/embed`, `embed.js`, lite participant home, survey-branded email                |
+| **acceleratedmedicine.org**  | Case for cures + **donations** + embed survey (no need to own the instrument)                                        |
+| **curedao.org**              | Landing as today + outbound product links. **No donate. No money ask.** Optional embed later                         |
+| **warondisease.org**         | Campaign: full dashboard (scores, badges, soldiers). May embed or deep-link the survey; not the partner embed origin |
 
 Shared Neon / `@optimitron/db` for users + `ReferendumVote` (slug `one-percent-treaty`). Origin ≠ database.
 
 ## Why survey is not on warondisease.org
 
-Partner embeds load a URL. `warondisease.org` reads as joining a faction.  
+Partner embeds load a URL. `warondisease.org` reads as joining a faction.
+
 `trialabundancesurvey.org` reads as a research instrument. That matches the nervous-nonprofit use case.
 
 ## Post-vote / email (no bait-and-switch)
@@ -28,23 +29,26 @@ Partner embeds load a URL. `warondisease.org` reads as joining a faction.
 
 ## Embed product
 
-| Piece | Purpose |
-|-------|---------|
-| `@optimitron/survey-embed` | React `<SurveyEmbed ref=… />` for monorepo sites |
-| `embed.js` on survey origin | WordPress / static: inject iframe |
-| `/embed` on survey app | Framed lite vote UI; `?ref=` for referral |
+| Piece                       | Purpose                                          |
+| --------------------------- | ------------------------------------------------ |
+| `@optimitron/survey-embed`  | React `<SurveyEmbed ref=… />` for monorepo sites |
+| `embed.js` on survey origin | WordPress / static: inject iframe                |
+| `/embed` on survey app      | Framed lite vote UI; `?ref=` for referral        |
 
 Dogfood order: survey host → acceleratedmedicine → curedao (optional) → external WordPress.
 
 ## MVP route lists
 
 ### `@apps/trialabundancesurvey`
+
 `/`, `/embed`, `/auth/*`, `/dashboard` (lite), `/faq`, `/privacy`, `/terms` + vote/auth APIs.
 
 ### `@apps/acceleratedmedicine`
+
 `/`, `/donate`, `/donate/success`, `/privacy`, `/terms`, `/about` + Stripe; homepage embeds survey.
 
 ### `@apps/curedao`
+
 `/`, `/about`, `/privacy`, `/terms`; outbound links to WoD / dfda / wishocracy / survey. No donate.
 
 ## Non-goals (v1)

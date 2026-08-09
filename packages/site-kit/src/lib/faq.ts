@@ -96,7 +96,7 @@ export const FAQ_ITEMS = {
   howCanIHelp: (showPoliticalContent: boolean) => ({
     q: "How can I help?",
     a: showPoliticalContent
-      ? "Answer the question on our homepage, share your referral link, join our divisions registry if you represent an organization, donate to support the movement, contact your representatives, and spread the word. Every voice counts toward a majority of humans on Earth."
+      ? "Answer the question on our homepage, share your referral link, register your organization, donate to support the campaign, contact your representatives, and tell your friends. Every voice counts toward a majority of humans on Earth."
       : "Answer the question on our homepage, share your referral link, join our divisions registry if you represent an organization, donate to support our research, and spread the word. Every voice counts toward a majority of humans on Earth.",
   }),
   researcherHelp: {

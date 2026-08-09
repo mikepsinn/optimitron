@@ -1,9 +1,6 @@
-# @apps/warondisease
+# @apps/acceleratedmedicine
 
-Next.js campaign app for **warondisease.org** (forked from dih-neobrutalist).
+Institute for Accelerated Medicine application for [acceleratedmedicine.org](https://acceleratedmedicine.org).
 
-- Single brand: War on Disease (no multi-variant site switch at deploy time).
-- Port: `3010` (`pnpm --filter @apps/warondisease dev`).
-- Database: transitioning to ``@optimitron/db`` (local ``prisma/`` still present during cutover).
-
-Other brand surfaces live in sibling apps under ``apps/``.
+- Local port: `3016`
+- Start: `pnpm --filter @apps/acceleratedmedicine dev`

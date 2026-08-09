@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowRight, Loader2, CheckCircle } from "lucide-react"
 import { createOrganization } from "@/app/dashboard/actions"
-import { Organization } from "@optimitron/db"
+import type { Organization } from "@optimitron/db"
 
 interface OrganizationFormProps {
     onSuccess?: (org: Pick<Organization, "id" | "name" | "slug">) => void

@@ -1,12 +1,20 @@
-'use server';
+"use server";
 
-import { GoogleGenAI, Type, HarmCategory, HarmBlockThreshold } from '@google/genai';
-import { logger } from '@/lib/logger';
-import { GOOGLE_AI_MODEL } from '../ai/google';
-import type { TreatmentForCondition, TreatmentComparisonResult } from '@/types/treatment';
-import { env } from '@/lib/env';
+import {
+  GoogleGenAI,
+  Type,
+  HarmCategory,
+  HarmBlockThreshold,
+} from "@google/genai";
+import { logger } from "@/lib/logger";
+import { GOOGLE_AI_MODEL } from "../ai/google";
+import type {
+  TreatmentForCondition,
+  TreatmentComparisonResult,
+} from "@/types/treatment";
+import { env } from "@/lib/env";
 
-const LOG_PREFIX = '[treatment-comparisons]';
+const LOG_PREFIX = "[treatment-comparisons]";
 
 // Use the GOOGLE_GENERATIVE_AI_API_KEY from environment
 const API_KEY = env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -22,10 +30,22 @@ const genAI = new GoogleGenAI({ apiKey: API_KEY });
 
 // Safety settings
 const safetySettings = [
-  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
 ];
 
 /**
@@ -34,12 +54,16 @@ const safetySettings = [
  * @returns Promise with structured treatment comparison data
  */
 export async function getTreatmentComparisonsAction(
-  conditionName: string
+  conditionName: string,
 ): Promise<TreatmentComparisonResult | null> {
-  logger.info(`${LOG_PREFIX} Getting treatment comparisons for condition:`, { conditionName });
+  logger.info(`${LOG_PREFIX} Getting treatment comparisons for condition:`, {
+    conditionName,
+  });
 
   if (!API_KEY) {
-    logger.error(`${LOG_PREFIX} GOOGLE_GENERATIVE_AI_API_KEY is not configured.`);
+    logger.error(
+      `${LOG_PREFIX} GOOGLE_GENERATIVE_AI_API_KEY is not configured.`,
+    );
     return null;
   }
 
@@ -94,12 +118,12 @@ export async function getTreatmentComparisonsAction(
         - PRIORITIZE: Extract from published health economics studies, systematic reviews, or meta-analyses
         - If not available, estimate from clinical outcomes (response rate, remission rate, survival data)
       * ICER: Incremental cost-effectiveness ratio in $/QALY (CRITICAL - actively search for this data)
-        - SEARCH SPECIFICALLY IN: NICE Technology Appraisals, ICER (Institute for Clinical and Economic Review) reports, 
+        - SEARCH SPECIFICALLY IN: NICE Technology Appraisals, ICER (Institute for Clinical and Economic Review) reports,
           CADTH (Canadian Agency for Drugs and Technologies in Health) reports, health economics journals
         - Look for: Cost-effectiveness analyses, budget impact analyses, value assessments
         - Format: Numeric value in USD per QALY (e.g., 45000, 125000)
         - If ICER not found but cost-effectiveness rating available, use that instead
-      * Cost-effectiveness rating: "excellent" (< $50k/QALY or dominates), "good" ($50-100k/QALY), 
+      * Cost-effectiveness rating: "excellent" (< $50k/QALY or dominates), "good" ($50-100k/QALY),
         "moderate" ($100-150k/QALY), or "poor" (> $150k/QALY) - calculate from ICER if rating not explicitly stated
       * Annual cost of care breakdown (in USD - be comprehensive):
         - Drug cost: Annual cost of medication/treatment (generic if available, brand if not)
@@ -132,13 +156,13 @@ export async function getTreatmentComparisonsAction(
 
     Rank treatments by effectiveness. Use evidence from systematic reviews, meta-analyses,
     and large-scale clinical trials. Focus on FDA-approved or widely-accepted treatments.
-    
+
     FOR PRESCRIPTION ACCESS ECONOMICS:
     - Only calculate for treatments with safety score > 70 (relatively safe)
     - Consider: Does this treatment require monitoring? (skip if yes)
     - Research: Is there an OTC version? Has FDA considered switching?
     - Estimate visit frequency: Chronic conditions (4-12 visits/year), acute (1-2 visits/year)
-    
+
     FOR HEALTH ECONOMICS DATA - USE THESE SPECIFIC SOURCES:
     1. NICE Technology Appraisals (UK) - https://www.nice.org.uk/guidance/published
     2. ICER Reports (US) - https://icer.org/our-work/
@@ -146,7 +170,7 @@ export async function getTreatmentComparisonsAction(
     4. Health economics journals: Value in Health, PharmacoEconomics, Journal of Medical Economics
     5. PubMed searches for "cost-effectiveness" + treatment name + condition name
     6. Cochrane reviews with economic evaluations
-    
+
     PRIORITIZE extracting ICER values and QALY data from these authoritative sources. If ICER is not available,
     provide cost-effectiveness rating based on available evidence.`;
 
@@ -155,7 +179,7 @@ export async function getTreatmentComparisonsAction(
       contents: prompt,
       config: {
         safetySettings,
-        responseMimeType: 'application/json',
+        responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
@@ -166,27 +190,31 @@ export async function getTreatmentComparisonsAction(
                 properties: {
                   name: {
                     type: Type.STRING,
-                    description: 'Generic name of the treatment or therapy',
+                    description: "Generic name of the treatment or therapy",
                   },
                   effectiveness: {
                     type: Type.NUMBER,
-                    description: 'Effectiveness rating from 0-100 based on clinical evidence',
+                    description:
+                      "Effectiveness rating from 0-100 based on clinical evidence",
                   },
                   confidenceScore: {
                     type: Type.NUMBER,
-                    description: 'Confidence score 0-100 based on quality and quantity of evidence',
+                    description:
+                      "Confidence score 0-100 based on quality and quantity of evidence",
                   },
                   safetyScore: {
                     type: Type.NUMBER,
-                    description: 'Comparative safety score 0-100 (higher is safer)',
+                    description:
+                      "Comparative safety score 0-100 (higher is safer)",
                   },
                   trials: {
                     type: Type.NUMBER,
-                    description: 'Approximate number of clinical trials',
+                    description: "Approximate number of clinical trials",
                   },
                   participants: {
                     type: Type.NUMBER,
-                    description: 'Approximate total number of trial participants',
+                    description:
+                      "Approximate total number of trial participants",
                   },
                   sideEffects: {
                     type: Type.ARRAY,
@@ -195,44 +223,49 @@ export async function getTreatmentComparisonsAction(
                       properties: {
                         name: {
                           type: Type.STRING,
-                          description: 'Name of the side effect',
+                          description: "Name of the side effect",
                         },
                         percentage: {
                           type: Type.NUMBER,
-                          description: 'Occurrence percentage',
+                          description: "Occurrence percentage",
                         },
                       },
-                      required: ['name', 'percentage'],
+                      required: ["name", "percentage"],
                     },
                   },
                   nnt: {
                     type: Type.NUMBER,
-                    description: 'Number Needed to Treat (from meta-analyses, optional)',
+                    description:
+                      "Number Needed to Treat (from meta-analyses, optional)",
                     nullable: true,
                   },
                   nnh: {
                     type: Type.NUMBER,
-                    description: 'Number Needed to Harm (from meta-analyses, optional)',
+                    description:
+                      "Number Needed to Harm (from meta-analyses, optional)",
                     nullable: true,
                   },
                   timeToEffect: {
                     type: Type.STRING,
-                    description: 'How long until treatment shows effect (optional)',
+                    description:
+                      "How long until treatment shows effect (optional)",
                     nullable: true,
                   },
                   responseRate: {
                     type: Type.NUMBER,
-                    description: 'Percentage of patients who respond to treatment 0-100 (optional)',
+                    description:
+                      "Percentage of patients who respond to treatment 0-100 (optional)",
                     nullable: true,
                   },
                   remissionRate: {
                     type: Type.NUMBER,
-                    description: 'Percentage achieving complete symptom resolution 0-100 (optional)',
+                    description:
+                      "Percentage achieving complete symptom resolution 0-100 (optional)",
                     nullable: true,
                   },
                   treatmentDuration: {
                     type: Type.STRING,
-                    description: 'Typical length of treatment (optional)',
+                    description: "Typical length of treatment (optional)",
                     nullable: true,
                   },
                   phase: {
@@ -240,36 +273,40 @@ export async function getTreatmentComparisonsAction(
                     items: {
                       type: Type.STRING,
                     },
-                    description: 'Clinical trial phases (e.g., Phase 3, Phase 4)',
+                    description:
+                      "Clinical trial phases (e.g., Phase 3, Phase 4)",
                   },
                   dosageRange: {
                     type: Type.STRING,
-                    description: 'Typical dosage for this condition',
+                    description: "Typical dosage for this condition",
                     nullable: true,
                   },
                   evidenceQuality: {
                     type: Type.STRING,
-                    description: 'GRADE quality rating (high, moderate, low, very-low)',
+                    description:
+                      "GRADE quality rating (high, moderate, low, very-low)",
                     nullable: true,
                   },
                   healthEconomics: {
                     type: Type.OBJECT,
-                    description: 'Health economics and cost-effectiveness data',
+                    description: "Health economics and cost-effectiveness data",
                     nullable: true,
                     properties: {
                       qalysGained: {
                         type: Type.NUMBER,
-                        description: 'Quality-adjusted life years gained vs no treatment',
+                        description:
+                          "Quality-adjusted life years gained vs no treatment",
                         nullable: true,
                       },
                       icer: {
                         type: Type.NUMBER,
-                        description: 'Incremental cost-effectiveness ratio ($/QALY)',
+                        description:
+                          "Incremental cost-effectiveness ratio ($/QALY)",
                         nullable: true,
                       },
                       costEffectivenessRating: {
                         type: Type.STRING,
-                        description: 'excellent, good, moderate, or poor',
+                        description: "excellent, good, moderate, or poor",
                         nullable: true,
                       },
                       annualCostOfCare: {
@@ -278,122 +315,141 @@ export async function getTreatmentComparisonsAction(
                         properties: {
                           drugCost: {
                             type: Type.NUMBER,
-                            description: 'Annual drug cost in USD',
+                            description: "Annual drug cost in USD",
                           },
                           monitoringCost: {
                             type: Type.NUMBER,
-                            description: 'Annual monitoring cost (labs, visits) in USD',
+                            description:
+                              "Annual monitoring cost (labs, visits) in USD",
                           },
                           sideEffectManagement: {
                             type: Type.NUMBER,
-                            description: 'Annual side effect management cost in USD',
+                            description:
+                              "Annual side effect management cost in USD",
                           },
                           totalAnnual: {
                             type: Type.NUMBER,
-                            description: 'Total annual cost in USD',
+                            description: "Total annual cost in USD",
                           },
                         },
-                        required: ['drugCost', 'monitoringCost', 'sideEffectManagement', 'totalAnnual'],
+                        required: [
+                          "drugCost",
+                          "monitoringCost",
+                          "sideEffectManagement",
+                          "totalAnnual",
+                        ],
                       },
                       costPerResponder: {
                         type: Type.NUMBER,
-                        description: 'Cost to achieve one treatment response',
+                        description: "Cost to achieve one treatment response",
                         nullable: true,
                       },
                       costPerRemission: {
                         type: Type.NUMBER,
-                        description: 'Cost to achieve one complete remission',
+                        description: "Cost to achieve one complete remission",
                         nullable: true,
                       },
                       vsComparator: {
                         type: Type.OBJECT,
-                        description: 'Comparison to standard first-line treatment',
+                        description:
+                          "Comparison to standard first-line treatment",
                         nullable: true,
                         properties: {
                           comparatorName: {
                             type: Type.STRING,
-                            description: 'Name of standard treatment',
+                            description: "Name of standard treatment",
                           },
                           costDifference: {
                             type: Type.NUMBER,
-                            description: 'Cost difference (positive = more expensive, negative = cheaper)',
+                            description:
+                              "Cost difference (positive = more expensive, negative = cheaper)",
                           },
                           qalysGainedDifference: {
                             type: Type.NUMBER,
-                            description: 'QALY difference (positive = better outcomes)',
+                            description:
+                              "QALY difference (positive = better outcomes)",
                           },
                           dominates: {
                             type: Type.BOOLEAN,
-                            description: 'True if both cheaper AND more effective',
+                            description:
+                              "True if both cheaper AND more effective",
                           },
                         },
                       },
                       prescriptionAccess: {
                         type: Type.OBJECT,
-                        description: 'Prescription access economics (only for Rx-only treatments with safety score > 70)',
+                        description:
+                          "Prescription access economics (only for Rx-only treatments with safety score > 70)",
                         nullable: true,
                         properties: {
                           prescriptionRequired: {
                             type: Type.BOOLEAN,
-                            description: 'True if currently prescription-only',
+                            description: "True if currently prescription-only",
                           },
                           otcAvailable: {
                             type: Type.BOOLEAN,
-                            description: 'True if OTC version exists',
+                            description: "True if OTC version exists",
                           },
                           annualPhysicianVisitCost: {
                             type: Type.NUMBER,
-                            description: 'Annual cost of doctor visits for prescriptions',
+                            description:
+                              "Annual cost of doctor visits for prescriptions",
                             nullable: true,
                           },
                           annualPrescriptionCost: {
                             type: Type.NUMBER,
-                            description: 'Annual Rx price',
+                            description: "Annual Rx price",
                             nullable: true,
                           },
                           annualOtcCost: {
                             type: Type.NUMBER,
-                            description: 'Annual OTC price if available',
+                            description: "Annual OTC price if available",
                             nullable: true,
                           },
                           annualTimeCost: {
                             type: Type.NUMBER,
-                            description: 'Annual time cost (travel + wait + visit)',
+                            description:
+                              "Annual time cost (travel + wait + visit)",
                             nullable: true,
                           },
                           annualInsuranceAdminCost: {
                             type: Type.NUMBER,
-                            description: 'Annual insurance administrative costs',
+                            description:
+                              "Annual insurance administrative costs",
                             nullable: true,
                           },
                           netSocietalLossFromRxOnly: {
                             type: Type.NUMBER,
-                            description: 'Annual net societal loss per patient from Rx-only status',
+                            description:
+                              "Annual net societal loss per patient from Rx-only status",
                             nullable: true,
                           },
                           earlyTreatmentBenefit: {
                             type: Type.NUMBER,
-                            description: 'QALYs gained from earlier OTC access',
+                            description: "QALYs gained from earlier OTC access",
                             nullable: true,
                           },
                           preventedComplicationCost: {
                             type: Type.NUMBER,
-                            description: 'Cost savings from early treatment',
+                            description: "Cost savings from early treatment",
                             nullable: true,
                           },
                           misuseRisk: {
                             type: Type.STRING,
-                            description: 'Safety concern level: low, moderate, or high',
+                            description:
+                              "Safety concern level: low, moderate, or high",
                             nullable: true,
                           },
                           missedDiagnosisRisk: {
                             type: Type.STRING,
-                            description: 'Risk of masking symptoms: low, moderate, or high',
+                            description:
+                              "Risk of masking symptoms: low, moderate, or high",
                             nullable: true,
                           },
                           requiresMonitoring: {
                             type: Type.BOOLEAN,
-                            description: 'Whether condition requires medical monitoring',
+                            description:
+                              "Whether condition requires medical monitoring",
                             nullable: true,
                           },
                         },
@@ -401,12 +457,38 @@ export async function getTreatmentComparisonsAction(
                     },
                   },
                 },
-                required: ['name', 'effectiveness', 'confidenceScore', 'safetyScore', 'trials', 'participants', 'sideEffects'],
-                propertyOrdering: ['name', 'effectiveness', 'confidenceScore', 'safetyScore', 'trials', 'participants', 'sideEffects', 'nnt', 'nnh', 'timeToEffect', 'responseRate', 'remissionRate', 'treatmentDuration', 'dosageRange', 'evidenceQuality', 'phase', 'healthEconomics'],
+                required: [
+                  "name",
+                  "effectiveness",
+                  "confidenceScore",
+                  "safetyScore",
+                  "trials",
+                  "participants",
+                  "sideEffects",
+                ],
+                propertyOrdering: [
+                  "name",
+                  "effectiveness",
+                  "confidenceScore",
+                  "safetyScore",
+                  "trials",
+                  "participants",
+                  "sideEffects",
+                  "nnt",
+                  "nnh",
+                  "timeToEffect",
+                  "responseRate",
+                  "remissionRate",
+                  "treatmentDuration",
+                  "dosageRange",
+                  "evidenceQuality",
+                  "phase",
+                  "healthEconomics",
+                ],
               },
             },
           },
-          required: ['treatments'],
+          required: ["treatments"],
         },
       },
     });
@@ -428,18 +510,20 @@ export async function getTreatmentComparisonsAction(
       return null;
     }
 
-    logger.info(`${LOG_PREFIX} Successfully processed ${treatments.length} treatments`);
+    logger.info(
+      `${LOG_PREFIX} Successfully processed ${treatments.length} treatments`,
+    );
 
     return {
       conditionName,
       treatments,
       lastUpdated: new Date().toISOString(),
-      dataSource: 'google-ai',
+      dataSource: "google-ai",
     };
   } catch (err: any) {
     logger.error(`${LOG_PREFIX} Error calling Google Gen AI API:`, {
       message: err.message,
-      stack: err.stack?.split('\n').map((line: string) => line.trim()),
+      stack: err.stack?.split("\n").map((line: string) => line.trim()),
     });
     return null;
   }

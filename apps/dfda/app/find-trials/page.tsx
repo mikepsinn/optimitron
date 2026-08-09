@@ -10,10 +10,28 @@ import { TreatyWarningBox } from '@/components/shared/TreatyWarningBox';
 import { getPrimaryDomain } from '@/lib/site-config';
 
 // Generate metadata
-export async function generateMetadata(
-  { searchParams: searchParamsProp }: { searchParams?: { condition?: string; intervention?: string } }
-): Promise<Metadata> {
-  const searchParams = await searchParamsProp;
+type FindTrialsSearchParams = {
+  condition?: string;
+  intervention?: string;
+  pageToken?: string;
+  studyStatus?: string;
+  studyType?: string;
+  ageGroups?: string;
+  sex?: string;
+  from?: string;
+  limit?: string;
+  lat?: string;
+  lng?: string;
+  locStr?: string;
+  distance?: string;
+};
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: Promise<FindTrialsSearchParams>;
+}): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams;
   const primaryDomain = getPrimaryDomain();
   const baseMetadata: Metadata = {
     title: "Find Clinical Trials",
@@ -23,12 +41,12 @@ export async function generateMetadata(
     },
   };
 
-  if (searchParams?.condition) {
-    const conditionName = searchParams.condition;
+  if (resolvedSearchParams?.condition) {
+    const conditionName = resolvedSearchParams.condition;
     baseMetadata.title = `Clinical Trials for ${conditionName}`;
     baseMetadata.description = `Find clinical trials for ${conditionName}`;
-    if (searchParams.intervention) {
-      const interventionName = searchParams.intervention;
+    if (resolvedSearchParams.intervention) {
+      const interventionName = resolvedSearchParams.intervention;
       baseMetadata.title = `${conditionName} Trials: ${interventionName}`;
       baseMetadata.description += ` with intervention ${interventionName}.`;
     }
@@ -37,21 +55,7 @@ export async function generateMetadata(
 }
 
 interface FindTrialsPageProps {
-  searchParams?: {
-    condition?: string;
-    intervention?: string;
-    pageToken?: string;
-    studyStatus?: string;
-    studyType?: string;
-    ageGroups?: string;
-    sex?: string;
-    from?: string;
-    limit?: string;
-    lat?: string;
-    lng?: string;
-    locStr?: string;
-    distance?: string;
-  };
+  searchParams?: Promise<FindTrialsSearchParams>;
 }
 
 export default async function FindTrialsPage({ searchParams: searchParamsProp }: FindTrialsPageProps) {

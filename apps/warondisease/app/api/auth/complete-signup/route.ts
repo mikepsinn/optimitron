@@ -7,4 +7,4 @@ const handlers = createCompleteSignupHandler({
 })
 
 export const POST = handlers.POST
-export const dynamic = handlers.dynamic
+export const dynamic = "force-dynamic"

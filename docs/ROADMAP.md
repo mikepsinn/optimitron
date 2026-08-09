@@ -35,7 +35,7 @@ as a parallel Now track, dogfooded by the operator as user #1.
 - Production Task rows own operational development status, dependencies, and
   human decisions. Managed synchronization owns only stable system roots and
   fixtures; it must not overwrite ordinary development children.
-- Black-and-white treaty style stays the default on public campaign surfaces.
+- Public campaign surfaces may use treaty or neobrutalist styling when the action remains clear.
 - Roadmap lines cite feature IDs so status claims live in one place.
 
 ## Now

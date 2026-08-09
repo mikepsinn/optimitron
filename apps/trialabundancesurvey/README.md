@@ -1,9 +1,6 @@
-# @apps/warondisease
+# @apps/trialabundancesurvey
 
-Next.js campaign app for **warondisease.org** (forked from dih-neobrutalist).
+Neutral clinical-trial abundance survey for [trialabundancesurvey.org](https://trialabundancesurvey.org).
 
-- Single brand: War on Disease (no multi-variant site switch at deploy time).
-- Port: `3010` (`pnpm --filter @apps/warondisease dev`).
-- Database: transitioning to ``@optimitron/db`` (local ``prisma/`` still present during cutover).
-
-Other brand surfaces live in sibling apps under ``apps/``.
+- Local port: `3014`
+- Start: `pnpm --filter @apps/trialabundancesurvey dev`

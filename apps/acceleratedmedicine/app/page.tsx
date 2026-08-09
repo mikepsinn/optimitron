@@ -1,15 +1,15 @@
-import Layout from "../components/layout"
-import HeroSection from "@/components/landing/hero-section"
-import ProblemStatement from "@/components/landing/problem-statement"
-import WarVsCuresChart from "@/components/landing/war-vs-cures-chart"
-import SolutionBridgeSection from "@/components/landing/solution-bridge-section"
-import PragmaticTrialCostProofSection from "@/components/landing/pragmatic-trial-cost-proof-section"
-import CallToAction from "@/components/landing/call-to-action"
-import FinalCTA from "@/components/landing/final-cta"
-import Link from "next/link"
-import { SurveyEmbed } from "@optimitron/survey-embed"
-import { SectionContainer } from "@/components/ui/section-container"
-import { Container } from "@/components/ui/container"
+import Layout from "../components/layout";
+import HeroSection from "@/components/landing/hero-section";
+import ProblemStatement from "@/components/landing/problem-statement";
+import WarVsCuresChart from "@/components/landing/war-vs-cures-chart";
+import SolutionBridgeSection from "@/components/landing/solution-bridge-section";
+import PragmaticTrialCostProofSection from "@/components/landing/pragmatic-trial-cost-proof-section";
+import CallToAction from "@/components/landing/call-to-action";
+import FinalCTA from "@/components/landing/final-cta";
+import Link from "next/link";
+import { SurveyEmbed } from "@optimitron/survey-embed";
+import { SectionContainer } from "@/components/ui/section-container";
+import { Container } from "@/components/ui/container";
 
 /**
  * Institute for Accelerated Medicine — case + donate + embedded survey.
@@ -17,7 +17,7 @@ import { Container } from "@/components/ui/container"
  */
 export default function HomePage() {
   const surveyOrigin =
-    process.env.NEXT_PUBLIC_SURVEY_ORIGIN ?? "https://trialabundancesurvey.org"
+    process.env.NEXT_PUBLIC_SURVEY_ORIGIN ?? "https://trialabundancesurvey.org";
 
   return (
     <Layout>
@@ -27,15 +27,20 @@ export default function HomePage() {
       <SolutionBridgeSection />
       <PragmaticTrialCostProofSection />
 
-      <SectionContainer bgColor="yellow" borderPosition="both" padding="lg">
+      <SectionContainer
+        id="vote"
+        bgColor="yellow"
+        borderPosition="both"
+        padding="lg"
+      >
         <Container>
           <h2 className="text-3xl sm:text-5xl font-black uppercase mb-4">
             Take the survey
           </h2>
           <p className="text-lg font-bold mb-6 max-w-3xl">
-            The Global Clinical Trial Abundance Survey is hosted on a neutral research
-            site. Your response is recorded there — we embed it here so you don’t leave
-            the case for cures.
+            The Global Clinical Trial Abundance Survey is hosted on a neutral
+            research site. Your response is recorded there — we embed it here so
+            you don’t leave the case for cures.
           </p>
           <SurveyEmbed origin={surveyOrigin} height={780} />
         </Container>
@@ -63,7 +68,9 @@ export default function HomePage() {
 
       <SectionContainer bgColor="background" borderPosition="none" padding="md">
         <Container>
-          <h2 className="text-2xl font-black uppercase mb-4">Related projects</h2>
+          <h2 className="text-2xl font-black uppercase mb-4">
+            Related projects
+          </h2>
           <ul className="grid gap-2 sm:grid-cols-2 font-bold">
             <li>
               <a className="underline" href="https://warondisease.org">
@@ -94,5 +101,5 @@ export default function HomePage() {
         </Container>
       </SectionContainer>
     </Layout>
-  )
+  );
 }

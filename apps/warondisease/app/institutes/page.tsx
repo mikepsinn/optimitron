@@ -79,7 +79,7 @@ export default function InstitutesPage() {
       <SectionContainer bgColor="pink" borderPosition="bottom" padding="sm">
         <Container size="md">
           <p className="text-center text-xl font-bold mb-6 max-w-2xl mx-auto">
-            Does this sound like your organization? Join the movement.
+            Does this sound like your organization? Endorse the treaty.
           </p>
           <BecomePartnerCTA variant="large" />
         </Container>

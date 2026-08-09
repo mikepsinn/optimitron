@@ -86,7 +86,7 @@ const planSteps: PlanStep[] = [
   },
   {
     number: "2",
-    title: "Turn Members Into Recruiters",
+    title: "Help Members Spread the Word",
     description: "You are not creating support for not dying of horrible diseases. Nearly everyone already supports that. You are proving it.",
     bgColor: "cyan",
   },
@@ -209,8 +209,8 @@ export default function ThePlanPage() {
               path="/knowledge/strategy/call-script.html"
             />
             <ChapterCard
-              title="Recruitment & Propaganda Plan"
-              description="How the wave spreads. Messaging, targeting, and what a good recruiter actually does day to day."
+              title="Referral & Communications Plan"
+              description="How the treaty spreads. Messaging, targeting, and what a helpful advocate does each day."
               path="/knowledge/appendix/recruitment-and-propaganda-plan.html"
             />
             <ChapterCard
@@ -234,7 +234,7 @@ export default function ThePlanPage() {
             <ChapterCard
               bgColor="background"
               title="Nonprofit Coalition Strategy"
-              description="Why nonprofits competing for scarce grants should unite around treaty advocacy — and how to recruit endorsing orgs."
+              description="Why nonprofits competing for scarce grants should unite around treaty advocacy — and how to invite endorsing organizations."
               path="/knowledge/strategy/nonprofit-coalition-strategy.html"
             />
             <ChapterCard
@@ -246,7 +246,7 @@ export default function ThePlanPage() {
             <ChapterCard
               bgColor="background"
               title="Declaration of Optimization"
-              description="The rallying document organizations can sign to publicly endorse the movement."
+              description="The treaty organizations can sign to publicly endorse the campaign."
               path="/knowledge/strategy/declaration-of-optimization.html"
             />
           </div>
@@ -265,7 +265,7 @@ export default function ThePlanPage() {
             <ChapterCard
               bgColor="background"
               title="Earth Optimization Prize"
-              description="The prize mechanism and recruitment engine — deposits compound, VOTE points distribute the pool if targets are hit."
+              description="The prize mechanism and referral system — deposits compound, and VOTE points distribute the pool if targets are hit."
               path="/knowledge/strategy/earth-optimization-prize.html"
             />
             <ChapterCard
@@ -291,7 +291,7 @@ export default function ThePlanPage() {
             YOUR <span className="text-brutal-yellow">NEXT MOVE</span>
           </h2>
           <p className="text-lg sm:text-xl font-bold mb-10 max-w-2xl mx-auto">
-            Your job was never to understand all of this. Your job is to vote and get two friends to vote.
+            Vote, then help two friends vote. That is enough to move the treaty forward.
           </p>
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-stretch mb-10">
             <Link href={voteHref} className="block w-full sm:w-auto">

@@ -92,11 +92,10 @@ export function LeaderboardCard({
       <CardHeader>
         <CardTitle className="text-2xl font-black uppercase">LEADERBOARD</CardTitle>
         <CardDescription className="font-bold">
-          Top contributors to {showPoliticalContent ? "the movement" : "the study"}
+          Top contributors to {showPoliticalContent ? "the campaign" : "the study"}
         </CardDescription>
       </CardHeader>
       <CardContent>{content}</CardContent>
     </Card>
   )
 }
-

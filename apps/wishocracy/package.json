@@ -2,6 +2,7 @@
   "name": "@apps/wishocracy",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_SITE_VARIANT=wishocracy.org next dev --port 3013",
     "build": "next build",

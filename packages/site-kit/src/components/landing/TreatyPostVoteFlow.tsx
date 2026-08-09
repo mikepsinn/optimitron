@@ -856,7 +856,7 @@ function OnlyTwoHumans({
     return (
       <div className="space-y-4 text-xl font-black leading-snug">
         <p>Fair. But here's why it's easier than you think:</p>
-        <p>Only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</p>
+        <p>Only 2 of your contacts need to vote and tell two more people. Two humans. Not 2 percent. Everyone else can ignore you.</p>
         <p>2 → 4 → 8 → 16... 32 rounds reaches 4 billion. One per week = 8 months.</p>
         <p>
           Yes, this is technically a chain letter. The old ones threatened 7 years of bad luck if you broke the chain. If this
@@ -868,7 +868,7 @@ function OnlyTwoHumans({
 
   return (
     <div className="space-y-4 text-xl font-black leading-snug">
-      <p>For that chain reaction to reach 4 billion, only 2 of your contacts need to keep going. Two humans. Not 2 percent. Everyone else can ignore you.</p>
+      <p>For that chain reaction to reach 4 billion, only 2 of your contacts need to vote and tell two more people. Two humans. Not 2 percent. Everyone else can ignore you.</p>
       <p>
         Why only 2? If 2 people each tell 2 more, and each of those tells 2 more: 32 rounds reaches 4 billion. At one per day,
         32 days. At one per week, 8 months.

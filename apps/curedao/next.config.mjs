@@ -1,14 +1,26 @@
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { withSentryConfig } from "@sentry/nextjs"
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { withSentryConfig } from "@sentry/nextjs";
+import { pinAppNextAuthInstance } from "../shared-next-config.mjs";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const monorepoRoot = path.join(__dirname, "../..")
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const monorepoRoot = path.join(__dirname, "../..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/impact-params", "@optimitron/survey-embed", "@optimitron/site-kit"],
+  env: {
+    NEXT_PUBLIC_SITE_VARIANT: "curedao.org",
+  },
+  transpilePackages: [
+    "@optimitron/neobrutalist-ui",
+    "@optimitron/impact-params",
+    "@optimitron/survey-embed",
+    "@optimitron/site-kit",
+  ],
   outputFileTracingRoot: monorepoRoot,
+  webpack(config) {
+    return pinAppNextAuthInstance(config, __dirname);
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -17,9 +29,6 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-  },
-  experimental: {
-    instrumentationHook: true,
   },
   async headers() {
     return [
@@ -30,7 +39,7 @@ const nextConfig = {
           { key: "Content-Security-Policy", value: "frame-ancestors *" },
         ],
       },
-    ]
+    ];
   },
   async redirects() {
     return [
@@ -49,9 +58,9 @@ const nextConfig = {
           "https://docs.google.com/document/d/1zQpLG2bFeYLGN-9K-VwJewdw0vG_MwpuLP6Lq81W4_0/edit",
         permanent: false,
       },
-    ]
+    ];
   },
-}
+};
 
 export default withSentryConfig(nextConfig, {
   org: "wishonia-org",
@@ -59,7 +68,10 @@ export default withSentryConfig(nextConfig, {
   silent: !process.env.CI,
   widenClientFileUpload: true,
   tunnelRoute: "/monitoring",
-  disableLogger: true,
-  automaticVercelMonitors: true,
-})
-
+  webpack: {
+    automaticVercelMonitors: true,
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+});

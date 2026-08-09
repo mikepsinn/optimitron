@@ -63,7 +63,7 @@ export function ImpactLedgerCard({ votesLogged, variant = "dashboard", userName 
 
   const ledgerStats = [
     {
-      label: isPublic ? "Recruited" : "You've recruited",
+      label: isPublic ? "Referred" : "You've referred",
       unit: "voters",
       value: metrics.votesLogged.toLocaleString("en-US"),
       icon: "🗳️",
@@ -173,7 +173,7 @@ export function ImpactLedgerCard({ votesLogged, variant = "dashboard", userName 
               <>
                 {userName || "This soldier"} has saved <span className="font-black">{formatLives(lifeMilestone.current)}</span> lives.
                 {lifeMilestone.current < lifeMilestone.next && (
-                  <> One more recruit will reach <span className="font-black">{formatLives(lifeMilestone.next)}</span>.</>
+                  <> One more referral will reach <span className="font-black">{formatLives(lifeMilestone.next)}</span>.</>
                 )}
               </>
             ) : (

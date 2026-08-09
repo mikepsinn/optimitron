@@ -4,7 +4,7 @@
 > explicitly game/demo screens. Public treaty/campaign surfaces use the
 > black-and-white treaty/editorial style mandated in [../AGENTS.md](../AGENTS.md)
 > and [../CLAUDE.md](../CLAUDE.md) — when the two conflict on a public page,
-> treaty style wins.
+> Match the established product surface. Treaty and neobrutalist styles are both supported.
 
 > **The game IS the app.** Optimitron looks like a Sierra Online adventure game because the core
 > metaphor is "Earth is a game and we're playing it wrong." Every page should feel like a screen

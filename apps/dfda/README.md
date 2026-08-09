@@ -1,9 +1,6 @@
 # @apps/dfda
 
-Single-brand Next app (forked from dih-neobrutalist / `apps/warondisease`).
+Condition, treatment, and clinical-trial application for [dfda.earth](https://dfda.earth).
 
-- Brand: `dfda`
-- Port: `3011`
-- Database: transitioning to `@optimitron/db`
-
-`pnpm --filter @apps/dfda dev`
+- Local port: `3011`
+- Start: `pnpm --filter @apps/dfda dev`

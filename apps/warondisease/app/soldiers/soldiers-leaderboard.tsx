@@ -97,7 +97,7 @@ export function SoldiersLeaderboard({
               </div>
               <div className="bg-white border-4 border-primary p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-3xl font-black">{totalReferrals}</div>
-                <div className="text-sm font-bold uppercase">Total Recruits</div>
+                <div className="text-sm font-bold uppercase">People Referred</div>
               </div>
               <div className="bg-white border-4 border-primary p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="text-3xl font-black">
@@ -122,7 +122,7 @@ export function SoldiersLeaderboard({
               <ImpactExplainer className="h-8 w-8 border-primary text-primary" size={16} />
             </div>
             <p className="text-lg font-bold mb-4 text-primary">
-              Every voter you recruit to the 1% Treaty movement brings us closer to a majority of humans on Earth.
+              Every voter you tell about the 1% Treaty brings us closer to a majority of humans on Earth.
             </p>
             <p className="text-lg font-bold text-primary">
               Each referral you make is projected to save ~{IMPACT_PER_VOTE.lives.toFixed(1)} lives by speeding up medical

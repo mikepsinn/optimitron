@@ -1,9 +1,6 @@
 # @apps/warondisease
 
-Next.js campaign app for **warondisease.org** (forked from dih-neobrutalist).
+War on Disease campaign application for [warondisease.org](https://warondisease.org).
 
-- Single brand: War on Disease (no multi-variant site switch at deploy time).
-- Port: `3010` (`pnpm --filter @apps/warondisease dev`).
-- Database: transitioning to ``@optimitron/db`` (local ``prisma/`` still present during cutover).
-
-Other brand surfaces live in sibling apps under ``apps/``.
+- Local port: `3010`
+- Start: `pnpm --filter @apps/warondisease dev`

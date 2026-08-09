@@ -1,14 +1,21 @@
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { withSentryConfig } from "@sentry/nextjs"
+import { pinAppNextAuthInstance } from "../shared-next-config.mjs"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const monorepoRoot = path.join(__dirname, "../..")
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_SITE_VARIANT: "acceleratedmedicine.org",
+  },
   transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/impact-params", "@optimitron/survey-embed", "@optimitron/site-kit"],
   outputFileTracingRoot: monorepoRoot,
+  webpack(config) {
+    return pinAppNextAuthInstance(config, __dirname)
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -17,9 +24,6 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-  },
-  experimental: {
-    instrumentationHook: true,
   },
   async headers() {
     return [
@@ -59,7 +63,10 @@ export default withSentryConfig(nextConfig, {
   silent: !process.env.CI,
   widenClientFileUpload: true,
   tunnelRoute: "/monitoring",
-  disableLogger: true,
-  automaticVercelMonitors: true,
+  webpack: {
+    automaticVercelMonitors: true,
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 })
-
