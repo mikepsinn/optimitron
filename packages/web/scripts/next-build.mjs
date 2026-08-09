@@ -9,10 +9,10 @@
  *   A full build completes in about 2 GB here, measured. Previews also build
  *   several PRs concurrently on one machine, so a high ceiling is actively
  *   harmful: V8 does not collect aggressively while it believes it has
- *   headroom, and the container OOM-kills the whole build. A 3584 MB ceiling
- *   still left too little room for the other compiler processes on an 8 GB
- *   preview builder. 3072 MB leaves about 2 GB for that overhead while staying
- *   comfortably above the measured plain-build heap.
+ *   headroom, and the container OOM-kills the whole build. The preview ceiling
+ *   remains 3584 MB because 3072 MB produced a real V8 heap exhaustion in the
+ *   client compilation. next.config.js instead limits Vercel to one worker so
+ *   that ceiling is not multiplied past the 8 GB container limit.
  *
  *   Production — SENTRY_AUTH_TOKEN is set, so source maps are generated and
  *   debug IDs are injected across the server, edge, and client compilations.
@@ -30,7 +30,7 @@
 import { spawn } from "node:child_process";
 
 const SOURCEMAP_BUILD_HEAP_MB = 5120;
-const PLAIN_BUILD_HEAP_MB = 3072;
+const PLAIN_BUILD_HEAP_MB = 3584;
 
 const generatesSourceMaps = Boolean(process.env.SENTRY_AUTH_TOKEN);
 const heapMb = generatesSourceMaps
@@ -65,6 +65,7 @@ const child = spawn("next", ["build", ...process.argv.slice(2)], {
 // signal -- including the OOM case this diagnostic exists for. Map those back.
 const SIGNAL_EXIT_CODES = new Map([
   [130, "SIGINT"],
+  [134, "SIGABRT"],
   [137, "SIGKILL"],
   [143, "SIGTERM"],
 ]);
@@ -72,16 +73,16 @@ const SIGNAL_EXIT_CODES = new Map([
 child.on("exit", (code, signal) => {
   const terminatingSignal = signal ?? SIGNAL_EXIT_CODES.get(code ?? -1) ?? null;
   if (terminatingSignal) {
-    // Deliberately does not assert OOM. Several things here send signals --
-    // scripts/run-with-timeout.mjs sends SIGTERM then SIGKILL when a build
-    // exceeds its budget, and CI cancels jobs the same way. Saying "out of
-    // memory" would send someone to tune the heap for a timeout.
-    console.error(
-      `[next-build] terminated by ${terminatingSignal}, not a heap error -- raising --max-old-space-size will not help.`,
-    );
-    console.error(
-      "[next-build] check, in order: the platform build log for an OOM report (then lower the ceiling or reduce parallelism), scripts/run-with-timeout.mjs firing on the build budget, or a cancelled CI job.",
-    );
+    console.error(`[next-build] terminated by ${terminatingSignal}.`);
+    if (terminatingSignal === "SIGABRT") {
+      console.error(
+        "[next-build] inspect the preceding output for a V8 FATAL ERROR; SIGABRT commonly follows JavaScript heap exhaustion.",
+      );
+    } else {
+      console.error(
+        "[next-build] check the platform log for a container OOM, the build-timeout wrapper, or a cancelled CI job before changing the heap ceiling.",
+      );
+    }
     process.exit(1);
   }
   process.exit(code ?? 1);
