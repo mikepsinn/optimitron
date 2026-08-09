@@ -1,0 +1,21 @@
+import type { Metadata } from "next";
+import { EXPECTED_VALUE_METHODOLOGY_MARKDOWN } from "@optimitron/data/parameters";
+import { RichMarkdown } from "@/components/markdown/rich-markdown";
+import { getRouteMetadata } from "@/lib/metadata";
+import { methodologyLink } from "@/lib/routes";
+
+export const metadata: Metadata = getRouteMetadata(methodologyLink);
+
+/**
+ * Renders the expected-value rules straight from the parameter catalog, so the
+ * page cannot describe numbers the code no longer uses.
+ */
+export default function MethodologyPage() {
+  return (
+    // id is the visual review's activation selector: it proves the markdown
+    // actually rendered rather than an empty shell.
+    <main className="mx-auto max-w-3xl px-4 py-10" id="methodology">
+      <RichMarkdown markdown={EXPECTED_VALUE_METHODOLOGY_MARKDOWN} />
+    </main>
+  );
+}

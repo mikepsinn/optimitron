@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTaskPath } from "@/lib/routes";
+import { getTaskPath, methodologyLink } from "@/lib/routes";
 import {
   deadlineChip,
   formatPriority,
@@ -24,7 +24,14 @@ export function PersonalQueueSection({
           What next
         </h2>
         <p className="text-xs text-[var(--treaty-ink-muted)]">
-          Ranked by expected value per hour at ${buybackRate.toLocaleString()}
+          Ranked by{" "}
+          <Link
+            className="underline decoration-dotted underline-offset-2"
+            href={methodologyLink.href}
+          >
+            expected value
+          </Link>{" "}
+          per hour at ${buybackRate.toLocaleString()}
           /hr. Required deadlines override the ranking.
         </p>
       </div>

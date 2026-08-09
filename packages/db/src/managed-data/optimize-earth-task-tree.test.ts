@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_WAR_MISSION_SCENARIO_VALUE_USD,
+  PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
+} from "@optimitron/data/parameters";
+import {
   COURT_OF_HUMANITY_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   END_DISEASE_TASK_ID,
@@ -42,6 +47,12 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
 
   it("has parentTaskId null (it's the root)", () => {
     expect(root?.parentTaskId).toBeNull();
+  });
+
+  it("leaves the root outcome estimate to treaty-accountability", () => {
+    expect(root?.impactEstimateManagedExternally).toBe(true);
+    expect(root?.expectedEconomicValueUsdBase).toBeUndefined();
+    expect(root?.successProbabilityBase).toBeUndefined();
   });
 
   // The /foundations mechanism comparison ranks the children of End War and
@@ -100,20 +111,71 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     );
   });
 
-  // Missions carry no economics scalars: their EV must be the roll-up of the
-  // strategies beneath them, and an empty mission (the animal-suffering stub)
-  // must not inflate any ranking.
+  // A mission states the value IF ACHIEVED, so it must never carry a
+  // probability -- multiplying by one would silently turn "what ending war is
+  // worth" into "what we expect to get", which nobody has estimated.
   it.each([
     END_WAR_TASK_ID,
     END_DISEASE_TASK_ID,
     END_POVERTY_TASK_ID,
     PREVENT_EXTINCTION_TASK_ID,
     MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
-  ])("mission %s carries no direct economics scalars", (id) => {
+  ])("mission %s states no success probability", (id) => {
     const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
     expect(mission).toBeDefined();
     expect(mission?.expectedEconomicValueUsdBase).toBeUndefined();
     expect(mission?.successProbabilityBase).toBeUndefined();
+  });
+
+  // Sourced or blank, never invented. A blank is honest; a made-up number gets
+  // ranked against real ones. See docs/EXPECTED_VALUE_METHODOLOGY.md.
+  it("gives a mission a value only where a sourced parameter exists", () => {
+    const valued = new Map([
+      [END_WAR_TASK_ID, END_WAR_MISSION_SCENARIO_VALUE_USD],
+      [END_DISEASE_TASK_ID, END_DISEASE_MISSION_SCENARIO_VALUE_USD],
+    ]);
+    for (const id of [
+      END_WAR_TASK_ID,
+      END_DISEASE_TASK_ID,
+      END_POVERTY_TASK_ID,
+      PREVENT_EXTINCTION_TASK_ID,
+      MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    ]) {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
+    }
+  });
+
+  // The peace dividend must not be summed across the mechanisms that share it.
+  // Every mechanism carrying it is an alternative route to the same outcome, so
+  // End War's own value has to come from the whole cost of war instead.
+  it("does not derive End War from the mechanisms beneath it", () => {
+    const mechanismTotal = OPTIMIZE_EARTH_TASK_TREE.filter(
+      (t) => t.parentTaskId === END_WAR_TASK_ID,
+    ).reduce((sum, t) => sum + (t.expectedEconomicValueUsdBase ?? 0), 0);
+    const endWar = OPTIMIZE_EARTH_TASK_TREE.find(
+      (t) => t.id === END_WAR_TASK_ID,
+    );
+    expect(endWar?.valueIfAchievedUsdBase).toBe(
+      END_WAR_MISSION_SCENARIO_VALUE_USD,
+    );
+    expect(endWar?.valueIfAchievedUsdBase).not.toBe(mechanismTotal);
+  });
+
+  it("keeps mechanism inputs on their source-native annual frame", () => {
+    for (const id of fundableMechanismKeys) {
+      const mechanism = OPTIMIZE_EARTH_TASK_TREE.find((task) => task.id === id);
+      expect(mechanism?.expectedEconomicValueUsdBase).toBe(
+        PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT.value,
+      );
+    }
+  });
+
+  it("leaves the Treaty impact estimate to treaty-accountability", () => {
+    const treaty = OPTIMIZE_EARTH_TASK_TREE.find(
+      (task) => task.id === TREATY_PARENT_TASK_ID,
+    );
+    expect(treaty?.impactEstimateManagedExternally).toBe(true);
   });
 
   // A mission with nothing under it is DRAFT so it stays out of active queues

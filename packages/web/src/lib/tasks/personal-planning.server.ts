@@ -164,7 +164,6 @@ export type PersonalQueueTaskRecord = Record<string, unknown> &
     }> | null;
     impact?: {
       currentSet?: {
-        parameterInputsStale?: boolean;
         publicationStatus?: string | null;
       } | null;
     } | null;
@@ -197,7 +196,6 @@ export type PersonalQueueRow = ReturnType<typeof summarizeTask> & {
   hasMarginalEstimate: boolean;
   hasStructuralUnlockEstimate: boolean;
   estimatePublicationEligible: boolean;
-  estimateInputsStale: boolean;
   pSuccess: number | null;
   priority: number;
   realEv: number;
@@ -695,60 +693,20 @@ function hasRecordedMarginalEstimate(task: PersonalQueueTaskRecord) {
   );
 }
 
-function getTaskImpactEstimateStatus(task: PersonalQueueTaskRecord) {
-  const currentSet = task.impact?.currentSet;
-  return {
-    estimateInputsStale: currentSet?.parameterInputsStale === true,
-    estimatePublicationEligible:
-      task.isPublic !== true ||
-      currentSet?.publicationStatus === TaskImpactPublicationStatus.PUBLISHED ||
-      currentSet?.publicationStatus === TaskImpactPublicationStatus.REVIEWED,
-  };
-}
-
-function getPinnedParameterRevisionIds(task: PersonalQueueTaskRecord) {
-  const estimateSet = asObject(task.currentImpactEstimateSet);
-  const inputs = Array.isArray(estimateSet?.inputs) ? estimateSet.inputs : [];
-  return inputs.flatMap((input) => {
-    const revisionId = asObject(input)?.parameterRevisionId;
-    return typeof revisionId === "string" ? [revisionId] : [];
-  });
-}
-
-async function attachTransitiveEstimateStaleness(
-  tasks: PersonalQueueTaskRecord[],
+function isTaskImpactEstimatePublicationEligible(
+  task: PersonalQueueTaskRecord,
 ) {
-  const revisionIds = tasks.flatMap(getPinnedParameterRevisionIds);
-  if (revisionIds.length === 0) return tasks;
-  const { getTransitiveStaleParameterRevisionIds } =
-    await import("../parameters/parameter-staleness.server");
-  const staleRevisionIds =
-    await getTransitiveStaleParameterRevisionIds(revisionIds);
-  if (staleRevisionIds.size === 0) return tasks;
-
-  return tasks.map((task) => {
-    if (
-      !getPinnedParameterRevisionIds(task).some((id) =>
-        staleRevisionIds.has(id),
-      )
-    ) {
-      return task;
-    }
-    const currentSet = task.impact?.currentSet;
-    if (!currentSet) return task;
-    return {
-      ...task,
-      impact: {
-        ...task.impact,
-        currentSet: { ...currentSet, parameterInputsStale: true },
-      },
-    };
-  });
+  const currentSet = task.impact?.currentSet;
+  return (
+    task.isPublic !== true ||
+    currentSet?.publicationStatus === TaskImpactPublicationStatus.PUBLISHED ||
+    currentSet?.publicationStatus === TaskImpactPublicationStatus.REVIEWED
+  );
 }
 
 function hasMarginalEstimate(task: PersonalQueueTaskRecord) {
   if (!hasRecordedMarginalEstimate(task)) return false;
-  return getTaskImpactEstimateStatus(task).estimatePublicationEligible;
+  return isTaskImpactEstimatePublicationEligible(task);
 }
 
 export function isAtomicExecutionRecord(task: PersonalQueueTaskRecord) {
@@ -1146,7 +1104,6 @@ export function buildPersonalQueueRows(
         0,
       ) ?? 0;
     const deadline = computeDeadlineSummary(sourceTask, hours, now);
-    const impactEstimateStatus = getTaskImpactEstimateStatus(sourceTask);
     return {
       ...summary,
       activeChildTaskCount:
@@ -1181,7 +1138,8 @@ export function buildPersonalQueueRows(
       executorType: getTaskExecutorType(sourceTask),
       hasMarginalEstimate: hasMarginalEstimate(sourceTask),
       hasStructuralUnlockEstimate: false,
-      ...impactEstimateStatus,
+      estimatePublicationEligible:
+        isTaskImpactEstimatePublicationEligible(sourceTask),
       priority: score.priority,
       pSuccess,
       realEv: score.realEv,
@@ -1503,10 +1461,8 @@ export async function getAuthorizedExecutionPlan(
     targetTasks,
     planningWindowStart,
   );
-  const planningTasksWithStaleness =
-    await attachTransitiveEstimateStaleness(currentTargetTasks);
   const graph = await loadExecutionGraphContext(
-    planningTasksWithStaleness,
+    currentTargetTasks,
     input.clientAccessBoundary,
   );
   const executorProfiles = [
@@ -1514,7 +1470,7 @@ export async function getAuthorizedExecutionPlan(
     ...(await loadAgentPlanningProfiles()),
   ];
   const planningTasks = await attachPlanningEffortEvidence(
-    planningTasksWithStaleness,
+    currentTargetTasks,
     executorProfiles,
   );
   const rows = buildPersonalQueueRows(planningTasks, ranking, buybackRate, {
@@ -1795,7 +1751,6 @@ export async function loadPersonalQueueAudit(request: {
       return {
         ...task,
         hasMarginalEstimate: task.hasMarginalEstimate,
-        estimateInputsStale: row?.estimateInputsStale ?? false,
         estimatePublicationEligible: row?.estimatePublicationEligible ?? false,
         priority: row?.priority ?? null,
         queueEligible: queueEligibleIds.has(task.id),

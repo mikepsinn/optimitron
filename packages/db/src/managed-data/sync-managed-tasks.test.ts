@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { VALUE_IF_ACHIEVED_USD_METRIC_KEY } from "@optimitron/data/parameters";
 import {
   TaskCategory,
   TaskClaimPolicy,
@@ -101,6 +102,16 @@ type FakeImpactFrameEstimate = {
   successProbabilityBase: number | null;
   taskImpactEstimateSetId: string;
   timeToImpactStartDays: number;
+};
+
+type FakeImpactMetric = {
+  id: string;
+  baseValue: number | null;
+  deletedAt: Date | null;
+  displayGroup: string | null;
+  metricKey: string;
+  taskImpactFrameEstimateId: string;
+  unit: string;
 };
 
 type FakeEndpoint = {
@@ -281,17 +292,20 @@ class FakeManagedTaskClient implements ManagedTaskClient {
   endpoints: FakeEndpoint[];
   impactEstimateSets: FakeImpactEstimateSet[];
   impactFrameEstimates: FakeImpactFrameEstimate[];
+  impactMetrics: FakeImpactMetric[];
 
   constructor(input: {
     endpoints?: FakeEndpoint[];
     impactEstimateSets?: FakeImpactEstimateSet[];
     impactFrameEstimates?: FakeImpactFrameEstimate[];
+    impactMetrics?: FakeImpactMetric[];
     tasks?: FakeTask[];
   }) {
     this.tasks = input.tasks ?? [];
     this.endpoints = input.endpoints ?? [];
     this.impactEstimateSets = input.impactEstimateSets ?? [];
     this.impactFrameEstimates = input.impactFrameEstimates ?? [];
+    this.impactMetrics = input.impactMetrics ?? [];
   }
 
   task = {
@@ -472,6 +486,63 @@ class FakeManagedTaskClient implements ManagedTaskClient {
         Object.assign(frame, update);
       }
       return { id: frame.id };
+    },
+    updateMany: async (args: unknown) => {
+      const { where, data } = args as {
+        where: {
+          deletedAt: null;
+          frameSlug: { in: string[] };
+          taskImpactEstimateSetId: string;
+        };
+        data: { deletedAt: Date };
+      };
+      let count = 0;
+      for (const frame of this.impactFrameEstimates) {
+        if (
+          frame.taskImpactEstimateSetId === where.taskImpactEstimateSetId &&
+          frame.deletedAt === null &&
+          where.frameSlug.in.includes(frame.frameSlug)
+        ) {
+          Object.assign(frame, data);
+          count += 1;
+        }
+      }
+      return { count };
+    },
+  };
+
+  taskImpactMetric = {
+    upsert: async (args: unknown) => {
+      const { where, create, update } = args as {
+        where: {
+          taskImpactFrameEstimateId_metricKey: {
+            metricKey: string;
+            taskImpactFrameEstimateId: string;
+          };
+        };
+        create: Omit<FakeImpactMetric, "id" | "deletedAt"> & {
+          deletedAt?: Date | null;
+        };
+        update: Partial<FakeImpactMetric>;
+      };
+      const key = where.taskImpactFrameEstimateId_metricKey;
+      let metric = this.impactMetrics.find(
+        (candidate) =>
+          candidate.taskImpactFrameEstimateId ===
+            key.taskImpactFrameEstimateId &&
+          candidate.metricKey === key.metricKey,
+      );
+      if (!metric) {
+        metric = {
+          id: `impact-metric-${this.impactMetrics.length + 1}`,
+          deletedAt: null,
+          ...create,
+        };
+        this.impactMetrics.push(metric);
+      } else {
+        Object.assign(metric, update);
+      }
+      return { id: metric.id };
     },
   };
 
@@ -1074,6 +1145,167 @@ describe("syncManagedTasks", () => {
       deletedAt: now,
       isPrimary: false,
     });
+  });
+
+  // A writer can change its declared slug. The old frame must not remain active
+  // beside its replacement.
+  it("retires a superseded frame left under a previous slug", async () => {
+    const estimateSetId = "estimate-set-existing";
+    const client = new FakeManagedTaskClient({
+      tasks: [
+        makeTask({
+          id: OPTIMIZE_EARTH_ROOT_TASK_ID,
+          taskKey: OPTIMIZE_EARTH_ROOT_TASK_KEY,
+        }),
+      ],
+      impactEstimateSets: [
+        {
+          id: estimateSetId,
+          calculationVersion: "managed-task-tree-v1",
+          counterfactualKey: "status-quo",
+          deletedAt: null,
+          estimateKind: "FORECAST",
+          isCurrent: true,
+          methodologyKey: "test-tree",
+          parameterSetHash: `managed-test-tree-${OPTIMIZE_EARTH_ROOT_TASK_ID}`,
+          publicationStatus: "PUBLISHED",
+          sourceSystem: "PARAMETER_CATALOG",
+          taskId: OPTIMIZE_EARTH_ROOT_TASK_ID,
+        },
+      ],
+      impactFrameEstimates: [
+        {
+          id: "impact-frame-lifetime",
+          adoptionRampYears: 0,
+          annualDiscountRate: 0,
+          benefitDurationYears: 73.4,
+          deletedAt: null,
+          estimatedEffortHoursBase: null,
+          evaluationHorizonYears: 73.4,
+          expectedEconomicValueUsdBase: 1_000,
+          frameKey: "LIFETIME",
+          frameSlug: "lifetime",
+          successProbabilityBase: 0.5,
+          taskImpactEstimateSetId: estimateSetId,
+          timeToImpactStartDays: 0,
+        },
+        {
+          id: "impact-frame-independent-scenario",
+          adoptionRampYears: 2,
+          annualDiscountRate: 0.03,
+          benefitDurationYears: 10,
+          deletedAt: null,
+          estimatedEffortHoursBase: null,
+          evaluationHorizonYears: 10,
+          expectedEconomicValueUsdBase: 500,
+          frameKey: "CUSTOM",
+          frameSlug: "independent-scenario",
+          successProbabilityBase: 0.25,
+          taskImpactEstimateSetId: estimateSetId,
+          timeToImpactStartDays: 30,
+        },
+      ],
+    });
+
+    const now = new Date("2026-08-08T00:00:00.000Z");
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      now,
+      records: [
+        {
+          ...activeRecord,
+          expectedEconomicValueUsdBase: 2_000,
+          successProbabilityBase: 0.5,
+        },
+      ],
+    });
+
+    const supersededFrame = client.impactFrameEstimates.find(
+      (frame) => frame.frameSlug === "lifetime",
+    );
+    const oneYearFrame = client.impactFrameEstimates.find(
+      (frame) => frame.frameSlug === "one-year",
+    );
+    const independentFrame = client.impactFrameEstimates.find(
+      (frame) => frame.frameSlug === "independent-scenario",
+    );
+
+    expect(supersededFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
+    // Pinned: retirement must stamp the sync's own timestamp, not a fresh
+    // wall-clock read, so one run marks every frame it retires identically.
+    expect(supersededFrame?.deletedAt).toEqual(now);
+    expect(independentFrame?.deletedAt).toBeNull();
+    expect(oneYearFrame?.taskImpactEstimateSetId).toBe(estimateSetId);
+    expect(oneYearFrame?.deletedAt).toBeNull();
+    expect(oneYearFrame).toMatchObject({
+      annualDiscountRate: 0,
+      benefitDurationYears: 1,
+      evaluationHorizonYears: 1,
+      expectedEconomicValueUsdBase: 1_000,
+      frameKey: "ONE_YEAR",
+      successProbabilityBase: 0.5,
+    });
+  });
+
+  it("stores a mission value as a probability-free metric", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        {
+          ...activeRecord,
+          valueIfAchievedUsdBase: 834_000_000_000_000,
+        },
+      ],
+    });
+
+    expect(client.impactFrameEstimates).toHaveLength(1);
+    expect(client.impactFrameEstimates[0]).toMatchObject({
+      annualDiscountRate: 0,
+      benefitDurationYears: 73.4,
+      evaluationHorizonYears: 73.4,
+      expectedEconomicValueUsdBase: null,
+      frameKey: "LIFETIME",
+      frameSlug: "lifetime",
+      successProbabilityBase: null,
+    });
+    expect(client.impactMetrics).toEqual([
+      expect.objectContaining({
+        baseValue: 834_000_000_000_000,
+        deletedAt: null,
+        displayGroup: "outcome-value",
+        metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+        taskImpactFrameEstimateId: client.impactFrameEstimates[0]?.id,
+        unit: "USD",
+      }),
+    ]);
+  });
+
+  it("does not write an impact owned by another managed writer", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        {
+          ...activeRecord,
+          expectedEconomicValueUsdBase: 2_000,
+          impactEstimateManagedExternally: true,
+          successProbabilityBase: 0.5,
+        },
+      ],
+    });
+
+    expect(client.impactEstimateSets).toEqual([]);
+    expect(client.impactFrameEstimates).toEqual([]);
+    expect(client.impactMetrics).toEqual([]);
   });
 
   describe("managed task edges", () => {

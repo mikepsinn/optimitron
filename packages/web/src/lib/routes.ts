@@ -159,6 +159,7 @@ export const ROUTES = {
   // Meta
   declaration: "/declaration",
   mcp: "/mcp",
+  methodology: "/methodology",
   developers: "/developers",
   developersTools: "/developers/tools",
   demo: "/demo",
@@ -705,6 +706,18 @@ export const mcpLink: NavItem = {
   copyPreview: true,
   screenshot: true,
   cta: "Install MCP",
+};
+
+export const methodologyLink: NavItem = {
+  href: ROUTES.methodology,
+  label: "Mission Value and Task Expected Value",
+  emoji: "=",
+  description:
+    "See how mission outcome values differ from probability-weighted task estimates.",
+  tagline: "Mission outcomes and probability-weighted task estimates",
+  copyPreview: true,
+  screenshot: true,
+  cta: "Read the method",
 };
 
 export const developersLink: NavItem = {
@@ -1918,6 +1931,7 @@ export const routeReviewNavItems = [
   editProfileLink,
   tasksLink,
   taskTreeLink,
+  methodologyLink,
   calendarLink,
   documentsLink,
   collectionsLink,

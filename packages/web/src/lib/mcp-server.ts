@@ -8164,7 +8164,7 @@ const TASK_TOOL_DEFINITIONS = [
   {
     name: "proposeTaskImpact",
     description:
-      "Create an immutable task-impact draft with materialized values, formulas or inert calculation code, exact parameter revision inputs, assumptions, and sources. Public drafts require admin review before use.",
+      "Create an immutable task-impact draft with materialized values, formulas or inert calculation code, assumptions, and sources. Public drafts require admin review before use.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -8186,18 +8186,6 @@ const TASK_TOOL_DEFINITIONS = [
         formulaLatex: { type: "string" },
         calculationCode: { type: "string" },
         calculationLanguage: { type: "string" },
-        parameterInputs: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              parameterKey: { type: "string" },
-              revisionId: { type: "string" },
-              symbol: { type: "string" },
-            },
-            required: ["parameterKey", "symbol"],
-          },
-        },
         sourceUrls: { type: "array", items: { type: "string" } },
         calculationSource: {
           type: "object",
@@ -8348,6 +8336,15 @@ const TASK_TOOL_DEFINITIONS = [
           type: "string",
           description:
             "Short explanation of the calculation and what would change the estimate",
+        },
+        formulaText: {
+          type: "string",
+          description:
+            "The arithmetic behind the number, in plain text, so a reader can check it without running anything",
+        },
+        formulaLatex: {
+          type: "string",
+          description: "Same formula as LaTeX, rendered on the task page",
         },
         calculationVersion: {
           type: "string",

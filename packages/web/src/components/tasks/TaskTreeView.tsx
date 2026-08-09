@@ -9,11 +9,20 @@ import type { TaskTreeNode } from "@/lib/tasks/task-tree";
  * long unreadable page. */
 const DEFAULT_OPEN_DEPTH = 1;
 
-function formatEvLabel(node: TaskTreeNode): string {
-  if (!node.evValid) {
+function formatImpactLabel(node: TaskTreeNode): string {
+  if (node.valueIfAchievedUsd != null) {
+    return `Value if achieved ${formatCompactCurrency(node.valueIfAchievedUsd)}`;
+  }
+  if (!node.hasEvEstimate) {
     return "no direct estimate";
   }
-  return `EV ${formatCompactCurrency(node.realEv)} · priority ${formatCompactCurrency(node.priority)}/hr`;
+  const value = `Expected value ${formatCompactCurrency(node.realEv)}`;
+  // Priority is value per hour, so a task with a real value but no effort
+  // estimate has nothing to divide by. Say which half is missing instead of
+  // discarding the half we have.
+  return node.evValid
+    ? `${value} · priority ${formatCompactCurrency(node.priority)}/hr`
+    : `${value} · no effort estimate`;
 }
 
 function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
@@ -28,7 +37,7 @@ function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
         {node.status.toLowerCase()}
       </span>
       <span className="text-xs text-muted-foreground">
-        {formatEvLabel(node)}
+        {formatImpactLabel(node)}
       </span>
       {node.alsoServes && node.alsoServes.length > 0 ? (
         <span className="text-xs text-muted-foreground">

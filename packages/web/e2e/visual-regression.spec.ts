@@ -223,6 +223,9 @@ test.describe("route visual regression", () => {
       if ("openTaskManagement" in route && route.openTaskManagement) {
         await page.locator("[data-task-management] > summary").click();
       }
+      if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
+        await openTaskImpactTrace(page);
+      }
 
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
@@ -552,6 +555,21 @@ async function openContentShare(page: Page) {
   await expect(summary).toHaveCount(1);
   await summary.click();
   await expect(page.getByLabel("Collaborator email")).toBeVisible();
+  await forceAnimationsComplete(page);
+  await waitForPaint(page);
+}
+
+async function openTaskImpactTrace(page: Page) {
+  const summary = page
+    .locator("summary")
+    .filter({ hasText: /^Estimate calculation and sources$/ });
+  await expect(summary).toHaveCount(1);
+  await summary.click();
+
+  const disclosure = summary.locator("..");
+  await expect(
+    disclosure.getByRole("heading", { name: "Estimate", exact: true }),
+  ).toBeVisible({ timeout: 15_000 });
   await forceAnimationsComplete(page);
   await waitForPaint(page);
 }
