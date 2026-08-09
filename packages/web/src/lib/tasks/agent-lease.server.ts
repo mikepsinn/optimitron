@@ -1,6 +1,7 @@
 import {
   TaskExecutionAttemptStatus,
   TaskStatus,
+  TaskVerificationResult,
   type Prisma,
 } from "@optimitron/db";
 import { prisma } from "@/lib/prisma";
@@ -241,12 +242,31 @@ export async function getTaskCoordinationContext(taskId: string) {
       where: {
         deletedAt: null,
         taskId,
-        status: {
-          in: [
-            TaskExecutionAttemptStatus.QUEUED,
-            TaskExecutionAttemptStatus.RUNNING,
-          ],
-        },
+        // Mirrors startTaskExecution's own eligibility predicate: a
+        // COMPLETED attempt with a pending verification still blocks a new
+        // start, so it must also read as "active" here. Otherwise this
+        // reports activeExecution: null while an agent following the
+        // getTask -> inspect coordination -> edit flow could start
+        // duplicate work that startTaskExecution only rejects afterward.
+        OR: [
+          {
+            status: {
+              in: [
+                TaskExecutionAttemptStatus.QUEUED,
+                TaskExecutionAttemptStatus.RUNNING,
+              ],
+            },
+          },
+          {
+            status: TaskExecutionAttemptStatus.COMPLETED,
+            verifications: {
+              some: {
+                deletedAt: null,
+                result: TaskVerificationResult.PENDING,
+              },
+            },
+          },
+        ],
       },
       orderBy: { startedAt: "desc" },
       select: {

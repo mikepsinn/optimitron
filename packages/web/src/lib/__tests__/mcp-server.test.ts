@@ -2655,6 +2655,38 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("returns coordination for an accessible public task even without an authenticated userId", async () => {
+      // Local stdio (scripts/mcp-task-server.ts) runs with userId undefined
+      // and ALL_SCOPES when no MCP_USER_ID/MCP_USER_EMAIL is configured, so
+      // it can read public tasks. Coordination must not be hidden behind a
+      // userId check on top of that already-applied access check, or the
+      // pre-edit lease/execution inspection this tool exists for silently
+      // no-ops for the primary local-agent connection path.
+      mocks.getTaskDetailData.mockResolvedValue({
+        taskCommunicationCount: 0,
+        task: makeCreatedTask({ id: "public-coordinated-task" }),
+      });
+      mocks.getTaskCoordinationContext.mockResolvedValue({
+        activeExecution: null,
+        activeLease: { agentId: "agent-1", expiresAt: new Date() },
+      });
+
+      const client = await setup(undefined, ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({
+          name: "getTask",
+          arguments: { taskId: "public-coordinated-task" },
+        }),
+      );
+
+      expect(body.coordination).toMatchObject({
+        activeLease: { agentId: "agent-1" },
+      });
+      expect(mocks.getTaskCoordinationContext).toHaveBeenCalledWith(
+        "public-coordinated-task",
+      );
+    });
+
     it("returns one canonical impact frame", async () => {
       const selectedFrame = {
         frameKey: "marginal",

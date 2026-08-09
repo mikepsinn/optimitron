@@ -5642,7 +5642,7 @@ const TASK_TOOL_DEFINITIONS = [
         agentId: {
           type: "string",
           description:
-            "Current agent ID. Tasks leased by another active agent are omitted; this agent's own leases remain visible.",
+            "Current agent ID. Required to see this agent's own leased tasks: any leased task is omitted unless agentId is passed and matches the lease holder.",
         },
         maxResults: {
           type: "number",
@@ -10571,9 +10571,17 @@ export function createMcpServer(
               { clientAccessBoundary: taskClientBoundary },
             );
             if (!result) return err("Task not found");
-            const coordination = userId
-              ? await lease.getTaskCoordinationContext(taskId)
-              : null;
+            // getTaskDetailData already applied the access check above (a
+            // null userId still returns public tasks). Coordination is
+            // metadata about that same already-accessible task, so gating
+            // it separately on userId hid it from local stdio sessions —
+            // resolveLocalMcpIdentity leaves userId undefined with
+            // ALL_SCOPES when no MCP_USER_ID/MCP_USER_EMAIL is configured,
+            // which is the primary way Claude Code and Codex connect
+            // locally — defeating the pre-edit lease/execution inspection
+            // this tool exists for.
+            const coordination =
+              await lease.getTaskCoordinationContext(taskId);
             return ok({
               coordination,
               task: enrichTaskForMcp(result.task),
