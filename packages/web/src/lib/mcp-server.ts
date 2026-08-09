@@ -931,6 +931,25 @@ function dedupeStrings(values: Array<string | null | undefined>) {
 }
 
 const TASK_PAGE_CURSOR_VERSION = 2;
+const TASK_SEARCH_SNIPPET_MAX_LENGTH = 200;
+
+function boundTaskSearchSnippet<T extends { id: string; snippet?: unknown }>(
+  task: T,
+) {
+  if (
+    typeof task.snippet !== "string" ||
+    task.snippet.length <= TASK_SEARCH_SNIPPET_MAX_LENGTH
+  ) {
+    return task;
+  }
+
+  return {
+    ...task,
+    snippet: `${task.snippet.slice(0, TASK_SEARCH_SNIPPET_MAX_LENGTH - 1).trimEnd()}…`,
+    snippetTruncated: true,
+    fullDescriptionHint: `Call getTask with {"taskId":"${task.id}"} to read the full description.`,
+  };
+}
 
 function getTaskPageSignature(
   tool: "listTasks" | "searchTasks",
@@ -8794,6 +8813,7 @@ const TASK_TOOL_DEFINITIONS = [
     description:
       "Fuzzy-search your accessible tasks by title, description, impact statement, task key, assignee, or organization. Signed-in results may include public tasks and private tasks you created, manage, are assigned, claimed, or can access through an organization; other users' private work remains excluded. " +
       "Use this before createTask/updateTask to find parents, duplicates, blockerTaskIds, or blockedTaskIds. " +
+      "Long snippets are capped at 200 characters and include a getTask instruction for reading the full description. " +
       "For Optimitron code or documentation work, query the stable key 'optimitron:dev', select that exact result, and call createTask with parentTaskKey='optimitron:dev'. Returns the legacy result array unless paginated=true or cursor is supplied. Paginated inventory uses immutable task-ID order, not relevance order.",
     inputSchema: {
       type: "object" as const,
@@ -10805,7 +10825,8 @@ export function createMcpServer(
               status,
               visibility: scope,
             });
-            if (!wantsPagination) return ok(results.slice(0, limit));
+            const boundedResults = results.map(boundTaskSearchSnippet);
+            if (!wantsPagination) return ok(boundedResults.slice(0, limit));
             if (results.length >= 500) {
               return err(
                 "This search matched the server's 500-candidate ranking window. Narrow the query or filters before paginating so no matches are silently omitted.",
@@ -10822,7 +10843,7 @@ export function createMcpServer(
                   scope,
                   status: status ?? null,
                 }),
-                tasks: results,
+                tasks: boundedResults,
                 tool: "searchTasks",
               });
               return ok(page);
