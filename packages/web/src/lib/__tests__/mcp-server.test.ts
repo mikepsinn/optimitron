@@ -3793,6 +3793,12 @@ describe("MCP server tool dispatch", () => {
           id: "program-scale-agent-task",
           title: "Program-scale agent task",
         }),
+        makeCreatedTask({
+          contextJson: { executor_type: "AI Agent" },
+          estimatedEffortHours: null,
+          id: "missing-estimate-agent-task",
+          title: "Missing estimate agent task",
+        }),
       ]);
       mocks.agentExecutorFindMany.mockResolvedValue([
         {
@@ -3833,6 +3839,11 @@ describe("MCP server tool dispatch", () => {
         expect.objectContaining({
           estimatedHours: 1_000,
           id: "program-scale-agent-task",
+        }),
+        expect.objectContaining({
+          estimatedHours: null,
+          id: "missing-estimate-agent-task",
+          reason: "Add a usable effort estimate before autonomous execution.",
         }),
       ]);
       expect(mocks.computeTaskPriority).toHaveBeenCalledWith(
@@ -4034,6 +4045,7 @@ describe("MCP server tool dispatch", () => {
           taskId: "program-scale-agent-task",
         }),
       );
+      expect(body.summary).toMatchObject({ unblockedTasks: 0 });
     });
 
     it("flags tasks with invalid priority inputs", async () => {

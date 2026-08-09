@@ -1742,6 +1742,7 @@ export async function loadPersonalQueueAudit(request: {
     {
       executorProfiles,
       limit: currentPersonalTasks.length,
+      requireBoundedAgentWork: true,
       requireExecutable: true,
       requireUnblocked: true,
       rootedTaskIds: graph.rootedTaskIds,
