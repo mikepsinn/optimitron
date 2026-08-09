@@ -12,6 +12,7 @@ import {
 } from "@optimitron/db";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
+import { acquireLease, getTaskCoordinationContext } from "./agent-lease.server";
 import {
   getTaskAuditTrail,
   startTaskExecution,
@@ -28,6 +29,9 @@ import {
 const TEST_PREFIX = "execution_lifecycle_";
 
 async function cleanup() {
+  await prisma.agentTaskLease.deleteMany({
+    where: { taskId: { startsWith: TEST_PREFIX } },
+  });
   await prisma.externalActionRequest.deleteMany({
     where: { taskId: { startsWith: TEST_PREFIX } },
   });
@@ -211,6 +215,48 @@ describe.sequential("private execution lifecycle boundaries", () => {
         },
       }),
     ).resolves.toBe(1);
+  });
+
+  it("persists the agent run context on the existing execution metadata", async () => {
+    const actor = await createUser("run_context");
+    const task = await createTask({
+      creatorUserId: actor.user.id,
+      id: "run_context_task",
+    });
+    const runContext = {
+      agentRunId: "run-2026-08-09",
+      baseCommit: "abc123def456",
+      branch: "feature/mcp-agent-coordination",
+      isolationMode: "ISOLATED_WORKTREE" as const,
+      ownedFileGlobs: ["packages/web/src/lib/**", "AGENTS.md"],
+      worktreePath: "C:/worktrees/mcp-agent-coordination",
+    };
+
+    const attempt = await startTaskExecution(
+      { runContext, taskId: task.id },
+      actor.user.id,
+    );
+    await acquireLease(task.id, "agent-run-context", 3_600);
+
+    await expect(
+      prisma.taskExecutionAttempt.findUniqueOrThrow({
+        where: { id: attempt.id },
+        select: { metadata: true },
+      }),
+    ).resolves.toEqual({
+      metadata: {
+        runContext,
+        startedByUserId: actor.user.id,
+      },
+    });
+    await expect(getTaskCoordinationContext(task.id)).resolves.toMatchObject({
+      activeExecution: {
+        id: attempt.id,
+        runContext,
+        status: TaskExecutionAttemptStatus.RUNNING,
+      },
+      activeLease: { agentId: "agent-run-context" },
+    });
   });
 
   it("lets a public claimant contribute to the attempt linked to their claim", async () => {

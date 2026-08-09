@@ -40,6 +40,13 @@
 - Do not start extra Next.js/Vite/preview servers on alternate ports just because `3001` is busy. If `3001` is busy with the right app, use it. If `3001` is busy with the wrong process, stop and report that instead of silently launching `3002`, `3003`, etc. Use a different port only when the human explicitly asks, a test genuinely requires two versions running at once, or a clean isolated server is required to debug a server-start problem.
 - When a server you started is no longer needed, shut it down before ending the turn. Do not leave background dev servers, preview servers, or Playwright-managed servers running unless they were already running when you arrived or the human asked to keep them.
 
+## Agent Execution Isolation
+
+- Use `NO_WORKTREE` for read-only or external-only work.
+- Use `SHARED_ONE_PR` only when agents own disjoint file globs on one branch. Record ownership in the task execution context.
+- Use `ISOLATED_WORKTREE` for independent code changes.
+- In new worktrees, run `pnpm install --prefer-offline` to reuse the warm pnpm content store.
+
 ## Branch and Pull Request Workflow
 
 - Feature branches must start with `feature/`, followed by a short kebab-case description of the feature or fix. Example: `feature/international-campaign-site-name`.

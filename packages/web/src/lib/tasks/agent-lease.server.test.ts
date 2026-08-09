@@ -2,7 +2,12 @@ import { TaskClaimPolicy, TaskStatus } from "@optimitron/db";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { completeSelfTask } from "../tasks.server";
-import { acquireLease, heartbeatLease } from "./agent-lease.server";
+import {
+  acquireLease,
+  heartbeatLease,
+  listActiveTaskLeases,
+  releaseLease,
+} from "./agent-lease.server";
 
 const TEST_PREFIX = "agent_lease_integrity_";
 
@@ -121,6 +126,33 @@ describe.sequential("agent task lease lifecycle integrity", () => {
         select: { expiresAt: true },
       }),
     ).resolves.toEqual({ expiresAt: lease.expiresAt });
+  });
+
+  it("lists only unexpired, unreleased leases for queue exclusion", async () => {
+    const active = await createTask("listed_active");
+    const expired = await createTask("listed_expired");
+    const released = await createTask("listed_released");
+    await acquireLease(active.task.id, "agent-active", 3_600);
+    const expiredLease = await acquireLease(
+      expired.task.id,
+      "agent-expired",
+      3_600,
+    );
+    await prisma.agentTaskLease.update({
+      where: { id: expiredLease.id },
+      data: { expiresAt: new Date("2025-01-01T00:00:00.000Z") },
+    });
+    await acquireLease(released.task.id, "agent-released", 3_600);
+    await releaseLease(released.task.id, "agent-released");
+
+    await expect(
+      listActiveTaskLeases([active.task.id, expired.task.id, released.task.id]),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        agentId: "agent-active",
+        taskId: active.task.id,
+      }),
+    ]);
   });
 
   it("never leaves a completed task with an active lease when completion races acquisition", async () => {

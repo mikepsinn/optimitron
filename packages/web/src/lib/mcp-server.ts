@@ -5639,6 +5639,11 @@ const TASK_TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object" as const,
       properties: {
+        agentId: {
+          type: "string",
+          description:
+            "Current agent ID. Tasks leased by another active agent are omitted; this agent's own leases remain visible.",
+        },
         maxResults: {
           type: "number",
           description: "Max number of tasks to return (default 20, max 100)",
@@ -9694,7 +9699,7 @@ export function createMcpServer(
                 'It returns your AI-assigned tasks — there is no "your" without identity.',
               );
 
-            const { tasks, ranking } = await getTaskFunctions();
+            const { tasks, ranking, lease } = await getTaskFunctions();
             const maxResults = parseQueueLimit(a.maxResults, 20, 100);
             const buybackRate = parsePositiveNumber(
               a.buybackRate,
@@ -9731,18 +9736,38 @@ export function createMcpServer(
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
-            const queue = buildPersonalQueueRows(
+            const eligibleRows = buildPersonalQueueRows(
               planningTasks,
               ranking,
               buybackRate,
               {
                 executorProfiles,
-                limit: maxResults,
+                limit: assignedTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
+            const activeLeases = await lease.listActiveTaskLeases(
+              eligibleRows.map((task) => task.id),
+            );
+            const currentAgentId = optionalString(a.agentId);
+            const leaseByTaskId = new Map(
+              activeLeases.map((activeLease) => [
+                activeLease.taskId,
+                activeLease,
+              ]),
+            );
+            const queue = eligibleRows
+              .filter((task) => {
+                const activeLease = leaseByTaskId.get(task.id);
+                return (
+                  !activeLease ||
+                  (currentAgentId != null &&
+                    activeLease.agentId === currentAgentId)
+                );
+              })
+              .slice(0, maxResults);
 
             return ok({
               buybackRate,
@@ -10537,7 +10562,7 @@ export function createMcpServer(
 
           // ── getTask ────────────────────────────────────────────
           case "getTask": {
-            const { tasks } = await getTaskFunctions();
+            const { lease, tasks } = await getTaskFunctions();
             const taskId = requiredString(a.taskId, "taskId");
             if (typeof taskId !== "string") return taskId;
             const result = await tasks.getTaskDetailData(
@@ -10546,7 +10571,11 @@ export function createMcpServer(
               { clientAccessBoundary: taskClientBoundary },
             );
             if (!result) return err("Task not found");
+            const coordination = userId
+              ? await lease.getTaskCoordinationContext(taskId)
+              : null;
             return ok({
+              coordination,
               task: enrichTaskForMcp(result.task),
               taskCommunicationCount: result.taskCommunicationCount,
             });
