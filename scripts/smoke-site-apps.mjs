@@ -16,7 +16,7 @@ const unknownApps = requestedApps.filter(
 );
 
 if (unknownApps.length > 0) {
-  throw new Error(`Unknown brand app(s): ${unknownApps.join(", ")}`);
+  throw new Error(`Unknown site app(s): ${unknownApps.join(", ")}`);
 }
 
 const selectedApps =

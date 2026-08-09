@@ -1,4 +1,4 @@
-/** Default no-op email for brand apps. Warondisease overrides via local lib/email.ts */
+/** Default no-op email for site apps. Warondisease overrides via local lib/email.ts */
 
 type EmailResult = { success: true; data: { id: string } } | { success: false; error: string }
 

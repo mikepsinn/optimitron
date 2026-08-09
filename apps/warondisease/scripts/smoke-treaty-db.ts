@@ -1,5 +1,5 @@
 /**
- * DB smoke for brand apps against shared Optimitron Postgres.
+ * DB smoke for site apps against shared Optimitron Postgres.
  *
  * Verifies:
  * 1. DB reachable
@@ -11,7 +11,7 @@
  *   pnpm db:deploy
  *   pnpm smoke:warondisease-db
  *
- * Requires DATABASE_URL (same DB for web + all brand apps — do not use per-app DBs).
+ * Requires DATABASE_URL (same DB for web + all site apps — do not use per-app DBs).
  */
 import { PrismaPg } from "@prisma/adapter-pg"
 import {

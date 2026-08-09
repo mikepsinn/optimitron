@@ -1,4 +1,4 @@
-# Deploying brand apps (warondisease / dfda / wishocracy)
+# Deploying site apps (warondisease / dfda / wishocracy)
 
 ## Situation
 
@@ -43,11 +43,11 @@ Until step 1–4 land, warondisease stays monorepo+CI-typecheck only.
 
 | Choice | Verdict |
 |--------|---------|
-| Separate Docker Compose per brand app | **No** — same Prisma schema, same User/ReferendumVote |
+| Separate Docker Compose per site app | **No** — same Prisma schema, same User/ReferendumVote |
 | Separate DB names per app on one Postgres | **Optional only** (`optimitron_test` for wipeable tests). Dev should share `optimitron` |
 | One `docker-compose.yml` at monorepo root | **Yes** (already: `pnpm db:up`) |
 
-All brand apps + `packages/web` should point at the **same** `DATABASE_URL` in development so referrals, treaty votes, and people match production.
+All site apps + `packages/web` should point at the **same** `DATABASE_URL` in development so referrals, treaty votes, and people match production.
 
 ```bash
 # From monorepo root
@@ -57,7 +57,7 @@ pnpm db:generate
 # optional full seed (includes one-percent-treaty when managed data applies):
 # pnpm db:sync:managed-data -- --apply
 
-# Brand app smoke (create+delete smoke vote):
+# Site-app smoke (create+delete smoke vote):
 export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/optimitron
 pnpm smoke:warondisease-db
 ```

@@ -67,7 +67,7 @@ Partner snippet (after survey is deployed):
 
 ## CI
 
-Job **`apps-brand-validate`** (on `apps/**` / `packages/db` changes):
+Job **`site-apps-validate`** (on `apps/**` / `packages/db` changes):
 
 1. migrate + `prisma generate`
 2. **`pnpm typecheck:apps`** — all six `@apps/*`

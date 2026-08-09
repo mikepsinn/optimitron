@@ -1,6 +1,6 @@
 # Survey host, embeds, and satellite apps
 
-Decisions for brand apps beyond warondisease / dfda / wishocracy.
+Decisions for site apps beyond warondisease / dfda / wishocracy.
 
 ## Origins
 

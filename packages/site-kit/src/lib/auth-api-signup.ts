@@ -19,7 +19,7 @@ export type PasswordSignupOptions = {
 }
 
 /**
- * Shared password signup POST handler for brand apps.
+ * Shared password signup POST handler for site apps.
  */
 export function createPasswordSignupHandler(options: PasswordSignupOptions) {
   const log = createLogger("auth-signup")

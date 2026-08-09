@@ -4,7 +4,7 @@
 
 `warondisease` · `dfda` · `wishocracy` · thin satellites. See `apps/README.md`.
 
-**One tip PR into `main`** for brand apps + site-kit (stacked per-app PRs are superseded).
+**One tip PR into `main`** for site apps + site-kit (stacked per-app PRs are superseded).
 
 ## Product split
 
