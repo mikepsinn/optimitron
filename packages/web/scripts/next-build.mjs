@@ -9,8 +9,10 @@
  *   A full build completes in about 2 GB here, measured. Previews also build
  *   several PRs concurrently on one machine, so a high ceiling is actively
  *   harmful: V8 does not collect aggressively while it believes it has
- *   headroom, and the container OOM-kills the whole build. 3584 MB was chosen
- *   from that measurement and holds.
+ *   headroom, and the container OOM-kills the whole build. A 3584 MB ceiling
+ *   still left too little room for the other compiler processes on an 8 GB
+ *   preview builder. 3072 MB leaves about 2 GB for that overhead while staying
+ *   comfortably above the measured plain-build heap.
  *
  *   Production — SENTRY_AUTH_TOKEN is set, so source maps are generated and
  *   debug IDs are injected across the server, edge, and client compilations.
@@ -28,7 +30,7 @@
 import { spawn } from "node:child_process";
 
 const SOURCEMAP_BUILD_HEAP_MB = 5120;
-const PLAIN_BUILD_HEAP_MB = 3584;
+const PLAIN_BUILD_HEAP_MB = 3072;
 
 const generatesSourceMaps = Boolean(process.env.SENTRY_AUTH_TOKEN);
 const heapMb = generatesSourceMaps

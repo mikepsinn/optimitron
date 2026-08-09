@@ -35,8 +35,10 @@ const nextConfig = {
     // compilation, before static generation started. The heap ceiling is the
     // remaining term: NODE_OPTIONS applies to every process, Next runs the
     // server/edge/client compilations in parallel, and 2 x 5120 MB does not
-    // fit an 8 GB container. `build` now caps the heap at 3584 MB, so two
-    // concurrent compilations peak near 7 GB and leave room for overhead.
+    // fit an 8 GB container. A 3584 MB preview ceiling still left less than
+    // 1 GB for non-heap overhead and Vercel OOM-killed PR #195 during
+    // compilation. `build` now caps the plain build at 3072 MB, so two
+    // concurrent compilations leave about 2 GB for the rest of the container.
     // Read the next failure's signature before tuning further: a kernel
     // SIGKILL with Vercel's "OOM event detected" means total RSS is still too
     // high (lower this further, or buy Enhanced Builds), whereas a Node

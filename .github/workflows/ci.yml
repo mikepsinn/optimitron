@@ -279,21 +279,33 @@ jobs:
           - app: warondisease
             variant: warondisease.org
             port: 4010
+            postgres_image: postgres:16
+            requires_database: true
           - app: dfda
             variant: dfda
             port: 4011
+            postgres_image: ""
+            requires_database: false
           - app: wishocracy
             variant: wishocracy.org
             port: 4013
+            postgres_image: ""
+            requires_database: false
           - app: trialabundancesurvey
             variant: trialabundancesurvey.org
             port: 4014
+            postgres_image: ""
+            requires_database: false
           - app: curedao
             variant: curedao.org
             port: 4015
+            postgres_image: ""
+            requires_database: false
           - app: acceleratedmedicine
             variant: acceleratedmedicine.org
             port: 4016
+            postgres_image: ""
+            requires_database: false
     env:
       CI: true
       DATABASE_URL: postgresql://test:test@localhost:5432/test
@@ -302,6 +314,20 @@ jobs:
       NEXT_PUBLIC_SITE_VARIANT: ${{ matrix.variant }}
       SKIP_DB_TEST_SETUP: "1"
       NODE_OPTIONS: --max-old-space-size=6144
+    services:
+      postgres:
+        image: ${{ matrix.postgres_image }}
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -330,6 +356,10 @@ jobs:
           restore-keys: |
             brand-next-${{ runner.os }}-${{ matrix.app }}-${{ hashFiles('pnpm-lock.yaml') }}-
             brand-next-${{ runner.os }}-${{ matrix.app }}-
+
+      - name: Apply database migrations
+        if: ${{ matrix.requires_database }}
+        run: pnpm db:deploy
 
       - name: Build app dependencies
         run: pnpm build:app-dependencies
