@@ -10,7 +10,7 @@
 - **Use the hosted Optimitron connector, never a local MCP server.** Task, person, and organization writes must land in the production database. A local server exposes identically-named tools backed by a different database, so writes appear to succeed and are invisible on optimitron.com. If you see more than one Optimitron MCP server offering `createTask` or `proposeTaskBundle`, stop and ask which is production before writing.
 - Never hand-edit `page.logged-out.md` or `*.email.md`. Generate them with `pnpm --filter @optimitron/web copy:preview` or `email:preview-md`.
 - Use the production `optimitron:dev` task tree as the operational queue. Update the owning task's comments/status and link the implementation PR; do not maintain a parallel Markdown checklist.
-- Ask the human owner only for copy approval, a strategic fork, or a ship/redraft/abandon decision. Decide ordinary engineering details from code and tests.
+- Pause only for an unresolved strategic choice or when the human requests a hold. Decide ordinary copy and engineering details from evidence, code, and tests.
 - `ParameterValue.valueOverride` may summarize related canonical evidence; do not force its trigger and dialog values to match (for example, `95%` may open the canonical 6,650-disease count and confidence interval).
 - For a non-trivial cross-system change, show the current and proposed flow before editing.
 

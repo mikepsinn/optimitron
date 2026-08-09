@@ -397,8 +397,43 @@ function renderPacket({
       "_No user-facing page or component changes were inferred from changed files or the visual review manifest._",
     );
   } else {
-    lines.push("### Review checklist");
+    const reviewCommitId =
+      typeof manifest?.commitSha === "string" && manifest.commitSha.length > 0
+        ? shortSha(manifest.commitSha)
+        : "current";
+    lines.push("### Agent preflight");
     lines.push("");
+    lines.push(
+      "_The agent checks this only after rerunning the review until every diff is intentional. It resets for each commit._",
+    );
+    lines.push("");
+    lines.push(
+      renderCheckItem(
+        {
+          id: `author:noise-audited:${reviewCommitId}`,
+          label:
+            "Opened the generated visual review, inspected every changed and copy-only route, and fixed all unexplained drift.",
+        },
+        checkedIds,
+      ),
+    );
+    lines.push("");
+    lines.push("### Human review checklist");
+    lines.push("");
+    lines.push(
+      "_Agents leave these boxes unchecked. Mike checks them after reviewing the linked evidence._",
+    );
+    lines.push("");
+    lines.push(
+      renderCheckItem(
+        {
+          id: "scope:no-unrelated-diffs",
+          label:
+            "Confirm every displayed visual and copy change belongs to this PR; investigate and fix unexplained drift before approval.",
+        },
+        checkedIds,
+      ),
+    );
     lines.push(...allItems.map((item) => renderCheckItem(item, checkedIds)));
   }
 
