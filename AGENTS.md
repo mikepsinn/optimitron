@@ -122,7 +122,8 @@ Before writing or editing any public-facing website, email, metadata, CTA, empty
 - **Write like Dale Carnegie.** Talk in the reader’s interest; make them feel important; appeal to nobler motives (love, lives saved, suffering prevented) — never obligation, ranking, or downline pressure.
 - **Use Octalysis on share/vote CTAs:** Epic Meaning & Calling, Development & Accomplishment, Social Influence & Relatedness. Do not lean on Scarcity/Obligation guilt loops that smell like MLM.
 - Treat `page.logged-out.md` diffs as copy-review evidence. Reject weaker copy, loader captures, and unrelated snapshot drift before committing.
-- After verification and screenshots, commit, push, and open or update a normal pull request. Pause only for an explicit hold or unresolved strategic choice.
+- After verification and screenshots, commit the intended changes. Push the branch. Open or update a normal pull request.
+- Pause only for an explicit hold or unresolved strategic choice.
 - Show copy changes as Before → After in the handoff. Label additions New and unchanged relocations Moved unchanged.
 
 ## Task Writing — Simplified Technical English
