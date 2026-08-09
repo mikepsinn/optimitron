@@ -41,6 +41,8 @@ const mocks = vi.hoisted(() => ({
   scoreTaskForUser: vi.fn(),
   isTaskBlocked: vi.fn(),
   isTaskLeased: vi.fn(),
+  listActiveTaskLeases: vi.fn(),
+  getTaskCoordinationContext: vi.fn(),
   mergeTask: vi.fn(),
   taskCreate: vi.fn(),
   taskUpdate: vi.fn(),
@@ -197,6 +199,8 @@ vi.mock("../tasks/task-merge.server", () => ({
 
 vi.mock("../tasks/agent-lease.server", () => ({
   isTaskLeased: mocks.isTaskLeased,
+  listActiveTaskLeases: mocks.listActiveTaskLeases,
+  getTaskCoordinationContext: mocks.getTaskCoordinationContext,
   acquireLease: vi.fn(),
   heartbeatLease: vi.fn(),
   releaseLease: vi.fn(),
@@ -719,6 +723,11 @@ beforeEach(() => {
   mocks.canUserManageTask.mockResolvedValue(true);
   mocks.getTaskAccessWhere.mockReturnValue({});
   mocks.getTaskClientAccessWhere.mockReturnValue({});
+  mocks.getTaskCoordinationContext.mockResolvedValue({
+    activeExecution: null,
+    activeLease: null,
+  });
+  mocks.listActiveTaskLeases.mockResolvedValue([]);
   mocks.isTaskWithinClientAccessBoundary.mockReturnValue(true);
   mocks.ensurePersonForUser.mockResolvedValue({
     displayName: "Test User",
@@ -2591,6 +2600,93 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
+    it("returns authorized active lease and execution context with getTask", async () => {
+      mocks.getTaskDetailData.mockResolvedValue({
+        taskCommunicationCount: 0,
+        task: makeCreatedTask({ id: "coordinated-task" }),
+      });
+      mocks.getTaskCoordinationContext.mockResolvedValue({
+        activeExecution: {
+          agentExecutor: {
+            agentKey: "openai-codex-general",
+            displayName: "OpenAI Codex",
+            id: "executor-1",
+          },
+          executorKey: "openai-codex-general",
+          id: "attempt-1",
+          runContext: {
+            agentRunId: "run-1",
+            baseCommit: "abc123",
+            branch: "feature/coordinated-work",
+            isolationMode: "ISOLATED_WORKTREE",
+            ownedFileGlobs: ["packages/web/src/lib/**"],
+            worktreePath: "C:/worktrees/coordinated-work",
+          },
+          startedAt: new Date("2026-08-09T00:00:00.000Z"),
+          status: TaskExecutionAttemptStatus.RUNNING,
+        },
+        activeLease: {
+          agentId: "agent-1",
+          expiresAt: new Date("2026-08-09T01:00:00.000Z"),
+          lastHeartbeatAt: new Date("2026-08-09T00:30:00.000Z"),
+        },
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({
+          name: "getTask",
+          arguments: { taskId: "coordinated-task" },
+        }),
+      );
+
+      expect(body.coordination).toMatchObject({
+        activeExecution: {
+          id: "attempt-1",
+          runContext: {
+            agentRunId: "run-1",
+            isolationMode: "ISOLATED_WORKTREE",
+          },
+        },
+        activeLease: { agentId: "agent-1" },
+      });
+      expect(mocks.getTaskCoordinationContext).toHaveBeenCalledWith(
+        "coordinated-task",
+      );
+    });
+
+    it("returns coordination for an accessible public task even without an authenticated userId", async () => {
+      // Local stdio (scripts/mcp-task-server.ts) runs with userId undefined
+      // and ALL_SCOPES when no MCP_USER_ID/MCP_USER_EMAIL is configured, so
+      // it can read public tasks. Coordination must not be hidden behind a
+      // userId check on top of that already-applied access check, or the
+      // pre-edit lease/execution inspection this tool exists for silently
+      // no-ops for the primary local-agent connection path.
+      mocks.getTaskDetailData.mockResolvedValue({
+        taskCommunicationCount: 0,
+        task: makeCreatedTask({ id: "public-coordinated-task" }),
+      });
+      mocks.getTaskCoordinationContext.mockResolvedValue({
+        activeExecution: null,
+        activeLease: { agentId: "agent-1", expiresAt: new Date() },
+      });
+
+      const client = await setup(undefined, ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({
+          name: "getTask",
+          arguments: { taskId: "public-coordinated-task" },
+        }),
+      );
+
+      expect(body.coordination).toMatchObject({
+        activeLease: { agentId: "agent-1" },
+      });
+      expect(mocks.getTaskCoordinationContext).toHaveBeenCalledWith(
+        "public-coordinated-task",
+      );
+    });
+
     it("returns one canonical impact frame", async () => {
       const selectedFrame = {
         frameKey: "marginal",
@@ -3777,6 +3873,63 @@ describe("MCP server tool dispatch", () => {
       expect(myQueue[0]).toMatchObject({ priority: 100, executorType: "Self" });
       expect(myQueue[0]?.sprintPriority).toBeUndefined();
       expect(myQueue[0]?.taskPriority).toBeUndefined();
+    });
+
+    it("omits other agents' leases from getAIQueue without truncating the next available task", async () => {
+      mocks.listTasks.mockResolvedValue([
+        makeCreatedTask({
+          id: "leased-by-other",
+          contextJson: { executor_type: "AI Agent" },
+        }),
+        makeCreatedTask({
+          id: "leased-by-caller",
+          contextJson: { executor_type: "AI Agent" },
+        }),
+        makeCreatedTask({
+          id: "available",
+          contextJson: { executor_type: "AI Agent" },
+        }),
+      ]);
+      mocks.isTaskBlocked.mockReturnValue(false);
+      mocks.computeTaskPriority.mockImplementation((task: { id: string }) =>
+        makePriority({
+          priority:
+            task.id === "leased-by-other"
+              ? 300
+              : task.id === "leased-by-caller"
+                ? 200
+                : 100,
+        }),
+      );
+      mocks.listActiveTaskLeases.mockResolvedValue([
+        {
+          agentId: "other-agent",
+          expiresAt: new Date("2030-01-01T00:00:00.000Z"),
+          taskId: "leased-by-other",
+        },
+        {
+          agentId: "current-agent",
+          expiresAt: new Date("2030-01-01T00:00:00.000Z"),
+          taskId: "leased-by-caller",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const body = parseToolBody(
+        await client.callTool({
+          name: "getAIQueue",
+          arguments: { agentId: "current-agent", maxResults: 2 },
+        }),
+      );
+
+      expect(
+        (body.queue as Array<{ id: string }>).map((task) => task.id),
+      ).toEqual(["leased-by-caller", "available"]);
+      expect(mocks.listActiveTaskLeases).toHaveBeenCalledWith([
+        "leased-by-other",
+        "leased-by-caller",
+        "available",
+      ]);
     });
 
     it("reports unknown capability evidence instead of executing the task", async () => {

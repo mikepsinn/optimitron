@@ -37,12 +37,28 @@ const MoneySchema = z
   })
   .strict();
 
+export const TaskExecutionRunContextSchema = z
+  .object({
+    agentRunId: z.string().min(1).max(200).optional(),
+    baseCommit: z.string().min(1).max(200).optional(),
+    branch: z.string().min(1).max(500).optional(),
+    isolationMode: z.enum([
+      "NO_WORKTREE",
+      "SHARED_ONE_PR",
+      "ISOLATED_WORKTREE",
+    ]),
+    ownedFileGlobs: z.array(z.string().min(1).max(500)).max(100).optional(),
+    worktreePath: z.string().min(1).max(2_000).optional(),
+  })
+  .strict();
+
 export const StartTaskExecutionSchema = z
   .object({
     agentExecutorId: z.string().min(1).nullable().optional(),
     confidence: z.number().min(0).max(1).nullable().optional(),
     estimatedCost: MoneySchema.nullable().optional(),
     estimatedDurationSeconds: z.number().int().positive().nullable().optional(),
+    runContext: TaskExecutionRunContextSchema.nullable().optional(),
     taskId: z.string().min(1),
   })
   .strict();
@@ -277,7 +293,10 @@ export async function startTaskExecution(
         executorPersonId: agent ? null : actor.personId,
         executorUserId: agent ? null : actorUserId,
         jurisdictionId: task.jurisdictionId,
-        metadata: { startedByUserId: actorUserId },
+        metadata: {
+          ...(input.runContext ? { runContext: input.runContext } : {}),
+          startedByUserId: actorUserId,
+        },
         startedAt: new Date(),
         status: TaskExecutionAttemptStatus.RUNNING,
         taskClaimId: task.claims[0]?.id ?? null,

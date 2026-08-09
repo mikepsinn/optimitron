@@ -234,6 +234,24 @@ export const PRIVATE_EXECUTION_TOOL_DEFINITIONS = [
         confidence: { type: ["number", "null"] },
         estimatedCost: { ...MONEY_SCHEMA, type: ["object", "null"] },
         estimatedDurationSeconds: { type: ["number", "null"] },
+        runContext: {
+          type: ["object", "null"],
+          properties: {
+            agentRunId: { type: "string" },
+            baseCommit: { type: "string" },
+            branch: { type: "string" },
+            isolationMode: {
+              type: "string",
+              enum: ["NO_WORKTREE", "SHARED_ONE_PR", "ISOLATED_WORKTREE"],
+            },
+            ownedFileGlobs: {
+              type: "array",
+              items: { type: "string" },
+            },
+            worktreePath: { type: "string" },
+          },
+          required: ["isolationMode"],
+        },
         taskId: { type: "string" },
       },
       required: ["taskId"],

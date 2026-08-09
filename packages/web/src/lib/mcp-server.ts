@@ -5894,6 +5894,11 @@ const TASK_TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object" as const,
       properties: {
+        agentId: {
+          type: "string",
+          description:
+            "Current agent ID. Required to see this agent's own leased tasks: any leased task is omitted unless agentId is passed and matches the lease holder.",
+        },
         maxResults: {
           type: "number",
           description: "Max number of tasks to return (default 20, max 100)",
@@ -9968,7 +9973,7 @@ export function createMcpServer(
                 'It returns your AI-assigned tasks — there is no "your" without identity.',
               );
 
-            const { tasks, ranking } = await getTaskFunctions();
+            const { tasks, ranking, lease } = await getTaskFunctions();
             const maxResults = parseQueueLimit(a.maxResults, 20, 100);
             const buybackRate = parsePositiveNumber(
               a.buybackRate,
@@ -10005,18 +10010,38 @@ export function createMcpServer(
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
-            const queue = buildPersonalQueueRows(
+            const eligibleRows = buildPersonalQueueRows(
               planningTasks,
               ranking,
               buybackRate,
               {
                 executorProfiles,
-                limit: maxResults,
+                limit: assignedTasks.length,
                 requireExecutable: true,
                 requireUnblocked: true,
                 rootedTaskIds: graph.rootedTaskIds,
               },
             );
+            const activeLeases = await lease.listActiveTaskLeases(
+              eligibleRows.map((task) => task.id),
+            );
+            const currentAgentId = optionalString(a.agentId);
+            const leaseByTaskId = new Map(
+              activeLeases.map((activeLease) => [
+                activeLease.taskId,
+                activeLease,
+              ]),
+            );
+            const queue = eligibleRows
+              .filter((task) => {
+                const activeLease = leaseByTaskId.get(task.id);
+                return (
+                  !activeLease ||
+                  (currentAgentId != null &&
+                    activeLease.agentId === currentAgentId)
+                );
+              })
+              .slice(0, maxResults);
 
             return ok({
               buybackRate,
@@ -10811,7 +10836,7 @@ export function createMcpServer(
 
           // ── getTask ────────────────────────────────────────────
           case "getTask": {
-            const { tasks } = await getTaskFunctions();
+            const { lease, tasks } = await getTaskFunctions();
             const taskId = requiredString(a.taskId, "taskId");
             if (typeof taskId !== "string") return taskId;
             const result = await tasks.getTaskDetailData(
@@ -10820,7 +10845,19 @@ export function createMcpServer(
               { clientAccessBoundary: taskClientBoundary },
             );
             if (!result) return err("Task not found");
+            // getTaskDetailData already applied the access check above (a
+            // null userId still returns public tasks). Coordination is
+            // metadata about that same already-accessible task, so gating
+            // it separately on userId hid it from local stdio sessions —
+            // resolveLocalMcpIdentity leaves userId undefined with
+            // ALL_SCOPES when no MCP_USER_ID/MCP_USER_EMAIL is configured,
+            // which is the primary way Claude Code and Codex connect
+            // locally — defeating the pre-edit lease/execution inspection
+            // this tool exists for.
+            const coordination =
+              await lease.getTaskCoordinationContext(taskId);
             return ok({
+              coordination,
               task: enrichTaskForMcp(result.task),
               taskCommunicationCount: result.taskCommunicationCount,
             });
