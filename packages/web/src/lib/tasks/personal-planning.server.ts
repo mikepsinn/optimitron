@@ -12,7 +12,11 @@ import {
   type TaskCapabilityAssessment,
   type TaskExecutorCapabilities,
 } from "@optimitron/agent/task-capability";
-import { isExecutableWorkItem } from "./execution-eligibility";
+import {
+  isBoundedAgentTaskEffort,
+  isExecutableWorkItem,
+  MAX_AGENT_TASK_EFFORT_HOURS,
+} from "./execution-eligibility";
 import {
   buildExecutionPlan,
   compareExecutionTasks,
@@ -1039,6 +1043,7 @@ export function buildPersonalQueueRows(
   buybackRate?: number,
   options?: {
     executorProfiles?: PlanningExecutorProfile[];
+    requireBoundedAgentWork?: boolean;
     requireExecutable?: boolean;
     requireUnblocked?: boolean;
     limit?: number;
@@ -1188,8 +1193,13 @@ export function buildPersonalQueueRows(
     : enrichedRows;
 
   const ranked = filteredRows
-    .filter(
-      (row) =>
+    .filter((row) => {
+      const passesAgentBound =
+        !options?.requireBoundedAgentWork ||
+        row.executorType !== AI_EXECUTOR_TYPE ||
+        isBoundedAgentTaskEffort(row.estimatedEffortHours);
+      if (!passesAgentBound) return false;
+      return (
         !options?.requireExecutable ||
         (isAtomicExecutionRecord(row) &&
           row.capabilityStatus === "eligible" &&
@@ -1197,8 +1207,9 @@ export function buildPersonalQueueRows(
           (((row.hasMarginalEstimate || row.hasStructuralUnlockEstimate) &&
             row.valid &&
             row.priority > 0) ||
-            isDeadlineLaneGuardrail(row))),
-    )
+            isDeadlineLaneGuardrail(row)))
+      );
+    })
     .sort((left, right) =>
       compareExecutionTasks(
         toExecutionPlanningTask(left),
@@ -1256,6 +1267,36 @@ export function summarizeCapabilityWork(rows: PersonalQueueRow[]) {
       .filter((row) => row.capabilityStatus === "unknown")
       .map(summarize),
   };
+}
+
+export function summarizeAgentWorkNeedingDecomposition(
+  rows: PersonalQueueRow[],
+  limit: number,
+) {
+  return rows
+    .filter(
+      (row) =>
+        row.executorType === AI_EXECUTOR_TYPE &&
+        isAtomicExecutionRecord(row as unknown as PersonalQueueTaskRecord) &&
+        row.rooted &&
+        !isBoundedAgentTaskEffort(row.estimatedEffortHours),
+    )
+    .sort((left, right) =>
+      compareExecutionTasks(
+        toExecutionPlanningTask(left),
+        toExecutionPlanningTask(right),
+      ),
+    )
+    .slice(0, limit)
+    .map((row) => ({
+      estimatedHours: row.estimatedEffortHours,
+      id: row.id,
+      reason:
+        row.estimatedEffortHours == null
+          ? "Add a usable effort estimate before autonomous execution."
+          : `Decompose this ${row.estimatedEffortHours}-hour task into independently verifiable tasks of ${MAX_AGENT_TASK_EFFORT_HOURS} hours or less.`,
+      title: row.title,
+    }));
 }
 
 export async function loadHumanPlanningProfiles(
@@ -1657,6 +1698,7 @@ export async function loadPersonalQueueAudit(request: {
     {
       executorProfiles,
       limit: currentPersonalTasks.length,
+      requireBoundedAgentWork: true,
       requireExecutable: true,
       requireUnblocked: true,
       rootedTaskIds: graph.rootedTaskIds,
@@ -1721,6 +1763,19 @@ export async function loadPersonalQueueAudit(request: {
     const row = rowById.get(task.id);
     if (!row) continue;
     const needsExecutionEstimate = isAtomicExecutionRecord(task);
+
+    if (
+      needsExecutionEstimate &&
+      isAIExecutableTask(task) &&
+      !isBoundedAgentTaskEffort(task.estimatedEffortHours)
+    ) {
+      issues.push({
+        code: "UNBOUNDED_AGENT_TASK",
+        message: `Agent task ${task.id} must be decomposed into tasks of ${MAX_AGENT_TASK_EFFORT_HOURS} hours or less before autonomous execution.`,
+        severity: "high",
+        taskId: task.id,
+      });
+    }
 
     if (needsExecutionEstimate && row.capabilityStatus === "unknown") {
       issues.push({
