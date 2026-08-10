@@ -1083,6 +1083,14 @@ export const SEGMENTS = [
     narration: `The entire game comes down to two numbers. Healthy life expectancy: ${currentHale} years, target ${targetHale}. Median income: ${currentAvgIncome} dollars, target ${targetAvgIncome} dollars. Your species has produced 4,000 pages of U.N. resolutions about these numbers. This game has two progress bars. We find the bars more effective.`,
   },
   {
+    id: "campaign-vote-and-share",
+    title: "Vote and Share",
+    slideId: "vote-and-share",
+    tags: ["mechanism", "cta"],
+    act: "II-game",
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Vote, then share your referral link. Each friend who votes through your link earns you one ${POINT}.`,
+  },
+  {
     id: "three-scenarios-all-win",
     title: "The Fund",
     slideId: "three-scenarios-all-win",
@@ -1223,6 +1231,33 @@ function resolveSegments(ids: readonly DemoSegmentId[]): DemoSegment[] {
 // ---------------------------------------------------------------------------
 
 export const PLAYLISTS: DemoPlaylist[] = [
+  {
+    id: "campaign-cut",
+    name: "Campaign Cut (~5 min)",
+    description: "Treaty case, vote and share action, evidence tools, and impact",
+    segments: resolveSegments([
+      "earth-optimization-game-brief",
+      "misaligned-superintelligence-brief",
+      "military-waste-170t",
+      "brain-drain-professionals",
+      "opportunity-cost-170t",
+      "military-health-ratio-brief",
+      "economic-collapse-clock-brief",
+      "compound-growth-scenarios",
+      "one-percent-treaty-brief",
+      "pluralistic-ignorance-bug-brief",
+      "win-conditions-hale-income",
+      "campaign-vote-and-share",
+      "armory-brief",
+      "decentralized-fda-brief",
+      "optimal-policy-generator",
+      "optimal-budget-generator",
+      "pairwise-budget-allocation-brief",
+      "eigenvector-budget-result",
+      "ten-billion-lives-saved-brief",
+      "final-call-to-action-brief",
+    ]),
+  },
   {
     id: "protocol-labs",
     name: "Protocol Labs Hackathon (~3:30)",
