@@ -2,8 +2,6 @@ import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
   END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
-  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
-  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
@@ -220,7 +218,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "",
       "Toby Ord estimates the probability of an existential catastrophe in this century at approximately 1 in 6. The largest part is unaligned artificial intelligence at approximately 1 in 10. Engineered pandemics are approximately 1 in 30. Nuclear war is approximately 1 in 1,000.",
       "",
-      "The value-if-achieved scenario values the eight billion people alive now at $10 million per statistical life. It excludes all future generations. It does not estimate the probability of extinction.",
+      "The method page keeps a current-lives mortality-risk scenario for context. The task tree does not compare it with annual mission values.",
       "",
       "An extinction event sets the value of every other mission task to zero. This task therefore multiplies the other mission tasks. It does not compete with them.",
       "",
@@ -229,9 +227,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "An extinction event sets the value of all other work to zero. Each task below this task decreases the probability of that event.",
     interestTags: [],
-    // Conservative current-lives-only floor. This excludes future generations
-    // and carries no extinction probability.
-    valueIfAchievedUsdBase: PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
+    // Null explicitly retires the previous managed mission-value frame.
+    valueIfAchievedUsdBase: null,
     status: TaskStatus.ACTIVE,
     sortOrder: -955,
   },
@@ -247,19 +244,19 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "",
       "The categories below identify major animal contexts. Add concrete welfare tasks below the applicable categories.",
       "",
-      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. [Animal Charity Evaluators reports](https://animalcharityevaluators.org/blog/better-for-animals-the-evidence-behind-conducting-research-for-effective-advocacy/) that persons allocated approximately $260 million to farmed-animal advocacy in 2024. This is approximately 0.3 cents for each land animal.",
+      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year.",
       "",
-      "The value-if-achieved scenario uses that observed annual spending for 73.4 years. This is a conservative lower bound. It does not assign a dollar value to an animal or to suffering.",
+      "[Animal Charity Evaluators reports](https://animalcharityevaluators.org/blog/better-for-animals-the-evidence-behind-conducting-research-for-effective-advocacy/) $260 million in farmed-animal advocacy funding for 2024. This excludes companion-animal markets, wild-animal welfare, and most direct animal care.",
+      "",
+      "Advocacy funding is an input cost. It is not the value of ending animal suffering. The task tree leaves this mission value empty until a species-weighted welfare model exists.",
       "",
       "Add a task below this task. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
     ].join("\n"),
     impactStatement:
       "Each task below this mission decreases the number, duration, or intensity of harmful animal experiences.",
     interestTags: [],
-    // Revealed-preference floor only. This avoids an invented cross-species
-    // welfare weight and does not claim to price all animal suffering.
-    valueIfAchievedUsdBase:
-      MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
+    // Null explicitly retires the previous managed mission-value frame.
+    valueIfAchievedUsdBase: null,
     status: TaskStatus.ACTIVE,
     sortOrder: -950,
   },

@@ -22,14 +22,14 @@ export const VALUE_IF_ACHIEVED_USD_METRIC_KEY = "value_if_achieved_usd";
 export const MISSION_VALUE_HORIZON_YEARS = GLOBAL_LIFE_EXPECTANCY_2024.value;
 
 /**
- * Observed annual farmed-animal advocacy allocation. This is a conservative
- * revealed-preference floor, not a price for an animal or for suffering.
+ * Observed annual farmed-animal advocacy allocation. This is funding context,
+ * not a price for an animal, a welfare preference, or an outcome value.
  */
 export const FARMED_ANIMAL_ADVOCACY_SPENDING_2024: Parameter = {
   confidence: "medium",
   conservative: true,
   description:
-    "Farmed-animal advocacy funding allocated in 2024. This observed spending is a lower-bound preference signal, not a complete valuation of animal welfare.",
+    "Farmed-animal advocacy funding allocated in 2024. This is an input cost, not a valuation of animal welfare.",
   displayName: "Farmed-animal advocacy spending in 2024",
   parameterName: "FARMED_ANIMAL_ADVOCACY_SPENDING_2024",
   sourceType: "external",
@@ -76,20 +76,20 @@ export const END_POVERTY_MISSION_SCENARIO_VALUE_USD = toMissionScenarioValue(
 );
 
 /**
- * Preventing extinction: current human lives only, valued once. This excludes
- * all future generations and is therefore a conservative scenario floor.
+ * Preventing extinction reference scenario: current human lives valued once.
+ * This excludes all future generations and does not use the mission horizon.
  *
- * This is not expected value. The mission probability is not estimated.
+ * This is not comparable with the annual-flow mission scenarios. It is not
+ * expected value. The mission probability is not estimated.
  */
 export const PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD =
   GLOBAL_POPULATION_2024.value * VALUE_OF_STATISTICAL_LIFE.value;
 
 /**
- * Minimizing animal suffering: the current revealed-preference spending floor
- * over the mission comparison period. This deliberately does not invent a
- * cross-species welfare weight or claim to price all animal suffering.
+ * Farmed-animal advocacy spending over the mission comparison period. This is
+ * funding context only. It is not the value of minimizing animal suffering.
  *
- * This is not expected value. The mission probability is not estimated.
+ * This is not expected value and must not enter mission or task ranking.
  */
 export const MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD =
   toMissionScenarioValue(FARMED_ANIMAL_ADVOCACY_SPENDING_2024.value);

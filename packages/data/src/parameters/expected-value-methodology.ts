@@ -84,17 +84,21 @@ mission value asks what that outcome would be worth under one stated scenario.
 
 **Mission value is not a forecast. We do not estimate the mission's probability.**
 
-The task tree labels this quantity **Value if achieved**. It does not use the
-quantity as task expected value or task priority.
+The task tree labels comparable mission scenarios **Value if achieved**. It
+does not use the quantity as task expected value or task priority.
+
+The tree leaves a mission value empty when the available scenario measures a
+different quantity. The methodology can still show that scenario as context.
 
 ### Mission comparison scenario
 
-Most missions use this calculation:
+End War, End Disease, and End Poverty use this calculation:
 
 **Value if achieved = current annual outcome value × ${MISSION_VALUE_HORIZON_YEARS} years**
 
-The extinction scenario values today's population once. It does not multiply
-current lives by the comparison period.
+The extinction reference scenario values today's population once. It does not
+multiply current lives by the comparison period. The tree does not compare it
+with the three annual-flow scenarios.
 
 | Assumption | Current choice |
 | --- | --- |
@@ -188,7 +192,7 @@ This scenario covers economic drag. It does not price pain or suffering.
 This population-equivalent scenario values the income gap at the global median.
 It is not a forecast of income distribution or mission success.
 
-## Worked mission scenario: preventing extinction
+## Reference scenario: preventing extinction
 
 | Step | Source | Value |
 | --- | --- | --- |
@@ -196,21 +200,36 @@ It is not a forecast of income distribution or mission success.
 | Value per statistical life | ${citedText(usdShort(VALUE_OF_STATISTICAL_LIFE.value), VALUE_OF_STATISTICAL_LIFE)} | policy-analysis value |
 | Current lives × value per life | One-time scenario | **${usdShort(PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD)}** |
 
-This conservative floor excludes every future generation. It does not multiply
-current lives by the comparison period or estimate extinction probability.
+The task tree does not display this number as a mission value. It is not
+comparable with the three annual-flow scenarios.
 
-## Worked mission scenario: minimizing animal suffering
+The scenario excludes every future generation. It does not multiply current
+lives by the ${MISSION_VALUE_HORIZON_YEARS}-year comparison period. It does not
+estimate extinction probability. The value of a statistical life represents
+collective willingness to pay for small mortality-risk reductions. It is not a
+price assigned to a certain death.
+
+## Funding context: minimizing animal suffering
 
 No accepted dollar conversion covers all species and harmful experiences. The
-tree therefore shows a documented revealed-preference floor instead of an
-invented cross-species welfare weight.
+task tree therefore leaves this mission value empty.
 
 | Step | Source | Value |
 | --- | --- | --- |
 | Farmed-animal advocacy allocation in 2024 | ${citedText(usdShort(FARMED_ANIMAL_ADVOCACY_SPENDING_2024.value), FARMED_ANIMAL_ADVOCACY_SPENDING_2024)} | observed annual spending |
-| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD)}** |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD)} in funding context** |
 
-This is a lower bound. It is not the full value of minimizing animal suffering.
+This amount covers farmed-animal advocacy. It excludes companion-animal markets,
+wild-animal welfare, and most direct animal care. It does not include pet food
+or veterinary spending. It is an input cost, not the value of minimizing animal
+suffering. The tree does not display it as a mission value or use it for ranking.
+
+[Rethink Priorities estimates](https://rethinkpriorities.org/research-area/welfare-range-estimates/)
+a median welfare range of 0.332 for chickens, compared with 1.0 for humans.
+That estimate concerns possible experience intensity. It does not mean one
+chicken life equals 0.332 human lives. A dollar valuation would also require
+the affected populations, duration, intensity, intervention effect, and moral
+weights. No accepted model currently supplies all of those inputs.
 
 ## Write a task estimate
 

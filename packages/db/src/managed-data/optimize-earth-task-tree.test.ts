@@ -3,9 +3,7 @@ import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
   END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
-  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
-  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
 } from "@optimitron/data/parameters";
 import {
   COURT_OF_HUMANITY_TASK_ID,
@@ -130,31 +128,25 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(mission?.successProbabilityBase).toBeUndefined();
   });
 
-  // Each mission uses a documented probability-free scenario. These values do
-  // not enter task ranking. See docs/EXPECTED_VALUE_METHODOLOGY.md.
-  it("gives every mission a documented value-if-achieved scenario", () => {
+  // Only annual-flow scenarios share the same horizon and units. Extinction's
+  // current-lives reference and animal-advocacy spending remain methodology
+  // context, not comparable mission values.
+  it("shows only comparable mission values in the task tree", () => {
     const valued = new Map([
       [END_WAR_TASK_ID, END_WAR_MISSION_SCENARIO_VALUE_USD],
       [END_DISEASE_TASK_ID, END_DISEASE_MISSION_SCENARIO_VALUE_USD],
       [END_POVERTY_TASK_ID, END_POVERTY_MISSION_SCENARIO_VALUE_USD],
-      [
-        PREVENT_EXTINCTION_TASK_ID,
-        PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
-      ],
-      [
-        MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
-        MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
-      ],
     ]);
+    for (const id of valued.keys()) {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
+    }
     for (const id of [
-      END_WAR_TASK_ID,
-      END_DISEASE_TASK_ID,
-      END_POVERTY_TASK_ID,
       PREVENT_EXTINCTION_TASK_ID,
       MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
     ]) {
       const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
-      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
+      expect(mission?.valueIfAchievedUsdBase).toBeNull();
     }
   });
 
