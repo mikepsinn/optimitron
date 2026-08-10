@@ -134,10 +134,16 @@ export function buildTaskTree(
     ancestorIds = new Set<string>(),
   ): TaskTreeNode {
     const nextAncestorIds = new Set(ancestorIds).add(task.id);
-    const children = Array.from(childrenByParentId.get(task.id)?.values() ?? [])
-      .filter(({ task: child }) => !nextAncestorIds.has(child.id))
-      .sort((left, right) => sortSiblings(left.task, right.task))
-      .map((child) => toNode(child.task, child.isLinked, nextAncestorIds));
+    // A linked appearance proves only that this task advances the displayed
+    // goal. Its canonical descendants do not inherit that edge automatically.
+    // Keep the full subtree on the canonical appearance and make aliases leaf
+    // references. This also avoids duplicating large branches in the DOM.
+    const children = isLinked
+      ? []
+      : Array.from(childrenByParentId.get(task.id)?.values() ?? [])
+          .filter(({ task: child }) => !nextAncestorIds.has(child.id))
+          .sort((left, right) => sortSiblings(left.task, right.task))
+          .map((child) => toNode(child.task, child.isLinked, nextAncestorIds));
     const valueIfAchievedUsd = task.selectedImpactFrame
       ? getMetricBaseValue(
           task.selectedImpactFrame.metrics,

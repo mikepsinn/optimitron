@@ -190,8 +190,11 @@ describe("buildTaskTree", () => {
       expect(treaty?.id).toBe("treaty");
       expect(treaty?.isLinked).toBe(true);
       expect(treaty?.parentTaskId).toBe("end-war");
-      expect(treaty?.children[0]?.id).toBe("treaty-child");
+      expect(treaty?.children).toEqual([]);
     }
+    expect(missions.get("end-war")?.children[0]?.children[0]?.id).toBe(
+      "treaty-child",
+    );
     expect(tree && countTaskTreeNodes(tree)).toBe(7);
   });
 
