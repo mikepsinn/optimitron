@@ -5,6 +5,7 @@ import {
   GLOBAL_LIFE_EXPECTANCY_2024,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
   GLOBAL_POPULATION_2024,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   PRIZE_TARGET_MEDIAN_INCOME_YEAR_15,
   VALUE_OF_STATISTICAL_LIFE,
 } from "./parameters-calculations-citations";
@@ -15,6 +16,7 @@ import {
   FARMED_ANIMAL_ADVOCACY_SPENDING_2024,
   MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
   MISSION_VALUE_HORIZON_YEARS,
+  OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD,
   PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
 } from "./mission-value-horizon";
 
@@ -156,6 +158,20 @@ Adding overlapping task estimates can count the same outcome more than once. A
 subtask must not change the mission's value if achieved.
 
 Show mission outcomes and task scenario estimates separately.
+
+## Worked root scenario: optimizing Earth
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Current annual opportunity cost | ${citedText("governance failures in health, science, lead exposure, and migration", POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL)} | ${usdShort(POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value)}/year |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD)}** |
+
+The task tree shows **Value if achieved ${usdShort(OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD)}** for Optimize Earth.
+It does not add the mission values below it because those outcomes overlap.
+
+This is not expected value. Expected value would also require a defensible
+probability that humanity achieves the objective. The current model does not
+invent that probability.
 
 ## Worked mission scenario: ending war
 

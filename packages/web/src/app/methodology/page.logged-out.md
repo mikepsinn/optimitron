@@ -49,6 +49,13 @@
 ### Do not add task estimates into a mission
 - Adding overlapping task estimates can count the same outcome more than once. A subtask must not change the mission's value if achieved.
 - Show mission outcomes and task scenario estimates separately.
+### Worked root scenario: optimizing Earth
+| STEP | SOURCE | VALUE |
+| --- | --- | --- |
+| Current annual opportunity cost | [governance failures in health, science, lead exposure, and migration](https://manual.WarOnDisease.org/calculations.html#sec-political_dysfunction_global_opportunity_cost_total) | $101T/year |
+| × comparison period | 73.4 years | $7.4 quadrillion |
+- The task tree shows Value if achieved $7.4 quadrillion for Optimize Earth. It does not add the mission values below it because those outcomes overlap.
+- This is not expected value. Expected value would also require a defensible probability that humanity achieves the objective. The current model does not invent that probability.
 ### Worked mission scenario: ending war
 | STEP | SOURCE | VALUE |
 | --- | --- | --- |

@@ -180,7 +180,13 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
   [ROUTES.fixAi, ["packages/web/src/app/fix-ai/page.tsx"]],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
-  [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
+  [
+    ROUTES.methodology,
+    [
+      "packages/data/src/parameters/expected-value-methodology.ts",
+      "packages/web/src/app/methodology/page.tsx",
+    ],
+  ],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],

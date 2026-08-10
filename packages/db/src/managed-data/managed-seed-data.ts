@@ -74,13 +74,17 @@ import {
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_COORDINATION_ACTIVATION_COST_PER_PARTICIPANT,
   GLOBAL_REGISTERED_VOTERS,
+  MISSION_VALUE_HORIZON_YEARS,
   MECHANISM_DFDA_NET_COST,
   MECHANISM_LOVING_TAKEOVER_NET_COST,
+  OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   SHIRT_SEED_PROGRAM_TOTAL_USD,
   TREATY_CAMPAIGN_TOTAL_COST,
   UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD,
   STANDARD_ECONOMIC_QALY_VALUE_USD,
   TREATY_COST_PER_DALY_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
+  VALUE_IF_ACHIEVED_USD_METRIC_KEY,
   earthOptimizationPrizeWinCondition,
   EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
   shareableSnippets,
@@ -1399,12 +1403,40 @@ export async function syncManagedTreatyAccountabilityData() {
       medianHealthyLifeYearsEffectBase: hale.deltaRequired,
       medianIncomeGrowthEffectPpPerYearBase:
         EARTH_OPTIMIZATION_PRIZE_INCOME_GROWTH_EFFECT_PP_PER_YEAR,
+      metrics: [
+        {
+          metricKey: VALUE_IF_ACHIEVED_USD_METRIC_KEY,
+          unit: "USD",
+          baseValue: OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD,
+          lowValue:
+            (POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL
+              .confidenceInterval?.[0] ??
+              POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value) *
+            MISSION_VALUE_HORIZON_YEARS,
+          highValue:
+            (POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL
+              .confidenceInterval?.[1] ??
+              POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value) *
+            MISSION_VALUE_HORIZON_YEARS,
+          displayGroup: "outcome-value",
+          metadataJson: {
+            annualValueUsdBase:
+              POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value,
+            calculationsUrl:
+              POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL
+                .calculationsUrl,
+            comparisonPeriodYears: MISSION_VALUE_HORIZON_YEARS,
+            parameterName:
+              POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL
+                .parameterName,
+          },
+        },
+      ],
     },
     methodologyKey: "earth-optimization-prize-win-condition",
     calculationsUrl: earthOptimizationPrizeWinCondition.manualUrl,
-    // This model covers Treaty-driven disease acceleration, not every outcome
-    // under Optimize Earth. Keep its delay and win-condition fields without
-    // presenting the partial total as the root task's expected or outcome value.
+    // The root metric carries a separate probability-free value-if-achieved
+    // scenario. Keep the Treaty-driven DALY model out of expected-value fields.
     omitExpectedValue: true,
   });
 
