@@ -550,25 +550,16 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     ...defaultTaskFields,
     id: END_WAR_AND_DISEASE_TASK_ID,
     taskKey: END_WAR_AND_DISEASE_TASK_KEY,
-    // Legacy combined node, demoted off the root under End War. Its runtime
-    // children (end-dementia, cognitron-labs, gov-tomorrow, ...) are re-homed
-    // via MCP after this deploys; retire the node once they are moved.
+    // Its runtime children now live under the mission branches. Keep this
+    // explicit retired record so managed sync removes the empty legacy node.
     parentTaskId: END_WAR_TASK_ID,
     title: "End War and Disease",
-    description: [
-      "Run the international campaign to end war on disease.",
-      "",
-      `The practical route is to build the Court of Humanity, prosecute ${HUMANITY_V_GOVERNMENT_CASE_NAME}, and ratify the 1% Treaty so one percent of military spending funds pragmatic clinical trials instead of organized murder machinery.`,
-    ].join("\n"),
+    description:
+      "Retired after its children moved under the End War and End Disease missions.",
     impactStatement:
-      "This is the public mission under Optimize Earth until the 1% Treaty passes.",
+      "The separate mission branches now own this work.",
+    retired: true,
     sortOrder: -900,
-    primaryEndpoint: {
-      label: "Open warondisease.org",
-      url: "/",
-      instructions:
-        "Vote, share, recruit two more humans, or choose a campaign task.",
-    },
   },
   {
     ...defaultTaskFields,
@@ -824,7 +815,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       { toTaskId: END_DISEASE_TASK_ID },
       { toTaskId: END_POVERTY_TASK_ID },
     ],
-    title: "The Loving Takeover",
+    title: "Use shareholder power to redirect military lobbying",
     description: [
       "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
       "",
@@ -851,7 +842,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
     taskKey: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY,
     parentTaskId: LOVING_TAKEOVER_TASK_ID,
-    title: "Take Love's Wager: own one share",
+    title: "Buy one share to gain shareholder rights",
     description: [
       "Buy one share of any major military contractor through any brokerage.",
       "",
@@ -873,7 +864,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
     taskKey: LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
     parentTaskId: LOVING_TAKEOVER_TASK_ID,
-    title: "Send the board a love letter",
+    title: "Submit a shareholder demand to the board",
     description: [
       "As a shareholder, write to your board: you own them, you love them, and you do not want them to suffer and die from horrible diseases along with the rest of their shareholders. Their lobbying budget can fix that.",
       "",
@@ -896,7 +887,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID,
     taskKey: LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_KEY,
     parentTaskId: LOVING_TAKEOVER_TASK_ID,
-    title: `Optimize the $${Math.round(DEFENSE_LOBBYING_ANNUAL.value / 1e6)}M lobbying budget`,
+    title: `Redirect the $${Math.round(DEFENSE_LOBBYING_ANNUAL.value / 1e6)}M military lobbying budget toward public welfare`,
     description: [
       `The ask: the ~$${Math.round(DEFENSE_LOBBYING_ANNUAL.value / 1e6)} million per year of military-contractor lobbying gets allocated by the Optimal Policy and Budget Generators to maximize long-term shareholder value — including the shareholders staying alive.`,
       "",
@@ -949,7 +940,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     // Capital for the whole machine; primary under End War (the campaign it
     // funds first), edged to the other missions via TaskEdge after deploy.
     parentTaskId: END_WAR_TASK_ID,
-    title: "Capitalize Earth Optimization Services",
+    title: "Fund tools that measure and improve public welfare",
     description: [
       "Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget.",
       "",
@@ -1068,7 +1059,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     parentTaskId: END_DISEASE_TASK_ID,
     // Cheaper trials mean less disease, and disease is a drag on income.
     edges: [{ toTaskId: END_POVERTY_TASK_ID }],
-    title: "Fund the decentralized FDA directly",
+    title: "Fund faster, cheaper pragmatic clinical trials",
     description: [
       "Fund the decentralized FDA (dFDA) to run pragmatic, patient-funded trials at a fraction of the usual cost — the direct path to disease eradication that does not wait on any treaty passing.",
       "",

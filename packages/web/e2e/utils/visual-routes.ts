@@ -178,6 +178,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "packages/web/src/components/eos-retro/MachineDiagram.tsx",
     ],
   ],
+  [ROUTES.fixAi, ["packages/web/src/app/fix-ai/page.tsx"]],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
   [ROUTES.invest, INVEST_LANDING_FILES],
@@ -192,6 +193,7 @@ const PRESIDENT_TASK_LIST_SELECTOR =
 const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.employees, PRESIDENT_TASK_LIST_SELECTOR],
   [ROUTES.eos, "h1"],
+  [ROUTES.fixAi, "#next-hour"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
   // Last section of the page: proves the capture rendered the whole pitch,
@@ -363,6 +365,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
   {
     covers: [
       TASK_TREE_VIEW_FILE,
+      "packages/db/src/managed-data/optimize-earth-task-tree.ts",
       "packages/web/src/app/tasks/tree/page.tsx",
     ],
     name: "tasks-tree",

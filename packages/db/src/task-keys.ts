@@ -56,8 +56,7 @@ export const END_WAR_AND_DISEASE_TASK_ID = "end-war-and-disease";
 export const END_WAR_AND_DISEASE_TASK_KEY = "program:end-war-and-disease";
 
 // Top-level mission layer: peer nodes directly under the Optimize Earth root.
-// `end-war-and-disease` above is the legacy combined node — demoted under
-// `end-war` until its runtime children are re-homed, then retired.
+// Keep the legacy constants above for its managed retirement record.
 
 export const END_WAR_TASK_ID = "end-war";
 export const END_WAR_TASK_KEY = "mission:end-war";
