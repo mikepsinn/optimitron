@@ -576,7 +576,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "manual",
         label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "readOnline", "youtubeChannel"],
+        items: ["manual", "listenPodcast", "youtubeChannel"],
       },
       {
         id: "resources",
@@ -713,7 +713,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           "faq",
           "thePlan",
           "manual",
-          "readOnline",
           "listenPodcast",
         ],
       },

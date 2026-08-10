@@ -12,16 +12,14 @@ import {
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   GLOBAL_DISEASE_DEATHS_DAILY,
   CURRENT_DISEASE_PATIENTS_GLOBAL,
+  DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   DFDA_NET_SAVINGS_RD_ONLY_ANNUAL,
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
+  TREATY_REDUCTION_PCT,
 } from "@/lib/parameters-calculations-citations"
-import { MESSAGING } from "@/lib/messaging"
-
-// Use centralized messaging for timeline shift values
-const { timelineShift } = MESSAGING.impact
 
 export default function AboutPage() {
   const config = getSiteConfig()
@@ -51,9 +49,9 @@ export default function AboutPage() {
             <div className="relative">
               <div className="bg-brutal-cyan border-4 border-background p-8 shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transform -rotate-2">
                 <div className="text-4xl sm:text-5xl md:text-6xl font-black mb-4">
-                  <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />
+                  <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} format={{ precision: 0 }} />
                 </div>
-                <div className="font-bold uppercase">MORE EFFICIENT THAN TRADITIONAL TRIALS</div>
+                <div className="font-bold uppercase">LOWER COST PER PATIENT IN THE RECOVERY TRIAL THAN IN A TRADITIONAL PHASE 3 TRIAL</div>
               </div>
             </div>
           </div>
@@ -63,27 +61,37 @@ export default function AboutPage() {
       {/* Stats Section */}
       <SectionContainer bgColor="yellow" borderPosition="none" padding="lg">
         <Container>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-center mb-16">THE IMPACT</h2>
+          <div className="mx-auto mb-16 max-w-4xl text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase">THE MISSION IN NUMBERS</h2>
+            <p className="mt-4 text-base font-bold uppercase sm:text-lg">
+              THE MODEL PROJECTS WHAT THE TREATY COULD ACHIEVE. TODAY&apos;S DISEASE BURDEN SHOWS WHY THE MISSION IS URGENT.
+            </p>
+          </div>
           <StatCardGrid
             columns={4}
             stats={[
-              { icon: Globe, value: timelineShift.livesSaved, label: "LIVES SAVED", hover: true },
+              {
+                icon: Globe,
+                value: <ParameterValue param={DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED} format={{ precision: 1 }} />,
+                label: "MODELED LIVES THAT COULD BE SAVED",
+                hover: true,
+              },
               {
                 icon: TrendingUp,
-                value: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
-                label: "COST REDUCTION",
+                value: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} format={{ precision: 0 }} />,
+                label: "RECOVERY TRIAL COST REDUCTION",
                 hover: true,
               },
               {
                 icon: Heart,
                 value: <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} />,
-                label: "DAILY DEATHS",
+                label: "DISEASE DEATHS EACH DAY NOW",
                 hover: true,
               },
               {
                 icon: Users,
-                value: <ParameterValue param={CURRENT_DISEASE_PATIENTS_GLOBAL} />,
-                label: "PEOPLE SUFFERING",
+                value: <ParameterValue param={CURRENT_DISEASE_PATIENTS_GLOBAL} format={{ precision: 1 }} />,
+                label: "PEOPLE WITH CHRONIC DISEASE NOW",
                 hover: true,
               },
             ] as StatCardProps[]}
@@ -125,8 +133,9 @@ export default function AboutPage() {
                 title: "R&D SAVINGS",
                 description: (
                   <>
-                    PRAGMATIC TRIALS COST <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} /> LESS,
-                    SAVING <ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} /> ANNUALLY IN MEDICAL RESEARCH.
+                    THE RECOVERY TRIAL DEMONSTRATED <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} format={{ precision: 0 }} /> LOWER COST PER
+                    PATIENT. AT SCALE, THE MODEL PROJECTS <ParameterValue param={DFDA_NET_SAVINGS_RD_ONLY_ANNUAL} format={{ precision: 1 }} /> IN ANNUAL MEDICAL
+                    R&amp;D SAVINGS.
                   </>
                 ),
                 color: "bg-brutal-pink",
@@ -135,31 +144,34 @@ export default function AboutPage() {
                 title: "TIMELINE SHIFT",
                 description: (
                   <>
-                    INCREASING TRIAL CAPACITY{" "}
-                    <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} />{" "}
-                    COMPRESSES THE DISEASE ERADICATION TIMELINE FROM{" "}
-                    <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> YEARS
-                    TO <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> YEARS.
+                    THE MODEL PROJECTS THAT <ParameterValue param={DFDA_TRIAL_CAPACITY_MULTIPLIER} format={{ precision: 1 }} /> MORE TRIAL CAPACITY COULD REDUCE
+                    THE TIME TO FIND FIRST TREATMENTS FOR ALL CURRENTLY UNTREATED DISEASES FROM{" "}
+                    <ParameterValue param={STATUS_QUO_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> YEARS TO{" "}
+                    <ParameterValue param={DFDA_QUEUE_CLEARANCE_YEARS} format={{ precision: 0 }} /> YEARS.
                   </>
                 ),
                 color: "bg-brutal-cyan",
               },
-              // Peace dividend & global security only shown on political/advocacy variants
+              // Peace dividend and security rebalancing only appear on political/advocacy variants.
               ...(showPoliticalContent ? [
                 {
                   title: "PEACE DIVIDEND",
                   description: (
                     <>
-                      REDUCING GLOBAL CONFLICT BY 1% SAVES{" "}
-                      <ParameterValue param={PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT} /> ANNUALLY IN DIRECT AND
-                      INDIRECT COSTS.
+                      THE MODEL PROJECTS THAT A <ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} /> REDUCTION IN GLOBAL WAR COSTS
+                      COULD PRODUCE <ParameterValue param={PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT} /> IN ANNUAL DIRECT AND INDIRECT SAVINGS.
                     </>
                   ),
                   color: "bg-brutal-yellow",
                 },
                 {
-                  title: "GLOBAL SECURITY",
-                  description: "EVERYONE GETS 1% MORE SECURITY WITH FEWER NUCLEAR WEAPONS POINTED AT THEM.",
+                  title: "SECURITY REBALANCE",
+                  description: (
+                    <>
+                      THE TREATY WOULD REDIRECT <ParameterValue param={TREATY_REDUCTION_PCT} format={{ precision: 0 }} /> OF MILITARY SPENDING TOWARD ENDING
+                      WAR AND DISEASE.
+                    </>
+                  ),
                   color: "bg-brutal-yellow",
                 },
               ] : []),

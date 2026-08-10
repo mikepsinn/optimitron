@@ -88,7 +88,7 @@ export function Layout({ children }: LayoutProps) {
     if (item.isExternal) {
       return (
         <a
-          key={item.path}
+          key={item.id}
           href={item.path}
           className={className}
           target="_blank"
@@ -113,7 +113,7 @@ export function Layout({ children }: LayoutProps) {
 
     return (
       <Link
-        key={item.path}
+        key={item.id}
         href={item.path}
         className={className}
         onClick={handleClick}
@@ -284,7 +284,7 @@ export function Layout({ children }: LayoutProps) {
                 </h3>
                 <ul className="space-y-2 font-bold">
                   {section.resolvedItems.map((item) => (
-                    <li key={item.path}>
+                    <li key={item.id}>
                       {item.isExternal ? (
                         <a
                           href={item.path}
@@ -329,7 +329,7 @@ export function Layout({ children }: LayoutProps) {
           <div className="border-t-4 border-background mt-8 pt-8">
             <div className="flex flex-wrap justify-center gap-6 font-bold text-sm mb-4">
               {legalItems.map((item, index, array) => (
-                <React.Fragment key={item.path}>
+                <React.Fragment key={item.id}>
                   <Link href={item.path} className="hover:text-brutal-yellow">
                     {item.label.toUpperCase()}
                   </Link>
