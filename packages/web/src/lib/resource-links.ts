@@ -2,7 +2,7 @@
  * Resource Links - Single Source of Truth
  *
  * All URLs for the field manual, audiobook podcast, and purchase links.
- * Used by: ResourcePromoCard, email templates.
+ * Used by email templates.
  *
  * Change a URL here -> it updates everywhere.
  */
