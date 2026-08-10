@@ -863,7 +863,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     title: "Acquire coordinated stakes in influential companies",
     description: [
       "Acquire activist stakes in companies whose lobbying shapes public budgets.",
-      "Coordinate shareholder votes to influence boards without requiring outright control.",
+      "Coordinate shareholder votes to influence boards without full ownership.",
     ].join("\n\n"),
     impactStatement:
       "Coordinated ownership turns dispersed public-welfare gains into concentrated corporate influence.",
@@ -1071,7 +1071,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     id: EOS_CALCULATE_POLICY_BUDGETS_TASK_ID,
     taskKey: EOS_CALCULATE_POLICY_BUDGETS_TASK_KEY,
     parentTaskId: EOS_CAPITALIZE_TASK_ID,
-    title: "Calculate welfare-maximizing policies and public budgets",
+    title: "Calculate policies and public budgets that maximize welfare",
     description: [
       "Compare policy and budget outcomes across jurisdictions.",
       "Rank changes by their effects on median health and median after-tax income.",

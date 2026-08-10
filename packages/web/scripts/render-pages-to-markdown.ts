@@ -514,7 +514,7 @@ async function extractPage(
           ? ""
           : "- ";
       if (tag === "table") {
-        if (out.at(-1) !== "") out.push("");
+        if (out.length > 0 && out.at(-1) !== "") out.push("");
         out.push(md, "");
       } else {
         out.push(prefix + md);
