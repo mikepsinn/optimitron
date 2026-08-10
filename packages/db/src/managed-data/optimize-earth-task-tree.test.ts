@@ -178,18 +178,56 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(treaty?.impactEstimateManagedExternally).toBe(true);
   });
 
-  // A mission with nothing under it is DRAFT so it stays out of active queues
-  // until real work exists. Flip to ACTIVE in the same commit that adds the
-  // first child, not before.
-  it.each([MINIMIZE_ANIMAL_SUFFERING_TASK_ID, PREVENT_EXTINCTION_TASK_ID])(
-    "empty mission %s is a DRAFT stub",
-    (id) => {
-      const stub = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
-      expect(stub?.status).toBe("DRAFT");
-      const children = OPTIMIZE_EARTH_TASK_TREE.filter(
-        (t) => t.parentTaskId === id && !t.retired,
+  const managedMissionTaxonomy = [
+    {
+      missionId: PREVENT_EXTINCTION_TASK_ID,
+      childIds: [
+        "prevent-severe-global-pandemics",
+        "prevent-nuclear-catastrophe",
+        "prevent-catastrophic-climate-disruption",
+        "prevent-catastrophic-emerging-technology-failures",
+        "prevent-asteroid-and-comet-impacts",
+        "prevent-supervolcanic-catastrophe",
+      ],
+    },
+    {
+      missionId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+      childIds: [
+        "reduce-terrestrial-animal-production-suffering",
+        "reduce-aquatic-animal-production-suffering",
+        "reduce-animal-transport-and-slaughter-suffering",
+        "reduce-research-and-education-animal-suffering",
+        "reduce-work-and-companion-animal-suffering",
+        "reduce-wild-animal-suffering",
+      ],
+    },
+  ];
+
+  // These mission branches are stable published taxonomies. They stay DRAFT
+  // because they classify work instead of claiming executable interventions.
+  it.each(managedMissionTaxonomy)(
+    "mission $missionId has its managed taxonomy without invented economics",
+    ({ missionId, childIds }) => {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find(
+        (task) => task.id === missionId,
       );
-      expect(children).toHaveLength(0);
+      expect(mission?.status).toBe("ACTIVE");
+
+      const children = OPTIMIZE_EARTH_TASK_TREE.filter(
+        (task) => task.parentTaskId === missionId && !task.retired,
+      );
+      expect(children.map((task) => task.id).sort()).toEqual(
+        [...childIds].sort(),
+      );
+      expect(
+        children.every(
+          (task) =>
+            task.status === "DRAFT" &&
+            task.valueIfAchievedUsdBase === undefined &&
+            task.expectedEconomicValueUsdBase === undefined &&
+            task.successProbabilityBase === undefined,
+        ),
+      ).toBe(true);
     },
   );
 
