@@ -4,19 +4,27 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { copyTextToClipboard } from "@/lib/clipboard";
 
-export function PosterPrintButton() {
+export function PosterPrintButton({ label = "Print" }: { label?: string }) {
   return (
     <button
       type="button"
       className="border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase text-background transition-colors hover:bg-background hover:text-foreground"
       onClick={() => window.print()}
     >
-      Print
+      {label}
     </button>
   );
 }
 
-export function PosterCopyLinkButton({ value }: { value: string }) {
+function CopyTextButton({
+  ariaLabel,
+  idleLabel,
+  value,
+}: {
+  ariaLabel: string;
+  idleLabel: string;
+  value: string;
+}) {
   const [copyState, setCopyState] = useState<"copied" | "error" | "idle">(
     "idle",
   );
@@ -36,7 +44,7 @@ export function PosterCopyLinkButton({ value }: { value: string }) {
   return (
     <button
       type="button"
-      aria-label="Copy poster referral link"
+      aria-label={ariaLabel}
       className="inline-flex items-center gap-2 border-2 border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
       onClick={handleCopy}
     >
@@ -49,7 +57,27 @@ export function PosterCopyLinkButton({ value }: { value: string }) {
         ? "Copied"
         : copyState === "error"
           ? "Copy failed"
-          : "Copy link"}
+          : idleLabel}
     </button>
+  );
+}
+
+export function PosterCopyLinkButton({ value }: { value: string }) {
+  return (
+    <CopyTextButton
+      ariaLabel="Copy referral link"
+      idleLabel="Copy link"
+      value={value}
+    />
+  );
+}
+
+export function FlyerRoutePromptCopyButton({ value }: { value: string }) {
+  return (
+    <CopyTextButton
+      ariaLabel="Copy the flyer route prompt for your AI"
+      idleLabel="Copy AI prompt"
+      value={value}
+    />
   );
 }

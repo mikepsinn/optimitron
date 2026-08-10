@@ -4,17 +4,25 @@ import type { CSSProperties } from "react";
 import { CampaignQrCode } from "@/components/sharing/campaign-qr-code";
 import { authOptions } from "@/lib/auth";
 import { CAMPAIGN_PRINT_COPY } from "@/lib/messaging";
-import { ROUTES } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/metadata";
+import { posterLink, ROUTES } from "@/lib/routes";
 import { buildUserReferralUrl } from "@/lib/url";
-import { PosterCopyLinkButton, PosterPrintButton } from "./poster-client";
+import {
+  FlyerRoutePromptCopyButton,
+  PosterCopyLinkButton,
+  PosterPrintButton,
+} from "./poster-client";
 
 const CAMPAIGN_ORIGIN = "https://warondisease.org";
 const POSTER_FAVICON_SRC = "/site-assets/warondisease/warondisease-favicon.png";
+const FLYER_ROUTE_PROMPT =
+  "Plan a one-hour flyer route for me. Use my current location if you have it. Otherwise, ask for my neighborhood or ZIP code. Find nearby places likely to permit community flyers, such as libraries, coffee shops, community centers, campuses, laundromats, grocery stores, clinics, and public bulletin boards. Rank them by likely permission, foot traffic, opening hours, and travel time. Put them in the best order to visit. Include each address and tell me whom to ask before posting. Do not recommend posting anywhere without permission.";
 
-type PaperSize = "letter" | "a4" | "card";
+export const metadata = getRouteMetadata(posterLink);
+
+type PaperSize = "letter" | "a4";
 
 function normalizePaperSize(value: string | string[] | undefined): PaperSize {
-  if (value === "card") return "card";
   return value === "a4" ? "a4" : "letter";
 }
 
@@ -25,11 +33,9 @@ function getVisibleTargetUrl(qrTarget: string) {
 function getPosterUrlStyle(visibleTargetUrl: string): CSSProperties {
   const normalizedLength = Math.max(visibleTargetUrl.length, 1);
   const fontCqw = Math.min(7.9, Math.max(3, 130 / normalizedLength));
-  const cardFontCqw = Math.min(5.8, Math.max(3, 126 / normalizedLength));
 
   return {
     "--poster-url-font-size": `${fontCqw.toFixed(2)}cqw`,
-    "--poster-card-url-font-size": `${cardFontCqw.toFixed(2)}cqw`,
     whiteSpace: normalizedLength <= 42 ? "nowrap" : undefined,
   } as CSSProperties;
 }
@@ -137,52 +143,6 @@ export default async function PosterPage({
           font-size: clamp(1.05rem, 3.8cqw, 0.3in);
         }
 
-        .poster-sheet[data-paper-size="card"] {
-          width: min(100%, 3.5in);
-          min-height: 2in;
-        }
-
-        .poster-card-line {
-          display: block;
-          font-weight: 900;
-          line-height: 0.98;
-          text-transform: uppercase;
-          white-space: nowrap;
-        }
-
-        .poster-card-line-0 {
-          font-size: clamp(0.86rem, 7.8cqw, 0.22in);
-        }
-
-        .poster-card-line-1 {
-          font-size: clamp(1rem, 9.4cqw, 0.265in);
-        }
-
-        .poster-card-line-2 {
-          font-size: clamp(0.8rem, 7.2cqw, 0.2in);
-        }
-
-        .poster-card-line-3 {
-          font-size: clamp(0.86rem, 7.8cqw, 0.22in);
-        }
-
-        .poster-card-url {
-          display: block;
-          font-family: "Courier New", monospace;
-          font-size: clamp(0.55rem, var(--poster-card-url-font-size), 0.19in);
-          font-weight: 900;
-          line-height: 1;
-          overflow-wrap: anywhere;
-          text-transform: uppercase;
-          word-break: break-word;
-        }
-
-        .poster-card-qr svg {
-          display: block;
-          width: min(30cqw, 1in);
-          height: auto;
-        }
-
         @media print {
           @page {
             size: letter;
@@ -196,11 +156,6 @@ export default async function PosterPage({
 
           @page poster-a4 {
             size: A4;
-            margin: 0;
-          }
-
-          @page poster-card {
-            size: 3.5in 2in;
             margin: 0;
           }
 
@@ -325,39 +280,6 @@ export default async function PosterPage({
             width: 1.25in !important;
           }
 
-          .poster-sheet[data-paper-size="card"] {
-            page: poster-card;
-            width: 3.5in !important;
-            height: 2in !important;
-            min-height: 2in !important;
-            max-height: 2in !important;
-            padding: 0.12in !important;
-          }
-
-          .poster-card-line-0 {
-            font-size: 0.22in !important;
-          }
-
-          .poster-card-line-1 {
-            font-size: 0.265in !important;
-          }
-
-          .poster-card-line-2 {
-            font-size: 0.2in !important;
-          }
-
-          .poster-card-line-3 {
-            font-size: 0.22in !important;
-          }
-
-          .poster-card-url {
-            font-size: clamp(0.1in, var(--poster-card-url-font-size), 0.18in) !important;
-          }
-
-          .poster-card-qr svg {
-            width: 1in !important;
-            height: 1in !important;
-          }
         }
       `}</style>
 
@@ -367,12 +289,12 @@ export default async function PosterPage({
       >
         <div className="max-w-3xl">
           <h1 className="text-4xl font-black uppercase leading-none text-foreground sm:text-5xl md:text-6xl">
-            Print your referral poster
+            Hang up flyers
           </h1>
           <p className="mt-3 max-w-2xl text-base font-bold leading-relaxed text-foreground sm:text-lg">
-            Print it, tape it up, and share it. Every human who votes through
-            your link earns you optimization points and moves humanity one
-            click closer to ending war and disease.
+            Print these flyers and put them where humans will see them. Every
+            human who votes through your link earns you optimization points and
+            moves humanity one click closer to ending war and disease.
           </p>
           <p className="mt-3 text-sm font-bold text-foreground">
             Going door to door?{" "}
@@ -386,12 +308,15 @@ export default async function PosterPage({
           </p>
           {hasPersonalReferralUrl ? (
             <p className="mt-2 break-all text-sm font-bold text-muted-foreground">
-              This poster uses your referral link: {visibleTargetUrl}
+              These flyers use your referral link: {visibleTargetUrl}
             </p>
           ) : (
             <p className="mt-2 text-sm font-bold text-muted-foreground">
               This prints the generic campaign URL.{" "}
-              <Link className="underline underline-offset-4" href={ROUTES.signIn}>
+              <Link
+                className="underline underline-offset-4"
+                href={ROUTES.signIn}
+              >
                 Sign in
               </Link>{" "}
               to personalize the URL and QR code.
@@ -400,7 +325,7 @@ export default async function PosterPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-sm font-bold uppercase text-foreground">
-          <PosterPrintButton />
+          <PosterPrintButton label="Print flyers" />
           <PosterCopyLinkButton value={qrTarget} />
           <div className="flex items-center gap-2">
             <Link
@@ -425,103 +350,76 @@ export default async function PosterPage({
             >
               A4
             </Link>
-            <Link
-              aria-current={paperSize === "card" ? "page" : undefined}
-              className={`border-2 border-foreground px-3 py-2 ${
-                paperSize === "card"
-                  ? "bg-foreground text-background"
-                  : "bg-background text-foreground hover:bg-muted"
-              }`}
-              href={`${ROUTES.poster}?paper=card`}
-            >
-              Card
-            </Link>
           </div>
+        </div>
+
+        <div className="mt-2 max-w-3xl border-t border-foreground pt-5">
+          <h2 className="text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
+            Make your AI plan the route
+          </h2>
+          <p className="mt-2 max-w-2xl font-bold leading-relaxed text-foreground">
+            Your AI can make the list. You can operate tape. Copy this prompt
+            and let it put nearby places in a useful order.
+          </p>
+          <blockquote className="my-4 border-l-2 border-foreground pl-4 text-sm font-bold leading-relaxed text-foreground sm:text-base">
+            {FLYER_ROUTE_PROMPT}
+          </blockquote>
+          <FlyerRoutePromptCopyButton value={FLYER_ROUTE_PROMPT} />
         </div>
       </div>
 
       <article
-        aria-label={`Printable War on Disease referral poster for ${visibleTargetUrl}`}
-        className={`poster-sheet mx-auto border-2 border-foreground bg-background text-foreground ${
-          paperSize === "card"
-            ? "grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] items-center gap-x-[clamp(0.3rem,2vw,0.08in)] gap-y-[clamp(0.16rem,1.5vw,0.06in)] p-[clamp(0.45rem,4vw,0.12in)]"
-            : "flex flex-col justify-center gap-[clamp(1.35rem,6vw,0.82in)] p-[clamp(1rem,5vw,0.62in)]"
-        }`}
+        aria-label={`Printable War on Disease referral flyer for ${visibleTargetUrl}`}
+        className="poster-sheet mx-auto flex flex-col justify-center gap-[clamp(1.35rem,6vw,0.82in)] border-2 border-foreground bg-background p-[clamp(1rem,5vw,0.62in)] text-foreground"
         data-paper-size={paperSize}
       >
-        {paperSize === "card" ? (
-          <>
-            <div className="min-w-0 text-left">
-              {CAMPAIGN_PRINT_COPY.businessCardLines.slice(0, -1).map((line, index) => (
-                <span
-                  className={`poster-card-line poster-card-line-${index}`}
-                  key={line}
-                >
-                  {line}
-                </span>
-              ))}
-            </div>
-            <div className="poster-card-qr w-fit border-2 border-foreground bg-background p-[clamp(0.16rem,1.4vw,0.06in)]">
+        <div className="flex min-h-0 items-center justify-center text-center">
+          <h2 className="poster-headline w-full max-w-full uppercase tracking-normal text-foreground">
+            {CAMPAIGN_PRINT_COPY.flyerHeadlineLines.map((line, index) => (
+              <span
+                className={`poster-headline-line poster-headline-line-${index}`}
+                key={line}
+              >
+                {line}
+              </span>
+            ))}
+          </h2>
+        </div>
+
+        <footer className="poster-footer">
+          <div className="poster-qr-row">
+            <img
+              alt=""
+              aria-hidden="true"
+              className="poster-favicon"
+              height={512}
+              src={POSTER_FAVICON_SRC}
+              width={512}
+            />
+            <div className="poster-qr w-fit border-2 border-foreground bg-background p-[clamp(0.45rem,2vw,0.15in)]">
               <CampaignQrCode value={qrTarget} />
             </div>
+            <img
+              alt=""
+              aria-hidden="true"
+              className="poster-favicon"
+              height={512}
+              src={POSTER_FAVICON_SRC}
+              width={512}
+            />
+          </div>
+          <div className="min-w-0">
+            <p className="poster-url-label font-bold uppercase leading-none text-muted-foreground">
+              Scan or type
+            </p>
             <p
-              className="poster-card-url col-span-2 min-w-0 text-center"
+              className="poster-visible-url mt-2 font-bold uppercase leading-none text-foreground"
               style={visibleTargetUrlStyle}
             >
               {visibleTargetUrl}
             </p>
-          </>
-        ) : (
-          <>
-            <div className="flex min-h-0 items-center justify-center text-center">
-              <h2 className="poster-headline w-full max-w-full uppercase tracking-normal text-foreground">
-                {CAMPAIGN_PRINT_COPY.flyerHeadlineLines.map((line, index) => (
-                  <span
-                    className={`poster-headline-line poster-headline-line-${index}`}
-                    key={line}
-                  >
-                    {line}
-                  </span>
-                ))}
-              </h2>
-            </div>
-
-            <footer className="poster-footer">
-              <div className="poster-qr-row">
-                <img
-                  alt=""
-                  aria-hidden="true"
-                  className="poster-favicon"
-                  height={512}
-                  src={POSTER_FAVICON_SRC}
-                  width={512}
-                />
-                <div className="poster-qr w-fit border-2 border-foreground bg-background p-[clamp(0.45rem,2vw,0.15in)]">
-                  <CampaignQrCode value={qrTarget} />
-                </div>
-                <img
-                  alt=""
-                  aria-hidden="true"
-                  className="poster-favicon"
-                  height={512}
-                  src={POSTER_FAVICON_SRC}
-                  width={512}
-                />
-              </div>
-              <div className="min-w-0">
-                <p className="poster-url-label font-bold uppercase leading-none text-muted-foreground">
-                  Scan or type
-                </p>
-                <p
-                  className="poster-visible-url mt-2 font-bold uppercase leading-none text-foreground"
-                  style={visibleTargetUrlStyle}
-                >
-                  {visibleTargetUrl}
-                </p>
-              </div>
-            </footer>
-          </>
-        )}
+          </div>
+        </footer>
       </article>
     </section>
   );
