@@ -3,11 +3,19 @@ import {
   GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST,
   GLOBAL_GDP_2025,
   GLOBAL_LIFE_EXPECTANCY_2024,
+  GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
+  GLOBAL_POPULATION_2024,
+  PRIZE_TARGET_MEDIAN_INCOME_YEAR_15,
+  VALUE_OF_STATISTICAL_LIFE,
 } from "./parameters-calculations-citations";
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
+  FARMED_ANIMAL_ADVOCACY_SPENDING_2024,
+  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
   MISSION_VALUE_HORIZON_YEARS,
+  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
 } from "./mission-value-horizon";
 
 /**
@@ -58,7 +66,7 @@ function usdShort(value: number) {
       return `$${scaled.toFixed(Math.abs(scaled) >= 100 ? 0 : 1)}${suffix}`;
     }
   }
-  return `$${value.toFixed(0)}`;
+  return `$${Math.round(value).toLocaleString("en-US")}`;
 }
 
 /**
@@ -76,14 +84,21 @@ mission value asks what that outcome would be worth under one stated scenario.
 
 **Mission value is not a forecast. We do not estimate the mission's probability.**
 
-The task tree labels this quantity **Value if achieved**. It does not use the
-quantity as task expected value or task priority.
+The task tree labels comparable mission scenarios **Value if achieved**. It
+does not use the quantity as task expected value or task priority.
+
+The tree leaves a mission value empty when the available scenario measures a
+different quantity. The methodology can still show that scenario as context.
 
 ### Mission comparison scenario
 
-The current scenario uses this calculation:
+End War, End Disease, and End Poverty use this calculation:
 
 **Value if achieved = current annual outcome value × ${MISSION_VALUE_HORIZON_YEARS} years**
+
+The extinction reference scenario values today's population once. It does not
+multiply current lives by the comparison period. The tree does not compare it
+with the three annual-flow scenarios.
 
 | Assumption | Current choice |
 | --- | --- |
@@ -164,6 +179,57 @@ smaller outcome and needs its own task scenario estimate.
 | × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_MISSION_SCENARIO_VALUE_USD)}** |
 
 This scenario covers economic drag. It does not price pain or suffering.
+
+## Worked mission scenario: ending poverty
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Current global median after-tax income | ${citedText(usdShort(GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value), GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025)} | per person per year |
+| 2040 prize target | ${citedText(usdShort(PRIZE_TARGET_MEDIAN_INCOME_YEAR_15.value), PRIZE_TARGET_MEDIAN_INCOME_YEAR_15)} | per person per year |
+| Annual gap × current population | ${citedText(GLOBAL_POPULATION_2024.value.toLocaleString("en-US"), GLOBAL_POPULATION_2024)} people | ${usdShort((PRIZE_TARGET_MEDIAN_INCOME_YEAR_15.value - GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value) * GLOBAL_POPULATION_2024.value)}/year |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_POVERTY_MISSION_SCENARIO_VALUE_USD)}** |
+
+This population-equivalent scenario values the income gap at the global median.
+It is not a forecast of income distribution or mission success.
+
+## Reference scenario: preventing extinction
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Current human population | ${citedText(GLOBAL_POPULATION_2024.value.toLocaleString("en-US"), GLOBAL_POPULATION_2024)} | current lives only |
+| Value per statistical life | ${citedText(usdShort(VALUE_OF_STATISTICAL_LIFE.value), VALUE_OF_STATISTICAL_LIFE)} | policy-analysis value |
+| Current lives × value per life | One-time scenario | **${usdShort(PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD)}** |
+
+The task tree does not display this number as a mission value. It is not
+comparable with the three annual-flow scenarios.
+
+The scenario excludes every future generation. It does not multiply current
+lives by the ${MISSION_VALUE_HORIZON_YEARS}-year comparison period. It does not
+estimate extinction probability. The value of a statistical life represents
+collective willingness to pay for small mortality-risk reductions. It is not a
+price assigned to a certain death.
+
+## Funding context: minimizing animal suffering
+
+No accepted dollar conversion covers all species and harmful experiences. The
+task tree therefore leaves this mission value empty.
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Farmed-animal advocacy allocation in 2024 | ${citedText(usdShort(FARMED_ANIMAL_ADVOCACY_SPENDING_2024.value), FARMED_ANIMAL_ADVOCACY_SPENDING_2024)} | observed annual spending |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD)} in funding context** |
+
+This amount covers farmed-animal advocacy. It excludes companion-animal markets,
+wild-animal welfare, and most direct animal care. It does not include pet food
+or veterinary spending. It is an input cost, not the value of minimizing animal
+suffering. The tree does not display it as a mission value or use it for ranking.
+
+[Rethink Priorities estimates](https://rethinkpriorities.org/research-area/welfare-range-estimates/)
+a median welfare range of 0.332 for chickens, compared with 1.0 for humans.
+That estimate concerns possible experience intensity. It does not mean one
+chicken life equals 0.332 human lives. A dollar valuation would also require
+the affected populations, duration, intensity, intervention effect, and moral
+weights. No accepted model currently supplies all of those inputs.
 
 ## Write a task estimate
 

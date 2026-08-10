@@ -1,5 +1,6 @@
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
@@ -90,6 +91,11 @@ const defaultTaskFields = {
   isPublic: true,
   skillTags: ["coordination"],
   interestTags: ["war-on-disease", "one-percent-treaty"],
+} satisfies Partial<ManagedTaskRecord>;
+
+const taxonomyTaskFields = {
+  ...defaultTaskFields,
+  contextJson: { optimizeEarthNodeKind: "taxonomy" },
 } satisfies Partial<ManagedTaskRecord>;
 
 export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
@@ -185,13 +191,17 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "This is a mission task. The goal is an increase of the median income of each person.",
       "",
+      "The value-if-achieved scenario closes the annual gap between the current $2,138 global median income and the $4,381 Earth Optimization Prize target. It applies that gap to the current population for 73.4 years. It does not estimate the probability of success.",
+      "",
       "Add a task below this task if the task increases the median real income after tax. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
       "",
       "Some tasks apply to this task and to the other mission tasks at the same time. The 1% Treaty, the Loving Takeover, and better public budgets are examples. War decreases income. Disease decreases income.",
     ].join("\n"),
     impactStatement:
       "The median income is one of the two measurements of Earth optimization. Each task below this task increases it.",
-    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    // Annual gap from today's median income to the prize target, applied to a
+    // population-equivalent scenario over the common mission horizon.
+    valueIfAchievedUsdBase: END_POVERTY_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -960,
   },
   {
@@ -204,9 +214,11 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "This is a mission task. The goal is the survival of humanity.",
       "",
-      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "The categories below identify recognized global catastrophic threats. Add concrete risk-reduction tasks below the applicable categories.",
       "",
       "Toby Ord estimates the probability of an existential catastrophe in this century at approximately 1 in 6. The largest part is unaligned artificial intelligence at approximately 1 in 10. Engineered pandemics are approximately 1 in 30. Nuclear war is approximately 1 in 1,000.",
+      "",
+      "The method page keeps a current-lives mortality-risk scenario for context. The task tree does not compare it with annual mission values.",
       "",
       "An extinction event sets the value of every other mission task to zero. This task therefore multiplies the other mission tasks. It does not compete with them.",
       "",
@@ -215,10 +227,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "An extinction event sets the value of all other work to zero. Each task below this task decreases the probability of that event.",
     interestTags: [],
-    // DRAFT + no economics scalars, same rule as the animal-suffering stub: a
-    // mission with nothing under it stays visible as intent without entering
-    // active queues or EV roll-ups.
-    status: TaskStatus.DRAFT,
+    // Null explicitly retires the previous managed mission-value frame.
+    valueIfAchievedUsdBase: null,
+    status: TaskStatus.ACTIVE,
     sortOrder: -955,
   },
   {
@@ -231,19 +242,309 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "This is a mission task. The goal is a decrease of the suffering of animals.",
       "",
-      "WARNING: This task is not complete. It has no tasks below it and no expected value. Do not use this task for a comparison of values.",
+      "The categories below identify major animal contexts. Add concrete welfare tasks below the applicable categories.",
       "",
-      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. Persons give approximately $260 million each year to decrease this suffering. This is approximately 0.3 cents for each land animal.",
+      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year.",
+      "",
+      "[Animal Charity Evaluators reports](https://animalcharityevaluators.org/blog/better-for-animals-the-evidence-behind-conducting-research-for-effective-advocacy/) $260 million in farmed-animal advocacy funding for 2024. This excludes companion-animal markets, wild-animal welfare, and most direct animal care.",
+      "",
+      "Advocacy funding is an input cost. It is not the value of ending animal suffering. The task tree leaves this mission value empty until a species-weighted welfare model exists.",
       "",
       "Add a task below this task. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
     ].join("\n"),
     impactStatement:
-      "This task has no expected value now. Add tasks and data below it before you compare this task to other tasks.",
+      "Each task below this mission decreases the number, duration, or intensity of harmful animal experiences.",
     interestTags: [],
-    // DRAFT + no economics scalars: the stub stays visible as intent without
-    // entering active queues or EV roll-ups.
-    status: TaskStatus.DRAFT,
+    // Null explicitly retires the previous managed mission-value frame.
+    valueIfAchievedUsdBase: null,
+    status: TaskStatus.ACTIVE,
     sortOrder: -950,
+  },
+  // Published global catastrophic-risk categories. These are durable taxonomy
+  // nodes, not quantified interventions. Keep them DRAFT and leave economics
+  // unset until sourced child programs provide the mission's EV.
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-severe-global-pandemics",
+    taskKey: "optimize-earth:prevent-extinction:severe-global-pandemics",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Severe Global Pandemics",
+    description: [
+      "Prevent severe global pandemics that can destroy civilization.",
+      "",
+      "Add tasks for surveillance, prevention, response, and recovery below this task.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the probability or severity of a globally catastrophic pandemic.",
+    interestTags: ["existential-risk", "pandemic-prevention"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -800,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-nuclear-catastrophe",
+    taskKey: "optimize-earth:prevent-extinction:nuclear-catastrophe",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Nuclear Catastrophe",
+    description: [
+      "Prevent nuclear events that can cause global famine, civilizational collapse, or human extinction.",
+      "",
+      "Add tasks that reduce arsenals, launch risk, escalation risk, or nuclear-winter effects.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the probability or severity of a nuclear catastrophe.",
+    interestTags: ["existential-risk", "nuclear-risk"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -790,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-catastrophic-climate-disruption",
+    taskKey:
+      "optimize-earth:prevent-extinction:catastrophic-climate-disruption",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Catastrophic Climate Disruption",
+    description: [
+      "Prevent sudden and severe climate changes that can destroy civilization.",
+      "",
+      "Add tasks that reduce hazards, exposure, vulnerability, or recovery time.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the probability or severity of catastrophic climate disruption.",
+    interestTags: ["existential-risk", "climate-risk"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -780,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-catastrophic-emerging-technology-failures",
+    taskKey: "optimize-earth:prevent-extinction:emerging-technology-failures",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Catastrophic New-Technology Failures",
+    description: [
+      "Prevent intentional or accidental new-technology failures that can destroy civilization.",
+      "",
+      "Add tasks for technical safety, governance, audits, containment, and response.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces catastrophic risk from an emerging technology.",
+    interestTags: ["existential-risk", "technology-safety"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -770,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-asteroid-and-comet-impacts",
+    taskKey: "optimize-earth:prevent-extinction:asteroid-comet-impacts",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Asteroid and Comet Impacts",
+    description: [
+      "Prevent asteroid and comet impacts that can destroy civilization.",
+      "",
+      "Add tasks for detection, deflection, response, and recovery.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the probability or severity of a catastrophic impact.",
+    interestTags: ["existential-risk", "planetary-defense"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -760,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "prevent-supervolcanic-catastrophe",
+    taskKey: "optimize-earth:prevent-extinction:supervolcanic-catastrophe",
+    parentTaskId: PREVENT_EXTINCTION_TASK_ID,
+    title: "Prevent Supervolcanic Catastrophe",
+    description: [
+      "Prevent supervolcanic events that can destroy civilization.",
+      "",
+      "Add tasks for detection, preparedness, food resilience, and recovery.",
+      "",
+      "Use sourced estimates for cost, risk reduction, and time to effect.",
+      "",
+      "The [Global Catastrophic Risk Management Act](https://www.congress.gov/bill/117th-congress/senate-bill/4488/text) identifies this threat category.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the probability or severity of a supervolcanic catastrophe.",
+    interestTags: ["existential-risk", "supervolcano-risk"],
+    skillTags: ["risk-analysis"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -750,
+  },
+  // Published animal-welfare contexts. These are durable taxonomy nodes. Use
+  // the Five Domains model for welfare effects and keep concrete interventions
+  // with sourced estimates as live child tasks.
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.OTHER,
+    id: "reduce-terrestrial-animal-production-suffering",
+    taskKey:
+      "optimize-earth:minimize-animal-suffering:terrestrial-production-suffering",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Suffering in Terrestrial Animal Production",
+    description: [
+      "Reduce suffering in terrestrial animal production systems.",
+      "",
+      "Add tasks for food, shelter, health, behavior, genetics, standards, or enforcement.",
+      "",
+      "Use the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+      "",
+      "Use [WOAH standards](https://www.woah.org/en/what-we-do/animal-health-and-welfare/animal-welfare/development-of-animal-welfare-standards/) to classify production contexts.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces harmful experiences among terrestrial farmed animals.",
+    interestTags: ["animal-welfare", "terrestrial-farming"],
+    skillTags: ["animal-welfare"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -800,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.OTHER,
+    id: "reduce-aquatic-animal-production-suffering",
+    taskKey:
+      "optimize-earth:minimize-animal-suffering:aquatic-production-suffering",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Suffering in Aquatic Animal Production",
+    description: [
+      "Reduce suffering in aquatic animal production systems.",
+      "",
+      "Add tasks for food, environments, health, behavior, transport, stun methods, slaughter, standards, or enforcement.",
+      "",
+      "Use the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+      "",
+      "Use [WOAH standards](https://www.woah.org/en/what-we-do/animal-health-and-welfare/animal-welfare/development-of-animal-welfare-standards/) to classify aquatic contexts.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces harmful experiences among farmed aquatic animals.",
+    interestTags: ["animal-welfare", "aquatic-farming"],
+    skillTags: ["animal-welfare"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -790,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.OTHER,
+    id: "reduce-animal-transport-and-slaughter-suffering",
+    taskKey:
+      "optimize-earth:minimize-animal-suffering:transport-and-slaughter-suffering",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Suffering During Animal Transport and Slaughter",
+    description: [
+      "Reduce suffering during animal transport and slaughter.",
+      "",
+      "Add tasks for equipment, procedures, staff skills, audits, standards, or enforcement.",
+      "",
+      "Use the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+      "",
+      "Use [WOAH standards](https://www.woah.org/en/what-we-do/animal-health-and-welfare/animal-welfare/development-of-animal-welfare-standards/) to classify transport and slaughter contexts.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces harmful experiences during transport or slaughter.",
+    interestTags: ["animal-welfare", "transport", "slaughter"],
+    skillTags: ["animal-welfare"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -780,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "reduce-research-and-education-animal-suffering",
+    taskKey:
+      "optimize-earth:minimize-animal-suffering:research-and-education-suffering",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Suffering in Animal Research and Education",
+    description: [
+      "Reduce suffering among animals used in research and education.",
+      "",
+      "Add tasks that replace animal use, reduce animal counts, refine procedures, or enforce standards.",
+      "",
+      "Use the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+      "",
+      "Use [WOAH standards](https://www.woah.org/en/what-we-do/animal-health-and-welfare/animal-welfare/development-of-animal-welfare-standards/) to classify research contexts.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces harmful experiences among animals used in research or education.",
+    interestTags: ["animal-welfare", "research-animals"],
+    skillTags: ["animal-welfare"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -770,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.OTHER,
+    id: "reduce-work-and-companion-animal-suffering",
+    taskKey:
+      "optimize-earth:minimize-animal-suffering:work-and-companion-animal-suffering",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Suffering Among Work and Companion Animals",
+    description: [
+      "Reduce suffering among animals used for work or companionship.",
+      "",
+      "Add tasks for care, health, environments, behavior, breeding, population management, standards, or enforcement.",
+      "",
+      "Use the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+      "",
+      "Use [WOAH standards](https://www.woah.org/en/what-we-do/animal-health-and-welfare/animal-welfare/development-of-animal-welfare-standards/) to classify work-animal and population-management contexts.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces harmful experiences among working or companion animals.",
+    interestTags: ["animal-welfare", "working-animals", "companion-animals"],
+    skillTags: ["animal-welfare"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -760,
+  },
+  {
+    ...taxonomyTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: "reduce-wild-animal-suffering",
+    taskKey: "optimize-earth:minimize-animal-suffering:wild-animals",
+    parentTaskId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+    title: "Reduce Wild-Animal Suffering",
+    description: [
+      "Reduce suffering among wild animals.",
+      "",
+      "Add tasks that address disease, hunger, injury, harmful human activity, or large ecological harms.",
+      "",
+      "Use species-specific evidence and the [Five Domains model](https://pmc.ncbi.nlm.nih.gov/articles/PMC7602120/) to measure welfare effects.",
+    ].join("\n"),
+    impactStatement:
+      "Each child task reduces the number, duration, or intensity of harmful wild-animal experiences.",
+    interestTags: ["animal-welfare", "wild-animal-welfare"],
+    skillTags: ["animal-welfare", "research"],
+    status: TaskStatus.DRAFT,
+    sortOrder: -750,
   },
   {
     ...defaultTaskFields,
@@ -356,8 +657,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     primaryEndpoint: {
       label: "Register a plaintiff",
       url: "/plaintiffs",
-      instructions:
-        `Register a plaintiff in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
+      instructions: `Register a plaintiff in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     },
   },
   {
@@ -367,16 +667,14 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     taskKey: SUMMON_JURORS_TASK_KEY,
     parentTaskId: HUMANITY_V_GOVERNMENTS_TASK_ID,
     title: "Summon jurors",
-    description:
-      `Invite humans to act as jurors by voting on the verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
+    description: `Invite humans to act as jurors by voting on the verdict in ${HUMANITY_V_GOVERNMENT_CASE_NAME}.`,
     impactStatement:
       "A court for humanity needs a jury large enough to matter.",
     sortOrder: -760,
     primaryEndpoint: {
       label: "Open the referral dashboard",
       url: "/dashboard",
-      instructions:
-        "Invite at least two humans to vote on the case.",
+      instructions: "Invite at least two humans to vote on the case.",
     },
   },
   {
@@ -785,7 +1083,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     primaryEndpoint: {
       label: "Read the dFDA impact math",
       url: "https://manual.warondisease.org/knowledge/economics/dfda-impact-paper.html",
-      instructions: "Read the impact math, then fund or build the decentralized FDA.",
+      instructions:
+        "Read the impact math, then fund or build the decentralized FDA.",
     },
   },
   {

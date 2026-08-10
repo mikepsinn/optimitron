@@ -18,4 +18,22 @@ describe("expected value methodology", () => {
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain("$1.1 quadrillion");
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).not.toContain("$1.1Q");
   });
+
+  it("separates comparable mission values from reference context", () => {
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Worked mission scenario: ending poverty",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Reference scenario: preventing extinction",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Funding context: minimizing animal suffering",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toMatch(
+      /task tree therefore leaves this mission value empty\./,
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "It does not mean one\nchicken life equals 0.332 human lives.",
+    );
+  });
 });
