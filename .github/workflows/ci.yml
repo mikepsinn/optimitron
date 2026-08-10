@@ -373,6 +373,16 @@ jobs:
         run: node scripts/smoke-site-apps.mjs "${{ matrix.app }}"
         env:
           NODE_ENV: production
+          PLAYWRIGHT_BROWSER_CHANNEL: chrome
+          SITE_APP_SCREENSHOT_ROOT: ${{ github.event_name == 'pull_request' && 'packages/web/output/playwright/site-app-screenshots' || '' }}
+
+      - name: Upload @apps/${{ matrix.app }} visual screenshots
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: site-app-visual-${{ matrix.app }}
+          path: packages/web/output/playwright/site-app-screenshots
+          if-no-files-found: error
 
   site-apps-validate:
     name: site-apps-validate
@@ -654,9 +664,10 @@ jobs:
 
   web-visual-review:
     name: web-visual-review
-    if: ${{ github.event_name == 'pull_request' && needs.web-e2e-validate.result == 'success' && fromJSON(needs.changes.outputs.web || 'false') == true }}
+    if: ${{ always() && github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) && needs.web-e2e-validate.result == 'success' && (fromJSON(needs.changes.outputs.site_apps || 'false') != true || needs.site-apps-build.result == 'success') }}
     needs:
       - changes
+      - site-apps-build
       - web-e2e-validate
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -709,12 +720,22 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Download PR visual screenshots
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/download-artifact@v6
         with:
           name: web-pr-visual-screenshots
           path: packages/web/screenshots
 
+      - name: Download site-app visual screenshots
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        uses: actions/download-artifact@v6
+        with:
+          pattern: site-app-visual-*
+          path: packages/web/screenshots
+          merge-multiple: true
+
       - name: Download PR markdown copy snapshots
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/download-artifact@v6
         with:
           name: web-pr-copy-snapshots

@@ -18,10 +18,11 @@
  *   meta: { prNumber, shortSha, commitSha, headBranch, repo, generatedAt,
  *           generatedAtCentral, previewBaseUrl, productionBaseUrl,
  *           reviewUrl, baselineDescription },
- *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, variantRoutes, erroredRoutes, totalRoutes },
+ *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, siteAppRoutes, variantRoutes, erroredRoutes, totalRoutes },
  *   coverage: { analysisAvailable, complete, changedUiFiles, coveredUiFiles, blockingIssues },
  *   routes: [{
  *     routeName, routeLabel, routePath, routeUrl, productionUrl, authState,
+ *     siteApp,         // true for a standalone apps/* screenshot
  *     siteVariant,     // null for the default surface; site key for variant-delta shots
  *     variantLabel,    // display domain, e.g. "optimitron.com"; null when siteVariant is null
  *     changed, copyChanged, errored, statusLabel,
@@ -630,6 +631,7 @@ const CLIENT_JS = `
     return ((r && r.pairs) || []).find(function (p) { return p.projectName === name; }) || null;
   }
   function groupOf(r) {
+    if (r.siteApp) return "site-apps";
     if (r.changed || r.errored) return "changed";
     if (r.copyChanged) return "copy";
     if (r.siteVariant) return "variants";
@@ -801,6 +803,7 @@ const CLIENT_JS = `
 
     var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
     var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
+    var siteApps = routes.filter(function (r) { return groupOf(r) === "site-apps"; });
     var cold = routes.filter(function (r) { return groupOf(r) === "cold"; });
     var variants = routes.filter(function (r) { return groupOf(r) === "variants"; });
 
@@ -831,6 +834,7 @@ const CLIENT_JS = `
     }
     addGroup("Changed", changed, "changed");
     addGroup("Copy only", copy, "copy");
+    addGroup("Site apps", siteApps, "site-apps");
     addColdGroup("Unchanged", cold, "cold", coldOpen, function (v) { coldOpen = v; });
     addColdGroup("Other variants", variants, "variants", variantsOpen, function (v) { variantsOpen = v; });
 
@@ -869,7 +873,7 @@ const CLIENT_JS = `
     if (r.siteVariant) {
       container.appendChild(el("span", {
         class: "badge variant",
-        title: "Site variant: " + (r.variantLabel || r.siteVariant),
+        title: (r.siteApp ? "Site app: " : "Site variant: ") + (r.variantLabel || r.siteVariant),
         text: r.variantLabel || r.siteVariant
       }));
     }
@@ -941,9 +945,10 @@ const CLIENT_JS = `
     if (rows.length) return rows.map(function (row) { return row.getAttribute("data-route"); });
     var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
     var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
+    var siteApps = routes.filter(function (r) { return groupOf(r) === "site-apps"; });
     var cold = coldOpen ? routes.filter(function (r) { return groupOf(r) === "cold"; }) : [];
     var variants = variantsOpen ? routes.filter(function (r) { return groupOf(r) === "variants"; }) : [];
-    return changed.concat(copy, cold, variants).map(function (r) { return r.routeName; });
+    return changed.concat(copy, siteApps, cold, variants).map(function (r) { return r.routeName; });
   }
   function markSelectedRow() {
     document.querySelectorAll(".route-row").forEach(function (row) {
@@ -2153,6 +2158,10 @@ function renderHeaderHtml(meta, summary, coverage) {
   if (summary.variantRoutes)
     chips.push(
       `<span class="chip">${escapeHtml(summary.variantRoutes)} variant</span>`,
+    );
+  if (summary.siteAppRoutes)
+    chips.push(
+      `<span class="chip">${escapeHtml(summary.siteAppRoutes)} site-app page${Number(summary.siteAppRoutes) === 1 ? "" : "s"}</span>`,
     );
   if (summary.erroredRoutes)
     chips.push(

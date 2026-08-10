@@ -174,8 +174,31 @@ const routeOrder = [
 // e2e/utils/visual-routes.ts. Keys match SiteKey in src/lib/site.ts.
 const VARIANT_DOMAIN_LABELS = {
   optimitron: "optimitron.com",
+  warondisease: "warondisease.org",
   dfda: "dfda.earth",
   dih: "dih.earth",
+  wishocracy: "wishocracy.org",
+  trialabundancesurvey: "trialabundancesurvey.org",
+  curedao: "curedao.org",
+  acceleratedmedicine: "acceleratedmedicine.org",
+};
+
+const SITE_APP_ORDER = [
+  "warondisease",
+  "dfda",
+  "wishocracy",
+  "trialabundancesurvey",
+  "curedao",
+  "acceleratedmedicine",
+];
+
+const SITE_APP_ROUTE_PATHS = {
+  home: "/",
+  about: "/about",
+  faq: "/faq",
+  contact: "/contact",
+  terms: "/terms",
+  privacy: "/privacy",
 };
 
 main().catch((error) => {
@@ -355,9 +378,11 @@ function buildReviewPageInput(groups, coverage) {
       ? 0
       : route.copyChanged
         ? 1
-        : route.siteVariant
-          ? 3
-          : 2;
+        : route.siteApp
+          ? 2
+          : route.siteVariant
+            ? 4
+            : 3;
   routes.sort((a, b) => rank(a) - rank(b));
   return {
     meta: {
@@ -376,8 +401,11 @@ function buildReviewPageInput(groups, coverage) {
     summary: {
       changedRoutes: routes.filter((route) => route.changed).length,
       copyOnlyRoutes: routes.filter((route) => rank(route) === 1).length,
-      unchangedRoutes: routes.filter((route) => rank(route) === 2).length,
-      variantRoutes: routes.filter((route) => route.siteVariant).length,
+      unchangedRoutes: routes.filter((route) => rank(route) === 3).length,
+      siteAppRoutes: routes.filter((route) => route.siteApp).length,
+      variantRoutes: routes.filter(
+        (route) => route.siteVariant && !route.siteApp,
+      ).length,
       erroredRoutes: routes.filter((route) => route.errored).length,
       totalRoutes: routes.length,
     },
@@ -401,17 +429,23 @@ function buildBaselineDescription() {
 
 function buildReviewPageRoute(group) {
   const markdownDiff = buildMarkdownDiff(group.routeName);
-  const routePath = routePaths.get(group.routeName) ?? null;
-  const siteVariant = getRouteSiteVariant(group.routeName);
+  const siteAppRoute = getSiteAppRoute(group.routeName);
+  const routePath =
+    routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
+  const siteVariant =
+    siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
   return {
     routeName: group.routeName,
-    routeLabel: siteVariant
-      ? labelVariantRoute(group.routeName, siteVariant)
-      : labelRoute(group.routeName),
+    routeLabel: siteAppRoute
+      ? `${getVariantDomainLabel(siteVariant)} · ${labelRoute(siteAppRoute.routeName)}`
+      : siteVariant
+        ? labelVariantRoute(group.routeName, siteVariant)
+        : labelRoute(group.routeName),
     routePath,
-    routeUrl: getRouteUrl(group.routeName),
+    routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
     productionUrl: getProductionRouteUrl(routePath, siteVariant),
     authState: getRouteAuthState(group.routeName),
+    siteApp: Boolean(siteAppRoute),
     siteVariant,
     variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
     changed: group.changed,
@@ -1313,6 +1347,8 @@ function summarizeGroups(groups) {
         Boolean(buildMarkdownDiff(group.routeName)),
     ).length,
     erroredRoutes: groups.filter((group) => group.errored).length,
+    siteAppRoutes: groups.filter((group) => getSiteAppRoute(group.routeName))
+      .length,
     unchangedRoutes: groups.filter(
       (group) =>
         !group.changed && !group.errored && !buildMarkdownDiff(group.routeName),
@@ -1339,15 +1375,22 @@ function buildReviewManifest(groups, coverage) {
     routes: groups.map((group) => {
       const markdownDiff = buildMarkdownDiff(group.routeName);
       const copyChanged = Boolean(markdownDiff);
-      const siteVariant = getRouteSiteVariant(group.routeName);
+      const siteAppRoute = getSiteAppRoute(group.routeName);
+      const siteVariant =
+        siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
+      const routePath =
+        routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
       return {
         routeName: group.routeName,
-        routeLabel: siteVariant
-          ? labelVariantRoute(group.routeName, siteVariant)
-          : labelRoute(group.routeName),
-        routePath: routePaths.get(group.routeName) ?? null,
-        routeUrl: getRouteUrl(group.routeName),
+        routeLabel: siteAppRoute
+          ? `${getVariantDomainLabel(siteVariant)} · ${labelRoute(siteAppRoute.routeName)}`
+          : siteVariant
+            ? labelVariantRoute(group.routeName, siteVariant)
+            : labelRoute(group.routeName),
+        routePath,
+        routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
         authState: getRouteAuthState(group.routeName),
+        siteApp: Boolean(siteAppRoute),
         siteVariant,
         changed: group.changed,
         copyChanged,
@@ -1443,7 +1486,24 @@ function safeReadDir(dir, { dirsOnly = false } = {}) {
 
 function routeSortIndex(routeName) {
   const index = routeOrder.indexOf(routeName);
-  return index === -1 ? routeOrder.length : index;
+  if (index !== -1) {
+    return index;
+  }
+
+  const siteAppRoute = getSiteAppRoute(routeName);
+  if (!siteAppRoute) {
+    return routeOrder.length;
+  }
+
+  const appIndex = SITE_APP_ORDER.indexOf(siteAppRoute.siteVariant);
+  const routeIndex = Object.keys(SITE_APP_ROUTE_PATHS).indexOf(
+    siteAppRoute.routeName,
+  );
+  return (
+    routeOrder.length +
+    appIndex * Object.keys(SITE_APP_ROUTE_PATHS).length +
+    routeIndex
+  );
 }
 
 function projectSortIndex(projectName) {
@@ -1586,6 +1646,25 @@ function getRouteSiteVariant(routeName) {
   }
   const match = /^variant-([a-z0-9]+)-/i.exec(routeName);
   return match && VARIANT_DOMAIN_LABELS[match[1]] ? match[1] : null;
+}
+
+function getSiteAppRoute(routeName) {
+  for (const siteVariant of SITE_APP_ORDER) {
+    const prefix = `site-app-${siteVariant}-`;
+    if (!routeName.startsWith(prefix)) {
+      continue;
+    }
+    const siteAppRouteName = routeName.slice(prefix.length);
+    const routePath = SITE_APP_ROUTE_PATHS[siteAppRouteName];
+    if (routePath) {
+      return {
+        routeName: siteAppRouteName,
+        routePath,
+        siteVariant,
+      };
+    }
+  }
+  return null;
 }
 
 function getVariantDomainLabel(siteVariant) {
