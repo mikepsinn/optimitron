@@ -20,6 +20,7 @@ import {
   questionsLink,
   routeReviewNavItems,
   servicesLink,
+  taskTreeLink,
   voteLink,
 } from "../routes";
 
@@ -124,6 +125,17 @@ describe("navigation routes", () => {
     expect(routeReviewNavItems.indexOf(eosLink)).toBe(
       routeReviewNavItems.indexOf(donateLink) + 1,
     );
+  });
+
+  it("keeps the task tree in screenshot and exact-copy review", () => {
+    expect(taskTreeLink).toEqual(
+      expect.objectContaining({
+        copyPreview: true,
+        reviewName: "tasks-tree",
+        screenshot: true,
+      }),
+    );
+    expect(routeReviewNavItems).toContain(taskTreeLink);
   });
 
   it("keeps dynamic route templates out of smart copy-preview routes", () => {

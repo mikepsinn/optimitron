@@ -5,6 +5,7 @@ import {
   GLOBAL_LIFE_EXPECTANCY_2024,
   GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
   GLOBAL_POPULATION_2024,
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL,
   PRIZE_TARGET_MEDIAN_INCOME_YEAR_15,
   VALUE_OF_STATISTICAL_LIFE,
 } from "./parameters-calculations-citations";
@@ -43,6 +44,18 @@ export const FARMED_ANIMAL_ADVOCACY_SPENDING_2024: Parameter = {
 function toMissionScenarioValue(annualValue: number) {
   return annualValue * MISSION_VALUE_HORIZON_YEARS;
 }
+
+/**
+ * Optimizing Earth: recapture the annual global opportunity cost of governance
+ * failures over the common mission comparison period.
+ *
+ * This is a non-additive root scenario. It does not add child mission values.
+ * Disease productivity losses and medical costs overlap this opportunity-cost
+ * estimate. This is not expected value because success probability is unknown.
+ */
+export const OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD = toMissionScenarioValue(
+  POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value,
+);
 
 /**
  * Ending war: value if achieved under the mission comparison scenario.

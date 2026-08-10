@@ -53,12 +53,8 @@ const DEFAULT_LOGGED_OUT_ROUTES = filterRedirectOnlyRoutes(
 );
 const DEFAULT_AUTHENTICATED_ROUTES = filterRedirectOnlyRoutes(
   dedupeRoutes([
-    ...getRouteReviewSpecs("authenticatedCopyPreview").map(
-      (spec) => spec.path,
-    ),
-    ...getRouteReviewSpecs("authenticatedScreenshot").map(
-      (spec) => spec.path,
-    ),
+    ...getRouteReviewSpecs("authenticatedCopyPreview").map((spec) => spec.path),
+    ...getRouteReviewSpecs("authenticatedScreenshot").map((spec) => spec.path),
   ]),
 );
 const DEFAULT_AUTHENTICATED_ROUTE_SET = new Set(DEFAULT_AUTHENTICATED_ROUTES);
@@ -241,11 +237,16 @@ async function extractPage(
     // Final retry: fall back to "load" for pages that never reach networkidle.
     const waitUntil = attempt === NAV_RETRIES ? "load" : "networkidle";
     try {
-      navResult = await tryExtract(attempt === NAV_RETRIES ? 2000 : 400, waitUntil);
+      navResult = await tryExtract(
+        attempt === NAV_RETRIES ? 2000 : 400,
+        waitUntil,
+      );
       break;
     } catch (err) {
       if (isRetryableNavError(err) && attempt < NAV_RETRIES) {
-        console.warn(`  retry ${attempt + 1}/${NAV_RETRIES} for ${route} (${err instanceof Error ? err.message.split("\n")[0] : err})`);
+        console.warn(
+          `  retry ${attempt + 1}/${NAV_RETRIES} for ${route} (${err instanceof Error ? err.message.split("\n")[0] : err})`,
+        );
         await page.waitForTimeout(3000);
         continue;
       }
@@ -297,7 +298,9 @@ async function extractPage(
     // tsx/esbuild injects __name(...) wrappers for named functions/arrows.
     // Shim it inside page.evaluate so those calls resolve in the browser.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const w = window as unknown as { __name?: (t: unknown, n: string) => unknown };
+    const w = window as unknown as {
+      __name?: (t: unknown, n: string) => unknown;
+    };
     if (typeof w.__name === "undefined") {
       w.__name = (target, value) =>
         Object.defineProperty(target as object, "name", {
@@ -332,8 +335,12 @@ async function extractPage(
     const isHiddenForRender = (el: Element): boolean => {
       if (el.hasAttribute("data-copy-preview-ignore")) return true;
       const style = getComputedStyle(el);
-      if (style.display === "none" || style.visibility === "hidden") return true;
-      if (typeof el.className === "string" && SR_ONLY_PATTERN.test(el.className)) {
+      if (style.display === "none" || style.visibility === "hidden")
+        return true;
+      if (
+        typeof el.className === "string" &&
+        SR_ONLY_PATTERN.test(el.className)
+      ) {
         return true;
       }
       return false;
@@ -392,8 +399,13 @@ async function extractPage(
           const child = node as Element;
           if (child.hasAttribute("data-copy-preview-ignore")) continue;
           if (!allowHidden && isHiddenForRender(child)) continue;
-          if (child.tagName === "A" || child.hasAttribute("data-copy-preview-href")) {
-            let inner = toMarkdown(child, allowHidden).replace(/\s+/g, " ").trim();
+          if (
+            child.tagName === "A" ||
+            child.hasAttribute("data-copy-preview-href")
+          ) {
+            let inner = toMarkdown(child, allowHidden)
+              .replace(/\s+/g, " ")
+              .trim();
             // sr-only-only Link: fall back to unfiltered inner so the accessible
             // name still ships in the snapshot.
             if (!inner && child.children.length > 0) {
@@ -423,9 +435,9 @@ async function extractPage(
       if (headerCells.length === 0) return "";
       const headerLine = `| ${headerCells.join(" | ")} |`;
       const dividerLine = `| ${headerCells.map(() => "---").join(" | ")} |`;
-      const bodyLines = rows.slice(1).map(
-        (tr) => `| ${cellsForRow(tr).join(" | ")} |`,
-      );
+      const bodyLines = rows
+        .slice(1)
+        .map((tr) => `| ${cellsForRow(tr).join(" | ")} |`);
       return [headerLine, dividerLine, ...bodyLines].join("\n");
     };
     // Layout tables (role="presentation") are not data — they're spacing
@@ -501,7 +513,12 @@ async function extractPage(
         : tag === "table"
           ? ""
           : "- ";
-      out.push(prefix + md);
+      if (tag === "table") {
+        if (out.length > 0 && out.at(-1) !== "") out.push("");
+        out.push(md, "");
+      } else {
+        out.push(prefix + md);
+      }
     }
     return out.join("\n");
   });
@@ -591,7 +608,8 @@ async function capturePass(
       const dir = routeToDirPath(route);
       const outPath = path.join(dir, filename);
       try {
-        const captureRoute = COPY_CAPTURE_PATH_OVERRIDE_BY_PATH.get(route) ?? route;
+        const captureRoute =
+          COPY_CAPTURE_PATH_OVERRIDE_BY_PATH.get(route) ?? route;
         const extracted = await extractPage(page, captureRoute);
         await mkdir(dir, { recursive: true });
         // When the route returned 3xx (typically auth-required pages
@@ -660,9 +678,13 @@ async function main() {
       console.log(
         `\n--- Authenticated pass (cookie minted offline for ${process.env.COPY_PREVIEW_USER_EMAIL ?? "m@thinkbynumbers.org"}) ---`,
       );
-      failures += await captureRoutes(authenticatedRoutes, "page.logged-in.md", {
-        authCookie,
-      });
+      failures += await captureRoutes(
+        authenticatedRoutes,
+        "page.logged-in.md",
+        {
+          authCookie,
+        },
+      );
     } catch (err) {
       failures += authenticatedRoutes.length;
       const message = err instanceof Error ? err.message : String(err);

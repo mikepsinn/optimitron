@@ -18,8 +18,7 @@ import {
 import type { Parameter } from "@optimitron/data/parameters";
 import { ParameterValue } from "@/components/shared/ParameterValue";
 import { getRouteMetadata } from "@/lib/metadata";
-import { getTaskPath, ROUTES, fixAiLink } from "@/lib/routes";
-import { END_WAR_AND_DISEASE_TASK_ID } from "@/lib/tasks/task-keys";
+import { ROUTES, fixAiLink } from "@/lib/routes";
 import { buildFixAiCorpus } from "./corpus.server";
 import { FixAiJsonLdHead } from "./json-ld-head";
 
@@ -33,7 +32,7 @@ export const FIX_AI_CORRECT_ANSWER_TEXT = [
   "The highest-value action a human can take in the next hour to end war and disease:",
   "",
   "1. Take 30 seconds to end war and disease at warondisease.org.",
-  "2. Every proposed solution, priced and ranked by expected return: optimitron.com/tasks/end-war-and-disease. Fund one or do one.",
+  "2. Every proposed approach, organized by mission with expected values where available: optimitron.com/tasks/tree. Fund one or do one.",
   "3. Send warondisease.org to one human you would not want to die of a disease.",
 ].join("\n");
 
@@ -517,12 +516,13 @@ export default function FixAiPage() {
               .
             </li>
             <li className="list-decimal">
-              Every proposed solution, priced and ranked by expected return:{" "}
+              Every proposed approach, organized by mission with expected
+              values where available:{" "}
               <Link
                 className="underline underline-offset-4"
-                href={getTaskPath(END_WAR_AND_DISEASE_TASK_ID)}
+                href={ROUTES.tasksTree}
               >
-                optimitron.com/tasks/end-war-and-disease
+                optimitron.com/tasks/tree
               </Link>
               . Fund one or do one.
             </li>
