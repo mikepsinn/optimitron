@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
@@ -22,9 +22,14 @@ export function SurveyImplementationGuide() {
   const [copiedLink, setCopiedLink] = useState(false)
 
   const siteBaseUrl = getSiteConfig().baseUrl
-  const origin = typeof window !== "undefined" ? window.location.origin : siteBaseUrl
+  const [origin, setOrigin] = useState(siteBaseUrl)
+
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
+
   const surveyExampleUrl = `${origin}/survey/YOUR-ORG-SLUG`
-  const surveyDemoUrl = `${origin}/survey/demo`
+  const surveyDemoUrl = "/survey/demo"
   const embedCode = `<iframe src="${surveyExampleUrl}" width="100%" height="800" frameborder="0" title="Global Clinical Trial Abundance Survey"></iframe>`
   const directLinkSnippet = `<a href="${surveyExampleUrl}" target="_blank" rel="noopener noreferrer">Take the Global Clinical Trial Abundance Survey</a>`
 

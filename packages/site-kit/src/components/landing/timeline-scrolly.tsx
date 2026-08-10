@@ -81,10 +81,19 @@ export function TimelineScrolly({ userAge, onAgeChange }: TimelineScrollyProps) 
       setDfdaComplete(year >= dfdaQueueYears)
     }
 
+    const completeVisualCapture = () => {
+      setCurrentYear(queueYears)
+      setDfdaComplete(true)
+    }
+
     window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("optimitron:visual-capture", completeVisualCapture)
     handleScroll() // Initial call
 
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("optimitron:visual-capture", completeVisualCapture)
+    }
   }, [queueYears, dfdaQueueYears, statusQuoHeight])
 
 

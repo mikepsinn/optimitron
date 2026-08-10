@@ -6,11 +6,16 @@ import * as fs from "fs";
 import * as path from "path";
 import {
   forceAnimationsComplete,
+  prepareFullPageVisualCapture,
   retryAfterNavigation,
   waitForPaint,
 } from "./visual-settle.mjs";
 
-export { forceAnimationsComplete, waitForPaint };
+export {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+  waitForPaint,
+};
 
 /**
  * Wait for a demo slide to actually render after hash navigation.

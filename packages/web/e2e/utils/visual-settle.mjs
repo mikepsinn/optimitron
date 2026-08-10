@@ -51,6 +51,69 @@ export async function forceAnimationsComplete(page) {
   await waitForPaint(page);
 }
 
+/**
+ * Prepare a full page without physically scrolling it. Native lazy content is
+ * promoted to eager loading, and scroll-driven components receive an explicit
+ * request to render their deterministic completed state.
+ *
+ * @param {import("@playwright/test").Page} page
+ */
+export async function prepareFullPageVisualCapture(page) {
+  await retryAfterNavigation(page, async () => {
+    await page.evaluate(async () => {
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(0, 0);
+      for (const element of document.querySelectorAll(
+        'img[loading="lazy"], iframe[loading="lazy"]',
+      )) {
+        element.setAttribute("loading", "eager");
+      }
+    });
+  });
+
+  await page
+    .waitForFunction(
+      () =>
+        Array.from(document.querySelectorAll("iframe[src]")).every(
+          (iframe) => {
+            try {
+              const expectedUrl = new URL(iframe.src, document.baseURI).href;
+              const actualUrl = iframe.contentWindow?.location.href;
+              return (
+                actualUrl !== "about:blank" &&
+                actualUrl === expectedUrl &&
+                iframe.contentDocument?.readyState === "complete"
+              );
+            } catch {
+              // Cross-origin frames cannot expose readiness to the parent.
+              // Their own load lifecycle is handled by Playwright below.
+              return true;
+            }
+          },
+        ),
+      undefined,
+      { timeout: 10_000 },
+    )
+    .catch(() => undefined);
+
+  await Promise.allSettled(
+    page
+      .frames()
+      .filter((frame) => frame !== page.mainFrame())
+      .map(async (frame) => {
+        await frame.waitForLoadState("load", { timeout: 10_000 });
+        await frame.evaluate(() => document.fonts.ready);
+      }),
+  );
+
+  await retryAfterNavigation(page, async () => {
+    await page.evaluate(() =>
+      window.dispatchEvent(new Event("optimitron:visual-capture")),
+    );
+  });
+  await waitForPaint(page);
+}
+
 /** @param {import("@playwright/test").Page} page */
 export async function waitForPaint(page) {
   await retryAfterNavigation(page, async () => {

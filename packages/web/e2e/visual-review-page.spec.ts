@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { forceAnimationsComplete } from "./utils/audit-helpers";
+import {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+} from "./utils/audit-helpers";
 
 const WEB_ROOT = path.resolve(__dirname, "..");
 const SMOKE_SCRIPT = path.join(
@@ -51,6 +54,56 @@ test("animation normalization stays applied through later Framer updates", async
   await expect(reveal).toHaveAttribute("data-visual-force-visible", "");
   await expect(reveal).toHaveCSS("opacity", "1");
   await expect(reveal).toHaveCSS("transform", "none");
+});
+
+test("full-page preparation completes scroll state and loads a lazy embed", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.route("https://visual.test/embed", (route) =>
+    route.fulfill({
+      body: '<main id="embed-ready">Loaded survey embed</main>',
+      contentType: "text/html",
+      status: 200,
+    }),
+  );
+  await page.setContent(`
+    <div style="height: 12000px">Scroll-driven page</div>
+    <iframe
+      id="lazy-embed"
+      title="Lazy embed"
+      loading="lazy"
+      src="https://visual.test/embed"
+      style="height: 800px"
+    ></iframe>
+    <script>
+      const updateVisualState = () => {
+        document.body.dataset.scrollState =
+          window.scrollY >= 8000 ? "complete" : "initial";
+      };
+      window.addEventListener("scroll", updateVisualState, { passive: true });
+      window.addEventListener("optimitron:visual-capture", () => {
+        document.body.dataset.scrollState = "complete";
+      });
+      updateVisualState();
+    </script>
+  `);
+
+  await prepareFullPageVisualCapture(page);
+
+  await expect(page.locator("body")).toHaveAttribute(
+    "data-scroll-state",
+    "complete",
+  );
+  await expect(
+    page.frameLocator("#lazy-embed").locator("#embed-ready"),
+  ).toHaveText("Loaded survey embed");
+  await expect(page.locator("#lazy-embed")).toHaveAttribute(
+    "loading",
+    "eager",
+  );
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
 test("new routes show their after-only screenshot", async ({

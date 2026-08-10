@@ -8,7 +8,10 @@ import {
   getSiteConfigForVariant,
   VARIANTS,
 } from "../packages/site-kit/src/lib/site-config.ts";
-import { forceAnimationsComplete } from "../packages/web/e2e/utils/visual-settle.mjs";
+import {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+} from "../packages/web/e2e/utils/visual-settle.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -157,6 +160,8 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               timeout: 15_000,
             });
             await page.evaluate(() => document.fonts.ready);
+            await forceAnimationsComplete(page);
+            await prepareFullPageVisualCapture(page);
             await forceAnimationsComplete(page);
             await page.screenshot({
               animations: "disabled",
