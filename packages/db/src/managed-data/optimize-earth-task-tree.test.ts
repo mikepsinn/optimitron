@@ -12,6 +12,7 @@ import {
   END_DISEASE_TASK_ID,
   END_POVERTY_TASK_ID,
   END_WAR_AND_DISEASE_TASK_ID,
+  END_WAR_AND_DISEASE_TASK_KEY,
   END_WAR_TASK_ID,
   EOS_CAPITALIZE_TASK_ID,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
@@ -249,6 +250,13 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     );
     expect(legacy?.retired).toBe(true);
     expect(legacy?.parentTaskId).toBe(END_WAR_TASK_ID);
+    expect(legacy?.taskKey).toBe(END_WAR_AND_DISEASE_TASK_KEY);
+    expect(
+      OPTIMIZE_EARTH_TASK_TREE.some(
+        (task) =>
+          task.parentTaskId === END_WAR_AND_DISEASE_TASK_ID && !task.retired,
+      ),
+    ).toBe(false);
   });
 
   it.each([
