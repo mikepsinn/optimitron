@@ -36,7 +36,10 @@ const screenshotProjects = [
   ],
 ];
 
-const screenshotRoot = process.env.SITE_APP_SCREENSHOT_ROOT?.trim();
+const screenshotRootInput = process.env.SITE_APP_SCREENSHOT_ROOT?.trim();
+const screenshotRoot = screenshotRootInput
+  ? path.resolve(repoRoot, screenshotRootInput)
+  : undefined;
 
 const requestedApps = process.argv.slice(2);
 const unknownApps = requestedApps.filter(
