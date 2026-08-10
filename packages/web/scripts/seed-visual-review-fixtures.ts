@@ -49,6 +49,7 @@ const ids = {
   managerTask: `${FIXTURE_PREFIX}manager_task`,
   managementClaimTask: `${FIXTURE_PREFIX}management_claim_task`,
   managementOwnerTask: `${FIXTURE_PREFIX}management_owner_task`,
+  referenceTargetTask: "cvisualtasklink0000000000",
   staleTask: `${FIXTURE_PREFIX}stale_task`,
 };
 
@@ -243,6 +244,25 @@ async function seedTaskManagementStates(input: {
   demo: Awaited<ReturnType<typeof loadDemoActor>>;
   fixtureManager: Awaited<ReturnType<typeof ensureFixtureManager>>;
 }) {
+  await prisma.task.upsert({
+    where: { id: ids.referenceTargetTask },
+    update: {
+      createdByUserId: input.demo.user.id,
+      deletedAt: null,
+      description: "Review the source documents for the filing checklist.",
+      isPublic: false,
+      taskKey: `${FIXTURE_PREFIX}reference_target`,
+      title: "Review the filing evidence",
+    },
+    create: {
+      createdByUserId: input.demo.user.id,
+      description: "Review the source documents for the filing checklist.",
+      id: ids.referenceTargetTask,
+      isPublic: false,
+      taskKey: `${FIXTURE_PREFIX}reference_target`,
+      title: "Review the filing evidence",
+    },
+  });
   const ownerTask = await prisma.task.upsert({
     where: { id: ids.managementOwnerTask },
     update: {
@@ -250,8 +270,7 @@ async function seedTaskManagementStates(input: {
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       createdByUserId: input.demo.user.id,
       deletedAt: null,
-      description:
-        "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
+      description: `Confirm the filing checklist against ${ids.referenceTargetTask}, add any missing steps, and archive this task when the checklist is no longer current.`,
       dueAt: MANAGEMENT_DUE_AT,
       estimatedEffortHours: 2,
       isPublic: false,
@@ -262,8 +281,7 @@ async function seedTaskManagementStates(input: {
       assigneePersonId: input.demo.person.id,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       createdByUserId: input.demo.user.id,
-      description:
-        "Confirm the filing checklist, add any missing steps, and archive this task when the checklist is no longer current.",
+      description: `Confirm the filing checklist against ${ids.referenceTargetTask}, add any missing steps, and archive this task when the checklist is no longer current.`,
       dueAt: MANAGEMENT_DUE_AT,
       estimatedEffortHours: 2,
       id: ids.managementOwnerTask,

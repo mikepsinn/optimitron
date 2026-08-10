@@ -86,6 +86,10 @@ const TASK_DELETE_BUTTON_FILE =
   "packages/web/src/components/tasks/TaskDeleteButton.tsx";
 const TASK_MANAGEMENT_CONTROLS_FILE =
   "packages/web/src/components/tasks/TaskManagementControls.tsx";
+const TASK_DESCRIPTION_FILE =
+  "packages/web/src/components/tasks/task-description.tsx";
+const RICH_MARKDOWN_FILE =
+  "packages/web/src/components/markdown/rich-markdown.tsx";
 const CREATE_TASK_DIALOG_FILE =
   "packages/web/src/components/tasks/CreateTaskDialog.tsx";
 const TASK_DEPENDENCIES_SECTION_FILE =
@@ -519,12 +523,15 @@ function loadDocumentReviewRoutes(): VisualRoute[] {
         TASK_MANAGEMENT_CONTROLS_FILE,
         TASK_COMPLETE_FORM_FILE,
         TASK_DELETE_BUTTON_FILE,
+        TASK_DESCRIPTION_FILE,
+        RICH_MARKDOWN_FILE,
       ],
       name: "task-management-owner",
       openTaskManagement: true,
       path: `/tasks/${manifest.managementOwnerTaskId}`,
       required: true,
       requiredSelector: "[data-task-management][open]",
+      requiredText: /^Review the filing evidence$/,
     },
     {
       authenticated: true,

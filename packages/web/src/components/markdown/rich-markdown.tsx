@@ -7,10 +7,15 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { MermaidBlock } from "./mermaid-block";
 import { ChartBlock, parseChartConfig } from "./chart-block";
+import {
+  createTaskReferenceLinksPlugin,
+  type TaskReferenceLink,
+} from "@/lib/tasks/task-reference-links";
 
 interface RichMarkdownProps {
   markdown: string;
   className?: string;
+  taskReferences?: readonly TaskReferenceLink[];
 }
 
 /**
@@ -28,15 +33,22 @@ interface RichMarkdownProps {
  * comment actually contains one of those fence types. Zero bundle cost
  * for text-only content.
  */
-export function RichMarkdown({ markdown, className }: RichMarkdownProps) {
+export function RichMarkdown({
+  markdown,
+  className,
+  taskReferences = [],
+}: RichMarkdownProps) {
   return (
-    <div className={`task-markdown space-y-3 text-[15px] leading-[1.6] text-foreground ${className ?? ""}`}>
+    <div
+      className={`task-markdown space-y-3 text-[15px] leading-[1.6] text-foreground ${className ?? ""}`}
+    >
       <ReactMarkdown
         remarkPlugins={[
           remarkGfm,
           // Disable single-`$` inline math so currency like "$27.2B" isn't
           // misparsed as a math delimiter. Block math with `$$...$$` still works.
           [remarkMath, { singleDollarTextMath: false }],
+          createTaskReferenceLinksPlugin(taskReferences),
         ]}
         rehypePlugins={[rehypeKatex]}
         components={getRichMarkdownComponents()}

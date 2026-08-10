@@ -60,6 +60,7 @@ import { normalizeTaskCommunicationEndpointUrl } from "@/lib/tasks/task-communic
 import { OUTBOUND_MESSAGE_OPERATION } from "@/lib/email/outbound-message-approval.server";
 import { listExternalActionRequestsForHuman } from "@/lib/tasks/external-action.server";
 import { TREATY_PARENT_TASK_ID } from "@/lib/tasks/task-keys";
+import { resolveTaskReferenceLinks } from "@/lib/tasks/task-reference-links.server";
 import {
   canUserManageTask,
   TASK_NOT_FOUND_MESSAGE,
@@ -453,6 +454,11 @@ export default async function TaskDetailPage({
   }
 
   const { task, viewer, viewerClaim } = data;
+  const taskReferenceLinks = await resolveTaskReferenceLinks({
+    markdown: task.description,
+    personId: viewer?.personId,
+    userId,
+  });
   const isAssignedDocumentReviewer =
     documentReviewPageData?.panel.mode === "REVIEWER";
   const showDocumentReviewManager =
@@ -809,7 +815,10 @@ export default async function TaskDetailPage({
           <>
             <section className="border-b border-foreground py-6">
               <article className="min-w-0">
-                <TaskDescription markdown={task.description} />
+                <TaskDescription
+                  markdown={task.description}
+                  taskReferences={taskReferenceLinks}
+                />
               </article>
             </section>
 

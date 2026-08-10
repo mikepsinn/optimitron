@@ -1,5 +1,6 @@
 import { RichMarkdown } from "@/components/markdown/rich-markdown";
 import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
+import type { TaskReferenceLink } from "@/lib/tasks/task-reference-links";
 
 /**
  * Render a task description as markdown with the neobrutalist typography system.
@@ -8,11 +9,18 @@ import { normalizeTaskTextLineBreaks } from "@/lib/task-text";
  * also handles inline math, mermaid diagrams, chart fences, and everything else
  * across the app. This keeps existing call sites working without changes.
  */
-export function TaskDescription({ markdown }: { markdown: string }) {
+export function TaskDescription({
+  markdown,
+  taskReferences = [],
+}: {
+  markdown: string;
+  taskReferences?: readonly TaskReferenceLink[];
+}) {
   return (
     <RichMarkdown
       markdown={normalizeTaskTextLineBreaks(markdown)}
       className="task-description"
+      taskReferences={taskReferences}
     />
   );
 }
@@ -22,7 +30,10 @@ export function TaskDescription({ markdown }: { markdown: string }) {
  * OG images, and share text. Strips markdown syntax and returns the first
  * paragraph, truncated to maxLength chars.
  */
-export function getTaskDescriptionSummary(markdown: string, maxLength = 220): string {
+export function getTaskDescriptionSummary(
+  markdown: string,
+  maxLength = 220,
+): string {
   const normalizedMarkdown = normalizeTaskTextLineBreaks(markdown);
   const firstParagraph =
     normalizedMarkdown

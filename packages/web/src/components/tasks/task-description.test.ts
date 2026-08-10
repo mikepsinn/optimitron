@@ -4,10 +4,7 @@
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-  getTaskDescriptionSummary,
-  TaskDescription,
-} from "./task-description";
+import { getTaskDescriptionSummary, TaskDescription } from "./task-description";
 
 describe("getTaskDescriptionSummary", () => {
   it("treats escaped line breaks as markdown paragraph boundaries", () => {
@@ -57,5 +54,47 @@ describe("TaskDescription", () => {
         item.textContent?.trim(),
       ),
     ).toEqual(["First item"]);
+  });
+
+  it("links accessible bare task IDs without changing protected markdown", async () => {
+    const accessibleId = "cautolinkpublic0000000000";
+    const inaccessibleId = "cautolinkprivate000000000";
+
+    await act(async () => {
+      root.render(
+        React.createElement(TaskDescription, {
+          markdown: [
+            `Read ${accessibleId} and keep ${inaccessibleId} private.`,
+            `Inline code: \`${accessibleId}\`.`,
+            `[Existing link](/tasks/${accessibleId}).`,
+          ].join("\n\n"),
+          taskReferences: [
+            {
+              href: `/tasks/${accessibleId}`,
+              id: accessibleId,
+              title: "Accessible task title",
+            },
+          ],
+        }),
+      );
+    });
+
+    expect(
+      Array.from(container.querySelectorAll("a")).map((link) => ({
+        href: link.getAttribute("href"),
+        text: link.textContent,
+      })),
+    ).toEqual([
+      {
+        href: `/tasks/${accessibleId}`,
+        text: "Accessible task title",
+      },
+      {
+        href: `/tasks/${accessibleId}`,
+        text: "Existing link",
+      },
+    ]);
+    expect(container.querySelector("code")?.textContent).toBe(accessibleId);
+    expect(container.textContent).toContain(inaccessibleId);
   });
 });
