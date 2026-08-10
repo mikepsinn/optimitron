@@ -198,6 +198,14 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
+  [
+    ROUTES.tasksTree,
+    [
+      TASK_TREE_VIEW_FILE,
+      "packages/db/src/managed-data/optimize-earth-task-tree.ts",
+      "packages/web/src/app/tasks/tree/page.tsx",
+    ],
+  ],
 ]);
 
 const PRESIDENT_TASK_LIST_SELECTOR =
@@ -216,6 +224,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
+  [ROUTES.tasksTree, "#task-tree"],
 ]);
 
 const IMAGE_STABLE_ROUTE_PATHS = new Set<string>([
@@ -375,17 +384,6 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     required: true,
     requiredSelector: 'details[open] a[href="/methodology"]',
     requiredText: /^Estimate$/,
-  },
-  {
-    covers: [
-      TASK_TREE_VIEW_FILE,
-      "packages/db/src/managed-data/optimize-earth-task-tree.ts",
-      "packages/web/src/app/tasks/tree/page.tsx",
-    ],
-    name: "tasks-tree",
-    path: "/tasks/tree",
-    required: true,
-    requiredSelector: "#task-tree",
   },
   {
     name: "task-signer-canada",
