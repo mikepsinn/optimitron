@@ -87,6 +87,7 @@ export const slideRegistry = {
   "three-scenarios-all-win": demoSlide("slide-three-scenarios-all-win"),
   "trial-acceleration-12x": demoSlide("slide-trial-acceleration-12x"),
   "viral-doubling-to-4b": demoSlide("slide-viral-doubling-to-4b"),
+  "vote-and-share": demoSlide("slide-vote-and-share"),
   "point-dollar-value": demoSlide("slide-point-dollar-value"),
   "point-value-asymmetry": demoSlide("slide-point-value-asymmetry"),
   "war-compounding-losses": demoSlide("slide-war-compounding-losses"),

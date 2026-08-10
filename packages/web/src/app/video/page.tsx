@@ -4,7 +4,7 @@ import { getRouteMetadata } from "@/lib/metadata";
 export const metadata = getRouteMetadata(videoLink);
 
 const VIDEO_URL =
-  "https://static.warondisease.org/assets/videos/optimitron-demo-2026-03-31-seekable.mp4";
+  "https://static.warondisease.org/assets/videos/optimitron-game-campaign-cut-2026-08-09.mp4";
 
 export default function VideoPage() {
   return (
