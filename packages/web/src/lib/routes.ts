@@ -1261,13 +1261,13 @@ export const messagesLink: NavItem = {
 
 export const posterLink: NavItem = {
   href: ROUTES.poster,
-  label: "Print a Poster",
+  label: "Hang Up Flyers",
   emoji: "📄",
-  description: `Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. A poster taped to a wall recruits voters who agree to this arrangement around the clock, without needing you in the room.`,
-  tagline: "Print your campaign QR code.",
+  description: `Every human on earth would be vastly richer and significantly less dead if we agreed to sacrifice one of our ${apocalypseCount} apocalypse capacity for disease eradication. Hang referral flyers where humans will see them and let nearby foot traffic recruit voters while you do something else.`,
+  tagline: "Print flyers. Ask your AI for a route. Hang them up.",
   copyPreview: true,
   screenshot: true,
-  cta: "Print",
+  cta: "Hang Flyers",
 };
 
 export const computeLink: NavItem = {
