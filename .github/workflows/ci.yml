@@ -707,11 +707,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          submodules: recursive
-          # Full history so build-visual-review.mjs can diff copy snapshots
-          # against the merge-base of origin/main. The default shallow clone
-          # has no main ref, which silently disabled the markdown-diff panels.
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Copy diffs need the merge-base with origin/main. A blobless clone
+          # keeps that history without downloading every historical asset.
           fetch-depth: 0
+          filter: blob:none
 
       - name: Enable Corepack
         run: |
