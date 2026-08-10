@@ -72,8 +72,7 @@ export const MINIMIZE_ANIMAL_SUFFERING_TASK_KEY =
 
 export const COURT_OF_HUMANITY_TASK_ID = "court-of-humanity";
 export const COURT_OF_HUMANITY_TASK_KEY = "program:court-of-humanity:establish";
-export const COURT_OF_HUMANITY_CHARTER_TASK_ID =
-  "court-of-humanity-charter";
+export const COURT_OF_HUMANITY_CHARTER_TASK_ID = "court-of-humanity-charter";
 export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
   "program:court-of-humanity:charter";
 
@@ -86,8 +85,7 @@ export const COURT_OF_HUMANITY_CHARTER_TASK_KEY =
  */
 export const HUMANITY_V_GOVERNMENT_CASE_NAME = "Humanity v. Government";
 
-export const HUMANITY_V_GOVERNMENTS_TASK_ID =
-  "humanity-v-governments-of-earth";
+export const HUMANITY_V_GOVERNMENTS_TASK_ID = "humanity-v-governments-of-earth";
 export const HUMANITY_V_GOVERNMENTS_TASK_KEY =
   "program:humanity-v-governments-of-earth:prosecute";
 export const REGISTER_PLAINTIFFS_TASK_ID = "register-plaintiffs";
@@ -133,6 +131,18 @@ export const LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID =
   "loving-takeover-optimize-lobbying";
 export const LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_KEY =
   "program:loving-takeover:optimize-lobbying";
+export const LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_ID =
+  "loving-takeover-acquire-stakes";
+export const LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_KEY =
+  "program:loving-takeover:acquire-stakes";
+export const LOVING_TAKEOVER_LITIGATION_TASK_ID =
+  "loving-takeover-shareholder-litigation";
+export const LOVING_TAKEOVER_LITIGATION_TASK_KEY =
+  "program:loving-takeover:shareholder-litigation";
+export const LOVING_TAKEOVER_FILE_COMPLAINT_TASK_ID =
+  "loving-takeover-file-derivative-complaint";
+export const LOVING_TAKEOVER_FILE_COMPLAINT_TASK_KEY =
+  "program:loving-takeover:file-derivative-complaint";
 
 // Earth Optimization Prize (Phase 1 funding mechanism)
 
@@ -154,6 +164,16 @@ export const SHIRT_SEED_TASK_KEY = "program:shirt-seed";
 
 export const EOS_CAPITALIZE_TASK_ID = "eos-capitalize";
 export const EOS_CAPITALIZE_TASK_KEY = "program:eos:capitalize";
+export const EOS_FUND_EVIDENCE_TASK_ID = "eos-fund-evidence-tools";
+export const EOS_FUND_EVIDENCE_TASK_KEY = "program:eos:fund-evidence-tools";
+export const EOS_CALCULATE_POLICY_BUDGETS_TASK_ID =
+  "eos-calculate-policy-budgets";
+export const EOS_CALCULATE_POLICY_BUDGETS_TASK_KEY =
+  "program:eos:calculate-policy-budgets";
+export const EOS_IMPLEMENT_INTERVENTIONS_TASK_ID =
+  "eos-implement-interventions";
+export const EOS_IMPLEMENT_INTERVENTIONS_TASK_KEY =
+  "program:eos:implement-interventions";
 
 // Optimize Optimitron engineering program (the dev branch of the task tree).
 //
@@ -172,7 +192,8 @@ export const TREATY_PARENT_TASK_ID = "1-pct-treaty";
 export const TREATY_PARENT_TASK_KEY = "program:one-percent-treaty:ratify";
 export const TREATY_PARENT_TASK_TITLE = "Ratify the 1% Treaty";
 export const TREATY_SIGNER_TASK_ID_PREFIX = "1-pct-treaty-signer";
-export const TREATY_SIGNER_TASK_KEY_PREFIX = "program:one-percent-treaty:signer";
+export const TREATY_SIGNER_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:signer";
 export const TREATY_SIGNER_TASK_TITLE = "Sign the 1% Treaty";
 
 export function getTreatySignerTaskKey(input: { countryCode: string }) {
@@ -188,10 +209,15 @@ export function isTreatyParentTaskKey(taskKey: string | null | undefined) {
 }
 
 export function isTreatySignerTaskKey(taskKey: string | null | undefined) {
-  return taskKey != null && /^program:one-percent-treaty:signer:[a-z0-9-]+$/i.test(taskKey);
+  return (
+    taskKey != null &&
+    /^program:one-percent-treaty:signer:[a-z0-9-]+$/i.test(taskKey)
+  );
 }
 
-export function isTreatySignerTaskKeyPrefix(taskKey: string | null | undefined) {
+export function isTreatySignerTaskKeyPrefix(
+  taskKey: string | null | undefined,
+) {
   return (
     taskKey != null && taskKey.startsWith(`${TREATY_SIGNER_TASK_KEY_PREFIX}:`)
   );
@@ -214,15 +240,20 @@ export function getUserTreatySubtaskKey(userId: string, kind: string) {
 
 // Signer reminder subtask
 
-export const SIGNER_REMINDER_TASK_KEY_PREFIX = "program:one-percent-treaty:reminder";
+export const SIGNER_REMINDER_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:reminder";
 
-export function buildSignerReminderTaskKey(countryCode: string, userId: string) {
+export function buildSignerReminderTaskKey(
+  countryCode: string,
+  userId: string,
+) {
   return `${SIGNER_REMINDER_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${userId}`;
 }
 
 // Referral invitation task
 
-export const REFERRAL_INVITATION_TASK_KEY_PREFIX = "program:one-percent-treaty:referral-invitation";
+export const REFERRAL_INVITATION_TASK_KEY_PREFIX =
+  "program:one-percent-treaty:referral-invitation";
 
 export function buildReferralInvitationTaskKey(inviteToken: string) {
   return `${REFERRAL_INVITATION_TASK_KEY_PREFIX}:${inviteToken}`;
@@ -232,6 +263,9 @@ export function buildReferralInvitationTaskKey(inviteToken: string) {
 
 export const ACCOUNTABILITY_TASK_KEY_PREFIX = "accountability";
 
-export function buildAccountabilityTaskKey(countryCode: string, activitySlug: string) {
+export function buildAccountabilityTaskKey(
+  countryCode: string,
+  activitySlug: string,
+) {
   return `${ACCOUNTABILITY_TASK_KEY_PREFIX}:${countryCode.toLowerCase()}:${activitySlug}`;
 }

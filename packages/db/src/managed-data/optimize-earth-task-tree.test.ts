@@ -14,7 +14,13 @@ import {
   END_WAR_AND_DISEASE_TASK_ID,
   END_WAR_AND_DISEASE_TASK_KEY,
   END_WAR_TASK_ID,
+  EOS_CALCULATE_POLICY_BUDGETS_TASK_ID,
   EOS_CAPITALIZE_TASK_ID,
+  EOS_FUND_EVIDENCE_TASK_ID,
+  EOS_IMPLEMENT_INTERVENTIONS_TASK_ID,
+  LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_ID,
+  LOVING_TAKEOVER_FILE_COMPLAINT_TASK_ID,
+  LOVING_TAKEOVER_LITIGATION_TASK_ID,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
   LOVING_TAKEOVER_OPTIMIZE_LOBBYING_TASK_ID,
   LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
@@ -262,7 +268,7 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
   it.each([
     [
       LOVING_TAKEOVER_TASK_ID,
-      "Use shareholder power to redirect military lobbying",
+      "Use shareholder power to redirect corporate lobbying toward public welfare",
     ],
     [
       LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
@@ -278,12 +284,66 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     ],
     [
       EOS_CAPITALIZE_TASK_ID,
-      "Fund tools that measure and improve public welfare",
+      "Build and capitalize a public-welfare investment company",
     ],
     [DFDA_CREATE_TASK_ID, "Fund faster, cheaper pragmatic clinical trials"],
   ])("uses a general method title for %s", (id, title) => {
     const task = OPTIMIZE_EARTH_TASK_TREE.find((record) => record.id === id);
     expect(task?.title).toBe(title);
+  });
+
+  it("places the shareholder strategy below the EOS capital engine", () => {
+    const lovingTakeover = OPTIMIZE_EARTH_TASK_TREE.find(
+      (task) => task.id === LOVING_TAKEOVER_TASK_ID,
+    );
+    expect(lovingTakeover?.parentTaskId).toBe(EOS_CAPITALIZE_TASK_ID);
+    expect(lovingTakeover?.edges?.map((edge) => edge.toTaskId)).toEqual([
+      END_DISEASE_TASK_ID,
+      END_POVERTY_TASK_ID,
+      PREVENT_EXTINCTION_TASK_ID,
+    ]);
+  });
+
+  it("keeps the shareholder litigation tactics in one managed branch", () => {
+    const parentById = new Map(
+      OPTIMIZE_EARTH_TASK_TREE.map((task) => [task.id, task.parentTaskId]),
+    );
+    expect(parentById.get(LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_ID)).toBe(
+      LOVING_TAKEOVER_TASK_ID,
+    );
+    expect(parentById.get(LOVING_TAKEOVER_LITIGATION_TASK_ID)).toBe(
+      LOVING_TAKEOVER_TASK_ID,
+    );
+    expect(parentById.get(LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID)).toBe(
+      LOVING_TAKEOVER_LITIGATION_TASK_ID,
+    );
+    expect(parentById.get(LOVING_TAKEOVER_LOVE_LETTER_TASK_ID)).toBe(
+      LOVING_TAKEOVER_LITIGATION_TASK_ID,
+    );
+    expect(parentById.get(LOVING_TAKEOVER_FILE_COMPLAINT_TASK_ID)).toBe(
+      LOVING_TAKEOVER_LITIGATION_TASK_ID,
+    );
+  });
+
+  it("adds the EOS evidence, policy, and implementation branches", () => {
+    const parentById = new Map(
+      OPTIMIZE_EARTH_TASK_TREE.map((task) => [task.id, task.parentTaskId]),
+    );
+    for (const childId of [
+      EOS_FUND_EVIDENCE_TASK_ID,
+      EOS_CALCULATE_POLICY_BUDGETS_TASK_ID,
+      EOS_IMPLEMENT_INTERVENTIONS_TASK_ID,
+    ]) {
+      expect(parentById.get(childId)).toBe(EOS_CAPITALIZE_TASK_ID);
+    }
+    const eos = OPTIMIZE_EARTH_TASK_TREE.find(
+      (task) => task.id === EOS_CAPITALIZE_TASK_ID,
+    );
+    expect(eos?.edges?.map((edge) => edge.toTaskId)).toEqual([
+      END_DISEASE_TASK_ID,
+      END_POVERTY_TASK_ID,
+      PREVENT_EXTINCTION_TASK_ID,
+    ]);
   });
 
   // Regression guard: the optimitron:dev entry adopted a runtime-created row,

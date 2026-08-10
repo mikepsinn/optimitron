@@ -24,8 +24,20 @@ import {
 import {
   EARTH_OPTIMIZATION_PRIZE_TASK_ID,
   EARTH_OPTIMIZATION_PRIZE_TASK_KEY,
+  EOS_CALCULATE_POLICY_BUDGETS_TASK_ID,
+  EOS_CALCULATE_POLICY_BUDGETS_TASK_KEY,
   EOS_CAPITALIZE_TASK_ID,
   EOS_CAPITALIZE_TASK_KEY,
+  EOS_FUND_EVIDENCE_TASK_ID,
+  EOS_FUND_EVIDENCE_TASK_KEY,
+  EOS_IMPLEMENT_INTERVENTIONS_TASK_ID,
+  EOS_IMPLEMENT_INTERVENTIONS_TASK_KEY,
+  LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_ID,
+  LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_KEY,
+  LOVING_TAKEOVER_FILE_COMPLAINT_TASK_ID,
+  LOVING_TAKEOVER_FILE_COMPLAINT_TASK_KEY,
+  LOVING_TAKEOVER_LITIGATION_TASK_ID,
+  LOVING_TAKEOVER_LITIGATION_TASK_KEY,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
   LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
   LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
@@ -561,8 +573,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     title: "End War and Disease",
     description:
       "Retired after its children moved under the End War and End Disease missions.",
-    impactStatement:
-      "The separate mission branches now own this work.",
+    impactStatement: "The separate mission branches now own this work.",
     retired: true,
     sortOrder: -900,
   },
@@ -813,14 +824,16 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: LOVING_TAKEOVER_TASK_ID,
     taskKey: LOVING_TAKEOVER_TASK_KEY,
-    parentTaskId: END_WAR_TASK_ID,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
     // Redirects contractor lobbying toward the treaty, and the shareholder
     // case is explicitly an income argument.
     edges: [
       { toTaskId: END_DISEASE_TASK_ID },
       { toTaskId: END_POVERTY_TASK_ID },
+      { toTaskId: PREVENT_EXTINCTION_TASK_ID },
     ],
-    title: "Use shareholder power to redirect military lobbying",
+    title:
+      "Use shareholder power to redirect corporate lobbying toward public welfare",
     description: [
       "Buy the companies whose lobbying keeps war funded, and have that lobbying allocated by analysis instead of habit — pointed at whatever maximizes long-term shareholder value, starting with the shareholders staying alive. Every run of the math says that is the 1% Treaty.",
       "",
@@ -843,10 +856,31 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   },
   {
     ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    id: LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_ID,
+    taskKey: LOVING_TAKEOVER_ACQUIRE_STAKES_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    title: "Acquire coordinated stakes in influential companies",
+    description: [
+      "Acquire activist stakes in companies whose lobbying shapes public budgets.",
+      "Coordinate shareholder votes to influence boards without requiring outright control.",
+    ].join("\n\n"),
+    impactStatement:
+      "Coordinated ownership turns dispersed public-welfare gains into concentrated corporate influence.",
+    sortOrder: -655,
+    primaryEndpoint: {
+      label: "Read the takeover math",
+      url: "https://manual.warondisease.org/knowledge/appendix/loving-takeover.html",
+      instructions:
+        "Review the target companies, stake sizes, and shareholder influence plan.",
+    },
+  },
+  {
+    ...defaultTaskFields,
     category: TaskCategory.OTHER,
     id: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_ID,
     taskKey: LOVING_TAKEOVER_OWN_ONE_SHARE_TASK_KEY,
-    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    parentTaskId: LOVING_TAKEOVER_LITIGATION_TASK_ID,
     title: "Buy one share to gain shareholder rights",
     description: [
       "Buy one share of any major military contractor through any brokerage.",
@@ -866,9 +900,53 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   {
     ...defaultTaskFields,
     category: TaskCategory.LEGAL,
+    id: LOVING_TAKEOVER_LITIGATION_TASK_ID,
+    taskKey: LOVING_TAKEOVER_LITIGATION_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    title: "Use shareholder demands and derivative litigation",
+    description: [
+      "Present boards with evidence that harmful lobbying reduces long-term shareholder welfare.",
+      "Use derivative litigation when a board refuses to investigate the documented risk.",
+      "The Funniest Lawsuit in the Universe is the first military-contractor implementation.",
+    ].join("\n\n"),
+    impactStatement:
+      "A formal demand converts public-welfare evidence into a board decision with a legal record.",
+    sortOrder: -645,
+    primaryEndpoint: {
+      label: "Read the lawsuit draft",
+      url: "https://manual.warondisease.org/knowledge/appendix/lawsuit.html",
+      instructions:
+        "Ask qualified counsel to review the draft before any demand or filing.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
+    id: LOVING_TAKEOVER_FILE_COMPLAINT_TASK_ID,
+    taskKey: LOVING_TAKEOVER_FILE_COMPLAINT_TASK_KEY,
+    parentTaskId: LOVING_TAKEOVER_LITIGATION_TASK_ID,
+    title: "File a derivative complaint after board refusal",
+    description: [
+      "Retain qualified securities and derivative-litigation counsel.",
+      "File only after the board refuses or fails to investigate the formal demand.",
+      "Seek a settlement that redirects lobbying toward the highest-value verified policy.",
+    ].join("\n\n"),
+    impactStatement:
+      "The complaint creates a legal path from ignored evidence to a negotiated lobbying redirect.",
+    sortOrder: -635,
+    primaryEndpoint: {
+      label: "Read the filing sequence",
+      url: "https://manual.warondisease.org/knowledge/appendix/lawsuit.html",
+      instructions:
+        "Verify standing, preserve the board response, and follow counsel's filing instructions.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.LEGAL,
     id: LOVING_TAKEOVER_LOVE_LETTER_TASK_ID,
     taskKey: LOVING_TAKEOVER_LOVE_LETTER_TASK_KEY,
-    parentTaskId: LOVING_TAKEOVER_TASK_ID,
+    parentTaskId: LOVING_TAKEOVER_LITIGATION_TASK_ID,
     title: "Submit a shareholder demand to the board",
     description: [
       "As a shareholder, write to your board: you own them, you love them, and you do not want them to suffer and die from horrible diseases along with the rest of their shareholders. Their lobbying budget can fix that.",
@@ -942,10 +1020,15 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     category: TaskCategory.ORGANIZING,
     id: EOS_CAPITALIZE_TASK_ID,
     taskKey: EOS_CAPITALIZE_TASK_KEY,
-    // Capital for the whole machine; primary under End War (the campaign it
-    // funds first), edged to the other missions via TaskEdge after deploy.
+    // Capital for the whole machine; primary under End War (the first
+    // implementation), with mission placement through managed task edges.
     parentTaskId: END_WAR_TASK_ID,
-    title: "Fund tools that measure and improve public welfare",
+    edges: [
+      { toTaskId: END_DISEASE_TASK_ID },
+      { toTaskId: END_POVERTY_TASK_ID },
+      { toTaskId: PREVENT_EXTINCTION_TASK_ID },
+    ],
+    title: "Build and capitalize a public-welfare investment company",
     description: [
       "Earth Optimization Services is the company form of the machine. Every human on Earth is already a president; this task funds the operating budget.",
       "",
@@ -959,6 +1042,69 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       label: "Open the fund",
       url: "/fund",
       instructions: "Read the terms, then invest or book a call.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: EOS_FUND_EVIDENCE_TASK_ID,
+    taskKey: EOS_FUND_EVIDENCE_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Fund causal evidence and welfare measurement tools",
+    description: [
+      "Fund systems that measure policy effects on median healthy life expectancy and median income.",
+      "Publish assumptions, sources, uncertainty ranges, and outcome measurements.",
+    ].join("\n\n"),
+    impactStatement:
+      "Reliable evidence lets capital distinguish measurable welfare gains from persuasive claims.",
+    sortOrder: -608,
+    primaryEndpoint: {
+      label: "Review Earth Optimization Services",
+      url: "/eos",
+      instructions:
+        "Review the evidence engine and fund its highest-value gap.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.RESEARCH,
+    id: EOS_CALCULATE_POLICY_BUDGETS_TASK_ID,
+    taskKey: EOS_CALCULATE_POLICY_BUDGETS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Calculate welfare-maximizing policies and public budgets",
+    description: [
+      "Compare policy and budget outcomes across jurisdictions.",
+      "Rank changes by their effects on median health and median after-tax income.",
+    ].join("\n\n"),
+    impactStatement:
+      "Governments and shareholders need a measurable destination before they redirect money or influence.",
+    sortOrder: -607,
+    primaryEndpoint: {
+      label: "Review the optimization method",
+      url: "/methodology",
+      instructions:
+        "Review the method and improve the weakest evidence inputs.",
+    },
+  },
+  {
+    ...defaultTaskFields,
+    category: TaskCategory.ORGANIZING,
+    id: EOS_IMPLEMENT_INTERVENTIONS_TASK_ID,
+    taskKey: EOS_IMPLEMENT_INTERVENTIONS_TASK_KEY,
+    parentTaskId: EOS_CAPITALIZE_TASK_ID,
+    title: "Fund and implement the highest-value verified interventions",
+    description: [
+      "Allocate capital to the highest-value interventions supported by reviewed evidence.",
+      "Measure results and update the ranking when reality contradicts the forecast.",
+    ].join("\n\n"),
+    impactStatement:
+      "Analysis creates value only when capital reaches the interventions that the evidence ranks first.",
+    sortOrder: -606,
+    primaryEndpoint: {
+      label: "Open the fund",
+      url: "/fund",
+      instructions:
+        "Review the ranked opportunities, then invest or book a call.",
     },
   },
   {
