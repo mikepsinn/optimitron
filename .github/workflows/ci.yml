@@ -82,6 +82,10 @@ jobs:
             site_apps_changed:
               - 'apps/**'
               - 'packages/db/**'
+              - 'packages/site-kit/**'
+              - 'scripts/site-app-navigation.test.ts'
+              - 'scripts/smoke-site-apps.mjs'
+              - 'package.json'
               - 'pnpm-workspace.yaml'
               - 'pnpm-lock.yaml'
               - '.github/workflows/ci.yml'
@@ -236,6 +240,10 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
         run: pnpm install --frozen-lockfile
 
+      - name: Verify site-app navigation routes
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm test:site-app-navigation
+
       - name: Apply database migrations
         if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
         run: pnpm db:deploy
@@ -369,8 +377,8 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Smoke @apps/${{ matrix.app }} homepage
-        run: node scripts/smoke-site-apps.mjs "${{ matrix.app }}"
+      - name: Smoke and capture @apps/${{ matrix.app }} navigation pages
+        run: pnpm --dir packages/web exec tsx ../../scripts/smoke-site-apps.mjs "${{ matrix.app }}"
         env:
           NODE_ENV: production
           PLAYWRIGHT_BROWSER_CHANNEL: chrome

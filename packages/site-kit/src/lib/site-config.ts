@@ -576,13 +576,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "manual",
         label: "GET THE MANUAL",
-        items: [
-          "manual",
-          "listenPodcast",
-          "buyPaperback",
-          "readOnline",
-          "youtubeChannel",
-        ],
+        items: ["manual", "listenPodcast", "readOnline", "youtubeChannel"],
       },
       {
         id: "resources",
@@ -709,7 +703,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "act",
         label: "ACT",
-        items: ["vote", "campaigns", "soldiers"],
+        items: ["vote", "soldiers"],
       },
       {
         id: "learn",
@@ -1296,7 +1290,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "manual",
         label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "buyPaperback", "readOnline"],
+        items: ["manual", "listenPodcast", "readOnline"],
       },
       {
         id: "learn",
@@ -1436,7 +1430,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "manual",
         label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "buyPaperback", "readOnline"],
+        items: ["manual", "listenPodcast", "readOnline"],
       },
       {
         id: "about",
@@ -1614,8 +1608,10 @@ export function getPrimaryDomain(): string {
 
 // ===== NAVIGATION HELPER FUNCTIONS =====
 
-function resolveNavItems(ids: NavItemId[]): NavItem[] {
-  const currentVariant = getSiteVariant();
+function resolveNavItemsForVariant(
+  ids: NavItemId[],
+  currentVariant: SiteVariant,
+): NavItem[] {
   return getNavItems(ids).map((item) => {
     if (
       item.canonicalVariant &&
@@ -1630,6 +1626,53 @@ function resolveNavItems(ids: NavItemId[]): NavItem[] {
     }
     return item;
   });
+}
+
+function resolveNavItems(ids: NavItemId[]): NavItem[] {
+  return resolveNavItemsForVariant(ids, getSiteVariant());
+}
+
+export interface InternalNavigationRoute {
+  label: string;
+  path: string;
+}
+
+/**
+ * Get every distinct internal page linked by a site's navigation.
+ *
+ * This includes the app homepage plus top-level, sidebar, footer, and legal
+ * navigation. Cross-site and external links are excluded.
+ */
+export function getInternalNavigationRoutesForVariant(
+  variant: SiteVariant,
+): InternalNavigationRoute[] {
+  const config = getSiteConfigForVariant(variant);
+  const navItemIds = [
+    ...(config.topLevelNavItems ?? []),
+    ...(config.sidebarSections ?? []).flatMap((section) => section.items),
+    ...(config.footerSections ?? []).flatMap((section) => section.items),
+    ...(config.legalItems ?? []),
+  ];
+  const routes = new Map<string, InternalNavigationRoute>();
+
+  routes.set(config.defaultRoute, {
+    label: "Home",
+    path: config.defaultRoute,
+  });
+  for (const item of resolveNavItemsForVariant(navItemIds, variant)) {
+    if (item.isExternal || !item.path.startsWith("/")) {
+      continue;
+    }
+
+    const [pathWithoutHash] = item.path.split("#", 1);
+    const [pathWithoutQuery] = pathWithoutHash.split("?", 1);
+    const path = pathWithoutQuery || "/";
+    if (!routes.has(path)) {
+      routes.set(path, { label: item.label, path });
+    }
+  }
+
+  return [...routes.values()];
 }
 
 export function getResolvedNavItem(id: NavItemId): NavItem {

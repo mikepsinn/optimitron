@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ExternalLink } from "lucide-react"
 import { ROUTES } from "../../lib/routes"
-import { PODCAST_URLS, MANUAL_URLS, withUtm } from "../../lib/manual-links"
+import { PODCAST_URLS, withUtm } from "../../lib/manual-links"
 
 interface ManualPromoCardProps {
   /** UTM source for tracking (e.g., "post_vote", "the_plan") */
@@ -24,7 +24,7 @@ export function ManualPromoCard({
     "An alien who finds your species confusing wrote a 300-page field manual covering the economics, legal framework, financial architecture, and the complete 36-month roadmap."
 
   const buttons = (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 gap-3">
       <a
         href={withUtm(PODCAST_URLS.spotify, utmSource)}
         target="_blank"
@@ -32,15 +32,6 @@ export function ManualPromoCard({
         className="bg-[#1DB954] text-white border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1"
       >
         Listen Free
-        <ExternalLink className="w-3 h-3 stroke-[3px] hidden sm:block" />
-      </a>
-      <a
-        href={withUtm(MANUAL_URLS.paperback, utmSource)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bg-[#FF9900] text-black border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1"
-      >
-        Paperback
         <ExternalLink className="w-3 h-3 stroke-[3px] hidden sm:block" />
       </a>
       <Link

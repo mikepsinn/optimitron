@@ -1,25 +1,27 @@
 import { spawn } from "node:child_process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  getInternalNavigationRoutesForVariant,
+  getSiteConfigForVariant,
+  VARIANTS,
+} from "../packages/site-kit/src/lib/site-config.ts";
 import { forceAnimationsComplete } from "../packages/web/e2e/utils/visual-settle.mjs";
 
-const apps = [
-  ["warondisease", 4010],
-  ["dfda", 4011],
-  ["wishocracy", 4013],
-  ["trialabundancesurvey", 4014],
-  ["curedao", 4015],
-  ["acceleratedmedicine", 4016],
-];
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 
-const screenshotRoutes = [
-  ["home", "/"],
-  ["about", "/about"],
-  ["faq", "/faq"],
-  ["contact", "/contact"],
-  ["terms", "/terms"],
-  ["privacy", "/privacy"],
+const apps = [
+  ["warondisease", 4010, VARIANTS.WAR_ON_DISEASE],
+  ["dfda", 4011, VARIANTS.DFDA],
+  ["wishocracy", 4013, VARIANTS.WISHOCRACY],
+  ["trialabundancesurvey", 4014, VARIANTS.SURVEY],
+  ["curedao", 4015, VARIANTS.CUREDAO],
+  ["acceleratedmedicine", 4016, VARIANTS.ACCELERATED_MEDICINE],
 ];
 
 const screenshotProjects = [
@@ -77,54 +79,96 @@ async function waitForHomePage(url, child, output) {
   throw new Error(`Timed out waiting for ${url}.\n${output.join("")}`);
 }
 
-async function captureScreenshots(appName, baseUrl) {
+function getScreenshotRoutes(siteVariant) {
+  return getInternalNavigationRoutesForVariant(siteVariant).map(
+    ({ label, path: routePath }) => ({
+      label,
+      routeName:
+        routePath === "/"
+          ? "home"
+          : routePath
+              .replace(/^\/+|\/+$/g, "")
+              .replaceAll("/", "-")
+              .replace(/[^a-z0-9-]+/gi, "-")
+              .toLowerCase(),
+      routePath,
+    }),
+  );
+}
+
+async function captureScreenshots(appName, siteVariant, baseUrl) {
   if (!screenshotRoot) {
     return;
   }
 
+  const screenshotRoutes = getScreenshotRoutes(siteVariant);
   const requireFromWeb = createRequire(
-    path.resolve("packages", "web", "package.json"),
+    path.join(repoRoot, "packages", "web", "package.json"),
   );
   const { chromium } = requireFromWeb("@playwright/test");
+  const manifestDirectory = path.resolve(screenshotRoot, "site-app-manifests");
+  await mkdir(manifestDirectory, { recursive: true });
+  await writeFile(
+    path.join(manifestDirectory, `${appName}.json`),
+    `${JSON.stringify(
+      {
+        version: 1,
+        appName,
+        domain: getSiteConfigForVariant(siteVariant).domain,
+        routes: screenshotRoutes,
+      },
+      null,
+      2,
+    )}\n`,
+  );
   const browser = await chromium.launch({
     channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
     headless: true,
   });
 
   try {
-    for (const [projectName, contextOptions] of screenshotProjects) {
-      const outputDirectory = path.resolve(screenshotRoot, projectName);
-      await mkdir(outputDirectory, { recursive: true });
-      const context = await browser.newContext(contextOptions);
-      const page = await context.newPage();
+    await Promise.all(
+      screenshotProjects.map(async ([projectName, contextOptions]) => {
+        const outputDirectory = path.resolve(screenshotRoot, projectName);
+        await mkdir(outputDirectory, { recursive: true });
+        const context = await browser.newContext(contextOptions);
+        const page = await context.newPage();
 
-      try {
-        for (const [routeName, routePath] of screenshotRoutes) {
-          const url = new URL(routePath, baseUrl).toString();
-          const response = await page.goto(url, {
-            timeout: 30_000,
-            waitUntil: "load",
-          });
-          if (!response || response.status() >= 400) {
-            throw new Error(
-              `${url} returned HTTP ${response?.status() ?? "unknown"}`,
-            );
+        try {
+          for (const { routeName, routePath } of screenshotRoutes) {
+            const url = new URL(routePath, baseUrl).toString();
+            const response = await page.goto(url, {
+              timeout: 30_000,
+              waitUntil: "load",
+            });
+            if (!response || response.status() >= 400) {
+              throw new Error(
+                `${url} returned HTTP ${response?.status() ?? "unknown"}`,
+              );
+            }
+            await page
+              .waitForLoadState("networkidle", { timeout: 15_000 })
+              .catch(() => {});
+            await page.waitForSelector(".animate-pulse.bg-muted", {
+              state: "detached",
+              timeout: 15_000,
+            });
+            await page.evaluate(() => document.fonts.ready);
+            await forceAnimationsComplete(page);
+            await page.screenshot({
+              animations: "disabled",
+              fullPage: true,
+              path: path.join(
+                outputDirectory,
+                `site-app-${appName}-${routeName}.png`,
+              ),
+            });
           }
-          await page.evaluate(() => document.fonts.ready);
-          await forceAnimationsComplete(page);
-          await page.screenshot({
-            animations: "disabled",
-            fullPage: true,
-            path: path.join(
-              outputDirectory,
-              `site-app-${appName}-${routeName}.png`,
-            ),
-          });
+        } finally {
+          await context.close();
         }
-      } finally {
-        await context.close();
-      }
-    }
+      }),
+    );
   } finally {
     await browser.close();
   }
@@ -134,9 +178,9 @@ async function captureScreenshots(appName, baseUrl) {
   );
 }
 
-async function smokeApp(appName, port) {
+async function smokeApp(appName, port, siteVariant) {
   const output = [];
-  const appDirectory = path.resolve("apps", appName);
+  const appDirectory = path.join(repoRoot, "apps", appName);
   const nextCli = path.join(
     appDirectory,
     "node_modules",
@@ -162,7 +206,7 @@ async function smokeApp(appName, port) {
     const baseUrl = `http://127.0.0.1:${port}/`;
     const status = await waitForHomePage(baseUrl, child, output);
     console.log(`@apps/${appName}: HTTP ${status}`);
-    await captureScreenshots(appName, baseUrl);
+    await captureScreenshots(appName, siteVariant, baseUrl);
   } finally {
     child.kill("SIGTERM");
     const stopped = await Promise.race([
@@ -175,6 +219,6 @@ async function smokeApp(appName, port) {
   }
 }
 
-for (const [appName, port] of selectedApps) {
-  await smokeApp(appName, port);
+for (const [appName, port, siteVariant] of selectedApps) {
+  await smokeApp(appName, port, siteVariant);
 }

@@ -13,9 +13,6 @@ export const MANUAL_URLS = {
   /** Read the full manual online (free) */
   readOnline: 'https://manual.warondisease.org',
 
-  /** Amazon paperback */
-  paperback: 'https://www.amazon.com/dp/B0GPLXFMMT',
-
   /** Amazon Kindle */
   kindle: 'https://www.amazon.com/dp/B0GPBH77XN',
 
@@ -59,7 +56,6 @@ export const LISTEN_LINKS = [
 
 /** Buy/read links with metadata (for /manual page list) */
 export const BUY_LINKS = [
-  { label: 'Amazon Paperback', href: MANUAL_URLS.paperback, subtitle: 'Ships in 1-2 days', primary: true },
   { label: 'Amazon Kindle', href: MANUAL_URLS.kindle, subtitle: 'Instant download' },
   { label: 'All Retailers', href: MANUAL_URLS.allRetailers, subtitle: 'Apple Books, Kobo, B&N, and more' },
   { label: 'Goodreads', href: MANUAL_URLS.goodreads, subtitle: 'Rate & review' },

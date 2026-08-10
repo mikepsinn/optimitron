@@ -43,7 +43,7 @@ export function ManualPromoSection({
         {description}
       </Text>
       <Row>
-        <Column style={{ width: "33.33%", paddingRight: "4px" }}>
+        <Column style={{ width: "50%", paddingRight: "4px" }}>
           <Link
             href={withUtm(PODCAST_URLS.spotify, utmSource, "email")}
             style={{
@@ -62,26 +62,7 @@ export function ManualPromoSection({
             🎧 Listen
           </Link>
         </Column>
-        <Column style={{ width: "33.33%", padding: "0 4px" }}>
-          <Link
-            href={withUtm(MANUAL_URLS.paperback, utmSource, "email")}
-            style={{
-              display: "block",
-              backgroundColor: "#FF9900",
-              border: "2px solid #000000",
-              color: "#000000",
-              fontSize: "11px",
-              fontWeight: "900",
-              textDecoration: "none",
-              textAlign: "center",
-              padding: "8px 4px",
-              textTransform: "uppercase",
-            }}
-          >
-            📕 Buy
-          </Link>
-        </Column>
-        <Column style={{ width: "33.33%", paddingLeft: "4px" }}>
+        <Column style={{ width: "50%", paddingLeft: "4px" }}>
           <Link
             href={withUtm(MANUAL_URLS.readOnline, utmSource, "email")}
             style={{

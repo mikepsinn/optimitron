@@ -572,16 +572,6 @@ export const NAV_ITEMS_MAP = {
       "listen free",
     ],
   },
-  buyPaperback: {
-    id: "buyPaperback",
-    label: "Amazon Paperback",
-    path: MANUAL_URLS.paperback,
-    description:
-      "300 pages of legal bribes, translated from the original Wishonian. Ships in 1-2 days",
-    emoji: "📕",
-    isExternal: true,
-    keywords: ["paperback", "amazon", "physical book", "buy"],
-  },
   readOnline: {
     id: "readOnline",
     label: "Get the Manual",

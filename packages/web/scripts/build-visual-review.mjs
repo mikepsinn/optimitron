@@ -192,14 +192,7 @@ const SITE_APP_ORDER = [
   "acceleratedmedicine",
 ];
 
-const SITE_APP_ROUTE_PATHS = {
-  home: "/",
-  about: "/about",
-  faq: "/faq",
-  contact: "/contact",
-  terms: "/terms",
-  privacy: "/privacy",
-};
+const siteAppRoutesByVariant = loadSiteAppRouteManifests();
 
 main().catch((error) => {
   console.error(
@@ -437,7 +430,7 @@ function buildReviewPageRoute(group) {
   return {
     routeName: group.routeName,
     routeLabel: siteAppRoute
-      ? `${getVariantDomainLabel(siteVariant)} · ${labelRoute(siteAppRoute.routeName)}`
+      ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
       : siteVariant
         ? labelVariantRoute(group.routeName, siteVariant)
         : labelRoute(group.routeName),
@@ -1383,7 +1376,7 @@ function buildReviewManifest(groups, coverage) {
       return {
         routeName: group.routeName,
         routeLabel: siteAppRoute
-          ? `${getVariantDomainLabel(siteVariant)} · ${labelRoute(siteAppRoute.routeName)}`
+          ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
           : siteVariant
             ? labelVariantRoute(group.routeName, siteVariant)
             : labelRoute(group.routeName),
@@ -1496,14 +1489,10 @@ function routeSortIndex(routeName) {
   }
 
   const appIndex = SITE_APP_ORDER.indexOf(siteAppRoute.siteVariant);
-  const routeIndex = Object.keys(SITE_APP_ROUTE_PATHS).indexOf(
-    siteAppRoute.routeName,
+  const routeIndex = getSiteAppRoutes(siteAppRoute.siteVariant).findIndex(
+    (route) => route.routeName === siteAppRoute.routeName,
   );
-  return (
-    routeOrder.length +
-    appIndex * Object.keys(SITE_APP_ROUTE_PATHS).length +
-    routeIndex
-  );
+  return routeOrder.length + appIndex * 100 + routeIndex;
 }
 
 function projectSortIndex(projectName) {
@@ -1655,16 +1644,69 @@ function getSiteAppRoute(routeName) {
       continue;
     }
     const siteAppRouteName = routeName.slice(prefix.length);
-    const routePath = SITE_APP_ROUTE_PATHS[siteAppRouteName];
-    if (routePath) {
+    const route = getSiteAppRoutes(siteVariant).find(
+      (candidate) => candidate.routeName === siteAppRouteName,
+    );
+    if (route) {
       return {
+        ...route,
         routeName: siteAppRouteName,
-        routePath,
         siteVariant,
       };
     }
   }
   return null;
+}
+
+function getSiteAppRoutes(siteVariant) {
+  return siteAppRoutesByVariant.get(siteVariant) ?? [];
+}
+
+function loadSiteAppRouteManifests() {
+  const manifests = new Map();
+  const manifestDirectory = path.join(screenshotsRoot, "site-app-manifests");
+
+  for (const fileName of safeReadDir(manifestDirectory)) {
+    if (!fileName.toLowerCase().endsWith(".json")) {
+      continue;
+    }
+
+    const manifestPath = path.join(manifestDirectory, fileName);
+    try {
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+      if (
+        !manifest ||
+        !SITE_APP_ORDER.includes(manifest.appName) ||
+        !Array.isArray(manifest.routes)
+      ) {
+        throw new Error("invalid manifest shape");
+      }
+
+      const routes = manifest.routes
+        .filter(
+          (route) =>
+            route &&
+            typeof route.label === "string" &&
+            typeof route.routeName === "string" &&
+            typeof route.routePath === "string",
+        )
+        .map((route) => ({
+          routeLabel: route.label,
+          routeName: route.routeName,
+          routePath: route.routePath,
+        }));
+      if (routes.length === 0) {
+        throw new Error("manifest contains no routes");
+      }
+      manifests.set(manifest.appName, routes);
+    } catch (error) {
+      console.warn(
+        `[visual-review] Could not read site-app route manifest at ${manifestPath}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return manifests;
 }
 
 function getVariantDomainLabel(siteVariant) {
