@@ -66,7 +66,7 @@ function usdShort(value: number) {
       return `$${scaled.toFixed(Math.abs(scaled) >= 100 ? 0 : 1)}${suffix}`;
     }
   }
-  return `$${value.toFixed(0)}`;
+  return `$${Math.round(value).toLocaleString("en-US")}`;
 }
 
 /**
