@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { forceAnimationsComplete } from "../packages/web/e2e/utils/visual-settle.mjs";
 
 const apps = [
   ["warondisease", 4010],
@@ -110,6 +111,7 @@ async function captureScreenshots(appName, baseUrl) {
             );
           }
           await page.evaluate(() => document.fonts.ready);
+          await forceAnimationsComplete(page);
           await page.screenshot({
             animations: "disabled",
             fullPage: true,

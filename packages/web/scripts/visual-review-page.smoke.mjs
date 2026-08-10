@@ -14,6 +14,7 @@ import { renderReviewHtml } from "./visual-review-page.mjs";
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = join(here, "..", "output");
 const htmlPath = join(outDir, "visual-page-smoke.html");
+const siteAppsHtmlPath = join(outDir, "visual-page-site-apps-smoke.html");
 const coverageHtmlPath = join(outDir, "visual-page-coverage-smoke.html");
 const clientJsPath = join(outDir, "visual-page-smoke.client.js");
 
@@ -222,8 +223,75 @@ const input = {
   ],
 };
 
+const siteAppInput = {
+  ...input,
+  summary: {
+    changedRoutes: 0,
+    copyOnlyRoutes: 0,
+    unchangedRoutes: 0,
+    siteAppRoutes: 3,
+    variantRoutes: 0,
+    erroredRoutes: 0,
+    totalRoutes: 3,
+  },
+  routes: [
+    {
+      routeName: "site-app-warondisease-home",
+      routeLabel: "warondisease.org · Home",
+      routePath: "/",
+      routeUrl: null,
+      productionUrl: "https://warondisease.org/",
+      authState: "logged-out",
+      siteApp: true,
+      siteVariant: "warondisease",
+      variantLabel: "warondisease.org",
+      changed: false,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "captured",
+      markdownDiff: null,
+      pairs: [],
+    },
+    {
+      routeName: "site-app-warondisease-about",
+      routeLabel: "warondisease.org · About",
+      routePath: "/about",
+      routeUrl: null,
+      productionUrl: "https://warondisease.org/about",
+      authState: "logged-out",
+      siteApp: true,
+      siteVariant: "warondisease",
+      variantLabel: "warondisease.org",
+      changed: false,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "captured",
+      markdownDiff: null,
+      pairs: [],
+    },
+    {
+      routeName: "site-app-dfda-home",
+      routeLabel: "dfda.earth · Home",
+      routePath: "/",
+      routeUrl: null,
+      productionUrl: "https://dfda.earth/",
+      authState: "logged-out",
+      siteApp: true,
+      siteVariant: "dfda",
+      variantLabel: "dfda.earth",
+      changed: false,
+      copyChanged: false,
+      errored: false,
+      statusLabel: "captured",
+      markdownDiff: null,
+      pairs: [],
+    },
+  ],
+};
+
 // ---------- render ----------
 const html = renderReviewHtml(input);
+const siteAppsHtml = renderReviewHtml(siteAppInput);
 const coverageHtml = renderReviewHtml({
   ...input,
   summary: { ...input.summary, changedRoutes: 0 },
@@ -241,6 +309,7 @@ const coverageHtml = renderReviewHtml({
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(htmlPath, html, "utf8");
+writeFileSync(siteAppsHtmlPath, siteAppsHtml, "utf8");
 writeFileSync(coverageHtmlPath, coverageHtml, "utf8");
 
 // ---------- assertions ----------
@@ -283,6 +352,7 @@ assert(
 );
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
 assert(html.includes("4 routes"), "summary chip: total");
+assert(siteAppsHtml.includes("3 site-app pages"), "site-app summary chip");
 assert(
   !html.includes("Visual capture contract failed"),
   "complete review omits coverage failure",
@@ -357,6 +427,7 @@ try {
 const summary = {
   ok: failures.length === 0,
   htmlPath,
+  siteAppsHtmlPath,
   coverageHtmlPath,
   htmlBytes: Buffer.byteLength(html, "utf8"),
   clientJsPath,

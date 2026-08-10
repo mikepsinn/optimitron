@@ -200,6 +200,20 @@ const CSS = `
     background: none; border: none; padding: 10px 10px;
   }
   button.rail-group-h:hover { color: var(--ink); }
+  .rail-site-app { border-top: 1px solid var(--border); }
+  .rail-site-app:first-of-type { border-top: none; }
+  .rail-site-app-h {
+    display: block; width: 100%; padding: 8px 10px;
+    color: var(--ink); background: var(--bg);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    list-style: none;
+  }
+  .rail-site-app-h::-webkit-details-marker { display: none; }
+  .rail-site-app-h::before { content: "\\25b8"; display: inline-block; width: 14px; color: var(--dim); }
+  .rail-site-app[open] > .rail-site-app-h::before { content: "\\25be"; }
+  .rail-site-app-h:hover { color: var(--accent); }
+  .rail-site-app .route-row { padding-left: 20px; }
   .route-row {
     display: block; width: 100%; text-align: left;
     background: none; border: none; border-left: 3px solid transparent;
@@ -637,6 +651,13 @@ const CLIENT_JS = `
     if (r.siteVariant) return "variants";
     return "cold";
   }
+  function siteAppKey(r) {
+    return r.siteVariant || r.variantLabel || r.routeName;
+  }
+  function siteAppPageLabel(r) {
+    var parts = String(r.routeLabel || r.routeName).split(" \u00b7 ");
+    return parts.length > 1 ? parts.slice(1).join(" \u00b7 ") : r.routeLabel;
+  }
   function visibleHunks(pair) {
     var out = [];
     ((pair && pair.hunks) || []).forEach(function (h, i) {
@@ -784,6 +805,9 @@ const CLIENT_JS = `
   /* ---------------- rail ---------------- */
   var coldOpen = false;
   var variantsOpen = false;
+  var siteAppOpen = {};
+  var firstSiteAppRoute = routes.find(function (r) { return r.siteApp; });
+  if (firstSiteAppRoute) siteAppOpen[siteAppKey(firstSiteAppRoute)] = true;
   var routeFilter = "";
   function renderRail() {
     var rail = document.getElementById("rail");
@@ -832,9 +856,45 @@ const CLIENT_JS = `
       if (isOpen) list.forEach(function (r) { wrap.appendChild(routeRow(r)); });
       rail.appendChild(wrap);
     }
+    function addSiteAppGroups(list) {
+      if (!list.length) return;
+      var grouped = {};
+      list.forEach(function (r) {
+        var key = siteAppKey(r);
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(r);
+      });
+      var appKeys = Object.keys(grouped);
+      var wrap = el("div", {
+        class: "rail-group", "data-title": "Site apps",
+        "data-total": String(appKeys.length), "data-key": "site-apps"
+      });
+      wrap.appendChild(el("div", {
+        class: "rail-group-h", text: "Site apps (" + appKeys.length + ")"
+      }));
+      appKeys.forEach(function (key) {
+        var appRoutes = grouped[key];
+        var details = el("details", {
+          class: "rail-site-app", "data-site-app": key
+        });
+        details.open = Boolean(siteAppOpen[key]);
+        details.appendChild(el("summary", {
+          class: "rail-site-app-h",
+          text: (appRoutes[0].variantLabel || key) + " (" + appRoutes.length + ")"
+        }));
+        appRoutes.forEach(function (r) {
+          details.appendChild(routeRow(r, siteAppPageLabel(r)));
+        });
+        details.addEventListener("toggle", function () {
+          if (!routeFilter.trim()) siteAppOpen[key] = details.open;
+        });
+        wrap.appendChild(details);
+      });
+      rail.appendChild(wrap);
+    }
     addGroup("Changed", changed, "changed");
     addGroup("Copy only", copy, "copy");
-    addGroup("Site apps", siteApps, "site-apps");
+    addSiteAppGroups(siteApps);
     addColdGroup("Unchanged", cold, "cold", coldOpen, function (v) { coldOpen = v; });
     addColdGroup("Other variants", variants, "variants", variantsOpen, function (v) { variantsOpen = v; });
 
@@ -844,7 +904,7 @@ const CLIENT_JS = `
     }));
   }
 
-  function routeRow(r) {
+  function routeRow(r, displayLabel) {
     var btn = el("button", {
       class: "route-row",
       "data-route": r.routeName,
@@ -857,7 +917,7 @@ const CLIENT_JS = `
     else if (r.copyChanged) dotCls += " copy";
     btn.appendChild(el("div", { class: "r-top" }, [
       el("span", { class: dotCls }),
-      el("span", { class: "r-label", text: r.routeLabel }),
+      el("span", { class: "r-label", text: displayLabel || r.routeLabel }),
       el("span", { class: "r-verdict", "data-verdict-for": r.routeName, text: verdictMark(verdictOf(r)) })
     ]));
 
@@ -870,7 +930,7 @@ const CLIENT_JS = `
 
   function fillRouteBadges(container, r) {
     container.innerHTML = "";
-    if (r.siteVariant) {
+    if (r.siteVariant && !r.siteApp) {
       container.appendChild(el("span", {
         class: "badge variant",
         title: (r.siteApp ? "Site app: " : "Site variant: ") + (r.variantLabel || r.siteVariant),
@@ -915,6 +975,14 @@ const CLIENT_JS = `
   function applyFilter() {
     var inp = document.getElementById("route-filter");
     var q = inp ? inp.value.trim().toLowerCase() : "";
+    document.querySelectorAll(".rail-site-app").forEach(function (group) {
+      var matches = 0;
+      group.querySelectorAll(".route-row").forEach(function (row) {
+        if (!q || row.getAttribute("data-filter").indexOf(q) !== -1) matches++;
+      });
+      group.style.display = !q || matches ? "" : "none";
+      group.open = q ? matches > 0 : Boolean(siteAppOpen[group.getAttribute("data-site-app")]);
+    });
     document.querySelectorAll(".rail-group").forEach(function (group) {
       var visible = 0;
       group.querySelectorAll(".route-row").forEach(function (row) {
@@ -922,13 +990,18 @@ const CLIENT_JS = `
         row.style.display = show ? "" : "none";
         if (show) visible++;
       });
+      var count = group.getAttribute("data-key") === "site-apps"
+        ? Array.prototype.filter.call(group.querySelectorAll(".rail-site-app"), function (siteApp) {
+            return siteApp.style.display !== "none";
+          }).length
+        : visible;
       var total = Number(group.getAttribute("data-total"));
       var h = group.querySelector(".rail-group-h");
       if (h && h.tagName !== "BUTTON") {
-        h.textContent = group.getAttribute("data-title") + " (" + (visible < total ? visible + "/" + total : String(total)) + ")";
+        h.textContent = group.getAttribute("data-title") + " (" + (count < total ? count + "/" + total : String(total)) + ")";
       }
       if (!h || h.tagName !== "BUTTON") {
-        group.style.display = visible ? "" : "none";
+        group.style.display = count ? "" : "none";
       }
     });
   }
@@ -945,7 +1018,9 @@ const CLIENT_JS = `
     if (rows.length) return rows.map(function (row) { return row.getAttribute("data-route"); });
     var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
     var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
-    var siteApps = routes.filter(function (r) { return groupOf(r) === "site-apps"; });
+    var siteApps = routes.filter(function (r) {
+      return groupOf(r) === "site-apps" && siteAppOpen[siteAppKey(r)];
+    });
     var cold = coldOpen ? routes.filter(function (r) { return groupOf(r) === "cold"; }) : [];
     var variants = variantsOpen ? routes.filter(function (r) { return groupOf(r) === "variants"; }) : [];
     return changed.concat(copy, siteApps, cold, variants).map(function (r) { return r.routeName; });
@@ -964,6 +1039,10 @@ const CLIENT_JS = `
     var r = routeByName(name);
     if (!r) return;
     reviewStatus = typeof opts.reviewStatus === "string" ? opts.reviewStatus : "";
+    if (r.siteApp && !siteAppOpen[siteAppKey(r)]) {
+      siteAppOpen[siteAppKey(r)] = true;
+      renderRail();
+    }
     selectedName = name;
     pairName = (opts.pair && pairOf(r, opts.pair)) ? opts.pair : defaultPairFor(r);
     if (opts.mode) cmpMode = opts.mode;

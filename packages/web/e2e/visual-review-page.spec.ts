@@ -11,6 +11,11 @@ const SMOKE_SCRIPT = path.join(
   "visual-review-page.smoke.mjs",
 );
 const SMOKE_HTML = path.join(WEB_ROOT, "output", "visual-page-smoke.html");
+const SITE_APPS_SMOKE_HTML = path.join(
+  WEB_ROOT,
+  "output",
+  "visual-page-site-apps-smoke.html",
+);
 const ONE_PIXEL_PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
   "base64",
@@ -182,6 +187,56 @@ test("collapsed variant routes remain available while filtering", async ({
   await expect(page.locator('iframe[src="https://dfda.earth/"]')).toHaveCount(
     1,
   );
+});
+
+test("site apps are separated into collapsible groups", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.goto(pathToFileURL(SITE_APPS_SMOKE_HTML).toString());
+
+  const siteApps = page.locator('.rail-group[data-key="site-apps"]');
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (2)");
+
+  const warOnDisease = siteApps.locator(
+    'details[data-site-app="warondisease"]',
+  );
+  const dfda = siteApps.locator('details[data-site-app="dfda"]');
+  const warOnDiseaseHome = warOnDisease.locator(
+    '[data-route="site-app-warondisease-home"]',
+  );
+  const dfdaHome = dfda.locator('[data-route="site-app-dfda-home"]');
+
+  await expect(warOnDisease).toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeVisible();
+  await expect(dfda).not.toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeHidden();
+
+  await dfda.locator("summary").click();
+  await expect(dfda).toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeVisible();
+
+  await warOnDisease.locator("summary").click();
+  await expect(warOnDisease).not.toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeHidden();
+
+  const routeFilter = page.getByRole("searchbox", { name: "Filter routes" });
+  await routeFilter.fill("warondisease");
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (1/2)");
+  await expect(warOnDisease).toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeVisible();
+  await expect(dfda).toBeHidden();
+
+  await routeFilter.fill("");
+  await expect(warOnDisease).not.toHaveAttribute("open", "");
+  await expect(dfda).toHaveAttribute("open", "");
+
+  await page.goto(
+    `${pathToFileURL(SITE_APPS_SMOKE_HTML)}#route=site-app-dfda-home`,
+  );
+  await expect(dfda).toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeVisible();
 });
 
 test("route verdicts persist and advance through every unreviewed route", async ({
