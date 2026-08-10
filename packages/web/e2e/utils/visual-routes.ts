@@ -96,6 +96,9 @@ const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
   "packages/web/src/components/dashboard/PersonalQueueSection.tsx";
+const STANDALONE_VIDEO_PAGE_FILE = "packages/web/src/app/video/page.tsx";
+const CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE =
+  "packages/web/src/components/demo/slides/sierra/slide-vote-and-share.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "packages/web/src/components/shared/PoliticianScorecardTable.tsx";
 // Sections rendered by both optimitron.com/ and /game. Either capture proves
@@ -219,6 +222,21 @@ const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
 ]);
 
 const SPECIAL_STATE_ROUTES: VisualRoute[] = [
+  {
+    covers: [STANDALONE_VIDEO_PAGE_FILE],
+    name: "campaign-video",
+    path: ROUTES.video,
+    required: true,
+    requiredSelector:
+      'video[src*="optimitron-game-campaign-cut-2026-08-09.mp4"]',
+  },
+  {
+    covers: [CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE],
+    name: "campaign-vote-and-share-slide",
+    path: `${ROUTES.demo}?playlist=campaign-cut#campaign-vote-and-share`,
+    required: true,
+    requiredSelector: '[data-testid="slide-vote-and-share"]',
+  },
   {
     name: "side-menu",
     path: ROUTES.home,
