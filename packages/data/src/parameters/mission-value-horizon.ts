@@ -49,8 +49,9 @@ function toMissionScenarioValue(annualValue: number) {
  * Optimizing Earth: recapture the annual global opportunity cost of governance
  * failures over the common mission comparison period.
  *
- * This is a non-overlapping root scenario. It does not add child mission values.
- * It is not expected value because the probability of success is not estimated.
+ * This is a non-additive root scenario. It does not add child mission values.
+ * Disease productivity losses and medical costs overlap this opportunity-cost
+ * estimate. This is not expected value because success probability is unknown.
  */
 export const OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD = toMissionScenarioValue(
   POLITICAL_DYSFUNCTION_GLOBAL_OPPORTUNITY_COST_TOTAL.value,

@@ -167,7 +167,8 @@ Show mission outcomes and task scenario estimates separately.
 | × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD)}** |
 
 The task tree shows **Value if achieved ${usdShort(OPTIMIZE_EARTH_MISSION_SCENARIO_VALUE_USD)}** for Optimize Earth.
-It does not add the mission values below it because those outcomes overlap.
+It does not add the mission values below it. Disease productivity losses and
+medical costs overlap the root opportunity-cost estimate.
 
 This is not expected value. Expected value would also require a defensible
 probability that humanity achieves the objective. The current model does not

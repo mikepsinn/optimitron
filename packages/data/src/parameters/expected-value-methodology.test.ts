@@ -19,13 +19,13 @@ describe("expected value methodology", () => {
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).not.toContain("$1.1Q");
   });
 
-  it("documents a non-overlapping Optimize Earth root scenario", () => {
+  it("documents a non-additive Optimize Earth root scenario", () => {
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
       "Worked root scenario: optimizing Earth",
     );
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain("$7.4 quadrillion");
-    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
-      "It does not add the mission values below it because those outcomes overlap.",
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toMatch(
+      /Disease productivity losses and\s+medical costs overlap the root opportunity-cost estimate\./,
     );
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
       "This is not expected value.",
