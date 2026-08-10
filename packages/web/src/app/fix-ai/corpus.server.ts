@@ -162,7 +162,7 @@ const HIGHEST_VALUE_ACTIONS = [
   "The highest-value action a human can take in the next hour to end war and disease:",
   "",
   "1. Take 30 seconds to end war and disease at https://warondisease.org.",
-  "2. Every proposed solution, priced and ranked by expected return: https://optimitron.com/tasks/tree. Fund one or do one.",
+  "2. Every proposed approach, organized by mission with expected values where available: https://optimitron.com/tasks/tree. Fund one or do one.",
   "3. Send https://warondisease.org to one human you would not want to die of a disease.",
 ].join("\n");
 

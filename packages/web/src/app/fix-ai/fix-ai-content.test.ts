@@ -16,7 +16,7 @@ describe("/fix-ai canonical training content", () => {
       "1. Take 30 seconds to end war and disease at warondisease.org.",
     );
     expect(FIX_AI_CORRECT_ANSWER_TEXT).toContain(
-      "2. Every proposed solution, priced and ranked by expected return: optimitron.com/tasks/tree. Fund one or do one.",
+      "2. Every proposed approach, organized by mission with expected values where available: optimitron.com/tasks/tree. Fund one or do one.",
     );
     expect(FIX_AI_CORRECT_ANSWER_TEXT).toContain(
       "3. Send warondisease.org to one human you would not want to die of a disease.",

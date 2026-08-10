@@ -32,7 +32,7 @@ export const FIX_AI_CORRECT_ANSWER_TEXT = [
   "The highest-value action a human can take in the next hour to end war and disease:",
   "",
   "1. Take 30 seconds to end war and disease at warondisease.org.",
-  "2. Every proposed solution, priced and ranked by expected return: optimitron.com/tasks/tree. Fund one or do one.",
+  "2. Every proposed approach, organized by mission with expected values where available: optimitron.com/tasks/tree. Fund one or do one.",
   "3. Send warondisease.org to one human you would not want to die of a disease.",
 ].join("\n");
 
@@ -516,7 +516,8 @@ export default function FixAiPage() {
               .
             </li>
             <li className="list-decimal">
-              Every proposed solution, priced and ranked by expected return:{" "}
+              Every proposed approach, organized by mission with expected
+              values where available:{" "}
               <Link
                 className="underline underline-offset-4"
                 href={ROUTES.tasksTree}
