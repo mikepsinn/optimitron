@@ -59,6 +59,7 @@ function flatTask(
     estimatedEffortHours: null,
     id,
     isPublic: true,
+    isTaxonomyNode: false,
     parentTaskId,
     selectedImpactFrame: null,
     sortOrder: null,
@@ -154,6 +155,61 @@ describe("buildTaskTree", () => {
       "tie-break-by-id-a",
       "tie-break-by-id-b",
     ]);
+  });
+
+  it("shows one task below every mission it advances without changing its canonical parent", () => {
+    const tree = buildTaskTree(
+      [
+        flatTask("root", null),
+        flatTask("end-war", "root"),
+        flatTask("end-disease", "root"),
+        flatTask("end-poverty", "root"),
+        flatTask("prevent-extinction", "root"),
+        flatTask("treaty", "end-war", {
+          additionalParentTaskIds: [
+            "end-disease",
+            "end-poverty",
+            "prevent-extinction",
+          ],
+        }),
+        flatTask("treaty-child", "treaty"),
+      ],
+      "root",
+    );
+
+    const missions = new Map(
+      tree?.children.map((mission) => [mission.id, mission]),
+    );
+    expect(missions.get("end-war")?.children[0]?.isLinked).toBe(false);
+    for (const missionId of [
+      "end-disease",
+      "end-poverty",
+      "prevent-extinction",
+    ]) {
+      const treaty = missions.get(missionId)?.children[0];
+      expect(treaty?.id).toBe("treaty");
+      expect(treaty?.isLinked).toBe(true);
+      expect(treaty?.parentTaskId).toBe("end-war");
+      expect(treaty?.children[0]?.id).toBe("treaty-child");
+    }
+    expect(tree && countTaskTreeNodes(tree)).toBe(7);
+  });
+
+  it("cuts value-edge cycles at the current path", () => {
+    const tree = buildTaskTree(
+      [
+        flatTask("root", null),
+        flatTask("mission", "root", {
+          additionalParentTaskIds: ["approach"],
+        }),
+        flatTask("approach", "mission"),
+      ],
+      "root",
+    );
+
+    expect(tree?.children[0]?.id).toBe("mission");
+    expect(tree?.children[0]?.children[0]?.id).toBe("approach");
+    expect(tree?.children[0]?.children[0]?.children).toEqual([]);
   });
 
   it("computes each node's EV numbers via the shared priority formula, not a new one", () => {

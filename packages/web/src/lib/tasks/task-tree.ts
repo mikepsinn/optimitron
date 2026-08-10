@@ -14,17 +14,18 @@ import {
  */
 export interface TaskTreeFlatTask {
   /**
-   * Titles of other goals this task advances via a value edge. Display only —
-   * the task still appears exactly once in the tree, under its single
-   * parentTaskId, so nothing here affects counts or roll-ups.
+   * Other rooted goals this task advances through a value edge. The tree
+   * projects the task below each goal, while parentTaskId remains its canonical
+   * owner for ordering, breadcrumbs, rootedness, and single-count roll-ups.
    */
-  alsoServes?: string[];
+  additionalParentTaskIds?: string[];
   blockerStatuses: TaskStatus[];
   createdAt: Date | string;
   dueAt: Date | string | null;
   estimatedEffortHours: number | null;
   id: string;
   isPublic: boolean;
+  isTaxonomyNode: boolean;
   parentTaskId: string | null;
   selectedImpactFrame: TaskImpactFrameSummary | null;
   sortOrder: number | null;
@@ -35,6 +36,9 @@ export interface TaskTreeFlatTask {
 
 export interface TaskTreeNode extends TaskTreeFlatTask {
   children: TaskTreeNode[];
+  /** True when this appearance comes from a value edge instead of the task's
+   * canonical parentTaskId. The same task can appear in several branches. */
+  isLinked: boolean;
   /** False when the priority formula is missing a required input (no direct
    * EV estimate or no effort-hours estimate). Only `priority` is unusable when
    * this is false. Read `hasEvEstimate` before treating `realEv` as measured. */
@@ -92,21 +96,48 @@ export function buildTaskTree(
     rootTaskId,
   );
 
-  const childrenByParentId = new Map<string, TaskTreeFlatTask[]>();
+  type ChildAppearance = { isLinked: boolean; task: TaskTreeFlatTask };
+  const childrenByParentId = new Map<string, Map<string, ChildAppearance>>();
+
+  function addChildAppearance(
+    parentId: string,
+    task: TaskTreeFlatTask,
+    isLinked: boolean,
+  ) {
+    const children = childrenByParentId.get(parentId) ?? new Map();
+    const existing = children.get(task.id);
+    // The canonical relationship wins when both forms connect the same pair.
+    if (!existing || (existing.isLinked && !isLinked)) {
+      children.set(task.id, { isLinked, task });
+    }
+    childrenByParentId.set(parentId, children);
+  }
+
   for (const task of tasks) {
     if (task.parentTaskId == null || !rootedIds.has(task.id)) {
       continue;
     }
-    const siblings = childrenByParentId.get(task.parentTaskId) ?? [];
-    siblings.push(task);
-    childrenByParentId.set(task.parentTaskId, siblings);
+    addChildAppearance(task.parentTaskId, task, false);
+    for (const additionalParentTaskId of task.additionalParentTaskIds ?? []) {
+      if (
+        additionalParentTaskId !== task.parentTaskId &&
+        rootedIds.has(additionalParentTaskId)
+      ) {
+        addChildAppearance(additionalParentTaskId, task, true);
+      }
+    }
   }
 
-  function toNode(task: TaskTreeFlatTask): TaskTreeNode {
-    const children = (childrenByParentId.get(task.id) ?? [])
-      .slice()
-      .sort(sortSiblings)
-      .map(toNode);
+  function toNode(
+    task: TaskTreeFlatTask,
+    isLinked = false,
+    ancestorIds = new Set<string>(),
+  ): TaskTreeNode {
+    const nextAncestorIds = new Set(ancestorIds).add(task.id);
+    const children = Array.from(childrenByParentId.get(task.id)?.values() ?? [])
+      .filter(({ task: child }) => !nextAncestorIds.has(child.id))
+      .sort((left, right) => sortSiblings(left.task, right.task))
+      .map((child) => toNode(child.task, child.isLinked, nextAncestorIds));
     const valueIfAchievedUsd = task.selectedImpactFrame
       ? getMetricBaseValue(
           task.selectedImpactFrame.metrics,
@@ -123,6 +154,7 @@ export function buildTaskTree(
         children,
         evValid: false,
         hasEvEstimate: false,
+        isLinked,
         priority: 0,
         realEv: 0,
         valueIfAchievedUsd,
@@ -147,6 +179,7 @@ export function buildTaskTree(
       children,
       evValid: valid && hasDirectEvEstimate,
       hasEvEstimate: hasDirectEvEstimate,
+      isLinked,
       priority,
       realEv,
       valueIfAchievedUsd: null,
@@ -156,11 +189,14 @@ export function buildTaskTree(
   return toNode(rootTask);
 }
 
-/** Total node count in a built tree, including the root. Used for the "N
- * tasks" summary line without a second pass over the flat list. */
+/** Unique task count in a built graph projection, including the root. Linked
+ * appearances do not inflate the page's task count. */
 export function countTaskTreeNodes(node: TaskTreeNode): number {
-  return (
-    1 +
-    node.children.reduce((total, child) => total + countTaskTreeNodes(child), 0)
-  );
+  const taskIds = new Set<string>();
+  function visit(current: TaskTreeNode) {
+    taskIds.add(current.id);
+    current.children.forEach(visit);
+  }
+  visit(node);
+  return taskIds.size;
 }

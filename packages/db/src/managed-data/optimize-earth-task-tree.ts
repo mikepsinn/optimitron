@@ -1,6 +1,9 @@
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
+  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
+  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
   DEFENSE_LOBBYING_ANNUAL,
   DEFENSE_TAKEOVER_COST_PER_HUMAN,
   MECHANISM_COURT_OF_HUMANITY_P_SUCCESS,
@@ -90,6 +93,11 @@ const defaultTaskFields = {
   isPublic: true,
   skillTags: ["coordination"],
   interestTags: ["war-on-disease", "one-percent-treaty"],
+} satisfies Partial<ManagedTaskRecord>;
+
+const taxonomyTaskFields = {
+  ...defaultTaskFields,
+  contextJson: { optimizeEarthNodeKind: "taxonomy" },
 } satisfies Partial<ManagedTaskRecord>;
 
 export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
@@ -185,13 +193,17 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     description: [
       "This is a mission task. The goal is an increase of the median income of each person.",
       "",
+      "The value-if-achieved scenario closes the annual gap between the current $2,138 global median income and the $4,381 Earth Optimization Prize target. It applies that gap to the current population for 73.4 years. It does not estimate the probability of success.",
+      "",
       "Add a task below this task if the task increases the median real income after tax. Optimitron calculates an expected value for each task. Optimitron then shows the tasks in sequence, from the highest value to the lowest value.",
       "",
       "Some tasks apply to this task and to the other mission tasks at the same time. The 1% Treaty, the Loving Takeover, and better public budgets are examples. War decreases income. Disease decreases income.",
     ].join("\n"),
     impactStatement:
       "The median income is one of the two measurements of Earth optimization. Each task below this task increases it.",
-    // TODO(param): mission EV is the child roll-up; do not add scalars here.
+    // Annual gap from today's median income to the prize target, applied to a
+    // population-equivalent scenario over the common mission horizon.
+    valueIfAchievedUsdBase: END_POVERTY_MISSION_SCENARIO_VALUE_USD,
     sortOrder: -960,
   },
   {
@@ -208,6 +220,8 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "",
       "Toby Ord estimates the probability of an existential catastrophe in this century at approximately 1 in 6. The largest part is unaligned artificial intelligence at approximately 1 in 10. Engineered pandemics are approximately 1 in 30. Nuclear war is approximately 1 in 1,000.",
       "",
+      "The value-if-achieved scenario values the eight billion people alive now at $10 million per statistical life. It excludes all future generations. It does not estimate the probability of extinction.",
+      "",
       "An extinction event sets the value of every other mission task to zero. This task therefore multiplies the other mission tasks. It does not compete with them.",
       "",
       "Add a task below this task if the task decreases one of these probabilities. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
@@ -215,9 +229,9 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     impactStatement:
       "An extinction event sets the value of all other work to zero. Each task below this task decreases the probability of that event.",
     interestTags: [],
-    // The mission is active because it now has managed category children. It
-    // has no sourced scenario value or success probability. Do not derive its
-    // value from overlapping child programs.
+    // Conservative current-lives-only floor. This excludes future generations
+    // and carries no extinction probability.
+    valueIfAchievedUsdBase: PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
     status: TaskStatus.ACTIVE,
     sortOrder: -955,
   },
@@ -233,16 +247,19 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
       "",
       "The categories below identify major animal contexts. Add concrete welfare tasks below the applicable categories.",
       "",
-      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. Persons give approximately $260 million each year to decrease this suffering. This is approximately 0.3 cents for each land animal.",
+      "Humans kill approximately 88 billion land animals each year. Humans also kill approximately 440 billion farmed shrimp and approximately 124 billion farmed fish each year. [Animal Charity Evaluators reports](https://animalcharityevaluators.org/blog/better-for-animals-the-evidence-behind-conducting-research-for-effective-advocacy/) that persons allocated approximately $260 million to farmed-animal advocacy in 2024. This is approximately 0.3 cents for each land animal.",
+      "",
+      "The value-if-achieved scenario uses that observed annual spending for 73.4 years. This is a conservative lower bound. It does not assign a dollar value to an animal or to suffering.",
       "",
       "Add a task below this task. Give the cost of the task and the effect of the task. Optimitron then calculates an expected value.",
     ].join("\n"),
     impactStatement:
       "Each task below this mission decreases the number, duration, or intensity of harmful animal experiences.",
     interestTags: [],
-    // The mission is active because it now has managed category children. It
-    // has no sourced scenario value or success probability. Do not derive its
-    // value from overlapping child programs.
+    // Revealed-preference floor only. This avoids an invented cross-species
+    // welfare weight and does not claim to price all animal suffering.
+    valueIfAchievedUsdBase:
+      MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
     status: TaskStatus.ACTIVE,
     sortOrder: -950,
   },
@@ -250,7 +267,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   // nodes, not quantified interventions. Keep them DRAFT and leave economics
   // unset until sourced child programs provide the mission's EV.
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-severe-global-pandemics",
     taskKey: "optimize-earth:prevent-extinction:severe-global-pandemics",
@@ -273,7 +290,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -800,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-nuclear-catastrophe",
     taskKey: "optimize-earth:prevent-extinction:nuclear-catastrophe",
@@ -296,7 +313,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -790,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-catastrophic-climate-disruption",
     taskKey:
@@ -320,7 +337,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -780,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-catastrophic-emerging-technology-failures",
     taskKey: "optimize-earth:prevent-extinction:emerging-technology-failures",
@@ -343,7 +360,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -770,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-asteroid-and-comet-impacts",
     taskKey: "optimize-earth:prevent-extinction:asteroid-comet-impacts",
@@ -366,7 +383,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -760,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "prevent-supervolcanic-catastrophe",
     taskKey: "optimize-earth:prevent-extinction:supervolcanic-catastrophe",
@@ -392,7 +409,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
   // the Five Domains model for welfare effects and keep concrete interventions
   // with sourced estimates as live child tasks.
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.OTHER,
     id: "reduce-terrestrial-animal-production-suffering",
     taskKey:
@@ -416,7 +433,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -800,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.OTHER,
     id: "reduce-aquatic-animal-production-suffering",
     taskKey:
@@ -440,7 +457,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -790,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.OTHER,
     id: "reduce-animal-transport-and-slaughter-suffering",
     taskKey:
@@ -464,7 +481,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -780,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "reduce-research-and-education-animal-suffering",
     taskKey:
@@ -488,7 +505,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -770,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.OTHER,
     id: "reduce-work-and-companion-animal-suffering",
     taskKey:
@@ -512,7 +529,7 @@ export const OPTIMIZE_EARTH_TASK_TREE: ManagedTaskRecord[] = [
     sortOrder: -760,
   },
   {
-    ...defaultTaskFields,
+    ...taxonomyTaskFields,
     category: TaskCategory.RESEARCH,
     id: "reduce-wild-animal-suffering",
     taskKey: "optimize-earth:minimize-animal-suffering:wild-animals",

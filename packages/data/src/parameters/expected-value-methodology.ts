@@ -3,11 +3,19 @@ import {
   GLOBAL_ANNUAL_DIRECT_INDIRECT_WAR_COST,
   GLOBAL_GDP_2025,
   GLOBAL_LIFE_EXPECTANCY_2024,
+  GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025,
+  GLOBAL_POPULATION_2024,
+  PRIZE_TARGET_MEDIAN_INCOME_YEAR_15,
+  VALUE_OF_STATISTICAL_LIFE,
 } from "./parameters-calculations-citations";
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
+  FARMED_ANIMAL_ADVOCACY_SPENDING_2024,
+  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
   MISSION_VALUE_HORIZON_YEARS,
+  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
 } from "./mission-value-horizon";
 
 /**
@@ -81,9 +89,12 @@ quantity as task expected value or task priority.
 
 ### Mission comparison scenario
 
-The current scenario uses this calculation:
+Most missions use this calculation:
 
 **Value if achieved = current annual outcome value × ${MISSION_VALUE_HORIZON_YEARS} years**
+
+The extinction scenario values today's population once. It does not multiply
+current lives by the comparison period.
 
 | Assumption | Current choice |
 | --- | --- |
@@ -164,6 +175,42 @@ smaller outcome and needs its own task scenario estimate.
 | × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_DISEASE_MISSION_SCENARIO_VALUE_USD)}** |
 
 This scenario covers economic drag. It does not price pain or suffering.
+
+## Worked mission scenario: ending poverty
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Current global median after-tax income | ${citedText(usdShort(GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value), GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025)} | per person per year |
+| 2040 prize target | ${citedText(usdShort(PRIZE_TARGET_MEDIAN_INCOME_YEAR_15.value), PRIZE_TARGET_MEDIAN_INCOME_YEAR_15)} | per person per year |
+| Annual gap × current population | ${citedText(GLOBAL_POPULATION_2024.value.toLocaleString("en-US"), GLOBAL_POPULATION_2024)} people | ${usdShort((PRIZE_TARGET_MEDIAN_INCOME_YEAR_15.value - GLOBAL_MEDIAN_AFTER_TAX_INCOME_2025.value) * GLOBAL_POPULATION_2024.value)}/year |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(END_POVERTY_MISSION_SCENARIO_VALUE_USD)}** |
+
+This population-equivalent scenario values the income gap at the global median.
+It is not a forecast of income distribution or mission success.
+
+## Worked mission scenario: preventing extinction
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Current human population | ${citedText(GLOBAL_POPULATION_2024.value.toLocaleString("en-US"), GLOBAL_POPULATION_2024)} | current lives only |
+| Value per statistical life | ${citedText(usdShort(VALUE_OF_STATISTICAL_LIFE.value), VALUE_OF_STATISTICAL_LIFE)} | policy-analysis value |
+| Current lives × value per life | One-time scenario | **${usdShort(PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD)}** |
+
+This conservative floor excludes every future generation. It does not multiply
+current lives by the comparison period or estimate extinction probability.
+
+## Worked mission scenario: minimizing animal suffering
+
+No accepted dollar conversion covers all species and harmful experiences. The
+tree therefore shows a documented revealed-preference floor instead of an
+invented cross-species welfare weight.
+
+| Step | Source | Value |
+| --- | --- | --- |
+| Farmed-animal advocacy allocation in 2024 | ${citedText(usdShort(FARMED_ANIMAL_ADVOCACY_SPENDING_2024.value), FARMED_ANIMAL_ADVOCACY_SPENDING_2024)} | observed annual spending |
+| × comparison period | ${MISSION_VALUE_HORIZON_YEARS} years | **${usdShort(MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD)}** |
+
+This is a lower bound. It is not the full value of minimizing animal suffering.
 
 ## Write a task estimate
 

@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
+  MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
+  PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
 } from "@optimitron/data/parameters";
 import {
   COURT_OF_HUMANITY_TASK_ID,
@@ -127,12 +130,21 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(mission?.successProbabilityBase).toBeUndefined();
   });
 
-  // Sourced or blank, never invented. A blank is honest; a made-up number gets
-  // ranked against real ones. See docs/EXPECTED_VALUE_METHODOLOGY.md.
-  it("gives a mission a value only where a sourced parameter exists", () => {
+  // Each mission uses a documented probability-free scenario. These values do
+  // not enter task ranking. See docs/EXPECTED_VALUE_METHODOLOGY.md.
+  it("gives every mission a documented value-if-achieved scenario", () => {
     const valued = new Map([
       [END_WAR_TASK_ID, END_WAR_MISSION_SCENARIO_VALUE_USD],
       [END_DISEASE_TASK_ID, END_DISEASE_MISSION_SCENARIO_VALUE_USD],
+      [END_POVERTY_TASK_ID, END_POVERTY_MISSION_SCENARIO_VALUE_USD],
+      [
+        PREVENT_EXTINCTION_TASK_ID,
+        PREVENT_EXTINCTION_MISSION_SCENARIO_VALUE_USD,
+      ],
+      [
+        MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+        MINIMIZE_ANIMAL_SUFFERING_MISSION_SCENARIO_VALUE_USD,
+      ],
     ]);
     for (const id of [
       END_WAR_TASK_ID,
@@ -223,6 +235,9 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
         children.every(
           (task) =>
             task.status === "DRAFT" &&
+            task.contextJson != null &&
+            !Array.isArray(task.contextJson) &&
+            task.contextJson.optimizeEarthNodeKind === "taxonomy" &&
             task.valueIfAchievedUsdBase === undefined &&
             task.expectedEconomicValueUsdBase === undefined &&
             task.successProbabilityBase === undefined,

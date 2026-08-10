@@ -18,4 +18,19 @@ describe("expected value methodology", () => {
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain("$1.1 quadrillion");
     expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).not.toContain("$1.1Q");
   });
+
+  it("documents all five mission value scenarios and their limits", () => {
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Worked mission scenario: ending poverty",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Worked mission scenario: preventing extinction",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "Worked mission scenario: minimizing animal suffering",
+    );
+    expect(EXPECTED_VALUE_METHODOLOGY_MARKDOWN).toContain(
+      "This is a lower bound. It is not the full value",
+    );
+  });
 });
