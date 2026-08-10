@@ -20,10 +20,12 @@ function CopyTextButton({
   ariaLabel,
   idleLabel,
   value,
+  visualAction,
 }: {
   ariaLabel: string;
   idleLabel: string;
   value: string;
+  visualAction?: string;
 }) {
   const [copyState, setCopyState] = useState<"copied" | "error" | "idle">(
     "idle",
@@ -46,6 +48,7 @@ function CopyTextButton({
       type="button"
       aria-label={ariaLabel}
       className="inline-flex items-center gap-2 border-2 border-foreground bg-background px-4 py-2 text-sm font-black uppercase text-foreground transition-colors hover:bg-foreground hover:text-background"
+      data-visual-action={visualAction}
       onClick={handleCopy}
     >
       {copyState === "copied" ? (
@@ -78,6 +81,7 @@ export function FlyerRoutePromptCopyButton({ value }: { value: string }) {
       ariaLabel="Copy the flyer route prompt for your AI"
       idleLabel="Copy AI prompt"
       value={value}
+      visualAction="copy-flyer-route-prompt"
     />
   );
 }

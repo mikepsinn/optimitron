@@ -201,10 +201,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
-  [
-    ROUTES.poster,
-    'button[aria-label="Copy the flyer route prompt for your AI"]',
-  ],
+  [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
