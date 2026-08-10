@@ -16,6 +16,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { extractHunksAndAlignment } from "./visual-review-hunks.mjs";
 import {
+  isNewCopySnapshot,
   isSignificantDimensionChange,
   normalizeVisualReviewMarkdown,
 } from "./visual-review-diff.mjs";
@@ -952,8 +953,8 @@ function buildMarkdownDiff(routeName) {
   );
   const gitBefore = readMainFile(snapshot.repoRelativePath);
   const before = generatedBefore ?? gitBefore;
-  const isNewRoute = before === null && isNewRouteSnapshot(snapshot);
-  if (before === null && !isNewRoute) {
+  const isNewSnapshot = isNewCopySnapshot(before, generatedAfter);
+  if (before === null && !isNewSnapshot) {
     markdownDiffCache.set(snapshot.repoRelativePath, null);
     return null;
   }
@@ -981,8 +982,8 @@ function buildMarkdownDiff(routeName) {
   const diff = {
     addedLines,
     fileName: snapshot.fileName,
-    label: isNewRoute
-      ? `Text snapshot: ${snapshot.fileName} (new route)`
+    label: isNewSnapshot
+      ? `Text snapshot: ${snapshot.fileName} (new snapshot)`
       : `Text diff: ${snapshot.fileName}`,
     lines,
     metaChanges: [],
@@ -1020,13 +1021,6 @@ function isAuthenticatedMarkdownRoute(routeName) {
     /-auth(\b|$)/.test(routeName) ||
     routeName.endsWith("-auth")
   );
-}
-
-function isNewRouteSnapshot(snapshot) {
-  const pageSourcePath = toPosix(
-    path.posix.join(path.posix.dirname(snapshot.repoRelativePath), "page.tsx"),
-  );
-  return readMainFile(pageSourcePath) === null;
 }
 
 function readCopySnapshot(root, relativePath) {
