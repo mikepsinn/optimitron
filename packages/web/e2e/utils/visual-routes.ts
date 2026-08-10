@@ -180,6 +180,13 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [ROUTES.methodology, ["packages/web/src/app/methodology/page.tsx"]],
+  [
+    ROUTES.poster,
+    [
+      "packages/web/src/app/poster/page.tsx",
+      "packages/web/src/app/poster/poster-client.tsx",
+    ],
+  ],
   [ROUTES.invest, INVEST_LANDING_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
@@ -194,6 +201,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.eos, "h1"],
   [ROUTES.game, "#vote"],
   [ROUTES.methodology, "#methodology"],
+  [ROUTES.poster, '[data-visual-action="copy-flyer-route-prompt"]'],
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
@@ -361,10 +369,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     requiredText: /^Estimate$/,
   },
   {
-    covers: [
-      TASK_TREE_VIEW_FILE,
-      "packages/web/src/app/tasks/tree/page.tsx",
-    ],
+    covers: [TASK_TREE_VIEW_FILE, "packages/web/src/app/tasks/tree/page.tsx"],
     name: "tasks-tree",
     path: "/tasks/tree",
     required: true,

@@ -37,13 +37,6 @@ export {
 };
 
 export const CAMPAIGN_PRINT_COPY = {
-  businessCardLines: [
-    "Please take",
-    "30 seconds",
-    "to end war",
-    "and disease",
-    "warondisease.org",
-  ],
   flyerHeadlineLines: [
     "Please take",
     "30 seconds",
