@@ -1088,7 +1088,7 @@ export const SEGMENTS = [
     slideId: "vote-and-share",
     tags: ["mechanism", "cta"],
     act: "II-game",
-    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Vote, then share your referral link. Each friend who votes through your link earns you one ${POINT}.`,
+    narration: `Billions of people have to overcome pluralistic ignorance and work together to achieve this. Then share your referral link. Each friend who votes through your link earns you one vote point. Here are the tools to hit the targets.`,
   },
   {
     id: "three-scenarios-all-win",
