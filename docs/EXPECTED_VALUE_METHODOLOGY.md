@@ -23,8 +23,9 @@ Mission outcomes and task scenarios use different quantities.
 
 ## Mission comparison scenario
 
-The current mission scenario multiplies the current annual outcome value by
-`MISSION_VALUE_HORIZON_YEARS`.
+Most mission scenarios multiply the current annual outcome value by
+`MISSION_VALUE_HORIZON_YEARS`. The extinction scenario values the current
+population once.
 
 That period uses the current global life expectancy at birth. It is a chosen
 comparison period, not a universal task duration.
@@ -37,7 +38,7 @@ The scenario assumes:
 - The discount rate is zero.
 - The mission probability is not estimated.
 
-These assumptions keep the two mission examples comparable. They do not make
+These assumptions keep the annual mission examples comparable. They do not make
 the resulting values forecasts.
 
 ## Task scenario formula

@@ -27,9 +27,10 @@ export default async function TaskTreePage() {
             Earth Optimization Task Tree
           </h1>
           <p className="mt-3 max-w-2xl text-sm font-bold text-muted-foreground">
-            {visibleTaskCount} tasks sit under Optimize Earth. Missions show
-            value if achieved. Task estimates include the stated chance of
-            success. Click any task to open its page. Read{" "}
+            {visibleTaskCount} unique tasks sit under Optimize Earth. Shared
+            approaches appear under every mission they advance, but count once.
+            Missions show value if achieved. Task estimates include the stated
+            chance of success. Click any task to open its page. Read{" "}
             <Link
               className="font-bold text-foreground underline underline-offset-4"
               href={methodologyLink.href}

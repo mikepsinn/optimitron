@@ -1286,6 +1286,47 @@ describe("syncManagedTasks", () => {
     ]);
   });
 
+  it("retires a managed mission value when the record explicitly clears it", async () => {
+    const client = new FakeManagedTaskClient({ tasks: [] });
+
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      records: [
+        {
+          ...activeRecord,
+          valueIfAchievedUsdBase: 80_000_000_000_000_000,
+        },
+      ],
+    });
+
+    const now = new Date("2026-08-10T00:00:00.000Z");
+    await syncManagedTasks(client, {
+      apply: true,
+      collectionKey: "test-tree",
+      createdByUserId: "creator",
+      now,
+      records: [{ ...activeRecord, valueIfAchievedUsdBase: null }],
+    });
+
+    expect(
+      client.impactFrameEstimates.find(
+        (frame) => frame.frameSlug === "lifetime",
+      )?.deletedAt,
+    ).toEqual(now);
+    expect(
+      client.impactFrameEstimates.find(
+        (frame) => frame.frameSlug === "one-year",
+      ),
+    ).toMatchObject({
+      deletedAt: null,
+      expectedEconomicValueUsdBase: null,
+      successProbabilityBase: null,
+    });
+    expect(client.impactMetrics).toHaveLength(1);
+  });
+
   it("does not write an impact owned by another managed writer", async () => {
     const client = new FakeManagedTaskClient({ tasks: [] });
 

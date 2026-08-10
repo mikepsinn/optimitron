@@ -78,7 +78,7 @@ export interface ManagedTaskRecord {
   expectedEconomicValueUsdBase?: number | null;
   /** Probability 0-1 the task produces the stated value. Source from `@optimitron/data` parameters. */
   successProbabilityBase?: number | null;
-  /** Probability-free mission outcome value under its stated scenario. */
+  /** Probability-free mission outcome value. Set null to retire the managed value. Omit to preserve it. */
   valueIfAchievedUsdBase?: number | null;
   /** Another managed writer owns this task's impact estimate. */
   impactEstimateManagedExternally?: boolean;
@@ -756,18 +756,22 @@ function findExistingTask(
   return rows.find((row) => row.taskKey === record.taskKey) ?? null;
 }
 
-function hasManagedTaskImpact(record: ManagedTaskRecord) {
+/**
+ * Omission leaves an existing managed estimate untouched. An explicit null
+ * writes an empty replacement frame and retires the previous managed frame.
+ */
+function declaresManagedTaskImpact(record: ManagedTaskRecord) {
   if (record.impactEstimateManagedExternally) {
     return false;
   }
 
   return (
-    (record.expectedEconomicValueUsdBase !== null &&
-      record.expectedEconomicValueUsdBase !== undefined) ||
-    (record.successProbabilityBase !== null &&
-      record.successProbabilityBase !== undefined) ||
-    (record.valueIfAchievedUsdBase !== null &&
-      record.valueIfAchievedUsdBase !== undefined)
+    Object.prototype.hasOwnProperty.call(
+      record,
+      "expectedEconomicValueUsdBase",
+    ) ||
+    Object.prototype.hasOwnProperty.call(record, "successProbabilityBase") ||
+    Object.prototype.hasOwnProperty.call(record, "valueIfAchievedUsdBase")
   );
 }
 
@@ -849,7 +853,7 @@ async function syncManagedTaskImpactEstimate(
   record: ManagedTaskRecord,
   now: Date,
 ) {
-  if (!hasManagedTaskImpact(record)) {
+  if (!declaresManagedTaskImpact(record)) {
     return;
   }
 

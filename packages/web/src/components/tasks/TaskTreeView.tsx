@@ -7,11 +7,24 @@ import type { TaskTreeNode } from "@/lib/tasks/task-tree";
  * top of the argument (Optimize Earth -> its programs) without a click.
  * Deeper branches start collapsed so a ~100-node tree doesn't render as one
  * long unreadable page. */
-const DEFAULT_OPEN_DEPTH = 1;
+const DEFAULT_OPEN_DEPTH = 2;
+
+function formatMissionCurrency(value: number): string {
+  if (Math.abs(value) < 1e15) {
+    return formatCompactCurrency(value);
+  }
+  const quadrillions = value / 1e15;
+  return `$${quadrillions.toLocaleString("en-US", {
+    maximumFractionDigits: Math.abs(quadrillions) >= 10 ? 0 : 1,
+  })} quadrillion`;
+}
 
 function formatImpactLabel(node: TaskTreeNode): string {
   if (node.valueIfAchievedUsd != null) {
-    return `Value if achieved ${formatCompactCurrency(node.valueIfAchievedUsd)}`;
+    return `Value if achieved ${formatMissionCurrency(node.valueIfAchievedUsd)}`;
+  }
+  if (node.isTaxonomyNode) {
+    return "category";
   }
   if (!node.hasEvEstimate) {
     return "no direct estimate";
@@ -36,14 +49,14 @@ function TaskTreeNodeLabel({ node }: { node: TaskTreeNode }) {
       <span className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
         {node.status.toLowerCase()}
       </span>
+      {node.isLinked ? (
+        <span className="text-xs font-bold text-muted-foreground">
+          shared approach
+        </span>
+      ) : null}
       <span className="text-xs text-muted-foreground">
         {formatImpactLabel(node)}
       </span>
-      {node.alsoServes && node.alsoServes.length > 0 ? (
-        <span className="text-xs text-muted-foreground">
-          also serves: {node.alsoServes.join(", ")}
-        </span>
-      ) : null}
     </span>
   );
 }
@@ -70,12 +83,16 @@ function TaskTreeNodeView({
           <TaskTreeNodeLabel node={node} />
           <span className="ml-2 text-xs text-muted-foreground">
             ({node.children.length}{" "}
-            {node.children.length === 1 ? "subtask" : "subtasks"})
+            {node.children.length === 1 ? "approach" : "approaches"})
           </span>
         </summary>
         <ul className="mt-2 border-l border-foreground/20 pl-4">
           {node.children.map((child) => (
-            <TaskTreeNodeView depth={depth + 1} key={child.id} node={child} />
+            <TaskTreeNodeView
+              depth={depth + 1}
+              key={`${child.id}:${child.isLinked ? "linked" : "primary"}`}
+              node={child}
+            />
           ))}
         </ul>
       </details>

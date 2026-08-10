@@ -14,6 +14,7 @@ import {
 
 const taskTreeSelect = {
   createdAt: true,
+  contextJson: true,
   currentImpactEstimateSet: {
     select: impactEstimateSetSelect,
   },
@@ -35,10 +36,9 @@ const taskTreeSelect = {
     },
   },
   isPublic: true,
-  // Titles of the other goals this task serves. Rendered as a flat chip on the
-  // node, never as extra tree nodes: buildTaskTree and countTaskTreeNodes both
-  // assume one path per task, so nesting an edged task under a second parent
-  // would render it twice and inflate visibleTaskCount.
+  // Other goals this task serves. The tree renders these value edges as linked
+  // appearances and counts unique task IDs, so shared approaches are visible
+  // below every mission without inflating visibleTaskCount.
   outgoingEdges: {
     where: {
       deletedAt: null,
@@ -47,7 +47,7 @@ const taskTreeSelect = {
       },
     },
     select: {
-      toTask: { select: { id: true, isPublic: true, title: true } },
+      toTask: { select: { id: true } },
     },
   },
   parentTaskId: true,
@@ -61,6 +61,15 @@ export interface TaskTreePageData {
   root: TaskTreeNode | null;
   totalTaskCount: number;
   visibleTaskCount: number;
+}
+
+function isTaxonomyNode(contextJson: Prisma.JsonValue | null): boolean {
+  return (
+    contextJson != null &&
+    typeof contextJson === "object" &&
+    !Array.isArray(contextJson) &&
+    contextJson.optimizeEarthNodeKind === "taxonomy"
+  );
 }
 
 export async function getTaskTreePageData(
@@ -101,15 +110,16 @@ export async function getTaskTreePageData(
   );
 
   const flatTasks = tasks.map((task) => ({
-    alsoServes: task.outgoingEdges
+    additionalParentTaskIds: task.outgoingEdges
       .filter((edge) => rootedTaskIds.has(edge.toTask.id))
-      .map((edge) => edge.toTask.title),
+      .map((edge) => edge.toTask.id),
     blockerStatuses: task.incomingEdges.map((edge) => edge.fromTask.status),
     createdAt: task.createdAt,
     dueAt: task.dueAt,
     estimatedEffortHours: task.estimatedEffortHours,
     id: task.id,
     isPublic: task.isPublic,
+    isTaxonomyNode: isTaxonomyNode(task.contextJson),
     parentTaskId: task.parentTaskId,
     selectedImpactFrame: selectImpactFrame(task.currentImpactEstimateSet)
       .selectedFrame,

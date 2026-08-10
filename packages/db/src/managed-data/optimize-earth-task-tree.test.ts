@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   END_DISEASE_MISSION_SCENARIO_VALUE_USD,
+  END_POVERTY_MISSION_SCENARIO_VALUE_USD,
   END_WAR_MISSION_SCENARIO_VALUE_USD,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
 } from "@optimitron/data/parameters";
@@ -127,22 +128,25 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(mission?.successProbabilityBase).toBeUndefined();
   });
 
-  // Sourced or blank, never invented. A blank is honest; a made-up number gets
-  // ranked against real ones. See docs/EXPECTED_VALUE_METHODOLOGY.md.
-  it("gives a mission a value only where a sourced parameter exists", () => {
+  // Only annual-flow scenarios share the same horizon and units. Extinction's
+  // current-lives reference and animal-advocacy spending remain methodology
+  // context, not comparable mission values.
+  it("shows only comparable mission values in the task tree", () => {
     const valued = new Map([
       [END_WAR_TASK_ID, END_WAR_MISSION_SCENARIO_VALUE_USD],
       [END_DISEASE_TASK_ID, END_DISEASE_MISSION_SCENARIO_VALUE_USD],
+      [END_POVERTY_TASK_ID, END_POVERTY_MISSION_SCENARIO_VALUE_USD],
     ]);
+    for (const id of valued.keys()) {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
+      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
+    }
     for (const id of [
-      END_WAR_TASK_ID,
-      END_DISEASE_TASK_ID,
-      END_POVERTY_TASK_ID,
       PREVENT_EXTINCTION_TASK_ID,
       MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
     ]) {
       const mission = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
-      expect(mission?.valueIfAchievedUsdBase).toBe(valued.get(id));
+      expect(mission?.valueIfAchievedUsdBase).toBeNull();
     }
   });
 
@@ -178,18 +182,59 @@ describe("OPTIMIZE_EARTH_TASK_TREE", () => {
     expect(treaty?.impactEstimateManagedExternally).toBe(true);
   });
 
-  // A mission with nothing under it is DRAFT so it stays out of active queues
-  // until real work exists. Flip to ACTIVE in the same commit that adds the
-  // first child, not before.
-  it.each([MINIMIZE_ANIMAL_SUFFERING_TASK_ID, PREVENT_EXTINCTION_TASK_ID])(
-    "empty mission %s is a DRAFT stub",
-    (id) => {
-      const stub = OPTIMIZE_EARTH_TASK_TREE.find((t) => t.id === id);
-      expect(stub?.status).toBe("DRAFT");
-      const children = OPTIMIZE_EARTH_TASK_TREE.filter(
-        (t) => t.parentTaskId === id && !t.retired,
+  const managedMissionTaxonomy = [
+    {
+      missionId: PREVENT_EXTINCTION_TASK_ID,
+      childIds: [
+        "prevent-severe-global-pandemics",
+        "prevent-nuclear-catastrophe",
+        "prevent-catastrophic-climate-disruption",
+        "prevent-catastrophic-emerging-technology-failures",
+        "prevent-asteroid-and-comet-impacts",
+        "prevent-supervolcanic-catastrophe",
+      ],
+    },
+    {
+      missionId: MINIMIZE_ANIMAL_SUFFERING_TASK_ID,
+      childIds: [
+        "reduce-terrestrial-animal-production-suffering",
+        "reduce-aquatic-animal-production-suffering",
+        "reduce-animal-transport-and-slaughter-suffering",
+        "reduce-research-and-education-animal-suffering",
+        "reduce-work-and-companion-animal-suffering",
+        "reduce-wild-animal-suffering",
+      ],
+    },
+  ];
+
+  // These mission branches are stable published taxonomies. They stay DRAFT
+  // because they classify work instead of claiming executable interventions.
+  it.each(managedMissionTaxonomy)(
+    "mission $missionId has its managed taxonomy without invented economics",
+    ({ missionId, childIds }) => {
+      const mission = OPTIMIZE_EARTH_TASK_TREE.find(
+        (task) => task.id === missionId,
       );
-      expect(children).toHaveLength(0);
+      expect(mission?.status).toBe("ACTIVE");
+
+      const children = OPTIMIZE_EARTH_TASK_TREE.filter(
+        (task) => task.parentTaskId === missionId && !task.retired,
+      );
+      expect(children.map((task) => task.id).sort()).toEqual(
+        [...childIds].sort(),
+      );
+      expect(
+        children.every(
+          (task) =>
+            task.status === "DRAFT" &&
+            task.contextJson != null &&
+            !Array.isArray(task.contextJson) &&
+            task.contextJson.optimizeEarthNodeKind === "taxonomy" &&
+            task.valueIfAchievedUsdBase === undefined &&
+            task.expectedEconomicValueUsdBase === undefined &&
+            task.successProbabilityBase === undefined,
+        ),
+      ).toBe(true);
     },
   );
 
