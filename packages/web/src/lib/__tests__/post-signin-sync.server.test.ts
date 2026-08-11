@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  ensureNearbyFlyerHangTasks: vi.fn(),
   ensurePersonForUser: vi.fn(),
   ensureUserTreatyTask: vi.fn(),
   findUnique: vi.fn(),
@@ -47,11 +48,24 @@ vi.mock("@/lib/triggers", () => ({
   buildTriggerParams: () => ({}),
 }));
 
-import { applyPostSigninSync } from "../post-signin-sync.server";
+vi.mock("@/lib/flyer-hang/server", () => ({
+  ensureNearbyFlyerHangTasks: mocks.ensureNearbyFlyerHangTasks,
+}));
+
+import {
+  applyPostSigninSync,
+  seedNearbyFlyerHangTasksAfterSignin,
+} from "../post-signin-sync.server";
 
 describe("post-signin sync", () => {
   beforeEach(() => {
     mocks.findUnique.mockReset();
+    mocks.ensureNearbyFlyerHangTasks.mockReset();
+    mocks.ensureNearbyFlyerHangTasks.mockResolvedValue({
+      personalTaskId: "task_personal",
+      places: [],
+      usedOverpass: true,
+    });
     mocks.ensurePersonForUser.mockReset();
     mocks.ensurePersonForUser.mockResolvedValue({ id: "person_1" });
     mocks.ensureUserTreatyTask.mockReset();
@@ -81,6 +95,7 @@ describe("post-signin sync", () => {
         shareAttemptId: "sa_123",
       }),
     ).resolves.toEqual({
+      personId: "person_1",
       referralRecorded: true,
       userUpdated: true,
     });
@@ -138,6 +153,7 @@ describe("post-signin sync", () => {
         name: "New Name",
       }),
     ).resolves.toEqual({
+      personId: "person_1",
       referralRecorded: false,
       userUpdated: false,
     });
@@ -148,5 +164,71 @@ describe("post-signin sync", () => {
     expect(mocks.ensurePersonForUser).toHaveBeenCalledWith("user_1", {
       displayName: "New Name",
     });
+  });
+});
+
+describe("seedNearbyFlyerHangTasksAfterSignin", () => {
+  beforeEach(() => {
+    mocks.findUnique.mockReset();
+    mocks.ensureNearbyFlyerHangTasks.mockReset();
+    mocks.ensureNearbyFlyerHangTasks.mockResolvedValue({
+      personalTaskId: "task_personal",
+      places: [],
+      usedOverpass: true,
+    });
+  });
+
+  it("seeds nearby tasks when the user has finite saved coordinates", async () => {
+    mocks.findUnique.mockResolvedValue({
+      city: "Austin",
+      countryCode: "US",
+      latitude: 30.27,
+      longitude: -97.74,
+      regionCode: "TX",
+    });
+
+    await seedNearbyFlyerHangTasksAfterSignin("user_1", "person_1");
+
+    expect(mocks.ensureNearbyFlyerHangTasks).toHaveBeenCalledWith({
+      city: "Austin",
+      countryCode: "US",
+      createdByUserId: "user_1",
+      latitude: 30.27,
+      longitude: -97.74,
+      personId: "person_1",
+      regionCode: "TX",
+      userId: "user_1",
+    });
+  });
+
+  it("skips seeding when the user has no saved coordinates yet", async () => {
+    mocks.findUnique.mockResolvedValue({
+      city: null,
+      countryCode: null,
+      latitude: null,
+      longitude: null,
+      regionCode: null,
+    });
+
+    await seedNearbyFlyerHangTasksAfterSignin("user_1", "person_1");
+
+    expect(mocks.ensureNearbyFlyerHangTasks).not.toHaveBeenCalled();
+  });
+
+  it("swallows errors from ensureNearbyFlyerHangTasks — signin must not fail on this", async () => {
+    mocks.findUnique.mockResolvedValue({
+      city: "Austin",
+      countryCode: "US",
+      latitude: 30.27,
+      longitude: -97.74,
+      regionCode: "TX",
+    });
+    mocks.ensureNearbyFlyerHangTasks.mockRejectedValue(
+      new Error("Overpass timed out"),
+    );
+
+    await expect(
+      seedNearbyFlyerHangTasksAfterSignin("user_1", "person_1"),
+    ).resolves.toBeUndefined();
   });
 });

@@ -5,6 +5,7 @@ import {
   TaskClaimStatus,
   TaskCompensationKind,
   TaskEdgeType,
+  TaskEngagementKind,
   TaskExecutionMode,
   TaskStatus,
 } from "@optimitron/db";
@@ -33,7 +34,10 @@ const mocks = vi.hoisted(() => ({
   },
   tx: {
     queryRaw: vi.fn(),
+    taskClaimCount: vi.fn(),
+    taskClaimCreate: vi.fn(),
     taskClaimFindFirst: vi.fn(),
+    taskClaimFindUnique: vi.fn(),
     taskClaimFindUniqueOrThrow: vi.fn(),
     taskClaimUpdate: vi.fn(),
     taskClaimUpdateMany: vi.fn(),
@@ -101,6 +105,7 @@ vi.mock("@/lib/tasks/planning-branch.server", async (importActual) => ({
 import {
   abandonTaskClaim,
   canCompleteSelfTask,
+  claimTask,
   completeSelfTask,
   completeTaskClaim,
   completeTaskForUser,
@@ -125,7 +130,10 @@ function createTransactionClient() {
     },
     user: { findUnique: mocks.tx.userFindUnique },
     taskClaim: {
+      count: mocks.tx.taskClaimCount,
+      create: mocks.tx.taskClaimCreate,
       findFirst: mocks.tx.taskClaimFindFirst,
+      findUnique: mocks.tx.taskClaimFindUnique,
       findUniqueOrThrow: mocks.tx.taskClaimFindUniqueOrThrow,
       update: mocks.tx.taskClaimUpdate,
       updateMany: mocks.tx.taskClaimUpdateMany,
@@ -615,6 +623,83 @@ describe("tasks server", () => {
       "Only active claims can be released.",
     );
     expect(mocks.tx.taskClaimUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("reopens a completed unpaid ongoing claim so the same volunteer can rehang", async () => {
+    mocks.tx.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.tx.taskFindFirst
+      .mockResolvedValueOnce({ id: "task_1" })
+      .mockResolvedValueOnce({
+        claimPolicy: TaskClaimPolicy.OPEN_MANY,
+        compensationCadence: null,
+        compensationCurrency: null,
+        compensationKind: TaskCompensationKind.UNSPECIFIED,
+        compensationMaxAmountMinorUnits: null,
+        compensationPaymentRails: [],
+        engagementKind: TaskEngagementKind.ONGOING,
+        id: "task_1",
+        maxClaims: null,
+        status: TaskStatus.ACTIVE,
+      });
+    mocks.tx.taskClaimFindUnique.mockResolvedValue({
+      id: "claim_1",
+      status: TaskClaimStatus.COMPLETED,
+      taskId: "task_1",
+      userId: "user_1",
+    });
+    mocks.tx.taskClaimCount.mockResolvedValue(0);
+    mocks.tx.taskClaimUpdate.mockResolvedValue({
+      id: "claim_1",
+      status: TaskClaimStatus.CLAIMED,
+      taskId: "task_1",
+      userId: "user_1",
+    });
+
+    await expect(claimTask("task_1", "user_1")).resolves.toMatchObject({
+      id: "claim_1",
+      status: TaskClaimStatus.CLAIMED,
+    });
+    expect(mocks.tx.taskClaimUpdate).toHaveBeenCalledWith({
+      where: { id: "claim_1" },
+      data: expect.objectContaining({
+        completedAt: null,
+        status: TaskClaimStatus.CLAIMED,
+        verifiedAt: null,
+        verifiedByUserId: null,
+      }),
+    });
+    expect(mocks.tx.taskClaimCreate).not.toHaveBeenCalled();
+  });
+
+  it("does not reopen a verified paid claim", async () => {
+    const existingClaim = {
+      id: "claim_paid",
+      status: TaskClaimStatus.VERIFIED,
+      taskId: "task_paid",
+      userId: "user_1",
+    };
+    mocks.tx.userFindUnique.mockResolvedValue({ personId: "person_1" });
+    mocks.tx.taskFindFirst
+      .mockResolvedValueOnce({ id: "task_paid" })
+      .mockResolvedValueOnce({
+        claimPolicy: TaskClaimPolicy.OPEN_MANY,
+        compensationCadence: null,
+        compensationCurrency: "usd",
+        compensationKind: TaskCompensationKind.BOUNTY,
+        compensationMaxAmountMinorUnits: 5000n,
+        compensationPaymentRails: ["stripe"],
+        engagementKind: TaskEngagementKind.ONGOING,
+        id: "task_paid",
+        maxClaims: null,
+        status: TaskStatus.ACTIVE,
+      });
+    mocks.tx.taskClaimFindUnique.mockResolvedValue(existingClaim);
+
+    await expect(claimTask("task_paid", "user_1")).resolves.toEqual(
+      existingClaim,
+    );
+    expect(mocks.tx.taskClaimUpdate).not.toHaveBeenCalled();
+    expect(mocks.tx.taskClaimCreate).not.toHaveBeenCalled();
   });
 
   it.each([
