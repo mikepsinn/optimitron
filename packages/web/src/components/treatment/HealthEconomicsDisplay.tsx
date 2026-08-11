@@ -64,8 +64,18 @@ const RATING_SWATCHES: Record<CostEffectivenessRating, RatingSwatch> = {
   },
 };
 
-function getCostEffectivenessColors(rating: CostEffectivenessRating) {
-  return RATING_SWATCHES[rating];
+/** Treat null/undefined/NaN as missing — production JSON often uses explicit null. */
+export function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+export function getCostEffectivenessColors(
+  rating: string | null | undefined,
+): RatingSwatch {
+  if (rating != null && Object.prototype.hasOwnProperty.call(RATING_SWATCHES, rating)) {
+    return RATING_SWATCHES[rating as CostEffectivenessRating];
+  }
+  return RATING_SWATCHES.moderate;
 }
 
 function getICERInterpretation(icer: number): string {
@@ -82,11 +92,11 @@ export function HealthEconomicsDisplay({
 }: HealthEconomicsDisplayProps) {
   const hasData = healthEconomics && (
     healthEconomics.annualCostOfCare ||
-    healthEconomics.icer ||
-    healthEconomics.qalysGained ||
+    isFiniteNumber(healthEconomics.icer) ||
+    isFiniteNumber(healthEconomics.qalysGained) ||
     healthEconomics.costEffectivenessRating ||
-    healthEconomics.costPerResponder ||
-    healthEconomics.costPerRemission ||
+    isFiniteNumber(healthEconomics.costPerResponder) ||
+    isFiniteNumber(healthEconomics.costPerRemission) ||
     healthEconomics.vsComparator
   );
 
@@ -106,38 +116,46 @@ export function HealthEconomicsDisplay({
         </div>
         {healthEconomics.annualCostOfCare && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div>
-              <p className="text-xs font-bold mb-1">Drug Cost</p>
-              <p className="text-sm font-black">
-                ${healthEconomics.annualCostOfCare.drugCost.toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-bold mb-1">Monitoring</p>
-              <p className="text-sm font-black">
-                ${healthEconomics.annualCostOfCare.monitoringCost.toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-bold mb-1">Side Effects</p>
-              <p className="text-sm font-black">
-                ${healthEconomics.annualCostOfCare.sideEffectManagement.toLocaleString()}
-              </p>
-            </div>
-            <div className="col-span-2 md:col-span-1">
-              <p className="text-xs font-bold mb-1 uppercase">Total Annual</p>
-              <p className="text-base font-black">
-                ${healthEconomics.annualCostOfCare.totalAnnual.toLocaleString()}
-              </p>
-            </div>
+            {isFiniteNumber(healthEconomics.annualCostOfCare.drugCost) && (
+              <div>
+                <p className="text-xs font-bold mb-1">Drug Cost</p>
+                <p className="text-sm font-black">
+                  ${healthEconomics.annualCostOfCare.drugCost.toLocaleString()}
+                </p>
+              </div>
+            )}
+            {isFiniteNumber(healthEconomics.annualCostOfCare.monitoringCost) && (
+              <div>
+                <p className="text-xs font-bold mb-1">Monitoring</p>
+                <p className="text-sm font-black">
+                  ${healthEconomics.annualCostOfCare.monitoringCost.toLocaleString()}
+                </p>
+              </div>
+            )}
+            {isFiniteNumber(healthEconomics.annualCostOfCare.sideEffectManagement) && (
+              <div>
+                <p className="text-xs font-bold mb-1">Side Effects</p>
+                <p className="text-sm font-black">
+                  ${healthEconomics.annualCostOfCare.sideEffectManagement.toLocaleString()}
+                </p>
+              </div>
+            )}
+            {isFiniteNumber(healthEconomics.annualCostOfCare.totalAnnual) && (
+              <div className="col-span-2 md:col-span-1">
+                <p className="text-xs font-bold mb-1 uppercase">Total Annual</p>
+                <p className="text-base font-black">
+                  ${healthEconomics.annualCostOfCare.totalAnnual.toLocaleString()}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
         {/* Additional metrics */}
-        {(healthEconomics.costPerRemission ||
-          healthEconomics.costPerResponder ||
-          healthEconomics.qalysGained ||
-          healthEconomics.icer ||
+        {(isFiniteNumber(healthEconomics.costPerRemission) ||
+          isFiniteNumber(healthEconomics.costPerResponder) ||
+          isFiniteNumber(healthEconomics.qalysGained) ||
+          isFiniteNumber(healthEconomics.icer) ||
           healthEconomics.costEffectivenessRating) && (
           <div className="mt-3 pt-3 border-t-2 border-foreground grid grid-cols-2 gap-3">
             {healthEconomics.costEffectivenessRating && (
@@ -152,7 +170,7 @@ export function HealthEconomicsDisplay({
                 </Badge>
               </div>
             )}
-            {healthEconomics.qalysGained && (
+            {isFiniteNumber(healthEconomics.qalysGained) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -173,7 +191,7 @@ export function HealthEconomicsDisplay({
                 </Tooltip>
               </TooltipProvider>
             )}
-            {healthEconomics.icer && (
+            {isFiniteNumber(healthEconomics.icer) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -190,7 +208,7 @@ export function HealthEconomicsDisplay({
                 </Tooltip>
               </TooltipProvider>
             )}
-            {healthEconomics.costPerRemission && (
+            {isFiniteNumber(healthEconomics.costPerRemission) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -210,7 +228,7 @@ export function HealthEconomicsDisplay({
                 </Tooltip>
               </TooltipProvider>
             )}
-            {healthEconomics.costPerResponder && (
+            {isFiniteNumber(healthEconomics.costPerResponder) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -251,31 +269,39 @@ export function HealthEconomicsDisplay({
           <div>
             <div className="text-sm font-bold uppercase mb-3">Annual Cost of Care</div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div className="flex justify-between border-b-2 border-foreground pb-2">
-                <span className="text-muted-foreground font-bold">Drug Cost:</span>
-                <span className="font-black">${healthEconomics.annualCostOfCare.drugCost.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between border-b-2 border-foreground pb-2">
-                <span className="text-muted-foreground font-bold">Monitoring:</span>
-                <span className="font-black">${healthEconomics.annualCostOfCare.monitoringCost.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between border-b-2 border-foreground pb-2">
-                <span className="text-muted-foreground font-bold">Side Effect Mgmt:</span>
-                <span className="font-black">${healthEconomics.annualCostOfCare.sideEffectManagement.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between font-black border-b-2 border-foreground pb-2">
-                <span>Total Annual:</span>
-                <span>${healthEconomics.annualCostOfCare.totalAnnual.toLocaleString()}</span>
-              </div>
+              {isFiniteNumber(healthEconomics.annualCostOfCare.drugCost) && (
+                <div className="flex justify-between border-b-2 border-foreground pb-2">
+                  <span className="text-muted-foreground font-bold">Drug Cost:</span>
+                  <span className="font-black">${healthEconomics.annualCostOfCare.drugCost.toLocaleString()}</span>
+                </div>
+              )}
+              {isFiniteNumber(healthEconomics.annualCostOfCare.monitoringCost) && (
+                <div className="flex justify-between border-b-2 border-foreground pb-2">
+                  <span className="text-muted-foreground font-bold">Monitoring:</span>
+                  <span className="font-black">${healthEconomics.annualCostOfCare.monitoringCost.toLocaleString()}</span>
+                </div>
+              )}
+              {isFiniteNumber(healthEconomics.annualCostOfCare.sideEffectManagement) && (
+                <div className="flex justify-between border-b-2 border-foreground pb-2">
+                  <span className="text-muted-foreground font-bold">Side Effect Mgmt:</span>
+                  <span className="font-black">${healthEconomics.annualCostOfCare.sideEffectManagement.toLocaleString()}</span>
+                </div>
+              )}
+              {isFiniteNumber(healthEconomics.annualCostOfCare.totalAnnual) && (
+                <div className="flex justify-between font-black border-b-2 border-foreground pb-2">
+                  <span>Total Annual:</span>
+                  <span>${healthEconomics.annualCostOfCare.totalAnnual.toLocaleString()}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Cost-Effectiveness Metrics */}
-        {(healthEconomics.icer ||
+        {(isFiniteNumber(healthEconomics.icer) ||
           healthEconomics.costEffectivenessRating ||
-          healthEconomics.qalysGained ||
-          healthEconomics.qalysVsComparator) && (
+          isFiniteNumber(healthEconomics.qalysGained) ||
+          isFiniteNumber(healthEconomics.qalysVsComparator)) && (
           <div className="border-t-2 border-foreground pt-4">
             <div className="text-sm font-bold uppercase mb-3">Cost-Effectiveness Analysis</div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -292,7 +318,7 @@ export function HealthEconomicsDisplay({
                   </Badge>
                 </div>
               )}
-              {healthEconomics.icer && (
+              {isFiniteNumber(healthEconomics.icer) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -309,7 +335,7 @@ export function HealthEconomicsDisplay({
                   </Tooltip>
                 </TooltipProvider>
               )}
-              {healthEconomics.qalysGained !== undefined && (
+              {isFiniteNumber(healthEconomics.qalysGained) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -327,7 +353,7 @@ export function HealthEconomicsDisplay({
                   </Tooltip>
                 </TooltipProvider>
               )}
-              {healthEconomics.qalysVsComparator !== undefined && (
+              {isFiniteNumber(healthEconomics.qalysVsComparator) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -347,13 +373,13 @@ export function HealthEconomicsDisplay({
         )}
 
         {/* Outcome-Based Costs */}
-        {(healthEconomics.costPerResponder ||
-          healthEconomics.costPerRemission ||
-          healthEconomics.costPerQALY) && (
+        {(isFiniteNumber(healthEconomics.costPerResponder) ||
+          isFiniteNumber(healthEconomics.costPerRemission) ||
+          isFiniteNumber(healthEconomics.costPerQALY)) && (
           <div className="border-t-2 border-foreground pt-4">
             <div className="text-sm font-bold uppercase mb-3">Outcome-Based Costs</div>
             <div className="grid md:grid-cols-3 gap-4">
-              {healthEconomics.costPerResponder && (
+              {isFiniteNumber(healthEconomics.costPerResponder) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -373,7 +399,7 @@ export function HealthEconomicsDisplay({
                   </Tooltip>
                 </TooltipProvider>
               )}
-              {healthEconomics.costPerRemission && (
+              {isFiniteNumber(healthEconomics.costPerRemission) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -393,7 +419,7 @@ export function HealthEconomicsDisplay({
                   </Tooltip>
                 </TooltipProvider>
               )}
-              {healthEconomics.costPerQALY && (
+              {isFiniteNumber(healthEconomics.costPerQALY) && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -425,34 +451,38 @@ export function HealthEconomicsDisplay({
               Comparison vs {healthEconomics.vsComparator.comparatorName}
             </div>
             <div className="grid md:grid-cols-3 gap-4">
-              <div className="border-2 border-foreground rounded-md p-3">
-                <div className="text-xs text-muted-foreground font-bold mb-1">Cost Difference</div>
-                <div className="text-lg font-black">
-                  {healthEconomics.vsComparator.costDifference > 0 ? '+' : ''}
-                  ${healthEconomics.vsComparator.costDifference.toLocaleString()}/year
+              {isFiniteNumber(healthEconomics.vsComparator.costDifference) && (
+                <div className="border-2 border-foreground rounded-md p-3">
+                  <div className="text-xs text-muted-foreground font-bold mb-1">Cost Difference</div>
+                  <div className="text-lg font-black">
+                    {healthEconomics.vsComparator.costDifference > 0 ? '+' : ''}
+                    ${healthEconomics.vsComparator.costDifference.toLocaleString()}/year
+                  </div>
+                  <div className="text-xs text-muted-foreground font-bold mt-1">
+                    {healthEconomics.vsComparator.costDifference < 0
+                      ? 'Less expensive'
+                      : healthEconomics.vsComparator.costDifference > 0
+                      ? 'More expensive'
+                      : 'Same cost'}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground font-bold mt-1">
-                  {healthEconomics.vsComparator.costDifference < 0
-                    ? 'Less expensive'
-                    : healthEconomics.vsComparator.costDifference > 0
-                    ? 'More expensive'
-                    : 'Same cost'}
+              )}
+              {isFiniteNumber(healthEconomics.vsComparator.qalysGainedDifference) && (
+                <div className="border-2 border-foreground rounded-md p-3">
+                  <div className="text-xs text-muted-foreground font-bold mb-1">QALY Difference</div>
+                  <div className="text-lg font-black">
+                    {healthEconomics.vsComparator.qalysGainedDifference > 0 ? '+' : ''}
+                    {healthEconomics.vsComparator.qalysGainedDifference.toFixed(2)} QALYs
+                  </div>
+                  <div className="text-xs text-muted-foreground font-bold mt-1">
+                    {healthEconomics.vsComparator.qalysGainedDifference > 0
+                      ? 'Better outcomes'
+                      : healthEconomics.vsComparator.qalysGainedDifference < 0
+                      ? 'Worse outcomes'
+                      : 'Same outcomes'}
+                  </div>
                 </div>
-              </div>
-              <div className="border-2 border-foreground rounded-md p-3">
-                <div className="text-xs text-muted-foreground font-bold mb-1">QALY Difference</div>
-                <div className="text-lg font-black">
-                  {healthEconomics.vsComparator.qalysGainedDifference > 0 ? '+' : ''}
-                  {healthEconomics.vsComparator.qalysGainedDifference.toFixed(2)} QALYs
-                </div>
-                <div className="text-xs text-muted-foreground font-bold mt-1">
-                  {healthEconomics.vsComparator.qalysGainedDifference > 0
-                    ? 'Better outcomes'
-                    : healthEconomics.vsComparator.qalysGainedDifference < 0
-                    ? 'Worse outcomes'
-                    : 'Same outcomes'}
-                </div>
-              </div>
+              )}
               <div className="border-2 border-foreground rounded-md p-3">
                 <div className="text-xs text-muted-foreground font-bold mb-1">Dominance</div>
                 {healthEconomics.vsComparator.dominates ? (
@@ -479,7 +509,7 @@ export function HealthEconomicsDisplay({
               )}
             </div>
 
-            {healthEconomics.prescriptionAccess.netSocietalLossFromRxOnly !== undefined && (
+            {isFiniteNumber(healthEconomics.prescriptionAccess.netSocietalLossFromRxOnly) && (
               <div className="bg-brutal-red text-brutal-red-foreground border-2 border-foreground rounded-md p-4 mb-4">
                 <div className="text-xs font-bold uppercase mb-1">Annual Societal Loss per Patient</div>
                 <div className="text-2xl font-black">
@@ -492,7 +522,7 @@ export function HealthEconomicsDisplay({
             )}
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {healthEconomics.prescriptionAccess.annualPhysicianVisitCost !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.annualPhysicianVisitCost) && (
                 <div className="border-2 border-foreground rounded-md p-3">
                   <div className="text-xs text-muted-foreground font-bold mb-1">Physician Visit Cost</div>
                   <div className="text-lg font-black">
@@ -500,7 +530,7 @@ export function HealthEconomicsDisplay({
                   </div>
                 </div>
               )}
-              {healthEconomics.prescriptionAccess.annualTimeCost !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.annualTimeCost) && (
                 <div className="border-2 border-foreground rounded-md p-3">
                   <div className="text-xs text-muted-foreground font-bold mb-1">Time Cost</div>
                   <div className="text-lg font-black">
@@ -509,7 +539,7 @@ export function HealthEconomicsDisplay({
                   <div className="text-xs text-muted-foreground font-bold mt-1">Travel + wait time</div>
                 </div>
               )}
-              {healthEconomics.prescriptionAccess.annualInsuranceAdminCost !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.annualInsuranceAdminCost) && (
                 <div className="border-2 border-foreground rounded-md p-3">
                   <div className="text-xs text-muted-foreground font-bold mb-1">Insurance Admin Cost</div>
                   <div className="text-lg font-black">
@@ -518,7 +548,7 @@ export function HealthEconomicsDisplay({
                   <div className="text-xs text-muted-foreground font-bold mt-1">Prior auth, claims</div>
                 </div>
               )}
-              {healthEconomics.prescriptionAccess.annualPrescriptionCost !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.annualPrescriptionCost) && (
                 <div className="border-2 border-foreground rounded-md p-3">
                   <div className="text-xs text-muted-foreground font-bold mb-1">Rx Price</div>
                   <div className="text-lg font-black">
@@ -526,7 +556,7 @@ export function HealthEconomicsDisplay({
                   </div>
                 </div>
               )}
-              {healthEconomics.prescriptionAccess.annualOtcCost !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.annualOtcCost) && (
                 <div className="border-2 border-foreground rounded-md p-3 bg-brutal-green text-brutal-green-foreground">
                   <div className="text-xs font-bold uppercase mb-1">Potential OTC Price</div>
                   <div className="text-lg font-black">
@@ -535,7 +565,7 @@ export function HealthEconomicsDisplay({
                   <div className="text-xs font-bold mt-1">Estimated if OTC available</div>
                 </div>
               )}
-              {healthEconomics.prescriptionAccess.earlyTreatmentBenefit !== undefined && (
+              {isFiniteNumber(healthEconomics.prescriptionAccess.earlyTreatmentBenefit) && (
                 <div className="border-2 border-foreground rounded-md p-3">
                   <div className="text-xs text-muted-foreground font-bold mb-1 flex items-center gap-1">
                     <TrendingUp className="h-3 w-3" />
