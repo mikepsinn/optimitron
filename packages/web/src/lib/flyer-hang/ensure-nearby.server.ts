@@ -49,14 +49,13 @@ async function resolveFlyerHangProgramParentId(
   db: EnsureDb,
   createdByUserId: string,
 ) {
-  const existing = await db.task.findFirst({
-    where: { deletedAt: null, taskKey: FLYER_HANG_PROGRAM_TASK_KEY },
-    select: { id: true },
-  });
-  if (existing) return existing.id;
-
-  const created = await db.task.create({
-    data: {
+  // upsert, not findFirst-then-create: two concurrent first-callers can both
+  // miss the findFirst and both attempt create, and taskKey is unique, so
+  // the loser would throw and 500 the route. upsert lets Postgres resolve
+  // the race atomically.
+  const task = await db.task.upsert({
+    where: { taskKey: FLYER_HANG_PROGRAM_TASK_KEY },
+    create: {
       category: TaskCategory.OUTREACH,
       claimPolicy: TaskClaimPolicy.ASSIGNED_ONLY,
       createdByUserId,
@@ -69,9 +68,10 @@ async function resolveFlyerHangProgramParentId(
       taskKey: FLYER_HANG_PROGRAM_TASK_KEY,
       title: "Hang referral flyers in public places",
     },
+    update: {},
     select: { id: true },
   });
-  return created.id;
+  return task.id;
 }
 
 function descriptionForPlace(place: FlyerHangPlaceCandidate) {
@@ -175,10 +175,17 @@ async function loadLastHungAtByTaskId(
   taskIds: string[],
 ): Promise<Map<string, Date>> {
   if (taskIds.length === 0) return new Map();
+  // Verifying a claim on a public task requires an admin (see
+  // getTaskAccessWhere's VERIFY boundary in tasks.server.ts), and flyer-hang
+  // place tasks are public with an open-ended flow of claimants — admin
+  // review of every hang isn't realistic. Treat a claimant's own COMPLETED
+  // report (photo evidence required by completeTaskClaim) as "hung" too, so
+  // "Needs first hang" clears through the normal user flow instead of
+  // staying stuck pending an admin who will never see most of these.
   const claims = await db.taskClaim.findMany({
     where: {
       deletedAt: null,
-      status: TaskClaimStatus.VERIFIED,
+      status: { in: [TaskClaimStatus.COMPLETED, TaskClaimStatus.VERIFIED] },
       taskId: { in: taskIds },
     },
     select: {
@@ -186,13 +193,19 @@ async function loadLastHungAtByTaskId(
       taskId: true,
       verifiedAt: true,
     },
-    orderBy: { verifiedAt: "desc" },
   });
+  // Pick the most recent hang per task explicitly in JS rather than leaning
+  // on SQL ORDER BY + first-row-wins: verifiedAt is null for COMPLETED-only
+  // claims, and DB null-ordering defaults aren't something to depend on for
+  // correctness here.
   const map = new Map<string, Date>();
   for (const claim of claims) {
-    if (map.has(claim.taskId)) continue;
     const at = claim.verifiedAt ?? claim.completedAt;
-    if (at) map.set(claim.taskId, at);
+    if (!at) continue;
+    const current = map.get(claim.taskId);
+    if (!current || at.getTime() > current.getTime()) {
+      map.set(claim.taskId, at);
+    }
   }
   return map;
 }

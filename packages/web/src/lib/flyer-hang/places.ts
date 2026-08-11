@@ -18,12 +18,13 @@ export type FlyerHangPlaceCandidate = {
   slotId?: FlyerHangGridSlotId;
 };
 
+function roundToGrid(value: number) {
+  return Math.round(value / FLYER_HANG_GRID_DEGREES) * FLYER_HANG_GRID_DEGREES;
+}
+
 export function buildFlyerHangGridId(latitude: number, longitude: number) {
-  const lat = (Math.round(latitude / FLYER_HANG_GRID_DEGREES) * FLYER_HANG_GRID_DEGREES)
-    .toFixed(2);
-  const lng = (
-    Math.round(longitude / FLYER_HANG_GRID_DEGREES) * FLYER_HANG_GRID_DEGREES
-  ).toFixed(2);
+  const lat = roundToGrid(latitude).toFixed(2);
+  const lng = roundToGrid(longitude).toFixed(2);
   return `${lat}:${lng}`;
 }
 
@@ -36,6 +37,14 @@ export function buildGridSlotPlaceCandidates(input: {
 }): FlyerHangPlaceCandidate[] {
   const gridId = buildFlyerHangGridId(input.latitude, input.longitude);
   const cityLabel = input.city?.trim() || "your area";
+  // taskKeyForFlyerHangPlace() derives the shared task's identity from
+  // gridId, so every user in the same cell upserts the same task. The
+  // candidate's own lat/lng must therefore come from that same rounded
+  // cell center, not each caller's raw origin — otherwise upsertPlaceTask's
+  // `update` branch keeps moving the shared task's map position to whoever
+  // last called in.
+  const cellLatitude = roundToGrid(input.latitude);
+  const cellLongitude = roundToGrid(input.longitude);
 
   return FLYER_HANG_GRID_SLOTS.map((slot, index) => {
     // Spread slots a few hundred meters around the grid center so ranking
@@ -45,8 +54,8 @@ export function buildGridSlotPlaceCandidates(input: {
     return {
       city: input.city?.trim() || null,
       countryCode: input.countryCode?.trim() || null,
-      latitude: input.latitude + offsetLat,
-      longitude: input.longitude + offsetLng,
+      latitude: cellLatitude + offsetLat,
+      longitude: cellLongitude + offsetLng,
       name: `${slot.title.replace(/^Hang a flyer at /i, "").replace(/^Hang a flyer /i, "")} (${cityLabel})`,
       placeId: `${gridId}:${slot.id}`,
       regionCode: input.regionCode?.trim() || null,

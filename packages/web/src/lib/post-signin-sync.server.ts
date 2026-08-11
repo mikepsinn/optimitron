@@ -109,9 +109,26 @@ export async function applyPostSigninSync({
     { actorUserId: userId },
   );
 
-  // Best-effort flyer hang inventory from saved/IP geo. Never fail signin
-  // if Overpass or task upserts error — the /poster page can retry with
-  // browser geolocation.
+  return {
+    personId: person.id,
+    referralRecorded,
+    userUpdated: Object.keys(updateData).length > 0,
+  };
+}
+
+/**
+ * Best-effort flyer hang inventory seed from saved/IP geo. Split out of
+ * applyPostSigninSync so the route handler can run it via Next's after()
+ * instead of awaiting it inline: Overpass can take up to 20s to answer
+ * (see fetchOverpassFlyerHangPlaces's AbortSignal.timeout), and every
+ * signin was blocking on that before returning a response. Never fail
+ * signin if Overpass or task upserts error — the /poster page can retry
+ * with browser geolocation.
+ */
+export async function seedNearbyFlyerHangTasksAfterSignin(
+  userId: string,
+  personId: string,
+) {
   const locatedUser = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -123,29 +140,25 @@ export async function applyPostSigninSync({
     },
   });
   if (
-    locatedUser?.latitude != null &&
-    locatedUser.longitude != null &&
-    Number.isFinite(locatedUser.latitude) &&
-    Number.isFinite(locatedUser.longitude)
+    locatedUser?.latitude == null ||
+    locatedUser.longitude == null ||
+    !Number.isFinite(locatedUser.latitude) ||
+    !Number.isFinite(locatedUser.longitude)
   ) {
-    try {
-      await ensureNearbyFlyerHangTasks({
-        city: locatedUser.city,
-        countryCode: locatedUser.countryCode,
-        createdByUserId: userId,
-        latitude: locatedUser.latitude,
-        longitude: locatedUser.longitude,
-        personId: person.id,
-        regionCode: locatedUser.regionCode,
-        userId,
-      });
-    } catch (error) {
-      console.error("[FLYER HANG] Failed to seed nearby hang tasks", userId, error);
-    }
+    return;
   }
-
-  return {
-    referralRecorded,
-    userUpdated: Object.keys(updateData).length > 0,
-  };
+  try {
+    await ensureNearbyFlyerHangTasks({
+      city: locatedUser.city,
+      countryCode: locatedUser.countryCode,
+      createdByUserId: userId,
+      latitude: locatedUser.latitude,
+      longitude: locatedUser.longitude,
+      personId,
+      regionCode: locatedUser.regionCode,
+      userId,
+    });
+  } catch (error) {
+    console.error("[FLYER HANG] Failed to seed nearby hang tasks", userId, error);
+  }
 }

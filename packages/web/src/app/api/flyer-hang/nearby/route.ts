@@ -14,8 +14,21 @@ type NearbyBody = {
   regionCode?: string | null;
 };
 
-function readFiniteNumber(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
+function readFiniteNumber(value: unknown, min: number, max: number) {
+  return typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= min &&
+    value <= max
+    ? value
+    : null;
+}
+
+function readLatitude(value: unknown) {
+  return readFiniteNumber(value, -90, 90);
+}
+
+function readLongitude(value: unknown) {
+  return readFiniteNumber(value, -180, 180);
 }
 
 export async function POST(request: Request) {
@@ -47,8 +60,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
-  const latitude = readFiniteNumber(body.latitude) ?? user.latitude;
-  const longitude = readFiniteNumber(body.longitude) ?? user.longitude;
+  const latitude = readLatitude(body.latitude) ?? user.latitude;
+  const longitude = readLongitude(body.longitude) ?? user.longitude;
   if (latitude == null || longitude == null) {
     return NextResponse.json(
       {
@@ -62,8 +75,8 @@ export async function POST(request: Request) {
 
   // Persist browser geolocation when the profile still lacks coordinates.
   if (
-    readFiniteNumber(body.latitude) != null &&
-    readFiniteNumber(body.longitude) != null &&
+    readLatitude(body.latitude) != null &&
+    readLongitude(body.longitude) != null &&
     (user.latitude == null || user.longitude == null)
   ) {
     await prisma.user.update({
@@ -82,21 +95,29 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = await ensureNearbyFlyerHangTasks({
-    city: body.city ?? user.city,
-    countryCode: body.countryCode ?? user.countryCode,
-    createdByUserId: userId,
-    latitude,
-    longitude,
-    personId: user.personId,
-    regionCode: body.regionCode ?? user.regionCode,
-    userId,
-  });
+  try {
+    const result = await ensureNearbyFlyerHangTasks({
+      city: body.city ?? user.city,
+      countryCode: body.countryCode ?? user.countryCode,
+      createdByUserId: userId,
+      latitude,
+      longitude,
+      personId: user.personId,
+      regionCode: body.regionCode ?? user.regionCode,
+      userId,
+    });
 
-  return NextResponse.json({
-    needsLocation: false,
-    personalTaskId: result.personalTaskId,
-    places: result.places,
-    usedOverpass: result.usedOverpass,
-  });
+    return NextResponse.json({
+      needsLocation: false,
+      personalTaskId: result.personalTaskId,
+      places: result.places,
+      usedOverpass: result.usedOverpass,
+    });
+  } catch (error) {
+    console.error("[FLYER HANG] Failed to load nearby tasks", userId, error);
+    return NextResponse.json(
+      { error: "Could not load hang spots.", needsLocation: false, places: [] },
+      { status: 500 },
+    );
+  }
 }

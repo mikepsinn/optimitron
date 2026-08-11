@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import type { FlyerHangNearbyTask } from "@/lib/flyer-hang";
@@ -107,9 +107,16 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [needsLocation, setNeedsLocation] = useState(false);
+  // The initial saved-location load and an explicit "Use my location" click
+  // can both be in flight at once (geolocation permission prompts add
+  // unpredictable latency). Only the response to the most recently
+  // *started* request should be allowed to update state, so a slow saved-
+  // location reply can't clobber a faster, more-precise browser-location one.
+  const requestIdRef = useRef(0);
 
   async function loadNearby(coords?: { latitude: number; longitude: number }) {
     if (!signedIn) return;
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -123,6 +130,7 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
         needsLocation?: boolean;
         places?: FlyerHangNearbyTask[];
       };
+      if (requestId !== requestIdRef.current) return;
       if (!response.ok) {
         setNeedsLocation(Boolean(payload.needsLocation));
         setPlaces([]);
@@ -132,10 +140,11 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
       setNeedsLocation(false);
       setPlaces(payload.places ?? []);
     } catch {
+      if (requestId !== requestIdRef.current) return;
       setError("Could not load hang spots.");
       setPlaces([]);
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }
 
@@ -172,7 +181,7 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
 
   if (!signedIn) {
     return (
-      <div className="border-2 border-foreground bg-background p-4">
+      <div className="border border-foreground bg-background p-4">
         <h2 className="text-xl font-black uppercase">Hang near you</h2>
         <p className="mt-2 text-sm font-bold text-muted-foreground">
           Sign in to get nearby hang spots as claimable tasks and credit when
@@ -183,7 +192,7 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
   }
 
   return (
-    <div className="border-2 border-foreground bg-background p-4">
+    <div className="border border-foreground bg-background p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-black uppercase">Hang near you</h2>
@@ -194,7 +203,7 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
         </div>
         <button
           type="button"
-          className="border-2 border-foreground bg-background px-3 py-2 text-xs font-black uppercase text-foreground hover:bg-foreground hover:text-background"
+          className="border border-foreground bg-background px-3 py-2 text-xs font-black uppercase text-foreground hover:bg-foreground hover:text-background"
           onClick={requestBrowserLocation}
         >
           Use my location
@@ -232,7 +241,7 @@ export function PosterHangNearbyPanel({ signedIn }: { signedIn: boolean }) {
                 </p>
               </div>
               <Link
-                className="shrink-0 border-2 border-foreground bg-foreground px-3 py-1.5 text-xs font-black uppercase text-background hover:bg-background hover:text-foreground"
+                className="shrink-0 border border-foreground bg-foreground px-3 py-1.5 text-xs font-black uppercase text-background hover:bg-background hover:text-foreground"
                 href={place.href}
               >
                 Open task
