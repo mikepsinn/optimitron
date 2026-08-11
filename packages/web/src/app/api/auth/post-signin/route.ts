@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-utils";
-import { applyPostSigninSync } from "@/lib/post-signin-sync.server";
+import {
+  applyPostSigninSync,
+  seedNearbyFlyerHangTasksAfterSignin,
+} from "@/lib/post-signin-sync.server";
 
 export const runtime = "nodejs";
 
@@ -75,6 +78,11 @@ export async function POST(request: Request) {
           ? sanitizeLandingUrl(body.signupLandingUrl)
           : null,
     });
+
+    // Deferred until after the response is sent — seeding flyer-hang tasks
+    // can wait up to 20s on Overpass and shouldn't add that latency to
+    // every signin. See seedNearbyFlyerHangTasksAfterSignin for details.
+    after(() => seedNearbyFlyerHangTasksAfterSignin(userId, result.personId));
 
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
