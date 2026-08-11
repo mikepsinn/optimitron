@@ -5443,13 +5443,12 @@ describe("MCP server tool dispatch", () => {
       expect(createTask?.description).toContain("never as bare IDs");
       expect(updateTask?.description).toContain("never as bare IDs");
       expect(respondToTrackingReminder).toMatchObject({
-        description: expect.stringContaining("TRACKED with value 0"),
+        description: expect.stringContaining("Record value 0"),
         inputSchema: {
           properties: {
             status: {
-              description: expect.stringContaining(
-                "SKIPPED records no measurement",
-              ),
+              enum: ["TRACKED", "SNOOZED"],
+              description: expect.stringContaining("SKIPPED is accepted"),
             },
           },
         },
@@ -9275,6 +9274,8 @@ describe("MCP server tool dispatch", () => {
       defaultUnit: TRACKING_UNIT,
       defaultUnitId: "unit-iu",
       id: "gv-vitd",
+      maximumAllowedValue: null,
+      minimumAllowedValue: null,
       name: "Vitamin D",
       variableCategory: { id: "cat-treatment", name: "Treatment" },
       variableCategoryId: "cat-treatment",
@@ -10199,23 +10200,64 @@ describe("MCP server tool dispatch", () => {
           dateKey: "2026-08-03",
           notifications: [
             {
-              due: "2026-08-03T08:00:00.000Z",
+              due: "2026-08-03T08:00:00+00:00",
+              dueUtc: "2026-08-03T08:00:00.000Z",
               id: "reminder-1",
               name: "Vitamin D",
               status: "OVERDUE",
             },
           ],
+          timeZone: "UTC",
         });
         expect(parseToolBody(deprecatedAlias)).toEqual({
           dateKey: "2026-08-03",
           reminders: [
             {
-              due: "2026-08-03T08:00:00.000Z",
+              due: "2026-08-03T08:00:00+00:00",
+              dueUtc: "2026-08-03T08:00:00.000Z",
               id: "reminder-1",
               name: "Vitamin D",
               status: "OVERDUE",
             },
           ],
+          timeZone: "UTC",
+        });
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("reports notification times in the user's local zone, not UTC", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T20:00:00.000Z").getTime());
+      try {
+        mocks.userFindUnique.mockResolvedValue({
+          timeZone: "America/Chicago",
+        });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          EXISTING_TRACKING_REMINDER,
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "listTrackingReminderNotifications",
+          arguments: { dateKey: "2026-08-03" },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          notifications: [
+            {
+              // 08:00 Central, the time the reminder is actually set for.
+              notifyAt: "2026-08-03T13:00:00.000Z",
+              notifyAtLocal: "2026-08-03T08:00:00-05:00",
+              reminderStartTime: "08:00",
+              utcOffsetMinutes: -300,
+            },
+          ],
+          timeZone: "America/Chicago",
         });
       } finally {
         now.mockRestore();
@@ -10324,7 +10366,7 @@ describe("MCP server tool dispatch", () => {
           defaultStatus: "TRACKED",
           except: [
             {
-              status: "SKIPPED",
+              status: "SNOOZED",
               trackingReminderId: "misheard-reminder",
             },
           ],
@@ -10337,6 +10379,7 @@ describe("MCP server tool dispatch", () => {
         dateKey: "2026-08-03",
         failed: [],
         results: [],
+        skippedCount: 0,
         unknownExceptionIds: ["misheard-reminder"],
       });
       expect(mocks.transaction).not.toHaveBeenCalled();
@@ -10388,7 +10431,7 @@ describe("MCP server tool dispatch", () => {
           defaultStatus: "TRACKED",
           except: [
             {
-              status: "SKIPPED",
+              status: "SNOOZED",
               trackingReminderId: "reminder-2",
             },
           ],
@@ -10400,8 +10443,16 @@ describe("MCP server tool dispatch", () => {
         answeredCount: 2,
         failed: [],
         results: [
-          { reminderId: "reminder-1", status: NotificationStatus.TRACKED },
-          { reminderId: "reminder-2", status: NotificationStatus.SKIPPED },
+          {
+            reminderId: "reminder-1",
+            source: "default",
+            status: NotificationStatus.TRACKED,
+          },
+          {
+            reminderId: "reminder-2",
+            source: "exception",
+            status: NotificationStatus.SNOOZED,
+          },
         ],
         unknownExceptionIds: [],
       });
@@ -10410,8 +10461,185 @@ describe("MCP server tool dispatch", () => {
         mocks.trackingReminderNotificationCreate.mock.calls.map(
           ([call]) => call.data.status,
         ),
-      ).toEqual([NotificationStatus.TRACKED, NotificationStatus.SKIPPED]);
+      ).toEqual([NotificationStatus.TRACKED, NotificationStatus.SNOOZED]);
       expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+    });
+
+    it("answers only the except entries when defaultStatus is omitted", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T20:00:00.000Z").getTime());
+      try {
+        const secondReminder = {
+          ...EXISTING_TRACKING_REMINDER,
+          globalVariable: {
+            ...TRACKING_VARIABLE,
+            id: "gv-magnesium",
+            name: "Magnesium",
+          },
+          globalVariableId: "gv-magnesium",
+          id: "reminder-2",
+          reminderStartTime: "09:00",
+        };
+        const reminders = [EXISTING_TRACKING_REMINDER, secondReminder];
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue(reminders);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+        mocks.trackingReminderFindFirst.mockImplementation(
+          async ({ where }: { where: { id: string } }) =>
+            reminders.find((reminder) => reminder.id === where.id) ?? null,
+        );
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: `notification-${String(data.trackingReminderId)}`,
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({ id: "reminder-1" });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: {
+            dateKey: "2026-08-03",
+            except: [
+              {
+                status: "TRACKED",
+                trackingReminderId: "reminder-1",
+                value: 2,
+              },
+            ],
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          answeredCount: 1,
+          failed: [],
+          results: [
+            {
+              reminderId: "reminder-1",
+              source: "exception",
+              status: NotificationStatus.TRACKED,
+            },
+          ],
+          skippedCount: 1,
+        });
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(
+          mocks.trackingReminderNotificationCreate.mock.calls[0]?.[0],
+        ).toMatchObject({
+          data: expect.objectContaining({ trackingReminderId: "reminder-1" }),
+        });
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("rejects a bulk call with neither defaultStatus nor exceptions", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminderNotifications",
+        arguments: { dateKey: "2026-08-03" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain("Provide defaultStatus");
+      expect(mocks.trackingReminderFindMany).not.toHaveBeenCalled();
+      expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
+    });
+
+    it("leaves an already-answered notification alone but lets an exception correct it", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T20:00:00.000Z").getTime());
+      try {
+        const secondReminder = {
+          ...EXISTING_TRACKING_REMINDER,
+          globalVariable: {
+            ...TRACKING_VARIABLE,
+            id: "gv-magnesium",
+            name: "Magnesium",
+          },
+          globalVariableId: "gv-magnesium",
+          id: "reminder-2",
+          reminderStartTime: "09:00",
+        };
+        const reminders = [EXISTING_TRACKING_REMINDER, secondReminder];
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue(reminders);
+        // reminder-2 is already TRACKED for the day.
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([
+          {
+            deletedAt: null,
+            id: "notification-2",
+            notifyAt: new Date("2026-08-03T09:00:00.000Z"),
+            status: NotificationStatus.TRACKED,
+            trackedValue: 1,
+            trackingReminderId: "reminder-2",
+            userId: "user-1",
+          },
+        ]);
+        mocks.trackingReminderFindFirst.mockImplementation(
+          async ({ where }: { where: { id: string } }) =>
+            reminders.find((reminder) => reminder.id === where.id) ?? null,
+        );
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: `notification-${String(data.trackingReminderId)}`,
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({ id: "reminder-1" });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const defaultOnly = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: { dateKey: "2026-08-03", defaultStatus: "TRACKED" },
+        });
+
+        expect(parseToolBody(defaultOnly)).toMatchObject({
+          answeredCount: 1,
+          results: [{ reminderId: "reminder-1", source: "default" }],
+          skippedCount: 1,
+        });
+
+        const correction = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: {
+            dateKey: "2026-08-03",
+            except: [
+              { status: "TRACKED", trackingReminderId: "reminder-2", value: 4 },
+            ],
+          },
+        });
+
+        expect(parseToolBody(correction)).toMatchObject({
+          answeredCount: 1,
+          results: [{ reminderId: "reminder-2", source: "exception" }],
+          unknownExceptionIds: [],
+        });
+      } finally {
+        now.mockRestore();
+      }
     });
 
     it("bulk responses leave later notifications untouched", async () => {
@@ -10452,7 +10680,7 @@ describe("MCP server tool dispatch", () => {
           name: "respondToTrackingReminderNotifications",
           arguments: {
             dateKey: "2026-08-03",
-            defaultStatus: "SKIPPED",
+            defaultStatus: "SNOOZED",
           },
         });
 
@@ -10461,8 +10689,9 @@ describe("MCP server tool dispatch", () => {
           answeredCount: 1,
           failed: [],
           results: [
-            { reminderId: "reminder-1", status: NotificationStatus.SKIPPED },
+            { reminderId: "reminder-1", status: NotificationStatus.SNOOZED },
           ],
+          skippedCount: 1,
         });
         expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledTimes(
           1,
@@ -10744,10 +10973,17 @@ describe("MCP server tool dispatch", () => {
       mocks.trackingReminderNotificationUpdate.mockResolvedValue({
         id: "notification-at-old-time",
         notifyAt: new Date("2026-07-01T13:00:00.000Z"),
-        status: NotificationStatus.SKIPPED,
-        trackedValue: null,
+        status: NotificationStatus.TRACKED,
+        trackedValue: 0,
         trackingReminderId: "reminder-1",
         userId: "user-1",
+      });
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 0,
       });
 
       const client = await setup("user-1", ALL_SCOPES);
@@ -10755,8 +10991,9 @@ describe("MCP server tool dispatch", () => {
         name: "respondToTrackingReminder",
         arguments: {
           dateKey: "2026-07-01",
-          status: "SKIPPED",
+          status: "TRACKED",
           trackingReminderId: "reminder-1",
+          value: 0,
         },
       });
 
@@ -10775,15 +11012,15 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.trackingReminderNotificationUpdate).toHaveBeenCalledWith({
         data: {
           receivedAt: expect.any(Date),
-          status: NotificationStatus.SKIPPED,
-          trackedValue: null,
+          status: NotificationStatus.TRACKED,
+          trackedValue: 0,
         },
         where: { id: "notification-at-old-time" },
       });
       expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
     });
 
-    it("respondToTrackingReminder SKIPPED writes the notification but no Measurement", async () => {
+    it("respondToTrackingReminder records a retired SKIPPED as zero, not the default dose", async () => {
       mocks.trackingReminderFindFirst.mockResolvedValue({
         defaultValue: 3,
         deletedAt: null,
@@ -10798,10 +11035,17 @@ describe("MCP server tool dispatch", () => {
       mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
       mocks.trackingReminderNotificationCreate.mockResolvedValue({
         id: "notification-2",
-        status: NotificationStatus.SKIPPED,
-        trackedValue: null,
+        status: NotificationStatus.TRACKED,
+        trackedValue: 0,
         trackingReminderId: "reminder-1",
         userId: "user-1",
+      });
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 0,
       });
 
       const client = await setup("user-1", ALL_SCOPES);
@@ -10821,16 +11065,56 @@ describe("MCP server tool dispatch", () => {
         mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
       ).toMatchObject({
         data: expect.objectContaining({
-          status: NotificationStatus.SKIPPED,
-          trackedValue: null,
+          status: NotificationStatus.TRACKED,
+          trackedValue: 0,
         }),
       });
-      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
-      expect(mocks.trackingReminderUpdate).not.toHaveBeenCalled();
+      expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
+      expect(mocks.measurementUpsert.mock.calls[0]![0]).toMatchObject({
+        create: expect.objectContaining({ value: 0 }),
+      });
       const body = parseToolBody(result) as {
-        result: { measurement: unknown };
+        result: { deprecationNotice: string; recordedAsZero: boolean };
       };
-      expect(body.result.measurement).toBeNull();
+      expect(body.result.recordedAsZero).toBe(true);
+      expect(body.result.deprecationNotice).toContain("SKIPPED is retired");
+    });
+
+    it("respondToTrackingReminder refuses a zero the variable cannot hold", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: {
+          ...TRACKING_VARIABLE,
+          id: "gv-mood",
+          minimumAllowedValue: 1,
+          name: "Mood",
+        },
+        globalVariableId: "gv-mood",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "SKIPPED",
+          trackingReminderId: "reminder-1",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "Zero is below the minimum allowed value",
+      );
+      expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
+      expect(mocks.measurementUpsert).not.toHaveBeenCalled();
     });
 
     it("rejects a caller lacking TASKS_PERSONAL scope", async () => {
