@@ -94,6 +94,8 @@ const TASK_TREE_VIEW_FILE =
   "packages/web/src/components/tasks/TaskTreeView.tsx";
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
+const HEALTH_ECONOMICS_DISPLAY_FILE =
+  "packages/web/src/components/treatment/HealthEconomicsDisplay.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
   "packages/web/src/components/dashboard/PersonalQueueSection.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "packages/web/src/app/video/page.tsx";
@@ -365,6 +367,13 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     name: "task-optimize-earth",
     path: "/tasks/optimize-earth",
     required: false,
+  },
+  {
+    covers: [HEALTH_ECONOMICS_DISPLAY_FILE],
+    name: "treatment-health-economics",
+    path: "/agencies/dfda/conditions/endometriosis/treatments/laparoscopic-excision-surgery",
+    required: true,
+    requiredSelector: '[data-visual-section="health-economics"]',
   },
   {
     // Required, and asserted on #also-serves rather than something always
