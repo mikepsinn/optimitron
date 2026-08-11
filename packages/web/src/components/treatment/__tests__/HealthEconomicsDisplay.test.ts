@@ -33,4 +33,10 @@ describe("getCostEffectivenessColors", () => {
     expect(getCostEffectivenessColors("unknown").badge).toBe(fallback.badge);
     expect(getCostEffectivenessColors("").badge).toBe(fallback.badge);
   });
+
+  it("normalizes title-case ratings from medical datasets", () => {
+    expect(getCostEffectivenessColors("Excellent").badge).toBe("default");
+    expect(getCostEffectivenessColors("Good").badge).toBe("secondary");
+    expect(getCostEffectivenessColors("Poor").badge).toBe("outline");
+  });
 });

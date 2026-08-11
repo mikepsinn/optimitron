@@ -72,8 +72,13 @@ export function isFiniteNumber(value: unknown): value is number {
 export function getCostEffectivenessColors(
   rating: string | null | undefined,
 ): RatingSwatch {
-  if (rating != null && Object.prototype.hasOwnProperty.call(RATING_SWATCHES, rating)) {
-    return RATING_SWATCHES[rating as CostEffectivenessRating];
+  const normalized =
+    typeof rating === "string" ? rating.trim().toLowerCase() : "";
+  if (
+    normalized &&
+    Object.prototype.hasOwnProperty.call(RATING_SWATCHES, normalized)
+  ) {
+    return RATING_SWATCHES[normalized as CostEffectivenessRating];
   }
   return RATING_SWATCHES.moderate;
 }
@@ -258,7 +263,7 @@ export function HealthEconomicsDisplay({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2" data-visual-section="health-economics">
           <DollarSign className="h-5 w-5" />
           Health Economics
         </CardTitle>
