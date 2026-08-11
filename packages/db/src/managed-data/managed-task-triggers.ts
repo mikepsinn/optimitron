@@ -251,6 +251,23 @@ const userOnboardingTreaty: ManagedTaskTriggerInput = {
       contributesToGate: true,
     },
     {
+      kind: "hangFlyers",
+      sortOrder: 35,
+      titleTemplate: "Print and hang referral flyers near you",
+      descriptionTemplate:
+        "Print your referral poster. Open nearby hang spots. Claim a board, ask before you tape, photograph the hung flyer, and mark the hang done. Rehang when a spot goes stale.",
+      category: "OUTREACH",
+      estimatedEffortHours: 0.5,
+      dueDays: 0,
+      creatorResolver: "actor",
+      assigneePersonResolver: "actor",
+      parentResolver: "trigger.parentSpec",
+      actionLinkUrlTemplate: "/poster",
+      actionLinkLabelTemplate: "Open poster and hang list",
+      // Optional outreach — does not block Humanity Manager promotion.
+      contributesToGate: false,
+    },
+    {
       kind: "phoneScript",
       sortOrder: 40,
       titleTemplate: HUMANITY_MANAGEMENT.callOneHumanTaskTitle,

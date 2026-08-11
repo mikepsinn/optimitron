@@ -238,6 +238,42 @@ export function getUserTreatySubtaskKey(userId: string, kind: string) {
   return `${getUserTreatyTaskKey(userId)}:${kind}`;
 }
 
+// Flyer hang coordination (shared place tasks + personal plan subtask)
+
+/** Shared parent under the 1% Treaty for public flyer-hang place tasks. */
+export const FLYER_HANG_PROGRAM_TASK_KEY =
+  "program:one-percent-treaty:flyer-hang";
+
+/** Prefix for durable place / grid-slot hang tasks. */
+export const FLYER_HANG_PLACE_TASK_KEY_PREFIX = "flyer-hang:place";
+
+/** Personal onboarding subtask kind: print and hang nearby. */
+export const USER_TREATY_HANG_FLYERS_SUBTASK_KIND = "hangFlyers";
+
+export function buildFlyerHangPlaceTaskKey(input: {
+  placeId: string;
+  source: string;
+}) {
+  const source = input.source.trim().toLowerCase();
+  const placeId = input.placeId.trim().toLowerCase();
+  if (!/^[a-z0-9_-]+$/.test(source) || !/^[a-z0-9._+:-]+$/i.test(placeId)) {
+    throw new Error(
+      `Invalid flyer hang place key parts: ${input.source}/${input.placeId}`,
+    );
+  }
+  return `${FLYER_HANG_PLACE_TASK_KEY_PREFIX}:${source}:${placeId}`;
+}
+
+export function isFlyerHangPlaceTaskKey(taskKey: string | null | undefined) {
+  return (
+    taskKey != null && taskKey.startsWith(`${FLYER_HANG_PLACE_TASK_KEY_PREFIX}:`)
+  );
+}
+
+export function getUserHangFlyersTaskKey(userId: string) {
+  return getUserTreatySubtaskKey(userId, USER_TREATY_HANG_FLYERS_SUBTASK_KIND);
+}
+
 // Signer reminder subtask
 
 export const SIGNER_REMINDER_TASK_KEY_PREFIX =
