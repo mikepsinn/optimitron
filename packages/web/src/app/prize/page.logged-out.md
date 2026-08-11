@@ -57,7 +57,7 @@
 - Share your referral link. Every verified voter you bring in earns you 1 Earth Optimization Point. No deposit required.
 #### YOUR CITIZEN DASHBOARD
 - Sign in to track your impact, see your leaderboard rank, and get your referral link. Each verified vote you bring in = 2.6 lives saved + 53 years of suffering prevented.
-- [SIGN IN](/api/auth/signin)
+- SIGN IN
 ### TECHNICAL DETAILS
 #### TRUST & TRANSPARENCY
 #### CONTRACT ARCHITECTURE

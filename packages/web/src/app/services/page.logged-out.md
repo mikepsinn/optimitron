@@ -86,10 +86,10 @@
 - A majority jury needs a court-shaped place to render the verdict.
 - OPENING DAY. BE THE FIRST.
 - [GET IT NOW](/tasks/court-of-humanity#funding)
-#### [Fund the decentralized FDA directly](/tasks/dfda#funding)
+#### [Fund faster, cheaper pragmatic clinical trials](/tasks/dfda#funding)
 - The treaty redirects money to trials; the dFDA is the trials. Funding it directly skips the politics.
 - [GET IT NOW](/tasks/dfda#funding)
-#### [The Loving Takeover](/tasks/loving-takeover#funding)
+#### [Use shareholder power to redirect military lobbying](/tasks/loving-takeover#funding)
 - The best lobbyists money can buy currently block the treaty. So we buy them.
 - [GET IT NOW](/tasks/loving-takeover#funding)
 #### [Seed the shirt cascade](/tasks/shirt-seed#funding)
