@@ -1,3 +1,4 @@
+import { ensureNearbyFlyerHangTasks } from "@/lib/flyer-hang/server";
 import { ensurePersonForUser } from "@/lib/person.server";
 import { prisma } from "@/lib/prisma";
 import { recordReferralAttributionForUser } from "@/lib/referral.server";
@@ -107,6 +108,41 @@ export async function applyPostSigninSync({
     }),
     { actorUserId: userId },
   );
+
+  // Best-effort flyer hang inventory from saved/IP geo. Never fail signin
+  // if Overpass or task upserts error — the /poster page can retry with
+  // browser geolocation.
+  const locatedUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      city: true,
+      countryCode: true,
+      latitude: true,
+      longitude: true,
+      regionCode: true,
+    },
+  });
+  if (
+    locatedUser?.latitude != null &&
+    locatedUser.longitude != null &&
+    Number.isFinite(locatedUser.latitude) &&
+    Number.isFinite(locatedUser.longitude)
+  ) {
+    try {
+      await ensureNearbyFlyerHangTasks({
+        city: locatedUser.city,
+        countryCode: locatedUser.countryCode,
+        createdByUserId: userId,
+        latitude: locatedUser.latitude,
+        longitude: locatedUser.longitude,
+        personId: person.id,
+        regionCode: locatedUser.regionCode,
+        userId,
+      });
+    } catch (error) {
+      console.error("[FLYER HANG] Failed to seed nearby hang tasks", userId, error);
+    }
+  }
 
   return {
     referralRecorded,
