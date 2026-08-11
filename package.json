@@ -51,7 +51,7 @@
     "build:apps": "pnpm --workspace-concurrency=1 --filter \"@apps/*\" run build",
     "build:app-dependencies": "pnpm --filter @optimitron/optimizer run build && pnpm --filter @optimitron/db run build",
     "smoke:apps": "pnpm --dir packages/web exec tsx ../../scripts/smoke-site-apps.mjs",
-    "copy:apps": "pnpm --dir packages/web exec tsx ../../scripts/copy-snapshot-site-apps.ts",
+    "copy": "pnpm --dir packages/web exec tsx ../../scripts/copy-snapshot-sites.ts",
     "test:site-app-navigation": "pnpm --dir packages/web exec tsx --test ../../scripts/site-app-navigation.test.ts",
     "test:apps:unit": "pnpm --filter \"@apps/*\" run test:unit",
     "test:warondisease:unit": "pnpm --filter @apps/warondisease run test:unit",

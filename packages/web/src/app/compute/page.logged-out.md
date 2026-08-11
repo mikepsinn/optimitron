@@ -24,8 +24,8 @@
 - And it's not theoretical. Right now, today, there's a free program called [Hermes Agent](https://hermes-agent.nousresearch.com/) that you install on your own hardware and tell it what to do — research a business idea, write code, manage files, schedule tasks, talk to you on your phone. It learns from what it does and gets better the longer it runs. You just need the chips to run it on.
 - "OK," you might say, "but is any of the scary stuff actually going to happen? The grid going down, the government going nuts?" Probably not. Your house will probably not burn down either, but you still buy insurance. Here's a fun thing to think about, though: Mark Zuckerberg is spending [$270+ million on a compound in Hawaii](https://www.insidehook.com/culture/doomsday-bunkers-billionaires) with a 5,000-square-foot underground bunker, its own food supply, and an escape hatch. Bill Gates reportedly has bunkers under multiple homes. Peter Thiel tried to build a compound in New Zealand. Sam Altman — the CEO of OpenAI, the guy building the AI — [told The New Yorker](https://futurism.com/the-byte/openai-ceo-survivalist-prepper) he keeps "guns, gold, potassium iodide, antibiotics, batteries, water, gas masks from the Israeli Defense Force, and a big patch of land in Big Sur I can fly to." The two things he said he's most afraid of? A lab-made virus and "AI that attacks us." This is the man in charge of the AI.
 - Their insurance costs hundreds of millions of dollars and doesn't make them a dime. Yours costs about as much as a used car — and it pays you rent while you wait for nothing bad to happen. And if absolutely none of it happens — if the world stays perfectly normal and boring forever? You still made money renting out the computing power the whole time. That's the punchline of this whole thing: the downside is "I guess I just made a bunch of money for nothing," and the upside is "I also have a Professor."
-- ASSUMPTIONS
 - FLEET
+- ASSUMPTIONS
 - MARKETPLACES
 - ECONOMICS
 - RETURNS
@@ -35,6 +35,34 @@
 - THESIS
 - RISKS
 - 01
+### CHOOSE THE FLEET
+- The price shown includes the GPU itself plus its share of the computer it plugs into (case, processor, power supply, cables). The hourly rate is what a renter — called a "host" — actually earns, before the marketplace takes its cut. "Price trend" shows whether that card's resale price has been rising or falling lately. Buy links are below each card; rental rates by marketplace are compared in §03.
+- RTX 3090 (USED)
+- 24 GB
+- Your budget buys 53 cards
+- [eBay (used) ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+3090)
+- [price src: BestValueGPU, Jul 2026 ↗](https://bestvaluegpu.com/history/new-and-used-rtx-3090-price-history-and-specs/)
+- RTX 4090
+- Your budget buys 31 cards
+- [eBay (used) ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+4090)
+- [price src: BestValueGPU, Jul 2026 ↗](https://bestvaluegpu.com/history/new-and-used-rtx-4090-price-history-and-specs/)
+- RTX 5090
+- 32 GB
+- Your budget buys 21 cards
+- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0)
+- [price src: GPUPoet, Apr 2026 ↗](https://gpupoet.com/blogs/news/gpu-market-report-february-2026)
+- RTX PRO 6000
+- 96 GB
+- Your budget buys 6 cards
+- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB)
+- [price src: Tom's Hardware, Jun 2026 (+55% MSRP hike) ↗](https://mlq.ai/news/nvidia-raises-rtx-pro-6000-blackwell-msrp-to-13250-a-55-hike-in-one-year/)
+- H100 80GB
+- 80 GB
+- Your budget buys 3 cards
+- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB)
+- [price src: IntuitionLabs 2026 ($27K–$40K range) ↗](https://intuitionlabs.ai/)
+- Nvidia stopped making two of these five cards (RTX 3090, RTX 4090) — every listing you'll find is used. Before paying: check the seller's rating, ask for a photo of the card running [GPU-Z](https://www.techpowerup.com/gpuz/) (confirms it's genuinely that card and not a relabeled cheaper one), and pay through eBay/PayPal rather than a direct wire so you're covered if it arrives dead. No manufacturer warranty left is normal for these two; a steep discount paired with a vague listing is the sign to walk away.
+- 02
 - Every number below updates instantly as you move a slider. The starting values come from real 2026 GPU-rental earnings, typical US home electricity prices, and each card's own recent resale trend. The investment slider runs from a single card (about $2,000) up to a $500,000 fleet — this isn't a $100,000-minimum decision, so size it to whatever amount you're actually weighing.
 - PICK THE SCENARIO YOU THINK IS MOST LIKELY — IT SETS THE SLIDERS TO MATCH:
 - SHORTAGE ENDS BY LATE 2026 Chip factories catch up by late 2026 — card prices and rental rates start cooling. Lowest returns for this investment.
@@ -72,47 +100,23 @@
 - Fixed costs included: setup is modeled from a few hundred dollars for a card or two (cables, a shelf, plugging into a spare outlet), rising toward $2,500+ once a fleet needs its own dedicated 240V circuits and real cooling instead of just shelving. Monthly overhead (internet, insurance, a repair reserve) scales the same way — a couple hundred dollars a month once you're clearly running a fleet, much less for a card or two — plus extra power for cooling and for cards left partly running even when idle, and tax on profit at the rate above. A card's occupancy also softens somewhat as it ages and newer hardware enters the marketplace. The monthly income and costs below show month 1; longer-term numbers follow the trend sliders, the tax rate, and that aging curve.
 - TOTAL VALUE AFTER 3-YEAR HOLD
 - $135,142
+- worst $74,215 — best $219,921
 - rental income earned so far + what the cards would sell for today
 - YEARLY RETURN (3-YEAR HOLD, AFTER TAX)
 - +10.6%
+- worst to best: −9.5% to +30.0%
 - like saying "this would have been a X%/yr investment"
 - TIME TO EARN IT BACK
-- >60 mo
+- Never at these assumptions
+- worst Never at these assumptions — best 34 mo (~2.8 yr)
 - from rental income alone, not counting what the cards are still worth
 - These update live as you change anything above. $100,000 invested in RTX 5090 cards, holding for 3 year.
 - COPY LINK WITH MY ASSUMPTIONS
 - Send it to the family member with capital.
-- 02
-### CHOOSE THE FLEET
-- The price shown includes the GPU itself plus its share of the computer it plugs into (case, processor, power supply, cables). The hourly rate is what a renter — called a "host" — actually earns, before the marketplace takes its cut. "Price trend" shows whether that card's resale price has been rising or falling lately. Buy links are below each card; rental rates by marketplace are compared in §03.
-- RTX 3090 (USED)
-- 24 GB
-- Your budget buys 53 cards
-- [eBay (used) ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+3090)
-- [price src: BestValueGPU, Jul 2026 ↗](https://bestvaluegpu.com/history/new-and-used-rtx-3090-price-history-and-specs/)
-- RTX 4090
-- Your budget buys 31 cards
-- [eBay (used) ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+4090)
-- [price src: BestValueGPU, Jul 2026 ↗](https://bestvaluegpu.com/history/new-and-used-rtx-4090-price-history-and-specs/)
-- RTX 5090
-- 32 GB
-- Your budget buys 21 cards
-- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0)
-- [price src: GPUPoet, Apr 2026 ↗](https://gpupoet.com/blogs/news/gpu-market-report-february-2026)
-- RTX PRO 6000
-- 96 GB
-- Your budget buys 6 cards
-- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB)
-- [price src: Tom's Hardware, Jun 2026 (+55% MSRP hike) ↗](https://mlq.ai/news/nvidia-raises-rtx-pro-6000-blackwell-msrp-to-13250-a-55-hike-in-one-year/)
-- H100 80GB
-- 80 GB
-- Your budget buys 3 cards
-- [eBay ↗](https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB)
-- [price src: IntuitionLabs 2026 ($27K–$40K range) ↗](https://intuitionlabs.ai/)
-- Nvidia stopped making two of these five cards (RTX 3090, RTX 4090) — every listing you'll find is used. Before paying: check the seller's rating, ask for a photo of the card running [GPU-Z](https://www.techpowerup.com/gpuz/) (confirms it's genuinely that card and not a relabeled cheaper one), and pay through eBay/PayPal rather than a direct wire so you're covered if it arrives dead. No manufacturer warranty left is normal for these two; a steep discount paired with a vague listing is the sign to walk away.
 - 03
 ### WHERE THE REVENUE COMES FROM
 - Five websites handle most of this GPU-rental business. This page's numbers (§01, §02) are based on Vast.ai's published host earnings. The other four are shown at their listed renter price for comparison — what a host actually keeps elsewhere is usually that price minus the site's own fee.
+
 | MARKETPLACE | HOW IT WORKS | CONSUMER CARD | DATACENTER CARD | LINK |
 | --- | --- | --- | --- | --- |
 | Vast.ai | Peer marketplace, reliability-scored hosts | $0.30–0.60/hr host earnings | $2.15–4.00+/hr host earnings | [Visit ↗](https://vast.ai) |
@@ -120,6 +124,7 @@
 | TensorDock | Bare-metal, on-demand or spot | ~$0.25/hr renter-paid | $1.60–2.50/hr renter-paid | [Visit ↗](https://www.tensordock.com) |
 | Akash Network | Decentralized bid market, paid in AKT/USDC | $0.10–0.20/hr renter-paid | $1.50–2.00/hr renter-paid | [Visit ↗](https://akash.network) |
 | Salad | Consumer-only network, inference jobs | ~$0.20–0.50/hr renter-paid | Not offered | [Visit ↗](https://www.salad.com) |
+
 - When you're ready to sell, hardware usually goes through [eBay auctions](https://www.ebay.com/sch/i.html?_nkw=rtx+gpu), peer groups like [r/hardwareswap](https://www.reddit.com/r/hardwareswap/), or specialized buyers like [ServerMonkey](https://www.servermonkey.com) for full server systems. §05 assumes a lower, guaranteed-quick-sale price rather than full market value — that discount is already built into the numbers.
 - 04
 ### THE MONTHLY MATH — RTX 5090
@@ -173,18 +178,21 @@
 - 06
 ### ALL FLEETS, SIDE BY SIDE
 - Same starting money, same assumptions, applied to each type of card. Yearly returns are for the 3 year holding period you picked above, and include selling the hardware at the end. Click a row to make it the selected fleet.
+
 | FLEET | CARDS | TOTAL MEMORY | NET / MONTH | PAYBACK | YEARLY RETURN | SCENARIO RANGE |
 | --- | --- | --- | --- | --- | --- | --- |
-| [RTX 3090 (used)](https://www.ebay.com/sch/i.html?_nkw=rtx+3090) | 53 | 1,272 GB | $756 | >60 mo | −13.5% | −99.5% to +12.6% |
-| [RTX 4090](https://www.ebay.com/sch/i.html?_nkw=rtx+4090) | 31 | 744 GB | $1,240 | >60 mo | −9.7% | −46.6% to +17.5% |
-| [RTX 5090](https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0) | 21 | 672 GB | $1,447 | >60 mo | +10.6% | −9.5% to +30.0% |
-| [RTX PRO 6000](https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB) | 6 | 576 GB | $1,360 | >60 mo | +12.2% | −1.2% to +26.0% |
-| [H100 80GB](https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB) | 3 | 240 GB | $1,946 | >60 mo | +22.8% | +9.7% to +37.5% |
+| [RTX 3090 (used)](https://www.ebay.com/sch/i.html?_nkw=rtx+3090) | 53 | 1,272 GB | $756 | Never at these assumptions | −13.5% | −99.5% to +12.6% |
+| [RTX 4090](https://www.ebay.com/sch/i.html?_nkw=rtx+4090) | 31 | 744 GB | $1,240 | Never at these assumptions | −9.7% | −46.6% to +17.5% |
+| [RTX 5090](https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0) | 21 | 672 GB | $1,447 | Never at these assumptions | +10.6% | −9.5% to +30.0% |
+| [RTX PRO 6000](https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB) | 6 | 576 GB | $1,360 | 192 mo (~16 yr) | +12.2% | −1.2% to +26.0% |
+| [H100 80GB](https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB) | 3 | 240 GB | $1,946 | 96 mo (~8.0 yr) | +22.8% | +9.7% to +37.5% |
+
 - 07
 ### CAN IT RUN THE BEST OPEN-SOURCE MODELS?
 - Besides renting GPUs out for cash, there's a second use for this hardware: running a powerful AI model yourself, for free, instead of paying a company per use. The strongest models anyone is allowed to download and run at home are enormous — the catch is they need a lot of memory. GLM 5.2, one of the largest and strongest right now, is used below as the yardstick.
 - QUALITY SETTING
 - Needs 440 GB of memory
+
 | CARD | CARDS NEEDED | HARDWARE COST | POWER USED | CARDS YOUR BUDGET BUYS | VERDICT |
 | --- | --- | --- | --- | --- | --- |
 | [RTX 3090 (used)](https://www.ebay.com/sch/i.html?_nkw=rtx+3090) | 19× (456 GB) | $31,350 | 8.3 kW | 53 cards | Impractical |
@@ -192,6 +200,7 @@
 | [RTX 5090](https://www.ebay.com/sch/i.html?_nkw=rtx+5090&_sacat=0) | 14× (448 GB) | $60,200 | 10.1 kW | 21 cards | Yes, with effort |
 | [RTX PRO 6000](https://www.ebay.com/sch/i.html?_nkw=RTX+PRO+6000+Blackwell+96GB) | 5× (480 GB) | $71,750 | 3.8 kW | 6 cards | Yes — clean fit |
 | [H100 80GB](https://www.ebay.com/sch/i.html?_nkw=NVIDIA+H100+80GB) | 6× (480 GB) | $194,400 | 5.3 kW | 3 cards | Fleet too small |
+
 - This uses GLM 5.2 as the stand-in — roughly 700 billion parameters, in line with today's other top open-weight models (DeepSeek, Kimi, Llama) — and includes memory for a long AI conversation, not just the model itself. Connecting many separate gaming GPUs together to run one huge model is slower than using fewer, more powerful cards built for this job (like the workstation and datacenter options above). Treat these numbers as rough estimates, not exact specs.
 - A node like this can also connect to the Optimitron over MCP, pull tasks, work them locally, and report back — which means the task tree keeps updating even if every hosted AI on Earth is suddenly busy, restricted, or reading your mail.
 - 08
@@ -312,6 +321,8 @@
 - A single flat rate against monthly profit is the only tax modeled. Real returns would also depend on equipment write-offs and depreciation schedules (which help you), state and self-employment tax (which don't), and capital-gains treatment on resale (not modeled at all here). Talk to a tax professional before relying on any figure on this page.
 - ZONING, HOA & UTILITY TERMS
 - Many municipalities, HOAs, and residential electric-service agreements restrict commercial-equivalent operations or resale of power from a home. Verify local rules before deploying capital.
+- RTX 5090 · Custom scenario · 3-year hold
+- ADJUST ▴
 - SOURCES & DATA PROVENANCE — SNAPSHOT OF JULY 2026
 - [Host earnings: Vast.ai's guide for people renting out their own GPUs](https://vast.ai/article/how-much-money-can-you-earn-renting-out-your-gpu-on-vast-ai), May 2026 — RTX 5090-class cards earn $0.30–0.60/hour; H100/H200 cards earn $2.15–4.00+/hour.
 - [Cloud rate index: AIMultiple's GPU Price Index](https://aimultiple.com/gpu-index), June 2026 — newest-generation rental rates roughly doubled over the past year; RTX 5090 median $0.66/hr across 63 sites.

@@ -28,6 +28,7 @@
 - WARONDISEASE.ORG
 - “Governments spend [604](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) times more on weapons than on the clinical trials that find out which medicines actually work. The 1% Treaty redirects [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) of every military budget — [$27.2 billion](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) a year — to curing diseases. Nobody’s military gets weaker, because every country cuts the same [1%](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). The wait for first treatments drops from [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to [36](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html). Scan the code to vote YES in 30 seconds — or sign here and confirm later.”
 - Signing below casts a YES vote on the 1% Treaty on the public treaty register at warondisease.org. The campaign contacts you only to verify your vote. One vote per human. Full treaty text: 1percenttreaty.org.
+
 | # | PRINTED NAME | EMAIL OR MOBILE | SIGNATURE |
 | --- | --- | --- | --- |
 | 1 |   |   |   |
@@ -40,6 +41,7 @@
 | 8 |   |   |   |
 | 9 |   |   |   |
 | 10 |   |   |   |
+
 - Collected by _______________________________________
 - Date _______________
 - Photograph finished sheets. Keep the paper. Every signer is verified digitally — no signature is wasted.
@@ -62,7 +64,7 @@
 - WHEREAS, unless the human genome has significantly degraded in the two generations since, a one percent improvement in resource allocation should be manageable;
 - WHEREAS, global military spending has been growing [2.76%](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) a year for twenty years. If no one tells it to stop, every human alive will pay about [$402,488](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) over their lifetime (mostly funding explosions in countries they cannot find on a map). A one percent cut tells it to stop. That saves the average person about [$290,052](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html) ([the peace dividend](https://manual.WarOnDisease.org/knowledge/economics/peace-dividend.html));
 - WHEREAS, [diseases kill more people than all wars combined](https://manual.WarOnDisease.org/knowledge/problem/cost-of-disease.html) and, unlike wars, do not even have the decency to be quick about it;
-- WHEREAS, your chance of dying in a terrorist attack is approximately 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html), and your chance of dying of a disease is 100%, and your current budget does not reflect this;
+- WHEREAS, your chance of dying in a terrorist attack is approximately 1 in [30 million](https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html), and your chance of dying of a disease is approximately 100%, and your current budget does not reflect this;
 - WHEREAS, only 15 diseases get their first effective treatment each year, while [6,650 diseases](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) are still waiting;
 - WHEREAS, at this rate, it takes [443](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) years to find treatments for all diseases, which is important because you will personally be dead within 80 years (which I mention not to be rude but because you seem weirdly calm about this);
 - WHEREAS, there are [9,500](https://manual.WarOnDisease.org/knowledge/problem/untapped-therapeutic-frontier.html) known safe treatments which have never been tested for [99.7%](https://manual.WarOnDisease.org/knowledge/problem/nih-fails-2-institute-health.html) of their potential uses;

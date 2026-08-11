@@ -72,7 +72,7 @@
 - $89 bed nets ÷ $0.02 treaty
 - Years of suffering prevented
 - 22,044,503,261
-- 193,109,848,563,635 suffering hours ÷ 8,760
+- 193,109,848,564,000 suffering hours ÷ 8,760
 ### HOW THIS IS CALCULATED
 - Click sourced constants for citations. The boxed numbers are the same live assumptions as the calculator above. Simple math: addition mostly, some multiplication.
 - 1 Only [15](https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html) diseases get their first effective treatment each year. That is the throughput of every drug regulator on the planet, combined. This means your Food and Drug Administration has not administered drugs for most food-and-drug-related problems.
