@@ -127,7 +127,12 @@ export default async function McpAuthorizePage({
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background text-foreground">
       <div className="w-full max-w-lg">
         <div className="border-4 border-primary bg-background text-foreground p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <h1 className="text-2xl font-black uppercase mb-2">Authorize App</h1>
+          <h1
+            id="mcp-authorize-heading"
+            className="text-2xl font-black uppercase mb-2"
+          >
+            Authorize App
+          </h1>
           <p className="font-bold text-muted-foreground mb-6">
             <span className="text-foreground">{clientName}</span> wants to
             access your Optimitron account. Tick the permissions you want to
