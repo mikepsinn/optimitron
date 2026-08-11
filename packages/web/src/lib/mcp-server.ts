@@ -125,7 +125,9 @@ import { IMAGE_UPLOAD_KINDS, isImageUploadKind } from "./image-upload-types";
 import { refreshMeasurementSummaries } from "./measurement-summaries.server";
 import { ensureSubjectForUser } from "./subject.server";
 import {
+  formatZonedIsoString,
   getStartOfZonedDayUtc,
+  getTimeZoneOffsetMinutes,
   getZonedDateKey,
   getZonedDateTimeUtc,
   parseDateKey as parseZonedDateKey,
@@ -2770,6 +2772,8 @@ const TRACKING_VARIABLE_SELECT = {
   defaultUnit: { select: TRACKING_UNIT_SELECT },
   defaultUnitId: true,
   id: true,
+  maximumAllowedValue: true,
+  minimumAllowedValue: true,
   name: true,
   variableCategory: { select: { id: true, name: true } },
   variableCategoryId: true,
@@ -3662,7 +3666,8 @@ async function listDueTrackingRemindersForUser(
     occurrenceByReminderId.set(reminder.id, occurrence);
     return true;
   });
-  if (dueReminders.length === 0) return { dateKey, notifications: [] };
+  if (dueReminders.length === 0)
+    return { dateKey, notifications: [], timeZone };
 
   const notifications = await prisma.trackingReminderNotification.findMany({
     orderBy: [{ notifyAt: "asc" }],
@@ -3716,12 +3721,21 @@ async function listDueTrackingRemindersForUser(
         isOverdue,
         notification,
         notifyAt,
+        // Reminders are scheduled in local wall-clock time, so report that
+        // alongside the UTC instant. Reading only notifyAt makes an 08:00
+        // Central reminder look like it fires at 13:00.
+        notifyAtLocal: formatZonedIsoString(notifyAt, timeZone),
         overdueSince: isOverdue ? notifyAt : null,
+        overdueSinceLocal: isOverdue
+          ? formatZonedIsoString(notifyAt, timeZone)
+          : null,
         reminderEndTime: reminder.reminderEndTime,
         reminderFrequency: reminder.reminderFrequency,
         reminderId: reminder.id,
         reminderStartTime: reminder.reminderStartTime,
         status,
+        timeZone,
+        utcOffsetMinutes: getTimeZoneOffsetMinutes(notifyAt, timeZone),
       };
     })
     .filter((reminder) => {
@@ -3737,7 +3751,7 @@ async function listDueTrackingRemindersForUser(
         reminder.status === NotificationStatus.SENT
       );
     });
-  return { dateKey, notifications: remindersWithStatus };
+  return { dateKey, notifications: remindersWithStatus, timeZone };
 }
 
 function toCompactTrackingNotifications(
@@ -3746,11 +3760,15 @@ function toCompactTrackingNotifications(
   return {
     dateKey: result.dateKey,
     notifications: result.notifications.map((notification) => ({
-      due: notification.notifyAt,
+      // `due` is the user's local time so a voice client can read it aloud
+      // without converting. `dueUtc` keeps the raw instant for machines.
+      due: notification.notifyAtLocal,
+      dueUtc: notification.notifyAt,
       id: notification.reminderId,
       name: notification.globalVariable.name,
       status: notification.derivedStatus,
     })),
+    timeZone: result.timeZone,
   };
 }
 
@@ -3816,7 +3834,44 @@ function assertTrackingReminderResponseStatus(
     status !== NotificationStatus.SKIPPED &&
     status !== NotificationStatus.SNOOZED
   ) {
-    throw new Error(`${fieldName} must be TRACKED, SKIPPED, or SNOOZED.`);
+    throw new Error(`${fieldName} must be TRACKED or SNOOZED.`);
+  }
+}
+
+/**
+ * SKIPPED is retired. A day a treatment, food, or activity was not taken is a
+ * zero, not a missing value: the off periods are the baseline that n-of-1
+ * causal inference needs. Callers that still send SKIPPED record a zero.
+ * Stored SKIPPED rows keep their status; we cannot know after the fact whether
+ * an old skip meant zero or meant nobody answered.
+ */
+function resolveTrackingResponseStatus(status: NotificationStatus) {
+  return status === NotificationStatus.SKIPPED
+    ? { recordedAsZero: true, status: NotificationStatus.TRACKED }
+    : { recordedAsZero: false, status };
+}
+
+/**
+ * Zero is the right entry for "not taken" only when zero is a value the
+ * variable can hold. A 1-5 mood rating has no zero, so nobody answering it is
+ * a genuine gap and the caller has to pick: a real value, a snooze, or turning
+ * the reminder off.
+ */
+function assertZeroIsMeasurable(variable: {
+  maximumAllowedValue: number | null;
+  minimumAllowedValue: number | null;
+  name: string;
+}) {
+  const bound =
+    variable.minimumAllowedValue != null && variable.minimumAllowedValue > 0
+      ? { label: "below the minimum", value: variable.minimumAllowedValue }
+      : variable.maximumAllowedValue != null && variable.maximumAllowedValue < 0
+        ? { label: "above the maximum", value: variable.maximumAllowedValue }
+        : null;
+  if (bound) {
+    throw new Error(
+      `Zero is ${bound.label} allowed value (${bound.value}) for ${variable.name}, so "not taken" cannot be recorded as zero. Pass an explicit value, use SNOOZED, or deactivate the reminder.`,
+    );
   }
 }
 
@@ -3829,7 +3884,9 @@ async function respondToTrackingReminderNotificationsForUser(
     input.defaultStatus,
     "defaultStatus",
   );
-  assertTrackingReminderResponseStatus(defaultStatus, "defaultStatus");
+  if (defaultStatus !== undefined) {
+    assertTrackingReminderResponseStatus(defaultStatus, "defaultStatus");
+  }
 
   const globalSnoozeMinutes =
     input.snoozeMinutes === undefined ? undefined : parseSnoozeMinutes(input);
@@ -3847,6 +3904,12 @@ async function respondToTrackingReminderNotificationsForUser(
     }
   >();
 
+  if (defaultStatus === undefined && exceptions.length === 0) {
+    throw new Error(
+      "Provide defaultStatus, at least one except entry, or both. Without either there is nothing to answer.",
+    );
+  }
+
   for (const raw of exceptions) {
     if (raw === null || typeof raw !== "object") {
       throw new Error("Each except entry must be an object.");
@@ -3859,6 +3922,11 @@ async function respondToTrackingReminderNotificationsForUser(
     const status =
       parseEnumInput(NotificationStatus, entry.status, "status") ??
       defaultStatus;
+    if (status === undefined) {
+      throw new Error(
+        `Each except entry needs a status when defaultStatus is omitted. Missing status for ${trackingReminderId}.`,
+      );
+    }
     assertTrackingReminderResponseStatus(status, "status");
     overrideById.set(trackingReminderId, {
       note: entry.note,
@@ -3871,17 +3939,19 @@ async function respondToTrackingReminderNotificationsForUser(
     });
   }
 
+  // Read the whole day, answered rows included, so an exception can correct a
+  // response that already exists. The single-reminder tool has always allowed
+  // that; rejecting it here made the two tools disagree.
   const due = await listDueTrackingRemindersForUser(
-    { dateKey: input.dateKey },
+    { dateKey: input.dateKey, includeCompleted: true },
     userId,
   );
   const now = Date.now();
-  const dueNotifications = due.notifications.filter(
-    (item) => item.notifyAt.getTime() <= now,
+  const scheduledIds = new Set(
+    due.notifications.map((item) => item.reminderId),
   );
-  const dueIds = new Set(dueNotifications.map((item) => item.reminderId));
   const unknownExceptionIds = [...overrideById.keys()].filter(
-    (id) => !dueIds.has(id),
+    (id) => !scheduledIds.has(id),
   );
 
   if (unknownExceptionIds.length > 0) {
@@ -3890,32 +3960,66 @@ async function respondToTrackingReminderNotificationsForUser(
       dateKey: due.dateKey,
       failed: [],
       results: [],
+      // Nothing was written, so every scheduled reminder was left untouched.
+      skippedCount: due.notifications.length,
       unknownExceptionIds,
     };
   }
 
+  // defaultStatus only reaches notifications that are due and still
+  // unanswered. Answering one reminder must never overwrite the rest of the
+  // day, and an already-recorded response is not the default's business.
+  const isUnanswered = (item: (typeof due.notifications)[number]) =>
+    item.status === NotificationStatus.PENDING ||
+    item.status === NotificationStatus.SENT ||
+    (item.status === NotificationStatus.SNOOZED &&
+      item.notifyAt.getTime() <= now);
+  const targets = due.notifications.filter((item) => {
+    if (overrideById.has(item.reminderId)) return true;
+    if (defaultStatus === undefined) return false;
+    return item.notifyAt.getTime() <= now && isUnanswered(item);
+  });
+  const skippedCount = due.notifications.length - targets.length;
+
   const results: Array<{
+    recordedAsZero: boolean;
     reminderId: string;
+    source: "default" | "exception";
     status: NotificationStatus;
   }> = [];
   const failed: Array<{ reminderId: string; error: string }> = [];
 
-  for (const item of dueNotifications) {
+  for (const item of targets) {
     const override = overrideById.get(item.reminderId);
-    const status = override?.status ?? defaultStatus;
+    const requestedStatus = override?.status ?? defaultStatus;
+    if (requestedStatus === undefined) continue;
+    const { recordedAsZero, status } =
+      resolveTrackingResponseStatus(requestedStatus);
     try {
       await respondToTrackingReminderForUser(
         {
           dateKey: due.dateKey,
           note: override?.note ?? input.note,
           snoozeMinutes: override?.snoozeMinutes ?? globalSnoozeMinutes,
-          status,
+          // Pass the requested status, not the resolved one, so a retired
+          // SKIPPED still lands as a zero instead of the reminder's default.
+          status: requestedStatus,
+          // Anchor the measurement to the scheduled occurrence rather than
+          // the wall clock. Answering the same notification twice then
+          // upserts one row, so an exception that corrects an earlier batch
+          // answer overwrites it instead of leaving a stale duplicate.
+          trackedAt: item.notifyAt,
           trackingReminderId: item.reminderId,
           value: override?.value,
         },
         userId,
       );
-      results.push({ reminderId: item.reminderId, status });
+      results.push({
+        recordedAsZero,
+        reminderId: item.reminderId,
+        source: override ? "exception" : "default",
+        status,
+      });
     } catch (error) {
       failed.push({
         error: error instanceof Error ? error.message : String(error),
@@ -3929,6 +4033,8 @@ async function respondToTrackingReminderNotificationsForUser(
     dateKey: due.dateKey,
     failed,
     results,
+    // Reminders scheduled today that this call deliberately left alone.
+    skippedCount,
     unknownExceptionIds,
   };
 }
@@ -3937,10 +4043,12 @@ async function respondToTrackingReminderForUser(
   input: Record<string, unknown>,
   userId: string,
 ) {
-  const status =
+  const requestedStatus =
     parseEnumInput(NotificationStatus, input.status, "status") ??
     NotificationStatus.TRACKED;
-  assertTrackingReminderResponseStatus(status, "status");
+  assertTrackingReminderResponseStatus(requestedStatus, "status");
+  const { recordedAsZero, status } =
+    resolveTrackingResponseStatus(requestedStatus);
   const trackingReminderId = optionalString(input.trackingReminderId);
   if (!trackingReminderId) throw new Error("trackingReminderId is required.");
   const snoozeMinutes =
@@ -3968,10 +4076,18 @@ async function respondToTrackingReminderForUser(
     if (!reminder) {
       throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
     }
+    const explicitValue = parseOptionalFiniteNumberInput(input, "value");
+    if (recordedAsZero) {
+      assertZeroIsMeasurable(reminder.globalVariable);
+    }
     const trackedValue =
       status === NotificationStatus.TRACKED
-        ? (parseOptionalFiniteNumberInput(input, "value") ??
-          cleanNumber(reminder.defaultValue))
+        ? recordedAsZero
+          ? // A retired SKIPPED means not taken, so it is always zero: never
+            // the reminder's default dose, and never a value sent alongside
+            // it. Anything else would contradict the recordedAsZero result.
+            0
+          : (explicitValue ?? cleanNumber(reminder.defaultValue))
         : null;
     if (status === NotificationStatus.TRACKED && trackedValue == null) {
       throw new Error(
@@ -4039,7 +4155,19 @@ async function respondToTrackingReminderForUser(
         where: { id: reminder.id },
       });
     }
-    return { dateKey, measurement, notification, reminderId: reminder.id };
+    return {
+      dateKey,
+      measurement,
+      notification,
+      recordedAsZero,
+      reminderId: reminder.id,
+      ...(recordedAsZero
+        ? {
+            deprecationNotice:
+              "SKIPPED is retired. This response recorded a zero measurement so the not-taken day counts as baseline. Send TRACKED with value 0 instead.",
+          }
+        : {}),
+    };
   });
 }
 
@@ -5292,7 +5420,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "upsertTrackingReminder",
     description:
-      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED, SKIPPED, or SNOOZED.",
+      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.",
     inputSchema: {
       type: "object" as const,
       anyOf: [
@@ -5372,7 +5500,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listTrackingReminderNotifications",
     description:
-      "List due tracking reminder notifications. A reminder defines a schedule. A notification is one occurrence that you answer. Most pending notifications have no stored row. Use compact mode for voice or chat clients.",
+      "List due tracking reminder notifications. A reminder defines a schedule. A notification is one occurrence that you answer. Most pending notifications have no stored row. Use compact mode for voice or chat clients. Times come back in the user's time zone as notifyAtLocal (compact: due), with the UTC instant in notifyAt (compact: dueUtc).",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5412,7 +5540,7 @@ const TRACKING_TOOL_DEFINITIONS = [
         includeCompleted: {
           type: "boolean",
           description:
-            "When true, include reminders already TRACKED, SKIPPED, or SNOOZED for the date.",
+            "When true, include reminders already answered or snoozed for the date.",
         },
       },
     },
@@ -5420,7 +5548,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "respondToTrackingReminderNotifications",
     description:
-      "Answer notifications whose due time has arrived. Apply one default status and optional exceptions. If any exception ID is not due, this tool writes nothing. Valid reminders continue when one response fails.",
+      "Answer several tracking reminder notifications in one call. To answer specific reminders, send only except entries and omit defaultStatus; every other reminder stays untouched. Send defaultStatus only when you intend to answer the whole day. An except entry can also correct a response you already recorded. If any exception ID is not scheduled for the date, this tool writes nothing.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5430,21 +5558,21 @@ const TRACKING_TOOL_DEFINITIONS = [
         },
         defaultStatus: {
           type: "string",
-          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          enum: ["TRACKED", "SNOOZED"],
           description:
-            "Apply this status to each notification without an exception.",
+            "Optional. Apply this status to every due and unanswered notification without an exception. Omit it to answer only the except entries. Already-answered notifications are never touched by the default.",
         },
         except: {
           type: "array",
           description:
-            "Override individual notifications by trackingReminderId.",
+            "Answer or correct individual notifications by trackingReminderId. Each entry needs a status when defaultStatus is omitted.",
           items: {
             type: "object",
             properties: {
               trackingReminderId: { type: "string" },
               status: {
                 type: "string",
-                enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+                enum: ["TRACKED", "SNOOZED"],
               },
               value: { type: "number" },
               snoozeMinutes: { type: "number" },
@@ -5460,22 +5588,21 @@ const TRACKING_TOOL_DEFINITIONS = [
             "Set the snooze duration. The default is 30 minutes. The server caps the deferred time at the local day's end.",
         },
       },
-      required: ["defaultStatus"],
     },
   },
   {
     name: "respondToTrackingReminder",
     description:
-      "Answer a due tracking reminder. TRACKED records a measurement; use TRACKED with value 0 when the value was definitely zero so analysis counts it. SKIPPED dismisses the occurrence without a measurement and leaves a gap. SNOOZED defers it.",
+      "Answer a due tracking reminder. TRACKED records a measurement. Record value 0 when the treatment, food, or activity was not taken; those zero days are the baseline that causal analysis needs. SNOOZED defers the notification. Deactivate the reminder when it no longer applies. SKIPPED is retired: it now records a zero and returns a deprecation notice.",
     inputSchema: {
       type: "object" as const,
       properties: {
         trackingReminderId: { type: "string" },
         status: {
           type: "string",
-          enum: ["TRACKED", "SKIPPED", "SNOOZED"],
+          enum: ["TRACKED", "SNOOZED"],
           description:
-            "TRACKED records a measurement. SKIPPED records no measurement. SNOOZED defers the notification.",
+            "TRACKED records a measurement; pass value 0 for a not-taken day. SNOOZED defers the notification. SKIPPED is accepted but retired and records a zero.",
         },
         snoozeMinutes: {
           type: "number",
@@ -10887,8 +11014,7 @@ export function createMcpServer(
             // which is the primary way Claude Code and Codex connect
             // locally — defeating the pre-edit lease/execution inspection
             // this tool exists for.
-            const coordination =
-              await lease.getTaskCoordinationContext(taskId);
+            const coordination = await lease.getTaskCoordinationContext(taskId);
             return ok({
               coordination,
               task: enrichTaskForMcp(result.task),
