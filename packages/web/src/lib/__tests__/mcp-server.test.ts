@@ -10379,7 +10379,8 @@ describe("MCP server tool dispatch", () => {
         dateKey: "2026-08-03",
         failed: [],
         results: [],
-        skippedCount: 0,
+        // Nothing written, so every scheduled reminder counts as untouched.
+        skippedCount: 1,
         unknownExceptionIds: ["misheard-reminder"],
       });
       expect(mocks.transaction).not.toHaveBeenCalled();
@@ -10637,6 +10638,17 @@ describe("MCP server tool dispatch", () => {
           results: [{ reminderId: "reminder-2", source: "exception" }],
           unknownExceptionIds: [],
         });
+        // The correction anchors to the scheduled occurrence, so it upserts
+        // the same measurement row instead of adding a stale duplicate at
+        // the wall-clock time.
+        const correctionUpsert = mocks.measurementUpsert.mock.calls.at(-1)![0];
+        expect(
+          correctionUpsert.where.subjectId_globalVariableId_startTime,
+        ).toMatchObject({
+          // reminder-2's 09:00 occurrence, not the 20:00 wall clock.
+          startTime: new Date("2026-08-03T09:00:00.000Z"),
+        });
+        expect(correctionUpsert.create).toMatchObject({ value: 4 });
       } finally {
         now.mockRestore();
       }
@@ -11078,6 +11090,57 @@ describe("MCP server tool dispatch", () => {
       };
       expect(body.result.recordedAsZero).toBe(true);
       expect(body.result.deprecationNotice).toContain("SKIPPED is retired");
+    });
+
+    it("respondToTrackingReminder ignores a value sent with a retired SKIPPED", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue({
+        defaultValue: 3,
+        deletedAt: null,
+        globalVariable: TRACKING_VARIABLE,
+        globalVariableId: "gv-vitd",
+        id: "reminder-1",
+        nOf1Variable: NOF1_VARIABLE,
+        reminderFrequency: 86_400,
+        reminderStartTime: "08:00",
+        userId: "user-1",
+      });
+      mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+      mocks.trackingReminderNotificationCreate.mockResolvedValue({
+        id: "notification-2",
+        status: NotificationStatus.TRACKED,
+        trackedValue: 0,
+        trackingReminderId: "reminder-1",
+        userId: "user-1",
+      });
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        subjectId: "subject-1",
+        unitId: "unit-iu",
+        value: 0,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "respondToTrackingReminder",
+        arguments: {
+          dateKey: "2026-07-01",
+          status: "SKIPPED",
+          trackingReminderId: "reminder-1",
+          value: 5,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      // recordedAsZero must not report a zero while storing something else.
+      expect(mocks.measurementUpsert.mock.calls[0]![0]).toMatchObject({
+        create: expect.objectContaining({ value: 0 }),
+      });
+      expect(
+        mocks.trackingReminderNotificationCreate.mock.calls[0]![0],
+      ).toMatchObject({
+        data: expect.objectContaining({ trackedValue: 0 }),
+      });
     });
 
     it("respondToTrackingReminder refuses a zero the variable cannot hold", async () => {

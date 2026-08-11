@@ -3858,15 +3858,19 @@ function resolveTrackingResponseStatus(status: NotificationStatus) {
  * the reminder off.
  */
 function assertZeroIsMeasurable(variable: {
+  maximumAllowedValue: number | null;
   minimumAllowedValue: number | null;
   name: string;
 }) {
-  if (
-    variable.minimumAllowedValue != null &&
-    variable.minimumAllowedValue > 0
-  ) {
+  const bound =
+    variable.minimumAllowedValue != null && variable.minimumAllowedValue > 0
+      ? { label: "below the minimum", value: variable.minimumAllowedValue }
+      : variable.maximumAllowedValue != null && variable.maximumAllowedValue < 0
+        ? { label: "above the maximum", value: variable.maximumAllowedValue }
+        : null;
+  if (bound) {
     throw new Error(
-      `Zero is below the minimum allowed value (${variable.minimumAllowedValue}) for ${variable.name}, so "not taken" cannot be recorded as zero. Pass an explicit value, use SNOOZED, or deactivate the reminder.`,
+      `Zero is ${bound.label} allowed value (${bound.value}) for ${variable.name}, so "not taken" cannot be recorded as zero. Pass an explicit value, use SNOOZED, or deactivate the reminder.`,
     );
   }
 }
@@ -3956,7 +3960,8 @@ async function respondToTrackingReminderNotificationsForUser(
       dateKey: due.dateKey,
       failed: [],
       results: [],
-      skippedCount: 0,
+      // Nothing was written, so every scheduled reminder was left untouched.
+      skippedCount: due.notifications.length,
       unknownExceptionIds,
     };
   }
@@ -3999,6 +4004,11 @@ async function respondToTrackingReminderNotificationsForUser(
           // Pass the requested status, not the resolved one, so a retired
           // SKIPPED still lands as a zero instead of the reminder's default.
           status: requestedStatus,
+          // Anchor the measurement to the scheduled occurrence rather than
+          // the wall clock. Answering the same notification twice then
+          // upserts one row, so an exception that corrects an earlier batch
+          // answer overwrites it instead of leaving a stale duplicate.
+          trackedAt: item.notifyAt,
           trackingReminderId: item.reminderId,
           value: override?.value,
         },
@@ -4067,14 +4077,16 @@ async function respondToTrackingReminderForUser(
       throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
     }
     const explicitValue = parseOptionalFiniteNumberInput(input, "value");
-    if (recordedAsZero && explicitValue == null) {
+    if (recordedAsZero) {
       assertZeroIsMeasurable(reminder.globalVariable);
     }
     const trackedValue =
       status === NotificationStatus.TRACKED
         ? recordedAsZero
-          ? // "Not taken" is zero, never the reminder's default dose.
-            (explicitValue ?? 0)
+          ? // A retired SKIPPED means not taken, so it is always zero: never
+            // the reminder's default dose, and never a value sent alongside
+            // it. Anything else would contradict the recordedAsZero result.
+            0
           : (explicitValue ?? cleanNumber(reminder.defaultValue))
         : null;
     if (status === NotificationStatus.TRACKED && trackedValue == null) {
