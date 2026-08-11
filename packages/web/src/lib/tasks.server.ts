@@ -8,6 +8,7 @@ import {
   TaskClaimStatus,
   TaskCompensationKind,
   TaskEdgeType,
+  TaskEngagementKind,
   TaskExecutionAttemptStatus,
   TaskExecutionMode,
   TaskImpactFrameKey,
@@ -81,12 +82,47 @@ const ACTIVE_CLAIM_STATUSES = [
   TaskClaimStatus.COMPLETED,
 ] as const;
 
-const CLAIM_STATUSES_THAT_BLOCK_RECLAIM = [
-  TaskClaimStatus.CLAIMED,
-  TaskClaimStatus.IN_PROGRESS,
-  TaskClaimStatus.COMPLETED,
-  TaskClaimStatus.VERIFIED,
-] as const;
+type ReclaimableTaskShape = {
+  compensationKind?: TaskCompensationKind | null;
+  engagementKind?: TaskEngagementKind | null;
+};
+
+/**
+ * Unpaid ONGOING tasks (flyer-hang spots) need the same volunteer to rehang
+ * after staleness. Paid/bounty claims stay non-reclaimable so verification
+ * cannot reset a TaskPayout row keyed 1:1 to the claim.
+ */
+function canReopenTerminalClaim(task: ReclaimableTaskShape) {
+  if (task.engagementKind !== TaskEngagementKind.ONGOING) {
+    return false;
+  }
+  if (
+    task.compensationKind === TaskCompensationKind.PAID ||
+    task.compensationKind === TaskCompensationKind.BOUNTY
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function claimStatusBlocksReclaim(
+  status: TaskClaimStatus,
+  task: ReclaimableTaskShape,
+) {
+  if (
+    status === TaskClaimStatus.CLAIMED ||
+    status === TaskClaimStatus.IN_PROGRESS
+  ) {
+    return true;
+  }
+  if (
+    status === TaskClaimStatus.COMPLETED ||
+    status === TaskClaimStatus.VERIFIED
+  ) {
+    return !canReopenTerminalClaim(task);
+  }
+  return false;
+}
 
 const personTaskProfilePersonSelect = {
   bio: true,
@@ -898,9 +934,7 @@ function hasViewerClaim(
   return task.claims.some(
     (claim) =>
       claim.userId === userId &&
-      CLAIM_STATUSES_THAT_BLOCK_RECLAIM.includes(
-        claim.status as (typeof CLAIM_STATUSES_THAT_BLOCK_RECLAIM)[number],
-      ),
+      claimStatusBlocksReclaim(claim.status as TaskClaimStatus, task),
   );
 }
 
@@ -2873,6 +2907,7 @@ export async function claimTask(taskId: string, userId: string) {
         compensationKind: true,
         compensationMaxAmountMinorUnits: true,
         compensationPaymentRails: true,
+        engagementKind: true,
         id: true,
         maxClaims: true,
         status: true,
@@ -2891,9 +2926,7 @@ export async function claimTask(taskId: string, userId: string) {
 
     if (
       existingClaim &&
-      CLAIM_STATUSES_THAT_BLOCK_RECLAIM.includes(
-        existingClaim.status as (typeof CLAIM_STATUSES_THAT_BLOCK_RECLAIM)[number],
-      )
+      claimStatusBlocksReclaim(existingClaim.status as TaskClaimStatus, task)
     ) {
       return existingClaim;
     }
