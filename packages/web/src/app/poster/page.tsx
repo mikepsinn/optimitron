@@ -10,6 +10,7 @@ import { buildUserReferralUrl } from "@/lib/url";
 import {
   FlyerRoutePromptCopyButton,
   PosterCopyLinkButton,
+  PosterHangNearbyPanel,
   PosterPrintButton,
 } from "./poster-client";
 
@@ -51,6 +52,7 @@ export default async function PosterPage({
     paramsPromise,
     getServerSession(authOptions),
   ]);
+  const sessionUserId = session?.user?.id ?? null;
   const hasPersonalReferralUrl = Boolean(
     session?.user?.handle?.trim() || session?.user?.referralCode?.trim(),
   );
@@ -144,18 +146,15 @@ export default async function PosterPage({
         }
 
         @media print {
+          /*
+           * One unnamed @page only. Named CSS pages (page: poster-letter)
+           * plus an exact 11in/297mm sheet make Chrome print preview emit a
+           * blank trailing page when margins or pixel rounding disagree with
+           * the box. Keep sheet boxes a hair under the page size — same
+           * approach as the existing A4 296mm clamp.
+           */
           @page {
-            size: letter;
-            margin: 0;
-          }
-
-          @page poster-letter {
-            size: letter;
-            margin: 0;
-          }
-
-          @page poster-a4 {
-            size: A4;
+            size: ${paperSize === "a4" ? "A4" : "letter"};
             margin: 0;
           }
 
@@ -171,26 +170,31 @@ export default async function PosterPage({
            */
           html,
           body {
-            width: 100%;
-            min-height: 100%;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
             background: #ffffff !important;
             color: #000000 !important;
-            overflow: visible !important;
+            overflow: hidden !important;
           }
 
           nav,
-          body > footer,
+          footer:not(.poster-footer),
           [data-print-hidden="true"] {
             display: none !important;
           }
 
-          main {
-            min-height: 0 !important;
-          }
-
+          main,
           .poster-root {
+            display: block !important;
+            width: auto !important;
+            height: auto !important;
             min-height: 0 !important;
+            margin: 0 !important;
             padding: 0 !important;
+            overflow: hidden !important;
             background: #ffffff !important;
             color: #000000 !important;
           }
@@ -200,14 +204,15 @@ export default async function PosterPage({
             break-before: avoid;
             break-inside: avoid;
             box-sizing: border-box;
-            margin: 0 auto !important;
-            overflow: hidden;
-            page: poster-letter;
+            margin: 0 !important;
+            overflow: hidden !important;
             width: 8.5in !important;
-            height: 11in !important;
-            min-height: 11in !important;
-            max-height: 11in !important;
-            border-color: transparent !important;
+            /* 10.95in (not 11in): Chrome pixel rounding on exact-letter
+               sheets spills a blank trailing page. */
+            height: 10.95in !important;
+            min-height: 10.95in !important;
+            max-height: 10.95in !important;
+            border: 0 !important;
             background: #ffffff !important;
             color: #000000 !important;
           }
@@ -240,7 +245,6 @@ export default async function PosterPage({
           /* 296mm (not 297mm): Chrome pixel rounding on exact-A4 sheets
              spills a blank trailing page. */
           .poster-sheet[data-paper-size="a4"] {
-            page: poster-a4;
             width: 210mm !important;
             height: 296mm !important;
             min-height: 296mm !important;
@@ -352,6 +356,8 @@ export default async function PosterPage({
             </Link>
           </div>
         </div>
+
+        <PosterHangNearbyPanel signedIn={Boolean(sessionUserId)} />
 
         <div className="mt-2 max-w-3xl border-t border-foreground pt-5">
           <h2 className="text-2xl font-black uppercase leading-tight text-foreground sm:text-3xl">
