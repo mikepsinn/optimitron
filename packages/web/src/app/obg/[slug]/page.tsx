@@ -66,8 +66,13 @@ function optimalSpending(cat: BudgetReportCategory): number {
   return cat.optimalSpendingNominal;
 }
 
-function marginalReturn(cat: BudgetReportCategory): number {
-  return cat.diminishingReturns?.marginalReturn ?? 0;
+function isDecreaseRecommendation(cat: BudgetReportCategory): boolean {
+  // Live reports store gap as |current - optimal| (always >= 0). Direction
+  // comes from recommendation / current-vs-optimal, not the sign of gap.
+  return (
+    cat.recommendation.includes("decrease") ||
+    cat.currentSpending > cat.optimalSpendingNominal
+  );
 }
 
 export function generateStaticParams() {
@@ -100,8 +105,12 @@ export default async function BudgetCategoryPage({
   const totalOptimal = data.categories.reduce((s, c) => s + optimalSpending(c), 0);
   const totalBudget = data.totalSpendingNominal;
   const dr = cat.diminishingReturns;
-  const mr = marginalReturn(cat);
+  const mr = dr?.marginalReturn;
+  const hasMarginalReturn = mr != null && Number.isFinite(mr);
   const elasticity = dr?.elasticity;
+  const shouldDecrease = isDecreaseRecommendation(cat);
+  const gapAbs = Math.abs(cat.gap);
+  const gapPctAbs = Math.abs(cat.gapPercent);
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
@@ -128,12 +137,14 @@ export default async function BudgetCategoryPage({
           </div>
           <div
             className={`border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
-              cat.gap >= 0 ? "bg-background text-foreground" : "bg-brutal-red text-brutal-red-foreground"
+              shouldDecrease
+                ? "bg-brutal-red text-brutal-red-foreground"
+                : "bg-background text-foreground"
             }`}
           >
             <div className="text-xs font-bold uppercase mb-1">Gap</div>
             <div className="text-2xl sm:text-3xl font-black">
-              {fmt(Math.abs(cat.gap))} ({pct(cat.gapPercent)})
+              {fmt(gapAbs)} ({pct(shouldDecrease ? -gapPctAbs : gapPctAbs)})
             </div>
           </div>
           <div className="border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-background text-foreground">
@@ -171,9 +182,11 @@ export default async function BudgetCategoryPage({
             </div>
           </div>
         </div>
-        <div className="mt-3 text-xs font-bold text-muted-foreground">
-          Marginal return per dollar: {(mr * 100).toFixed(2)}%
-        </div>
+        {hasMarginalReturn && (
+          <div className="mt-3 text-xs font-bold text-muted-foreground">
+            Marginal return per dollar: {(mr * 100).toFixed(2)}%
+          </div>
+        )}
       </section>
 
       {dr && (
@@ -246,7 +259,9 @@ export default async function BudgetCategoryPage({
 
       <section
         className={`border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 ${
-          cat.gap >= 0 ? "bg-background text-foreground" : "bg-brutal-red text-brutal-red-foreground"
+          shouldDecrease
+            ? "bg-brutal-red text-brutal-red-foreground"
+            : "bg-background text-foreground"
         }`}
       >
         <h2 className="text-lg font-black uppercase mb-2">
@@ -256,15 +271,17 @@ export default async function BudgetCategoryPage({
           RECOMMENDATION
         </h2>
         <p className="font-bold mb-3">
-          {cat.gap >= 0
-            ? `Spending on ${cat.name} should be increased by ${fmt(Math.abs(cat.gap))} (${pct(cat.gapPercent)}) to reach the optimal allocation of ${fmt(optimal)}.`
-            : `Spending on ${cat.name} should be decreased by ${fmt(Math.abs(cat.gap))} (${pct(Math.abs(cat.gapPercent))}) to reach the optimal allocation of ${fmt(optimal)}.`}
+          {shouldDecrease
+            ? `Spending on ${cat.name} should be decreased by ${fmt(gapAbs)} (${pct(-gapPctAbs)}) to reach the optimal allocation of ${fmt(optimal)}.`
+            : `Spending on ${cat.name} should be increased by ${fmt(gapAbs)} (${pct(gapPctAbs)}) to reach the optimal allocation of ${fmt(optimal)}.`}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-4">
-          <div className="border-4 border-primary p-3 bg-background">
-            <div className="text-xs font-bold uppercase text-muted-foreground">Marginal Return</div>
-            <div className="text-xl font-black text-foreground">{(mr * 100).toFixed(2)}%</div>
-          </div>
+          {hasMarginalReturn && (
+            <div className="border-4 border-primary p-3 bg-background">
+              <div className="text-xs font-bold uppercase text-muted-foreground">Marginal Return</div>
+              <div className="text-xl font-black text-foreground">{(mr * 100).toFixed(2)}%</div>
+            </div>
+          )}
           <div className="border-4 border-primary p-3 bg-background">
             <div className="text-xs font-bold uppercase text-muted-foreground">Share of Total Budget</div>
             <div className="text-xl font-black text-foreground">
@@ -315,24 +332,26 @@ export default async function BudgetCategoryPage({
             category is modeled with a concave utility function — the first dollar spent on a
             category produces more welfare than the billionth dollar.
           </p>
-          <div className="border-4 border-primary bg-foreground text-background p-4">
-            <h3 className="text-sm font-black uppercase mb-2">
-              Marginal Return ({(mr * 100).toFixed(2)}% for {cat.name})
-            </h3>
-            <p>
-              The marginal return of{" "}
-              <strong>{(mr * 100).toFixed(2)}%</strong> means
-              each additional dollar currently spent on {cat.name} produces{" "}
-              {(mr * 100).toFixed(2)} cents of welfare value. Categories with
-              higher marginal returns are underfunded relative to their potential; those with
-              lower returns are overfunded.
-            </p>
-          </div>
+          {hasMarginalReturn && (
+            <div className="border-4 border-primary bg-foreground text-background p-4">
+              <h3 className="text-sm font-black uppercase mb-2">
+                Marginal Return ({(mr * 100).toFixed(2)}% for {cat.name})
+              </h3>
+              <p>
+                The marginal return of{" "}
+                <strong>{(mr * 100).toFixed(2)}%</strong> means
+                each additional dollar currently spent on {cat.name} produces{" "}
+                {(mr * 100).toFixed(2)} cents of welfare value. Categories with
+                higher marginal returns are underfunded relative to their potential; those with
+                lower returns are overfunded.
+              </p>
+            </div>
+          )}
           <p>
-            The total budget constraint is maintained at{" "}
+            Federal spending is about{" "}
             <strong className="text-foreground">{fmt(totalBudget)}</strong>.
-            The optimizer reallocates within this envelope to maximize aggregate welfare measured
-            by the BIS-weighted outcome metrics across all {data.categories.length} categories.
+            Each category&apos;s optimal is an independent efficient-frontier estimate, not a
+            fixed-budget reallocation of that total across all {data.categories.length} categories.
           </p>
           <p className="text-xs text-muted-foreground">
             See the{" "}
