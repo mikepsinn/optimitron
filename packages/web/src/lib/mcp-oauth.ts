@@ -88,7 +88,11 @@ export function buildMcpAuthorizeSignInPath(
       ),
     ),
   );
-  return `/auth/signin?callbackUrl=${encodeURIComponent(consentUrl.toString())}`;
+  // Relative callback keeps login on the same browser origin. Absolute issuer
+  // URLs break local loopback aliases (localhost vs 127.0.0.1) and drop the
+  // session cookie after credentials succeed.
+  const callbackPath = `${consentUrl.pathname}${consentUrl.search}`;
+  return `/auth/signin?callbackUrl=${encodeURIComponent(callbackPath)}`;
 }
 
 /**

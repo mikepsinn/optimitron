@@ -140,7 +140,7 @@ describe("MCP authorize consent URL helpers", () => {
     );
   });
 
-  it("returns a sign-in path whose callbackUrl is the canonical authorize page", () => {
+  it("returns a sign-in path whose callbackUrl is the authorize path on this origin", () => {
     vi.stubEnv("VERCEL_ENV", "production");
     vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
 
@@ -155,7 +155,8 @@ describe("MCP authorize consent URL helpers", () => {
     const callbackUrl = decodeURIComponent(
       path.slice("/auth/signin?callbackUrl=".length),
     );
-    expect(callbackUrl.startsWith(`${CANONICAL}/mcp/authorize?`)).toBe(true);
+    expect(callbackUrl.startsWith("/mcp/authorize?")).toBe(true);
+    expect(callbackUrl).not.toMatch(/^https?:\/\//);
     expect(callbackUrl).toContain("client_id=mcp_abc");
     expect(callbackUrl).toContain("code_challenge=challenge");
   });

@@ -1,8 +1,11 @@
 /**
- * Auth-gated page → sign-in → back to the original page.
+ * Auth-gated page → sign-in → back to the original page (with query intact).
  *
  * Guards the regression where login drops `callbackUrl` and dumps the user on
  * home/dashboard/sign-in instead of the page that sent them to login.
+ *
+ * Also covers MCP OAuth consent: cold `/mcp/authorize` → sign-in keeps OAuth
+ * params in `callbackUrl` → return to consent → Authorize issues a code.
  *
  * Uses credentials API login (not the Try Demo button) so CI production builds
  * pass when `isDemoLoginEnabled` is false. AuthForm's demo path does the same
@@ -13,25 +16,43 @@
  * Run:
  *   pnpm --filter @optimitron/web exec playwright test e2e/auth-callback-roundtrip.spec.ts
  */
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { signInDemoUser } from "./utils/auth";
 
-const TARGET_PATH = "/dashboard?from=auth-callback-roundtrip";
+const DASHBOARD_TARGET = "/dashboard?from=auth-callback-roundtrip";
+const OAUTH_REDIRECT_ORIGIN = "http://127.0.0.1:34567";
+const OAUTH_REDIRECT_URI = `${OAUTH_REDIRECT_ORIGIN}/oauth-callback`;
+const OAUTH_STATE = "e2e-mcp-authorize-state";
+// RFC 7636 appendix B example challenge (consent stores it; token exchange not tested here).
+const OAUTH_CODE_CHALLENGE = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
+
+function pathAndSearch(urlLike: string, base: string): string {
+  const url = new URL(urlLike, base);
+  return `${url.pathname}${url.search}`;
+}
+
+async function readSignInCallbackUrl(page: Page): Promise<string> {
+  await page.waitForURL(/\/auth\/signin/, { timeout: 15_000 });
+
+  const signInUrl = new URL(page.url());
+  expect(signInUrl.pathname).toBe("/auth/signin");
+
+  const callbackUrl = signInUrl.searchParams.get("callbackUrl");
+  expect(callbackUrl).toBeTruthy();
+  return callbackUrl!;
+}
 
 test("auth-gated page -> login -> returns to the same callbackUrl", async ({
   page,
 }) => {
-  const response = await page.goto(TARGET_PATH);
+  const response = await page.goto(DASHBOARD_TARGET);
   if ((response?.status() ?? 0) >= 500) {
     test.skip(true, "Needs database");
     return;
   }
 
-  await page.waitForURL(/\/auth\/signin/, { timeout: 15_000 });
-
-  const signInUrl = new URL(page.url());
-  expect(signInUrl.pathname).toBe("/auth/signin");
-  expect(signInUrl.searchParams.get("callbackUrl")).toBe(TARGET_PATH);
+  const callbackUrl = await readSignInCallbackUrl(page);
+  expect(pathAndSearch(callbackUrl, page.url())).toBe(DASHBOARD_TARGET);
 
   const signedIn = await signInDemoUser(page);
   if (!signedIn) {
@@ -39,12 +60,104 @@ test("auth-gated page -> login -> returns to the same callbackUrl", async ({
     return;
   }
 
-  // Mirror AuthForm demo login: after credentials succeed, go to callbackUrl.
-  await page.goto(TARGET_PATH);
+  // Mirror AuthForm: after credentials succeed, go to callbackUrl on this origin.
+  await page.goto(pathAndSearch(callbackUrl, page.url()));
 
-  await expect(page).not.toHaveURL(/\/auth\/signin/);
+  await expect(page).not.toHaveURL(/\/auth\/signin/, { timeout: 15_000 });
 
   const landed = new URL(page.url());
   expect(landed.pathname).toBe("/dashboard");
   expect(landed.searchParams.get("from")).toBe("auth-callback-roundtrip");
+});
+
+test("MCP authorize -> login -> Authorize returns an OAuth code", async ({
+  page,
+}) => {
+  // Serve the OAuth client redirect so Authorize's window.location navigation
+  // does not hang on a closed port.
+  await page.route(`${OAUTH_REDIRECT_ORIGIN}/**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "text/plain",
+      body: "oauth-callback-ok",
+    });
+  });
+
+  const register = await page.request.post("/api/mcp/oauth/register", {
+    data: {
+      client_name: "E2E MCP Authorize",
+      redirect_uris: [OAUTH_REDIRECT_URI],
+      grant_types: ["authorization_code"],
+      scope: "tasks:personal",
+    },
+  });
+  if (register.status() >= 500) {
+    test.skip(true, "Needs database");
+    return;
+  }
+  expect(register.status()).toBe(201);
+  const registration = (await register.json()) as { client_id?: string };
+  expect(registration.client_id).toBeTruthy();
+
+  const authorizePath =
+    `/mcp/authorize` +
+    `?response_type=code` +
+    `&client_id=${encodeURIComponent(registration.client_id!)}` +
+    `&redirect_uri=${encodeURIComponent(OAUTH_REDIRECT_URI)}` +
+    `&code_challenge=${encodeURIComponent(OAUTH_CODE_CHALLENGE)}` +
+    `&code_challenge_method=S256` +
+    `&state=${encodeURIComponent(OAUTH_STATE)}` +
+    `&scope=${encodeURIComponent("tasks:personal")}` +
+    `&client_name=${encodeURIComponent("E2E MCP Authorize")}`;
+
+  const response = await page.goto(authorizePath);
+  if ((response?.status() ?? 0) >= 500) {
+    test.skip(true, "Needs database");
+    return;
+  }
+
+  const callbackUrl = await readSignInCallbackUrl(page);
+  // Must be same-origin relative so localhost vs 127.0.0.1 does not drop cookies.
+  expect(callbackUrl.startsWith("/mcp/authorize?")).toBe(true);
+  expect(callbackUrl).not.toMatch(/^https?:\/\//);
+
+  const callback = new URL(callbackUrl, page.url());
+  expect(callback.pathname).toBe("/mcp/authorize");
+  expect(callback.searchParams.get("client_id")).toBe(registration.client_id);
+  expect(callback.searchParams.get("redirect_uri")).toBe(OAUTH_REDIRECT_URI);
+  expect(callback.searchParams.get("code_challenge")).toBe(OAUTH_CODE_CHALLENGE);
+  expect(callback.searchParams.get("state")).toBe(OAUTH_STATE);
+  expect(callback.searchParams.get("scope")).toBe("tasks:personal");
+
+  const signedIn = await signInDemoUser(page);
+  if (!signedIn) {
+    test.skip(true, "Demo credentials not available");
+    return;
+  }
+
+  await page.goto(pathAndSearch(callbackUrl, page.url()));
+
+  await expect(page).not.toHaveURL(/\/auth\/signin/);
+  await expect(page.locator("#mcp-authorize-heading")).toBeVisible({
+    timeout: 15_000,
+  });
+
+  const authorizeButton = page.getByRole("button", { name: "Authorize" });
+  await expect(authorizeButton).toBeEnabled({ timeout: 10_000 });
+
+  await Promise.all([
+    page.waitForURL(
+      (url) =>
+        url.origin === OAUTH_REDIRECT_ORIGIN &&
+        url.searchParams.has("code") &&
+        url.searchParams.get("state") === OAUTH_STATE,
+      { timeout: 15_000 },
+    ),
+    authorizeButton.click(),
+  ]);
+
+  const redirected = new URL(page.url());
+  expect(redirected.origin).toBe(OAUTH_REDIRECT_ORIGIN);
+  expect(redirected.searchParams.get("code")).toBeTruthy();
+  expect(redirected.searchParams.get("state")).toBe(OAUTH_STATE);
 });
