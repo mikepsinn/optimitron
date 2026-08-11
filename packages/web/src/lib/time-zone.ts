@@ -91,6 +91,24 @@ export function getZonedDateKey(date: Date, timeZone: string) {
   return `${parts.year}-${padNumber(parts.month)}-${padNumber(parts.day)}`;
 }
 
+export function getTimeZoneOffsetMinutes(date: Date, timeZone: string) {
+  return Math.round(getTimeZoneOffsetMs(date, timeZone) / 60_000);
+}
+
+/**
+ * Format an instant as an ISO 8601 string in the given zone, offset included.
+ * `2026-08-03T08:00:00-05:00` names the same instant as its UTC form but reads
+ * as the wall-clock time the user set the reminder for.
+ */
+export function formatZonedIsoString(date: Date, timeZone: string) {
+  const parts = getZonedDateParts(date, timeZone);
+  const offsetMinutes = getTimeZoneOffsetMinutes(date, timeZone);
+  const sign = offsetMinutes < 0 ? "-" : "+";
+  const absolute = Math.abs(offsetMinutes);
+  const offset = `${sign}${padNumber(Math.floor(absolute / 60))}:${padNumber(absolute % 60)}`;
+  return `${parts.year}-${padNumber(parts.month)}-${padNumber(parts.day)}T${padNumber(parts.hour)}:${padNumber(parts.minute)}:${padNumber(parts.second)}${offset}`;
+}
+
 export function parseDateKey(dateKey: string) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
   if (!match) return null;

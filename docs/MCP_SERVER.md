@@ -427,6 +427,30 @@ An unknown variable name is an error rather than an empty page, so a typo does
 not read as "nothing logged". Pages return `nextCursor`; repeat the same call
 with `cursor` set until it is null.
 
+### Answering Tracking Reminders
+
+A reminder has two answers: `TRACKED` records a measurement, `SNOOZED` defers
+the occurrence. Record `value: 0` on a day the treatment, food, or activity was
+not taken. Those zero days are the baseline an n-of-1 analysis compares against,
+so a gap costs confidence in every relationship inferred from that variable.
+Deactivate the reminder when it stops applying; do not leave holes.
+
+`SKIPPED` is retired. Calls that still send it record a zero and get a
+deprecation notice back. A variable whose `minimumAllowedValue` is above zero
+(a 1-5 rating, say) rejects the conversion instead, because there is no zero to
+record. Stored `SKIPPED` rows keep their status: nothing after the fact can tell
+whether an old skip meant zero or meant nobody answered.
+
+`listTrackingReminderNotifications` returns `notifyAtLocal` (compact: `due`) in
+the user's zone with the offset attached, plus the raw UTC instant in
+`notifyAt` (compact: `dueUtc`). `dateKey` and the day boundaries are local.
+
+`respondToTrackingReminderNotifications` answers several at once. Send only
+`except` entries to answer specific reminders; everything else stays untouched.
+`defaultStatus` is for answering the whole day and reaches only notifications
+that are due and still unanswered. An `except` entry can also correct a response
+already recorded.
+
 `serving`, `servings`, and the UCUM code `{serving}` resolve to the seeded
 `servings` unit. Use servings for simple behavior or adherence tracking. Use a
 specific mass, volume, energy, or nutrient unit such as `g`, `mL`, or `kcal`
