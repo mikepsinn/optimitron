@@ -31,7 +31,7 @@ function getSecret() {
   return new TextEncoder().encode(secret);
 }
 
-function getIssuerUrl(): string {
+export function getIssuerUrl(): string {
   // OAuth belongs to the Optimitron product even though the same Vercel
   // deployment serves campaign site variants. Production stays fixed to
   // the canonical issuer regardless of MCP_OAUTH_ISSUER so a variable
@@ -45,6 +45,76 @@ function getIssuerUrl(): string {
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : "http://localhost:3001")
   );
+}
+
+/**
+ * Issuers accepted when verifying MCP JWTs.
+ *
+ * Tokens are always minted with {@link getIssuerUrl}, but older production
+ * tokens were signed with campaign hosts (especially warondisease.org) before
+ * the issuer was pinned to optimitron.com. Accept those legacy hosts so
+ * existing Cursor/Claude connectors keep working until they refresh.
+ */
+export function getAcceptedMcpIssuers(): string[] {
+  const canonical = getIssuerUrl();
+  const legacy = ["https://warondisease.org", "https://www.warondisease.org"];
+  return Array.from(new Set([canonical, ...legacy]));
+}
+
+/** Consent + NextAuth for MCP OAuth always live on the canonical issuer. */
+export function buildMcpConsentAuthorizeUrl(
+  params: URLSearchParams | Record<string, string | null | undefined>,
+): URL {
+  const url = new URL("/mcp/authorize", getIssuerUrl());
+  const entries =
+    params instanceof URLSearchParams
+      ? params.entries()
+      : Object.entries(params);
+  for (const [key, value] of entries) {
+    if (typeof value === "string" && value.length > 0) {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url;
+}
+
+export function buildMcpAuthorizeSignInPath(
+  authorizeParams: Record<string, string | string[] | undefined>,
+): string {
+  const consentUrl = buildMcpConsentAuthorizeUrl(
+    Object.fromEntries(
+      Object.entries(authorizeParams).filter(
+        (entry): entry is [string, string] => typeof entry[1] === "string",
+      ),
+    ),
+  );
+  return `/auth/signin?callbackUrl=${encodeURIComponent(consentUrl.toString())}`;
+}
+
+/**
+ * True when `/mcp/authorize` was hit on a campaign/variant host and must move
+ * to the canonical issuer before NextAuth. Loopback alias mismatches
+ * (localhost vs 127.0.0.1) are ignored so local dev does not redirect-loop.
+ */
+export function shouldRedirectMcpAuthorizeToIssuer(
+  requestOrigin: string | null | undefined,
+): boolean {
+  const issuer = getIssuerUrl();
+  if (!requestOrigin?.trim()) return false;
+  try {
+    const requestUrl = new URL(requestOrigin);
+    const issuerUrl = new URL(issuer);
+    if (requestUrl.origin === issuerUrl.origin) return false;
+    if (isLoopbackHost(requestUrl.hostname) && isLoopbackHost(issuerUrl.hostname)) {
+      return false;
+    }
+    return (
+      SERVED_MCP_HOSTS.has(requestUrl.hostname.toLowerCase()) &&
+      requestUrl.hostname.toLowerCase() !== issuerUrl.hostname.toLowerCase()
+    );
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -90,7 +160,7 @@ export async function verifyMcpAccessToken(
   token: string,
 ): Promise<McpAccessTokenPayload> {
   const { payload } = await jwtVerify(token, getSecret(), {
-    issuer: getIssuerUrl(),
+    issuer: getAcceptedMcpIssuers(),
   });
   if (payload.type !== "access") {
     throw new Error("Not an access token");
@@ -113,7 +183,7 @@ export async function verifyMcpRefreshToken(
   token: string,
 ): Promise<{ sub: string; clientId: string }> {
   const { payload } = await jwtVerify(token, getSecret(), {
-    issuer: getIssuerUrl(),
+    issuer: getAcceptedMcpIssuers(),
   });
   if (payload.type !== "refresh") {
     throw new Error("Not a refresh token");

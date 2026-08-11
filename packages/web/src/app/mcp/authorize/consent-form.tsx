@@ -102,12 +102,20 @@ export function McpConsentForm({
     const organizationSelectionRequired =
       selected.has(McpScope.TASKS_ORGANIZATION) &&
       selectedOrganizationIds.size === 0;
-    if (selected.size === 0 || organizationSelectionRequired) return;
+    if (selected.size === 0) {
+      setError("Select at least one permission.");
+      return;
+    }
+    if (organizationSelectionRequired) {
+      setError("Select at least one organization, or turn off organization access.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/mcp/oauth/consent", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_id: clientId,
@@ -122,7 +130,17 @@ export function McpConsentForm({
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json().catch(() => ({}))) as {
+        redirect_url?: string;
+        error?: string;
+        error_description?: string;
+      };
+      if (res.status === 401) {
+        setError("Your session expired. Sign in again, then authorize.");
+        setLoading(false);
+        window.location.href = `/auth/signin?callbackUrl=${encodeURIComponent(window.location.href)}`;
+        return;
+      }
       if (data.redirect_url) {
         window.location.href = data.redirect_url;
         return;
@@ -218,7 +236,10 @@ export function McpConsentForm({
 
       <div className="flex gap-3">
         <Button
-          onClick={handleApprove}
+          type="button"
+          onClick={() => {
+            void handleApprove();
+          }}
           disabled={
             loading ||
             selected.size === 0 ||
@@ -230,6 +251,7 @@ export function McpConsentForm({
           {loading ? "Authorizing..." : selected.size === 0 ? "Select Permissions" : "Authorize"}
         </Button>
         <Button
+          type="button"
           variant="outline"
           onClick={handleDeny}
           disabled={loading}
