@@ -130,9 +130,12 @@ export async function prepareFullPageVisualCapture(page) {
   );
 
   await retryAfterNavigation(page, async () => {
-    await page.evaluate(() => {
-      window.dispatchEvent(new Event("optimitron:visual-capture"));
+    await page.evaluate(async () => {
       window.scrollTo(0, 0);
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+      window.dispatchEvent(new Event("optimitron:visual-capture"));
     });
   });
   await waitForPaint(page);
