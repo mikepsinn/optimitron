@@ -15,17 +15,27 @@ describe("recommendationDirection", () => {
   it("preserves explicit increase and decrease actions", () => {
     expect(
       recommendationDirection({
-        currentSpending: 80,
+        currentSpending: 120,
         optimalSpendingNominal: 100,
         recommendation: "increase",
       }),
     ).toBe("increase");
     expect(
       recommendationDirection({
-        currentSpending: 120,
+        currentSpending: 80,
         optimalSpendingNominal: 100,
         recommendation: "decrease",
       }),
     ).toBe("decrease");
+  });
+
+  it("returns neutral when current and optimal spending match", () => {
+    expect(
+      recommendationDirection({
+        currentSpending: 100,
+        optimalSpendingNominal: 100,
+        recommendation: "adjust",
+      }),
+    ).toBe("neutral");
   });
 });
