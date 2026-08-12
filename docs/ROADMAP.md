@@ -35,7 +35,6 @@ as a parallel Now track, dogfooded by the operator as user #1.
 - Production Task rows own operational development status, dependencies, and
   human decisions. Managed synchronization owns only stable system roots and
   fixtures; it must not overwrite ordinary development children.
-- Black-and-white treaty style stays the default on public campaign surfaces.
 - Roadmap lines cite feature IDs so status claims live in one place.
 
 ## Now
@@ -222,6 +221,3 @@ Infra hygiene (lower priority):
     `job-*.log`, `.tmp-pr79-*.json`, `.tmp-clone-*`.
 12. Extension test coverage — OPT-EXT-01 ships with zero tests.
 13. `packages/wishonia-widget` README.
-14. Black-and-white style migration — ~46 files still reference `brutal-*`
-    components; standing migrate-on-touch policy rather than a big-bang
-    sweep.

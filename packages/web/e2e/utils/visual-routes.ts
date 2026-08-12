@@ -95,6 +95,8 @@ const TASK_TREE_VIEW_FILE =
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
 const OBG_CATEGORY_PAGE_FILE = "packages/web/src/app/obg/[slug]/page.tsx";
+const HEALTH_ECONOMICS_DISPLAY_FILE =
+  "packages/web/src/components/treatment/HealthEconomicsDisplay.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
   "packages/web/src/components/dashboard/PersonalQueueSection.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "packages/web/src/app/video/page.tsx";
@@ -374,6 +376,13 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     required: true,
     requiredSelector: "h1",
     requiredText: /EPA \/ Environment/,
+  },
+  {
+    covers: [HEALTH_ECONOMICS_DISPLAY_FILE],
+    name: "treatment-health-economics",
+    path: "/agencies/dfda/conditions/endometriosis/treatments/laparoscopic-excision-surgery",
+    required: true,
+    requiredSelector: '[data-visual-section="health-economics"]',
   },
   {
     // Required, and asserted on #also-serves rather than something always
