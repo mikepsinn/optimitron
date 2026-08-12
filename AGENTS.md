@@ -90,9 +90,7 @@
 
 ## UI Style
 
-- Treaty and neobrutalist styles are both supported. Match the established style of the product and surface.
-- Reuse semantic tokens and shared primitives. Do not create one-off visual systems inside a page.
-- Keep War on Disease campaign actions visually dominant, regardless of the selected style.
+- Match the surrounding page style. Do not migrate styling as a side effect of an unrelated bug fix or feature.
 - Keep UI minimal. Do not add wrapper boxes, divider lines, shadows, icons, labels, helper text, or other extra elements unless they clarify the action, improve scanning, or solve a real usability problem.
 - Do not lead campaign landing pages with raw counters, scoreboards, totals, leaderboards, or internal status panels. The first screen of `warondisease.org` must lead with the treaty vote/referral action; social proof belongs after the action is understood.
 - Make actionable things look actionable. If a link starts or completes a user task, especially an external workflow, render it as a clear button or command control, not only as inline text. Use plain inline links for references, citations, navigation, and secondary reading.

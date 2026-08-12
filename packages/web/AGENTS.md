@@ -19,8 +19,8 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 ## Rules
 
 - **Prisma is OK here.** This is the only package that uses Prisma client at runtime.
-- **Follow the product's design system.** Treaty and neobrutalist styles are both supported.
-- **Use shared primitives.** Check `src/components/retroui/` and existing domain components before hand-rolling standard controls.
+- **Match surrounding style.** Do not migrate styling as a side effect of an unrelated bug fix or feature.
+- **Use primitives for behavior, not decoration.** Check `src/components/retroui/` and existing domain components before hand-rolling buttons, inputs, checkboxes, dialogs, tables, menus, accordions, or other standard controls.
 - **Metadata from routes.ts.** Use `getRouteMetadata()` — don't hardcode page titles.
 - **Metadata is cold-link copy.** Titles name the page in normal words. Descriptions say what is on the page, who should click, and why now. Do not put in-page workflow steps like "share", "hire two", "sign in", or "click yes/no" in metadata unless that route is exactly that action surface.
 - **Wishonia's voice.** All user-facing copy is in Wishonia's voice. Read `docs/h2ewd.md` before writing or rewriting public copy.
@@ -29,7 +29,7 @@ Imports from ALL `@optimitron/*` packages. This is the integration layer.
 - **Conversion copy, not internal narration.** Speak directly to the audience, tell them what to do, and show the value of doing it. Keep it concise, funny where appropriate, and allergic to generic nonprofit/consultant language.
 - **No implementation leaks in copy.** Do not expose internal planning terms like "site variant", "program graph", "initiative landing page", "approved organizations get", route policy language, or admin labels unless the user explicitly wants that exact wording surfaced.
 - **Treat every empty state as an action surface.** If the user needs to invite humans, embed a survey, vote, assign Earth optimization tasks, or check status, show the useful control before explaining the absence of data.
-- **Contrast rules.** Black-and-white treaty surfaces must keep text legible through semantic/treaty tokens. Use color only where it carries functional meaning, such as admin status, charts, games/demos, or email-client markup.
+- **Contrast rules.** Keep text legible. Use color only where it carries functional meaning, such as admin status, charts, games/demos, or email-client markup.
 - **Prefer the Playwright wrapper.** For web verification, use `pnpm --filter @optimitron/web run e2e -- <mode>` instead of calling Playwright or `next build` directly.
 - **Treaty screenshots use the wrapper.** Use `pnpm --filter @optimitron/web run e2e -- treaty-screenshots --reporter=list` for the treaty vote/post-vote screenshot audit; do not call `pnpm exec playwright ...` directly for that spec.
 - **Reuse an existing dev server when available.** The wrapper checks `BASE_URL`, `http://127.0.0.1:3001`, and `http://localhost:3001` first and reuses that server before falling back to a production build.
