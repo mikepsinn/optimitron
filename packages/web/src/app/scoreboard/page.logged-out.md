@@ -21,6 +21,7 @@
 - LEAST BAD GOVERNMENTS
 - COLUMNS
 - Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+
 | #? | COUNTRY? | MILITARY? | KILLED? | MIL/TRIALS ↓? | HALE? | MEDIAN INCOME? | MIL/RESEARCH? |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [🇵🇰Pakistan](/governments/PK) | [$10B](/governments/PK) | [1,503,000](/governments/PK) | [51,500:1](/governments/PK) | [57.4](/governments/PK) | [$1.3K](/governments/PK) | [3,433:1](/governments/PK) |
@@ -33,9 +34,11 @@
 | 8 | [🇮🇳India](/governments/IN) | [$84B](/governments/IN) | [100,000](/governments/IN) | [418:1](/governments/IN) | [60.3](/governments/IN) | [$1.7K](/governments/IN) | [27.9:1](/governments/IN) |
 | 9 | [🇬🇧United Kingdom](/governments/GB) | [$75B](/governments/GB) | [500,000](/governments/GB) | [414:1](/governments/GB) | [70.1](/governments/GB) | [$17.2K](/governments/GB) | [27.8:1](/governments/GB) |
 | 10 | [🇪🇹Ethiopia](/governments/ET) | [$1B](/governments/ET) | [873,000](/governments/ET) | [333:1](/governments/ET) | [56.0](/governments/ET) | [$1.1K](/governments/ET) | [21.3:1](/governments/ET) |
+
 ### WORST POLITICIANS
 - The same ranking from the Optimitron landing page: dollars each representative voted toward weapons for every dollar toward testing medicines.
 - LEAST BAD POLITICIANS
+
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
@@ -48,6 +51,7 @@
 | 8 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
 | 9 | [Pete Sessions Texas](/governments/US/politicians/S000250) | $2.7T | $0 | -$2.7T | ∞ |
 | 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
+
 ### SIGNATURE LEADERBOARD
 - Top signatories by verified treaty signatures attributed to them. This is the part where the species notices it has thumbs.
 - No public signatories yet.

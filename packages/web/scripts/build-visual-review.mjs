@@ -175,9 +175,26 @@ const routeOrder = [
 // e2e/utils/visual-routes.ts. Keys match SiteKey in src/lib/site.ts.
 const VARIANT_DOMAIN_LABELS = {
   optimitron: "optimitron.com",
+  warondisease: "warondisease.org",
   dfda: "dfda.earth",
   dih: "dih.earth",
+  wishocracy: "wishocracy.org",
+  trialabundancesurvey: "trialabundancesurvey.org",
+  curedao: "curedao.org",
+  acceleratedmedicine: "acceleratedmedicine.org",
 };
+
+const SITE_APP_ORDER = [
+  "warondisease",
+  "dfda",
+  "wishocracy",
+  "trialabundancesurvey",
+  "curedao",
+  "acceleratedmedicine",
+];
+
+const siteAppRoutesByVariant = loadSiteAppRouteManifests();
+registerSiteAppRouteSpecs(routeSpecs, routePaths, siteAppRoutesByVariant);
 
 main().catch((error) => {
   console.error(
@@ -356,9 +373,11 @@ function buildReviewPageInput(groups, coverage) {
       ? 0
       : route.copyChanged
         ? 1
-        : route.siteVariant
-          ? 3
-          : 2;
+        : route.siteApp
+          ? 2
+          : route.siteVariant
+            ? 4
+            : 3;
   routes.sort((a, b) => rank(a) - rank(b));
   return {
     meta: {
@@ -377,8 +396,11 @@ function buildReviewPageInput(groups, coverage) {
     summary: {
       changedRoutes: routes.filter((route) => route.changed).length,
       copyOnlyRoutes: routes.filter((route) => rank(route) === 1).length,
-      unchangedRoutes: routes.filter((route) => rank(route) === 2).length,
-      variantRoutes: routes.filter((route) => route.siteVariant).length,
+      unchangedRoutes: routes.filter((route) => rank(route) === 3).length,
+      siteAppRoutes: routes.filter((route) => route.siteApp).length,
+      variantRoutes: routes.filter(
+        (route) => route.siteVariant && !route.siteApp,
+      ).length,
       erroredRoutes: routes.filter((route) => route.errored).length,
       totalRoutes: routes.length,
     },
@@ -402,17 +424,23 @@ function buildBaselineDescription() {
 
 function buildReviewPageRoute(group) {
   const markdownDiff = buildMarkdownDiff(group.routeName);
-  const routePath = routePaths.get(group.routeName) ?? null;
-  const siteVariant = getRouteSiteVariant(group.routeName);
+  const siteAppRoute = getSiteAppRoute(group.routeName);
+  const routePath =
+    routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
+  const siteVariant =
+    siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
   return {
     routeName: group.routeName,
-    routeLabel: siteVariant
-      ? labelVariantRoute(group.routeName, siteVariant)
-      : labelRoute(group.routeName),
+    routeLabel: siteAppRoute
+      ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
+      : siteVariant
+        ? labelVariantRoute(group.routeName, siteVariant)
+        : labelRoute(group.routeName),
     routePath,
-    routeUrl: getRouteUrl(group.routeName),
+    routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
     productionUrl: getProductionRouteUrl(routePath, siteVariant),
     authState: getRouteAuthState(group.routeName),
+    siteApp: Boolean(siteAppRoute),
     siteVariant,
     variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
     changed: group.changed,
@@ -1307,6 +1335,8 @@ function summarizeGroups(groups) {
         Boolean(buildMarkdownDiff(group.routeName)),
     ).length,
     erroredRoutes: groups.filter((group) => group.errored).length,
+    siteAppRoutes: groups.filter((group) => getSiteAppRoute(group.routeName))
+      .length,
     unchangedRoutes: groups.filter(
       (group) =>
         !group.changed && !group.errored && !buildMarkdownDiff(group.routeName),
@@ -1333,15 +1363,22 @@ function buildReviewManifest(groups, coverage) {
     routes: groups.map((group) => {
       const markdownDiff = buildMarkdownDiff(group.routeName);
       const copyChanged = Boolean(markdownDiff);
-      const siteVariant = getRouteSiteVariant(group.routeName);
+      const siteAppRoute = getSiteAppRoute(group.routeName);
+      const siteVariant =
+        siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
+      const routePath =
+        routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
       return {
         routeName: group.routeName,
-        routeLabel: siteVariant
-          ? labelVariantRoute(group.routeName, siteVariant)
-          : labelRoute(group.routeName),
-        routePath: routePaths.get(group.routeName) ?? null,
-        routeUrl: getRouteUrl(group.routeName),
+        routeLabel: siteAppRoute
+          ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
+          : siteVariant
+            ? labelVariantRoute(group.routeName, siteVariant)
+            : labelRoute(group.routeName),
+        routePath,
+        routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
         authState: getRouteAuthState(group.routeName),
+        siteApp: Boolean(siteAppRoute),
         siteVariant,
         changed: group.changed,
         copyChanged,
@@ -1437,7 +1474,20 @@ function safeReadDir(dir, { dirsOnly = false } = {}) {
 
 function routeSortIndex(routeName) {
   const index = routeOrder.indexOf(routeName);
-  return index === -1 ? routeOrder.length : index;
+  if (index !== -1) {
+    return index;
+  }
+
+  const siteAppRoute = getSiteAppRoute(routeName);
+  if (!siteAppRoute) {
+    return routeOrder.length;
+  }
+
+  const appIndex = SITE_APP_ORDER.indexOf(siteAppRoute.siteVariant);
+  const routeIndex = getSiteAppRoutes(siteAppRoute.siteVariant).findIndex(
+    (route) => route.routeName === siteAppRoute.routeName,
+  );
+  return routeOrder.length + appIndex * 100 + routeIndex;
 }
 
 function projectSortIndex(projectName) {
@@ -1580,6 +1630,99 @@ function getRouteSiteVariant(routeName) {
   }
   const match = /^variant-([a-z0-9]+)-/i.exec(routeName);
   return match && VARIANT_DOMAIN_LABELS[match[1]] ? match[1] : null;
+}
+
+function getSiteAppRoute(routeName) {
+  for (const siteVariant of SITE_APP_ORDER) {
+    const prefix = `site-app-${siteVariant}-`;
+    if (!routeName.startsWith(prefix)) {
+      continue;
+    }
+    const siteAppRouteName = routeName.slice(prefix.length);
+    const route = getSiteAppRoutes(siteVariant).find(
+      (candidate) => candidate.routeName === siteAppRouteName,
+    );
+    if (route) {
+      return {
+        ...route,
+        routeName: siteAppRouteName,
+        siteVariant,
+      };
+    }
+  }
+  return null;
+}
+
+function getSiteAppRoutes(siteVariant) {
+  return siteAppRoutesByVariant.get(siteVariant) ?? [];
+}
+
+function loadSiteAppRouteManifests() {
+  const manifests = new Map();
+  const manifestDirectory = path.join(screenshotsRoot, "site-app-manifests");
+
+  for (const fileName of safeReadDir(manifestDirectory)) {
+    if (!fileName.toLowerCase().endsWith(".json")) {
+      continue;
+    }
+
+    const manifestPath = path.join(manifestDirectory, fileName);
+    try {
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+      if (
+        !manifest ||
+        !SITE_APP_ORDER.includes(manifest.appName) ||
+        !Array.isArray(manifest.routes)
+      ) {
+        throw new Error("invalid manifest shape");
+      }
+
+      const routes = manifest.routes
+        .filter(
+          (route) =>
+            route &&
+            typeof route.label === "string" &&
+            typeof route.routeName === "string" &&
+            typeof route.routePath === "string",
+        )
+        .map((route) => ({
+          covers: Array.isArray(route.covers)
+            ? route.covers.filter((filePath) => typeof filePath === "string")
+            : [],
+          routeLabel: route.label,
+          routeName: route.routeName,
+          routePath: route.routePath,
+        }));
+      if (routes.length === 0) {
+        throw new Error("manifest contains no routes");
+      }
+      manifests.set(manifest.appName, routes);
+    } catch (error) {
+      console.warn(
+        `[visual-review] Could not read site-app route manifest at ${manifestPath}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return manifests;
+}
+
+function registerSiteAppRouteSpecs(specs, paths, manifests) {
+  for (const [siteVariant, routes] of manifests) {
+    for (const route of routes) {
+      const name = `site-app-${siteVariant}-${route.routeName}`;
+      specs.set(name, {
+        activationSelector: "body",
+        authenticated: false,
+        covers: route.covers,
+        path: route.routePath,
+        required: true,
+        requiredProjects: ["default", "visual-mobile"],
+        siteVariant,
+      });
+      paths.set(name, route.routePath);
+    }
+  }
 }
 
 function getVariantDomainLabel(siteVariant) {

@@ -76,10 +76,17 @@ export function isVisualUiSourceFile(filePath) {
  *
  * `fileExists` is injectable so the unit tests do not need real files.
  */
-export function getChangedUiFiles(changedFiles, fileExists = defaultFileExists) {
+export function getChangedUiFiles(
+  changedFiles,
+  fileExists = defaultFileExists,
+  explicitlyCoveredFiles = new Set(),
+) {
   if (!Array.isArray(changedFiles)) return [];
   return [...new Set(changedFiles.map(normalizeRepoPath))]
-    .filter(isVisualUiSourceFile)
+    .filter(
+      (filePath) =>
+        isVisualUiSourceFile(filePath) || explicitlyCoveredFiles.has(filePath),
+    )
     .filter((filePath) => fileExists(filePath))
     .sort((a, b) => a.localeCompare(b));
 }
@@ -95,7 +102,18 @@ export function buildVisualCoverage({
   routes = [],
 }) {
   const analysisAvailable = Array.isArray(changedFiles);
-  const changedUiFiles = getChangedUiFiles(changedFiles, fileExists);
+  const explicitlyCoveredFiles = new Set(
+    routes.flatMap((route) =>
+      Array.isArray(route.covers)
+        ? route.covers.map(normalizeRepoPath).filter(Boolean)
+        : [],
+    ),
+  );
+  const changedUiFiles = getChangedUiFiles(
+    changedFiles,
+    fileExists,
+    explicitlyCoveredFiles,
+  );
   const blockingIssues = [];
   if (!analysisAvailable) {
     blockingIssues.push(

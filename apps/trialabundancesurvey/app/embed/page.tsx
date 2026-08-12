@@ -1,0 +1,36 @@
+import TreatyVoteSection from "@/components/landing/treaty-vote-section";
+import { EmbedReadySignal } from "@optimitron/survey-embed";
+
+export const dynamic = "force-dynamic";
+
+type EmbedPageProps = {
+  searchParams?: Promise<{
+    ref?: string;
+    embed?: string;
+    visual?: string;
+  }>;
+};
+
+/**
+ * Framed survey surface for partners (iframe / embed.js).
+ * Referral: ?ref=CODE
+ */
+export default async function EmbedPage({ searchParams }: EmbedPageProps) {
+  const resolved = (await searchParams) ?? {};
+  const ref = resolved.ref;
+
+  return (
+    <div
+      className="min-h-screen bg-background p-2 sm:p-4"
+      data-embed="1"
+      data-ref={ref ?? ""}
+    >
+      <EmbedReadySignal />
+      <TreatyVoteSection
+        postVoteMode="lite"
+        disableIntroAnimation={resolved.visual === "1"}
+      />
+      {ref ? <p className="sr-only">Referral code {ref}</p> : null}
+    </div>
+  );
+}

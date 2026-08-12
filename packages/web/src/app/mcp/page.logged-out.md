@@ -19,7 +19,7 @@
 - MCP SERVER URL
 - COPY
 - ```text
-http://localhost:3001/api/mcp
+http://127.0.0.1:3001/api/mcp
 ```
 - [INSTALL MCP](#install)
 - [SEE TOOLS](#tools)
@@ -27,7 +27,7 @@ http://localhost:3001/api/mcp
 ### ONE COMMAND, THEN /MCP.
 - Use this when the agent is working in a repo and needs the live queue, manual, task comments, and coordination tools.
 - ```text
-claude mcp add --transport http optimitron http://localhost:3001/api/mcp
+claude mcp add --transport http optimitron http://127.0.0.1:3001/api/mcp
 ```
 - 1 RUN THE COMMAND Paste it in the terminal where Claude Code is installed.
 - 2 OPEN /MCP Inside Claude Code, run /mcp and follow the browser sign-in flow.
@@ -51,7 +51,7 @@ claude mcp add --transport http optimitron http://localhost:3001/api/mcp
 {
   "mcpServers": {
     "optimitron": {
-      "url": "http://localhost:3001/api/mcp"
+      "url": "http://127.0.0.1:3001/api/mcp"
     }
   }
 }
@@ -73,19 +73,21 @@ claude mcp add --transport http optimitron http://localhost:3001/api/mcp
 ### ENDPOINT AND DISCOVERY.
 #### MCP ENDPOINT
 - ```text
-POST http://localhost:3001/api/mcp
+POST http://127.0.0.1:3001/api/mcp
 ```
 #### TOOL CATALOG
 - ```text
-GET http://localhost:3001/api/mcp/tools
+GET http://127.0.0.1:3001/api/mcp/tools
 ```
 #### OAUTH METADATA
 - ```text
-GET http://localhost:3001/.well-known/oauth-authorization-server
+GET http://127.0.0.1:3001/.well-known/oauth-authorization-server
 ```
 - PERMISSIONS
 ### SCOPES ARE THE LEASH.
 - Manage your private tasks, dependencies, comments, queues, and next-action recommendations
+- Manage private tasks for organizations where you have permission
+- Approve exact outbound-action payloads as an authenticated human
 - Admin-only: create and manage public Optimitron tasks, people, organizations, estimates, and dependencies
 - Create sourced public Earth-data records: memorials, evidence, intervention reports, organization signatories, and correction reports
 - Admin-only: hide, restore, merge, and resolve Earth-data records and reports

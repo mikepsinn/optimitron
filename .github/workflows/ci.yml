@@ -25,6 +25,7 @@ jobs:
     outputs:
       web: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+      site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -36,7 +37,9 @@ jobs:
         id: manual
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
-        run: echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+          echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Detect web-impacting changes
         id: filter
@@ -76,6 +79,16 @@ jobs:
               - 'packages/db/src/managed-data/**'
               - 'packages/web/src/**'
               - 'packages/web/public/**'
+            site_apps_changed:
+              - 'apps/**'
+              - 'packages/db/**'
+              - 'packages/site-kit/**'
+              - 'scripts/site-app-navigation.test.ts'
+              - 'scripts/smoke-site-apps.mjs'
+              - 'package.json'
+              - 'pnpm-workspace.yaml'
+              - 'pnpm-lock.yaml'
+              - '.github/workflows/ci.yml'
 
   leak-scan:
     name: leak-scan
@@ -140,8 +153,11 @@ jobs:
       - name: Apply database migrations
         run: pnpm db:deploy
 
+      # Site apps under apps/* are validated in the site-app jobs.
+      # (they are Next entrypoints, not library packages). Exclude them here
+      # so recursive package filters do not `next build` unfinished brands.
       - name: Build
-        run: pnpm --filter '!@optimitron/web' run build
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run build
 
       # Dropped the dry-run managed-data check that used to live here:
       # the same script runs with `--apply` against a freshly-migrated
@@ -152,13 +168,258 @@ jobs:
       # diff before pushing.
 
       - name: Typecheck
-        run: pnpm --filter '!@optimitron/web' run typecheck
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run typecheck
 
       - name: Lint
-        run: pnpm --filter '!@optimitron/web' run lint
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run lint
 
       - name: Test
-        run: pnpm --filter '!@optimitron/web' run test
+        run: pnpm --filter '!@optimitron/web' --filter '!@apps/*' run test
+
+  site-apps-static-validate:
+    name: site-apps-static-validate
+    # Gates all apps/* site packages (shared @optimitron/db schema).
+    # Typecheck every app; unit-test apps with vitest unit suites; WoD DB smoke.
+    # packages/web keeps its own e2e/deploy smoke — not replaced here.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: true
+      NODE_ENV: test
+      # Match other optimitron CI Postgres services (shared schema, not per-app DBs)
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+      NEXTAUTH_URL: http://127.0.0.1:3010
+      NEXT_PUBLIC_SITE_VARIANT: warondisease.org
+      SKIP_DB_TEST_SETUP: "1"
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test -d test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Skip site-app validation
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') != true }}
+        shell: bash
+        run: echo "No apps/* or packages/db changes; skipping site-app validation."
+
+      - name: Checkout
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify site-app navigation routes
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm test:site-app-navigation
+
+      - name: Apply database migrations
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm db:deploy
+
+      - name: Generate Prisma client
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm db:generate
+
+      - name: Build app dependencies
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm build:app-dependencies
+
+      - name: Typecheck all @apps/*
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm typecheck:apps
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+
+      - name: Lint all @apps/*
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm lint:apps
+
+      - name: Treaty DB smoke (ReferendumVote path)
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm smoke:warondisease-db
+
+      - name: Unit tests @apps/* (excluding integration/)
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        run: pnpm test:apps:unit
+
+  site-apps-build:
+    name: site-apps-build (${{ matrix.app }})
+    if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: warondisease
+            variant: warondisease.org
+            port: 4010
+            postgres_image: postgres:16
+            requires_database: true
+          - app: dfda
+            variant: dfda
+            port: 4011
+            postgres_image: ""
+            requires_database: false
+          - app: wishocracy
+            variant: wishocracy.org
+            port: 4013
+            postgres_image: ""
+            requires_database: false
+          - app: trialabundancesurvey
+            variant: trialabundancesurvey.org
+            port: 4014
+            postgres_image: ""
+            requires_database: false
+          - app: curedao
+            variant: curedao.org
+            port: 4015
+            postgres_image: ""
+            requires_database: false
+          - app: acceleratedmedicine
+            variant: acceleratedmedicine.org
+            port: 4016
+            postgres_image: ""
+            requires_database: false
+    env:
+      CI: true
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      NEXTAUTH_SECRET: test-secret-minimum-32-characters-long-for-validation
+      NEXTAUTH_URL: http://127.0.0.1:${{ matrix.port }}
+      NEXT_PUBLIC_SITE_VARIANT: ${{ matrix.variant }}
+      SKIP_DB_TEST_SETUP: "1"
+      NODE_OPTIONS: --max-old-space-size=6144
+    services:
+      postgres:
+        image: ${{ matrix.postgres_image }}
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.14.0 --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: apps/${{ matrix.app }}/.next/cache
+          key: site-app-next-${{ runner.os }}-${{ matrix.app }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            site-app-next-${{ runner.os }}-${{ matrix.app }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            site-app-next-${{ runner.os }}-${{ matrix.app }}-
+
+      - name: Apply database migrations
+        if: ${{ matrix.requires_database }}
+        run: pnpm db:deploy
+
+      - name: Build app dependencies
+        run: pnpm build:app-dependencies
+
+      - name: Build @apps/${{ matrix.app }}
+        run: pnpm --filter "@apps/${{ matrix.app }}" run build
+        env:
+          NODE_ENV: production
+
+      - name: Smoke and capture @apps/${{ matrix.app }} navigation pages
+        run: pnpm --dir packages/web exec tsx ../../scripts/smoke-site-apps.mjs "${{ matrix.app }}"
+        env:
+          NODE_ENV: production
+          PLAYWRIGHT_BROWSER_CHANNEL: chrome
+          SITE_APP_SCREENSHOT_ROOT: ${{ github.event_name == 'pull_request' && 'packages/web/output/playwright/site-app-screenshots' || '' }}
+
+      - name: Upload @apps/${{ matrix.app }} visual screenshots
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: site-app-visual-${{ matrix.app }}
+          path: packages/web/output/playwright/site-app-screenshots
+          if-no-files-found: error
+
+  site-apps-validate:
+    name: site-apps-validate
+    if: ${{ always() }}
+    needs: [changes, site-apps-static-validate, site-apps-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify site-app validation results
+        env:
+          SITE_APPS_CHANGED: ${{ needs.changes.outputs.site_apps }}
+          STATIC_RESULT: ${{ needs.site-apps-static-validate.result }}
+          BUILD_RESULT: ${{ needs.site-apps-build.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$SITE_APPS_CHANGED" != "true" ]; then
+            echo "No site-app changes; validation was skipped."
+            exit 0
+          fi
+          test "$STATIC_RESULT" = "success" || {
+            echo "::error::Site-app static validation result: $STATIC_RESULT"
+            exit 1
+          }
+          test "$BUILD_RESULT" = "success" || {
+            echo "::error::Site-app build matrix result: $BUILD_RESULT"
+            exit 1
+          }
+          echo "All site-app static, build, and smoke checks passed."
 
   web-static-validate:
     name: web-static-validate
@@ -411,9 +672,10 @@ jobs:
 
   web-visual-review:
     name: web-visual-review
-    if: ${{ github.event_name == 'pull_request' && needs.web-e2e-validate.result == 'success' && fromJSON(needs.changes.outputs.web || 'false') == true }}
+    if: ${{ always() && github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) && needs.web-e2e-validate.result == 'success' && (fromJSON(needs.changes.outputs.site_apps || 'false') != true || needs.site-apps-build.result == 'success') }}
     needs:
       - changes
+      - site-apps-build
       - web-e2e-validate
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -445,11 +707,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          submodules: recursive
-          # Full history so build-visual-review.mjs can diff copy snapshots
-          # against the merge-base of origin/main. The default shallow clone
-          # has no main ref, which silently disabled the markdown-diff panels.
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Copy diffs need the merge-base with origin/main. A blobless clone
+          # keeps that history without downloading every historical asset.
           fetch-depth: 0
+          filter: blob:none
 
       - name: Enable Corepack
         run: |
@@ -466,12 +728,22 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Download PR visual screenshots
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/download-artifact@v6
         with:
           name: web-pr-visual-screenshots
           path: packages/web/screenshots
 
+      - name: Download site-app visual screenshots
+        if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
+        uses: actions/download-artifact@v6
+        with:
+          pattern: site-app-visual-*
+          path: packages/web/screenshots
+          merge-multiple: true
+
       - name: Download PR markdown copy snapshots
+        if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/download-artifact@v6
         with:
           name: web-pr-copy-snapshots

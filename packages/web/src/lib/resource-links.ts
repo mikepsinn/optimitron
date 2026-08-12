@@ -2,7 +2,7 @@
  * Resource Links - Single Source of Truth
  *
  * All URLs for the field manual, audiobook podcast, and purchase links.
- * Used by: ResourcePromoCard, email templates.
+ * Used by email templates.
  *
  * Change a URL here -> it updates everywhere.
  */
@@ -11,7 +11,6 @@
 
 export const MANUAL_URLS = {
   readOnline: 'https://manual.warondisease.org',
-  paperback: 'https://www.amazon.com/dp/B0GPLXFMMT',
   kindle: 'https://www.amazon.com/dp/B0GPBH77XN',
   allRetailers: 'https://books2read.com/u/baegEq',
   goodreads: 'https://www.goodreads.com/book/show/248248875-how-to-end-war-and-disease',
@@ -48,7 +47,6 @@ export const LISTEN_LINKS = [
 ] as const
 
 export const BUY_LINKS = [
-  { label: 'Amazon Paperback', href: MANUAL_URLS.paperback, subtitle: 'Ships in 1-2 days', primary: true },
   { label: 'Amazon Kindle', href: MANUAL_URLS.kindle, subtitle: 'Instant download' },
   { label: 'All Retailers', href: MANUAL_URLS.allRetailers, subtitle: 'Apple Books, Kobo, B&N, and more' },
   { label: 'Goodreads', href: MANUAL_URLS.goodreads, subtitle: 'Rate & review' },

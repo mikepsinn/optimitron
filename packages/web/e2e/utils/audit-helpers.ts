@@ -4,6 +4,18 @@
 import type { Page, Response } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
+import {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+  retryAfterNavigation,
+  waitForPaint,
+} from "./visual-settle.mjs";
+
+export {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+  waitForPaint,
+};
 
 /**
  * Wait for a demo slide to actually render after hash navigation.
@@ -34,63 +46,6 @@ export async function waitForDemoSlide(
   // with timeouts). CSS overrides can't force these — we need to wait for all
   // phases to complete. Most slides finish within 5-8 seconds.
   await page.waitForTimeout(8_000);
-}
-
-/**
- * Inject CSS that disables all transitions/animations and forces all
- * opacity-0 elements to full opacity. Also handles Framer Motion
- * which uses JavaScript-driven inline styles that CSS can't override.
- */
-export async function forceAnimationsComplete(page: Page): Promise<void> {
-  await retryAfterNavigation(page, async () => {
-    await page.addStyleTag({
-      content: `
-        *, *::before, *::after {
-          animation-duration: 0s !important;
-          animation-delay: 0s !important;
-          transition-duration: 0s !important;
-          transition-delay: 0s !important;
-        }
-        .opacity-0 { opacity: 1 !important; }
-        [data-visual-force-visible] {
-          opacity: 1 !important;
-          transform: none !important;
-        }
-      `,
-    });
-  });
-
-  // Framer Motion sets opacity via inline styles while animating, which CSS
-  // overrides can't reliably normalize. Force any inline opacity below 1 up to
-  // 1 so audits measure the settled UI state rather than a transient frame.
-  // Elements can hydrate and start a fade after a scan completes, so rescan
-  // until a pass finds nothing new (bounded — a scan that races hydration was
-  // the main source of blank sections in visual-review diffs).
-  await retryAfterNavigation(page, async () => {
-    for (let pass = 0; pass < 5; pass++) {
-      const forced = await page.evaluate(() => {
-        let count = 0;
-        const all = document.querySelectorAll("*");
-        for (const el of all) {
-          const htmlEl = el as HTMLElement;
-          const inlineOpacity = Number.parseFloat(htmlEl.style.opacity);
-          if (Number.isFinite(inlineOpacity) && inlineOpacity < 1) {
-            htmlEl.dataset.visualForceVisible = "";
-            htmlEl.style.opacity = "1";
-            htmlEl.style.transform = "none";
-            count++;
-          }
-        }
-        return count;
-      });
-      if (forced === 0 && pass > 0) break;
-      if (pass < 4) {
-        await page.waitForTimeout(100);
-      }
-    }
-  });
-
-  await waitForPaint(page);
 }
 
 /**
@@ -136,16 +91,6 @@ async function freezeDemoPlayback(page: Page): Promise<void> {
   await page.waitForTimeout(150);
 }
 
-export async function waitForPaint(page: Page): Promise<void> {
-  await retryAfterNavigation(page, async () => {
-    await page.evaluate(() => new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => resolve());
-      });
-    }));
-  });
-}
-
 /**
  * Write a JSON audit report to the playwright-report directory.
  */
@@ -158,37 +103,6 @@ export function writeAuditReport(
   const filePath = path.join(dir, `${name}.json`);
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   return filePath;
-}
-
-async function retryAfterNavigation(
-  page: Page,
-  action: () => Promise<void>,
-  maxRetries = 2,
-): Promise<void> {
-  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
-    try {
-      await action();
-      return;
-    } catch (error) {
-      if (!isExecutionContextResetError(error) || attempt === maxRetries) {
-        throw error;
-      }
-
-      await page.waitForLoadState("domcontentloaded").catch(() => {});
-      await page.waitForTimeout(250);
-    }
-  }
-}
-
-function isExecutionContextResetError(error: unknown): boolean {
-  if (!(error instanceof Error)) {
-    return false;
-  }
-
-  return error.message.includes("Execution context was destroyed")
-    || error.message.includes("Cannot find context with specified id")
-    || error.message.includes("Most likely the page has been closed")
-    || error.message.includes("Target page, context or browser has been closed");
 }
 
 /**

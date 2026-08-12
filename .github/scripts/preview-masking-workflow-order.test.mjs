@@ -183,6 +183,44 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
 });
 
+test("publishes every site-app screenshot in the PR visual review", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const siteAppBuildIndex = workflow.indexOf("  site-apps-build:");
+  const uploadIndex = workflow.indexOf(
+    "- name: Upload @apps/${{ matrix.app }} visual screenshots",
+  );
+  const visualReviewJobIndex = workflow.indexOf("  web-visual-review:");
+  const downloadIndex = workflow.indexOf(
+    "- name: Download site-app visual screenshots",
+  );
+  const buildIndex = workflow.indexOf(
+    "- name: Build visual review index",
+    visualReviewJobIndex,
+  );
+
+  assert.notEqual(siteAppBuildIndex, -1, "site-app build job is missing");
+  assert.notEqual(uploadIndex, -1, "site-app screenshot upload is missing");
+  assert.notEqual(visualReviewJobIndex, -1, "web visual-review job is missing");
+  assert.notEqual(downloadIndex, -1, "site-app screenshot download is missing");
+  assert.notEqual(buildIndex, -1, "visual-review build step is missing");
+  assert.ok(siteAppBuildIndex < uploadIndex);
+  assert.ok(uploadIndex < visualReviewJobIndex);
+  assert.ok(visualReviewJobIndex < downloadIndex);
+  assert.ok(
+    downloadIndex < buildIndex,
+    "site-app screenshots must be downloaded before the review HTML is built",
+  );
+  assert.match(
+    workflow,
+    /pattern: site-app-visual-\*[\s\S]*?merge-multiple: true/u,
+  );
+  assert.match(
+    workflow,
+    /fromJSON\(needs\.changes\.outputs\.web \|\| 'false'\) == true \|\| fromJSON\(needs\.changes\.outputs\.site_apps \|\| 'false'\) == true/u,
+    "an apps-only PR should still publish its visual review",
+  );
+});
+
 test("prefers the exact PR-base visual artifact regardless of overall run status", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const baselineStepStart = workflow.indexOf(

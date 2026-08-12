@@ -1,0 +1,61 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Windows: bash tools sometimes create a literal NUL file instead of /dev/null
+NUL
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+!.env.example
+!.env.example.*
+!.env.shared.example
+!.env.variant.*.example
+!.env.test
+
+# vercel
+.vercel
+
+.vercel-projects/
+.vercel-project-ids.txt
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.claude/settings.local.json
+
+# sentry
+.sentryclirc
+sentry.properties
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# GitHub Actions local testing
+.secrets
+.env.act
+*.act.json
+act/
+test-results/
+backups/
+.vercel
+
+# Auto Claude data directory
+.auto-claude/
+.claude_settings.json
+docs/questions.md
+playwright-report/

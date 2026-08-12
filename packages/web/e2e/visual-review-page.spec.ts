@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { forceAnimationsComplete } from "./utils/audit-helpers";
+import {
+  forceAnimationsComplete,
+  prepareFullPageVisualCapture,
+} from "./utils/audit-helpers";
 
 const WEB_ROOT = path.resolve(__dirname, "..");
 const SMOKE_SCRIPT = path.join(
@@ -11,6 +14,11 @@ const SMOKE_SCRIPT = path.join(
   "visual-review-page.smoke.mjs",
 );
 const SMOKE_HTML = path.join(WEB_ROOT, "output", "visual-page-smoke.html");
+const SITE_APPS_SMOKE_HTML = path.join(
+  WEB_ROOT,
+  "output",
+  "visual-page-site-apps-smoke.html",
+);
 const ONE_PIXEL_PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
   "base64",
@@ -46,6 +54,58 @@ test("animation normalization stays applied through later Framer updates", async
   await expect(reveal).toHaveAttribute("data-visual-force-visible", "");
   await expect(reveal).toHaveCSS("opacity", "1");
   await expect(reveal).toHaveCSS("transform", "none");
+});
+
+test("full-page preparation completes scroll state and loads a lazy embed", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.route("https://visual.test/embed", (route) =>
+    route.fulfill({
+      body: '<main id="embed-ready">Loaded survey embed</main>',
+      contentType: "text/html",
+      status: 200,
+    }),
+  );
+  await page.setContent(`
+    <div style="height: 12000px">Scroll-driven page</div>
+    <iframe
+      id="lazy-embed"
+      title="Lazy embed"
+      loading="lazy"
+      src="https://visual.test/embed"
+      style="height: 800px"
+    ></iframe>
+    <script>
+      const updateVisualState = () => {
+        document.body.dataset.scrollState =
+          window.scrollY >= 8000 ? "complete" : "initial";
+        if (window.scrollY > 0) {
+          const growth = document.createElement("div");
+          growth.style.height = "1000px";
+          document.body.append(growth);
+        }
+      };
+      window.addEventListener("scroll", updateVisualState, { passive: true });
+      window.addEventListener("optimitron:visual-capture", () => {
+        document.body.dataset.scrollState = "complete";
+      });
+      updateVisualState();
+    </script>
+  `);
+
+  await prepareFullPageVisualCapture(page);
+
+  await expect(page.locator("body")).toHaveAttribute(
+    "data-scroll-state",
+    "complete",
+  );
+  await expect(
+    page.frameLocator("#lazy-embed").locator("#embed-ready"),
+  ).toHaveText("Loaded survey embed");
+  await expect(page.locator("#lazy-embed")).toHaveAttribute("loading", "eager");
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
 test("new routes show their after-only screenshot", async ({
@@ -182,6 +242,56 @@ test("collapsed variant routes remain available while filtering", async ({
   await expect(page.locator('iframe[src="https://dfda.earth/"]')).toHaveCount(
     1,
   );
+});
+
+test("site apps are separated into collapsible groups", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.goto(pathToFileURL(SITE_APPS_SMOKE_HTML).toString());
+
+  const siteApps = page.locator('.rail-group[data-key="site-apps"]');
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (2)");
+
+  const warOnDisease = siteApps.locator(
+    'details[data-site-app="warondisease"]',
+  );
+  const dfda = siteApps.locator('details[data-site-app="dfda"]');
+  const warOnDiseaseHome = warOnDisease.locator(
+    '[data-route="site-app-warondisease-home"]',
+  );
+  const dfdaHome = dfda.locator('[data-route="site-app-dfda-home"]');
+
+  await expect(warOnDisease).toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeVisible();
+  await expect(dfda).not.toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeHidden();
+
+  await dfda.locator("summary").click();
+  await expect(dfda).toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeVisible();
+
+  await warOnDisease.locator("summary").click();
+  await expect(warOnDisease).not.toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeHidden();
+
+  const routeFilter = page.getByRole("searchbox", { name: "Filter routes" });
+  await routeFilter.fill("warondisease");
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (1/2)");
+  await expect(warOnDisease).toHaveAttribute("open", "");
+  await expect(warOnDiseaseHome).toBeVisible();
+  await expect(dfda).toBeHidden();
+
+  await routeFilter.fill("");
+  await expect(warOnDisease).not.toHaveAttribute("open", "");
+  await expect(dfda).toHaveAttribute("open", "");
+
+  await page.goto(
+    `${pathToFileURL(SITE_APPS_SMOKE_HTML)}#route=site-app-dfda-home`,
+  );
+  await expect(dfda).toHaveAttribute("open", "");
+  await expect(dfdaHome).toBeVisible();
 });
 
 test("route verdicts persist and advance through every unreviewed route", async ({

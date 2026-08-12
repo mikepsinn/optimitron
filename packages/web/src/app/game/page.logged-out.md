@@ -79,10 +79,11 @@
 - Productive Economy
 - Parasitic Economy
 - % of GDP
-- [💀[deaths] HUMANS TERMINATED🔥[governance waste] BURNED BY MISALIGNED GOVERNMENTS💣[destruction spend] SPENT ON DESTRUCTION INSTEAD OF CURES](/plaintiffs)
+- [💀[deaths]🔥[governance waste]💣[destruction spend]](/plaintiffs)
 - Right now, doing nothing means you lose. Vote and you stop.
 ### EVERY POLICY GRADED A THROUGH F
 - I ran causal inference on decades of data across dozens of countries. Most of your policies fail.
+
 | POLICY | HEALTH | INCOME | GRADE | ACTION |
 | --- | --- | --- | --- | --- |
 | Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp | B | ✅ IMPLEMENT |
@@ -90,6 +91,7 @@
 | Pragmatic Clinical Trial Funding Reform | +0.30 yrs | +0.05 pp | A | ✅ IMPLEMENT |
 | Military: Adopt Switzerland's Approach | +0.05 yrs | +0.41 pp | B | 🔄 REALLOCATE |
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp | B | ✅ IMPLEMENT |
+
 - [SEE ALL POLICY GRADES →](/opg)
 ### WHEN YOU ASK PEOPLE WHAT THEY WANT
 - Cures beat bombs. Nobody has ever asked. Until now.
@@ -181,18 +183,22 @@
 - [More Details](/agencies/dfda/conditions/high-cholesterol/treatments/ezetimibe-10mg)
 - [Explore More Conditions on dfda.earth →](https://dfda.earth)
 - You're on Path A. You chose it by not choosing.
+
 | SCENARIO | INCOME / PERSON / YEAR | MEDIAN HALE |
 | --- | --- | --- |
 | STATUS QUO Somalia, But Everywhere | $14K baseline | 63.3 yrs |
 | 1% TREATY Minimum Acceptable Governance | 1.9× current$27K | 79.4 yrs |
 | OPTIMAL GOVERNANCE End the $101T/yr Dysfunction Tax | 35.0× current$504K | 90.1 yrs |
+
 - [CHOOSE PATH B](/prize)
 ### THE DECISION MATRIX
 - Depositors claim the pool if the targets are missed. Earth Optimization Point holders split it if the targets are hit. You can do both.
+
 | YOUR MOVE | TARGETS MISSED | TARGETS HIT |
 | --- | --- | --- |
 | DEPOSIT + EARN POINTS | Your deposit claims a pro-rata share of the realized pool:~[9](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html)x projected by [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) at [15.8%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) annually. | Your points split the pool: Modeled ~[$6,670](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) per point if [1%](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) of global investable assets enter. |
 | DO NEITHER | No prize claim. | No prize claim. |
+
 - Modeled world outcome: Targets missed — the destructive economy reaches [50% of GDP by 2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). Targets hit — [1.6x](https://manual.WarOnDisease.org/knowledge/appendix/recruitment-and-propaganda-plan.html) lifetime income and +[16.1](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html) healthy years.
 - Every verified voter you bring in earns you 1 Earth Optimization Point. Deposits are locked until [2040](https://manual.WarOnDisease.org/knowledge/strategy/earth-optimization-prize.html). All figures are projections, not guarantees.
 - [SEE HOW THE PRIZE WORKS](/prize)
@@ -202,6 +208,7 @@
 - LEAST BAD GOVERNMENTS
 - COLUMNS
 - Ranked by military-to-clinical-trials spending ratio, then total military spend, then least clinical trial funding.
+
 | #? | COUNTRY? | MILITARY? | KILLED? | MIL/TRIALS ↓? | HALE? | MEDIAN INCOME? | MIL/RESEARCH? |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [🇵🇰Pakistan](/governments/PK) | [$10B](/governments/PK) | [1,503,000](/governments/PK) | [51,500:1](/governments/PK) | [57.4](/governments/PK) | [$1.3K](/governments/PK) | [3,433:1](/governments/PK) |
@@ -214,21 +221,24 @@
 | 8 | [🇮🇳India](/governments/IN) | [$84B](/governments/IN) | [100,000](/governments/IN) | [418:1](/governments/IN) | [60.3](/governments/IN) | [$1.7K](/governments/IN) | [27.9:1](/governments/IN) |
 | 9 | [🇬🇧United Kingdom](/governments/GB) | [$75B](/governments/GB) | [500,000](/governments/GB) | [414:1](/governments/GB) | [70.1](/governments/GB) | [$17.2K](/governments/GB) | [27.8:1](/governments/GB) |
 | 10 | [🇪🇹Ethiopia](/governments/ET) | [$1B](/governments/ET) | [873,000](/governments/ET) | [333:1](/governments/ET) | [56.0](/governments/ET) | [$1.1K](/governments/ET) | [21.3:1](/governments/ET) |
+
 - [💀 SEE ALL REPORT CARDS](/governments)
 ### WORST PLAYERS: POLITICIANS
 - How your representatives actually vote vs what humans actually wanted.
+
 | #? | NAME? | WIDOW PRODUCTION? | TESTING MEDICINES? | SCORE? | RATIO? |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [James E. Risch Idaho](/governments/US/politicians/R000584) | $2.7T | $0 | -$2.7T | ∞ |
 | 2 | [James Lankford Oklahoma](/governments/US/politicians/L000575) | $2.7T | $0 | -$2.7T | ∞ |
 | 3 | [John Kennedy Louisiana](/governments/US/politicians/K000393) | $2.7T | $0 | -$2.7T | ∞ |
-| 4 | [Tommy Tuberville Alabama](/governments/US/politicians/T000278) | $2.6T | $0 | -$2.6T | ∞ |
-| 5 | [Rick Scott Florida](/governments/US/politicians/S001217) | $2.6T | $0 | -$2.6T | ∞ |
-| 6 | [Tim Scott South Carolina](/governments/US/politicians/S001184) | $2.6T | $0 | -$2.6T | ∞ |
-| 7 | [Roger Marshall Kansas](/governments/US/politicians/M001198) | $2.6T | $0 | -$2.6T | ∞ |
-| 8 | [Pete Ricketts Nebraska](/governments/US/politicians/R000618) | $1.9T | $0 | -$1.9T | ∞ |
-| 9 | [Eric Schmitt Missouri](/governments/US/politicians/S001227) | $1.8T | $0 | -$1.8T | ∞ |
-| 10 | [Cynthia M. Lummis Wyoming](/governments/US/politicians/L000571) | $895B | $0 | -$895B | ∞ |
+| 4 | [Steve Daines Montana](/governments/US/politicians/D000618) | $2.7T | $0 | -$2.7T | ∞ |
+| 5 | [Mike Crapo Idaho](/governments/US/politicians/C000880) | $2.7T | $0 | -$2.7T | ∞ |
+| 6 | [Ann Wagner Missouri](/governments/US/politicians/W000812) | $2.7T | $0 | -$2.7T | ∞ |
+| 7 | [Darin LaHood Illinois](/governments/US/politicians/L000585) | $2.7T | $0 | -$2.7T | ∞ |
+| 8 | [Tony Gonzales Texas](/governments/US/politicians/G000594) | $2.7T | $0 | -$2.7T | ∞ |
+| 9 | [Pete Sessions Texas](/governments/US/politicians/S000250) | $2.7T | $0 | -$2.7T | ∞ |
+| 10 | [Randy Feenstra Iowa](/governments/US/politicians/F000446) | $2.7T | $0 | -$2.7T | ∞ |
+
 - [SEE ALL POLITICIANS](/governments/US/politicians)
 ### PRESIDENT MANAGEMENT SYSTEM
 - You give these people $37 trillion a year. Their job is to promote the general welfare which means increasing median health and wealth. Your job is to remind them that this is their job. Please do your job by clicking the remind button.
@@ -261,7 +271,7 @@
 - 💸 WASTED ON DISEASE WHILE THEY DELAY
 - [money]
 - RATE: [$9.90 trillion/year](https://manual.WarOnDisease.org/knowledge/appendix/dfda-impact-paper.html) + PRODUCTIVITY LOSSES ÷ 365 × DELAY DAYS
-### ↳ 202 employees have overdue tasks
+### ↳ 206 employees have overdue tasks
 - 👉 CLICK THE REMIND BUTTON TO DO YOUR JOB
 - ASSIGNEE
 - TASK
@@ -290,7 +300,9 @@
 - [Sifi Ghrieb](/tasks/1-pct-treaty-signer-dz)
 - [[initials]](/people/sifi-ghrieb-dz)
 - [SIGN THE 1% TREATY](/tasks/1-pct-treaty-signer-dz)
-- [SEE ALL 202 OVERDUE TASKS](/tasks/1-pct-treaty#subtasks)
+- ← PREV
+- PAGE 1 / 21
+- NEXT →
 ### OPTIMIZED GOVERNANCE
 - Every agency redesigned around one question: what does the data say actually works?
 - [🗳️WISHOCRACY Pick between two things. Do it ten times. Congratulations, you've just outperformed Congress. START VOTING →](/agencies/dcongress/wishocracy)

@@ -1,0 +1,74 @@
+import Link from "next/link"
+import { ExternalLink } from "lucide-react"
+import { ROUTES } from "../../lib/routes"
+import { PODCAST_URLS, withUtm } from "../../lib/manual-links"
+
+interface ManualPromoCardProps {
+  /** UTM source for tracking (e.g., "post_vote", "the_plan") */
+  utmSource: string
+  /** Show the descriptive text above buttons */
+  showDescription?: boolean
+  /** Custom description text (overrides default) */
+  description?: string
+  /** Visual variant */
+  variant?: "compact" | "card"
+}
+
+export function ManualPromoCard({
+  utmSource,
+  showDescription = true,
+  description,
+  variant = "card",
+}: ManualPromoCardProps) {
+  const descText = description ??
+    "An alien who finds your species confusing wrote a 300-page field manual covering the economics, legal framework, financial architecture, and the complete 36-month roadmap."
+
+  const buttons = (
+    <div className="grid grid-cols-2 gap-3">
+      <a
+        href={withUtm(PODCAST_URLS.spotify, utmSource)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-[#1DB954] text-white border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1"
+      >
+        Listen Free
+        <ExternalLink className="w-3 h-3 stroke-[3px] hidden sm:block" />
+      </a>
+      <Link
+        href={ROUTES.manual}
+        className="bg-background text-foreground border-4 border-primary p-3 font-black text-xs sm:text-sm uppercase text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:-translate-y-0.5 transition-all flex items-center justify-center"
+      >
+        All Formats
+      </Link>
+    </div>
+  )
+
+  if (variant === "compact") {
+    return (
+      <div>
+        {showDescription && (
+          <p className="text-center font-bold text-sm text-muted-foreground mb-4">
+            {descText}
+          </p>
+        )}
+        {buttons}
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-4 border-primary bg-background p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      {showDescription && (
+        <>
+          <p className="text-center font-black uppercase text-lg sm:text-xl mb-2">
+            Want the full story?
+          </p>
+          <p className="text-center font-bold text-sm text-muted-foreground mb-6">
+            {descText}
+          </p>
+        </>
+      )}
+      {buttons}
+    </div>
+  )
+}
