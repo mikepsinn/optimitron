@@ -375,7 +375,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: "/obg/epa-environment",
     required: true,
     requiredSelector: "h1",
-    requiredText: /EPA \/ Environment/,
+    requiredText: /^EPA \/ Environment$/,
   },
   {
     covers: [HEALTH_ECONOMICS_DISPLAY_FILE],
