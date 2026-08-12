@@ -1,10 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { SignJWT } from "jose";
 
 import {
+  buildMcpAuthorizeSignInPath,
+  buildMcpConsentAuthorizeUrl,
+  getAcceptedMcpIssuers,
   getMcpRequestOrigin,
   getProtectedResourceMetadata,
   resolveMcpResourceOrigin,
+  shouldRedirectMcpAuthorizeToIssuer,
+  signMcpAccessToken,
+  verifyMcpAccessToken,
+  verifyMcpRefreshToken,
 } from "@/lib/mcp-oauth";
+import { McpScope } from "@/lib/mcp-scopes";
 
 const CANONICAL = "https://optimitron.com";
 
@@ -66,6 +75,156 @@ describe("OAuth issuer", () => {
 
     expect(getOAuthMetadata().issuer).toBe(CANONICAL);
   });
+
+  it("accepts legacy warondisease.org tokens while minting canonical ones", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret-for-iss-check");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "");
+
+    expect(getAcceptedMcpIssuers()).toEqual([
+      CANONICAL,
+      "https://warondisease.org",
+      "https://www.warondisease.org",
+    ]);
+
+    const minted = await signMcpAccessToken(
+      "user_1",
+      "client_1",
+      [McpScope.TASKS_PERSONAL],
+      [],
+    );
+    await expect(verifyMcpAccessToken(minted)).resolves.toMatchObject({
+      sub: "user_1",
+      clientId: "client_1",
+    });
+
+    const legacy = await new SignJWT({
+      clientId: "client_1",
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      type: "access",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("user_1")
+      .setIssuer("https://warondisease.org")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET));
+
+    await expect(verifyMcpAccessToken(legacy)).resolves.toMatchObject({
+      sub: "user_1",
+      clientId: "client_1",
+    });
+
+    const legacyRefresh = await new SignJWT({
+      clientId: "client_1",
+      type: "refresh",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("user_1")
+      .setIssuer("https://warondisease.org")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET));
+
+    await expect(verifyMcpRefreshToken(legacyRefresh)).resolves.toEqual({
+      sub: "user_1",
+      clientId: "client_1",
+    });
+  });
+
+  it("does not accept production legacy issuers outside production", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret-for-iss-check");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "https://preview.example.com");
+
+    expect(getAcceptedMcpIssuers()).toEqual(["https://preview.example.com"]);
+
+    const legacy = await new SignJWT({
+      clientId: "client_1",
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      type: "access",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("user_1")
+      .setIssuer("https://warondisease.org")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET));
+
+    await expect(verifyMcpAccessToken(legacy)).rejects.toThrow();
+  });
+});
+
+describe("MCP authorize consent URL helpers", () => {
+  it("builds consent URLs on the canonical issuer even when discovery was on warondisease", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+
+    const url = buildMcpConsentAuthorizeUrl({
+      client_id: "mcp_abc",
+      redirect_uri: "http://127.0.0.1:1234/callback",
+      state: "state-1",
+      scope: "tasks:personal",
+      code_challenge: "challenge",
+      client_name: "Cursor",
+    });
+
+    expect(url.origin).toBe(CANONICAL);
+    expect(url.pathname).toBe("/mcp/authorize");
+    expect(url.searchParams.get("client_id")).toBe("mcp_abc");
+    expect(url.searchParams.get("redirect_uri")).toBe(
+      "http://127.0.0.1:1234/callback",
+    );
+    expect(url.searchParams.get("state")).toBe("state-1");
+    expect(url.searchParams.get("scope")).toBe("tasks:personal");
+    expect(url.searchParams.get("code_challenge")).toBe("challenge");
+    expect(url.searchParams.get("client_name")).toBe("Cursor");
+  });
+
+  it("returns a sign-in path whose callbackUrl is the authorize path on this origin", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+
+    const path = buildMcpAuthorizeSignInPath({
+      client_id: "mcp_abc",
+      redirect_uri: "http://127.0.0.1:1234/callback",
+      code_challenge: "challenge",
+      scope: "tasks:personal",
+    });
+
+    expect(path.startsWith("/auth/signin?callbackUrl=")).toBe(true);
+    const callbackUrl = decodeURIComponent(
+      path.slice("/auth/signin?callbackUrl=".length),
+    );
+    expect(callbackUrl.startsWith("/mcp/authorize?")).toBe(true);
+    expect(callbackUrl).not.toMatch(/^https?:\/\//);
+    const callback = new URL(callbackUrl, CANONICAL);
+    expect(callback.searchParams.get("client_id")).toBe("mcp_abc");
+    expect(callback.searchParams.get("redirect_uri")).toBe(
+      "http://127.0.0.1:1234/callback",
+    );
+    expect(callback.searchParams.get("scope")).toBe("tasks:personal");
+    expect(callback.searchParams.get("code_challenge")).toBe("challenge");
+  });
+
+  it("bounces campaign-host authorize hits to the issuer without looping loopback aliases", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
+
+    expect(shouldRedirectMcpAuthorizeToIssuer("https://warondisease.org")).toBe(
+      true,
+    );
+    expect(shouldRedirectMcpAuthorizeToIssuer(CANONICAL)).toBe(false);
+
+    vi.stubEnv("VERCEL_ENV", "development");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "http://localhost:3001");
+    expect(shouldRedirectMcpAuthorizeToIssuer("http://127.0.0.1:3001")).toBe(
+      false,
+    );
+  });
 });
 
 describe("getProtectedResourceMetadata", () => {
@@ -73,12 +232,8 @@ describe("getProtectedResourceMetadata", () => {
     stubCanonicalOrigin();
     const metadata = getProtectedResourceMetadata("https://optimitron.com");
 
-    // The mismatch this guards against: `resource` naming a different host
-    // than the endpoint the client connected to, which clients reject during
-    // discovery.
     expect(metadata.resource).toBe("https://optimitron.com/api/mcp");
     expect(metadata.resource_documentation).toBe("https://optimitron.com/mcp");
-    // Sessions, consent, and token issuance live on exactly one origin.
     expect(metadata.authorization_servers).toEqual([CANONICAL]);
   });
 

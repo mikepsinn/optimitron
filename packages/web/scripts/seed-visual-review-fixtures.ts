@@ -41,6 +41,17 @@ const FIXTURE_MANIFEST_PATH = path.resolve(
   "visual-fixtures",
   "document-review.json",
 );
+const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
+  WEB_ROOT,
+  "output",
+  "playwright",
+  "visual-fixtures",
+  "mcp-authorize.json",
+);
+const MCP_AUTHORIZE_CLIENT_ID = "visual_mcp_authorize_client";
+const MCP_AUTHORIZE_REDIRECT_URI = "http://127.0.0.1/visual-mcp-callback";
+const MCP_AUTHORIZE_CODE_CHALLENGE =
+  "visualreviewcodechallengeaaaaaaaaaaaaaaaa";
 
 const ids = {
   activeTask: `${FIXTURE_PREFIX}active_task`,
@@ -82,7 +93,52 @@ function assertLocalFixtureDatabase() {
 }
 
 async function removeFixtureManifest() {
-  await rm(FIXTURE_MANIFEST_PATH, { force: true });
+  await Promise.all([
+    rm(FIXTURE_MANIFEST_PATH, { force: true }),
+    rm(MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH, { force: true }),
+  ]);
+}
+
+async function seedMcpAuthorizeFixture() {
+  await prisma.oAuthClient.upsert({
+    where: { clientId: MCP_AUTHORIZE_CLIENT_ID },
+    create: {
+      clientId: MCP_AUTHORIZE_CLIENT_ID,
+      clientName: "Visual Review MCP",
+      redirectUris: [MCP_AUTHORIZE_REDIRECT_URI],
+    },
+    update: {
+      clientName: "Visual Review MCP",
+      redirectUris: [MCP_AUTHORIZE_REDIRECT_URI],
+    },
+  });
+
+  const authorizePath = new URL("http://127.0.0.1/mcp/authorize");
+  authorizePath.searchParams.set("client_id", MCP_AUTHORIZE_CLIENT_ID);
+  authorizePath.searchParams.set("redirect_uri", MCP_AUTHORIZE_REDIRECT_URI);
+  authorizePath.searchParams.set("state", "visual-review");
+  authorizePath.searchParams.set("scope", "tasks:personal");
+  authorizePath.searchParams.set("code_challenge", MCP_AUTHORIZE_CODE_CHALLENGE);
+  authorizePath.searchParams.set("client_name", "Visual Review MCP");
+
+  await mkdir(path.dirname(MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH), {
+    recursive: true,
+  });
+  await writeFile(
+    MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH,
+    JSON.stringify(
+      {
+        authorizePath: `${authorizePath.pathname}${authorizePath.search}`,
+        version: 1,
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  console.log(
+    `[visual-review] wrote ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}`,
+  );
 }
 
 async function resetVisualReviewFixtures() {
@@ -583,6 +639,7 @@ async function main() {
     fixtureManager,
   });
 
+  await seedMcpAuthorizeFixture();
   await mkdir(path.dirname(FIXTURE_MANIFEST_PATH), { recursive: true });
   await writeFile(
     FIXTURE_MANIFEST_PATH,
