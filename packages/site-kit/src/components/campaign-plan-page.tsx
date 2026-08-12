@@ -7,10 +7,18 @@ import {
   ExternalLink,
   Handshake,
   Megaphone,
+  Share2,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
 } from "lucide-react";
 import { Button } from "@optimitron/neobrutalist-ui/ui/button";
 import { BrutalCard } from "@optimitron/neobrutalist-ui/ui/brutal-card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
+import { FeaturedInfoCard } from "@optimitron/neobrutalist-ui/ui/featured-info-card";
+import { IconBoxCardGrid } from "@optimitron/neobrutalist-ui/ui/icon-box-card";
+import { IconHeading } from "@optimitron/neobrutalist-ui/ui/icon-heading";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 import { SectionHeader } from "@optimitron/neobrutalist-ui/ui/section-header";
 import {
@@ -18,11 +26,15 @@ import {
   GLOBAL_POPULATION_ACTIVISM_THRESHOLD_PCT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION,
+  TREATY_ANNUAL_FUNDING,
+  TREATY_CAMPAIGN_BUDGET_LOBBYING,
+  TREATY_CAMPAIGN_BUDGET_RESERVE,
+  TREATY_CAMPAIGN_TOTAL_COST,
+  TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE,
 } from "@optimitron/impact-params/parameters";
 import { formatParameter } from "@optimitron/impact-params/format";
 import Layout from "./layout";
 import { ParameterValue } from "./shared/ParameterValue";
-import { MAJORITY_OF_HUMANS_ON_EARTH } from "../lib/majority-humanity-target";
 import { MANUAL_URLS, withUtm } from "../lib/manual-links";
 import { ROUTES } from "../lib/routes";
 import { getVoteSectionUrl } from "../lib/voting";
@@ -75,8 +87,9 @@ const planSteps: PlanStep[] = [
     title: `Reach The Number Where “I'll Look Into It” Stops Working`,
     description: (
       <>
-        The public coordination target is{" "}
-        <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} />.
+        Make support impossible to dismiss: reach{" "}
+        <ParameterValue param={THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION} />{" "}
+        verified humans.
       </>
     ),
     bgColor: "pink",
@@ -105,11 +118,35 @@ const planSteps: PlanStep[] = [
 ];
 
 const propagationScenarios = [
-  { newVotes: 1.1, roundDays: 7 },
-  { newVotes: 1.3, roundDays: 7 },
-  { newVotes: 1.6, roundDays: 3 },
-  { newVotes: 2, roundDays: 3 },
-].map(({ newVotes, roundDays }) => {
+  {
+    label: "SLOW GROWTH",
+    emoji: "😴",
+    newVotes: 1.1,
+    roundDays: 7,
+    bgColor: "cyan" as const,
+  },
+  {
+    label: "STEADY GROWTH",
+    emoji: "🚀",
+    newVotes: 1.3,
+    roundDays: 7,
+    bgColor: "yellow" as const,
+  },
+  {
+    label: "FAST GROWTH",
+    emoji: "⚡",
+    newVotes: 1.6,
+    roundDays: 3,
+    bgColor: "pink" as const,
+  },
+  {
+    label: "TWO FRIENDS",
+    emoji: "🔥",
+    newVotes: 2,
+    roundDays: 3,
+    bgColor: "foreground" as const,
+  },
+].map(({ label, emoji, newVotes, roundDays, bgColor }) => {
   const seedVotes = 1_000_000;
   const targetVotes = THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION.value;
   const rounds =
@@ -117,11 +154,99 @@ const propagationScenarios = [
     Math.log(newVotes);
 
   return {
+    label,
+    emoji,
     newVotes,
     roundDays,
     days: Math.round(rounds * roundDays),
+    rounds: Math.ceil(rounds),
+    bgColor,
   };
 });
+
+const referralFunnel = [
+  {
+    stage: "SEE THE ASK",
+    detail:
+      "A friend, patient group, partner, or public post puts the treaty in front of someone.",
+    width: "100%",
+    color: "bg-brutal-yellow",
+  },
+  {
+    stage: "UNDERSTAND THE TRADE",
+    detail:
+      "They see the actual choice: one percent less military spending, many more clinical trials.",
+    width: "88%",
+    color: "bg-brutal-cyan",
+  },
+  {
+    stage: "CAST A VERIFIED VOTE",
+    detail:
+      "The vote becomes visible evidence rather than another private opinion.",
+    width: "76%",
+    color: "bg-brutal-pink",
+  },
+  {
+    stage: "TELL TWO FRIENDS",
+    detail: "One voter becomes a path to the next two voters.",
+    width: "64%",
+    color: "bg-foreground text-background",
+  },
+];
+
+const executionPhases = [
+  {
+    phase: "PROVE THE LOOP",
+    target: "1M",
+    description:
+      "Start with patient organizations and partners. Measure which invitations produce verified votes and shares.",
+    color: "bg-brutal-yellow",
+  },
+  {
+    phase: "CROSS LANGUAGES & BORDERS",
+    target: "10M",
+    description:
+      "Translate the strongest case, equip organizations to embed it, and make every completed vote easy to pass on.",
+    color: "bg-brutal-cyan",
+  },
+  {
+    phase: "MAKE SUPPORT UNIGNORABLE",
+    target: "100M",
+    description:
+      "Turn millions of isolated preferences into public evidence that leaders, media, and institutions can see.",
+    color: "bg-brutal-pink",
+  },
+  {
+    phase: "REACH THE BENCHMARK",
+    target: "280M",
+    description:
+      "Use the verified coalition to demand negotiations, model legislation, and treaty commitments country by country.",
+    color: "bg-foreground text-background",
+  },
+];
+
+const planMetrics = [
+  {
+    metric: "R > 1",
+    label: "New voters per voter",
+    icon: TrendingUp,
+  },
+  {
+    metric: "3–7 days",
+    label: "Time for a sharing round",
+    icon: Zap,
+  },
+  {
+    metric: "2 friends",
+    label: "Simple action after voting",
+    icon: Share2,
+  },
+  {
+    metric: "280M",
+    label: "Verified-vote benchmark",
+    icon: Users,
+  },
+];
 
 function ChapterCard({
   title,
@@ -180,7 +305,8 @@ export default function CampaignPlanPage() {
             into hundreds of times more pragmatic clinical trials.
           </p>
           <p className="mx-auto max-w-2xl text-base font-bold text-muted-foreground sm:text-lg">
-            This is the short version. The field manual has the receipts.
+            The target is 280 million verified humans. Here is the math,
+            machinery, money, and sequence for getting there.
           </p>
         </Container>
       </SectionContainer>
@@ -249,12 +375,10 @@ export default function CampaignPlanPage() {
                   param={THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION}
                 />{" "}
                 people. But an online global treaty vote is not sustained
-                national participation. Treat 280 million as a historical
-                benchmark, not a promise or finish line.
-              </p>
-              <p className="font-bold">
-                The public coordination target remains{" "}
-                <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} />.
+                national participation. We use 280 million as the public
+                campaign target because it is large enough to test whether
+                support can become political power—not because a percentage
+                automatically changes policy.
               </p>
               <a
                 href="https://www.hks.harvard.edu/sites/default/files/2024-05/Erica%20Chenoweth_2020-005.pdf"
@@ -267,32 +391,323 @@ export default function CampaignPlanPage() {
               </a>
             </BrutalCard>
 
-            <div>
-              <h3 className="mb-4 text-xl font-black uppercase sm:text-2xl">
-                If one million people start
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {propagationScenarios.map((scenario) => (
-                  <BrutalCard
-                    key={`${scenario.newVotes}-${scenario.roundDays}`}
-                    bgColor="yellow"
-                    padding="md"
-                  >
-                    <p className="text-3xl font-black">~{scenario.days} DAYS</p>
-                    <p className="font-bold">
-                      If each new voter brings {scenario.newVotes} more voters
-                      in the next {scenario.roundDays}-day round
-                    </p>
-                  </BrutalCard>
-                ))}
-              </div>
-              <p className="mt-4 text-sm font-bold">
-                These are geometric illustrations, not forecasts. Real
-                propagation loses people to overlap, verification, language,
-                access, and ordinary human failure to click links.
-              </p>
-            </div>
+            <IconBoxCardGrid
+              columns={3}
+              className="lg:grid-cols-1"
+              cards={[
+                {
+                  icon: Users,
+                  title: "REPRODUCTION RATE",
+                  description:
+                    "Average new verified voters produced by each voter. Above one, the chain grows.",
+                  iconBgColor: "yellow",
+                  children: (
+                    <p className="mt-3 text-2xl font-black">R = 1.1–2.0</p>
+                  ),
+                },
+                {
+                  icon: Zap,
+                  title: "GENERATION TIME",
+                  description:
+                    "Time between one vote and the next sharing round. Shorter rounds reach the target sooner.",
+                  iconBgColor: "cyan",
+                  children: (
+                    <p className="mt-3 text-2xl font-black">G = 3–7 DAYS</p>
+                  ),
+                },
+                {
+                  icon: Target,
+                  title: "TARGET VOTES",
+                  description:
+                    "The campaign target derived from the 3.5% historical benchmark.",
+                  iconBgColor: "pink",
+                  children: (
+                    <p className="mt-3 text-2xl font-black">280 MILLION</p>
+                  ),
+                },
+              ]}
+            />
           </div>
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="background" padding="md">
+        <Container>
+          <SectionHeader
+            title={
+              <>
+                TIME TO <span className="text-brutal-pink">280 MILLION</span>
+              </>
+            }
+            subtitle="START WITH ONE MILLION VERIFIED VOTERS. CHANGE ONLY R AND G."
+            size="lg"
+          />
+          <div className="grid gap-6 md:grid-cols-2">
+            {propagationScenarios.map((scenario) => (
+              <BrutalCard
+                key={`${scenario.newVotes}-${scenario.roundDays}`}
+                bgColor={scenario.bgColor}
+                padding="lg"
+              >
+                <IconHeading
+                  icon={
+                    <span className="text-2xl font-black">
+                      {scenario.emoji}
+                    </span>
+                  }
+                  title={scenario.label}
+                  subtitle={`R = ${scenario.newVotes}, G = ${scenario.roundDays} days`}
+                  iconColor={
+                    scenario.bgColor === "foreground" ? "yellow" : "foreground"
+                  }
+                />
+                <p className="mb-1 mt-6 text-4xl font-black sm:text-5xl">
+                  ~{scenario.days} DAYS
+                </p>
+                <p className="text-lg font-bold">
+                  About {scenario.rounds} sharing rounds
+                </p>
+              </BrutalCard>
+            ))}
+          </div>
+          <p className="mx-auto mt-6 max-w-4xl text-center text-sm font-bold sm:text-base">
+            These are geometric illustrations, not forecasts. Real propagation
+            loses people to overlap, failed verification, language, access, and
+            the ancient human custom of seeing a useful link and thinking “I’ll
+            do that later.”
+          </p>
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="cyan" padding="md">
+        <Container>
+          <SectionHeader
+            title="THE VOTE-TO-VOTE FUNNEL"
+            subtitle="THE CHAIN ONLY GROWS WHEN EACH STEP MAKES THE NEXT STEP EASIER"
+            size="lg"
+          />
+          <div className="mx-auto max-w-4xl space-y-4">
+            {referralFunnel.map((step, index) => (
+              <div key={step.stage} className="flex justify-center">
+                <div
+                  className={`${step.color} border-4 border-primary p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]`}
+                  style={{ width: step.width }}
+                >
+                  <div className="mb-2 flex items-center justify-between gap-4">
+                    <h3 className="text-lg font-black uppercase sm:text-xl">
+                      {step.stage}
+                    </h3>
+                    <span className="shrink-0 text-2xl font-black">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <p className="font-bold">{step.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <FeaturedInfoCard
+            bgColor="yellow"
+            className="mx-auto mt-10 max-w-3xl"
+            title="THE LOOP"
+            content={
+              <p className="text-xl font-black sm:text-2xl">
+                VOTE → TELL TWO FRIENDS → HELP THEM VOTE → REPEAT
+              </p>
+            }
+          />
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="background" padding="md">
+        <Container>
+          <SectionHeader
+            title="WHAT WE WATCH"
+            subtitle="FOUR NUMBERS TELL US WHETHER THE PLAN IS SPREADING OR MERELY LOOKING BUSY"
+            size="lg"
+          />
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {planMetrics.map((item) => {
+              const Icon = item.icon;
+              return (
+                <BrutalCard
+                  key={item.metric}
+                  padding="lg"
+                  className="text-center"
+                >
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center border-4 border-primary bg-brutal-yellow">
+                    <Icon className="h-8 w-8 stroke-[3px]" />
+                  </div>
+                  <p className="mb-2 text-3xl font-black">{item.metric}</p>
+                  <p className="font-bold uppercase">{item.label}</p>
+                </BrutalCard>
+              );
+            })}
+          </div>
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="pink" padding="md">
+        <Container>
+          <SectionHeader
+            title="THE EXECUTION SEQUENCE"
+            subtitle="MILESTONES, NOT DATE PROMISES"
+            size="lg"
+          />
+          <div className="space-y-6">
+            {executionPhases.map((phase) => (
+              <div
+                key={phase.phase}
+                className={`${phase.color} border-4 border-primary p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}
+              >
+                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                  <div className="max-w-3xl">
+                    <h3 className="mb-2 text-2xl font-black uppercase sm:text-3xl">
+                      {phase.phase}
+                    </h3>
+                    <p className="font-bold sm:text-lg">{phase.description}</p>
+                  </div>
+                  <div className="shrink-0 border-4 border-current bg-background px-8 py-4 text-center text-foreground">
+                    <p className="text-xs font-black uppercase">
+                      Verified votes
+                    </p>
+                    <p className="text-3xl font-black">{phase.target}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="yellow" padding="md">
+        <Container>
+          <SectionHeader
+            title="HOW THE MACHINE WORKS"
+            subtitle="THE HUMAN LOOP AND THE POLITICAL LOOP HAVE TO CONNECT"
+            size="lg"
+          />
+          <div className="grid gap-8 lg:grid-cols-2">
+            <BrutalCard padding="lg">
+              <h3 className="mb-5 text-2xl font-black uppercase text-brutal-pink">
+                THE VOTE LOOP
+              </h3>
+              <ul className="space-y-4 font-bold sm:text-lg">
+                <li>→ Make the treaty choice understandable in one screen.</li>
+                <li>
+                  → Verify each vote without making the human regret clicking.
+                </li>
+                <li>
+                  → Give every voter a direct link and useful words to share.
+                </li>
+                <li>
+                  → Show organizations the votes their communities produced.
+                </li>
+                <li>
+                  → Measure where the chain stops, then remove that friction.
+                </li>
+              </ul>
+            </BrutalCard>
+            <BrutalCard padding="lg">
+              <h3 className="mb-5 text-2xl font-black uppercase text-brutal-cyan">
+                THE POWER LOOP
+              </h3>
+              <ul className="space-y-4 font-bold sm:text-lg">
+                <li>→ Patient groups endorse and invite their members.</li>
+                <li>
+                  → Public votes prove support across borders and parties.
+                </li>
+                <li>
+                  → Plaintiffs, advocates, and partners increase legal pressure.
+                </li>
+                <li>
+                  → Lobbying converts public support into signed commitments.
+                </li>
+                <li>
+                  → Treaty funding pays for pragmatic trials at global scale.
+                </li>
+              </ul>
+            </BrutalCard>
+          </div>
+        </Container>
+      </SectionContainer>
+
+      <SectionContainer bgColor="foreground" padding="md">
+        <Container>
+          <SectionHeader
+            title={
+              <>
+                THE <span className="text-brutal-yellow">ECONOMICS</span>
+              </>
+            }
+            subtitle="A CAMPAIGN COST BUYS A RECURRING MEDICAL-RESEARCH FLOW"
+            size="lg"
+          />
+          <div className="grid gap-6 md:grid-cols-3">
+            <BrutalCard bgColor="yellow" padding="lg" className="text-center">
+              <p className="mb-2 text-sm font-black uppercase">
+                VIRAL REFERENDUM
+              </p>
+              <p className="mb-2 text-4xl font-black sm:text-5xl">
+                <ParameterValue
+                  param={TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE}
+                />
+              </p>
+              <p className="font-bold">
+                Platform, verification, sharing, and launch
+              </p>
+            </BrutalCard>
+            <BrutalCard bgColor="pink" padding="lg" className="text-center">
+              <p className="mb-2 text-sm font-black uppercase">FULL CAMPAIGN</p>
+              <p className="mb-2 text-4xl font-black sm:text-5xl">
+                <ParameterValue param={TREATY_CAMPAIGN_TOTAL_COST} />
+              </p>
+              <p className="font-bold">
+                Referendum, political work, and reserve
+              </p>
+            </BrutalCard>
+            <BrutalCard bgColor="cyan" padding="lg" className="text-center">
+              <p className="mb-2 text-sm font-black uppercase">
+                TREATY FUNDING
+              </p>
+              <p className="mb-2 text-4xl font-black sm:text-5xl">
+                <ParameterValue
+                  param={TREATY_ANNUAL_FUNDING}
+                  format={{ includeUnit: true }}
+                />
+              </p>
+              <p className="font-bold">
+                Recurring annual funding from the first one percent
+              </p>
+            </BrutalCard>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <BrutalCard padding="md">
+              <p className="text-sm font-black uppercase">Referendum</p>
+              <p className="text-3xl font-black">
+                <ParameterValue
+                  param={TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE}
+                />
+              </p>
+            </BrutalCard>
+            <BrutalCard padding="md">
+              <p className="text-sm font-black uppercase">Political campaign</p>
+              <p className="text-3xl font-black">
+                <ParameterValue param={TREATY_CAMPAIGN_BUDGET_LOBBYING} />
+              </p>
+            </BrutalCard>
+            <BrutalCard padding="md">
+              <p className="text-sm font-black uppercase">Reserve</p>
+              <p className="text-3xl font-black">
+                <ParameterValue param={TREATY_CAMPAIGN_BUDGET_RESERVE} />
+              </p>
+            </BrutalCard>
+          </div>
+          <p className="mx-auto mt-6 max-w-4xl text-center font-bold">
+            These are planning estimates with uncertainty ranges. Click any
+            underlined number to inspect its definition, range, formula, and
+            source.
+          </p>
         </Container>
       </SectionContainer>
 

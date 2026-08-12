@@ -12,12 +12,12 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
     // Database
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.string().url().optional(),
     DATABASE_URL_UNPOOLED: z.string().url().optional(),
 
     // Authentication
-    NEXTAUTH_SECRET: z.string().min(1),
-    NEXTAUTH_URL: z.string().url(),
+    NEXTAUTH_SECRET: z.string().min(1).optional(),
+    NEXTAUTH_URL: z.string().url().optional(),
 
     // Stripe
     STRIPE_SECRET_KEY: z.string().startsWith("sk_").optional(),

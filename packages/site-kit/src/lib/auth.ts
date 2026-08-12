@@ -16,6 +16,16 @@ import { getSiteConfig, DOMAIN_TO_VARIANT } from "./site-config"
 import { createAuthAdapter } from "./auth-adapter"
 import { ensurePersonForUser } from "./person.server"
 
+const missingAuthEnv = [
+  ["DATABASE_URL", env.DATABASE_URL],
+  ["NEXTAUTH_SECRET", env.NEXTAUTH_SECRET],
+  ["NEXTAUTH_URL", env.NEXTAUTH_URL],
+].filter(([, value]) => !value)
+
+if (missingAuthEnv.length > 0) {
+  throw new Error(`Authentication requires: ${missingAuthEnv.map(([name]) => name).join(", ")}`)
+}
+
 const personIdentitySelect = {
   id: true,
   handle: true,

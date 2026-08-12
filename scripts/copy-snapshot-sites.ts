@@ -23,7 +23,7 @@
  *   pnpm copy acceleratedmedicine  # one site, while iterating
  *   pnpm copy web --routes=/shirt  # one site, some routes
  */
-import "./lib/load-root-env";
+import "./lib/load-copy-preview-env";
 
 import { spawn } from "node:child_process";
 import type { ChildProcess } from "node:child_process";
@@ -204,6 +204,11 @@ function siteEnv(site: Site): NodeJS.ProcessEnv {
     // committed baseline differs per machine.
     NEXT_PUBLIC_BASE_URL: getSiteConfigForVariant(site.variant).baseUrl,
     NEXT_PUBLIC_SITE_VARIANT: site.variant,
+    // The War on Disease app initializes NextAuth middleware on public routes.
+    // Keep its local callback local and provide a non-production signing secret
+    // so copy review never requires real credentials.
+    NEXTAUTH_SECRET: "copy-snapshot-local-only-secret",
+    NEXTAUTH_URL: `http://${site.host}:${site.port}`,
     PORT: String(site.port),
   };
 }
@@ -444,7 +449,9 @@ async function snapshotSite(site: Site): Promise<void> {
 async function main() {
   // Default is every site. Names narrow it down, for iterating on one site
   // without paying for the other six.
-  const requested = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+  const requested = process.argv
+    .slice(2)
+    .filter((arg) => !arg.startsWith("--"));
   const unknown = requested.filter(
     (name) => !SITES.some((site) => siteName(site) === name),
   );
@@ -471,7 +478,9 @@ async function main() {
     }
   }
   if (failures.length > 0) {
-    throw new Error(`${failures.length} site(s) failed:\n${failures.join("\n")}`);
+    throw new Error(
+      `${failures.length} site(s) failed:\n${failures.join("\n")}`,
+    );
   }
 }
 

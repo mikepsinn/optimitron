@@ -27,7 +27,7 @@ are truly shared. Link each shared variable to the projects that need it.
 
 Good shared candidates:
 
-- `DATABASE_URL` for production apps that use the shared Optimitron schema.
+- `DATABASE_URL` for War on Disease, dFDA, Wishocracy, and Trial Abundance Survey.
 - A Resend API key when the same account and sending policy serve several apps.
 - A Sentry DSN when several apps intentionally report to the same Sentry project.
 
@@ -52,13 +52,11 @@ production schema because votes, people, and referrals are shared records.
 
 ## Source of truth
 
-Each app's `.env.example` lists only the variables that app reads or that the
-shared site-kit currently validates. Vercel remains the value store. The example
-files are the reviewable contract and contain no real secrets.
-
-`DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` still appear in every app
-because `packages/site-kit/src/lib/env.ts` validates them globally. A future
-capability-scoped env refactor can remove those three from landing-only apps.
+Each app's `.env.example` lists only the variables its shipped capabilities
+need. Vercel remains the value store. The example files are the reviewable
+contract and contain no real secrets. Accelerated Medicine and CureDAO do not
+receive database or authentication secrets because they do not ship those
+capabilities.
 
 Vercel sets `NODE_ENV`, `VERCEL_URL`, and related platform variables. Do not add
 them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.

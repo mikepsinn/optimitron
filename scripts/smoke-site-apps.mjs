@@ -43,6 +43,8 @@ const screenshotRootInput = process.env.SITE_APP_SCREENSHOT_ROOT?.trim();
 const screenshotRoot = screenshotRootInput
   ? path.resolve(repoRoot, screenshotRootInput)
   : undefined;
+const campaignPlanPageFile =
+  "packages/site-kit/src/components/campaign-plan-page.tsx";
 
 const requestedApps = process.argv.slice(2);
 const unknownApps = requestedApps.filter(
@@ -106,10 +108,15 @@ function getScreenshotRoutes(siteVariant) {
       label: "Shared campaign plan",
       routeName: "the-plan",
       routePath: "/the-plan",
+      covers: [campaignPlanPageFile],
     });
   }
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
+    const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
+    if (planRoute) {
+      planRoute.covers = [campaignPlanPageFile];
+    }
     routes.push({
       label: "Legacy About redirect",
       routeName: "about-redirect",

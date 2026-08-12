@@ -134,6 +134,20 @@ test("accepts zero pixel differences when every changed UI file was captured", (
   assert.deepEqual(coverage.blockingIssues, []);
 });
 
+test("covers shared site UI when a site-app route registers the source file", () => {
+  const sharedFile = "packages/site-kit/src/components/campaign-plan-page.tsx";
+  const routeName = "site-app-warondisease-the-plan";
+  const coverage = buildVisualCoverage({
+    afterCaptures: capturesFor(routeName),
+    changedFiles: [sharedFile],
+    routes: [requiredRoute(routeName, [sharedFile])],
+  });
+
+  assert.equal(isVisualUiSourceFile(sharedFile), false);
+  assert.equal(coverage.complete, true);
+  assert.deepEqual(coverage.coveredUiFiles, [sharedFile]);
+});
+
 test("fails when changed UI source has no registered state", () => {
   const coverage = buildVisualCoverage({
     afterCaptures: [],

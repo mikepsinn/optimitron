@@ -194,6 +194,7 @@ const SITE_APP_ORDER = [
 ];
 
 const siteAppRoutesByVariant = loadSiteAppRouteManifests();
+registerSiteAppRouteSpecs(routeSpecs, routePaths, siteAppRoutesByVariant);
 
 main().catch((error) => {
   console.error(
@@ -1685,6 +1686,9 @@ function loadSiteAppRouteManifests() {
             typeof route.routePath === "string",
         )
         .map((route) => ({
+          covers: Array.isArray(route.covers)
+            ? route.covers.filter((filePath) => typeof filePath === "string")
+            : [],
           routeLabel: route.label,
           routeName: route.routeName,
           routePath: route.routePath,
@@ -1701,6 +1705,24 @@ function loadSiteAppRouteManifests() {
   }
 
   return manifests;
+}
+
+function registerSiteAppRouteSpecs(specs, paths, manifests) {
+  for (const [siteVariant, routes] of manifests) {
+    for (const route of routes) {
+      const name = `site-app-${siteVariant}-${route.routeName}`;
+      specs.set(name, {
+        activationSelector: "body",
+        authenticated: false,
+        covers: route.covers,
+        path: route.routePath,
+        required: true,
+        requiredProjects: ["default", "visual-mobile"],
+        siteVariant,
+      });
+      paths.set(name, route.routePath);
+    }
+  }
 }
 
 function getVariantDomainLabel(siteVariant) {
