@@ -11,6 +11,7 @@ import {
   shouldRedirectMcpAuthorizeToIssuer,
   signMcpAccessToken,
   verifyMcpAccessToken,
+  verifyMcpRefreshToken,
 } from "@/lib/mcp-oauth";
 import { McpScope } from "@/lib/mcp-scopes";
 
@@ -75,7 +76,7 @@ describe("OAuth issuer", () => {
     expect(getOAuthMetadata().issuer).toBe(CANONICAL);
   });
 
-  it("accepts legacy warondisease.org access tokens while minting canonical ones", async () => {
+  it("accepts legacy warondisease.org tokens while minting canonical ones", async () => {
     vi.stubEnv("VERCEL_ENV", "production");
     vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret-for-iss-check");
     vi.stubEnv("NEXTAUTH_URL", "https://warondisease.org");
@@ -115,6 +116,45 @@ describe("OAuth issuer", () => {
       sub: "user_1",
       clientId: "client_1",
     });
+
+    const legacyRefresh = await new SignJWT({
+      clientId: "client_1",
+      type: "refresh",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("user_1")
+      .setIssuer("https://warondisease.org")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET));
+
+    await expect(verifyMcpRefreshToken(legacyRefresh)).resolves.toEqual({
+      sub: "user_1",
+      clientId: "client_1",
+    });
+  });
+
+  it("does not accept production legacy issuers outside production", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret-for-iss-check");
+    vi.stubEnv("MCP_OAUTH_ISSUER", "https://preview.example.com");
+
+    expect(getAcceptedMcpIssuers()).toEqual(["https://preview.example.com"]);
+
+    const legacy = await new SignJWT({
+      clientId: "client_1",
+      organizationIds: [],
+      scopes: [McpScope.TASKS_PERSONAL],
+      type: "access",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("user_1")
+      .setIssuer("https://warondisease.org")
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.NEXTAUTH_SECRET));
+
+    await expect(verifyMcpAccessToken(legacy)).rejects.toThrow();
   });
 });
 
@@ -138,6 +178,10 @@ describe("MCP authorize consent URL helpers", () => {
     expect(url.searchParams.get("redirect_uri")).toBe(
       "http://127.0.0.1:1234/callback",
     );
+    expect(url.searchParams.get("state")).toBe("state-1");
+    expect(url.searchParams.get("scope")).toBe("tasks:personal");
+    expect(url.searchParams.get("code_challenge")).toBe("challenge");
+    expect(url.searchParams.get("client_name")).toBe("Cursor");
   });
 
   it("returns a sign-in path whose callbackUrl is the authorize path on this origin", () => {
@@ -157,8 +201,13 @@ describe("MCP authorize consent URL helpers", () => {
     );
     expect(callbackUrl.startsWith("/mcp/authorize?")).toBe(true);
     expect(callbackUrl).not.toMatch(/^https?:\/\//);
-    expect(callbackUrl).toContain("client_id=mcp_abc");
-    expect(callbackUrl).toContain("code_challenge=challenge");
+    const callback = new URL(callbackUrl, CANONICAL);
+    expect(callback.searchParams.get("client_id")).toBe("mcp_abc");
+    expect(callback.searchParams.get("redirect_uri")).toBe(
+      "http://127.0.0.1:1234/callback",
+    );
+    expect(callback.searchParams.get("scope")).toBe("tasks:personal");
+    expect(callback.searchParams.get("code_challenge")).toBe("challenge");
   });
 
   it("bounces campaign-host authorize hits to the issuer without looping loopback aliases", () => {

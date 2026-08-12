@@ -57,6 +57,8 @@ export function getIssuerUrl(): string {
  */
 export function getAcceptedMcpIssuers(): string[] {
   const canonical = getIssuerUrl();
+  if (process.env.VERCEL_ENV !== "production") return [canonical];
+
   const legacy = ["https://warondisease.org", "https://www.warondisease.org"];
   return Array.from(new Set([canonical, ...legacy]));
 }
@@ -109,7 +111,10 @@ export function shouldRedirectMcpAuthorizeToIssuer(
     const requestUrl = new URL(requestOrigin);
     const issuerUrl = new URL(issuer);
     if (requestUrl.origin === issuerUrl.origin) return false;
-    if (isLoopbackHost(requestUrl.hostname) && isLoopbackHost(issuerUrl.hostname)) {
+    if (
+      isLoopbackHost(requestUrl.hostname) &&
+      isLoopbackHost(issuerUrl.hostname)
+    ) {
       return false;
     }
     return (

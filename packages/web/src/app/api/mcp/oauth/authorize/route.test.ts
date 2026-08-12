@@ -49,6 +49,7 @@ describe("MCP OAuth authorize route", () => {
     );
     expect(consent.searchParams.get("code_challenge")).toBe("abc");
     expect(consent.searchParams.get("state")).toBe("xyz");
+    expect(consent.searchParams.get("scope")).toBe("tasks:personal");
     expect(consent.searchParams.get("client_name")).toBe("Cursor");
   });
 });

@@ -8,11 +8,13 @@ import { McpScope, scopeToWire, scopesToWire } from "@/lib/mcp-scopes";
 const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
   [McpScope.TASKS_ADMIN]: {
     title: "Admin public task management",
-    detail: "Create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones.",
+    detail:
+      "Create and manage public Optimitron tasks, people, organizations, estimates, dependencies, and milestones.",
   },
   [McpScope.TASKS_PERSONAL]: {
     title: "Manage private tasks",
-    detail: "Create, update, delete, prioritize, and comment on your private tasks.",
+    detail:
+      "Create, update, delete, prioritize, and comment on your private tasks.",
   },
   [McpScope.TASKS_ORGANIZATION]: {
     title: "Manage organization tasks",
@@ -24,19 +26,23 @@ const SCOPE_LABELS: Record<McpScope, { title: string; detail: string }> = {
   },
   [McpScope.EARTHDATA_WRITE]: {
     title: "Add Earth data",
-    detail: "Create sourced memorials, evidence, organization signatures, intervention reports, and correction reports.",
+    detail:
+      "Create sourced memorials, evidence, organization signatures, intervention reports, and correction reports.",
   },
   [McpScope.EARTHDATA_ADMIN]: {
     title: "Moderate Earth data",
-    detail: "Hide, restore, merge, and resolve public Earth-data records and reports.",
+    detail:
+      "Hide, restore, merge, and resolve public Earth-data records and reports.",
   },
   [McpScope.AGENT_RUN]: {
     title: "Run coordinated agents",
-    detail: "Acquire leases and log multi-agent runs for public optimize-earth workflows.",
+    detail:
+      "Acquire leases and log multi-agent runs for public optimize-earth workflows.",
   },
   [McpScope.GITHUB]: {
     title: "GitHub repo access",
-    detail: "Read code from the configured Optimitron repos and call the GitHub API on the server's behalf (issues, PRs, discussions, commit statuses).",
+    detail:
+      "Read code from the configured Optimitron repos and call the GitHub API on the server's behalf (issues, PRs, discussions, commit statuses).",
   },
 };
 
@@ -102,14 +108,7 @@ export function McpConsentForm({
     const organizationSelectionRequired =
       selected.has(McpScope.TASKS_ORGANIZATION) &&
       selectedOrganizationIds.size === 0;
-    if (selected.size === 0) {
-      setError("Select at least one permission.");
-      return;
-    }
-    if (organizationSelectionRequired) {
-      setError("Select at least one organization, or turn off organization access.");
-      return;
-    }
+    if (selected.size === 0 || organizationSelectionRequired) return;
     setLoading(true);
     setError(null);
     try {
@@ -178,15 +177,21 @@ export function McpConsentForm({
                 />
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-black uppercase text-sm">{labels.title}</span>
-                    <code className="text-xs font-bold text-muted-foreground">{scopeToWire(scope)}</code>
+                    <span className="font-black uppercase text-sm">
+                      {labels.title}
+                    </span>
+                    <code className="text-xs font-bold text-muted-foreground">
+                      {scopeToWire(scope)}
+                    </code>
                     {!wasRequested ? (
                       <span className="text-[10px] font-black uppercase border-2 border-primary bg-background text-foreground px-1">
                         Not Requested
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-xs font-bold text-muted-foreground mt-1">{labels.detail}</p>
+                  <p className="text-xs font-bold text-muted-foreground mt-1">
+                    {labels.detail}
+                  </p>
                 </div>
               </label>
             </li>
@@ -204,7 +209,9 @@ export function McpConsentForm({
                   <label className="flex gap-3 items-start cursor-pointer border-2 border-primary p-3 hover:bg-muted">
                     <Checkbox
                       checked={selectedOrganizationIds.has(organization.id)}
-                      onCheckedChange={() => toggleOrganization(organization.id)}
+                      onCheckedChange={() =>
+                        toggleOrganization(organization.id)
+                      }
                       className="mt-0.5"
                     />
                     <span className="flex-1 min-w-0">
@@ -248,7 +255,11 @@ export function McpConsentForm({
           }
           className="flex-1"
         >
-          {loading ? "Authorizing..." : selected.size === 0 ? "Select Permissions" : "Authorize"}
+          {loading
+            ? "Authorizing..."
+            : selected.size === 0
+              ? "Select Permissions"
+              : "Authorize"}
         </Button>
         <Button
           type="button"

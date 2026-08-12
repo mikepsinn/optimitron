@@ -1,8 +1,8 @@
 /**
- * Auth-gated page → sign-in → back to the original page (with query intact).
+ * Auth-gated request → sign-in retains the callback → authenticated revisit.
  *
- * Guards the regression where login drops `callbackUrl` and dumps the user on
- * home/dashboard/sign-in instead of the page that sent them to login.
+ * Guards the server-side redirect and callback handoff. The test signs in via
+ * the credentials API, then revisits the captured callback on the same origin.
  *
  * Also covers MCP OAuth consent: cold `/mcp/authorize` → sign-in keeps OAuth
  * params in `callbackUrl` → return to consent → Authorize issues a code.
@@ -14,7 +14,7 @@
  * Requires: seeded demo credentials (`prisma db seed`).
  *
  * Run:
- *   pnpm --filter @optimitron/web exec playwright test e2e/auth-callback-roundtrip.spec.ts
+ *   pnpm --filter @optimitron/web run e2e -- smoke --grep "auth-gated request|MCP authorize"
  */
 import { test, expect, type Page } from "@playwright/test";
 import { signInDemoUser } from "./utils/auth";
@@ -42,12 +42,17 @@ async function readSignInCallbackUrl(page: Page): Promise<string> {
   return callbackUrl!;
 }
 
-test("auth-gated page -> login -> returns to the same callbackUrl", async ({
+function skipLocallyOrFailInCi(reason: string): void {
+  if (process.env.CI) throw new Error(reason);
+  test.skip(true, reason);
+}
+
+test("auth-gated request preserves callbackUrl for an authenticated revisit", async ({
   page,
 }) => {
   const response = await page.goto(DASHBOARD_TARGET);
   if ((response?.status() ?? 0) >= 500) {
-    test.skip(true, "Needs database");
+    skipLocallyOrFailInCi("Database unavailable for auth callback test");
     return;
   }
 
@@ -56,11 +61,11 @@ test("auth-gated page -> login -> returns to the same callbackUrl", async ({
 
   const signedIn = await signInDemoUser(page);
   if (!signedIn) {
-    test.skip(true, "Demo credentials not available");
+    skipLocallyOrFailInCi("Seeded demo credentials are unavailable");
     return;
   }
 
-  // Mirror AuthForm: after credentials succeed, go to callbackUrl on this origin.
+  // Revisit the server-provided callback on the authenticated browser context.
   await page.goto(pathAndSearch(callbackUrl, page.url()));
 
   await expect(page).not.toHaveURL(/\/auth\/signin/, { timeout: 15_000 });
@@ -70,7 +75,7 @@ test("auth-gated page -> login -> returns to the same callbackUrl", async ({
   expect(landed.searchParams.get("from")).toBe("auth-callback-roundtrip");
 });
 
-test("MCP authorize -> login -> Authorize returns an OAuth code", async ({
+test("MCP authorize preserves the login callback and returns an OAuth code", async ({
   page,
 }) => {
   // Serve the OAuth client redirect so Authorize's window.location navigation
@@ -92,7 +97,7 @@ test("MCP authorize -> login -> Authorize returns an OAuth code", async ({
     },
   });
   if (register.status() >= 500) {
-    test.skip(true, "Needs database");
+    skipLocallyOrFailInCi("Database unavailable for MCP authorize test");
     return;
   }
   expect(register.status()).toBe(201);
@@ -112,7 +117,7 @@ test("MCP authorize -> login -> Authorize returns an OAuth code", async ({
 
   const response = await page.goto(authorizePath);
   if ((response?.status() ?? 0) >= 500) {
-    test.skip(true, "Needs database");
+    skipLocallyOrFailInCi("Database unavailable for MCP authorize page");
     return;
   }
 
@@ -125,13 +130,15 @@ test("MCP authorize -> login -> Authorize returns an OAuth code", async ({
   expect(callback.pathname).toBe("/mcp/authorize");
   expect(callback.searchParams.get("client_id")).toBe(registration.client_id);
   expect(callback.searchParams.get("redirect_uri")).toBe(OAUTH_REDIRECT_URI);
-  expect(callback.searchParams.get("code_challenge")).toBe(OAUTH_CODE_CHALLENGE);
+  expect(callback.searchParams.get("code_challenge")).toBe(
+    OAUTH_CODE_CHALLENGE,
+  );
   expect(callback.searchParams.get("state")).toBe(OAUTH_STATE);
   expect(callback.searchParams.get("scope")).toBe("tasks:personal");
 
   const signedIn = await signInDemoUser(page);
   if (!signedIn) {
-    test.skip(true, "Demo credentials not available");
+    skipLocallyOrFailInCi("Seeded demo credentials are unavailable");
     return;
   }
 
