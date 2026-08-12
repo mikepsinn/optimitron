@@ -3,6 +3,7 @@ import { NavItemLink } from "@/components/navigation/NavItemLink";
 import { obgLink, optimalBudgetGeneratorPaperLink } from "@/lib/routes";
 import { slugify } from "@/lib/slugify";
 import type { BudgetReportCategory } from "@optimitron/obg";
+import { recommendationDirection } from "./recommendation-direction";
 
 const data = usBudgetAnalysis;
 
@@ -71,15 +72,6 @@ function optimalSpending(cat: BudgetReportCategory): number {
   return cat.optimalSpendingNominal;
 }
 
-function isDecreaseRecommendation(cat: BudgetReportCategory): boolean {
-  // Live reports store gap as |current - optimal| (always >= 0). Direction
-  // comes from recommendation / current-vs-optimal, not the sign of gap.
-  return (
-    cat.recommendation.includes("decrease") ||
-    cat.currentSpending > cat.optimalSpendingNominal
-  );
-}
-
 export function generateStaticParams() {
   return data.categories.map((c) => ({ slug: slugify(c.name) }));
 }
@@ -122,7 +114,8 @@ export default async function BudgetCategoryPage({
   const mr = dr?.marginalReturn;
   const hasMarginalReturn = mr != null && Number.isFinite(mr);
   const elasticity = dr?.elasticity;
-  const shouldDecrease = isDecreaseRecommendation(cat);
+  const direction = recommendationDirection(cat);
+  const shouldDecrease = direction === "decrease";
   const gapAbs = Math.abs(cat.gap);
   const gapPctAbs = Math.abs(cat.gapPercent);
 
@@ -166,7 +159,9 @@ export default async function BudgetCategoryPage({
           >
             <div className="text-xs font-bold uppercase mb-1">Gap</div>
             <div className="text-2xl sm:text-3xl font-black">
-              {fmt(gapAbs)} ({pct(shouldDecrease ? -gapPctAbs : gapPctAbs)})
+              {direction === "neutral"
+                ? "Near optimal"
+                : `${fmt(gapAbs)} (${pct(shouldDecrease ? -gapPctAbs : gapPctAbs)})`}
             </div>
           </div>
           <div className="border-4 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-background text-foreground">
@@ -324,7 +319,9 @@ export default async function BudgetCategoryPage({
           RECOMMENDATION
         </h2>
         <p className="font-bold mb-3">
-          {shouldDecrease
+          {direction === "neutral"
+            ? `Spending on ${cat.name} should be maintained near its current level. The modeled optimal allocation is ${fmt(optimal)}.`
+            : shouldDecrease
             ? `Spending on ${cat.name} should be decreased by ${fmt(gapAbs)} (${pct(-gapPctAbs)}) to reach the optimal allocation of ${fmt(optimal)}.`
             : `Spending on ${cat.name} should be increased by ${fmt(gapAbs)} (${pct(gapPctAbs)}) to reach the optimal allocation of ${fmt(optimal)}.`}
         </p>
