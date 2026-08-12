@@ -1,82 +1,78 @@
-# Deploying site apps (warondisease / dfda / wishocracy)
+# Deploying the site apps to Vercel
 
-## Situation
+## Project shape
 
-| Surface | Code | Vercel today |
-|---------|------|--------------|
-| Optimitron product | `packages/web` | **Existing** project — `rootDirectory: packages/web`, domains optimitron.com (+ warondisease.org host multi-site in web today) |
-| DIH-style UI apps | `apps/warondisease` etc. | **Not wired** — workspace members only; no deploy step yet |
+Keep `packages/web` on its existing Vercel project. Create one additional
+Vercel project for each app under `apps/*`.
 
-Production CI (`deploy-production` in `.github/workflows/ci.yml`) deploys **only** the existing Vercel project with `VERCEL_PROJECT_ID` and expects `rootDirectory === packages/web`. **Do not** repoint that project at `apps/*` — it will break optimitron.com.
+| Project                | Root Directory              | Production domain          |
+| ---------------------- | --------------------------- | -------------------------- |
+| `optimitron-web`       | `packages/web`              | `optimitron.com`           |
+| `warondisease`         | `apps/warondisease`         | `warondisease.org`         |
+| `acceleratedmedicine`  | `apps/acceleratedmedicine`  | `acceleratedmedicine.org`  |
+| `trialabundancesurvey` | `apps/trialabundancesurvey` | `trialabundancesurvey.org` |
+| `dfda`                 | `apps/dfda`                 | `dfda.earth`               |
+| `wishocracy`           | `apps/wishocracy`           | `wishocracy.org`           |
+| `curedao`              | `apps/curedao`              | `curedao.org`              |
 
-## Smoke / CI strategy
+Use Vercel's Git integration for these projects. Do not repoint the existing
+`packages/web` project and do not add a workflow that redeploys every app after
+every commit. Vercel can skip projects whose workspace dependencies did not
+change.
 
-| Layer | What | Where |
-|-------|------|--------|
-| Static gate | Typecheck `@apps/warondisease` when `apps/**` or `packages/db/**` change | Job `apps-warondisease-validate` in `ci.yml` |
-| Package CI | Packages except web **and** apps | `core-validate` excludes `@apps/*` |
-| Web e2e + visual | packages/web Playwright smoke | Unchanged |
-| Deploy smoke | Hits ready Vercel deployment URL | `smoke-deploy.yml` (vercel[bot] for the **one** project) |
+## Environment variables
 
-**Post-deploy HTTP smoke for apps/warondisease** only makes sense after a **second** Vercel project exists. Until then, local/`next build` is the deployability check.
+Use Vercel Shared Environment Variables only when the value and trust boundary
+are truly shared. Link each shared variable to the projects that need it.
 
-### Future: second project smoke
+Good shared candidates:
 
-1. Create Vercel project `optimitron-warondisease` with Root Directory `apps/warondisease`.
-2. Share Neon `DATABASE_URL` (same Optimitron DB / managed seed).
-3. Set `NEXTAUTH_URL` / OAuth callbacks to that project's URL.
-4. Add env `VERCEL_WARONDISEASE_PROJECT_ID` (do not overwrite `VERCEL_PROJECT_ID`).
-5. Optionally extend `smoke-deploy.yml` to accept that project's deployment URLs.
+- `DATABASE_URL` for production apps that use the shared Optimitron schema.
+- A Resend API key when the same account and sending policy serve several apps.
+- A Sentry DSN when several apps intentionally report to the same Sentry project.
 
-Until step 1–4 land, warondisease stays monorepo+CI-typecheck only.
+Keep these project-specific:
 
-## Recommended order
+- `NEXTAUTH_URL` because every app has a different canonical host.
+- `NEXTAUTH_SECRET` to avoid one satellite exposing every app's sessions.
+- `CRON_SECRET` because only War on Disease exposes cron routes.
+- `NEXT_PUBLIC_SURVEY_ORIGIN` because only Accelerated Medicine embeds the survey.
+- Analytics IDs when reports must remain separated by brand.
 
-1. Ship code so `apps/warondisease` typechecks in CI (this PR lane).
-2. Manually `pnpm --filter @apps/warondisease build` with a real `.env` offline.
-3. Create separate Vercel project **after** browser vote smoke against shared DB.
-4. Point `warondisease.org` at the new project only when packages/web multi-host can safely drop that host (cutover plan — separate PR).
+Provider credentials can be shared only when the provider configuration includes
+every required callback URL. Separate credentials are safer when an app does not
+need the provider.
 
-# Local database (one compose, shared)
+The current donation page uses checked-in Stripe Payment Links, so it does not
+need Stripe API secrets. The legacy checkout and webhook routes remain dormant.
 
-## Recommendation: **one shared Postgres**
+Do not give Preview deployments the production database by default. Use a Neon
+preview branch or another disposable database. Production apps can share the
+production schema because votes, people, and referrals are shared records.
 
-| Choice | Verdict |
-|--------|---------|
-| Separate Docker Compose per site app | **No** — same Prisma schema, same User/ReferendumVote |
-| Separate DB names per app on one Postgres | **Optional only** (`optimitron_test` for wipeable tests). Dev should share `optimitron` |
-| One `docker-compose.yml` at monorepo root | **Yes** (already: `pnpm db:up`) |
+## Source of truth
 
-All site apps + `packages/web` should point at the **same** `DATABASE_URL` in development so referrals, treaty votes, and people match production.
+Each app's `.env.example` lists only the variables that app reads or that the
+shared site-kit currently validates. Vercel remains the value store. The example
+files are the reviewable contract and contain no real secrets.
 
-```bash
-# From monorepo root
-pnpm db:up          # postgres:postgres@localhost:5432/optimitron
-pnpm db:deploy
-pnpm db:generate
-# optional full seed (includes one-percent-treaty when managed data applies):
-# pnpm db:sync:managed-data -- --apply
+`DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` still appear in every app
+because `packages/site-kit/src/lib/env.ts` validates them globally. A future
+capability-scoped env refactor can remove those three from landing-only apps.
 
-# Site-app smoke (create+delete smoke vote):
-export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/optimitron
-pnpm smoke:warondisease-db
-```
+Vercel sets `NODE_ENV`, `VERCEL_URL`, and related platform variables. Do not add
+them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
 
-`apps/*/.env.test` uses that same URL (not the old DIH `localhost:15432`).
+## Cutover order
 
-## GitHub Actions
+1. Create the six projects with their root directories.
+2. Add Development, Preview, and Production variables for each project.
+3. Deploy `trialabundancesurvey` and verify `/embed?embed=1` before Accelerated Medicine.
+4. Deploy the remaining apps to Vercel preview URLs.
+5. Run page and API smoke checks against each preview.
+6. Move one custom domain at a time.
+7. Remove that host from the old multi-host deployment only after its new project is healthy.
 
-Job **`apps-warondisease-validate`** when `apps/**` or `packages/db/**` change:
-
-1. Ephemeral Postgres 16 (same as web CI shape)
-2. `pnpm db:deploy` + `pnpm db:generate`
-3. Typecheck `@apps/warondisease`
-4. **`pnpm smoke:warondisease-db`** (hard fail)
-5. Unit tests (soft until cleaned)
-
-This is a **shared schema** smoke, not a separate database per app.
-
-
-## Auth
-
-Same NextAuth pattern per app domain (`NEXTAUTH_URL` per host). Shared cookie SSO across domains is **out of scope** until a dedicated IdP; shared `User` rows are enough for identity continuity after re-login.
+The production survey domain currently returns 404 for `/embed`. Accelerated
+Medicine will show a working iframe only after the survey project is deployed and
+that route is healthy.

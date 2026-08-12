@@ -23,6 +23,8 @@
         "../../packages/site-kit/src/components/layout.tsx"
       ],
       "@optimitron/site-kit/*": ["../../packages/site-kit/src/*"],
+      "@optimitron/survey-embed": ["../../packages/survey-embed/src/index.ts"],
+      "@optimitron/survey-embed/*": ["../../packages/survey-embed/src/*"],
       "@/components/landing/*": [
         "./components/landing/*",
         "../../packages/site-kit/src/components/landing/*"

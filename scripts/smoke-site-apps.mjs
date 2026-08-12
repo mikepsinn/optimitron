@@ -86,7 +86,7 @@ async function waitForHomePage(url, child, output) {
 }
 
 function getScreenshotRoutes(siteVariant) {
-  return getInternalNavigationRoutesForVariant(siteVariant).map(
+  const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
       label,
       routeName:
@@ -100,6 +100,32 @@ function getScreenshotRoutes(siteVariant) {
       routePath,
     }),
   );
+
+  if (siteVariant === VARIANTS.WAR_ON_DISEASE) {
+    routes.push({
+      label: "Shared campaign plan",
+      routeName: "the-plan",
+      routePath: "/the-plan",
+    });
+  }
+
+  if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
+    routes.push({
+      label: "Legacy About redirect",
+      routeName: "about-redirect",
+      routePath: "/about",
+    });
+  }
+
+  if (siteVariant === VARIANTS.SURVEY) {
+    routes.push({
+      label: "Partner embed",
+      routeName: "embed",
+      routePath: "/embed?embed=1&visual=1",
+    });
+  }
+
+  return routes;
 }
 
 async function captureScreenshots(appName, siteVariant, baseUrl) {
@@ -142,7 +168,11 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
 
         try {
           for (const { routeName, routePath } of screenshotRoutes) {
-            const url = new URL(routePath, baseUrl).toString();
+            const pageUrl = new URL(routePath, baseUrl);
+            if (appName === "acceleratedmedicine" && routeName === "home") {
+              pageUrl.searchParams.set("visual", "1");
+            }
+            const url = pageUrl.toString();
             const response = await page.goto(url, {
               timeout: 30_000,
               waitUntil: "load",

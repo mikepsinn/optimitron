@@ -1,1 +1,5 @@
-export { default } from "@optimitron/site-kit/components/brand-about-page"
+import { permanentRedirect } from "next/navigation";
+
+export default function AboutPage() {
+  permanentRedirect("/the-plan");
+}

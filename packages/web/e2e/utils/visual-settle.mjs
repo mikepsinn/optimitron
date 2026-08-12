@@ -29,6 +29,15 @@ export async function forceAnimationsComplete(page) {
     for (let pass = 0; pass < 5; pass++) {
       const forced = await page.evaluate(() => {
         let count = 0;
+        for (const animation of document.getAnimations()) {
+          try {
+            if (animation.effect?.getTiming().iterations !== Infinity) {
+              animation.finish();
+            }
+          } catch {
+            // Some browser-managed animations cannot be finished explicitly.
+          }
+        }
         const all = document.querySelectorAll("*");
         for (const element of all) {
           const inlineOpacity = Number.parseFloat(element.style.opacity);
@@ -52,9 +61,10 @@ export async function forceAnimationsComplete(page) {
 }
 
 /**
- * Prepare a full page without physically scrolling it. Native lazy content is
- * promoted to eager loading, and scroll-driven components receive an explicit
- * request to render their deterministic completed state.
+ * Prepare a full page by visiting every viewport. This triggers Intersection
+ * Observer and Framer Motion whileInView states before capture. Native lazy
+ * content is promoted to eager loading, and custom scroll-driven components
+ * receive an explicit request to render their deterministic completed state.
  *
  * @param {import("@playwright/test").Page} page
  */
@@ -68,29 +78,39 @@ export async function prepareFullPageVisualCapture(page) {
       )) {
         element.setAttribute("loading", "eager");
       }
+
+      const viewportStep = Math.max(400, Math.floor(window.innerHeight * 0.8));
+      for (
+        let y = 0;
+        y < document.documentElement.scrollHeight;
+        y += viewportStep
+      ) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
   });
 
   await page
     .waitForFunction(
       () =>
-        Array.from(document.querySelectorAll("iframe[src]")).every(
-          (iframe) => {
-            try {
-              const expectedUrl = new URL(iframe.src, document.baseURI).href;
-              const actualUrl = iframe.contentWindow?.location.href;
-              return (
-                actualUrl !== "about:blank" &&
-                actualUrl === expectedUrl &&
-                iframe.contentDocument?.readyState === "complete"
-              );
-            } catch {
-              // Cross-origin frames cannot expose readiness to the parent.
-              // Their own load lifecycle is handled by Playwright below.
-              return true;
-            }
-          },
-        ),
+        Array.from(document.querySelectorAll("iframe[src]")).every((iframe) => {
+          try {
+            const expectedUrl = new URL(iframe.src, document.baseURI).href;
+            const actualUrl = iframe.contentWindow?.location.href;
+            return (
+              actualUrl !== "about:blank" &&
+              actualUrl === expectedUrl &&
+              iframe.contentDocument?.readyState === "complete"
+            );
+          } catch {
+            // Cross-origin frames cannot expose readiness to the parent.
+            // Their own load lifecycle is handled by Playwright below.
+            return true;
+          }
+        }),
       undefined,
       { timeout: 10_000 },
     )
@@ -103,13 +123,17 @@ export async function prepareFullPageVisualCapture(page) {
       .map(async (frame) => {
         await frame.waitForLoadState("load", { timeout: 10_000 });
         await frame.evaluate(() => document.fonts.ready);
+        await frame.evaluate(() =>
+          window.dispatchEvent(new Event("optimitron:visual-capture")),
+        );
       }),
   );
 
   await retryAfterNavigation(page, async () => {
-    await page.evaluate(() =>
-      window.dispatchEvent(new Event("optimitron:visual-capture")),
-    );
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("optimitron:visual-capture"));
+      window.scrollTo(0, 0);
+    });
   });
   await waitForPaint(page);
 }

@@ -41,6 +41,7 @@ interface TreatyVoteSectionProps {
   bgColor?: SectionBgColor
   showManualPromo?: boolean
   postVoteMode?: TreatyPostVoteMode
+  disableIntroAnimation?: boolean
 }
 
 export default function TreatyVoteSection({
@@ -51,12 +52,13 @@ export default function TreatyVoteSection({
   bgColor = "yellow",
   showManualPromo = true,
   postVoteMode = "full",
+  disableIntroAnimation = false
 }: TreatyVoteSectionProps = {}) {
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null)
   const [militaryAllocation, setMilitaryAllocation] = useState<number>(50)
   const [showSlider, setShowSlider] = useState(true)
   const [sliderSubmitted, setSliderSubmitted] = useState(false)
-  const [userHasDragged, setUserHasDragged] = useState(false)
+  const [userHasDragged, setUserHasDragged] = useState(disableIntroAnimation)
   const [showAnimation, setShowAnimation] = useState(false)
   const [animatedValue, setAnimatedValue] = useState(50)
   const { data: session, status } = useSession()

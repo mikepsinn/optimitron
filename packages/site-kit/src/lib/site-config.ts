@@ -1359,7 +1359,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       SITE_FEATURES.MOVEMENT,
       SITE_FEATURES.DONATE,
     ],
-    showPoliticalContent: false,
+    showPoliticalContent: true,
     authEnabled: false,
     dashboardEnabled: false,
     icons: {
@@ -1396,9 +1396,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation system - Umbrella/donation focused
-    // Donate is prominent, cross-links to other projects
-    topLevelNavItems: ["donate", "vote", "about"],
+    // Navigation system - campaign case + donation focused
+    topLevelNavItems: ["donate", "vote", "thePlan"],
     sidebarSections: [
       {
         id: "support",
@@ -1409,11 +1408,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         id: "evidence",
         label: "THE EVIDENCE",
         items: ["research", "faq"],
-      },
-      {
-        id: "about-us",
-        label: "ABOUT US",
-        items: ["about"],
       },
     ],
     footerBranding: {
@@ -1432,9 +1426,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         items: ["manual", "listenPodcast", "readOnline"],
       },
       {
-        id: "about",
-        label: "ABOUT",
-        items: ["about", "research", "faq"],
+        id: "evidence",
+        label: "EVIDENCE",
+        items: ["research", "faq"],
       },
     ],
     contactInfo: {

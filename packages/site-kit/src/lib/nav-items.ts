@@ -360,7 +360,7 @@ export const NAV_ITEMS_MAP = {
       "The full plan to end war and disease, organized by how you want to help: vote, share, build a coalition, or fund the campaign.",
     emoji: "🎯",
     canonicalVariant: VARIANTS.WAR_ON_DISEASE,
-    allowedVariants: [VARIANTS.WAR_ON_DISEASE],
+    allowedVariants: [VARIANTS.WAR_ON_DISEASE, VARIANTS.ACCELERATED_MEDICINE],
     keywords: [
       "plan",
       "manual",
