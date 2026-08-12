@@ -33,7 +33,20 @@ export async function signInViaApi(
     },
   );
 
-  return signInResponse.status() < 400;
+  if (signInResponse.status() >= 400) {
+    return false;
+  }
+
+  // Credentials can return 200 while the session cookie is still missing
+  // (wrong host / CSRF reuse). Confirm the browser context is actually signed in.
+  const sessionResponse = await request.get("/api/auth/session");
+  if (sessionResponse.status() >= 400) {
+    return false;
+  }
+  const session = (await sessionResponse.json()) as {
+    user?: { id?: string | null } | null;
+  };
+  return Boolean(session.user?.id);
 }
 
 export async function signInUser(

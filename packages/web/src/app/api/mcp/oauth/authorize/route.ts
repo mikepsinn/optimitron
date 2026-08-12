@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { isRedirectUriAllowed } from "@/lib/mcp-oauth";
+import {
+  buildMcpConsentAuthorizeUrl,
+  isRedirectUriAllowed,
+} from "@/lib/mcp-oauth";
 
 /**
  * OAuth authorization endpoint. Validates the request parameters and redirects
- * to the consent page where the user can approve/deny access.
+ * to the consent page where the user can authorize/deny access.
+ *
+ * Consent always lives on the canonical Optimitron issuer origin, even when
+ * the client discovered MCP on a campaign host like warondisease.org. Mixing
+ * those hosts breaks NextAuth cookies and the post-login return to consent.
  */
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -26,14 +33,21 @@ export async function GET(req: Request) {
 
   if (!clientId || !redirectUri || !codeChallenge) {
     return NextResponse.json(
-      { error: "invalid_request", error_description: "client_id, redirect_uri, and code_challenge are required" },
+      {
+        error: "invalid_request",
+        error_description:
+          "client_id, redirect_uri, and code_challenge are required",
+      },
       { status: 400 },
     );
   }
 
   if (codeChallengeMethod && codeChallengeMethod !== "S256") {
     return NextResponse.json(
-      { error: "invalid_request", error_description: "Only S256 code_challenge_method is supported" },
+      {
+        error: "invalid_request",
+        error_description: "Only S256 code_challenge_method is supported",
+      },
       { status: 400 },
     );
   }
@@ -52,19 +66,22 @@ export async function GET(req: Request) {
 
   if (!isRedirectUriAllowed(client.redirectUris, redirectUri)) {
     return NextResponse.json(
-      { error: "invalid_request", error_description: "redirect_uri not registered for this client" },
+      {
+        error: "invalid_request",
+        error_description: "redirect_uri not registered for this client",
+      },
       { status: 400 },
     );
   }
 
-  // Redirect to the consent page with all params
-  const consentUrl = new URL("/mcp/authorize", url.origin);
-  consentUrl.searchParams.set("client_id", clientId);
-  consentUrl.searchParams.set("redirect_uri", redirectUri);
-  if (state) consentUrl.searchParams.set("state", state);
-  if (scope) consentUrl.searchParams.set("scope", scope);
-  consentUrl.searchParams.set("code_challenge", codeChallenge);
-  consentUrl.searchParams.set("client_name", client.clientName ?? clientId);
+  const consentUrl = buildMcpConsentAuthorizeUrl({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    state,
+    scope,
+    code_challenge: codeChallenge,
+    client_name: client.clientName ?? clientId,
+  });
 
   return NextResponse.redirect(consentUrl.toString());
 }

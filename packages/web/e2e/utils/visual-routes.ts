@@ -43,6 +43,11 @@ type DocumentReviewFixtureManifest = {
   version: 1;
 };
 
+type McpAuthorizeFixtureManifest = {
+  authorizePath: string;
+  version: 1;
+};
+
 function isDocumentReviewFixtureManifest(
   value: unknown,
 ): value is DocumentReviewFixtureManifest {
@@ -61,6 +66,19 @@ function isDocumentReviewFixtureManifest(
   );
 }
 
+function isMcpAuthorizeFixtureManifest(
+  value: unknown,
+): value is McpAuthorizeFixtureManifest {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    candidate.version === 1 && isNonEmptyString(candidate.authorizePath)
+  );
+}
+
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -73,6 +91,16 @@ const DOCUMENT_REVIEW_FIXTURE_MANIFEST_PATH = path.resolve(
   "visual-fixtures",
   "document-review.json",
 );
+const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
+  WEB_ROOT,
+  "output",
+  "playwright",
+  "visual-fixtures",
+  "mcp-authorize.json",
+);
+const MCP_AUTHORIZE_PAGE_FILE = "packages/web/src/app/mcp/authorize/page.tsx";
+const MCP_CONSENT_FORM_FILE =
+  "packages/web/src/app/mcp/authorize/consent-form.tsx";
 const TASK_DETAIL_PAGE_FILE = "packages/web/src/app/tasks/[id]/page.tsx";
 const DOCUMENT_REVIEW_MANAGER_FILE =
   "packages/web/src/components/tasks/document-review-manager-panel.tsx";
@@ -400,6 +428,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     required: false,
   },
   ...loadDocumentReviewRoutes(),
+  ...loadMcpAuthorizeRoutes(),
 ];
 
 const PUBLIC_SCREENSHOT_ROUTES: VisualRoute[] = filterRedirectOnlyRoutes(
@@ -510,6 +539,42 @@ function dedupeRoutes(routes: VisualRoute[]): VisualRoute[] {
     deduped.push(route);
   }
   return deduped;
+}
+
+function loadMcpAuthorizeRoutes(): VisualRoute[] {
+  if (process.env.ROUTE_VISUAL_REVIEW !== "1") {
+    return [];
+  }
+
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(
+      readFileSync(MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH, "utf8"),
+    );
+  } catch (error) {
+    throw new Error(
+      `MCP authorize visual fixture manifest is missing at ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}. The visual fixture seeder must run before Playwright.`,
+      { cause: error },
+    );
+  }
+
+  if (!isMcpAuthorizeFixtureManifest(manifest)) {
+    throw new Error(
+      `MCP authorize visual fixture manifest is invalid at ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}.`,
+    );
+  }
+
+  return [
+    {
+      authenticated: true,
+      covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
+      name: "mcp-authorize-consent",
+      path: manifest.authorizePath,
+      required: true,
+      requiredSelector: "#mcp-authorize-heading",
+      requiredText: /^Authorize$/,
+    },
+  ];
 }
 
 function loadDocumentReviewRoutes(): VisualRoute[] {
