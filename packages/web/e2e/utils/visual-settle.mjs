@@ -80,13 +80,19 @@ export async function prepareFullPageVisualCapture(page) {
       }
 
       const viewportStep = Math.max(400, Math.floor(window.innerHeight * 0.8));
-      for (
-        let y = 0;
-        y < document.documentElement.scrollHeight;
-        y += viewportStep
-      ) {
-        window.scrollTo(0, y);
-        await new Promise((resolve) => setTimeout(resolve, 40));
+      let nextY = 0;
+      let visitedViewports = 0;
+      for (let pass = 0; pass < 3 && visitedViewports < 120; pass++) {
+        const passHeight = document.documentElement.scrollHeight;
+        while (nextY < passHeight && visitedViewports < 120) {
+          window.scrollTo(0, nextY);
+          await new Promise((resolve) => setTimeout(resolve, 40));
+          nextY += viewportStep;
+          visitedViewports++;
+        }
+        window.scrollTo(0, passHeight);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        if (document.documentElement.scrollHeight <= passHeight) break;
       }
       window.scrollTo(0, document.documentElement.scrollHeight);
       await new Promise((resolve) => setTimeout(resolve, 100));

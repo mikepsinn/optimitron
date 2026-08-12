@@ -81,6 +81,11 @@ test("full-page preparation completes scroll state and loads a lazy embed", asyn
       const updateVisualState = () => {
         document.body.dataset.scrollState =
           window.scrollY >= 8000 ? "complete" : "initial";
+        if (window.scrollY > 0) {
+          const growth = document.createElement("div");
+          growth.style.height = "1000px";
+          document.body.append(growth);
+        }
       };
       window.addEventListener("scroll", updateVisualState, { passive: true });
       window.addEventListener("optimitron:visual-capture", () => {
@@ -99,10 +104,7 @@ test("full-page preparation completes scroll state and loads a lazy embed", asyn
   await expect(
     page.frameLocator("#lazy-embed").locator("#embed-ready"),
   ).toHaveText("Loaded survey embed");
-  await expect(page.locator("#lazy-embed")).toHaveAttribute(
-    "loading",
-    "eager",
-  );
+  await expect(page.locator("#lazy-embed")).toHaveAttribute("loading", "eager");
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
