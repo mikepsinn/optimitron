@@ -2791,6 +2791,10 @@ const TRACKING_REMINDER_INCLUDE = {
   },
 } satisfies Prisma.TrackingReminderInclude;
 
+const TRACKING_NOTIFICATION_WITH_REMINDER_INCLUDE = {
+  trackingReminder: { include: TRACKING_REMINDER_INCLUDE },
+} satisfies Prisma.TrackingReminderNotificationInclude;
+
 const TRACKING_MEASUREMENT_SELECT = {
   createdAt: true,
   duration: true,
@@ -3825,6 +3829,64 @@ function parseTrackingNotificationStatus(value: unknown) {
   return normalized as NotificationStatus | TrackingReminderDerivedStatus;
 }
 
+function storedTrackingNotificationToQueueItem(
+  notification: Prisma.TrackingReminderNotificationGetPayload<{
+    include: typeof TRACKING_NOTIFICATION_WITH_REMINDER_INCLUDE;
+  }>,
+  timeZone: string,
+) {
+  const reminder = notification.trackingReminder;
+  const notifyAt = notification.notifyAt;
+  const dateKey = getZonedDateKey(notifyAt, timeZone);
+  const snoozeElapsed =
+    notification.status === NotificationStatus.SNOOZED &&
+    notifyAt.getTime() <= Date.now();
+  const isOverdue =
+    (notification.status === NotificationStatus.PENDING ||
+      notification.status === NotificationStatus.SENT ||
+      snoozeElapsed) &&
+    notifyAt.getTime() < Date.now();
+  return {
+    dateKey,
+    defaultValue: cleanNumber(reminder.defaultValue),
+    derivedStatus: isOverdue
+      ? TrackingReminderDerivedStatus.OVERDUE
+      : snoozeElapsed
+        ? NotificationStatus.PENDING
+        : notification.status,
+    globalVariable: reminder.globalVariable,
+    instructions: reminder.instructions,
+    isOverdue,
+    notification,
+    notificationId: notification.id,
+    notifyAt,
+    notifyAtLocal: formatZonedIsoString(notifyAt, timeZone),
+    overdueSince: isOverdue ? notifyAt : null,
+    overdueSinceLocal: isOverdue
+      ? formatZonedIsoString(notifyAt, timeZone)
+      : null,
+    reminderEndTime: reminder.reminderEndTime,
+    reminderFrequency: reminder.reminderFrequency,
+    reminderId: reminder.id,
+    reminderStartTime: reminder.reminderStartTime,
+    // A current schedule cannot reconstruct the historical scheduled instant
+    // after the reminder was edited. Keep it null instead of inventing one.
+    scheduledAt: null,
+    scheduledAtLocal: null,
+    snoozedUntil:
+      notification.status === NotificationStatus.SNOOZED ? notifyAt : null,
+    snoozedUntilLocal:
+      notification.status === NotificationStatus.SNOOZED
+        ? formatZonedIsoString(notifyAt, timeZone)
+        : null,
+    snoozeDelayMinutes: null,
+    status: notification.status,
+    timeZone,
+    trackedValue: cleanNumber(notification.trackedValue),
+    utcOffsetMinutes: getTimeZoneOffsetMinutes(notifyAt, timeZone),
+  };
+}
+
 function trackingNotificationDateKeys(
   input: Record<string, unknown>,
   fallbackDateKey: string,
@@ -3900,14 +3962,50 @@ async function listTrackingReminderNotificationsForUser(
       ),
     );
   }
-  const notifications = dayResults
-    .flatMap((result) => result.notifications)
+  const scheduledNotifications = dayResults.flatMap(
+    (result) => result.notifications,
+  );
+  const scheduledNotificationIds = new Set(
+    scheduledNotifications.flatMap((notification) =>
+      notification.notificationId ? [notification.notificationId] : [],
+    ),
+  );
+  const firstRange = dayRange(dateKeys[0]!, timeZone);
+  const lastRange = dayRange(dateKeys[dateKeys.length - 1]!, timeZone);
+  const storedNotifications =
+    await prisma.trackingReminderNotification.findMany({
+      include: TRACKING_NOTIFICATION_WITH_REMINDER_INCLUDE,
+      orderBy: [{ notifyAt: "asc" }],
+      where: {
+        deletedAt: null,
+        notifyAt: { gte: firstRange.start, lt: lastRange.end },
+        userId,
+      },
+    });
+  const unmatchedStoredNotifications = storedNotifications
+    .filter(
+      (notification) =>
+        !scheduledNotificationIds.has(notification.id) &&
+        (input.includeCompleted === true ||
+          status !== null ||
+          notification.status === NotificationStatus.PENDING ||
+          notification.status === NotificationStatus.SENT ||
+          notification.status === NotificationStatus.SNOOZED),
+    )
+    .map((notification) =>
+      storedTrackingNotificationToQueueItem(notification, timeZone),
+    );
+  const notifications = [
+    ...scheduledNotifications,
+    ...unmatchedStoredNotifications,
+  ]
     .filter(
       (notification) =>
         (!trackingReminderId ||
           notification.reminderId === trackingReminderId) &&
         (!status || notification.derivedStatus === status),
-    );
+    )
+    .sort((left, right) => left.notifyAt.getTime() - right.notifyAt.getTime());
   const result =
     dateKeys.length === 1
       ? { dateKey: dateKeys[0]!, notifications, timeZone }

@@ -10337,6 +10337,48 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.trackingReminderFindMany).not.toHaveBeenCalled();
     });
 
+    it("returns stored tracked history after a reminder is deactivated", async () => {
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+      mocks.trackingReminderFindMany.mockResolvedValue([]);
+      mocks.trackingReminderNotificationFindMany.mockResolvedValue([
+        {
+          deletedAt: null,
+          id: "historical-notification",
+          notifyAt: new Date("2026-08-03T08:00:00.000Z"),
+          status: NotificationStatus.TRACKED,
+          trackedValue: 3,
+          trackingReminder: {
+            ...EXISTING_TRACKING_REMINDER,
+            active: false,
+            reminderStartTime: "17:00",
+          },
+          trackingReminderId: "reminder-1",
+          userId: "user-1",
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listTrackingReminderNotifications",
+        arguments: { dateKey: "2026-08-03", status: "TRACKED" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(parseToolBody(result)).toMatchObject({
+        dateKey: "2026-08-03",
+        notifications: [
+          {
+            derivedStatus: NotificationStatus.TRACKED,
+            notificationId: "historical-notification",
+            reminderId: "reminder-1",
+            scheduledAt: null,
+            status: NotificationStatus.TRACKED,
+            trackedValue: 3,
+          },
+        ],
+      });
+    });
+
     it("restores a snoozed notification after its deferred time", async () => {
       const now = vi
         .spyOn(Date, "now")
