@@ -231,24 +231,6 @@ test.describe("route visual regression", () => {
       if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
         await openTaskImpactTrace(page);
       }
-      if (
-        "showMcpDisabledAuthorize" in route &&
-        route.showMcpDisabledAuthorize
-      ) {
-        await page
-          .getByRole("checkbox", { name: /Manage Private Tasks/i })
-          .uncheck();
-        await page
-          .getByRole("checkbox", { name: /Manage Organization Tasks/i })
-          .uncheck();
-        await expect(
-          page.getByRole("button", {
-            name: "Select Permissions",
-            exact: true,
-          }),
-        ).toBeDisabled();
-        await page.evaluate(() => window.scrollTo(0, 0));
-      }
       if ("mcpScopeAccess" in route && route.mcpScopeAccess) {
         const privilegedPermissions = [
           /Admin Public Task Management/i,
@@ -307,6 +289,24 @@ test.describe("route visual regression", () => {
         path: reviewScreenshotPath,
         contentType: "image/png",
       });
+
+      if (
+        "verifyMcpDisabledAuthorize" in route &&
+        route.verifyMcpDisabledAuthorize
+      ) {
+        await page
+          .getByRole("checkbox", { name: /Manage Private Tasks/i })
+          .uncheck();
+        await page
+          .getByRole("checkbox", { name: /Manage Organization Tasks/i })
+          .uncheck();
+        await expect(
+          page.getByRole("button", {
+            name: "Select Permissions",
+            exact: true,
+          }),
+        ).toBeDisabled();
+      }
     });
   }
 });

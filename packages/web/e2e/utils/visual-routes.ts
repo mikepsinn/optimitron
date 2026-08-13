@@ -24,7 +24,7 @@ export type VisualRoute = {
   openContentShare?: boolean;
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
-  showMcpDisabledAuthorize?: boolean;
+  verifyMcpDisabledAuthorize?: boolean;
   mcpScopeAccess?: "admin" | "non-admin";
   openMenu?: boolean;
   openTaskManagement?: boolean;
@@ -599,34 +599,29 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
   return [
     {
       authenticated: true,
-      covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
-      name: "mcp-authorize-admin-consent",
+      covers: [
+        MCP_AUTHORIZE_PAGE_FILE,
+        MCP_CONSENT_FORM_FILE,
+        RETRO_UI_BUTTON_FILE,
+      ],
+      name: "mcp-authorize-admin-user",
       mcpScopeAccess: "admin",
       path: manifest.authorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,
+      verifyMcpDisabledAuthorize: true,
     },
     {
       authenticated: true,
       authenticatedEmail: manifest.nonAdminEmail,
       covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
       mcpScopeAccess: "non-admin",
-      name: "mcp-authorize-non-admin-consent",
+      name: "mcp-authorize-non-admin-user",
       path: manifest.nonAdminAuthorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,
-    },
-    {
-      authenticated: true,
-      covers: [RETRO_UI_BUTTON_FILE],
-      name: "mcp-authorize-admin-disabled",
-      path: manifest.authorizePath,
-      required: true,
-      requiredSelector: "#mcp-authorize-heading",
-      requiredText: /^Select Permissions$/,
-      showMcpDisabledAuthorize: true,
     },
   ];
 }
