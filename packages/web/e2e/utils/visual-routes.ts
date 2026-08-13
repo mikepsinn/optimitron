@@ -14,6 +14,7 @@ import { ALL_PAGE_PATHS, PUBLIC_PAGE_PATHS } from "./static-pages";
 
 export type VisualRoute = {
   authenticated?: boolean;
+  authenticatedEmail?: string;
   /** UI source files whose rendered states this route is required to exercise. */
   covers?: string[];
   createTaskMode?: "person";
@@ -24,6 +25,7 @@ export type VisualRoute = {
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
   showMcpDisabledAuthorize?: boolean;
+  mcpScopeAccess?: "admin" | "non-admin";
   openMenu?: boolean;
   openTaskManagement?: boolean;
   path: string;
@@ -46,7 +48,9 @@ type DocumentReviewFixtureManifest = {
 
 type McpAuthorizeFixtureManifest = {
   authorizePath: string;
-  version: 1;
+  nonAdminAuthorizePath: string;
+  nonAdminEmail: string;
+  version: 2;
 };
 
 function isDocumentReviewFixtureManifest(
@@ -75,7 +79,12 @@ function isMcpAuthorizeFixtureManifest(
   }
 
   const candidate = value as Record<string, unknown>;
-  return candidate.version === 1 && isNonEmptyString(candidate.authorizePath);
+  return (
+    candidate.version === 2 &&
+    isNonEmptyString(candidate.authorizePath) &&
+    isNonEmptyString(candidate.nonAdminAuthorizePath) &&
+    isNonEmptyString(candidate.nonAdminEmail)
+  );
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -583,7 +592,19 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
       authenticated: true,
       covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
       name: "mcp-authorize-admin-consent",
+      mcpScopeAccess: "admin",
       path: manifest.authorizePath,
+      required: true,
+      requiredSelector: "#mcp-authorize-heading",
+      requiredText: /^Authorize$/,
+    },
+    {
+      authenticated: true,
+      authenticatedEmail: manifest.nonAdminEmail,
+      covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
+      mcpScopeAccess: "non-admin",
+      name: "mcp-authorize-non-admin-consent",
+      path: manifest.nonAdminAuthorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,

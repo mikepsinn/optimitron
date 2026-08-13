@@ -60,6 +60,8 @@ const ids = {
   managerTask: `${FIXTURE_PREFIX}manager_task`,
   managementClaimTask: `${FIXTURE_PREFIX}management_claim_task`,
   managementOwnerTask: `${FIXTURE_PREFIX}management_owner_task`,
+  nonAdminMcpPerson: `${FIXTURE_PREFIX}mcp_non_admin_person`,
+  nonAdminMcpUser: `${FIXTURE_PREFIX}mcp_non_admin_user`,
   staleTask: `${FIXTURE_PREFIX}stale_task`,
 };
 
@@ -99,7 +101,7 @@ async function removeFixtureManifest() {
   ]);
 }
 
-async function seedMcpAuthorizeFixture() {
+async function seedMcpAuthorizeFixture(input: { nonAdminEmail: string }) {
   await prisma.oAuthGrant.deleteMany({
     where: { clientId: MCP_AUTHORIZE_CLIENT_ID },
   });
@@ -121,8 +123,26 @@ async function seedMcpAuthorizeFixture() {
   authorizePath.searchParams.set("redirect_uri", MCP_AUTHORIZE_REDIRECT_URI);
   authorizePath.searchParams.set("state", "visual-review");
   authorizePath.searchParams.set("scope", "tasks:personal tasks:organization");
-  authorizePath.searchParams.set("code_challenge", MCP_AUTHORIZE_CODE_CHALLENGE);
+  authorizePath.searchParams.set(
+    "code_challenge",
+    MCP_AUTHORIZE_CODE_CHALLENGE,
+  );
   authorizePath.searchParams.set("client_name", "Visual Review MCP");
+
+  const nonAdminAuthorizePath = new URL(authorizePath);
+  nonAdminAuthorizePath.searchParams.set("state", "visual-review-non-admin");
+  nonAdminAuthorizePath.searchParams.set(
+    "scope",
+    [
+      "tasks:personal",
+      "tasks:organization",
+      "earthdata:write",
+      "tasks:admin",
+      "earthdata:admin",
+      "agent:run",
+      "github",
+    ].join(" "),
+  );
 
   await mkdir(path.dirname(MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH), {
     recursive: true,
@@ -132,16 +152,16 @@ async function seedMcpAuthorizeFixture() {
     JSON.stringify(
       {
         authorizePath: `${authorizePath.pathname}${authorizePath.search}`,
-        version: 1,
+        nonAdminAuthorizePath: `${nonAdminAuthorizePath.pathname}${nonAdminAuthorizePath.search}`,
+        nonAdminEmail: input.nonAdminEmail,
+        version: 2,
       },
       null,
       2,
     ),
     "utf8",
   );
-  console.log(
-    `[visual-review] wrote ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}`,
-  );
+  console.log(`[visual-review] wrote ${MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH}`);
 }
 
 async function resetVisualReviewFixtures() {
@@ -281,10 +301,11 @@ async function loadDemoActor() {
     select: {
       id: true,
       isAdmin: true,
+      password: true,
       person: { select: { id: true } },
     },
   });
-  if (!user?.person) {
+  if (!user?.person || !user.password) {
     throw new Error(
       `Visual review fixtures require the managed demo user (${DEMO_EMAIL}). Run managed-data sync first.`,
     );
@@ -295,7 +316,47 @@ async function loadDemoActor() {
       data: { isAdmin: true },
     });
   }
-  return { person: user.person, user: { id: user.id } };
+  return {
+    passwordHash: user.password,
+    person: user.person,
+    user: { id: user.id },
+  };
+}
+
+async function ensureNonAdminMcpAuthorizeUser(passwordHash: string) {
+  const email = "visual-user@example.test";
+  const person = await prisma.person.upsert({
+    where: { id: ids.nonAdminMcpPerson },
+    update: {
+      deletedAt: null,
+      displayName: "Normal Visual Reviewer",
+      email,
+    },
+    create: {
+      displayName: "Normal Visual Reviewer",
+      email,
+      id: ids.nonAdminMcpPerson,
+    },
+  });
+  const user = await prisma.user.upsert({
+    where: { id: ids.nonAdminMcpUser },
+    update: {
+      deletedAt: null,
+      email,
+      isAdmin: false,
+      password: passwordHash,
+      personId: person.id,
+    },
+    create: {
+      email,
+      id: ids.nonAdminMcpUser,
+      isAdmin: false,
+      password: passwordHash,
+      personId: person.id,
+    },
+  });
+  await prisma.organizationMember.deleteMany({ where: { userId: user.id } });
+  return { email };
 }
 
 async function seedTaskManagementStates(input: {
@@ -628,6 +689,9 @@ async function main() {
     loadDemoActor(),
     ensureFixtureManager(),
   ]);
+  const nonAdminMcpUser = await ensureNonAdminMcpAuthorizeUser(
+    demo.passwordHash,
+  );
   const managerTaskId = await seedManagerState({ demo, fixtureManager });
   const activeReviewTaskId = await seedActiveReviewerState({
     demo,
@@ -642,7 +706,7 @@ async function main() {
     fixtureManager,
   });
 
-  await seedMcpAuthorizeFixture();
+  await seedMcpAuthorizeFixture({ nonAdminEmail: nonAdminMcpUser.email });
   await mkdir(path.dirname(FIXTURE_MANIFEST_PATH), { recursive: true });
   await writeFile(
     FIXTURE_MANIFEST_PATH,
