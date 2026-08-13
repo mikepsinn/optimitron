@@ -3260,6 +3260,7 @@ async function recordTrackingMeasurementWithTx(
       value: input.value,
     },
     update: {
+      deletedAt: null,
       duration: input.duration,
       latitude: input.latitude,
       longitude: input.longitude,
@@ -3322,6 +3323,8 @@ async function findOwnedMeasurementForMutation(
       globalVariableId: true,
       id: true,
       nOf1VariableId: true,
+      originalUnitId: true,
+      unitId: true,
     },
     where: {
       deletedAt: null,
@@ -3346,6 +3349,10 @@ async function updateMeasurementForUser(
     );
   }
   const value = parseRequiredFiniteNumber(input.value, "value");
+  const suppliedOriginalValue = parseOptionalFiniteNumberInput(
+    input,
+    "originalValue",
+  );
   const prisma = await getPrisma();
   return prisma.$transaction(async (tx) => {
     const existing = await findOwnedMeasurementForMutation(
@@ -3353,10 +3360,18 @@ async function updateMeasurementForUser(
       measurementId,
       userId,
     );
+    if (
+      existing.originalUnitId !== existing.unitId &&
+      suppliedOriginalValue === undefined
+    ) {
+      throw new Error(
+        "originalValue is required because this measurement was converted between different units. Pass value in the normalized unit and originalValue in the original unit.",
+      );
+    }
     const measurement = await tx.measurement.update({
       data: {
         value,
-        originalValue: value,
+        originalValue: suppliedOriginalValue ?? value,
         ...(input.duration !== undefined
           ? {
               duration: parseOptionalNonnegativeInteger(
@@ -5156,6 +5171,11 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         metricKind: { type: "string" },
         sourceType: { type: "string" },
         value: { type: "number" },
+        originalValue: {
+          type: "number",
+          description:
+            "Corrected value in the existing original unit. Required when originalUnitId differs from unitId; otherwise defaults to value.",
+        },
         unitId: { type: "string" },
         confidenceScore: { type: "number" },
         participants: { type: "number" },

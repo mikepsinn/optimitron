@@ -9369,6 +9369,7 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.measurementUpsert).toHaveBeenCalledTimes(1);
       const call = mocks.measurementUpsert.mock.calls[0]![0] as {
         create: Record<string, unknown>;
+        update: Record<string, unknown>;
         where: {
           subjectId_globalVariableId_startTime: Record<string, unknown>;
         };
@@ -9379,6 +9380,7 @@ describe("MCP server tool dispatch", () => {
         subjectId: "subject-1",
       });
       expect(call.create).toMatchObject({ unitId: "unit-iu", value: 5000 });
+      expect(call.update).toMatchObject({ deletedAt: null });
 
       const body = parseToolBody(result) as {
         result: { measurement: { subjectId: string; value: number } };
@@ -9781,6 +9783,8 @@ describe("MCP server tool dispatch", () => {
         globalVariableId: "gv-vitd",
         id: "measurement-1",
         nOf1VariableId: "nof1-1",
+        originalUnitId: "unit-iu",
+        unitId: "unit-iu",
       });
       mocks.measurementUpdate.mockResolvedValue({
         ...measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
@@ -9828,6 +9832,8 @@ describe("MCP server tool dispatch", () => {
         globalVariableId: "gv-vitd",
         id: "measurement-1",
         nOf1VariableId: "nof1-1",
+        originalUnitId: "unit-iu",
+        unitId: "unit-iu",
       });
       const deletedAt = new Date("2026-08-13T00:00:00.000Z");
       mocks.measurementUpdate.mockResolvedValue({
@@ -9851,6 +9857,52 @@ describe("MCP server tool dispatch", () => {
       );
       expect(mocks.nOf1VariableUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ where: { id: "nof1-1" } }),
+      );
+    });
+
+    it("updateMeasurement requires both representations for a converted measurement", async () => {
+      mocks.measurementFindFirst.mockResolvedValue({
+        globalVariableId: "gv-weight",
+        id: "measurement-converted",
+        nOf1VariableId: "nof1-weight",
+        originalUnitId: "unit-g",
+        unitId: "unit-mg",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const missingOriginalValue = await client.callTool({
+        name: "updateMeasurement",
+        arguments: { measurementId: "measurement-converted", value: 2000 },
+      });
+
+      expect(missingOriginalValue.isError).toBe(true);
+      expect(parseToolBody(missingOriginalValue).message).toContain(
+        "originalValue is required",
+      );
+      expect(mocks.measurementUpdate).not.toHaveBeenCalled();
+
+      mocks.measurementUpdate.mockResolvedValue({
+        ...measurementRow(
+          "measurement-converted",
+          "2026-07-01T08:00:00.000Z",
+        ),
+        originalValue: 2,
+        value: 2000,
+      });
+      const corrected = await client.callTool({
+        name: "updateMeasurement",
+        arguments: {
+          measurementId: "measurement-converted",
+          originalValue: 2,
+          value: 2000,
+        },
+      });
+
+      expect(corrected.isError).toBeFalsy();
+      expect(mocks.measurementUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ originalValue: 2, value: 2000 }),
+        }),
       );
     });
 
