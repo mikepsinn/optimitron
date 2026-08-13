@@ -15,6 +15,19 @@ describe("getTaskDescriptionSummary", () => {
       getTaskDescriptionSummary("# Heading\\n\\nFirst paragraph\\n\\n- Action"),
     ).toBe("First paragraph");
   });
+
+  it("strips markdown and truncates search-card summaries", () => {
+    const summary = getTaskDescriptionSummary(
+      "## Internal heading\\n\\n**Fix** the [public search](https://example.com) so `humans` can find it. " +
+        "Do not expose raw markdown in compact results.",
+      72,
+    );
+
+    expect(summary).toBe(
+      "Fix the public search so humans can find it. Do not expose raw markdown...",
+    );
+    expect(summary).not.toMatch(/[\[*`#]/u);
+  });
 });
 
 describe("TaskDescription", () => {

@@ -593,9 +593,10 @@ export const searchLink: NavItem = {
   href: ROUTES.search,
   label: "Search",
   emoji: "🔎",
-  description: "Search pages, tasks, and the manual.",
-  tagline: "Search pages, tasks, and manual",
+  description: "Search pages, tasks, and the Earth Repair Manual.",
+  tagline: "Search pages, tasks, and the Earth Repair Manual",
   matchPrefixes: [ROUTES.search],
+  copyPreview: true,
   cta: "Search Site",
 };
 
@@ -1927,6 +1928,7 @@ export const routeReviewNavItems = [
   foundationsLink,
   signatoriesLink,
   presidentManagementLink,
+  searchLink,
   dashboardLink,
   editProfileLink,
   tasksLink,
