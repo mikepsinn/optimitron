@@ -80,6 +80,73 @@ describe("MCP OAuth consent route (Authorize)", () => {
     expect(mocks.createAuthCode).toHaveBeenCalledOnce();
   });
 
+  it("omits organization access when no organizations are selected", async () => {
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        state: "state-1",
+        scope: "tasks:personal tasks:organization",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: [],
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.findMemberships).not.toHaveBeenCalled();
+    expect(mocks.createAuthCode).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        scopes: ["TASKS_PERSONAL"],
+        organizationIds: [],
+      }),
+    });
+  });
+
+  it("keeps organization access for selected member organizations", async () => {
+    mocks.findMemberships.mockResolvedValue([
+      { organizationId: "organization_1" },
+    ]);
+
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        scope: "tasks:personal tasks:organization",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: ["organization_1"],
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.createAuthCode).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        scopes: ["TASKS_PERSONAL", "TASKS_ORGANIZATION"],
+        organizationIds: ["organization_1"],
+      }),
+    });
+  });
+
+  it("rejects organization IDs outside the user's memberships", async () => {
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        scope: "tasks:personal tasks:organization",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: ["organization_unauthorized"],
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({
+      error: "invalid_scope",
+    });
+    expect(mocks.createAuthCode).not.toHaveBeenCalled();
+  });
+
   it("rejects Authorize when the session is missing", async () => {
     mocks.getServerSession.mockResolvedValue(null);
 

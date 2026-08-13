@@ -24,7 +24,6 @@ export type VisualRoute = {
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
   showMcpDisabledAuthorize?: boolean;
-  showMcpOrganizationSelectionError?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
   path: string;
@@ -76,9 +75,7 @@ function isMcpAuthorizeFixtureManifest(
   }
 
   const candidate = value as Record<string, unknown>;
-  return (
-    candidate.version === 1 && isNonEmptyString(candidate.authorizePath)
-  );
+  return candidate.version === 1 && isNonEmptyString(candidate.authorizePath);
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -103,8 +100,7 @@ const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
 const MCP_AUTHORIZE_PAGE_FILE = "packages/web/src/app/mcp/authorize/page.tsx";
 const MCP_CONSENT_FORM_FILE =
   "packages/web/src/app/mcp/authorize/consent-form.tsx";
-const RETRO_UI_BUTTON_FILE =
-  "packages/web/src/components/retroui/Button.tsx";
+const RETRO_UI_BUTTON_FILE = "packages/web/src/components/retroui/Button.tsx";
 const TASK_DETAIL_PAGE_FILE = "packages/web/src/app/tasks/[id]/page.tsx";
 const DOCUMENT_REVIEW_MANAGER_FILE =
   "packages/web/src/components/tasks/document-review-manager-panel.tsx";
@@ -591,7 +587,6 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,
-      showMcpOrganizationSelectionError: true,
     },
     {
       authenticated: true,

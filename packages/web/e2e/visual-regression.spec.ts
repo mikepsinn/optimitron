@@ -244,22 +244,6 @@ test.describe("route visual regression", () => {
         ).toBeDisabled();
         await page.evaluate(() => window.scrollTo(0, 0));
       }
-      if (
-        "showMcpOrganizationSelectionError" in route &&
-        route.showMcpOrganizationSelectionError
-      ) {
-        await page
-          .getByRole("button", { name: "Authorize", exact: true })
-          .click();
-        await expect(
-          page.getByText(
-            "Select at least one organization or remove organization access.",
-            { exact: true },
-          ),
-        ).toBeVisible();
-        await page.evaluate(() => window.scrollTo(0, 0));
-      }
-
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
         // president/signer task list. Do not delete without Mike's explicit
@@ -382,8 +366,7 @@ async function waitForVisualIdle(page: Page) {
 
 async function waitForAuthenticatedVisualSession(page: Page) {
   await page.waitForFunction(
-    () =>
-      document.documentElement.dataset.visualAuthState === "authenticated",
+    () => document.documentElement.dataset.visualAuthState === "authenticated",
     undefined,
     { timeout: 15_000 },
   );

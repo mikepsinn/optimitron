@@ -154,16 +154,6 @@ test("MCP authorize preserves the login callback and returns an OAuth code", asy
   const authorizeButton = page.getByRole("button", { name: "Authorize" });
   await expect(authorizeButton).toBeEnabled({ timeout: 10_000 });
 
-  await authorizeButton.click();
-  const organizationSelectionError = page.getByText(
-    "Select at least one organization or remove organization access.",
-    { exact: true },
-  );
-  await expect(organizationSelectionError).toBeVisible();
-
-  await page.getByRole("checkbox", { name: /Demo Organization/i }).check();
-  await expect(organizationSelectionError).not.toBeVisible();
-
   await Promise.all([
     page.waitForURL(
       (url) =>

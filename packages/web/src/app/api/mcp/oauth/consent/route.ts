@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateAuthCode, AUTH_CODE_TTL_MS, isRedirectUriAllowed } from "@/lib/mcp-oauth";
+import {
+  generateAuthCode,
+  AUTH_CODE_TTL_MS,
+  isRedirectUriAllowed,
+} from "@/lib/mcp-oauth";
 import {
   filterAllowedMcpScopes,
   isHumanApprovalOAuthRedirectUri,
@@ -51,7 +55,10 @@ export async function POST(req: Request) {
     !URL.canParse(redirectUri) ||
     !isRedirectUriAllowed(client.redirectUris, redirectUri)
   ) {
-    return NextResponse.json({ error: "Invalid redirect_uri" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid redirect_uri" },
+      { status: 400 },
+    );
   }
 
   if (!approved) {
@@ -69,54 +76,51 @@ export async function POST(req: Request) {
     where: { id: session.user.id },
     select: { isAdmin: true },
   });
-  const scopes = filterAllowedMcpScopes(requestedScopes, user?.isAdmin === true, {
+  let scopes = filterAllowedMcpScopes(requestedScopes, user?.isAdmin === true, {
     allowHumanApproval: isHumanApprovalOAuthRedirectUri(redirectUri),
   });
-
-  if (scopes.length === 0) {
-    return NextResponse.json(
-      { error: "invalid_scope", error_description: "At least one valid scope is required" },
-      { status: 400 },
-    );
-  }
 
   let organizationIds: string[] = [];
   if (scopes.includes(McpScope.TASKS_ORGANIZATION)) {
     if (requestedOrganizationIds.length === 0) {
-      return NextResponse.json(
-        {
-          error: "invalid_scope",
-          error_description:
-            "Select at least one organization or remove tasks:organization.",
+      scopes = scopes.filter((scope) => scope !== McpScope.TASKS_ORGANIZATION);
+    } else {
+      const memberships = await prisma.organizationMember.findMany({
+        where: {
+          organizationId: { in: requestedOrganizationIds },
+          organization: { deletedAt: null },
+          userId: session.user.id,
         },
-        { status: 400 },
+        select: { organizationId: true },
+      });
+      const membershipIds = new Set(
+        memberships.map((membership) => membership.organizationId),
       );
+      if (
+        membershipIds.size !== requestedOrganizationIds.length ||
+        requestedOrganizationIds.some((id) => !membershipIds.has(id))
+      ) {
+        return NextResponse.json(
+          {
+            error: "invalid_scope",
+            error_description:
+              "One or more selected organizations are unavailable.",
+          },
+          { status: 400 },
+        );
+      }
+      organizationIds = requestedOrganizationIds;
     }
-    const memberships = await prisma.organizationMember.findMany({
-      where: {
-        organizationId: { in: requestedOrganizationIds },
-        organization: { deletedAt: null },
-        userId: session.user.id,
+  }
+
+  if (scopes.length === 0) {
+    return NextResponse.json(
+      {
+        error: "invalid_scope",
+        error_description: "At least one valid scope is required",
       },
-      select: { organizationId: true },
-    });
-    const membershipIds = new Set(
-      memberships.map((membership) => membership.organizationId),
+      { status: 400 },
     );
-    if (
-      membershipIds.size !== requestedOrganizationIds.length ||
-      requestedOrganizationIds.some((id) => !membershipIds.has(id))
-    ) {
-      return NextResponse.json(
-        {
-          error: "invalid_scope",
-          error_description:
-            "One or more selected organizations are unavailable.",
-        },
-        { status: 400 },
-      );
-    }
-    organizationIds = requestedOrganizationIds;
   }
 
   await prisma.oAuthAuthCode.create({

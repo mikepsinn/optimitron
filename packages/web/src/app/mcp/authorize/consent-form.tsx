@@ -85,6 +85,10 @@ export function McpConsentForm({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const canAuthorize = Array.from(selected).some(
+    (scope) =>
+      scope !== McpScope.TASKS_ORGANIZATION || selectedOrganizationIds.size > 0,
+  );
 
   function toggle(scope: McpScope) {
     setError(null);
@@ -107,16 +111,12 @@ export function McpConsentForm({
   }
 
   async function handleApprove() {
-    const organizationSelectionRequired =
-      selected.has(McpScope.TASKS_ORGANIZATION) &&
-      selectedOrganizationIds.size === 0;
-    if (selected.size === 0) return;
-    if (organizationSelectionRequired) {
-      setError(
-        "Select at least one organization or remove organization access.",
-      );
-      return;
-    }
+    const scopesToAuthorize = Array.from(selected).filter(
+      (scope) =>
+        scope !== McpScope.TASKS_ORGANIZATION ||
+        selectedOrganizationIds.size > 0,
+    );
+    if (scopesToAuthorize.length === 0) return;
     setLoading(true);
     setError(null);
     try {
@@ -128,8 +128,10 @@ export function McpConsentForm({
           client_id: clientId,
           redirect_uri: redirectUri,
           state,
-          scope: scopesToWire(Array.from(selected)),
-          organization_ids: selected.has(McpScope.TASKS_ORGANIZATION)
+          scope: scopesToWire(scopesToAuthorize),
+          organization_ids: scopesToAuthorize.includes(
+            McpScope.TASKS_ORGANIZATION,
+          )
             ? Array.from(selectedOrganizationIds)
             : [],
           code_challenge: codeChallenge,
@@ -211,33 +213,40 @@ export function McpConsentForm({
         <div className="mb-6">
           <h2 className="text-sm font-black uppercase mb-3">Organizations</h2>
           {availableOrganizations.length > 0 ? (
-            <ul className="space-y-2">
-              {availableOrganizations.map((organization) => (
-                <li key={organization.id}>
-                  <label className="flex gap-3 items-start cursor-pointer border-2 border-primary p-3 hover:bg-muted">
-                    <Checkbox
-                      checked={selectedOrganizationIds.has(organization.id)}
-                      onCheckedChange={() =>
-                        toggleOrganization(organization.id)
-                      }
-                      className="mt-0.5"
-                    />
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-sm font-black uppercase break-words">
-                        {organization.name}
+            <>
+              <p className="text-xs font-bold text-muted-foreground mb-3">
+                Select the organizations this app may manage. Leave all
+                unchecked to continue without organization access.
+              </p>
+              <ul className="space-y-2">
+                {availableOrganizations.map((organization) => (
+                  <li key={organization.id}>
+                    <label className="flex gap-3 items-start cursor-pointer border-2 border-primary p-3 hover:bg-muted">
+                      <Checkbox
+                        checked={selectedOrganizationIds.has(organization.id)}
+                        onCheckedChange={() =>
+                          toggleOrganization(organization.id)
+                        }
+                        className="mt-0.5"
+                      />
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-sm font-black uppercase break-words">
+                          {organization.name}
+                        </span>
+                        <span className="block text-xs font-bold text-muted-foreground mt-1">
+                          {organization.role.toLowerCase()} ·{" "}
+                          {organization.slug}
+                        </span>
                       </span>
-                      <span className="block text-xs font-bold text-muted-foreground mt-1">
-                        {organization.role.toLowerCase()} · {organization.slug}
-                      </span>
-                    </span>
-                  </label>
-                </li>
-              ))}
-            </ul>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </>
           ) : (
             <p className="text-xs font-bold text-muted-foreground">
-              You do not belong to an organization. Remove organization access
-              to continue.
+              You do not belong to an organization, so no organization access
+              will be granted.
             </p>
           )}
         </div>
@@ -255,12 +264,12 @@ export function McpConsentForm({
           onClick={() => {
             void handleApprove();
           }}
-          disabled={loading || selected.size === 0}
+          disabled={loading || !canAuthorize}
           className="flex-1"
         >
           {loading
             ? "Authorizing..."
-            : selected.size === 0
+            : !canAuthorize
               ? "Select Permissions"
               : "Authorize"}
         </Button>
