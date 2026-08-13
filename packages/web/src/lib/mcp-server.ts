@@ -3983,23 +3983,21 @@ async function listTrackingReminderNotificationsForUser(
       },
     });
   const unmatchedStoredNotifications = storedNotifications
-    .filter(
-      (notification) => {
-        if (scheduledNotificationIds.has(notification.id)) return false;
-        if (status !== null) return true;
-        const isAnswered =
-          notification.status === NotificationStatus.TRACKED ||
-          notification.status === NotificationStatus.SKIPPED;
-        const isOutstanding =
-          notification.status === NotificationStatus.PENDING ||
-          notification.status === NotificationStatus.SENT ||
-          notification.status === NotificationStatus.SNOOZED;
-        return (
-          (input.includeCompleted === true && isAnswered) ||
-          (notification.trackingReminder.active && isOutstanding)
-        );
-      },
-    )
+    .filter((notification) => {
+      if (scheduledNotificationIds.has(notification.id)) return false;
+      if (status !== null) return true;
+      const isAnswered =
+        notification.status === NotificationStatus.TRACKED ||
+        notification.status === NotificationStatus.SKIPPED;
+      const isOutstanding =
+        notification.status === NotificationStatus.PENDING ||
+        notification.status === NotificationStatus.SENT ||
+        notification.status === NotificationStatus.SNOOZED;
+      return (
+        (input.includeCompleted === true && isAnswered) ||
+        (notification.trackingReminder.active && isOutstanding)
+      );
+    })
     .map((notification) =>
       storedTrackingNotificationToQueueItem(notification, timeZone),
     );
