@@ -103,6 +103,45 @@ describe("MCP OAuth consent route (Authorize)", () => {
     });
   });
 
+  it("allows public-only access when organization access was the only scope", async () => {
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        scope: "tasks:organization",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: [],
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.findMemberships).not.toHaveBeenCalled();
+    expect(mocks.createAuthCode).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        scopes: [],
+        organizationIds: [],
+      }),
+    });
+  });
+
+  it("rejects requests with no recognized scopes", async () => {
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        scope: "unknown:scope",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: [],
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "invalid_scope" });
+    expect(mocks.createAuthCode).not.toHaveBeenCalled();
+  });
+
   it("keeps organization access for selected member organizations", async () => {
     mocks.findMemberships.mockResolvedValue([
       { organizationId: "organization_1" },

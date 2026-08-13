@@ -81,9 +81,11 @@ export async function POST(req: Request) {
   });
 
   let organizationIds: string[] = [];
+  let omittedOrganizationScope = false;
   if (scopes.includes(McpScope.TASKS_ORGANIZATION)) {
     if (requestedOrganizationIds.length === 0) {
       scopes = scopes.filter((scope) => scope !== McpScope.TASKS_ORGANIZATION);
+      omittedOrganizationScope = true;
     } else {
       const memberships = await prisma.organizationMember.findMany({
         where: {
@@ -113,7 +115,7 @@ export async function POST(req: Request) {
     }
   }
 
-  if (scopes.length === 0) {
+  if (scopes.length === 0 && !omittedOrganizationScope) {
     return NextResponse.json(
       {
         error: "invalid_scope",

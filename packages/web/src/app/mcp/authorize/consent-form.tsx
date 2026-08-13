@@ -85,10 +85,7 @@ export function McpConsentForm({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const canAuthorize = Array.from(selected).some(
-    (scope) =>
-      scope !== McpScope.TASKS_ORGANIZATION || selectedOrganizationIds.size > 0,
-  );
+  const canAuthorize = selected.size > 0;
 
   function toggle(scope: McpScope) {
     setError(null);
@@ -116,7 +113,7 @@ export function McpConsentForm({
         scope !== McpScope.TASKS_ORGANIZATION ||
         selectedOrganizationIds.size > 0,
     );
-    if (scopesToAuthorize.length === 0) return;
+    if (!canAuthorize) return;
     setLoading(true);
     setError(null);
     try {
