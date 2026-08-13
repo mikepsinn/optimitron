@@ -226,11 +226,30 @@ test.describe("route visual regression", () => {
       if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
         await openTaskImpactTrace(page);
       }
+      if ("typeSearchQuery" in route && route.typeSearchQuery) {
+        const searchbox = page.getByRole("searchbox", {
+          name: "Search the site",
+        });
+        await expect(searchbox).toHaveAttribute("data-search-ready", "true");
+        await searchbox.fill(route.typeSearchQuery);
+        await expect(searchbox).toHaveValue(route.typeSearchQuery);
+      }
+      if ("submitSearch" in route && route.submitSearch) {
+        const searchbox = page.getByRole("searchbox", {
+          name: "Search the site",
+        });
+        await searchbox.evaluate((element) => {
+          const form = (element as HTMLInputElement).form;
+          if (!form) throw new Error("Search input is not inside a form.");
+          form.addEventListener("submit", (event) => event.preventDefault(), {
+            once: true,
+          });
+        });
+        await page.getByRole("button", { name: "Search", exact: true }).click();
+      }
 
       if (route.requiredSelector) {
-        // Regression guard: these visual pages must keep exposing the
-        // president/signer task list. Do not delete without Mike's explicit
-        // approval.
+        // Regression guard for route-specific content that must be visible.
         await expect(page.locator(route.requiredSelector)).toBeVisible();
       }
 
@@ -349,8 +368,7 @@ async function waitForVisualIdle(page: Page) {
 
 async function waitForAuthenticatedVisualSession(page: Page) {
   await page.waitForFunction(
-    () =>
-      document.documentElement.dataset.visualAuthState === "authenticated",
+    () => document.documentElement.dataset.visualAuthState === "authenticated",
     undefined,
     { timeout: 15_000 },
   );

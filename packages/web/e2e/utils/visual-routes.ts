@@ -25,6 +25,8 @@ export type VisualRoute = {
   openTaskImpactTrace?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
+  submitSearch?: boolean;
+  typeSearchQuery?: string;
   path: string;
   required: boolean;
   requiredSelector?: string;
@@ -74,9 +76,7 @@ function isMcpAuthorizeFixtureManifest(
   }
 
   const candidate = value as Record<string, unknown>;
-  return (
-    candidate.version === 1 && isNonEmptyString(candidate.authorizePath)
-  );
+  return candidate.version === 1 && isNonEmptyString(candidate.authorizePath);
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -127,6 +127,9 @@ const HEALTH_ECONOMICS_DISPLAY_FILE =
   "packages/web/src/components/treatment/HealthEconomicsDisplay.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
   "packages/web/src/components/dashboard/PersonalQueueSection.tsx";
+const SEARCH_PAGE_FILE = "packages/web/src/app/search/page.tsx";
+const SEARCH_DISCOVERY_FILE =
+  "packages/web/src/app/search/search-discovery.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "packages/web/src/app/video/page.tsx";
 const CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE =
   "packages/web/src/components/demo/slides/sierra/slide-vote-and-share.tsx";
@@ -292,6 +295,43 @@ const VISUAL_PATH_OVERRIDE_BY_PATH = new Map<string, string>([
 ]);
 
 const SPECIAL_STATE_ROUTES: VisualRoute[] = [
+  {
+    covers: [SEARCH_PAGE_FILE, SEARCH_DISCOVERY_FILE],
+    name: "search-empty",
+    path: ROUTES.search,
+    required: true,
+    requiredSelector: '[data-search-popular] a[href="/tasks"]',
+    requiredText: /Popular pages/i,
+    siteVariant: "optimitron",
+  },
+  {
+    covers: [SEARCH_DISCOVERY_FILE],
+    name: "search-typeahead",
+    path: ROUTES.search,
+    required: true,
+    requiredSelector: '[data-search-suggestions] a[href="/donate"]',
+    siteVariant: "optimitron",
+    typeSearchQuery: "donate",
+  },
+  {
+    covers: [SEARCH_DISCOVERY_FILE],
+    name: "search-loading",
+    path: ROUTES.search,
+    required: true,
+    requiredSelector: 'form[aria-busy="true"] button:disabled',
+    requiredText: /^Searching…$/i,
+    siteVariant: "optimitron",
+    submitSearch: true,
+    typeSearchQuery: "vote",
+  },
+  {
+    covers: [SEARCH_PAGE_FILE],
+    name: "search-results",
+    path: `${ROUTES.search}?q=vote`,
+    required: true,
+    requiredSelector: 'a[href="/vote"]',
+    siteVariant: "optimitron",
+  },
   {
     covers: [STANDALONE_VIDEO_PAGE_FILE],
     name: "campaign-video",
