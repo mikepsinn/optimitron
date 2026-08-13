@@ -107,8 +107,11 @@ const CSS = `
     padding: 8px 16px;
     z-index: 20;
   }
-  .hdr-row1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .hdr-row1 { display: flex; align-items: center; gap: 10px; }
   .hdr-row1 h1 { font-size: 15px; margin: 0; font-weight: 700; white-space: nowrap; }
+  .header-tools { display: block; flex: 1 1 auto; min-width: 0; }
+  .header-tools-panel { display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; flex-wrap: wrap; }
+  .header-tools > summary { display: none; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .chip {
     font-size: 12px;
@@ -135,7 +138,8 @@ const CSS = `
     white-space: nowrap;
   }
   .hbtn:hover { border-color: var(--dim); }
-  .hdr-row2 { font-size: 12px; color: var(--dim); margin-top: 4px; overflow-wrap: anywhere; }
+  .header-actions { display: contents; }
+  .hdr-row2 { flex: 1 1 100%; font-size: 12px; color: var(--dim); margin-top: 4px; overflow-wrap: anywhere; }
   .hdr-row2 code { font-family: var(--mono); font-size: 11px; }
   body.condensed .hdr-row2 { display: none; }
   body.condensed header#hdr { box-shadow: 0 1px 4px rgba(0,0,0,.08); }
@@ -275,6 +279,9 @@ const CSS = `
   }
   .context-btn:hover { color: var(--ink); }
   .context-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .route-tools, .route-tools-panel { display: contents; }
+  .route-tools > summary { display: none; }
 
   .toolbar { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
   .seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; background: var(--panel); }
@@ -499,6 +506,8 @@ const CSS = `
   .vbtn.btn-skip { border-style: dashed; }
   .vbtn.btn-skip.on { background: var(--ink); color: #fff; font-weight: 700; }
   .review-status { flex: 1 1 100%; font-size: 12px; font-weight: 700; color: var(--ink); }
+  .verdict-more, .verdict-more-panel { display: contents; }
+  .verdict-more > summary { display: none; }
   .note-box { flex: 1 1 200px; min-width: 160px; }
   .note-box input {
     width: 100%; font: inherit;
@@ -507,6 +516,7 @@ const CSS = `
   .v-kbd { font-size: 11px; color: var(--dim); white-space: nowrap; }
 
   .fatal { margin: 40px auto; max-width: 520px; padding: 20px; background: var(--panel); border: 1px solid var(--err); color: var(--err); }
+  .mobile-only { display: none; }
 
   /* ---------- touch targets ---------- */
   @media (pointer: coarse) {
@@ -520,6 +530,34 @@ const CSS = `
 
   /* ---------- narrow screens ---------- */
   @media (max-width: 700px) {
+    header#hdr { position: relative; padding: 6px 10px; }
+    .hdr-row1 { min-height: 40px; flex-wrap: nowrap; }
+    .hdr-row1 h1 { overflow: hidden; text-overflow: ellipsis; }
+    .header-tools { flex: 0 0 auto; margin-left: auto; }
+    .header-tools > summary {
+      display: flex; align-items: center; min-height: 40px;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--panel); padding: 6px 10px; font-weight: 600;
+      list-style: none; white-space: nowrap; cursor: pointer;
+    }
+    .header-tools > summary::-webkit-details-marker { display: none; }
+    .header-tools > summary::after { content: "\\22ef"; margin-left: 6px; color: var(--dim); }
+    .header-tools-panel {
+      display: none; position: absolute; z-index: 30;
+      top: calc(100% + 4px); left: 8px; right: 8px;
+      max-height: calc(100dvh - 70px); overflow: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.2); padding: 12px;
+    }
+    .header-tools[open] > .header-tools-panel { display: flex; flex-direction: column; gap: 12px; }
+    .header-tools-panel .chips { display: flex; }
+    .header-tools-panel .hdr-spacer { display: none; }
+    body.condensed .header-tools-panel .hdr-row2 { display: block; }
+    .header-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .header-actions .noise-label { grid-column: 1 / -1; justify-content: space-between; }
+    .header-actions .hbtn { width: 100%; }
+    .hdr-row2 { margin: 0; }
+
     .app { flex-direction: column; }
     #rail-toggle { display: flex; }
     nav.rail {
@@ -527,7 +565,32 @@ const CSS = `
       max-height: 55vh; border-right: none; border-bottom: 1px solid var(--border);
     }
     body.rail-open nav.rail { display: flex; }
-    #pane-content { padding: 12px 12px 170px; }
+    #pane-content { padding: 12px 12px 90px; }
+    .route-head { align-items: center; }
+    .route-head h2 { font-size: 19px; }
+    .route-tools { display: block; position: relative; margin: 8px 0 10px; }
+    .route-tools > summary {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 40px; padding: 7px 10px;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--panel); font-size: 13px; font-weight: 600;
+      list-style: none; cursor: pointer;
+    }
+    .route-tools > summary::-webkit-details-marker { display: none; }
+    .route-tools > summary::after { content: "\\25be"; color: var(--dim); margin-left: 8px; }
+    .route-tools[open] > summary::after { transform: rotate(180deg); }
+    .route-tools-panel {
+      display: none; position: absolute; z-index: 15;
+      top: calc(100% + 4px); left: 0; right: 0;
+      max-height: min(70vh, 520px); overflow: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 5px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2); padding: 12px;
+    }
+    .route-tools[open] > .route-tools-panel { display: block; }
+    .route-tools-panel .route-meta { margin: 0 0 12px; }
+    .route-tools-panel .toolbar { margin: 0; gap: 10px; }
+    .mobile-only { display: inline; }
+    .desktop-only { display: none; }
     .hunk-grid, .full-grid, .sbs, .live-grid { grid-template-columns: minmax(0, 1fr); }
     .hunk-cols { display: none; }
     .strip-cap { display: block; }
@@ -547,8 +610,33 @@ const CSS = `
     .cmp-scroll { max-height: 65vh; }
     .live-grid iframe { height: 55vh; }
     .preview-panel { height: auto; min-height: 140px; }
-    .verdict-bar { padding: 6px 10px; gap: 6px; }
+    .verdict-bar { padding: 6px 10px; gap: 6px; flex-wrap: nowrap; position: sticky; }
     .vbtn { padding: 8px 10px; font-size: 13px; }
+    .vbtn .mobile-only { display: inline; }
+    .vbtn .desktop-only { display: none; }
+    .v-kbd { display: none; }
+    .review-status {
+      position: absolute; left: 10px; right: 10px; bottom: calc(100% + 6px);
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px;
+      background: var(--panel); box-shadow: 0 3px 12px rgba(0,0,0,.14);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      pointer-events: none;
+    }
+    .verdict-more { display: block; margin-left: auto; }
+    .verdict-more > summary {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 40px; padding: 8px 10px;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--panel); font-size: 13px; list-style: none; cursor: pointer;
+    }
+    .verdict-more > summary::-webkit-details-marker { display: none; }
+    .verdict-more-panel {
+      display: none; position: absolute; z-index: 20;
+      left: 10px; right: 10px; bottom: calc(100% + 6px);
+      background: var(--panel); border: 1px solid var(--border); border-radius: 5px;
+      box-shadow: 0 -6px 20px rgba(0,0,0,.18); padding: 10px;
+    }
+    .verdict-more[open] > .verdict-more-panel { display: block; }
     .note-box input { font-size: 16px; } /* stops iOS focus zoom */
   }
 `;
@@ -624,6 +712,11 @@ const CLIENT_JS = `
     return base ? base + "/" + clean : clean;
   }
   function isMobile() { return window.matchMedia(MOBILE_MQ).matches; }
+  function closeMobileMenus() {
+    document.querySelectorAll(".header-tools[open], .route-tools[open], .verdict-more[open]").forEach(function (details) {
+      details.removeAttribute("open");
+    });
+  }
   function fmtPx(n) { return Math.round(n).toLocaleString("en-US"); }
   function fmtPct(n) {
     if (!isFinite(n)) return "0";
@@ -742,11 +835,13 @@ const CLIENT_JS = `
       if (v && v.v === "needs-work") flagged++;
       if (v && v.v === "skipped") skipped++;
     });
-    var chip = document.getElementById("chip-reviewed");
-    chip.textContent = done + "/" + pool.length + " reviewed" +
+    var text = done + "/" + pool.length + " reviewed" +
       (flagged ? " \\u00b7 " + flagged + " flagged" : "") +
       (skipped ? " \\u00b7 " + skipped + " skipped" : "");
-    chip.classList.toggle("reviewed", done > 0);
+    document.querySelectorAll("[data-reviewed-chip]").forEach(function (chip) {
+      chip.textContent = text;
+      chip.classList.toggle("reviewed", done > 0);
+    });
   }
 
   /* ---------------- hash deep links ---------------- */
@@ -792,6 +887,12 @@ const CLIENT_JS = `
       updateReviewedChip();
       refreshRailMarks();
       renderPane(true);
+    });
+    document.addEventListener("click", function (event) {
+      if (!isMobile()) return;
+      document.querySelectorAll(".header-tools[open], .route-tools[open], .verdict-more[open]").forEach(function (details) {
+        if (!details.contains(event.target)) details.removeAttribute("open");
+      });
     });
     // collapsing chrome: condense to one sticky line once the pane scrolls
     var pane = document.getElementById("pane");
@@ -1103,7 +1204,21 @@ const CLIENT_JS = `
       metaRow.appendChild(el("span", { text: "n/a" }));
     }
     metaRow.appendChild(buildContextActions(r));
-    content.appendChild(metaRow);
+    var routeTools = el("details", {
+      class: "route-tools",
+      open: isMobile() ? null : ""
+    });
+    routeTools.appendChild(el("summary", {}, [
+      el("span", { text: "Review controls" }),
+      el("span", {
+        class: "mobile-only",
+        text: " " + ((pairName && pairOf(r, pairName)) ? (pairOf(r, pairName).projectLabel || pairName) : "")
+      })
+    ]));
+    var routeToolsPanel = el("div", { class: "route-tools-panel" });
+    routeToolsPanel.appendChild(metaRow);
+    routeTools.appendChild(routeToolsPanel);
+    content.appendChild(routeTools);
 
     if (r.errored) {
       content.appendChild(el("div", { class: "err-note", text: "This route errored during capture: " + r.statusLabel }));
@@ -1161,7 +1276,7 @@ const CLIENT_JS = `
         });
         toolbar.appendChild(zoomAfter);
       }
-      content.appendChild(toolbar);
+      routeToolsPanel.appendChild(toolbar);
 
       var info = el("p", { class: "vp-info" });
       info.innerHTML = "<b>" + esc(pair.projectLabel || pair.projectName) + ":</b> " + esc(pair.diffLabel || "no diff data") +
@@ -2017,8 +2132,16 @@ const CLIENT_JS = `
   function buildVerdictBar(r) {
     var bar = el("div", { class: "verdict-bar" });
     var v = verdictOf(r);
-    var good = el("button", { type: "button", class: "vbtn btn-good" + (v && v.v === "looks-right" ? " on" : ""), title: "Verdict: looks right (key: 1)", text: "Looks right \\uD83D\\uDC4D" });
-    var bad = el("button", { type: "button", class: "vbtn btn-bad" + (v && v.v === "needs-work" ? " on" : ""), title: "Verdict: needs work (key: 2)", text: "Needs work \\uD83D\\uDC4E" });
+    var good = el("button", { type: "button", class: "vbtn btn-good" + (v && v.v === "looks-right" ? " on" : ""), title: "Verdict: looks right (key: 1)", "aria-label": "Looks right \\uD83D\\uDC4D" }, [
+      el("span", { class: "desktop-only", "aria-hidden": "true", text: "Looks right " }),
+      el("span", { class: "mobile-only", "aria-hidden": "true", text: "Right " }),
+      el("span", { "aria-hidden": "true", text: "\\uD83D\\uDC4D" })
+    ]);
+    var bad = el("button", { type: "button", class: "vbtn btn-bad" + (v && v.v === "needs-work" ? " on" : ""), title: "Verdict: needs work (key: 2)", "aria-label": "Needs work \\uD83D\\uDC4E" }, [
+      el("span", { class: "desktop-only", "aria-hidden": "true", text: "Needs work " }),
+      el("span", { class: "mobile-only", "aria-hidden": "true", text: "Fix " }),
+      el("span", { "aria-hidden": "true", text: "\\uD83D\\uDC4E" })
+    ]);
     var skip = el("button", { type: "button", class: "vbtn btn-skip" + (v && v.v === "skipped" ? " on" : ""), title: "Records a skipped verdict (key: s)", text: "Skip \\u23ED" });
     var noteWrap = el("div", { class: "note-box" });
     var note = el("input", { type: "text", id: "note-input", placeholder: "Note (optional \\u2014 encouraged for \\uD83D\\uDC4E)", value: (v && v.note) || "" });
@@ -2036,7 +2159,13 @@ const CLIENT_JS = `
     bar.appendChild(good);
     bar.appendChild(bad);
     bar.appendChild(skip);
-    bar.appendChild(noteWrap);
+    var more = el("details", {
+      class: "verdict-more",
+      open: isMobile() ? null : ""
+    });
+    more.appendChild(el("summary", { title: "Add a review note", text: "Note" }));
+    more.appendChild(el("div", { class: "verdict-more-panel" }, [noteWrap]));
+    bar.appendChild(more);
     bar.appendChild(el("span", { class: "v-kbd", html: "<kbd>1</kbd> \\uD83D\\uDC4D <kbd>2</kbd> \\uD83D\\uDC4E <kbd>s</kbd> skip <kbd>j</kbd>/<kbd>k</kbd> next/prev <kbd>n</kbd>/<kbd>p</kbd> hunks" }));
     return bar;
   }
@@ -2151,6 +2280,10 @@ const CLIENT_JS = `
   function onKey(e) {
     if (lightbox && lightbox.open) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "Escape") {
+      if (isMobile()) closeMobileMenus();
+      return;
+    }
     var tag = (e.target && e.target.tagName) || "";
     if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT" || (e.target && e.target.isContentEditable)) return;
     var names, idx;
@@ -2182,6 +2315,8 @@ const CLIENT_JS = `
       return;
     }
     loadVerdicts();
+    var headerTools = document.querySelector(".header-tools");
+    if (headerTools && isMobile()) headerTools.removeAttribute("open");
     wireHeader();
     wireLightbox();
     renderRail();
@@ -2216,6 +2351,13 @@ const CLIENT_JS = `
       selectRoute(hh.route, o);
     });
     document.addEventListener("keydown", onKey);
+    window.matchMedia(MOBILE_MQ).addEventListener("change", function (event) {
+      var open = !event.matches;
+      document.querySelectorAll(".header-tools, .route-tools, .verdict-more").forEach(function (details) {
+        if (open) details.setAttribute("open", "");
+        else details.removeAttribute("open");
+      });
+    });
   }
 
   boot();
@@ -2262,7 +2404,7 @@ function renderHeaderHtml(meta, summary, coverage) {
       `<span class="chip coverage-failed">capture contract failed</span>`,
     );
   }
-  chips.push(`<span class="chip" id="chip-reviewed">0 reviewed</span>`);
+  chips.push(`<span class="chip" id="chip-reviewed" data-reviewed-chip>0 reviewed</span>`);
 
   const noteBits = [
     `PR #${escapeHtml(meta.prNumber)}`,
@@ -2279,21 +2421,29 @@ function renderHeaderHtml(meta, summary, coverage) {
   return `<header id="hdr">
   <div class="hdr-row1">
     <h1>PR #${escapeHtml(meta.prNumber)} review</h1>
-    <div class="chips">${chips.join("")}</div>
-    <span class="hdr-spacer"></span>
-    <label class="noise-label" for="noise">Noise
-      <select id="noise" title="Hide hunks smaller than this share of the page">
-        <option value="0" selected>show all diffs</option>
-        <option value="0.1">hide diffs under 0.1%</option>
-        <option value="0.5">hide diffs under 0.5%</option>
-        <option value="1">hide diffs under 1%</option>
-      </select>
-    </label>
-    <button type="button" id="copy-review-btn" class="hbtn" title="Copy every verdict and note as one pull request comment">Copy PR comment</button>
-    <button type="button" id="export-btn" class="hbtn" title="Download every verdict + note as a markdown review packet">Export review notes</button>
-    <button type="button" id="reset-btn" class="hbtn" title="Clear saved verdicts for this commit">Reset</button>
+    <span class="chip mobile-only" data-reviewed-chip>0 reviewed</span>
+    <details class="header-tools" open>
+      <summary aria-label="Open review summary and actions">Review</summary>
+      <div class="header-tools-panel">
+        <div class="chips">${chips.join("")}</div>
+        <span class="hdr-spacer"></span>
+        <div class="header-actions">
+          <label class="noise-label" for="noise">Noise
+            <select id="noise" title="Hide hunks smaller than this share of the page">
+              <option value="0" selected>show all diffs</option>
+              <option value="0.1">hide diffs under 0.1%</option>
+              <option value="0.5">hide diffs under 0.5%</option>
+              <option value="1">hide diffs under 1%</option>
+            </select>
+          </label>
+          <button type="button" id="copy-review-btn" class="hbtn" title="Copy every verdict and note as one pull request comment">Copy PR comment</button>
+          <button type="button" id="export-btn" class="hbtn" title="Download every verdict + note as a markdown review packet">Export review notes</button>
+          <button type="button" id="reset-btn" class="hbtn" title="Clear saved verdicts for this commit">Reset</button>
+        </div>
+        <div class="hdr-row2" id="gen-note">${noteBits.join(" · ")}</div>
+      </div>
+    </details>
   </div>
-  <div class="hdr-row2" id="gen-note">${noteBits.join(" · ")}</div>
 </header>`;
 }
 
