@@ -155,7 +155,9 @@ const mocks = vi.hoisted(() => ({
   nOf1VariableUpdate: vi.fn(),
   nOf1VariableUpsert: vi.fn(),
   measurementUpsert: vi.fn(),
+  measurementFindFirst: vi.fn(),
   measurementFindMany: vi.fn(),
+  measurementUpdate: vi.fn(),
   queryRaw: vi.fn(),
   trackingReminderUpsert: vi.fn(),
   trackingReminderFindMany: vi.fn(),
@@ -466,7 +468,9 @@ vi.mock("../prisma", () => ({
       upsert: mocks.nOf1VariableUpsert,
     },
     measurement: {
+      findFirst: mocks.measurementFindFirst,
       findMany: mocks.measurementFindMany,
+      update: mocks.measurementUpdate,
       upsert: mocks.measurementUpsert,
     },
     trackingReminder: {
@@ -789,6 +793,8 @@ beforeEach(() => {
       upsert: mocks.nOf1VariableUpsert,
     },
     measurement: {
+      findFirst: mocks.measurementFindFirst,
+      update: mocks.measurementUpdate,
       upsert: mocks.measurementUpsert,
     },
     trackingReminder: {
@@ -3341,7 +3347,7 @@ describe("MCP server tool dispatch", () => {
       });
     });
 
-    it("rejects anonymous calls to getMyQueue / getAIQueue / getQueueAudit / listMeasurements with the same structured error", async () => {
+    it("rejects anonymous calls to personal queue and measurement tools with the same structured error", async () => {
       const client = await setup(undefined, ALL_SCOPES);
 
       for (const tool of [
@@ -3352,6 +3358,8 @@ describe("MCP server tool dispatch", () => {
         // userId undefined, and Prisma would drop the `subject.userId` filter
         // and return every user's measurements.
         "listMeasurements",
+        "updateMeasurement",
+        "deleteMeasurement",
       ] as const) {
         const result = await client.callTool({ name: tool, arguments: {} });
         expect(result.isError, `${tool} should error`).toBe(true);
@@ -9767,6 +9775,113 @@ describe("MCP server tool dispatch", () => {
       expect(body.message).toContain("Insufficient scope");
       expect(mocks.measurementFindMany).not.toHaveBeenCalled();
     });
+
+    it("updateMeasurement changes an owned measurement and refreshes summaries", async () => {
+      mocks.measurementFindFirst.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        nOf1VariableId: "nof1-1",
+      });
+      mocks.measurementUpdate.mockResolvedValue({
+        ...measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
+        note: "corrected",
+        originalValue: 0,
+        value: 0,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "updateMeasurement",
+        arguments: {
+          measurementId: "measurement-1",
+          note: "corrected",
+          value: 0,
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.measurementFindFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            deletedAt: null,
+            id: "measurement-1",
+            subject: { userId: "user-1" },
+          },
+        }),
+      );
+      expect(mocks.measurementUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { note: "corrected", originalValue: 0, value: 0 },
+          where: { id: "measurement-1" },
+        }),
+      );
+      expect(mocks.globalVariableUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "gv-vitd" } }),
+      );
+      expect(mocks.nOf1VariableUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "nof1-1" } }),
+      );
+    });
+
+    it("deleteMeasurement soft-deletes an owned measurement and refreshes summaries", async () => {
+      mocks.measurementFindFirst.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-1",
+        nOf1VariableId: "nof1-1",
+      });
+      const deletedAt = new Date("2026-08-13T00:00:00.000Z");
+      mocks.measurementUpdate.mockResolvedValue({
+        ...measurementRow("measurement-1", "2026-07-01T08:00:00.000Z"),
+        deletedAt,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "deleteMeasurement",
+        arguments: { measurementId: "measurement-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const update = mocks.measurementUpdate.mock.calls[0]![0] as {
+        data: { deletedAt: Date };
+      };
+      expect(update.data.deletedAt).toBeInstanceOf(Date);
+      expect(mocks.globalVariableUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "gv-vitd" } }),
+      );
+      expect(mocks.nOf1VariableUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "nof1-1" } }),
+      );
+    });
+
+    it.each(["updateMeasurement", "deleteMeasurement"])(
+      "%s rejects a measurement that the caller does not own",
+      async (toolName) => {
+        mocks.measurementFindFirst.mockResolvedValue(null);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: toolName,
+          arguments: {
+            measurementId: "measurement-other-user",
+            ...(toolName === "updateMeasurement" ? { value: 0 } : {}),
+          },
+        });
+
+        expect(result.isError).toBe(true);
+        expect(parseToolBody(result).message).toContain(
+          "Measurement not found: measurement-other-user",
+        );
+        expect(mocks.measurementFindFirst).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              subject: { userId: "user-1" },
+            }),
+          }),
+        );
+        expect(mocks.measurementUpdate).not.toHaveBeenCalled();
+      },
+    );
 
     it("upsertTrackingReminder keeps no-ID creation idempotent and defaults reminderFrequency to 86400", async () => {
       mocks.trackingReminderUpsert.mockResolvedValue({

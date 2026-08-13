@@ -179,6 +179,8 @@ export { MCP_SCOPE_DESCRIPTIONS, DEFAULT_CONSENT_SCOPES, ALL_SCOPES, McpScope };
 
 const UPLOAD_IMAGE_FROM_URL_TOOL_NAME = "uploadImageFromUrl" as const;
 const RECORD_MEASUREMENT_TOOL_NAME = "recordMeasurement" as const;
+const UPDATE_MEASUREMENT_TOOL_NAME = "updateMeasurement" as const;
+const DELETE_MEASUREMENT_TOOL_NAME = "deleteMeasurement" as const;
 
 const TOOL_SCOPES: Record<string, McpScope[]> = {
   // Explicitly public, read-only tools. Missing entries are a registry error.
@@ -325,6 +327,8 @@ const TOOL_SCOPES: Record<string, McpScope[]> = {
   getQueueAudit: [McpScope.TASKS_PERSONAL, McpScope.TASKS_ORGANIZATION],
   getTaskTreeAudit: [McpScope.TASKS_ADMIN],
   [RECORD_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
+  [UPDATE_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
+  [DELETE_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
   listMeasurements: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
@@ -2793,6 +2797,7 @@ const TRACKING_REMINDER_INCLUDE = {
 
 const TRACKING_MEASUREMENT_SELECT = {
   createdAt: true,
+  deletedAt: true,
   duration: true,
   globalVariable: { select: TRACKING_VARIABLE_SELECT },
   globalVariableId: true,
@@ -3305,6 +3310,113 @@ async function recordTrackingMeasurement(
       value,
     }),
   );
+}
+
+async function findOwnedMeasurementForMutation(
+  tx: Prisma.TransactionClient,
+  measurementId: string,
+  userId: string,
+) {
+  const measurement = await tx.measurement.findFirst({
+    select: {
+      globalVariableId: true,
+      id: true,
+      nOf1VariableId: true,
+    },
+    where: {
+      deletedAt: null,
+      id: measurementId,
+      subject: { userId },
+    },
+  });
+  if (!measurement) {
+    throw new Error(`Measurement not found: ${measurementId}`);
+  }
+  return measurement;
+}
+
+async function updateMeasurementForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const measurementId = optionalString(input.measurementId);
+  if (!measurementId) {
+    throw new Error(
+      "measurementId is required. Use listMeasurements to find the measurement ID.",
+    );
+  }
+  const value = parseRequiredFiniteNumber(input.value, "value");
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const existing = await findOwnedMeasurementForMutation(
+      tx,
+      measurementId,
+      userId,
+    );
+    const measurement = await tx.measurement.update({
+      data: {
+        value,
+        originalValue: value,
+        ...(input.duration !== undefined
+          ? {
+              duration: parseOptionalNonnegativeInteger(
+                input.duration,
+                "duration",
+              ),
+            }
+          : {}),
+        ...(input.latitude !== undefined
+          ? {
+              latitude:
+                parseOptionalFiniteNumberInput(input, "latitude") ?? null,
+            }
+          : {}),
+        ...(input.longitude !== undefined
+          ? {
+              longitude:
+                parseOptionalFiniteNumberInput(input, "longitude") ?? null,
+            }
+          : {}),
+        ...(input.note !== undefined
+          ? { note: optionalStringInput(input, "note") }
+          : {}),
+        ...(input.sourceName !== undefined
+          ? { sourceName: optionalStringInput(input, "sourceName") }
+          : {}),
+      },
+      select: TRACKING_MEASUREMENT_SELECT,
+      where: { id: existing.id },
+    });
+    await refreshMeasurementSummaries(tx, existing);
+    return measurement;
+  });
+}
+
+async function deleteMeasurementForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const measurementId = optionalString(input.measurementId);
+  if (!measurementId) {
+    throw new Error(
+      "measurementId is required. Use listMeasurements to find the measurement ID.",
+    );
+  }
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const existing = await findOwnedMeasurementForMutation(
+      tx,
+      measurementId,
+      userId,
+    );
+    const measurement = await tx.measurement.update({
+      data: { deletedAt: new Date() },
+      select: TRACKING_MEASUREMENT_SELECT,
+      where: { id: existing.id },
+    });
+    await refreshMeasurementSummaries(tx, existing);
+    return measurement;
+  });
 }
 
 async function upsertTrackingReminderForUser(
@@ -5415,6 +5527,39 @@ const TRACKING_TOOL_DEFINITIONS = [
             "nextCursor from the previous page. Repeat the same filters until nextCursor is null.",
         },
       },
+    },
+  },
+  {
+    name: UPDATE_MEASUREMENT_TOOL_NAME,
+    description:
+      "Correct one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. The required value replaces both the normalized and originally entered value; units and variable identity stay unchanged. Optional metadata fields patch the existing row. The tool rejects measurements owned by another user and refreshes cached summaries.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        measurementId: { type: "string" },
+        value: { type: "number" },
+        duration: {
+          type: ["number", "null"],
+          description: "Duration in seconds. Null clears it.",
+        },
+        note: { type: ["string", "null"] },
+        sourceName: { type: ["string", "null"] },
+        latitude: { type: ["number", "null"] },
+        longitude: { type: ["number", "null"] },
+      },
+      required: ["measurementId", "value"],
+    },
+  },
+  {
+    name: DELETE_MEASUREMENT_TOOL_NAME,
+    description:
+      "Soft-delete one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. The tool rejects measurements owned by another user and refreshes cached summaries.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        measurementId: { type: "string" },
+      },
+      required: ["measurementId"],
     },
   },
   {
@@ -9861,6 +10006,28 @@ export function createMcpServer(
                 "This tool lists your personal tracking measurements.",
               );
             return ok(await listMeasurementsForUser(a, userId));
+          }
+
+          case UPDATE_MEASUREMENT_TOOL_NAME: {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool corrects your personal tracking measurements.",
+              );
+            return ok({
+              measurement: await updateMeasurementForUser(a, userId),
+            });
+          }
+
+          case DELETE_MEASUREMENT_TOOL_NAME: {
+            if (!userId)
+              return authRequired(
+                name,
+                "This tool deletes your personal tracking measurements.",
+              );
+            return ok({
+              measurement: await deleteMeasurementForUser(a, userId),
+            });
           }
 
           case "upsertTrackingReminder": {
