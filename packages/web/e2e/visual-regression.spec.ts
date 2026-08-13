@@ -226,6 +226,11 @@ test.describe("route visual regression", () => {
       if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
         await openTaskImpactTrace(page);
       }
+      if ("typeSearchQuery" in route && route.typeSearchQuery) {
+        await page
+          .getByRole("searchbox", { name: "Search the site" })
+          .fill(route.typeSearchQuery);
+      }
 
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the
@@ -349,8 +354,7 @@ async function waitForVisualIdle(page: Page) {
 
 async function waitForAuthenticatedVisualSession(page: Page) {
   await page.waitForFunction(
-    () =>
-      document.documentElement.dataset.visualAuthState === "authenticated",
+    () => document.documentElement.dataset.visualAuthState === "authenticated",
     undefined,
     { timeout: 15_000 },
   );

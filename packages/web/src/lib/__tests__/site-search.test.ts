@@ -4,6 +4,7 @@ import { ROUTES } from "../routes";
 import { getSiteConfig } from "../site";
 import {
   scoreSearchRecord,
+  searchSiteDocuments,
   searchStaticSiteDocuments,
   staticSiteSearchDocuments,
 } from "../site-search";
@@ -18,7 +19,9 @@ describe("site search helpers", () => {
   it("finds the government size page from a direct query", () => {
     const results = searchStaticSiteDocuments("government size");
 
-    expect(results.map((result) => result.href)).toContain(ROUTES.governmentSize);
+    expect(results.map((result) => result.href)).toContain(
+      ROUTES.governmentSize,
+    );
   });
 
   it("scopes static page results to the War on Disease site", () => {
@@ -40,6 +43,33 @@ describe("site search helpers", () => {
     expect(results.map((result) => result.href)).toContain(ROUTES.tasks);
   });
 
+  it.each(["vote", "donate"] as const)(
+    "keeps the obvious %s destination searchable on Optimitron",
+    (query) => {
+      const results = searchStaticSiteDocuments(query, {
+        site: getSiteConfig("optimitron"),
+      });
+
+      expect(results[0]?.href).toBe(ROUTES[query]);
+    },
+  );
+
+  it("includes campaign footer destinations in variant search", () => {
+    const results = searchStaticSiteDocuments("donate", {
+      site: getSiteConfig("warOnDisease"),
+    });
+
+    expect(results[0]?.href).toBe(ROUTES.donate);
+  });
+
+  it("finds the Earth Repair Manual by its new name", () => {
+    const results = searchStaticSiteDocuments("earth repair manual", {
+      site: getSiteConfig("optimitron"),
+    });
+
+    expect(results[0]?.title).toBe("Earth Repair Manual");
+  });
+
   it("prioritizes direct title matches over generic descriptions", () => {
     const titleMatch = scoreSearchRecord("tasks", {
       title: "Tasks",
@@ -55,5 +85,14 @@ describe("site search helpers", () => {
     });
 
     expect(titleMatch).toBeGreaterThan(weakMatch);
+  });
+
+  it("returns ranked page suggestions without a server search", () => {
+    const results = searchSiteDocuments("treaty", staticSiteSearchDocuments, 5);
+
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.length).toBeLessThanOrEqual(5);
+    expect(results[0]?.href).toBe(ROUTES.treaty);
+    expect(results.every((result) => result.score > 0)).toBe(true);
   });
 });

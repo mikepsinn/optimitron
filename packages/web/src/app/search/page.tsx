@@ -1,14 +1,24 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
-import { Search } from "lucide-react";
 import { Avatar } from "@/components/retroui/Avatar";
-import { Input } from "@/components/retroui/Input";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
-import { ROUTES, searchLink } from "@/lib/routes";
+import {
+  fullManualPaperLink,
+  donateLink,
+  ROUTES,
+  searchLink,
+  treatyLink,
+  voteLink,
+} from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
+import {
+  getStaticSiteSearchDocuments,
+  type StaticSiteSearchDocument,
+} from "@/lib/site-search";
 import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
+import { SearchDiscovery } from "./search-discovery";
 
 export const dynamic = "force-dynamic";
 export const metadata = getRouteMetadata(searchLink);
@@ -17,15 +27,6 @@ const SITE_ORIGIN = getConfiguredSiteOrigin({
   allowLocalFallback: process.env.NODE_ENV !== "production",
 });
 const SITE_BASE_ORIGIN = new URL(SITE_ORIGIN).origin;
-
-const sampleQueries = [
-  "treaty",
-  "clinical trials",
-  "leader reminders",
-  "signatories",
-  "government waste",
-  "donation math",
-];
 
 type SearchScope = "all" | "content" | "manual" | "pages" | "tasks";
 
@@ -153,16 +154,40 @@ function getResultItems(
     meta: entry.section ?? null,
     scope: "manual",
     score: entry.score,
-    source: "Instruction Manual",
+    source: "Earth Repair Manual",
     title: entry.title,
   }));
 
-  return dedupeResultItems([
+  const items = dedupeResultItems([
     ...contentItems,
     ...pageItems,
     ...taskItems,
     ...manualItems,
-  ]).sort((left, right) => {
+  ]);
+  const normalizedQuery = results.query.toLowerCase();
+  const isDirectPageMatch = (item: SearchResultItem) => {
+    if (item.scope !== "pages") {
+      return false;
+    }
+
+    const pathname = new URL(item.href, SITE_ORIGIN).pathname
+      .replace(/^\/+|\/+$/gu, "")
+      .toLowerCase();
+
+    return (
+      pathname === normalizedQuery ||
+      item.title.toLowerCase() === normalizedQuery
+    );
+  };
+
+  return items.sort((left, right) => {
+    const directPageDelta =
+      Number(isDirectPageMatch(right)) - Number(isDirectPageMatch(left));
+
+    if (directPageDelta !== 0) {
+      return directPageDelta;
+    }
+
     const priorityDelta =
       SEARCH_SCOPE_PRIORITY[right.scope] - SEARCH_SCOPE_PRIORITY[left.scope];
 
@@ -175,6 +200,32 @@ function getResultItems(
     }
 
     return left.title.localeCompare(right.title);
+  });
+}
+
+function getFeaturedDocuments(
+  documents: StaticSiteSearchDocument[],
+): StaticSiteSearchDocument[] {
+  const featuredLinks = [
+    { link: voteLink, section: "Vote" },
+    { link: treatyLink, section: "Treaty" },
+    { link: donateLink, section: "Outreach" },
+    { link: fullManualPaperLink, section: "Manual" },
+  ];
+
+  return featuredLinks.map(({ link, section }) => {
+    const indexedDocument = documents.find(
+      (document) => document.href === link.href,
+    );
+
+    return {
+      ...indexedDocument,
+      description: link.tagline ?? link.description,
+      external: link.external,
+      href: link.href,
+      section,
+      title: link === fullManualPaperLink ? "Earth Repair Manual" : link.label,
+    };
   });
 }
 
@@ -303,6 +354,7 @@ export default async function SearchPage({
       : "all";
   const session = await getServerSession(authOptions);
   const userId = session?.user.id ?? null;
+  const pageDocuments = getStaticSiteSearchDocuments(site);
   const results = await searchSiteContent(query, {
     contentLimit: 24,
     pageLimit: 24,
@@ -320,138 +372,97 @@ export default async function SearchPage({
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <section className="space-y-4 border-b border-primary/30 pb-4">
-          <form
-            action={ROUTES.search}
-            className="flex flex-col gap-3 md:flex-row md:items-center"
-          >
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                aria-label="Search the site"
-                autoFocus
-                className="h-14 rounded-none border-2 border-foreground bg-background pl-12 text-base font-bold md:max-w-3xl"
-                defaultValue={query}
-                name="q"
-                placeholder="Search pages, tasks, treaty docs, policy analysis..."
-                type="search"
-              />
-            </div>
-            {scope !== "all" ? (
-              <input type="hidden" name="scope" value={scope} />
-            ) : null}
-            <button
-              type="submit"
-              className="inline-flex h-14 items-center justify-center border-2 border-foreground bg-foreground px-6 text-sm font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
-            >
-              Search
-            </button>
-          </form>
-
+        <SearchDiscovery
+          documents={pageDocuments}
+          featuredDocuments={getFeaturedDocuments(pageDocuments)}
+          initialQuery={query}
+          scope={scope === "all" ? null : scope}
+          siteName={site.shortName}
+        >
           {query ? (
-            <div className="flex flex-wrap items-center gap-5 overflow-x-auto">
-              <SearchTab
-                count={counts.all}
-                href={buildScopeHref(query, "all")}
-                isActive={scope === "all"}
-                label="All"
-              />
-              <SearchTab
-                count={counts.content}
-                href={buildScopeHref(query, "content")}
-                isActive={scope === "content"}
-                label="Documents & records"
-              />
-              <SearchTab
-                count={counts.pages}
-                href={buildScopeHref(query, "pages")}
-                isActive={scope === "pages"}
-                label="Pages"
-              />
-              <SearchTab
-                count={counts.tasks}
-                href={buildScopeHref(query, "tasks")}
-                isActive={scope === "tasks"}
-                label="Tasks"
-              />
-              <SearchTab
-                count={counts.manual}
-                href={buildScopeHref(query, "manual")}
-                isActive={scope === "manual"}
-                label="Instruction Manual"
-              />
-            </div>
-          ) : null}
-        </section>
-
-        {query ? (
-          <>
-            <section className="space-y-2">
-              <p className="text-sm font-bold text-muted-foreground">
-                {visibleResults.length.toLocaleString()} result
-                {visibleResults.length === 1 ? "" : "s"} for{" "}
-                <span className="text-foreground">
-                  &quot;{results.query}&quot;
-                </span>
-                {scope !== "all" ? <span>{` in ${scope}`}</span> : null}
-              </p>
-              {results.manualError ? (
-                <div className="max-w-3xl border-2 border-primary bg-background px-4 py-3 text-sm font-bold text-foreground">
-                  {results.manualError}
-                </div>
-              ) : null}
-            </section>
-
-            {visibleResults.length === 0 ? (
-              <section className="max-w-3xl border-2 border-foreground bg-background p-6">
-                <h2 className="text-2xl font-black uppercase text-foreground">
-                  No Matches
-                </h2>
-                <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
-                  Try a broader term, a person name, a system name, or a
-                  concrete phrase like &quot;clinical trials&quot; or &quot;fund
-                  optimization&quot;.
-                </p>
-              </section>
-            ) : null}
-
-            {visibleResults.length > 0 ? (
-              <section className="max-w-4xl space-y-6">
-                {visibleResults.map((result) => (
-                  <SearchResultRow
-                    key={`${result.scope}:${result.href}:${result.title}`}
-                    description={result.description}
-                    external={result.external}
-                    href={result.href}
-                    meta={result.meta}
-                    source={result.source}
-                    title={result.title}
+            <>
+              <section className="border-b border-foreground/30 pb-4">
+                <div className="flex flex-wrap items-center gap-5 overflow-x-auto">
+                  <SearchTab
+                    count={counts.all}
+                    href={buildScopeHref(query, "all")}
+                    isActive={scope === "all"}
+                    label="All"
                   />
-                ))}
+                  <SearchTab
+                    count={counts.content}
+                    href={buildScopeHref(query, "content")}
+                    isActive={scope === "content"}
+                    label="Documents & records"
+                  />
+                  <SearchTab
+                    count={counts.pages}
+                    href={buildScopeHref(query, "pages")}
+                    isActive={scope === "pages"}
+                    label="Pages"
+                  />
+                  <SearchTab
+                    count={counts.tasks}
+                    href={buildScopeHref(query, "tasks")}
+                    isActive={scope === "tasks"}
+                    label="Tasks"
+                  />
+                  <SearchTab
+                    count={counts.manual}
+                    href={buildScopeHref(query, "manual")}
+                    isActive={scope === "manual"}
+                    label="Earth Repair Manual"
+                  />
+                </div>
               </section>
-            ) : null}
-          </>
-        ) : (
-          <section className="max-w-3xl space-y-5">
-            <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
-              Search {site.shortName}
-            </h1>
-            <p className="text-base font-bold leading-7 text-muted-foreground">
-              Find pages, tasks, and manual entries.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {sampleQueries.map((sampleQuery) => (
-                <Link
-                  key={sampleQuery}
-                  href={`${ROUTES.search}?q=${encodeURIComponent(sampleQuery)}`}
-                  className="border border-foreground px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-foreground hover:text-background"
-                >
-                  {sampleQuery}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+
+              <section className="space-y-2">
+                <p className="text-sm font-bold text-muted-foreground">
+                  {visibleResults.length.toLocaleString()} result
+                  {visibleResults.length === 1 ? "" : "s"} for{" "}
+                  <span className="text-foreground">
+                    &quot;{results.query}&quot;
+                  </span>
+                  {scope !== "all" ? <span>{` in ${scope}`}</span> : null}
+                </p>
+                {results.manualError ? (
+                  <div className="max-w-3xl border-2 border-primary bg-background px-4 py-3 text-sm font-bold text-foreground">
+                    {results.manualError}
+                  </div>
+                ) : null}
+              </section>
+
+              {visibleResults.length === 0 ? (
+                <section className="max-w-3xl border-2 border-foreground bg-background p-6">
+                  <h2 className="text-2xl font-black uppercase text-foreground">
+                    No Matches
+                  </h2>
+                  <p className="mt-3 text-sm font-bold leading-6 text-muted-foreground">
+                    Try a broader term, a person name, a system name, or a
+                    concrete phrase like &quot;clinical trials&quot; or
+                    &quot;fund optimization&quot;.
+                  </p>
+                </section>
+              ) : null}
+
+              {visibleResults.length > 0 ? (
+                <section className="max-w-4xl space-y-6">
+                  {visibleResults.map((result) => (
+                    <SearchResultRow
+                      key={`${result.scope}:${result.href}:${result.title}`}
+                      description={result.description}
+                      external={result.external}
+                      href={result.href}
+                      meta={result.meta}
+                      source={result.source}
+                      title={result.title}
+                    />
+                  ))}
+                </section>
+              ) : null}
+            </>
+          ) : null}
+        </SearchDiscovery>
       </div>
     </div>
   );

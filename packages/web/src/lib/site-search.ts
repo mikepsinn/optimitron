@@ -1,45 +1,24 @@
-import { ROUTES, navSections, type NavItem } from "@/lib/routes";
+import {
+  fullManualPaperLink,
+  ROUTES,
+  navSections,
+  routeReviewNavItems,
+  type NavItem,
+} from "@/lib/routes";
 import type { SiteConfig } from "@/lib/site";
+import {
+  searchSiteDocuments,
+  type StaticSiteSearchDocument,
+} from "@/lib/site-search-ranking";
 
-const STOP_WORDS = new Set([
-  "a",
-  "an",
-  "and",
-  "for",
-  "from",
-  "how",
-  "into",
-  "not",
-  "the",
-  "this",
-  "that",
-  "what",
-  "with",
-  "you",
-  "your",
-]);
-
-export interface SearchTerms {
-  normalizedQuery: string;
-  terms: string[];
-}
-
-export interface SearchScorableRecord {
-  title: string;
-  description?: string | null;
-  href?: string | null;
-  keywords?: string[];
-  section?: string | null;
-}
-
-export interface StaticSiteSearchDocument {
-  description: string;
-  external?: boolean;
-  href: string;
-  keywords?: string[];
-  section: string;
-  title: string;
-}
+export {
+  getSearchTerms,
+  scoreSearchRecord,
+  searchSiteDocuments,
+  type SearchScorableRecord,
+  type SearchTerms,
+  type StaticSiteSearchDocument,
+} from "@/lib/site-search-ranking";
 
 function dedupeByHref(documents: StaticSiteSearchDocument[]) {
   const seen = new Set<string>();
@@ -82,6 +61,14 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
     ],
   },
   {
+    description: fullManualPaperLink.description,
+    external: true,
+    href: fullManualPaperLink.href,
+    keywords: ["guide", "handbook", "instruction manual", "manual"],
+    section: "Manual",
+    title: "Earth Repair Manual",
+  },
+  {
     href: ROUTES.mcp,
     title: "Optimitron MCP",
     description:
@@ -107,6 +94,9 @@ export const staticSiteSearchDocuments: StaticSiteSearchDocument[] =
         buildDocumentFromNavItem(section.label, item),
       ),
     ),
+    ...routeReviewNavItems.map((item) =>
+      buildDocumentFromNavItem("Pages", item),
+    ),
   ]);
 
 function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {
@@ -119,108 +109,25 @@ function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {
   };
 }
 
-function getStaticSiteSearchDocuments(site?: SiteConfig) {
+export function getStaticSiteSearchDocuments(site?: SiteConfig) {
   if (!site || site.key === "optimitron") {
     return staticSiteSearchDocuments;
   }
 
   return dedupeByHref([
     buildHomeDocument(site),
+    ...extraStaticDocuments.filter(
+      (document) => document.href === fullManualPaperLink.href,
+    ),
     ...site.ui.nav.sections.flatMap((section) =>
-      section.items.map((item) => buildDocumentFromNavItem(section.label, item)),
+      section.items.map((item) =>
+        buildDocumentFromNavItem(section.label, item),
+      ),
+    ),
+    ...site.ui.footer.columns.flatMap((column) =>
+      column.items.map((item) => buildDocumentFromNavItem(column.title, item)),
     ),
   ]);
-}
-
-export function getSearchTerms(query: string): SearchTerms {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  if (!normalizedQuery) {
-    return {
-      normalizedQuery,
-      terms: [],
-    };
-  }
-
-  const terms = Array.from(
-    new Set(
-      normalizedQuery
-        .split(/[^a-z0-9%]+/i)
-        .map((term) => term.trim())
-        .filter((term) => term.length >= 2 && !STOP_WORDS.has(term)),
-    ),
-  );
-
-  return {
-    normalizedQuery,
-    terms,
-  };
-}
-
-export function scoreSearchRecord(
-  query: string | SearchTerms,
-  record: SearchScorableRecord,
-) {
-  const searchTerms = typeof query === "string" ? getSearchTerms(query) : query;
-
-  if (!searchTerms.normalizedQuery) {
-    return 0;
-  }
-
-  const title = record.title.toLowerCase();
-  const description = (record.description ?? "").toLowerCase();
-  const href = (record.href ?? "").toLowerCase();
-  const section = (record.section ?? "").toLowerCase();
-  const keywords =
-    record.keywords?.map((keyword) => keyword.toLowerCase()) ?? [];
-
-  let score = 0;
-
-  if (title.includes(searchTerms.normalizedQuery)) {
-    score += 14;
-  }
-
-  if (
-    keywords.some((keyword) => keyword.includes(searchTerms.normalizedQuery))
-  ) {
-    score += 10;
-  }
-
-  if (description.includes(searchTerms.normalizedQuery)) {
-    score += 8;
-  }
-
-  if (section.includes(searchTerms.normalizedQuery)) {
-    score += 4;
-  }
-
-  if (href.includes(searchTerms.normalizedQuery)) {
-    score += 4;
-  }
-
-  for (const term of searchTerms.terms) {
-    if (title.includes(term)) {
-      score += 5;
-    }
-
-    if (keywords.some((keyword) => keyword.includes(term))) {
-      score += 3;
-    }
-
-    if (description.includes(term)) {
-      score += 2;
-    }
-
-    if (section.includes(term)) {
-      score += 1.5;
-    }
-
-    if (href.includes(term)) {
-      score += 1.5;
-    }
-  }
-
-  return Number(score.toFixed(3));
 }
 
 export function searchStaticSiteDocuments(
@@ -230,25 +137,11 @@ export function searchStaticSiteDocuments(
     site?: SiteConfig;
   },
 ) {
-  const searchTerms = getSearchTerms(query);
   const limit = options?.limit ?? 12;
 
-  if (!searchTerms.normalizedQuery) {
-    return [];
-  }
-
-  return getStaticSiteSearchDocuments(options?.site)
-    .map((document) => ({
-      ...document,
-      score: scoreSearchRecord(searchTerms, document),
-    }))
-    .filter((document) => document.score > 0)
-    .sort((left, right) => {
-      if (right.score !== left.score) {
-        return right.score - left.score;
-      }
-
-      return left.title.localeCompare(right.title);
-    })
-    .slice(0, limit);
+  return searchSiteDocuments(
+    query,
+    getStaticSiteSearchDocuments(options?.site),
+    limit,
+  );
 }
