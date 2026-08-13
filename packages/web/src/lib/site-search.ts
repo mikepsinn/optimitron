@@ -39,6 +39,7 @@ function buildDocumentFromNavItem(
 ): StaticSiteSearchDocument {
   return {
     description: item.tagline ?? item.description,
+    emoji: item.emoji || undefined,
     external: item.external,
     href: item.href,
     section,
@@ -50,6 +51,7 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
   {
     href: ROUTES.home,
     title: "Optimitron",
+    emoji: "🏠",
     description:
       "Landing page for the Earth Optimization Game, the 1% Treaty, the prize mechanics, and the core argument for fixing public systems with evidence.",
     section: "Primary",
@@ -62,6 +64,7 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
   },
   {
     description: fullManualPaperLink.description,
+    emoji: fullManualPaperLink.emoji,
     external: true,
     href: fullManualPaperLink.href,
     keywords: ["guide", "handbook", "instruction manual", "manual"],
@@ -71,6 +74,7 @@ const extraStaticDocuments: StaticSiteSearchDocument[] = [
   {
     href: ROUTES.mcp,
     title: "Optimitron MCP",
+    emoji: "🔌",
     description:
       "Connect AI agents to the live Optimitron task graph so they can take the highest-value action to optimize Earth.",
     section: "Developer Tools",
@@ -104,6 +108,7 @@ function buildHomeDocument(site: SiteConfig): StaticSiteSearchDocument {
     href: ROUTES.home,
     title: site.shortName,
     description: site.rootMetadata.description,
+    emoji: "🏠",
     section: "Primary",
     keywords: site.rootMetadata.keywords,
   };

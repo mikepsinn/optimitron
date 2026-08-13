@@ -13,7 +13,6 @@ import {
 type SearchDiscoveryProps = {
   children?: ReactNode;
   documents: StaticSiteSearchDocument[];
-  featuredDocuments: StaticSiteSearchDocument[];
   initialQuery: string;
   scope: "content" | "manual" | "pages" | "tasks" | null;
   siteName: string;
@@ -25,20 +24,27 @@ function SearchDestination({
   document: StaticSiteSearchDocument;
 }) {
   const content = (
-    <>
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-black text-foreground">{document.title}</h2>
-        <span className="shrink-0 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-          {document.section}
-        </span>
+    <div className="flex items-start gap-3">
+      <span aria-hidden="true" className="w-7 shrink-0 text-xl leading-7">
+        {document.emoji ?? "📄"}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-black text-foreground">
+            {document.title}
+          </h2>
+          <span className="shrink-0 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
+            {document.section}
+          </span>
+        </div>
+        <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
+          {document.description}
+        </p>
       </div>
-      <p className="mt-2 text-sm font-bold leading-6 text-muted-foreground">
-        {document.description}
-      </p>
-    </>
+    </div>
   );
   const className =
-    "block border-b border-foreground/25 py-4 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+    "block border-b border-foreground/25 py-4 transition-colors last:border-b-0 hover:bg-muted focus-visible:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
   return document.external ? (
     <a
@@ -59,7 +65,6 @@ function SearchDestination({
 export function SearchDiscovery({
   children,
   documents,
-  featuredDocuments,
   initialQuery,
   scope,
   siteName,
@@ -92,7 +97,7 @@ export function SearchDiscovery({
 
   return (
     <>
-      <section className="space-y-4 border-b border-foreground/30 pb-4">
+      <section className="space-y-3">
         <form action={ROUTES.search} className="flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -119,6 +124,12 @@ export function SearchDiscovery({
           </button>
         </form>
 
+        {!trimmedInput ? (
+          <p className="text-sm font-bold text-muted-foreground">
+            Search pages, tasks, documents, and the Earth Repair Manual.
+          </p>
+        ) : null}
+
         {showSuggestions ? (
           <section
             aria-label="Page suggestions"
@@ -144,28 +155,6 @@ export function SearchDiscovery({
       </section>
 
       <h1 className="sr-only">Search {siteName}</h1>
-
-      {!trimmedInput ? (
-        <section className="max-w-4xl space-y-5">
-          <div className="space-y-2">
-            <p
-              aria-hidden="true"
-              className="text-4xl font-black tracking-tight text-foreground md:text-5xl"
-            >
-              Search {siteName}
-            </p>
-            <p className="text-base font-bold leading-7 text-muted-foreground">
-              Vote now, read the treaty, fund outreach, or open the manual.
-              Search for anything else.
-            </p>
-          </div>
-          <nav aria-label="Featured destinations">
-            {featuredDocuments.map((document) => (
-              <SearchDestination document={document} key={document.href} />
-            ))}
-          </nav>
-        </section>
-      ) : null}
 
       {initialQuery && !isEditingSubmittedQuery ? children : null}
     </>

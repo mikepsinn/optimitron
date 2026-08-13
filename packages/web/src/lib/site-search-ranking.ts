@@ -31,6 +31,7 @@ export interface SearchScorableRecord {
 
 export interface StaticSiteSearchDocument {
   description: string;
+  emoji?: string;
   external?: boolean;
   href: string;
   keywords?: string[];

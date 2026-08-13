@@ -298,7 +298,7 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     name: "search-empty",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[aria-label="Featured destinations"]',
+    requiredSelector: '[aria-label="Search the site"]',
     siteVariant: "optimitron",
   },
   {

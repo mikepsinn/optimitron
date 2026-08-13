@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ROUTES } from "../routes";
+import { ROUTES, voteLink } from "../routes";
 import { getSiteConfig } from "../site";
 import {
   scoreSearchRecord,
@@ -14,6 +14,14 @@ describe("site search helpers", () => {
     const hrefs = staticSiteSearchDocuments.map((document) => document.href);
 
     expect(new Set(hrefs).size).toBe(hrefs.length);
+  });
+
+  it("keeps route emojis in the search index", () => {
+    const voteDocument = staticSiteSearchDocuments.find(
+      (document) => document.href === voteLink.href,
+    );
+
+    expect(voteDocument?.emoji).toBe(voteLink.emoji);
   });
 
   it("finds the government size page from a direct query", () => {

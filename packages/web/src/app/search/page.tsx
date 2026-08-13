@@ -1,22 +1,11 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
-import { Avatar } from "@/components/retroui/Avatar";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
-import {
-  fullManualPaperLink,
-  donateLink,
-  ROUTES,
-  searchLink,
-  treatyLink,
-  voteLink,
-} from "@/lib/routes";
+import { ROUTES, searchLink } from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
-import {
-  getStaticSiteSearchDocuments,
-  type StaticSiteSearchDocument,
-} from "@/lib/site-search";
+import { getStaticSiteSearchDocuments } from "@/lib/site-search";
 import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
 import { SearchDiscovery } from "./search-discovery";
 
@@ -32,6 +21,7 @@ type SearchScope = "all" | "content" | "manual" | "pages" | "tasks";
 
 type SearchResultItem = {
   description: string;
+  emoji: string;
   external: boolean;
   href: string;
   meta: string | null;
@@ -108,6 +98,7 @@ function getResultItems(
 ): SearchResultItem[] {
   const contentItems: SearchResultItem[] = results.content.map((item) => ({
     description: item.snippet,
+    emoji: item.kind === "collectionRecord" ? "🗂️" : "📄",
     external: false,
     href: item.url,
     meta: item.kind === "collectionRecord" ? "Collection" : null,
@@ -121,6 +112,7 @@ function getResultItems(
     .filter((page) => !page.external)
     .map((page) => ({
       description: page.description,
+      emoji: page.emoji ?? "📄",
       external: false,
       href: page.href,
       meta: page.section,
@@ -132,6 +124,7 @@ function getResultItems(
 
   const taskItems: SearchResultItem[] = results.tasks.map((task) => ({
     description: task.snippet ?? "Task result",
+    emoji: "✅",
     external: false,
     href: task.href,
     meta: [
@@ -149,6 +142,7 @@ function getResultItems(
 
   const manualItems: SearchResultItem[] = results.manual.map((entry) => ({
     description: entry.description,
+    emoji: "📖",
     external: true,
     href: entry.href,
     meta: entry.section ?? null,
@@ -203,32 +197,6 @@ function getResultItems(
   });
 }
 
-function getFeaturedDocuments(
-  documents: StaticSiteSearchDocument[],
-): StaticSiteSearchDocument[] {
-  const featuredLinks = [
-    { link: voteLink, section: "Vote" },
-    { link: treatyLink, section: "Treaty" },
-    { link: donateLink, section: "Outreach" },
-    { link: fullManualPaperLink, section: "Manual" },
-  ];
-
-  return featuredLinks.map(({ link, section }) => {
-    const indexedDocument = documents.find(
-      (document) => document.href === link.href,
-    );
-
-    return {
-      ...indexedDocument,
-      description: link.tagline ?? link.description,
-      external: link.external,
-      href: link.href,
-      section,
-      title: link === fullManualPaperLink ? "Earth Repair Manual" : link.label,
-    };
-  });
-}
-
 function SearchTab({
   count,
   href,
@@ -273,30 +241,20 @@ function formatDisplayUrl(href: string, external: boolean) {
 
 function SearchResultRow({
   description,
+  emoji,
   external,
   href,
   meta,
   source,
   title,
 }: Omit<SearchResultItem, "scope" | "score">) {
-  const absoluteUrl = new URL(href, SITE_ORIGIN);
   const displayUrl = formatDisplayUrl(href, external);
-  const faviconUrl = external
-    ? `${absoluteUrl.origin}/favicon.ico`
-    : "/favicon.ico";
   const row = (
-    <div className="space-y-1">
-      <div className="flex items-center gap-3">
-        <Avatar className="h-5 w-5 border border-primary/25 bg-background">
-          <Avatar.Image
-            src={faviconUrl}
-            alt=""
-            className="h-full w-full object-cover"
-          />
-          <Avatar.Fallback className="bg-background text-[9px] font-black text-foreground">
-            {source.charAt(0)}
-          </Avatar.Fallback>
-        </Avatar>
+    <div className="flex items-start gap-3">
+      <span aria-hidden="true" className="w-7 shrink-0 text-xl leading-7">
+        {emoji}
+      </span>
+      <div className="min-w-0 flex-1 space-y-1">
         <div className="min-w-0">
           <div className="truncate text-xs font-bold text-foreground">
             {source}
@@ -306,18 +264,18 @@ function SearchResultRow({
             {meta ? <span>{` / ${meta}`}</span> : null}
           </div>
         </div>
+        <h2 className="text-xl font-bold text-foreground transition-colors hover:text-primary">
+          {title}
+        </h2>
+        <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+          {description}
+        </p>
       </div>
-      <h2 className="text-xl font-bold text-foreground transition-colors hover:text-primary">
-        {title}
-      </h2>
-      <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-        {description}
-      </p>
     </div>
   );
 
   return (
-    <div className="border-b border-primary/20 pb-6">
+    <div className="border-b border-primary/20 pb-6 last:border-b-0">
       {external ? (
         <a
           href={href}
@@ -374,7 +332,6 @@ export default async function SearchPage({
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <SearchDiscovery
           documents={pageDocuments}
-          featuredDocuments={getFeaturedDocuments(pageDocuments)}
           initialQuery={query}
           scope={scope === "all" ? null : scope}
           siteName={site.shortName}
@@ -451,6 +408,7 @@ export default async function SearchPage({
                     <SearchResultRow
                       key={`${result.scope}:${result.href}:${result.title}`}
                       description={result.description}
+                      emoji={result.emoji}
                       external={result.external}
                       href={result.href}
                       meta={result.meta}
