@@ -45,6 +45,11 @@ const screenshotRoot = screenshotRootInput
   : undefined;
 const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
+const campaignHomeFiles = [
+  "apps/warondisease/app/page.tsx",
+  "packages/site-kit/src/components/landing/final-cta.tsx",
+  "packages/site-kit/src/lib/site-config.ts",
+];
 
 const requestedApps = process.argv.slice(2);
 const unknownApps = requestedApps.filter(
@@ -87,10 +92,45 @@ async function waitForHomePage(url, child, output) {
   throw new Error(`Timed out waiting for ${url}.\n${output.join("")}`);
 }
 
+async function assertWarOnDiseaseHome(page) {
+  const bodyText = await page.locator("body").innerText();
+  if (/bottom line/i.test(bodyText)) {
+    throw new Error("War on Disease home still renders 'Bottom Line'");
+  }
+  if (/donate now/i.test(bodyText)) {
+    throw new Error("War on Disease home still renders 'Donate Now'");
+  }
+  if (await page.locator('a[href="/soldiers"]').count()) {
+    throw new Error("War on Disease navigation still links to Soldiers");
+  }
+
+  const donateLink = page.locator('footer a[href="/donate"]');
+  if ((await donateLink.count()) !== 1) {
+    throw new Error("War on Disease ACT footer must contain one Donate link");
+  }
+  if ((await donateLink.getAttribute("href")) !== "/donate") {
+    throw new Error(
+      "War on Disease ACT footer Donate link must point to /donate",
+    );
+  }
+  const donateActSection = donateLink.locator(
+    "xpath=ancestor::div[h3[normalize-space()='ACT']]",
+  );
+  if ((await donateActSection.count()) !== 1) {
+    throw new Error("War on Disease Donate link must appear under ACT");
+  }
+  if (await page.locator('script[src*="promotion-bar.js"]').count()) {
+    throw new Error("War on Disease still loads the floating promotion bar");
+  }
+}
+
 function getScreenshotRoutes(siteVariant) {
   const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
       label,
+      ...(siteVariant === VARIANTS.WAR_ON_DISEASE && routePath === "/"
+        ? { covers: campaignHomeFiles }
+        : {}),
       routeName:
         routePath === "/"
           ? "home"
@@ -104,6 +144,13 @@ function getScreenshotRoutes(siteVariant) {
   );
 
   if (siteVariant === VARIANTS.WAR_ON_DISEASE) {
+    routes.push({
+      label: "Home footer",
+      routeName: "home-footer",
+      routePath: "/",
+      captureSelector: "footer",
+      covers: campaignHomeFiles,
+    });
     routes.push({
       label: "Shared campaign plan",
       routeName: "the-plan",
@@ -174,7 +221,11 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
         const page = await context.newPage();
 
         try {
-          for (const { routeName, routePath } of screenshotRoutes) {
+          for (const {
+            routeName,
+            routePath,
+            captureSelector,
+          } of screenshotRoutes) {
             const pageUrl = new URL(routePath, baseUrl);
             if (appName === "acceleratedmedicine" && routeName === "home") {
               pageUrl.searchParams.set("visual", "1");
@@ -197,17 +248,30 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               timeout: 15_000,
             });
             await page.evaluate(() => document.fonts.ready);
+            if (appName === "warondisease" && routeName === "home") {
+              await assertWarOnDiseaseHome(page);
+            }
             await forceAnimationsComplete(page);
             await prepareFullPageVisualCapture(page);
             await forceAnimationsComplete(page);
-            await page.screenshot({
-              animations: "disabled",
-              fullPage: true,
-              path: path.join(
-                outputDirectory,
-                `site-app-${appName}-${routeName}.png`,
-              ),
-            });
+            const screenshotPath = path.join(
+              outputDirectory,
+              `site-app-${appName}-${routeName}.png`,
+            );
+            if (captureSelector) {
+              const target = page.locator(captureSelector).first();
+              await target.scrollIntoViewIfNeeded();
+              await target.screenshot({
+                animations: "disabled",
+                path: screenshotPath,
+              });
+            } else {
+              await page.screenshot({
+                animations: "disabled",
+                fullPage: true,
+                path: screenshotPath,
+              });
+            }
           }
         } finally {
           await context.close();

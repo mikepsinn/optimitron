@@ -559,7 +559,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
           "donate",
           "volunteer",
           /* 'campaigns', */ "divisions",
-          "soldiers",
         ],
       },
     ],
@@ -648,7 +647,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     defaultRoute: "/",
     enabledFeatures: ALL_PUBLIC_SITE_FEATURES,
     showPoliticalContent: true,
-    promotionBarEnabled: true,
     routing: {
       skipCanonicalRedirects: true,
     },
@@ -691,9 +689,9 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
 
     // Navigation: flat, action-first. No sidebar accordion — every extra label dilutes the CTA.
-    // Primary: Vote (core action). Soldiers (viral leaderboard). Campaigns (expected-value crowdfunding).
+    // Primary: Vote (core action).
     // Manual (long-form conversion). Secondary links live in the footer.
-    topLevelNavItems: ["vote", "soldiers", "manual"],
+    topLevelNavItems: ["vote", "manual"],
     sidebarSections: [],
     footerBranding: {
       title: "THE WAR ON DISEASE",
@@ -703,18 +701,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "act",
         label: "ACT",
-        items: ["vote", "soldiers"],
+        items: ["vote", "donate"],
       },
       {
         id: "learn",
         label: "LEARN",
-        items: [
-          "about",
-          "faq",
-          "thePlan",
-          "manual",
-          "listenPodcast",
-        ],
+        items: ["about", "faq", "thePlan", "manual", "listenPodcast"],
       },
       {
         id: "connect",
@@ -1271,7 +1263,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "support",
         label: "SUPPORT THE MISSION",
-        items: ["institutes", "soldiers"],
+        items: ["institutes"],
       },
     ],
 
