@@ -9271,6 +9271,29 @@ describe("MCP server tool dispatch", () => {
   });
 
   describe("tracking reminders and measurements", () => {
+    it("advertises originalValue only on updateMeasurement", async () => {
+      const client = await setup("user-1", ALL_SCOPES);
+      const tools = await client.listTools();
+      const updateMeasurement = tools.tools.find(
+        (tool) => tool.name === "updateMeasurement",
+      );
+      const upsertRelationship = tools.tools.find(
+        (tool) => tool.name === "upsertVariableRelationshipEvidenceEstimate",
+      );
+
+      expect(updateMeasurement?.inputSchema.properties).toMatchObject({
+        originalValue: {
+          type: "number",
+          description: expect.stringContaining(
+            "Required when originalUnitId differs from unitId",
+          ),
+        },
+      });
+      expect(upsertRelationship?.inputSchema.properties).not.toHaveProperty(
+        "originalValue",
+      );
+    });
+
     const TRACKING_UNIT = {
       abbreviatedName: "IU",
       id: "unit-iu",
@@ -9882,10 +9905,7 @@ describe("MCP server tool dispatch", () => {
       expect(mocks.measurementUpdate).not.toHaveBeenCalled();
 
       mocks.measurementUpdate.mockResolvedValue({
-        ...measurementRow(
-          "measurement-converted",
-          "2026-07-01T08:00:00.000Z",
-        ),
+        ...measurementRow("measurement-converted", "2026-07-01T08:00:00.000Z"),
         originalValue: 2,
         value: 2000,
       });

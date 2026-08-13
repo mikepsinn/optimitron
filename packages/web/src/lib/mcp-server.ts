@@ -5425,11 +5425,6 @@ const EARTH_DATA_TOOL_DEFINITIONS = [
         metricKind: { type: "string" },
         sourceType: { type: "string" },
         value: { type: "number" },
-        originalValue: {
-          type: "number",
-          description:
-            "Corrected value in the existing original unit. Required when originalUnitId differs from unitId; otherwise defaults to value.",
-        },
         unitId: { type: "string" },
         confidenceScore: { type: "number" },
         participants: { type: "number" },
@@ -5806,12 +5801,17 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: UPDATE_MEASUREMENT_TOOL_NAME,
     description:
-      "Correct one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. The required value replaces both the normalized and originally entered value; units and variable identity stay unchanged. Optional metadata fields patch the existing row. The tool rejects measurements owned by another user and refreshes cached summaries.",
+      "Correct one of the authenticated user's measurements by ID. Use listMeasurements to get the ID. Pass value in the normalized unit. If the measurement was converted between units, also pass originalValue in its original unit. Units and variable identity stay unchanged. Optional metadata fields patch the existing row. The tool rejects measurements owned by another user and refreshes cached summaries.",
     inputSchema: {
       type: "object" as const,
       properties: {
         measurementId: { type: "string" },
         value: { type: "number" },
+        originalValue: {
+          type: "number",
+          description:
+            "Corrected value in the existing original unit. Required when originalUnitId differs from unitId; otherwise defaults to value.",
+        },
         duration: {
           type: ["number", "null"],
           description: "Duration in seconds. Null clears it.",
