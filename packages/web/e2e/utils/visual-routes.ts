@@ -197,6 +197,17 @@ const INVEST_LANDING_FILES = [
   "packages/web/src/components/landing/TreatyVoteFlow.tsx",
 ];
 
+// /prize is the only place CitizenDashboard mounts. Without this list a
+// one-line sign-in fix still fails visual-review incomplete coverage.
+const PRIZE_PAGE_FILES = [
+  "packages/web/src/app/prize/page.tsx",
+  "packages/web/src/components/prize/CitizenDashboard.tsx",
+  "packages/web/src/components/prize/CitizenDashboardWrapper.tsx",
+  "packages/web/src/components/prize/ShareTemplatesCard.tsx",
+  "packages/web/src/components/prize/TwoOutcomes.tsx",
+  "packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx",
+];
+
 const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [
     ROUTES.eos,
@@ -226,6 +237,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
     ],
   ],
   [ROUTES.invest, INVEST_LANDING_FILES],
+  [ROUTES.prize, PRIZE_PAGE_FILES],
   [ROUTES.profile, ["packages/web/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["packages/web/src/app/services/page.tsx"]],
@@ -252,6 +264,8 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   // Last section of the page: proves the capture rendered the whole pitch,
   // not just the hero.
   [ROUTES.invest, "#claim"],
+  // Citizen dashboard section (sign-in card when logged out).
+  [ROUTES.prize, "#dashboard"],
   [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],

@@ -13,7 +13,7 @@
 
 ## Visible Page Copy
 
-- 30 TOOLS
+- 31 TOOLS
 ## THE ARMORY
 - Every machine I used to optimize my planet, now yours to run. Pick one. Point it at a number that needs moving.
 ### ANALYSIS
@@ -42,6 +42,7 @@
 - [🔍DECENTRALIZED ACCOUNTABILITY OFFICE Every fund flow on IPFS — impossible to quietly delete](/agencies/dgao)
 ### PLAYER
 - [🎯EARTH OPTIMIZATION TASKS What waiting costs](/tasks)
+- [📅CALENDAR Know what to do and when](/calendar)
 - [❤️EARTH OPTIMIZATION MISSIONS Find someone to optimize Earth with](/missions)
 - [🛍️STORE Buy useful campaign things.](/store)
 - [👕GET THE SHIRT Wear your campaign QR code.](/shirt)

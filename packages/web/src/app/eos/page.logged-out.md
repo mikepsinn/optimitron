@@ -29,6 +29,7 @@
 - [🧠THE HUMAN OPTIMIZATION SYSTEM The same engine, pointed at one human: you.](#system-you)
 #### PART A · LAWS GRADED LIKE HOMEWORK
 - 275 humans spend months guessing what a bill will cost. The algorithm does it in 200 milliseconds and shows its work. But sure, let the humans keep guessing.
+
 | POLICY | HEALTH | INCOME | GRADE | VERDICT |
 | --- | --- | --- | --- | --- |
 | Universal Pre-K (Ages 3-4) | +0.10 yrs | +0.15 pp/yr | A | REALLOCATE |
@@ -36,6 +37,7 @@
 | Shift Drug Policy from Criminal to Health Approach | +0.35 yrs | +0.05 pp/yr | B | ENACT |
 | Housing Supply Deregulation | +0.03 yrs | +0.05 pp/yr | B | ENACT |
 | Right to Trial & FDA Upgrade Act | +0.35 yrs | +0.05 pp/yr | B | ENACT |
+
 - Health = healthy life-years gained per person. Income = added income growth in percentage points per year. Grade = evidence strength, A to F. Live output for United States; the full ranking runs 23 policies deep.
 - [Explore the Policy Generator](/opg)
 #### PART B · THE BUDGET, SOLVED LIKE AN EQUATION

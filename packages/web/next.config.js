@@ -7,6 +7,7 @@ const { REDIRECTS } = require("./src/lib/redirects");
 
 /** @type {import('next').NextConfig} */
 const isStaticExport = process.env.NEXT_OUTPUT_EXPORT === "true";
+const isVercelBuild = process.env.VERCEL === "1";
 const legislationContentTraceFiles = ["../../content/legislation/**/*.md"];
 const loggedOutPageSnapshotTraceFiles = ["./src/app/**/page.logged-out.md"];
 
@@ -25,18 +26,12 @@ const nextConfig = {
     // memoryBasedWorkersCount alone was not enough: the build then survived
     // compilation and died at "Generating static pages (228/305)", because
     // the container reports 4 cores and static generation fans out to one
-    // worker each. Pin the pool to 2 so peak worker heap stays inside 8 GB.
-    // Cheap in wall-clock -- generating all 305 pages took ~7s across 4
-    // workers, so halving the pool costs seconds against a 420s budget that
-    // currently finishes with ~135s to spare.
-    cpus: 2,
-    // Third round of the same fight, 2026-08-07. With the worker pool already
-    // pinned, previews still OOM-killed intermittently -- this time during
-    // compilation, before static generation started. The heap ceiling is the
-    // remaining term: NODE_OPTIONS applies to every process, Next runs the
-    // server/edge/client compilations in parallel, and 2 x 5120 MB does not
-    // fit an 8 GB container. `build` now caps the heap at 3584 MB, so two
-    // concurrent compilations peak near 7 GB and leave room for overhead.
+    // worker each. GitHub and local builds retain two workers. Vercel's 8 GB
+    // preview builder gets one: PR #195 proved that two workers at 3584 MB
+    // trigger a container OOM, while lowering both to 3072 MB triggers a V8
+    // heap OOM in client compilation. One 3584 MB worker gives the compiler
+    // the heap it needs without multiplying that ceiling past container RAM.
+    cpus: isVercelBuild ? 1 : 2,
     // Read the next failure's signature before tuning further: a kernel
     // SIGKILL with Vercel's "OOM event detected" means total RSS is still too
     // high (lower this further, or buy Enhanced Builds), whereas a Node

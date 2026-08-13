@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - optimitron-postgres-data:/var/lib/postgresql/data
+      # Creates optimitron_test on first boot only (empty volume).
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d optimitron"]
       interval: 10s

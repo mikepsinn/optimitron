@@ -1,0 +1,71 @@
+{
+  "name": "@optimitron/site-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared site-app shell, configuration, auth, and campaign components",
+  "type": "module",
+  "exports": {
+    "./components/layout": "./src/components/layout.tsx",
+    "./components/providers": "./src/components/providers.tsx",
+    "./components/theme-provider": "./src/components/theme-provider.tsx",
+    "./components/sentry-404-reporter": "./src/components/sentry-404-reporter.tsx",
+    "./components/root-layout": "./src/components/root-layout.tsx",
+    "./components/global-error": "./src/components/global-error.tsx",
+    "./components/not-found": "./src/components/not-found.tsx",
+    "./components/faq-page": "./src/components/faq-page.tsx",
+    "./components/brand-about-page": "./src/components/brand-about-page.tsx",
+    "./components/contact-page": "./src/components/contact-page.tsx",
+    "./components/legal/terms-page": "./src/components/legal/terms-page.tsx",
+    "./components/legal/privacy-page": "./src/components/legal/privacy-page.tsx",
+    "./components/*": "./src/components/*",
+    "./sentry/client": "./src/sentry/client.ts",
+    "./sentry/instrumentation": "./src/sentry/instrumentation.ts",
+    "./types/dashboard": "./src/types/dashboard.ts",
+    "./types/*": "./src/types/*",
+    "./lib/*": "./src/lib/*",
+    "./lib/create-middleware": "./src/lib/create-middleware.ts",
+    "./lib/auth-api-signup": "./src/lib/auth-api-signup.ts",
+    "./lib/auth-api-complete-signup": "./src/lib/auth-api-complete-signup.ts",
+    "./lib/auth-api-nextauth": "./src/lib/auth-api-nextauth.ts",
+    "./lib/dashboard-actions": "./src/lib/dashboard-actions.ts",
+    "./hooks/*": "./src/hooks/*"
+  },
+  "peerDependencies": {
+    "next": "15.5.15",
+    "next-auth": "4.24.15",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "@sentry/nextjs": "*"
+  },
+  "peerDependenciesMeta": {
+    "next": { "optional": false },
+    "next-auth": { "optional": false }
+  },
+  "dependencies": {
+    "@auth/prisma-adapter": "2.11.3",
+    "@neondatabase/serverless": "^1.1.0",
+    "@optimitron/db": "workspace:^",
+    "@optimitron/impact-params": "workspace:^",
+    "@optimitron/neobrutalist-ui": "workspace:^",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@t3-oss/env-nextjs": "^0.13.11",
+    "bcryptjs": "3.0.3",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.454.0",
+    "nanoid": "5.1.6",
+    "next-themes": "0.4.6",
+    "pg": "^8.20.0",
+    "pino": "^10.3.1",
+    "react-icons": "^5.5.0",
+    "resend": "^4.0.0",
+    "slugify": "^1.6.9",
+    "zod": "^3.22.4",
+    "stripe": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.3.3"
+  }
+}
