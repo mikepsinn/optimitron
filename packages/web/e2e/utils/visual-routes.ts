@@ -582,7 +582,7 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
     {
       authenticated: true,
       covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
-      name: "mcp-authorize-consent",
+      name: "mcp-authorize-admin-consent",
       path: manifest.authorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",
@@ -591,7 +591,7 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
     {
       authenticated: true,
       covers: [RETRO_UI_BUTTON_FILE],
-      name: "mcp-authorize-disabled",
+      name: "mcp-authorize-admin-disabled",
       path: manifest.authorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",

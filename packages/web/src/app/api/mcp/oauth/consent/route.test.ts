@@ -142,6 +142,26 @@ describe("MCP OAuth consent route (Authorize)", () => {
     expect(mocks.createAuthCode).not.toHaveBeenCalled();
   });
 
+  it("strips admin, agent, and GitHub scopes from non-admin grants", async () => {
+    const response = await POST(
+      consentRequest({
+        client_id: "mcp_client",
+        redirect_uri: "http://127.0.0.1:9999/callback",
+        scope: "tasks:personal tasks:admin earthdata:admin agent:run github",
+        code_challenge: "challenge",
+        approved: true,
+        organization_ids: [],
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.createAuthCode).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        scopes: ["TASKS_PERSONAL"],
+      }),
+    });
+  });
+
   it("keeps organization access for selected member organizations", async () => {
     mocks.findMemberships.mockResolvedValue([
       { organizationId: "organization_1" },
