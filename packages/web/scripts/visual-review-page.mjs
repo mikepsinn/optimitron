@@ -2281,7 +2281,7 @@ const CLIENT_JS = `
     if (lightbox && lightbox.open) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === "Escape") {
-      closeMobileMenus();
+      if (isMobile()) closeMobileMenus();
       return;
     }
     var tag = (e.target && e.target.tagName) || "";

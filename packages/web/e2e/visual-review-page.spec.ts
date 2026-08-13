@@ -237,6 +237,10 @@ test("mobile review chrome stays compact and exposes controls on demand", async 
 
   await page.locator(".header-tools > summary").click();
   await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeVisible();
+  await page.locator(".verdict-bar").click({ position: { x: 1, y: 1 } });
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeHidden();
+
+  await page.locator(".header-tools > summary").click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeHidden();
 
@@ -249,6 +253,24 @@ test("mobile review chrome stays compact and exposes controls on demand", async 
   await page.locator("#note-input").focus();
   await page.keyboard.press("Escape");
   await expect(page.locator("#note-input")).toBeHidden();
+});
+
+test("Escape preserves always-visible desktop review controls", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${pathToFileURL(SMOKE_HTML)}#route=home`);
+  await page.locator("#note-input").focus();
+  await page.keyboard.press("Escape");
+
+  await expect(page.locator(".header-tools")).toHaveAttribute("open", "");
+  await expect(page.locator(".route-tools")).toHaveAttribute("open", "");
+  await expect(page.locator(".verdict-more")).toHaveAttribute("open", "");
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeVisible();
+  await expect(page.locator(".toolbar")).toBeVisible();
+  await expect(page.locator("#note-input")).toBeVisible();
 });
 
 test("collapsed variant routes remain available while filtering", async ({
