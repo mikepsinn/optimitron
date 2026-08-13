@@ -597,7 +597,6 @@ export const searchLink: NavItem = {
   tagline: "Search pages, tasks, and the Earth Repair Manual",
   matchPrefixes: [ROUTES.search],
   copyPreview: true,
-  screenshot: true,
   cta: "Search Site",
 };
 
@@ -1929,6 +1928,7 @@ export const routeReviewNavItems = [
   foundationsLink,
   signatoriesLink,
   presidentManagementLink,
+  searchLink,
   dashboardLink,
   editProfileLink,
   tasksLink,
