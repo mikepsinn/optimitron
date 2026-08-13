@@ -23,6 +23,7 @@ export type VisualRoute = {
   openContentShare?: boolean;
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
+  showMcpDisabledAuthorize?: boolean;
   showMcpOrganizationSelectionError?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
@@ -102,6 +103,8 @@ const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
 const MCP_AUTHORIZE_PAGE_FILE = "packages/web/src/app/mcp/authorize/page.tsx";
 const MCP_CONSENT_FORM_FILE =
   "packages/web/src/app/mcp/authorize/consent-form.tsx";
+const RETRO_UI_BUTTON_FILE =
+  "packages/web/src/components/retroui/Button.tsx";
 const TASK_DETAIL_PAGE_FILE = "packages/web/src/app/tasks/[id]/page.tsx";
 const DOCUMENT_REVIEW_MANAGER_FILE =
   "packages/web/src/components/tasks/document-review-manager-panel.tsx";
@@ -589,6 +592,16 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,
       showMcpOrganizationSelectionError: true,
+    },
+    {
+      authenticated: true,
+      covers: [RETRO_UI_BUTTON_FILE],
+      name: "mcp-authorize-disabled",
+      path: manifest.authorizePath,
+      required: true,
+      requiredSelector: "#mcp-authorize-heading",
+      requiredText: /^Select Permissions$/,
+      showMcpDisabledAuthorize: true,
     },
   ];
 }

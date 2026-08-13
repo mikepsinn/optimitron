@@ -227,6 +227,24 @@ test.describe("route visual regression", () => {
         await openTaskImpactTrace(page);
       }
       if (
+        "showMcpDisabledAuthorize" in route &&
+        route.showMcpDisabledAuthorize
+      ) {
+        await page
+          .getByRole("checkbox", { name: /Manage Private Tasks/i })
+          .uncheck();
+        await page
+          .getByRole("checkbox", { name: /Manage Organization Tasks/i })
+          .uncheck();
+        await expect(
+          page.getByRole("button", {
+            name: "Select Permissions",
+            exact: true,
+          }),
+        ).toBeDisabled();
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
+      if (
         "showMcpOrganizationSelectionError" in route &&
         route.showMcpOrganizationSelectionError
       ) {
