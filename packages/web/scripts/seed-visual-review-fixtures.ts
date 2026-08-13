@@ -117,7 +117,7 @@ async function seedMcpAuthorizeFixture() {
   authorizePath.searchParams.set("client_id", MCP_AUTHORIZE_CLIENT_ID);
   authorizePath.searchParams.set("redirect_uri", MCP_AUTHORIZE_REDIRECT_URI);
   authorizePath.searchParams.set("state", "visual-review");
-  authorizePath.searchParams.set("scope", "tasks:personal");
+  authorizePath.searchParams.set("scope", "tasks:personal tasks:organization");
   authorizePath.searchParams.set("code_challenge", MCP_AUTHORIZE_CODE_CHALLENGE);
   authorizePath.searchParams.set("client_name", "Visual Review MCP");
 

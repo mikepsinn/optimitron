@@ -226,6 +226,21 @@ test.describe("route visual regression", () => {
       if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
         await openTaskImpactTrace(page);
       }
+      if (
+        "showMcpOrganizationSelectionError" in route &&
+        route.showMcpOrganizationSelectionError
+      ) {
+        await page
+          .getByRole("button", { name: "Authorize", exact: true })
+          .click();
+        await expect(
+          page.getByText(
+            "Select at least one organization or remove organization access.",
+            { exact: true },
+          ),
+        ).toBeVisible();
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
 
       if (route.requiredSelector) {
         // Regression guard: these visual pages must keep exposing the

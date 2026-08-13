@@ -23,6 +23,7 @@ export type VisualRoute = {
   openContentShare?: boolean;
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
+  showMcpOrganizationSelectionError?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
   path: string;
@@ -587,6 +588,7 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,
+      showMcpOrganizationSelectionError: true,
     },
   ];
 }

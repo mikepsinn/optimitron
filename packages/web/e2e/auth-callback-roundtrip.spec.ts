@@ -93,7 +93,7 @@ test("MCP authorize preserves the login callback and returns an OAuth code", asy
       client_name: "E2E MCP Authorize",
       redirect_uris: [OAUTH_REDIRECT_URI],
       grant_types: ["authorization_code"],
-      scope: "tasks:personal",
+      scope: "tasks:personal tasks:organization",
     },
   });
   if (register.status() >= 500) {
@@ -112,7 +112,7 @@ test("MCP authorize preserves the login callback and returns an OAuth code", asy
     `&code_challenge=${encodeURIComponent(OAUTH_CODE_CHALLENGE)}` +
     `&code_challenge_method=S256` +
     `&state=${encodeURIComponent(OAUTH_STATE)}` +
-    `&scope=${encodeURIComponent("tasks:personal")}` +
+    `&scope=${encodeURIComponent("tasks:personal tasks:organization")}` +
     `&client_name=${encodeURIComponent("E2E MCP Authorize")}`;
 
   const response = await page.goto(authorizePath);
@@ -134,7 +134,9 @@ test("MCP authorize preserves the login callback and returns an OAuth code", asy
     OAUTH_CODE_CHALLENGE,
   );
   expect(callback.searchParams.get("state")).toBe(OAUTH_STATE);
-  expect(callback.searchParams.get("scope")).toBe("tasks:personal");
+  expect(callback.searchParams.get("scope")).toBe(
+    "tasks:personal tasks:organization",
+  );
 
   const signedIn = await signInDemoUser(page);
   if (!signedIn) {
@@ -151,6 +153,16 @@ test("MCP authorize preserves the login callback and returns an OAuth code", asy
 
   const authorizeButton = page.getByRole("button", { name: "Authorize" });
   await expect(authorizeButton).toBeEnabled({ timeout: 10_000 });
+
+  await authorizeButton.click();
+  const organizationSelectionError = page.getByText(
+    "Select at least one organization or remove organization access.",
+    { exact: true },
+  );
+  await expect(organizationSelectionError).toBeVisible();
+
+  await page.getByRole("checkbox", { name: /Demo Organization/i }).check();
+  await expect(organizationSelectionError).not.toBeVisible();
 
   await Promise.all([
     page.waitForURL(

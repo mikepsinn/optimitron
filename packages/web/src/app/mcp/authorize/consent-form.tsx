@@ -87,6 +87,7 @@ export function McpConsentForm({
   const [error, setError] = useState<string | null>(null);
 
   function toggle(scope: McpScope) {
+    setError(null);
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(scope)) next.delete(scope);
@@ -96,6 +97,7 @@ export function McpConsentForm({
   }
 
   function toggleOrganization(organizationId: string) {
+    setError(null);
     setSelectedOrganizationIds((previous) => {
       const next = new Set(previous);
       if (next.has(organizationId)) next.delete(organizationId);
@@ -108,7 +110,13 @@ export function McpConsentForm({
     const organizationSelectionRequired =
       selected.has(McpScope.TASKS_ORGANIZATION) &&
       selectedOrganizationIds.size === 0;
-    if (selected.size === 0 || organizationSelectionRequired) return;
+    if (selected.size === 0) return;
+    if (organizationSelectionRequired) {
+      setError(
+        "Select at least one organization or remove organization access.",
+      );
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -247,12 +255,7 @@ export function McpConsentForm({
           onClick={() => {
             void handleApprove();
           }}
-          disabled={
-            loading ||
-            selected.size === 0 ||
-            (selected.has(McpScope.TASKS_ORGANIZATION) &&
-              selectedOrganizationIds.size === 0)
-          }
+          disabled={loading || selected.size === 0}
           className="flex-1"
         >
           {loading
