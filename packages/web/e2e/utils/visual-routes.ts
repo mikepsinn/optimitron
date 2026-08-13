@@ -311,6 +311,14 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     typeSearchQuery: "donate",
   },
   {
+    covers: [SEARCH_PAGE_FILE],
+    name: "search-results",
+    path: `${ROUTES.search}?q=vote`,
+    required: true,
+    requiredSelector: 'a[href="/vote"]',
+    siteVariant: "optimitron",
+  },
+  {
     covers: [STANDALONE_VIDEO_PAGE_FILE],
     name: "campaign-video",
     path: ROUTES.video,
