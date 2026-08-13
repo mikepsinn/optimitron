@@ -211,6 +211,68 @@ test("screenshots open in a keyboard-friendly lightbox", async ({
   await expect(lightbox).toBeVisible();
 });
 
+test("mobile review chrome stays compact and exposes controls on demand", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${pathToFileURL(SMOKE_HTML)}#route=home`);
+
+  const header = page.locator("#hdr");
+  const verdictBar = page.locator(".verdict-bar");
+  const screenshotCard = page.locator("section.card").first();
+
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeHidden();
+  await expect(page.locator(".toolbar")).toBeHidden();
+  await expect(page.locator("#note-input")).toBeHidden();
+  expect((await header.boundingBox())?.height).toBeLessThanOrEqual(56);
+  expect((await verdictBar.boundingBox())?.height).toBeLessThanOrEqual(56);
+  expect((await screenshotCard.boundingBox())?.y).toBeLessThan(320);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    ),
+  ).toBe(0);
+
+  await page.locator(".header-tools > summary").click();
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeVisible();
+  await page.locator(".verdict-bar").click({ position: { x: 1, y: 1 } });
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeHidden();
+
+  await page.locator(".header-tools > summary").click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeHidden();
+
+  await page.locator(".route-tools > summary").click();
+  await expect(page.locator(".toolbar")).toBeVisible();
+  await page.locator(".route-tools > summary").click();
+
+  await page.locator(".verdict-more > summary").click();
+  await expect(page.locator("#note-input")).toBeVisible();
+  await page.locator("#note-input").focus();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#note-input")).toBeHidden();
+});
+
+test("Escape preserves always-visible desktop review controls", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "default");
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${pathToFileURL(SMOKE_HTML)}#route=home`);
+  await page.locator("#note-input").focus();
+  await page.keyboard.press("Escape");
+
+  await expect(page.locator(".header-tools")).toHaveAttribute("open", "");
+  await expect(page.locator(".route-tools")).toHaveAttribute("open", "");
+  await expect(page.locator(".verdict-more")).toHaveAttribute("open", "");
+  await expect(page.getByRole("button", { name: "Copy PR comment" })).toBeVisible();
+  await expect(page.locator(".toolbar")).toBeVisible();
+  await expect(page.locator("#note-input")).toBeVisible();
+});
+
 test("collapsed variant routes remain available while filtering", async ({
   page,
 }, testInfo) => {
