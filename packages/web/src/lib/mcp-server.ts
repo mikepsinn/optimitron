@@ -3988,9 +3988,8 @@ async function listTrackingReminderNotificationsForUser(
         !scheduledNotificationIds.has(notification.id) &&
         (input.includeCompleted === true ||
           status !== null ||
-          notification.status === NotificationStatus.PENDING ||
-          notification.status === NotificationStatus.SENT ||
-          notification.status === NotificationStatus.SNOOZED),
+          (notification.trackingReminder.active &&
+            notification.status === NotificationStatus.SNOOZED)),
     )
     .map((notification) =>
       storedTrackingNotificationToQueueItem(notification, timeZone),
