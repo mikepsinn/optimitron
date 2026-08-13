@@ -124,6 +124,25 @@ async function assertWarOnDiseaseHome(page) {
   }
 }
 
+async function verifyWarOnDiseaseHome(baseUrl) {
+  const requireFromWeb = createRequire(
+    path.join(repoRoot, "packages", "web", "package.json"),
+  );
+  const { chromium } = requireFromWeb("@playwright/test");
+  const browser = await chromium.launch({
+    channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL || "chrome",
+    headless: true,
+  });
+
+  try {
+    const page = await browser.newPage();
+    await page.goto(baseUrl, { timeout: 30_000, waitUntil: "load" });
+    await assertWarOnDiseaseHome(page);
+  } finally {
+    await browser.close();
+  }
+}
+
 function getScreenshotRoutes(siteVariant) {
   const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
@@ -248,9 +267,6 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               timeout: 15_000,
             });
             await page.evaluate(() => document.fonts.ready);
-            if (appName === "warondisease" && routeName === "home") {
-              await assertWarOnDiseaseHome(page);
-            }
             await forceAnimationsComplete(page);
             await prepareFullPageVisualCapture(page);
             await forceAnimationsComplete(page);
@@ -315,6 +331,9 @@ async function smokeApp(appName, port, siteVariant) {
     const baseUrl = `http://127.0.0.1:${port}/`;
     const status = await waitForHomePage(baseUrl, child, output);
     console.log(`@apps/${appName}: HTTP ${status}`);
+    if (appName === "warondisease") {
+      await verifyWarOnDiseaseHome(baseUrl);
+    }
     await captureScreenshots(appName, siteVariant, baseUrl);
   } finally {
     child.kill("SIGTERM");
