@@ -108,11 +108,6 @@ export function McpConsentForm({
   }
 
   async function handleApprove() {
-    const scopesToAuthorize = Array.from(selected).filter(
-      (scope) =>
-        scope !== McpScope.TASKS_ORGANIZATION ||
-        selectedOrganizationIds.size > 0,
-    );
     if (!canAuthorize) return;
     setLoading(true);
     setError(null);
@@ -125,10 +120,8 @@ export function McpConsentForm({
           client_id: clientId,
           redirect_uri: redirectUri,
           state,
-          scope: scopesToWire(scopesToAuthorize),
-          organization_ids: scopesToAuthorize.includes(
-            McpScope.TASKS_ORGANIZATION,
-          )
+          scope: scopesToWire(Array.from(selected)),
+          organization_ids: selected.has(McpScope.TASKS_ORGANIZATION)
             ? Array.from(selectedOrganizationIds)
             : [],
           code_challenge: codeChallenge,
