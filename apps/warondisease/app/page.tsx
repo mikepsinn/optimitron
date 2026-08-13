@@ -36,7 +36,7 @@ export default async function HomePage() {
       <YourImpactSection />
       <CallToAction />
       <DeathClock />
-      <FinalCTA />
+      <FinalCTA showDonateButton={false} />
     </Layout>
   )
 }
