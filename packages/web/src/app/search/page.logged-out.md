@@ -14,4 +14,10 @@
 ## Visible Page Copy
 
 - SEARCH
-- Search pages, tasks, documents, and the Earth Repair Manual.
+- Find tasks, people, organizations, treatments, and the Earth Repair Manual.
+### POPULAR PAGES
+- [🎯Earth Optimization Tasks PRIMARY What waiting costs](/tasks)
+- [👥Humans Who Can End War and Disease TELL SOMEONE ELSE Find the right human](/people)
+- [🩺Conditions POPULAR Find disease evidence](/agencies/dfda/conditions)
+- [💊Treatments POPULAR Compare treatment evidence](/agencies/dfda/treatments)
+- [📖Earth Repair Manual MANUAL The complete idiot's guide to legally bribing your way to utopia. Contains pictures, because reading is hard when you are diseased and dying.](https://manual.warondisease.org)

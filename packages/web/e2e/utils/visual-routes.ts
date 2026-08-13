@@ -25,6 +25,7 @@ export type VisualRoute = {
   openTaskImpactTrace?: boolean;
   openMenu?: boolean;
   openTaskManagement?: boolean;
+  submitSearch?: boolean;
   typeSearchQuery?: string;
   path: string;
   required: boolean;
@@ -298,7 +299,8 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     name: "search-empty",
     path: ROUTES.search,
     required: true,
-    requiredSelector: '[aria-label="Search the site"]',
+    requiredSelector: '[data-search-popular] a[href="/tasks"]',
+    requiredText: /Popular pages/i,
     siteVariant: "optimitron",
   },
   {
@@ -309,6 +311,17 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     requiredSelector: '[data-search-suggestions] a[href="/donate"]',
     siteVariant: "optimitron",
     typeSearchQuery: "donate",
+  },
+  {
+    covers: [SEARCH_DISCOVERY_FILE],
+    name: "search-loading",
+    path: ROUTES.search,
+    required: true,
+    requiredSelector: 'form[aria-busy="true"] button:disabled',
+    requiredText: /^Searching…$/i,
+    siteVariant: "optimitron",
+    submitSearch: true,
+    typeSearchQuery: "vote",
   },
   {
     covers: [SEARCH_PAGE_FILE],

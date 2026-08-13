@@ -1,11 +1,23 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
+import { getTaskDescriptionSummary } from "@/components/tasks/task-description";
 import { authOptions } from "@/lib/auth";
 import { getRouteMetadata } from "@/lib/metadata";
-import { ROUTES, searchLink } from "@/lib/routes";
+import {
+  conditionsLink,
+  fullManualPaperLink,
+  peopleLink,
+  ROUTES,
+  searchLink,
+  tasksLink,
+  treatmentsLink,
+} from "@/lib/routes";
 import { searchSiteContent } from "@/lib/site-search.server";
-import { getStaticSiteSearchDocuments } from "@/lib/site-search";
+import {
+  getStaticSiteSearchDocuments,
+  type StaticSiteSearchDocument,
+} from "@/lib/site-search";
 import { getConfiguredSiteOrigin, getSiteFromHeaders } from "@/lib/site";
 import { SearchDiscovery } from "./search-discovery";
 
@@ -37,6 +49,34 @@ const SEARCH_SCOPE_PRIORITY: Record<SearchResultItem["scope"], number> = {
   manual: 2,
   tasks: 1,
 };
+
+function getPopularDocuments(
+  documents: StaticSiteSearchDocument[],
+): StaticSiteSearchDocument[] {
+  const popularLinks = [
+    tasksLink,
+    peopleLink,
+    conditionsLink,
+    treatmentsLink,
+    fullManualPaperLink,
+  ];
+
+  return popularLinks.map((link) => {
+    const indexedDocument = documents.find(
+      (document) => document.href === link.href,
+    );
+
+    return {
+      ...indexedDocument,
+      description: link.tagline ?? link.description,
+      emoji: link.emoji,
+      external: link.external,
+      href: link.href,
+      section: indexedDocument?.section ?? "Popular",
+      title: link === fullManualPaperLink ? "Earth Repair Manual" : link.label,
+    };
+  });
+}
 
 function dedupeResultItems(items: SearchResultItem[]) {
   const seen = new Set<string>();
@@ -123,7 +163,7 @@ function getResultItems(
     }));
 
   const taskItems: SearchResultItem[] = results.tasks.map((task) => ({
-    description: task.snippet ?? "Task result",
+    description: getTaskDescriptionSummary(task.snippet ?? "Task result", 180),
     emoji: "✅",
     external: false,
     href: task.href,
@@ -331,7 +371,9 @@ export default async function SearchPage({
     <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <SearchDiscovery
+          key={`${query}:${scope}`}
           documents={pageDocuments}
+          popularDocuments={getPopularDocuments(pageDocuments)}
           initialQuery={query}
           scope={scope === "all" ? null : scope}
           siteName={site.shortName}

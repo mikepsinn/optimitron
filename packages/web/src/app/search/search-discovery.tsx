@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { LoaderCircle, Search } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Input } from "@/components/retroui/Input";
 import { ROUTES } from "@/lib/routes";
@@ -14,6 +14,7 @@ type SearchDiscoveryProps = {
   children?: ReactNode;
   documents: StaticSiteSearchDocument[];
   initialQuery: string;
+  popularDocuments: StaticSiteSearchDocument[];
   scope: "content" | "manual" | "pages" | "tasks" | null;
   siteName: string;
 };
@@ -66,11 +67,13 @@ export function SearchDiscovery({
   children,
   documents,
   initialQuery,
+  popularDocuments,
   scope,
   siteName,
 }: SearchDiscoveryProps) {
   const [inputValue, setInputValue] = useState(initialQuery);
   const [isInteractive, setIsInteractive] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setIsInteractive(true);
@@ -98,7 +101,12 @@ export function SearchDiscovery({
   return (
     <>
       <section className="space-y-3">
-        <form action={ROUTES.search} className="flex items-center gap-2">
+        <form
+          action={ROUTES.search}
+          aria-busy={isSearching}
+          className="flex items-center gap-2"
+          onSubmit={() => setIsSearching(true)}
+        >
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -109,8 +117,11 @@ export function SearchDiscovery({
               className="h-14 rounded-none border-2 border-foreground bg-background pl-12 text-base font-bold md:max-w-3xl"
               data-search-ready={isInteractive ? "true" : undefined}
               name="q"
-              onChange={(event) => setInputValue(event.target.value)}
-              placeholder="Search pages, tasks, treaty docs, policy analysis..."
+              onChange={(event) => {
+                setInputValue(event.target.value);
+                setIsSearching(false);
+              }}
+              placeholder="Search tasks, people, treatments, or organizations..."
               type="search"
               value={inputValue}
             />
@@ -118,15 +129,28 @@ export function SearchDiscovery({
           {scope ? <input type="hidden" name="scope" value={scope} /> : null}
           <button
             type="submit"
-            className="inline-flex h-14 shrink-0 items-center justify-center border-2 border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground"
+            aria-live="polite"
+            disabled={isSearching}
+            className="inline-flex h-14 shrink-0 items-center justify-center border-2 border-foreground bg-foreground px-5 text-sm font-black uppercase tracking-[0.14em] text-background transition-colors hover:bg-background hover:text-foreground disabled:cursor-wait disabled:opacity-60 disabled:hover:bg-foreground disabled:hover:text-background"
           >
-            Search
+            {isSearching ? (
+              <>
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="mr-2 h-4 w-4 animate-spin"
+                />
+                Searching…
+              </>
+            ) : (
+              "Search"
+            )}
           </button>
         </form>
 
         {!trimmedInput ? (
           <p className="text-sm font-bold text-muted-foreground">
-            Search pages, tasks, documents, and the Earth Repair Manual.
+            Find tasks, people, organizations, treatments, and the Earth Repair
+            Manual.
           </p>
         ) : null}
 
@@ -155,6 +179,19 @@ export function SearchDiscovery({
       </section>
 
       <h1 className="sr-only">Search {siteName}</h1>
+
+      {!trimmedInput ? (
+        <section className="max-w-4xl" data-search-popular>
+          <h2 className="mb-1 text-sm font-black uppercase tracking-[0.14em] text-foreground">
+            Popular pages
+          </h2>
+          <nav aria-label="Popular pages">
+            {popularDocuments.map((document) => (
+              <SearchDestination document={document} key={document.href} />
+            ))}
+          </nav>
+        </section>
+      ) : null}
 
       {initialQuery && !isEditingSubmittedQuery ? children : null}
     </>

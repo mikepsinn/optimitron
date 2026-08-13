@@ -234,11 +234,22 @@ test.describe("route visual regression", () => {
         await searchbox.fill(route.typeSearchQuery);
         await expect(searchbox).toHaveValue(route.typeSearchQuery);
       }
+      if ("submitSearch" in route && route.submitSearch) {
+        const searchbox = page.getByRole("searchbox", {
+          name: "Search the site",
+        });
+        await searchbox.evaluate((element) => {
+          const form = (element as HTMLInputElement).form;
+          if (!form) throw new Error("Search input is not inside a form.");
+          form.addEventListener("submit", (event) => event.preventDefault(), {
+            once: true,
+          });
+        });
+        await page.getByRole("button", { name: "Search", exact: true }).click();
+      }
 
       if (route.requiredSelector) {
-        // Regression guard: these visual pages must keep exposing the
-        // president/signer task list. Do not delete without Mike's explicit
-        // approval.
+        // Regression guard for route-specific content that must be visible.
         await expect(page.locator(route.requiredSelector)).toBeVisible();
       }
 
