@@ -3615,17 +3615,23 @@ async function listTrackingRemindersForUser(
 
 /** Default snooze length when a caller does not name one. */
 const DEFAULT_SNOOZE_MINUTES = 30;
+const MAX_TRACKING_NOTIFICATION_RANGE_DAYS = 31;
 
 async function listDueTrackingRemindersForUser(
   input: Record<string, unknown>,
   userId: string,
+  knownTimeZone?: string,
 ) {
   const prisma = await getPrisma();
-  const user = await prisma.user.findUnique({
-    select: { timeZone: true },
-    where: { id: userId },
-  });
-  const timeZone = user?.timeZone ?? "UTC";
+  const timeZone =
+    knownTimeZone ??
+    (
+      await prisma.user.findUnique({
+        select: { timeZone: true },
+        where: { id: userId },
+      })
+    )?.timeZone ??
+    "UTC";
   const dateKey = parseDateKey(
     input.dateKey,
     getZonedDateKey(new Date(), timeZone),
@@ -3692,9 +3698,9 @@ async function listDueTrackingRemindersForUser(
       const existingNotification = byReminderId.get(reminder.id);
       const notification =
         existingNotification === undefined ? null : existingNotification;
-      const notifyAt =
-        notification?.notifyAt ?? occurrenceByReminderId.get(reminder.id);
-      if (!notifyAt) {
+      const scheduledAt = occurrenceByReminderId.get(reminder.id);
+      const notifyAt = notification?.notifyAt ?? scheduledAt;
+      if (!notifyAt || !scheduledAt) {
         throw new Error(
           `Missing scheduled occurrence for tracking reminder ${reminder.id}.`,
         );
@@ -3720,6 +3726,7 @@ async function listDueTrackingRemindersForUser(
         instructions: reminder.instructions,
         isOverdue,
         notification,
+        notificationId: notification?.id ?? null,
         notifyAt,
         // Reminders are scheduled in local wall-clock time, so report that
         // alongside the UTC instant. Reading only notifyAt makes an 08:00
@@ -3733,13 +3740,31 @@ async function listDueTrackingRemindersForUser(
         reminderFrequency: reminder.reminderFrequency,
         reminderId: reminder.id,
         reminderStartTime: reminder.reminderStartTime,
+        scheduledAt,
+        scheduledAtLocal: formatZonedIsoString(scheduledAt, timeZone),
+        snoozedUntil: status === NotificationStatus.SNOOZED ? notifyAt : null,
+        snoozedUntilLocal:
+          status === NotificationStatus.SNOOZED
+            ? formatZonedIsoString(notifyAt, timeZone)
+            : null,
+        snoozeDelayMinutes:
+          status === NotificationStatus.SNOOZED
+            ? Math.max(0, (notifyAt.getTime() - scheduledAt.getTime()) / 60_000)
+            : null,
         status,
         timeZone,
+        trackedValue: cleanNumber(notification?.trackedValue),
         utcOffsetMinutes: getTimeZoneOffsetMinutes(notifyAt, timeZone),
       };
     })
     .filter((reminder) => {
       if (input.includeCompleted === true) return true;
+      if (
+        input.includeSnoozed === true &&
+        reminder.status === NotificationStatus.SNOOZED
+      ) {
+        return true;
+      }
       if (
         reminder.status === NotificationStatus.SNOOZED &&
         reminder.notifyAt.getTime() <= Date.now()
@@ -3754,11 +3779,23 @@ async function listDueTrackingRemindersForUser(
   return { dateKey, notifications: remindersWithStatus, timeZone };
 }
 
-function toCompactTrackingNotifications(
-  result: Awaited<ReturnType<typeof listDueTrackingRemindersForUser>>,
-) {
+function toCompactTrackingNotifications(result: {
+  dateKey?: string;
+  endDateKey?: string;
+  notifications: Array<{
+    derivedStatus: NotificationStatus | TrackingReminderDerivedStatus;
+    globalVariable: { name: string };
+    notifyAt: Date;
+    notifyAtLocal: string;
+    reminderId: string;
+  }>;
+  startDateKey?: string;
+  timeZone: string;
+}) {
   return {
-    dateKey: result.dateKey,
+    ...(result.dateKey ? { dateKey: result.dateKey } : {}),
+    ...(result.startDateKey ? { startDateKey: result.startDateKey } : {}),
+    ...(result.endDateKey ? { endDateKey: result.endDateKey } : {}),
     notifications: result.notifications.map((notification) => ({
       // `due` is the user's local time so a voice client can read it aloud
       // without converting. `dueUtc` keeps the raw instant for machines.
@@ -3770,6 +3807,119 @@ function toCompactTrackingNotifications(
     })),
     timeZone: result.timeZone,
   };
+}
+
+function parseTrackingNotificationStatus(value: unknown) {
+  if (value == null || value === "") return null;
+  if (typeof value !== "string") {
+    throw new Error("status must be a string.");
+  }
+  const normalized = value.trim().toUpperCase();
+  const validStatuses = new Set<string>([
+    ...Object.values(NotificationStatus),
+    TrackingReminderDerivedStatus.OVERDUE,
+  ]);
+  if (!validStatuses.has(normalized)) {
+    throw new Error(`status must be one of ${[...validStatuses].join(", ")}.`);
+  }
+  return normalized as NotificationStatus | TrackingReminderDerivedStatus;
+}
+
+function trackingNotificationDateKeys(
+  input: Record<string, unknown>,
+  fallbackDateKey: string,
+) {
+  const hasDateKey = input.dateKey != null && input.dateKey !== "";
+  const hasRange =
+    (input.startDateKey != null && input.startDateKey !== "") ||
+    (input.endDateKey != null && input.endDateKey !== "");
+  if (hasDateKey && hasRange) {
+    throw new Error(
+      "Use dateKey for one day or startDateKey/endDateKey for a range, not both.",
+    );
+  }
+  if (!hasRange) {
+    return [parseDateKey(input.dateKey, fallbackDateKey)];
+  }
+
+  const endFallback = parseDateKey(input.endDateKey, fallbackDateKey);
+  const startDateKey = parseDateKey(input.startDateKey, endFallback);
+  const endDateKey = parseDateKey(input.endDateKey, startDateKey);
+  if (startDateKey > endDateKey) {
+    throw new Error("startDateKey must be on or before endDateKey.");
+  }
+
+  const dateKeys: string[] = [];
+  let currentDateKey = startDateKey;
+  while (true) {
+    dateKeys.push(currentDateKey);
+    if (currentDateKey === endDateKey) break;
+    if (dateKeys.length >= MAX_TRACKING_NOTIFICATION_RANGE_DAYS) {
+      throw new Error(
+        `Tracking notification ranges may include at most ${MAX_TRACKING_NOTIFICATION_RANGE_DAYS} days.`,
+      );
+    }
+    const nextDateKey = shiftDateKey(currentDateKey, 1);
+    if (!nextDateKey) throw new Error("Invalid tracking date range.");
+    currentDateKey = nextDateKey;
+  }
+  return dateKeys;
+}
+
+async function listTrackingReminderNotificationsForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const trackingReminderId = optionalString(input.trackingReminderId);
+  if ("trackingReminderId" in input && !trackingReminderId) {
+    throw new Error("trackingReminderId must be a non-empty string.");
+  }
+  const status = parseTrackingNotificationStatus(input.status);
+  const prisma = await getPrisma();
+  const user = await prisma.user.findUnique({
+    select: { timeZone: true },
+    where: { id: userId },
+  });
+  const timeZone = user?.timeZone ?? "UTC";
+  const dateKeys = trackingNotificationDateKeys(
+    input,
+    getZonedDateKey(new Date(), timeZone),
+  );
+  const dayResults = [];
+  for (const dateKey of dateKeys) {
+    dayResults.push(
+      await listDueTrackingRemindersForUser(
+        {
+          ...input,
+          dateKey,
+          includeCompleted: input.includeCompleted === true || status !== null,
+          includeSnoozed: true,
+        },
+        userId,
+        timeZone,
+      ),
+    );
+  }
+  const notifications = dayResults
+    .flatMap((result) => result.notifications)
+    .filter(
+      (notification) =>
+        (!trackingReminderId ||
+          notification.reminderId === trackingReminderId) &&
+        (!status || notification.derivedStatus === status),
+    );
+  const result =
+    dateKeys.length === 1
+      ? { dateKey: dateKeys[0]!, notifications, timeZone }
+      : {
+          endDateKey: dateKeys[dateKeys.length - 1]!,
+          notifications,
+          startDateKey: dateKeys[0]!,
+          timeZone,
+        };
+  return input.compact === true
+    ? toCompactTrackingNotifications(result)
+    : result;
 }
 
 async function findOrCreateTrackingNotification(
@@ -5500,13 +5650,34 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listTrackingReminderNotifications",
     description:
-      "List due tracking reminder notifications. A reminder defines a schedule. A notification is one occurrence that you answer. Most pending notifications have no stored row. Use compact mode for voice or chat clients. Times come back in the user's time zone as notifyAtLocal (compact: due), with the UTC instant in notifyAt (compact: dueUtc).",
+      "List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or stored/derived status, including OVERDUE. Results expose scheduledAt, effective notifyAt, and snoozedUntil so clients can tell exactly how far a snooze moved an occurrence. Set includeCompleted to include recent TRACKED notifications. Times include the user's local zone and the UTC instant. Use compact mode for voice or chat clients.",
     inputSchema: {
       type: "object" as const,
       properties: {
         dateKey: {
           type: "string",
-          description: "Local date in YYYY-MM-DD. Defaults to today.",
+          description:
+            "One local date in YYYY-MM-DD. Defaults to today. Do not combine with startDateKey or endDateKey.",
+        },
+        startDateKey: {
+          type: "string",
+          description:
+            "First local date in an inclusive range. Defaults to endDateKey when omitted.",
+        },
+        endDateKey: {
+          type: "string",
+          description:
+            "Last local date in an inclusive range. Defaults to startDateKey when omitted. Ranges may include at most 31 days.",
+        },
+        trackingReminderId: {
+          type: "string",
+          description: "Return occurrences for only this reminder.",
+        },
+        status: {
+          type: "string",
+          enum: ["PENDING", "SENT", "TRACKED", "SKIPPED", "SNOOZED", "OVERDUE"],
+          description:
+            "Return only this stored or derived status. OVERDUE means effective notifyAt is in the past and the occurrence remains unanswered.",
         },
         compact: {
           type: "boolean",
@@ -5516,7 +5687,7 @@ const TRACKING_TOOL_DEFINITIONS = [
         includeCompleted: {
           type: "boolean",
           description:
-            "Include completed notifications and snoozes that have not elapsed.",
+            "Include answered TRACKED or legacy SKIPPED occurrences. SNOOZED occurrences are always returned with snoozedUntil.",
         },
       },
     },
@@ -9893,11 +10064,13 @@ export function createMcpServer(
                 "This tool lists your due personal tracking reminder notifications.",
               );
             const result =
-              a.compact === true
-                ? toCompactTrackingNotifications(
-                    await listDueTrackingRemindersForUser(a, userId),
-                  )
-                : await listDueTrackingRemindersForUser(a, userId);
+              name === "listTrackingReminderNotifications"
+                ? await listTrackingReminderNotificationsForUser(a, userId)
+                : a.compact === true
+                  ? toCompactTrackingNotifications(
+                      await listDueTrackingRemindersForUser(a, userId),
+                    )
+                  : await listDueTrackingRemindersForUser(a, userId);
             if (name === "listDueTrackingReminders") {
               const { notifications, ...rest } = result;
               return ok({ ...rest, reminders: notifications });

@@ -10264,6 +10264,79 @@ describe("MCP server tool dispatch", () => {
       }
     });
 
+    it("filters an inclusive notification range by reminder and overdue status", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-04T10:00:00.000Z").getTime());
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          EXISTING_TRACKING_REMINDER,
+          {
+            ...EXISTING_TRACKING_REMINDER,
+            globalVariable: {
+              ...TRACKING_VARIABLE,
+              id: "gv-mood",
+              name: "Mood",
+            },
+            globalVariableId: "gv-mood",
+            id: "reminder-2",
+          },
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "listTrackingReminderNotifications",
+          arguments: {
+            endDateKey: "2026-08-03",
+            startDateKey: "2026-08-02",
+            status: "OVERDUE",
+            trackingReminderId: "reminder-1",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          endDateKey: "2026-08-03",
+          notifications: [
+            {
+              dateKey: "2026-08-02",
+              derivedStatus: "OVERDUE",
+              reminderId: "reminder-1",
+            },
+            {
+              dateKey: "2026-08-03",
+              derivedStatus: "OVERDUE",
+              reminderId: "reminder-1",
+            },
+          ],
+          startDateKey: "2026-08-02",
+          timeZone: "UTC",
+        });
+        expect(mocks.userFindUnique).toHaveBeenCalledTimes(1);
+        expect(mocks.trackingReminderFindMany).toHaveBeenCalledTimes(2);
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("rejects a notification range longer than 31 days before querying reminders", async () => {
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listTrackingReminderNotifications",
+        arguments: {
+          endDateKey: "2026-08-01",
+          startDateKey: "2026-07-01",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain("at most 31 days");
+      expect(mocks.trackingReminderFindMany).not.toHaveBeenCalled();
+    });
+
     it("restores a snoozed notification after its deferred time", async () => {
       const now = vi
         .spyOn(Date, "now")
@@ -10290,7 +10363,21 @@ describe("MCP server tool dispatch", () => {
           name: "listTrackingReminderNotifications",
           arguments: { dateKey: "2026-08-03" },
         });
-        expect(parseToolBody(before)).toMatchObject({ notifications: [] });
+        expect(parseToolBody(before)).toMatchObject({
+          notifications: [
+            {
+              derivedStatus: NotificationStatus.SNOOZED,
+              isOverdue: false,
+              notificationId: "notification-1",
+              notifyAt: "2026-08-03T10:30:00.000Z",
+              reminderId: "reminder-1",
+              scheduledAt: "2026-08-03T08:00:00.000Z",
+              snoozeDelayMinutes: 150,
+              snoozedUntil: "2026-08-03T10:30:00.000Z",
+              status: NotificationStatus.SNOOZED,
+            },
+          ],
+        });
 
         now.mockReturnValue(new Date("2026-08-03T10:30:00.000Z").getTime());
         const atDeferredTime = await client.callTool({
