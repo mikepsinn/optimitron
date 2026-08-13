@@ -14,7 +14,7 @@
 ## Visible Page Copy
 
 - SEARCH
-## Search IC2EWD
+- Search IC2EWD
 - Vote now, read the treaty, fund outreach, or open the manual. Search for anything else.
 - [Vote VOTE Answer one question for humanity](/vote)
 - [Sign the Treaty TREATY Redirect 1% from weapons to medicine](/treaty)

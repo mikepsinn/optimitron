@@ -227,9 +227,12 @@ test.describe("route visual regression", () => {
         await openTaskImpactTrace(page);
       }
       if ("typeSearchQuery" in route && route.typeSearchQuery) {
-        await page
-          .getByRole("searchbox", { name: "Search the site" })
-          .fill(route.typeSearchQuery);
+        const searchbox = page.getByRole("searchbox", {
+          name: "Search the site",
+        });
+        await expect(searchbox).toHaveAttribute("data-search-ready", "true");
+        await searchbox.fill(route.typeSearchQuery);
+        await expect(searchbox).toHaveValue(route.typeSearchQuery);
       }
 
       if (route.requiredSelector) {

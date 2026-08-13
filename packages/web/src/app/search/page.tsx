@@ -344,7 +344,7 @@ export default async function SearchPage({
   const params = await searchParams;
   const hdrs = await headers();
   const site = getSiteFromHeaders(hdrs);
-  const query = typeof params.q === "string" ? params.q : "";
+  const query = typeof params.q === "string" ? params.q.trim() : "";
   const scope: SearchScope =
     params.scope === "content" ||
     params.scope === "pages" ||

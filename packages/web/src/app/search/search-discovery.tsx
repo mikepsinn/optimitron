@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Input } from "@/components/retroui/Input";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -65,6 +65,12 @@ export function SearchDiscovery({
   siteName,
 }: SearchDiscoveryProps) {
   const [inputValue, setInputValue] = useState(initialQuery);
+  const [isInteractive, setIsInteractive] = useState(false);
+
+  useEffect(() => {
+    setIsInteractive(true);
+  }, []);
+
   const trimmedInput = inputValue.trim();
   const isEditingSubmittedQuery = trimmedInput !== initialQuery.trim();
   const suggestions = useMemo(
@@ -96,6 +102,7 @@ export function SearchDiscovery({
               autoComplete="off"
               autoFocus
               className="h-14 rounded-none border-2 border-foreground bg-background pl-12 text-base font-bold md:max-w-3xl"
+              data-search-ready={isInteractive ? "true" : undefined}
               name="q"
               onChange={(event) => setInputValue(event.target.value)}
               placeholder="Search pages, tasks, treaty docs, policy analysis..."
@@ -136,22 +143,27 @@ export function SearchDiscovery({
         ) : null}
       </section>
 
+      <h1 className="sr-only">Search {siteName}</h1>
+
       {!trimmedInput ? (
         <section className="max-w-4xl space-y-5">
           <div className="space-y-2">
-            <h1 className="text-4xl font-black tracking-tight text-foreground md:text-5xl">
+            <p
+              aria-hidden="true"
+              className="text-4xl font-black tracking-tight text-foreground md:text-5xl"
+            >
               Search {siteName}
-            </h1>
+            </p>
             <p className="text-base font-bold leading-7 text-muted-foreground">
               Vote now, read the treaty, fund outreach, or open the manual.
               Search for anything else.
             </p>
           </div>
-          <div aria-label="Featured destinations">
+          <nav aria-label="Featured destinations">
             {featuredDocuments.map((document) => (
               <SearchDestination document={document} key={document.href} />
             ))}
-          </div>
+          </nav>
         </section>
       ) : null}
 
