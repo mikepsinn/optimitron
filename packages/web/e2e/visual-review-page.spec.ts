@@ -246,6 +246,9 @@ test("mobile review chrome stays compact and exposes controls on demand", async 
 
   await page.locator(".verdict-more > summary").click();
   await expect(page.locator("#note-input")).toBeVisible();
+  await page.locator("#note-input").focus();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#note-input")).toBeHidden();
 });
 
 test("collapsed variant routes remain available while filtering", async ({

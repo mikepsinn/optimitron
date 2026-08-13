@@ -712,6 +712,11 @@ const CLIENT_JS = `
     return base ? base + "/" + clean : clean;
   }
   function isMobile() { return window.matchMedia(MOBILE_MQ).matches; }
+  function closeMobileMenus() {
+    document.querySelectorAll(".header-tools[open], .route-tools[open], .verdict-more[open]").forEach(function (details) {
+      details.removeAttribute("open");
+    });
+  }
   function fmtPx(n) { return Math.round(n).toLocaleString("en-US"); }
   function fmtPct(n) {
     if (!isFinite(n)) return "0";
@@ -2275,6 +2280,10 @@ const CLIENT_JS = `
   function onKey(e) {
     if (lightbox && lightbox.open) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "Escape") {
+      closeMobileMenus();
+      return;
+    }
     var tag = (e.target && e.target.tagName) || "";
     if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT" || (e.target && e.target.isContentEditable)) return;
     var names, idx;
@@ -2295,11 +2304,6 @@ const CLIENT_JS = `
       case "s": e.preventDefault(); setVerdict("skipped"); break;
       case "n": e.preventDefault(); stepHunk(1); break;
       case "p": e.preventDefault(); stepHunk(-1); break;
-      case "Escape":
-        document.querySelectorAll(".header-tools[open], .route-tools[open], .verdict-more[open]").forEach(function (details) {
-          details.removeAttribute("open");
-        });
-        break;
     }
   }
 
