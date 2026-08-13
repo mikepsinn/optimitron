@@ -10,8 +10,12 @@ import { VoteOrShareButton } from "../shared/VoteOrShareButton"
 import { ROUTES } from '../../lib/routes'
 import { isFeatureEnabled, SITE_FEATURES } from "../../lib/site-config"
 
-export default function FinalCTA() {
-  const donateEnabled = isFeatureEnabled(SITE_FEATURES.DONATE)
+interface FinalCTAProps {
+  showDonateButton?: boolean
+}
+
+export default function FinalCTA({ showDonateButton = true }: FinalCTAProps) {
+  const donateEnabled = showDonateButton && isFeatureEnabled(SITE_FEATURES.DONATE)
 
   const statements = [
     { text: "SUFFERING: OPTIONAL", color: "" },
@@ -24,17 +28,6 @@ export default function FinalCTA() {
   return (
     <SectionContainer bgColor="yellow" borderPosition="none" padding="lg" className="overflow-hidden">
       <Container size="md" className="text-center overflow-hidden">
-        <motion.h2
-          initial={{ y: -100, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase mb-8"
-        >
-          BOTTOM
-          <br />
-          <span className="text-brutal-pink">LINE</span>
-        </motion.h2>
         <div className="space-y-4 mb-12">
           {statements.map((statement, index) => (
             <motion.div

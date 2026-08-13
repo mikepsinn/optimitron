@@ -27,12 +27,6 @@ jobs:
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
       - name: Treat manual runs as web-impacting
         id: manual
         if: ${{ github.event_name == 'workflow_dispatch' }}

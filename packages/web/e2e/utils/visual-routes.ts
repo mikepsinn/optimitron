@@ -131,6 +131,7 @@ const TASK_TREE_VIEW_FILE =
   "packages/web/src/components/tasks/TaskTreeView.tsx";
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
+const OBG_CATEGORY_PAGE_FILE = "packages/web/src/app/obg/[slug]/page.tsx";
 const HEALTH_ECONOMICS_DISPLAY_FILE =
   "packages/web/src/components/treatment/HealthEconomicsDisplay.tsx";
 const PERSONAL_QUEUE_SECTION_FILE =
@@ -418,6 +419,14 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     name: "task-optimize-earth",
     path: "/tasks/optimize-earth",
     required: false,
+  },
+  {
+    covers: [OBG_CATEGORY_PAGE_FILE],
+    name: "obg-category-detail",
+    path: "/obg/epa-environment",
+    required: true,
+    requiredSelector: "h1",
+    requiredText: /^EPA \/ Environment$/,
   },
   {
     covers: [HEALTH_ECONOMICS_DISPLAY_FILE],
