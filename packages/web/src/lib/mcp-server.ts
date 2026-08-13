@@ -5650,7 +5650,7 @@ const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listTrackingReminderNotifications",
     description:
-      "List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or stored/derived status, including OVERDUE. Results expose scheduledAt, effective notifyAt, and snoozedUntil so clients can tell exactly how far a snooze moved an occurrence. Set includeCompleted to include recent TRACKED notifications. Times include the user's local zone and the UTC instant. Use compact mode for voice or chat clients.",
+      "List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or effective status, including OVERDUE. Results expose scheduledAt, effective notifyAt, and snoozedUntil so clients can tell exactly how far a snooze moved an occurrence. Set includeCompleted to include recent TRACKED notifications. Times include the user's local zone and the UTC instant. Use compact mode for voice or chat clients.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -5677,7 +5677,7 @@ const TRACKING_TOOL_DEFINITIONS = [
           type: "string",
           enum: ["PENDING", "SENT", "TRACKED", "SKIPPED", "SNOOZED", "OVERDUE"],
           description:
-            "Return only this stored or derived status. OVERDUE means effective notifyAt is in the past and the occurrence remains unanswered.",
+            "Return only this effective status. An elapsed snooze becomes PENDING or OVERDUE. OVERDUE means effective notifyAt is in the past and the occurrence remains unanswered.",
         },
         compact: {
           type: "boolean",
