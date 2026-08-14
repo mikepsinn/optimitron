@@ -2373,6 +2373,10 @@ function renderHeaderHtml(meta, summary, coverage) {
     chips.push(
       `<span class="chip">${escapeHtml(summary.copyOnlyRoutes)} copy-only</span>`,
     );
+  if (summary.missingBaselineRoutes)
+    chips.push(
+      `<span class="chip">${escapeHtml(summary.missingBaselineRoutes)} baseline missing</span>`,
+    );
   chips.push(
     `<span class="chip">${escapeHtml(summary.unchangedRoutes)} unchanged</span>`,
   );
@@ -2404,7 +2408,9 @@ function renderHeaderHtml(meta, summary, coverage) {
       `<span class="chip coverage-failed">capture contract failed</span>`,
     );
   }
-  chips.push(`<span class="chip" id="chip-reviewed" data-reviewed-chip>0 reviewed</span>`);
+  chips.push(
+    `<span class="chip" id="chip-reviewed" data-reviewed-chip>0 reviewed</span>`,
+  );
 
   const noteBits = [
     `PR #${escapeHtml(meta.prNumber)}`,

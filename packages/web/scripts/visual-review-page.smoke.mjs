@@ -36,8 +36,9 @@ const input = {
       "screenshots vs main @ 871661d, copy vs pre-merge snapshots",
   },
   summary: {
-    changedRoutes: 2,
+    changedRoutes: 1,
     copyOnlyRoutes: 1,
+    missingBaselineRoutes: 1,
     unchangedRoutes: 0,
     variantRoutes: 1,
     erroredRoutes: 0,
@@ -156,16 +157,18 @@ const input = {
       routeUrl:
         "https://optimitron-git-feature-preview.vercel.app/calendar?login=demo&site=reset",
       authState: "demo-logged-in",
-      changed: true,
+      changed: false,
+      baselineMissingPairs: 1,
       copyChanged: false,
       errored: false,
-      statusLabel: "1 changed / 1 missing",
+      missingPairs: 1,
+      statusLabel: "1 baseline missing",
       markdownDiff: null,
       pairs: [
         {
           projectName: "default",
           projectLabel: "Desktop",
-          changed: true,
+          changed: false,
           missing: true,
           errored: false,
           diffLabel: "missing before",
@@ -326,7 +329,10 @@ assert(html.includes('id="noise"'), "noise select present");
 assert(html.includes('id="export-btn"'), "export button present");
 assert(html.includes('id="copy-review-btn"'), "copy PR comment button present");
 assert(html.includes('class="header-tools"'), "mobile header menu present");
-assert(html.includes('class: "route-tools"'), "mobile route controls menu present");
+assert(
+  html.includes('class: "route-tools"'),
+  "mobile route controls menu present",
+);
 assert(html.includes('class: "verdict-more"'), "mobile note menu present");
 assert(html.includes('id="shot-lightbox"'), "screenshot lightbox present");
 assert(html.includes("Zoom after"), "screenshot zoom action present");
@@ -350,9 +356,10 @@ assert(
 );
 assert(html.includes("\\u003c"), "JSON island escapes < sequences");
 assert(
-  html.includes("2 screenshot differences"),
+  html.includes("1 screenshot difference"),
   "summary chip: screenshot differences",
 );
+assert(html.includes("1 baseline missing"), "summary chip: baseline missing");
 assert(html.includes("1 copy-only"), "summary chip: copy-only");
 assert(html.includes("4 routes"), "summary chip: total");
 assert(siteAppsHtml.includes("3 site-app pages"), "site-app summary chip");

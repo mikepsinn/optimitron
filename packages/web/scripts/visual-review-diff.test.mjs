@@ -5,10 +5,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  isComparableScreenshotChange,
   isNewCopySnapshot,
   isSignificantDimensionChange,
   normalizeVisualReviewMarkdown,
 } from "./visual-review-diff.mjs";
+
+test("missing baselines stay visible without counting as screenshot differences", () => {
+  assert.equal(
+    isComparableScreenshotChange({ changed: true, missing: true }),
+    false,
+  );
+  assert.equal(
+    isComparableScreenshotChange({ changed: true, missing: false }),
+    true,
+  );
+});
 
 test("a newly enrolled existing route has a new copy snapshot", () => {
   assert.equal(

@@ -131,6 +131,12 @@ test("new routes show their after-only screenshot", async ({
   await expect(
     page.locator('img[src$="assets/after/default/calendar.png"]'),
   ).toBeVisible();
+  await expect(
+    page.locator("#hdr").getByText("1 baseline missing", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('[data-route="calendar"] .dot.changed'),
+  ).toHaveCount(0);
   await expect(page.getByText("No screenshots for this viewport.")).toHaveCount(
     0,
   );
@@ -372,9 +378,6 @@ test("route verdicts persist and advance through every unreviewed route", async 
   await expect(page.getByRole("status")).toContainText("Next unreviewed: Home");
 
   await approve();
-  await expect(page).toHaveURL(/#route=calendar$/);
-
-  await approve();
   await expect(page).toHaveURL(/#route=prize$/);
 
   await page
@@ -385,7 +388,7 @@ test("route verdicts persist and advance through every unreviewed route", async 
     "Review pass complete. Copy the PR comment or export the notes.",
   );
   await expect(page.locator("#chip-reviewed")).toHaveText(
-    "4/4 reviewed · 1 flagged",
+    "3/3 reviewed · 1 flagged",
   );
 
   const savedVerdicts = await page.evaluate(() => {
@@ -395,7 +398,6 @@ test("route verdicts persist and advance through every unreviewed route", async 
     return saved ? JSON.parse(saved).verdicts : null;
   });
   expect(savedVerdicts).toMatchObject({
-    calendar: { v: "looks-right" },
     home: { v: "looks-right" },
     prize: { v: "needs-work" },
     "variant-dfda-home": { v: "looks-right" },
@@ -403,7 +405,7 @@ test("route verdicts persist and advance through every unreviewed route", async 
 
   await page.reload();
   await expect(page.locator("#chip-reviewed")).toHaveText(
-    "4/4 reviewed · 1 flagged",
+    "3/3 reviewed · 1 flagged",
   );
   await expect(
     page.getByRole("button", { name: "Needs work 👎", exact: true }),
