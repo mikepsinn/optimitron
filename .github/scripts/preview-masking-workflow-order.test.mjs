@@ -36,6 +36,16 @@ test("creates complete visual baselines for every main push", () => {
   assert.match(mainBaselineJob, /pattern: site-app-visual-\*/u);
   assert.match(mainBaselineJob, /name: main-visual-baseline/u);
 
+  const nonPrReviewStep = workflow.slice(
+    workflow.indexOf("- name: Build visual review index"),
+    workflow.indexOf("- name: Summarize visual review"),
+  );
+  assert.match(
+    nonPrReviewStep,
+    /VISUAL_REVIEW_ALLOW_INCOMPLETE: "1"/u,
+    "full non-PR captures must not require PR changed-file analysis",
+  );
+
   const siteAppBuildStart = workflow.indexOf("  site-apps-build:");
   const siteAppBuildEnd = workflow.indexOf("  site-apps-validate:");
   const siteAppBuild = workflow.slice(siteAppBuildStart, siteAppBuildEnd);

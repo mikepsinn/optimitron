@@ -644,6 +644,7 @@ jobs:
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.ref_name }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
           VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/packages/web/output/playwright/copy-snapshots
+          VISUAL_REVIEW_ALLOW_INCOMPLETE: "1"
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
