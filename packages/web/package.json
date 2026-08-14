@@ -80,6 +80,7 @@
     "@optimitron/opg": "workspace:^",
     "@optimitron/optimizer": "workspace:^",
     "@optimitron/storage": "workspace:^",
+    "@optimitron/tracking": "workspace:^",
     "@optimitron/treasury-iab": "workspace:*",
     "@optimitron/treasury-prize": "workspace:*",
     "@optimitron/treasury-shared": "workspace:*",

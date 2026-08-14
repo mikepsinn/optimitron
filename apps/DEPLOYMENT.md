@@ -32,13 +32,19 @@ are truly shared. Link each shared variable to the projects that need it.
 Good shared candidates:
 
 - `DATABASE_URL` for War on Disease, dFDA, Wishocracy, and Trial Abundance Survey.
+- `NEXTAUTH_SECRET` for the optimitron web project and dFDA only. optimitron.com
+  signs MCP Bearer tokens with it and dfda.earth/api/mcp verifies them, so those
+  two projects must share one value (decided 2026-08-14: one secret, no separate
+  MCP signing variable; if it ever leaks, rotate it and every connector re-runs
+  OAuth once). The other satellites keep their own per-project values.
 - A Resend API key when the same account and sending policy serve several apps.
 - A Sentry DSN when several apps intentionally report to the same Sentry project.
 
 Keep these project-specific:
 
 - `NEXTAUTH_URL` because every app has a different canonical host.
-- `NEXTAUTH_SECRET` to avoid one satellite exposing every app's sessions.
+- `NEXTAUTH_SECRET` for every satellite except dFDA (see the shared list above),
+  so one satellite cannot expose every app's sessions.
 - `CRON_SECRET` because only War on Disease exposes cron routes.
 - `NEXT_PUBLIC_SURVEY_ORIGIN` because only Accelerated Medicine embeds the survey.
 - Analytics IDs when reports must remain separated by brand.

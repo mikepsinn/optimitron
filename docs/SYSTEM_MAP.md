@@ -83,6 +83,7 @@ queue.
 | Optimitron Web/API/MCP | `packages/web` | `optimitron.com` UI, REST, OAuth, MCP, authorization, server workflows, and temporary legacy host variants during cutover. |
 | War on Disease campaign | `apps/warondisease` | Canonical rich campaign home and neobrutalist authenticated dashboard. |
 | Satellite sites | `apps/dfda`, `apps/wishocracy`, `apps/trialabundancesurvey`, `apps/curedao`, `apps/acceleratedmedicine` | Brand-specific deployable entrypoints over shared packages. |
+| Tracking engine | `packages/tracking` | Personal measurements, reminders, and notification tools. One implementation served by `optimitron.com/api/mcp` and `dfda.earth/api/mcp` (resource server; optimitron.com stays the OAuth issuer). Hosts inject the Prisma client. |
 | Optimizer | `packages/optimizer` | Domain-agnostic causal and expected-value algorithms. No database runtime. |
 | Data | `packages/data` | Parameters, datasets, and importers. No database runtime. |
 | OPG/OBG/Wishocracy | `packages/opg`, `packages/obg`, `packages/wishocracy` | Domain engines above optimizer. |

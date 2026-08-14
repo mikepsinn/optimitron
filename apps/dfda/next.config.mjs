@@ -15,6 +15,7 @@ const nextConfig = {
     "@optimitron/neobrutalist-ui",
     "@optimitron/impact-params",
     "@optimitron/site-kit",
+    "@optimitron/tracking",
   ],
   outputFileTracingRoot: monorepoRoot,
   webpack(config) {

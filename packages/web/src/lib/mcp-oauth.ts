@@ -26,6 +26,10 @@ const REFRESH_TOKEN_TTL = 180 * 24 * 60 * 60; // 180 days
 const AUTH_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 function getSecret() {
+  // Satellite MCP resource servers (apps/dfda) verify these tokens with the
+  // same key, so their deployments must carry this project's NEXTAUTH_SECRET
+  // value (apps/DEPLOYMENT.md). Decided 2026-08-14: one shared secret, no
+  // separate MCP signing variable.
   const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) throw new Error("NEXTAUTH_SECRET is not set");
   return new TextEncoder().encode(secret);
