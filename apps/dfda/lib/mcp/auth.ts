@@ -14,9 +14,10 @@ export const CANONICAL_ISSUER = "https://optimitron.com";
 /**
  * Tokens are HS256 JWTs signed by the authorization server with its
  * NEXTAUTH_SECRET. This app's NEXTAUTH_SECRET must therefore hold the same
- * value as the optimitron web project's (apps/DEPLOYMENT.md; locally both
- * apps read one root .env). Decided 2026-08-14: one shared secret, no
- * separate MCP signing variable.
+ * value as the optimitron web project's (apps/DEPLOYMENT.md). That applies
+ * locally too: next dev loads apps/dfda/.env, not the repo root .env, so
+ * copy the value there for local MCP testing. Decided 2026-08-14: one
+ * shared secret, no separate MCP signing variable.
  */
 function getMcpTokenSecret() {
   const secret = process.env.NEXTAUTH_SECRET;
