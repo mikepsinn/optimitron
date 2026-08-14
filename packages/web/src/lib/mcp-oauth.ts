@@ -26,8 +26,11 @@ const REFRESH_TOKEN_TTL = 180 * 24 * 60 * 60; // 180 days
 const AUTH_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 function getSecret() {
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error("NEXTAUTH_SECRET is not set");
+  // MCP_TOKEN_SECRET lets satellite resource servers (apps/dfda) verify the
+  // same tokens across Vercel projects, where NEXTAUTH_SECRET stays
+  // per-project. Fallback keeps existing deployments and old tokens valid.
+  const secret = process.env.MCP_TOKEN_SECRET ?? process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error("MCP_TOKEN_SECRET or NEXTAUTH_SECRET must be set");
   return new TextEncoder().encode(secret);
 }
 

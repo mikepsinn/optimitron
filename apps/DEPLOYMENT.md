@@ -32,6 +32,9 @@ are truly shared. Link each shared variable to the projects that need it.
 Good shared candidates:
 
 - `DATABASE_URL` for War on Disease, dFDA, Wishocracy, and Trial Abundance Survey.
+- `MCP_TOKEN_SECRET` for the optimitron web project and dFDA. optimitron.com signs
+  MCP Bearer tokens with it; dfda.earth/api/mcp verifies them. Without it the web
+  project falls back to its `NEXTAUTH_SECRET` and dfda cannot verify tokens.
 - A Resend API key when the same account and sending policy serve several apps.
 - A Sentry DSN when several apps intentionally report to the same Sentry project.
 

@@ -204,6 +204,7 @@ wishocracy ← (nothing, standalone pure math)
 opg ← optimizer, data
 obg ← optimizer, opg
 data ← optimizer
+tracking ← db (type-only; hosts inject the runtime Prisma client)
 agent ← data, obg, opg, optimizer, storage, hypercerts, wishocracy
 web ← everything
 ```

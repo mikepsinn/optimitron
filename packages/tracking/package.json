@@ -1,0 +1,36 @@
+{
+  "name": "@optimitron/tracking",
+  "version": "0.1.0",
+  "description": "dFDA personal health-tracking engine: measurements, tracking reminders, notifications, and their MCP tool surface. Shared by optimitron.com and dfda.earth.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./core": "./src/core.ts",
+    "./handlers": "./src/handlers.ts",
+    "./tool-definitions": "./src/tool-definitions.ts",
+    "./parse": "./src/parse.ts",
+    "./types": "./src/types.ts",
+    "./time-zone": "./src/time-zone.ts",
+    "./subject": "./src/subject.ts",
+    "./measurement-summaries": "./src/measurement-summaries.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@optimitron/db": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.32",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}

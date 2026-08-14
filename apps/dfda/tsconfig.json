@@ -81,6 +81,7 @@
     "../next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "app/.well-known/**/*.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
