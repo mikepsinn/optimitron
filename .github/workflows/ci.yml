@@ -23,9 +23,9 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      web: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
-      web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
-      site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
+      web: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+      web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
+      site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.main.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
     steps:
       - name: Treat manual runs as web-impacting
         id: manual
@@ -35,9 +35,17 @@ jobs:
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
 
+      - name: Treat main pushes as full visual baselines
+        id: main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        shell: bash
+        run: |
+          echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
+          echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
+
       - name: Detect web-impacting changes
         id: filter
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: dorny/paths-filter@v3
         with:
           filters: |
@@ -368,13 +376,13 @@ jobs:
         run: pnpm build:app-dependencies
 
       - name: Sync managed data for authenticated screenshots
-        if: ${{ matrix.requires_database && github.event_name == 'pull_request' }}
+        if: ${{ matrix.requires_database }}
         env:
           MANAGED_DATA_SKIP_MEDICAL_REFERENCE: "1"
         run: pnpm db:sync:managed-data -- --apply
 
       - name: Prepare local authenticated visual fixtures
-        if: ${{ matrix.requires_database && github.event_name == 'pull_request' }}
+        if: ${{ matrix.requires_database }}
         env:
           SITE_APP_VISUAL_FIXTURES: "1"
         run: pnpm db:seed:site-app-visual
@@ -389,10 +397,9 @@ jobs:
         env:
           NODE_ENV: production
           PLAYWRIGHT_BROWSER_CHANNEL: chrome
-          SITE_APP_SCREENSHOT_ROOT: ${{ github.event_name == 'pull_request' && 'packages/web/output/playwright/site-app-screenshots' || '' }}
+          SITE_APP_SCREENSHOT_ROOT: packages/web/output/playwright/site-app-screenshots
 
       - name: Upload @apps/${{ matrix.app }} visual screenshots
-        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v6
         with:
           name: site-app-visual-${{ matrix.app }}
@@ -677,6 +684,38 @@ jobs:
             packages/web/test-results
           if-no-files-found: ignore
 
+  main-visual-baseline:
+    name: main-visual-baseline
+    if: ${{ always() && github.event_name != 'pull_request' && needs.web-e2e-validate.result == 'success' && needs.site-apps-build.result == 'success' }}
+    needs:
+      - site-apps-build
+      - web-e2e-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Download web visual baseline
+        uses: actions/download-artifact@v6
+        with:
+          name: web-visual-review
+          path: packages/web/output/playwright/main-visual-baseline
+
+      - name: Add site-app screenshots to main baseline
+        uses: actions/download-artifact@v6
+        with:
+          pattern: site-app-visual-*
+          path: packages/web/output/playwright/main-visual-baseline/screenshots
+          merge-multiple: true
+
+      - name: Upload complete main visual baseline
+        uses: actions/upload-artifact@v6
+        with:
+          name: main-visual-baseline
+          path: packages/web/output/playwright/main-visual-baseline
+          if-no-files-found: error
+
   web-visual-review:
     name: web-visual-review
     if: ${{ always() && github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) && needs.web-e2e-validate.result == 'success' && (fromJSON(needs.changes.outputs.site_apps || 'false') != true || needs.site-apps-build.result == 'success') }}
@@ -806,12 +845,16 @@ jobs:
           for candidate in "${run_candidates[@]}"; do
             IFS=$'\t' read -r run_id baseline_sha <<< "$candidate"
             run_root="$baseline_root/run-$run_id"
-            rm -rf "$run_root"
-            mkdir -p "$run_root"
+            for artifact_name in main-visual-baseline web-visual-review; do
+              rm -rf "$run_root"
+              mkdir -p "$run_root"
 
-            if gh run download "$run_id" \
-              --name web-visual-review \
-              --dir "$run_root" >/dev/null 2>&1; then
+              if ! gh run download "$run_id" \
+                --name "$artifact_name" \
+                --dir "$run_root" >/dev/null 2>&1; then
+                continue
+              fi
+
               for screenshots_dir in "$run_root/screenshots" "$run_root/packages/web/screenshots"; do
                 if [ -d "$screenshots_dir" ]; then
                   echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
@@ -828,13 +871,13 @@ jobs:
                       break
                     fi
                   done
-                  echo "Downloaded visual baseline main@$baseline_sha from run $run_id (requested main@$base_sha)."
+                  echo "Downloaded $artifact_name main@$baseline_sha from run $run_id (requested main@$base_sha)."
                   rm -rf packages/web/screenshots
                   cp -R "$pr_screenshots" packages/web/screenshots
                   exit 0
                 fi
               done
-            fi
+            done
 
             rm -rf "$run_root"
           done
