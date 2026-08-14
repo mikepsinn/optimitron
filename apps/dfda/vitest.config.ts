@@ -31,6 +31,13 @@ export default defineConfig({
       // tests/ (like db-test-utils.ts) fall outside what tsconfigPaths()
       // resolves — alias their one shared-package import by hand.
       "@/lib/db-safety": path.resolve(__dirname, "../../packages/site-kit/src/lib/db-safety.ts"),
+      // tsconfig.json also excludes "**/*.test.ts", so vi.mock("@/lib/...")
+      // specifiers inside colocated route tests would not resolve to the
+      // same module id the route under test imports. Alias the two modules
+      // the REST v1 tests mock; both resolve to site-kit (no local file
+      // shadows them), matching production resolution.
+      "@/lib/auth-utils": path.resolve(__dirname, "../../packages/site-kit/src/lib/auth-utils.ts"),
+      "@/lib/prisma": path.resolve(__dirname, "../../packages/site-kit/src/lib/prisma.ts"),
       // `server-only` is a Next.js marker module that throws when imported
       // from a client bundle. In Node-based tests we don't care — shim to
       // empty.

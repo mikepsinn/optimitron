@@ -4,6 +4,7 @@ export {
   listMeasurementsForUser,
   listTrackingReminderNotificationsForUser,
   listTrackingRemindersForUser,
+  listTrackingVariablesForUser,
   recordTrackingMeasurement,
   recordTrackingMeasurementWithTx,
   respondToTrackingReminderForUser,
@@ -11,6 +12,7 @@ export {
   setTrackingPrismaProvider,
   toCompactTrackingNotifications,
   updateMeasurementForUser,
+  updateTrackingVariableSettingsForUser,
   upsertTrackingReminderForUser,
   type TrackingDbClient,
 } from "./core";

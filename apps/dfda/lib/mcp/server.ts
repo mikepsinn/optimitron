@@ -13,18 +13,16 @@ import type { McpScope } from "@optimitron/db/enums";
 import {
   handleTrackingToolCall,
   isTrackingToolName,
-  setTrackingPrismaProvider,
   TRACKING_TOOL_DEFINITIONS,
   TRACKING_TOOL_SCOPES,
   type TrackingToolResponse,
 } from "@optimitron/tracking";
 import { randomUUID } from "crypto";
 
-import { prisma } from "@/lib/prisma";
+// Side effect: points the tracking engine at this app's Prisma singleton.
+import "@/lib/tracking-provider";
 
 import { CANONICAL_ISSUER, getIssuerUrl } from "./auth";
-
-setTrackingPrismaProvider(async () => prisma);
 
 const SERVER_INSTRUCTIONS = [
   "dFDA personal tracking server. Record measurements (doses, foods, symptoms, moods, sleep, labs, vitals), manage tracking reminders, and answer reminder notifications.",
