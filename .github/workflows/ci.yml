@@ -78,6 +78,7 @@ jobs:
               - 'packages/db/**'
               - 'packages/site-kit/**'
               - 'scripts/site-app-navigation.test.ts'
+              - 'scripts/site-app-visual-routes.mjs'
               - 'scripts/smoke-site-apps.mjs'
               - 'package.json'
               - 'pnpm-workspace.yaml'
@@ -291,13 +292,13 @@ jobs:
           - app: wishocracy
             variant: wishocracy.org
             port: 4013
-            postgres_image: ""
-            requires_database: false
+            postgres_image: postgres:16
+            requires_database: true
           - app: trialabundancesurvey
             variant: trialabundancesurvey.org
             port: 4014
-            postgres_image: ""
-            requires_database: false
+            postgres_image: postgres:16
+            requires_database: true
           - app: curedao
             variant: curedao.org
             port: 4015
@@ -365,6 +366,18 @@ jobs:
 
       - name: Build app dependencies
         run: pnpm build:app-dependencies
+
+      - name: Sync managed data for authenticated screenshots
+        if: ${{ matrix.requires_database && github.event_name == 'pull_request' }}
+        env:
+          MANAGED_DATA_SKIP_MEDICAL_REFERENCE: "1"
+        run: pnpm db:sync:managed-data -- --apply
+
+      - name: Prepare local authenticated visual fixtures
+        if: ${{ matrix.requires_database && github.event_name == 'pull_request' }}
+        env:
+          SITE_APP_VISUAL_FIXTURES: "1"
+        run: pnpm db:seed:site-app-visual
 
       - name: Build @apps/${{ matrix.app }}
         run: pnpm --filter "@apps/${{ matrix.app }}" run build

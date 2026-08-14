@@ -1705,6 +1705,9 @@ function loadSiteAppRouteManifests() {
             typeof route.routePath === "string",
         )
         .map((route) => ({
+          authenticated: route.authenticated === true,
+          authRole:
+            typeof route.authRole === "string" ? route.authRole : null,
           covers: Array.isArray(route.covers)
             ? route.covers.filter((filePath) => typeof filePath === "string")
             : [],
@@ -1732,7 +1735,8 @@ function registerSiteAppRouteSpecs(specs, paths, manifests) {
       const name = `site-app-${siteVariant}-${route.routeName}`;
       specs.set(name, {
         activationSelector: "body",
-        authenticated: false,
+        authenticated: route.authenticated,
+        authRole: route.authRole,
         covers: route.covers,
         path: route.routePath,
         required: true,

@@ -174,6 +174,53 @@ export function AdminUsersClient({
     )
   }
 
+  const renderActions = (user: AdminUser, isCurrentAdmin: boolean) => (
+    <div className="flex flex-wrap gap-2">
+      {user.username && user.isPublic && (
+        <Link
+          href={buildRoute.userProfile(user.username)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 border-2 border-primary font-bold"
+            title="View public profile"
+          >
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </Link>
+      )}
+      <Button
+        onClick={() => handleAdminChange(user.id, !user.isAdmin)}
+        disabled={isUpdating === user.id || isCurrentAdmin}
+        size="sm"
+        className={cn(
+          "h-8 border-2 border-primary text-xs font-bold",
+          user.isAdmin
+            ? "bg-brutal-pink text-foreground hover:bg-brutal-pink/80"
+            : "bg-brutal-cyan text-foreground hover:bg-brutal-cyan/80"
+        )}
+        title={
+          isCurrentAdmin
+            ? "You can't change your own admin status"
+            : user.isAdmin
+            ? "Remove admin"
+            : "Make admin"
+        }
+      >
+        {isCurrentAdmin
+          ? "You"
+          : isUpdating === user.id
+          ? "…"
+          : user.isAdmin
+          ? "Demote"
+          : "Promote"}
+      </Button>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-7xl mx-auto py-8 px-4">
@@ -241,9 +288,100 @@ export function AdminUsersClient({
           </div>
         </div>
 
-        {/* Table */}
-        <Card className="border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
-          <table className="w-full text-sm">
+        {/* Mobile cards + desktop table */}
+        <Card className="overflow-hidden border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="flex items-end gap-2 border-b-2 border-primary bg-brutal-yellow p-3 lg:hidden">
+            <label className="flex min-w-0 flex-1 flex-col gap-1 text-[10px] font-black uppercase">
+              Sort users
+              <select
+                value={sortKey}
+                onChange={(event) => {
+                  setSortKey(event.target.value as SortKey)
+                  setSortDir("asc")
+                }}
+                className="h-9 w-full border-2 border-primary bg-background px-2 text-sm font-bold normal-case"
+              >
+                <option value="name">Name</option>
+                <option value="email">Email</option>
+                <option value="organization">Organization</option>
+                <option value="verified">Verified</option>
+                <option value="orgsCreated">Organizations created</option>
+                <option value="createdAt">Joined</option>
+              </select>
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={`Sort ${sortDir === "asc" ? "descending" : "ascending"}`}
+              title={`Sort ${sortDir === "asc" ? "descending" : "ascending"}`}
+              onClick={() =>
+                setSortDir((direction) =>
+                  direction === "asc" ? "desc" : "asc"
+                )
+              }
+              className="h-9 border-2 border-primary bg-background"
+            >
+              {sortDir === "asc" ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="divide-y-2 divide-primary lg:hidden">
+            {sortedAndFiltered.length === 0 ? (
+              <div className="px-4 py-12 text-center font-bold text-muted-foreground">
+                No users found
+              </div>
+            ) : (
+              sortedAndFiltered.map((user) => {
+                const displayName = user.name || user.username || user.email.split("@")[0]
+                const isCurrentAdmin = user.id === currentAdminId
+                return (
+                  <article key={user.id} className="space-y-4 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h2 className="font-black">{displayName}</h2>
+                        {user.username && (
+                          <div className="font-mono text-[11px] text-muted-foreground">
+                            @{user.username}
+                          </div>
+                        )}
+                      </div>
+                      {user.isAdmin && (
+                        <Badge className="border-2 border-primary bg-brutal-cyan text-[10px] font-black">
+                          <ShieldCheck className="mr-0.5 h-2.5 w-2.5" /> ADMIN
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="break-all text-sm font-bold">{user.email}</div>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                      <div>
+                        <dt className="text-[10px] font-black uppercase text-muted-foreground">Verified</dt>
+                        <dd className="font-bold">{user.emailVerified ? "Yes" : "No"}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-black uppercase text-muted-foreground">Joined</dt>
+                        <dd className="font-bold">{formatDate(user.createdAt)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-black uppercase text-muted-foreground">Organization</dt>
+                        <dd className="font-bold">{user.organization?.name || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-black uppercase text-muted-foreground">Organizations created</dt>
+                        <dd className="font-bold">{user._count.createdOrganizations}</dd>
+                      </div>
+                    </dl>
+                    {renderActions(user, isCurrentAdmin)}
+                  </article>
+                )
+              })
+            )}
+          </div>
+
+          <table className="hidden w-full text-sm lg:table">
             <thead className="bg-foreground text-background">
               <tr>
                 <th className="text-left px-3 py-3"><SortHeader label="Name" k="name" /></th>
@@ -316,50 +454,7 @@ export function AdminUsersClient({
                         {formatDate(user.createdAt)}
                       </td>
                       <td className="px-3 py-3 align-top">
-                        <div className="flex flex-wrap gap-1">
-                          {user.username && user.isPublic && (
-                            <Link
-                              href={buildRoute.userProfile(user.username)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-2 border-primary font-bold h-8"
-                                title="View public profile"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                              </Button>
-                            </Link>
-                          )}
-                          <Button
-                            onClick={() => handleAdminChange(user.id, !user.isAdmin)}
-                            disabled={isUpdating === user.id || isCurrentAdmin}
-                            size="sm"
-                            className={cn(
-                              "border-2 border-primary font-bold h-8 text-xs",
-                              user.isAdmin
-                                ? "bg-brutal-pink text-foreground hover:bg-brutal-pink/80"
-                                : "bg-brutal-cyan text-foreground hover:bg-brutal-cyan/80"
-                            )}
-                            title={
-                              isCurrentAdmin
-                                ? "You can't change your own admin status"
-                                : user.isAdmin
-                                ? "Remove admin"
-                                : "Make admin"
-                            }
-                          >
-                            {isCurrentAdmin
-                              ? "You"
-                              : isUpdating === user.id
-                              ? "…"
-                              : user.isAdmin
-                              ? "Demote"
-                              : "Promote"}
-                          </Button>
-                        </div>
+                        {renderActions(user, isCurrentAdmin)}
                       </td>
                     </tr>
                   )

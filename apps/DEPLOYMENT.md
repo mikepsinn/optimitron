@@ -5,6 +5,10 @@
 Keep `packages/web` on its existing Vercel project. Create one additional
 Vercel project for each app under `apps/*`.
 
+`apps/warondisease` is the source of truth for the campaign site. Its rich
+neobrutalist home and dashboard must pass public and authenticated visual review
+before `warondisease.org` moves off the temporary `packages/web` host.
+
 | Project                | Root Directory              | Production domain          |
 | ---------------------- | --------------------------- | -------------------------- |
 | `optimitron-web`       | `packages/web`              | `optimitron.com`           |
@@ -67,7 +71,7 @@ them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
 2. Add Development, Preview, and Production variables for each project.
 3. Deploy `trialabundancesurvey` and verify `/embed?embed=1` before Accelerated Medicine.
 4. Deploy the remaining apps to Vercel preview URLs.
-5. Run page and API smoke checks against each preview.
+5. Run page, API, and authenticated screenshot checks against each preview.
 6. Move one custom domain at a time.
 7. Remove that host from the old multi-host deployment only after its new project is healthy.
 
