@@ -464,6 +464,26 @@ export const NAV_ITEMS_MAP = {
     ],
   },
 
+  mcp: {
+    id: "mcp",
+    label: "AI Health Tracker",
+    pageTitle: "dFDA MCP Server",
+    path: ROUTES.mcp,
+    description:
+      "Connect an AI assistant to dFDA to record personal health measurements, review your history, and manage tracking reminders.",
+    emoji: "🤖",
+    canonicalVariant: VARIANTS.DFDA,
+    allowedVariants: [VARIANTS.DFDA],
+    keywords: [
+      "dFDA MCP server",
+      "AI health tracker",
+      "personal health data",
+      "health reminders",
+      "MCP",
+    ],
+    useSiteDefaultOg: true,
+  },
+
   // Legal items
   privacy: {
     id: "privacy",

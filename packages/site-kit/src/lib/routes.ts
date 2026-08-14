@@ -54,6 +54,7 @@ export const ROUTES = {
   campaignsCreate: '/campaigns/create',
   wishocracy: '/wishocracy',
   dfda: '/dfda',
+  mcp: '/mcp',
   surveyDemo: '/survey/demo',
 
   // Studies (dfda)
