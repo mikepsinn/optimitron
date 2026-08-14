@@ -335,9 +335,13 @@ The MCP server (`packages/web/src/lib/mcp-server.ts`) is the primary product
 interface for the personal layer. Codex and Claude Code remain the chat,
 reasoning, connector, coding, and browser clients; Optimitron owns durable
 tasks, provenance, EV, permissions, approvals, verification, and audit.
-Tools are OAuth-authenticated and scope-gated (OPT-API-01). REST/OpenAPI
-exists for the narrow web and partner operations that need it, not as a
-second richer write contract. Tool reference:
+Tools are OAuth-authenticated and scope-gated (OPT-API-01). For task,
+document, and campaign operations, REST/OpenAPI exists for the narrow web
+and partner operations that need it, not as a second richer write contract.
+Amended 2026-08-13: the personal tracking family is the exception — dfda.earth
+will ship a public REST v1 (measurements, reminders, notifications, variables)
+for third-party health apps, backed by the same `@optimitron/tracking` core
+functions as the MCP tools so the two surfaces cannot diverge. Tool reference:
 [MCP_SERVER.md](./MCP_SERVER.md).
 
 ### 9.4 Data provenance

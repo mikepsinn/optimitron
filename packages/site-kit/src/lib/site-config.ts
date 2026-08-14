@@ -819,7 +819,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     // Navigation system - TREATMENT-FOCUSED for clinical encyclopedia
     // Priority: Conditions → Treatments → Trials → Studies
     // Research scoped to MEDICAL EVIDENCE (not macro-economic policy)
-    topLevelNavItems: ["conditions", "treatments"],
+    topLevelNavItems: ["conditions", "treatments", "mcp"],
     sidebarSections: [
       {
         id: "find-treatment",

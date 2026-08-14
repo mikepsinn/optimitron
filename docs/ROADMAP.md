@@ -159,9 +159,13 @@ Do not pick these up unless they directly unblock a Now track:
 
 - Board/kanban parody, timeline/Gantt views, burndown/sprint parody chrome,
   generic gamified civics surfaces. The joke isn't worth the surface area.
-- A second task model, a separate personal-tracking app, or a bespoke
-  outreach model. The canonical Task graph, artifacts, and verification
-  lifecycle cover those workflows.
+- A second task model or a bespoke outreach model. The canonical Task graph,
+  artifacts, and verification lifecycle cover those workflows. (Amended
+  2026-08-13: the former "no separate personal-tracking app" entry is
+  superseded — apps/dfda is the sanctioned dFDA tracking product surface over
+  the same `@optimitron/tracking` engine and shared database; see the
+  `optimitron:dev:dfda-tracking-mcp-server-split` task tree. A second tracking
+  *data model* remains banned; the engine and rows are shared, never forked.)
 - A custom chat client, coding agent, connector suite, model gateway, terminal,
   general browser controller, ambient private-message scraper, or credential
   sharing/resale system.

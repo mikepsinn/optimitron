@@ -378,6 +378,14 @@ vi.mock("../subject.server", () => ({
   ensureExternalPersonSubject: vi.fn(),
 }));
 
+// ../subject.server is now a re-export shim; the tracking package's core
+// imports the module directly, so the same mock must cover that id too.
+vi.mock("@optimitron/tracking/subject", () => ({
+  ensureSubjectForUser: mocks.ensureSubjectForUser,
+  ensureSubjectForPerson: vi.fn(),
+  ensureExternalPersonSubject: vi.fn(),
+}));
+
 vi.mock("../prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,

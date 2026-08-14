@@ -177,7 +177,7 @@ verified against `feature/private-execution-system` (2026-07-17).
 - **Layer:** personal
 - **Status:** implemented
 - **Summary:** Personal health-variable reminders can be created, edited in place, listed, queried by due date, and answered as tracked or snoozed through MCP. A not-taken day is recorded as value 0, not skipped, so the off periods stay in the series as baseline. Answering a tracked reminder writes a `Measurement`; `listMeasurements` reads those measurements back for one variable or all of them. Reminders are queried on demand rather than delivered by a scheduler or UI.
-- **Evidence:** `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, and `listMeasurements` in packages/web/src/lib/mcp-server.ts
+- **Evidence:** `upsertTrackingReminder`, `listTrackingReminders`, `listDueTrackingReminders`, `respondToTrackingReminder`, and `listMeasurements` in packages/tracking/src/core.ts (extracted 2026-08 from packages/web/src/lib/mcp-server.ts; served by both optimitron.com/api/mcp and dfda.earth/api/mcp via apps/dfda/app/api/mcp/route.ts)
 - **Acceptance:** An authenticated caller can preserve a reminder's ID and response history while changing its schedule, a tracked response writes a measurement, and `listMeasurements` returns that measurement scoped to the caller's own subject.
 - **Roadmap:** shipped MCP workflow — task-queue or push delivery remains in OPT-HEALTH-06.
 
