@@ -3,6 +3,7 @@ import Layout from "@/components/layout"
 import { Container } from "@/components/ui/container"
 import { SendReferralInvitationClient } from "./send-referral-invitation-client"
 
+// visual-auth-state: required
 export const metadata: Metadata = {
   title: "Send One More",
   description: "Send one more 1% Treaty invitation.",

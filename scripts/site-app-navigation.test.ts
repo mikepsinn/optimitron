@@ -34,8 +34,10 @@ function isAuthenticatedPage(filePath: string) {
   }
 
   const source = readFileSync(filePath, "utf8");
-  return /\b(?:requireAdmin|requireAuth|requireOrganizationAccess|requireUser|getCurrentUser)\s*\(/.test(
-    source,
+  return (
+    /\b(?:requireAdmin|requireAuth|requireOrganizationAccess|requireUser|getCurrentUser)\s*\(/.test(
+      source,
+    ) || /\/\/\s*visual-auth-state:\s*required\b/.test(source)
   );
 }
 
@@ -100,6 +102,10 @@ test("every authenticated site-app page has visual coverage or a documented exem
       assert.ok(
         existsSync(path.join(repoRoot, route.sourcePage)),
         `${appName}:${route.routeName} references missing page ${route.sourcePage}`,
+      );
+      assert.ok(
+        isAuthenticatedPage(path.join(repoRoot, route.sourcePage)),
+        `${appName}:${route.routeName} source page needs an independent auth guard or visual-auth-state marker`,
       );
 
       const uniqueRouteName = `${appName}:${route.routeName}`;

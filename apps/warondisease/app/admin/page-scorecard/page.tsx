@@ -152,7 +152,7 @@ export default async function PageScorecardPage() {
 
         {/* Mobile cards + desktop table */}
         <Card className="overflow-hidden border-4 border-primary bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="divide-y-2 divide-primary md:hidden">
+          <div className="divide-y-2 divide-primary lg:hidden">
             {rows.length === 0 && (
               <div className="px-4 py-8 text-center font-bold text-muted-foreground">
                 No data yet. Run the migration and wait for conversions.
@@ -207,7 +207,7 @@ export default async function PageScorecardPage() {
             })}
           </div>
 
-          <table className="hidden w-full text-sm md:table">
+          <table className="hidden w-full text-sm lg:table">
             <thead className="bg-foreground text-background">
               <tr>
                 <th className="text-left px-4 py-3 font-black uppercase">Source URL</th>

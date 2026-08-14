@@ -73,14 +73,17 @@ Partner snippet (after survey is deployed):
 
 ## CI
 
-Job **`site-apps-validate`** (on `apps/**` / `packages/db` changes):
+Job **`site-apps-static-validate`** (on `apps/**` / `packages/db` changes):
 
 1. verify public navigation and authenticated screenshot coverage
 2. migrate + `prisma generate`
 3. **`pnpm typecheck:apps`** — all six `@apps/*`
 4. **`pnpm smoke:warondisease-db`** — ReferendumVote path
 5. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
-6. build every app and capture public and authenticated desktop/mobile states
+
+Job **`site-apps-build`**:
+
+1. build every app and capture public and authenticated desktop/mobile states
 
 The authenticated route inventory fails when a dashboard, admin, profile, or
 other auth-gated page lacks screenshots or a documented no-UI exemption.

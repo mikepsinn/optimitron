@@ -290,7 +290,46 @@ export function AdminUsersClient({
 
         {/* Mobile cards + desktop table */}
         <Card className="overflow-hidden border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="divide-y-2 divide-primary md:hidden">
+          <div className="flex items-end gap-2 border-b-2 border-primary bg-brutal-yellow p-3 lg:hidden">
+            <label className="flex min-w-0 flex-1 flex-col gap-1 text-[10px] font-black uppercase">
+              Sort users
+              <select
+                value={sortKey}
+                onChange={(event) => {
+                  setSortKey(event.target.value as SortKey)
+                  setSortDir("asc")
+                }}
+                className="h-9 w-full border-2 border-primary bg-background px-2 text-sm font-bold normal-case"
+              >
+                <option value="name">Name</option>
+                <option value="email">Email</option>
+                <option value="organization">Organization</option>
+                <option value="verified">Verified</option>
+                <option value="orgsCreated">Organizations created</option>
+                <option value="createdAt">Joined</option>
+              </select>
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label={`Sort ${sortDir === "asc" ? "descending" : "ascending"}`}
+              title={`Sort ${sortDir === "asc" ? "descending" : "ascending"}`}
+              onClick={() =>
+                setSortDir((direction) =>
+                  direction === "asc" ? "desc" : "asc"
+                )
+              }
+              className="h-9 border-2 border-primary bg-background"
+            >
+              {sortDir === "asc" ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="divide-y-2 divide-primary lg:hidden">
             {sortedAndFiltered.length === 0 ? (
               <div className="px-4 py-12 text-center font-bold text-muted-foreground">
                 No users found
@@ -342,7 +381,7 @@ export function AdminUsersClient({
             )}
           </div>
 
-          <table className="hidden w-full text-sm md:table">
+          <table className="hidden w-full text-sm lg:table">
             <thead className="bg-foreground text-background">
               <tr>
                 <th className="text-left px-3 py-3"><SortHeader label="Name" k="name" /></th>

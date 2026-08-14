@@ -1,6 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import { DEMO_ORGANIZATION_SLUG } from "@optimitron/data/campaign";
 import { TREATY_REFERENDUM_SLUG } from "../src/constants.js";
 import {
+  OrganizationMemberRole,
   PrismaClient,
   ReferendumVoteSource,
   VotePosition,
@@ -37,7 +39,17 @@ try {
   const [user, referendum] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { email: DEMO_EMAIL },
-      select: { id: true, personId: true },
+      select: {
+        id: true,
+        organizationMemberships: {
+          where: {
+            organization: { slug: DEMO_ORGANIZATION_SLUG },
+            role: OrganizationMemberRole.OWNER,
+          },
+          select: { id: true },
+        },
+        personId: true,
+      },
     }),
     prisma.referendum.findUniqueOrThrow({
       where: { slug: TREATY_REFERENDUM_SLUG },
@@ -47,6 +59,11 @@ try {
 
   if (!user.personId) {
     throw new Error("Managed demo user must have a Person before visual capture.");
+  }
+  if (user.organizationMemberships.length !== 1) {
+    throw new Error(
+      "Managed demo user must own the demo organization before visual capture.",
+    );
   }
 
   await prisma.$transaction([
