@@ -14,6 +14,7 @@ import { ALL_PAGE_PATHS, PUBLIC_PAGE_PATHS } from "./static-pages";
 
 export type VisualRoute = {
   authenticated?: boolean;
+  authenticatedEmail?: string;
   /** UI source files whose rendered states this route is required to exercise. */
   covers?: string[];
   createTaskMode?: "person";
@@ -23,6 +24,8 @@ export type VisualRoute = {
   openContentShare?: boolean;
   openAddSubtask?: boolean;
   openTaskImpactTrace?: boolean;
+  verifyMcpDisabledAuthorize?: boolean;
+  mcpScopeAccess?: "admin" | "non-admin";
   openMenu?: boolean;
   openTaskManagement?: boolean;
   submitSearch?: boolean;
@@ -47,7 +50,9 @@ type DocumentReviewFixtureManifest = {
 
 type McpAuthorizeFixtureManifest = {
   authorizePath: string;
-  version: 1;
+  nonAdminAuthorizePath: string;
+  nonAdminEmail: string;
+  version: 2;
 };
 
 function isDocumentReviewFixtureManifest(
@@ -76,7 +81,12 @@ function isMcpAuthorizeFixtureManifest(
   }
 
   const candidate = value as Record<string, unknown>;
-  return candidate.version === 1 && isNonEmptyString(candidate.authorizePath);
+  return (
+    candidate.version === 2 &&
+    isNonEmptyString(candidate.authorizePath) &&
+    isNonEmptyString(candidate.nonAdminAuthorizePath) &&
+    isNonEmptyString(candidate.nonAdminEmail)
+  );
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -101,6 +111,7 @@ const MCP_AUTHORIZE_FIXTURE_MANIFEST_PATH = path.resolve(
 const MCP_AUTHORIZE_PAGE_FILE = "packages/web/src/app/mcp/authorize/page.tsx";
 const MCP_CONSENT_FORM_FILE =
   "packages/web/src/app/mcp/authorize/consent-form.tsx";
+const RETRO_UI_BUTTON_FILE = "packages/web/src/components/retroui/Button.tsx";
 const TASK_DETAIL_PAGE_FILE = "packages/web/src/app/tasks/[id]/page.tsx";
 const DOCUMENT_REVIEW_MANAGER_FILE =
   "packages/web/src/components/tasks/document-review-manager-panel.tsx";
@@ -630,9 +641,26 @@ function loadMcpAuthorizeRoutes(): VisualRoute[] {
   return [
     {
       authenticated: true,
-      covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
-      name: "mcp-authorize-consent",
+      covers: [
+        MCP_AUTHORIZE_PAGE_FILE,
+        MCP_CONSENT_FORM_FILE,
+        RETRO_UI_BUTTON_FILE,
+      ],
+      name: "mcp-authorize-admin-user",
+      mcpScopeAccess: "admin",
       path: manifest.authorizePath,
+      required: true,
+      requiredSelector: "#mcp-authorize-heading",
+      requiredText: /^Authorize$/,
+      verifyMcpDisabledAuthorize: true,
+    },
+    {
+      authenticated: true,
+      authenticatedEmail: manifest.nonAdminEmail,
+      covers: [MCP_AUTHORIZE_PAGE_FILE, MCP_CONSENT_FORM_FILE],
+      mcpScopeAccess: "non-admin",
+      name: "mcp-authorize-non-admin-user",
+      path: manifest.nonAdminAuthorizePath,
       required: true,
       requiredSelector: "#mcp-authorize-heading",
       requiredText: /^Authorize$/,

@@ -151,6 +151,8 @@ const routeOrder = [
   "privacy",
   "terms",
   "settings",
+  "mcp-authorize-admin-user",
+  "mcp-authorize-non-admin-user",
   "organizations",
   "organization-iam-public",
   "organization-iam-survey",
@@ -170,6 +172,15 @@ const routeOrder = [
   "variant-dih-home",
   "variant-dih-fund-a-disease",
 ];
+
+const legacyRouteNameAliases = new Map([
+  ["mcp-authorize-consent", "mcp-authorize-admin-user"],
+]);
+
+const routeLabelOverrides = new Map([
+  ["mcp-authorize-admin-user", "MCP authorize — admin user"],
+  ["mcp-authorize-non-admin-user", "MCP authorize — non-admin user"],
+]);
 
 // Non-default site variants captured by the variant-delta routes in
 // e2e/utils/visual-routes.ts. Keys match SiteKey in src/lib/site.ts.
@@ -277,9 +288,13 @@ function collectScreenshots(root, version) {
       mkdirSync(assetDir, { recursive: true });
       const assetPath = path.join(assetDir, entry);
       copyFileSync(filePath, assetPath);
-      const routeName = entry
+      const legacyRouteName = entry
         .replace(/\.png$/i, "")
         .replace(/-(default|visual-mobile)$/i, "");
+      const routeName =
+        version === "before"
+          ? (legacyRouteNameAliases.get(legacyRouteName) ?? legacyRouteName)
+          : legacyRouteName;
       if (isRedirectOnlyScreenshotRoute(routeName)) {
         continue;
       }
@@ -1501,6 +1516,10 @@ function projectSortIndex(projectName) {
 }
 
 function labelRoute(routeName) {
+  const override = routeLabelOverrides.get(routeName);
+  if (override) {
+    return override;
+  }
   return routeName
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))

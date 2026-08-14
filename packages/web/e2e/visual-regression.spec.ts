@@ -14,7 +14,7 @@ import {
   SITE_VARIANT_OVERRIDE_QUERY_PARAM,
 } from "@/lib/site";
 import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
-import { signInDemoUser } from "./utils/auth";
+import { DEMO_PASSWORD, signInDemoUser, signInUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock";
 
@@ -157,7 +157,12 @@ test.describe("route visual regression", () => {
   for (const route of VISUAL_ROUTES) {
     test(`${route.name}`, async ({ page }, testInfo) => {
       if ("authenticated" in route && route.authenticated) {
-        const signedIn = await signInDemoUser(page);
+        const signedIn = route.authenticatedEmail
+          ? await signInUser(page, {
+              email: route.authenticatedEmail,
+              password: DEMO_PASSWORD,
+            })
+          : await signInDemoUser(page);
         expect(
           signedIn,
           "demo user should sign in before dashboard screenshot",
@@ -226,6 +231,30 @@ test.describe("route visual regression", () => {
       if ("openTaskImpactTrace" in route && route.openTaskImpactTrace) {
         await openTaskImpactTrace(page);
       }
+      if ("mcpScopeAccess" in route && route.mcpScopeAccess) {
+        const privilegedPermissions = [
+          /Admin Public Task Management/i,
+          /Moderate Earth Data/i,
+          /Run Coordinated Agents/i,
+          /GitHub Repo Access/i,
+        ];
+        for (const permission of privilegedPermissions) {
+          const checkbox = page.getByRole("checkbox", { name: permission });
+          if (route.mcpScopeAccess === "admin") {
+            await expect(checkbox).toBeVisible();
+          } else {
+            await expect(checkbox).toHaveCount(0);
+          }
+        }
+        if (route.mcpScopeAccess === "non-admin") {
+          await expect(
+            page.getByRole("checkbox", { name: /Manage Private Tasks/i }),
+          ).toBeVisible();
+          await expect(
+            page.getByRole("checkbox", { name: /Add Earth Data/i }),
+          ).toBeVisible();
+        }
+      }
       if ("typeSearchQuery" in route && route.typeSearchQuery) {
         const searchbox = page.getByRole("searchbox", {
           name: "Search the site",
@@ -280,6 +309,24 @@ test.describe("route visual regression", () => {
         path: reviewScreenshotPath,
         contentType: "image/png",
       });
+
+      if (
+        "verifyMcpDisabledAuthorize" in route &&
+        route.verifyMcpDisabledAuthorize
+      ) {
+        await page
+          .getByRole("checkbox", { name: /Manage Private Tasks/i })
+          .uncheck();
+        await page
+          .getByRole("checkbox", { name: /Manage Organization Tasks/i })
+          .uncheck();
+        await expect(
+          page.getByRole("button", {
+            name: "Select Permissions",
+            exact: true,
+          }),
+        ).toBeDisabled();
+      }
     });
   }
 });
