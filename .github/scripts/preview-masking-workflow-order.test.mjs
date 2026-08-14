@@ -183,6 +183,29 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
 });
 
+test("does not retain older screenshot revisions for the current PR", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const carryStepStart = workflow.indexOf(
+    "- name: Carry forward open PRs' review pages, prune closed ones",
+  );
+  const carryStepEnd = workflow.indexOf(
+    "- name: Publish visual review to gh-pages",
+  );
+
+  assert.notEqual(carryStepStart, -1, "visual review carry step is missing");
+  assert.notEqual(carryStepEnd, -1, "visual review publish step is missing");
+
+  const carryStep = workflow.slice(carryStepStart, carryStepEnd);
+  assert.match(
+    carryStep,
+    /CURRENT_PR_NUMBER: \$\{\{ github\.event\.pull_request\.number \}\}/u,
+  );
+  assert.match(
+    carryStep,
+    /if \[ "\$pr_number" = "\$CURRENT_PR_NUMBER" \]; then[\s\S]*?continue/u,
+  );
+});
+
 test("publishes every site-app screenshot in the PR visual review", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const siteAppBuildIndex = workflow.indexOf("  site-apps-build:");

@@ -1050,9 +1050,10 @@ jobs:
         # OPEN. Because every publish rebuilds the branch from scratch,
         # pruning is simply declining to carry a directory forward: merged and
         # closed PRs' pages drop off on the next publish with no separate
-        # cleanup job. cp -n means anything this run just generated wins, so
-        # the current PR's fresh `latest` is kept while its older per-sha
-        # directories survive.
+        # cleanup job. The current PR is also not carried forward. Its fresh
+        # directory already exists in the publish root, and replacing its old
+        # revisions prevents stale or sensitive screenshots from living at
+        # permanent historical URLs.
         #
         # Fail-open on the API check: if the PR-state lookup errors, carry the
         # directory anyway. Keeping a stale page beats deleting a live one.
@@ -1065,6 +1066,7 @@ jobs:
         # fail the step on every re-push and block the publish entirely.
         shell: bash
         env:
+          CURRENT_PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
@@ -1105,6 +1107,10 @@ jobs:
                 continue
                 ;;
             esac
+            if [ "$pr_number" = "$CURRENT_PR_NUMBER" ]; then
+              echo "Replacing $dir_name with this run's sanitized review."
+              continue
+            fi
             state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq .state 2>/dev/null || echo unknown)"
             if [ "$state" = "closed" ]; then
               pruned=$((pruned + 1))
