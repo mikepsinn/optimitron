@@ -12,18 +12,16 @@ import { jwtVerify } from "jose";
 export const CANONICAL_ISSUER = "https://optimitron.com";
 
 /**
- * Tokens are HS256 JWTs. The signing secret must match the authorization
- * server's: set MCP_TOKEN_SECRET to the same value on the optimitron web
- * project and this app. NEXTAUTH_SECRET is the legacy fallback the web
- * project signed with before MCP_TOKEN_SECRET existed — locally both apps
- * read one root .env, so the fallback just works.
+ * Tokens are HS256 JWTs signed by the authorization server with its
+ * NEXTAUTH_SECRET. This app's NEXTAUTH_SECRET must therefore hold the same
+ * value as the optimitron web project's (apps/DEPLOYMENT.md; locally both
+ * apps read one root .env). Decided 2026-08-14: one shared secret, no
+ * separate MCP signing variable.
  */
 function getMcpTokenSecret() {
-  // `||` so the blank MCP_TOKEN_SECRET="" in a copied .env.example still
-  // falls back to NEXTAUTH_SECRET instead of tripping the guard below.
-  const secret = process.env.MCP_TOKEN_SECRET || process.env.NEXTAUTH_SECRET;
+  const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) {
-    throw new Error("MCP_TOKEN_SECRET (or NEXTAUTH_SECRET) is not set");
+    throw new Error("NEXTAUTH_SECRET is not set");
   }
   return new TextEncoder().encode(secret);
 }

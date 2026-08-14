@@ -26,15 +26,12 @@ const REFRESH_TOKEN_TTL = 180 * 24 * 60 * 60; // 180 days
 const AUTH_CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 function getSecret() {
-  // MCP_TOKEN_SECRET lets satellite resource servers (apps/dfda) verify the
-  // same tokens across Vercel projects, where NEXTAUTH_SECRET stays
-  // per-project. Deployments without it keep signing with NEXTAUTH_SECRET
-  // unchanged. Introducing a different MCP_TOKEN_SECRET value rotates the
-  // signing key: previously issued access/refresh tokens stop verifying and
-  // each connector re-runs OAuth once (apps/DEPLOYMENT.md).
-  // `||` so the blank value in a copied .env.example still falls back.
-  const secret = process.env.MCP_TOKEN_SECRET || process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error("MCP_TOKEN_SECRET or NEXTAUTH_SECRET must be set");
+  // Satellite MCP resource servers (apps/dfda) verify these tokens with the
+  // same key, so their deployments must carry this project's NEXTAUTH_SECRET
+  // value (apps/DEPLOYMENT.md). Decided 2026-08-14: one shared secret, no
+  // separate MCP signing variable.
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error("NEXTAUTH_SECRET is not set");
   return new TextEncoder().encode(secret);
 }
 
