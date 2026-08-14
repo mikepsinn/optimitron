@@ -18,11 +18,25 @@ const MANAGED_DEMO_DOCUMENT_SOURCE_KEY =
   "managed:demo:document:apg-operating-note";
 const LEGACY_PRIVATE_INSPIRED_RECORD_ID =
   "managed-demo-apg-record-vaultanium";
+const RETIRED_LEGACY_RECORD_SOURCE_KEY =
+  "managed:demo:record:retired-private-inspired";
 
 export const MANAGED_DEMO_VISIBLE_CONTENT = {
   collectionDescription:
     "Synthetic records for content search and visual review. No real organization or proposal is represented.",
   collectionName: "Synthetic demo projects",
+  documentBody: `## Current decision
+
+Use this synthetic note to verify private document search and Markdown rendering.
+It does not describe a real person, organization, or proposal.
+
+## Done when
+
+- The demo budget has sources.
+- The demo application names one measurable outcome.
+- The demo record has a next action.
+
+> This is synthetic test data.`,
   documentTitle: "Synthetic demo project note",
   records: [
     {
@@ -43,18 +57,7 @@ export const MANAGED_DEMO_VISIBLE_CONTENT = {
 } as const;
 
 const DOCUMENT_TITLE = MANAGED_DEMO_VISIBLE_CONTENT.documentTitle;
-const DOCUMENT_BODY = `## Current decision
-
-Use this synthetic note to verify private document search and Markdown rendering.
-It does not describe a real person, organization, or proposal.
-
-## Done when
-
-- The demo budget has sources.
-- The demo application names one measurable outcome.
-- The demo record has a next action.
-
-> This is synthetic test data.`;
+const DOCUMENT_BODY = MANAGED_DEMO_VISIBLE_CONTENT.documentBody;
 
 const COLLECTION_FIELDS = [
   {
@@ -166,7 +169,10 @@ export async function syncManagedDemoContent(
         version: 1,
       },
       update: {
+        body: DOCUMENT_BODY,
+        createdByUserId: user.id,
         deletedAt: null,
+        title: DOCUMENT_TITLE,
         updatedAt: MANAGED_DEMO_CONTENT_DATE,
       },
     });
@@ -239,10 +245,24 @@ export async function syncManagedDemoContent(
       });
     }
 
-    await tx.collectionRecord.deleteMany({
+    await tx.collectionRecord.updateMany({
       where: {
         collectionId: MANAGED_DEMO_COLLECTION_ID,
         id: LEGACY_PRIVATE_INSPIRED_RECORD_ID,
+      },
+      data: {
+        deletedAt: MANAGED_DEMO_CONTENT_DATE,
+        searchText: "Removed synthetic demo fixture.",
+        sourceKey: RETIRED_LEGACY_RECORD_SOURCE_KEY,
+        updatedAt: MANAGED_DEMO_CONTENT_DATE,
+        valuesJson: {
+          expected_value: 0,
+          hours: 0,
+          name: "Removed synthetic demo fixture",
+          status: "Done",
+          value_per_hour: 0,
+        },
+        version: 1,
       },
     });
 

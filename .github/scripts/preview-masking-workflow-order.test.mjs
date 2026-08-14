@@ -204,6 +204,22 @@ test("does not retain older screenshot revisions for the current PR", () => {
     carryStep,
     /if \[ "\$pr_number" = "\$CURRENT_PR_NUMBER" \]; then[\s\S]*?continue/u,
   );
+  const currentPrBranchIndex = carryStep.indexOf(
+    'if [ "$pr_number" = "$CURRENT_PR_NUMBER" ]; then',
+  );
+  const currentPrContinueIndex = carryStep.indexOf(
+    "continue",
+    currentPrBranchIndex,
+  );
+  const normalCopyIndex = carryStep.lastIndexOf(
+    'cp -Rn "$existing" "$publish_root/"',
+  );
+  assert.ok(
+    currentPrBranchIndex >= 0 &&
+      currentPrContinueIndex > currentPrBranchIndex &&
+      currentPrContinueIndex < normalCopyIndex,
+    "current PR must be skipped before the normal carry-forward copy",
+  );
 });
 
 test("publishes every site-app screenshot in the PR visual review", () => {
