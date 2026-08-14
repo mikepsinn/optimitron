@@ -35,6 +35,10 @@ Good shared candidates:
 - `MCP_TOKEN_SECRET` for the optimitron web project and dFDA. optimitron.com signs
   MCP Bearer tokens with it; dfda.earth/api/mcp verifies them. Without it the web
   project falls back to its `NEXTAUTH_SECRET` and dfda cannot verify tokens.
+  Introducing a value different from the web project's `NEXTAUTH_SECRET` rotates
+  the signing key: every previously issued access and refresh token stops
+  verifying and each connector re-runs OAuth once. That one-time re-auth is the
+  accepted cutover cost; there is no dual-key verification window.
 - A Resend API key when the same account and sending policy serve several apps.
 - A Sentry DSN when several apps intentionally report to the same Sentry project.
 

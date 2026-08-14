@@ -1,3 +1,6 @@
+// The package's only runtime Prisma import: the SQL template builders
+// (Prisma.sql/raw/join). Every other module imports Prisma types only; the
+// client connection itself is always injected by the host app.
 import { Prisma } from "@optimitron/db";
 
 /**

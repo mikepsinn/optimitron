@@ -1,7 +1,7 @@
 // Personal health-tracking core: measurements, tracking reminders, and
 // notification queues. Extracted verbatim from packages/web/src/lib/mcp-server.ts
 // so optimitron.com and dfda.earth serve one implementation over one database.
-import { Prisma } from "@optimitron/db";
+import type { Prisma } from "@optimitron/db";
 import {
   CombinationOperation,
   FillingType,

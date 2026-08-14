@@ -118,6 +118,10 @@ export function createDfdaMcpServer(userId: string, scopes: McpScope[]) {
           userId,
         });
       } catch (error) {
+        // Same wire behavior as packages/web/src/lib/mcp-server.ts: the
+        // message is returned as a result payload, the full error goes to
+        // server logs only.
+        console.error(`[dfda-mcp] tool "${name}" threw:`, error);
         response = toolError(
           error instanceof Error ? error.message : "Tool execution failed.",
         );

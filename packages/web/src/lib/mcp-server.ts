@@ -3798,12 +3798,12 @@ const TASK_ROUTING_INPUT_PROPERTIES = {
   compensationMinAmountUsd: {
     type: ["number", "null"],
     description:
-      "Alias for compensationMinAmountMinorUnits when the currency is USD.",
+      "Minimum compensation in whole US dollars; the server converts to minor units (cents). USD alternative to compensationMinAmountMinorUnits.",
   },
   compensationMaxAmountUsd: {
     type: ["number", "null"],
     description:
-      "Alias for compensationMaxAmountMinorUnits when the currency is USD.",
+      "Maximum compensation in whole US dollars; the server converts to minor units (cents). USD alternative to compensationMaxAmountMinorUnits.",
   },
   compensationPaymentRails: {
     type: "array",

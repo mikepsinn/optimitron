@@ -19,7 +19,9 @@ export const CANONICAL_ISSUER = "https://optimitron.com";
  * read one root .env, so the fallback just works.
  */
 function getMcpTokenSecret() {
-  const secret = process.env.MCP_TOKEN_SECRET ?? process.env.NEXTAUTH_SECRET;
+  // `||` so the blank MCP_TOKEN_SECRET="" in a copied .env.example still
+  // falls back to NEXTAUTH_SECRET instead of tripping the guard below.
+  const secret = process.env.MCP_TOKEN_SECRET || process.env.NEXTAUTH_SECRET;
   if (!secret) {
     throw new Error("MCP_TOKEN_SECRET (or NEXTAUTH_SECRET) is not set");
   }
