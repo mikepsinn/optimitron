@@ -12,6 +12,8 @@ import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
 } from "../packages/web/e2e/utils/visual-settle.mjs";
+import { signInViaApi } from "../packages/web/e2e/utils/auth-api.mjs";
+import { getAuthenticatedSiteAppRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -143,7 +145,7 @@ async function verifyWarOnDiseaseHome(baseUrl) {
   }
 }
 
-function getScreenshotRoutes(siteVariant) {
+function getScreenshotRoutes(appName, siteVariant) {
   const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
       label,
@@ -170,12 +172,17 @@ function getScreenshotRoutes(siteVariant) {
       captureSelector: "footer",
       covers: campaignHomeFiles,
     });
-    routes.push({
-      label: "Shared campaign plan",
-      routeName: "the-plan",
-      routePath: "/the-plan",
-      covers: [campaignPlanPageFile],
-    });
+    const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
+    if (planRoute) {
+      planRoute.covers = [campaignPlanPageFile];
+    } else {
+      routes.push({
+        label: "Shared campaign plan",
+        routeName: "the-plan",
+        routePath: "/the-plan",
+        covers: [campaignPlanPageFile],
+      });
+    }
   }
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
@@ -198,7 +205,20 @@ function getScreenshotRoutes(siteVariant) {
     });
   }
 
-  return routes;
+  const screenshotRoutes = [
+    ...routes,
+    ...getAuthenticatedSiteAppRoutes(appName),
+  ];
+  const routeNames = new Set();
+  for (const route of screenshotRoutes) {
+    if (routeNames.has(route.routeName)) {
+      throw new Error(
+        `@apps/${appName}: duplicate screenshot route name ${route.routeName}`,
+      );
+    }
+    routeNames.add(route.routeName);
+  }
+  return screenshotRoutes;
 }
 
 async function captureScreenshots(appName, siteVariant, baseUrl) {
@@ -206,7 +226,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
     return;
   }
 
-  const screenshotRoutes = getScreenshotRoutes(siteVariant);
+  const screenshotRoutes = getScreenshotRoutes(appName, siteVariant);
   const requireFromWeb = createRequire(
     path.join(repoRoot, "packages", "web", "package.json"),
   );
@@ -236,15 +256,37 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
       screenshotProjects.map(async ([projectName, contextOptions]) => {
         const outputDirectory = path.resolve(screenshotRoot, projectName);
         await mkdir(outputDirectory, { recursive: true });
-        const context = await browser.newContext(contextOptions);
-        const page = await context.newPage();
+        const loggedOutContext = await browser.newContext({
+          ...contextOptions,
+          baseURL: baseUrl,
+        });
+        const authenticatedContext = await browser.newContext({
+          ...contextOptions,
+          baseURL: baseUrl,
+        });
+        const loggedOutPage = await loggedOutContext.newPage();
+        const authenticatedPage = await authenticatedContext.newPage();
 
         try {
+          const needsAuthentication = screenshotRoutes.some(
+            ({ authenticated }) => authenticated,
+          );
+          if (
+            needsAuthentication &&
+            !(await signInViaApi(authenticatedContext.request))
+          ) {
+            throw new Error(
+              `@apps/${appName}: managed demo user could not sign in for authenticated screenshots`,
+            );
+          }
+
           for (const {
+            authenticated,
             routeName,
             routePath,
             captureSelector,
           } of screenshotRoutes) {
+            const page = authenticated ? authenticatedPage : loggedOutPage;
             const pageUrl = new URL(routePath, baseUrl);
             if (appName === "acceleratedmedicine" && routeName === "home") {
               pageUrl.searchParams.set("visual", "1");
@@ -258,6 +300,15 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               throw new Error(
                 `${url} returned HTTP ${response?.status() ?? "unknown"}`,
               );
+            }
+            if (authenticated) {
+              const expectedPath = pageUrl.pathname;
+              const actualPath = new URL(page.url()).pathname;
+              if (actualPath !== expectedPath) {
+                throw new Error(
+                  `${url} redirected to ${page.url()} instead of rendering its authenticated state`,
+                );
+              }
             }
             await page
               .waitForLoadState("networkidle", { timeout: 15_000 })
@@ -290,7 +341,10 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
             }
           }
         } finally {
-          await context.close();
+          await Promise.all([
+            loggedOutContext.close(),
+            authenticatedContext.close(),
+          ]);
         }
       }),
     );

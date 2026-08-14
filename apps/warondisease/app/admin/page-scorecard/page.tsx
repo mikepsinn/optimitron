@@ -150,9 +150,64 @@ export default async function PageScorecardPage() {
           </Card>
         </div>
 
-        {/* Table */}
-        <Card className="bg-background border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
-          <table className="w-full text-sm">
+        {/* Mobile cards + desktop table */}
+        <Card className="overflow-hidden border-4 border-primary bg-background p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="divide-y-2 divide-primary md:hidden">
+            {rows.length === 0 && (
+              <div className="px-4 py-8 text-center font-bold text-muted-foreground">
+                No data yet. Run the migration and wait for conversions.
+              </div>
+            )}
+            {rows.map((row, i) => {
+              const yesPct = row.votes > 0 ? (row.yesVotes / row.votes) * 100 : 0
+              return (
+                <article key={i} className="space-y-4 p-4">
+                  <div>
+                    <div className="text-[10px] font-black uppercase text-muted-foreground">
+                      Source URL
+                    </div>
+                    <div className="break-all font-mono text-xs">
+                      {row.sourceUrl ?? <em className="opacity-60">(null)</em>}
+                    </div>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Votes</dt>
+                      <dd className="font-black">{row.votes.toLocaleString()}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Yes</dt>
+                      <dd className="font-bold">{row.votes > 0 ? `${yesPct.toFixed(0)}%` : "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Average military allocation</dt>
+                      <dd className="font-bold">
+                        {row.avgAllocation !== null ? `${row.avgAllocation.toFixed(0)}%` : "—"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Donations</dt>
+                      <dd className="font-bold">
+                        {row.donations > 0
+                          ? `${row.donations} (${formatDollars(row.donationAmountCents)})`
+                          : "—"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Pledges</dt>
+                      <dd className="font-bold">
+                        {row.pledges > 0
+                          ? `${row.pledges} (${formatDollars(row.pledgeAmountCents)})`
+                          : "—"}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              )
+            })}
+          </div>
+
+          <table className="hidden w-full text-sm md:table">
             <thead className="bg-foreground text-background">
               <tr>
                 <th className="text-left px-4 py-3 font-black uppercase">Source URL</th>

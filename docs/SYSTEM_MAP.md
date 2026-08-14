@@ -80,7 +80,9 @@ queue.
 |---|---|---|
 | Database contract | `packages/db/prisma/schema.prisma` | Canonical models, enums, relations, indexes. |
 | Generated DB types | `packages/db/src/generated` and `@optimitron/db` exports | Prisma client for web only; pure types and validators for consumers. |
-| Web/API/MCP | `packages/web` | Next.js UI, REST, OAuth, MCP, authorization, server workflows. |
+| Optimitron Web/API/MCP | `packages/web` | `optimitron.com` UI, REST, OAuth, MCP, authorization, server workflows, and temporary legacy host variants during cutover. |
+| War on Disease campaign | `apps/warondisease` | Canonical rich campaign home and neobrutalist authenticated dashboard. |
+| Satellite sites | `apps/dfda`, `apps/wishocracy`, `apps/trialabundancesurvey`, `apps/curedao`, `apps/acceleratedmedicine` | Brand-specific deployable entrypoints over shared packages. |
 | Optimizer | `packages/optimizer` | Domain-agnostic causal and expected-value algorithms. No database runtime. |
 | Data | `packages/data` | Parameters, datasets, and importers. No database runtime. |
 | OPG/OBG/Wishocracy | `packages/opg`, `packages/obg`, `packages/wishocracy` | Domain engines above optimizer. |

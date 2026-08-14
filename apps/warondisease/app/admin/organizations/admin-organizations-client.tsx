@@ -175,6 +175,56 @@ export function AdminOrganizationsClient({
     )
   }
 
+  const renderActions = (org: Organization) => (
+    <div className="flex flex-wrap gap-2">
+      {org.slug && (
+        <Link href={`/organizations/${org.slug}`}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 border-2 border-primary font-bold"
+          >
+            Manage
+          </Button>
+        </Link>
+      )}
+      {org.status === OrgStatus.PENDING && (
+        <>
+          <Button
+            aria-label={`Approve ${org.name}`}
+            onClick={() => handleStatusChange(org.id, OrgStatus.APPROVED)}
+            disabled={isUpdating === org.id}
+            size="sm"
+            className="h-8 border-2 border-primary bg-brutal-cyan font-bold text-foreground hover:bg-brutal-cyan/80"
+          >
+            <CheckCircle className="h-3 w-3" />
+          </Button>
+          <Button
+            aria-label={`Reject ${org.name}`}
+            onClick={() => handleStatusChange(org.id, OrgStatus.REJECTED)}
+            disabled={isUpdating === org.id}
+            size="sm"
+            className="h-8 border-2 border-primary bg-brutal-pink font-bold text-foreground hover:bg-brutal-pink/80"
+          >
+            <XCircle className="h-3 w-3" />
+          </Button>
+        </>
+      )}
+      {org.status === OrgStatus.APPROVED && org.slug && (
+        <Link href={`/survey/${org.slug}`} target="_blank">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 border-2 border-primary font-bold"
+            title="View survey page"
+          >
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </Link>
+      )}
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-7xl mx-auto py-8 px-4">
@@ -251,9 +301,48 @@ export function AdminOrganizationsClient({
           </div>
         </div>
 
-        {/* Table */}
-        <Card className="border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-x-auto">
-          <table className="w-full text-sm">
+        {/* Mobile cards + desktop table */}
+        <Card className="overflow-hidden border-4 border-primary p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="divide-y-2 divide-primary md:hidden">
+            {sortedAndFiltered.length === 0 ? (
+              <div className="px-4 py-12 text-center font-bold text-muted-foreground">
+                No organizations found
+              </div>
+            ) : (
+              sortedAndFiltered.map((org) => (
+                <article key={org.id} className="space-y-4 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="font-black">{org.name}</h2>
+                      {org.slug && (
+                        <div className="truncate font-mono text-[11px] text-muted-foreground">
+                          {getSiteConfig().domain}/survey/{org.slug}
+                        </div>
+                      )}
+                    </div>
+                    <StatusBadge status={org.status} />
+                  </div>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Type</dt>
+                      <dd className="font-bold">{org.type || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Applied</dt>
+                      <dd className="font-bold">{formatDate(org.createdAt)}</dd>
+                    </div>
+                    <div className="col-span-2">
+                      <dt className="text-[10px] font-black uppercase text-muted-foreground">Contact</dt>
+                      <dd className="break-all font-bold">{org.contactEmail || "—"}</dd>
+                    </div>
+                  </dl>
+                  {renderActions(org)}
+                </article>
+              ))
+            )}
+          </div>
+
+          <table className="hidden w-full text-sm md:table">
             <thead className="bg-foreground text-background">
               <tr>
                 <th className="text-left px-3 py-3"><SortHeader label="Name" k="name" /></th>
@@ -291,49 +380,7 @@ export function AdminOrganizationsClient({
                       {formatDate(org.createdAt)}
                     </td>
                     <td className="px-3 py-3 align-top">
-                      <div className="flex flex-wrap gap-1">
-                        <Link href={`/admin/organizations/${org.id}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-2 border-primary font-bold h-8"
-                          >
-                            View
-                          </Button>
-                        </Link>
-                        {org.status === OrgStatus.PENDING && (
-                          <>
-                            <Button
-                              onClick={() => handleStatusChange(org.id, OrgStatus.APPROVED)}
-                              disabled={isUpdating === org.id}
-                              size="sm"
-                              className="bg-brutal-cyan text-foreground border-2 border-primary font-bold hover:bg-brutal-cyan/80 h-8"
-                            >
-                              <CheckCircle className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              onClick={() => handleStatusChange(org.id, OrgStatus.REJECTED)}
-                              disabled={isUpdating === org.id}
-                              size="sm"
-                              className="bg-brutal-pink text-foreground border-2 border-primary font-bold hover:bg-brutal-pink/80 h-8"
-                            >
-                              <XCircle className="h-3 w-3" />
-                            </Button>
-                          </>
-                        )}
-                        {org.status === OrgStatus.APPROVED && org.slug && (
-                          <Link href={`/survey/${org.slug}`} target="_blank">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-2 border-primary font-bold h-8"
-                              title="View survey page"
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
+                      {renderActions(org)}
                     </td>
                   </tr>
                 ))

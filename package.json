@@ -30,6 +30,7 @@
     "db:test": "pnpm --filter @optimitron/db run test:integration",
     "db:push": "pnpm --filter @optimitron/db run prisma:push",
     "db:sync:managed-data": "node scripts/sync-managed-data.mjs",
+    "db:seed:site-app-visual": "pnpm --filter @optimitron/db exec tsx scripts/seed-site-app-visual-fixtures.ts",
     "audit:schema-usage": "pnpm --filter @optimitron/db run audit:schema-usage",
     "db:up": "docker compose up -d --wait postgres",
     "db:setup": "pnpm db:up && pnpm db:deploy && pnpm db:generate && pnpm db:sync:managed-data -- --apply",

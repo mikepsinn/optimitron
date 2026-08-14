@@ -1,7 +1,9 @@
 # Apps
 
 Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
-**`packages/web` remains the main optimitron multi-site product.**
+**`apps/warondisease` is the canonical War on Disease campaign app.**
+`packages/web` owns Optimitron and remains a temporary multi-host fallback until
+each standalone app passes preview checks and its domain moves.
 
 **Landing this work:** one tip branch/PR into `main` (not a stack of per-app PRs). Shared shell lives in `@optimitron/site-kit`; apps stay thin wrappers.
 
@@ -9,7 +11,7 @@ Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 
 | App | Port | Domain | Owns |
 |-----|------|--------|------|
-| `@apps/warondisease` | 3010 | warondisease.org | Campaign: home, **full** dashboard (referrals/scores/badges), soldiers, orgs, institutes |
+| `@apps/warondisease` | 3010 | warondisease.org | Canonical campaign home and **full neobrutalist dashboard** (referrals/scores/badges), orgs, institutes |
 | `@apps/dfda` | 3011 | dfda.earth | Clinical encyclopedia |
 | `@apps/wishocracy` | 3013 | wishocracy.org | Wishocracy **allocations only** (pairbars + edit) — not the WoD campaign dashboard |
 | `@apps/trialabundancesurvey` | 3014 | trialabundancesurvey.org | **Survey host** + `/embed` + lite participant home + `embed.js` |
@@ -19,6 +21,10 @@ Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 Architecture decisions (host vs campaign, email, embeds): **`SURVEY-AND-SATELLITES.md`**.
 
 Satellite apps should stay thin: routes + brand `public/` + config. Shared UI/lib lives in `@optimitron/site-kit` / `neobrutalist-ui` / `impact-params` / `survey-embed`. Do not re-copy chart dumps, email templates, or campaign tests into satellites.
+
+War on Disease is the campaign exception: keep its rich home and dashboard fun,
+colorful, and neobrutalist. Do not replace that dashboard with the treaty-paper
+dashboard from `packages/web`.
 
 ## Shared packages
 
@@ -69,12 +75,17 @@ Partner snippet (after survey is deployed):
 
 Job **`site-apps-validate`** (on `apps/**` / `packages/db` changes):
 
-1. migrate + `prisma generate`
-2. **`pnpm typecheck:apps`** — all six `@apps/*`
-3. **`pnpm smoke:warondisease-db`** — ReferendumVote path
-4. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
+1. verify public navigation and authenticated screenshot coverage
+2. migrate + `prisma generate`
+3. **`pnpm typecheck:apps`** — all six `@apps/*`
+4. **`pnpm smoke:warondisease-db`** — ReferendumVote path
+5. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
+6. build every app and capture public and authenticated desktop/mobile states
 
-`packages/web` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke. Brand production deploys are not CI-gated yet.
+The authenticated route inventory fails when a dashboard, admin, profile, or
+other auth-gated page lacks screenshots or a documented no-UI exemption.
+`packages/web` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke.
+Standalone production deploys remain a separate cutover step.
 
 Local:
 
