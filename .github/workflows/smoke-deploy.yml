@@ -473,10 +473,12 @@ jobs:
                 });
                 runs.push(...data.check_runs);
               }
-              return runs.sort((left, right) =>
-                Date.parse(right.started_at || right.created_at || "") -
-                Date.parse(left.started_at || left.created_at || ""),
-              )[0];
+              return runs
+                .filter((run) => run.conclusion !== "skipped")
+                .sort((left, right) =>
+                  Date.parse(right.started_at || right.created_at || "") -
+                  Date.parse(left.started_at || left.created_at || ""),
+                )[0];
             }
 
             while (Date.now() < deadline) {
@@ -1017,10 +1019,12 @@ jobs:
                 });
                 runs.push(...data.check_runs);
               }
-              return runs.sort((left, right) =>
-                Date.parse(right.started_at || right.created_at || "") -
-                Date.parse(left.started_at || left.created_at || ""),
-              )[0];
+              return runs
+                .filter((run) => run.conclusion !== "skipped")
+                .sort((left, right) =>
+                  Date.parse(right.started_at || right.created_at || "") -
+                  Date.parse(left.started_at || left.created_at || ""),
+                )[0];
             }
 
             while (Date.now() < deadline) {

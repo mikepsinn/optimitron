@@ -396,7 +396,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
     path: `/collections/${MANAGED_DEMO_COLLECTION_ID}`,
     required: true,
     authenticated: true,
-    requiredText: /^Finish the Vaultanium Systems proposal$/,
+    requiredText: /^Review the demo health proposal$/,
   },
   {
     name: "collection-share",
@@ -408,10 +408,10 @@ const SEEDED_DYNAMIC_ROUTES: VisualRoute[] = [
   },
   {
     name: "content-search",
-    path: "/search?q=Vaultanium",
+    path: "/search?q=demo%20health",
     required: true,
     authenticated: true,
-    requiredText: /^Finish the Vaultanium Systems proposal$/,
+    requiredText: /^Review the demo health proposal$/,
   },
   {
     name: "referendum-one-percent-treaty",

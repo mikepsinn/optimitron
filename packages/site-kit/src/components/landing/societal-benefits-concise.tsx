@@ -5,9 +5,11 @@ import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 import { ROICard } from "./roi-card"
 import { InfiniteROICard } from "./infinite-roi-card"
-import { ROUTES } from '../../lib/routes'
+import { getResolvedNavItem } from "../../lib/site-config"
 
 export default function SocietalBenefitsConcise() {
+  const researchHref = getResolvedNavItem("research").path
+
   return (
     <SectionContainer bgColor="cyan" borderPosition="bottom" padding="lg">
       <Container>
@@ -22,7 +24,7 @@ export default function SocietalBenefitsConcise() {
         {/* CTA to full research */}
         <div className="text-center mt-12">
           <Link
-            href={ROUTES.research}
+            href={researchHref}
             className="inline-block bg-brutal-pink border-4 border-primary px-8 py-4 text-xl sm:text-2xl font-black uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all"
           >
             SEE THE FULL MATH →

@@ -16,6 +16,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { extractHunksAndAlignment } from "./visual-review-hunks.mjs";
 import {
+  isComparableScreenshotChange,
   isNewCopySnapshot,
   isSignificantDimensionChange,
   normalizeVisualReviewMarkdown,
@@ -411,7 +412,12 @@ function buildReviewPageInput(groups, coverage) {
     summary: {
       changedRoutes: routes.filter((route) => route.changed).length,
       copyOnlyRoutes: routes.filter((route) => rank(route) === 1).length,
-      unchangedRoutes: routes.filter((route) => rank(route) === 3).length,
+      missingBaselineRoutes: routes.filter(
+        (route) => route.baselineMissingPairs > 0,
+      ).length,
+      unchangedRoutes: routes.filter(
+        (route) => rank(route) === 3 && route.missingPairs === 0,
+      ).length,
       siteAppRoutes: routes.filter((route) => route.siteApp).length,
       variantRoutes: routes.filter(
         (route) => route.siteVariant && !route.siteApp,
@@ -459,8 +465,10 @@ function buildReviewPageRoute(group) {
     siteVariant,
     variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
     changed: group.changed,
+    baselineMissingPairs: group.baselineMissingPairs,
     copyChanged: Boolean(markdownDiff),
     errored: group.errored,
+    missingPairs: group.missingPairs,
     statusLabel: reviewStatusLabel(group, markdownDiff),
     markdownDiff,
     pairs: group.pairs.map((pair) => buildReviewPagePair(pair)),
@@ -496,11 +504,17 @@ async function analyzeGroups(groups) {
         diff: await comparePair(pair),
       })),
     );
-    const changedPairs = pairs.filter((pair) => pair.diff.changed).length;
+    const changedPairs = pairs.filter((pair) =>
+      isComparableScreenshotChange(pair.diff),
+    ).length;
     const missingPairs = pairs.filter((pair) => pair.diff.missing).length;
+    const baselineMissingPairs = pairs.filter(
+      (pair) => pair.diff.missing && !pair.before && pair.after,
+    ).length;
     const erroredPairs = pairs.filter((pair) => pair.diff.errored).length;
     analyzed.push({
       ...group,
+      baselineMissingPairs,
       changed: changedPairs > 0,
       changedPairs,
       errored: erroredPairs > 0,
@@ -520,6 +534,7 @@ function appendCopyOnlyGroups(groups) {
     }
     groups.push({
       routeName,
+      baselineMissingPairs: 0,
       changed: false,
       changedPairs: 0,
       errored: false,
@@ -552,7 +567,7 @@ function loadImageDiffDependencies() {
 async function comparePair(pair) {
   if (!pair.before && pair.after) {
     return {
-      changed: true,
+      changed: false,
       label: "missing before",
       missing: true,
       statusClass: "missing",
@@ -560,7 +575,7 @@ async function comparePair(pair) {
   }
   if (pair.before && !pair.after) {
     return {
-      changed: true,
+      changed: false,
       label: "missing after",
       missing: true,
       statusClass: "missing",
@@ -568,7 +583,7 @@ async function comparePair(pair) {
   }
   if (!pair.before || !pair.after) {
     return {
-      changed: true,
+      changed: false,
       label: "missing",
       missing: true,
       statusClass: "missing",
@@ -1350,11 +1365,17 @@ function summarizeGroups(groups) {
         Boolean(buildMarkdownDiff(group.routeName)),
     ).length,
     erroredRoutes: groups.filter((group) => group.errored).length,
+    missingBaselineRoutes: groups.filter(
+      (group) => group.baselineMissingPairs > 0,
+    ).length,
     siteAppRoutes: groups.filter((group) => getSiteAppRoute(group.routeName))
       .length,
     unchangedRoutes: groups.filter(
       (group) =>
-        !group.changed && !group.errored && !buildMarkdownDiff(group.routeName),
+        !group.changed &&
+        !group.errored &&
+        group.missingPairs === 0 &&
+        !buildMarkdownDiff(group.routeName),
     ).length,
     missingPairs: groups.reduce((sum, group) => sum + group.missingPairs, 0),
   };
@@ -1395,6 +1416,7 @@ function buildReviewManifest(groups, coverage) {
         authState: getRouteAuthState(group.routeName),
         siteApp: Boolean(siteAppRoute),
         siteVariant,
+        baselineMissingPairs: group.baselineMissingPairs,
         changed: group.changed,
         copyChanged,
         errored: group.errored,
@@ -1459,15 +1481,19 @@ function getBlockingReviewIssues(groups, screenshots, coverage) {
 }
 
 function routeStatusLabel(group) {
-  if (!group.changed && !group.errored) {
+  if (!group.changed && !group.errored && group.missingPairs === 0) {
     return "unchanged";
   }
   const parts = [];
   if (group.changedPairs > 0) {
     parts.push(`${group.changedPairs} changed`);
   }
-  if (group.missingPairs > 0) {
-    parts.push(`${group.missingPairs} missing`);
+  if (group.baselineMissingPairs > 0) {
+    parts.push(`${group.baselineMissingPairs} baseline missing`);
+  }
+  const currentMissingPairs = group.missingPairs - group.baselineMissingPairs;
+  if (currentMissingPairs > 0) {
+    parts.push(`${currentMissingPairs} current missing`);
   }
   if (group.erroredPairs > 0) {
     parts.push(`${group.erroredPairs} errored`);

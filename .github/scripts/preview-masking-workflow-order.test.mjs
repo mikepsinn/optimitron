@@ -7,6 +7,59 @@ const WORKFLOW = fileURLToPath(
   new URL("../workflows/ci.yml", import.meta.url),
 );
 
+test("creates complete visual baselines for every main push", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const changesJobStart = workflow.indexOf("  changes:");
+  const changesJobEnd = workflow.indexOf("  leak-scan:");
+  assert.notEqual(changesJobStart, -1, "changes job is missing");
+  assert.notEqual(changesJobEnd, -1, "changes job boundary is missing");
+
+  const changesJob = workflow.slice(changesJobStart, changesJobEnd);
+  assert.match(
+    changesJob,
+    /- name: Treat main pushes as full visual baselines\s+id: main\s+if: \$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}[\s\S]*?web_files_changed=true[\s\S]*?site_apps_changed=true/u,
+  );
+  assert.match(
+    changesJob,
+    /- name: Detect web-impacting changes\s+id: filter\s+if: \$\{\{ github\.event_name == 'pull_request' \}\}/u,
+  );
+
+  const mainBaselineStart = workflow.indexOf("  main-visual-baseline:");
+  const prVisualReviewStart = workflow.indexOf("  web-visual-review:");
+  assert.notEqual(mainBaselineStart, -1, "main baseline job is missing");
+  assert.notEqual(prVisualReviewStart, -1, "PR visual review job is missing");
+  const mainBaselineJob = workflow.slice(
+    mainBaselineStart,
+    prVisualReviewStart,
+  );
+  assert.match(mainBaselineJob, /name: web-visual-review/u);
+  assert.match(mainBaselineJob, /pattern: site-app-visual-\*/u);
+  assert.match(mainBaselineJob, /name: main-visual-baseline/u);
+
+  const nonPrReviewStep = workflow.slice(
+    workflow.indexOf("- name: Build visual review index"),
+    workflow.indexOf("- name: Summarize visual review"),
+  );
+  assert.match(
+    nonPrReviewStep,
+    /VISUAL_REVIEW_ALLOW_INCOMPLETE: "1"/u,
+    "full non-PR captures must not require PR changed-file analysis",
+  );
+
+  const siteAppBuildStart = workflow.indexOf("  site-apps-build:");
+  const siteAppBuildEnd = workflow.indexOf("  site-apps-validate:");
+  const siteAppBuild = workflow.slice(siteAppBuildStart, siteAppBuildEnd);
+  assert.match(
+    siteAppBuild,
+    /SITE_APP_SCREENSHOT_ROOT: packages\/web\/output\/playwright\/site-app-screenshots/u,
+  );
+  assert.match(
+    siteAppBuild,
+    /- name: Upload @apps\/\$\{\{ matrix\.app \}\} visual screenshots\s+uses: actions\/upload-artifact@v6/u,
+    "main runs must upload site-app screenshots as well as PR runs",
+  );
+});
+
 test("verifies preview masking after preview managed-data sync", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const previewJobStart = workflow.indexOf("  sync-preview-managed-data:");
@@ -183,6 +236,45 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
 });
 
+test("does not retain older screenshot revisions for the current PR", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const carryStepStart = workflow.indexOf(
+    "- name: Carry forward open PRs' review pages, prune closed ones",
+  );
+  const carryStepEnd = workflow.indexOf(
+    "- name: Publish visual review to gh-pages",
+  );
+
+  assert.notEqual(carryStepStart, -1, "visual review carry step is missing");
+  assert.notEqual(carryStepEnd, -1, "visual review publish step is missing");
+
+  const carryStep = workflow.slice(carryStepStart, carryStepEnd);
+  assert.match(
+    carryStep,
+    /CURRENT_PR_NUMBER: \$\{\{ github\.event\.pull_request\.number \}\}/u,
+  );
+  assert.match(
+    carryStep,
+    /if \[ "\$pr_number" = "\$CURRENT_PR_NUMBER" \]; then[\s\S]*?continue/u,
+  );
+  const currentPrBranchIndex = carryStep.indexOf(
+    'if [ "$pr_number" = "$CURRENT_PR_NUMBER" ]; then',
+  );
+  const currentPrContinueIndex = carryStep.indexOf(
+    "continue",
+    currentPrBranchIndex,
+  );
+  const normalCopyIndex = carryStep.lastIndexOf(
+    'cp -Rn "$existing" "$publish_root/"',
+  );
+  assert.ok(
+    currentPrBranchIndex >= 0 &&
+      currentPrContinueIndex > currentPrBranchIndex &&
+      currentPrContinueIndex < normalCopyIndex,
+    "current PR must be skipped before the normal carry-forward copy",
+  );
+});
+
 test("publishes every site-app screenshot in the PR visual review", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const siteAppBuildIndex = workflow.indexOf("  site-apps-build:");
@@ -273,4 +365,9 @@ test("prefers the exact PR-base visual artifact regardless of overall run status
     /VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA=\$base_sha/u,
   );
   assert.match(baselineStep, /VISUAL_REVIEW_BASELINE_RUN_ID=\$run_id/u);
+  assert.match(
+    baselineStep,
+    /for artifact_name in main-visual-baseline web-visual-review/u,
+    "complete main baselines should take precedence over legacy web-only artifacts",
+  );
 });
