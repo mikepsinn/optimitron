@@ -86,8 +86,9 @@ describe("REST v1 measurements", () => {
       jsonRequest(BASE, "POST", { value: 3, variableName: "Vitamin D" }),
     );
     expect(res.status).toBe(201);
+    // The route stamps REST provenance when the client names no source.
     expect(recordTrackingMeasurement).toHaveBeenCalledWith(
-      { value: 3, variableName: "Vitamin D" },
+      { sourceName: "dfda-rest", value: 3, variableName: "Vitamin D" },
       "user-1",
     );
     await expect(res.json()).resolves.toEqual({

@@ -9549,6 +9549,44 @@ describe("MCP server tool dispatch", () => {
       );
     });
 
+    it("recordMeasurement without a unit uses and preserves the user's default unit", async () => {
+      // Regression: the NOf1Variable upsert used to write the canonical unit
+      // back on every recording, so a per-user unit preference (set through
+      // updateTrackingVariableSettingsForUser) was ignored and then reverted.
+      mocks.nOf1VariableUpsert.mockResolvedValue({
+        ...NOF1_VARIABLE,
+        defaultUnitId: "unit-mg",
+      });
+      mocks.measurementUpsert.mockResolvedValue({
+        globalVariableId: "gv-vitd",
+        id: "measurement-2",
+        subjectId: "subject-1",
+        unitId: "unit-mg",
+        value: 5000,
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "recordMeasurement",
+        arguments: { value: 5000, variableName: "Vitamin D" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const upsertArgs = mocks.nOf1VariableUpsert.mock.calls[0]![0] as {
+        update: Record<string, unknown>;
+      };
+      expect(upsertArgs.update).not.toHaveProperty("defaultUnitId");
+      const measurementArgs = mocks.measurementUpsert.mock.calls[0]![0] as {
+        create: Record<string, unknown>;
+        update: Record<string, unknown>;
+      };
+      expect(measurementArgs.create).toMatchObject({
+        originalUnitId: "unit-mg",
+        unitId: "unit-mg",
+      });
+      expect(measurementArgs.update).toMatchObject({ unitId: "unit-mg" });
+    });
+
     it("recordMeasurement requires a category when creating a new variable", async () => {
       mocks.globalVariableFindFirst.mockResolvedValue(null);
 

@@ -517,6 +517,12 @@ async function ensureTrackingNOf1Variable(
     fillingType?: FillingType;
     globalVariableId: string;
     subjectId: string;
+    /**
+     * True only when the caller named a unit. A canonical-default fallback
+     * must never overwrite the user's persisted unit preference (set via
+     * updateTrackingVariableSettingsForUser or a previous explicit unit).
+     */
+    unitExplicit: boolean;
   },
 ) {
   return db.nOf1Variable.upsert({
@@ -527,7 +533,7 @@ async function ensureTrackingNOf1Variable(
       subjectId: input.subjectId,
     },
     update: {
-      defaultUnitId: input.defaultUnitId,
+      ...(input.unitExplicit ? { defaultUnitId: input.defaultUnitId } : {}),
       ...(input.fillingType ? { fillingType: input.fillingType } : {}),
     },
     where: {
@@ -545,12 +551,21 @@ export async function recordTrackingMeasurementWithTx(
 ) {
   const subject = await trackingUserSubject(tx, input.userId);
   const { unit, variable } = await resolveTrackingVariable(tx, input);
+  const unitExplicit = Boolean(
+    input.unitAbbreviation || input.unitId || input.unitName,
+  );
   const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
     defaultUnitId: unit.id,
     fillingType: input.fillingType,
     globalVariableId: variable.id,
     subjectId: subject.id,
+    unitExplicit,
   });
+  // Without an explicit unit, record in the user's persisted default unit,
+  // not the canonical one, so a settings-level unit choice actually applies.
+  const unitId = unitExplicit
+    ? unit.id
+    : (nOf1Variable.defaultUnitId ?? unit.id);
   const startTime = input.startTime ?? new Date();
   const measurement = await tx.measurement.upsert({
     create: {
@@ -560,13 +575,13 @@ export async function recordTrackingMeasurementWithTx(
       longitude: input.longitude,
       nOf1VariableId: nOf1Variable.id,
       note: input.note,
-      originalUnitId: unit.id,
+      originalUnitId: unitId,
       originalValue: input.value,
       recordedByUserId: input.userId,
       sourceName: input.sourceName ?? "mcp",
       startTime,
       subjectId: subject.id,
-      unitId: unit.id,
+      unitId,
       value: input.value,
     },
     update: {
@@ -575,11 +590,11 @@ export async function recordTrackingMeasurementWithTx(
       latitude: input.latitude,
       longitude: input.longitude,
       note: input.note,
-      originalUnitId: unit.id,
+      originalUnitId: unitId,
       originalValue: input.value,
       recordedByUserId: input.userId,
       sourceName: input.sourceName ?? "mcp",
-      unitId: unit.id,
+      unitId,
       value: input.value,
     },
     where: {
@@ -876,6 +891,11 @@ export async function upsertTrackingReminderForUser(
       fillingType: variableArgs.fillingType,
       globalVariableId: variable.id,
       subjectId: subject.id,
+      unitExplicit: Boolean(
+        variableArgs.unitAbbreviation ||
+          variableArgs.unitId ||
+          variableArgs.unitName,
+      ),
     });
     const reminder = await tx.trackingReminder.upsert({
       create: {
@@ -1985,8 +2005,10 @@ export async function respondToTrackingReminderForUser(
         sourceName: optionalString(input.sourceName) ?? "mcp-reminder",
         startTime: trackedAt ?? new Date(),
         unitAbbreviation: optionalString(input.unitAbbreviation),
-        unitId:
-          optionalString(input.unitId) ?? reminder.globalVariable.defaultUnitId,
+        // Only a caller-named unit is explicit. Leaving unitId unset lets
+        // recordTrackingMeasurementWithTx use the user's persisted default
+        // unit instead of clobbering it with the canonical one.
+        unitId: optionalString(input.unitId),
         unitName: optionalString(input.unitName),
         userId,
         value,

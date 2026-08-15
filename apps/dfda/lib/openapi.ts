@@ -9,7 +9,7 @@
  */
 import { TRACKING_TOOL_DEFINITIONS } from "@optimitron/tracking";
 
-import { CANONICAL_ISSUER } from "@/lib/mcp/auth";
+import { getIssuerUrl } from "@/lib/mcp/auth";
 
 type JsonSchema = Record<string, unknown>;
 
@@ -153,6 +153,10 @@ const updateVariableSettingsBody = {
 
 export function getDfdaOpenApiDocument(origin: string) {
   const baseUrl = origin.replace(/\/+$/u, "");
+  // Same issuer the token verifier accepts in this environment
+  // (verifyMcpAccessToken); a production URL here would hand local/preview
+  // clients a token this deployment rejects.
+  const issuer = getIssuerUrl();
   return {
     openapi: "3.1.0",
     info: {
@@ -355,7 +359,10 @@ export function getDfdaOpenApiDocument(origin: string) {
             content: {
               "application/json": {
                 schema: {
-                  oneOf: [
+                  // anyOf, not oneOf: the batch schema has no required
+                  // properties, so a single-reminder payload matches both
+                  // branches and oneOf would reject every valid single body.
+                  anyOf: [
                     toolInputSchemas.respondToTrackingReminder,
                     toolInputSchemas.respondToTrackingReminderNotifications,
                   ],
@@ -420,9 +427,9 @@ export function getDfdaOpenApiDocument(origin: string) {
             "OAuth 2.1 authorization code + PKCE on the canonical authorization server.",
           flows: {
             authorizationCode: {
-              authorizationUrl: `${CANONICAL_ISSUER}/api/mcp/oauth/authorize`,
-              tokenUrl: `${CANONICAL_ISSUER}/api/mcp/oauth/token`,
-              refreshUrl: `${CANONICAL_ISSUER}/api/mcp/oauth/token`,
+              authorizationUrl: `${issuer}/api/mcp/oauth/authorize`,
+              tokenUrl: `${issuer}/api/mcp/oauth/token`,
+              refreshUrl: `${issuer}/api/mcp/oauth/token`,
               scopes: {
                 [TASKS_PERSONAL_SCOPE]:
                   "Read and write the signed-in user's own tracking data",

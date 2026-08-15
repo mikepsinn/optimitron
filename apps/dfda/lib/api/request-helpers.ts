@@ -11,6 +11,9 @@ export function trackingErrorResponse(
   context: string,
 ): NextResponse {
   if (error instanceof Error) {
+    // Same wire behavior as the MCP surface (lib/mcp/server.ts): the message
+    // goes to the client, the full error goes to server logs.
+    console.error(`[dfda-api] ${context} rejected:`, error);
     return NextResponse.json(
       { error: { code: "invalid_argument", message: error.message } },
       { status: 400 },

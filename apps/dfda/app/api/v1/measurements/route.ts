@@ -37,8 +37,15 @@ export async function POST(req: Request) {
   if (auth instanceof Response) return auth;
   try {
     const body = await readJsonObject(req);
+    // The core's fallback provenance is "mcp"; measurements recorded through
+    // this REST surface must say so instead. An explicit sourceName wins.
     return NextResponse.json(
-      { result: await recordTrackingMeasurement(body, auth.userId) },
+      {
+        result: await recordTrackingMeasurement(
+          { ...body, sourceName: body.sourceName ?? "dfda-rest" },
+          auth.userId,
+        ),
+      },
       { status: 201 },
     );
   } catch (error) {
