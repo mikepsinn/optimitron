@@ -16,19 +16,48 @@ const MANAGED_DEMO_COLLECTION_SOURCE_KEY =
   "managed:demo:collection:apg-projects";
 const MANAGED_DEMO_DOCUMENT_SOURCE_KEY =
   "managed:demo:document:apg-operating-note";
+const LEGACY_PRIVATE_INSPIRED_RECORD_ID =
+  "managed-demo-apg-record-vaultanium";
+const RETIRED_LEGACY_RECORD_SOURCE_KEY =
+  "managed:demo:record:retired-private-inspired";
 
-const DOCUMENT_TITLE = "Autonomous Public Goods operating note";
-const DOCUMENT_BODY = `## Current decision
+export const MANAGED_DEMO_VISIBLE_CONTENT = {
+  collectionDescription:
+    "Synthetic records for content search and visual review. No real organization or proposal is represented.",
+  collectionName: "Synthetic demo projects",
+  documentBody: `## Current decision
 
-Apply for the grant after Tom reviews the on-premises agent proposal.
+Use this synthetic note to verify private document search and Markdown rendering.
+It does not describe a real person, organization, or proposal.
 
 ## Done when
 
-- The budget has sources.
-- The application names one measurable outcome.
-- The next action is assigned.
+- The demo budget has sources.
+- The demo application names one measurable outcome.
+- The demo record has a next action.
 
-> Keep unsupported Notion blocks in the source artifact. Keep the useful action here.`;
+> This is synthetic test data.`,
+  documentTitle: "Synthetic demo project note",
+  records: [
+    {
+      expected_value: 25,
+      hours: 3,
+      name: "Prepare the demo grant application",
+      status: "Next",
+      value_per_hour: 8.3,
+    },
+    {
+      expected_value: 18,
+      hours: 6,
+      name: "Review the demo health proposal",
+      status: "Waiting",
+      value_per_hour: 3,
+    },
+  ],
+} as const;
+
+const DOCUMENT_TITLE = MANAGED_DEMO_VISIBLE_CONTENT.documentTitle;
+const DOCUMENT_BODY = MANAGED_DEMO_VISIBLE_CONTENT.documentBody;
 
 const COLLECTION_FIELDS = [
   {
@@ -82,24 +111,12 @@ const COLLECTION_RECORDS = [
   {
     id: "managed-demo-apg-record-grant",
     sourceKey: "managed:demo:record:apg-grant",
-    values: {
-      expected_value: 25,
-      hours: 3,
-      name: "Prepare the grant application",
-      status: "Next",
-      value_per_hour: 8.3,
-    },
+    values: MANAGED_DEMO_VISIBLE_CONTENT.records[0],
   },
   {
-    id: "managed-demo-apg-record-vaultanium",
-    sourceKey: "managed:demo:record:vaultanium-proposal",
-    values: {
-      expected_value: 18,
-      hours: 6,
-      name: "Finish the Vaultanium Systems proposal",
-      status: "Waiting",
-      value_per_hour: 3,
-    },
+    id: "managed-demo-apg-record-health-proposal",
+    sourceKey: "managed:demo:record:health-proposal",
+    values: MANAGED_DEMO_VISIBLE_CONTENT.records[1],
   },
 ] as const;
 
@@ -152,7 +169,10 @@ export async function syncManagedDemoContent(
         version: 1,
       },
       update: {
+        body: DOCUMENT_BODY,
+        createdByUserId: user.id,
         deletedAt: null,
+        title: DOCUMENT_TITLE,
         updatedAt: MANAGED_DEMO_CONTENT_DATE,
       },
     });
@@ -171,9 +191,9 @@ export async function syncManagedDemoContent(
       create: {
         createdAt: MANAGED_DEMO_CONTENT_DATE,
         createdByUserId: user.id,
-        description: "Grant and product work that is ready to review.",
+        description: MANAGED_DEMO_VISIBLE_CONTENT.collectionDescription,
         id: MANAGED_DEMO_COLLECTION_ID,
-        name: "Autonomous Public Goods projects",
+        name: MANAGED_DEMO_VISIBLE_CONTENT.collectionName,
         sourceKey: MANAGED_DEMO_COLLECTION_SOURCE_KEY,
         updatedAt: MANAGED_DEMO_CONTENT_DATE,
         visibility: ContentVisibility.PRIVATE,
@@ -181,8 +201,8 @@ export async function syncManagedDemoContent(
       update: {
         createdByUserId: user.id,
         deletedAt: null,
-        description: "Grant and product work that is ready to review.",
-        name: "Autonomous Public Goods projects",
+        description: MANAGED_DEMO_VISIBLE_CONTENT.collectionDescription,
+        name: MANAGED_DEMO_VISIBLE_CONTENT.collectionName,
         sourceKey: MANAGED_DEMO_COLLECTION_SOURCE_KEY,
         updatedAt: MANAGED_DEMO_CONTENT_DATE,
         visibility: ContentVisibility.PRIVATE,
@@ -224,6 +244,27 @@ export async function syncManagedDemoContent(
         },
       });
     }
+
+    await tx.collectionRecord.updateMany({
+      where: {
+        collectionId: MANAGED_DEMO_COLLECTION_ID,
+        id: LEGACY_PRIVATE_INSPIRED_RECORD_ID,
+      },
+      data: {
+        deletedAt: MANAGED_DEMO_CONTENT_DATE,
+        searchText: "Removed synthetic demo fixture.",
+        sourceKey: RETIRED_LEGACY_RECORD_SOURCE_KEY,
+        updatedAt: MANAGED_DEMO_CONTENT_DATE,
+        valuesJson: {
+          expected_value: 0,
+          hours: 0,
+          name: "Removed synthetic demo fixture",
+          status: "Done",
+          value_per_hour: 0,
+        },
+        version: 1,
+      },
+    });
 
     for (const record of COLLECTION_RECORDS) {
       const searchText = [

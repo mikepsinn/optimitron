@@ -124,6 +124,11 @@ test("preview smoke waits for the merge-ref database sync check", () => {
     assert.match(block, /listPullRequestsAssociatedWithCommit/u);
     assert.match(block, /currentPull\.merge_commit_sha/u);
     assert.match(block, /checkRefs\.add\(currentPull\.merge_commit_sha\)/u);
+    assert.match(
+      block,
+      /filter\(\(run\) => run\.conclusion !== "skipped"\)/u,
+      "manual workflow skips must not hide the successful PR database sync",
+    );
     assert.match(block, /check\.conclusion === "success"/u);
     assert.doesNotMatch(
       block,

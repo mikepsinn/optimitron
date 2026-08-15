@@ -47,11 +47,16 @@ const screenshotRoot = screenshotRootInput
   : undefined;
 const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
-const campaignHomeFiles = [
-  "apps/warondisease/app/page.tsx",
+const campaignHomeSharedFiles = [
+  "packages/site-kit/src/components/campaign-home-page.tsx",
   "packages/site-kit/src/components/landing/final-cta.tsx",
+  "packages/site-kit/src/components/landing/societal-benefits-concise.tsx",
   "packages/site-kit/src/lib/site-config.ts",
 ];
+
+function getCampaignHomeFiles(appName) {
+  return [`apps/${appName}/app/page.tsx`, ...campaignHomeSharedFiles];
+}
 
 const requestedApps = process.argv.slice(2);
 const unknownApps = requestedApps.filter(
@@ -146,10 +151,14 @@ async function verifyWarOnDiseaseHome(baseUrl) {
 }
 
 function getScreenshotRoutes(appName, siteVariant) {
+  const isCampaignHome =
+    siteVariant === VARIANTS.WAR_ON_DISEASE ||
+    siteVariant === VARIANTS.CUREDAO;
+  const campaignHomeFiles = getCampaignHomeFiles(appName);
   const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
       label,
-      ...(siteVariant === VARIANTS.WAR_ON_DISEASE && routePath === "/"
+      ...(isCampaignHome && routePath === "/"
         ? { covers: campaignHomeFiles }
         : {}),
       routeName:

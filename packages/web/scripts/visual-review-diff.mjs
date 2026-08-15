@@ -53,6 +53,17 @@ export function isNewCopySnapshot(before, after) {
   return before === null && after !== null;
 }
 
+/**
+ * A missing side is a baseline or capture gap, not a measured visual change.
+ * Keep it visible, but do not inflate the screenshot-difference count.
+ *
+ * @param {{ changed?: boolean, missing?: boolean } | null | undefined} diff
+ * @returns {boolean}
+ */
+export function isComparableScreenshotChange(diff) {
+  return Boolean(diff?.changed && !diff?.missing);
+}
+
 const GENERATED_CUID = /(?<![a-z0-9])c[a-z0-9]{24}(?![a-z0-9])/gi;
 const ENCODED_GENERATED_CUID = /(%2f)c[a-z0-9]{24}(?![a-z0-9])/gi;
 const CALENDAR_DATE = new RegExp(
