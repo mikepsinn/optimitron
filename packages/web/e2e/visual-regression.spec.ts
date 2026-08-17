@@ -13,11 +13,7 @@ import {
   SITE_VARIANT_OVERRIDE_COOKIE,
   SITE_VARIANT_OVERRIDE_QUERY_PARAM,
 } from "@/lib/site";
-import {
-  forceAnimationsComplete,
-  prepareFullPageVisualCapture,
-  waitForPaint,
-} from "./utils/audit-helpers";
+import { forceAnimationsComplete, waitForPaint } from "./utils/audit-helpers";
 import { DEMO_PASSWORD, signInDemoUser, signInUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock";
@@ -307,11 +303,7 @@ test.describe("route visual regression", () => {
       const screenshotPath = path.join(screenshotDir, screenshotFileName);
       await mkdir(reviewScreenshotDir, { recursive: true });
       await mkdir(screenshotDir, { recursive: true });
-      await page.screenshot({
-        path: reviewScreenshotPath,
-        fullPage: true,
-        animations: "disabled",
-      });
+      await page.screenshot({ path: reviewScreenshotPath, fullPage: true });
       await copyFile(reviewScreenshotPath, screenshotPath);
       await testInfo.attach(`${route.name}-${testInfo.project.name}`, {
         path: reviewScreenshotPath,
@@ -418,7 +410,6 @@ async function waitForVisualIdle(page: Page) {
     undefined,
     { timeout: 10_000 },
   );
-  await prepareFullPageVisualCapture(page);
   await forceAnimationsComplete(page);
 }
 
