@@ -88,6 +88,23 @@ const TRACKING_NOTIFICATION_WITH_REMINDER_INCLUDE = {
   trackingReminder: { include: TRACKING_REMINDER_INCLUDE },
 } satisfies Prisma.TrackingReminderNotificationInclude;
 
+const TRACKING_NOF1_VARIABLE_SELECT = {
+  defaultUnit: { select: TRACKING_UNIT_SELECT },
+  defaultUnitId: true,
+  durationOfAction: true,
+  fillingType: true,
+  fillingValue: true,
+  globalVariable: { select: TRACKING_VARIABLE_SELECT },
+  globalVariableId: true,
+  id: true,
+  latestMeasurementStartAt: true,
+  maximumAllowedValue: true,
+  minimumAllowedValue: true,
+  numberOfMeasurements: true,
+  onsetDelay: true,
+  updatedAt: true,
+} satisfies Prisma.NOf1VariableSelect;
+
 const TRACKING_MEASUREMENT_SELECT = {
   createdAt: true,
   deletedAt: true,
@@ -500,6 +517,12 @@ async function ensureTrackingNOf1Variable(
     fillingType?: FillingType;
     globalVariableId: string;
     subjectId: string;
+    /**
+     * True only when the caller named a unit. A canonical-default fallback
+     * must never overwrite the user's persisted unit preference (set via
+     * updateTrackingVariableSettingsForUser or a previous explicit unit).
+     */
+    unitExplicit: boolean;
   },
 ) {
   return db.nOf1Variable.upsert({
@@ -510,7 +533,7 @@ async function ensureTrackingNOf1Variable(
       subjectId: input.subjectId,
     },
     update: {
-      defaultUnitId: input.defaultUnitId,
+      ...(input.unitExplicit ? { defaultUnitId: input.defaultUnitId } : {}),
       ...(input.fillingType ? { fillingType: input.fillingType } : {}),
     },
     where: {
@@ -528,12 +551,21 @@ export async function recordTrackingMeasurementWithTx(
 ) {
   const subject = await trackingUserSubject(tx, input.userId);
   const { unit, variable } = await resolveTrackingVariable(tx, input);
+  const unitExplicit = Boolean(
+    input.unitAbbreviation || input.unitId || input.unitName,
+  );
   const nOf1Variable = await ensureTrackingNOf1Variable(tx, {
     defaultUnitId: unit.id,
     fillingType: input.fillingType,
     globalVariableId: variable.id,
     subjectId: subject.id,
+    unitExplicit,
   });
+  // Without an explicit unit, record in the user's persisted default unit,
+  // not the canonical one, so a settings-level unit choice actually applies.
+  const unitId = unitExplicit
+    ? unit.id
+    : (nOf1Variable.defaultUnitId ?? unit.id);
   const startTime = input.startTime ?? new Date();
   const measurement = await tx.measurement.upsert({
     create: {
@@ -543,13 +575,13 @@ export async function recordTrackingMeasurementWithTx(
       longitude: input.longitude,
       nOf1VariableId: nOf1Variable.id,
       note: input.note,
-      originalUnitId: unit.id,
+      originalUnitId: unitId,
       originalValue: input.value,
       recordedByUserId: input.userId,
       sourceName: input.sourceName ?? "mcp",
       startTime,
       subjectId: subject.id,
-      unitId: unit.id,
+      unitId,
       value: input.value,
     },
     update: {
@@ -558,11 +590,11 @@ export async function recordTrackingMeasurementWithTx(
       latitude: input.latitude,
       longitude: input.longitude,
       note: input.note,
-      originalUnitId: unit.id,
+      originalUnitId: unitId,
       originalValue: input.value,
       recordedByUserId: input.userId,
       sourceName: input.sourceName ?? "mcp",
-      unitId: unit.id,
+      unitId,
       value: input.value,
     },
     where: {
@@ -859,6 +891,11 @@ export async function upsertTrackingReminderForUser(
       fillingType: variableArgs.fillingType,
       globalVariableId: variable.id,
       subjectId: subject.id,
+      unitExplicit: Boolean(
+        variableArgs.unitAbbreviation ||
+          variableArgs.unitId ||
+          variableArgs.unitName,
+      ),
     });
     const reminder = await tx.trackingReminder.upsert({
       create: {
@@ -1015,6 +1052,163 @@ export async function listMeasurementsForUser(
         : null,
     variable,
   };
+}
+
+export async function listTrackingVariablesForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const limit = parsePositiveInteger(
+    input.limit,
+    "limit",
+    DEFAULT_MEASUREMENT_PAGE_SIZE,
+  );
+  if (limit > MAX_MEASUREMENT_PAGE_SIZE) {
+    throw new Error(`limit must be ${MAX_MEASUREMENT_PAGE_SIZE} or less.`);
+  }
+  const cursor = optionalString(input.cursor);
+  const query = optionalString(input.query);
+
+  const prisma = await getPrisma();
+  const rows = await prisma.nOf1Variable.findMany({
+    orderBy: [
+      { latestMeasurementStartAt: { nulls: "last", sort: "desc" } },
+      { updatedAt: "desc" },
+      { id: "desc" },
+    ],
+    select: TRACKING_NOF1_VARIABLE_SELECT,
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    where: {
+      deletedAt: null,
+      subject: { userId },
+      ...(query
+        ? {
+            globalVariable: {
+              name: { contains: query, mode: "insensitive" as const },
+            },
+          }
+        : {}),
+    },
+  });
+
+  const variables = rows.slice(0, limit);
+  return {
+    nextCursor:
+      rows.length > limit
+        ? (variables[variables.length - 1]?.id ?? null)
+        : null,
+    variables,
+  };
+}
+
+export async function updateTrackingVariableSettingsForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const globalVariableId = optionalString(input.globalVariableId);
+  const variableName = optionalString(input.variableName);
+  let variableWhere: Prisma.NOf1VariableWhereInput;
+  if (globalVariableId) {
+    variableWhere = { globalVariableId };
+  } else if (variableName) {
+    variableWhere = {
+      globalVariable: {
+        deletedAt: null,
+        name: { equals: variableName, mode: "insensitive" },
+      },
+    };
+  } else {
+    throw new Error("Provide globalVariableId or variableName.");
+  }
+
+  // Per-user overrides only: the canonical GlobalVariable is never touched.
+  const update: Prisma.NOf1VariableUncheckedUpdateInput = {};
+  if ("fillingType" in input) {
+    const fillingType = parseEnumInput(
+      FillingType,
+      input.fillingType,
+      "fillingType",
+    );
+    if (!fillingType) {
+      throw new Error(
+        `fillingType must be one of: ${Object.keys(FillingType).join(", ")}.`,
+      );
+    }
+    update.fillingType = fillingType;
+  }
+  const fillingValue = parseOptionalFiniteNumberInput(input, "fillingValue");
+  if (fillingValue !== undefined) update.fillingValue = fillingValue;
+  const minimumAllowedValue = parseOptionalFiniteNumberInput(
+    input,
+    "minimumAllowedValue",
+  );
+  if (minimumAllowedValue !== undefined) {
+    update.minimumAllowedValue = minimumAllowedValue;
+  }
+  const maximumAllowedValue = parseOptionalFiniteNumberInput(
+    input,
+    "maximumAllowedValue",
+  );
+  if (maximumAllowedValue !== undefined) {
+    update.maximumAllowedValue = maximumAllowedValue;
+  }
+  if ("onsetDelay" in input) {
+    update.onsetDelay = parseOptionalNonnegativeInteger(
+      input.onsetDelay,
+      "onsetDelay",
+    );
+  }
+  if ("durationOfAction" in input) {
+    update.durationOfAction = parseOptionalNonnegativeInteger(
+      input.durationOfAction,
+      "durationOfAction",
+    );
+  }
+
+  const unitInput = {
+    unitAbbreviation: optionalString(input.unitAbbreviation),
+    unitId: optionalString(input.unitId),
+    unitName: optionalString(input.unitName),
+  };
+  const hasUnitInput = Boolean(
+    unitInput.unitAbbreviation || unitInput.unitId || unitInput.unitName,
+  );
+
+  const prisma = await getPrisma();
+  return prisma.$transaction(async (tx) => {
+    const matches = await tx.nOf1Variable.findMany({
+      select: TRACKING_NOF1_VARIABLE_SELECT,
+      take: 2,
+      where: {
+        deletedAt: null,
+        subject: { userId },
+        ...variableWhere,
+      },
+    });
+    const [existing, ambiguous] = matches;
+    if (!existing) {
+      throw new Error(
+        `Tracking variable not found: ${globalVariableId ?? variableName}`,
+      );
+    }
+    if (ambiguous) {
+      throw new Error(
+        `Multiple variables match "${variableName}" case-insensitively. Use globalVariableId to disambiguate.`,
+      );
+    }
+    if (hasUnitInput) {
+      const unit = await resolveTrackingUnit(tx, unitInput);
+      if (!unit) throw new Error("Requested unit was not found.");
+      update.defaultUnitId = unit.id;
+    }
+    if (Object.keys(update).length === 0) return existing;
+    return tx.nOf1Variable.update({
+      data: update,
+      select: TRACKING_NOF1_VARIABLE_SELECT,
+      where: { id: existing.id },
+    });
+  });
 }
 
 export async function listTrackingRemindersForUser(
@@ -1811,8 +2005,10 @@ export async function respondToTrackingReminderForUser(
         sourceName: optionalString(input.sourceName) ?? "mcp-reminder",
         startTime: trackedAt ?? new Date(),
         unitAbbreviation: optionalString(input.unitAbbreviation),
-        unitId:
-          optionalString(input.unitId) ?? reminder.globalVariable.defaultUnitId,
+        // Only a caller-named unit is explicit. Leaving unitId unset lets
+        // recordTrackingMeasurementWithTx use the user's persisted default
+        // unit instead of clobbering it with the canonical one.
+        unitId: optionalString(input.unitId),
         unitName: optionalString(input.unitName),
         userId,
         value,
