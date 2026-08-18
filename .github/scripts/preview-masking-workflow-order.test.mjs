@@ -3,9 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-const WORKFLOW = fileURLToPath(
-  new URL("../workflows/ci.yml", import.meta.url),
-);
+const WORKFLOW = fileURLToPath(new URL("../workflows/ci.yml", import.meta.url));
 
 test("creates complete visual baselines for every main push", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
@@ -60,6 +58,29 @@ test("creates complete visual baselines for every main push", () => {
   );
 });
 
+test("deploys Optimitron production only when its build inputs change", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const changesJob = workflow.slice(
+    workflow.indexOf("  changes:"),
+    workflow.indexOf("  leak-scan:"),
+  );
+  const deployJob = workflow.slice(workflow.indexOf("  deploy-production:"));
+
+  assert.match(
+    changesJob,
+    /web_deploy: \$\{\{ steps\.manual\.outputs\.web_deploy \|\| steps\.production\.outputs\.web_deploy \|\| 'false' \}\}/u,
+  );
+  assert.match(
+    changesJob,
+    /- name: Detect Optimitron production deployment scope[\s\S]*?getVercelPreviewBuildMatches/u,
+  );
+  assert.match(deployJob, /needs: \[changes, web-validate\]/u);
+  assert.match(
+    deployJob,
+    /fromJSON\(needs\.changes\.outputs\.web_deploy \|\| 'false'\) == true/u,
+  );
+});
+
 test("verifies preview masking after preview managed-data sync", () => {
   const workflow = readFileSync(WORKFLOW, "utf8");
   const previewJobStart = workflow.indexOf("  sync-preview-managed-data:");
@@ -82,7 +103,11 @@ test("verifies preview masking after preview managed-data sync", () => {
   assert.notEqual(anonymizeIndex, -1, "anonymization step is missing");
   assert.notEqual(syncIndex, -1, "preview managed-data sync step is missing");
   assert.notEqual(reapplyIndex, -1, "post-sync anonymization step is missing");
-  assert.notEqual(verifyIndex, -1, "preview masking verification step is missing");
+  assert.notEqual(
+    verifyIndex,
+    -1,
+    "preview masking verification step is missing",
+  );
 
   assert.ok(
     anonymizeIndex < syncIndex,
@@ -122,8 +147,14 @@ test("verifies preview masking after preview managed-data sync", () => {
     previewJob.indexOf("- name: Enable Corepack"),
   );
   assert.match(configStep, /if: .*should_prepare == 'true'/u);
-  assert.match(configStep, /IS_FORK: .*head\.repo\.full_name != github\.repository/u);
-  assert.match(configStep, /if \[ "\$IS_FORK" = "true" \]; then[\s\S]*?exit 0/u);
+  assert.match(
+    configStep,
+    /IS_FORK: .*head\.repo\.full_name != github\.repository/u,
+  );
+  assert.match(
+    configStep,
+    /if \[ "\$IS_FORK" = "true" \]; then[\s\S]*?exit 0/u,
+  );
   assert.match(configStep, /missing NEON_API_KEY[\s\S]*?exit 1/u);
   assert.match(
     previewJob,
@@ -179,7 +210,11 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   assert.notEqual(pendingIndex, -1, "visual review pending status is missing");
   assert.notEqual(publishIndex, -1, "visual review publish step is missing");
   assert.notEqual(waitIndex, -1, "visual review wait step is missing");
-  assert.notEqual(finalStatusIndex, -1, "visual review final status is missing");
+  assert.notEqual(
+    finalStatusIndex,
+    -1,
+    "visual review final status is missing",
+  );
   assert.notEqual(failIndex, -1, "visual review failure gate is missing");
 
   assert.ok(

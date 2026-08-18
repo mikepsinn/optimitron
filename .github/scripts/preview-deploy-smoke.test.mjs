@@ -91,15 +91,15 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
 });
 
 test("both smoke waiters skip instead of failing when the deployment is an ignored build", () => {
-  const skipEmits = [
-    ...workflow.matchAll(/setOutput\("state", "skipped"\)/gu),
-  ];
+  const skipEmits = [...workflow.matchAll(/setOutput\("state", "skipped"\)/gu)];
   assert.equal(
     skipEmits.length,
     2,
     "both waiters (Smoke deployed URL and Playwright preview smoke) must emit the skipped state for persistently inactive deployments",
   );
-  const inactiveCounters = [...workflow.matchAll(/consecutiveInactive \+= 1/gu)];
+  const inactiveCounters = [
+    ...workflow.matchAll(/consecutiveInactive \+= 1/gu),
+  ];
   assert.equal(
     inactiveCounters.length,
     2,
@@ -136,4 +136,20 @@ test("preview smoke waits for the merge-ref database sync check", () => {
       "database deployment must succeed before preview smoke runs",
     );
   }
+});
+
+test("routes deployment smoke to the deployed app", () => {
+  assert.match(
+    workflow,
+    /- name: Resolve smoke target[\s\S]*?getVercelAppByUrl[\s\S]*?app=\$\{appName\}/u,
+  );
+  assert.match(
+    workflow,
+    /if \[ "\$VERCEL_APP" = "optimitron" \]; then[\s\S]*?smoke-deploy\.mjs[\s\S]*?else[\s\S]*?smoke-site-deployment\.mjs/u,
+  );
+  assert.match(
+    workflow,
+    /- name: Run Playwright smoke against preview\s+if: .*steps\.target\.outputs\.app == 'optimitron'/u,
+    "the Optimitron Playwright suite must not run against satellite deployments",
+  );
 });

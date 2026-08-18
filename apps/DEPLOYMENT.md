@@ -24,6 +24,18 @@ Use Vercel's Git integration for these projects. Update the existing
 replacement project. Do not add a workflow that redeploys every app after every
 commit. Vercel can skip projects whose workspace dependencies did not change.
 
+Run `pnpm vercel:projects` to audit this project topology. Run
+`pnpm vercel:projects -- --apply` to create missing projects and repair their
+deployment settings. The `Reconcile Vercel app projects` workflow provides the
+same audit or apply operation with the Production environment's Vercel token.
+The reconciler does not move domains or copy secrets.
+
+Affected-project deployments are enabled for every project. Vercel uses the
+pnpm workspace graph and each app's declared internal dependencies to decide
+which projects need a deployment. Root configuration and lockfile changes can
+still affect every project. The custom `optimitron-web` production workflow
+uses the same build-input scope before it starts a production deployment.
+
 ## Environment variables
 
 Use Vercel Shared Environment Variables only when the value and trust boundary

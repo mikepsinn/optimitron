@@ -56,7 +56,8 @@
     "test:site-app-navigation": "pnpm --dir apps/optimitron exec tsx --test ../../scripts/site-app-navigation.test.ts",
     "test:apps:unit": "pnpm --filter \"@apps/*\" run test:unit",
     "test:warondisease:unit": "pnpm --filter @apps/warondisease run test:unit",
-    "smoke:warondisease-db": "pnpm --filter @apps/warondisease exec tsx scripts/smoke-treaty-db.ts"
+    "smoke:warondisease-db": "pnpm --filter @apps/warondisease exec tsx scripts/smoke-treaty-db.ts",
+    "vercel:projects": "node .github/scripts/vercel-app-projects.mjs"
   },
   "devDependencies": {
     "eslint": "^9.0.0",

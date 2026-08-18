@@ -1,0 +1,37 @@
+name: Reconcile Vercel app projects
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Create missing projects and repair project settings.
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  reconcile:
+    name: reconcile-vercel-app-projects
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: Production
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Reconcile Vercel projects
+        shell: bash
+        run: node .github/scripts/vercel-app-projects.mjs ${{ inputs.apply && '--apply' || '' }}

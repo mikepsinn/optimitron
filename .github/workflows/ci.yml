@@ -26,6 +26,7 @@ jobs:
       web: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.main.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
+      web_deploy: ${{ steps.manual.outputs.web_deploy || steps.production.outputs.web_deploy || 'false' }}
     steps:
       - name: Treat manual runs as web-impacting
         id: manual
@@ -34,6 +35,7 @@ jobs:
         run: |
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
+          echo "web_deploy=true" >> "$GITHUB_OUTPUT"
 
       - name: Treat main pushes as full visual baselines
         id: main
@@ -42,6 +44,47 @@ jobs:
         run: |
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout production comparison
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect Optimitron production deployment scope
+        id: production
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$BEFORE_SHA" =~ ^0+$ ]] || ! git cat-file -e "$BEFORE_SHA^{commit}"; then
+            echo "web_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from "node:fs";
+          import { getVercelPreviewBuildMatches } from "./.github/scripts/preview-smoke-scope.mjs";
+
+          const files = readFileSync(
+            `${process.env.RUNNER_TEMP}/production-changed-files.txt`,
+            "utf8",
+          ).split(/\r?\n/u).filter(Boolean);
+          const matches = getVercelPreviewBuildMatches(files);
+          appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `web_deploy=${matches.length > 0 ? "true" : "false"}\n`,
+          );
+          console.log(
+            matches.length > 0
+              ? `Deploying Optimitron for: ${matches.join(", ")}`
+              : "Skipping Optimitron deployment; no Optimitron build inputs changed.",
+          );
+          NODE
 
       - name: Detect web-impacting changes
         id: filter
@@ -488,7 +531,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-projects.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -1587,8 +1630,11 @@ jobs:
 
   deploy-production:
     name: deploy-production
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-    needs: web-validate
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main' &&
+      fromJSON(needs.changes.outputs.web_deploy || 'false') == true
+    needs: [changes, web-validate]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
