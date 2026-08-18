@@ -24,6 +24,7 @@ import {
 import {
   buildChangedFileDiscoveryArgs,
   buildVisualCoverage,
+  parseChangedFileDiscoveryOutput,
 } from "./visual-review-coverage.mjs";
 import {
   getVisualCaptureVersion,
@@ -1182,10 +1183,7 @@ function loadChangedFiles() {
         stdio: ["ignore", "pipe", "ignore"],
       },
     );
-    return output
-      .split(/\r?\n/)
-      .map((entry) => entry.trim())
-      .filter(Boolean);
+    return parseChangedFileDiscoveryOutput(output);
   } catch {
     console.warn(
       "[visual-review] changed-file analysis unavailable; screenshot coverage cannot be proven",
