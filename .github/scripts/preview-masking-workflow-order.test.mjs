@@ -51,7 +51,7 @@ test("creates complete visual baselines for every main push", () => {
   const siteAppBuild = workflow.slice(siteAppBuildStart, siteAppBuildEnd);
   assert.match(
     siteAppBuild,
-    /SITE_APP_SCREENSHOT_ROOT: packages\/web\/output\/playwright\/site-app-screenshots/u,
+    /SITE_APP_SCREENSHOT_ROOT: apps\/optimitron\/output\/playwright\/site-app-screenshots/u,
   );
   assert.match(
     siteAppBuild,

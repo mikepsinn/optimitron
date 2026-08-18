@@ -23,4 +23,4 @@ Hypercert record builders and AT Protocol publishing helpers. Creates verifiable
 ## Off-Limits
 
 - `packages/agent/*` — agent consumes hypercerts, not the other way around
-- `packages/web/*`
+- `apps/optimitron/*`

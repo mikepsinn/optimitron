@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from "@optimitron/db";
 
 /**
- * Full Prisma client injected by the host app (packages/web or apps/dfda).
+ * Full Prisma client injected by the host app (apps/optimitron or apps/dfda).
  * This package never constructs a client itself, so it stays free of
  * connection-string and driver-adapter concerns.
  */

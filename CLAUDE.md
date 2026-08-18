@@ -23,8 +23,8 @@
 ## Local Runtime
 
 - Environment variables live in root `.env`; local `NEXTAUTH_URL` is `http://localhost:3001`.
-- `pnpm --filter @optimitron/web dev:watch` keeps the canonical port 3001 server warm and writes `packages/web/.dev-watcher.log`.
-- Run ad-hoc Playwright from `packages/web` so its dependencies resolve.
+- `pnpm --filter @optimitron/web dev:watch` keeps the canonical port 3001 server warm and writes `apps/optimitron/.dev-watcher.log`.
+- Run ad-hoc Playwright from `apps/optimitron` so its dependencies resolve.
 
 ## Testing Rules
 

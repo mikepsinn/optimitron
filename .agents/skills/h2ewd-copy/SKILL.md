@@ -1,6 +1,6 @@
 ---
 name: h2ewd-copy
-description: Protect Optimitron / War on Disease public copy from conversion regressions. Use before writing, rewriting, reviewing, or committing user-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, plaintiff, task, or partner copy in packages/web or docs/h2ewd surfaces.
+description: Protect Optimitron / War on Disease public copy from conversion regressions. Use before writing, rewriting, reviewing, or committing user-facing website, email, metadata, CTA, empty-state, dashboard, survey, referral, plaintiff, task, or partner copy in apps/optimitron or docs/h2ewd surfaces.
 ---
 
 # H2EWD Copy
@@ -25,7 +25,7 @@ autonomous, less urgent, or less clear.
 2. Search existing source/manual copy before inventing wording. Prefer
    `searchManual` when the Optimitron MCP server is mounted; otherwise use the
    static manual index at `https://manual.warondisease.org/assets/json/search-index.json`
-   or `rg` over `docs/`, `packages/web/src/app`, and `packages/web/src/components`.
+   or `rg` over `docs/`, `apps/optimitron/src/app`, and `apps/optimitron/src/components`.
 3. Before editing existing copy, write this brief:
 
 ```md

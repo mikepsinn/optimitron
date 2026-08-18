@@ -84,23 +84,23 @@ Right now. With this code. Not in some theoretical future where humans have lear
 
 | What | How | Where |
 |------|-----|-------|
-| Vote for the 1% Treaty | Cast a treaty vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](packages/web/) |
-| Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](packages/web/) |
-| Join as an organization | Join, embed, and recruit your community | [`/join`](packages/web/) |
-| Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](packages/web/) |
-| Remind a leader | 193 heads of state have a constitutional duty to promote the general welfare — remind them they're late | [`/tasks/1-pct-treaty`](packages/web/) |
-| Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](packages/web/) |
-| Score your politicians | Alignment reports vs your stated preferences | [`/agencies/dfec/alignment`](packages/web/) |
-| Grade governments by outcomes | Every nation ranked by health, income, and freedom | [`/governments`](packages/web/) |
-| Browse the politician leaderboard | Voting records, alignment scores, campaign contributions | [`/politicians`](packages/web/) |
-| Vote on referendums | Direct democracy with proof-of-personhood sybil resistance | [`/agencies/dcongress/referendums`](packages/web/) |
-| Vote on legislation | Cost-benefit analysis, representative lookup | [`/civic`](packages/web/) |
-| Compare countries | Health, education, drug policy, criminal justice | [`/compare`](packages/web/) |
-| Submit health data | Import from 9 apps or transmit daily check-ins | [`/transmit`](packages/web/) |
+| Vote for the 1% Treaty | Cast a treaty vote and get a referral link | [`warondisease.org`](https://warondisease.org) / [`/vote`](apps/optimitron/) |
+| Recruit two humans | Share tracked invites and watch conversions | [`/dashboard`](apps/optimitron/) |
+| Join as an organization | Join, embed, and recruit your community | [`/join`](apps/optimitron/) |
+| Register a plaintiff | Join the Court of Humanity case framing | [`/plaintiffs`](apps/optimitron/) |
+| Remind a leader | 193 heads of state have a constitutional duty to promote the general welfare — remind them they're late | [`/tasks/1-pct-treaty`](apps/optimitron/) |
+| Express your budget preferences | 5-minute pairwise comparison survey | [`/agencies/dcongress/wishocracy`](apps/optimitron/) |
+| Score your politicians | Alignment reports vs your stated preferences | [`/agencies/dfec/alignment`](apps/optimitron/) |
+| Grade governments by outcomes | Every nation ranked by health, income, and freedom | [`/governments`](apps/optimitron/) |
+| Browse the politician leaderboard | Voting records, alignment scores, campaign contributions | [`/politicians`](apps/optimitron/) |
+| Vote on referendums | Direct democracy with proof-of-personhood sybil resistance | [`/agencies/dcongress/referendums`](apps/optimitron/) |
+| Vote on legislation | Cost-benefit analysis, representative lookup | [`/civic`](apps/optimitron/) |
+| Compare countries | Health, education, drug policy, criminal justice | [`/compare`](apps/optimitron/) |
+| Submit health data | Import from 9 apps or transmit daily check-ins | [`/transmit`](apps/optimitron/) |
 | Run causal inference on any time series | Temporal alignment, Bradford Hill, PIS, optimal values | [`@optimitron/optimizer`](packages/optimizer/) |
-| Optimize a budget | 34+ categories, diminishing returns, overspend diagnostics | [`/agencies/domb`](packages/web/) |
-| Score policies | 12+ policies with Bradford Hill evidence grading | [`/agencies/dcbo`](packages/web/) |
-| Generate policy reports | Evidence-grade scoring, causal confidence | [`/agencies/dcbo`](packages/web/) |
+| Optimize a budget | 34+ categories, diminishing returns, overspend diagnostics | [`/agencies/domb`](apps/optimitron/) |
+| Score policies | 12+ policies with Bradford Hill evidence grading | [`/agencies/dcbo`](apps/optimitron/) |
+| Generate policy reports | Evidence-grade scoring, causal confidence | [`/agencies/dcbo`](apps/optimitron/) |
 | Publish auditable outputs | IPFS snapshots, Hypercert records | [`@optimitron/storage`](packages/storage/) |
 | Chat-based health tracking | NLP text-to-measurement parsing for symptoms, mood, food | [`@optimitron/chat-ui`](packages/chat-ui/) |
 
@@ -139,7 +139,7 @@ pnpm alignment:sync
 
 ## The Web App
 
-The Next.js 15 app at `packages/web` serves the War on Disease campaign and the
+The Next.js 15 app at `apps/optimitron` serves the War on Disease campaign and the
 Optimitron proof surfaces. During campaign mode, `warondisease.org` is the
 primary user-facing product. Here's what's live:
 
@@ -230,7 +230,7 @@ Auth: Google OAuth, magic-link email, proof-of-personhood. Referral tracking bui
 | [`@optimitron/treasury-shared`](packages/treasury-shared/) | Shared interfaces and addresses for all treasury packages | Shared treasury foundation |
 | [`@optimitron/data`](packages/data/) | Public-data fetchers plus 9 local-first health importers and the international dataset catalog | Real-source ingestion layer |
 | [`@optimitron/db`](packages/db/) | Prisma 7 schema, governance models, auth/session/referral data, and Zod validators | Production schema layer |
-| [`@optimitron/web`](packages/web/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, daily tracking | Active product surface |
+| [`@optimitron/web`](apps/optimitron/) | Live Next.js 15 app: auth, voting, alignment reports, referrals, daily tracking | Active product surface |
 | [`@optimitron/chat-ui`](packages/chat-ui/) | Reusable conversational UI components plus text-to-measurement parsing for personal tracking flows | Reusable UI package |
 | [`@optimitron/storage`](packages/storage/) | Content-addressed Storacha/IPFS snapshots for analysis and aggregation history chains | Verifiable audit trail layer |
 | [`@optimitron/hypercerts`](packages/hypercerts/) | Hypercert-compatible record builders and AT Protocol publishing helpers for Optimitron outputs | Verifiable publication layer |

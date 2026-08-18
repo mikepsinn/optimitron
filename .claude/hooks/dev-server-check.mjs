@@ -25,7 +25,7 @@ import { execSync } from "node:child_process";
 const PORT = 3001;
 const URL = `http://127.0.0.1:${PORT}`;
 const START_CMD =
-  "pnpm --filter @optimitron/web dev:fast > packages/web/.dev-server.log 2>&1";
+  "pnpm --filter @optimitron/web dev:fast > apps/optimitron/.dev-server.log 2>&1";
 
 try {
   let status = null;

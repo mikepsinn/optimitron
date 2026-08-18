@@ -48,7 +48,7 @@ test("generates a review packet with visual-review links and preserved checkboxe
     VISUAL_REVIEW_URL: visualReviewUrl,
     VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify(manifest),
     CHANGED_FILES: JSON.stringify([
-      "packages/web/src/components/landing/TreatyVoteFlow.tsx",
+      "apps/optimitron/src/components/landing/TreatyVoteFlow.tsx",
     ]),
     EXISTING_COMMENT_BODY:
       "- [x] <!-- review-item:author:noise-audited:abcdef123456 --> old author preflight\n- [x] <!-- review-item:scope:no-unrelated-diffs --> old scope\n- [x] <!-- review-item:visual:home:logged-out --> old label",
@@ -103,7 +103,7 @@ test("lists authenticated and logged-out preview states for hybrid routes", () =
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app/",
     CHANGED_FILES: JSON.stringify([
-      "packages/web/src/components/tasks/TaskCard.tsx",
+      "apps/optimitron/src/components/tasks/TaskCard.tsx",
     ]),
   });
 
@@ -152,7 +152,7 @@ test("includes copy-only review states from the visual manifest", () => {
 test("reports when no user-facing page or component routes are inferred", () => {
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app",
-    CHANGED_FILES: JSON.stringify(["packages/web/src/lib/messaging.ts"]),
+    CHANGED_FILES: JSON.stringify(["apps/optimitron/src/lib/messaging.ts"]),
   });
 
   assert.match(output, /No user-facing page or component changes were inferred/);

@@ -20,7 +20,7 @@ test("skips database-gated preview smoke scope for workflow-only deployment plum
 
 test("runs preview smoke for app, database, and shared package changes", () => {
   const files = [
-    "packages/web/src/app/tasks/page.tsx",
+    "apps/optimitron/src/app/tasks/page.tsx",
     "packages/db/prisma/schema.prisma",
     "packages/data/src/parameters/parameters.ts",
   ];
@@ -45,7 +45,7 @@ test("runs preview smoke for package manager and build configuration changes", (
 
 test("ignores test-only files under runtime paths", () => {
   const files = [
-    "packages/web/e2e/smoke.spec.ts",
+    "apps/optimitron/e2e/smoke.spec.ts",
     "packages/db/src/__tests__/seed.integration.test.ts",
   ];
 
@@ -60,7 +60,7 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
     "content/campaigns/treaty.md",
     "eslint.config.mjs",
     "package.json",
-    "packages/web/e2e/visual-review-page.spec.ts",
+    "apps/optimitron/e2e/visual-review-page.spec.ts",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     "scripts/render-pages-to-markdown.ts",

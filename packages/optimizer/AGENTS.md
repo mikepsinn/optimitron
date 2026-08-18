@@ -28,4 +28,4 @@ Domain-agnostic causal inference engine. Takes any two time series and answers: 
 
 - Any other `packages/*` directory
 - `packages/db/prisma/schema.prisma`
-- `packages/web/*`
+- `apps/optimitron/*`

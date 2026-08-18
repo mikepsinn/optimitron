@@ -8896,7 +8896,7 @@ model TaskTrigger {
   /// resolver runs and the trigger is fired once per yielded record with
   /// the record injected as `context.<key>`. NULL or "none" = single fire,
   /// no iteration. Recognized keys live in
-  /// packages/web/src/lib/triggers/iteration-sources.ts.
+  /// apps/optimitron/src/lib/triggers/iteration-sources.ts.
   ///   "none"           — fire once, no records (good for fan-out tasks)
   ///   "overdue-tasks"  — iterate Task rows past dueAt with status != VERIFIED
   iterationSource String?

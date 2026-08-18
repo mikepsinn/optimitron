@@ -23,14 +23,14 @@
 - Summary: Legislative bill metadata is heavily used through external fetchers, classification flows, UI cards, and saved CitizenBillVote rows, but there is no first-class Prisma bill model yet.
 - Evidence: 14 files / 112 matches
 - Key files:
-  - [packages/web/src/components/chat/ChatPage.tsx](../packages/web/src/components/chat/ChatPage.tsx) (37 matches)
-  - [packages/web/src/lib/alignment-legislative-sync.server.ts](../packages/web/src/lib/alignment-legislative-sync.server.ts) (16 matches)
-  - [packages/web/src/app/api/civic/bills/route.ts](../packages/web/src/app/api/civic/bills/route.ts) (11 matches)
-  - [packages/web/src/components/chat/BillListCard.tsx](../packages/web/src/components/chat/BillListCard.tsx) (10 matches)
-  - [packages/web/src/components/chat/BillVoteCard.tsx](../packages/web/src/components/chat/BillVoteCard.tsx) (9 matches)
+  - [apps/optimitron/src/components/chat/ChatPage.tsx](../apps/optimitron/src/components/chat/ChatPage.tsx) (37 matches)
+  - [apps/optimitron/src/lib/alignment-legislative-sync.server.ts](../apps/optimitron/src/lib/alignment-legislative-sync.server.ts) (16 matches)
+  - [apps/optimitron/src/app/api/civic/bills/route.ts](../apps/optimitron/src/app/api/civic/bills/route.ts) (11 matches)
+  - [apps/optimitron/src/components/chat/BillListCard.tsx](../apps/optimitron/src/components/chat/BillListCard.tsx) (10 matches)
+  - [apps/optimitron/src/components/chat/BillVoteCard.tsx](../apps/optimitron/src/components/chat/BillVoteCard.tsx) (9 matches)
   - [packages/data/src/fetchers/congress.ts](../packages/data/src/fetchers/congress.ts) (6 matches)
-  - [packages/web/src/app/api/civic/votes/route.ts](../packages/web/src/app/api/civic/votes/route.ts) (6 matches)
-  - [packages/web/src/components/chat/BillCard.tsx](../packages/web/src/components/chat/BillCard.tsx) (6 matches)
+  - [apps/optimitron/src/app/api/civic/votes/route.ts](../apps/optimitron/src/app/api/civic/votes/route.ts) (6 matches)
+  - [apps/optimitron/src/components/chat/BillCard.tsx](../apps/optimitron/src/components/chat/BillCard.tsx) (6 matches)
 
 ## Model Inventory
 
@@ -219,10 +219,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 21 files / 28 matches
 - Key files:
-  - [packages/web/src/app/api/social-accounts/disconnect/route.ts](../packages/web/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
-  - [packages/web/src/app/privacy/page.tsx](../packages/web/src/app/privacy/page.tsx) (1 matches)
-  - [packages/web/src/components/donate/WaysToGiveCard.tsx](../packages/web/src/components/donate/WaysToGiveCard.tsx) (2 matches)
-  - [packages/web/src/components/auth/AuthForm.tsx](../packages/web/src/components/auth/AuthForm.tsx) (1 matches)
+  - [apps/optimitron/src/app/api/social-accounts/disconnect/route.ts](../apps/optimitron/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
+  - [apps/optimitron/src/app/privacy/page.tsx](../apps/optimitron/src/app/privacy/page.tsx) (1 matches)
+  - [apps/optimitron/src/components/donate/WaysToGiveCard.tsx](../apps/optimitron/src/components/donate/WaysToGiveCard.tsx) (2 matches)
+  - [apps/optimitron/src/components/auth/AuthForm.tsx](../apps/optimitron/src/components/auth/AuthForm.tsx) (1 matches)
   - [packages/data/src/datasets/medical-data/references.json](../packages/data/src/datasets/medical-data/references.json) (2 matches)
   - [packages/data/src/datasets/natural-experiments.ts](../packages/data/src/datasets/natural-experiments.ts) (1 matches)
   - [packages/data/src/fetchers/usaspending.ts](../packages/data/src/fetchers/usaspending.ts) (1 matches)
@@ -248,14 +248,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 4 files / 23 matches
 - Key files:
-  - [packages/web/src/app/api/admin/organizations/[id]/route.ts](../packages/web/src/app/api/admin/organizations/[id]/route.ts) (4 matches)
-  - [packages/web/src/lib/content-access.server.ts](../packages/web/src/lib/content-access.server.ts) (4 matches)
-  - [packages/web/src/lib/email/suppression.server.ts](../packages/web/src/lib/email/suppression.server.ts) (4 matches)
-  - [packages/web/src/app/api/referendums/[slug]/vote/route.ts](../packages/web/src/app/api/referendums/[slug]/vote/route.ts) (3 matches)
-  - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (3 matches)
-  - [packages/web/src/app/api/game-stats/route.ts](../packages/web/src/app/api/game-stats/route.ts) (2 matches)
-  - [packages/web/src/app/api/social-accounts/connect-wallet/route.ts](../packages/web/src/app/api/social-accounts/connect-wallet/route.ts) (2 matches)
-  - [packages/web/src/app/api/social-accounts/disconnect/route.ts](../packages/web/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/admin/organizations/[id]/route.ts](../apps/optimitron/src/app/api/admin/organizations/[id]/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/content-access.server.ts](../apps/optimitron/src/lib/content-access.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/email/suppression.server.ts](../apps/optimitron/src/lib/email/suppression.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts) (3 matches)
+  - [apps/optimitron/src/lib/tasks/task-comments.server.ts](../apps/optimitron/src/lib/tasks/task-comments.server.ts) (3 matches)
+  - [apps/optimitron/src/app/api/game-stats/route.ts](../apps/optimitron/src/app/api/game-stats/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts](../apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/social-accounts/disconnect/route.ts](../apps/optimitron/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
 - Notes:
   - none
 
@@ -273,9 +273,9 @@
   - `generated`: 13 files / 278 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (10 matches)
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/personal-planning.server.ts](../packages/web/src/lib/tasks/personal-planning.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (10 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/personal-planning.server.ts](../apps/optimitron/src/lib/tasks/personal-planning.server.ts) (2 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (12 matches)
@@ -298,8 +298,8 @@
   - `generated`: 9 files / 174 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/agent-lease.server.ts](../packages/web/src/lib/tasks/agent-lease.server.ts) (16 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks/agent-lease.server.ts](../apps/optimitron/src/lib/tasks/agent-lease.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (7 matches)
@@ -323,7 +323,7 @@
   - `generated`: 8 files / 405 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-relationships.server.ts](../packages/web/src/lib/aggregate-relationships.server.ts) (5 matches)
+  - [apps/optimitron/src/lib/aggregate-relationships.server.ts](../apps/optimitron/src/lib/aggregate-relationships.server.ts) (5 matches)
   - [packages/optimizer/src/outcome-mega-study-ranking.ts](../packages/optimizer/src/outcome-mega-study-ranking.ts) (2 matches)
   - [packages/optimizer/src/statistics.ts](../packages/optimizer/src/statistics.ts) (2 matches)
   - [packages/optimizer/src/variable-relationship-runner.ts](../packages/optimizer/src/variable-relationship-runner.ts) (2 matches)
@@ -348,9 +348,9 @@
   - `generated`: 10 files / 195 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (6 matches)
-  - [packages/web/src/lib/score-merkle.server.ts](../packages/web/src/lib/score-merkle.server.ts) (3 matches)
-  - [packages/web/src/lib/score-publication.server.ts](../packages/web/src/lib/score-publication.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/score-merkle.server.ts](../apps/optimitron/src/lib/score-merkle.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/score-publication.server.ts](../apps/optimitron/src/lib/score-publication.server.ts) (3 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260311211431_init/migration.sql](../packages/db/prisma/migrations/20260311211431_init/migration.sql) (5 matches)
@@ -375,9 +375,9 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (10 matches)
-  - [packages/web/src/lib/score-publication.server.ts](../packages/web/src/lib/score-publication.server.ts) (3 matches)
-  - [packages/web/src/lib/wishocracy-alignment.ts](../packages/web/src/lib/wishocracy-alignment.ts) (3 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/score-publication.server.ts](../apps/optimitron/src/lib/score-publication.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/wishocracy-alignment.ts](../apps/optimitron/src/lib/wishocracy-alignment.ts) (3 matches)
   - [packages/wishocracy/src/__tests__/alignment.test.ts](../packages/wishocracy/src/__tests__/alignment.test.ts) (5 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (3 matches)
   - [docs/TYPE_SYSTEM.md](../docs/TYPE_SYSTEM.md) (1 matches)
@@ -402,14 +402,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/badges.server.ts](../packages/web/src/lib/badges.server.ts) (2 matches)
-  - [packages/web/src/components/shared/TrialCard.tsx](../packages/web/src/components/shared/TrialCard.tsx) (21 matches)
-  - [packages/web/src/components/treatment/HealthEconomicsDisplay.tsx](../packages/web/src/components/treatment/HealthEconomicsDisplay.tsx) (15 matches)
-  - [packages/web/src/components/personhood/PersonhoodStatusBadge.tsx](../packages/web/src/components/personhood/PersonhoodStatusBadge.tsx) (6 matches)
-  - [packages/web/src/components/shared/ParameterValue.tsx](../packages/web/src/components/shared/ParameterValue.tsx) (6 matches)
-  - [packages/web/src/components/tasks/ApplicationReviewUI.tsx](../packages/web/src/components/tasks/ApplicationReviewUI.tsx) (4 matches)
-  - [packages/web/src/components/ui/badge.tsx](../packages/web/src/components/ui/badge.tsx) (4 matches)
-  - [packages/web/src/components/medical/TreatmentReport.tsx](../packages/web/src/components/medical/TreatmentReport.tsx) (3 matches)
+  - [apps/optimitron/src/lib/badges.server.ts](../apps/optimitron/src/lib/badges.server.ts) (2 matches)
+  - [apps/optimitron/src/components/shared/TrialCard.tsx](../apps/optimitron/src/components/shared/TrialCard.tsx) (21 matches)
+  - [apps/optimitron/src/components/treatment/HealthEconomicsDisplay.tsx](../apps/optimitron/src/components/treatment/HealthEconomicsDisplay.tsx) (15 matches)
+  - [apps/optimitron/src/components/personhood/PersonhoodStatusBadge.tsx](../apps/optimitron/src/components/personhood/PersonhoodStatusBadge.tsx) (6 matches)
+  - [apps/optimitron/src/components/shared/ParameterValue.tsx](../apps/optimitron/src/components/shared/ParameterValue.tsx) (6 matches)
+  - [apps/optimitron/src/components/tasks/ApplicationReviewUI.tsx](../apps/optimitron/src/components/tasks/ApplicationReviewUI.tsx) (4 matches)
+  - [apps/optimitron/src/components/ui/badge.tsx](../apps/optimitron/src/components/ui/badge.tsx) (4 matches)
+  - [apps/optimitron/src/components/medical/TreatmentReport.tsx](../apps/optimitron/src/components/medical/TreatmentReport.tsx) (3 matches)
 - Notes:
   - none
 
@@ -429,8 +429,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/civic/votes/route.ts](../packages/web/src/app/api/civic/votes/route.ts) (4 matches)
-  - [packages/web/src/app/civic/votes/[identifier]/page.tsx](../packages/web/src/app/civic/votes/[identifier]/page.tsx) (4 matches)
+  - [apps/optimitron/src/app/api/civic/votes/route.ts](../apps/optimitron/src/app/api/civic/votes/route.ts) (4 matches)
+  - [apps/optimitron/src/app/civic/votes/[identifier]/page.tsx](../apps/optimitron/src/app/civic/votes/[identifier]/page.tsx) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (8 matches)
@@ -456,14 +456,14 @@
   - `migrations`: 1 files / 18 matches
   - `generated`: 13 files / 289 matches
 - Key files:
-  - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (25 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (9 matches)
+  - [apps/optimitron/src/lib/collections.server.ts](../apps/optimitron/src/lib/collections.server.ts) (25 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (9 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
-  - [packages/web/src/app/api/collections/[id]/records/[recordId]/route.ts](../packages/web/src/app/api/collections/[id]/records/[recordId]/route.ts) (2 matches)
-  - [packages/web/src/app/api/collections/[id]/route.ts](../packages/web/src/app/api/collections/[id]/route.ts) (1 matches)
-  - [packages/web/src/app/collections/[id]/page.tsx](../packages/web/src/app/collections/[id]/page.tsx) (1 matches)
-  - [packages/web/src/app/search/page.tsx](../packages/web/src/app/search/page.tsx) (1 matches)
-  - [packages/web/src/lib/developer-openapi.ts](../packages/web/src/lib/developer-openapi.ts) (3 matches)
+  - [apps/optimitron/src/app/api/collections/[id]/records/[recordId]/route.ts](../apps/optimitron/src/app/api/collections/[id]/records/[recordId]/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/collections/[id]/route.ts](../apps/optimitron/src/app/api/collections/[id]/route.ts) (1 matches)
+  - [apps/optimitron/src/app/collections/[id]/page.tsx](../apps/optimitron/src/app/collections/[id]/page.tsx) (1 matches)
+  - [apps/optimitron/src/app/search/page.tsx](../apps/optimitron/src/app/search/page.tsx) (1 matches)
+  - [apps/optimitron/src/lib/developer-openapi.ts](../apps/optimitron/src/lib/developer-openapi.ts) (3 matches)
 - Notes:
   - none
 
@@ -480,12 +480,12 @@
   - `migrations`: 1 files / 10 matches
   - `generated`: 10 files / 217 matches
 - Key files:
-  - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/collections.server.ts](../apps/optimitron/src/lib/collections.server.ts) (6 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
-  - [packages/web/src/components/collections/collection-records-grid.tsx](../packages/web/src/components/collections/collection-records-grid.tsx) (9 matches)
-  - [packages/web/src/components/collections/collection-records-client.tsx](../packages/web/src/components/collections/collection-records-client.tsx) (5 matches)
-  - [packages/web/src/lib/developer-openapi.ts](../packages/web/src/lib/developer-openapi.ts) (3 matches)
-  - [packages/web/src/lib/content-search.server.ts](../packages/web/src/lib/content-search.server.ts) (1 matches)
+  - [apps/optimitron/src/components/collections/collection-records-grid.tsx](../apps/optimitron/src/components/collections/collection-records-grid.tsx) (9 matches)
+  - [apps/optimitron/src/components/collections/collection-records-client.tsx](../apps/optimitron/src/components/collections/collection-records-client.tsx) (5 matches)
+  - [apps/optimitron/src/lib/developer-openapi.ts](../apps/optimitron/src/lib/developer-openapi.ts) (3 matches)
+  - [apps/optimitron/src/lib/content-search.server.ts](../apps/optimitron/src/lib/content-search.server.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (10 matches)
 - Notes:
@@ -504,14 +504,14 @@
   - `migrations`: 1 files / 22 matches
   - `generated`: 16 files / 316 matches
 - Key files:
-  - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (28 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/collections.server.ts](../apps/optimitron/src/lib/collections.server.ts) (28 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
-  - [packages/web/src/lib/content-attachments.server.ts](../packages/web/src/lib/content-attachments.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
-  - [packages/web/src/components/collections/collection-records-grid.tsx](../packages/web/src/components/collections/collection-records-grid.tsx) (20 matches)
-  - [packages/web/src/components/collections/collection-records-client.tsx](../packages/web/src/components/collections/collection-records-client.tsx) (9 matches)
-  - [packages/web/src/lib/content-search.server.ts](../packages/web/src/lib/content-search.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/content-attachments.server.ts](../apps/optimitron/src/lib/content-attachments.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/components/collections/collection-records-grid.tsx](../apps/optimitron/src/components/collections/collection-records-grid.tsx) (20 matches)
+  - [apps/optimitron/src/components/collections/collection-records-client.tsx](../apps/optimitron/src/components/collections/collection-records-client.tsx) (9 matches)
+  - [apps/optimitron/src/lib/content-search.server.ts](../apps/optimitron/src/lib/content-search.server.ts) (1 matches)
 - Notes:
   - none
 
@@ -527,9 +527,9 @@
   - `migrations`: 1 files / 22 matches
   - `generated`: 14 files / 267 matches
 - Key files:
-  - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (14 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
-  - [packages/web/src/lib/developer-openapi.ts](../packages/web/src/lib/developer-openapi.ts) (3 matches)
+  - [apps/optimitron/src/lib/collections.server.ts](../apps/optimitron/src/lib/collections.server.ts) (14 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/developer-openapi.ts](../apps/optimitron/src/lib/developer-openapi.ts) (3 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (9 matches)
   - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (22 matches)
   - [packages/db/src/generated/prisma/models/CollectionRelation.ts](../packages/db/src/generated/prisma/models/CollectionRelation.ts) (206 matches)
@@ -551,11 +551,11 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 188 matches
 - Key files:
-  - [packages/web/src/lib/collections.server.ts](../packages/web/src/lib/collections.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/collections.server.ts](../apps/optimitron/src/lib/collections.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
-  - [packages/web/src/components/collections/collection-records-grid.tsx](../packages/web/src/components/collections/collection-records-grid.tsx) (5 matches)
-  - [packages/web/src/components/collections/collection-records-client.tsx](../packages/web/src/components/collections/collection-records-client.tsx) (3 matches)
-  - [packages/web/src/components/collections/collection-column-settings.ts](../packages/web/src/components/collections/collection-column-settings.ts) (1 matches)
+  - [apps/optimitron/src/components/collections/collection-records-grid.tsx](../apps/optimitron/src/components/collections/collection-records-grid.tsx) (5 matches)
+  - [apps/optimitron/src/components/collections/collection-records-client.tsx](../apps/optimitron/src/components/collections/collection-records-client.tsx) (3 matches)
+  - [apps/optimitron/src/components/collections/collection-column-settings.ts](../apps/optimitron/src/components/collections/collection-column-settings.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/CollectionView.ts](../packages/db/src/generated/prisma/models/CollectionView.ts) (151 matches)
@@ -596,8 +596,8 @@
   - `migrations`: 1 files / 9 matches
   - `generated`: 9 files / 233 matches
 - Key files:
-  - [packages/web/src/lib/shirt-fulfillment.server.ts](../packages/web/src/lib/shirt-fulfillment.server.ts) (10 matches)
-  - [packages/web/src/app/api/stripe/webhook/route.ts](../packages/web/src/app/api/stripe/webhook/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/shirt-fulfillment.server.ts](../apps/optimitron/src/lib/shirt-fulfillment.server.ts) (10 matches)
+  - [apps/optimitron/src/app/api/stripe/webhook/route.ts](../apps/optimitron/src/app/api/stripe/webhook/route.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql](../packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql) (9 matches)
   - [packages/db/src/generated/prisma/models/CommerceFulfillment.ts](../packages/db/src/generated/prisma/models/CommerceFulfillment.ts) (196 matches)
@@ -643,9 +643,9 @@
   - `generated`: 10 files / 241 matches
 - Key files:
   - [packages/db/src/managed-data/managed-commerce-catalog.ts](../packages/db/src/managed-data/managed-commerce-catalog.ts) (4 matches)
-  - [packages/web/src/lib/commerce-catalog.server.ts](../packages/web/src/lib/commerce-catalog.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/commerce-catalog.server.ts](../apps/optimitron/src/lib/commerce-catalog.server.ts) (4 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/src/lib/task-funding/conversion.server.ts](../packages/web/src/lib/task-funding/conversion.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/conversion.server.ts](../apps/optimitron/src/lib/task-funding/conversion.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql](../packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql) (7 matches)
   - [packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql](../packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql) (1 matches)
@@ -666,7 +666,7 @@
   - `generated`: 11 files / 266 matches
 - Key files:
   - [packages/db/src/managed-data/managed-commerce-catalog.ts](../packages/db/src/managed-data/managed-commerce-catalog.ts) (4 matches)
-  - [packages/web/src/lib/commerce-catalog.server.ts](../packages/web/src/lib/commerce-catalog.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/commerce-catalog.server.ts](../apps/optimitron/src/lib/commerce-catalog.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql](../packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql) (9 matches)
   - [packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql](../packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql) (1 matches)
@@ -689,11 +689,11 @@
   - `migrations`: 2 files / 13 matches
   - `generated`: 9 files / 307 matches
 - Key files:
-  - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (14 matches)
-  - [packages/web/src/app/api/stripe/create-checkout/route.ts](../packages/web/src/app/api/stripe/create-checkout/route.ts) (12 matches)
-  - [packages/web/src/lib/shirt-fulfillment.server.ts](../packages/web/src/lib/shirt-fulfillment.server.ts) (8 matches)
-  - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (8 matches)
-  - [packages/web/src/app/api/stripe/webhook/route.ts](../packages/web/src/app/api/stripe/webhook/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/task-funding/payments.server.ts](../apps/optimitron/src/lib/task-funding/payments.server.ts) (14 matches)
+  - [apps/optimitron/src/app/api/stripe/create-checkout/route.ts](../apps/optimitron/src/app/api/stripe/create-checkout/route.ts) (12 matches)
+  - [apps/optimitron/src/lib/shirt-fulfillment.server.ts](../apps/optimitron/src/lib/shirt-fulfillment.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/task-funding/escrow.server.ts](../apps/optimitron/src/lib/task-funding/escrow.server.ts) (8 matches)
+  - [apps/optimitron/src/app/api/stripe/webhook/route.ts](../apps/optimitron/src/app/api/stripe/webhook/route.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql](../packages/db/prisma/migrations/20260520030000_add_commerce_ledger/migration.sql) (12 matches)
   - [packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql](../packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql) (1 matches)
@@ -740,14 +740,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (5 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (5 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (3 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (3 matches)
-  - [packages/web/src/app/api/conflicts/search/route.ts](../packages/web/src/app/api/conflicts/search/route.ts) (2 matches)
-  - [packages/web/src/app/api/tasks/[id]/pledge/route.ts](../packages/web/src/app/api/tasks/[id]/pledge/route.ts) (1 matches)
-  - [packages/web/src/app/agencies/ddod/page.tsx](../packages/web/src/app/agencies/ddod/page.tsx) (1 matches)
-  - [packages/web/src/components/people/PeopleFilterBar.tsx](../packages/web/src/components/people/PeopleFilterBar.tsx) (1 matches)
-  - [packages/web/src/components/people/RepresentedPersonForm.tsx](../packages/web/src/components/people/RepresentedPersonForm.tsx) (1 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (3 matches)
+  - [apps/optimitron/src/app/api/conflicts/search/route.ts](../apps/optimitron/src/app/api/conflicts/search/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts](../apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts) (1 matches)
+  - [apps/optimitron/src/app/agencies/ddod/page.tsx](../apps/optimitron/src/app/agencies/ddod/page.tsx) (1 matches)
+  - [apps/optimitron/src/components/people/PeopleFilterBar.tsx](../apps/optimitron/src/components/people/PeopleFilterBar.tsx) (1 matches)
+  - [apps/optimitron/src/components/people/RepresentedPersonForm.tsx](../apps/optimitron/src/components/people/RepresentedPersonForm.tsx) (1 matches)
 - Notes:
   - none
 
@@ -764,7 +764,7 @@
   - `migrations`: 1 files / 16 matches
   - `generated`: 11 files / 230 matches
 - Key files:
-  - [packages/web/src/lib/content-access.server.ts](../packages/web/src/lib/content-access.server.ts) (12 matches)
+  - [apps/optimitron/src/lib/content-access.server.ts](../apps/optimitron/src/lib/content-access.server.ts) (12 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (16 matches)
@@ -788,10 +788,10 @@
   - `migrations`: 2 files / 12 matches
   - `generated`: 12 files / 260 matches
 - Key files:
-  - [packages/web/src/lib/content-attachments.server.ts](../packages/web/src/lib/content-attachments.server.ts) (26 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (10 matches)
-  - [packages/web/src/lib/content-export.server.ts](../packages/web/src/lib/content-export.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/content-attachments.server.ts](../apps/optimitron/src/lib/content-attachments.server.ts) (26 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/content-export.server.ts](../apps/optimitron/src/lib/content-export.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql](../packages/db/prisma/migrations/20260714233000_add_notion_replacement_foundation/migration.sql) (11 matches)
@@ -814,7 +814,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (8 matches)
@@ -841,12 +841,12 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (12 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (12 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-humanity-v-government.ts](../packages/db/src/managed-data/managed-humanity-v-government.ts) (4 matches)
-  - [packages/web/src/lib/humanity-v-government-case.server.ts](../packages/web/src/lib/humanity-v-government-case.server.ts) (4 matches)
-  - [packages/web/src/lib/represented-people.server.ts](../packages/web/src/lib/represented-people.server.ts) (2 matches)
-  - [packages/web/src/lib/__tests__/campaign-structured-data.test.ts](../packages/web/src/lib/__tests__/campaign-structured-data.test.ts) (2 matches)
+  - [apps/optimitron/src/lib/humanity-v-government-case.server.ts](../apps/optimitron/src/lib/humanity-v-government-case.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/represented-people.server.ts](../apps/optimitron/src/lib/represented-people.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/__tests__/campaign-structured-data.test.ts](../apps/optimitron/src/lib/__tests__/campaign-structured-data.test.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (12 matches)
 - Notes:
@@ -867,7 +867,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql](../packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql) (13 matches)
@@ -893,7 +893,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 7 matches
 - Key files:
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (10 matches)
   - [packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql](../packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql) (21 matches)
@@ -919,7 +919,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql](../packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql) (17 matches)
@@ -946,11 +946,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/represented-people.server.ts](../packages/web/src/lib/represented-people.server.ts) (8 matches)
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (4 matches)
-  - [packages/web/src/lib/humanity-v-government-case.server.ts](../packages/web/src/lib/humanity-v-government-case.server.ts) (4 matches)
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
-  - [packages/web/src/lib/people-dedup.server.ts](../packages/web/src/lib/people-dedup.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/represented-people.server.ts](../apps/optimitron/src/lib/represented-people.server.ts) (8 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/humanity-v-government-case.server.ts](../apps/optimitron/src/lib/humanity-v-government-case.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/people-dedup.server.ts](../apps/optimitron/src/lib/people-dedup.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql](../packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql) (12 matches)
@@ -972,8 +972,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql](../packages/db/prisma/migrations/20260503090000_add_court_of_humanity_schema/migration.sql) (15 matches)
@@ -995,7 +995,7 @@
   - `migrations`: 1 files / 6 matches
   - `generated`: 8 files / 163 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (6 matches)
   - [packages/db/src/generated/prisma/models/DatingBlock.ts](../packages/db/src/generated/prisma/models/DatingBlock.ts) (126 matches)
@@ -1018,7 +1018,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 165 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (8 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/DatingConversation.ts](../packages/db/src/generated/prisma/models/DatingConversation.ts) (126 matches)
@@ -1041,8 +1041,8 @@
   - `migrations`: 1 files / 14 matches
   - `generated`: 12 files / 295 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (14 matches)
   - [packages/db/src/generated/prisma/models/DatingDatePlan.ts](../packages/db/src/generated/prisma/models/DatingDatePlan.ts) (242 matches)
@@ -1064,7 +1064,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 8 files / 173 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/DatingInteraction.ts](../packages/db/src/generated/prisma/models/DatingInteraction.ts) (136 matches)
@@ -1087,7 +1087,7 @@
   - `migrations`: 1 files / 10 matches
   - `generated`: 10 files / 200 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (10 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (10 matches)
   - [packages/db/src/generated/prisma/models/DatingMatch.ts](../packages/db/src/generated/prisma/models/DatingMatch.ts) (153 matches)
@@ -1131,7 +1131,7 @@
   - `migrations`: 1 files / 8 matches
   - `generated`: 10 files / 188 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (8 matches)
   - [packages/db/src/generated/prisma/models/DatingMessage.ts](../packages/db/src/generated/prisma/models/DatingMessage.ts) (147 matches)
@@ -1175,7 +1175,7 @@
   - `migrations`: 1 files / 24 matches
   - `generated`: 10 files / 359 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (16 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (19 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (24 matches)
   - [packages/db/src/generated/prisma/models/DatingProfile.ts](../packages/db/src/generated/prisma/models/DatingProfile.ts) (288 matches)
@@ -1198,7 +1198,7 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 208 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/DatingProfilePhoto.ts](../packages/db/src/generated/prisma/models/DatingProfilePhoto.ts) (171 matches)
@@ -1266,7 +1266,7 @@
   - `generated`: 7 files / 179 matches
 - Key files:
   - [packages/db/src/managed-data/managed-dating-catalog.ts](../packages/db/src/managed-data/managed-dating-catalog.ts) (2 matches)
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (5 matches)
   - [packages/db/src/generated/prisma/models/DatingQuestion.ts](../packages/db/src/generated/prisma/models/DatingQuestion.ts) (148 matches)
@@ -1288,7 +1288,7 @@
   - `migrations`: 1 files / 8 matches
   - `generated`: 9 files / 188 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (8 matches)
   - [packages/db/src/generated/prisma/models/DatingQuestionAnswer.ts](../packages/db/src/generated/prisma/models/DatingQuestionAnswer.ts) (151 matches)
@@ -1311,7 +1311,7 @@
   - `migrations`: 1 files / 13 matches
   - `generated`: 11 files / 250 matches
 - Key files:
-  - [packages/web/src/lib/dating.server.ts](../packages/web/src/lib/dating.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/dating.server.ts](../apps/optimitron/src/lib/dating.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql](../packages/db/prisma/migrations/20260520043000_add_dating_foundation/migration.sql) (13 matches)
   - [packages/db/src/generated/prisma/models/DatingSafetyReport.ts](../packages/db/src/generated/prisma/models/DatingSafetyReport.ts) (201 matches)
@@ -1338,14 +1338,14 @@
   - `migrations`: 3 files / 43 matches
   - `generated`: 16 files / 341 matches
 - Key files:
-  - [packages/web/src/lib/documents.server.ts](../packages/web/src/lib/documents.server.ts) (21 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/documents.server.ts](../apps/optimitron/src/lib/documents.server.ts) (21 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (4 matches)
-  - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
-  - [packages/web/src/app/documents/[id]/page.tsx](../packages/web/src/app/documents/[id]/page.tsx) (1 matches)
-  - [packages/web/src/app/search/page.tsx](../packages/web/src/app/search/page.tsx) (1 matches)
-  - [packages/web/src/components/documents/task-documents-list.tsx](../packages/web/src/components/documents/task-documents-list.tsx) (1 matches)
+  - [apps/optimitron/src/lib/tasks/private-work-portability.server.ts](../apps/optimitron/src/lib/tasks/private-work-portability.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/app/documents/[id]/page.tsx](../apps/optimitron/src/app/documents/[id]/page.tsx) (1 matches)
+  - [apps/optimitron/src/app/search/page.tsx](../apps/optimitron/src/app/search/page.tsx) (1 matches)
+  - [apps/optimitron/src/components/documents/task-documents-list.tsx](../apps/optimitron/src/components/documents/task-documents-list.tsx) (1 matches)
 - Notes:
   - none
 
@@ -1363,11 +1363,11 @@
   - `migrations`: 3 files / 17 matches
   - `generated`: 12 files / 231 matches
 - Key files:
-  - [packages/web/src/lib/documents.server.ts](../packages/web/src/lib/documents.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/documents.server.ts](../apps/optimitron/src/lib/documents.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-demo-content.ts](../packages/db/src/managed-data/managed-demo-content.ts) (2 matches)
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
-  - [packages/web/src/lib/content-search.server.ts](../packages/web/src/lib/content-search.server.ts) (1 matches)
-  - [packages/web/src/lib/__tests__/content-search.server.test.ts](../packages/web/src/lib/__tests__/content-search.server.test.ts) (1 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/content-search.server.ts](../apps/optimitron/src/lib/content-search.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/__tests__/content-search.server.test.ts](../apps/optimitron/src/lib/__tests__/content-search.server.test.ts) (1 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
   - [docs/PRD.md](../docs/PRD.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
@@ -1390,14 +1390,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 7 matches
 - Key files:
-  - [packages/web/src/lib/email/resend-webhook.ts](../packages/web/src/lib/email/resend-webhook.ts) (16 matches)
-  - [packages/web/src/lib/admin-communications.server.ts](../packages/web/src/lib/admin-communications.server.ts) (4 matches)
-  - [packages/web/src/lib/email/email-log.server.ts](../packages/web/src/lib/email/email-log.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/task-notifications.server.ts](../packages/web/src/lib/tasks/task-notifications.server.ts) (3 matches)
-  - [packages/web/src/lib/email/send-deduped-email.server.ts](../packages/web/src/lib/email/send-deduped-email.server.ts) (3 matches)
-  - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (3 matches)
-  - [packages/web/src/lib/email/suppression.server.ts](../packages/web/src/lib/email/suppression.server.ts) (2 matches)
-  - [packages/web/src/lib/email/task-funding-pledge-confirmation-email.ts](../packages/web/src/lib/email/task-funding-pledge-confirmation-email.ts) (2 matches)
+  - [apps/optimitron/src/lib/email/resend-webhook.ts](../apps/optimitron/src/lib/email/resend-webhook.ts) (16 matches)
+  - [apps/optimitron/src/lib/admin-communications.server.ts](../apps/optimitron/src/lib/admin-communications.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/email/email-log.server.ts](../apps/optimitron/src/lib/email/email-log.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/task-notifications.server.ts](../apps/optimitron/src/lib/tasks/task-notifications.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/email/send-deduped-email.server.ts](../apps/optimitron/src/lib/email/send-deduped-email.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/task-funding/escrow.server.ts](../apps/optimitron/src/lib/task-funding/escrow.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/email/suppression.server.ts](../apps/optimitron/src/lib/email/suppression.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/email/task-funding-pledge-confirmation-email.ts](../apps/optimitron/src/lib/email/task-funding-pledge-confirmation-email.ts) (2 matches)
 - Notes:
   - none
 
@@ -1416,11 +1416,11 @@
   - `generated`: 12 files / 332 matches
   - `other`: 2 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/tasks/external-action.server.ts](../packages/web/src/lib/tasks/external-action.server.ts) (20 matches)
-  - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-instructions.ts](../packages/web/src/lib/mcp-instructions.ts) (1 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/tasks/external-action.server.ts](../apps/optimitron/src/lib/tasks/external-action.server.ts) (20 matches)
+  - [apps/optimitron/src/lib/mcp-tools/private-execution.ts](../apps/optimitron/src/lib/mcp-tools/private-execution.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-instructions.ts](../apps/optimitron/src/lib/mcp-instructions.ts) (1 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1445,10 +1445,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 6 files / 12 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (21 matches)
-  - [packages/web/src/components/donate/WaysToGiveCard.tsx](../packages/web/src/components/donate/WaysToGiveCard.tsx) (3 matches)
-  - [packages/web/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx](../packages/web/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx) (1 matches)
-  - [packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx](../packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx) (1 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (21 matches)
+  - [apps/optimitron/src/components/donate/WaysToGiveCard.tsx](../apps/optimitron/src/components/donate/WaysToGiveCard.tsx) (3 matches)
+  - [apps/optimitron/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx](../apps/optimitron/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx) (1 matches)
+  - [apps/optimitron/src/components/prize/VoterPrizeTreasuryDeposit.tsx](../apps/optimitron/src/components/prize/VoterPrizeTreasuryDeposit.tsx) (1 matches)
   - [packages/data/src/datasets/medical-data/references.json](../packages/data/src/datasets/medical-data/references.json) (11 matches)
   - [packages/data/src/datasets/medical-data/treatments/irritable-bowel-syndrome.json](../packages/data/src/datasets/medical-data/treatments/irritable-bowel-syndrome.json) (2 matches)
   - [packages/data/src/datasets/medical-data/treatments/anxiety-disorder.json](../packages/data/src/datasets/medical-data/treatments/anxiety-disorder.json) (1 matches)
@@ -1473,11 +1473,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (4 matches)
-  - [packages/web/src/components/profile/ProfileSnapshotForm.tsx](../packages/web/src/components/profile/ProfileSnapshotForm.tsx) (51 matches)
-  - [packages/web/src/components/profile/DailyCheckInCard.tsx](../packages/web/src/components/profile/DailyCheckInCard.tsx) (3 matches)
-  - [packages/web/src/components/ui/form-field.tsx](../packages/web/src/components/ui/form-field.tsx) (1 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (4 matches)
+  - [apps/optimitron/src/components/profile/ProfileSnapshotForm.tsx](../apps/optimitron/src/components/profile/ProfileSnapshotForm.tsx) (51 matches)
+  - [apps/optimitron/src/components/profile/DailyCheckInCard.tsx](../apps/optimitron/src/components/profile/DailyCheckInCard.tsx) (3 matches)
+  - [apps/optimitron/src/components/ui/form-field.tsx](../apps/optimitron/src/components/ui/form-field.tsx) (1 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (10 matches)
@@ -1500,8 +1500,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (2 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (12 matches)
@@ -1526,7 +1526,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (6 matches)
   - [docs/PRD.md](../docs/PRD.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
@@ -1574,8 +1574,8 @@
   - `generated`: 13 files / 290 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (10 matches)
-  - [packages/web/src/lib/tasks/external-action.server.ts](../packages/web/src/lib/tasks/external-action.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/tasks/external-action.server.ts](../apps/optimitron/src/lib/tasks/external-action.server.ts) (8 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (9 matches)
   - [packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql](../packages/db/prisma/migrations/20260722120000_normalize_forms_and_reusable_answers/migration.sql) (20 matches)
   - [packages/db/src/generated/prisma/models/FormSubmission.ts](../packages/db/src/generated/prisma/models/FormSubmission.ts) (231 matches)
@@ -1603,14 +1603,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (10 matches)
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (10 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (10 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (7 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
-  - [packages/web/src/app/api/health-analysis/submit/route.ts](../packages/web/src/app/api/health-analysis/submit/route.ts) (3 matches)
-  - [packages/web/src/app/api/conditions/search/route.ts](../packages/web/src/app/api/conditions/search/route.ts) (2 matches)
-  - [packages/web/src/lib/global-variable-lookup.server.ts](../packages/web/src/lib/global-variable-lookup.server.ts) (2 matches)
-  - [packages/web/src/components/medical/medical-pages.tsx](../packages/web/src/components/medical/medical-pages.tsx) (1 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/health-analysis/submit/route.ts](../apps/optimitron/src/app/api/health-analysis/submit/route.ts) (3 matches)
+  - [apps/optimitron/src/app/api/conditions/search/route.ts](../apps/optimitron/src/app/api/conditions/search/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/global-variable-lookup.server.ts](../apps/optimitron/src/lib/global-variable-lookup.server.ts) (2 matches)
+  - [apps/optimitron/src/components/medical/medical-pages.tsx](../apps/optimitron/src/components/medical/medical-pages.tsx) (1 matches)
 - Notes:
   - none
 
@@ -1628,7 +1628,7 @@
   - `generated`: 9 files / 188 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (6 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
@@ -1726,10 +1726,10 @@
   - `generated`: 10 files / 284 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (8 matches)
-  - [packages/web/src/lib/efficacy-lag-matcher.server.ts](../packages/web/src/lib/efficacy-lag-matcher.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/efficacy-lag-matcher.server.ts](../apps/optimitron/src/lib/efficacy-lag-matcher.server.ts) (3 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/scripts/recompute-efficacy-lag.ts](../packages/web/scripts/recompute-efficacy-lag.ts) (1 matches)
+  - [apps/optimitron/scripts/recompute-efficacy-lag.ts](../apps/optimitron/scripts/recompute-efficacy-lag.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (6 matches)
   - [packages/db/src/generated/prisma/models/InterventionApprovalTimeline.ts](../packages/db/src/generated/prisma/models/InterventionApprovalTimeline.ts) (237 matches)
@@ -1752,7 +1752,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (5 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (5 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
   - [docs/PRD.md](../docs/PRD.md) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1778,7 +1778,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (6 matches)
@@ -1804,7 +1804,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (3 matches)
@@ -1859,13 +1859,13 @@
   - `other`: 5 files / 13 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (8 matches)
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (5 matches)
-  - [packages/web/scripts/import-treaty-policy-model.ts](../packages/web/scripts/import-treaty-policy-model.ts) (2 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/alignment-politicians.server.ts](../packages/web/src/lib/alignment-politicians.server.ts) (2 matches)
-  - [packages/web/src/lib/jurisdiction-search.server.ts](../packages/web/src/lib/jurisdiction-search.server.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-catalog.server.ts](../packages/web/src/lib/wishocracy-catalog.server.ts) (2 matches)
-  - [packages/web/src/components/scoreboard/PoliticianAlignmentDashboard.tsx](../packages/web/src/components/scoreboard/PoliticianAlignmentDashboard.tsx) (1 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (5 matches)
+  - [apps/optimitron/scripts/import-treaty-policy-model.ts](../apps/optimitron/scripts/import-treaty-policy-model.ts) (2 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/alignment-politicians.server.ts](../apps/optimitron/src/lib/alignment-politicians.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/jurisdiction-search.server.ts](../apps/optimitron/src/lib/jurisdiction-search.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-catalog.server.ts](../apps/optimitron/src/lib/wishocracy-catalog.server.ts) (2 matches)
+  - [apps/optimitron/src/components/scoreboard/PoliticianAlignmentDashboard.tsx](../apps/optimitron/src/components/scoreboard/PoliticianAlignmentDashboard.tsx) (1 matches)
 - Notes:
   - none
 
@@ -1885,8 +1885,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (11 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (11 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/PRD.md](../docs/PRD.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1911,7 +1911,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (12 matches)
@@ -1939,9 +1939,9 @@
   - `zod`: 1 files / 2 matches
   - `other`: 3 files / 14 matches
 - Key files:
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (14 matches)
-  - [packages/web/src/lib/census-aggregation.server.ts](../packages/web/src/lib/census-aggregation.server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (14 matches)
+  - [apps/optimitron/src/lib/census-aggregation.server.ts](../apps/optimitron/src/lib/census-aggregation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
   - [packages/data/src/importers/types.ts](../packages/data/src/importers/types.ts) (4 matches)
   - [packages/optimizer/src/temporal-alignment.ts](../packages/optimizer/src/temporal-alignment.ts) (4 matches)
   - [packages/optimizer/src/types.ts](../packages/optimizer/src/types.ts) (4 matches)
@@ -1966,8 +1966,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 15 matches
 - Key files:
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (6 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
   - [packages/data/src/variable-statistics.ts](../packages/data/src/variable-statistics.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -1993,8 +1993,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-relationships.server.ts](../packages/web/src/lib/aggregate-relationships.server.ts) (9 matches)
-  - [packages/web/src/app/api/health-analysis/submit/route.ts](../packages/web/src/app/api/health-analysis/submit/route.ts) (3 matches)
+  - [apps/optimitron/src/lib/aggregate-relationships.server.ts](../apps/optimitron/src/lib/aggregate-relationships.server.ts) (9 matches)
+  - [apps/optimitron/src/app/api/health-analysis/submit/route.ts](../apps/optimitron/src/app/api/health-analysis/submit/route.ts) (3 matches)
   - [packages/optimizer/src/statistics.ts](../packages/optimizer/src/statistics.ts) (3 matches)
   - [packages/optimizer/src/variable-relationship-runner.ts](../packages/optimizer/src/variable-relationship-runner.ts) (3 matches)
   - [packages/extension/src/workers/analysis.worker.ts](../packages/extension/src/workers/analysis.worker.ts) (2 matches)
@@ -2019,13 +2019,13 @@
   - `zod`: 1 files / 1 matches
   - `other`: 4 files / 9 matches
 - Key files:
-  - [packages/web/src/components/notifications/PushNotificationPrompt.tsx](../packages/web/src/components/notifications/PushNotificationPrompt.tsx) (2 matches)
-  - [packages/web/src/components/settings/SettingsClient.tsx](../packages/web/src/components/settings/SettingsClient.tsx) (1 matches)
+  - [apps/optimitron/src/components/notifications/PushNotificationPrompt.tsx](../apps/optimitron/src/components/notifications/PushNotificationPrompt.tsx) (2 matches)
+  - [apps/optimitron/src/components/settings/SettingsClient.tsx](../apps/optimitron/src/components/settings/SettingsClient.tsx) (1 matches)
   - [packages/extension/src/background/service-worker.ts](../packages/extension/src/background/service-worker.ts) (2 matches)
-  - [packages/web/src/lib/routes.ts](../packages/web/src/lib/routes.ts) (2 matches)
+  - [apps/optimitron/src/lib/routes.ts](../apps/optimitron/src/lib/routes.ts) (2 matches)
   - [packages/db/src/cleanup-test-data.ts](../packages/db/src/cleanup-test-data.ts) (1 matches)
-  - [packages/web/src/lib/push-notifications.ts](../packages/web/src/lib/push-notifications.ts) (1 matches)
-  - [packages/web/src/lib/tasks/share-templates.ts](../packages/web/src/lib/tasks/share-templates.ts) (1 matches)
+  - [apps/optimitron/src/lib/push-notifications.ts](../apps/optimitron/src/lib/push-notifications.ts) (1 matches)
+  - [apps/optimitron/src/lib/tasks/share-templates.ts](../apps/optimitron/src/lib/tasks/share-templates.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
 - Notes:
   - none
@@ -2043,7 +2043,7 @@
   - `generated`: 9 files / 153 matches
   - `zod`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/app/api/dashboard/notification-preferences/route.ts](../packages/web/src/app/api/dashboard/notification-preferences/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/dashboard/notification-preferences/route.ts](../apps/optimitron/src/app/api/dashboard/notification-preferences/route.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (4 matches)
   - [packages/db/src/generated/prisma/models/NotificationPreference.ts](../packages/db/src/generated/prisma/models/NotificationPreference.ts) (116 matches)
@@ -2068,8 +2068,8 @@
   - `generated`: 9 files / 182 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/mcp/oauth/token/route.ts](../packages/web/src/app/api/mcp/oauth/token/route.ts) (4 matches)
-  - [packages/web/src/app/api/mcp/oauth/consent/route.ts](../packages/web/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/token/route.ts](../apps/optimitron/src/app/api/mcp/oauth/token/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/consent/route.ts](../apps/optimitron/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql](../packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql) (9 matches)
@@ -2095,11 +2095,11 @@
   - `generated`: 8 files / 181 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/app/api/mcp/oauth/authorize/route.ts](../packages/web/src/app/api/mcp/oauth/authorize/route.ts) (2 matches)
-  - [packages/web/src/app/api/mcp/oauth/consent/route.ts](../packages/web/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
-  - [packages/web/src/app/api/mcp/oauth/register/route.ts](../packages/web/src/app/api/mcp/oauth/register/route.ts) (2 matches)
-  - [packages/web/src/app/mcp/authorize/page.tsx](../packages/web/src/app/mcp/authorize/page.tsx) (2 matches)
-  - [packages/web/src/lib/developer-openapi.ts](../packages/web/src/lib/developer-openapi.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/authorize/route.ts](../apps/optimitron/src/app/api/mcp/oauth/authorize/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/consent/route.ts](../apps/optimitron/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/register/route.ts](../apps/optimitron/src/app/api/mcp/oauth/register/route.ts) (2 matches)
+  - [apps/optimitron/src/app/mcp/authorize/page.tsx](../apps/optimitron/src/app/mcp/authorize/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/developer-openapi.ts](../apps/optimitron/src/lib/developer-openapi.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql](../packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql) (4 matches)
@@ -2122,11 +2122,11 @@
   - `generated`: 10 files / 187 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/app/api/mcp/oauth/revoke/route.ts](../packages/web/src/app/api/mcp/oauth/revoke/route.ts) (4 matches)
-  - [packages/web/src/app/api/mcp/oauth/token/route.ts](../packages/web/src/app/api/mcp/oauth/token/route.ts) (4 matches)
-  - [packages/web/src/app/api/mcp/route.ts](../packages/web/src/app/api/mcp/route.ts) (2 matches)
-  - [packages/web/src/app/mcp/authorize/page.tsx](../packages/web/src/app/mcp/authorize/page.tsx) (2 matches)
-  - [packages/web/src/lib/auth-utils.ts](../packages/web/src/lib/auth-utils.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/revoke/route.ts](../apps/optimitron/src/app/api/mcp/oauth/revoke/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/token/route.ts](../apps/optimitron/src/app/api/mcp/oauth/token/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/mcp/route.ts](../apps/optimitron/src/app/api/mcp/route.ts) (2 matches)
+  - [apps/optimitron/src/app/mcp/authorize/page.tsx](../apps/optimitron/src/app/mcp/authorize/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/auth-utils.ts](../apps/optimitron/src/lib/auth-utils.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql](../packages/db/prisma/migrations/20260425245000_create_oauth_tables/migration.sql) (10 matches)
@@ -2153,14 +2153,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 8 files / 31 matches
 - Key files:
-  - [packages/web/src/lib/organization.server.ts](../packages/web/src/lib/organization.server.ts) (42 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (32 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (14 matches)
-  - [packages/web/src/app/api/admin/organizations/[id]/route.ts](../packages/web/src/app/api/admin/organizations/[id]/route.ts) (13 matches)
+  - [apps/optimitron/src/lib/organization.server.ts](../apps/optimitron/src/lib/organization.server.ts) (42 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (32 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (14 matches)
+  - [apps/optimitron/src/app/api/admin/organizations/[id]/route.ts](../apps/optimitron/src/app/api/admin/organizations/[id]/route.ts) (13 matches)
   - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (11 matches)
   - [packages/db/src/managed-data/managed-demo-user.ts](../packages/db/src/managed-data/managed-demo-user.ts) (6 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (6 matches)
-  - [packages/web/src/app/api/organizations/[id]/route.ts](../packages/web/src/app/api/organizations/[id]/route.ts) (6 matches)
+  - [apps/optimitron/src/app/api/organizations/[id]/route.ts](../apps/optimitron/src/app/api/organizations/[id]/route.ts) (6 matches)
 - Notes:
   - none
 
@@ -2180,14 +2180,14 @@
   - `generated`: 9 files / 153 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/organization.server.ts](../packages/web/src/lib/organization.server.ts) (23 matches)
+  - [apps/optimitron/src/lib/organization.server.ts](../apps/optimitron/src/lib/organization.server.ts) (23 matches)
   - [packages/db/src/managed-data/managed-demo-user.ts](../packages/db/src/managed-data/managed-demo-user.ts) (2 matches)
   - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (2 matches)
-  - [packages/web/src/app/api/mcp/oauth/consent/route.ts](../packages/web/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
-  - [packages/web/src/app/api/mcp/route.ts](../packages/web/src/app/api/mcp/route.ts) (2 matches)
-  - [packages/web/src/app/mcp/authorize/page.tsx](../packages/web/src/app/mcp/authorize/page.tsx) (2 matches)
-  - [packages/web/src/lib/auth-utils.ts](../packages/web/src/lib/auth-utils.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/oauth/consent/route.ts](../apps/optimitron/src/app/api/mcp/oauth/consent/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/mcp/route.ts](../apps/optimitron/src/app/api/mcp/route.ts) (2 matches)
+  - [apps/optimitron/src/app/mcp/authorize/page.tsx](../apps/optimitron/src/app/mcp/authorize/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/auth-utils.ts](../apps/optimitron/src/lib/auth-utils.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
 - Notes:
   - none
 
@@ -2231,14 +2231,14 @@
   - `generated`: 10 files / 211 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (7 matches)
-  - [packages/web/src/lib/referendum-site.server.ts](../packages/web/src/lib/referendum-site.server.ts) (6 matches)
-  - [packages/web/src/app/api/admin/referendum-positions/[id]/route.ts](../packages/web/src/app/api/admin/referendum-positions/[id]/route.ts) (4 matches)
-  - [packages/web/src/app/api/admin/referendum-positions/route.ts](../packages/web/src/app/api/admin/referendum-positions/route.ts) (4 matches)
-  - [packages/web/src/app/api/referendums/[slug]/organization-position/route.ts](../packages/web/src/app/api/referendums/[slug]/organization-position/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (7 matches)
+  - [apps/optimitron/src/lib/referendum-site.server.ts](../apps/optimitron/src/lib/referendum-site.server.ts) (6 matches)
+  - [apps/optimitron/src/app/api/admin/referendum-positions/[id]/route.ts](../apps/optimitron/src/app/api/admin/referendum-positions/[id]/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/admin/referendum-positions/route.ts](../apps/optimitron/src/app/api/admin/referendum-positions/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/organization-position/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/organization-position/route.ts) (4 matches)
   - [packages/db/src/managed-data/managed-demo-user.ts](../packages/db/src/managed-data/managed-demo-user.ts) (2 matches)
   - [packages/db/src/managed-data/managed-iam-organization.ts](../packages/db/src/managed-data/managed-iam-organization.ts) (2 matches)
-  - [packages/web/src/app/admin/referendum-positions/page.tsx](../packages/web/src/app/admin/referendum-positions/page.tsx) (2 matches)
+  - [apps/optimitron/src/app/admin/referendum-positions/page.tsx](../apps/optimitron/src/app/admin/referendum-positions/page.tsx) (2 matches)
 - Notes:
   - none
 
@@ -2255,9 +2255,9 @@
   - `generated`: 9 files / 189 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (19 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-catalog.server.ts](../apps/optimitron/src/lib/parameters/parameter-catalog.server.ts) (19 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql](../packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/ParameterDefinition.ts](../packages/db/src/generated/prisma/models/ParameterDefinition.ts) (150 matches)
@@ -2279,9 +2279,9 @@
   - `generated`: 9 files / 394 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (18 matches)
-  - [packages/web/src/lib/parameters/parameter-staleness.server.ts](../packages/web/src/lib/parameters/parameter-staleness.server.ts) (2 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-catalog.server.ts](../apps/optimitron/src/lib/parameters/parameter-catalog.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-staleness.server.ts](../apps/optimitron/src/lib/parameters/parameter-staleness.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (9 matches)
   - [packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql](../packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql) (15 matches)
   - [packages/db/src/generated/prisma/models/ParameterRevision.ts](../packages/db/src/generated/prisma/models/ParameterRevision.ts) (341 matches)
@@ -2303,7 +2303,7 @@
   - `generated`: 8 files / 168 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-catalog.server.ts](../apps/optimitron/src/lib/parameters/parameter-catalog.server.ts) (6 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql](../packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/ParameterRevisionInput.ts](../packages/db/src/generated/prisma/models/ParameterRevisionInput.ts) (131 matches)
@@ -2327,7 +2327,7 @@
   - `generated`: 9 files / 163 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-catalog.server.ts](../apps/optimitron/src/lib/parameters/parameter-catalog.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql](../packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql) (6 matches)
   - [packages/db/src/generated/prisma/models/ParameterRevisionSourceArtifact.ts](../packages/db/src/generated/prisma/models/ParameterRevisionSourceArtifact.ts) (126 matches)
@@ -2358,14 +2358,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 5 files / 24 matches
 - Key files:
-  - [packages/web/src/lib/person.server.ts](../packages/web/src/lib/person.server.ts) (43 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (31 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (15 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (12 matches)
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
+  - [apps/optimitron/src/lib/person.server.ts](../apps/optimitron/src/lib/person.server.ts) (43 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (31 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (15 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (12 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (10 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (8 matches)
-  - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (8 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks.server.ts](../apps/optimitron/src/lib/tasks.server.ts) (8 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (6 matches)
 - Notes:
   - none
 
@@ -2385,12 +2385,12 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (10 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (4 matches)
   - [packages/db/src/managed-data/managed-grandma-kay.ts](../packages/db/src/managed-data/managed-grandma-kay.ts) (2 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/efficacy-lag-matcher.server.ts](../packages/web/src/lib/efficacy-lag-matcher.server.ts) (2 matches)
-  - [packages/web/src/lib/prosecution-data.server.ts](../packages/web/src/lib/prosecution-data.server.ts) (1 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/efficacy-lag-matcher.server.ts](../apps/optimitron/src/lib/efficacy-lag-matcher.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/prosecution-data.server.ts](../apps/optimitron/src/lib/prosecution-data.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
 - Notes:
@@ -2412,10 +2412,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/efficacy-lag-matcher.server.ts](../packages/web/src/lib/efficacy-lag-matcher.server.ts) (3 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (2 matches)
-  - [packages/web/src/lib/prosecution-data.server.ts](../packages/web/src/lib/prosecution-data.server.ts) (1 matches)
-  - [packages/web/scripts/recompute-efficacy-lag.ts](../packages/web/scripts/recompute-efficacy-lag.ts) (1 matches)
+  - [apps/optimitron/src/lib/efficacy-lag-matcher.server.ts](../apps/optimitron/src/lib/efficacy-lag-matcher.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/prosecution-data.server.ts](../apps/optimitron/src/lib/prosecution-data.server.ts) (1 matches)
+  - [apps/optimitron/scripts/recompute-efficacy-lag.ts](../apps/optimitron/scripts/recompute-efficacy-lag.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (8 matches)
@@ -2440,11 +2440,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/personhood.server.ts](../packages/web/src/lib/personhood.server.ts) (4 matches)
-  - [packages/web/src/app/api/treasury/register-ubi/route.ts](../packages/web/src/app/api/treasury/register-ubi/route.ts) (2 matches)
-  - [packages/web/src/lib/census-aggregation.server.ts](../packages/web/src/lib/census-aggregation.server.ts) (2 matches)
-  - [packages/web/src/lib/referral-point-mint.server.ts](../packages/web/src/lib/referral-point-mint.server.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-community.ts](../packages/web/src/lib/wishocracy-community.ts) (2 matches)
+  - [apps/optimitron/src/lib/personhood.server.ts](../apps/optimitron/src/lib/personhood.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/treasury/register-ubi/route.ts](../apps/optimitron/src/app/api/treasury/register-ubi/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/census-aggregation.server.ts](../apps/optimitron/src/lib/census-aggregation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/referral-point-mint.server.ts](../apps/optimitron/src/lib/referral-point-mint.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-community.ts](../apps/optimitron/src/lib/wishocracy-community.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
@@ -2468,14 +2468,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (9 matches)
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (8 matches)
-  - [packages/web/src/lib/prosecution-data.server.ts](../packages/web/src/lib/prosecution-data.server.ts) (7 matches)
-  - [packages/web/src/lib/evidence-package.server.ts](../packages/web/src/lib/evidence-package.server.ts) (3 matches)
-  - [packages/web/scripts/recompute-efficacy-lag.ts](../packages/web/scripts/recompute-efficacy-lag.ts) (2 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/efficacy-lag-matcher.server.ts](../packages/web/src/lib/efficacy-lag-matcher.server.ts) (2 matches)
-  - [packages/web/src/app/api/people/[id]/evidence-package/route.ts](../packages/web/src/app/api/people/[id]/evidence-package/route.ts) (1 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (9 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (8 matches)
+  - [apps/optimitron/src/lib/prosecution-data.server.ts](../apps/optimitron/src/lib/prosecution-data.server.ts) (7 matches)
+  - [apps/optimitron/src/lib/evidence-package.server.ts](../apps/optimitron/src/lib/evidence-package.server.ts) (3 matches)
+  - [apps/optimitron/scripts/recompute-efficacy-lag.ts](../apps/optimitron/scripts/recompute-efficacy-lag.ts) (2 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/efficacy-lag-matcher.server.ts](../apps/optimitron/src/lib/efficacy-lag-matcher.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/people/[id]/evidence-package/route.ts](../apps/optimitron/src/app/api/people/[id]/evidence-package/route.ts) (1 matches)
 - Notes:
   - none
 
@@ -2495,10 +2495,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (16 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (11 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/evidence-package.server.ts](../packages/web/src/lib/evidence-package.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (16 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (11 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/evidence-package.server.ts](../apps/optimitron/src/lib/evidence-package.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (7 matches)
@@ -2522,11 +2522,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (11 matches)
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (4 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/evidence-package.server.ts](../packages/web/src/lib/evidence-package.server.ts) (1 matches)
-  - [packages/web/src/lib/prosecution-data.server.ts](../packages/web/src/lib/prosecution-data.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (11 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/evidence-package.server.ts](../apps/optimitron/src/lib/evidence-package.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/prosecution-data.server.ts](../apps/optimitron/src/lib/prosecution-data.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (10 matches)
@@ -2549,10 +2549,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/evidence-package.server.ts](../packages/web/src/lib/evidence-package.server.ts) (1 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (10 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (6 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/evidence-package.server.ts](../apps/optimitron/src/lib/evidence-package.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (9 matches)
@@ -2576,10 +2576,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/app/api/people/[id]/route.ts](../packages/web/src/app/api/people/[id]/route.ts) (10 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
-  - [packages/web/src/app/api/referendums/[slug]/represented-people/route.ts](../packages/web/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
-  - [packages/web/src/lib/evidence-package.server.ts](../packages/web/src/lib/evidence-package.server.ts) (1 matches)
+  - [apps/optimitron/src/app/api/people/[id]/route.ts](../apps/optimitron/src/app/api/people/[id]/route.ts) (10 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (6 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/evidence-package.server.ts](../apps/optimitron/src/lib/evidence-package.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (7 matches)
@@ -2603,12 +2603,12 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/cron/point-mint/route.ts](../packages/web/src/app/api/cron/point-mint/route.ts) (8 matches)
-  - [packages/web/src/lib/referral-point-mint.server.ts](../packages/web/src/lib/referral-point-mint.server.ts) (6 matches)
-  - [packages/web/src/app/api/points/balance/route.ts](../packages/web/src/app/api/points/balance/route.ts) (2 matches)
-  - [packages/web/src/app/api/prize-treasury/status/route.ts](../packages/web/src/app/api/prize-treasury/status/route.ts) (2 matches)
-  - [packages/web/src/lib/impact-receipts.server.ts](../packages/web/src/lib/impact-receipts.server.ts) (2 matches)
-  - [packages/web/src/components/prize/EarthOptimizationPointsBalanceCard.tsx](../packages/web/src/components/prize/EarthOptimizationPointsBalanceCard.tsx) (2 matches)
+  - [apps/optimitron/src/app/api/cron/point-mint/route.ts](../apps/optimitron/src/app/api/cron/point-mint/route.ts) (8 matches)
+  - [apps/optimitron/src/lib/referral-point-mint.server.ts](../apps/optimitron/src/lib/referral-point-mint.server.ts) (6 matches)
+  - [apps/optimitron/src/app/api/points/balance/route.ts](../apps/optimitron/src/app/api/points/balance/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/prize-treasury/status/route.ts](../apps/optimitron/src/app/api/prize-treasury/status/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/impact-receipts.server.ts](../apps/optimitron/src/lib/impact-receipts.server.ts) (2 matches)
+  - [apps/optimitron/src/components/prize/EarthOptimizationPointsBalanceCard.tsx](../apps/optimitron/src/components/prize/EarthOptimizationPointsBalanceCard.tsx) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260607120000_rename_vote_token_mint_to_point_mint/migration.sql](../packages/db/prisma/migrations/20260607120000_rename_vote_token_mint_to_point_mint/migration.sql) (4 matches)
 - Notes:
@@ -2633,14 +2633,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 10 files / 71 matches
 - Key files:
-  - [packages/web/src/lib/alignment-politicians.server.ts](../packages/web/src/lib/alignment-politicians.server.ts) (4 matches)
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (2 matches)
-  - [packages/web/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts](../packages/web/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts) (1 matches)
-  - [packages/web/src/app/governments/[code]/page.tsx](../packages/web/src/app/governments/[code]/page.tsx) (3 matches)
-  - [packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx](../packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx) (2 matches)
-  - [packages/web/src/app/iab/page.tsx](../packages/web/src/app/iab/page.tsx) (1 matches)
-  - [packages/web/src/components/alignment/AlignmentReport.tsx](../packages/web/src/components/alignment/AlignmentReport.tsx) (2 matches)
-  - [packages/web/src/components/treasury/TreasuryAllocationViz.tsx](../packages/web/src/components/treasury/TreasuryAllocationViz.tsx) (2 matches)
+  - [apps/optimitron/src/lib/alignment-politicians.server.ts](../apps/optimitron/src/lib/alignment-politicians.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts](../apps/optimitron/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts) (1 matches)
+  - [apps/optimitron/src/app/governments/[code]/page.tsx](../apps/optimitron/src/app/governments/[code]/page.tsx) (3 matches)
+  - [apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx](../apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx) (2 matches)
+  - [apps/optimitron/src/app/iab/page.tsx](../apps/optimitron/src/app/iab/page.tsx) (1 matches)
+  - [apps/optimitron/src/components/alignment/AlignmentReport.tsx](../apps/optimitron/src/components/alignment/AlignmentReport.tsx) (2 matches)
+  - [apps/optimitron/src/components/treasury/TreasuryAllocationViz.tsx](../apps/optimitron/src/components/treasury/TreasuryAllocationViz.tsx) (2 matches)
 - Notes:
   - none
 
@@ -2659,8 +2659,8 @@
   - `generated`: 9 files / 174 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/alignment-politicians.server.ts](../packages/web/src/lib/alignment-politicians.server.ts) (4 matches)
-  - [packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx](../packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/alignment-politicians.server.ts](../apps/optimitron/src/lib/alignment-politicians.server.ts) (4 matches)
+  - [apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx](../apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260311211431_init/migration.sql](../packages/db/prisma/migrations/20260311211431_init/migration.sql) (4 matches)
@@ -2686,9 +2686,9 @@
   - `zod`: 1 files / 1 matches
   - `other`: 4 files / 11 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (4 matches)
   - [packages/db/src/types.ts](../packages/db/src/types.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-alignment.ts](../packages/web/src/lib/wishocracy-alignment.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-alignment.ts](../apps/optimitron/src/lib/wishocracy-alignment.ts) (2 matches)
   - [packages/wishocracy/src/__tests__/alignment.test.ts](../packages/wishocracy/src/__tests__/alignment.test.ts) (19 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (3 matches)
   - [docs/TYPE_SYSTEM.md](../docs/TYPE_SYSTEM.md) (1 matches)
@@ -2713,8 +2713,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/app/api/prize-treasury/status/route.ts](../packages/web/src/app/api/prize-treasury/status/route.ts) (2 matches)
-  - [packages/web/src/app/prize/page.tsx](../packages/web/src/app/prize/page.tsx) (2 matches)
+  - [apps/optimitron/src/app/api/prize-treasury/status/route.ts](../apps/optimitron/src/app/api/prize-treasury/status/route.ts) (2 matches)
+  - [apps/optimitron/src/app/prize/page.tsx](../apps/optimitron/src/app/prize/page.tsx) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (4 matches)
@@ -2792,14 +2792,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 5 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (14 matches)
-  - [packages/web/src/app/api/referendums/[slug]/vote/route.ts](../packages/web/src/app/api/referendums/[slug]/vote/route.ts) (7 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (7 matches)
-  - [packages/web/src/app/agencies/dcongress/referendums/[slug]/page.tsx](../packages/web/src/app/agencies/dcongress/referendums/[slug]/page.tsx) (6 matches)
-  - [packages/web/src/app/api/referendums/route.ts](../packages/web/src/app/api/referendums/route.ts) (6 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (14 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts) (7 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (7 matches)
+  - [apps/optimitron/src/app/agencies/dcongress/referendums/[slug]/page.tsx](../apps/optimitron/src/app/agencies/dcongress/referendums/[slug]/page.tsx) (6 matches)
+  - [apps/optimitron/src/app/api/referendums/route.ts](../apps/optimitron/src/app/api/referendums/route.ts) (6 matches)
   - [packages/db/src/managed-data/managed-referendums.ts](../packages/db/src/managed-data/managed-referendums.ts) (5 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (4 matches)
-  - [packages/web/src/lib/referendum-site.server.ts](../packages/web/src/lib/referendum-site.server.ts) (4 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (4 matches)
+  - [apps/optimitron/src/lib/referendum-site.server.ts](../apps/optimitron/src/lib/referendum-site.server.ts) (4 matches)
 - Notes:
   - none
 
@@ -2821,14 +2821,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/verified-votes.server.ts](../packages/web/src/lib/verified-votes.server.ts) (16 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (13 matches)
-  - [packages/web/src/lib/referendum-site.server.ts](../packages/web/src/lib/referendum-site.server.ts) (12 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (11 matches)
-  - [packages/web/src/lib/email/monthly-chain-digest.server.ts](../packages/web/src/lib/email/monthly-chain-digest.server.ts) (6 matches)
-  - [packages/web/src/app/api/referendums/[slug]/vote/route.ts](../packages/web/src/app/api/referendums/[slug]/vote/route.ts) (4 matches)
-  - [packages/web/src/lib/daily-activity-digest.server.ts](../packages/web/src/lib/daily-activity-digest.server.ts) (4 matches)
-  - [packages/web/src/lib/humanity-v-government-case.server.ts](../packages/web/src/lib/humanity-v-government-case.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/verified-votes.server.ts](../apps/optimitron/src/lib/verified-votes.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (13 matches)
+  - [apps/optimitron/src/lib/referendum-site.server.ts](../apps/optimitron/src/lib/referendum-site.server.ts) (12 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (11 matches)
+  - [apps/optimitron/src/lib/email/monthly-chain-digest.server.ts](../apps/optimitron/src/lib/email/monthly-chain-digest.server.ts) (6 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/daily-activity-digest.server.ts](../apps/optimitron/src/lib/daily-activity-digest.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/humanity-v-government-case.server.ts](../apps/optimitron/src/lib/humanity-v-government-case.server.ts) (4 matches)
 - Notes:
   - Internal platform vote tied to a real Referendum row, referral attribution, and VOTE token / reward flows.
 
@@ -2851,14 +2851,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 5 files / 11 matches
 - Key files:
-  - [packages/web/src/lib/referral.server.ts](../packages/web/src/lib/referral.server.ts) (8 matches)
-  - [packages/web/src/app/api/game-stats/route.ts](../packages/web/src/app/api/game-stats/route.ts) (2 matches)
-  - [packages/web/src/lib/badges.server.ts](../packages/web/src/lib/badges.server.ts) (2 matches)
-  - [packages/web/src/lib/daily-activity-digest.server.ts](../packages/web/src/lib/daily-activity-digest.server.ts) (2 matches)
-  - [packages/web/src/app/api/referendums/[slug]/vote/route.ts](../packages/web/src/app/api/referendums/[slug]/vote/route.ts) (4 matches)
-  - [packages/web/src/app/api/cron/point-mint/route.ts](../packages/web/src/app/api/cron/point-mint/route.ts) (1 matches)
-  - [packages/web/src/app/api/personhood/world-id/verify/route.ts](../packages/web/src/app/api/personhood/world-id/verify/route.ts) (1 matches)
-  - [packages/web/src/app/prize/page.tsx](../packages/web/src/app/prize/page.tsx) (1 matches)
+  - [apps/optimitron/src/lib/referral.server.ts](../apps/optimitron/src/lib/referral.server.ts) (8 matches)
+  - [apps/optimitron/src/app/api/game-stats/route.ts](../apps/optimitron/src/app/api/game-stats/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/badges.server.ts](../apps/optimitron/src/lib/badges.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/daily-activity-digest.server.ts](../apps/optimitron/src/lib/daily-activity-digest.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts](../apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/cron/point-mint/route.ts](../apps/optimitron/src/app/api/cron/point-mint/route.ts) (1 matches)
+  - [apps/optimitron/src/app/api/personhood/world-id/verify/route.ts](../apps/optimitron/src/app/api/personhood/world-id/verify/route.ts) (1 matches)
+  - [apps/optimitron/src/app/prize/page.tsx](../apps/optimitron/src/app/prize/page.tsx) (1 matches)
 - Notes:
   - none
 
@@ -2877,8 +2877,8 @@
   - `generated`: 8 files / 179 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/referral-redirect.server.ts](../packages/web/src/lib/referral-redirect.server.ts) (2 matches)
-  - [packages/web/src/app/r/[code]/page.tsx](../packages/web/src/app/r/[code]/page.tsx) (1 matches)
+  - [apps/optimitron/src/lib/referral-redirect.server.ts](../apps/optimitron/src/lib/referral-redirect.server.ts) (2 matches)
+  - [apps/optimitron/src/app/r/[code]/page.tsx](../apps/optimitron/src/app/r/[code]/page.tsx) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260417_share_attempts_and_email_variants/migration.sql](../packages/db/prisma/migrations/20260417_share_attempts_and_email_variants/migration.sql) (9 matches)
@@ -2904,13 +2904,13 @@
   - `generated`: 15 files / 325 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/referral-invitations.server.ts](../packages/web/src/lib/referral-invitations.server.ts) (23 matches)
-  - [packages/web/src/lib/humanity-manager-status.server.ts](../packages/web/src/lib/humanity-manager-status.server.ts) (11 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (9 matches)
-  - [packages/web/src/app/api/referral-invitations/route.ts](../packages/web/src/app/api/referral-invitations/route.ts) (6 matches)
-  - [packages/web/src/lib/email/monthly-chain-digest.server.ts](../packages/web/src/lib/email/monthly-chain-digest.server.ts) (4 matches)
-  - [packages/web/src/lib/person.server.ts](../packages/web/src/lib/person.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/referral-invitations.server.ts](../apps/optimitron/src/lib/referral-invitations.server.ts) (23 matches)
+  - [apps/optimitron/src/lib/humanity-manager-status.server.ts](../apps/optimitron/src/lib/humanity-manager-status.server.ts) (11 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (9 matches)
+  - [apps/optimitron/src/app/api/referral-invitations/route.ts](../apps/optimitron/src/app/api/referral-invitations/route.ts) (6 matches)
+  - [apps/optimitron/src/lib/email/monthly-chain-digest.server.ts](../apps/optimitron/src/lib/email/monthly-chain-digest.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/person.server.ts](../apps/optimitron/src/lib/person.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/src/cleanup-test-data.ts](../packages/db/src/cleanup-test-data.ts) (1 matches)
 - Notes:
   - none
@@ -2932,14 +2932,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 4 files / 7 matches
 - Key files:
-  - [packages/web/src/app/api/stripe/webhook/route.ts](../packages/web/src/app/api/stripe/webhook/route.ts) (7 matches)
-  - [packages/web/src/components/treaty/TreatyNameSignatureBox.tsx](../packages/web/src/components/treaty/TreatyNameSignatureBox.tsx) (1 matches)
-  - [packages/web/src/lib/shirt-fulfillment.server.ts](../packages/web/src/lib/shirt-fulfillment.server.ts) (6 matches)
-  - [packages/web/src/lib/voice-session.ts](../packages/web/src/lib/voice-session.ts) (4 matches)
-  - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (3 matches)
+  - [apps/optimitron/src/app/api/stripe/webhook/route.ts](../apps/optimitron/src/app/api/stripe/webhook/route.ts) (7 matches)
+  - [apps/optimitron/src/components/treaty/TreatyNameSignatureBox.tsx](../apps/optimitron/src/components/treaty/TreatyNameSignatureBox.tsx) (1 matches)
+  - [apps/optimitron/src/lib/shirt-fulfillment.server.ts](../apps/optimitron/src/lib/shirt-fulfillment.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/voice-session.ts](../apps/optimitron/src/lib/voice-session.ts) (4 matches)
+  - [apps/optimitron/src/lib/task-funding/payments.server.ts](../apps/optimitron/src/lib/task-funding/payments.server.ts) (3 matches)
   - [packages/data/src/datasets/wishonia-agencies.ts](../packages/data/src/datasets/wishonia-agencies.ts) (2 matches)
-  - [packages/web/src/lib/referendum-vote-sync.ts](../packages/web/src/lib/referendum-vote-sync.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-state-utils.ts](../packages/web/src/lib/wishocracy-state-utils.ts) (2 matches)
+  - [apps/optimitron/src/lib/referendum-vote-sync.ts](../apps/optimitron/src/lib/referendum-vote-sync.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-state-utils.ts](../apps/optimitron/src/lib/wishocracy-state-utils.ts) (2 matches)
 - Notes:
   - none
 
@@ -2959,14 +2959,14 @@
   - `generated`: 16 files / 295 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/app/api/share-attempts/route.ts](../packages/web/src/app/api/share-attempts/route.ts) (2 matches)
-  - [packages/web/src/lib/referral-redirect.server.ts](../packages/web/src/lib/referral-redirect.server.ts) (2 matches)
-  - [packages/web/src/lib/referral.server.ts](../packages/web/src/lib/referral.server.ts) (2 matches)
-  - [packages/web/src/lib/share-attempts.server.ts](../packages/web/src/lib/share-attempts.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
-  - [packages/web/src/app/r/[code]/page.tsx](../packages/web/src/app/r/[code]/page.tsx) (1 matches)
+  - [apps/optimitron/src/app/api/share-attempts/route.ts](../apps/optimitron/src/app/api/share-attempts/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/referral-redirect.server.ts](../apps/optimitron/src/lib/referral-redirect.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/referral.server.ts](../apps/optimitron/src/lib/referral.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/share-attempts.server.ts](../apps/optimitron/src/lib/share-attempts.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/app/r/[code]/page.tsx](../apps/optimitron/src/app/r/[code]/page.tsx) (1 matches)
   - [packages/db/src/cleanup-test-data.ts](../packages/db/src/cleanup-test-data.ts) (1 matches)
-  - [packages/web/src/lib/share-channels.ts](../packages/web/src/lib/share-channels.ts) (1 matches)
+  - [apps/optimitron/src/lib/share-channels.ts](../apps/optimitron/src/lib/share-channels.ts) (1 matches)
 - Notes:
   - none
 
@@ -2986,9 +2986,9 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/app/api/social-accounts/connect-wallet/route.ts](../packages/web/src/app/api/social-accounts/connect-wallet/route.ts) (2 matches)
-  - [packages/web/src/app/api/social-accounts/disconnect/route.ts](../packages/web/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
-  - [packages/web/src/lib/referral-point-mint.server.ts](../packages/web/src/lib/referral-point-mint.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts](../apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/social-accounts/disconnect/route.ts](../apps/optimitron/src/app/api/social-accounts/disconnect/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/referral-point-mint.server.ts](../apps/optimitron/src/lib/referral-point-mint.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (7 matches)
@@ -3013,14 +3013,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (16 matches)
-  - [packages/web/src/lib/parameters/parameter-catalog.server.ts](../packages/web/src/lib/parameters/parameter-catalog.server.ts) (6 matches)
-  - [packages/web/scripts/extract-tasks-from-manual.ts](../packages/web/scripts/extract-tasks-from-manual.ts) (4 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (4 matches)
-  - [packages/web/src/lib/source-artifact-visibility.server.ts](../packages/web/src/lib/source-artifact-visibility.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (4 matches)
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/parameters/parameter-catalog.server.ts](../apps/optimitron/src/lib/parameters/parameter-catalog.server.ts) (6 matches)
+  - [apps/optimitron/scripts/extract-tasks-from-manual.ts](../apps/optimitron/scripts/extract-tasks-from-manual.ts) (4 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/source-artifact-visibility.server.ts](../apps/optimitron/src/lib/source-artifact-visibility.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/private-work-portability.server.ts](../apps/optimitron/src/lib/tasks/private-work-portability.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
 - Notes:
   - none
 
@@ -3036,8 +3036,8 @@
   - `migrations`: 1 files / 10 matches
   - `generated`: 10 files / 256 matches
 - Key files:
-  - [packages/web/src/lib/stripe-connect.server.ts](../packages/web/src/lib/stripe-connect.server.ts) (18 matches)
-  - [packages/web/src/lib/task-payouts.server.ts](../packages/web/src/lib/task-payouts.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/stripe-connect.server.ts](../apps/optimitron/src/lib/stripe-connect.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/task-payouts.server.ts](../apps/optimitron/src/lib/task-payouts.server.ts) (8 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql](../packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql) (10 matches)
   - [packages/db/src/generated/prisma/models/StripeConnectedAccount.ts](../packages/db/src/generated/prisma/models/StripeConnectedAccount.ts) (215 matches)
@@ -3065,14 +3065,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/subject.server.ts](../packages/web/src/lib/subject.server.ts) (6 matches)
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (4 matches)
-  - [packages/web/src/lib/court-data.server.ts](../packages/web/src/lib/court-data.server.ts) (2 matches)
-  - [packages/web/src/app/admin/communications/page.tsx](../packages/web/src/app/admin/communications/page.tsx) (3 matches)
-  - [packages/web/src/app/organizations/[id]/page.tsx](../packages/web/src/app/organizations/[id]/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/subject.server.ts](../apps/optimitron/src/lib/subject.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/court-data.server.ts](../apps/optimitron/src/lib/court-data.server.ts) (2 matches)
+  - [apps/optimitron/src/app/admin/communications/page.tsx](../apps/optimitron/src/app/admin/communications/page.tsx) (3 matches)
+  - [apps/optimitron/src/app/organizations/[id]/page.tsx](../apps/optimitron/src/app/organizations/[id]/page.tsx) (2 matches)
   - [packages/data/src/datasets/medical-data/treatments/hemophilia.json](../packages/data/src/datasets/medical-data/treatments/hemophilia.json) (2 matches)
-  - [packages/web/src/lib/email/preview-envelope.ts](../packages/web/src/lib/email/preview-envelope.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-comment-notification.email.md](../packages/web/src/lib/tasks/task-comment-notification.email.md) (2 matches)
+  - [apps/optimitron/src/lib/email/preview-envelope.ts](../apps/optimitron/src/lib/email/preview-envelope.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-comment-notification.email.md](../apps/optimitron/src/lib/tasks/task-comment-notification.email.md) (2 matches)
 - Notes:
   - none
 
@@ -3096,14 +3096,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 13 files / 39 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (132 matches)
-  - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (59 matches)
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (28 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (27 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (132 matches)
+  - [apps/optimitron/src/lib/tasks.server.ts](../apps/optimitron/src/lib/tasks.server.ts) (59 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (28 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (27 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (19 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (18 matches)
-  - [packages/web/src/lib/tasks/private-task-bundle.server.ts](../packages/web/src/lib/tasks/private-task-bundle.server.ts) (16 matches)
-  - [packages/web/src/lib/triggers/fire-handlers.ts](../packages/web/src/lib/triggers/fire-handlers.ts) (16 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/tasks/private-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/private-task-bundle.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/triggers/fire-handlers.ts](../apps/optimitron/src/lib/triggers/fire-handlers.ts) (16 matches)
 - Notes:
   - none
 
@@ -3121,10 +3121,10 @@
   - `generated`: 15 files / 371 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (8 matches)
-  - [packages/web/src/lib/task-applications.server.ts](../packages/web/src/lib/task-applications.server.ts) (8 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (7 matches)
-  - [packages/web/src/app/api/tasks/[id]/applications/[applicationId]/route.ts](../packages/web/src/app/api/tasks/[id]/applications/[applicationId]/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (8 matches)
+  - [apps/optimitron/src/lib/task-applications.server.ts](../apps/optimitron/src/lib/task-applications.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (7 matches)
+  - [apps/optimitron/src/app/api/tasks/[id]/applications/[applicationId]/route.ts](../apps/optimitron/src/app/api/tasks/[id]/applications/[applicationId]/route.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (11 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (22 matches)
   - [packages/db/src/generated/prisma/models/TaskApplication.ts](../packages/db/src/generated/prisma/models/TaskApplication.ts) (304 matches)
@@ -3145,8 +3145,8 @@
   - `generated`: 10 files / 217 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (4 matches)
-  - [packages/web/src/lib/task-applications.server.ts](../packages/web/src/lib/task-applications.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (4 matches)
+  - [apps/optimitron/src/lib/task-applications.server.ts](../apps/optimitron/src/lib/task-applications.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (9 matches)
   - [packages/db/src/generated/prisma/models/TaskApplicationEvent.ts](../packages/db/src/generated/prisma/models/TaskApplicationEvent.ts) (176 matches)
@@ -3169,9 +3169,9 @@
   - `generated`: 14 files / 304 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (6 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
-  - [packages/web/src/lib/tasks/personal-planning.server.ts](../packages/web/src/lib/tasks/personal-planning.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks/personal-planning.server.ts](../apps/optimitron/src/lib/tasks/personal-planning.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (17 matches)
   - [packages/db/src/generated/prisma/models/TaskCandidateMatch.ts](../packages/db/src/generated/prisma/models/TaskCandidateMatch.ts) (247 matches)
@@ -3195,11 +3195,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (18 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (7 matches)
-  - [packages/web/src/lib/task-payouts.server.ts](../packages/web/src/lib/task-payouts.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks.server.ts](../apps/optimitron/src/lib/tasks.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (7 matches)
+  - [apps/optimitron/src/lib/task-payouts.server.ts](../apps/optimitron/src/lib/task-payouts.server.ts) (2 matches)
   - [packages/db/src/cleanup-test-data.ts](../packages/db/src/cleanup-test-data.ts) (3 matches)
-  - [packages/web/src/lib/tasks/agent-lease.server.ts](../packages/web/src/lib/tasks/agent-lease.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/tasks/agent-lease.server.ts](../apps/optimitron/src/lib/tasks/agent-lease.server.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql](../packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql) (9 matches)
@@ -3221,14 +3221,14 @@
   - `generated`: 17 files / 411 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (28 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (11 matches)
-  - [packages/web/src/lib/tasks/user-treaty-task-progress.server.ts](../packages/web/src/lib/tasks/user-treaty-task-progress.server.ts) (10 matches)
-  - [packages/web/src/lib/referral-invitations.server.ts](../packages/web/src/lib/referral-invitations.server.ts) (6 matches)
-  - [packages/web/src/lib/triggers/fire-handlers.ts](../packages/web/src/lib/triggers/fire-handlers.ts) (5 matches)
-  - [packages/web/src/lib/email/inbound-reply.ts](../packages/web/src/lib/email/inbound-reply.ts) (4 matches)
-  - [packages/web/src/lib/tasks/task-comment-notifications.server.ts](../packages/web/src/lib/tasks/task-comment-notifications.server.ts) (3 matches)
-  - [packages/web/src/lib/tasks/task-notifications.server.ts](../packages/web/src/lib/tasks/task-notifications.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/tasks/task-comments.server.ts](../apps/optimitron/src/lib/tasks/task-comments.server.ts) (28 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (11 matches)
+  - [apps/optimitron/src/lib/tasks/user-treaty-task-progress.server.ts](../apps/optimitron/src/lib/tasks/user-treaty-task-progress.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/referral-invitations.server.ts](../apps/optimitron/src/lib/referral-invitations.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/triggers/fire-handlers.ts](../apps/optimitron/src/lib/triggers/fire-handlers.ts) (5 matches)
+  - [apps/optimitron/src/lib/email/inbound-reply.ts](../apps/optimitron/src/lib/email/inbound-reply.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/task-comment-notifications.server.ts](../apps/optimitron/src/lib/tasks/task-comment-notifications.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/tasks/task-notifications.server.ts](../apps/optimitron/src/lib/tasks/task-notifications.server.ts) (3 matches)
 - Notes:
   - none
 
@@ -3245,10 +3245,10 @@
   - `generated`: 11 files / 231 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-comment-attachments.server.ts](../packages/web/src/lib/tasks/task-comment-attachments.server.ts) (18 matches)
-  - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (14 matches)
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-comment-attachments.server.ts](../apps/optimitron/src/lib/tasks/task-comment-attachments.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/tasks/task-comments.server.ts](../apps/optimitron/src/lib/tasks/task-comments.server.ts) (14 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260713160000_add_private_task_comment_attachments/migration.sql](../packages/db/prisma/migrations/20260713160000_add_private_task_comment_attachments/migration.sql) (9 matches)
   - [packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql](../packages/db/prisma/migrations/20260715180000_private_execution_system/migration.sql) (1 matches)
@@ -3270,7 +3270,7 @@
   - `generated`: 9 files / 168 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-comments.server.ts](../packages/web/src/lib/tasks/task-comments.server.ts) (18 matches)
+  - [apps/optimitron/src/lib/tasks/task-comments.server.ts](../apps/optimitron/src/lib/tasks/task-comments.server.ts) (18 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260425200000_create_task_comment_tables/migration.sql](../packages/db/prisma/migrations/20260425200000_create_task_comment_tables/migration.sql) (9 matches)
@@ -3296,14 +3296,14 @@
   - `generated`: 21 files / 487 matches
   - `other`: 1 files / 8 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-notifications.server.ts](../packages/web/src/lib/tasks/task-notifications.server.ts) (29 matches)
-  - [packages/web/src/lib/triggers/fire-handlers.ts](../packages/web/src/lib/triggers/fire-handlers.ts) (11 matches)
-  - [packages/web/src/lib/email/inbound-reply.ts](../packages/web/src/lib/email/inbound-reply.ts) (10 matches)
-  - [packages/web/src/lib/communications-audit.server.ts](../packages/web/src/lib/communications-audit.server.ts) (7 matches)
-  - [packages/web/src/lib/tasks/task-communications.server.ts](../packages/web/src/lib/tasks/task-communications.server.ts) (6 matches)
-  - [packages/web/src/lib/admin-communications.server.ts](../packages/web/src/lib/admin-communications.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/task-recipient-rate-limit.server.ts](../packages/web/src/lib/tasks/task-recipient-rate-limit.server.ts) (4 matches)
-  - [packages/web/scripts/soft-delete-funding-tasks.ts](../packages/web/scripts/soft-delete-funding-tasks.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-notifications.server.ts](../apps/optimitron/src/lib/tasks/task-notifications.server.ts) (29 matches)
+  - [apps/optimitron/src/lib/triggers/fire-handlers.ts](../apps/optimitron/src/lib/triggers/fire-handlers.ts) (11 matches)
+  - [apps/optimitron/src/lib/email/inbound-reply.ts](../apps/optimitron/src/lib/email/inbound-reply.ts) (10 matches)
+  - [apps/optimitron/src/lib/communications-audit.server.ts](../apps/optimitron/src/lib/communications-audit.server.ts) (7 matches)
+  - [apps/optimitron/src/lib/tasks/task-communications.server.ts](../apps/optimitron/src/lib/tasks/task-communications.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/admin-communications.server.ts](../apps/optimitron/src/lib/admin-communications.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/task-recipient-rate-limit.server.ts](../apps/optimitron/src/lib/tasks/task-recipient-rate-limit.server.ts) (4 matches)
+  - [apps/optimitron/scripts/soft-delete-funding-tasks.ts](../apps/optimitron/scripts/soft-delete-funding-tasks.ts) (2 matches)
 - Notes:
   - none
 
@@ -3322,8 +3322,8 @@
   - `other`: 1 files / 5 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (8 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
-  - [packages/web/src/lib/triggers/fire-handlers.ts](../packages/web/src/lib/triggers/fire-handlers.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/triggers/fire-handlers.ts](../apps/optimitron/src/lib/triggers/fire-handlers.ts) (4 matches)
   - [docs/TASK_COMMUNICATION_MODEL.md](../docs/TASK_COMMUNICATION_MODEL.md) (2 matches)
   - [docs/MCP_SERVER.md](../docs/MCP_SERVER.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -3347,8 +3347,8 @@
   - `other`: 1 files / 7 matches
 - Key files:
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (5 matches)
-  - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (4 matches)
-  - [packages/web/src/lib/triggers/iteration-sources.ts](../packages/web/src/lib/triggers/iteration-sources.ts) (1 matches)
+  - [apps/optimitron/src/lib/triggers/admin.ts](../apps/optimitron/src/lib/triggers/admin.ts) (4 matches)
+  - [apps/optimitron/src/lib/triggers/iteration-sources.ts](../apps/optimitron/src/lib/triggers/iteration-sources.ts) (1 matches)
   - [docs/MCP_SERVER.md](../docs/MCP_SERVER.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
@@ -3371,7 +3371,7 @@
   - `generated`: 10 files / 191 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260425220000_task_communication_system/migration.sql](../packages/db/prisma/migrations/20260425220000_task_communication_system/migration.sql) (10 matches)
@@ -3418,7 +3418,7 @@
   - `generated`: 13 files / 353 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (8 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (24 matches)
   - [packages/db/src/generated/prisma/models/TaskDistributionAttempt.ts](../packages/db/src/generated/prisma/models/TaskDistributionAttempt.ts) (296 matches)
@@ -3466,13 +3466,13 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (26 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (16 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (14 matches)
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/personal-planning.server.ts](../packages/web/src/lib/tasks/personal-planning.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/private-task-bundle.server.ts](../packages/web/src/lib/tasks/private-task-bundle.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (26 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (16 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (14 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/personal-planning.server.ts](../apps/optimitron/src/lib/tasks/personal-planning.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/private-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/private-task-bundle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/private-work-portability.server.ts](../apps/optimitron/src/lib/tasks/private-work-portability.server.ts) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
 - Notes:
   - none
@@ -3492,8 +3492,8 @@
   - `generated`: 13 files / 269 matches
   - `other`: 2 files / 8 matches
 - Key files:
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (4 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (4 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -3518,13 +3518,13 @@
   - `generated`: 19 files / 436 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (10 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (4 matches)
-  - [packages/web/src/app/api/extension/tasks/[id]/done/route.ts](../packages/web/src/app/api/extension/tasks/[id]/done/route.ts) (2 matches)
-  - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
-  - [packages/web/src/lib/tasks/external-action.server.ts](../packages/web/src/lib/tasks/external-action.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/personal-planning.server.ts](../packages/web/src/lib/tasks/personal-planning.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/extension/tasks/[id]/done/route.ts](../apps/optimitron/src/app/api/extension/tasks/[id]/done/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-tools/private-execution.ts](../apps/optimitron/src/lib/mcp-tools/private-execution.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/external-action.server.ts](../apps/optimitron/src/lib/tasks/external-action.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/personal-planning.server.ts](../apps/optimitron/src/lib/tasks/personal-planning.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (2 matches)
 - Notes:
   - none
@@ -3542,7 +3542,7 @@
   - `generated`: 10 files / 206 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/task-funding/pledges.server.ts](../packages/web/src/lib/task-funding/pledges.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/task-funding/pledges.server.ts](../apps/optimitron/src/lib/task-funding/pledges.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql](../packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql) (6 matches)
   - [packages/db/prisma/migrations/20260521184500_add_task_funding_event_deleted_at/migration.sql](../packages/db/prisma/migrations/20260521184500_add_task_funding_event_deleted_at/migration.sql) (2 matches)
@@ -3566,12 +3566,12 @@
   - `migrations`: 2 files / 19 matches
   - `generated`: 13 files / 311 matches
 - Key files:
-  - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (24 matches)
-  - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (22 matches)
-  - [packages/web/src/lib/task-funding/status.server.ts](../packages/web/src/lib/task-funding/status.server.ts) (8 matches)
-  - [packages/web/src/app/admin/task-payouts/page.tsx](../packages/web/src/app/admin/task-payouts/page.tsx) (2 matches)
-  - [packages/web/src/lib/task-payouts.server.ts](../packages/web/src/lib/task-payouts.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/payments.server.ts](../apps/optimitron/src/lib/task-funding/payments.server.ts) (24 matches)
+  - [apps/optimitron/src/lib/task-funding/escrow.server.ts](../apps/optimitron/src/lib/task-funding/escrow.server.ts) (22 matches)
+  - [apps/optimitron/src/lib/task-funding/status.server.ts](../apps/optimitron/src/lib/task-funding/status.server.ts) (8 matches)
+  - [apps/optimitron/src/app/admin/task-payouts/page.tsx](../apps/optimitron/src/app/admin/task-payouts/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/task-payouts.server.ts](../apps/optimitron/src/lib/task-payouts.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql](../packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql) (16 matches)
 - Notes:
@@ -3591,11 +3591,11 @@
   - `generated`: 15 files / 401 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (30 matches)
-  - [packages/web/src/lib/task-funding/pledges.server.ts](../packages/web/src/lib/task-funding/pledges.server.ts) (11 matches)
-  - [packages/web/src/lib/task-funding/status.server.ts](../packages/web/src/lib/task-funding/status.server.ts) (8 matches)
-  - [packages/web/src/app/admin/task-payouts/page.tsx](../packages/web/src/app/admin/task-payouts/page.tsx) (2 matches)
-  - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/escrow.server.ts](../apps/optimitron/src/lib/task-funding/escrow.server.ts) (30 matches)
+  - [apps/optimitron/src/lib/task-funding/pledges.server.ts](../apps/optimitron/src/lib/task-funding/pledges.server.ts) (11 matches)
+  - [apps/optimitron/src/lib/task-funding/status.server.ts](../apps/optimitron/src/lib/task-funding/status.server.ts) (8 matches)
+  - [apps/optimitron/src/app/admin/task-payouts/page.tsx](../apps/optimitron/src/app/admin/task-payouts/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/payments.server.ts](../apps/optimitron/src/lib/task-funding/payments.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (10 matches)
   - [packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql](../packages/db/prisma/migrations/20260520181737_add_task_funding_primitive/migration.sql) (15 matches)
   - [packages/db/prisma/migrations/20260703050000_add_assurance_escrow_pledges/migration.sql](../packages/db/prisma/migrations/20260703050000_add_assurance_escrow_pledges/migration.sql) (3 matches)
@@ -3618,14 +3618,14 @@
   - `generated`: 9 files / 246 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/task-funding/escrow.server.ts](../packages/web/src/lib/task-funding/escrow.server.ts) (12 matches)
-  - [packages/web/src/lib/task-funding/payments.server.ts](../packages/web/src/lib/task-funding/payments.server.ts) (8 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (7 matches)
+  - [apps/optimitron/src/lib/task-funding/escrow.server.ts](../apps/optimitron/src/lib/task-funding/escrow.server.ts) (12 matches)
+  - [apps/optimitron/src/lib/task-funding/payments.server.ts](../apps/optimitron/src/lib/task-funding/payments.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (7 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (5 matches)
-  - [packages/web/src/lib/task-funding/pledges.server.ts](../packages/web/src/lib/task-funding/pledges.server.ts) (4 matches)
-  - [packages/web/src/app/admin/task-payouts/page.tsx](../packages/web/src/app/admin/task-payouts/page.tsx) (2 matches)
-  - [packages/web/src/app/api/tasks/[id]/pledge/route.ts](../packages/web/src/app/api/tasks/[id]/pledge/route.ts) (2 matches)
-  - [packages/web/src/lib/task-funding/status.server.ts](../packages/web/src/lib/task-funding/status.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/pledges.server.ts](../apps/optimitron/src/lib/task-funding/pledges.server.ts) (4 matches)
+  - [apps/optimitron/src/app/admin/task-payouts/page.tsx](../apps/optimitron/src/app/admin/task-payouts/page.tsx) (2 matches)
+  - [apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts](../apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/task-funding/status.server.ts](../apps/optimitron/src/lib/task-funding/status.server.ts) (2 matches)
 - Notes:
   - none
 
@@ -3641,8 +3641,8 @@
   - `migrations`: 1 files / 7 matches
   - `generated`: 9 files / 168 matches
 - Key files:
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (4 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql](../packages/db/prisma/migrations/20260713010000_add_normalized_parameters_and_task_impacts/migration.sql) (7 matches)
   - [packages/db/src/generated/prisma/models/TaskImpactEstimateInput.ts](../packages/db/src/generated/prisma/models/TaskImpactEstimateInput.ts) (131 matches)
@@ -3667,11 +3667,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (10 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (8 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (10 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (8 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (4 matches)
-  - [packages/web/src/lib/tasks/per-verified-voter-impact.server.ts](../packages/web/src/lib/tasks/per-verified-voter-impact.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts](../apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts) (4 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [docs/TASK_MODEL.md](../docs/TASK_MODEL.md) (1 matches)
@@ -3694,10 +3694,10 @@
   - `other`: 1 files / 2 matches
 - Key files:
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/per-verified-voter-impact.server.ts](../packages/web/src/lib/tasks/per-verified-voter-impact.server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/wishonia-task-reply.server.ts](../packages/web/src/lib/tasks/wishonia-task-reply.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts](../apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/wishonia-task-reply.server.ts](../apps/optimitron/src/lib/tasks/wishonia-task-reply.server.ts) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [docs/ROADMAP.md](../docs/ROADMAP.md) (1 matches)
@@ -3719,10 +3719,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 3 matches
 - Key files:
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/per-verified-voter-impact.server.ts](../packages/web/src/lib/tasks/per-verified-voter-impact.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts](../apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts) (4 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
   - [docs/TASK_MODEL.md](../docs/TASK_MODEL.md) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
@@ -3744,8 +3744,8 @@
   - `generated`: 9 files / 158 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (6 matches)
-  - [packages/web/src/lib/parameters/task-impact-calculation.server.ts](../packages/web/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts](../apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts) (2 matches)
   - [docs/TASK_MODEL.md](../docs/TASK_MODEL.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql](../packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql) (7 matches)
@@ -3768,8 +3768,8 @@
   - `generated`: 9 files / 187 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
-  - [packages/web/src/lib/task-applications.server.ts](../packages/web/src/lib/task-applications.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/task-applications.server.ts](../apps/optimitron/src/lib/task-applications.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (9 matches)
   - [packages/db/src/generated/prisma/models/TaskManager.ts](../packages/db/src/generated/prisma/models/TaskManager.ts) (146 matches)
@@ -3792,7 +3792,7 @@
   - `generated`: 12 files / 270 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (6 matches)
   - [packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql](../packages/db/prisma/migrations/20260614120000_add_task_applications/migration.sql) (15 matches)
   - [packages/db/src/generated/prisma/models/TaskMarketplaceListing.ts](../packages/db/src/generated/prisma/models/TaskMarketplaceListing.ts) (221 matches)
@@ -3816,9 +3816,9 @@
   - `migrations`: 1 files / 16 matches
   - `generated`: 12 files / 307 matches
 - Key files:
-  - [packages/web/src/lib/task-payouts.server.ts](../packages/web/src/lib/task-payouts.server.ts) (32 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (5 matches)
-  - [packages/web/src/app/admin/task-payouts/page.tsx](../packages/web/src/app/admin/task-payouts/page.tsx) (2 matches)
+  - [apps/optimitron/src/lib/task-payouts.server.ts](../apps/optimitron/src/lib/task-payouts.server.ts) (32 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (5 matches)
+  - [apps/optimitron/src/app/admin/task-payouts/page.tsx](../apps/optimitron/src/app/admin/task-payouts/page.tsx) (2 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql](../packages/db/prisma/migrations/20260701120000_add_task_funding_payments_and_payouts/migration.sql) (16 matches)
   - [packages/db/src/generated/prisma/models/TaskPayout.ts](../packages/db/src/generated/prisma/models/TaskPayout.ts) (254 matches)
@@ -3842,14 +3842,14 @@
   - `generated`: 9 files / 158 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/tasks/import-task-bundle.server.ts](../packages/web/src/lib/tasks/import-task-bundle.server.ts) (6 matches)
-  - [packages/web/src/lib/tasks/task-merge.server.ts](../packages/web/src/lib/tasks/task-merge.server.ts) (6 matches)
-  - [packages/web/scripts/extract-tasks-from-manual.ts](../packages/web/scripts/extract-tasks-from-manual.ts) (4 matches)
-  - [packages/web/src/lib/notion-import.server.ts](../packages/web/src/lib/notion-import.server.ts) (4 matches)
-  - [packages/web/src/lib/tasks/private-task-bundle.server.ts](../packages/web/src/lib/tasks/private-task-bundle.server.ts) (4 matches)
-  - [packages/web/src/lib/form-responses.server.ts](../packages/web/src/lib/form-responses.server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
-  - [packages/web/src/lib/tasks/private-work-portability.server.ts](../packages/web/src/lib/tasks/private-work-portability.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/import-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/import-task-bundle.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/tasks/task-merge.server.ts](../apps/optimitron/src/lib/tasks/task-merge.server.ts) (6 matches)
+  - [apps/optimitron/scripts/extract-tasks-from-manual.ts](../apps/optimitron/scripts/extract-tasks-from-manual.ts) (4 matches)
+  - [apps/optimitron/src/lib/notion-import.server.ts](../apps/optimitron/src/lib/notion-import.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/tasks/private-task-bundle.server.ts](../apps/optimitron/src/lib/tasks/private-task-bundle.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/form-responses.server.ts](../apps/optimitron/src/lib/form-responses.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/lib/tasks/private-work-portability.server.ts](../apps/optimitron/src/lib/tasks/private-work-portability.server.ts) (2 matches)
 - Notes:
   - none
 
@@ -3869,12 +3869,12 @@
   - `other`: 2 files / 12 matches
 - Key files:
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (4 matches)
-  - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (4 matches)
-  - [packages/web/src/lib/triggers/completion-gate.ts](../packages/web/src/lib/triggers/completion-gate.ts) (1 matches)
-  - [packages/web/src/lib/triggers/fire-types.ts](../packages/web/src/lib/triggers/fire-types.ts) (1 matches)
-  - [packages/web/src/lib/triggers/fire.ts](../packages/web/src/lib/triggers/fire.ts) (1 matches)
-  - [packages/web/src/lib/triggers/resolvers.ts](../packages/web/src/lib/triggers/resolvers.ts) (1 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/triggers/admin.ts](../apps/optimitron/src/lib/triggers/admin.ts) (4 matches)
+  - [apps/optimitron/src/lib/triggers/completion-gate.ts](../apps/optimitron/src/lib/triggers/completion-gate.ts) (1 matches)
+  - [apps/optimitron/src/lib/triggers/fire-types.ts](../apps/optimitron/src/lib/triggers/fire-types.ts) (1 matches)
+  - [apps/optimitron/src/lib/triggers/fire.ts](../apps/optimitron/src/lib/triggers/fire.ts) (1 matches)
+  - [apps/optimitron/src/lib/triggers/resolvers.ts](../apps/optimitron/src/lib/triggers/resolvers.ts) (1 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/MCP_SERVER.md](../docs/MCP_SERVER.md) (1 matches)
 - Notes:
   - none
@@ -3896,14 +3896,14 @@
   - `generated`: 11 files / 265 matches
   - `other`: 2 files / 26 matches
 - Key files:
-  - [packages/web/src/lib/triggers/admin.ts](../packages/web/src/lib/triggers/admin.ts) (13 matches)
+  - [apps/optimitron/src/lib/triggers/admin.ts](../apps/optimitron/src/lib/triggers/admin.ts) (13 matches)
   - [packages/db/src/managed-data/managed-task-triggers.ts](../packages/db/src/managed-data/managed-task-triggers.ts) (8 matches)
-  - [packages/web/src/app/api/cron/run-due-triggers/route.ts](../packages/web/src/app/api/cron/run-due-triggers/route.ts) (4 matches)
-  - [packages/web/src/lib/mcp-tools/task-triggers.ts](../packages/web/src/lib/mcp-tools/task-triggers.ts) (6 matches)
-  - [packages/web/src/lib/mcp-tools/task-templates.ts](../packages/web/src/lib/mcp-tools/task-templates.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (1 matches)
-  - [packages/web/src/lib/post-signin-sync.server.ts](../packages/web/src/lib/post-signin-sync.server.ts) (1 matches)
-  - [packages/web/src/lib/referral-invitation-tasks.server.ts](../packages/web/src/lib/referral-invitation-tasks.server.ts) (1 matches)
+  - [apps/optimitron/src/app/api/cron/run-due-triggers/route.ts](../apps/optimitron/src/app/api/cron/run-due-triggers/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/mcp-tools/task-triggers.ts](../apps/optimitron/src/lib/mcp-tools/task-triggers.ts) (6 matches)
+  - [apps/optimitron/src/lib/mcp-tools/task-templates.ts](../apps/optimitron/src/lib/mcp-tools/task-templates.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (1 matches)
+  - [apps/optimitron/src/lib/post-signin-sync.server.ts](../apps/optimitron/src/lib/post-signin-sync.server.ts) (1 matches)
+  - [apps/optimitron/src/lib/referral-invitation-tasks.server.ts](../apps/optimitron/src/lib/referral-invitation-tasks.server.ts) (1 matches)
 - Notes:
   - none
 
@@ -3922,8 +3922,8 @@
   - `generated`: 8 files / 180 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/triggers/fire.ts](../packages/web/src/lib/triggers/fire.ts) (4 matches)
-  - [packages/web/src/app/api/cron/run-due-triggers/route.ts](../packages/web/src/app/api/cron/run-due-triggers/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/triggers/fire.ts](../apps/optimitron/src/lib/triggers/fire.ts) (4 matches)
+  - [apps/optimitron/src/app/api/cron/run-due-triggers/route.ts](../apps/optimitron/src/app/api/cron/run-due-triggers/route.ts) (2 matches)
   - [docs/MCP_SERVER.md](../docs/MCP_SERVER.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (4 matches)
@@ -3948,9 +3948,9 @@
   - `generated`: 11 files / 247 matches
   - `other`: 2 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/tasks/execution-lifecycle.server.ts](../packages/web/src/lib/tasks/execution-lifecycle.server.ts) (8 matches)
-  - [packages/web/src/lib/mcp-tools/private-execution.ts](../packages/web/src/lib/mcp-tools/private-execution.ts) (2 matches)
-  - [packages/web/scripts/verify-preview-masking.mjs](../packages/web/scripts/verify-preview-masking.mjs) (2 matches)
+  - [apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts](../apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/mcp-tools/private-execution.ts](../apps/optimitron/src/lib/mcp-tools/private-execution.ts) (2 matches)
+  - [apps/optimitron/scripts/verify-preview-masking.mjs](../apps/optimitron/scripts/verify-preview-masking.mjs) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (2 matches)
   - [docs/plans/phased-approach-optimitron.md](../docs/plans/phased-approach-optimitron.md) (1 matches)
   - [docs/PRD.md](../docs/PRD.md) (1 matches)
@@ -3975,7 +3975,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 6 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (11 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (11 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (3 matches)
   - [docs/MCP_SERVER.md](../docs/MCP_SERVER.md) (1 matches)
@@ -4002,7 +4002,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 5 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (8 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (8 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (2 matches)
   - [docs/FEATURES.md](../docs/FEATURES.md) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
@@ -4031,12 +4031,12 @@
   - `zod`: 1 files / 1 matches
   - `other`: 2 files / 7 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (8 matches)
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (4 matches)
-  - [packages/web/src/app/api/health-analysis/submit/route.ts](../packages/web/src/app/api/health-analysis/submit/route.ts) (3 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (8 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/health-analysis/submit/route.ts](../apps/optimitron/src/app/api/health-analysis/submit/route.ts) (3 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/src/components/site/EarthOptimizationServicesLandingPage.tsx](../packages/web/src/components/site/EarthOptimizationServicesLandingPage.tsx) (1 matches)
-  - [packages/web/src/components/task-funding/TaskFundingProgress.tsx](../packages/web/src/components/task-funding/TaskFundingProgress.tsx) (1 matches)
+  - [apps/optimitron/src/components/site/EarthOptimizationServicesLandingPage.tsx](../apps/optimitron/src/components/site/EarthOptimizationServicesLandingPage.tsx) (1 matches)
+  - [apps/optimitron/src/components/task-funding/TaskFundingProgress.tsx](../apps/optimitron/src/components/task-funding/TaskFundingProgress.tsx) (1 matches)
   - [packages/data/src/measurement-validation.ts](../packages/data/src/measurement-validation.ts) (3 matches)
   - [packages/data/src/datasets/medical-data/treatments/covid-19.json](../packages/data/src/datasets/medical-data/treatments/covid-19.json) (2 matches)
 - Notes:
@@ -4062,14 +4062,14 @@
   - `zod`: 1 files / 1 matches
   - `other`: 10 files / 62 matches
 - Key files:
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (30 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (20 matches)
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (12 matches)
-  - [packages/web/src/lib/tasks.server.ts](../packages/web/src/lib/tasks.server.ts) (12 matches)
-  - [packages/web/src/lib/auth-utils.ts](../packages/web/src/lib/auth-utils.ts) (9 matches)
-  - [packages/web/src/lib/person.server.ts](../packages/web/src/lib/person.server.ts) (9 matches)
-  - [packages/web/src/lib/profile-identity.server.ts](../packages/web/src/lib/profile-identity.server.ts) (9 matches)
-  - [packages/web/src/lib/email/suppression.server.ts](../packages/web/src/lib/email/suppression.server.ts) (8 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (30 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (20 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (12 matches)
+  - [apps/optimitron/src/lib/tasks.server.ts](../apps/optimitron/src/lib/tasks.server.ts) (12 matches)
+  - [apps/optimitron/src/lib/auth-utils.ts](../apps/optimitron/src/lib/auth-utils.ts) (9 matches)
+  - [apps/optimitron/src/lib/person.server.ts](../apps/optimitron/src/lib/person.server.ts) (9 matches)
+  - [apps/optimitron/src/lib/profile-identity.server.ts](../apps/optimitron/src/lib/profile-identity.server.ts) (9 matches)
+  - [apps/optimitron/src/lib/email/suppression.server.ts](../apps/optimitron/src/lib/email/suppression.server.ts) (8 matches)
 - Notes:
   - none
 
@@ -4089,10 +4089,10 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/app/api/cron/push-notifications/route.ts](../packages/web/src/app/api/cron/push-notifications/route.ts) (4 matches)
-  - [packages/web/src/app/api/push/preferences/route.ts](../packages/web/src/app/api/push/preferences/route.ts) (4 matches)
-  - [packages/web/src/app/api/push/subscribe/route.ts](../packages/web/src/app/api/push/subscribe/route.ts) (2 matches)
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/cron/push-notifications/route.ts](../apps/optimitron/src/app/api/cron/push-notifications/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/push/preferences/route.ts](../apps/optimitron/src/app/api/push/preferences/route.ts) (4 matches)
+  - [apps/optimitron/src/app/api/push/subscribe/route.ts](../apps/optimitron/src/app/api/push/subscribe/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (5 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (3 matches)
@@ -4116,11 +4116,11 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/profile.server.ts](../packages/web/src/lib/profile.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/profile.server.ts](../apps/optimitron/src/lib/profile.server.ts) (6 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (4 matches)
-  - [packages/web/src/app/api/health-analysis/submit/route.ts](../packages/web/src/app/api/health-analysis/submit/route.ts) (3 matches)
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (2 matches)
-  - [packages/web/src/lib/mcp-server.ts](../packages/web/src/lib/mcp-server.ts) (2 matches)
+  - [apps/optimitron/src/app/api/health-analysis/submit/route.ts](../apps/optimitron/src/app/api/health-analysis/submit/route.ts) (3 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/mcp-server.ts](../apps/optimitron/src/lib/mcp-server.ts) (2 matches)
   - [packages/data/src/importers/standard-variable-names.ts](../packages/data/src/importers/standard-variable-names.ts) (2 matches)
   - [packages/data/src/variable-registry.ts](../packages/data/src/variable-registry.ts) (1 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
@@ -4140,7 +4140,7 @@
   - `generated`: 11 files / 270 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/earth-data.server.ts](../packages/web/src/lib/earth-data.server.ts) (6 matches)
+  - [apps/optimitron/src/lib/earth-data.server.ts](../apps/optimitron/src/lib/earth-data.server.ts) (6 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (7 matches)
   - [packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql](../packages/db/prisma/migrations/20260502010000_person_centered_referendum_votes/migration.sql) (15 matches)
@@ -4167,7 +4167,7 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/lib/auth-spam-guard.server.ts](../packages/web/src/lib/auth-spam-guard.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/auth-spam-guard.server.ts](../apps/optimitron/src/lib/auth-spam-guard.server.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (1 matches)
@@ -4194,9 +4194,9 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 4 matches
 - Key files:
-  - [packages/web/src/lib/push-sender.server.ts](../packages/web/src/lib/push-sender.server.ts) (8 matches)
-  - [packages/web/src/app/api/push/subscribe/route.ts](../packages/web/src/app/api/push/subscribe/route.ts) (2 matches)
-  - [packages/web/src/app/api/push/unsubscribe/route.ts](../packages/web/src/app/api/push/unsubscribe/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/push-sender.server.ts](../apps/optimitron/src/lib/push-sender.server.ts) (8 matches)
+  - [apps/optimitron/src/app/api/push/subscribe/route.ts](../apps/optimitron/src/app/api/push/subscribe/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/push/unsubscribe/route.ts](../apps/optimitron/src/app/api/push/unsubscribe/route.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (5 matches)
@@ -4221,14 +4221,14 @@
   - `generated`: 9 files / 177 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/app/api/wishocracy/allocations/route.ts](../packages/web/src/app/api/wishocracy/allocations/route.ts) (18 matches)
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (12 matches)
-  - [packages/web/src/app/api/wishocracy/sync/route.ts](../packages/web/src/app/api/wishocracy/sync/route.ts) (6 matches)
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (4 matches)
-  - [packages/web/src/app/api/wishocracy/preferences/route.ts](../packages/web/src/app/api/wishocracy/preferences/route.ts) (2 matches)
-  - [packages/web/src/lib/alignment-report.server.ts](../packages/web/src/lib/alignment-report.server.ts) (2 matches)
-  - [packages/web/src/lib/badges.server.ts](../packages/web/src/lib/badges.server.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-community.ts](../packages/web/src/lib/wishocracy-community.ts) (2 matches)
+  - [apps/optimitron/src/app/api/wishocracy/allocations/route.ts](../apps/optimitron/src/app/api/wishocracy/allocations/route.ts) (18 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (12 matches)
+  - [apps/optimitron/src/app/api/wishocracy/sync/route.ts](../apps/optimitron/src/app/api/wishocracy/sync/route.ts) (6 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (4 matches)
+  - [apps/optimitron/src/app/api/wishocracy/preferences/route.ts](../apps/optimitron/src/app/api/wishocracy/preferences/route.ts) (2 matches)
+  - [apps/optimitron/src/lib/alignment-report.server.ts](../apps/optimitron/src/lib/alignment-report.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/badges.server.ts](../apps/optimitron/src/lib/badges.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-community.ts](../apps/optimitron/src/lib/wishocracy-community.ts) (2 matches)
 - Notes:
   - none
 
@@ -4245,7 +4245,7 @@
   - `generated`: 7 files / 152 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/wishocratic-treasury.server.ts](../packages/web/src/lib/wishocratic-treasury.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/wishocratic-treasury.server.ts](../apps/optimitron/src/lib/wishocratic-treasury.server.ts) (4 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (1 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (2 matches)
   - [packages/db/src/generated/prisma/models/WishocraticDistribution.ts](../packages/db/src/generated/prisma/models/WishocraticDistribution.ts) (123 matches)
@@ -4271,8 +4271,8 @@
   - `zod`: 1 files / 1 matches
   - `other`: 1 files / 2 matches
 - Key files:
-  - [packages/web/src/app/api/wishocracy/allocations/route.ts](../packages/web/src/app/api/wishocracy/allocations/route.ts) (2 matches)
-  - [packages/web/src/app/api/wishocracy/sync/route.ts](../packages/web/src/app/api/wishocracy/sync/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/wishocracy/allocations/route.ts](../apps/optimitron/src/app/api/wishocracy/allocations/route.ts) (2 matches)
+  - [apps/optimitron/src/app/api/wishocracy/sync/route.ts](../apps/optimitron/src/app/api/wishocracy/sync/route.ts) (2 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (2 matches)
   - [packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql](../packages/db/prisma/migrations/20260318010000_schema_structural_improvements/migration.sql) (3 matches)
@@ -4297,10 +4297,10 @@
   - `generated`: 13 files / 254 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (7 matches)
-  - [packages/web/scripts/probe-wishocratic-items.ts](../packages/web/scripts/probe-wishocratic-items.ts) (3 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (7 matches)
+  - [apps/optimitron/scripts/probe-wishocratic-items.ts](../apps/optimitron/scripts/probe-wishocratic-items.ts) (3 matches)
   - [packages/db/src/managed-data/managed-seed-data.ts](../packages/db/src/managed-data/managed-seed-data.ts) (2 matches)
-  - [packages/web/src/lib/wishocracy-catalog.server.ts](../packages/web/src/lib/wishocracy-catalog.server.ts) (2 matches)
+  - [apps/optimitron/src/lib/wishocracy-catalog.server.ts](../apps/optimitron/src/lib/wishocracy-catalog.server.ts) (2 matches)
   - [packages/db/src/types.ts](../packages/db/src/types.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (19 matches)
@@ -4321,7 +4321,7 @@
   - `generated`: 9 files / 148 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/aggregate-alignment.server.ts](../packages/web/src/lib/aggregate-alignment.server.ts) (3 matches)
+  - [apps/optimitron/src/lib/aggregate-alignment.server.ts](../apps/optimitron/src/lib/aggregate-alignment.server.ts) (3 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql](../packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql) (6 matches)
   - [packages/db/src/generated/prisma/models/WishocraticItemAlignmentScore.ts](../packages/db/src/generated/prisma/models/WishocraticItemAlignmentScore.ts) (111 matches)
@@ -4348,10 +4348,10 @@
   - `generated`: 9 files / 163 matches
   - `zod`: 1 files / 1 matches
 - Key files:
-  - [packages/web/scripts/import-dih-users-votes.ts](../packages/web/scripts/import-dih-users-votes.ts) (6 matches)
-  - [packages/web/src/app/api/wishocracy/item-inclusions/route.ts](../packages/web/src/app/api/wishocracy/item-inclusions/route.ts) (6 matches)
-  - [packages/web/src/app/api/wishocracy/sync/route.ts](../packages/web/src/app/api/wishocracy/sync/route.ts) (4 matches)
-  - [packages/web/src/lib/alignment-report.server.ts](../packages/web/src/lib/alignment-report.server.ts) (2 matches)
+  - [apps/optimitron/scripts/import-dih-users-votes.ts](../apps/optimitron/scripts/import-dih-users-votes.ts) (6 matches)
+  - [apps/optimitron/src/app/api/wishocracy/item-inclusions/route.ts](../apps/optimitron/src/app/api/wishocracy/item-inclusions/route.ts) (6 matches)
+  - [apps/optimitron/src/app/api/wishocracy/sync/route.ts](../apps/optimitron/src/app/api/wishocracy/sync/route.ts) (4 matches)
+  - [apps/optimitron/src/lib/alignment-report.server.ts](../apps/optimitron/src/lib/alignment-report.server.ts) (2 matches)
   - [packages/db/src/__tests__/zod-validators.test.ts](../packages/db/src/__tests__/zod-validators.test.ts) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql](../packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql) (9 matches)
@@ -4373,8 +4373,8 @@
   - `generated`: 9 files / 173 matches
   - `other`: 1 files / 1 matches
 - Key files:
-  - [packages/web/src/lib/wishes.server.ts](../packages/web/src/lib/wishes.server.ts) (11 matches)
-  - [packages/web/src/lib/dashboard.server.ts](../packages/web/src/lib/dashboard.server.ts) (4 matches)
+  - [apps/optimitron/src/lib/wishes.server.ts](../apps/optimitron/src/lib/wishes.server.ts) (11 matches)
+  - [apps/optimitron/src/lib/dashboard.server.ts](../apps/optimitron/src/lib/dashboard.server.ts) (4 matches)
   - [docs/PREVIEW_DATA_PRIVACY.md](../docs/PREVIEW_DATA_PRIVACY.md) (1 matches)
   - [packages/db/prisma/schema.prisma](../packages/db/prisma/schema.prisma) (3 matches)
   - [packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql](../packages/db/prisma/migrations/20260409212751_task_schema_freeze/migration.sql) (6 matches)

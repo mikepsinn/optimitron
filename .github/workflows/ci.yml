@@ -79,10 +79,14 @@ jobs:
               - 'packages/**/*.svg'
               - 'packages/db/prisma/**'
               - 'packages/db/src/managed-data/**'
-              - 'packages/web/src/**'
-              - 'packages/web/public/**'
+              - 'apps/optimitron/**'
             site_apps_changed:
-              - 'apps/**'
+              - 'apps/acceleratedmedicine/**'
+              - 'apps/curedao/**'
+              - 'apps/dfda/**'
+              - 'apps/trialabundancesurvey/**'
+              - 'apps/warondisease/**'
+              - 'apps/wishocracy/**'
               - 'packages/db/**'
               - 'packages/site-kit/**'
               - 'scripts/site-app-navigation.test.ts'
@@ -183,7 +187,7 @@ jobs:
     name: site-apps-static-validate
     # Gates all apps/* site packages (shared @optimitron/db schema).
     # Typecheck every app; unit-test apps with vitest unit suites; WoD DB smoke.
-    # packages/web keeps its own e2e/deploy smoke — not replaced here.
+    # apps/optimitron keeps its own e2e/deploy smoke — not replaced here.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'pull_request' ||
@@ -393,17 +397,17 @@ jobs:
           NODE_ENV: production
 
       - name: Smoke and capture @apps/${{ matrix.app }} navigation pages
-        run: pnpm --dir packages/web exec tsx ../../scripts/smoke-site-apps.mjs "${{ matrix.app }}"
+        run: pnpm --dir apps/optimitron exec tsx ../../scripts/smoke-site-apps.mjs "${{ matrix.app }}"
         env:
           NODE_ENV: production
           PLAYWRIGHT_BROWSER_CHANNEL: chrome
-          SITE_APP_SCREENSHOT_ROOT: packages/web/output/playwright/site-app-screenshots
+          SITE_APP_SCREENSHOT_ROOT: apps/optimitron/output/playwright/site-app-screenshots
 
       - name: Upload @apps/${{ matrix.app }} visual screenshots
         uses: actions/upload-artifact@v6
         with:
           name: site-app-visual-${{ matrix.app }}
-          path: packages/web/output/playwright/site-app-screenshots
+          path: apps/optimitron/output/playwright/site-app-screenshots
           if-no-files-found: error
 
   site-apps-validate:
@@ -576,8 +580,8 @@ jobs:
         if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
         uses: actions/cache@v4
         with:
-          path: packages/web/.next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('packages/web/src/**') }}
+          path: apps/optimitron/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/optimitron/src/**') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             nextjs-${{ runner.os }}-
@@ -624,7 +628,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: web-pr-visual-screenshots
-          path: packages/web/screenshots
+          path: apps/optimitron/screenshots
           if-no-files-found: error
 
       - name: Upload PR markdown copy snapshots for review publishing
@@ -632,7 +636,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: web-pr-copy-snapshots
-          path: packages/web/output/playwright/copy-snapshots
+          path: apps/optimitron/output/playwright/copy-snapshots
           if-no-files-found: error
 
       - name: Build visual review index
@@ -643,7 +647,7 @@ jobs:
           VISUAL_REVIEW_PR_NUMBER: ""
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.ref_name }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
-          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/packages/web/output/playwright/copy-snapshots
+          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/apps/optimitron/output/playwright/copy-snapshots
           VISUAL_REVIEW_ALLOW_INCOMPLETE: "1"
         run: pnpm --filter @optimitron/web run visual:review
 
@@ -655,9 +659,9 @@ jobs:
             echo "## Visual review"
             echo
             echo "- Open the \`web-visual-review\` artifact from this run."
-            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
+            echo "- Start with \`apps/optimitron/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
             echo "- Use the generated gallery for before/after diffs and changed-only review."
-            echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
+            echo "- Captured routes are defined in \`apps/optimitron/e2e/visual-regression.spec.ts\`."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Playwright visual review
@@ -666,11 +670,11 @@ jobs:
         with:
           name: web-visual-review
           path: |
-            packages/web/output/playwright/review
-            packages/web/output/playwright/copy-snapshots
-            packages/web/screenshots
-            packages/web/playwright-report
-            packages/web/test-results
+            apps/optimitron/output/playwright/review
+            apps/optimitron/output/playwright/copy-snapshots
+            apps/optimitron/screenshots
+            apps/optimitron/playwright-report
+            apps/optimitron/test-results
           if-no-files-found: ignore
 
       - name: Upload Playwright artifacts
@@ -679,10 +683,10 @@ jobs:
         with:
           name: web-playwright-artifacts
           path: |
-            packages/web/playwright-report
-            packages/web/screenshots
-            packages/web/public/img/screenshots
-            packages/web/test-results
+            apps/optimitron/playwright-report
+            apps/optimitron/screenshots
+            apps/optimitron/public/img/screenshots
+            apps/optimitron/test-results
           if-no-files-found: ignore
 
   main-visual-baseline:
@@ -701,20 +705,20 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: web-visual-review
-          path: packages/web/output/playwright/main-visual-baseline
+          path: apps/optimitron/output/playwright/main-visual-baseline
 
       - name: Add site-app screenshots to main baseline
         uses: actions/download-artifact@v6
         with:
           pattern: site-app-visual-*
-          path: packages/web/output/playwright/main-visual-baseline/screenshots
+          path: apps/optimitron/output/playwright/main-visual-baseline/screenshots
           merge-multiple: true
 
       - name: Upload complete main visual baseline
         uses: actions/upload-artifact@v6
         with:
           name: main-visual-baseline
-          path: packages/web/output/playwright/main-visual-baseline
+          path: apps/optimitron/output/playwright/main-visual-baseline
           if-no-files-found: error
 
   web-visual-review:
@@ -779,14 +783,14 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: web-pr-visual-screenshots
-          path: packages/web/screenshots
+          path: apps/optimitron/screenshots
 
       - name: Download site-app visual screenshots
         if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
         uses: actions/download-artifact@v6
         with:
           pattern: site-app-visual-*
-          path: packages/web/screenshots
+          path: apps/optimitron/screenshots
           merge-multiple: true
 
       - name: Download PR markdown copy snapshots
@@ -794,22 +798,22 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: web-pr-copy-snapshots
-          path: packages/web/output/playwright/copy-after
+          path: apps/optimitron/output/playwright/copy-after
 
       - name: Preserve PR visual screenshots
         shell: bash
         run: |
-          rm -rf packages/web/output/playwright/pr-screenshots
-          mkdir -p packages/web/output/playwright
-          cp -R packages/web/screenshots packages/web/output/playwright/pr-screenshots
+          rm -rf apps/optimitron/output/playwright/pr-screenshots
+          mkdir -p apps/optimitron/output/playwright
+          cp -R apps/optimitron/screenshots apps/optimitron/output/playwright/pr-screenshots
 
       - name: Resolve main visual baseline
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          baseline_root="packages/web/output/playwright/main-baseline"
-          pr_screenshots="packages/web/output/playwright/pr-screenshots"
+          baseline_root="apps/optimitron/output/playwright/main-baseline"
+          pr_screenshots="apps/optimitron/output/playwright/pr-screenshots"
           base_sha="${{ github.event.pull_request.base.sha }}"
           rm -rf "$baseline_root"
           mkdir -p "$baseline_root"
@@ -856,7 +860,7 @@ jobs:
                 continue
               fi
 
-              for screenshots_dir in "$run_root/screenshots" "$run_root/packages/web/screenshots"; do
+              for screenshots_dir in "$run_root/screenshots" "$run_root/apps/optimitron/screenshots"; do
                 if [ -d "$screenshots_dir" ]; then
                   echo "VISUAL_BEFORE_ROOT=$GITHUB_WORKSPACE/$screenshots_dir" >> "$GITHUB_ENV"
                   echo "VISUAL_REVIEW_BASELINE_COMMIT_SHA=$baseline_sha" >> "$GITHUB_ENV"
@@ -865,7 +869,7 @@ jobs:
                   for copy_dir in \
                     "$run_root/copy-snapshots" \
                     "$run_root/output/playwright/copy-snapshots" \
-                    "$run_root/packages/web/output/playwright/copy-snapshots"; do
+                    "$run_root/apps/optimitron/output/playwright/copy-snapshots"; do
                     if [ -d "$copy_dir" ]; then
                       echo "VISUAL_COPY_BEFORE_ROOT=$GITHUB_WORKSPACE/$copy_dir" >> "$GITHUB_ENV"
                       echo "Using rendered copy baseline from main run $run_id."
@@ -873,8 +877,8 @@ jobs:
                     fi
                   done
                   echo "Downloaded $artifact_name main@$baseline_sha from run $run_id (requested main@$base_sha)."
-                  rm -rf packages/web/screenshots
-                  cp -R "$pr_screenshots" packages/web/screenshots
+                  rm -rf apps/optimitron/screenshots
+                  cp -R "$pr_screenshots" apps/optimitron/screenshots
                   exit 0
                 fi
               done
@@ -884,8 +888,8 @@ jobs:
           done
 
           echo "No usable main web-visual-review artifact found; visual review will show after screenshots only."
-          rm -rf packages/web/screenshots
-          cp -R "$pr_screenshots" packages/web/screenshots
+          rm -rf apps/optimitron/screenshots
+          cp -R "$pr_screenshots" apps/optimitron/screenshots
 
       - name: Resolve PR preview URL
         id: pr_preview_url
@@ -983,7 +987,7 @@ jobs:
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
-          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/packages/web/output/playwright/copy-after
+          VISUAL_COPY_AFTER_ROOT: ${{ github.workspace }}/apps/optimitron/output/playwright/copy-after
         run: pnpm --filter @optimitron/web run visual:review
 
       - name: Summarize visual review
@@ -994,9 +998,9 @@ jobs:
             echo "## Visual review"
             echo
             echo "- Open the \`web-visual-review\` artifact from this run."
-            echo "- Start with \`packages/web/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
+            echo "- Start with \`apps/optimitron/output/playwright/review/latest.html\` for the compact before/after screenshot gallery."
             echo "- Use the generated gallery for before/after diffs and changed-only review."
-            echo "- Captured routes are defined in \`packages/web/e2e/visual-regression.spec.ts\`."
+            echo "- Captured routes are defined in \`apps/optimitron/e2e/visual-regression.spec.ts\`."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload Playwright visual review
@@ -1005,11 +1009,11 @@ jobs:
         with:
           name: web-visual-review
           path: |
-            packages/web/output/playwright/review
-            packages/web/output/playwright/copy-after
-            packages/web/screenshots
-            packages/web/playwright-report
-            packages/web/test-results
+            apps/optimitron/output/playwright/review
+            apps/optimitron/output/playwright/copy-after
+            apps/optimitron/screenshots
+            apps/optimitron/playwright-report
+            apps/optimitron/test-results
           if-no-files-found: ignore
 
       - name: Prepare per-PR visual review directory
@@ -1018,31 +1022,31 @@ jobs:
         run: |
           head_sha="${{ github.event.pull_request.head.sha }}"
           short_sha="${head_sha:0:12}"
-          pr_root="packages/web/output/playwright/pages-per-pr/pr-${{ github.event.pull_request.number }}"
+          pr_root="apps/optimitron/output/playwright/pages-per-pr/pr-${{ github.event.pull_request.number }}"
           commit_dir="$pr_root/$short_sha"
           latest_dir="$pr_root/latest"
           rm -rf "$pr_root"
           mkdir -p "$commit_dir" "$latest_dir"
-          cp -R packages/web/output/playwright/review/. "$commit_dir/"
-          cp -R packages/web/output/playwright/review/. "$latest_dir/"
+          cp -R apps/optimitron/output/playwright/review/. "$commit_dir/"
+          cp -R apps/optimitron/output/playwright/review/. "$latest_dir/"
           if [ -f "$commit_dir/latest.html" ]; then
             cp "$commit_dir/latest.html" "$commit_dir/index.html"
           fi
           if [ -f "$latest_dir/latest.html" ]; then
             cp "$latest_dir/latest.html" "$latest_dir/index.html"
           fi
-          publish_root="packages/web/output/playwright/pages-per-pr"
+          publish_root="apps/optimitron/output/playwright/pages-per-pr"
           touch "$publish_root/.nojekyll"
           # Vercel reads vercel.json from the DEPLOYED commit's tree, so the
           # repo's gh-pages:false rule never applies to the gh-pages branch
           # itself (it only contains these screenshots). Publish a
           # deployment kill-switch into the branch at both paths Vercel
-          # might resolve (repo root and the project's packages/web root)
+          # might resolve (repo root and the project's apps/optimitron root)
           # so every visual-review push stops producing a failed Vercel
           # deploy + failure email.
           echo '{"git":{"deploymentEnabled":false},"github":{"enabled":false}}' > "$publish_root/vercel.json"
-          mkdir -p "$publish_root/packages/web"
-          echo '{"git":{"deploymentEnabled":false},"github":{"enabled":false}}' > "$publish_root/packages/web/vercel.json"
+          mkdir -p "$publish_root/apps/optimitron"
+          echo '{"git":{"deploymentEnabled":false},"github":{"enabled":false}}' > "$publish_root/apps/optimitron/vercel.json"
           cat > "$publish_root/index.html" <<'HTML'
           <!doctype html>
           <html lang="en">
@@ -1058,7 +1062,7 @@ jobs:
           </html>
           HTML
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
-          echo "publish_dir=packages/web/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
+          echo "publish_dir=apps/optimitron/output/playwright/pages-per-pr" >> "$GITHUB_OUTPUT"
           echo "review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/$short_sha/" >> "$GITHUB_OUTPUT"
           echo "latest_review_url=https://mikepsinn.github.io/optimitron/pr-${{ github.event.pull_request.number }}/latest/" >> "$GITHUB_OUTPUT"
 
@@ -1247,7 +1251,7 @@ jobs:
         env:
           PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
           VISUAL_REVIEW_URL: ${{ steps.prepare_pages.outputs.latest_review_url }}
-          VISUAL_REVIEW_MANIFEST_PATH: packages/web/output/playwright/review/manifest.json
+          VISUAL_REVIEW_MANIFEST_PATH: apps/optimitron/output/playwright/review/manifest.json
         with:
           script: |
             const { execFileSync } = require('node:child_process');
@@ -1554,7 +1558,7 @@ jobs:
       - name: Verify preview masking applied to rows
         if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
         shell: bash
-        run: node packages/web/scripts/verify-preview-masking.mjs
+        run: node apps/optimitron/scripts/verify-preview-masking.mjs
 
       - name: Summarize preview database sync
         if: steps.preview_data_changes.outputs.should_prepare == 'true' && steps.preview_secrets.outputs.configured == 'true'
@@ -1618,8 +1622,8 @@ jobs:
       - name: Cache Next.js production build
         uses: actions/cache@v4
         with:
-          path: packages/web/.next/cache
-          key: nextjs-production-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('packages/web/src/**', 'packages/web/next.config.js', 'packages/web/package.json') }}
+          path: apps/optimitron/.next/cache
+          key: nextjs-production-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/optimitron/src/**', 'apps/optimitron/next.config.js', 'apps/optimitron/package.json') }}
           restore-keys: |
             nextjs-production-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             nextjs-production-${{ runner.os }}-
@@ -1664,14 +1668,42 @@ jobs:
               ;;
           esac
 
+          root_directory="$(
+            node -e '
+              const fs = require("node:fs");
+              const project = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              process.stdout.write(project.rootDirectory ?? project.settings?.rootDirectory ?? "");
+            ' "$project_json"
+          )"
+          if [ "$root_directory" != "apps/optimitron" ]; then
+            updated_project_json="$(mktemp)"
+            status="$(
+              curl --silent --show-error \
+                --output "$updated_project_json" \
+                --write-out "%{http_code}" \
+                --request PATCH \
+                --header "Authorization: Bearer $VERCEL_TOKEN" \
+                --header "Content-Type: application/json" \
+                --data '{"rootDirectory":"apps/optimitron"}' \
+                "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID"
+            )"
+            if [ "$status" != "200" ]; then
+              echo "::error::Failed to update the Vercel project root directory (HTTP $status)."
+              cat "$updated_project_json"
+              exit 1
+            fi
+            mv "$updated_project_json" "$project_json"
+            echo "Updated the Vercel project root directory to apps/optimitron."
+          fi
+
           node - "$project_json" <<'NODE'
           const fs = require("node:fs");
           const [projectJsonPath] = process.argv.slice(2);
           const project = JSON.parse(fs.readFileSync(projectJsonPath, "utf8"));
           const name = project.name || project.projectName || "(unknown)";
           const rootDirectory = project.rootDirectory ?? project.settings?.rootDirectory ?? null;
-          if (rootDirectory !== "packages/web") {
-            console.log(`::warning::Vercel project ${name} rootDirectory is ${rootDirectory ?? "(unset)"}, expected packages/web.`);
+          if (rootDirectory !== "apps/optimitron") {
+            throw new Error(`Vercel project ${name} rootDirectory is ${rootDirectory ?? "(unset)"}, expected apps/optimitron.`);
           }
           fs.mkdirSync(".vercel", { recursive: true });
           fs.writeFileSync(

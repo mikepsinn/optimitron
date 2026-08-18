@@ -16,8 +16,8 @@ describe('test output review', () => {
 
   it('extracts likely file paths from compiler output', () => {
     expect(
-      extractLikelyFiles('src/foo.ts(1,1): error TS2322\npackages/web/src/app/page.tsx:12'),
-    ).toEqual(['src/foo.ts', 'packages/web/src/app/page.tsx']);
+      extractLikelyFiles('src/foo.ts(1,1): error TS2322\napps/optimitron/src/app/page.tsx:12'),
+    ).toEqual(['src/foo.ts', 'apps/optimitron/src/app/page.tsx']);
   });
 
   it('focuses the review snippet around failure lines', () => {

@@ -1,5 +1,5 @@
 // Personal health-tracking core: measurements, tracking reminders, and
-// notification queues. Extracted verbatim from packages/web/src/lib/mcp-server.ts
+// notification queues. Extracted verbatim from apps/optimitron/src/lib/mcp-server.ts
 // so optimitron.com and dfda.earth serve one implementation over one database.
 import type { Prisma } from "@optimitron/db";
 import {
@@ -32,7 +32,7 @@ let trackingPrismaProvider: (() => Promise<TrackingPrismaClient>) | null =
   null;
 
 /**
- * Host apps must call this once at startup (packages/web's mcp-server and
+ * Host apps must call this once at startup (apps/optimitron's mcp-server and
  * apps/dfda's MCP route each pass their own singleton). The package never
  * opens a database connection on its own.
  */

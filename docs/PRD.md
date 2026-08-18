@@ -331,7 +331,7 @@ contract status in FEATURES.md OPT-TREAS-01..03):
 
 ### 9.3 MCP and API surface
 
-The MCP server (`packages/web/src/lib/mcp-server.ts`) is the primary product
+The MCP server (`apps/optimitron/src/lib/mcp-server.ts`) is the primary product
 interface for the personal layer. Codex and Claude Code remain the chat,
 reasoning, connector, coding, and browser clients; Optimitron owns durable
 tasks, provenance, EV, permissions, approvals, verification, and audit.

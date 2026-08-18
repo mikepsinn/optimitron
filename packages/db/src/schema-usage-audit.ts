@@ -296,20 +296,20 @@ function bucketForRelativePath(relativePath: string): UsageBucket {
   ) {
     return "tests";
   }
-  if (relativePath.startsWith("packages/web/src/app/api/")) {
+  if (relativePath.startsWith("apps/optimitron/src/app/api/")) {
     return "api-routes";
   }
   if (
-    relativePath.startsWith("packages/web/src/app/") &&
+    relativePath.startsWith("apps/optimitron/src/app/") &&
     /\/page\.(ts|tsx)$/.test(relativePath)
   ) {
     return "pages";
   }
-  if (relativePath.startsWith("packages/web/src/components/")) {
+  if (relativePath.startsWith("apps/optimitron/src/components/")) {
     return "components";
   }
   if (
-    relativePath.startsWith("packages/web/scripts/") ||
+    relativePath.startsWith("apps/optimitron/scripts/") ||
     relativePath.startsWith("packages/db/prisma/seed") ||
     relativePath.endsWith(".sh") ||
     relativePath.endsWith(".ps1")
@@ -317,7 +317,7 @@ function bucketForRelativePath(relativePath: string): UsageBucket {
     return "scripts";
   }
   if (
-    relativePath.startsWith("packages/web/src/lib/") ||
+    relativePath.startsWith("apps/optimitron/src/lib/") ||
     relativePath.startsWith("packages/data/src/") ||
     relativePath.startsWith("packages/opg/src/") ||
     relativePath.startsWith("packages/obg/src/") ||

@@ -1,4 +1,5 @@
 const PREVIEW_SMOKE_PATTERN_SOURCES = [
+  "^apps/optimitron/",
   "^packages/",
   "^scripts/",
   "^package\\.json$",
@@ -10,6 +11,7 @@ const PREVIEW_SMOKE_PATTERN_SOURCES = [
   "^playwright(?:\\.[^/]+)?\\.[cm]?[jt]s$",
 ];
 const VERCEL_PREVIEW_BUILD_PATTERN_SOURCES = [
+  "^apps/optimitron/",
   "^packages/",
   "^content/",
   "^scripts/",
@@ -39,7 +41,7 @@ export function shouldRunPreviewSmoke(files) {
   return getPreviewSmokeMatches(files).length > 0;
 }
 
-// Mirrors packages/web/vercel.json. Unlike smoke scope, test-only changes
+// Mirrors apps/optimitron/vercel.json. Unlike smoke scope, test-only changes
 // still count because Vercel builds them.
 export function getVercelPreviewBuildMatches(files) {
   return files

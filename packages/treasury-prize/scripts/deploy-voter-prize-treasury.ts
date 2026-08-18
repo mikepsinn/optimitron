@@ -84,7 +84,7 @@ async function main() {
   console.log("Income thr.:         ", INCOME_THRESHOLD, "bps (0.5%)");
 
   console.log(
-    "\n--- Update packages/web/src/lib/contracts/addresses.ts ---",
+    "\n--- Update apps/optimitron/src/lib/contracts/addresses.ts ---",
   );
   console.log(`  earthOptimizationPoint: "${pointTokenAddress}" as Address,`);
   console.log(`  voterPrizeTreasury: "${treasuryAddress}" as Address,`);

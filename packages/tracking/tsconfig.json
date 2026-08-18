@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    // The tracking core moved verbatim from packages/web, whose tsconfig does
+    // The tracking core moved verbatim from apps/optimitron, whose tsconfig does
     // not enable these two checks; keeping them off preserves a clean diff.
     "noUncheckedIndexedAccess": false,
     "noPropertyAccessFromIndexSignature": false

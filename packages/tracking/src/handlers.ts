@@ -1,5 +1,5 @@
 // MCP call dispatch for the tracking tools, transposed verbatim from the
-// switch cases in packages/web/src/lib/mcp-server.ts. Hosts pass their own
+// switch cases in apps/optimitron/src/lib/mcp-server.ts. Hosts pass their own
 // authRequired() so the remediation payload advertises the host's OAuth
 // endpoints. Thrown errors propagate to the host's try/catch, matching the
 // pre-extraction behavior.
@@ -27,7 +27,7 @@ import type { TrackingToolResponse } from "./types";
 
 export { isTrackingToolName } from "./tool-definitions";
 
-// Mirrors ok() in packages/web/src/lib/mcp-server.ts so responses keep the
+// Mirrors ok() in apps/optimitron/src/lib/mcp-server.ts so responses keep the
 // same content + structuredContent shape on both hosts.
 function ok(data: unknown): TrackingToolResponse {
   const text = stringifyJsonSafe(data, 2);

@@ -8,9 +8,9 @@
 // underlying page/email and re-run the script.
 //
 // Match paths:
-//   packages/web/src/app/**/page.logged-out.md
-//   packages/web/src/app/**/page.logged-in.md
-//   packages/web/**/*.email.md
+//   apps/optimitron/src/app/**/page.logged-out.md
+//   apps/optimitron/src/app/**/page.logged-in.md
+//   apps/optimitron/**/*.email.md
 //
 // 2026-05-14: written after I hand-edited HVG snapshots three times in
 // one session before the user pushed back. Per
@@ -38,8 +38,8 @@ try {
   const normalized = filePath.replace(/\\/g, "/");
 
   const isSnapshot =
-    /\/packages\/web\/src\/app\/.+\/page\.logged-(out|in)\.md$/.test(normalized) ||
-    /\/packages\/web\/.+\.email\.md$/.test(normalized);
+    /\/apps\/optimitron\/src\/app\/.+\/page\.logged-(out|in)\.md$/.test(normalized) ||
+    /\/apps\/optimitron\/.+\.email\.md$/.test(normalized);
 
   if (!isSnapshot) process.exit(0);
 

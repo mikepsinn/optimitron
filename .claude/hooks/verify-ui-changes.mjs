@@ -25,7 +25,7 @@ import { join, resolve } from "node:path";
 const RepoRoot = process.env.CLAUDE_PROJECT_DIR
   ? resolve(process.env.CLAUDE_PROJECT_DIR)
   : process.cwd();
-const ScreenshotDir = join(RepoRoot, "packages/web/output/playwright");
+const ScreenshotDir = join(RepoRoot, "apps/optimitron/output/playwright");
 
 try {
   let hookData = null;
@@ -79,13 +79,13 @@ try {
   const addedLines = added.map((a) => a.text);
 
   const uiFiles = allChanged.filter((f) =>
-    /^packages\/web\/src\/(app|components)\/.+\.(tsx|css|scss)$/.test(f),
+    /^apps\/optimitron\/src\/(app|components)\/.+\.(tsx|css|scss)$/.test(f),
   );
   const copyFiles = allChanged.filter((f) =>
-    /^packages\/web\/src\/app\/.+\.md$/.test(f),
+    /^apps\/optimitron\/src\/app\/.+\.md$/.test(f),
   );
   const emailFiles = allChanged.filter((f) =>
-    /^packages\/web\/(emails|src\/(emails|lib\/email))\//.test(f),
+    /^apps\/optimitron\/(emails|src\/(emails|lib\/email))\//.test(f),
   );
   const testFiles = allChanged.filter(
     (f) =>
@@ -93,7 +93,7 @@ try {
   );
   const newReusableFiles = untracked.filter(
     (f) =>
-      /^packages\/web\/src\/(components|lib)\/.+\.(ts|tsx)$/.test(f) &&
+      /^apps\/optimitron\/src\/(components|lib)\/.+\.(ts|tsx)$/.test(f) &&
       !/\.(test|spec)\./.test(f),
   );
   const claudeMd = allChanged.includes("CLAUDE.md");
@@ -172,7 +172,7 @@ try {
     if (file.startsWith(".husky/")) return false;
     // E2E / test code is TypeScript, not user-facing copy. error.stack and
     // similar JS API names are legitimate; voice rules apply to copy only.
-    if (file.startsWith("packages/web/e2e/")) return false;
+    if (file.startsWith("apps/optimitron/e2e/")) return false;
     if (/\.(test|spec)\.(ts|tsx|js|jsx|mjs)$/.test(file)) return false;
     if (/__tests__\//.test(file)) return false;
     return true;
@@ -230,7 +230,7 @@ ${sample}`);
   // --- Check 5: copy-snapshot drift ---------------------------------------
   if (uiFiles.length && !copyFiles.length) {
     const tsxPageChanges = uiFiles.filter((f) =>
-      /^packages\/web\/src\/app\/.+\/page\.tsx$/.test(f),
+      /^apps\/optimitron\/src\/app\/.+\/page\.tsx$/.test(f),
     );
     // Skip if a sibling page.logged-*.md was regenerated AFTER the staged
     // page.tsx file's mtime — the preview script ran, just produced no

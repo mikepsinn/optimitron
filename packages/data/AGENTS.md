@@ -28,5 +28,5 @@ Data fetchers and importers — OECD, World Bank, WHO, FRED, Congress, IMF, Cens
 ## Off-Limits
 
 - `packages/optimizer/*` — use it, don't modify it
-- `packages/web/*`
+- `apps/optimitron/*`
 - `packages/db/prisma/schema.prisma`

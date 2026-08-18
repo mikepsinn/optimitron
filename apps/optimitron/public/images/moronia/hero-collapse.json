@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-03-24T07:02:28.231Z",
+  "images": [
+    {
+      "byteLength": 3302399,
+      "mimeType": "image/jpeg",
+      "path": "E:\\code\\optimitron\\apps\\optimitron\\public\\images\\moronia\\hero-collapse-1.jpg"
+    }
+  ],
+  "model": "gemini-3.1-flash-image-preview",
+  "prompt": "A dying planet viewed from orbit. Vast grey-brown landmasses scarred by industrial sprawl. Military installations visible as geometric patterns across every continent. The atmosphere is a sickly orange-brown haze. Oceans are dark and murky. Orbiting the planet are thousands of weapons satellites, glinting cold in starlight. The overall feeling is: a civilisation that spent everything on killing and nothing on living.",
+  "styledPrompt": "A dying planet viewed from orbit. Vast grey-brown landmasses scarred by industrial sprawl. Military installations visible as geometric patterns across every continent. The atmosphere is a sickly orange-brown haze. Oceans are dark and murky. Orbiting the planet are thousands of weapons satellites, glinting cold in starlight. The overall feeling is: a civilisation that spent everything on killing and nothing on living.\nCreate an image with a fun retro scientific illustration style.\nAdditional art direction: 1970s dystopian science fiction illustration. Style of HR Giger meets Soviet propaganda meets John Harris. Industrial decay, oppressive architecture, toxic skies. Desaturated palette with sickly reds, greys, and toxic yellows. Claustrophobic, decaying, surveillance-state aesthetic. No text, no labels, no UI elements."
+}

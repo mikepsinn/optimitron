@@ -2,7 +2,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**', '**/*.js', '**/*.mjs', '!eslint.config.mjs', '**/__tests__/**', '**/*.test.ts', '**/*.spec.ts', 'packages/web/**', 'packages/extension/**', 'packages/site-kit/**'],
+    ignores: ['**/dist/**', '**/.next/**', '**/node_modules/**', '**/*.js', '**/*.mjs', '!eslint.config.mjs', '**/__tests__/**', '**/*.test.ts', '**/*.spec.ts', 'apps/optimitron/**', 'packages/extension/**', 'packages/site-kit/**'],
   },
   ...tseslint.configs.recommendedTypeChecked,
   {

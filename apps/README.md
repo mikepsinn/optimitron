@@ -2,7 +2,7 @@
 
 Deployable Next.js entrypoints for product brands that share `@optimitron/db`.
 **`apps/warondisease` is the canonical War on Disease campaign app.**
-`packages/web` owns Optimitron and remains a temporary multi-host fallback until
+`apps/optimitron` owns Optimitron and remains a temporary multi-host fallback until
 each standalone app passes preview checks and its domain moves.
 
 **Landing this work:** one tip branch/PR into `main` (not a stack of per-app PRs). Shared shell lives in `@optimitron/site-kit`; apps stay thin wrappers.
@@ -11,6 +11,7 @@ each standalone app passes preview checks and its domain moves.
 
 | App | Port | Domain | Owns |
 |-----|------|--------|------|
+| `@optimitron/web` | 3001 | optimitron.com | Optimitron UI, REST, OAuth, MCP, authorization, and server workflows |
 | `@apps/warondisease` | 3010 | warondisease.org | Canonical campaign home and **full neobrutalist dashboard** (referrals/scores/badges), orgs, institutes |
 | `@apps/dfda` | 3011 | dfda.earth | Clinical encyclopedia |
 | `@apps/wishocracy` | 3013 | wishocracy.org | Wishocracy **allocations only** (pairbars + edit) — not the WoD campaign dashboard |
@@ -24,7 +25,7 @@ Satellite apps should stay thin: routes + brand `public/` + config. Shared UI/li
 
 War on Disease is the campaign exception: keep its rich home and dashboard fun,
 colorful, and neobrutalist. Do not replace that dashboard with the treaty-paper
-dashboard from `packages/web`.
+dashboard from `apps/optimitron`.
 
 ## Shared packages
 
@@ -52,6 +53,7 @@ dashboard from `packages/web`.
 pnpm install
 pnpm db:up && pnpm db:deploy && pnpm db:generate
 
+pnpm dev                         # :3001 — Optimitron
 pnpm dev:warondisease            # :3010
 pnpm dev:wishocracy              # :3013 — allocations product
 pnpm dev:trialabundancesurvey    # :3014  — set NEXT_PUBLIC_SURVEY_ORIGIN=http://localhost:3014 for embeds
@@ -73,7 +75,7 @@ Partner snippet (after survey is deployed):
 
 ## CI
 
-Job **`site-apps-static-validate`** (on `apps/**` / `packages/db` changes):
+Job **`site-apps-static-validate`** (on satellite app or `packages/db` changes):
 
 1. verify public navigation and authenticated screenshot coverage
 2. migrate + `prisma generate`
@@ -87,7 +89,7 @@ Job **`site-apps-build`**:
 
 The authenticated route inventory fails when a dashboard, admin, profile, or
 other auth-gated page lacks screenshots or a documented no-UI exemption.
-`packages/web` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke.
+`apps/optimitron` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke.
 Standalone production deploys remain a separate cutover step.
 
 Local:
@@ -98,4 +100,4 @@ pnpm test:apps:unit
 pnpm smoke:warondisease-db
 ```
 
-Deploy production still **`packages/web` only**. See `DEPLOYMENT.md`.
+Deploy production still **`apps/optimitron` only**. See `DEPLOYMENT.md`.

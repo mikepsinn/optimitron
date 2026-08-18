@@ -9,14 +9,14 @@ Registry entry: OPT-API-01 in [FEATURES.md](./FEATURES.md).
 ## Shipped
 
 - `/openapi.json` for the REST and OAuth surface
-  (`packages/web/src/app/openapi.json/route.ts`).
+  (`apps/optimitron/src/app/openapi.json/route.ts`).
 - `/developers` as the human-readable entry point for external app and website
-  builders (`packages/web/src/app/developers/page.tsx`).
+  builders (`apps/optimitron/src/app/developers/page.tsx`).
 - OAuth authorization-code plus PKCE flow, dynamic client registration,
   refresh token rotation, and revocation endpoints
-  (`packages/web/src/lib/mcp-oauth.ts`).
+  (`apps/optimitron/src/lib/mcp-oauth.ts`).
 - MCP and REST share one scope catalog
-  (`packages/web/src/lib/mcp-scopes.ts`).
+  (`apps/optimitron/src/lib/mcp-scopes.ts`).
 
 ## Now
 

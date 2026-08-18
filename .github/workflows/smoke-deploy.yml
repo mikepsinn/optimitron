@@ -526,7 +526,7 @@ jobs:
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
         run: |
           set +e
-          node packages/web/scripts/smoke-deploy.mjs
+          node apps/optimitron/scripts/smoke-deploy.mjs
           exit_code=$?
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
           exit 0
@@ -1124,7 +1124,7 @@ jobs:
         with:
           name: playwright-preview-${{ github.run_id }}
           path: |
-            packages/web/playwright-report/
-            packages/web/test-results/
+            apps/optimitron/playwright-report/
+            apps/optimitron/test-results/
           retention-days: 7
           if-no-files-found: ignore

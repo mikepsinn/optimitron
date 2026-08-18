@@ -105,12 +105,12 @@ function getChangedFiles() {
   }
 }
 
-// `packages/web/src/app/foo/bar/page.tsx` -> `/foo/bar`
-// `packages/web/src/app/page.tsx` -> `/`
-// `packages/web/src/app/tasks/[id]/page.tsx` -> `/tasks`
+// `apps/optimitron/src/app/foo/bar/page.tsx` -> `/foo/bar`
+// `apps/optimitron/src/app/page.tsx` -> `/`
+// `apps/optimitron/src/app/tasks/[id]/page.tsx` -> `/tasks`
 function pageFileToRoute(file) {
   const match = file.match(
-    /^packages\/web\/src\/app\/((?:[^/]+\/)*)page\.tsx$/,
+    /^apps\/optimitron\/src\/app\/((?:[^/]+\/)*)page\.tsx$/,
   );
   if (!match) return null;
   const segments = match[1]
@@ -138,7 +138,7 @@ function inferRouteChanges(changedFiles) {
     }
 
     for (const [folder, routes] of Object.entries(COMPONENT_FOLDER_ROUTES)) {
-      if (!file.startsWith(`packages/web/${folder}`)) continue;
+      if (!file.startsWith(`apps/optimitron/${folder}`)) continue;
       for (const mappedRoute of routes) {
         addRouteFile(routeChanges, mappedRoute, shortFile(file));
       }
@@ -189,7 +189,7 @@ function addAuthParamToUrl(url, authParam) {
 }
 
 function shortFile(file) {
-  return file.replace(/^packages\/web\/src\//, "");
+  return file.replace(/^apps\/optimitron\/src\//, "");
 }
 
 function loadVisualReviewManifest() {
