@@ -54,7 +54,8 @@ Good shared candidates:
 
 Keep these project-specific:
 
-- `NEXTAUTH_URL` because every app has a different canonical host.
+- Production `NEXTAUTH_URL` because every app has a different canonical host.
+  Preview deployments use Vercel's per-deployment `VERCEL_URL` fallback.
 - `NEXTAUTH_SECRET` for every satellite except dFDA (see the shared list above),
   so one satellite cannot expose every app's sessions.
 - `CRON_SECRET` because only War on Disease exposes cron routes.
