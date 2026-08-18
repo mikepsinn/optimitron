@@ -68,6 +68,8 @@ export default function TreatyVoteSection({
   const shareCardRef = useRef<HTMLDivElement>(null)
   const sliderSectionRef = useRef<HTMLDivElement>(null)
   const animationFrameRef = useRef<number | null>(null)
+  const introAnimationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const visualCaptureRef = useRef(false)
 
   // Restore state from localStorage on mount
   useEffect(() => {
@@ -91,9 +93,17 @@ export default function TreatyVoteSection({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !userHasDragged) {
+          if (
+            entry.isIntersecting &&
+            !userHasDragged &&
+            !visualCaptureRef.current &&
+            !introAnimationTimeoutRef.current
+          ) {
             // Start animation after a brief delay
-            setTimeout(() => setShowAnimation(true), 500)
+            introAnimationTimeoutRef.current = setTimeout(() => {
+              introAnimationTimeoutRef.current = null
+              if (!visualCaptureRef.current) setShowAnimation(true)
+            }, 500)
           }
         })
       },
@@ -102,7 +112,37 @@ export default function TreatyVoteSection({
 
     observer.observe(sliderSectionRef.current)
 
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (introAnimationTimeoutRef.current) {
+        clearTimeout(introAnimationTimeoutRef.current)
+        introAnimationTimeoutRef.current = null
+      }
+    }
+  }, [userHasDragged])
+
+  useEffect(() => {
+    const completeVisualCapture = () => {
+      visualCaptureRef.current = true
+      if (introAnimationTimeoutRef.current) {
+        clearTimeout(introAnimationTimeoutRef.current)
+        introAnimationTimeoutRef.current = null
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      if (!userHasDragged) {
+        setAnimatedValue(50)
+        setMilitaryAllocation(50)
+      }
+      setShowAnimation(false)
+    }
+
+    window.addEventListener("optimitron:visual-capture", completeVisualCapture)
+    return () => {
+      window.removeEventListener("optimitron:visual-capture", completeVisualCapture)
+    }
   }, [userHasDragged])
 
   // Animate the slider thumb across the track until the user interacts.
@@ -124,6 +164,7 @@ export default function TreatyVoteSection({
     const centerValue = 50
 
     const animate = (timestamp: number) => {
+      if (visualCaptureRef.current) return
       if (!startTime) startTime = timestamp
       const elapsed = timestamp - startTime
 

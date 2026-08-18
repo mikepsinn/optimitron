@@ -66,6 +66,7 @@ async function getUsers(filter?: UserAdminFilter) {
     orderBy: [
       { isAdmin: "desc" },
       { createdAt: "desc" },
+      { email: "asc" },
     ],
   }).then((users) =>
     users.map((u) => ({

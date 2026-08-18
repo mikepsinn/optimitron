@@ -287,7 +287,10 @@ function SearchResultRow({
   meta,
   source,
   title,
-}: Omit<SearchResultItem, "scope" | "score">) {
+  volatileDisplayUrl = false,
+}: Omit<SearchResultItem, "scope" | "score"> & {
+  volatileDisplayUrl?: boolean;
+}) {
   const displayUrl = formatDisplayUrl(href, external);
   const row = (
     <div className="flex items-start gap-3">
@@ -300,7 +303,16 @@ function SearchResultRow({
             {source}
           </div>
           <div className="truncate text-xs text-muted-foreground">
-            {displayUrl}
+            {volatileDisplayUrl && displayUrl.startsWith("/tasks/") ? (
+              <>
+                /tasks/
+                <span data-volatile="task-id">
+                  {displayUrl.slice("/tasks/".length)}
+                </span>
+              </>
+            ) : (
+              displayUrl
+            )}
             {meta ? <span>{` / ${meta}`}</span> : null}
           </div>
         </div>
@@ -456,6 +468,7 @@ export default async function SearchPage({
                       meta={result.meta}
                       source={result.source}
                       title={result.title}
+                      volatileDisplayUrl={result.scope === "tasks"}
                     />
                   ))}
                 </section>

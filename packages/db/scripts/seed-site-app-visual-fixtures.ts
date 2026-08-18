@@ -34,6 +34,7 @@ assertLocalVisualFixtureTarget(connectionString);
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString }),
 });
+const VISUAL_FIXTURE_CREATED_AT = new Date("2026-01-15T12:00:00.000Z");
 
 try {
   const [user, referendum] = await Promise.all([
@@ -67,6 +68,14 @@ try {
   }
 
   await prisma.$transaction([
+    prisma.organization.updateMany({
+      where: { deletedAt: null },
+      data: { createdAt: VISUAL_FIXTURE_CREATED_AT },
+    }),
+    prisma.user.updateMany({
+      where: { deletedAt: null },
+      data: { createdAt: VISUAL_FIXTURE_CREATED_AT },
+    }),
     prisma.user.update({
       where: { id: user.id },
       data: { isAdmin: true },
