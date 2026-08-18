@@ -146,6 +146,8 @@ const SEARCH_DISCOVERY_FILE =
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
 const CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE =
   "apps/optimitron/src/components/demo/slides/sierra/slide-vote-and-share.tsx";
+const GLOBAL_FAILED_STATE_SLIDE_FILE =
+  "apps/optimitron/src/components/demo/slides/sierra/slide-global-failed-state.tsx";
 const POLITICIAN_SCORECARD_TABLE_FILE =
   "apps/optimitron/src/components/shared/PoliticianScorecardTable.tsx";
 // Sections rendered by both optimitron.com/ and /game. Either capture proves
@@ -359,6 +361,14 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
     path: `${ROUTES.demo}?playlist=campaign-cut#campaign-vote-and-share`,
     required: true,
     requiredSelector: '[data-testid="slide-vote-and-share"]',
+  },
+  {
+    covers: [GLOBAL_FAILED_STATE_SLIDE_FILE],
+    name: "global-failed-state-slide",
+    path: `${ROUTES.demo}?playlist=hackathon#global-failed-state`,
+    required: true,
+    requiredSelector: '[data-testid="slide-global-failed-state"]',
+    requiredText: /^INFRASTRUCTURE COLLAPSE$/,
   },
   {
     name: "side-menu",

@@ -246,6 +246,25 @@ function DemoPlayerInner({
     }
   }, []);
 
+  useEffect(() => {
+    const prepareVisualCapture = () => {
+      generationRef.current += 1;
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+      stopAudio();
+    };
+
+    window.addEventListener(
+      "optimitron:visual-capture",
+      prepareVisualCapture,
+    );
+    return () =>
+      window.removeEventListener(
+        "optimitron:visual-capture",
+        prepareVisualCapture,
+      );
+  }, [stopAudio]);
+
   // Stable callback — only recreated when slides change (playlist switch)
   const playSlideAudio = useCallback(
     async (index: number, generation: number) => {

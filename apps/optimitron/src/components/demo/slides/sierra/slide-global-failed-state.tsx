@@ -19,6 +19,8 @@ export function SlideGlobalFailedState() {
   const [failedElements, setFailedElements] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    const completeVisualCapture = () => setDecayProgress(100);
+
     // Gradually decay elements
     const interval = setInterval(() => {
       setDecayProgress((prev) => {
@@ -27,7 +29,18 @@ export function SlideGlobalFailedState() {
       });
     }, 100);
 
-    return () => clearInterval(interval);
+    window.addEventListener(
+      "optimitron:visual-capture",
+      completeVisualCapture,
+    );
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener(
+        "optimitron:visual-capture",
+        completeVisualCapture,
+      );
+    };
   }, []);
 
   useEffect(() => {
