@@ -15,6 +15,9 @@ permissions:
 jobs:
   reconcile:
     name: reconcile-vercel-app-projects
+    concurrency:
+      group: reconcile-vercel-app-projects
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: Production
