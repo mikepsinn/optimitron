@@ -144,6 +144,8 @@ const SEARCH_PAGE_FILE = "apps/optimitron/src/app/search/page.tsx";
 const SEARCH_DISCOVERY_FILE =
   "apps/optimitron/src/app/search/search-discovery.tsx";
 const STANDALONE_VIDEO_PAGE_FILE = "apps/optimitron/src/app/video/page.tsx";
+const DEMO_PLAYER_FILE =
+  "apps/optimitron/src/components/demo/DemoPlayer.tsx";
 const CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE =
   "apps/optimitron/src/components/demo/slides/sierra/slide-vote-and-share.tsx";
 const GLOBAL_FAILED_STATE_SLIDE_FILE =
@@ -356,14 +358,14 @@ const SPECIAL_STATE_ROUTES: VisualRoute[] = [
       'video[src*="optimitron-game-campaign-cut-2026-08-09.mp4"]',
   },
   {
-    covers: [CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE],
+    covers: [DEMO_PLAYER_FILE, CAMPAIGN_VOTE_AND_SHARE_SLIDE_FILE],
     name: "campaign-vote-and-share-slide",
     path: `${ROUTES.demo}?playlist=campaign-cut#campaign-vote-and-share`,
     required: true,
     requiredSelector: '[data-testid="slide-vote-and-share"]',
   },
   {
-    covers: [GLOBAL_FAILED_STATE_SLIDE_FILE],
+    covers: [DEMO_PLAYER_FILE, GLOBAL_FAILED_STATE_SLIDE_FILE],
     name: "global-failed-state-slide",
     path: `${ROUTES.demo}?playlist=hackathon#global-failed-state`,
     required: true,

@@ -5,15 +5,42 @@ import {
   buildVisualCoverage,
   getChangedUiFiles,
   isVisualUiSourceFile,
+  parseChangedFileDiscoveryOutput,
 } from "./visual-review-coverage.mjs";
 
-test("discovers deleted UI paths as well as added and modified files", () => {
+test("discovers rename-aware changed-file records", () => {
   assert.deepEqual(buildChangedFileDiscoveryArgs("origin/main"), [
+    "-c",
+    "diff.renameLimit=999999",
     "diff",
-    "--name-only",
+    "--name-status",
+    "--find-renames=100%",
+    "-z",
     "origin/main",
     "--",
   ]);
+  assert.deepEqual(
+    parseChangedFileDiscoveryOutput(
+      [
+        "M",
+        "apps/optimitron/src/components/changed.tsx",
+        "R100",
+        "packages/web/src/components/moved.tsx",
+        "apps/optimitron/src/components/moved.tsx",
+        "R097",
+        "packages/web/src/components/renamed-and-changed.tsx",
+        "apps/optimitron/src/components/renamed-and-changed.tsx",
+        "D",
+        "apps/optimitron/src/components/deleted.tsx",
+        "",
+      ].join("\0"),
+    ),
+    [
+      "apps/optimitron/src/components/changed.tsx",
+      "apps/optimitron/src/components/renamed-and-changed.tsx",
+      "apps/optimitron/src/components/deleted.tsx",
+    ],
+  );
   assert.equal(
     isVisualUiSourceFile("apps/optimitron/src/components/deleted-panel.tsx"),
     true,

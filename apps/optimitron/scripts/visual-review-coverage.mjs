@@ -14,7 +14,54 @@ function defaultFileExists(repoRelativePath) {
 }
 
 export function buildChangedFileDiscoveryArgs(baselineRef) {
-  return ["diff", "--name-only", baselineRef, "--"];
+  return [
+    "-c",
+    "diff.renameLimit=999999",
+    "diff",
+    "--name-status",
+    "--find-renames=100%",
+    "-z",
+    baselineRef,
+    "--",
+  ];
+}
+
+/**
+ * Keep content changes while dropping byte-identical path-only renames.
+ * NUL delimiters preserve unusual filenames and make rename pairs unambiguous.
+ */
+export function parseChangedFileDiscoveryOutput(output) {
+  const fields = String(output ?? "").split("\0");
+  const changedFiles = [];
+
+  for (let index = 0; index < fields.length; ) {
+    const status = fields[index++];
+    if (!status) continue;
+
+    const isRename = /^R\d+$/.test(status);
+    const isCopy = /^C\d+$/.test(status);
+    if (!isRename && !isCopy && !/^[ADMTUXB]$/.test(status)) {
+      throw new TypeError(`Unexpected git diff status: ${status}`);
+    }
+
+    if (isRename || isCopy) {
+      const sourcePath = fields[index++];
+      const destinationPath = fields[index++];
+      if (!sourcePath || !destinationPath) {
+        throw new TypeError(`Incomplete git diff record for ${status}`);
+      }
+      if (status !== "R100") changedFiles.push(destinationPath);
+      continue;
+    }
+
+    const filePath = fields[index++];
+    if (!filePath) {
+      throw new TypeError(`Incomplete git diff record for ${status}`);
+    }
+    changedFiles.push(filePath);
+  }
+
+  return changedFiles;
 }
 
 function normalizeRepoPath(filePath) {
