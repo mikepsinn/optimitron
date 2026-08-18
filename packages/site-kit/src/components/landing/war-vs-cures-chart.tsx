@@ -78,6 +78,7 @@ export default function WarVsCuresChart() {
                 <div className="text-xl sm:text-2xl md:text-3xl font-black text-brutal-pink">{militarySpending}</div>
               </motion.div>
               <motion.div
+                data-visual-force-complete
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
@@ -108,6 +109,7 @@ export default function WarVsCuresChart() {
               </motion.div>
               <div className="flex items-center gap-4">
                 <motion.div
+                  data-visual-force-complete
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}

@@ -19,20 +19,29 @@ export async function forceAnimationsComplete(page) {
           opacity: 1 !important;
           transform: none !important;
         }
+        [data-visual-force-complete] {
+          transform: none !important;
+        }
       `,
     });
   });
 
-  // Framer Motion can update inline opacity after hydration. Rescan until a
-  // complete pass finds no new hidden elements, then wait for two paints.
+  // Framer Motion can create another animation after a prior animation's
+  // finish callback updates React state. Rescan until a complete pass finds
+  // neither a new animation nor a newly hidden element.
   await retryAfterNavigation(page, async () => {
     for (let pass = 0; pass < 5; pass++) {
-      const forced = await page.evaluate(() => {
-        let count = 0;
+      const settled = await page.evaluate(() => {
+        let finishedAnimations = 0;
+        let forcedElements = 0;
         for (const animation of document.getAnimations()) {
           try {
-            if (animation.effect?.getTiming().iterations !== Infinity) {
+            if (
+              animation.effect?.getTiming().iterations !== Infinity &&
+              animation.playState !== "finished"
+            ) {
               animation.finish();
+              finishedAnimations++;
             }
           } catch {
             // Some browser-managed animations cannot be finished explicitly.
@@ -45,12 +54,18 @@ export async function forceAnimationsComplete(page) {
             element.dataset.visualForceVisible = "";
             element.style.opacity = "1";
             element.style.transform = "none";
-            count++;
+            forcedElements++;
           }
         }
-        return count;
+        return { finishedAnimations, forcedElements };
       });
-      if (forced === 0 && pass > 0) break;
+      if (
+        settled.finishedAnimations === 0 &&
+        settled.forcedElements === 0 &&
+        pass > 0
+      ) {
+        break;
+      }
       if (pass < 4) {
         await page.waitForTimeout(100);
       }
