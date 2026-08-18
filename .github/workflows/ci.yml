@@ -946,6 +946,8 @@ jobs:
         with:
           script: |
             const { execFileSync } = require('node:child_process');
+            const { writeFileSync } = require('node:fs');
+            const path = require('node:path');
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
 
@@ -955,6 +957,11 @@ jobs:
             const changed = files
               .filter((f) => f.status !== 'removed')
               .map((f) => f.filename);
+            const changedFilesPath = path.join(
+              process.env.RUNNER_TEMP,
+              `pr-${issue_number}-changed-files.json`,
+            );
+            writeFileSync(changedFilesPath, JSON.stringify(changed));
 
             const packetMarker = '<!-- pr-review-packet -->';
             const legacyMarker = '<!-- pr-preview-links -->';
@@ -970,7 +977,7 @@ jobs:
               {
                 env: {
                   ...process.env,
-                  CHANGED_FILES: JSON.stringify(changed),
+                  CHANGED_FILES_PATH: changedFilesPath,
                   EXISTING_COMMENT_BODY: existing?.body ?? '',
                 },
                 encoding: 'utf8',
@@ -1265,6 +1272,8 @@ jobs:
         with:
           script: |
             const { execFileSync } = require('node:child_process');
+            const { writeFileSync } = require('node:fs');
+            const path = require('node:path');
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
 
@@ -1274,6 +1283,11 @@ jobs:
             const changed = files
               .filter((f) => f.status !== 'removed')
               .map((f) => f.filename);
+            const changedFilesPath = path.join(
+              process.env.RUNNER_TEMP,
+              `pr-${issue_number}-changed-files.json`,
+            );
+            writeFileSync(changedFilesPath, JSON.stringify(changed));
 
             const packetMarker = '<!-- pr-review-packet -->';
             const legacyMarker = '<!-- pr-preview-links -->';
@@ -1290,7 +1304,7 @@ jobs:
               {
                 env: {
                   ...process.env,
-                  CHANGED_FILES: JSON.stringify(changed),
+                  CHANGED_FILES_PATH: changedFilesPath,
                   EXISTING_COMMENT_BODY: existing?.body ?? '',
                   VISUAL_REVIEW_URL: process.env.VISUAL_REVIEW_URL,
                 },
