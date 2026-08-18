@@ -22,7 +22,7 @@ import {
   SITE_VARIANT_OVERRIDE_QUERY_PARAM,
   type SiteKey,
 } from "@/lib/site";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 import { DEMO_PASSWORD } from "./utils/auth";
 
 interface VariantConfig {

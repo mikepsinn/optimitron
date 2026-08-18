@@ -21,7 +21,7 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 
 const SCREENSHOT_ROOT = path.resolve(process.cwd(), "screenshots");
 

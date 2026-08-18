@@ -21,7 +21,7 @@ import {
 } from "./utils/audit-helpers";
 import { DEMO_PASSWORD, signInDemoUser, signInUser } from "./utils/auth";
 import { VISUAL_ROUTES } from "./utils/visual-routes";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 
 const VISUAL_REVIEW_CSS = `
   *, *::before, *::after {

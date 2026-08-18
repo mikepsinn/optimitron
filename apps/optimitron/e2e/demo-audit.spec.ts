@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { forceAnimationsComplete, writeAuditReport } from "./utils/audit-helpers";
 import { getContrastViolations } from "./utils/computed-contrast";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 
 // Desktop viewport for keyboard navigation
 test.use({ viewport: { width: 1920, height: 1080 } });

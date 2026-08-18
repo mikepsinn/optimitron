@@ -7,7 +7,7 @@
 import { expect, test, type APIRequestContext, type Locator, type Page, type TestInfo } from "@playwright/test";
 import * as fs from "fs";
 import path from "path";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 import { DEMO_PASSWORD, signInUser } from "./utils/auth";
 
 interface TestUser {
