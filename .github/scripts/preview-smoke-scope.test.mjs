@@ -73,7 +73,7 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
   assert.deepEqual(getVercelPreviewBuildMatches(files), files.sort());
 });
 
-test("keeps the Fix AI corpus in the Vercel ignore-command scope", () => {
+test("keeps the Vercel ignore command on the shared scope matcher", () => {
   const vercelConfig = JSON.parse(
     readFileSync(
       new URL("../../apps/optimitron/vercel.json", import.meta.url),
@@ -81,10 +81,11 @@ test("keeps the Fix AI corpus in the Vercel ignore-command scope", () => {
     ),
   );
 
-  assert.match(
+  assert.equal(
     vercelConfig.ignoreCommand,
-    /\.\.\/\.\.\/docs\/canonical-argument-2026-05-20\.md/u,
+    "node ../../.github/scripts/vercel-ignore-build.mjs",
   );
+  assert.ok(vercelConfig.ignoreCommand.length <= 256);
 });
 
 test("does not resolve a preview database when Vercel skips the PR", () => {

@@ -42,8 +42,8 @@ export function shouldRunPreviewSmoke(files) {
   return getPreviewSmokeMatches(files).length > 0;
 }
 
-// Mirrors apps/optimitron/vercel.json. Unlike smoke scope, test-only changes
-// still count because Vercel builds them.
+// Shared by the Optimitron Vercel ignore command and CI production scope.
+// Unlike smoke scope, test-only changes still count because Vercel builds them.
 export function getVercelPreviewBuildMatches(files) {
   return files
     .filter((file) =>
