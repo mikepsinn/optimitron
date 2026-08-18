@@ -15,7 +15,7 @@
  */
 import { test, expect } from "@playwright/test";
 import path from "path";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 
 const SCREENSHOT_DIR = path.resolve(
   __dirname,

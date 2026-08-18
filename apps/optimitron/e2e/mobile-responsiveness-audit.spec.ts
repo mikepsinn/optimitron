@@ -25,7 +25,7 @@ import {
   getDeduplicatedOverflows,
   waitForPaint,
 } from "./utils/audit-helpers";
-import { freezeClock } from "./helpers/freeze-clock";
+import { freezeClock } from "./helpers/freeze-clock.mjs";
 import { PUBLIC_PAGE_PATHS } from "./utils/static-pages";
 
 // Force mobile viewport for this entire spec

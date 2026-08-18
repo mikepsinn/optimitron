@@ -66,7 +66,7 @@ const reviewManifestPath = path.join(outputRoot, "manifest.json");
 // 0.2% — covers cross-environment pixel rendering noise (Windows-Chromium-
 // local vs Linux-Chromium-CI font hinting + anti-aliasing). Tightened from
 // the original 0.5% workaround for live-clock drift (that drift is now
-// fixed upstream by freezeClock at e2e/helpers/freeze-clock.ts), then
+// fixed upstream by freezeClock at e2e/helpers/freeze-clock.mjs), then
 // raised from 0.1% on 2026-05-15 after side-menu and side-menu-auth
 // landed at 0.11% from pure rendering noise. Real UI changes are
 // typically >1%. If a class of pages drifts because of a DYNAMIC
