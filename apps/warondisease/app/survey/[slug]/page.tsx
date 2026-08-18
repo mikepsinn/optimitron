@@ -135,12 +135,9 @@ export async function generateStaticParams() {
       },
       select: { slug: true },
     })
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("DATABASE_URL is required")) {
-      return []
-    }
-
-    throw error
+  } catch {
+    // Static params are optional; preview migrations may finish after the Vercel build starts.
+    return []
   }
 
   return organizations.map((org) => ({
