@@ -19,7 +19,7 @@ import { ensurePersonForUser } from "./person.server"
 const missingAuthEnv = [
   ["DATABASE_URL", env.DATABASE_URL],
   ["NEXTAUTH_SECRET", env.NEXTAUTH_SECRET],
-  ["NEXTAUTH_URL", env.NEXTAUTH_URL],
+  ["NEXTAUTH_URL or VERCEL_URL", env.NEXTAUTH_URL ?? env.VERCEL_URL],
 ].filter(([, value]) => !value)
 
 if (missingAuthEnv.length > 0) {
