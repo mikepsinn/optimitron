@@ -10,7 +10,7 @@
 -- Wrapped in BEGIN/COMMIT so partial failures roll back.
 --
 -- Adding a new masked column: add an UPDATE here, copy-paste a
--- sibling row. Read packages/web/scripts/verify-preview-masking.mjs
+-- sibling row. Read apps/optimitron/scripts/verify-preview-masking.mjs
 -- to see what shapes the row-level invariant check expects.
 --
 -- Must not be converted into a Prisma migration without explicit

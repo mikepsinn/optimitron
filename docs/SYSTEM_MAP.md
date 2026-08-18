@@ -80,7 +80,7 @@ queue.
 |---|---|---|
 | Database contract | `packages/db/prisma/schema.prisma` | Canonical models, enums, relations, indexes. |
 | Generated DB types | `packages/db/src/generated` and `@optimitron/db` exports | Prisma client for web only; pure types and validators for consumers. |
-| Optimitron Web/API/MCP | `packages/web` | `optimitron.com` UI, REST, OAuth, MCP, authorization, server workflows, and temporary legacy host variants during cutover. |
+| Optimitron Web/API/MCP | `apps/optimitron` | `optimitron.com` UI, REST, OAuth, MCP, authorization, server workflows, and temporary legacy host variants during cutover. |
 | War on Disease campaign | `apps/warondisease` | Canonical rich campaign home and neobrutalist authenticated dashboard. |
 | Satellite sites | `apps/dfda`, `apps/wishocracy`, `apps/trialabundancesurvey`, `apps/curedao`, `apps/acceleratedmedicine` | Brand-specific deployable entrypoints over shared packages. |
 | Tracking engine | `packages/tracking` | Personal measurements, reminders, and notification tools. One implementation served by `optimitron.com/api/mcp` and `dfda.earth/api/mcp` (resource server; optimitron.com stays the OAuth issuer). Hosts inject the Prisma client. |

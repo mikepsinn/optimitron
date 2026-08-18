@@ -3,7 +3,7 @@
  *
  * dfda.earth never issues tokens. optimitron.com is the OAuth 2.1
  * authorization server; this module only verifies the Bearer JWTs it minted.
- * Reference implementation: packages/web/src/lib/mcp-oauth.ts — keep the
+ * Reference implementation: apps/optimitron/src/lib/mcp-oauth.ts — keep the
  * issuer list and payload checks in sync with it.
  */
 import type { McpScope } from "@optimitron/db/enums";
@@ -34,7 +34,7 @@ export function getIssuerUrl(): string {
   return "http://localhost:3001";
 }
 
-/** Mirrors getAcceptedMcpIssuers in packages/web/src/lib/mcp-oauth.ts. */
+/** Mirrors getAcceptedMcpIssuers in apps/optimitron/src/lib/mcp-oauth.ts. */
 function getAcceptedIssuers(): string[] {
   const canonical = getIssuerUrl();
   if (process.env.VERCEL_ENV !== "production") return [canonical];

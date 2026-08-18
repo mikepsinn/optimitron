@@ -2,16 +2,16 @@
 
 ## Project shape
 
-Keep `packages/web` on its existing Vercel project. Create one additional
-Vercel project for each app under `apps/*`.
+Keep `apps/optimitron` on its existing Vercel project. Create one additional
+Vercel project for each other app under `apps/*`.
 
 `apps/warondisease` is the source of truth for the campaign site. Its rich
 neobrutalist home and dashboard must pass public and authenticated visual review
-before `warondisease.org` moves off the temporary `packages/web` host.
+before `warondisease.org` moves off the temporary `apps/optimitron` host.
 
 | Project                | Root Directory              | Production domain          |
 | ---------------------- | --------------------------- | -------------------------- |
-| `optimitron-web`       | `packages/web`              | `optimitron.com`           |
+| `optimitron-web`       | `apps/optimitron`           | `optimitron.com`           |
 | `warondisease`         | `apps/warondisease`         | `warondisease.org`         |
 | `acceleratedmedicine`  | `apps/acceleratedmedicine`  | `acceleratedmedicine.org`  |
 | `trialabundancesurvey` | `apps/trialabundancesurvey` | `trialabundancesurvey.org` |
@@ -19,10 +19,10 @@ before `warondisease.org` moves off the temporary `packages/web` host.
 | `wishocracy`           | `apps/wishocracy`           | `wishocracy.org`           |
 | `curedao`              | `apps/curedao`              | `curedao.org`              |
 
-Use Vercel's Git integration for these projects. Do not repoint the existing
-`packages/web` project and do not add a workflow that redeploys every app after
-every commit. Vercel can skip projects whose workspace dependencies did not
-change.
+Use Vercel's Git integration for these projects. Update the existing
+`optimitron-web` project's Root Directory to `apps/optimitron`; do not create a
+replacement project. Do not add a workflow that redeploys every app after every
+commit. Vercel can skip projects whose workspace dependencies did not change.
 
 ## Environment variables
 

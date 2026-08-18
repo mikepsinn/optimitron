@@ -1,4 +1,4 @@
-// Mirrors packages/web/src/lib/json-safe.ts: Prisma rows carry BigInt columns
+// Mirrors apps/optimitron/src/lib/json-safe.ts: Prisma rows carry BigInt columns
 // and bare JSON.stringify throws on them.
 export function jsonSafeReplacer(_key: string, value: unknown): unknown {
   if (typeof value === "bigint") {

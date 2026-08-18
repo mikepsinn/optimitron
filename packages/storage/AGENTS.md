@@ -24,5 +24,5 @@ IPFS-backed snapshot storage for Wishocracy aggregations, policy analyses, and h
 
 ## Off-Limits
 
-- `packages/web/*`
+- `apps/optimitron/*`
 - `packages/agent/*` — agent consumes storage, not the other way around

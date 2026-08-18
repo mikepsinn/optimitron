@@ -62,19 +62,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/social-accounts/disconnect/route.ts",
+          "path": "apps/optimitron/src/app/api/social-accounts/disconnect/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/privacy/page.tsx",
+          "path": "apps/optimitron/src/app/privacy/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/donate/WaysToGiveCard.tsx",
+          "path": "apps/optimitron/src/components/donate/WaysToGiveCard.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/auth/AuthForm.tsx",
+          "path": "apps/optimitron/src/components/auth/AuthForm.tsx",
           "matches": 1
         },
         {
@@ -158,35 +158,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/admin/organizations/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/admin/organizations/[id]/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/content-access.server.ts",
+          "path": "apps/optimitron/src/lib/content-access.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/email/suppression.server.ts",
+          "path": "apps/optimitron/src/lib/email/suppression.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/vote/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/tasks/task-comments.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comments.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/api/game-stats/route.ts",
+          "path": "apps/optimitron/src/app/api/game-stats/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/social-accounts/connect-wallet/route.ts",
+          "path": "apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/social-accounts/disconnect/route.ts",
+          "path": "apps/optimitron/src/app/api/social-accounts/disconnect/route.ts",
           "matches": 2
         }
       ],
@@ -254,15 +254,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/personal-planning.server.ts",
           "matches": 2
         },
         {
@@ -350,11 +350,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/agent-lease.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/agent-lease.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
@@ -446,7 +446,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-relationships.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-relationships.server.ts",
           "matches": 5
         },
         {
@@ -542,15 +542,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/score-merkle.server.ts",
+          "path": "apps/optimitron/src/lib/score-merkle.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/score-publication.server.ts",
+          "path": "apps/optimitron/src/lib/score-publication.server.ts",
           "matches": 3
         },
         {
@@ -638,15 +638,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/score-publication.server.ts",
+          "path": "apps/optimitron/src/lib/score-publication.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/wishocracy-alignment.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-alignment.ts",
           "matches": 3
         },
         {
@@ -734,35 +734,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/badges.server.ts",
+          "path": "apps/optimitron/src/lib/badges.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/shared/TrialCard.tsx",
+          "path": "apps/optimitron/src/components/shared/TrialCard.tsx",
           "matches": 21
         },
         {
-          "path": "packages/web/src/components/treatment/HealthEconomicsDisplay.tsx",
+          "path": "apps/optimitron/src/components/treatment/HealthEconomicsDisplay.tsx",
           "matches": 15
         },
         {
-          "path": "packages/web/src/components/personhood/PersonhoodStatusBadge.tsx",
+          "path": "apps/optimitron/src/components/personhood/PersonhoodStatusBadge.tsx",
           "matches": 6
         },
         {
-          "path": "packages/web/src/components/shared/ParameterValue.tsx",
+          "path": "apps/optimitron/src/components/shared/ParameterValue.tsx",
           "matches": 6
         },
         {
-          "path": "packages/web/src/components/tasks/ApplicationReviewUI.tsx",
+          "path": "apps/optimitron/src/components/tasks/ApplicationReviewUI.tsx",
           "matches": 4
         },
         {
-          "path": "packages/web/src/components/ui/badge.tsx",
+          "path": "apps/optimitron/src/components/ui/badge.tsx",
           "matches": 4
         },
         {
-          "path": "packages/web/src/components/medical/TreatmentReport.tsx",
+          "path": "apps/optimitron/src/components/medical/TreatmentReport.tsx",
           "matches": 3
         }
       ],
@@ -830,11 +830,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/civic/votes/route.ts",
+          "path": "apps/optimitron/src/app/api/civic/votes/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/civic/votes/[identifier]/page.tsx",
+          "path": "apps/optimitron/src/app/civic/votes/[identifier]/page.tsx",
           "matches": 4
         },
         {
@@ -928,11 +928,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/collections.server.ts",
+          "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 25
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 9
         },
         {
@@ -940,23 +940,23 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/collections/[id]/records/[recordId]/route.ts",
+          "path": "apps/optimitron/src/app/api/collections/[id]/records/[recordId]/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/collections/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/collections/[id]/route.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/collections/[id]/page.tsx",
+          "path": "apps/optimitron/src/app/collections/[id]/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/search/page.tsx",
+          "path": "apps/optimitron/src/app/search/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/developer-openapi.ts",
+          "path": "apps/optimitron/src/lib/developer-openapi.ts",
           "matches": 3
         }
       ],
@@ -1024,7 +1024,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/collections.server.ts",
+          "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 6
         },
         {
@@ -1032,19 +1032,19 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-grid.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-grid.tsx",
           "matches": 9
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-client.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-client.tsx",
           "matches": 5
         },
         {
-          "path": "packages/web/src/lib/developer-openapi.ts",
+          "path": "apps/optimitron/src/lib/developer-openapi.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/content-search.server.ts",
+          "path": "apps/optimitron/src/lib/content-search.server.ts",
           "matches": 1
         },
         {
@@ -1120,11 +1120,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/collections.server.ts",
+          "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 28
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 8
         },
         {
@@ -1132,23 +1132,23 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/content-attachments.server.ts",
+          "path": "apps/optimitron/src/lib/content-attachments.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-grid.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-grid.tsx",
           "matches": 20
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-client.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-client.tsx",
           "matches": 9
         },
         {
-          "path": "packages/web/src/lib/content-search.server.ts",
+          "path": "apps/optimitron/src/lib/content-search.server.ts",
           "matches": 1
         }
       ],
@@ -1216,15 +1216,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/collections.server.ts",
+          "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/developer-openapi.ts",
+          "path": "apps/optimitron/src/lib/developer-openapi.ts",
           "matches": 3
         },
         {
@@ -1312,7 +1312,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/collections.server.ts",
+          "path": "apps/optimitron/src/lib/collections.server.ts",
           "matches": 8
         },
         {
@@ -1320,15 +1320,15 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-grid.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-grid.tsx",
           "matches": 5
         },
         {
-          "path": "packages/web/src/components/collections/collection-records-client.tsx",
+          "path": "apps/optimitron/src/components/collections/collection-records-client.tsx",
           "matches": 3
         },
         {
-          "path": "packages/web/src/components/collections/collection-column-settings.ts",
+          "path": "apps/optimitron/src/components/collections/collection-column-settings.ts",
           "matches": 1
         },
         {
@@ -1506,11 +1506,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/shirt-fulfillment.server.ts",
+          "path": "apps/optimitron/src/lib/shirt-fulfillment.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/app/api/stripe/webhook/route.ts",
+          "path": "apps/optimitron/src/app/api/stripe/webhook/route.ts",
           "matches": 4
         },
         {
@@ -1702,7 +1702,7 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/commerce-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/commerce-catalog.server.ts",
           "matches": 4
         },
         {
@@ -1710,7 +1710,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/task-funding/conversion.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/conversion.server.ts",
           "matches": 2
         },
         {
@@ -1798,7 +1798,7 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/commerce-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/commerce-catalog.server.ts",
           "matches": 2
         },
         {
@@ -1890,23 +1890,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-funding/payments.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/payments.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/app/api/stripe/create-checkout/route.ts",
+          "path": "apps/optimitron/src/app/api/stripe/create-checkout/route.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/lib/shirt-fulfillment.server.ts",
+          "path": "apps/optimitron/src/lib/shirt-fulfillment.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/task-funding/escrow.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/escrow.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/api/stripe/webhook/route.ts",
+          "path": "apps/optimitron/src/app/api/stripe/webhook/route.ts",
           "matches": 4
         },
         {
@@ -2084,7 +2084,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 5
         },
         {
@@ -2092,27 +2092,27 @@
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/api/conflicts/search/route.ts",
+          "path": "apps/optimitron/src/app/api/conflicts/search/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/tasks/[id]/pledge/route.ts",
+          "path": "apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/agencies/ddod/page.tsx",
+          "path": "apps/optimitron/src/app/agencies/ddod/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/people/PeopleFilterBar.tsx",
+          "path": "apps/optimitron/src/components/people/PeopleFilterBar.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/people/RepresentedPersonForm.tsx",
+          "path": "apps/optimitron/src/components/people/RepresentedPersonForm.tsx",
           "matches": 1
         }
       ],
@@ -2180,7 +2180,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/content-access.server.ts",
+          "path": "apps/optimitron/src/lib/content-access.server.ts",
           "matches": 12
         },
         {
@@ -2276,19 +2276,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/content-attachments.server.ts",
+          "path": "apps/optimitron/src/lib/content-attachments.server.ts",
           "matches": 26
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/content-export.server.ts",
+          "path": "apps/optimitron/src/lib/content-export.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 2
         },
         {
@@ -2372,7 +2372,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 4
         },
         {
@@ -2468,11 +2468,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 8
         },
         {
@@ -2480,15 +2480,15 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/humanity-v-government-case.server.ts",
+          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/represented-people.server.ts",
+          "path": "apps/optimitron/src/lib/represented-people.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/__tests__/campaign-structured-data.test.ts",
+          "path": "apps/optimitron/src/lib/__tests__/campaign-structured-data.test.ts",
           "matches": 2
         },
         {
@@ -2564,7 +2564,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 4
         },
         {
@@ -2660,7 +2660,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 2
         },
         {
@@ -2756,7 +2756,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 2
         },
         {
@@ -2852,23 +2852,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/represented-people.server.ts",
+          "path": "apps/optimitron/src/lib/represented-people.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/humanity-v-government-case.server.ts",
+          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/people-dedup.server.ts",
+          "path": "apps/optimitron/src/lib/people-dedup.server.ts",
           "matches": 1
         },
         {
@@ -2948,11 +2948,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -3044,7 +3044,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 4
         },
         {
@@ -3140,7 +3140,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 8
         },
         {
@@ -3236,11 +3236,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -3332,7 +3332,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 4
         },
         {
@@ -3428,7 +3428,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 10
         },
         {
@@ -3622,7 +3622,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 4
         },
         {
@@ -3816,7 +3816,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 16
         },
         {
@@ -3912,7 +3912,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 4
         },
         {
@@ -4206,7 +4206,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 2
         },
         {
@@ -4298,7 +4298,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 2
         },
         {
@@ -4394,7 +4394,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/dating.server.ts",
+          "path": "apps/optimitron/src/lib/dating.server.ts",
           "matches": 2
         },
         {
@@ -4490,11 +4490,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/documents.server.ts",
+          "path": "apps/optimitron/src/lib/documents.server.ts",
           "matches": 21
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 8
         },
         {
@@ -4502,23 +4502,23 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/private-work-portability.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-work-portability.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/documents/[id]/page.tsx",
+          "path": "apps/optimitron/src/app/documents/[id]/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/search/page.tsx",
+          "path": "apps/optimitron/src/app/search/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/documents/task-documents-list.tsx",
+          "path": "apps/optimitron/src/components/documents/task-documents-list.tsx",
           "matches": 1
         }
       ],
@@ -4586,7 +4586,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/documents.server.ts",
+          "path": "apps/optimitron/src/lib/documents.server.ts",
           "matches": 8
         },
         {
@@ -4594,15 +4594,15 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/content-search.server.ts",
+          "path": "apps/optimitron/src/lib/content-search.server.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/__tests__/content-search.server.test.ts",
+          "path": "apps/optimitron/src/lib/__tests__/content-search.server.test.ts",
           "matches": 1
         },
         {
@@ -4682,35 +4682,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/email/resend-webhook.ts",
+          "path": "apps/optimitron/src/lib/email/resend-webhook.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/admin-communications.server.ts",
+          "path": "apps/optimitron/src/lib/admin-communications.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/email/email-log.server.ts",
+          "path": "apps/optimitron/src/lib/email/email-log.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/task-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/email/send-deduped-email.server.ts",
+          "path": "apps/optimitron/src/lib/email/send-deduped-email.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/task-funding/escrow.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/escrow.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/email/suppression.server.ts",
+          "path": "apps/optimitron/src/lib/email/suppression.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/email/task-funding-pledge-confirmation-email.ts",
+          "path": "apps/optimitron/src/lib/email/task-funding-pledge-confirmation-email.ts",
           "matches": 2
         }
       ],
@@ -4778,23 +4778,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/external-action.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
           "matches": 20
         },
         {
-          "path": "packages/web/src/lib/mcp-tools/private-execution.ts",
+          "path": "apps/optimitron/src/lib/mcp-tools/private-execution.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-instructions.ts",
+          "path": "apps/optimitron/src/lib/mcp-instructions.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -4874,19 +4874,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 21
         },
         {
-          "path": "packages/web/src/components/donate/WaysToGiveCard.tsx",
+          "path": "apps/optimitron/src/components/donate/WaysToGiveCard.tsx",
           "matches": 3
         },
         {
-          "path": "packages/web/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx",
+          "path": "apps/optimitron/src/components/demo/slides/sierra/slide-trial-acceleration-12x.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/prize/VoterPrizeTreasuryDeposit.tsx",
+          "path": "apps/optimitron/src/components/prize/VoterPrizeTreasuryDeposit.tsx",
           "matches": 1
         },
         {
@@ -4970,23 +4970,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/components/profile/ProfileSnapshotForm.tsx",
+          "path": "apps/optimitron/src/components/profile/ProfileSnapshotForm.tsx",
           "matches": 51
         },
         {
-          "path": "packages/web/src/components/profile/DailyCheckInCard.tsx",
+          "path": "apps/optimitron/src/components/profile/DailyCheckInCard.tsx",
           "matches": 3
         },
         {
-          "path": "packages/web/src/components/ui/form-field.tsx",
+          "path": "apps/optimitron/src/components/ui/form-field.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -5066,11 +5066,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -5162,7 +5162,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 6
         },
         {
@@ -5356,11 +5356,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/tasks/external-action.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
           "matches": 8
         },
         {
@@ -5452,11 +5452,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 10
         },
         {
@@ -5464,23 +5464,23 @@
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/health-analysis/submit/route.ts",
+          "path": "apps/optimitron/src/app/api/health-analysis/submit/route.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/api/conditions/search/route.ts",
+          "path": "apps/optimitron/src/app/api/conditions/search/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/global-variable-lookup.server.ts",
+          "path": "apps/optimitron/src/lib/global-variable-lookup.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/medical/medical-pages.tsx",
+          "path": "apps/optimitron/src/components/medical/medical-pages.tsx",
           "matches": 1
         }
       ],
@@ -5548,7 +5548,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
         },
         {
@@ -5938,11 +5938,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/efficacy-lag-matcher.server.ts",
+          "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
           "matches": 3
         },
         {
@@ -5950,7 +5950,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/scripts/recompute-efficacy-lag.ts",
+          "path": "apps/optimitron/scripts/recompute-efficacy-lag.ts",
           "matches": 1
         },
         {
@@ -6034,7 +6034,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 5
         },
         {
@@ -6130,7 +6130,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 2
         },
         {
@@ -6226,7 +6226,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 2
         },
         {
@@ -6422,31 +6422,31 @@
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 5
         },
         {
-          "path": "packages/web/scripts/import-treaty-policy-model.ts",
+          "path": "apps/optimitron/scripts/import-treaty-policy-model.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/alignment-politicians.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-politicians.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/jurisdiction-search.server.ts",
+          "path": "apps/optimitron/src/lib/jurisdiction-search.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-catalog.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/scoreboard/PoliticianAlignmentDashboard.tsx",
+          "path": "apps/optimitron/src/components/scoreboard/PoliticianAlignmentDashboard.tsx",
           "matches": 1
         }
       ],
@@ -6514,11 +6514,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -6610,7 +6610,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
@@ -6706,15 +6706,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/lib/census-aggregation.server.ts",
+          "path": "apps/optimitron/src/lib/census-aggregation.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
@@ -6802,11 +6802,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
@@ -6898,11 +6898,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-relationships.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-relationships.server.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/app/api/health-analysis/submit/route.ts",
+          "path": "apps/optimitron/src/app/api/health-analysis/submit/route.ts",
           "matches": 3
         },
         {
@@ -6994,11 +6994,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/components/notifications/PushNotificationPrompt.tsx",
+          "path": "apps/optimitron/src/components/notifications/PushNotificationPrompt.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/settings/SettingsClient.tsx",
+          "path": "apps/optimitron/src/components/settings/SettingsClient.tsx",
           "matches": 1
         },
         {
@@ -7006,7 +7006,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/routes.ts",
+          "path": "apps/optimitron/src/lib/routes.ts",
           "matches": 2
         },
         {
@@ -7014,11 +7014,11 @@
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/push-notifications.ts",
+          "path": "apps/optimitron/src/lib/push-notifications.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/tasks/share-templates.ts",
+          "path": "apps/optimitron/src/lib/tasks/share-templates.ts",
           "matches": 1
         },
         {
@@ -7090,7 +7090,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/dashboard/notification-preferences/route.ts",
+          "path": "apps/optimitron/src/app/api/dashboard/notification-preferences/route.ts",
           "matches": 4
         },
         {
@@ -7188,11 +7188,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/mcp/oauth/token/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/token/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/mcp/oauth/consent/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/consent/route.ts",
           "matches": 2
         },
         {
@@ -7284,23 +7284,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/mcp/oauth/authorize/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/authorize/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/mcp/oauth/consent/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/consent/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/mcp/oauth/register/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/register/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/mcp/authorize/page.tsx",
+          "path": "apps/optimitron/src/app/mcp/authorize/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/developer-openapi.ts",
+          "path": "apps/optimitron/src/lib/developer-openapi.ts",
           "matches": 2
         },
         {
@@ -7380,23 +7380,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/mcp/oauth/revoke/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/revoke/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/mcp/oauth/token/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/token/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/mcp/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/mcp/authorize/page.tsx",
+          "path": "apps/optimitron/src/app/mcp/authorize/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/auth-utils.ts",
+          "path": "apps/optimitron/src/lib/auth-utils.ts",
           "matches": 2
         },
         {
@@ -7476,19 +7476,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/organization.server.ts",
+          "path": "apps/optimitron/src/lib/organization.server.ts",
           "matches": 42
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 32
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/app/api/admin/organizations/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/admin/organizations/[id]/route.ts",
           "matches": 13
         },
         {
@@ -7504,7 +7504,7 @@
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/organizations/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/organizations/[id]/route.ts",
           "matches": 6
         }
       ],
@@ -7572,7 +7572,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/organization.server.ts",
+          "path": "apps/optimitron/src/lib/organization.server.ts",
           "matches": 23
         },
         {
@@ -7584,23 +7584,23 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/mcp/oauth/consent/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/oauth/consent/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/mcp/route.ts",
+          "path": "apps/optimitron/src/app/api/mcp/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/mcp/authorize/page.tsx",
+          "path": "apps/optimitron/src/app/mcp/authorize/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/auth-utils.ts",
+          "path": "apps/optimitron/src/lib/auth-utils.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         }
       ],
@@ -7764,23 +7764,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/referendum-site.server.ts",
+          "path": "apps/optimitron/src/lib/referendum-site.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/admin/referendum-positions/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/admin/referendum-positions/[id]/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/admin/referendum-positions/route.ts",
+          "path": "apps/optimitron/src/app/api/admin/referendum-positions/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/organization-position/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/organization-position/route.ts",
           "matches": 4
         },
         {
@@ -7792,7 +7792,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/admin/referendum-positions/page.tsx",
+          "path": "apps/optimitron/src/app/admin/referendum-positions/page.tsx",
           "matches": 2
         }
       ],
@@ -7860,15 +7860,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/parameters/parameter-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 19
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 2
         },
         {
@@ -7956,15 +7956,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/parameters/parameter-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/src/lib/parameters/parameter-staleness.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-staleness.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
@@ -8052,7 +8052,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/parameters/parameter-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 6
         },
         {
@@ -8148,7 +8148,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/parameters/parameter-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 4
         },
         {
@@ -8244,23 +8244,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/person.server.ts",
+          "path": "apps/optimitron/src/lib/person.server.ts",
           "matches": 43
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 31
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 15
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 10
         },
         {
@@ -8268,11 +8268,11 @@
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/tasks.server.ts",
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 6
         }
       ],
@@ -8340,11 +8340,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 4
         },
         {
@@ -8352,15 +8352,15 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/efficacy-lag-matcher.server.ts",
+          "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/prosecution-data.server.ts",
+          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
           "matches": 1
         },
         {
@@ -8436,19 +8436,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/efficacy-lag-matcher.server.ts",
+          "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/prosecution-data.server.ts",
+          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/scripts/recompute-efficacy-lag.ts",
+          "path": "apps/optimitron/scripts/recompute-efficacy-lag.ts",
           "matches": 1
         },
         {
@@ -8532,23 +8532,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/personhood.server.ts",
+          "path": "apps/optimitron/src/lib/personhood.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/treasury/register-ubi/route.ts",
+          "path": "apps/optimitron/src/app/api/treasury/register-ubi/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/census-aggregation.server.ts",
+          "path": "apps/optimitron/src/lib/census-aggregation.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/referral-point-mint.server.ts",
+          "path": "apps/optimitron/src/lib/referral-point-mint.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-community.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-community.ts",
           "matches": 2
         },
         {
@@ -8628,35 +8628,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/prosecution-data.server.ts",
+          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/evidence-package.server.ts",
+          "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/scripts/recompute-efficacy-lag.ts",
+          "path": "apps/optimitron/scripts/recompute-efficacy-lag.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/efficacy-lag-matcher.server.ts",
+          "path": "apps/optimitron/src/lib/efficacy-lag-matcher.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/people/[id]/evidence-package/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/evidence-package/route.ts",
           "matches": 1
         }
       ],
@@ -8724,19 +8724,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/evidence-package.server.ts",
+          "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 2
         },
         {
@@ -8820,23 +8820,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/evidence-package.server.ts",
+          "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/prosecution-data.server.ts",
+          "path": "apps/optimitron/src/lib/prosecution-data.server.ts",
           "matches": 1
         },
         {
@@ -8916,19 +8916,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/evidence-package.server.ts",
+          "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 1
         },
         {
@@ -9012,19 +9012,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/people/[id]/route.ts",
+          "path": "apps/optimitron/src/app/api/people/[id]/route.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/represented-people/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/represented-people/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/evidence-package.server.ts",
+          "path": "apps/optimitron/src/lib/evidence-package.server.ts",
           "matches": 1
         },
         {
@@ -9108,27 +9108,27 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/cron/point-mint/route.ts",
+          "path": "apps/optimitron/src/app/api/cron/point-mint/route.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/referral-point-mint.server.ts",
+          "path": "apps/optimitron/src/lib/referral-point-mint.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/points/balance/route.ts",
+          "path": "apps/optimitron/src/app/api/points/balance/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/prize-treasury/status/route.ts",
+          "path": "apps/optimitron/src/app/api/prize-treasury/status/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/impact-receipts.server.ts",
+          "path": "apps/optimitron/src/lib/impact-receipts.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/prize/EarthOptimizationPointsBalanceCard.tsx",
+          "path": "apps/optimitron/src/components/prize/EarthOptimizationPointsBalanceCard.tsx",
           "matches": 2
         },
         {
@@ -9204,35 +9204,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/alignment-politicians.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-politicians.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts",
+          "path": "apps/optimitron/src/app/api/scores/[jurisdictionCode]/[politicianExternalId]/route.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/governments/[code]/page.tsx",
+          "path": "apps/optimitron/src/app/governments/[code]/page.tsx",
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
+          "path": "apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/iab/page.tsx",
+          "path": "apps/optimitron/src/app/iab/page.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/alignment/AlignmentReport.tsx",
+          "path": "apps/optimitron/src/components/alignment/AlignmentReport.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/treasury/TreasuryAllocationViz.tsx",
+          "path": "apps/optimitron/src/components/treasury/TreasuryAllocationViz.tsx",
           "matches": 2
         }
       ],
@@ -9300,11 +9300,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/alignment-politicians.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-politicians.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
+          "path": "apps/optimitron/src/app/governments/[code]/politicians/[bioguideId]/page.tsx",
           "matches": 2
         },
         {
@@ -9396,7 +9396,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 4
         },
         {
@@ -9404,7 +9404,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-alignment.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-alignment.ts",
           "matches": 2
         },
         {
@@ -9492,11 +9492,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/prize-treasury/status/route.ts",
+          "path": "apps/optimitron/src/app/api/prize-treasury/status/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/prize/page.tsx",
+          "path": "apps/optimitron/src/app/prize/page.tsx",
           "matches": 2
         },
         {
@@ -9782,23 +9782,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/vote/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/app/agencies/dcongress/referendums/[slug]/page.tsx",
+          "path": "apps/optimitron/src/app/agencies/dcongress/referendums/[slug]/page.tsx",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/referendums/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/route.ts",
           "matches": 6
         },
         {
@@ -9806,11 +9806,11 @@
           "matches": 5
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/referendum-site.server.ts",
+          "path": "apps/optimitron/src/lib/referendum-site.server.ts",
           "matches": 4
         }
       ],
@@ -9878,35 +9878,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/verified-votes.server.ts",
+          "path": "apps/optimitron/src/lib/verified-votes.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 13
         },
         {
-          "path": "packages/web/src/lib/referendum-site.server.ts",
+          "path": "apps/optimitron/src/lib/referendum-site.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/lib/email/monthly-chain-digest.server.ts",
+          "path": "apps/optimitron/src/lib/email/monthly-chain-digest.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/vote/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/daily-activity-digest.server.ts",
+          "path": "apps/optimitron/src/lib/daily-activity-digest.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/humanity-v-government-case.server.ts",
+          "path": "apps/optimitron/src/lib/humanity-v-government-case.server.ts",
           "matches": 4
         }
       ],
@@ -9976,35 +9976,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/referral.server.ts",
+          "path": "apps/optimitron/src/lib/referral.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/api/game-stats/route.ts",
+          "path": "apps/optimitron/src/app/api/game-stats/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/badges.server.ts",
+          "path": "apps/optimitron/src/lib/badges.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/daily-activity-digest.server.ts",
+          "path": "apps/optimitron/src/lib/daily-activity-digest.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/referendums/[slug]/vote/route.ts",
+          "path": "apps/optimitron/src/app/api/referendums/[slug]/vote/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/cron/point-mint/route.ts",
+          "path": "apps/optimitron/src/app/api/cron/point-mint/route.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/api/personhood/world-id/verify/route.ts",
+          "path": "apps/optimitron/src/app/api/personhood/world-id/verify/route.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/app/prize/page.tsx",
+          "path": "apps/optimitron/src/app/prize/page.tsx",
           "matches": 1
         }
       ],
@@ -10072,11 +10072,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/referral-redirect.server.ts",
+          "path": "apps/optimitron/src/lib/referral-redirect.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/r/[code]/page.tsx",
+          "path": "apps/optimitron/src/app/r/[code]/page.tsx",
           "matches": 1
         },
         {
@@ -10168,31 +10168,31 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/referral-invitations.server.ts",
+          "path": "apps/optimitron/src/lib/referral-invitations.server.ts",
           "matches": 23
         },
         {
-          "path": "packages/web/src/lib/humanity-manager-status.server.ts",
+          "path": "apps/optimitron/src/lib/humanity-manager-status.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/app/api/referral-invitations/route.ts",
+          "path": "apps/optimitron/src/app/api/referral-invitations/route.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/email/monthly-chain-digest.server.ts",
+          "path": "apps/optimitron/src/lib/email/monthly-chain-digest.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/person.server.ts",
+          "path": "apps/optimitron/src/lib/person.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -10264,23 +10264,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/stripe/webhook/route.ts",
+          "path": "apps/optimitron/src/app/api/stripe/webhook/route.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/components/treaty/TreatyNameSignatureBox.tsx",
+          "path": "apps/optimitron/src/components/treaty/TreatyNameSignatureBox.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/shirt-fulfillment.server.ts",
+          "path": "apps/optimitron/src/lib/shirt-fulfillment.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/voice-session.ts",
+          "path": "apps/optimitron/src/lib/voice-session.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/task-funding/payments.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/payments.server.ts",
           "matches": 3
         },
         {
@@ -10288,11 +10288,11 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/referendum-vote-sync.ts",
+          "path": "apps/optimitron/src/lib/referendum-vote-sync.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-state-utils.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-state-utils.ts",
           "matches": 2
         }
       ],
@@ -10360,27 +10360,27 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/share-attempts/route.ts",
+          "path": "apps/optimitron/src/app/api/share-attempts/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/referral-redirect.server.ts",
+          "path": "apps/optimitron/src/lib/referral-redirect.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/referral.server.ts",
+          "path": "apps/optimitron/src/lib/referral.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/share-attempts.server.ts",
+          "path": "apps/optimitron/src/lib/share-attempts.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/r/[code]/page.tsx",
+          "path": "apps/optimitron/src/app/r/[code]/page.tsx",
           "matches": 1
         },
         {
@@ -10388,7 +10388,7 @@
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/share-channels.ts",
+          "path": "apps/optimitron/src/lib/share-channels.ts",
           "matches": 1
         }
       ],
@@ -10456,15 +10456,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/social-accounts/connect-wallet/route.ts",
+          "path": "apps/optimitron/src/app/api/social-accounts/connect-wallet/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/social-accounts/disconnect/route.ts",
+          "path": "apps/optimitron/src/app/api/social-accounts/disconnect/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/referral-point-mint.server.ts",
+          "path": "apps/optimitron/src/lib/referral-point-mint.server.ts",
           "matches": 2
         },
         {
@@ -10552,35 +10552,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/parameters/parameter-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/parameter-catalog.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/scripts/extract-tasks-from-manual.ts",
+          "path": "apps/optimitron/scripts/extract-tasks-from-manual.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/source-artifact-visibility.server.ts",
+          "path": "apps/optimitron/src/lib/source-artifact-visibility.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/private-work-portability.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-work-portability.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         }
       ],
@@ -10648,11 +10648,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/stripe-connect.server.ts",
+          "path": "apps/optimitron/src/lib/stripe-connect.server.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/src/lib/task-payouts.server.ts",
+          "path": "apps/optimitron/src/lib/task-payouts.server.ts",
           "matches": 8
         },
         {
@@ -10744,23 +10744,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/subject.server.ts",
+          "path": "apps/optimitron/src/lib/subject.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/court-data.server.ts",
+          "path": "apps/optimitron/src/lib/court-data.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/admin/communications/page.tsx",
+          "path": "apps/optimitron/src/app/admin/communications/page.tsx",
           "matches": 3
         },
         {
-          "path": "packages/web/src/app/organizations/[id]/page.tsx",
+          "path": "apps/optimitron/src/app/organizations/[id]/page.tsx",
           "matches": 2
         },
         {
@@ -10768,11 +10768,11 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/email/preview-envelope.ts",
+          "path": "apps/optimitron/src/lib/email/preview-envelope.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-comment-notification.email.md",
+          "path": "apps/optimitron/src/lib/tasks/task-comment-notification.email.md",
           "matches": 2
         }
       ],
@@ -10840,19 +10840,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 132
         },
         {
-          "path": "packages/web/src/lib/tasks.server.ts",
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
           "matches": 59
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 28
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 27
         },
         {
@@ -10860,15 +10860,15 @@
           "matches": 19
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/src/lib/tasks/private-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-task-bundle.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/triggers/fire-handlers.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
           "matches": 16
         }
       ],
@@ -10936,19 +10936,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/task-applications.server.ts",
+          "path": "apps/optimitron/src/lib/task-applications.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/app/api/tasks/[id]/applications/[applicationId]/route.ts",
+          "path": "apps/optimitron/src/app/api/tasks/[id]/applications/[applicationId]/route.ts",
           "matches": 2
         },
         {
@@ -11032,11 +11032,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/task-applications.server.ts",
+          "path": "apps/optimitron/src/lib/task-applications.server.ts",
           "matches": 2
         },
         {
@@ -11128,15 +11128,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/personal-planning.server.ts",
           "matches": 2
         },
         {
@@ -11224,15 +11224,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks.server.ts",
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/task-payouts.server.ts",
+          "path": "apps/optimitron/src/lib/task-payouts.server.ts",
           "matches": 2
         },
         {
@@ -11240,7 +11240,7 @@
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/tasks/agent-lease.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/agent-lease.server.ts",
           "matches": 1
         },
         {
@@ -11320,35 +11320,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-comments.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comments.server.ts",
           "matches": 28
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/lib/tasks/user-treaty-task-progress.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/user-treaty-task-progress.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/referral-invitations.server.ts",
+          "path": "apps/optimitron/src/lib/referral-invitations.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/triggers/fire-handlers.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
           "matches": 5
         },
         {
-          "path": "packages/web/src/lib/email/inbound-reply.ts",
+          "path": "apps/optimitron/src/lib/email/inbound-reply.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/task-comment-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comment-notifications.server.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/tasks/task-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
           "matches": 3
         }
       ],
@@ -11416,19 +11416,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-comment-attachments.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comment-attachments.server.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/src/lib/tasks/task-comments.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comments.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -11512,7 +11512,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-comments.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-comments.server.ts",
           "matches": 18
         },
         {
@@ -11608,35 +11608,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-notifications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-notifications.server.ts",
           "matches": 29
         },
         {
-          "path": "packages/web/src/lib/triggers/fire-handlers.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/lib/email/inbound-reply.ts",
+          "path": "apps/optimitron/src/lib/email/inbound-reply.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/communications-audit.server.ts",
+          "path": "apps/optimitron/src/lib/communications-audit.server.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/src/lib/tasks/task-communications.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-communications.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/admin-communications.server.ts",
+          "path": "apps/optimitron/src/lib/admin-communications.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/task-recipient-rate-limit.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-recipient-rate-limit.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/scripts/soft-delete-funding-tasks.ts",
+          "path": "apps/optimitron/scripts/soft-delete-funding-tasks.ts",
           "matches": 2
         }
       ],
@@ -11708,11 +11708,11 @@
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/triggers/fire-handlers.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire-handlers.ts",
           "matches": 4
         },
         {
@@ -11804,11 +11804,11 @@
           "matches": 5
         },
         {
-          "path": "packages/web/src/lib/triggers/admin.ts",
+          "path": "apps/optimitron/src/lib/triggers/admin.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/triggers/iteration-sources.ts",
+          "path": "apps/optimitron/src/lib/triggers/iteration-sources.ts",
           "matches": 1
         },
         {
@@ -11896,7 +11896,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
@@ -12090,7 +12090,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -12284,31 +12284,31 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 26
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 14
         },
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/personal-planning.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/private-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-task-bundle.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/private-work-portability.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-work-portability.server.ts",
           "matches": 2
         },
         {
@@ -12380,11 +12380,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -12476,31 +12476,31 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/extension/tasks/[id]/done/route.ts",
+          "path": "apps/optimitron/src/app/api/extension/tasks/[id]/done/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-tools/private-execution.ts",
+          "path": "apps/optimitron/src/lib/mcp-tools/private-execution.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/external-action.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/external-action.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/personal-planning.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/personal-planning.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -12572,7 +12572,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-funding/pledges.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/pledges.server.ts",
           "matches": 4
         },
         {
@@ -12668,27 +12668,27 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-funding/payments.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/payments.server.ts",
           "matches": 24
         },
         {
-          "path": "packages/web/src/lib/task-funding/escrow.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/escrow.server.ts",
           "matches": 22
         },
         {
-          "path": "packages/web/src/lib/task-funding/status.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/status.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/admin/task-payouts/page.tsx",
+          "path": "apps/optimitron/src/app/admin/task-payouts/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/task-payouts.server.ts",
+          "path": "apps/optimitron/src/lib/task-payouts.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -12764,23 +12764,23 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-funding/escrow.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/escrow.server.ts",
           "matches": 30
         },
         {
-          "path": "packages/web/src/lib/task-funding/pledges.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/pledges.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/lib/task-funding/status.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/status.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/admin/task-payouts/page.tsx",
+          "path": "apps/optimitron/src/app/admin/task-payouts/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/task-funding/payments.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/payments.server.ts",
           "matches": 2
         },
         {
@@ -12860,15 +12860,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-funding/escrow.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/escrow.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/lib/task-funding/payments.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/payments.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 7
         },
         {
@@ -12876,19 +12876,19 @@
           "matches": 5
         },
         {
-          "path": "packages/web/src/lib/task-funding/pledges.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/pledges.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/admin/task-payouts/page.tsx",
+          "path": "apps/optimitron/src/app/admin/task-payouts/page.tsx",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/tasks/[id]/pledge/route.ts",
+          "path": "apps/optimitron/src/app/api/tasks/[id]/pledge/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/task-funding/status.server.ts",
+          "path": "apps/optimitron/src/lib/task-funding/status.server.ts",
           "matches": 2
         }
       ],
@@ -12956,11 +12956,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
@@ -13052,15 +13052,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 10
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 8
         },
         {
@@ -13068,7 +13068,7 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/per-verified-voter-impact.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts",
           "matches": 4
         },
         {
@@ -13152,19 +13152,19 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/per-verified-voter-impact.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/wishonia-task-reply.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/wishonia-task-reply.server.ts",
           "matches": 2
         },
         {
@@ -13244,11 +13244,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/per-verified-voter-impact.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/per-verified-voter-impact.server.ts",
           "matches": 4
         },
         {
@@ -13256,7 +13256,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
@@ -13340,11 +13340,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/parameters/task-impact-calculation.server.ts",
+          "path": "apps/optimitron/src/lib/parameters/task-impact-calculation.server.ts",
           "matches": 2
         },
         {
@@ -13436,11 +13436,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/task-applications.server.ts",
+          "path": "apps/optimitron/src/lib/task-applications.server.ts",
           "matches": 2
         },
         {
@@ -13532,7 +13532,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 2
         },
         {
@@ -13628,15 +13628,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/task-payouts.server.ts",
+          "path": "apps/optimitron/src/lib/task-payouts.server.ts",
           "matches": 32
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 5
         },
         {
-          "path": "packages/web/src/app/admin/task-payouts/page.tsx",
+          "path": "apps/optimitron/src/app/admin/task-payouts/page.tsx",
           "matches": 2
         },
         {
@@ -13724,35 +13724,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/import-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/import-task-bundle.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/tasks/task-merge.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/task-merge.server.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/scripts/extract-tasks-from-manual.ts",
+          "path": "apps/optimitron/scripts/extract-tasks-from-manual.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/notion-import.server.ts",
+          "path": "apps/optimitron/src/lib/notion-import.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/tasks/private-task-bundle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-task-bundle.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/form-responses.server.ts",
+          "path": "apps/optimitron/src/lib/form-responses.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/tasks/private-work-portability.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/private-work-portability.server.ts",
           "matches": 2
         }
       ],
@@ -13824,27 +13824,27 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/triggers/admin.ts",
+          "path": "apps/optimitron/src/lib/triggers/admin.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/triggers/completion-gate.ts",
+          "path": "apps/optimitron/src/lib/triggers/completion-gate.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/triggers/fire-types.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire-types.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/triggers/fire.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/triggers/resolvers.ts",
+          "path": "apps/optimitron/src/lib/triggers/resolvers.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -13916,7 +13916,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/triggers/admin.ts",
+          "path": "apps/optimitron/src/lib/triggers/admin.ts",
           "matches": 13
         },
         {
@@ -13924,27 +13924,27 @@
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/api/cron/run-due-triggers/route.ts",
+          "path": "apps/optimitron/src/app/api/cron/run-due-triggers/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/mcp-tools/task-triggers.ts",
+          "path": "apps/optimitron/src/lib/mcp-tools/task-triggers.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/mcp-tools/task-templates.ts",
+          "path": "apps/optimitron/src/lib/mcp-tools/task-templates.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/post-signin-sync.server.ts",
+          "path": "apps/optimitron/src/lib/post-signin-sync.server.ts",
           "matches": 1
         },
         {
-          "path": "packages/web/src/lib/referral-invitation-tasks.server.ts",
+          "path": "apps/optimitron/src/lib/referral-invitation-tasks.server.ts",
           "matches": 1
         }
       ],
@@ -14012,11 +14012,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/triggers/fire.ts",
+          "path": "apps/optimitron/src/lib/triggers/fire.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/cron/run-due-triggers/route.ts",
+          "path": "apps/optimitron/src/app/api/cron/run-due-triggers/route.ts",
           "matches": 2
         },
         {
@@ -14108,15 +14108,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/tasks/execution-lifecycle.server.ts",
+          "path": "apps/optimitron/src/lib/tasks/execution-lifecycle.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/mcp-tools/private-execution.ts",
+          "path": "apps/optimitron/src/lib/mcp-tools/private-execution.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/scripts/verify-preview-masking.mjs",
+          "path": "apps/optimitron/scripts/verify-preview-masking.mjs",
           "matches": 2
         },
         {
@@ -14204,7 +14204,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 11
         },
         {
@@ -14300,7 +14300,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 8
         },
         {
@@ -14396,15 +14396,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/health-analysis/submit/route.ts",
+          "path": "apps/optimitron/src/app/api/health-analysis/submit/route.ts",
           "matches": 3
         },
         {
@@ -14412,11 +14412,11 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/components/site/EarthOptimizationServicesLandingPage.tsx",
+          "path": "apps/optimitron/src/components/site/EarthOptimizationServicesLandingPage.tsx",
           "matches": 1
         },
         {
-          "path": "packages/web/src/components/task-funding/TaskFundingProgress.tsx",
+          "path": "apps/optimitron/src/components/task-funding/TaskFundingProgress.tsx",
           "matches": 1
         },
         {
@@ -14492,35 +14492,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 30
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 20
         },
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/lib/tasks.server.ts",
+          "path": "apps/optimitron/src/lib/tasks.server.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/lib/auth-utils.ts",
+          "path": "apps/optimitron/src/lib/auth-utils.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/lib/person.server.ts",
+          "path": "apps/optimitron/src/lib/person.server.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/lib/profile-identity.server.ts",
+          "path": "apps/optimitron/src/lib/profile-identity.server.ts",
           "matches": 9
         },
         {
-          "path": "packages/web/src/lib/email/suppression.server.ts",
+          "path": "apps/optimitron/src/lib/email/suppression.server.ts",
           "matches": 8
         }
       ],
@@ -14588,19 +14588,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/cron/push-notifications/route.ts",
+          "path": "apps/optimitron/src/app/api/cron/push-notifications/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/push/preferences/route.ts",
+          "path": "apps/optimitron/src/app/api/push/preferences/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/push/subscribe/route.ts",
+          "path": "apps/optimitron/src/app/api/push/subscribe/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 2
         },
         {
@@ -14686,7 +14686,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/profile.server.ts",
+          "path": "apps/optimitron/src/lib/profile.server.ts",
           "matches": 6
         },
         {
@@ -14694,15 +14694,15 @@
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/health-analysis/submit/route.ts",
+          "path": "apps/optimitron/src/app/api/health-analysis/submit/route.ts",
           "matches": 3
         },
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/mcp-server.ts",
+          "path": "apps/optimitron/src/lib/mcp-server.ts",
           "matches": 2
         },
         {
@@ -14782,7 +14782,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/earth-data.server.ts",
+          "path": "apps/optimitron/src/lib/earth-data.server.ts",
           "matches": 6
         },
         {
@@ -14878,7 +14878,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/auth-spam-guard.server.ts",
+          "path": "apps/optimitron/src/lib/auth-spam-guard.server.ts",
           "matches": 2
         },
         {
@@ -14974,15 +14974,15 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/push-sender.server.ts",
+          "path": "apps/optimitron/src/lib/push-sender.server.ts",
           "matches": 8
         },
         {
-          "path": "packages/web/src/app/api/push/subscribe/route.ts",
+          "path": "apps/optimitron/src/app/api/push/subscribe/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/push/unsubscribe/route.ts",
+          "path": "apps/optimitron/src/app/api/push/unsubscribe/route.ts",
           "matches": 2
         },
         {
@@ -15072,35 +15072,35 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/wishocracy/allocations/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/allocations/route.ts",
           "matches": 18
         },
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 12
         },
         {
-          "path": "packages/web/src/app/api/wishocracy/sync/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/sync/route.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/app/api/wishocracy/preferences/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/preferences/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/alignment-report.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-report.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/badges.server.ts",
+          "path": "apps/optimitron/src/lib/badges.server.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-community.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-community.ts",
           "matches": 2
         }
       ],
@@ -15168,7 +15168,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/wishocratic-treasury.server.ts",
+          "path": "apps/optimitron/src/lib/wishocratic-treasury.server.ts",
           "matches": 4
         },
         {
@@ -15264,11 +15264,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/app/api/wishocracy/allocations/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/allocations/route.ts",
           "matches": 2
         },
         {
-          "path": "packages/web/src/app/api/wishocracy/sync/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/sync/route.ts",
           "matches": 2
         },
         {
@@ -15362,11 +15362,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 7
         },
         {
-          "path": "packages/web/scripts/probe-wishocratic-items.ts",
+          "path": "apps/optimitron/scripts/probe-wishocratic-items.ts",
           "matches": 3
         },
         {
@@ -15374,7 +15374,7 @@
           "matches": 2
         },
         {
-          "path": "packages/web/src/lib/wishocracy-catalog.server.ts",
+          "path": "apps/optimitron/src/lib/wishocracy-catalog.server.ts",
           "matches": 2
         },
         {
@@ -15458,7 +15458,7 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/aggregate-alignment.server.ts",
+          "path": "apps/optimitron/src/lib/aggregate-alignment.server.ts",
           "matches": 3
         },
         {
@@ -15554,19 +15554,19 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/scripts/import-dih-users-votes.ts",
+          "path": "apps/optimitron/scripts/import-dih-users-votes.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/wishocracy/item-inclusions/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/item-inclusions/route.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/wishocracy/sync/route.ts",
+          "path": "apps/optimitron/src/app/api/wishocracy/sync/route.ts",
           "matches": 4
         },
         {
-          "path": "packages/web/src/lib/alignment-report.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-report.server.ts",
           "matches": 2
         },
         {
@@ -15650,11 +15650,11 @@
       },
       "keyFiles": [
         {
-          "path": "packages/web/src/lib/wishes.server.ts",
+          "path": "apps/optimitron/src/lib/wishes.server.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/lib/dashboard.server.ts",
+          "path": "apps/optimitron/src/lib/dashboard.server.ts",
           "matches": 4
         },
         {
@@ -16567,23 +16567,23 @@
       "evidenceMatches": 112,
       "evidence": [
         {
-          "path": "packages/web/src/components/chat/ChatPage.tsx",
+          "path": "apps/optimitron/src/components/chat/ChatPage.tsx",
           "matches": 37
         },
         {
-          "path": "packages/web/src/lib/alignment-legislative-sync.server.ts",
+          "path": "apps/optimitron/src/lib/alignment-legislative-sync.server.ts",
           "matches": 16
         },
         {
-          "path": "packages/web/src/app/api/civic/bills/route.ts",
+          "path": "apps/optimitron/src/app/api/civic/bills/route.ts",
           "matches": 11
         },
         {
-          "path": "packages/web/src/components/chat/BillListCard.tsx",
+          "path": "apps/optimitron/src/components/chat/BillListCard.tsx",
           "matches": 10
         },
         {
-          "path": "packages/web/src/components/chat/BillVoteCard.tsx",
+          "path": "apps/optimitron/src/components/chat/BillVoteCard.tsx",
           "matches": 9
         },
         {
@@ -16591,11 +16591,11 @@
           "matches": 6
         },
         {
-          "path": "packages/web/src/app/api/civic/votes/route.ts",
+          "path": "apps/optimitron/src/app/api/civic/votes/route.ts",
           "matches": 6
         },
         {
-          "path": "packages/web/src/components/chat/BillCard.tsx",
+          "path": "apps/optimitron/src/components/chat/BillCard.tsx",
           "matches": 6
         }
       ]

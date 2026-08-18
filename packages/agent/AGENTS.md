@@ -30,6 +30,6 @@ Autonomous policy analyst — Gemini-powered orchestrator that discovers prefere
 
 ## Off-Limits
 
-- `packages/web/*` — UI lives in the web package
+- `apps/optimitron/*` — UI lives in the web package
 - `packages/treasury-*/*` — smart contracts live in treasury packages
 - `packages/db/prisma/schema.prisma` — schema changes need explicit human approval

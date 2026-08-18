@@ -9,7 +9,7 @@
  *
  * When the Python generator catches up and `shareableSnippets.courtOfHumanityText`
  * starts appearing in the auto-generated file, this module can be deleted
- * and the import in `packages/web/src/config/referendums.ts` switched to
+ * and the import in `apps/optimitron/src/config/referendums.ts` switched to
  * `shareableSnippets.courtOfHumanityText`. Keep the export shape compatible
  * (`{ markdown, sourceFile, originalName }`) to make that migration trivial.
  *

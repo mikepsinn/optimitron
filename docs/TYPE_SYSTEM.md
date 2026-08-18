@@ -40,7 +40,7 @@ Minimal interfaces for pure computation. No DB concerns.
 
 The **web/API layer** converts between them:
 ```typescript
-// In packages/web or API routes:
+// In apps/optimitron or API routes:
 import type { Measurement as DbMeasurement } from '@optimitron/db';
 import type { Measurement as OptimizerMeasurement } from '@optimitron/optimizer';
 
@@ -94,5 +94,5 @@ Conversion utilities live in `@optimitron/db`:
 When adding a new concept:
 1. Add the model to `schema.prisma` first
 2. Define the minimal library type in the relevant package
-3. Add the conversion function in `packages/web/src/lib/converters.ts`
+3. Add the conversion function in `apps/optimitron/src/lib/converters.ts`
 4. Write tests for both the library function AND the conversion

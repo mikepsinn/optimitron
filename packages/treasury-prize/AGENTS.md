@@ -24,4 +24,4 @@ Earth Optimization Prize — Phase 1 referendum campaign. VoteToken and VoterPri
 
 - `packages/treasury-iab/*` — separate financial mechanism
 - `packages/treasury-wish/*` — separate monetary system
-- `packages/web/*` — UI integration lives in the web package
+- `apps/optimitron/*` — UI integration lives in the web package

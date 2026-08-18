@@ -56,7 +56,7 @@ Buttons: **[ I don't care ]** ・ **[ That's a shame ]**
 
 Both buttons advance to the Apocalypse screen. "I don't care" sets the alt flag for the next screen.
 
-Asset: photo lives at `packages/web/public/img/grandma.jpg`.
+Asset: photo lives at `apps/optimitron/public/img/grandma.jpg`.
 
 ---
 
@@ -760,7 +760,7 @@ Current generated parameter result: `~2.6` lives and `~53` years of suffering pr
 
 **Flow-visible wrapper exports**
 
-Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flow-parameters.ts` when the flow copy needs the rounded visible values:
+Use these UI-only wrapper parameters from `apps/optimitron/src/lib/treaty-share-flow-parameters.ts` when the flow copy needs the rounded visible values:
 
 | Variable | Formula | Use |
 | --- | --- | --- |
@@ -784,7 +784,7 @@ Use these UI-only wrapper parameters from `packages/web/src/lib/treaty-share-flo
 | `GLOBAL_REGISTERED_VOTERS` | source/input parameter | Denominator for per-vote impact and the share-flow target. Current generated value: `4,128,142,495`. |
 | `GLOBAL_POPULATION_2024` | source/input parameter | Population denominator for progress-as-share-of-Earth calculations. |
 | `GLOBAL_COORDINATION_TARGET_PCT` | `GLOBAL_REGISTERED_VOTERS / GLOBAL_POPULATION_2024` | Progress target when UI stores current progress as percent of global population. |
-| `MAJORITY_OF_HUMANS_ON_EARTH` | display alias over `GLOBAL_REGISTERED_VOTERS` in `packages/web/src/lib/majority-humanity-target.ts` | UI wrapper for `ParameterValue` popovers so the visible label says majority of humans. |
+| `MAJORITY_OF_HUMANS_ON_EARTH` | display alias over `GLOBAL_REGISTERED_VOTERS` in `apps/optimitron/src/lib/majority-humanity-target.ts` | UI wrapper for `ParameterValue` popovers so the visible label says majority of humans. |
 | `MAJORITY_OF_HUMANS_SHARE_OF_EARTH` | optional display alias over `GLOBAL_COORDINATION_TARGET_PCT`; derive in app code if needed | Optional UI-only wrapper for share-of-Earth display. |
 
 **Do not use as denominator for this flow**

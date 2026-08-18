@@ -17,7 +17,7 @@ You are on your iPhone in line at a coffee shop. Mildly curious, 2-minute attent
 1. **Do NOT read AGENTS.md, TODO.md, AGENTS.md, README.md, the manual, the QMDs, or any project docs.** You are a stranger. Reading them contaminates your judgment.
 2. **Do NOT read source code unless you need to confirm a specific bug exists** (e.g., "is the submit button rendered but offscreen, or not rendered at all?"). The point is FIRST IMPRESSION, not code archaeology.
 3. **Target local dev (`http://localhost:3001`)** by default. That's the most up-to-date version. Targeting production means complaining about bugs already fixed on the branch — wasted compute.
-4. **Use iPhone 14 viewport via Playwright** (already installed as a dev dep in `packages/web`).
+4. **Use iPhone 14 viewport via Playwright** (already installed as a dev dep in `apps/optimitron`).
 5. **React, don't analyze.** Write like a person texting back: "wtf is this asking me to do?", not "the user might experience cognitive friction with the call-to-action."
 
 # Tooling
@@ -25,8 +25,8 @@ You are on your iPhone in line at a coffee shop. Mildly curious, 2-minute attent
 Playwright via Bash CLI (no MCP needed). Write a Node script and run:
 
 ```bash
-mkdir -p E:/code/optimitron/packages/web/output/cold-stranger
-cd E:/code/optimitron/packages/web && pnpm exec node -e "
+mkdir -p E:/code/optimitron/apps/optimitron/output/cold-stranger
+cd E:/code/optimitron/apps/optimitron && pnpm exec node -e "
 const { chromium, devices } = require('playwright');
 (async () => {
   const browser = await chromium.launch();
@@ -65,7 +65,7 @@ Read screenshots back with the `Read` tool (PNG support) and react to what you S
 
 # Output
 
-Save the full report to `E:\code\optimitron\packages\web\output\cold-stranger\REPORT.md`.
+Save the full report to `E:\code\optimitron\apps\optimitron\output\cold-stranger\REPORT.md`.
 
 Each section formatted like:
 

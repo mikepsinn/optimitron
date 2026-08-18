@@ -274,18 +274,13 @@ jobs:
           RESOLVED_DEPLOYMENT_ENVIRONMENT: ${{ steps.deployment_status.outputs.environment }}
           RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          # onepercenttreaty.org used to be listed here and is gone on purpose:
-          # we do not own it. It was registered by someone else on 2026-04-30,
-          # points at Cloudflare nameservers with an empty zone, and has never
-          # resolved -- so all nine of its routes returned "no response" and
-          # kept production smoke permanently red. Do not add it back. If we
-          # ever acquire it, the redirect (not the app) is what should be
-          # asserted, since smoke follows redirects and would otherwise just
-          # re-test warondisease.org.
-          PUBLIC_PRODUCTION_SMOKE_URLS: ${{ vars.PUBLIC_PRODUCTION_SMOKE_URLS || 'https://warondisease.org,https://optimitron.com' }}
         run: |
-          node <<'NODE'
-          const fs = require("node:fs");
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from "node:fs";
+          import {
+            getVercelAppByUrl,
+            VERCEL_APP_PROJECTS,
+          } from "./.github/scripts/vercel-app-projects.mjs";
 
           const deployment = JSON.parse(process.env.DEPLOYMENT_JSON || "{}");
           const status = JSON.parse(process.env.DEPLOYMENT_STATUS_JSON || "{}");
@@ -303,15 +298,17 @@ jobs:
           }
 
           const parsedUrl = new URL(targetUrl);
+          const app = getVercelAppByUrl(targetUrl);
+          const appName = app?.appName ?? "unknown";
           const bypassSecret = String(
             process.env.VERCEL_AUTOMATION_BYPASS_SECRET || "",
           ).trim();
-          const productionHosts = new Set([
-            "warondisease.org",
-            "www.warondisease.org",
-            "optimitron.com",
-            "www.optimitron.com",
-          ]);
+          const productionHosts = new Set(
+            VERCEL_APP_PROJECTS.flatMap(({ productionDomain }) => [
+              productionDomain,
+              `www.${productionDomain}`,
+            ]),
+          );
           const isProduction =
             /^production$/i.test(environmentName) ||
             productionHosts.has(parsedUrl.hostname.toLowerCase());
@@ -320,39 +317,23 @@ jobs:
             environment === "Production" &&
             parsedUrl.hostname.endsWith(".vercel.app") &&
             !bypassSecret;
-          const publicProductionSmokeUrls = parseUrlList(
-            process.env.PUBLIC_PRODUCTION_SMOKE_URLS,
-          );
-          const smokeUrls = isProtectedVercelDeploymentUrl
-            ? publicProductionSmokeUrls
+          const smokeUrls = isProtectedVercelDeploymentUrl && app
+            ? [`https://${app.productionDomain}`]
             : [targetUrl];
 
-          if (isProtectedVercelDeploymentUrl && smokeUrls.length === 0) {
-            throw new Error(
-              "PUBLIC_PRODUCTION_SMOKE_URLS must include at least one public production URL when Production deployment protection is enabled without a bypass secret.",
-            );
-          }
-
-          if (isProtectedVercelDeploymentUrl) {
+          if (isProtectedVercelDeploymentUrl && app) {
             console.log(
               "Production deployment URL is Vercel-protected and no Production bypass secret is configured; smoking the public production domains instead.",
             );
           }
 
-          fs.appendFileSync(
+          appendFileSync(
             process.env.GITHUB_OUTPUT,
-            `environment=${environment}\nurl=${smokeUrls[0]}\nurls=${smokeUrls.join(",")}\nsource_url=${targetUrl}\n`,
+            `app=${appName}\nenvironment=${environment}\nurl=${smokeUrls[0]}\nurls=${smokeUrls.join(",")}\nsource_url=${targetUrl}\n`,
           );
           console.log(
-            `Resolved ${environment} smoke target(s): ${smokeUrls.join(", ")}`,
+            `Resolved ${environment} ${appName} smoke target(s): ${smokeUrls.join(", ")}`,
           );
-
-          function parseUrlList(value) {
-            return String(value || "")
-              .split(/[,\s]+/u)
-              .map((url) => url.trim())
-              .filter(Boolean);
-          }
           NODE
 
       - name: Resolve preview smoke scope
@@ -419,7 +400,7 @@ jobs:
         run: echo "Running lightweight deployed preview smoke only because this PR only changed workflow/deploy plumbing."
 
       - name: Wait for preview database sync
-        if: steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
+        if: steps.target.outputs.app == 'optimitron' && steps.target.outputs.environment == 'Preview' && steps.preview_scope.outputs.should_smoke != 'false'
         uses: actions/github-script@v8
         with:
           script: |
@@ -517,19 +498,30 @@ jobs:
 
       - name: Run deploy smoke
         id: smoke
-        if: steps.deployment_status.outputs.state != 'skipped'
+        if: steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app != 'unknown'
         env:
+          DEPLOYMENT_ENVIRONMENT: ${{ steps.target.outputs.environment }}
           PREVIEW_URL: ${{ steps.target.outputs.environment == 'Preview' && steps.target.outputs.url || '' }}
           PROD_URL: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.url || '' }}
           PROD_URLS: ${{ steps.target.outputs.environment == 'Production' && steps.target.outputs.urls || '' }}
+          SITE_APP_URL: ${{ steps.target.outputs.url }}
+          VERCEL_APP: ${{ steps.target.outputs.app }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
         run: |
           set +e
-          node packages/web/scripts/smoke-deploy.mjs
+          if [ "$VERCEL_APP" = "optimitron" ]; then
+            node apps/optimitron/scripts/smoke-deploy.mjs
+          else
+            node .github/scripts/smoke-site-deployment.mjs
+          fi
           exit_code=$?
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
           exit 0
+
+      - name: Skip unrelated Vercel project smoke
+        if: steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'unknown'
+        run: echo "This deployment belongs to a Vercel project outside the app project manifest."
 
       - name: Comment on preview failure
         if: always() && steps.target.outputs.environment == 'Preview' && steps.smoke.outputs.exit_code != '' && steps.smoke.outputs.exit_code != '0'
@@ -622,7 +614,7 @@ jobs:
             }
 
       - name: Post production failure to Slack
-        if: always() && steps.target.outputs.environment == 'Production' && steps.smoke.outputs.exit_code != '0'
+        if: always() && steps.target.outputs.environment == 'Production' && steps.smoke.outputs.exit_code != '' && steps.smoke.outputs.exit_code != '0'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
@@ -964,8 +956,29 @@ jobs:
 
             core.setFailed(`Deployment did not reach success with an environment URL before preview smoke timeout; last status: ${lastStatus}.`);
 
-      - name: Wait for preview database sync
+      - name: Resolve preview deployment target
+        id: target
         if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        env:
+          RESOLVED_DEPLOYMENT_URL: ${{ steps.deployment_status.outputs.environment_url }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from "node:fs";
+          import { getVercelAppByUrl } from "./.github/scripts/vercel-app-projects.mjs";
+
+          const app = getVercelAppByUrl(process.env.RESOLVED_DEPLOYMENT_URL);
+          appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `app=${app?.appName ?? "unknown"}\n`,
+          );
+          NODE
+
+      - name: Skip satellite Playwright preview smoke
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app != 'optimitron'
+        run: echo "The Optimitron Playwright suite does not apply to this Vercel project."
+
+      - name: Wait for preview database sync
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         uses: actions/github-script@v8
         with:
           script: |
@@ -1062,39 +1075,39 @@ jobs:
             core.setFailed(`${checkName} did not complete before preview smoke timeout; last status: ${lastStatus}.`);
 
       - name: Enable Corepack
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         run: |
           corepack enable
           corepack prepare pnpm@8.14.0 --activate
 
       - name: Setup Node.js
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         run: pnpm install --frozen-lockfile
 
       - name: Build web workspace dependencies
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         # Without this, Playwright fails at import time on @optimitron/db,
         # @optimitron/data, etc. (transitive imports from e2e/utils/*).
         # Same step as web-validate (ci.yml line 152).
         run: pnpm --filter @optimitron/web run build:workspace-deps
 
       - name: Verify system Chrome
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         run: google-chrome --version
 
       - name: Install Playwright system deps
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         run: pnpm --filter @optimitron/web exec playwright install-deps chromium
 
       - name: Run Playwright smoke against preview
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped'
+        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         env:
           BASE_URL: ${{ steps.deployment_status.outputs.environment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -1124,7 +1137,7 @@ jobs:
         with:
           name: playwright-preview-${{ github.run_id }}
           path: |
-            packages/web/playwright-report/
-            packages/web/test-results/
+            apps/optimitron/playwright-report/
+            apps/optimitron/test-results/
           retention-days: 7
           if-no-files-found: ignore

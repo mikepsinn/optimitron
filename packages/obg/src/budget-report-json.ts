@@ -3,7 +3,7 @@
  *
  * These types are the contract between:
  *   - The generator (packages/examples/generate-web-data.ts)
- *   - The web app (packages/web/src/data/us-budget-analysis.ts)
+ *   - The web app (apps/optimitron/src/data/us-budget-analysis.ts)
  *
  * The generated .ts file uses `satisfies BudgetReportJSON` so TypeScript
  * validates the data at compile time. No runtime validation needed.

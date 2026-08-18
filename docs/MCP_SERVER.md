@@ -517,7 +517,7 @@ returned as page text. It does not expose authenticated page copy.
 
 `TaskTrigger` is a data-driven blueprint that fires on a named event and either spawns tasks, verifies a task on a completion gate, or spawns a communication. AI agents author triggers over MCP — no source-code commit, no deploy.
 
-The schema is designed to absorb new patterns without migrations: `eventName`, `triggerKind`, and resolver keys are strings; `eventFilter`, `completionGate`, and `metadata` are JSON; templates use `{{path.to.field}}` substitution against the event context. Adding a new resolver kind or gate operator is a code change in `packages/web/src/lib/triggers/`, not a schema change.
+The schema is designed to absorb new patterns without migrations: `eventName`, `triggerKind`, and resolver keys are strings; `eventFilter`, `completionGate`, and `metadata` are JSON; templates use `{{path.to.field}}` substitution against the event context. Adding a new resolver kind or gate operator is a code change in `apps/optimitron/src/lib/triggers/`, not a schema change.
 
 **Worked example — talking to Claude to add a new onboarding subtask.**
 
@@ -552,11 +552,11 @@ Then `fireTaskTrigger` with `dryRun: true` to verify the rendered preview before
 
 **Triggers ship today:** `user-onboarding:treaty`, `referral:vote-invitation`, `treaty:signer-reminder`, `treaty:ratify`, `user-onboarding:treaty:hmt-gate`, `treaty:signer`, `task:overdue-reminder`. Run `listTaskTriggers` to see the live set in any deployment.
 
-**Implementation:** `packages/web/src/lib/triggers/{template,resolvers,event-filter,completion-gate,fire,admin,context}.ts`. The schema lives in `packages/db/prisma/schema.prisma` (`TaskTrigger`, `TaskSpawnSpec`, `TaskCommunicationSpawnSpec`, `TaskTriggerFire`).
+**Implementation:** `apps/optimitron/src/lib/triggers/{template,resolvers,event-filter,completion-gate,fire,admin,context}.ts`. The schema lives in `packages/db/prisma/schema.prisma` (`TaskTrigger`, `TaskSpawnSpec`, `TaskCommunicationSpawnSpec`, `TaskTriggerFire`).
 
 **Deploy requirement:** every production deploy MUST run `pnpm db:sync:managed-data -- --apply` AFTER `pnpm db:deploy` and BEFORE the new code goes live. The sync is idempotent (upsert on stable managed keys) and is wired into `db:setup` for local development. CI runs it automatically (see `.github/workflows/ci.yml`). If you add a new wired event source to the application code, ensure its corresponding trigger blueprint is managed — otherwise `fireTaskTriggersForEvent` will return `filteredOut` (trigger not found) and the layered behavior won't run.
 
-**Parameter tokens:** every fired trigger context is augmented with `params.<slug>` values pre-resolved from `@optimitron/data/parameters`. The current set is in `packages/web/src/lib/triggers/context.ts` — extend that map when you need a new parameter in a template.
+**Parameter tokens:** every fired trigger context is augmented with `params.<slug>` values pre-resolved from `@optimitron/data/parameters`. The current set is in `apps/optimitron/src/lib/triggers/context.ts` — extend that map when you need a new parameter in a template.
 
 ## Claude Code Task Handoff
 

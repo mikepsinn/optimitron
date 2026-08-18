@@ -2334,6 +2334,9 @@ importers:
       cmdk:
         specifier: 1.0.4
         version: 1.0.4(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      katex:
+        specifier: ^0.16.45
+        version: 0.16.47
       lucide-react:
         specifier: ^0.454.0
         version: 0.454.0(react@18.3.1)
@@ -2653,7 +2656,7 @@ importers:
         specifier: ^2.22.0
         version: 2.28.6(ts-node@10.9.2)(typescript@5.9.3)
 
-  packages/web:
+  apps/optimitron:
     dependencies:
       '@aws-sdk/client-s3':
         specifier: ^3.1037.0
@@ -2693,52 +2696,52 @@ importers:
         version: 16.2.2(next@15.5.15)(react@18.3.1)
       '@optimitron/agent':
         specifier: workspace:^
-        version: link:../agent
+        version: link:../../packages/agent
       '@optimitron/chat-ui':
         specifier: workspace:^
-        version: link:../chat-ui
+        version: link:../../packages/chat-ui
       '@optimitron/data':
         specifier: workspace:^
-        version: link:../data
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
-        version: link:../db
+        version: link:../../packages/db
       '@optimitron/hypercerts':
         specifier: workspace:^
-        version: link:../hypercerts
+        version: link:../../packages/hypercerts
       '@optimitron/obg':
         specifier: workspace:^
-        version: link:../obg
+        version: link:../../packages/obg
       '@optimitron/opg':
         specifier: workspace:^
-        version: link:../opg
+        version: link:../../packages/opg
       '@optimitron/optimizer':
         specifier: workspace:^
-        version: link:../optimizer
+        version: link:../../packages/optimizer
       '@optimitron/storage':
         specifier: workspace:^
-        version: link:../storage
+        version: link:../../packages/storage
       '@optimitron/tracking':
         specifier: workspace:^
-        version: link:../tracking
+        version: link:../../packages/tracking
       '@optimitron/treasury-iab':
         specifier: workspace:*
-        version: link:../treasury-iab
+        version: link:../../packages/treasury-iab
       '@optimitron/treasury-prize':
         specifier: workspace:*
-        version: link:../treasury-prize
+        version: link:../../packages/treasury-prize
       '@optimitron/treasury-shared':
         specifier: workspace:*
-        version: link:../treasury-shared
+        version: link:../../packages/treasury-shared
       '@optimitron/treasury-wish':
         specifier: workspace:*
-        version: link:../treasury-wish
+        version: link:../../packages/treasury-wish
       '@optimitron/wishocracy':
         specifier: workspace:^
-        version: link:../wishocracy
+        version: link:../../packages/wishocracy
       '@optimitron/wishonia-widget':
         specifier: workspace:^
-        version: link:../wishonia-widget
+        version: link:../../packages/wishonia-widget
       '@prisma/adapter-pg':
         specifier: ^7.0.0
         version: 7.5.0

@@ -1,5 +1,5 @@
 // Input-parsing helpers shared by the tracking tools and the wider
-// optimitron MCP server (packages/web imports these back from here).
+// optimitron MCP server (apps/optimitron imports these back from here).
 
 export function optionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;

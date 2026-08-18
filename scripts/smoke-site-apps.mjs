@@ -11,9 +11,10 @@ import {
 import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
-} from "../packages/web/e2e/utils/visual-settle.mjs";
-import { signInViaApi } from "../packages/web/e2e/utils/auth-api.mjs";
-import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../packages/web/scripts/visual-capture-contract.mjs";
+} from "../apps/optimitron/e2e/utils/visual-settle.mjs";
+import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.mjs";
+import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
+import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../apps/optimitron/scripts/visual-capture-contract.mjs";
 import { getAuthenticatedSiteAppRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
@@ -134,7 +135,7 @@ async function assertWarOnDiseaseHome(page) {
 
 async function verifyWarOnDiseaseHome(baseUrl) {
   const requireFromWeb = createRequire(
-    path.join(repoRoot, "packages", "web", "package.json"),
+    path.join(repoRoot, "apps", "optimitron", "package.json"),
   );
   const { chromium } = requireFromWeb("@playwright/test");
   const browser = await chromium.launch({
@@ -238,7 +239,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
 
   const screenshotRoutes = getScreenshotRoutes(appName, siteVariant);
   const requireFromWeb = createRequire(
-    path.join(repoRoot, "packages", "web", "package.json"),
+    path.join(repoRoot, "apps", "optimitron", "package.json"),
   );
   const { chromium } = requireFromWeb("@playwright/test");
   const manifestDirectory = path.resolve(screenshotRoot, "site-app-manifests");
@@ -277,6 +278,10 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
         });
         const loggedOutPage = await loggedOutContext.newPage();
         const authenticatedPage = await authenticatedContext.newPage();
+        await Promise.all([
+          freezeClock(loggedOutPage),
+          freezeClock(authenticatedPage),
+        ]);
 
         try {
           const needsAuthentication = screenshotRoutes.some(

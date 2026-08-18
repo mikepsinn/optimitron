@@ -2,15 +2,15 @@
  * copy-snapshot-sites.ts
  *
  * One command that regenerates the page-copy snapshots for every website in
- * the monorepo: `packages/web` plus each split site in `apps/`.
+ * the monorepo: the Optimitron app plus each split site app.
  *
  * Each site's routes are rendered to markdown next to their `page.tsx` so copy
  * is reviewable and diffable without opening a browser:
  *
- *   packages/web/src/app/treaty/page.tsx -> .../treaty/page.logged-out.md
+ *   apps/optimitron/src/app/treaty/page.tsx -> .../treaty/page.logged-out.md
  *   apps/warondisease/app/about/page.tsx -> .../about/page.logged-out.md
  *
- * `packages/web` keeps its own renderer (`render-pages-to-markdown.ts`) — it
+ * `apps/optimitron` keeps its own renderer (`render-pages-to-markdown.ts`) — it
  * handles demo-session auth, redirect-only routes, and dynamic route paths that
  * the apps don't have. This script drives it rather than reimplementing it, so
  * there is one command without two copies of that logic.
@@ -36,7 +36,7 @@ import {
   getSiteConfigForVariant,
   VARIANTS,
 } from "../packages/site-kit/src/lib/site-config";
-import { buildCopyPreviewMarkdown } from "../packages/web/src/lib/copy-preview-markdown";
+import { buildCopyPreviewMarkdown } from "../apps/optimitron/src/lib/copy-preview-markdown";
 import { extractVisibleCopyMarkdown } from "./lib/copy-preview-dom";
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -51,6 +51,8 @@ const routeFilter = routeFilterArg
   .filter(Boolean);
 
 interface Site {
+  /** Stable command-line selector, when it differs from the directory name. */
+  commandName?: string;
   /**
    * Package script that starts the dev server. When set, it is used instead of
    * calling `next dev` directly, so the package's own env and DB preflight run.
@@ -82,8 +84,9 @@ const SITES: Site[] = [
     // web serves every variant from one server and selects between them with
     // the x-optimitron-site-key request header, so it must NOT get the
     // NEXT_PUBLIC_SITE_VARIANT / NEXT_PUBLIC_BASE_URL pinning the apps need.
+    commandName: "web",
     devScript: "dev:fast",
-    directory: "packages/web",
+    directory: "apps/optimitron",
     host: "127.0.0.1",
     label: "@optimitron/web",
     port: 3001,
@@ -140,9 +143,9 @@ const SITES: Site[] = [
   },
 ];
 
-/** Last path segment: "web", "warondisease", ... — what the CLI filter takes. */
+/** Stable selector used by the optional CLI site filter. */
 function siteName(site: Site): string {
-  return site.directory.split("/").at(-1) as string;
+  return site.commandName ?? (site.directory.split("/").at(-1) as string);
 }
 
 function routeToOutputPath(site: Site, routePath: string): string {
@@ -338,7 +341,7 @@ async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
     return;
   }
   const requireFromWeb = createRequire(
-    path.join(repoRoot, "packages", "web", "package.json"),
+    path.join(repoRoot, "apps", "optimitron", "package.json"),
   );
   const { chromium } = requireFromWeb("@playwright/test");
   const browser = await chromium.launch({
@@ -404,7 +407,7 @@ async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
   }
 }
 
-/** `packages/web` — hand off to the renderer that already lives there. */
+/** `apps/optimitron` — hand off to the renderer that already lives there. */
 async function snapshotOwnRenderer(site: Site, baseUrl: string): Promise<void> {
   const exitCode = await new Promise<number>((resolve) => {
     const child = spawn(

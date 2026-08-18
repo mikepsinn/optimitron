@@ -5,11 +5,11 @@ pnpm exec lint-staged
 
 # === Copy preview markdown reminder (not auto-run) ===
 # Previously this block auto-ran `pnpm copy:preview` on every commit
-# that touched packages/web/src — Playwright + 16 routes ≈ 30-60s,
+# that touched apps/optimitron/src — Playwright + 16 routes ≈ 30-60s,
 # required the dev server, and failed the commit if any .md changed
 # (forcing a re-stage + re-commit cycle). Total cost: 1-2 minutes per
 # UI commit. Moved to a manual step; CI catches drift at PR time.
-if git diff --cached --name-only -- packages/web/src/app 'packages/web/src/lib/email' 'packages/web/src/lib/tasks' 'packages/site-kit/src' 'apps/*/app' | grep -qE '\.(tsx?|md)$'; then
+if git diff --cached --name-only -- apps/optimitron/src/app 'apps/optimitron/src/lib/email' 'apps/optimitron/src/lib/tasks' 'packages/site-kit/src' 'apps/*/app' | grep -qE '\.(tsx?|md)$'; then
   echo "→ Reminder: user-facing copy or email templates changed."
   echo "  Regen snapshots (NEVER hand-edit .md):"
   echo "    pnpm copy                                        # every site in the repo"

@@ -91,15 +91,15 @@ test("deploy smoke treats inactive Vercel deployment events as recoverable", () 
 });
 
 test("both smoke waiters skip instead of failing when the deployment is an ignored build", () => {
-  const skipEmits = [
-    ...workflow.matchAll(/setOutput\("state", "skipped"\)/gu),
-  ];
+  const skipEmits = [...workflow.matchAll(/setOutput\("state", "skipped"\)/gu)];
   assert.equal(
     skipEmits.length,
     2,
     "both waiters (Smoke deployed URL and Playwright preview smoke) must emit the skipped state for persistently inactive deployments",
   );
-  const inactiveCounters = [...workflow.matchAll(/consecutiveInactive \+= 1/gu)];
+  const inactiveCounters = [
+    ...workflow.matchAll(/consecutiveInactive \+= 1/gu),
+  ];
   assert.equal(
     inactiveCounters.length,
     2,
@@ -136,4 +136,47 @@ test("preview smoke waits for the merge-ref database sync check", () => {
       "database deployment must succeed before preview smoke runs",
     );
   }
+});
+
+test("routes deployment smoke to the deployed app", () => {
+  assert.match(
+    workflow,
+    /- name: Resolve smoke target[\s\S]*?getVercelAppByUrl[\s\S]*?app=\$\{appName\}/u,
+  );
+  assert.match(
+    workflow,
+    /if \[ "\$VERCEL_APP" = "optimitron" \]; then[\s\S]*?smoke-deploy\.mjs[\s\S]*?else[\s\S]*?smoke-site-deployment\.mjs/u,
+  );
+  assert.match(
+    workflow,
+    /- name: Run Playwright smoke against preview\s+if: .*steps\.target\.outputs\.app == 'optimitron'/u,
+    "the Optimitron Playwright suite must not run against satellite deployments",
+  );
+});
+
+test("skips unrelated production deployments without invoking failure handlers", () => {
+  const targetBlock = workflow.slice(
+    workflow.indexOf("- name: Resolve smoke target"),
+    workflow.indexOf("- name: Resolve preview smoke scope"),
+  );
+  const slackStep = workflow.slice(
+    workflow.indexOf("- name: Post production failure to Slack"),
+    workflow.indexOf("- name: Fail deploy smoke"),
+  );
+
+  assert.match(
+    targetBlock,
+    /const smokeUrls = isProtectedVercelDeploymentUrl && app[\s\S]*?: \[targetUrl\];/u,
+    "an unknown protected deployment must retain a URL long enough to emit app=unknown",
+  );
+  assert.doesNotMatch(
+    targetBlock,
+    /Cannot resolve a public production domain/u,
+    "an unknown project should reach the existing skip step",
+  );
+  assert.match(
+    slackStep,
+    /steps\.smoke\.outputs\.exit_code != '' && steps\.smoke\.outputs\.exit_code != '0'/u,
+    "Slack should run only when deploy smoke produced a failure result",
+  );
 });

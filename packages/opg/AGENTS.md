@@ -27,5 +27,5 @@ Optimal Policy Generator — policy scoring, jurisdiction analysis, Bradford Hil
 ## Off-Limits
 
 - `packages/optimizer/*` — use it, don't modify it
-- `packages/web/*`
+- `apps/optimitron/*`
 - `packages/db/prisma/schema.prisma`

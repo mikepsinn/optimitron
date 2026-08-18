@@ -16,7 +16,7 @@ const anonymizationSql = readFileSync(
   "utf8",
 );
 const verifierScript = readFileSync(
-  new URL("../../packages/web/scripts/verify-preview-masking.mjs", import.meta.url),
+  new URL("../../apps/optimitron/scripts/verify-preview-masking.mjs", import.meta.url),
   "utf8",
 );
 

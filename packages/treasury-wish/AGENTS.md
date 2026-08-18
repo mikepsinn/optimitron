@@ -23,4 +23,4 @@ $WISH token monetary system — WishToken, WishocraticTreasury, UBIDistributor. 
 ## Off-Limits
 
 - `packages/treasury-prize/*`, `packages/treasury-iab/*`
-- `packages/web/*`
+- `apps/optimitron/*`

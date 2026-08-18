@@ -35,7 +35,7 @@ jobs:
             actions: read
 
   # Auto-dispatched when Mike taps the 💬 button on a Vercel preview's
-  # visual-review HTML (packages/web/scripts/build-visual-review.mjs).
+  # visual-review HTML (apps/optimitron/scripts/build-visual-review.mjs).
   # That button opens a GitHub issue with title prefix "Visual review —"
   # and a body containing the per-screen context (route, auth, viewing,
   # screenshot URL, originating PR number) plus Mike's typed complaint.
@@ -94,7 +94,7 @@ jobs:
                  get the branch name. `git fetch origin && git checkout
                  <branch>` to land on it.
               3. Read the user-facing code for that route — usually
-                 packages/web/src/app/<route-slug>/page.tsx and any
+                 apps/optimitron/src/app/<route-slug>/page.tsx and any
                  components it imports. For markdown-diff complaints,
                  check page.<authState>.md alongside.
               4. Make the smallest focused fix that addresses Mike's

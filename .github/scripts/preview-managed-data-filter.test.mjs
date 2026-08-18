@@ -10,9 +10,9 @@ import {
 test("skips preview managed-data sync for copy and UI-only changes", () => {
   const files = [
     "AGENTS.md",
-    "packages/web/src/app/join/page.logged-out.md",
-    "packages/web/src/components/shared/ParameterValue.tsx",
-    "packages/web/scripts/build-visual-review.mjs",
+    "apps/optimitron/src/app/join/page.logged-out.md",
+    "apps/optimitron/src/components/shared/ParameterValue.tsx",
+    "apps/optimitron/scripts/build-visual-review.mjs",
   ];
 
   assert.equal(shouldSyncPreviewManagedData(files), false);
@@ -32,8 +32,8 @@ test("runs preview managed-data sync for database and managed-data changes", () 
 
 test("runs preview managed-data sync for masking and leader-data inputs", () => {
   const files = [
-    "packages/web/scripts/verify-preview-masking.mjs",
-    "packages/web/public/images/leaders/manifest.json",
+    "apps/optimitron/scripts/verify-preview-masking.mjs",
+    "apps/optimitron/public/images/leaders/manifest.json",
     "packages/data/src/datasets/government-leaders.ts",
   ];
 

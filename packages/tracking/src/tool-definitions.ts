@@ -1,5 +1,5 @@
 // MCP tool definitions for the personal tracking surface. Extracted verbatim
-// from packages/web/src/lib/mcp-server.ts; served by optimitron.com and dfda.earth.
+// from apps/optimitron/src/lib/mcp-server.ts; served by optimitron.com and dfda.earth.
 import { McpScope } from "@optimitron/db/enums";
 
 import {

@@ -9,8 +9,8 @@ const PREVIEW_MANAGED_DATA_PATTERN_SOURCES = [
   "^packages/data/src/datasets/",
   "^packages/data/src/jurisdictions\\.ts$",
   "^packages/data/src/parameters(?:/|\\.ts$)",
-  "^packages/web/public/images/leaders/manifest\\.json$",
-  "^packages/web/scripts/verify-preview-masking\\.mjs$",
+  "^apps/optimitron/public/images/leaders/manifest\\.json$",
+  "^apps/optimitron/scripts/verify-preview-masking\\.mjs$",
 ];
 const PREVIEW_MEDICAL_REFERENCE_PATTERN_SOURCES = [
   "^packages/data/src/datasets/medical/",

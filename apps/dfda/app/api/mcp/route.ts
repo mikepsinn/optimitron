@@ -3,7 +3,7 @@
  * Token issuance and consent stay on the canonical authorization server
  * (optimitron.com); this route verifies its Bearer JWTs, re-validates the
  * grant, and serves the tracking tool family only.
- * Reference: packages/web/src/app/api/mcp/route.ts.
+ * Reference: apps/optimitron/src/app/api/mcp/route.ts.
  */
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import type { McpScope } from "@optimitron/db/enums";

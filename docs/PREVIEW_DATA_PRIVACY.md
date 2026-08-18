@@ -22,7 +22,7 @@ and row-shape verification completed.
    `packages/db/prisma/anonymization-updates.sql` with `psql`.
 5. When managed-data inputs changed, it syncs them and re-applies masking.
    Managed data must remain public, synthetic, or campaign-system data only.
-6. It runs `packages/web/scripts/verify-preview-masking.mjs`, which samples
+6. It runs `apps/optimitron/scripts/verify-preview-masking.mjs`, which samples
    high-risk columns and asserts masked value shapes without logging sampled
    values.
 

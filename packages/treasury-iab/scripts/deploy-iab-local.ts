@@ -106,7 +106,7 @@ async function main() {
   console.log("  Add USDC token:", usdcAddress);
   console.log("  Add IAB token: ", vaultAddress);
   console.log("");
-  console.log("--- Copy these to packages/web/src/lib/contracts/addresses.ts ---");
+  console.log("--- Copy these to apps/optimitron/src/lib/contracts/addresses.ts ---");
   console.log(`  31337: {`);
   console.log(`    iabVault: "${vaultAddress}" as Address,`);
   console.log(`    publicGoodsPool: "${poolAddress}" as Address,`);

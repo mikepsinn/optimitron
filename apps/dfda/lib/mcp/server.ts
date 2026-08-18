@@ -37,7 +37,7 @@ function hasScope(grantedScopes: McpScope[], toolName: string): boolean {
   return required.some((scope) => grantedScopes.includes(scope));
 }
 
-// Mirrors toolError in packages/web/src/lib/mcp-server.ts: errors surface as
+// Mirrors toolError in apps/optimitron/src/lib/mcp-server.ts: errors surface as
 // results (exposeAsResult) so streaming clients render them instead of
 // dropping the call.
 function toolError(
@@ -116,7 +116,7 @@ export function createDfdaMcpServer(userId: string, scopes: McpScope[]) {
           userId,
         });
       } catch (error) {
-        // Same wire behavior as packages/web/src/lib/mcp-server.ts: the
+        // Same wire behavior as apps/optimitron/src/lib/mcp-server.ts: the
         // message is returned as a result payload, the full error goes to
         // server logs only.
         console.error(`[dfda-mcp] tool "${name}" threw:`, error);

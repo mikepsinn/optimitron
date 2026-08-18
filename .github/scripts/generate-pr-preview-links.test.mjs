@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -15,6 +18,7 @@ function runGenerator(env) {
       VISUAL_REVIEW_BASELINE_COMMIT_SHA: "",
       VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: "",
       VISUAL_REVIEW_BASELINE_RUN_ID: "",
+      CHANGED_FILES_PATH: "",
       ...env,
     },
   });
@@ -48,7 +52,7 @@ test("generates a review packet with visual-review links and preserved checkboxe
     VISUAL_REVIEW_URL: visualReviewUrl,
     VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify(manifest),
     CHANGED_FILES: JSON.stringify([
-      "packages/web/src/components/landing/TreatyVoteFlow.tsx",
+      "apps/optimitron/src/components/landing/TreatyVoteFlow.tsx",
     ]),
     EXISTING_COMMENT_BODY:
       "- [x] <!-- review-item:author:noise-audited:abcdef123456 --> old author preflight\n- [x] <!-- review-item:scope:no-unrelated-diffs --> old scope\n- [x] <!-- review-item:visual:home:logged-out --> old label",
@@ -103,7 +107,7 @@ test("lists authenticated and logged-out preview states for hybrid routes", () =
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app/",
     CHANGED_FILES: JSON.stringify([
-      "packages/web/src/components/tasks/TaskCard.tsx",
+      "apps/optimitron/src/components/tasks/TaskCard.tsx",
     ]),
   });
 
@@ -152,11 +156,34 @@ test("includes copy-only review states from the visual manifest", () => {
 test("reports when no user-facing page or component routes are inferred", () => {
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app",
-    CHANGED_FILES: JSON.stringify(["packages/web/src/lib/messaging.ts"]),
+    CHANGED_FILES: JSON.stringify(["apps/optimitron/src/lib/messaging.ts"]),
   });
 
   assert.match(output, /No user-facing page or component changes were inferred/);
   assert.doesNotMatch(output, /<!-- review-item:/);
+});
+
+test("reads large changed-file lists from a file", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "pr-preview-files-"));
+  const changedFilesPath = path.join(directory, "changed-files.json");
+  const changedFiles = Array.from(
+    { length: 2054 },
+    (_, index) => `apps/optimitron/public/generated-${index}.png`,
+  );
+  writeFileSync(changedFilesPath, JSON.stringify(changedFiles));
+
+  try {
+    const output = runGenerator({
+      PREVIEW_URL: "https://preview.example.vercel.app",
+      CHANGED_FILES: "",
+      CHANGED_FILES_PATH: changedFilesPath,
+    });
+
+    assert.match(output, /`apps\/optimitron\/public\/generated-0\.png`/u);
+    assert.match(output, /\.\.\.and 2014 more/u);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("identifies exact and fallback screenshot baselines", () => {

@@ -2,7 +2,7 @@
  * copy-preview-dom.ts
  *
  * Browser-side DOM -> markdown walker shared by every copy-snapshot script:
- *   - packages/web/scripts/render-pages-to-markdown.ts (the monolith app)
+ *   - apps/optimitron/scripts/render-pages-to-markdown.ts (the monolith app)
  *   - scripts/copy-snapshot-site-apps.mjs (the split apps/ sites)
  *
  * This function is handed to Playwright's `page.evaluate`, so it must stay
@@ -81,7 +81,7 @@ export function extractVisibleCopyMarkdown(): string {
   // sr-only/display-none filter — used as a fallback when filtering would
   // produce an empty Link (sr-only-only links carry the link's accessible
   // name; without it the leader name vanishes — see task-row overlay Link
-  // at packages/web/src/components/tasks/task-row.tsx:701-708).
+  // at apps/optimitron/src/components/tasks/task-row.tsx:701-708).
   const toMarkdown = (el: Element, allowHidden = false): string => {
     let buf = "";
     // Insert a space between adjacent element-emitted fragments when

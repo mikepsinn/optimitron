@@ -10,7 +10,7 @@
  * Lives in `@optimitron/db` (rather than `@optimitron/web`) so the prisma
  * seed and any other backend script can use the same literals without
  * reaching into the web package. The one web-only helper that needs URL
- * routing (`getTreatyParentTaskHref`) stays in `packages/web/src/lib/tasks/
+ * routing (`getTreatyParentTaskHref`) stays in `apps/optimitron/src/lib/tasks/
  * task-keys.ts` alongside a re-export of everything below.
  *
  * Naming convention:

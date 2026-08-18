@@ -5,6 +5,7 @@
 // Reads from env:
 //   PREVIEW_URL                 Vercel preview deployment URL.
 //   CHANGED_FILES               JSON array of changed PR paths.
+//   CHANGED_FILES_PATH          Path to that JSON array for large pull requests.
 //   EXISTING_COMMENT_BODY       Existing sticky packet body, if any.
 //   VISUAL_REVIEW_URL           Published latest.html URL.
 //   VISUAL_REVIEW_MANIFEST_PATH Optional JSON manifest path from visual:review.
@@ -15,6 +16,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 const PREVIEW_URL = process.env.PREVIEW_URL?.replace(/\/$/, "") ?? "";
 const CHANGED_FILES_JSON = process.env.CHANGED_FILES ?? "";
+const CHANGED_FILES_PATH = process.env.CHANGED_FILES_PATH ?? "";
 const EXISTING_COMMENT_BODY = process.env.EXISTING_COMMENT_BODY ?? "";
 const VISUAL_REVIEW_URL =
   process.env.VISUAL_REVIEW_URL?.replace(/\/$/, "") ?? "";
@@ -73,14 +75,18 @@ const COMPONENT_FOLDER_ROUTES = {
 };
 
 function getChangedFiles() {
-  if (CHANGED_FILES_JSON) {
+  const changedFilesJson = CHANGED_FILES_PATH
+    ? readChangedFilesFile(CHANGED_FILES_PATH)
+    : CHANGED_FILES_JSON;
+
+  if (changedFilesJson) {
     try {
-      const parsed = JSON.parse(CHANGED_FILES_JSON);
+      const parsed = JSON.parse(changedFilesJson);
       return Array.isArray(parsed)
         ? parsed.filter((file) => typeof file === "string")
         : [];
     } catch (err) {
-      console.error(`Failed to parse CHANGED_FILES JSON: ${err.message}`);
+      console.error(`Failed to parse changed-files JSON: ${err.message}`);
       return [];
     }
   }
@@ -105,12 +111,21 @@ function getChangedFiles() {
   }
 }
 
-// `packages/web/src/app/foo/bar/page.tsx` -> `/foo/bar`
-// `packages/web/src/app/page.tsx` -> `/`
-// `packages/web/src/app/tasks/[id]/page.tsx` -> `/tasks`
+function readChangedFilesFile(filePath) {
+  try {
+    return readFileSync(filePath, "utf8");
+  } catch (err) {
+    console.error(`Failed to read CHANGED_FILES_PATH: ${err.message}`);
+    return "";
+  }
+}
+
+// `apps/optimitron/src/app/foo/bar/page.tsx` -> `/foo/bar`
+// `apps/optimitron/src/app/page.tsx` -> `/`
+// `apps/optimitron/src/app/tasks/[id]/page.tsx` -> `/tasks`
 function pageFileToRoute(file) {
   const match = file.match(
-    /^packages\/web\/src\/app\/((?:[^/]+\/)*)page\.tsx$/,
+    /^apps\/optimitron\/src\/app\/((?:[^/]+\/)*)page\.tsx$/,
   );
   if (!match) return null;
   const segments = match[1]
@@ -138,7 +153,7 @@ function inferRouteChanges(changedFiles) {
     }
 
     for (const [folder, routes] of Object.entries(COMPONENT_FOLDER_ROUTES)) {
-      if (!file.startsWith(`packages/web/${folder}`)) continue;
+      if (!file.startsWith(`apps/optimitron/${folder}`)) continue;
       for (const mappedRoute of routes) {
         addRouteFile(routeChanges, mappedRoute, shortFile(file));
       }
@@ -189,7 +204,7 @@ function addAuthParamToUrl(url, authParam) {
 }
 
 function shortFile(file) {
-  return file.replace(/^packages\/web\/src\//, "");
+  return file.replace(/^apps\/optimitron\/src\//, "");
 }
 
 function loadVisualReviewManifest() {

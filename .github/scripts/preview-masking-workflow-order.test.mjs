@@ -51,7 +51,7 @@ test("creates complete visual baselines for every main push", () => {
   const siteAppBuild = workflow.slice(siteAppBuildStart, siteAppBuildEnd);
   assert.match(
     siteAppBuild,
-    /SITE_APP_SCREENSHOT_ROOT: packages\/web\/output\/playwright\/site-app-screenshots/u,
+    /SITE_APP_SCREENSHOT_ROOT: apps\/optimitron\/output\/playwright\/site-app-screenshots/u,
   );
   assert.match(
     siteAppBuild,
@@ -225,6 +225,14 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
   assert.match(workflow, /state: 'pending'/);
   assert.match(workflow, /state: available \? 'success' : 'failure'/);
+  assert.match(
+    workflow,
+    /- name: Post Visual review pending status[\s\S]*?continue-on-error: true[\s\S]*?uses: actions\/github-script@v8/,
+  );
+  assert.match(
+    workflow,
+    /- name: Post Visual review commit status[\s\S]*?continue-on-error: true[\s\S]*?uses: actions\/github-script@v8/,
+  );
   assert.match(workflow, /keep_files: false/);
   assert.match(workflow, /force_orphan: true/);
   assert.match(workflow, /max_attempts=180/);

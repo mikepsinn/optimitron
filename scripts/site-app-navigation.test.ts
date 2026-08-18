@@ -128,7 +128,7 @@ test("every authenticated site-app page has visual coverage or a documented exem
   const authenticatedPages = readdirSync(path.join(repoRoot, "apps"), {
     withFileTypes: true,
   })
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.isDirectory() && entry.name !== "optimitron")
     .flatMap((entry) => listPageFiles(path.join(repoRoot, "apps", entry.name, "app")))
     .filter(isAuthenticatedPage)
     .map((filePath) => normalizePath(path.relative(repoRoot, filePath)))

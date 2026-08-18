@@ -26,4 +26,4 @@ Incentive Alignment Bonds — Phase 2 lobbying campaign. IABVault, IABSplitter, 
 
 - `packages/treasury-prize/*` — different mechanism
 - `packages/treasury-wish/*` — different mechanism
-- `packages/web/*`
+- `apps/optimitron/*`

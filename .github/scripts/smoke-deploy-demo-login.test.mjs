@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { evaluateDemoLoginSmokeResponse } from "../../packages/web/scripts/smoke-deploy.mjs";
+import { evaluateDemoLoginSmokeResponse } from "../../apps/optimitron/scripts/smoke-deploy.mjs";
 
 test("accepts demo login redirect with a NextAuth session cookie", () => {
   const result = evaluateDemoLoginSmokeResponse({

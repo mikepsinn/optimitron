@@ -23,7 +23,7 @@ Skip rules:
 
 ## Scope each invocation
 
-Before dispatching, run `node packages/web/scripts/affected-routes.mjs` to enumerate the routes whose page.tsx files import the changed components. Pass that route list to `cold-stranger-ux` so it doesn't drive the whole site — only the surfaces that actually moved.
+Before dispatching, run `node apps/optimitron/scripts/affected-routes.mjs` to enumerate the routes whose page.tsx files import the changed components. Pass that route list to `cold-stranger-ux` so it doesn't drive the whole site — only the surfaces that actually moved.
 
 For `voice-critic`, scope to the changed `.tsx` files + their regenerated `.md` snapshots.
 
@@ -55,7 +55,7 @@ If NEEDS USER DECISION: what specifically is the call to make?
 Don't run on commits that only touch:
 - `.claude/`, `.codex/`, `.husky/` (meta-config)
 - `CLAUDE.md`, `TODO.md`, `AGENTS.md` (docs)
-- `packages/web/scripts/`, `packages/web/e2e/` (tooling)
+- `apps/optimitron/scripts/`, `apps/optimitron/e2e/` (tooling)
 - Pure dependency bumps in `package.json` / `pnpm-lock.yaml`
 
 For everything else — yes, run it before committing.
@@ -69,7 +69,7 @@ For everything else — yes, run it before committing.
 ## Standard pre-commit ritual
 
 1. Make the change.
-2. Run `pnpm --filter @optimitron/web copy:preview -- --routes=$(node packages/web/scripts/affected-routes.mjs)` to regenerate affected snapshots.
+2. Run `pnpm --filter @optimitron/web copy:preview -- --routes=$(node apps/optimitron/scripts/affected-routes.mjs)` to regenerate affected snapshots.
 3. Run `/qa-editorial` — the project-specific editorial layer.
 4. Fix any deal-breakers; mark hand-waves intentional with a one-line comment in the commit.
 5. Commit with `qa-passed:` line.

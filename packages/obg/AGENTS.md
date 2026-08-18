@@ -28,5 +28,5 @@ Optimal Budget Generator — diminishing returns, cost-effectiveness analysis, B
 ## Off-Limits
 
 - `packages/optimizer/*`, `packages/opg/*` — use them, don't modify them
-- `packages/web/*`
+- `apps/optimitron/*`
 - `packages/db/prisma/schema.prisma`

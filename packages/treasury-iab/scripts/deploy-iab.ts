@@ -79,7 +79,7 @@ async function main() {
   console.log("Health thr.: ", HEALTH_THRESHOLD, "bps (1%)");
   console.log("Income thr.: ", INCOME_THRESHOLD, "bps (0.5%)");
 
-  console.log("\n--- Update packages/web/src/lib/contracts/addresses.ts ---");
+  console.log("\n--- Update apps/optimitron/src/lib/contracts/addresses.ts ---");
   console.log(`  iabVault: "${vaultAddress}" as Address,`);
   console.log(`  publicGoodsPool: "${poolAddress}" as Address,`);
   console.log(`  usdc: "${USDC_ADDRESS}" as Address,`);
