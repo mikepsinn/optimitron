@@ -89,21 +89,19 @@ test("classifies custom domains and Vercel deployment URLs", () => {
   assert.equal(getVercelAppByUrl("https://dih-earth.vercel.app"), undefined);
 });
 
-test("does not spend satellite build CPU on pull request previews", () => {
+test("deploys only affected apps and ignores visual-review publishing", () => {
   for (const project of VERCEL_APP_PROJECTS) {
     const vercelJson = JSON.parse(
       readFileSync(
         new URL(`../../${project.rootDirectory}/vercel.json`, import.meta.url),
       ),
     );
-    if (project.appName === "optimitron") {
-      assert.equal(vercelJson.git.deploymentEnabled.main, false);
-      continue;
-    }
-    assert.deepEqual(vercelJson.git?.deploymentEnabled, {
-      main: true,
-      "*": false,
-    });
+    assert.equal(vercelJson.git.deploymentEnabled["gh-pages"], false);
+    assert.equal(
+      "*" in vercelJson.git.deploymentEnabled,
+      false,
+      `${project.appName} must allow affected pull-request previews`,
+    );
   }
 });
 
