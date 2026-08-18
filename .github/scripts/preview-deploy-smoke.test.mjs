@@ -153,3 +153,30 @@ test("routes deployment smoke to the deployed app", () => {
     "the Optimitron Playwright suite must not run against satellite deployments",
   );
 });
+
+test("skips unrelated production deployments without invoking failure handlers", () => {
+  const targetBlock = workflow.slice(
+    workflow.indexOf("- name: Resolve smoke target"),
+    workflow.indexOf("- name: Resolve preview smoke scope"),
+  );
+  const slackStep = workflow.slice(
+    workflow.indexOf("- name: Post production failure to Slack"),
+    workflow.indexOf("- name: Fail deploy smoke"),
+  );
+
+  assert.match(
+    targetBlock,
+    /const smokeUrls = isProtectedVercelDeploymentUrl && app[\s\S]*?: \[targetUrl\];/u,
+    "an unknown protected deployment must retain a URL long enough to emit app=unknown",
+  );
+  assert.doesNotMatch(
+    targetBlock,
+    /Cannot resolve a public production domain/u,
+    "an unknown project should reach the existing skip step",
+  );
+  assert.match(
+    slackStep,
+    /steps\.smoke\.outputs\.exit_code != '' && steps\.smoke\.outputs\.exit_code != '0'/u,
+    "Slack should run only when deploy smoke produced a failure result",
+  );
+});

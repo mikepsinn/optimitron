@@ -317,19 +317,11 @@ jobs:
             environment === "Production" &&
             parsedUrl.hostname.endsWith(".vercel.app") &&
             !bypassSecret;
-          const smokeUrls = isProtectedVercelDeploymentUrl
-            ? app
-              ? [`https://${app.productionDomain}`]
-              : []
+          const smokeUrls = isProtectedVercelDeploymentUrl && app
+            ? [`https://${app.productionDomain}`]
             : [targetUrl];
 
-          if (isProtectedVercelDeploymentUrl && smokeUrls.length === 0) {
-            throw new Error(
-              `Cannot resolve a public production domain for ${targetUrl}.`,
-            );
-          }
-
-          if (isProtectedVercelDeploymentUrl) {
+          if (isProtectedVercelDeploymentUrl && app) {
             console.log(
               "Production deployment URL is Vercel-protected and no Production bypass secret is configured; smoking the public production domains instead.",
             );
@@ -622,7 +614,7 @@ jobs:
             }
 
       - name: Post production failure to Slack
-        if: always() && steps.target.outputs.environment == 'Production' && steps.smoke.outputs.exit_code != '0'
+        if: always() && steps.target.outputs.environment == 'Production' && steps.smoke.outputs.exit_code != '' && steps.smoke.outputs.exit_code != '0'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SMOKE_DEPLOY_RESULT_FILE: ${{ runner.temp }}/smoke-deploy-result.json
