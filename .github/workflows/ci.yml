@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pull-request' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   changes:
@@ -1637,6 +1637,10 @@ jobs:
     needs: [changes, web-validate]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    concurrency:
+      group: optimitron-production
+      cancel-in-progress: false
+      queue: max
     environment:
       name: Production
       url: ${{ steps.deploy.outputs.deployment_url }}

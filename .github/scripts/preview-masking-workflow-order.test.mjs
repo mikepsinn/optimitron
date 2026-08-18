@@ -79,6 +79,16 @@ test("deploys Optimitron production only when its build inputs change", () => {
     deployJob,
     /fromJSON\(needs\.changes\.outputs\.web_deploy \|\| 'false'\) == true/u,
   );
+  assert.match(
+    workflow,
+    /group: \$\{\{ github\.workflow \}\}-\$\{\{ github\.ref \}\}-\$\{\{ github\.event_name == 'pull_request' && 'pull-request' \|\| github\.run_id \}\}/u,
+    "main pushes must not cancel a deploy-worthy predecessor",
+  );
+  assert.match(
+    deployJob,
+    /concurrency:\s+group: optimitron-production\s+cancel-in-progress: false\s+queue: max/u,
+    "production deployments must run in FIFO order",
+  );
 });
 
 test("verifies preview masking after preview managed-data sync", () => {
