@@ -225,6 +225,14 @@ test("keeps visual review status pending until the Pages URL is live", () => {
   );
   assert.match(workflow, /state: 'pending'/);
   assert.match(workflow, /state: available \? 'success' : 'failure'/);
+  assert.match(
+    workflow,
+    /- name: Post Visual review pending status[\s\S]*?continue-on-error: true[\s\S]*?uses: actions\/github-script@v8/,
+  );
+  assert.match(
+    workflow,
+    /- name: Post Visual review commit status[\s\S]*?continue-on-error: true[\s\S]*?uses: actions\/github-script@v8/,
+  );
   assert.match(workflow, /keep_files: false/);
   assert.match(workflow, /force_orphan: true/);
   assert.match(workflow, /max_attempts=180/);
