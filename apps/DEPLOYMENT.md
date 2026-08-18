@@ -36,6 +36,12 @@ which projects need a deployment. Root configuration and lockfile changes can
 still affect every project. The custom `optimitron-web` production workflow
 uses the same build-input scope before it starts a production deployment.
 
+Satellite projects deploy automatically from `main` only. GitHub Actions builds
+and captures them for pull request review, so six additional Vercel preview
+builds would duplicate the same validation. `optimitron-web` remains the one
+automatic Vercel preview. Use `vercel deploy` from a satellite app directory
+when a live standalone preview is necessary.
+
 ## Environment variables
 
 Use Vercel Shared Environment Variables only when the value and trust boundary

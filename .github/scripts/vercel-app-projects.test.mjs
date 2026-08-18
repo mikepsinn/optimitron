@@ -89,6 +89,24 @@ test("classifies custom domains and Vercel deployment URLs", () => {
   assert.equal(getVercelAppByUrl("https://dih-earth.vercel.app"), undefined);
 });
 
+test("does not spend satellite build CPU on pull request previews", () => {
+  for (const project of VERCEL_APP_PROJECTS) {
+    const vercelJson = JSON.parse(
+      readFileSync(
+        new URL(`../../${project.rootDirectory}/vercel.json`, import.meta.url),
+      ),
+    );
+    if (project.appName === "optimitron") {
+      assert.equal(vercelJson.git.deploymentEnabled.main, false);
+      continue;
+    }
+    assert.deepEqual(vercelJson.git?.deploymentEnabled, {
+      main: true,
+      "*": false,
+    });
+  }
+});
+
 test("repairs only deployment settings that drift", () => {
   const desired = VERCEL_APP_PROJECTS[1];
   assert.deepEqual(
