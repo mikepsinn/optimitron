@@ -93,6 +93,7 @@ export default function TreatyVisualization() {
                   <div className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink">{remainingMilitaryBudget}</div>
                 </motion.div>
                 <motion.div
+                  data-visual-force-complete
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true }}
@@ -125,6 +126,7 @@ export default function TreatyVisualization() {
                 </motion.div>
                 <div className="flex items-center gap-4">
                   <motion.div
+                    data-visual-force-complete
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}

@@ -12,6 +12,7 @@ import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
 } from "../apps/optimitron/e2e/utils/visual-settle.mjs";
+import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.ts";
 import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
 import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../apps/optimitron/scripts/visual-capture-contract.mjs";
 import { getAuthenticatedSiteAppRoutes } from "./site-app-visual-routes.mjs";
@@ -277,6 +278,10 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
         });
         const loggedOutPage = await loggedOutContext.newPage();
         const authenticatedPage = await authenticatedContext.newPage();
+        await Promise.all([
+          freezeClock(loggedOutPage),
+          freezeClock(authenticatedPage),
+        ]);
 
         try {
           const needsAuthentication = screenshotRoutes.some(

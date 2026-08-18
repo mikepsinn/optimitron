@@ -78,7 +78,10 @@ export default function DeathClock() {
             }}
           >
             <Card className="bg-brutal-pink border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-pink-foreground tabular-nums mb-4">
+              <div
+                className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-pink-foreground tabular-nums mb-4"
+                data-volatile="deaths-today"
+              >
                 {formatNumber(todayDeaths)}
               </div>
               <div className="text-lg sm:text-xl md:text-2xl font-black text-brutal-pink-foreground uppercase">
@@ -97,7 +100,10 @@ export default function DeathClock() {
             }}
           >
             <Card className="bg-brutal-cyan border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-cyan-foreground tabular-nums mb-4">
+              <div
+                className="text-4xl sm:text-5xl md:text-6xl font-black text-brutal-cyan-foreground tabular-nums mb-4"
+                data-volatile="deaths-this-year"
+              >
                 {formatNumber(yearDeaths)}
               </div>
               <div className="text-lg sm:text-xl md:text-2xl font-black text-brutal-cyan-foreground uppercase">
