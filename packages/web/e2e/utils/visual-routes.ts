@@ -548,7 +548,6 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     siteVariant: "optimitron",
   },
   {
-    covers: [TASK_LIST_CONTROLS_FILE],
     name: "variant-optimitron-tasks",
     path: ROUTES.tasks,
     required: true,
@@ -557,7 +556,7 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
   },
   {
     authenticated: true,
-    covers: [PERSONAL_QUEUE_SECTION_FILE],
+    covers: [PERSONAL_QUEUE_SECTION_FILE, TASK_LIST_CONTROLS_FILE],
     name: "variant-optimitron-dashboard-auth",
     path: ROUTES.dashboard,
     required: true,

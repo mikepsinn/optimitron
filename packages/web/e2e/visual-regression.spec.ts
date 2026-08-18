@@ -300,6 +300,7 @@ test.describe("route visual regression", () => {
         await waitForVisualImages(page);
       }
       await prepareFullPageVisualCapture(page);
+      await forceAnimationsComplete(page);
       const screenshotFileName = `${route.name}.png`;
       const reviewScreenshotDir = path.join(
         REVIEW_AFTER_ROOT,
