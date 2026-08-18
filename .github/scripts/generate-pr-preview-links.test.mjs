@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -15,6 +18,7 @@ function runGenerator(env) {
       VISUAL_REVIEW_BASELINE_COMMIT_SHA: "",
       VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: "",
       VISUAL_REVIEW_BASELINE_RUN_ID: "",
+      CHANGED_FILES_PATH: "",
       ...env,
     },
   });
@@ -157,6 +161,29 @@ test("reports when no user-facing page or component routes are inferred", () => 
 
   assert.match(output, /No user-facing page or component changes were inferred/);
   assert.doesNotMatch(output, /<!-- review-item:/);
+});
+
+test("reads large changed-file lists from a file", () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "pr-preview-files-"));
+  const changedFilesPath = path.join(directory, "changed-files.json");
+  const changedFiles = Array.from(
+    { length: 2054 },
+    (_, index) => `apps/optimitron/public/generated-${index}.png`,
+  );
+  writeFileSync(changedFilesPath, JSON.stringify(changedFiles));
+
+  try {
+    const output = runGenerator({
+      PREVIEW_URL: "https://preview.example.vercel.app",
+      CHANGED_FILES: "",
+      CHANGED_FILES_PATH: changedFilesPath,
+    });
+
+    assert.match(output, /`apps\/optimitron\/public\/generated-0\.png`/u);
+    assert.match(output, /\.\.\.and 2014 more/u);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("identifies exact and fallback screenshot baselines", () => {
