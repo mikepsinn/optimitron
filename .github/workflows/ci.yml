@@ -1128,6 +1128,7 @@ jobs:
 
       - name: Post Visual review pending status
         if: ${{ !cancelled() && steps.prepare_pages.outcome == 'success' }}
+        continue-on-error: true
         uses: actions/github-script@v8
         env:
           VISUAL_REVIEW_URL: ${{ steps.prepare_pages.outputs.review_url }}
@@ -1277,6 +1278,7 @@ jobs:
 
       - name: Post Visual review commit status
         if: ${{ always() && steps.prepare_pages.outcome == 'success' && !cancelled() }}
+        continue-on-error: true
         uses: actions/github-script@v8
         env:
           VISUAL_REVIEW_AVAILABLE: ${{ steps.wait_visual_review_pages.outputs.available }}
