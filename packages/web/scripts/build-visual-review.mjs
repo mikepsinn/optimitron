@@ -25,6 +25,10 @@ import {
   buildChangedFileDiscoveryArgs,
   buildVisualCoverage,
 } from "./visual-review-coverage.mjs";
+import {
+  getVisualCaptureVersion,
+  normalizeVisualRouteManifest,
+} from "./visual-capture-contract.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -38,6 +42,9 @@ const screenshotsRoot = process.env.VISUAL_AFTER_ROOT
 const routeManifestPath = path.join(screenshotsRoot, "routes.json");
 const beforeScreenshotsRoot = process.env.VISUAL_BEFORE_ROOT
   ? resolveInputPath(process.env.VISUAL_BEFORE_ROOT)
+  : null;
+const beforeRouteManifestPath = beforeScreenshotsRoot
+  ? path.join(beforeScreenshotsRoot, "routes.json")
   : null;
 const beforeCopySnapshotsRoot = process.env.VISUAL_COPY_BEFORE_ROOT
   ? resolveInputPath(process.env.VISUAL_COPY_BEFORE_ROOT)
@@ -92,7 +99,16 @@ const reviewCommitSha =
   process.env.GITHUB_SHA ??
   null;
 const reviewGeneratedAt = new Date();
-const routeSpecs = loadRouteSpecs();
+const routeManifest = loadRouteManifest(routeManifestPath);
+const beforeRouteManifest = beforeRouteManifestPath
+  ? loadRouteManifest(beforeRouteManifestPath)
+  : null;
+const routeSpecs = routeManifest.routeSpecs;
+const webCaptureProtocolMismatch = Boolean(
+  beforeScreenshotsRoot &&
+  routeSpecs.size > 0 &&
+  routeManifest.captureVersion !== beforeRouteManifest?.captureVersion,
+);
 const routePaths = new Map(
   [...routeSpecs.entries()].map(([name, spec]) => [name, spec.path]),
 );
@@ -205,8 +221,22 @@ const SITE_APP_ORDER = [
   "acceleratedmedicine",
 ];
 
-const siteAppRoutesByVariant = loadSiteAppRouteManifests();
-registerSiteAppRouteSpecs(routeSpecs, routePaths, siteAppRoutesByVariant);
+const siteAppManifestsByVariant = loadSiteAppRouteManifests(screenshotsRoot);
+const beforeSiteAppManifestsByVariant = beforeScreenshotsRoot
+  ? loadSiteAppRouteManifests(beforeScreenshotsRoot)
+  : new Map();
+const incompatibleSiteAppVariants = new Set(
+  [...siteAppManifestsByVariant.entries()]
+    .filter(
+      ([siteVariant, manifest]) =>
+        beforeScreenshotsRoot &&
+        manifest.captureVersion !==
+          (beforeSiteAppManifestsByVariant.get(siteVariant)?.captureVersion ??
+            1),
+    )
+    .map(([siteVariant]) => siteVariant),
+);
+registerSiteAppRouteSpecs(routeSpecs, routePaths, siteAppManifestsByVariant);
 
 main().catch((error) => {
   console.error(
@@ -219,10 +249,11 @@ async function main() {
   mkdirSync(outputRoot, { recursive: true });
   rmSync(assetRoot, { recursive: true, force: true });
 
+  const beforeScreenshots = beforeScreenshotsRoot
+    ? collectScreenshots(beforeScreenshotsRoot, "before")
+    : [];
   const screenshots = [
-    ...(beforeScreenshotsRoot
-      ? collectScreenshots(beforeScreenshotsRoot, "before")
-      : []),
+    ...beforeScreenshots.filter(isCompatibleBaselineScreenshot),
     ...collectScreenshots(screenshotsRoot, "after"),
   ];
   const grouped = appendCopyOnlyGroups(
@@ -435,12 +466,32 @@ function buildBaselineDescription() {
   const copyRefLabel = /^[0-9a-f]{40}$/i.test(copyRef)
     ? shortSha(copyRef)
     : copyRef;
-  return [
-    beforeScreenshotsRoot
-      ? "screenshots vs main baseline artifact"
-      : "no screenshot baseline artifact",
-    `copy vs ${copyRefLabel}`,
-  ].join(" · ");
+  const skippedBaselines = [];
+  if (webCaptureProtocolMismatch) {
+    skippedBaselines.push(
+      `web capture protocol v${beforeRouteManifest?.captureVersion} -> v${routeManifest.captureVersion}`,
+    );
+  }
+  if (incompatibleSiteAppVariants.size > 0) {
+    skippedBaselines.push(
+      `site-app capture protocol changed: ${[...incompatibleSiteAppVariants].join(", ")}`,
+    );
+  }
+  const screenshotBaseline = beforeScreenshotsRoot
+    ? skippedBaselines.length > 0
+      ? `baseline skipped for ${skippedBaselines.join("; ")}`
+      : "screenshots vs main baseline artifact"
+    : "no screenshot baseline artifact";
+
+  return [screenshotBaseline, `copy vs ${copyRefLabel}`].join(" · ");
+}
+
+function isCompatibleBaselineScreenshot(screenshot) {
+  const siteVariant = getSiteAppVariantFromRouteName(screenshot.routeName);
+  if (siteVariant) {
+    return !incompatibleSiteAppVariants.has(siteVariant);
+  }
+  return !webCaptureProtocolMismatch;
 }
 
 function buildReviewPageRoute(group) {
@@ -1600,19 +1651,18 @@ function shortSha(value) {
   return String(value).slice(0, 12);
 }
 
-function loadRouteSpecs() {
-  if (!existsSync(routeManifestPath)) {
-    return new Map();
+function loadRouteManifest(manifestPath) {
+  if (!manifestPath || !existsSync(manifestPath)) {
+    const manifest = normalizeVisualRouteManifest(null);
+    return { ...manifest, routeSpecs: new Map() };
   }
 
   try {
-    const parsed = JSON.parse(readFileSync(routeManifestPath, "utf8"));
-    if (!Array.isArray(parsed)) {
-      return new Map();
-    }
+    const parsed = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const manifest = normalizeVisualRouteManifest(parsed);
 
-    return new Map(
-      parsed
+    const routeSpecs = new Map(
+      manifest.routes
         .filter(
           (entry) =>
             entry &&
@@ -1642,11 +1692,13 @@ function loadRouteSpecs() {
           },
         ]),
     );
+    return { ...manifest, routeSpecs };
   } catch (error) {
     console.warn(
-      `[visual-review] Could not read route manifest at ${routeManifestPath}: ${error instanceof Error ? error.message : String(error)}`,
+      `[visual-review] Could not read route manifest at ${manifestPath}: ${error instanceof Error ? error.message : String(error)}`,
     );
-    return new Map();
+    const manifest = normalizeVisualRouteManifest(null);
+    return { ...manifest, routeSpecs: new Map() };
   }
 }
 
@@ -1678,11 +1730,9 @@ function getRouteSiteVariant(routeName) {
 }
 
 function getSiteAppRoute(routeName) {
-  for (const siteVariant of SITE_APP_ORDER) {
+  const siteVariant = getSiteAppVariantFromRouteName(routeName);
+  if (siteVariant) {
     const prefix = `site-app-${siteVariant}-`;
-    if (!routeName.startsWith(prefix)) {
-      continue;
-    }
     const siteAppRouteName = routeName.slice(prefix.length);
     const route = getSiteAppRoutes(siteVariant).find(
       (candidate) => candidate.routeName === siteAppRouteName,
@@ -1698,13 +1748,21 @@ function getSiteAppRoute(routeName) {
   return null;
 }
 
-function getSiteAppRoutes(siteVariant) {
-  return siteAppRoutesByVariant.get(siteVariant) ?? [];
+function getSiteAppVariantFromRouteName(routeName) {
+  return (
+    SITE_APP_ORDER.find((siteVariant) =>
+      routeName.startsWith(`site-app-${siteVariant}-`),
+    ) ?? null
+  );
 }
 
-function loadSiteAppRouteManifests() {
+function getSiteAppRoutes(siteVariant) {
+  return siteAppManifestsByVariant.get(siteVariant)?.routes ?? [];
+}
+
+function loadSiteAppRouteManifests(root) {
   const manifests = new Map();
-  const manifestDirectory = path.join(screenshotsRoot, "site-app-manifests");
+  const manifestDirectory = path.join(root, "site-app-manifests");
 
   for (const fileName of safeReadDir(manifestDirectory)) {
     if (!fileName.toLowerCase().endsWith(".json")) {
@@ -1744,7 +1802,10 @@ function loadSiteAppRouteManifests() {
       if (routes.length === 0) {
         throw new Error("manifest contains no routes");
       }
-      manifests.set(manifest.appName, routes);
+      manifests.set(manifest.appName, {
+        captureVersion: getVisualCaptureVersion(manifest),
+        routes,
+      });
     } catch (error) {
       console.warn(
         `[visual-review] Could not read site-app route manifest at ${manifestPath}: ${error instanceof Error ? error.message : String(error)}`,
@@ -1756,8 +1817,8 @@ function loadSiteAppRouteManifests() {
 }
 
 function registerSiteAppRouteSpecs(specs, paths, manifests) {
-  for (const [siteVariant, routes] of manifests) {
-    for (const route of routes) {
+  for (const [siteVariant, manifest] of manifests) {
+    for (const route of manifest.routes) {
       const name = `site-app-${siteVariant}-${route.routeName}`;
       specs.set(name, {
         activationSelector: "body",

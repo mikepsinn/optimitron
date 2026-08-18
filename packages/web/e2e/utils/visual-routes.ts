@@ -131,6 +131,8 @@ const TASK_DEPENDENCIES_SECTION_FILE =
   "packages/web/src/components/tasks/TaskDependenciesSection.tsx";
 const TASK_TREE_VIEW_FILE =
   "packages/web/src/components/tasks/TaskTreeView.tsx";
+const TASK_LIST_CONTROLS_FILE =
+  "packages/web/src/components/tasks/task-list-controls.tsx";
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "packages/web/src/components/tasks/task-impact-trace-disclosure.tsx";
 const OBG_CATEGORY_PAGE_FILE = "packages/web/src/app/obg/[slug]/page.tsx";
@@ -546,9 +548,11 @@ const VARIANT_DELTA_ROUTES: VisualRoute[] = [
     siteVariant: "optimitron",
   },
   {
+    covers: [TASK_LIST_CONTROLS_FILE],
     name: "variant-optimitron-tasks",
     path: ROUTES.tasks,
     required: true,
+    requiredSelector: 'input[placeholder="Filter tasks..."]',
     siteVariant: "optimitron",
   },
   {

@@ -13,6 +13,7 @@ import {
   prepareFullPageVisualCapture,
 } from "../packages/web/e2e/utils/visual-settle.mjs";
 import { signInViaApi } from "../packages/web/e2e/utils/auth-api.mjs";
+import { SITE_APP_VISUAL_CAPTURE_VERSION } from "../packages/web/scripts/visual-capture-contract.mjs";
 import { getAuthenticatedSiteAppRoutes } from "./site-app-visual-routes.mjs";
 
 const repoRoot = path.resolve(
@@ -246,7 +247,8 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
     path.join(manifestDirectory, `${appName}.json`),
     `${JSON.stringify(
       {
-        version: 1,
+        version: 2,
+        captureVersion: SITE_APP_VISUAL_CAPTURE_VERSION,
         appName,
         domain: getSiteConfigForVariant(siteVariant).domain,
         routes: screenshotRoutes,

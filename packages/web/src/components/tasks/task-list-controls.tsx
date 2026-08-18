@@ -9,6 +9,7 @@ import {
   type TaskSortKey,
 } from "./task-row";
 import type { TaskCardTask } from "./task-card";
+import { compareTaskListValues } from "./task-list-sort";
 import { useHydratedNow } from "@/lib/use-hydrated-now";
 
 const SORT_OPTIONS: { key: TaskSortKey; label: string }[] = [
@@ -78,14 +79,7 @@ export function SortableTaskList({
     return filtered.sort((a, b) => {
       const valA = getTaskSortValue(a, sortKey);
       const valB = getTaskSortValue(b, sortKey);
-      if (typeof valA === "string" && typeof valB === "string") {
-        return sortDir === "asc"
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
-      }
-      return sortDir === "asc"
-        ? Number(valA) - Number(valB)
-        : Number(valB) - Number(valA);
+      return compareTaskListValues(a, b, valA, valB, sortDir);
     });
   }, [tasks, sortKey, sortDir, filter]);
 

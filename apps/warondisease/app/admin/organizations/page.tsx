@@ -34,6 +34,7 @@ async function getOrganizations(status?: OrgStatus) {
     orderBy: [
       { status: "asc" }, // PENDING first
       { createdAt: "desc" },
+      { slug: "asc" },
     ],
   })
 
