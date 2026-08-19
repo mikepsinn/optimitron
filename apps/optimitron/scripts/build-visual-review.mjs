@@ -1458,6 +1458,7 @@ function buildReviewManifest(groups, coverage) {
     repo: repoSlug,
     previewBaseUrl: pageLinkBaseUrl ? pageLinkBaseUrl.toString() : null,
     reviewUrl: reviewBase ? `${reviewBase}/latest.html` : null,
+    baselineDescription: buildBaselineDescription(),
     summary: summarizeGroups(groups),
     coverage,
     routes: groups.map((group) => {

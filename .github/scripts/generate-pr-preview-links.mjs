@@ -280,7 +280,11 @@ function changedManifestRoutes(manifest) {
 
 function isCaptureProtocolRefresh(manifest) {
   return /capture protocol changed/iu.test(
-    String(manifest?.meta?.baselineDescription ?? ""),
+    String(
+      manifest?.baselineDescription ??
+        manifest?.meta?.baselineDescription ??
+        "",
+    ),
   );
 }
 

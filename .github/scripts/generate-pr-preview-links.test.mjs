@@ -218,10 +218,8 @@ test("summarizes capture protocol refreshes without fake missing-route items", (
     VISUAL_REVIEW_URL:
       "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
     VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
-      meta: {
-        baselineDescription:
-          "baseline skipped for site-app capture protocol changed: curedao",
-      },
+      baselineDescription:
+        "baseline skipped for site-app capture protocol changed: curedao",
       summary: { missingBaselineRoutes: 52 },
       routes: [
         {
