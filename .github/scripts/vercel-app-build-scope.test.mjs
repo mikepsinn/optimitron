@@ -103,9 +103,15 @@ test("compares with the last successful deployment when Vercel provides it", () 
     }),
     "1234567890abcdef1234567890abcdef12345678",
   );
-  assert.equal(getVercelDiffBase({}), "HEAD^");
   assert.equal(
-    getVercelDiffBase({ VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" }),
-    "HEAD^",
+    getVercelDiffBase({}, () => "abcdef1234567890abcdef1234567890abcdef12"),
+    "abcdef1234567890abcdef1234567890abcdef12",
+  );
+  assert.equal(
+    getVercelDiffBase(
+      { VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" },
+      () => null,
+    ),
+    null,
   );
 });

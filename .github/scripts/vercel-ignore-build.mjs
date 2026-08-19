@@ -6,17 +6,22 @@ import {
 
 const appName = process.argv[2] ?? "optimitron";
 const diffBase = getVercelDiffBase();
+const comparisonLabel = diffBase ?? "the full tracked tree";
 
-const files = execFileSync("git", ["diff", "--name-only", diffBase, "HEAD"], {
-  encoding: "utf8",
-})
+const files = execFileSync(
+  "git",
+  diffBase
+    ? ["diff", "--name-only", diffBase, "HEAD"]
+    : ["ls-tree", "-r", "--name-only", "HEAD"],
+  { encoding: "utf8" },
+)
   .split(/\r?\n/u)
   .filter(Boolean);
 
 const matches = getVercelAppBuildMatches(appName, files);
 console.log(
   matches.length > 0
-    ? `Building ${appName} for changes since ${diffBase}: ${matches.join(", ")}`
-    : `Skipping ${appName}; no deployable inputs changed since ${diffBase}.`,
+    ? `Building ${appName} for changes since ${comparisonLabel}: ${matches.join(", ")}`
+    : `Skipping ${appName}; no deployable inputs changed since ${comparisonLabel}.`,
 );
 process.exitCode = matches.length === 0 ? 0 : 1;

@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(
@@ -82,9 +83,29 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
   );
 }
 
-export function getVercelDiffBase(environment = process.env) {
+export function getVercelDiffBase(
+  environment = process.env,
+  resolveMergeBase = resolveProductionMergeBase,
+) {
   const previousSha = String(environment.VERCEL_GIT_PREVIOUS_SHA ?? "").trim();
-  return /^[0-9a-f]{7,40}$/iu.test(previousSha) ? previousSha : "HEAD^";
+  if (/^[0-9a-f]{7,40}$/iu.test(previousSha)) return previousSha;
+  return resolveMergeBase();
+}
+
+function resolveProductionMergeBase() {
+  for (const ref of ["origin/main", "main"]) {
+    try {
+      const sha = execFileSync("git", ["merge-base", "HEAD", ref], {
+        cwd: repoRoot,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+      if (/^[0-9a-f]{40}$/iu.test(sha)) return sha;
+    } catch {
+      // Vercel uses a shallow clone, so the production ref may be unavailable.
+    }
+  }
+  return null;
 }
 
 export function loadWorkspacePackages(root = repoRoot) {
