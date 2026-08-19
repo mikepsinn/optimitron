@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getVercelAppBuildMatches } from "./vercel-app-build-scope.mjs";
+import {
+  getVercelAppBuildMatches,
+  getVercelDiffBase,
+} from "./vercel-app-build-scope.mjs";
 
 const apps = [
   "optimitron",
@@ -73,4 +76,18 @@ test("rebuilds every app for root dependency inputs", () => {
   for (const app of apps) {
     assert.deepEqual(getVercelAppBuildMatches(app, files), files);
   }
+});
+
+test("compares with the last successful deployment when Vercel provides it", () => {
+  assert.equal(
+    getVercelDiffBase({
+      VERCEL_GIT_PREVIOUS_SHA: "1234567890abcdef1234567890abcdef12345678",
+    }),
+    "1234567890abcdef1234567890abcdef12345678",
+  );
+  assert.equal(getVercelDiffBase({}), "HEAD^");
+  assert.equal(
+    getVercelDiffBase({ VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" }),
+    "HEAD^",
+  );
 });

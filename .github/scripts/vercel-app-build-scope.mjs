@@ -60,6 +60,11 @@ export function getVercelAppBuildMatches(
     .sort();
 }
 
+export function getVercelDiffBase(environment = process.env) {
+  const previousSha = String(environment.VERCEL_GIT_PREVIOUS_SHA ?? "").trim();
+  return /^[0-9a-f]{7,40}$/iu.test(previousSha) ? previousSha : "HEAD^";
+}
+
 export function loadWorkspacePackages(root = repoRoot) {
   const packages = new Map();
 
