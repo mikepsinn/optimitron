@@ -56,6 +56,24 @@ test("keeps Optimitron content inputs without treating it as the default app", (
   );
 });
 
+test("ignores app-only test and visual-review tooling", () => {
+  const files = [
+    "apps/optimitron/e2e/visual-regression.spec.ts",
+    "apps/optimitron/scripts/build-visual-review.mjs",
+    "apps/optimitron/scripts/visual-review-page.mjs",
+    "apps/optimitron/src/lib/routes.test.ts",
+    "apps/optimitron/src/lib/routes.ts",
+    "apps/optimitron/scripts/next-build.mjs",
+    "apps/warondisease/tests/navigation.test.ts",
+  ];
+
+  assert.deepEqual(getVercelAppBuildMatches("optimitron", files), [
+    "apps/optimitron/scripts/next-build.mjs",
+    "apps/optimitron/src/lib/routes.ts",
+  ]);
+  assert.deepEqual(getVercelAppBuildMatches("warondisease", files), []);
+});
+
 test("ignores global review and documentation changes", () => {
   const files = [
     ".github/workflows/ci.yml",

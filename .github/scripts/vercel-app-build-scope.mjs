@@ -25,6 +25,16 @@ const appExtraBuildPaths = Object.freeze({
     "docs/canonical-argument-2026-05-20.md",
   ],
 });
+const appIgnoredBuildPaths = Object.freeze({
+  optimitron: [
+    "apps/optimitron/scripts/build-visual-review.mjs",
+    "apps/optimitron/scripts/visual-capture-contract.mjs",
+    "apps/optimitron/scripts/visual-review-coverage.mjs",
+    "apps/optimitron/scripts/visual-review-diff.mjs",
+    "apps/optimitron/scripts/visual-review-hunks.mjs",
+    "apps/optimitron/scripts/visual-review-page.mjs",
+  ],
+});
 
 export function getVercelAppBuildMatches(
   appName,
@@ -41,23 +51,35 @@ export function getVercelAppBuildMatches(
     workspacePackages,
   );
   const extraPaths = appExtraBuildPaths[appName] ?? [];
+  const ignoredPaths = appIgnoredBuildPaths[appName] ?? [];
 
   return files
     .map((file) => file.replaceAll("\\", "/"))
     .filter(
       (file) =>
-        globalBuildFiles.has(file) ||
-        extraPaths.some((extraPath) =>
-          extraPath.endsWith("/")
-            ? file.startsWith(extraPath)
-            : file === extraPath,
-        ) ||
-        [...relevantDirectories].some(
-          (directory) =>
-            file === directory || file.startsWith(`${directory}/`),
-        ),
+        !isIgnoredBuildPath(file, ignoredPaths) &&
+        (globalBuildFiles.has(file) ||
+          extraPaths.some((extraPath) =>
+            extraPath.endsWith("/")
+              ? file.startsWith(extraPath)
+              : file === extraPath,
+          ) ||
+          [...relevantDirectories].some(
+            (directory) =>
+              file === directory || file.startsWith(`${directory}/`),
+          )),
     )
     .sort();
+}
+
+function isIgnoredBuildPath(file, appIgnoredPaths) {
+  return (
+    appIgnoredPaths.includes(file) ||
+    /\/(?:e2e|output|playwright-report|screenshots|test-results)\//u.test(
+      file,
+    ) ||
+    /\.(?:spec|test)\.[cm]?[jt]sx?$/u.test(file)
+  );
 }
 
 export function getVercelDiffBase(environment = process.env) {

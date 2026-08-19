@@ -42,7 +42,8 @@ uses the same dependency-aware ignore script to reject documentation, review
 automation, and unrelated app changes before build CPU starts. App source,
 transitive workspace dependencies, and root dependency files still build. The
 script compares against the last successful deployment, so multi-commit pushes
-cannot hide an earlier app change.
+cannot hide an earlier app change. App tests, browser fixtures, screenshots,
+and Optimitron's current visual-review assembler do not trigger app deployment.
 
 GitHub Actions also builds and captures every relevant app for pull request
 visual review. This local fixture-based review is broader than the live Vercel
