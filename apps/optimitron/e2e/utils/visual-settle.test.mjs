@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
+  waitForFonts,
 } from "./visual-settle.mjs";
 
 test("waits for a quiet pass after finishing newly-created animations", async () => {
@@ -63,4 +64,17 @@ test("waits for custom visual-capture state to commit", async () => {
       source.includes('data-visual-capture-ready="false"'),
     ),
   );
+});
+
+test("bounds font readiness waits", async () => {
+  let receivedTimeout;
+  const target = {
+    async waitForFunction(_action, _argument, options) {
+      receivedTimeout = options.timeout;
+      throw new Error("font request stalled");
+    },
+  };
+
+  assert.equal(await waitForFonts(target, 1234), false);
+  assert.equal(receivedTimeout, 1234);
 });
