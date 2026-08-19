@@ -2050,7 +2050,11 @@ export async function respondToTrackingReminderNotificationsForUser(
   // After midnight, "today" flips while the user is still finishing
   // yesterday: every occurrence for the defaulted dateKey is in the future,
   // so a catch-up call either writes nothing or answers tomorrow's slots
-  // while yesterday stays OVERDUE (#248). Refuse with directions instead.
+  // while yesterday stays OVERDUE (#248). Refuse with directions when the
+  // call is ambiguous: the default would write nothing, or an except entry
+  // names a reminder that is still unanswered for yesterday. An except entry
+  // whose reminder has no unanswered yesterday occurrence is an unambiguous
+  // answer-in-advance and proceeds.
   const dateKeyOmitted = input.dateKey == null || input.dateKey === "";
   const nothingDueYetToday = due.notifications.every(
     (item) => item.notifyAt.getTime() > now,
@@ -2064,9 +2068,17 @@ export async function respondToTrackingReminderNotificationsForUser(
         )
       : null;
     if (previous && previous.notifications.length > 0) {
-      throw new Error(
-        `Nothing was written. No notifications are due yet for ${due.dateKey} in ${due.timeZone}, but ${previousDateKey} has ${previous.notifications.length} unanswered. Pass dateKey: "${previousDateKey}" to answer that day, or dateKey: "${due.dateKey}" to answer today's future occurrences in advance.`,
+      const previousUnansweredIds = new Set(
+        previous.notifications.map((item) => item.reminderId),
       );
+      const ambiguous =
+        defaultStatus !== undefined ||
+        [...overrideById.keys()].some((id) => previousUnansweredIds.has(id));
+      if (ambiguous) {
+        throw new Error(
+          `Nothing was written. No notifications are due yet for ${due.dateKey} in ${due.timeZone}, but ${previousDateKey} has ${previous.notifications.length} unanswered. Pass dateKey: "${previousDateKey}" to answer that day, or dateKey: "${due.dateKey}" to answer today's future occurrences in advance.`,
+        );
+      }
     }
   }
 
@@ -2149,21 +2161,35 @@ const MAX_RESPONSE_BACKFILL_DAYS = 7;
 async function mostRecentDueUnansweredDateKey(
   tx: Prisma.TransactionClient,
   reminder: {
+    active: boolean;
     createdAt: Date;
     id: string;
     reminderFrequency: number;
     reminderStartTime: string;
     startTrackingDate: Date | null;
+    stopTrackingDate: Date | null;
   },
   userId: string,
   timeZone: string,
   todayKey: string,
 ) {
+  // An inactive reminder is never listed as due, so implicit catch-up does
+  // not apply; answering it keeps the calendar default.
+  if (!reminder.active) return null;
   const now = Date.now();
   for (let offset = 0; offset <= MAX_RESPONSE_BACKFILL_DAYS; offset += 1) {
     const candidate = offset === 0 ? todayKey : shiftDateKey(todayKey, -offset);
     if (!candidate) return null;
     const { end, start } = dayRange(candidate, timeZone);
+    // Match listDueTrackingRemindersForUser's eligibility window: a day that
+    // starts after stopTrackingDate has no due occurrence. startTrackingDate
+    // is enforced by the occurrence anchor below.
+    if (
+      reminder.stopTrackingDate != null &&
+      reminder.stopTrackingDate < start
+    ) {
+      continue;
+    }
     const occurrence = reminderOccurrenceWithinRange(reminder, {
       dateKey: candidate,
       end,

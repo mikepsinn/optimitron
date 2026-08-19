@@ -11717,6 +11717,7 @@ describe("MCP server tool dispatch", () => {
     // calendar-today default targeted the new day's still-future occurrence,
     // leaving yesterday OVERDUE (#248).
     const NIGHTLY_REMINDER = {
+      active: true,
       createdAt: new Date("2026-08-01T00:00:00.000Z"),
       defaultValue: 1500,
       deletedAt: null,
@@ -11850,6 +11851,54 @@ describe("MCP server tool dispatch", () => {
       }
     });
 
+    it("respondToTrackingReminder keeps the calendar default for reminders outside their eligibility window", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        // Stopped a week+ ago: no day in the walk-back window is eligible,
+        // so an explicit answer targets today, as before the walk-back.
+        mocks.trackingReminderFindFirst.mockResolvedValue({
+          ...NIGHTLY_REMINDER,
+          stopTrackingDate: new Date("2026-08-10T00:00:00.000Z"),
+        });
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            status: "TRACKED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        const body = parseToolBody(result) as {
+          result: { answersPastOccurrence?: boolean; dateKey: string };
+        };
+        expect(body.result.dateKey).toBe("2026-08-19");
+        expect(body.result.answersPastOccurrence).toBeUndefined();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it("bulk respond without dateKey refuses an after-midnight catch-up and names yesterday", async () => {
       vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
       try {
@@ -11869,6 +11918,93 @@ describe("MCP server tool dispatch", () => {
         expect(message).toContain('dateKey: "2026-08-18"');
         expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
         expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("bulk respond allows an unambiguous after-midnight answer-in-advance via except", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        // reminder-other is still unanswered for yesterday, but the except
+        // entry names reminder-night, whose yesterday occurrence is TRACKED:
+        // no ambiguity, so the call answers tonight's slot in advance.
+        const otherReminder = {
+          ...NIGHTLY_REMINDER,
+          globalVariable: {
+            ...TRACKING_VARIABLE,
+            id: "gv-magnesium",
+            name: "Magnesium",
+          },
+          globalVariableId: "gv-magnesium",
+          id: "reminder-other",
+        };
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          NIGHTLY_REMINDER,
+          otherReminder,
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockImplementation(
+          async ({ where }: { where: { notifyAt: { gte: Date } } }) =>
+            // Yesterday's window: reminder-night is already answered.
+            where.notifyAt.gte.getTime() ===
+            new Date("2026-08-18T05:00:00.000Z").getTime()
+              ? [
+                  {
+                    deletedAt: null,
+                    id: "notification-night-yesterday",
+                    notifyAt: new Date("2026-08-19T03:30:00.000Z"),
+                    status: NotificationStatus.TRACKED,
+                    trackedValue: 1500,
+                    trackingReminderId: "reminder-night",
+                    userId: "user-1",
+                  },
+                ]
+              : [],
+        );
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-tonight",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: {
+            except: [
+              { status: "TRACKED", trackingReminderId: "reminder-night" },
+            ],
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          answeredCount: 1,
+          results: [
+            { reminderId: "reminder-night", source: "exception" },
+          ],
+        });
+        // The answer lands on tonight's 22:30 slot.
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-20T03:30:00.000Z"),
+            trackingReminderId: "reminder-night",
+          }),
+        });
       } finally {
         vi.useRealTimers();
       }
