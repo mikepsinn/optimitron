@@ -32,6 +32,7 @@ import {
 } from "./visual-capture-contract.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
 import {
+  APP_PREVIEW_LABELS,
   getAppPreviewRouteUrl,
   parseAppPreviewUrls,
 } from "../../../scripts/app-preview-urls.mjs";
@@ -191,8 +192,8 @@ const routeOrder = [
   "document-review-manager",
   "document-review-reviewer",
   "document-review-stale",
-  "variant-optimitron-home",
-  "variant-optimitron-tasks",
+  "legacy-warondisease-home",
+  "legacy-warondisease-dashboard-auth",
   "variant-dfda-home",
   "variant-dfda-conditions",
   "variant-dih-home",
@@ -213,6 +214,7 @@ const routeLabelOverrides = new Map([
 const VARIANT_DOMAIN_LABELS = {
   optimitron: "optimitron.com",
   warondisease: "warondisease.org",
+  warOnDisease: "warondisease.org",
   dfda: "dfda.earth",
   dih: "dih.earth",
   wishocracy: "wishocracy.org",
@@ -416,25 +418,12 @@ function renderHtml(groups, coverage) {
 /**
  * Adapter: map the analyzed screenshot groups onto the data contract
  * expected by renderReviewHtml (scripts/visual-review-page.mjs). Routes are
- * ordered changed -> copy-only -> unchanged; the sort is stable, so
- * routeOrder is preserved within each rank.
+ * ordered by app and capture kind. The rail applies review priority within
+ * each app while preserving routeOrder for equal-priority routes.
  */
 function buildReviewPageInput(groups, coverage) {
   const reviewBase = getPublishedReviewBase();
   const routes = groups.map((group) => buildReviewPageRoute(group));
-  // Changed variant routes rank 0 with everything else (they must surface);
-  // unchanged variant routes park below Unchanged in their own rail group.
-  const rank = (route) =>
-    route.changed || route.errored
-      ? 0
-      : route.copyChanged
-        ? 1
-        : route.siteApp
-          ? 2
-          : route.siteVariant
-            ? 4
-            : 3;
-  routes.sort((a, b) => rank(a) - rank(b));
   return {
     meta: {
       prNumber,
@@ -451,16 +440,27 @@ function buildReviewPageInput(groups, coverage) {
     },
     summary: {
       changedRoutes: routes.filter((route) => route.changed).length,
-      copyOnlyRoutes: routes.filter((route) => rank(route) === 1).length,
+      copyOnlyRoutes: routes.filter(
+        (route) => route.copyChanged && !route.changed && !route.errored,
+      ).length,
       missingBaselineRoutes: routes.filter(
         (route) => route.baselineMissingPairs > 0,
       ).length,
       unchangedRoutes: routes.filter(
-        (route) => rank(route) === 3 && route.missingPairs === 0,
+        (route) =>
+          !route.changed &&
+          !route.copyChanged &&
+          !route.errored &&
+          route.missingPairs === 0,
       ).length,
-      siteAppRoutes: routes.filter((route) => route.siteApp).length,
-      variantRoutes: routes.filter(
-        (route) => route.siteVariant && !route.siteApp,
+      appCount: new Set(
+        routes
+          .filter((route) => route.captureKind === "app")
+          .map((route) => route.appId),
+      ).size,
+      appRoutes: routes.filter((route) => route.captureKind === "app").length,
+      compatibilityRoutes: routes.filter(
+        (route) => route.captureKind === "legacy-host",
       ).length,
       erroredRoutes: routes.filter((route) => route.errored).length,
       totalRoutes: routes.length,
@@ -478,7 +478,7 @@ function buildBaselineDescription() {
   const skippedBaselines = [];
   if (webCaptureProtocolMismatch) {
     skippedBaselines.push(
-      `web capture protocol v${beforeRouteManifest?.captureVersion} -> v${routeManifest.captureVersion}`,
+      `intentional web baseline refresh: capture ownership protocol v${beforeRouteManifest?.captureVersion} -> v${routeManifest.captureVersion}`,
     );
   }
   if (incompatibleSiteAppVariants.size > 0) {
@@ -513,17 +513,19 @@ function isRouteBaselineSkippedForCaptureProtocol(routeName) {
 function buildReviewPageRoute(group) {
   const markdownDiff = buildMarkdownDiff(group.routeName);
   const siteAppRoute = getSiteAppRoute(group.routeName);
+  const ownership = getRouteOwnership(group.routeName, siteAppRoute);
   const routePath =
     routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
   const siteVariant =
     siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
   return {
+    appId: ownership.appId,
+    appLabel: ownership.appLabel,
+    captureKind: ownership.captureKind,
     routeName: group.routeName,
     routeLabel: siteAppRoute
       ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
-      : siteVariant
-        ? labelVariantRoute(group.routeName, siteVariant)
-        : labelRoute(group.routeName),
+      : labelOwnedRoute(group.routeName, ownership.appId),
     routePath,
     routeUrl: siteAppRoute
       ? getAppPreviewRouteUrl(
@@ -533,7 +535,7 @@ function buildReviewPageRoute(group) {
           getRouteAuthState(group.routeName),
         )
       : getRouteUrl(group.routeName),
-    productionUrl: getProductionRouteUrl(routePath, siteVariant),
+    productionUrl: getProductionRouteUrl(routePath, ownership.appId),
     authState: getRouteAuthState(group.routeName),
     siteApp: Boolean(siteAppRoute),
     siteVariant,
@@ -1429,6 +1431,9 @@ function buildDiffFileName(fileName) {
 }
 
 function summarizeGroups(groups) {
+  const ownership = groups.map((group) =>
+    getRouteOwnership(group.routeName, getSiteAppRoute(group.routeName)),
+  );
   return {
     changedRoutes: groups.filter((group) => group.changed).length,
     copyOnlyRoutes: groups.filter(
@@ -1441,8 +1446,16 @@ function summarizeGroups(groups) {
     missingBaselineRoutes: groups.filter(
       (group) => group.baselineMissingPairs > 0,
     ).length,
-    siteAppRoutes: groups.filter((group) => getSiteAppRoute(group.routeName))
+    appCount: new Set(
+      ownership
+        .filter(({ captureKind }) => captureKind === "app")
+        .map(({ appId }) => appId),
+    ).size,
+    appRoutes: ownership.filter(({ captureKind }) => captureKind === "app")
       .length,
+    compatibilityRoutes: ownership.filter(
+      ({ captureKind }) => captureKind === "legacy-host",
+    ).length,
     unchangedRoutes: groups.filter(
       (group) =>
         !group.changed &&
@@ -1457,7 +1470,7 @@ function summarizeGroups(groups) {
 function buildReviewManifest(groups, coverage) {
   const reviewBase = getPublishedReviewBase();
   return {
-    version: 1,
+    version: 2,
     generatedAt: reviewGeneratedAt.toISOString(),
     generatedAtCentral: formatCentralTime(reviewGeneratedAt),
     commitSha: reviewCommitSha,
@@ -1474,17 +1487,19 @@ function buildReviewManifest(groups, coverage) {
       const markdownDiff = buildMarkdownDiff(group.routeName);
       const copyChanged = Boolean(markdownDiff);
       const siteAppRoute = getSiteAppRoute(group.routeName);
+      const ownership = getRouteOwnership(group.routeName, siteAppRoute);
       const siteVariant =
         siteAppRoute?.siteVariant ?? getRouteSiteVariant(group.routeName);
       const routePath =
         routePaths.get(group.routeName) ?? siteAppRoute?.routePath ?? null;
       return {
+        appId: ownership.appId,
+        appLabel: ownership.appLabel,
+        captureKind: ownership.captureKind,
         routeName: group.routeName,
         routeLabel: siteAppRoute
           ? `${getVariantDomainLabel(siteVariant)} · ${siteAppRoute.routeLabel}`
-          : siteVariant
-            ? labelVariantRoute(group.routeName, siteVariant)
-            : labelRoute(group.routeName),
+          : labelOwnedRoute(group.routeName, ownership.appId),
         routePath,
         routeUrl: siteAppRoute
           ? getAppPreviewRouteUrl(
@@ -1704,6 +1719,14 @@ function loadRouteManifest(manifestPath) {
         .map((entry) => [
           entry.name,
           {
+            appId: typeof entry.appId === "string" ? entry.appId : null,
+            appLabel:
+              typeof entry.appLabel === "string" ? entry.appLabel : null,
+            captureKind:
+              entry.captureKind === "app" ||
+              entry.captureKind === "legacy-host"
+                ? entry.captureKind
+                : null,
             path: entry.path,
             authenticated: entry.authenticated === true,
             activationSelector:
@@ -1854,8 +1877,11 @@ function registerSiteAppRouteSpecs(specs, paths, manifests) {
       const name = `site-app-${siteVariant}-${route.routeName}`;
       specs.set(name, {
         activationSelector: "body",
+        appId: siteVariant,
+        appLabel: getAppLabel(siteVariant),
         authenticated: route.authenticated,
         authRole: route.authRole,
+        captureKind: "app",
         covers: route.covers,
         path: route.routePath,
         required: true,
@@ -1871,15 +1897,41 @@ function getVariantDomainLabel(siteVariant) {
   return VARIANT_DOMAIN_LABELS[siteVariant] ?? siteVariant;
 }
 
-function labelVariantRoute(routeName, siteVariant) {
-  const rest = routeName.replace(`variant-${siteVariant}-`, "");
-  return `${getVariantDomainLabel(siteVariant)} · ${labelRoute(rest)}`;
+function getAppLabel(appId) {
+  return APP_PREVIEW_LABELS[appId] ?? (appId === "dih" ? "DIH" : appId);
 }
 
-function getProductionRouteUrl(routePath, siteVariant) {
+function getRouteOwnership(routeName, siteAppRoute = null) {
+  const routeSpec = routeSpecs.get(routeName);
+  const fallbackVariant =
+    siteAppRoute?.siteVariant ?? getRouteSiteVariant(routeName);
+  const fallbackAppId =
+    fallbackVariant === "warOnDisease"
+      ? "warondisease"
+      : (fallbackVariant ?? "optimitron");
+  const appId = routeSpec?.appId ?? fallbackAppId;
+  const captureKind =
+    routeSpec?.captureKind ??
+    (/^(?:legacy-|variant-(?:dfda|dih)-)/u.test(routeName)
+      ? "legacy-host"
+      : "app");
+  return {
+    appId,
+    appLabel: routeSpec?.appLabel ?? getAppLabel(appId),
+    captureKind,
+  };
+}
+
+function labelOwnedRoute(routeName, appId) {
+  const prefixPattern = new RegExp(`^(?:variant|legacy)-${appId}-`, "u");
+  const rest = routeName.replace(prefixPattern, "");
+  return `${getVariantDomainLabel(appId)} · ${labelRoute(rest)}`;
+}
+
+function getProductionRouteUrl(routePath, appId) {
   if (!routePath) return null;
-  const origin = siteVariant
-    ? `https://${getVariantDomainLabel(siteVariant)}`
+  const origin = appId
+    ? `https://${getVariantDomainLabel(appId)}`
     : "https://warondisease.org";
   return new URL(routePath, origin).toString();
 }

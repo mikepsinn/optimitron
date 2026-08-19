@@ -279,23 +279,31 @@ test("Escape preserves always-visible desktop review controls", async ({
   await expect(page.locator("#note-input")).toBeVisible();
 });
 
-test("collapsed variant routes remain available while filtering", async ({
+test("compatibility routes remain available while filtering", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "default");
 
   await page.goto(pathToFileURL(SMOKE_HTML).toString());
 
-  const variantToggle = page.getByRole("button", {
-    name: /Other variants \(1\)/,
-  });
-  await expect(variantToggle).toBeVisible();
+  const optimitronRows = page.locator(
+    'details[data-owner-key="optimitron"] .route-row',
+  );
+  await expect(optimitronRows.nth(0)).toHaveAttribute("data-route", "home");
+  await expect(optimitronRows.nth(1)).toHaveAttribute("data-route", "prize");
+  await expect(optimitronRows.nth(2)).toHaveAttribute("data-route", "calendar");
+
+  const compatibility = page.locator(
+    'details.rail-group[data-key="compatibility"]',
+  );
+  await expect(compatibility.locator(":scope > summary")).toHaveText(
+    "Compatibility checks (1)",
+  );
+  await expect(compatibility).not.toHaveAttribute("open", "");
 
   const routeFilter = page.getByRole("searchbox", { name: "Filter routes" });
   await routeFilter.fill("dfda");
-  await expect(variantToggle).toBeVisible();
-
-  await variantToggle.click();
+  await expect(compatibility).toHaveAttribute("open", "");
   await expect(routeFilter).toHaveValue("dfda");
   const variantRoute = page.locator('[data-route="variant-dfda-home"]');
   await expect(variantRoute).toBeVisible();
@@ -312,20 +320,31 @@ test("collapsed variant routes remain available while filtering", async ({
   );
 });
 
-test("site apps are separated into collapsible groups", async ({
+test("seven peer apps are separated into collapsible groups", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "default");
 
   await page.goto(pathToFileURL(SITE_APPS_SMOKE_HTML).toString());
 
-  const siteApps = page.locator('.rail-group[data-key="site-apps"]');
-  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (2)");
+  const siteApps = page.locator('.rail-group[data-key="apps"]');
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (7)");
 
   const warOnDisease = siteApps.locator(
-    'details[data-site-app="warondisease"]',
+    'details[data-owner-key="warondisease"]',
   );
-  const dfda = siteApps.locator('details[data-site-app="dfda"]');
+  const optimitron = siteApps.locator(
+    'details[data-owner-key="optimitron"]',
+  );
+  const dfda = siteApps.locator('details[data-owner-key="dfda"]');
+  await expect(siteApps.locator(":scope > details.rail-app").nth(0)).toHaveAttribute(
+    "data-owner-key",
+    "warondisease",
+  );
+  await expect(siteApps.locator(":scope > details.rail-app").nth(1)).toHaveAttribute(
+    "data-owner-key",
+    "optimitron",
+  );
   const warOnDiseaseHome = warOnDisease.locator(
     '[data-route="site-app-warondisease-home"]',
   );
@@ -333,6 +352,8 @@ test("site apps are separated into collapsible groups", async ({
 
   await expect(warOnDisease).toHaveAttribute("open", "");
   await expect(warOnDiseaseHome).toBeVisible();
+  await expect(optimitron).toBeVisible();
+  await expect(optimitron).not.toHaveAttribute("open", "");
   await expect(dfda).not.toHaveAttribute("open", "");
   await expect(dfdaHome).toBeHidden();
 
@@ -346,7 +367,7 @@ test("site apps are separated into collapsible groups", async ({
 
   const routeFilter = page.getByRole("searchbox", { name: "Filter routes" });
   await routeFilter.fill("warondisease");
-  await expect(siteApps.locator(".rail-group-h")).toHaveText("Site apps (1/2)");
+  await expect(siteApps.locator(".rail-group-h")).toHaveText("Apps (1/7)");
   await expect(warOnDisease).toHaveAttribute("open", "");
   await expect(warOnDiseaseHome).toBeVisible();
   await expect(dfda).toBeHidden();
@@ -378,6 +399,9 @@ test("route verdicts persist and advance through every unreviewed route", async 
   await expect(page.getByRole("status")).toContainText("Next unreviewed: Home");
 
   await approve();
+  await expect(page).toHaveURL(/#route=calendar$/);
+
+  await approve();
   await expect(page).toHaveURL(/#route=prize$/);
 
   await page
@@ -399,6 +423,7 @@ test("route verdicts persist and advance through every unreviewed route", async 
   });
   expect(savedVerdicts).toMatchObject({
     home: { v: "looks-right" },
+    calendar: { v: "looks-right" },
     prize: { v: "needs-work" },
     "variant-dfda-home": { v: "looks-right" },
   });

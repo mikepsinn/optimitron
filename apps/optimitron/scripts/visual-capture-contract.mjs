@@ -1,5 +1,5 @@
 export const LEGACY_VISUAL_CAPTURE_VERSION = 1;
-export const VISUAL_CAPTURE_VERSION = 2;
+export const VISUAL_CAPTURE_VERSION = 3;
 export const SITE_APP_VISUAL_CAPTURE_VERSION = 4;
 
 export function getVisualCaptureVersion(value) {
