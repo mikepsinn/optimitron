@@ -11851,6 +11851,51 @@ describe("MCP server tool dispatch", () => {
       }
     });
 
+    it("respondToTrackingReminder never walks a snooze back to a past occurrence", async () => {
+      // A walked-back SNOOZED would clamp deferUntil at yesterday's day end,
+      // which is already in the past, so the snooze would silently do
+      // nothing. Snoozes stay on calendar today.
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            snoozeMinutes: 45,
+            status: "SNOOZED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        // Deferred 45 real minutes into the future, on today's occurrence.
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-19T07:50:00.000Z"),
+            status: NotificationStatus.SNOOZED,
+          }),
+        });
+        const body = parseToolBody(result) as {
+          result: { answersPastOccurrence?: boolean; dateKey: string };
+        };
+        expect(body.result.dateKey).toBe("2026-08-19");
+        expect(body.result.answersPastOccurrence).toBeUndefined();
+        expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it("respondToTrackingReminder keeps the calendar default for reminders outside their eligibility window", async () => {
       vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
       try {

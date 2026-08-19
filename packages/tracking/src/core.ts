@@ -2256,7 +2256,11 @@ export async function respondToTrackingReminderForUser(
     }
     let dateKey = requestedDateKey;
     let answersPastOccurrence = false;
-    if (!hasExplicitTarget) {
+    // SNOOZED never walks back: the snooze clamp caps deferUntil at the
+    // target day's end, so a backfilled past day would defer into the past
+    // and the snooze would silently do nothing. Snoozing is a future nudge,
+    // not a backfill; only TRACKED answers target a past occurrence.
+    if (!hasExplicitTarget && status !== NotificationStatus.SNOOZED) {
       const resolved = await mostRecentDueUnansweredDateKey(
         tx,
         reminder,
