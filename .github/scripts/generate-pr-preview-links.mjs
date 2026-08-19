@@ -255,12 +255,11 @@ function renderCheckItem({ id, label }, checkedIds) {
 
 function changedManifestRoutes(manifest) {
   const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
-  const protocolRefresh = isCaptureProtocolRefresh(manifest);
   return routes
     .filter((route) => {
       if (!route) return false;
       const missingPairs = Number(route.missingPairs ?? 0);
-      const baselineMissingPairs = protocolRefresh
+      const baselineMissingPairs = route.baselineSkippedForCaptureProtocol
         ? Number(route.baselineMissingPairs ?? 0)
         : 0;
       const currentMissingPairs = Math.max(
@@ -278,20 +277,13 @@ function changedManifestRoutes(manifest) {
     .sort((a, b) => String(a.routeName).localeCompare(String(b.routeName)));
 }
 
-function isCaptureProtocolRefresh(manifest) {
-  return /capture protocol changed/iu.test(
-    String(
-      manifest?.baselineDescription ??
-        manifest?.meta?.baselineDescription ??
-        "",
-    ),
-  );
-}
-
 function captureProtocolRefreshRouteCount(manifest) {
-  if (!isCaptureProtocolRefresh(manifest)) return 0;
-  const count = Number(manifest?.summary?.missingBaselineRoutes ?? 0);
-  return Number.isFinite(count) && count > 0 ? count : 0;
+  const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
+  return routes.filter(
+    (route) =>
+      route?.baselineSkippedForCaptureProtocol === true &&
+      Number(route.baselineMissingPairs ?? 0) > 0,
+  ).length;
 }
 
 function buildVisualReviewItems(manifest) {
@@ -454,8 +446,10 @@ function renderPacket({
   if (baselineSummaryLine) lines.push(baselineSummaryLine);
   const protocolRefreshRoutes = captureProtocolRefreshRouteCount(manifest);
   if (protocolRefreshRoutes > 0) {
+    const routeLabel =
+      protocolRefreshRoutes === 1 ? "route has" : "routes have";
     lines.push(
-      `- :camera: ${protocolRefreshRoutes} site-app routes have fresh after-only screenshots because the capture protocol changed; the next \`main\` run creates their new baselines.`,
+      `- :camera: ${protocolRefreshRoutes} ${routeLabel} fresh after-only screenshots because the capture protocol changed; the next \`main\` run creates their new baselines.`,
     );
   }
   for (const appName of APP_PREVIEW_ORDER) {

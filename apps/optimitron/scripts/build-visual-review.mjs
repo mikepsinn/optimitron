@@ -503,6 +503,13 @@ function isCompatibleBaselineScreenshot(screenshot) {
   return !webCaptureProtocolMismatch;
 }
 
+function isRouteBaselineSkippedForCaptureProtocol(routeName) {
+  const siteVariant = getSiteAppVariantFromRouteName(routeName);
+  return siteVariant
+    ? incompatibleSiteAppVariants.has(siteVariant)
+    : webCaptureProtocolMismatch;
+}
+
 function buildReviewPageRoute(group) {
   const markdownDiff = buildMarkdownDiff(group.routeName);
   const siteAppRoute = getSiteAppRoute(group.routeName);
@@ -533,6 +540,8 @@ function buildReviewPageRoute(group) {
     variantLabel: siteVariant ? getVariantDomainLabel(siteVariant) : null,
     changed: group.changed,
     baselineMissingPairs: group.baselineMissingPairs,
+    baselineSkippedForCaptureProtocol:
+      isRouteBaselineSkippedForCaptureProtocol(group.routeName),
     copyChanged: Boolean(markdownDiff),
     errored: group.errored,
     missingPairs: group.missingPairs,
@@ -1489,6 +1498,8 @@ function buildReviewManifest(groups, coverage) {
         siteApp: Boolean(siteAppRoute),
         siteVariant,
         baselineMissingPairs: group.baselineMissingPairs,
+        baselineSkippedForCaptureProtocol:
+          isRouteBaselineSkippedForCaptureProtocol(group.routeName),
         changed: group.changed,
         copyChanged,
         errored: group.errored,

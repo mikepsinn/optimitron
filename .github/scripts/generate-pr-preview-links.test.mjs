@@ -212,15 +212,12 @@ test("includes copy-only review states from the visual manifest", () => {
   );
 });
 
-test("summarizes capture protocol refreshes without fake missing-route items", () => {
+test("suppresses only routes whose baseline was skipped for a protocol refresh", () => {
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app",
     VISUAL_REVIEW_URL:
       "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
     VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
-      baselineDescription:
-        "baseline skipped for site-app capture protocol changed: curedao",
-      summary: { missingBaselineRoutes: 52 },
       routes: [
         {
           routeName: "site-app-curedao-home",
@@ -233,6 +230,21 @@ test("summarizes capture protocol refreshes without fake missing-route items", (
           changedPairs: 0,
           missingPairs: 2,
           baselineMissingPairs: 2,
+          baselineSkippedForCaptureProtocol: true,
+          erroredPairs: 0,
+        },
+        {
+          routeName: "site-app-warondisease-home",
+          routeLabel: "War on Disease home",
+          routePath: "/",
+          siteVariant: "warondisease",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 1,
+          baselineMissingPairs: 1,
+          baselineSkippedForCaptureProtocol: false,
           erroredPairs: 0,
         },
       ],
@@ -240,9 +252,41 @@ test("summarizes capture protocol refreshes without fake missing-route items", (
     CHANGED_FILES: JSON.stringify([]),
   });
 
-  assert.match(output, /52 site-app routes have fresh after-only screenshots/u);
-  assert.doesNotMatch(output, /review-item:visual:/u);
+  assert.match(output, /1 route has fresh after-only screenshots/u);
+  assert.doesNotMatch(output, /review-item:visual:site-app-curedao-home/u);
+  assert.match(output, /review-item:visual:site-app-warondisease-home/u);
+  assert.match(output, /1 missing screenshot/u);
   assert.doesNotMatch(output, /2 missing screenshots/u);
+});
+
+test("summarizes a web-only capture protocol refresh", () => {
+  const output = runGenerator({
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "home",
+          routeLabel: "Home",
+          routePath: "/",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 2,
+          baselineMissingPairs: 2,
+          baselineSkippedForCaptureProtocol: true,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(output, /1 route has fresh after-only screenshots/u);
+  assert.doesNotMatch(output, /review-item:visual:/u);
+  assert.doesNotMatch(output, /missing screenshots/u);
 });
 
 test("reports when no user-facing page or component routes are inferred", () => {
