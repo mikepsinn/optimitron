@@ -6,6 +6,10 @@ const workflow = readFileSync(
   new URL("../workflows/smoke-deploy.yml", import.meta.url),
   "utf8",
 );
+const ciWorkflow = readFileSync(
+  new URL("../workflows/ci.yml", import.meta.url),
+  "utf8",
+);
 
 test("deploy smoke waits for a successful deployment URL instead of skipping early deployment events", () => {
   const smokeJobHeader = workflow.slice(
@@ -73,6 +77,13 @@ test("Playwright preview smoke ignores non-Vercel deployment events", () => {
     playwrightJobHeader,
     /github\.event\.deployment_status\.creator\.login == 'vercel\[bot\]'/u,
   );
+});
+
+test("browser jobs verify preinstalled Chrome without downloading OS packages", () => {
+  for (const source of [workflow, ciWorkflow]) {
+    assert.doesNotMatch(source, /playwright install-deps/u);
+    assert.match(source, /missing_dependencies="\$\(ldd "\$chrome_binary"/u);
+  }
 });
 
 test("deploy smoke can recover the Vercel preview URL from the PR comment", () => {

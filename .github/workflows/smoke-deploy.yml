@@ -1102,11 +1102,16 @@ jobs:
 
       - name: Verify system Chrome
         if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
-        run: google-chrome --version
-
-      - name: Install Playwright system deps
-        if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
-        run: pnpm --filter @optimitron/web exec playwright install-deps chromium
+        shell: bash
+        run: |
+          chrome_binary="$(readlink -f "$(command -v google-chrome)")"
+          google-chrome --version
+          missing_dependencies="$(ldd "$chrome_binary" | awk '/not found/')"
+          if [ -n "$missing_dependencies" ]; then
+            echo "::error::System Chrome has missing shared libraries:"
+            echo "$missing_dependencies"
+            exit 1
+          fi
 
       - name: Run Playwright smoke against preview
         if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
