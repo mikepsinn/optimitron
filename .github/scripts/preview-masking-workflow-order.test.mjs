@@ -441,7 +441,23 @@ test("links each affected app to its own pull request preview", () => {
   assert.match(resolver, /latestAffectedCommitIndex/u);
   assert.match(resolver, /\['diff', '--name-only'/u);
   assert.match(resolver, /commitIndex >= affectedCommitIndex/u);
+  assert.match(resolver, /const maxAttempts = 18/u);
+  assert.match(resolver, /setTimeout\(resolve, 10_000\)/u);
+  assert.match(resolver, /core\.setFailed/u);
+  assert.match(resolver, /Missing successful Vercel previews for affected apps/u);
   assert.match(resolver, /JSON\.stringify\(previewUrls\)/u);
   assert.match(workflow, /APP_PREVIEW_URLS_JSON/u);
   assert.match(workflow, /VISUAL_REVIEW_APP_URLS_JSON/u);
+
+  const prValidate = workflow.slice(
+    workflow.indexOf("  pr-validate:"),
+    workflow.indexOf("  web-validate:"),
+  );
+  assert.match(prValidate, /name: pr-validate/u);
+  assert.match(prValidate, /- web-visual-review/u);
+  assert.match(prValidate, /visual_required=/u);
+  assert.match(
+    prValidate,
+    /\[ "\$visual_required" = "true" \] && \[ "\$visual_result" != "success" \]/u,
+  );
 });

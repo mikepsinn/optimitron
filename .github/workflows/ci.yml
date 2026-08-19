@@ -1000,50 +1000,76 @@ jobs:
                 }
               }
             }
-            const previewUrls = {};
-
-            for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
-              const commit = commits[commitIndex];
-              const deployments = await github.paginate(github.rest.repos.listDeployments, {
-                owner, repo, ref: commit.sha, per_page: 100,
-              });
-              for (const deployment of deployments) {
-                if ((deployment.environment || '').startsWith('visual-review')) continue;
-                const statuses = await github.rest.repos.listDeploymentStatuses({
-                  owner,
-                  repo,
-                  deployment_id: deployment.id,
-                  per_page: 20,
+            async function collectPreviewUrls() {
+              const previewUrls = {};
+              for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
+                const commit = commits[commitIndex];
+                const deployments = await github.paginate(github.rest.repos.listDeployments, {
+                  owner, repo, ref: commit.sha, per_page: 100,
                 });
-                const ready = statuses.data.find((status) =>
-                  status.state === 'success' &&
-                  status.environment_url &&
-                  /^https?:\/\//.test(status.environment_url)
-                );
-                if (!ready) continue;
-                const app = projectModule.getVercelAppByUrl(ready.environment_url);
-                const affectedCommitIndex = app
-                  ? latestAffectedCommitIndex.get(app.appName)
-                  : undefined;
-                if (
-                  app &&
-                  targetApps.has(app.appName) &&
-                  affectedCommitIndex !== undefined &&
-                  commitIndex >= affectedCommitIndex &&
-                  !previewUrls[app.appName]
-                ) {
-                  previewUrls[app.appName] = ready.environment_url;
+                for (const deployment of deployments) {
+                  if ((deployment.environment || '').startsWith('visual-review')) continue;
+                  const statuses = await github.rest.repos.listDeploymentStatuses({
+                    owner,
+                    repo,
+                    deployment_id: deployment.id,
+                    per_page: 20,
+                  });
+                  const ready = statuses.data.find((status) =>
+                    status.state === 'success' &&
+                    status.environment_url &&
+                    /^https?:\/\//.test(status.environment_url)
+                  );
+                  if (!ready) continue;
+                  const app = projectModule.getVercelAppByUrl(ready.environment_url);
+                  const affectedCommitIndex = app
+                    ? latestAffectedCommitIndex.get(app.appName)
+                    : undefined;
+                  if (
+                    app &&
+                    targetApps.has(app.appName) &&
+                    affectedCommitIndex !== undefined &&
+                    commitIndex >= affectedCommitIndex &&
+                    !previewUrls[app.appName]
+                  ) {
+                    previewUrls[app.appName] = ready.environment_url;
+                  }
                 }
+                if ([...targetApps].every((appName) => previewUrls[appName])) break;
+                if (
+                  [...targetApps].every((appName) =>
+                    previewUrls[appName] ||
+                    commitIndex <= latestAffectedCommitIndex.get(appName)
+                  )
+                ) break;
               }
-              if ([...targetApps].every((appName) => previewUrls[appName])) break;
-              if (
-                [...targetApps].every((appName) =>
-                  previewUrls[appName] ||
-                  commitIndex <= latestAffectedCommitIndex.get(appName)
-                )
-              ) break;
+              return previewUrls;
             }
 
+            let previewUrls = {};
+            const maxAttempts = 18;
+            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+              previewUrls = await collectPreviewUrls();
+              const missingApps = [...targetApps].filter(
+                (appName) => !previewUrls[appName]
+              );
+              if (missingApps.length === 0) break;
+              if (attempt < maxAttempts) {
+                console.log(
+                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${missingApps.join(', ')}`
+                );
+                await new Promise((resolve) => setTimeout(resolve, 10_000));
+              }
+            }
+
+            const missingApps = [...targetApps].filter(
+              (appName) => !previewUrls[appName]
+            );
+            if (missingApps.length > 0) {
+              core.setFailed(
+                `Missing successful Vercel previews for affected apps: ${missingApps.join(', ')}`
+              );
+            }
             return JSON.stringify(previewUrls);
 
       - name: Post PR review packet preview links
@@ -1439,6 +1465,25 @@ jobs:
                 body,
               });
             }
+
+  pr-validate:
+    name: pr-validate
+    if: always() && github.event_name == 'pull_request'
+    needs:
+      - changes
+      - web-visual-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify pull request review evidence
+        shell: bash
+        run: |
+          visual_result="${{ needs.web-visual-review.result }}"
+          visual_required="${{ github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) }}"
+          echo "web-visual-review: $visual_result (required: $visual_required)"
+          if [ "$visual_required" = "true" ] && [ "$visual_result" != "success" ]; then
+            exit 1
+          fi
 
   web-validate:
     name: web-validate
