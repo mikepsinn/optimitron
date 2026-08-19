@@ -212,6 +212,41 @@ test("includes copy-only review states from the visual manifest", () => {
   );
 });
 
+test("summarizes capture protocol refreshes without fake missing-route items", () => {
+  const output = runGenerator({
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      meta: {
+        baselineDescription:
+          "baseline skipped for site-app capture protocol changed: curedao",
+      },
+      summary: { missingBaselineRoutes: 52 },
+      routes: [
+        {
+          routeName: "site-app-curedao-home",
+          routeLabel: "CureDAO home",
+          routePath: "/",
+          siteVariant: "curedao",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 2,
+          baselineMissingPairs: 2,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(output, /52 site-app routes have fresh after-only screenshots/u);
+  assert.doesNotMatch(output, /review-item:visual:/u);
+  assert.doesNotMatch(output, /2 missing screenshots/u);
+});
+
 test("reports when no user-facing page or component routes are inferred", () => {
   const output = runGenerator({
     PREVIEW_URL: "https://preview.example.vercel.app",

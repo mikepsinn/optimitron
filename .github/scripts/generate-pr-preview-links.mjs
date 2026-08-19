@@ -255,16 +255,39 @@ function renderCheckItem({ id, label }, checkedIds) {
 
 function changedManifestRoutes(manifest) {
   const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
+  const protocolRefresh = isCaptureProtocolRefresh(manifest);
   return routes
-    .filter((route) =>
-      route &&
-      (route.changed ||
+    .filter((route) => {
+      if (!route) return false;
+      const missingPairs = Number(route.missingPairs ?? 0);
+      const baselineMissingPairs = protocolRefresh
+        ? Number(route.baselineMissingPairs ?? 0)
+        : 0;
+      const currentMissingPairs = Math.max(
+        0,
+        missingPairs - baselineMissingPairs,
+      );
+      return (
+        route.changed ||
         route.copyChanged ||
         route.errored ||
-        route.missingPairs > 0 ||
-        route.erroredPairs > 0),
-    )
+        currentMissingPairs > 0 ||
+        route.erroredPairs > 0
+      );
+    })
     .sort((a, b) => String(a.routeName).localeCompare(String(b.routeName)));
+}
+
+function isCaptureProtocolRefresh(manifest) {
+  return /capture protocol changed/iu.test(
+    String(manifest?.meta?.baselineDescription ?? ""),
+  );
+}
+
+function captureProtocolRefreshRouteCount(manifest) {
+  if (!isCaptureProtocolRefresh(manifest)) return 0;
+  const count = Number(manifest?.summary?.missingBaselineRoutes ?? 0);
+  return Number.isFinite(count) && count > 0 ? count : 0;
 }
 
 function buildVisualReviewItems(manifest) {
@@ -425,6 +448,12 @@ function renderPacket({
   }
   const baselineSummaryLine = buildBaselineSummaryLine();
   if (baselineSummaryLine) lines.push(baselineSummaryLine);
+  const protocolRefreshRoutes = captureProtocolRefreshRouteCount(manifest);
+  if (protocolRefreshRoutes > 0) {
+    lines.push(
+      `- :camera: ${protocolRefreshRoutes} site-app routes have fresh after-only screenshots because the capture protocol changed; the next \`main\` run creates their new baselines.`,
+    );
+  }
   for (const appName of APP_PREVIEW_ORDER) {
     const previewUrl = APP_PREVIEW_URLS[appName];
     if (!previewUrl) continue;
