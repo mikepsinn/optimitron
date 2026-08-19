@@ -37,6 +37,11 @@ which projects need a preview or production deployment. Root configuration and
 lockfile changes can still affect every project. Every app disables deployment
 from `gh-pages` because that branch contains generated visual-review files.
 
+Vercel treats changes outside the pnpm workspace as global. Each app therefore
+uses the same dependency-aware ignore script to reject documentation, review
+automation, and unrelated app changes before build CPU starts. App source,
+transitive workspace dependencies, and root dependency files still build.
+
 GitHub Actions also builds and captures every relevant app for pull request
 visual review. This local fixture-based review is broader than the live Vercel
 previews and remains available when Vercel correctly skips an unaffected app.

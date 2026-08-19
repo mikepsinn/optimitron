@@ -69,6 +69,10 @@ test("declares one Vercel project for every deployed app", () => {
       vercelJson.buildCommand,
       `${project.rootDirectory} needs a Vercel build command`,
     );
+    assert.equal(
+      vercelJson.ignoreCommand,
+      `node ../../.github/scripts/vercel-ignore-build.mjs ${project.appName}`,
+    );
   }
 });
 

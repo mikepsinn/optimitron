@@ -73,7 +73,7 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
   assert.deepEqual(getVercelPreviewBuildMatches(files), files.sort());
 });
 
-test("keeps the Vercel ignore command on the shared scope matcher", () => {
+test("keeps the Optimitron ignore command app-specific", () => {
   const vercelConfig = JSON.parse(
     readFileSync(
       new URL("../../apps/optimitron/vercel.json", import.meta.url),
@@ -83,7 +83,7 @@ test("keeps the Vercel ignore command on the shared scope matcher", () => {
 
   assert.equal(
     vercelConfig.ignoreCommand,
-    "node ../../.github/scripts/vercel-ignore-build.mjs",
+    "node ../../.github/scripts/vercel-ignore-build.mjs optimitron",
   );
   assert.ok(vercelConfig.ignoreCommand.length <= 256);
 });
