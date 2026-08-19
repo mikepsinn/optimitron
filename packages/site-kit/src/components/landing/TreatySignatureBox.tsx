@@ -47,6 +47,12 @@ export function TreatySignatureBox({
 
   const [name, setName] = useState("")
   const [showLegalName, setShowLegalName] = useState(false)
+  // The expander button unmounts when the legal-name fields appear; move
+  // focus into the first field so keyboard users don't restart from <body>.
+  const firstNameRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (showLegalName) firstNameRef.current?.focus()
+  }, [showLegalName])
   const [firstName, setFirstName] = useState("")
   const [middleName, setMiddleName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -203,6 +209,7 @@ export function TreatySignatureBox({
       {showLegalName ? (
         <div className="grid gap-3 sm:grid-cols-3">
           <input
+            ref={firstNameRef}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="First name"
@@ -249,7 +256,9 @@ export function TreatySignatureBox({
         </span>
       </label>
       {error ? (
-        <p className="text-center text-xs font-bold uppercase">{error}</p>
+        <p role="alert" className="text-center text-xs font-bold uppercase">
+          {error}
+        </p>
       ) : null}
     </Card>
   )

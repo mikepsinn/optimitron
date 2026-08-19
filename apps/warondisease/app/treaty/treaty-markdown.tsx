@@ -57,7 +57,13 @@ const treatyMarkdownComponents: MarkdownComponents = {
     </a>
   ),
   table: ({ children }) => (
-    <div className="mt-6 overflow-x-auto">
+    // Focusable region so keyboard-only users can scroll wide tables.
+    <div
+      className="mt-6 overflow-x-auto"
+      tabIndex={0}
+      role="region"
+      aria-label="Treaty table"
+    >
       <table className="w-full border-4 border-primary text-left text-sm sm:text-base">
         {children}
       </table>

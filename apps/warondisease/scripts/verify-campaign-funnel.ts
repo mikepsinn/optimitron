@@ -70,6 +70,35 @@ async function voteYesThroughSlider(page: Page) {
 }
 
 async function run(browser: Browser) {
+  // ---------- referral landings preserve attribution + utm params ----------
+  {
+    const ctx = await browser.newContext()
+    const cases: Array<[string, string]> = [
+      [
+        "/vote/jane?sa=s1&utm_source=twitter&invite=tok",
+        "/vote?ref=jane&sa=s1&invite=tok&utm_source=twitter",
+      ],
+      [
+        "/r/jane?utm_medium=email&treatyFlow=v2",
+        "/vote?ref=jane&treatyFlow=v2&utm_medium=email",
+      ],
+      [
+        "/questions?ref=jane&utm_medium=email",
+        "/vote?ref=jane&utm_medium=email",
+      ],
+    ]
+    for (const [from, to] of cases) {
+      const res = await ctx.request.get(`${BASE}${from}`, { maxRedirects: 0 })
+      const location = res.headers()["location"] ?? ""
+      check(
+        `${from} redirects with params preserved`,
+        res.status() === 307 && location === `${BASE}${to}`,
+        `${res.status()} -> ${location}`,
+      )
+    }
+    await ctx.close()
+  }
+
   // ---------- logged-out /treaty (desktop + mobile) ----------
   for (const [viewport, ctxOpts] of [
     ["desktop", { viewport: { width: 1280, height: 900 } }],
@@ -110,7 +139,11 @@ async function run(browser: Browser) {
     await page.getByPlaceholder("Last name").fill("Lovelace")
     await shot(page, "treaty-signature-filled", "desktop")
     await page.getByRole("button", { name: "Sign", exact: true }).click()
-    await page.waitForTimeout(1500)
+    await page.waitForFunction(
+      () =>
+        JSON.parse(localStorage.getItem("pendingVote") ?? "null")?.answer ===
+        "YES",
+    )
     const pending = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("pendingVote") ?? "null"),
     )
@@ -143,7 +176,11 @@ async function run(browser: Browser) {
     await shot(page, "vote-logged-out", viewport)
     if (viewport === "desktop") {
       await voteYesThroughSlider(page)
-      await page.waitForTimeout(1500)
+      await page.waitForFunction(
+        () =>
+          JSON.parse(localStorage.getItem("pendingVote") ?? "null")?.answer ===
+          "YES",
+      )
       const pending = await page.evaluate(() =>
         JSON.parse(localStorage.getItem("pendingVote") ?? "null"),
       )
@@ -233,7 +270,17 @@ async function run(browser: Browser) {
     })
     const page = await ctx.newPage()
     await login(page, "test-signer@example.com")
+    // A signer who previously voted NO still sees the signature box; signing
+    // must upgrade the recorded answer to YES.
+    const noVote = await page.request.post(`${BASE}/api/votes/sync`, {
+      data: { answer: "NO" },
+    })
+    check("pre-seeded NO vote for signer", noVote.ok(), String(noVote.status()))
     await page.goto(`${BASE}/treaty`, { waitUntil: "networkidle" })
+    check(
+      "NO voter still sees the signature box",
+      await page.getByPlaceholder("Your name").isVisible(),
+    )
     await page.getByPlaceholder("Your name").fill("Grace B Hopper")
     await page
       .getByRole("button", {
@@ -243,7 +290,21 @@ async function run(browser: Browser) {
     await page.getByPlaceholder("First name").fill("Grace")
     await page.getByPlaceholder("Middle name").fill("Brewster")
     await page.getByPlaceholder("Last name").fill("Hopper")
+    const signSyncPromise = page.waitForResponse(
+      (r) =>
+        r.url().includes("/api/votes/sync") && r.request().method() === "POST",
+      { timeout: 60_000 },
+    )
     await page.getByRole("button", { name: "Sign", exact: true }).click()
+    const signSync = await signSyncPromise
+    const signSyncBody = (await signSync.json()) as {
+      vote?: { answer?: string }
+    }
+    check(
+      "signing upgrades the existing NO vote to YES",
+      signSync.ok() && signSyncBody.vote?.answer === "YES",
+      `status=${signSync.status()} answer=${signSyncBody.vote?.answer}`,
+    )
     await page
       .getByText("Signed. Thank you for ending war and disease.")
       .waitFor({ timeout: 60_000 })

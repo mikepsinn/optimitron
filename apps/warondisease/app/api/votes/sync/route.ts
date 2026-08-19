@@ -64,10 +64,17 @@ export async function POST(req: NextRequest) {
 
     if (existingVote) {
       const updateData: {
+        answer?: VotePosition
         referredByUserId?: string
         organizationId?: string | null
         isPublic?: boolean
       } = {}
+
+      // Revotes update the answer (matching the legacy referendum-vote
+      // upsert), so signing the treaty after a NO vote records the YES.
+      if (existingVote.answer !== answer) {
+        updateData.answer = answer as VotePosition
+      }
 
       if ((referredBy || referralInvitation) && !existingVote.referredByUserId) {
         const referrer =
@@ -86,8 +93,9 @@ export async function POST(req: NextRequest) {
         updateData.isPublic = voteIsPublic
       }
 
+      let vote = existingVote
       if (Object.keys(updateData).length > 0) {
-        await prisma.referendumVote.update({
+        vote = await prisma.referendumVote.update({
           where: { id: existingVote.id },
           data: updateData,
         })
@@ -107,7 +115,7 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        { message: "Vote already recorded", vote: existingVote },
+        { message: "Vote already recorded", vote },
         { status: 200 },
       )
     }
@@ -192,12 +200,18 @@ export async function POST(req: NextRequest) {
 
       for (const milestone of badgeMilestones) {
         if (referralCount === milestone.count) {
-          await prisma.badge.create({
-            data: {
-              userId: referrerUserId,
-              type: milestone.type,
-            },
-          })
+          // A referrer can hit a milestone count again after a referred vote
+          // is soft-deleted and re-synced; the badge is unique per user, and
+          // a duplicate must not fail the sync after the vote is recorded.
+          const badge = await prisma.badge
+            .create({
+              data: {
+                userId: referrerUserId,
+                type: milestone.type,
+              },
+            })
+            .catch(() => null)
+          if (!badge) continue
 
           await prisma.notification.create({
             data: {
