@@ -279,7 +279,7 @@ test("Escape preserves always-visible desktop review controls", async ({
   await expect(page.locator("#note-input")).toBeVisible();
 });
 
-test("compatibility routes remain available while filtering", async ({
+test("legacy variant routes remain available while filtering", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "default");
@@ -297,7 +297,7 @@ test("compatibility routes remain available while filtering", async ({
     'details.rail-group[data-key="compatibility"]',
   );
   await expect(compatibility.locator(":scope > summary")).toHaveText(
-    "Compatibility checks (1)",
+    "Legacy site variants (1)",
   );
   await expect(compatibility).not.toHaveAttribute("open", "");
 
