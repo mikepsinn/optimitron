@@ -1,12 +1,20 @@
 import { execFileSync } from "node:child_process";
 import {
+  ensureVercelDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
 } from "./vercel-app-build-scope.mjs";
 
 const appName = process.argv[2] ?? "optimitron";
-const diffBase = getVercelDiffBase();
+const requestedDiffBase = getVercelDiffBase();
+const diffBase = ensureVercelDiffBase(requestedDiffBase);
 const comparisonLabel = diffBase ?? "the full tracked tree";
+
+if (requestedDiffBase && !diffBase) {
+  console.warn(
+    `Could not load Vercel diff base ${requestedDiffBase}; building ${appName} to avoid an unsafe skip.`,
+  );
+}
 
 const files = execFileSync(
   "git",

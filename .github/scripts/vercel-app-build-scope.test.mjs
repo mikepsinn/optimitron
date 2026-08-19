@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  ensureVercelDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
 } from "./vercel-app-build-scope.mjs";
@@ -112,6 +113,42 @@ test("compares with the last successful deployment when Vercel provides it", () 
       { VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" },
       () => null,
     ),
+    null,
+  );
+});
+
+test("fetches a missing Vercel diff base in a shallow clone", () => {
+  const sha = "1234567890abcdef1234567890abcdef12345678";
+  const calls = [];
+  let fetched = false;
+  const execFile = (_command, args) => {
+    calls.push(args);
+    if (args[0] === "fetch") {
+      fetched = true;
+      return "";
+    }
+    if (args[0] === "cat-file" && fetched) return "";
+    throw new Error("missing commit");
+  };
+
+  assert.equal(ensureVercelDiffBase(sha, { root: "/repo", execFile }), sha);
+  assert.deepEqual(calls, [
+    ["cat-file", "-e", `${sha}^{commit}`],
+    ["fetch", "--no-tags", "--depth=1", "origin", sha],
+    ["cat-file", "-e", `${sha}^{commit}`],
+  ]);
+});
+
+test("builds safely when a missing Vercel diff base cannot be fetched", () => {
+  const execFile = () => {
+    throw new Error("missing commit");
+  };
+
+  assert.equal(
+    ensureVercelDiffBase("1234567890abcdef1234567890abcdef12345678", {
+      root: "/repo",
+      execFile,
+    }),
     null,
   );
 });

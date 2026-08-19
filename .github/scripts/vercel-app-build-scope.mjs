@@ -92,6 +92,43 @@ export function getVercelDiffBase(
   return resolveMergeBase();
 }
 
+export function ensureVercelDiffBase(
+  diffBase,
+  { root = repoRoot, execFile = execFileSync } = {},
+) {
+  if (!diffBase) return null;
+  if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+
+  try {
+    execFile(
+      "git",
+      ["fetch", "--no-tags", "--depth=1", "origin", diffBase],
+      {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "ignore", "pipe"],
+      },
+    );
+  } catch {
+    return null;
+  }
+
+  return hasGitCommit(diffBase, root, execFile) ? diffBase : null;
+}
+
+function hasGitCommit(ref, root, execFile) {
+  try {
+    execFile("git", ["cat-file", "-e", `${ref}^{commit}`], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "ignore", "ignore"],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function resolveProductionMergeBase() {
   for (const ref of ["origin/main", "main"]) {
     try {
