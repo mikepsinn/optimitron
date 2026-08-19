@@ -76,6 +76,7 @@ const TRACKING_REMINDER_INCLUDE = {
   globalVariable: { select: TRACKING_VARIABLE_SELECT },
   nOf1Variable: {
     select: {
+      defaultUnit: { select: TRACKING_UNIT_SELECT },
       defaultUnitId: true,
       fillingType: true,
       id: true,
@@ -83,6 +84,27 @@ const TRACKING_REMINDER_INCLUDE = {
     },
   },
 } satisfies Prisma.TrackingReminderInclude;
+
+type TrackingUnitSummary = Prisma.UnitGetPayload<{
+  select: typeof TRACKING_UNIT_SELECT;
+}>;
+
+/**
+ * The unit a reminder answer records in: the user's per-variable preference
+ * when one is set, else the canonical variable default. Responses surface
+ * this because the nested defaultUnitId alone made an honored unit request
+ * look silently dropped (#250).
+ */
+function reminderEffectiveUnit(reminder: {
+  globalVariable?: { defaultUnit?: TrackingUnitSummary | null } | null;
+  nOf1Variable?: { defaultUnit?: TrackingUnitSummary | null } | null;
+}): TrackingUnitSummary | null {
+  return (
+    reminder.nOf1Variable?.defaultUnit ??
+    reminder.globalVariable?.defaultUnit ??
+    null
+  );
+}
 
 const TRACKING_NOTIFICATION_WITH_REMINDER_INCLUDE = {
   trackingReminder: { include: TRACKING_REMINDER_INCLUDE },
@@ -771,20 +793,30 @@ export async function upsertTrackingReminderForUser(
     const immutableVariableFields = [
       "categoryName",
       "combinationOperation",
-      "fillingType",
       "globalVariableId",
-      "unitAbbreviation",
-      "unitId",
-      "unitName",
       "variableName",
     ].filter((fieldName) => fieldName in input);
     if (immutableVariableFields.length > 0) {
       throw new Error(
-        `A reminder's tracked variable cannot be changed. Omit ${immutableVariableFields.join(
+        `A reminder's tracked variable is fixed at creation. Omit ${immutableVariableFields.join(
           ", ",
-        )} when editing by trackingReminderId.`,
+        )} when editing by trackingReminderId. To track a different variable, create a new reminder and set active: false on this one. To change only the recording unit, pass unitAbbreviation, unitId, or unitName.`,
       );
     }
+
+    const unitInput = {
+      unitAbbreviation: optionalString(input.unitAbbreviation),
+      unitId: optionalString(input.unitId),
+      unitName: optionalString(input.unitName),
+    };
+    const hasUnitInput = Boolean(
+      unitInput.unitAbbreviation || unitInput.unitId || unitInput.unitName,
+    );
+    const fillingType = parseEnumInput(
+      FillingType,
+      input.fillingType,
+      "fillingType",
+    );
 
     const update: Prisma.TrackingReminderUpdateInput = {};
     if ("active" in input) {
@@ -846,20 +878,50 @@ export async function upsertTrackingReminderForUser(
         if (!existing) {
           throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
         }
-        if (Object.keys(update).length === 0) {
-          return {
-            reminder: existing,
-            subjectId: existing.nOf1Variable.subjectId,
+
+        // Unit and fillingType are per-user settings on the NOf1Variable,
+        // not part of the reminder's variable identity, so an ID edit may
+        // change them. The canonical GlobalVariable is never touched.
+        let appliedUnit: TrackingUnitSummary | null = null;
+        if (hasUnitInput) {
+          appliedUnit = await resolveTrackingUnit(tx, unitInput);
+          if (!appliedUnit) throw new Error("Requested unit was not found.");
+        }
+        const nOf1Update: Prisma.NOf1VariableUncheckedUpdateInput = {
+          ...(appliedUnit ? { defaultUnitId: appliedUnit.id } : {}),
+          ...(fillingType ? { fillingType } : {}),
+        };
+        if (Object.keys(nOf1Update).length > 0) {
+          await tx.nOf1Variable.update({
+            data: nOf1Update,
+            where: { id: existing.nOf1VariableId },
+          });
+        }
+
+        let reminder =
+          Object.keys(update).length > 0
+            ? await tx.trackingReminder.update({
+                data: update,
+                include: TRACKING_REMINDER_INCLUDE,
+                where: { id: existing.id },
+              })
+            : existing;
+        if (appliedUnit || fillingType) {
+          reminder = {
+            ...reminder,
+            nOf1Variable: {
+              ...reminder.nOf1Variable,
+              ...(appliedUnit
+                ? { defaultUnit: appliedUnit, defaultUnitId: appliedUnit.id }
+                : {}),
+              ...(fillingType ? { fillingType } : {}),
+            },
           };
         }
-        const reminder = await tx.trackingReminder.update({
-          data: update,
-          include: TRACKING_REMINDER_INCLUDE,
-          where: { id: existing.id },
-        });
         return {
           reminder,
           subjectId: reminder.nOf1Variable.subjectId,
+          unit: reminderEffectiveUnit(reminder),
         };
       });
     } catch (error) {
@@ -951,8 +1013,33 @@ export async function upsertTrackingReminderForUser(
         },
       },
     });
-    return { reminder, subjectId: subject.id };
+    return {
+      reminder,
+      subjectId: subject.id,
+      unit: reminderEffectiveUnit(reminder),
+    };
   });
+}
+
+export async function getTrackingReminderForUser(
+  input: Record<string, unknown>,
+  userId: string,
+) {
+  const trackingReminderId = optionalString(input.trackingReminderId);
+  if (!trackingReminderId) {
+    throw new Error(
+      "trackingReminderId is required. Use listTrackingReminders to find it.",
+    );
+  }
+  const prisma = await getPrisma();
+  const reminder = await prisma.trackingReminder.findFirst({
+    include: TRACKING_REMINDER_INCLUDE,
+    where: { deletedAt: null, id: trackingReminderId, userId },
+  });
+  if (!reminder) {
+    throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
+  }
+  return { reminder, unit: reminderEffectiveUnit(reminder) };
 }
 
 export async function listMeasurementsForUser(
@@ -987,6 +1074,13 @@ export async function listMeasurementsForUser(
   const variableName = optionalString(input.variableName);
 
   const prisma = await getPrisma();
+  // Report times in the user's zone alongside UTC: an agent reading raw UTC
+  // startTime as local misdated a whole evening of answers by a day (#248).
+  const user = await prisma.user.findUnique({
+    select: { timeZone: true },
+    where: { id: userId },
+  });
+  const timeZone = user?.timeZone ?? "UTC";
   // Read-only variable lookup: unlike recordMeasurement this must never create
   // a GlobalVariable, and an unknown name is an error rather than an empty page.
   let variable: Prisma.GlobalVariableGetPayload<{
@@ -1043,13 +1137,15 @@ export async function listMeasurementsForUser(
     },
   });
 
-  const measurements = rows.slice(0, limit);
+  const kept = rows.slice(0, limit);
+  const measurements = kept.map((measurement) => ({
+    ...measurement,
+    startTimeLocal: formatZonedIsoString(measurement.startTime, timeZone),
+  }));
   return {
     measurements,
-    nextCursor:
-      rows.length > limit
-        ? (measurements[measurements.length - 1]?.id ?? null)
-        : null,
+    nextCursor: rows.length > limit ? (kept[kept.length - 1]?.id ?? null) : null,
+    timeZone,
     variable,
   };
 }
@@ -1211,12 +1307,24 @@ export async function updateTrackingVariableSettingsForUser(
   });
 }
 
+const INSTRUCTIONS_PREVIEW_LIMIT = 200;
+
+function instructionsPreview(instructions: string | null) {
+  if (
+    instructions == null ||
+    instructions.length <= INSTRUCTIONS_PREVIEW_LIMIT
+  ) {
+    return instructions;
+  }
+  return `${instructions.slice(0, INSTRUCTIONS_PREVIEW_LIMIT)} … [truncated; getTrackingReminder returns the full instructions]`;
+}
+
 export async function listTrackingRemindersForUser(
   input: Record<string, unknown>,
   userId: string,
 ) {
   const prisma = await getPrisma();
-  return prisma.trackingReminder.findMany({
+  const reminders = await prisma.trackingReminder.findMany({
     include: TRACKING_REMINDER_INCLUDE,
     orderBy: [{ active: "desc" }, { reminderStartTime: "asc" }],
     where: {
@@ -1225,6 +1333,24 @@ export async function listTrackingRemindersForUser(
       ...(input.includeInactive === true ? {} : { active: true }),
     },
   });
+  if (input.compact === false) return reminders;
+  // Compact is the default: queue-answering agents need the schedule and the
+  // value/unit, not full instruction text or expanded variable records (#249).
+  return reminders.map((reminder) => ({
+    active: reminder.active,
+    defaultValue: cleanNumber(reminder.defaultValue),
+    fillingType: reminder.nOf1Variable.fillingType,
+    id: reminder.id,
+    instructions: instructionsPreview(reminder.instructions),
+    lastTracked: reminder.lastTracked,
+    name: reminder.globalVariable.name,
+    reminderEndTime: reminder.reminderEndTime,
+    reminderFrequency: reminder.reminderFrequency,
+    reminderStartTime: reminder.reminderStartTime,
+    startTrackingDate: reminder.startTrackingDate,
+    stopTrackingDate: reminder.stopTrackingDate,
+    unit: reminderEffectiveUnit(reminder)?.abbreviatedName ?? null,
+  }));
 }
 
 /** Default snooze length when a caller does not name one. */
@@ -1336,6 +1462,7 @@ export async function listDueTrackingRemindersForUser(
           : snoozeElapsed
             ? NotificationStatus.PENDING
             : status,
+        fillingType: reminder.nOf1Variable.fillingType,
         globalVariable: reminder.globalVariable,
         instructions: reminder.instructions,
         isOverdue,
@@ -1368,6 +1495,7 @@ export async function listDueTrackingRemindersForUser(
         status,
         timeZone,
         trackedValue: cleanNumber(notification?.trackedValue),
+        unit: reminderEffectiveUnit(reminder)?.abbreviatedName ?? null,
         utcOffsetMinutes: getTimeZoneOffsetMinutes(notifyAt, timeZone),
       };
     })
@@ -1397,11 +1525,15 @@ export function toCompactTrackingNotifications(result: {
   dateKey?: string;
   endDateKey?: string;
   notifications: Array<{
+    defaultValue?: number | null;
     derivedStatus: NotificationStatus | TrackingReminderDerivedStatus;
+    fillingType?: FillingType;
     globalVariable: { name: string };
     notifyAt: Date;
     notifyAtLocal: string;
     reminderId: string;
+    sameDayMeasurementCount?: number;
+    unit?: string | null;
   }>;
   startDateKey?: string;
   timeZone: string;
@@ -1411,13 +1543,21 @@ export function toCompactTrackingNotifications(result: {
     ...(result.startDateKey ? { startDateKey: result.startDateKey } : {}),
     ...(result.endDateKey ? { endDateKey: result.endDateKey } : {}),
     notifications: result.notifications.map((notification) => ({
+      // defaultValue and unit ride along so an agent can answer without a
+      // second listTrackingReminders fetch (#249).
+      defaultValue: notification.defaultValue ?? null,
       // `due` is the user's local time so a voice client can read it aloud
       // without converting. `dueUtc` keeps the raw instant for machines.
       due: notification.notifyAtLocal,
       dueUtc: notification.notifyAt,
+      fillingType: notification.fillingType ?? null,
       id: notification.reminderId,
       name: notification.globalVariable.name,
+      ...(notification.sameDayMeasurementCount
+        ? { sameDayMeasurementCount: notification.sameDayMeasurementCount }
+        : {}),
       status: notification.derivedStatus,
+      unit: notification.unit ?? null,
     })),
     timeZone: result.timeZone,
   };
@@ -1464,6 +1604,7 @@ function storedTrackingNotificationToQueueItem(
       : snoozeElapsed
         ? NotificationStatus.PENDING
         : notification.status,
+    fillingType: reminder.nOf1Variable.fillingType,
     globalVariable: reminder.globalVariable,
     instructions: reminder.instructions,
     isOverdue,
@@ -1493,6 +1634,7 @@ function storedTrackingNotificationToQueueItem(
     status: notification.status,
     timeZone,
     trackedValue: cleanNumber(notification.trackedValue),
+    unit: reminderEffectiveUnit(reminder)?.abbreviatedName ?? null,
     utcOffsetMinutes: getTimeZoneOffsetMinutes(notifyAt, timeZone),
   };
 }
@@ -1611,17 +1753,22 @@ export async function listTrackingReminderNotificationsForUser(
     .map((notification) =>
       storedTrackingNotificationToQueueItem(notification, timeZone),
     );
-  const notifications = [
-    ...scheduledNotifications,
-    ...unmatchedStoredNotifications,
-  ]
-    .filter(
-      (notification) =>
-        (!trackingReminderId ||
-          notification.reminderId === trackingReminderId) &&
-        (!status || notification.derivedStatus === status),
-    )
-    .sort((left, right) => left.notifyAt.getTime() - right.notifyAt.getTime());
+  const notifications = await annotateSameDayMeasurements(
+    prisma,
+    [...scheduledNotifications, ...unmatchedStoredNotifications]
+      .filter(
+        (notification) =>
+          (!trackingReminderId ||
+            notification.reminderId === trackingReminderId) &&
+          (!status || notification.derivedStatus === status),
+      )
+      .sort(
+        (left, right) => left.notifyAt.getTime() - right.notifyAt.getTime(),
+      ),
+    userId,
+    timeZone,
+    { end: lastRange.end, start: firstRange.start },
+  );
   const result =
     dateKeys.length === 1
       ? { dateKey: dateKeys[0], notifications, timeZone }
@@ -1631,9 +1778,65 @@ export async function listTrackingReminderNotificationsForUser(
           startDateKey: dateKeys[0],
           timeZone,
         };
-  return input.compact === true
-    ? toCompactTrackingNotifications(result)
-    : result;
+  // Compact is the default so queue-answering clients get the light shape
+  // without knowing to ask; compact: false opts into the full records (#249).
+  return input.compact === false
+    ? result
+    : toCompactTrackingNotifications(result);
+}
+
+/**
+ * Flags OVERDUE occurrences whose variable already has same-local-day
+ * measurements. An unanswered notification says nothing about data recorded
+ * through other paths, which made the overdue queue unverifiable and invited
+ * duplicate re-answers (#248). The flag is diagnostic only; nothing is
+ * auto-resolved.
+ */
+async function annotateSameDayMeasurements<
+  T extends {
+    dateKey: string;
+    globalVariable: { id: string };
+    isOverdue: boolean;
+  },
+>(
+  prisma: TrackingDbClient,
+  notifications: T[],
+  userId: string,
+  timeZone: string,
+  range: { end: Date; start: Date },
+): Promise<Array<T & { sameDayMeasurementCount?: number }>> {
+  const overdue = notifications.filter(
+    (notification) => notification.isOverdue,
+  );
+  if (overdue.length === 0) return notifications;
+  const rows = await prisma.measurement.findMany({
+    select: { globalVariableId: true, startTime: true },
+    where: {
+      deletedAt: null,
+      globalVariableId: {
+        in: [
+          ...new Set(overdue.map((item) => item.globalVariable.id)),
+        ],
+      },
+      startTime: { gte: range.start, lt: range.end },
+      subject: { userId },
+    },
+  });
+  const countByVariableDay = new Map<string, number>();
+  for (const row of rows) {
+    const key = `${row.globalVariableId}|${getZonedDateKey(row.startTime, timeZone)}`;
+    countByVariableDay.set(key, (countByVariableDay.get(key) ?? 0) + 1);
+  }
+  return notifications.map((notification) => {
+    if (!notification.isOverdue) return notification;
+    const count =
+      countByVariableDay.get(
+        `${notification.globalVariable.id}|${notification.dateKey}`,
+      ) ?? 0;
+    return count > 0
+      ? { ...notification, sameDayMeasurementCount: count }
+      : notification;
+  });
 }
 
 async function findOrCreateTrackingNotification(
@@ -1819,15 +2022,14 @@ export async function respondToTrackingReminderNotificationsForUser(
   );
 
   if (unknownExceptionIds.length > 0) {
-    return {
-      answeredCount: 0,
-      dateKey: due.dateKey,
-      failed: [],
-      results: [],
-      // Nothing was written, so every scheduled reminder was left untouched.
-      skippedCount: due.notifications.length,
-      unknownExceptionIds,
-    };
+    // All-or-nothing, and loudly: the previous success-shaped no-op response
+    // let an agent report a whole day as answered when nothing was written
+    // (#248). An error cannot be missed.
+    throw new Error(
+      `Nothing was written. These except entries are not scheduled for ${due.dateKey}: ${unknownExceptionIds.join(
+        ", ",
+      )}. Check the reminder IDs with listTrackingReminderNotifications, or pass the dateKey their occurrences belong to.`,
+    );
   }
 
   // defaultStatus only reaches notifications that are due and still
@@ -1845,7 +2047,31 @@ export async function respondToTrackingReminderNotificationsForUser(
   });
   const skippedCount = due.notifications.length - targets.length;
 
+  // After midnight, "today" flips while the user is still finishing
+  // yesterday: every occurrence for the defaulted dateKey is in the future,
+  // so a catch-up call either writes nothing or answers tomorrow's slots
+  // while yesterday stays OVERDUE (#248). Refuse with directions instead.
+  const dateKeyOmitted = input.dateKey == null || input.dateKey === "";
+  const nothingDueYetToday = due.notifications.every(
+    (item) => item.notifyAt.getTime() > now,
+  );
+  if (dateKeyOmitted && nothingDueYetToday) {
+    const previousDateKey = shiftDateKey(due.dateKey, -1);
+    const previous = previousDateKey
+      ? await listDueTrackingRemindersForUser(
+          { dateKey: previousDateKey },
+          userId,
+        )
+      : null;
+    if (previous && previous.notifications.length > 0) {
+      throw new Error(
+        `Nothing was written. No notifications are due yet for ${due.dateKey} in ${due.timeZone}, but ${previousDateKey} has ${previous.notifications.length} unanswered. Pass dateKey: "${previousDateKey}" to answer that day, or dateKey: "${due.dateKey}" to answer today's future occurrences in advance.`,
+      );
+    }
+  }
+
   const results: Array<{
+    notifyAtLocal: string;
     recordedAsZero: boolean;
     reminderId: string;
     source: "default" | "exception";
@@ -1879,6 +2105,8 @@ export async function respondToTrackingReminderNotificationsForUser(
         userId,
       );
       results.push({
+        // Where the answer landed, so an agent can verify the day it wrote.
+        notifyAtLocal: item.notifyAtLocal,
         recordedAsZero,
         reminderId: item.reminderId,
         source: override ? "exception" : "default",
@@ -1903,6 +2131,64 @@ export async function respondToTrackingReminderNotificationsForUser(
   };
 }
 
+/**
+ * Days respondToTrackingReminder walks back looking for the most recent due
+ * occurrence when the caller names neither dateKey nor trackedAt. Bounds the
+ * per-response lookups; older gaps need an explicit dateKey.
+ */
+const MAX_RESPONSE_BACKFILL_DAYS = 7;
+
+/**
+ * The calendar-today default mis-anchored after-midnight catch-ups: at 02:00
+ * an answer to yesterday's 22:30 reminder landed on today's still-future
+ * occurrence, leaving yesterday OVERDUE (#248). Without an explicit target,
+ * answer the most recent occurrence that is actually due. An already-answered
+ * most-recent occurrence keeps the calendar default so corrections and
+ * answering today in advance behave as before.
+ */
+async function mostRecentDueUnansweredDateKey(
+  tx: Prisma.TransactionClient,
+  reminder: {
+    createdAt: Date;
+    id: string;
+    reminderFrequency: number;
+    reminderStartTime: string;
+    startTrackingDate: Date | null;
+  },
+  userId: string,
+  timeZone: string,
+  todayKey: string,
+) {
+  const now = Date.now();
+  for (let offset = 0; offset <= MAX_RESPONSE_BACKFILL_DAYS; offset += 1) {
+    const candidate = offset === 0 ? todayKey : shiftDateKey(todayKey, -offset);
+    if (!candidate) return null;
+    const { end, start } = dayRange(candidate, timeZone);
+    const occurrence = reminderOccurrenceWithinRange(reminder, {
+      dateKey: candidate,
+      end,
+      start,
+      timeZone,
+    });
+    if (!occurrence || occurrence.getTime() > now) continue;
+    const stored = await tx.trackingReminderNotification.findFirst({
+      select: { status: true },
+      where: {
+        deletedAt: null,
+        notifyAt: { gte: start, lt: end },
+        trackingReminderId: reminder.id,
+        userId,
+      },
+    });
+    const answered =
+      stored != null &&
+      (stored.status === NotificationStatus.TRACKED ||
+        stored.status === NotificationStatus.SKIPPED);
+    return answered ? todayKey : candidate;
+  }
+  return null;
+}
+
 export async function respondToTrackingReminderForUser(
   input: Record<string, unknown>,
   userId: string,
@@ -1918,13 +2204,15 @@ export async function respondToTrackingReminderForUser(
   const snoozeMinutes =
     status === NotificationStatus.SNOOZED ? parseSnoozeMinutes(input) : null;
   const trackedAt = parseOptionalDateValue(input.trackedAt, "trackedAt");
+  const hasExplicitTarget =
+    (input.dateKey != null && input.dateKey !== "") || trackedAt != null;
   const prisma = await getPrisma();
   const user = await prisma.user.findUnique({
     select: { timeZone: true },
     where: { id: userId },
   });
   const timeZone = user?.timeZone ?? "UTC";
-  const dateKey = parseDateKey(
+  const requestedDateKey = parseDateKey(
     input.dateKey,
     getZonedDateKey(trackedAt ?? new Date(), timeZone),
   );
@@ -1939,6 +2227,21 @@ export async function respondToTrackingReminderForUser(
     });
     if (!reminder) {
       throw new Error(`TrackingReminder not found: ${trackingReminderId}`);
+    }
+    let dateKey = requestedDateKey;
+    let answersPastOccurrence = false;
+    if (!hasExplicitTarget) {
+      const resolved = await mostRecentDueUnansweredDateKey(
+        tx,
+        reminder,
+        userId,
+        timeZone,
+        requestedDateKey,
+      );
+      if (resolved && resolved !== requestedDateKey) {
+        dateKey = resolved;
+        answersPastOccurrence = true;
+      }
     }
     const explicitValue = parseOptionalFiniteNumberInput(input, "value");
     if (recordedAsZero) {
@@ -1986,6 +2289,11 @@ export async function respondToTrackingReminderForUser(
       trackingReminderId,
       userId,
     });
+    // A backfilled past occurrence anchors the measurement to its scheduled
+    // slot, matching the bulk tool, so the value lands on the day being
+    // answered instead of the wall-clock day.
+    const measuredAt =
+      trackedAt ?? (answersPastOccurrence ? notifyAt : new Date());
     let measurement = null;
     if (status === NotificationStatus.TRACKED) {
       const value = trackedValue;
@@ -2003,7 +2311,7 @@ export async function respondToTrackingReminderForUser(
         longitude: null,
         note: optionalString(input.note),
         sourceName: optionalString(input.sourceName) ?? "mcp-reminder",
-        startTime: trackedAt ?? new Date(),
+        startTime: measuredAt,
         unitAbbreviation: optionalString(input.unitAbbreviation),
         // Only a caller-named unit is explicit. Leaving unitId unset lets
         // recordTrackingMeasurementWithTx use the user's persisted default
@@ -2017,14 +2325,16 @@ export async function respondToTrackingReminderForUser(
     }
     if (status === NotificationStatus.TRACKED) {
       await tx.trackingReminder.update({
-        data: { lastTracked: trackedAt ?? new Date() },
+        data: { lastTracked: measuredAt },
         where: { id: reminder.id },
       });
     }
     return {
+      ...(answersPastOccurrence ? { answersPastOccurrence: true } : {}),
       dateKey,
       measurement,
       notification,
+      notifyAtLocal: formatZonedIsoString(notifyAt, timeZone),
       recordedAsZero,
       reminderId: reminder.id,
       ...(recordedAsZero

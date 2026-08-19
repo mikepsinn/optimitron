@@ -1,5 +1,6 @@
 export {
   deleteMeasurementForUser,
+  getTrackingReminderForUser,
   listDueTrackingRemindersForUser,
   listMeasurementsForUser,
   listTrackingReminderNotificationsForUser,

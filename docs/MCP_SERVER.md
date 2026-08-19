@@ -425,7 +425,10 @@ and measurements written by answering a tracking reminder:
 
 An unknown variable name is an error rather than an empty page, so a typo does
 not read as "nothing logged". Pages return `nextCursor`; repeat the same call
-with `cursor` set until it is null.
+with `cursor` set until it is null. Each row carries `startTime` (UTC) and
+`startTimeLocal` (the user's zone, offset attached); report times to the user
+from `startTimeLocal` — reading raw UTC as local misdates late-evening entries
+by a day.
 
 ### Answering Tracking Reminders
 
@@ -444,12 +447,29 @@ whether an old skip meant zero or meant nobody answered.
 `listTrackingReminderNotifications` returns `notifyAtLocal` (compact: `due`) in
 the user's zone with the offset attached, plus the raw UTC instant in
 `notifyAt` (compact: `dueUtc`). `dateKey` and the day boundaries are local.
+The compact shape is the default and carries `defaultValue`, `unit`, and
+`fillingType`, so answering a queue needs no `listTrackingReminders` call;
+pass `compact: false` for full records. An OVERDUE item with
+`sameDayMeasurementCount` already has same-day data for its variable recorded
+outside the notification — verify with `listMeasurements` before answering
+again, or you may duplicate data.
+
+`listTrackingReminders` also defaults to a compact shape with truncated
+instructions; `getTrackingReminder` returns one reminder in full.
+
+`respondToTrackingReminder` without `dateKey` or `trackedAt` answers the
+reminder's most recent unanswered due occurrence within the last 7 days, so an
+after-midnight catch-up resolves yesterday's occurrence instead of
+pre-answering tomorrow's. The response's `notifyAtLocal` shows where the
+answer landed.
 
 `respondToTrackingReminderNotifications` answers several at once. Send only
 `except` entries to answer specific reminders; everything else stays untouched.
 `defaultStatus` is for answering the whole day and reaches only notifications
 that are due and still unanswered. An `except` entry can also correct a response
-already recorded.
+already recorded. The call is all-or-nothing and errors loudly: an `except`
+entry that is not scheduled for the date, or a catch-up aimed at a day with
+nothing due yet, writes nothing and returns directions instead.
 
 `serving`, `servings`, and the UCUM code `{serving}` resolve to the seeded
 `servings` unit. Use servings for simple behavior or adherence tracking. Use a

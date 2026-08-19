@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   if (auth instanceof Response) return auth;
   try {
     const input = queryInput(new URL(req.url), {
-      booleans: ["includeInactive"],
+      booleans: ["compact", "includeInactive"],
     });
     return NextResponse.json({
       reminders: await listTrackingRemindersForUser(input, auth.userId),

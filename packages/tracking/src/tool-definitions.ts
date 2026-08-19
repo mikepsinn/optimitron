@@ -55,7 +55,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listMeasurements",
     description:
-      "List the authenticated user's own recorded measurements, newest first. Covers everything logged through recordMeasurement or a tracking-reminder response. Filter by globalVariableId or variableName for one variable, or omit both to see every variable. Use this to review logged doses, foods, symptoms, moods, sleep, activity, labs, and vitals, or to check whether a reminder was actually answered.",
+      "List the authenticated user's own recorded measurements, newest first. Covers everything logged through recordMeasurement or a tracking-reminder response. Filter by globalVariableId or variableName for one variable, or omit both to see every variable. Use this to review logged doses, foods, symptoms, moods, sleep, activity, labs, and vitals, or to check whether a reminder was actually answered. Each row carries startTime (UTC) and startTimeLocal (the user's zone): report times to the user from startTimeLocal.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -128,7 +128,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "upsertTrackingReminder",
     description:
-      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, first get its ID from listTrackingReminders, then pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.",
+      "Create or edit a personal tracking reminder for medications, food, symptoms, mood, sleep, activity, labs, or vitals. When creating a new variable, pass categoryName; Food defaults to servings. To edit a reminder in place, pass trackingReminderId plus only the fields to change. Omit trackingReminderId to create or idempotently update the reminder identified by variable, start time, and frequency. Unit fields set your personal recording unit for the variable; the canonical variable default is unchanged. The response's top-level unit is the unit answers record in. The reminder can later be answered as TRACKED (value 0 for a not-taken day) or SNOOZED.",
     inputSchema: {
       type: "object" as const,
       anyOf: [
@@ -139,7 +139,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
         trackingReminderId: {
           type: "string",
           description:
-            "Existing reminder ID to edit in place. When present, variable identity fields must be omitted and all other fields are optional patches.",
+            "Existing reminder ID to edit in place. Patchable: active, defaultValue, instructions, reminderStartTime, reminderEndTime, reminderFrequency, startTrackingDate, stopTrackingDate, unit fields, and fillingType. Fixed at creation: the tracked variable (variableName, globalVariableId, categoryName, combinationOperation) — to change it, create a new reminder and set active: false on this one.",
         },
         globalVariableId: { type: "string" },
         variableName: { type: "string" },
@@ -157,7 +157,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
         unitAbbreviation: {
           type: "string",
           description:
-            "Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings.",
+            "Short unit such as mg, IU, servings, count, or 1-5. serving and {serving} are accepted aliases for servings. Sets your personal recording unit for this variable, on create or on edit.",
         },
         unitName: {
           type: "string",
@@ -197,18 +197,35 @@ export const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "listTrackingReminders",
     description:
-      "List the authenticated user's personal tracking reminders, active by default.",
+      "List the authenticated user's personal tracking reminders, active by default. Returns a compact shape by default: id, name, schedule, defaultValue, recording unit, fillingType, and an instructions preview. Pass compact: false for full records. Use getTrackingReminder for one reminder with full instructions.",
     inputSchema: {
       type: "object" as const,
       properties: {
         includeInactive: { type: "boolean" },
+        compact: {
+          type: "boolean",
+          description:
+            "Defaults to true. Pass false for full records with expanded variable and unit objects and untruncated instructions.",
+        },
       },
+    },
+  },
+  {
+    name: "getTrackingReminder",
+    description:
+      "Get one of the authenticated user's tracking reminders in full, including untruncated instructions, the expanded variable, and the effective recording unit. Use listTrackingReminders to find the ID.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        trackingReminderId: { type: "string" },
+      },
+      required: ["trackingReminderId"],
     },
   },
   {
     name: "listTrackingReminderNotifications",
     description:
-      "List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or effective status, including OVERDUE. Results expose scheduledAt, effective notifyAt, and snoozedUntil so clients can tell exactly how far a snooze moved an occurrence. Set includeCompleted to include recent TRACKED notifications. Times include the user's local zone and the UTC instant. Use compact mode for voice or chat clients.",
+      "List the authenticated user's tracking notification queue for one local day or an inclusive local-date range. A reminder defines a schedule; a notification is one occurrence. Filter by trackingReminderId or effective status, including OVERDUE. The default compact shape carries id (the trackingReminderId to answer with), name, due (local time), status, defaultValue, unit, and fillingType, so an agent can answer without a second lookup. An OVERDUE item with sameDayMeasurementCount already has same-day data for its variable recorded outside this notification: verify with listMeasurements before answering again, or you may duplicate data. Pass compact: false for full records with scheduledAt, effective notifyAt, and snoozedUntil. Set includeCompleted to include recent TRACKED notifications.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -240,7 +257,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
         compact: {
           type: "boolean",
           description:
-            "Return trackingReminderId as id, plus name, due, and status.",
+            "Defaults to true. Pass false for full records including scheduledAt, snooze detail, and instructions.",
         },
         includeCompleted: {
           type: "boolean",
@@ -277,7 +294,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "respondToTrackingReminderNotifications",
     description:
-      "Answer several tracking reminder notifications in one call. To answer specific reminders, send only except entries and omit defaultStatus; every other reminder stays untouched. Send defaultStatus only when you intend to answer the whole day. An except entry can also correct a response you already recorded. If any exception ID is not scheduled for the date, this tool writes nothing.",
+      "Answer several tracking reminder notifications in one call. To answer specific reminders, send only except entries and omit defaultStatus; every other reminder stays untouched. Send defaultStatus only when you intend to answer the whole day. An except entry can also correct a response you already recorded. All-or-nothing: if any exception ID is not scheduled for the date, the tool writes nothing and returns an error. The call targets one local date; when catching up a past day (for example after midnight), pass that day's dateKey. Each result reports notifyAtLocal, the occurrence the answer landed on: verify it is the day you meant.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -322,7 +339,7 @@ export const TRACKING_TOOL_DEFINITIONS = [
   {
     name: "respondToTrackingReminder",
     description:
-      "Answer a due tracking reminder. TRACKED records a measurement. Record value 0 when the treatment, food, or activity was not taken; those zero days are the baseline that causal analysis needs. SNOOZED defers the notification. Deactivate the reminder when it no longer applies. SKIPPED is retired: it now records a zero and returns a deprecation notice.",
+      "Answer a due tracking reminder. TRACKED records a measurement. Record value 0 when the treatment, food, or activity was not taken; those zero days are the baseline that causal analysis needs. SNOOZED defers the notification. Deactivate the reminder when it no longer applies. SKIPPED is retired: it now records a zero and returns a deprecation notice. When dateKey and trackedAt are omitted, the answer targets the reminder's most recent due occurrence within the last 7 days that is still unanswered — so an after-midnight catch-up resolves yesterday's occurrence, not tomorrow's. The response's notifyAtLocal shows where the answer landed.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -346,10 +363,15 @@ export const TRACKING_TOOL_DEFINITIONS = [
         unitId: { type: "string" },
         unitAbbreviation: { type: "string" },
         unitName: { type: "string" },
-        trackedAt: { type: "string", description: "ISO date/time." },
+        trackedAt: {
+          type: "string",
+          description:
+            "ISO date/time the measurement actually happened. Also anchors the target day when dateKey is omitted.",
+        },
         dateKey: {
           type: "string",
-          description: "Local date in YYYY-MM-DD. Defaults from trackedAt.",
+          description:
+            "Local date in YYYY-MM-DD of the occurrence to answer. Defaults from trackedAt when given, else to the most recent unanswered due occurrence.",
         },
         note: { type: "string" },
         sourceName: { type: "string" },
@@ -365,6 +387,7 @@ export const TRACKING_TOOL_SCOPES = {
   [DELETE_MEASUREMENT_TOOL_NAME]: [McpScope.TASKS_PERSONAL],
   listMeasurements: [McpScope.TASKS_PERSONAL],
   upsertTrackingReminder: [McpScope.TASKS_PERSONAL],
+  getTrackingReminder: [McpScope.TASKS_PERSONAL],
   listTrackingReminders: [McpScope.TASKS_PERSONAL],
   listDueTrackingReminders: [McpScope.TASKS_PERSONAL],
   listTrackingReminderNotifications: [McpScope.TASKS_PERSONAL],
