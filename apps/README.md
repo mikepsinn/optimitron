@@ -21,7 +21,7 @@ each standalone app passes preview checks and its domain moves.
 
 Architecture decisions (host vs campaign, email, embeds): **`SURVEY-AND-SATELLITES.md`**.
 
-Satellite apps should stay thin: routes + brand `public/` + config. Shared UI/lib lives in `@optimitron/site-kit` / `neobrutalist-ui` / `impact-params` / `survey-embed`. Do not re-copy chart dumps, email templates, or campaign tests into satellites.
+Keep app entrypoints focused on routes, brand assets, and configuration. Shared UI and libraries live in `@optimitron/site-kit`, `neobrutalist-ui`, `impact-params`, and `survey-embed`. Do not copy chart dumps, email templates, or campaign tests between apps.
 
 War on Disease is the campaign exception: keep its rich home and dashboard fun,
 colorful, and neobrutalist. Do not replace that dashboard with the treaty-paper
@@ -75,7 +75,7 @@ Partner snippet (after survey is deployed):
 
 ## CI
 
-Job **`site-apps-static-validate`** (on satellite app or `packages/db` changes):
+Job **`site-apps-static-validate`** (on peer app or `packages/db` changes):
 
 1. verify public navigation and authenticated screenshot coverage
 2. migrate + `prisma generate`
@@ -89,8 +89,8 @@ Job **`site-apps-build`**:
 
 The authenticated route inventory fails when a dashboard, admin, profile, or
 other auth-gated page lacks screenshots or a documented no-UI exemption.
-`apps/optimitron` still has **web-static-validate**, **web-e2e-validate**, and deploy smoke.
-Standalone production deploys remain a separate cutover step.
+`apps/optimitron` has deeper app-specific checks because it owns more routes and
+server workflows. Every app has its own Vercel preview and production project.
 
 Local:
 
@@ -100,4 +100,4 @@ pnpm test:apps:unit
 pnpm smoke:warondisease-db
 ```
 
-Deploy production still **`apps/optimitron` only**. See `DEPLOYMENT.md`.
+Vercel deploys each affected app independently. See `DEPLOYMENT.md`.

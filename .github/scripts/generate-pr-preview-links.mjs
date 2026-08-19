@@ -3,7 +3,8 @@
 // and a reviewer checklist whose checked state survives CI reruns.
 //
 // Reads from env:
-//   PREVIEW_URL                 Vercel preview deployment URL.
+//   APP_PREVIEW_URLS_JSON       App name to Vercel preview URL map.
+//   PREVIEW_URL                 Legacy Optimitron preview URL fallback.
 //   CHANGED_FILES               JSON array of changed PR paths.
 //   CHANGED_FILES_PATH          Path to that JSON array for large pull requests.
 //   EXISTING_COMMENT_BODY       Existing sticky packet body, if any.
@@ -13,8 +14,18 @@
 
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import {
+  APP_PREVIEW_LABELS,
+  APP_PREVIEW_ORDER,
+  getAppPreviewRouteUrl,
+  parseAppPreviewUrls,
+} from "../../scripts/app-preview-urls.mjs";
 
-const PREVIEW_URL = process.env.PREVIEW_URL?.replace(/\/$/, "") ?? "";
+const APP_PREVIEW_URLS = parseAppPreviewUrls(
+  process.env.APP_PREVIEW_URLS_JSON,
+  process.env.PREVIEW_URL,
+);
+const PREVIEW_URL = APP_PREVIEW_URLS.optimitron ?? "";
 const CHANGED_FILES_JSON = process.env.CHANGED_FILES ?? "";
 const CHANGED_FILES_PATH = process.env.CHANGED_FILES_PATH ?? "";
 const EXISTING_COMMENT_BODY = process.env.EXISTING_COMMENT_BODY ?? "";
@@ -34,8 +45,8 @@ const VISUAL_REVIEW_BASELINE_RUN_ID = normalizeRunId(
   process.env.VISUAL_REVIEW_BASELINE_RUN_ID,
 );
 
-if (!PREVIEW_URL) {
-  console.error("PREVIEW_URL not set; skipping comment generation.");
+if (Object.keys(APP_PREVIEW_URLS).length === 0) {
+  console.error("No app preview URLs are set; skipping comment generation.");
   process.exit(0);
 }
 
@@ -192,8 +203,12 @@ function reviewStatesForRoute(route) {
 }
 
 function buildUrl(route, authParam) {
+  if (!PREVIEW_URL) return null;
   const path = route === "/" ? "/" : route;
-  return addAuthParamToUrl(new URL(path, `${PREVIEW_URL}/`).toString(), authParam);
+  return addAuthParamToUrl(
+    new URL(path, `${PREVIEW_URL}/`).toString(),
+    authParam,
+  );
 }
 
 function addAuthParamToUrl(url, authParam) {
@@ -241,15 +256,34 @@ function renderCheckItem({ id, label }, checkedIds) {
 function changedManifestRoutes(manifest) {
   const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
   return routes
-    .filter((route) =>
-      route &&
-      (route.changed ||
+    .filter((route) => {
+      if (!route) return false;
+      const missingPairs = Number(route.missingPairs ?? 0);
+      const baselineMissingPairs = route.baselineSkippedForCaptureProtocol
+        ? Number(route.baselineMissingPairs ?? 0)
+        : 0;
+      const currentMissingPairs = Math.max(
+        0,
+        missingPairs - baselineMissingPairs,
+      );
+      return (
+        route.changed ||
         route.copyChanged ||
         route.errored ||
-        route.missingPairs > 0 ||
-        route.erroredPairs > 0),
-    )
+        currentMissingPairs > 0 ||
+        route.erroredPairs > 0
+      );
+    })
     .sort((a, b) => String(a.routeName).localeCompare(String(b.routeName)));
+}
+
+function captureProtocolRefreshRouteCount(manifest) {
+  const routes = Array.isArray(manifest?.routes) ? manifest.routes : [];
+  return routes.filter(
+    (route) =>
+      route?.baselineSkippedForCaptureProtocol === true &&
+      Number(route.baselineMissingPairs ?? 0) > 0,
+  ).length;
 }
 
 function buildVisualReviewItems(manifest) {
@@ -261,9 +295,16 @@ function buildVisualReviewItems(manifest) {
     const authParam = authState === "demo-logged-in" ? "login=demo" : "logout=1";
     const routeUrl = route.routeUrl
       ? addAuthParamToUrl(route.routeUrl, authParam)
-      : typeof route.routePath === "string"
-        ? buildUrl(route.routePath, authParam)
-        : null;
+      : route.siteVariant
+        ? getAppPreviewRouteUrl(
+            APP_PREVIEW_URLS,
+            route.siteVariant,
+            route.routePath,
+            authState,
+          )
+        : typeof route.routePath === "string"
+          ? buildUrl(route.routePath, authParam)
+          : null;
     const reviewUrl =
       typeof route.reviewUrl === "string" && route.reviewUrl
         ? route.reviewUrl
@@ -351,10 +392,12 @@ function buildPreviewItems(routeChanges) {
       files.slice(0, 4).join(", ") +
       (files.length > 4 ? ` (+${files.length - 4} more)` : "");
     for (const state of reviewStatesForRoute(route)) {
+      const previewUrl = buildUrl(route, state.param);
+      if (!previewUrl) continue;
       items.push({
         id: `preview:${route}:${state.id}`,
         label:
-          `:rocket: [\`${route}\`](${buildUrl(route, state.param)})` +
+          `:rocket: [\`${route}\`](${previewUrl})` +
           ` - ${state.label} preview - ${filesLabel}`,
       });
     }
@@ -401,7 +444,21 @@ function renderPacket({
   }
   const baselineSummaryLine = buildBaselineSummaryLine();
   if (baselineSummaryLine) lines.push(baselineSummaryLine);
-  lines.push(`- :rocket: [Preview deployment](${PREVIEW_URL})`);
+  const protocolRefreshRoutes = captureProtocolRefreshRouteCount(manifest);
+  if (protocolRefreshRoutes > 0) {
+    const routeLabel =
+      protocolRefreshRoutes === 1 ? "route has" : "routes have";
+    lines.push(
+      `- :camera: ${protocolRefreshRoutes} ${routeLabel} fresh after-only screenshots because the capture protocol changed; the next \`main\` run creates their new baselines.`,
+    );
+  }
+  for (const appName of APP_PREVIEW_ORDER) {
+    const previewUrl = APP_PREVIEW_URLS[appName];
+    if (!previewUrl) continue;
+    lines.push(
+      `- :rocket: [${APP_PREVIEW_LABELS[appName]} preview](${previewUrl})`,
+    );
+  }
   lines.push("- :point_up: Cmd/Ctrl-click review links to keep this PR open.");
   lines.push("- :key: `?login=demo` signs in as the demo user; `?logout=1` clears the session.");
   lines.push("- :speech_balloon: For a visual problem, use the comment button in `latest.html` or reply here with `@claude` and the checklist item.");

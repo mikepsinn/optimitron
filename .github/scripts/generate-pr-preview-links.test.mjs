@@ -19,10 +19,69 @@ function runGenerator(env) {
       VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: "",
       VISUAL_REVIEW_BASELINE_RUN_ID: "",
       CHANGED_FILES_PATH: "",
+      APP_PREVIEW_URLS_JSON: "",
       ...env,
     },
   });
 }
+
+test("lists peer app previews and links app-specific visual routes", () => {
+  const warPreview = "https://war.example.vercel.app";
+  const output = runGenerator({
+    APP_PREVIEW_URLS_JSON: JSON.stringify({
+      optimitron: "https://optimitron.example.vercel.app",
+      warondisease: warPreview,
+    }),
+    PREVIEW_URL: "",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "site-app-warondisease-dashboard-authenticated",
+          routeLabel: "War on Disease dashboard",
+          routePath: "/dashboard",
+          siteVariant: "warondisease",
+          authState: "demo-logged-in",
+          changed: true,
+          changedPairs: 1,
+          missingPairs: 0,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(
+    output,
+    /\[Optimitron preview\]\(https:\/\/optimitron\.example\.vercel\.app\)/u,
+  );
+  assert.match(
+    output,
+    /\[War on Disease preview\]\(https:\/\/war\.example\.vercel\.app\)/u,
+  );
+  assert.match(
+    output,
+    /\[open page\]\(https:\/\/war\.example\.vercel\.app\/dashboard\?login=demo\)/u,
+  );
+});
+
+test("omits Optimitron route links when only peer app previews exist", () => {
+  const output = runGenerator({
+    APP_PREVIEW_URLS_JSON: JSON.stringify({
+      warondisease: "https://war.example.vercel.app",
+    }),
+    PREVIEW_URL: "",
+    CHANGED_FILES: JSON.stringify([
+      "apps/optimitron/src/components/tasks/TaskCard.tsx",
+    ]),
+  });
+
+  assert.match(output, /\[War on Disease preview\]/u);
+  assert.doesNotMatch(output, /\]\(null\)/u);
+  assert.doesNotMatch(output, /review-item:preview:/u);
+});
 
 test("generates a review packet with visual-review links and preserved checkboxes", () => {
   const previewUrl = "https://preview.example.vercel.app";
@@ -151,6 +210,83 @@ test("includes copy-only review states from the visual manifest", () => {
     output,
     /https:\/\/preview\.example\.vercel\.app\/survey\?login=demo/,
   );
+});
+
+test("suppresses only routes whose baseline was skipped for a protocol refresh", () => {
+  const output = runGenerator({
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "site-app-curedao-home",
+          routeLabel: "CureDAO home",
+          routePath: "/",
+          siteVariant: "curedao",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 2,
+          baselineMissingPairs: 2,
+          baselineSkippedForCaptureProtocol: true,
+          erroredPairs: 0,
+        },
+        {
+          routeName: "site-app-warondisease-home",
+          routeLabel: "War on Disease home",
+          routePath: "/",
+          siteVariant: "warondisease",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 1,
+          baselineMissingPairs: 1,
+          baselineSkippedForCaptureProtocol: false,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(output, /1 route has fresh after-only screenshots/u);
+  assert.doesNotMatch(output, /review-item:visual:site-app-curedao-home/u);
+  assert.match(output, /review-item:visual:site-app-warondisease-home/u);
+  assert.match(output, /1 missing screenshot/u);
+  assert.doesNotMatch(output, /2 missing screenshots/u);
+});
+
+test("summarizes a web-only capture protocol refresh", () => {
+  const output = runGenerator({
+    PREVIEW_URL: "https://preview.example.vercel.app",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "home",
+          routeLabel: "Home",
+          routePath: "/",
+          changed: false,
+          copyChanged: false,
+          errored: false,
+          changedPairs: 0,
+          missingPairs: 2,
+          baselineMissingPairs: 2,
+          baselineSkippedForCaptureProtocol: true,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(output, /1 route has fresh after-only screenshots/u);
+  assert.doesNotMatch(output, /review-item:visual:/u);
+  assert.doesNotMatch(output, /missing screenshots/u);
 });
 
 test("reports when no user-facing page or component routes are inferred", () => {

@@ -6,6 +6,10 @@ const workflow = readFileSync(
   new URL("../workflows/smoke-deploy.yml", import.meta.url),
   "utf8",
 );
+const ciWorkflow = readFileSync(
+  new URL("../workflows/ci.yml", import.meta.url),
+  "utf8",
+);
 
 test("deploy smoke waits for a successful deployment URL instead of skipping early deployment events", () => {
   const smokeJobHeader = workflow.slice(
@@ -56,6 +60,29 @@ test("both smoke jobs recognize Vercel status creators on redeploys", () => {
       /initialStatus\.creator\?\.login/u,
       "CLI redeploy events identify Vercel through the deployment status creator",
     );
+  }
+});
+
+test("Playwright preview smoke ignores non-Vercel deployment events", () => {
+  const playwrightJobHeader = workflow.slice(
+    workflow.indexOf("  playwright-preview:"),
+    workflow.indexOf("    steps:", workflow.indexOf("  playwright-preview:")),
+  );
+
+  assert.match(
+    playwrightJobHeader,
+    /github\.event\.deployment\.creator\.login == 'vercel\[bot\]'/u,
+  );
+  assert.match(
+    playwrightJobHeader,
+    /github\.event\.deployment_status\.creator\.login == 'vercel\[bot\]'/u,
+  );
+});
+
+test("browser jobs verify preinstalled Chrome without downloading OS packages", () => {
+  for (const source of [workflow, ciWorkflow]) {
+    assert.doesNotMatch(source, /playwright install-deps/u);
+    assert.match(source, /missing_dependencies="\$\(ldd "\$chrome_binary"/u);
   }
 });
 
@@ -150,7 +177,7 @@ test("routes deployment smoke to the deployed app", () => {
   assert.match(
     workflow,
     /- name: Run Playwright smoke against preview\s+if: .*steps\.target\.outputs\.app == 'optimitron'/u,
-    "the Optimitron Playwright suite must not run against satellite deployments",
+    "the Optimitron Playwright suite must run only against its matching app",
   );
 });
 

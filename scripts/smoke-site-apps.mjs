@@ -11,6 +11,7 @@ import {
 import {
   forceAnimationsComplete,
   prepareFullPageVisualCapture,
+  waitForFonts,
 } from "../apps/optimitron/e2e/utils/visual-settle.mjs";
 import { freezeClock } from "../apps/optimitron/e2e/helpers/freeze-clock.mjs";
 import { signInViaApi } from "../apps/optimitron/e2e/utils/auth-api.mjs";
@@ -308,6 +309,8 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               pageUrl.searchParams.set("visual", "1");
             }
             const url = pageUrl.toString();
+            const captureLabel = `${projectName}/${routeName}`;
+            console.log(`@apps/${appName}: capturing ${captureLabel}`);
             const response = await page.goto(url, {
               timeout: 30_000,
               waitUntil: "load",
@@ -333,7 +336,11 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
               state: "detached",
               timeout: 15_000,
             });
-            await page.evaluate(() => document.fonts.ready);
+            if (!(await waitForFonts(page))) {
+              console.warn(
+                `@apps/${appName}: font readiness timed out for ${captureLabel}`,
+              );
+            }
             await forceAnimationsComplete(page);
             await prepareFullPageVisualCapture(page);
             await forceAnimationsComplete(page);
@@ -355,6 +362,7 @@ async function captureScreenshots(appName, siteVariant, baseUrl) {
                 path: screenshotPath,
               });
             }
+            console.log(`@apps/${appName}: captured ${captureLabel}`);
           }
         } finally {
           await Promise.all([

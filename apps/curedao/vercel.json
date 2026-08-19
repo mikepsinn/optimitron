@@ -1,6 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
+  "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs curedao",
+  "git": {
+    "deploymentEnabled": {
+      "gh-pages": false
+    }
+  },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm --filter @optimitron/db run prisma:generate && pnpm build:app-dependencies && pnpm --filter @apps/curedao run build"
 }

@@ -7,6 +7,15 @@ import {
   getVercelAppByUrl,
   VERCEL_APP_PROJECTS,
 } from "./vercel-app-projects.mjs";
+import {
+  getVercelAppBuildMatches,
+  loadWorkspacePackages,
+} from "./vercel-app-build-scope.mjs";
+
+const ciWorkflow = readFileSync(
+  new URL("../workflows/ci.yml", import.meta.url),
+  "utf8",
+);
 
 test("declares one Vercel project for every deployed app", () => {
   assert.deepEqual(
@@ -69,6 +78,10 @@ test("declares one Vercel project for every deployed app", () => {
       vercelJson.buildCommand,
       `${project.rootDirectory} needs a Vercel build command`,
     );
+    assert.equal(
+      vercelJson.ignoreCommand,
+      `node ../../.github/scripts/vercel-ignore-build.mjs ${project.appName}`,
+    );
   }
 });
 
@@ -87,6 +100,49 @@ test("classifies custom domains and Vercel deployment URLs", () => {
     "optimitron",
   );
   assert.equal(getVercelAppByUrl("https://dih-earth.vercel.app"), undefined);
+});
+
+test("deploys only affected apps and ignores visual-review publishing", () => {
+  for (const project of VERCEL_APP_PROJECTS) {
+    const vercelJson = JSON.parse(
+      readFileSync(
+        new URL(`../../${project.rootDirectory}/vercel.json`, import.meta.url),
+      ),
+    );
+    assert.equal(vercelJson.git.deploymentEnabled["gh-pages"], false);
+    assert.equal(
+      "*" in vercelJson.git.deploymentEnabled,
+      false,
+      `${project.appName} must allow affected pull-request previews`,
+    );
+  }
+});
+
+test("validates every shared package used by the peer site apps", () => {
+  const workspacePackages = loadWorkspacePackages();
+  const packageFiles = [...workspacePackages.values()]
+    .filter(({ directory }) => directory.startsWith("packages/"))
+    .map(({ directory }) => `${directory}/package.json`);
+  const requiredDirectories = new Set();
+
+  for (const { appName } of VERCEL_APP_PROJECTS) {
+    if (appName === "optimitron") continue;
+    for (const file of getVercelAppBuildMatches(
+      appName,
+      packageFiles,
+      workspacePackages,
+    )) {
+      requiredDirectories.add(file.replace(/\/package\.json$/u, ""));
+    }
+  }
+
+  for (const directory of requiredDirectories) {
+    assert.match(
+      ciWorkflow,
+      new RegExp(`- '${directory.replaceAll("/", "\\/")}\\/\\*\\*'`, "u"),
+      `${directory} must trigger peer app validation`,
+    );
+  }
 });
 
 test("repairs only deployment settings that drift", () => {

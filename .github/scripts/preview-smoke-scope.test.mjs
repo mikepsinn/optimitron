@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   getVercelPreviewBuildMatches,
@@ -58,6 +59,7 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
     ".env.example",
     ".npmrc",
     "content/campaigns/treaty.md",
+    "docs/canonical-argument-2026-05-20.md",
     "eslint.config.mjs",
     "package.json",
     "apps/optimitron/e2e/visual-review-page.spec.ts",
@@ -69,6 +71,21 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
 
   assert.equal(shouldPreparePreviewDatabase(files), true);
   assert.deepEqual(getVercelPreviewBuildMatches(files), files.sort());
+});
+
+test("keeps the Optimitron ignore command app-specific", () => {
+  const vercelConfig = JSON.parse(
+    readFileSync(
+      new URL("../../apps/optimitron/vercel.json", import.meta.url),
+      "utf8",
+    ),
+  );
+
+  assert.equal(
+    vercelConfig.ignoreCommand,
+    "node ../../.github/scripts/vercel-ignore-build.mjs optimitron",
+  );
+  assert.ok(vercelConfig.ignoreCommand.length <= 256);
 });
 
 test("does not resolve a preview database when Vercel skips the PR", () => {

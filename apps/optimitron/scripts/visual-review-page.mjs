@@ -18,13 +18,13 @@
  *   meta: { prNumber, shortSha, commitSha, headBranch, repo, generatedAt,
  *           generatedAtCentral, previewBaseUrl, productionBaseUrl,
  *           reviewUrl, baselineDescription },
- *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, siteAppRoutes, variantRoutes, erroredRoutes, totalRoutes },
+ *   summary: { changedRoutes, copyOnlyRoutes, unchangedRoutes, appCount,
+ *              appRoutes, compatibilityRoutes, erroredRoutes, totalRoutes },
  *   coverage: { analysisAvailable, complete, changedUiFiles, coveredUiFiles, blockingIssues },
  *   routes: [{
  *     routeName, routeLabel, routePath, routeUrl, productionUrl, authState,
- *     siteApp,         // true for a standalone apps/* screenshot
- *     siteVariant,     // null for the default surface; site key for variant-delta shots
- *     variantLabel,    // display domain, e.g. "optimitron.com"; null when siteVariant is null
+ *     appId, appLabel, captureKind, // captureKind: "app" | "legacy-host"
+ *     siteVariant, variantLabel,    // explicit host variant used by legacy captures
  *     changed, copyChanged, errored, statusLabel,
  *     markdownDiff: null | { addedLines, removedLines,
  *       metaChanges: [{field,before,after}],
@@ -204,20 +204,22 @@ const CSS = `
     background: none; border: none; padding: 10px 10px;
   }
   button.rail-group-h:hover { color: var(--ink); }
-  .rail-site-app { border-top: 1px solid var(--border); }
-  .rail-site-app:first-of-type { border-top: none; }
-  .rail-site-app-h {
+  .rail-app { border-top: 1px solid var(--border); }
+  .rail-app:first-of-type { border-top: none; }
+  .rail-app-h {
     display: block; width: 100%; padding: 8px 10px;
     color: var(--ink); background: var(--bg);
     font-size: 12px; font-weight: 700; cursor: pointer;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     list-style: none;
   }
-  .rail-site-app-h::-webkit-details-marker { display: none; }
-  .rail-site-app-h::before { content: "\\25b8"; display: inline-block; width: 14px; color: var(--dim); }
-  .rail-site-app[open] > .rail-site-app-h::before { content: "\\25be"; }
-  .rail-site-app-h:hover { color: var(--accent); }
-  .rail-site-app .route-row { padding-left: 20px; }
+  .rail-app-h::-webkit-details-marker { display: none; }
+  .rail-app-h::before { content: "\\25b8"; display: inline-block; width: 14px; color: var(--dim); }
+  .rail-app[open] > .rail-app-h::before { content: "\\25be"; }
+  .rail-app-h:hover { color: var(--accent); }
+  .rail-app .route-row { padding-left: 20px; }
+  .rail-compat > summary { cursor: pointer; list-style: none; }
+  .rail-compat > summary::-webkit-details-marker { display: none; }
   .route-row {
     display: block; width: 100%; text-align: left;
     background: none; border: none; border-left: 3px solid transparent;
@@ -737,17 +739,40 @@ const CLIENT_JS = `
   function pairOf(r, name) {
     return ((r && r.pairs) || []).find(function (p) { return p.projectName === name; }) || null;
   }
-  function groupOf(r) {
-    if (r.siteApp) return "site-apps";
-    if (r.changed || r.errored) return "changed";
-    if (r.copyChanged) return "copy";
-    if (r.siteVariant) return "variants";
-    return "cold";
+  var APP_DISPLAY_ORDER = [
+    "warondisease",
+    "optimitron",
+    "dfda",
+    "wishocracy",
+    "trialabundancesurvey",
+    "curedao",
+    "acceleratedmedicine"
+  ];
+  var COMPATIBILITY_DISPLAY_ORDER = ["warondisease", "dfda", "dih"];
+  function routeNeedsReview(r) {
+    return Boolean(
+      r.errored ||
+      r.changed ||
+      r.copyChanged ||
+      Number(r.baselineMissingPairs) > 0
+    );
   }
-  function siteAppKey(r) {
-    return r.siteVariant || r.variantLabel || r.routeName;
+  function routePriority(r) {
+    if (r.errored) return 0;
+    if (r.changed) return 1;
+    if (r.copyChanged) return 2;
+    if (Number(r.baselineMissingPairs) > 0) return 3;
+    return 4;
   }
-  function siteAppPageLabel(r) {
+  function sortRoutesForReview(list) {
+    return list.slice().sort(function (a, b) {
+      return routePriority(a) - routePriority(b);
+    });
+  }
+  function ownerKey(r) {
+    return r.appId || r.siteVariant || r.routeName;
+  }
+  function appPageLabel(r) {
     var parts = String(r.routeLabel || r.routeName).split(" \u00b7 ");
     return parts.length > 1 ? parts.slice(1).join(" \u00b7 ") : r.routeLabel;
   }
@@ -824,7 +849,7 @@ const CLIENT_JS = `
     return v ? (v.v === "looks-right" ? "\\uD83D\\uDC4D" : v.v === "needs-work" ? "\\uD83D\\uDC4E" : "\\u23ED") : "";
   }
   function reviewable() {
-    return routes.filter(function (r) { return groupOf(r) !== "cold"; });
+    return routes.filter(routeNeedsReview);
   }
   function updateReviewedChip() {
     var pool = reviewable();
@@ -904,11 +929,24 @@ const CLIENT_JS = `
   }
 
   /* ---------------- rail ---------------- */
-  var coldOpen = false;
-  var variantsOpen = false;
-  var siteAppOpen = {};
-  var firstSiteAppRoute = routes.find(function (r) { return r.siteApp; });
-  if (firstSiteAppRoute) siteAppOpen[siteAppKey(firstSiteAppRoute)] = true;
+  var appOpen = {};
+  var compatibilityHostOpen = {};
+  var compatibilityOpen = false;
+  routes.forEach(function (r) {
+    if (!routeNeedsReview(r)) return;
+    if (r.captureKind === "legacy-host") {
+      compatibilityOpen = true;
+      compatibilityHostOpen[ownerKey(r)] = true;
+    } else {
+      appOpen[ownerKey(r)] = true;
+    }
+  });
+  var firstAppRoute = routes.find(function (r) {
+    return r.captureKind === "app" && r.appId === "warondisease";
+  }) || routes.find(function (r) { return r.captureKind === "app"; });
+  if (firstAppRoute && !Object.keys(appOpen).length) {
+    appOpen[ownerKey(firstAppRoute)] = true;
+  }
   var routeFilter = "";
   function renderRail() {
     var rail = document.getElementById("rail");
@@ -926,78 +964,79 @@ const CLIENT_JS = `
     filterWrap.appendChild(input);
     rail.appendChild(filterWrap);
 
-    var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
-    var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
-    var siteApps = routes.filter(function (r) { return groupOf(r) === "site-apps"; });
-    var cold = routes.filter(function (r) { return groupOf(r) === "cold"; });
-    var variants = routes.filter(function (r) { return groupOf(r) === "variants"; });
+    var appRoutes = routes.filter(function (r) { return r.captureKind === "app"; });
+    var compatibilityRoutes = routes.filter(function (r) { return r.captureKind === "legacy-host"; });
 
-    function addGroup(title, list, key) {
-      if (!list.length) return;
-      var wrap = el("div", { class: "rail-group", "data-title": title, "data-total": String(list.length), "data-key": key });
-      wrap.appendChild(el("div", { class: "rail-group-h", text: title + " (" + list.length + ")" }));
-      list.forEach(function (r) { wrap.appendChild(routeRow(r)); });
-      rail.appendChild(wrap);
-    }
-    // collapsed-by-default group behind a count toggle
-    function addColdGroup(title, list, key, isOpen, setOpen) {
-      if (!list.length) return;
-      var wrap = el("div", { class: "rail-group", "data-title": title, "data-total": String(list.length), "data-key": key });
-      var toggle = el("button", {
-        type: "button", class: "rail-group-h", "aria-expanded": String(isOpen),
-        text: (isOpen ? "\\u25be" : "\\u25b8") + " " + title + " (" + list.length + ")"
+    function orderedOwnerKeys(grouped, kind) {
+      var preferred = kind === "app" ? APP_DISPLAY_ORDER : COMPATIBILITY_DISPLAY_ORDER;
+      return Object.keys(grouped).sort(function (a, b) {
+        var ai = preferred.indexOf(a);
+        var bi = preferred.indexOf(b);
+        if (ai === -1) ai = preferred.length;
+        if (bi === -1) bi = preferred.length;
+        return ai - bi || a.localeCompare(b);
       });
-      toggle.addEventListener("click", function () {
-        setOpen(!isOpen);
-        renderRail();
-        markSelectedRow();
-        applyFilter();
-      });
-      wrap.appendChild(toggle);
-      if (isOpen) list.forEach(function (r) { wrap.appendChild(routeRow(r)); });
-      rail.appendChild(wrap);
     }
-    function addSiteAppGroups(list) {
+    function addOwnerGroups(wrap, list, kind) {
       if (!list.length) return;
       var grouped = {};
       list.forEach(function (r) {
-        var key = siteAppKey(r);
+        var key = ownerKey(r);
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(r);
       });
-      var appKeys = Object.keys(grouped);
-      var wrap = el("div", {
-        class: "rail-group", "data-title": "Site apps",
-        "data-total": String(appKeys.length), "data-key": "site-apps"
-      });
-      wrap.appendChild(el("div", {
-        class: "rail-group-h", text: "Site apps (" + appKeys.length + ")"
-      }));
-      appKeys.forEach(function (key) {
-        var appRoutes = grouped[key];
+      orderedOwnerKeys(grouped, kind).forEach(function (key) {
+        var ownerRoutes = sortRoutesForReview(grouped[key]);
+        var openState = kind === "app" ? appOpen : compatibilityHostOpen;
         var details = el("details", {
-          class: "rail-site-app", "data-site-app": key
+          class: "rail-app", "data-owner-key": key, "data-owner-kind": kind
         });
-        details.open = Boolean(siteAppOpen[key]);
+        details.open = Boolean(openState[key]);
         details.appendChild(el("summary", {
-          class: "rail-site-app-h",
-          text: (appRoutes[0].variantLabel || key) + " (" + appRoutes.length + ")"
+          class: "rail-app-h",
+          text: (ownerRoutes[0].appLabel || key) + " (" + ownerRoutes.length + ")"
         }));
-        appRoutes.forEach(function (r) {
-          details.appendChild(routeRow(r, siteAppPageLabel(r)));
+        ownerRoutes.forEach(function (r) {
+          details.appendChild(routeRow(r, appPageLabel(r)));
         });
         details.addEventListener("toggle", function () {
-          if (!routeFilter.trim()) siteAppOpen[key] = details.open;
+          if (!routeFilter.trim()) openState[key] = details.open;
         });
         wrap.appendChild(details);
       });
+    }
+    function addApps(list) {
+      if (!list.length) return;
+      var appCount = new Set(list.map(function (r) { return ownerKey(r); })).size;
+      var wrap = el("div", {
+        class: "rail-group", "data-title": "Apps",
+        "data-total": String(appCount), "data-key": "apps"
+      });
+      wrap.appendChild(el("div", {
+        class: "rail-group-h", text: "Apps (" + appCount + ")"
+      }));
+      addOwnerGroups(wrap, list, "app");
       rail.appendChild(wrap);
     }
-    addGroup("Changed", changed, "changed");
-    addGroup("Copy only", copy, "copy");
-    addSiteAppGroups(siteApps);
-    addColdGroup("Unchanged", cold, "cold", coldOpen, function (v) { coldOpen = v; });
-    addColdGroup("Other variants", variants, "variants", variantsOpen, function (v) { variantsOpen = v; });
+    function addCompatibility(list) {
+      if (!list.length) return;
+      var hostCount = new Set(list.map(function (r) { return ownerKey(r); })).size;
+      var wrap = el("details", {
+        class: "rail-group rail-compat", "data-title": "Compatibility checks",
+        "data-total": String(hostCount), "data-key": "compatibility"
+      });
+      wrap.open = compatibilityOpen;
+      wrap.appendChild(el("summary", {
+        class: "rail-group-h", text: "Compatibility checks (" + hostCount + ")"
+      }));
+      addOwnerGroups(wrap, list, "legacy-host");
+      wrap.addEventListener("toggle", function () {
+        if (!routeFilter.trim()) compatibilityOpen = wrap.open;
+      });
+      rail.appendChild(wrap);
+    }
+    addApps(appRoutes);
+    addCompatibility(compatibilityRoutes);
 
     rail.appendChild(el("div", {
       class: "kbd-hint",
@@ -1009,7 +1048,7 @@ const CLIENT_JS = `
     var btn = el("button", {
       class: "route-row",
       "data-route": r.routeName,
-      "data-filter": (r.routeLabel + " " + r.routeName + " " + r.routePath).toLowerCase(),
+      "data-filter": (r.routeLabel + " " + r.routeName + " " + r.routePath + " " + (r.appLabel || "") + " " + (r.appId || "")).toLowerCase(),
       title: r.routeLabel + " \\u2014 " + r.statusLabel
     });
     var dotCls = "dot";
@@ -1031,11 +1070,11 @@ const CLIENT_JS = `
 
   function fillRouteBadges(container, r) {
     container.innerHTML = "";
-    if (r.siteVariant && !r.siteApp) {
+    if (r.captureKind === "legacy-host") {
       container.appendChild(el("span", {
         class: "badge variant",
-        title: (r.siteApp ? "Site app: " : "Site variant: ") + (r.variantLabel || r.siteVariant),
-        text: r.variantLabel || r.siteVariant
+        title: "Temporary capture from the legacy host",
+        text: "legacy host"
       }));
     }
     (r.pairs || []).forEach(function (p) {
@@ -1076,55 +1115,53 @@ const CLIENT_JS = `
   function applyFilter() {
     var inp = document.getElementById("route-filter");
     var q = inp ? inp.value.trim().toLowerCase() : "";
-    document.querySelectorAll(".rail-site-app").forEach(function (group) {
+    document.querySelectorAll(".rail-app").forEach(function (group) {
       var matches = 0;
-      group.querySelectorAll(".route-row").forEach(function (row) {
-        if (!q || row.getAttribute("data-filter").indexOf(q) !== -1) matches++;
-      });
-      group.style.display = !q || matches ? "" : "none";
-      group.open = q ? matches > 0 : Boolean(siteAppOpen[group.getAttribute("data-site-app")]);
-    });
-    document.querySelectorAll(".rail-group").forEach(function (group) {
-      var visible = 0;
       group.querySelectorAll(".route-row").forEach(function (row) {
         var show = !q || row.getAttribute("data-filter").indexOf(q) !== -1;
         row.style.display = show ? "" : "none";
-        if (show) visible++;
+        if (show) matches++;
       });
-      var count = group.getAttribute("data-key") === "site-apps"
-        ? Array.prototype.filter.call(group.querySelectorAll(".rail-site-app"), function (siteApp) {
-            return siteApp.style.display !== "none";
-          }).length
-        : visible;
+      group.style.display = !q || matches ? "" : "none";
+      var key = group.getAttribute("data-owner-key");
+      var state = group.getAttribute("data-owner-kind") === "app"
+        ? appOpen
+        : compatibilityHostOpen;
+      group.open = q ? matches > 0 : Boolean(state[key]);
+    });
+    document.querySelectorAll(".rail-group").forEach(function (group) {
+      var count = Array.prototype.filter.call(
+        group.querySelectorAll(".rail-app"),
+        function (owner) { return owner.style.display !== "none"; }
+      ).length;
       var total = Number(group.getAttribute("data-total"));
       var h = group.querySelector(".rail-group-h");
-      if (h && h.tagName !== "BUTTON") {
+      if (h) {
         h.textContent = group.getAttribute("data-title") + " (" + (count < total ? count + "/" + total : String(total)) + ")";
       }
-      if (!h || h.tagName !== "BUTTON") {
-        group.style.display = count ? "" : "none";
+      group.style.display = count ? "" : "none";
+      if (group.getAttribute("data-key") === "compatibility") {
+        group.open = q ? count > 0 : compatibilityOpen;
       }
     });
   }
 
   function visibleRows() {
     return Array.prototype.filter.call(document.querySelectorAll(".route-row"), function (r) {
-      return r.style.display !== "none" && r.offsetParent !== null;
+      if (r.style.display === "none") return false;
+      var parent = r.parentElement;
+      while (parent && parent.id !== "rail") {
+        if (parent.tagName === "DETAILS" && !parent.open) return false;
+        parent = parent.parentElement;
+      }
+      return true;
     });
   }
   // Route order for j/k and verdict auto-advance. Rail rows when visible;
   // otherwise (mobile, rail accordion closed) the same grouped order the rail would show.
   function navNames() {
     var rows = visibleRows();
-    if (rows.length) return rows.map(function (row) { return row.getAttribute("data-route"); });
-    var changed = routes.filter(function (r) { return groupOf(r) === "changed"; });
-    var copy = routes.filter(function (r) { return groupOf(r) === "copy"; });
-    var siteApps = routes.filter(function (r) {
-      return groupOf(r) === "site-apps" && siteAppOpen[siteAppKey(r)];
-    });
-    var cold = coldOpen ? routes.filter(function (r) { return groupOf(r) === "cold"; }) : [];
-    var variants = variantsOpen ? routes.filter(function (r) { return groupOf(r) === "variants"; }) : [];
-    return changed.concat(copy, siteApps, cold, variants).map(function (r) { return r.routeName; });
+    return rows.map(function (row) { return row.getAttribute("data-route"); });
   }
   function markSelectedRow() {
     document.querySelectorAll(".route-row").forEach(function (row) {
@@ -1140,8 +1177,17 @@ const CLIENT_JS = `
     var r = routeByName(name);
     if (!r) return;
     reviewStatus = typeof opts.reviewStatus === "string" ? opts.reviewStatus : "";
-    if (r.siteApp && !siteAppOpen[siteAppKey(r)]) {
-      siteAppOpen[siteAppKey(r)] = true;
+    var key = ownerKey(r);
+    var shouldRenderRail = false;
+    if (r.captureKind === "legacy-host") {
+      if (!compatibilityOpen || !compatibilityHostOpen[key]) shouldRenderRail = true;
+      compatibilityOpen = true;
+      compatibilityHostOpen[key] = true;
+    } else if (!appOpen[key]) {
+      appOpen[key] = true;
+      shouldRenderRail = true;
+    }
+    if (shouldRenderRail) {
       renderRail();
     }
     selectedName = name;
@@ -2202,7 +2248,6 @@ const CLIENT_JS = `
     var names = reviewable().map(function (r) { return r.routeName; });
     if (!names.length) return null;
     var currentIndex = names.indexOf(currentName);
-    if (currentIndex === -1) currentIndex = 0;
     for (var offset = 1; offset <= names.length; offset++) {
       var candidate = names[(currentIndex + offset) % names.length];
       if (!verdicts[candidate]) return candidate;
@@ -2380,13 +2425,13 @@ function renderHeaderHtml(meta, summary, coverage) {
   chips.push(
     `<span class="chip">${escapeHtml(summary.unchangedRoutes)} unchanged</span>`,
   );
-  if (summary.variantRoutes)
+  if (summary.appCount)
     chips.push(
-      `<span class="chip">${escapeHtml(summary.variantRoutes)} variant</span>`,
+      `<span class="chip">${escapeHtml(summary.appCount)} app${Number(summary.appCount) === 1 ? "" : "s"}</span>`,
     );
-  if (summary.siteAppRoutes)
+  if (summary.compatibilityRoutes)
     chips.push(
-      `<span class="chip">${escapeHtml(summary.siteAppRoutes)} site-app page${Number(summary.siteAppRoutes) === 1 ? "" : "s"}</span>`,
+      `<span class="chip">${escapeHtml(summary.compatibilityRoutes)} compatibility check${Number(summary.compatibilityRoutes) === 1 ? "" : "s"}</span>`,
     );
   if (summary.erroredRoutes)
     chips.push(

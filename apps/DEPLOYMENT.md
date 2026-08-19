@@ -1,9 +1,10 @@
-# Deploying the site apps to Vercel
+# Deploying apps to Vercel
 
 ## Project shape
 
-Keep `apps/optimitron` on its existing Vercel project. Create one additional
-Vercel project for each other app under `apps/*`.
+Treat every directory under `apps/*` as a peer application with its own Vercel
+project. Keep `apps/optimitron` on its existing project because its domains and
+history already live there. Create one project for each other app.
 
 `apps/warondisease` is the source of truth for the campaign site. Its rich
 neobrutalist home and dashboard must pass public and authenticated visual review
@@ -24,6 +25,40 @@ Use Vercel's Git integration for these projects. Update the existing
 replacement project. Do not add a workflow that redeploys every app after every
 commit. Vercel can skip projects whose workspace dependencies did not change.
 
+Run `pnpm vercel:projects` to audit this project topology. Run
+`pnpm vercel:projects -- --apply` to create missing projects and repair their
+deployment settings. The `Reconcile Vercel app projects` workflow provides the
+same audit or apply operation with the Production environment's Vercel token.
+The reconciler does not move domains or copy secrets.
+
+Affected-project deployments are enabled for every project. Vercel uses the
+pnpm workspace graph and each app's declared internal dependencies to decide
+which projects need a preview or production deployment. Root configuration and
+lockfile changes can still affect every project. Every app disables deployment
+from `gh-pages` because that branch contains generated visual-review files.
+
+Vercel treats changes outside the pnpm workspace as global. Each app therefore
+uses the same dependency-aware ignore script to reject documentation, review
+automation, and unrelated app changes before build CPU starts. App source,
+transitive workspace dependencies, and root dependency files still build. The
+script compares against the last successful deployment, so multi-commit pushes
+cannot hide an earlier app change. App tests, browser fixtures, screenshots,
+and Optimitron's current visual-review assembler do not trigger app deployment.
+On a branch's first deployment, the script compares with `main` or treats the
+full tracked tree as changed. It can overbuild once, but it cannot skip an
+earlier unpreviewed change.
+
+GitHub Actions also builds and captures every relevant app for pull request
+visual review. This local fixture-based review is broader than the live Vercel
+previews and remains available when Vercel correctly skips an unaffected app.
+The review packet resolves a separate live preview URL for each affected app,
+and each screenshot route links to the matching app instead of a shared host.
+
+`optimitron-web` temporarily uses a custom production workflow so production
+database migrations and managed-data sync finish before deployment. It uses the
+same affected-input check before it builds. This is a deployment-ordering
+exception, not a difference in application importance.
+
 ## Environment variables
 
 Use Vercel Shared Environment Variables only when the value and trust boundary
@@ -36,15 +71,17 @@ Good shared candidates:
   signs MCP Bearer tokens with it and dfda.earth/api/mcp verifies them, so those
   two projects must share one value (decided 2026-08-14: one secret, no separate
   MCP signing variable; if it ever leaks, rotate it and every connector re-runs
-  OAuth once). The other satellites keep their own per-project values.
+  OAuth once). The other apps keep their own per-project values.
 - A Resend API key when the same account and sending policy serve several apps.
 - A Sentry DSN when several apps intentionally report to the same Sentry project.
 
 Keep these project-specific:
 
-- `NEXTAUTH_URL` because every app has a different canonical host.
-- `NEXTAUTH_SECRET` for every satellite except dFDA (see the shared list above),
-  so one satellite cannot expose every app's sessions.
+- Production `NEXTAUTH_URL` because every app has a different canonical host.
+  Preview deployments use Vercel's per-deployment `VERCEL_URL` fallback.
+- `NEXTAUTH_SECRET` for each app that ships authentication, except Optimitron
+  and dFDA (see the shared list above), so one app cannot expose every app's
+  sessions.
 - `CRON_SECRET` because only War on Disease exposes cron routes.
 - `NEXT_PUBLIC_SURVEY_ORIGIN` because only Accelerated Medicine embeds the survey.
 - Analytics IDs when reports must remain separated by brand.

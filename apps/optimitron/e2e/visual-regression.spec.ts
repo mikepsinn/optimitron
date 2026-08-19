@@ -20,7 +20,10 @@ import {
   waitForPaint,
 } from "./utils/audit-helpers";
 import { DEMO_PASSWORD, signInDemoUser, signInUser } from "./utils/auth";
-import { VISUAL_ROUTES } from "./utils/visual-routes";
+import {
+  getVisualRouteOwnership,
+  VISUAL_ROUTES,
+} from "./utils/visual-routes";
 import { freezeClock } from "./helpers/freeze-clock.mjs";
 
 const VISUAL_REVIEW_CSS = `
@@ -98,13 +101,16 @@ const REVIEW_AFTER_ROOT = path.resolve(
 );
 const ROUTE_MANIFEST_PATH = path.join(SCREENSHOT_ROOT, "routes.json");
 const ROUTE_REVIEW_MANIFEST = {
-  version: 2,
+  version: 3,
   captureVersion: VISUAL_CAPTURE_VERSION,
   routes: buildRouteReviewManifest(),
 };
 
 function buildRouteReviewManifest() {
   const entries = VISUAL_ROUTES.map((route) => ({
+    appId: route.appId,
+    appLabel: route.appLabel,
+    captureKind: route.captureKind,
     name: route.name,
     path: route.path,
     authenticated: route.authenticated === true,
@@ -114,7 +120,7 @@ function buildRouteReviewManifest() {
       ? { activationSelector: route.requiredSelector }
       : {}),
     ...(route.covers?.length ? { covers: route.covers } : {}),
-    ...(route.siteVariant ? { siteVariant: route.siteVariant } : {}),
+    siteVariant: route.siteVariant,
   }));
   const representedStates = new Set(
     entries.map((entry) => `${entry.path}\u0000${entry.authenticated}`),
@@ -132,7 +138,9 @@ function buildRouteReviewManifest() {
       const hasLoggedOutState = entries.some(
         (entry) => entry.path === spec.path && !entry.authenticated,
       );
+      const ownership = getVisualRouteOwnership(spec.path);
       entries.push({
+        ...ownership,
         name:
           authenticated && hasLoggedOutState ? `${spec.name}-auth` : spec.name,
         path: spec.path,

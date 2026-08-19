@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm run build:vercel",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../packages ../../content ../../scripts ../../package.json ../../pnpm-lock.yaml ../../pnpm-workspace.yaml ../../tsconfig.base.json ../../eslint.config.mjs ../../.npmrc ../../.env.example",
+  "ignoreCommand": "node ../../.github/scripts/vercel-ignore-build.mjs optimitron",
   "git": {
     "deploymentEnabled": {
       "main": false,

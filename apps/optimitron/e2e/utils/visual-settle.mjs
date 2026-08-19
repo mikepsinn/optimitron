@@ -143,7 +143,7 @@ export async function prepareFullPageVisualCapture(page) {
       .filter((frame) => frame !== page.mainFrame())
       .map(async (frame) => {
         await frame.waitForLoadState("load", { timeout: 10_000 });
-        await frame.evaluate(() => document.fonts.ready);
+        await waitForFonts(frame);
         await frame.evaluate(() =>
           window.dispatchEvent(new Event("optimitron:visual-capture")),
         );
@@ -159,7 +159,34 @@ export async function prepareFullPageVisualCapture(page) {
       window.dispatchEvent(new Event("optimitron:visual-capture"));
     });
   });
+  await retryAfterNavigation(page, async () => {
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('[data-visual-capture-ready="false"]'),
+      undefined,
+      { timeout: 10_000 },
+    );
+  });
   await waitForPaint(page);
+}
+
+/**
+ * Wait for web fonts without allowing a stalled font request to hang capture.
+ *
+ * @param {import("@playwright/test").Page | import("@playwright/test").Frame} target
+ * @param {number} [timeout]
+ */
+export async function waitForFonts(target, timeout = 10_000) {
+  try {
+    await target.waitForFunction(
+      () => !document.fonts || document.fonts.status === "loaded",
+      undefined,
+      { timeout },
+    );
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** @param {import("@playwright/test").Page} page */
