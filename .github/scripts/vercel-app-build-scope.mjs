@@ -94,26 +94,73 @@ export function getVercelDiffBase(
 
 export function ensureVercelDiffBase(
   diffBase,
-  { root = repoRoot, execFile = execFileSync } = {},
+  {
+    root = repoRoot,
+    execFile = execFileSync,
+    fetchRemotes = getVercelGitFetchRemotes(process.env, root),
+  } = {},
 ) {
   if (!diffBase) return null;
   if (hasGitCommit(diffBase, root, execFile)) return diffBase;
 
-  try {
-    execFile(
-      "git",
-      ["fetch", "--no-tags", "--depth=1", "origin", diffBase],
-      {
-        cwd: root,
-        encoding: "utf8",
-        stdio: ["ignore", "ignore", "pipe"],
-      },
-    );
-  } catch {
-    return null;
+  for (const remote of fetchRemotes) {
+    try {
+      execFile(
+        "git",
+        ["fetch", "--no-tags", "--depth=1", remote, diffBase],
+        {
+          cwd: root,
+          encoding: "utf8",
+          stdio: ["ignore", "ignore", "pipe"],
+        },
+      );
+    } catch {
+      continue;
+    }
+    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
   }
 
-  return hasGitCommit(diffBase, root, execFile) ? diffBase : null;
+  return null;
+}
+
+export function getVercelGitFetchRemotes(
+  environment = process.env,
+  root = repoRoot,
+) {
+  const remotes = ["origin"];
+  const owner = String(environment.VERCEL_GIT_REPO_OWNER ?? "").trim();
+  const slug = String(environment.VERCEL_GIT_REPO_SLUG ?? "").trim();
+  const safeRepoPart = /^[a-z0-9_.-]+$/iu;
+  if (safeRepoPart.test(owner) && safeRepoPart.test(slug)) {
+    remotes.push(`https://github.com/${owner}/${slug}.git`);
+    return remotes;
+  }
+
+  try {
+    const manifest = JSON.parse(
+      readFileSync(path.join(root, "package.json"), "utf8"),
+    );
+    const repositoryUrl = String(
+      typeof manifest.repository === "string"
+        ? manifest.repository
+        : (manifest.repository?.url ?? ""),
+    )
+      .replace(/^git\+/u, "")
+      .trim();
+    if (
+      /^https:\/\/github\.com\/[a-z0-9_.-]+\/[a-z0-9_.-]+(?:\.git)?$/iu.test(
+        repositoryUrl,
+      )
+    ) {
+      remotes.push(
+        repositoryUrl.endsWith(".git") ? repositoryUrl : `${repositoryUrl}.git`,
+      );
+    }
+  } catch {
+    // The named remote remains available for non-Vercel checkouts.
+  }
+
+  return remotes;
 }
 
 function hasGitCommit(ref, root, execFile) {

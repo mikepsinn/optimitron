@@ -4,6 +4,7 @@ import {
   ensureVercelDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
+  getVercelGitFetchRemotes,
 } from "./vercel-app-build-scope.mjs";
 
 const apps = [
@@ -131,11 +132,45 @@ test("fetches a missing Vercel diff base in a shallow clone", () => {
     throw new Error("missing commit");
   };
 
-  assert.equal(ensureVercelDiffBase(sha, { root: "/repo", execFile }), sha);
+  assert.equal(
+    ensureVercelDiffBase(sha, {
+      root: "/repo",
+      execFile,
+      fetchRemotes: ["origin"],
+    }),
+    sha,
+  );
   assert.deepEqual(calls, [
     ["cat-file", "-e", `${sha}^{commit}`],
     ["fetch", "--no-tags", "--depth=1", "origin", sha],
     ["cat-file", "-e", `${sha}^{commit}`],
+  ]);
+});
+
+test("falls back to the public GitHub remote when Vercel omits origin", () => {
+  const sha = "1234567890abcdef1234567890abcdef12345678";
+  const fetchRemotes = getVercelGitFetchRemotes({
+    VERCEL_GIT_REPO_OWNER: "mikepsinn",
+    VERCEL_GIT_REPO_SLUG: "optimitron",
+  });
+  const fetched = [];
+  const execFile = (_command, args) => {
+    if (args[0] === "fetch") {
+      fetched.push(args[3]);
+      if (args[3] === fetchRemotes[1]) return "";
+      throw new Error("missing origin");
+    }
+    if (args[0] === "cat-file" && fetched.length === 2) return "";
+    throw new Error("missing commit");
+  };
+
+  assert.equal(
+    ensureVercelDiffBase(sha, { root: "/repo", execFile, fetchRemotes }),
+    sha,
+  );
+  assert.deepEqual(fetched, [
+    "origin",
+    "https://github.com/mikepsinn/optimitron.git",
   ]);
 });
 
@@ -148,6 +183,7 @@ test("builds safely when a missing Vercel diff base cannot be fetched", () => {
     ensureVercelDiffBase("1234567890abcdef1234567890abcdef12345678", {
       root: "/repo",
       execFile,
+      fetchRemotes: ["origin"],
     }),
     null,
   );
