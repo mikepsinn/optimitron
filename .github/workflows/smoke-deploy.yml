@@ -692,6 +692,8 @@ jobs:
     # existing smoke job on the same deployment_status event.
     name: Playwright preview smoke
     if: >-
+      (github.event.deployment.creator.login == 'vercel[bot]' ||
+        github.event.deployment_status.creator.login == 'vercel[bot]') &&
       !startsWith(github.event.deployment.environment, 'visual-review') &&
       !startsWith(github.event.deployment_status.environment, 'visual-review') &&
       github.event.deployment.environment != 'Production' &&

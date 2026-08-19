@@ -59,6 +59,22 @@ test("both smoke jobs recognize Vercel status creators on redeploys", () => {
   }
 });
 
+test("Playwright preview smoke ignores non-Vercel deployment events", () => {
+  const playwrightJobHeader = workflow.slice(
+    workflow.indexOf("  playwright-preview:"),
+    workflow.indexOf("    steps:", workflow.indexOf("  playwright-preview:")),
+  );
+
+  assert.match(
+    playwrightJobHeader,
+    /github\.event\.deployment\.creator\.login == 'vercel\[bot\]'/u,
+  );
+  assert.match(
+    playwrightJobHeader,
+    /github\.event\.deployment_status\.creator\.login == 'vercel\[bot\]'/u,
+  );
+});
+
 test("deploy smoke can recover the Vercel preview URL from the PR comment", () => {
   assert.match(
     workflow,
