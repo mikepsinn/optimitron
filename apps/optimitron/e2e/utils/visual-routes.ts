@@ -648,7 +648,7 @@ const LEGACY_HOST_ROUTES: VisualRouteSpec[] = [
     name: "legacy-warondisease-home",
     path: ROUTES.home,
     required: true,
-    requiredSelector: "#vote",
+    requiredSelector: "#sign",
     siteVariant: "warOnDisease",
   },
   {
