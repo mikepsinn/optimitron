@@ -1022,12 +1022,12 @@ const CLIENT_JS = `
       if (!list.length) return;
       var hostCount = new Set(list.map(function (r) { return ownerKey(r); })).size;
       var wrap = el("details", {
-        class: "rail-group rail-compat", "data-title": "Compatibility checks",
+        class: "rail-group rail-compat", "data-title": "Legacy site variants",
         "data-total": String(hostCount), "data-key": "compatibility"
       });
       wrap.open = compatibilityOpen;
       wrap.appendChild(el("summary", {
-        class: "rail-group-h", text: "Compatibility checks (" + hostCount + ")"
+        class: "rail-group-h", text: "Legacy site variants (" + hostCount + ")"
       }));
       addOwnerGroups(wrap, list, "legacy-host");
       wrap.addEventListener("toggle", function () {
@@ -2431,7 +2431,7 @@ function renderHeaderHtml(meta, summary, coverage) {
     );
   if (summary.compatibilityRoutes)
     chips.push(
-      `<span class="chip">${escapeHtml(summary.compatibilityRoutes)} compatibility check${Number(summary.compatibilityRoutes) === 1 ? "" : "s"}</span>`,
+      `<span class="chip">${escapeHtml(summary.compatibilityRoutes)} legacy variant route${Number(summary.compatibilityRoutes) === 1 ? "" : "s"}</span>`,
     );
   if (summary.erroredRoutes)
     chips.push(

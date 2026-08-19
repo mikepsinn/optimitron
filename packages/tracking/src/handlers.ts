@@ -5,6 +5,7 @@
 // pre-extraction behavior.
 import {
   deleteMeasurementForUser,
+  getTrackingReminderForUser,
   listDueTrackingRemindersForUser,
   listMeasurementsForUser,
   listTrackingReminderNotificationsForUser,
@@ -116,6 +117,15 @@ export async function handleTrackingToolCall({
       return ok({
         reminders: await listTrackingRemindersForUser(a, userId),
       });
+    }
+
+    case "getTrackingReminder": {
+      if (!userId)
+        return authRequired(
+          name,
+          "This tool reads one of your personal tracking reminders.",
+        );
+      return ok(await getTrackingReminderForUser(a, userId));
     }
 
     case "listTrackingReminderNotifications":
