@@ -79,8 +79,9 @@ Keep these project-specific:
 
 - Production `NEXTAUTH_URL` because every app has a different canonical host.
   Preview deployments use Vercel's per-deployment `VERCEL_URL` fallback.
-- `NEXTAUTH_SECRET` for every app except Optimitron and dFDA (see the shared
-  list above), so one app cannot expose every app's sessions.
+- `NEXTAUTH_SECRET` for each app that ships authentication, except Optimitron
+  and dFDA (see the shared list above), so one app cannot expose every app's
+  sessions.
 - `CRON_SECRET` because only War on Disease exposes cron routes.
 - `NEXT_PUBLIC_SURVEY_ORIGIN` because only Accelerated Medicine embeds the survey.
 - Analytics IDs when reports must remain separated by brand.

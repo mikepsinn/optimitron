@@ -67,6 +67,22 @@ test("lists peer app previews and links app-specific visual routes", () => {
   );
 });
 
+test("omits Optimitron route links when only peer app previews exist", () => {
+  const output = runGenerator({
+    APP_PREVIEW_URLS_JSON: JSON.stringify({
+      warondisease: "https://war.example.vercel.app",
+    }),
+    PREVIEW_URL: "",
+    CHANGED_FILES: JSON.stringify([
+      "apps/optimitron/src/components/tasks/TaskCard.tsx",
+    ]),
+  });
+
+  assert.match(output, /\[War on Disease preview\]/u);
+  assert.doesNotMatch(output, /\]\(null\)/u);
+  assert.doesNotMatch(output, /review-item:preview:/u);
+});
+
 test("generates a review packet with visual-review links and preserved checkboxes", () => {
   const previewUrl = "https://preview.example.vercel.app";
   const visualReviewUrl =

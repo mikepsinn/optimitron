@@ -373,10 +373,12 @@ function buildPreviewItems(routeChanges) {
       files.slice(0, 4).join(", ") +
       (files.length > 4 ? ` (+${files.length - 4} more)` : "");
     for (const state of reviewStatesForRoute(route)) {
+      const previewUrl = buildUrl(route, state.param);
+      if (!previewUrl) continue;
       items.push({
         id: `preview:${route}:${state.id}`,
         label:
-          `:rocket: [\`${route}\`](${buildUrl(route, state.param)})` +
+          `:rocket: [\`${route}\`](${previewUrl})` +
           ` - ${state.label} preview - ${filesLabel}`,
       });
     }
