@@ -1476,7 +1476,14 @@ function buildReviewManifest(groups, coverage) {
             ? labelVariantRoute(group.routeName, siteVariant)
             : labelRoute(group.routeName),
         routePath,
-        routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
+        routeUrl: siteAppRoute
+          ? getAppPreviewRouteUrl(
+              appPreviewUrls,
+              siteVariant,
+              routePath,
+              getRouteAuthState(group.routeName),
+            )
+          : getRouteUrl(group.routeName),
         authState: getRouteAuthState(group.routeName),
         siteApp: Boolean(siteAppRoute),
         siteVariant,

@@ -99,7 +99,11 @@ export function TimelineScrolly({ userAge, onAgeChange }: TimelineScrollyProps) 
 
 
   return (
-    <div ref={timelineRef} className="relative">
+    <div
+      ref={timelineRef}
+      className="relative"
+      data-visual-capture-ready={dfdaComplete && currentYear === queueYears}
+    >
       {/* Explanation */}
       <p className="text-sm sm:text-base text-foreground/80 text-center mb-4 sm:mb-6 max-w-2xl mx-auto">
         This timeline shows how soon we could find a first treatment for all {diseasesUntreated.toLocaleString()} untreated diseases.

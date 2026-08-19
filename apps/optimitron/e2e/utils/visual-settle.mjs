@@ -159,6 +159,14 @@ export async function prepareFullPageVisualCapture(page) {
       window.dispatchEvent(new Event("optimitron:visual-capture"));
     });
   });
+  await retryAfterNavigation(page, async () => {
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('[data-visual-capture-ready="false"]'),
+      undefined,
+      { timeout: 10_000 },
+    );
+  });
   await waitForPaint(page);
 }
 
