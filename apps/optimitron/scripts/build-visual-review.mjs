@@ -31,6 +31,10 @@ import {
   normalizeVisualRouteManifest,
 } from "./visual-capture-contract.mjs";
 import { renderReviewHtml } from "./visual-review-page.mjs";
+import {
+  getAppPreviewRouteUrl,
+  parseAppPreviewUrls,
+} from "../../../scripts/app-preview-urls.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -53,8 +57,12 @@ const beforeCopySnapshotsRoot = process.env.VISUAL_COPY_BEFORE_ROOT
 const afterCopySnapshotsRoot = process.env.VISUAL_COPY_AFTER_ROOT
   ? resolveInputPath(process.env.VISUAL_COPY_AFTER_ROOT)
   : null;
+const appPreviewUrls = parseAppPreviewUrls(
+  process.env.VISUAL_REVIEW_APP_URLS_JSON,
+  process.env.VISUAL_REVIEW_BASE_URL,
+);
 const pageLinkBaseUrl = parseOptionalUrl(
-  process.env.VISUAL_REVIEW_BASE_URL ??
+  appPreviewUrls.optimitron ??
     (process.env.CI === "true"
       ? null
       : (process.env.BASE_URL ?? process.env.NEXTAUTH_URL)),
@@ -510,7 +518,14 @@ function buildReviewPageRoute(group) {
         ? labelVariantRoute(group.routeName, siteVariant)
         : labelRoute(group.routeName),
     routePath,
-    routeUrl: siteAppRoute ? null : getRouteUrl(group.routeName),
+    routeUrl: siteAppRoute
+      ? getAppPreviewRouteUrl(
+          appPreviewUrls,
+          siteVariant,
+          routePath,
+          getRouteAuthState(group.routeName),
+        )
+      : getRouteUrl(group.routeName),
     productionUrl: getProductionRouteUrl(routePath, siteVariant),
     authState: getRouteAuthState(group.routeName),
     siteApp: Boolean(siteAppRoute),

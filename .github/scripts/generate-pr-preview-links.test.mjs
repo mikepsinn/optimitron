@@ -19,10 +19,53 @@ function runGenerator(env) {
       VISUAL_REVIEW_REQUESTED_BASE_COMMIT_SHA: "",
       VISUAL_REVIEW_BASELINE_RUN_ID: "",
       CHANGED_FILES_PATH: "",
+      APP_PREVIEW_URLS_JSON: "",
       ...env,
     },
   });
 }
+
+test("lists peer app previews and links app-specific visual routes", () => {
+  const warPreview = "https://war.example.vercel.app";
+  const output = runGenerator({
+    APP_PREVIEW_URLS_JSON: JSON.stringify({
+      optimitron: "https://optimitron.example.vercel.app",
+      warondisease: warPreview,
+    }),
+    PREVIEW_URL: "",
+    VISUAL_REVIEW_URL:
+      "https://mikepsinn.github.io/optimitron/pr-123/latest.html",
+    VISUAL_REVIEW_MANIFEST_JSON: JSON.stringify({
+      routes: [
+        {
+          routeName: "site-app-warondisease-dashboard-authenticated",
+          routeLabel: "War on Disease dashboard",
+          routePath: "/dashboard",
+          siteVariant: "warondisease",
+          authState: "demo-logged-in",
+          changed: true,
+          changedPairs: 1,
+          missingPairs: 0,
+          erroredPairs: 0,
+        },
+      ],
+    }),
+    CHANGED_FILES: JSON.stringify([]),
+  });
+
+  assert.match(
+    output,
+    /\[Optimitron preview\]\(https:\/\/optimitron\.example\.vercel\.app\)/u,
+  );
+  assert.match(
+    output,
+    /\[War on Disease preview\]\(https:\/\/war\.example\.vercel\.app\)/u,
+  );
+  assert.match(
+    output,
+    /\[open page\]\(https:\/\/war\.example\.vercel\.app\/dashboard\?login=demo\)/u,
+  );
+});
 
 test("generates a review packet with visual-review links and preserved checkboxes", () => {
   const previewUrl = "https://preview.example.vercel.app";

@@ -47,6 +47,8 @@ cannot hide an earlier app change.
 GitHub Actions also builds and captures every relevant app for pull request
 visual review. This local fixture-based review is broader than the live Vercel
 previews and remains available when Vercel correctly skips an unaffected app.
+The review packet resolves a separate live preview URL for each affected app,
+and each screenshot route links to the matching app instead of a shared host.
 
 `optimitron-web` temporarily uses a custom production workflow so production
 database migrations and managed-data sync finish before deployment. It uses the

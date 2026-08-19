@@ -973,7 +973,7 @@ jobs:
           );
           NODE
 
-      - name: Skip satellite Playwright preview smoke
+      - name: Skip Optimitron-specific Playwright preview smoke
         if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app != 'optimitron'
         run: echo "The Optimitron Playwright suite does not apply to this Vercel project."
 

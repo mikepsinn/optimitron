@@ -1,4 +1,4 @@
-# Survey host, embeds, and satellite apps
+# Survey host, embeds, and peer apps
 
 Decisions for site apps beyond warondisease / dfda / wishocracy.
 

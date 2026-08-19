@@ -371,7 +371,7 @@ test("prefers the exact PR-base visual artifact regardless of overall run status
   const baselineStepStart = workflow.indexOf(
     "- name: Resolve main visual baseline",
   );
-  const baselineStepEnd = workflow.indexOf("- name: Resolve PR preview URL");
+  const baselineStepEnd = workflow.indexOf("- name: Resolve app preview URLs");
   assert.notEqual(baselineStepStart, -1, "visual baseline step is missing");
   assert.notEqual(
     baselineStepEnd,
@@ -423,4 +423,25 @@ test("prefers the exact PR-base visual artifact regardless of overall run status
     /for artifact_name in main-visual-baseline web-visual-review/u,
     "complete main baselines should take precedence over legacy web-only artifacts",
   );
+});
+
+test("links each affected app to its own pull request preview", () => {
+  const workflow = readFileSync(WORKFLOW, "utf8");
+  const resolverStart = workflow.indexOf("- name: Resolve app preview URLs");
+  const resolverEnd = workflow.indexOf(
+    "- name: Post PR review packet preview links",
+  );
+  assert.notEqual(resolverStart, -1, "app preview resolver is missing");
+  assert.notEqual(resolverEnd, -1, "app preview resolver boundary is missing");
+  const resolver = workflow.slice(resolverStart, resolverEnd);
+
+  assert.match(resolver, /getVercelAppBuildMatches/u);
+  assert.match(resolver, /getVercelAppByUrl/u);
+  assert.match(resolver, /listCommits/u);
+  assert.match(resolver, /latestAffectedCommitIndex/u);
+  assert.match(resolver, /\['diff', '--name-only'/u);
+  assert.match(resolver, /commitIndex >= affectedCommitIndex/u);
+  assert.match(resolver, /JSON\.stringify\(previewUrls\)/u);
+  assert.match(workflow, /APP_PREVIEW_URLS_JSON/u);
+  assert.match(workflow, /VISUAL_REVIEW_APP_URLS_JSON/u);
 });

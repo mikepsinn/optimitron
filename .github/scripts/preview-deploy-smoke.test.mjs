@@ -150,7 +150,7 @@ test("routes deployment smoke to the deployed app", () => {
   assert.match(
     workflow,
     /- name: Run Playwright smoke against preview\s+if: .*steps\.target\.outputs\.app == 'optimitron'/u,
-    "the Optimitron Playwright suite must not run against satellite deployments",
+    "the Optimitron Playwright suite must run only against its matching app",
   );
 });
 

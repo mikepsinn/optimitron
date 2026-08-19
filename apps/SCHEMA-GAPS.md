@@ -2,7 +2,7 @@
 
 ## Deployables
 
-`warondisease` · `dfda` · `wishocracy` · thin satellites. See `apps/README.md`.
+`warondisease` · `dfda` · `wishocracy` · focused app shells. See `apps/README.md`.
 
 **One tip PR into `main`** for site apps + site-kit (stacked per-app PRs are superseded).
 

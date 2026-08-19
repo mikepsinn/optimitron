@@ -541,7 +541,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs
+        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs scripts/app-preview-urls.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -944,48 +944,107 @@ jobs:
           rm -rf apps/optimitron/screenshots
           cp -R "$pr_screenshots" apps/optimitron/screenshots
 
-      - name: Resolve PR preview URL
-        id: pr_preview_url
+      - name: Resolve app preview URLs
+        id: pr_preview_urls
         uses: actions/github-script@v8
         with:
           result-encoding: string
           script: |
+            const { execFileSync } = require('node:child_process');
+            const { pathToFileURL } = require('node:url');
             const { owner, repo } = context.repo;
-            const ref = context.payload.pull_request.head.sha;
-            const deployments = await github.paginate(github.rest.repos.listDeployments, {
-              owner,
-              repo,
-              ref,
-              per_page: 100,
+            const issue_number = context.issue.number;
+            const projectModule = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/vercel-app-projects.mjs`).href
+            );
+            const scopeModule = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/vercel-app-build-scope.mjs`).href
+            );
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: issue_number, per_page: 100,
             });
+            const changed = files.map((file) => file.filename);
+            const targetApps = new Set(
+              projectModule.VERCEL_APP_PROJECTS
+                .filter(({ appName }) =>
+                  scopeModule.getVercelAppBuildMatches(appName, changed).length > 0
+                )
+                .map(({ appName }) => appName)
+            );
+            if (targetApps.size === 0) return '{}';
 
-            for (const deployment of deployments) {
-              const env = deployment.environment || '';
-              if (env.startsWith('visual-review')) continue;
-
-              const statuses = await github.rest.repos.listDeploymentStatuses({
-                owner,
-                repo,
-                deployment_id: deployment.id,
-                per_page: 20,
-              });
-              const ready = statuses.data.find((status) =>
-                status.state === 'success' &&
-                status.environment_url &&
-                /^https?:\/\//.test(status.environment_url)
-              );
-              if (ready) {
-                return ready.environment_url;
+            const commits = await github.paginate(github.rest.pulls.listCommits, {
+              owner, repo, pull_number: issue_number, per_page: 100,
+            });
+            const latestAffectedCommitIndex = new Map();
+            for (const [index, commit] of commits.entries()) {
+              const parentSha = commit.parents?.[0]?.sha;
+              if (!parentSha) continue;
+              const commitFiles = execFileSync(
+                'git',
+                ['diff', '--name-only', `${parentSha}..${commit.sha}`],
+                { encoding: 'utf8' },
+              ).split(/\r?\n/u).filter(Boolean);
+              for (const { appName } of projectModule.VERCEL_APP_PROJECTS) {
+                if (
+                  targetApps.has(appName) &&
+                  scopeModule.getVercelAppBuildMatches(appName, commitFiles).length > 0
+                ) {
+                  latestAffectedCommitIndex.set(appName, index);
+                }
               }
             }
+            const previewUrls = {};
 
-            return '';
+            for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
+              const commit = commits[commitIndex];
+              const deployments = await github.paginate(github.rest.repos.listDeployments, {
+                owner, repo, ref: commit.sha, per_page: 100,
+              });
+              for (const deployment of deployments) {
+                if ((deployment.environment || '').startsWith('visual-review')) continue;
+                const statuses = await github.rest.repos.listDeploymentStatuses({
+                  owner,
+                  repo,
+                  deployment_id: deployment.id,
+                  per_page: 20,
+                });
+                const ready = statuses.data.find((status) =>
+                  status.state === 'success' &&
+                  status.environment_url &&
+                  /^https?:\/\//.test(status.environment_url)
+                );
+                if (!ready) continue;
+                const app = projectModule.getVercelAppByUrl(ready.environment_url);
+                const affectedCommitIndex = app
+                  ? latestAffectedCommitIndex.get(app.appName)
+                  : undefined;
+                if (
+                  app &&
+                  targetApps.has(app.appName) &&
+                  affectedCommitIndex !== undefined &&
+                  commitIndex >= affectedCommitIndex &&
+                  !previewUrls[app.appName]
+                ) {
+                  previewUrls[app.appName] = ready.environment_url;
+                }
+              }
+              if ([...targetApps].every((appName) => previewUrls[appName])) break;
+              if (
+                [...targetApps].every((appName) =>
+                  previewUrls[appName] ||
+                  commitIndex <= latestAffectedCommitIndex.get(appName)
+                )
+              ) break;
+            }
+
+            return JSON.stringify(previewUrls);
 
       - name: Post PR review packet preview links
-        if: ${{ !cancelled() && steps.pr_preview_url.outputs.result != '' }}
+        if: ${{ !cancelled() && steps.pr_preview_urls.outputs.result != '{}' }}
         uses: actions/github-script@v8
         env:
-          PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+          APP_PREVIEW_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
         with:
           script: |
             const { execFileSync } = require('node:child_process');
@@ -1043,7 +1102,7 @@ jobs:
         if: always()
         env:
           VISUAL_REVIEW_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          VISUAL_REVIEW_BASE_URL: ${{ steps.pr_preview_url.outputs.result }}
+          VISUAL_REVIEW_APP_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
           VISUAL_REVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
           VISUAL_REVIEW_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
           VISUAL_REVIEW_REPO: ${{ github.repository }}
@@ -1308,10 +1367,10 @@ jobs:
         run: exit 1
 
       - name: Update PR review packet with visual review
-        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' && steps.pr_preview_url.outputs.result != '' }}
+        if: ${{ !cancelled() && steps.wait_visual_review_pages.outputs.available == 'true' && steps.pr_preview_urls.outputs.result != '{}' }}
         uses: actions/github-script@v8
         env:
-          PREVIEW_URL: ${{ steps.pr_preview_url.outputs.result }}
+          APP_PREVIEW_URLS_JSON: ${{ steps.pr_preview_urls.outputs.result }}
           VISUAL_REVIEW_URL: ${{ steps.prepare_pages.outputs.latest_review_url }}
           VISUAL_REVIEW_MANIFEST_PATH: apps/optimitron/output/playwright/review/manifest.json
         with:
