@@ -91,6 +91,13 @@ function runSharedRedirects(req: NextRequest, options: { handleVoteShare?: boole
 export type AuthMiddlewareOptions = {
   /** Paths that require a session token. Defaults to dashboard + vote/profile APIs. */
   authPaths?: string[]
+  /**
+   * Redirect `/vote/<identifier>` share links to the home vote section.
+   * Apps that own a dedicated `/vote/[code]` referral landing route (with
+   * click logging) must opt out so the route handler receives the request.
+   * Defaults to true.
+   */
+  handleVoteShare?: boolean
 }
 
 /**
@@ -98,10 +105,11 @@ export type AuthMiddlewareOptions = {
  */
 export function createAuthMiddleware(options: AuthMiddlewareOptions = {}) {
   const authPaths = options.authPaths ?? ["/dashboard", "/api/vote", "/api/profile"]
+  const handleVoteShare = options.handleVoteShare ?? true
 
   return withAuth(
     function middleware(req: NextRequest) {
-      const shared = runSharedRedirects(req, { handleVoteShare: true })
+      const shared = runSharedRedirects(req, { handleVoteShare })
       if (shared.response) return shared.response
       return applyVariantCookie(NextResponse.next(), shared.variant)
     },

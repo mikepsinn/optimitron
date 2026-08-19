@@ -22,6 +22,7 @@ import {
   getUserTreatyVote,
   upsertTreatyVote,
 } from "@/lib/treaty-votes.server"
+import { applySignatureProfile } from "@/lib/signature-profile.server"
 
 const log = createLogger("votes-sync-api")
 
@@ -49,11 +50,14 @@ export async function POST(req: NextRequest) {
       organizationId,
       sourceUrl,
       sourceReferrer,
+      makePublic,
     } = body
 
     if (!answer || ![VotePosition.YES, VotePosition.NO].includes(answer)) {
       return NextResponse.json({ error: "Invalid vote answer" }, { status: 400 })
     }
+
+    const voteIsPublic = typeof makePublic === "boolean" ? makePublic : undefined
 
     const existingVote = await getUserTreatyVote(userId)
     const referralInvitation = await findReferralInvitation(inviteToken)
@@ -62,6 +66,7 @@ export async function POST(req: NextRequest) {
       const updateData: {
         referredByUserId?: string
         organizationId?: string | null
+        isPublic?: boolean
       } = {}
 
       if ((referredBy || referralInvitation) && !existingVote.referredByUserId) {
@@ -77,12 +82,18 @@ export async function POST(req: NextRequest) {
         updateData.organizationId = organizationId
       }
 
+      if (voteIsPublic !== undefined && existingVote.isPublic !== voteIsPublic) {
+        updateData.isPublic = voteIsPublic
+      }
+
       if (Object.keys(updateData).length > 0) {
         await prisma.referendumVote.update({
           where: { id: existingVote.id },
           data: updateData,
         })
       }
+
+      await applySignatureProfile(userId, body)
 
       if (
         referralInvitation &&
@@ -127,7 +138,10 @@ export async function POST(req: NextRequest) {
       referredByUserId: referrerUserId,
       organizationId: organizationId || null,
       originUrl,
+      isPublic: voteIsPublic,
     })
+
+    await applySignatureProfile(userId, body)
 
     await prisma.activity.create({
       data: {

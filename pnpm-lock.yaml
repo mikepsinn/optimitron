@@ -1070,6 +1070,415 @@ importers:
         specifier: ^4.1.5
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.37)(happy-dom@20.11.2)(msw@2.15.0)(vite@8.2.1)
 
+  apps/optimitron:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.1037.0
+        version: 3.1037.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.1037.0
+        version: 3.1041.0
+      '@fullcalendar/core':
+        specifier: 6.1.21
+        version: 6.1.21
+      '@fullcalendar/luxon3':
+        specifier: 6.1.21
+        version: 6.1.21(@fullcalendar/core@6.1.21)(luxon@3.7.2)
+      '@fullcalendar/react':
+        specifier: 6.1.21
+        version: 6.1.21(@fullcalendar/core@6.1.21)(react-dom@18.3.1)(react@18.3.1)
+      '@fullcalendar/timegrid':
+        specifier: 6.1.21
+        version: 6.1.21(@fullcalendar/core@6.1.21)
+      '@google/genai':
+        specifier: ^1.48.0
+        version: 1.48.0(@modelcontextprotocol/sdk@1.29.0)
+      '@headlessui/react':
+        specifier: ^2.2.9
+        version: 2.2.9(react-dom@18.3.1)(react@18.3.1)
+      '@metamask/sdk':
+        specifier: ~0.33.1
+        version: 0.33.1
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@3.25.76)
+      '@next-auth/prisma-adapter':
+        specifier: ^1.0.7
+        version: 1.0.7(@prisma/client@7.5.0)(next-auth@4.24.15)
+      '@next/third-parties':
+        specifier: ^16.2.2
+        version: 16.2.2(next@15.5.15)(react@18.3.1)
+      '@optimitron/agent':
+        specifier: workspace:^
+        version: link:../../packages/agent
+      '@optimitron/chat-ui':
+        specifier: workspace:^
+        version: link:../../packages/chat-ui
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
+      '@optimitron/db':
+        specifier: workspace:^
+        version: link:../../packages/db
+      '@optimitron/hypercerts':
+        specifier: workspace:^
+        version: link:../../packages/hypercerts
+      '@optimitron/obg':
+        specifier: workspace:^
+        version: link:../../packages/obg
+      '@optimitron/opg':
+        specifier: workspace:^
+        version: link:../../packages/opg
+      '@optimitron/optimizer':
+        specifier: workspace:^
+        version: link:../../packages/optimizer
+      '@optimitron/storage':
+        specifier: workspace:^
+        version: link:../../packages/storage
+      '@optimitron/tracking':
+        specifier: workspace:^
+        version: link:../../packages/tracking
+      '@optimitron/treasury-iab':
+        specifier: workspace:*
+        version: link:../../packages/treasury-iab
+      '@optimitron/treasury-prize':
+        specifier: workspace:*
+        version: link:../../packages/treasury-prize
+      '@optimitron/treasury-shared':
+        specifier: workspace:*
+        version: link:../../packages/treasury-shared
+      '@optimitron/treasury-wish':
+        specifier: workspace:*
+        version: link:../../packages/treasury-wish
+      '@optimitron/wishocracy':
+        specifier: workspace:^
+        version: link:../../packages/wishocracy
+      '@optimitron/wishonia-widget':
+        specifier: workspace:^
+        version: link:../../packages/wishonia-widget
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.5.0
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.5.0(prisma@7.5.0)(typescript@5.7.3)
+      '@radix-ui/react-accordion':
+        specifier: ^1.2.12
+        version: 1.2.12(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-avatar':
+        specifier: ^1.1.11
+        version: 1.1.11(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-checkbox':
+        specifier: ^1.3.3
+        version: 1.3.3(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-context-menu':
+        specifier: ^2.2.16
+        version: 2.2.16(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dialog':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.1.16
+        version: 2.1.16(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-label':
+        specifier: ^2.1.8
+        version: 2.1.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-popover':
+        specifier: ^1.1.15
+        version: 1.1.15(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-progress':
+        specifier: ^1.1.8
+        version: 1.1.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-radio-group':
+        specifier: ^1.3.8
+        version: 1.3.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-select':
+        specifier: ^2.2.6
+        version: 2.2.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slider':
+        specifier: ^1.3.6
+        version: 1.3.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react@18.3.28)(react@18.3.1)
+      '@radix-ui/react-switch':
+        specifier: ^1.2.6
+        version: 1.2.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-toggle':
+        specifier: ^1.1.10
+        version: 1.1.10(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-toggle-group':
+        specifier: ^1.1.11
+        version: 1.1.11(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.2.8
+        version: 1.2.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-visually-hidden':
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      '@react-email/components':
+        specifier: ^1.0.9
+        version: 1.0.10(react-dom@18.3.1)(react@18.3.1)
+      '@sentry/nextjs':
+        specifier: ^10.47.0
+        version: 10.47.0(@opentelemetry/context-async-hooks@2.6.1)(@opentelemetry/core@2.10.0)(@opentelemetry/sdk-trace-base@2.10.0)(next@15.5.15)(react@18.3.1)(webpack@5.105.4)
+      '@tanstack/query-core':
+        specifier: 5.95.2
+        version: 5.95.2
+      '@tanstack/react-query':
+        specifier: ^5.90.21
+        version: 5.95.2(react@18.3.1)
+      '@vercel/analytics':
+        specifier: ^2.0.1
+        version: 2.0.1(next@15.5.15)(react@18.3.1)
+      '@vercel/og':
+        specifier: ^0.11.1
+        version: 0.11.1
+      '@walletconnect/ethereum-provider':
+        specifier: ^2.23.8
+        version: 2.23.8(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(zod@3.25.76)
+      '@worldcoin/idkit':
+        specifier: ^4.0.9
+        version: 4.0.11(react-dom@18.3.1)(react@18.3.1)
+      ag-grid-community:
+        specifier: 35.3.1
+        version: 35.3.1
+      ag-grid-react:
+        specifier: 35.3.1
+        version: 35.3.1(react-dom@18.3.1)(react@18.3.1)
+      bcryptjs:
+        specifier: ^3.0.2
+        version: 3.0.3
+      canvas-confetti:
+        specifier: ^1.9.4
+        version: 1.9.4
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      cmdk:
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      cron-parser:
+        specifier: ^5.5.0
+        version: 5.5.0
+      embla-carousel-react:
+        specifier: ^8.6.0
+        version: 8.6.0(react@18.3.1)
+      ethers:
+        specifier: ^6.4.0
+        version: 6.16.0
+      framer-motion:
+        specifier: ^12.33.0
+        version: 12.38.0(react-dom@18.3.1)(react@18.3.1)
+      import-in-the-middle:
+        specifier: 3.0.0
+        version: 3.0.0
+      jose:
+        specifier: ^6.2.2
+        version: 6.2.2
+      katex:
+        specifier: ^0.16.38
+        version: 0.16.43
+      lucide-react:
+        specifier: ^0.563.0
+        version: 0.563.0(react@18.3.1)
+      luxon:
+        specifier: 3.7.2
+        version: 3.7.2
+      nanoid:
+        specifier: ^5.1.6
+        version: 5.1.7
+      next:
+        specifier: 15.5.15
+        version: 15.5.15(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.58.2)(react-dom@18.3.1)(react@18.3.1)
+      next-auth:
+        specifier: 4.24.15
+        version: 4.24.15(next@15.5.15)(nodemailer@8.0.5)(react-dom@18.3.1)(react@18.3.1)
+      nodemailer:
+        specifier: ^8.0.5
+        version: 8.0.5
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
+      qrcode:
+        specifier: 1.5.4
+        version: 1.5.4
+      qrcode.react:
+        specifier: ^4.0.1
+        version: 4.2.0(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-day-picker:
+        specifier: ^9.14.0
+        version: 9.14.0(react@18.3.1)
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-easy-crop:
+        specifier: ^5.5.7
+        version: 5.5.7(react-dom@18.3.1)(react@18.3.1)
+      react-icons:
+        specifier: ^5.6.0
+        version: 5.6.0(react@18.3.1)
+      react-katex:
+        specifier: ^3.1.0
+        version: 3.1.0(prop-types@15.8.1)(react@18.3.1)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@18.3.28)(react@18.3.1)
+      recharts:
+        specifier: ^3.8.0
+        version: 3.8.1(@types/react@18.3.28)(react-dom@18.3.1)(react-is@19.2.4)(react@18.3.1)(redux@5.0.1)
+      rehype-katex:
+        specifier: ^7.0.1
+        version: 7.0.1
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0
+      resend:
+        specifier: ^6.9.3
+        version: 6.9.4
+      sanitize-html:
+        specifier: ^2.17.4
+        version: 2.17.4
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@18.3.1)(react@18.3.1)
+      stripe:
+        specifier: ^19.3.0
+        version: 19.3.0(@types/node@20.19.37)
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.5.0
+      tw-animate-css:
+        specifier: ^1.3.0
+        version: 1.3.3
+      vaul:
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
+      viem:
+        specifier: ^2
+        version: 2.47.6(typescript@5.7.3)(zod@3.25.76)
+      wagmi:
+        specifier: 3.5.0
+        version: 3.5.0(@metamask/sdk@0.33.1)(@tanstack/query-core@5.95.2)(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6)
+      web-push:
+        specifier: ^3.6.7
+        version: 3.6.7
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
+      zod-to-json-schema:
+        specifier: 3.25.2
+        version: 3.25.2(zod@3.25.76)
+    devDependencies:
+      '@axe-core/playwright':
+        specifier: ^4.11.1
+        version: 4.11.1(playwright-core@1.58.2)
+      '@next/bundle-analyzer':
+        specifier: ^16.2.2
+        version: 16.2.2
+      '@playwright/test':
+        specifier: 1.58.2
+        version: 1.58.2
+      '@tailwindcss/postcss':
+        specifier: ^4.1.9
+        version: 4.2.2
+      '@types/mime-types':
+        specifier: ^3.0.1
+        version: 3.0.1
+      '@types/node':
+        specifier: ^20.19.37
+        version: 20.19.37
+      '@types/nodemailer':
+        specifier: ^8.0.0
+        version: 8.0.0
+      '@types/pg':
+        specifier: ^8.20.0
+        version: 8.20.0
+      '@types/qrcode':
+        specifier: 1.5.5
+        version: 1.5.5
+      '@types/react':
+        specifier: ^18.2.48
+        version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.2.18
+        version: 18.3.7(@types/react@18.3.28)
+      '@types/react-katex':
+        specifier: ^3.0.4
+        version: 3.0.4
+      '@types/sharp':
+        specifier: ^0.32.0
+        version: 0.32.0
+      '@types/web-push':
+        specifier: ^3.6.4
+        version: 3.6.4
+      cross-env:
+        specifier: ^10.1.0
+        version: 10.1.0
+      dotenv:
+        specifier: ^17.3.1
+        version: 17.3.1
+      eslint:
+        specifier: ^8.56.0
+        version: 8.57.1
+      eslint-config-next:
+        specifier: 15.5.15
+        version: 15.5.15(eslint@8.57.1)(typescript@5.7.3)
+      mime-types:
+        specifier: ^3.0.2
+        version: 3.0.2
+      openai:
+        specifier: ^6.27.0
+        version: 6.33.0(ws@8.18.3)(zod@3.25.76)
+      pixelmatch:
+        specifier: ^7.2.0
+        version: 7.2.0
+      playwright-core:
+        specifier: 1.58.2
+        version: 1.58.2
+      png-to-ico:
+        specifier: ^3.0.1
+        version: 3.0.1
+      pngjs:
+        specifier: ^7.0.0
+        version: 7.0.0
+      postcss:
+        specifier: ^8.4.33
+        version: 8.5.8
+      prisma:
+        specifier: ^7.0.0
+        version: 7.5.0(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)(typescript@5.7.3)
+      react-email:
+        specifier: ^5.2.9
+        version: 5.2.10
+      require-in-the-middle:
+        specifier: ^8.0.1
+        version: 8.0.1
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
+      tailwindcss:
+        specifier: ^4.1.9
+        version: 4.2.2
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.3.3
+        version: 5.7.3
+      vitest:
+        specifier: ^1.2.0
+        version: 1.6.1(@types/node@20.19.37)
+
   apps/trialabundancesurvey:
     dependencies:
       '@auth/core':
@@ -1634,12 +2043,18 @@ importers:
       react-katex:
         specifier: ^3.1.0
         version: 3.1.0(prop-types@15.8.1)(react@18.3.1)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@18.3.28)(react@18.3.1)
       react-resizable-panels:
         specifier: ^2.1.9
         version: 2.1.9(react-dom@18.3.1)(react@18.3.1)
       recharts:
         specifier: 2.15.0
         version: 2.15.0(react-dom@18.3.1)(react@18.3.1)
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
       resend:
         specifier: ^6.12.2
         version: 6.18.1(@react-email/render@1.4.0)
@@ -2655,415 +3070,6 @@ importers:
       hardhat:
         specifier: ^2.22.0
         version: 2.28.6(ts-node@10.9.2)(typescript@5.9.3)
-
-  apps/optimitron:
-    dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.1037.0
-        version: 3.1037.0
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.1037.0
-        version: 3.1041.0
-      '@fullcalendar/core':
-        specifier: 6.1.21
-        version: 6.1.21
-      '@fullcalendar/luxon3':
-        specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)(luxon@3.7.2)
-      '@fullcalendar/react':
-        specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)(react-dom@18.3.1)(react@18.3.1)
-      '@fullcalendar/timegrid':
-        specifier: 6.1.21
-        version: 6.1.21(@fullcalendar/core@6.1.21)
-      '@google/genai':
-        specifier: ^1.48.0
-        version: 1.48.0(@modelcontextprotocol/sdk@1.29.0)
-      '@headlessui/react':
-        specifier: ^2.2.9
-        version: 2.2.9(react-dom@18.3.1)(react@18.3.1)
-      '@metamask/sdk':
-        specifier: ~0.33.1
-        version: 0.33.1
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@3.25.76)
-      '@next-auth/prisma-adapter':
-        specifier: ^1.0.7
-        version: 1.0.7(@prisma/client@7.5.0)(next-auth@4.24.15)
-      '@next/third-parties':
-        specifier: ^16.2.2
-        version: 16.2.2(next@15.5.15)(react@18.3.1)
-      '@optimitron/agent':
-        specifier: workspace:^
-        version: link:../../packages/agent
-      '@optimitron/chat-ui':
-        specifier: workspace:^
-        version: link:../../packages/chat-ui
-      '@optimitron/data':
-        specifier: workspace:^
-        version: link:../../packages/data
-      '@optimitron/db':
-        specifier: workspace:^
-        version: link:../../packages/db
-      '@optimitron/hypercerts':
-        specifier: workspace:^
-        version: link:../../packages/hypercerts
-      '@optimitron/obg':
-        specifier: workspace:^
-        version: link:../../packages/obg
-      '@optimitron/opg':
-        specifier: workspace:^
-        version: link:../../packages/opg
-      '@optimitron/optimizer':
-        specifier: workspace:^
-        version: link:../../packages/optimizer
-      '@optimitron/storage':
-        specifier: workspace:^
-        version: link:../../packages/storage
-      '@optimitron/tracking':
-        specifier: workspace:^
-        version: link:../../packages/tracking
-      '@optimitron/treasury-iab':
-        specifier: workspace:*
-        version: link:../../packages/treasury-iab
-      '@optimitron/treasury-prize':
-        specifier: workspace:*
-        version: link:../../packages/treasury-prize
-      '@optimitron/treasury-shared':
-        specifier: workspace:*
-        version: link:../../packages/treasury-shared
-      '@optimitron/treasury-wish':
-        specifier: workspace:*
-        version: link:../../packages/treasury-wish
-      '@optimitron/wishocracy':
-        specifier: workspace:^
-        version: link:../../packages/wishocracy
-      '@optimitron/wishonia-widget':
-        specifier: workspace:^
-        version: link:../../packages/wishonia-widget
-      '@prisma/adapter-pg':
-        specifier: ^7.0.0
-        version: 7.5.0
-      '@prisma/client':
-        specifier: ^7.0.0
-        version: 7.5.0(prisma@7.5.0)(typescript@5.7.3)
-      '@radix-ui/react-accordion':
-        specifier: ^1.2.12
-        version: 1.2.12(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-avatar':
-        specifier: ^1.1.11
-        version: 1.1.11(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-checkbox':
-        specifier: ^1.3.3
-        version: 1.3.3(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-context-menu':
-        specifier: ^2.2.16
-        version: 2.2.16(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-dialog':
-        specifier: ^1.1.15
-        version: 1.1.15(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.1.16
-        version: 2.1.16(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-label':
-        specifier: ^2.1.8
-        version: 2.1.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-popover':
-        specifier: ^1.1.15
-        version: 1.1.15(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-progress':
-        specifier: ^1.1.8
-        version: 1.1.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-radio-group':
-        specifier: ^1.3.8
-        version: 1.3.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-select':
-        specifier: ^2.2.6
-        version: 2.2.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-slider':
-        specifier: ^1.3.6
-        version: 1.3.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-slot':
-        specifier: ^1.2.4
-        version: 1.2.4(@types/react@18.3.28)(react@18.3.1)
-      '@radix-ui/react-switch':
-        specifier: ^1.2.6
-        version: 1.2.6(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-toggle':
-        specifier: ^1.1.10
-        version: 1.1.10(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-toggle-group':
-        specifier: ^1.1.11
-        version: 1.1.11(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-tooltip':
-        specifier: ^1.2.8
-        version: 1.2.8(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-visually-hidden':
-        specifier: ^1.2.4
-        version: 1.2.4(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      '@react-email/components':
-        specifier: ^1.0.9
-        version: 1.0.10(react-dom@18.3.1)(react@18.3.1)
-      '@sentry/nextjs':
-        specifier: ^10.47.0
-        version: 10.47.0(@opentelemetry/context-async-hooks@2.6.1)(@opentelemetry/core@2.10.0)(@opentelemetry/sdk-trace-base@2.10.0)(next@15.5.15)(react@18.3.1)(webpack@5.105.4)
-      '@tanstack/query-core':
-        specifier: 5.95.2
-        version: 5.95.2
-      '@tanstack/react-query':
-        specifier: ^5.90.21
-        version: 5.95.2(react@18.3.1)
-      '@vercel/analytics':
-        specifier: ^2.0.1
-        version: 2.0.1(next@15.5.15)(react@18.3.1)
-      '@vercel/og':
-        specifier: ^0.11.1
-        version: 0.11.1
-      '@walletconnect/ethereum-provider':
-        specifier: ^2.23.8
-        version: 2.23.8(@types/react@18.3.28)(react@18.3.1)(typescript@5.7.3)(zod@3.25.76)
-      '@worldcoin/idkit':
-        specifier: ^4.0.9
-        version: 4.0.11(react-dom@18.3.1)(react@18.3.1)
-      ag-grid-community:
-        specifier: 35.3.1
-        version: 35.3.1
-      ag-grid-react:
-        specifier: 35.3.1
-        version: 35.3.1(react-dom@18.3.1)(react@18.3.1)
-      bcryptjs:
-        specifier: ^3.0.2
-        version: 3.0.3
-      canvas-confetti:
-        specifier: ^1.9.4
-        version: 1.9.4
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      cmdk:
-        specifier: ^1.1.1
-        version: 1.1.1(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      cron-parser:
-        specifier: ^5.5.0
-        version: 5.5.0
-      embla-carousel-react:
-        specifier: ^8.6.0
-        version: 8.6.0(react@18.3.1)
-      ethers:
-        specifier: ^6.4.0
-        version: 6.16.0
-      framer-motion:
-        specifier: ^12.33.0
-        version: 12.38.0(react-dom@18.3.1)(react@18.3.1)
-      import-in-the-middle:
-        specifier: 3.0.0
-        version: 3.0.0
-      jose:
-        specifier: ^6.2.2
-        version: 6.2.2
-      katex:
-        specifier: ^0.16.38
-        version: 0.16.43
-      lucide-react:
-        specifier: ^0.563.0
-        version: 0.563.0(react@18.3.1)
-      luxon:
-        specifier: 3.7.2
-        version: 3.7.2
-      nanoid:
-        specifier: ^5.1.6
-        version: 5.1.7
-      next:
-        specifier: 15.5.15
-        version: 15.5.15(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.58.2)(react-dom@18.3.1)(react@18.3.1)
-      next-auth:
-        specifier: 4.24.15
-        version: 4.24.15(next@15.5.15)(nodemailer@8.0.5)(react-dom@18.3.1)(react@18.3.1)
-      nodemailer:
-        specifier: ^8.0.5
-        version: 8.0.5
-      pg:
-        specifier: ^8.20.0
-        version: 8.20.0
-      qrcode:
-        specifier: 1.5.4
-        version: 1.5.4
-      qrcode.react:
-        specifier: ^4.0.1
-        version: 4.2.0(react@18.3.1)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-day-picker:
-        specifier: ^9.14.0
-        version: 9.14.0(react@18.3.1)
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
-      react-easy-crop:
-        specifier: ^5.5.7
-        version: 5.5.7(react-dom@18.3.1)(react@18.3.1)
-      react-icons:
-        specifier: ^5.6.0
-        version: 5.6.0(react@18.3.1)
-      react-katex:
-        specifier: ^3.1.0
-        version: 3.1.0(prop-types@15.8.1)(react@18.3.1)
-      react-markdown:
-        specifier: ^10.1.0
-        version: 10.1.0(@types/react@18.3.28)(react@18.3.1)
-      recharts:
-        specifier: ^3.8.0
-        version: 3.8.1(@types/react@18.3.28)(react-dom@18.3.1)(react-is@19.2.4)(react@18.3.1)(redux@5.0.1)
-      rehype-katex:
-        specifier: ^7.0.1
-        version: 7.0.1
-      remark-gfm:
-        specifier: ^4.0.1
-        version: 4.0.1
-      remark-math:
-        specifier: ^6.0.0
-        version: 6.0.0
-      resend:
-        specifier: ^6.9.3
-        version: 6.9.4
-      sanitize-html:
-        specifier: ^2.17.4
-        version: 2.17.4
-      sonner:
-        specifier: ^2.0.7
-        version: 2.0.7(react-dom@18.3.1)(react@18.3.1)
-      stripe:
-        specifier: ^19.3.0
-        version: 19.3.0(@types/node@20.19.37)
-      tailwind-merge:
-        specifier: ^3.4.0
-        version: 3.5.0
-      tw-animate-css:
-        specifier: ^1.3.0
-        version: 1.3.3
-      vaul:
-        specifier: ^1.1.2
-        version: 1.1.2(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
-      viem:
-        specifier: ^2
-        version: 2.47.6(typescript@5.7.3)(zod@3.25.76)
-      wagmi:
-        specifier: 3.5.0
-        version: 3.5.0(@metamask/sdk@0.33.1)(@tanstack/query-core@5.95.2)(@tanstack/react-query@5.95.2)(@types/react@18.3.28)(@walletconnect/ethereum-provider@2.23.8)(react@18.3.1)(typescript@5.7.3)(viem@2.47.6)
-      web-push:
-        specifier: ^3.6.7
-        version: 3.6.7
-      zod:
-        specifier: ^3.22.4
-        version: 3.25.76
-      zod-to-json-schema:
-        specifier: 3.25.2
-        version: 3.25.2(zod@3.25.76)
-    devDependencies:
-      '@axe-core/playwright':
-        specifier: ^4.11.1
-        version: 4.11.1(playwright-core@1.58.2)
-      '@next/bundle-analyzer':
-        specifier: ^16.2.2
-        version: 16.2.2
-      '@playwright/test':
-        specifier: 1.58.2
-        version: 1.58.2
-      '@tailwindcss/postcss':
-        specifier: ^4.1.9
-        version: 4.2.2
-      '@types/mime-types':
-        specifier: ^3.0.1
-        version: 3.0.1
-      '@types/node':
-        specifier: ^20.19.37
-        version: 20.19.37
-      '@types/nodemailer':
-        specifier: ^8.0.0
-        version: 8.0.0
-      '@types/pg':
-        specifier: ^8.20.0
-        version: 8.20.0
-      '@types/qrcode':
-        specifier: 1.5.5
-        version: 1.5.5
-      '@types/react':
-        specifier: ^18.2.48
-        version: 18.3.28
-      '@types/react-dom':
-        specifier: ^18.2.18
-        version: 18.3.7(@types/react@18.3.28)
-      '@types/react-katex':
-        specifier: ^3.0.4
-        version: 3.0.4
-      '@types/sharp':
-        specifier: ^0.32.0
-        version: 0.32.0
-      '@types/web-push':
-        specifier: ^3.6.4
-        version: 3.6.4
-      cross-env:
-        specifier: ^10.1.0
-        version: 10.1.0
-      dotenv:
-        specifier: ^17.3.1
-        version: 17.3.1
-      eslint:
-        specifier: ^8.56.0
-        version: 8.57.1
-      eslint-config-next:
-        specifier: 15.5.15
-        version: 15.5.15(eslint@8.57.1)(typescript@5.7.3)
-      mime-types:
-        specifier: ^3.0.2
-        version: 3.0.2
-      openai:
-        specifier: ^6.27.0
-        version: 6.33.0(ws@8.18.3)(zod@3.25.76)
-      pixelmatch:
-        specifier: ^7.2.0
-        version: 7.2.0
-      playwright-core:
-        specifier: 1.58.2
-        version: 1.58.2
-      png-to-ico:
-        specifier: ^3.0.1
-        version: 3.0.1
-      pngjs:
-        specifier: ^7.0.0
-        version: 7.0.0
-      postcss:
-        specifier: ^8.4.33
-        version: 8.5.8
-      prisma:
-        specifier: ^7.0.0
-        version: 7.5.0(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)(typescript@5.7.3)
-      react-email:
-        specifier: ^5.2.9
-        version: 5.2.10
-      require-in-the-middle:
-        specifier: ^8.0.1
-        version: 8.0.1
-      sharp:
-        specifier: ^0.34.5
-        version: 0.34.5
-      tailwindcss:
-        specifier: ^4.1.9
-        version: 4.2.2
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
-      typescript:
-        specifier: ^5.3.3
-        version: 5.7.3
-      vitest:
-        specifier: ^1.2.0
-        version: 1.6.1(@types/node@20.19.37)
 
   packages/wishocracy:
     dependencies:
@@ -15598,7 +15604,7 @@ packages:
   /@types/estree-jsx@1.0.5:
     resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
     dev: false
 
   /@types/estree@1.0.8:
@@ -20707,7 +20713,7 @@ packages:
   /estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
     dev: true
 
   /esutils@2.0.3:
@@ -21986,7 +21992,7 @@ packages:
   /hast-util-to-jsx-runtime@2.3.6:
     resolution: {integrity: sha512-zl6s8LwNyo1P9uw+XJGvZtdFF1GdAkOg8ujOw+4Pyb76874fLps4ueHXDhXWdk6YHQ6OgUtinliG7RsYvCbbBg==}
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       '@types/hast': 3.0.4
       '@types/unist': 3.0.3
       comma-separated-tokens: 2.0.3
