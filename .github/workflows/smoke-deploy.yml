@@ -1104,8 +1104,10 @@ jobs:
         if: steps.preview_scope.outputs.should_smoke != 'false' && steps.deployment_status.outputs.state != 'skipped' && steps.target.outputs.app == 'optimitron'
         shell: bash
         run: |
-          chrome_binary="$(readlink -f "$(command -v google-chrome)")"
+          chrome_wrapper="$(readlink -f "$(command -v google-chrome)")"
+          chrome_binary="$(dirname "$chrome_wrapper")/chrome"
           google-chrome --version
+          test -x "$chrome_binary"
           missing_dependencies="$(ldd "$chrome_binary" | awk '/not found/')"
           if [ -n "$missing_dependencies" ]; then
             echo "::error::System Chrome has missing shared libraries:"
