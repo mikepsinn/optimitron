@@ -9373,6 +9373,8 @@ describe("MCP server tool dispatch", () => {
       mocks.globalVariableFindFirst.mockResolvedValue(TRACKING_VARIABLE);
       mocks.unitFindFirst.mockResolvedValue(TRACKING_UNIT);
       mocks.nOf1VariableUpsert.mockResolvedValue(NOF1_VARIABLE);
+      // The overdue cross-check queries same-day measurements.
+      mocks.measurementFindMany.mockResolvedValue([]);
     });
 
     it("recordMeasurement writes a measurement upsert keyed on (subjectId, globalVariableId, startTime)", async () => {
@@ -10254,9 +10256,158 @@ describe("MCP server tool dispatch", () => {
 
       expect(result.isError).toBe(true);
       expect(parseToolBody(result).message).toContain(
-        "tracked variable cannot be changed",
+        "tracked variable is fixed at creation",
       );
       expect(mocks.transaction).not.toHaveBeenCalled();
+    });
+
+    it("upsertTrackingReminder changes the recording unit in place via the per-user variable settings", async () => {
+      // #250: the unit is a per-user NOf1Variable setting, not variable
+      // identity, so an ID edit must be able to fix it without recreating
+      // the reminder.
+      const MG_UNIT = {
+        abbreviatedName: "mg",
+        id: "unit-mg",
+        name: "Milligrams",
+        ucumCode: "mg",
+      };
+      mocks.unitFindFirst.mockResolvedValue(MG_UNIT);
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+      mocks.nOf1VariableUpdate.mockResolvedValue({
+        ...NOF1_VARIABLE,
+        defaultUnitId: "unit-mg",
+      });
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          trackingReminderId: "reminder-1",
+          unitAbbreviation: "mg",
+        },
+      });
+
+      expect(result.isError).toBeFalsy();
+      expect(mocks.nOf1VariableUpdate).toHaveBeenCalledWith({
+        data: { defaultUnitId: "unit-mg" },
+        where: { id: "nof1-1" },
+      });
+      // The canonical GlobalVariable stays untouched.
+      expect(mocks.globalVariableUpdate).not.toHaveBeenCalled();
+      const body = parseToolBody(result) as {
+        result: { unit: { abbreviatedName: string } | null };
+      };
+      expect(body.result.unit?.abbreviatedName).toBe("mg");
+    });
+
+    it("upsertTrackingReminder rejects an unknown unit on an ID edit with no write", async () => {
+      mocks.unitFindFirst.mockResolvedValue(null);
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "upsertTrackingReminder",
+        arguments: {
+          trackingReminderId: "reminder-1",
+          unitAbbreviation: "furlongs",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "Requested unit was not found",
+      );
+      expect(mocks.nOf1VariableUpdate).not.toHaveBeenCalled();
+      expect(mocks.trackingReminderUpdate).not.toHaveBeenCalled();
+    });
+
+    it("getTrackingReminder returns the full reminder with its effective unit", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(
+        EXISTING_TRACKING_REMINDER,
+      );
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getTrackingReminder",
+        arguments: { trackingReminderId: "reminder-1" },
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result) as {
+        reminder: { id: string; instructions: string | null };
+        unit: { abbreviatedName: string } | null;
+      };
+      expect(body.reminder.id).toBe("reminder-1");
+      expect(body.reminder.instructions).toBe("Daily");
+      // Falls back to the canonical variable unit when no per-user unit is set.
+      expect(body.unit?.abbreviatedName).toBe("IU");
+    });
+
+    it("getTrackingReminder hides foreign and missing reminders behind not-found", async () => {
+      mocks.trackingReminderFindFirst.mockResolvedValue(null);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "getTrackingReminder",
+        arguments: { trackingReminderId: "reminder-of-someone-else" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "TrackingReminder not found",
+      );
+    });
+
+    it("listTrackingReminders defaults to a compact shape and truncates instructions with a pointer", async () => {
+      const longInstructions = "Open the ampoule carefully. ".repeat(20);
+      mocks.trackingReminderFindMany.mockResolvedValue([
+        { ...EXISTING_TRACKING_REMINDER, instructions: longInstructions },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const compact = await client.callTool({
+        name: "listTrackingReminders",
+        arguments: {},
+      });
+
+      expect(compact.isError).toBeFalsy();
+      const compactBody = parseToolBody(compact) as {
+        reminders: Array<{
+          defaultValue: number | null;
+          globalVariable?: unknown;
+          id: string;
+          instructions: string;
+          name: string;
+          unit: string | null;
+        }>;
+      };
+      expect(compactBody.reminders[0]).toMatchObject({
+        defaultValue: 1,
+        id: "reminder-1",
+        name: "Vitamin D",
+        unit: "IU",
+      });
+      expect(compactBody.reminders[0]!.instructions).toContain(
+        "getTrackingReminder returns the full instructions",
+      );
+      expect(compactBody.reminders[0]!.instructions.length).toBeLessThan(
+        longInstructions.length,
+      );
+      expect(compactBody.reminders[0]!.globalVariable).toBeUndefined();
+
+      const full = await client.callTool({
+        name: "listTrackingReminders",
+        arguments: { compact: false },
+      });
+      const fullBody = parseToolBody(full) as {
+        reminders: Array<{ globalVariable: { name: string }; instructions: string }>;
+      };
+      expect(fullBody.reminders[0]!.instructions).toBe(longInstructions);
+      expect(fullBody.reminders[0]!.globalVariable.name).toBe("Vitamin D");
     });
 
     it("upsertTrackingReminder rejects an invalid reminderStartTime with no write", async () => {
@@ -10429,15 +10580,20 @@ describe("MCP server tool dispatch", () => {
         });
 
         expect(canonical.isError).toBeFalsy();
+        // defaultValue, unit, and fillingType ride along so an agent can
+        // answer without a second listTrackingReminders fetch (#249).
         expect(parseToolBody(canonical)).toEqual({
           dateKey: "2026-08-03",
           notifications: [
             {
+              defaultValue: 1,
               due: "2026-08-03T08:00:00+00:00",
               dueUtc: "2026-08-03T08:00:00.000Z",
+              fillingType: "NONE",
               id: "reminder-1",
               name: "Vitamin D",
               status: "OVERDUE",
+              unit: "IU",
             },
           ],
           timeZone: "UTC",
@@ -10446,11 +10602,14 @@ describe("MCP server tool dispatch", () => {
           dateKey: "2026-08-03",
           reminders: [
             {
+              defaultValue: 1,
               due: "2026-08-03T08:00:00+00:00",
               dueUtc: "2026-08-03T08:00:00.000Z",
+              fillingType: "NONE",
               id: "reminder-1",
               name: "Vitamin D",
               status: "OVERDUE",
+              unit: "IU",
             },
           ],
           timeZone: "UTC",
@@ -10476,7 +10635,7 @@ describe("MCP server tool dispatch", () => {
         const client = await setup("user-1", ALL_SCOPES);
         const result = await client.callTool({
           name: "listTrackingReminderNotifications",
-          arguments: { dateKey: "2026-08-03" },
+          arguments: { compact: false, dateKey: "2026-08-03" },
         });
 
         expect(result.isError).toBeFalsy();
@@ -10522,6 +10681,7 @@ describe("MCP server tool dispatch", () => {
         const result = await client.callTool({
           name: "listTrackingReminderNotifications",
           arguments: {
+            compact: false,
             endDateKey: "2026-08-03",
             startDateKey: "2026-08-02",
             status: "OVERDUE",
@@ -10593,7 +10753,7 @@ describe("MCP server tool dispatch", () => {
       const client = await setup("user-1", ALL_SCOPES);
       const result = await client.callTool({
         name: "listTrackingReminderNotifications",
-        arguments: { dateKey: "2026-08-03", status: "TRACKED" },
+        arguments: { compact: false, dateKey: "2026-08-03", status: "TRACKED" },
       });
 
       expect(result.isError).toBeFalsy();
@@ -10636,7 +10796,7 @@ describe("MCP server tool dispatch", () => {
         const client = await setup("user-1", ALL_SCOPES);
         const before = await client.callTool({
           name: "listTrackingReminderNotifications",
-          arguments: { dateKey: "2026-08-03" },
+          arguments: { compact: false, dateKey: "2026-08-03" },
         });
         expect(parseToolBody(before)).toMatchObject({
           notifications: [
@@ -10657,7 +10817,7 @@ describe("MCP server tool dispatch", () => {
         now.mockReturnValue(new Date("2026-08-03T10:30:00.000Z").getTime());
         const atDeferredTime = await client.callTool({
           name: "listTrackingReminderNotifications",
-          arguments: { dateKey: "2026-08-03" },
+          arguments: { compact: false, dateKey: "2026-08-03" },
         });
         expect(parseToolBody(atDeferredTime)).toMatchObject({
           notifications: [
@@ -10674,7 +10834,7 @@ describe("MCP server tool dispatch", () => {
         now.mockReturnValue(new Date("2026-08-03T10:31:00.000Z").getTime());
         const after = await client.callTool({
           name: "listTrackingReminderNotifications",
-          arguments: { dateKey: "2026-08-03" },
+          arguments: { compact: false, dateKey: "2026-08-03" },
         });
         expect(parseToolBody(after)).toMatchObject({
           notifications: [
@@ -10735,16 +10895,12 @@ describe("MCP server tool dispatch", () => {
         },
       });
 
-      expect(result.isError).toBeFalsy();
-      expect(parseToolBody(result)).toEqual({
-        answeredCount: 0,
-        dateKey: "2026-08-03",
-        failed: [],
-        results: [],
-        // Nothing written, so every scheduled reminder counts as untouched.
-        skippedCount: 1,
-        unknownExceptionIds: ["misheard-reminder"],
-      });
+      // The success-shaped no-op response let an agent report a day as
+      // answered when nothing was written (#248); it is a hard error now.
+      expect(result.isError).toBe(true);
+      expect(parseToolBody(result).message).toContain(
+        "not scheduled for 2026-08-03: misheard-reminder",
+      );
       expect(mocks.transaction).not.toHaveBeenCalled();
       expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
       expect(mocks.trackingReminderNotificationUpdate).not.toHaveBeenCalled();
@@ -11555,6 +11711,423 @@ describe("MCP server tool dispatch", () => {
       expect(body.message).toContain("Insufficient scope");
       expect(body.message).toContain("recordMeasurement");
       expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+    });
+
+    // A nightly 22:30 reminder answered at 02:05 the next morning. The old
+    // calendar-today default targeted the new day's still-future occurrence,
+    // leaving yesterday OVERDUE (#248).
+    const NIGHTLY_REMINDER = {
+      active: true,
+      createdAt: new Date("2026-08-01T00:00:00.000Z"),
+      defaultValue: 1500,
+      deletedAt: null,
+      globalVariable: TRACKING_VARIABLE,
+      globalVariableId: "gv-vitd",
+      id: "reminder-night",
+      instructions: null,
+      nOf1Variable: { ...NOF1_VARIABLE, subjectId: "subject-1" },
+      nOf1VariableId: "nof1-1",
+      reminderEndTime: null,
+      reminderFrequency: 86_400,
+      reminderStartTime: "22:30",
+      startTrackingDate: null,
+      stopTrackingDate: null,
+      userId: "user-1",
+    };
+
+    it("respondToTrackingReminder without dateKey answers yesterday's unanswered occurrence after midnight", async () => {
+      // 02:05 on 2026-08-19 in Chicago.
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            status: "TRACKED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        // The notification lands on Aug 18's 22:30 slot (03:30Z on Aug 19).
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-19T03:30:00.000Z"),
+            status: NotificationStatus.TRACKED,
+          }),
+        });
+        // The measurement anchors to the scheduled slot, not the 02:05 wall
+        // clock, so it counts toward Aug 18.
+        const upsert = mocks.measurementUpsert.mock.calls[0]![0] as {
+          where: { subjectId_globalVariableId_startTime: { startTime: Date } };
+        };
+        expect(
+          upsert.where.subjectId_globalVariableId_startTime.startTime,
+        ).toEqual(new Date("2026-08-19T03:30:00.000Z"));
+        const body = parseToolBody(result) as {
+          result: {
+            answersPastOccurrence?: boolean;
+            dateKey: string;
+            notifyAtLocal: string;
+          };
+        };
+        expect(body.result.dateKey).toBe("2026-08-18");
+        expect(body.result.answersPastOccurrence).toBe(true);
+        expect(body.result.notifyAtLocal).toBe("2026-08-18T22:30:00-05:00");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("respondToTrackingReminder keeps the calendar default when the last occurrence is already answered", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        // Yesterday's occurrence is TRACKED, so the walk-back must not
+        // redirect: the caller is answering today (in advance) or correcting.
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue({
+          id: "notification-yesterday",
+          notifyAt: new Date("2026-08-19T03:30:00.000Z"),
+          status: NotificationStatus.TRACKED,
+          trackedValue: 1500,
+          trackingReminderId: "reminder-night",
+          userId: "user-1",
+        });
+        mocks.trackingReminderNotificationUpdate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-yesterday",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-2",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            status: "TRACKED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        const body = parseToolBody(result) as {
+          result: { answersPastOccurrence?: boolean; dateKey: string };
+        };
+        expect(body.result.dateKey).toBe("2026-08-19");
+        expect(body.result.answersPastOccurrence).toBeUndefined();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("respondToTrackingReminder never walks a snooze back to a past occurrence", async () => {
+      // A walked-back SNOOZED would clamp deferUntil at yesterday's day end,
+      // which is already in the past, so the snooze would silently do
+      // nothing. Snoozes stay on calendar today.
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            snoozeMinutes: 45,
+            status: "SNOOZED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        // Deferred 45 real minutes into the future, on today's occurrence.
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-19T07:50:00.000Z"),
+            status: NotificationStatus.SNOOZED,
+          }),
+        });
+        const body = parseToolBody(result) as {
+          result: { answersPastOccurrence?: boolean; dateKey: string };
+        };
+        expect(body.result.dateKey).toBe("2026-08-19");
+        expect(body.result.answersPastOccurrence).toBeUndefined();
+        expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("respondToTrackingReminder keeps the calendar default for reminders outside their eligibility window", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        // Stopped a week+ ago: no day in the walk-back window is eligible,
+        // so an explicit answer targets today, as before the walk-back.
+        mocks.trackingReminderFindFirst.mockResolvedValue({
+          ...NIGHTLY_REMINDER,
+          stopTrackingDate: new Date("2026-08-10T00:00:00.000Z"),
+        });
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-1",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminder",
+          arguments: {
+            status: "TRACKED",
+            trackingReminderId: "reminder-night",
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        const body = parseToolBody(result) as {
+          result: { answersPastOccurrence?: boolean; dateKey: string };
+        };
+        expect(body.result.dateKey).toBe("2026-08-19");
+        expect(body.result.answersPastOccurrence).toBeUndefined();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("bulk respond without dateKey refuses an after-midnight catch-up and names yesterday", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindMany.mockResolvedValue([NIGHTLY_REMINDER]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: { defaultStatus: "TRACKED" },
+        });
+
+        expect(result.isError).toBe(true);
+        const message = parseToolBody(result).message as string;
+        expect(message).toContain("Nothing was written");
+        expect(message).toContain('dateKey: "2026-08-18"');
+        expect(mocks.trackingReminderNotificationCreate).not.toHaveBeenCalled();
+        expect(mocks.measurementUpsert).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("bulk respond allows an unambiguous after-midnight answer-in-advance via except", async () => {
+      vi.useFakeTimers({ now: new Date("2026-08-19T07:05:00.000Z"), toFake: ["Date"] });
+      try {
+        // reminder-other is still unanswered for yesterday, but the except
+        // entry names reminder-night, whose yesterday occurrence is TRACKED:
+        // no ambiguity, so the call answers tonight's slot in advance.
+        const otherReminder = {
+          ...NIGHTLY_REMINDER,
+          globalVariable: {
+            ...TRACKING_VARIABLE,
+            id: "gv-magnesium",
+            name: "Magnesium",
+          },
+          globalVariableId: "gv-magnesium",
+          id: "reminder-other",
+        };
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          NIGHTLY_REMINDER,
+          otherReminder,
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockImplementation(
+          async ({ where }: { where: { notifyAt: { gte: Date } } }) =>
+            // Yesterday's window: reminder-night is already answered.
+            where.notifyAt.gte.getTime() ===
+            new Date("2026-08-18T05:00:00.000Z").getTime()
+              ? [
+                  {
+                    deletedAt: null,
+                    id: "notification-night-yesterday",
+                    notifyAt: new Date("2026-08-19T03:30:00.000Z"),
+                    status: NotificationStatus.TRACKED,
+                    trackedValue: 1500,
+                    trackingReminderId: "reminder-night",
+                    userId: "user-1",
+                  },
+                ]
+              : [],
+        );
+        mocks.trackingReminderFindFirst.mockResolvedValue(NIGHTLY_REMINDER);
+        mocks.trackingReminderNotificationFindFirst.mockResolvedValue(null);
+        mocks.trackingReminderNotificationCreate.mockImplementation(
+          async ({ data }: { data: Record<string, unknown> }) => ({
+            ...data,
+            id: "notification-tonight",
+          }),
+        );
+        mocks.measurementUpsert.mockResolvedValue({
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          subjectId: "subject-1",
+          unitId: "unit-iu",
+          value: 1500,
+        });
+        mocks.trackingReminderUpdate.mockResolvedValue({
+          id: "reminder-night",
+        });
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "respondToTrackingReminderNotifications",
+          arguments: {
+            except: [
+              { status: "TRACKED", trackingReminderId: "reminder-night" },
+            ],
+          },
+        });
+
+        expect(result.isError).toBeFalsy();
+        expect(parseToolBody(result)).toMatchObject({
+          answeredCount: 1,
+          results: [
+            { reminderId: "reminder-night", source: "exception" },
+          ],
+        });
+        // The answer lands on tonight's 22:30 slot.
+        expect(mocks.trackingReminderNotificationCreate).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            notifyAt: new Date("2026-08-20T03:30:00.000Z"),
+            trackingReminderId: "reminder-night",
+          }),
+        });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("flags an OVERDUE occurrence whose variable already has same-day measurements", async () => {
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2026-08-03T10:00:00.000Z").getTime());
+      try {
+        mocks.userFindUnique.mockResolvedValue({ timeZone: "UTC" });
+        mocks.trackingReminderFindMany.mockResolvedValue([
+          EXISTING_TRACKING_REMINDER,
+        ]);
+        mocks.trackingReminderNotificationFindMany.mockResolvedValue([]);
+        // Two Vitamin D measurements already exist on the same local day.
+        mocks.measurementFindMany.mockResolvedValue([
+          {
+            globalVariableId: "gv-vitd",
+            startTime: new Date("2026-08-03T08:05:00.000Z"),
+          },
+          {
+            globalVariableId: "gv-vitd",
+            startTime: new Date("2026-08-03T09:00:00.000Z"),
+          },
+        ]);
+
+        const client = await setup("user-1", ALL_SCOPES);
+        const result = await client.callTool({
+          name: "listTrackingReminderNotifications",
+          arguments: { dateKey: "2026-08-03" },
+        });
+
+        expect(result.isError).toBeFalsy();
+        const body = parseToolBody(result) as {
+          notifications: Array<{
+            sameDayMeasurementCount?: number;
+            status: string;
+          }>;
+        };
+        expect(body.notifications[0]).toMatchObject({
+          sameDayMeasurementCount: 2,
+          status: "OVERDUE",
+        });
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    it("listMeasurements reports startTimeLocal in the user's zone", async () => {
+      mocks.userFindUnique.mockResolvedValue({ timeZone: "America/Chicago" });
+      mocks.measurementFindMany.mockResolvedValue([
+        {
+          globalVariableId: "gv-vitd",
+          id: "measurement-1",
+          // 21:02 on Aug 18 in Chicago; reading the raw UTC value as local
+          // misdated an evening of answers by a day (#248).
+          startTime: new Date("2026-08-19T02:02:09.000Z"),
+          subjectId: "subject-1",
+          value: 2.5,
+        },
+      ]);
+
+      const client = await setup("user-1", ALL_SCOPES);
+      const result = await client.callTool({
+        name: "listMeasurements",
+        arguments: {},
+      });
+
+      expect(result.isError).toBeFalsy();
+      const body = parseToolBody(result) as {
+        measurements: Array<{ startTimeLocal: string }>;
+        timeZone: string;
+      };
+      expect(body.timeZone).toBe("America/Chicago");
+      expect(body.measurements[0]!.startTimeLocal).toBe(
+        "2026-08-18T21:02:09-05:00",
+      );
     });
   });
 });
