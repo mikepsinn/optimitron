@@ -1,4 +1,4 @@
-import { shareableSnippets } from "@optimitron/impact-params/parameters"
+import { shareableSnippets } from "@optimitron/data/parameters"
 import { prisma } from "./prisma"
 import { TREATY_REFERENDUM_SLUG } from "./treaty"
 

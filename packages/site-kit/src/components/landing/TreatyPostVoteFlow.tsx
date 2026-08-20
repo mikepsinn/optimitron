@@ -11,7 +11,7 @@ import { ReferralLinkCard } from "../shared/ReferralLinkCard"
 import { ParameterInline, ParameterValue } from "../shared/ParameterValue"
 import { ReferralSendLoop } from "./ReferralSendLoop"
 import { trackEvent } from "../../lib/analytics"
-import { formatParameter } from "@optimitron/impact-params/format"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import {
   type Parameter,
   CURRENT_TRIAL_SLOTS_AVAILABLE,
@@ -45,7 +45,7 @@ import {
   UNEXPLORED_RATIO,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { MAJORITY_OF_HUMANS_ON_EARTH } from "../../lib/majority-humanity-target"
 import { cn } from "@optimitron/neobrutalist-ui/cn"
 

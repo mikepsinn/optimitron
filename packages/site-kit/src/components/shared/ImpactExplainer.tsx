@@ -9,8 +9,8 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import { ParameterInline } from "./ParameterValue"
 import { MAJORITY_OF_HUMANS_ON_EARTH } from "../../lib/majority-humanity-target"
 import {

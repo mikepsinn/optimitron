@@ -4,7 +4,7 @@ import {
   NUCLEAR_WINTER_OVERKILL_FACTOR,
   NUCLEAR_WINTER_WARHEAD_THRESHOLD,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 export interface ShareTemplateOption {
   label: string

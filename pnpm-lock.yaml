@@ -55,12 +55,12 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@15.5.15)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -738,12 +738,12 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@15.5.15)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -1087,9 +1087,6 @@ importers:
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -1842,12 +1839,12 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@15.5.15)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -2182,12 +2179,12 @@ importers:
       '@next/third-parties':
         specifier: ^15.5.15
         version: 15.5.23(next@15.5.15)(react@18.3.1)
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../../packages/data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -2534,9 +2531,6 @@ importers:
       '@optimitron/db':
         specifier: workspace:^
         version: link:../../packages/db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../../packages/impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../../packages/neobrutalist-ui
@@ -3030,15 +3024,6 @@ importers:
         specifier: ^1.2.0
         version: 1.6.1(@types/node@20.19.37)
 
-  packages/impact-params:
-    devDependencies:
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
-      vitest:
-        specifier: ^1.2.0
-        version: 1.6.1(jsdom@23.2.0)
-
   packages/neobrutalist-ui:
     dependencies:
       '@radix-ui/react-accordion':
@@ -3186,12 +3171,12 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.1.0
         version: 1.1.0
+      '@optimitron/data':
+        specifier: workspace:^
+        version: link:../data
       '@optimitron/db':
         specifier: workspace:^
         version: link:../db
-      '@optimitron/impact-params':
-        specifier: workspace:^
-        version: link:../impact-params
       '@optimitron/neobrutalist-ui':
         specifier: workspace:^
         version: link:../neobrutalist-ui

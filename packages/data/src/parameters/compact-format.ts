@@ -1,3 +1,14 @@
+/**
+ * Compact parameter formatting — "$2.72T", "86%", "1.27M".
+ *
+ * Deliberately separate from `./format-parameter`, which renders the verbose
+ * register ("$2.72 trillion", "86.1%", "1.27 million deaths"). Dense UI
+ * (cards, charts, counters) needs the compact form; prose needs the verbose
+ * one. Both are real display registers, so both live here.
+ *
+ * NOT re-exported from `./index` — the two modules export the same symbol
+ * names on purpose. Import the register you want by its own subpath.
+ */
 import type { Parameter } from "./parameters-calculations-citations"
 
 /**

@@ -6,7 +6,7 @@ import { Container } from "@optimitron/neobrutalist-ui/ui/container"
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
 import { useEffect, useState } from "react"
 import { getSiteConfig } from "../../lib/site-config"
-import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/impact-params/parameters"
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters"
 
 export default function DeathClock() {
   const config = getSiteConfig()

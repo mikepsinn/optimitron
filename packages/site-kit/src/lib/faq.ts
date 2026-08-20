@@ -6,7 +6,7 @@
  */
 
 import type { FaqConfig } from './site-config'
-import { formatParameter } from "@optimitron/impact-params/format"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import {
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
@@ -14,7 +14,7 @@ import {
   GLOBAL_REGISTERED_VOTERS,
   TREATY_ANNUAL_FUNDING,
   DFDA_BENEFIT_RD_ONLY_ANNUAL,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 // ============================================================================
 // INDIVIDUAL FAQ ITEMS (Reusable Questions)

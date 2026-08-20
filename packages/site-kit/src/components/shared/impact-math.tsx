@@ -5,7 +5,7 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_LIVES_SAVED,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_SUFFERING_HOURS,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { ParameterInline } from "./ParameterValue"
 import { MAJORITY_OF_HUMANS_ON_EARTH } from "../../lib/majority-humanity-target"
 

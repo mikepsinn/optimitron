@@ -61,17 +61,15 @@
         "../../packages/neobrutalist-ui/src/index.ts"
       ],
       "@optimitron/neobrutalist-ui/*": ["../../packages/neobrutalist-ui/src/*"],
-      "@optimitron/impact-params": [
-        "../../packages/impact-params/src/index.ts"
-      ],
-      "@optimitron/impact-params/*": ["../../packages/impact-params/src/*"],
+      "@optimitron/data": ["../../packages/data/src/index.ts"],
+      "@optimitron/data/*": ["../../packages/data/src/*"],
       "@/components/ui/*": ["../../packages/neobrutalist-ui/src/ui/*"],
       "@/lib/utils": ["../../packages/neobrutalist-ui/src/cn.ts"],
       "@/lib/parameters-calculations-citations": [
-        "../../packages/impact-params/src/parameters-calculations-citations.ts"
+        "../../packages/data/src/parameters/parameters-calculations-citations.ts"
       ],
       "@/lib/format-parameter": [
-        "../../packages/impact-params/src/format-parameter.ts"
+        "../../packages/data/src/parameters/compact-format.ts"
       ]
     },
     "baseUrl": "."

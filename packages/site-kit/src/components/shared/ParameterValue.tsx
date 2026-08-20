@@ -9,11 +9,11 @@ import {
   citations,
   type Citation,
   type Parameter,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import {
   formatParameter,
   type FormatParameterOptions,
-} from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters/compact-format"
 import { BookOpen, ExternalLink, FlaskConical, Info, type LucideIcon } from "lucide-react"
 
 export interface ParameterValueProps {

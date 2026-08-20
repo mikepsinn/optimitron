@@ -9,8 +9,8 @@ import {
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE,
   TREATY_ROI_TRIAL_CAPACITY_PLUS_EFFICACY_LAG,
   TREATY_CAMPAIGN_TOTAL_COST,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 import { ParameterValue } from "../shared/ParameterValue"
 
 // Escape dollar signs for LaTeX ($ -> \$)

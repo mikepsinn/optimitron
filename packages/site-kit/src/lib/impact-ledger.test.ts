@@ -12,7 +12,7 @@ import {
   THREE_POINT_FIVE_PERCENT_OF_GLOBAL_POPULATION,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 describe("impact ledger majority denominator", () => {
   it("uses the majority-of-humanity denominator instead of the Chenoweth threshold", () => {
