@@ -1052,11 +1052,19 @@ jobs:
                     deployment_id: deployment.id,
                     per_page: 20,
                   });
-                  const ready = statuses.data.find((status) =>
-                    status.state === 'success' &&
+                  // Vercel reports two outcomes for an app it did not rebuild.
+                  // "Skipped - Not affected" is an inactive status that still
+                  // carries the URL of the deployment that remains current for
+                  // that app, so it is exactly what the visual review should
+                  // screenshot. Only a build that never produced a URL at all
+                  // is treated as missing.
+                  const usable = (status) =>
                     status.environment_url &&
-                    /^https?:\/\//.test(status.environment_url)
-                  );
+                    /^https?:\/\//.test(status.environment_url) &&
+                    (status.state === 'success' ||
+                      (status.state === 'inactive' &&
+                        (status.description || '').startsWith('Skipped')));
+                  const ready = statuses.data.find(usable);
                   if (!ready) continue;
                   const app = projectModule.getVercelAppByUrl(ready.environment_url);
                   if (!app || !targetApps.has(app.appName)) continue;
