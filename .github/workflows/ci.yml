@@ -1000,6 +1000,13 @@ jobs:
             });
             const latestAffectedCommitIndex = new Map();
             for (const [index, commit] of commits.entries()) {
+              // A merge commit's first-parent diff contains every file the
+              // merged branch brought in, so it would pin an app's "latest
+              // affecting commit" to the merge even when that app's own
+              // sources never changed on this branch. Vercel skips rebuilding
+              // those apps, so the merge would demand a preview that is never
+              // created. Branch commits alone decide what is affected.
+              if ((commit.parents?.length ?? 0) > 1) continue;
               const parentSha = commit.parents?.[0]?.sha;
               if (!parentSha) continue;
               const commitFiles = execFileSync(
@@ -1016,8 +1023,9 @@ jobs:
                 }
               }
             }
-            async function collectPreviewUrls() {
-              const previewUrls = {};
+            async function collectPreviewUrls(allowStalePreview = false) {
+              const freshUrls = {};
+              const newestUrls = {};
               for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
                 const commit = commits[commitIndex];
                 const deployments = await github.paginate(github.rest.repos.listDeployments, {
@@ -1038,26 +1046,39 @@ jobs:
                   );
                   if (!ready) continue;
                   const app = projectModule.getVercelAppByUrl(ready.environment_url);
-                  const affectedCommitIndex = app
-                    ? latestAffectedCommitIndex.get(app.appName)
-                    : undefined;
+                  if (!app || !targetApps.has(app.appName)) continue;
+                  // Commits are scanned newest-first, so the first URL seen for
+                  // an app is its most recent preview.
+                  if (!newestUrls[app.appName]) {
+                    newestUrls[app.appName] = ready.environment_url;
+                  }
+                  const affectedCommitIndex = latestAffectedCommitIndex.get(
+                    app.appName,
+                  );
                   if (
-                    app &&
-                    targetApps.has(app.appName) &&
                     affectedCommitIndex !== undefined &&
                     commitIndex >= affectedCommitIndex &&
-                    !previewUrls[app.appName]
+                    !freshUrls[app.appName]
                   ) {
-                    previewUrls[app.appName] = ready.environment_url;
+                    freshUrls[app.appName] = ready.environment_url;
                   }
                 }
-                if ([...targetApps].every((appName) => previewUrls[appName])) break;
-                if (
-                  [...targetApps].every((appName) =>
-                    previewUrls[appName] ||
-                    commitIndex <= latestAffectedCommitIndex.get(appName)
-                  )
-                ) break;
+                if ([...targetApps].every((appName) => freshUrls[appName])) break;
+              }
+              if (!allowStalePreview) return freshUrls;
+              // Vercel skips deploying an app whose own scope did not change,
+              // even though a shared lockfile or root manifest bump marks it
+              // affected here. No newer preview will ever appear, and the
+              // existing one still renders the code under review, so fall back
+              // to it instead of failing the PR.
+              const previewUrls = { ...freshUrls };
+              for (const appName of targetApps) {
+                if (!previewUrls[appName] && newestUrls[appName]) {
+                  previewUrls[appName] = newestUrls[appName];
+                  console.log(
+                    `Using last known preview for ${appName} (Vercel skipped a rebuild for this commit).`
+                  );
+                }
               }
               return previewUrls;
             }
@@ -1065,7 +1086,9 @@ jobs:
             let previewUrls = {};
             const maxAttempts = 18;
             for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-              previewUrls = await collectPreviewUrls();
+              // Keep waiting for a fresh deployment until the last attempt, so
+              // a preview that is merely still building is never bypassed.
+              previewUrls = await collectPreviewUrls(attempt === maxAttempts);
               const missingApps = [...targetApps].filter(
                 (appName) => !previewUrls[appName]
               );
