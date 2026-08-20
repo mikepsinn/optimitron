@@ -1079,19 +1079,25 @@ jobs:
             let previewUrls = {};
             let appsWithDeployment = new Set();
             const maxAttempts = 18;
-            // Only apps Vercel actually deployed can still produce a preview;
-            // waiting on the ones it skipped would burn the whole timeout and
-            // then fail for a deployment that is never coming.
-            const pendingApps = () =>
+            // Vercel registers its deployment records moments after the push,
+            // so an app can legitimately have no record on the first lookups.
+            // Keep polling those for a grace period before concluding Vercel
+            // skipped them, otherwise a slow registration would be mistaken
+            // for a skip and the preview dropped from the review silently.
+            const graceAttempts = 6;
+            const pendingApps = (attempt) =>
               [...targetApps].filter(
-                (appName) => !previewUrls[appName] && appsWithDeployment.has(appName)
+                (appName) =>
+                  !previewUrls[appName] &&
+                  (appsWithDeployment.has(appName) || attempt <= graceAttempts)
               );
             for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
               ({ previewUrls, appsWithDeployment } = await collectPreviewUrls());
-              if (pendingApps().length === 0) break;
+              const waitingApps = pendingApps(attempt);
+              if (waitingApps.length === 0) break;
               if (attempt < maxAttempts) {
                 console.log(
-                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${pendingApps().join(', ')}`
+                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${waitingApps.join(', ')}`
                 );
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
               }
@@ -1109,7 +1115,9 @@ jobs:
               );
             }
 
-            const missingApps = pendingApps();
+            const missingApps = [...targetApps].filter(
+              (appName) => !previewUrls[appName] && appsWithDeployment.has(appName)
+            );
             if (missingApps.length > 0) {
               core.setFailed(
                 `Missing successful Vercel previews for affected apps: ${missingApps.join(', ')}`

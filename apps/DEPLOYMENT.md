@@ -67,7 +67,9 @@ are truly shared. Link each shared variable to the projects that need it.
 
 Good shared candidates:
 
-- `DATABASE_URL` for War on Disease, dFDA, Wishocracy, and Trial Abundance Survey.
+- `DATABASE_URL` for War on Disease, dFDA, Wishocracy, Trial Abundance Survey,
+  and Court of Humanity. Court of Humanity authenticates against the same shared
+  database, so it needs this variable before its first production deploy.
 - `NEXTAUTH_SECRET` for the optimitron web project and dFDA only. optimitron.com
   signs MCP Bearer tokens with it and dfda.earth/api/mcp verifies them, so those
   two projects must share one value (decided 2026-08-14: one secret, no separate

@@ -5,10 +5,26 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Layout } from "@/components/layout"
 import { storage } from "@/lib/storage"
-import { syncPendingVote } from "@/lib/vote-utils"
 import { createLogger } from "@/lib/logger"
 
 const log = createLogger("complete-signup-page")
+
+/**
+ * Same-origin callback paths only. A prefix test is not enough: browsers
+ * resolve "/\\evil.example/path" to an external origin even though it starts
+ * with a single slash, so the value is parsed and its origin compared before
+ * only the normalized path is reused.
+ */
+function resolveCallbackUrl(raw: string | null | undefined): string {
+  if (!raw) return "/dashboard"
+  try {
+    const parsed = new URL(raw, window.location.origin)
+    if (parsed.origin !== window.location.origin) return "/dashboard"
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`
+  } catch {
+    return "/dashboard"
+  }
+}
 
 export default function CompleteSignupPage() {
   const router = useRouter()
@@ -61,17 +77,11 @@ export default function CompleteSignupPage() {
           storage.clearSignupData()
         }
 
-        await syncPendingVote(session)
-
-        // Redirect to the callback URL, accepting only same-origin paths —
-        // anything else (absolute URLs, protocol-relative, javascript:) falls
-        // back to the dashboard.
-        const rawCallbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
-        const callbackUrl =
-          rawCallbackUrl.startsWith("/") && !rawCallbackUrl.startsWith("//")
-            ? rawCallbackUrl
-            : "/dashboard"
-        router.push(callbackUrl)
+        // No vote sync here: this app has no vote surface yet, so nothing can
+        // stage a pending vote on this origin. The sync call and its
+        // /api/votes/sync route arrive together with the court vote routes
+        // (#254) — calling it now would only ever 404 against a missing route.
+        router.push(resolveCallbackUrl(searchParams?.get("callbackUrl")))
       } catch (error) {
         log.error("Complete vote verification error", { error })
         setError("An error occurred. Redirecting to dashboard...")
