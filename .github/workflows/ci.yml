@@ -1023,9 +1023,13 @@ jobs:
                 }
               }
             }
-            async function collectPreviewUrls(allowStalePreview = false) {
+            async function collectPreviewUrls() {
               const freshUrls = {};
-              const newestUrls = {};
+              // Vercel creates a GitHub deployment record for every build it
+              // runs, including failed ones, but creates none at all when its
+              // ignore step skips an app. "No record anywhere in this PR"
+              // therefore means Vercel decided the app did not change.
+              const appsWithDeployment = new Set();
               for (let commitIndex = commits.length - 1; commitIndex >= 0; commitIndex -= 1) {
                 const commit = commits[commitIndex];
                 const deployments = await github.paginate(github.rest.repos.listDeployments, {
@@ -1033,6 +1037,15 @@ jobs:
                 });
                 for (const deployment of deployments) {
                   if ((deployment.environment || '').startsWith('visual-review')) continue;
+                  const environmentName = deployment.environment || '';
+                  for (const { appName, projectName } of projectModule.VERCEL_APP_PROJECTS) {
+                    if (
+                      targetApps.has(appName) &&
+                      environmentName === `Preview – ${projectName}`
+                    ) {
+                      appsWithDeployment.add(appName);
+                    }
+                  }
                   const statuses = await github.rest.repos.listDeploymentStatuses({
                     owner,
                     repo,
@@ -1047,11 +1060,6 @@ jobs:
                   if (!ready) continue;
                   const app = projectModule.getVercelAppByUrl(ready.environment_url);
                   if (!app || !targetApps.has(app.appName)) continue;
-                  // Commits are scanned newest-first, so the first URL seen for
-                  // an app is its most recent preview.
-                  if (!newestUrls[app.appName]) {
-                    newestUrls[app.appName] = ready.environment_url;
-                  }
                   const affectedCommitIndex = latestAffectedCommitIndex.get(
                     app.appName,
                   );
@@ -1065,45 +1073,43 @@ jobs:
                 }
                 if ([...targetApps].every((appName) => freshUrls[appName])) break;
               }
-              if (!allowStalePreview) return freshUrls;
-              // Vercel skips deploying an app whose own scope did not change,
-              // even though a shared lockfile or root manifest bump marks it
-              // affected here. No newer preview will ever appear, and the
-              // existing one still renders the code under review, so fall back
-              // to it instead of failing the PR.
-              const previewUrls = { ...freshUrls };
-              for (const appName of targetApps) {
-                if (!previewUrls[appName] && newestUrls[appName]) {
-                  previewUrls[appName] = newestUrls[appName];
-                  console.log(
-                    `Using last known preview for ${appName} (Vercel skipped a rebuild for this commit).`
-                  );
-                }
-              }
-              return previewUrls;
+              return { previewUrls: freshUrls, appsWithDeployment };
             }
 
             let previewUrls = {};
+            let appsWithDeployment = new Set();
             const maxAttempts = 18;
-            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-              // Keep waiting for a fresh deployment until the last attempt, so
-              // a preview that is merely still building is never bypassed.
-              previewUrls = await collectPreviewUrls(attempt === maxAttempts);
-              const missingApps = [...targetApps].filter(
-                (appName) => !previewUrls[appName]
+            // Only apps Vercel actually deployed can still produce a preview;
+            // waiting on the ones it skipped would burn the whole timeout and
+            // then fail for a deployment that is never coming.
+            const pendingApps = () =>
+              [...targetApps].filter(
+                (appName) => !previewUrls[appName] && appsWithDeployment.has(appName)
               );
-              if (missingApps.length === 0) break;
+            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+              ({ previewUrls, appsWithDeployment } = await collectPreviewUrls());
+              if (pendingApps().length === 0) break;
               if (attempt < maxAttempts) {
                 console.log(
-                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${missingApps.join(', ')}`
+                  `Waiting for affected app previews (${attempt}/${maxAttempts}): ${pendingApps().join(', ')}`
                 );
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
               }
             }
 
-            const missingApps = [...targetApps].filter(
-              (appName) => !previewUrls[appName]
+            const skippedApps = [...targetApps].filter(
+              (appName) => !previewUrls[appName] && !appsWithDeployment.has(appName)
             );
+            if (skippedApps.length > 0) {
+              // Not a failure: Vercel judged these apps unchanged, so there is
+              // no new rendering to review. The build matrix still compiles
+              // them, and their routes keep their existing screenshots.
+              console.log(
+                `Vercel skipped deploying (no preview to review): ${skippedApps.join(', ')}`
+              );
+            }
+
+            const missingApps = pendingApps();
             if (missingApps.length > 0) {
               core.setFailed(
                 `Missing successful Vercel previews for affected apps: ${missingApps.join(', ')}`
