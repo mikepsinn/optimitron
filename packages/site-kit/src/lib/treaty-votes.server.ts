@@ -65,6 +65,8 @@ export async function upsertTreatyVote(input: {
   referredByUserId?: string | null
   organizationId?: string | null
   originUrl?: string | null
+  /** Signature-surface consent; omitted keeps the existing default (public). */
+  isPublic?: boolean
 }) {
   const referendum = await getTreatyReferendum()
   if (referendum.status !== ReferendumStatus.ACTIVE) {
@@ -85,6 +87,7 @@ export async function upsertTreatyVote(input: {
       deletedAt: null,
       userId: input.userId,
       voteSource: ReferendumVoteSource.SELF,
+      ...(input.isPublic === undefined ? {} : { isPublic: input.isPublic }),
     },
     create: {
       userId: input.userId,
@@ -95,7 +98,7 @@ export async function upsertTreatyVote(input: {
       referredByUserId: input.referredByUserId ?? null,
       organizationId: input.organizationId ?? null,
       originUrl: input.originUrl ?? null,
-      isPublic: true,
+      isPublic: input.isPublic ?? true,
     },
   })
 }

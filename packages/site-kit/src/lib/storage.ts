@@ -83,6 +83,27 @@ export function hasStorageItem(key: StorageKey): boolean {
 
 // Typed helper functions for specific storage items
 
+/**
+ * A vote staged in localStorage until it can be synced to /api/votes/sync.
+ * displayName/firstName/middleName/lastName/makePublic come from the treaty
+ * signature box; the sync API updates the voter's Person when present.
+ */
+export interface PendingVote {
+  answer: string
+  referredBy: string | null
+  inviteToken?: string | null
+  timestamp: string
+  militaryAllocationPercent?: number
+  organizationId?: string | null
+  sourceUrl?: string | null
+  sourceReferrer?: string | null
+  displayName?: string | null
+  firstName?: string | null
+  middleName?: string | null
+  lastName?: string | null
+  makePublic?: boolean
+}
+
 export const storage = {
   // Signup flow
   getSignupName: () => getStorageItem<string>(STORAGE_KEYS.SIGNUP_NAME),
@@ -110,8 +131,8 @@ export const storage = {
   },
 
   // Vote flow
-  getPendingVote: () => getStorageItem<{ answer: string; referredBy: string | null; inviteToken?: string | null; timestamp: string; militaryAllocationPercent?: number; organizationId?: string | null; sourceUrl?: string | null; sourceReferrer?: string | null }>(STORAGE_KEYS.PENDING_VOTE),
-  setPendingVote: (voteData: { answer: string; referredBy: string | null; inviteToken?: string | null; timestamp: string; militaryAllocationPercent?: number; organizationId?: string | null; sourceUrl?: string | null; sourceReferrer?: string | null }) =>
+  getPendingVote: () => getStorageItem<PendingVote>(STORAGE_KEYS.PENDING_VOTE),
+  setPendingVote: (voteData: PendingVote) =>
     setStorageItem(STORAGE_KEYS.PENDING_VOTE, voteData),
   removePendingVote: () => removeStorageItem(STORAGE_KEYS.PENDING_VOTE),
 

@@ -58,6 +58,12 @@ export async function getCurrentUser() {
   return user
 }
 
+/** The session user's id, or null when signed out. No DB query. */
+export async function getSessionUserId(): Promise<string | null> {
+  const session = await getServerSession(authOptions)
+  return session?.user?.id ?? null
+}
+
 /**
  * Require authentication (lightweight) - throws error if not authenticated
  * Returns just session data (userId, email) without DB query

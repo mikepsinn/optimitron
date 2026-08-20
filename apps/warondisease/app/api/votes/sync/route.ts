@@ -22,6 +22,7 @@ import {
   getUserTreatyVote,
   upsertTreatyVote,
 } from "@/lib/treaty-votes.server"
+import { applySignatureProfile } from "@/lib/signature-profile.server"
 
 const log = createLogger("votes-sync-api")
 
@@ -49,20 +50,31 @@ export async function POST(req: NextRequest) {
       organizationId,
       sourceUrl,
       sourceReferrer,
+      makePublic,
     } = body
 
     if (!answer || ![VotePosition.YES, VotePosition.NO].includes(answer)) {
       return NextResponse.json({ error: "Invalid vote answer" }, { status: 400 })
     }
 
+    const voteIsPublic = typeof makePublic === "boolean" ? makePublic : undefined
+
     const existingVote = await getUserTreatyVote(userId)
     const referralInvitation = await findReferralInvitation(inviteToken)
 
     if (existingVote) {
       const updateData: {
+        answer?: VotePosition
         referredByUserId?: string
         organizationId?: string | null
+        isPublic?: boolean
       } = {}
+
+      // Revotes update the answer (matching the legacy referendum-vote
+      // upsert), so signing the treaty after a NO vote records the YES.
+      if (existingVote.answer !== answer) {
+        updateData.answer = answer as VotePosition
+      }
 
       if ((referredBy || referralInvitation) && !existingVote.referredByUserId) {
         const referrer =
@@ -77,12 +89,19 @@ export async function POST(req: NextRequest) {
         updateData.organizationId = organizationId
       }
 
+      if (voteIsPublic !== undefined && existingVote.isPublic !== voteIsPublic) {
+        updateData.isPublic = voteIsPublic
+      }
+
+      let vote = existingVote
       if (Object.keys(updateData).length > 0) {
-        await prisma.referendumVote.update({
+        vote = await prisma.referendumVote.update({
           where: { id: existingVote.id },
           data: updateData,
         })
       }
+
+      await applySignatureProfile(userId, body)
 
       if (
         referralInvitation &&
@@ -96,7 +115,7 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(
-        { message: "Vote already recorded", vote: existingVote },
+        { message: "Vote already recorded", vote },
         { status: 200 },
       )
     }
@@ -127,7 +146,10 @@ export async function POST(req: NextRequest) {
       referredByUserId: referrerUserId,
       organizationId: organizationId || null,
       originUrl,
+      isPublic: voteIsPublic,
     })
+
+    await applySignatureProfile(userId, body)
 
     await prisma.activity.create({
       data: {
@@ -178,12 +200,18 @@ export async function POST(req: NextRequest) {
 
       for (const milestone of badgeMilestones) {
         if (referralCount === milestone.count) {
-          await prisma.badge.create({
-            data: {
-              userId: referrerUserId,
-              type: milestone.type,
-            },
-          })
+          // A referrer can hit a milestone count again after a referred vote
+          // is soft-deleted and re-synced; the badge is unique per user, and
+          // a duplicate must not fail the sync after the vote is recorded.
+          const badge = await prisma.badge
+            .create({
+              data: {
+                userId: referrerUserId,
+                type: milestone.type,
+              },
+            })
+            .catch(() => null)
+          if (!badge) continue
 
           await prisma.notification.create({
             data: {
