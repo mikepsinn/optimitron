@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation"
-import Link from "next/link"
 import { VotePosition } from "@optimitron/db"
 import Layout from "../../components/layout"
 import { requireAuth } from "@/lib/auth-utils"
@@ -45,9 +44,12 @@ export default async function CourtDashboardPage() {
             ) : (
               <p className="text-lg font-bold">
                 You are not on the plaintiff register yet.{" "}
-                <Link href="/" className="underline">
+                <a
+                  href="https://warondisease.org/humanity-v-government"
+                  className="underline"
+                >
                   Read the case
-                </Link>{" "}
+                </a>{" "}
                 and sign the 1% Treaty to join it.
               </p>
             )}

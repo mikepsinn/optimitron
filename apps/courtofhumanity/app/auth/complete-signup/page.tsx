@@ -2,29 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+
+import { resolveCallbackUrl } from "@/lib/callback-url"
 import { useSession } from "next-auth/react"
 import { Layout } from "@/components/layout"
 import { storage } from "@/lib/storage"
 import { createLogger } from "@/lib/logger"
 
 const log = createLogger("complete-signup-page")
-
-/**
- * Same-origin callback paths only. A prefix test is not enough: browsers
- * resolve "/\\evil.example/path" to an external origin even though it starts
- * with a single slash, so the value is parsed and its origin compared before
- * only the normalized path is reused.
- */
-function resolveCallbackUrl(raw: string | null | undefined): string {
-  if (!raw) return "/dashboard"
-  try {
-    const parsed = new URL(raw, window.location.origin)
-    if (parsed.origin !== window.location.origin) return "/dashboard"
-    return `${parsed.pathname}${parsed.search}${parsed.hash}`
-  } catch {
-    return "/dashboard"
-  }
-}
 
 export default function CompleteSignupPage() {
   const router = useRouter()
@@ -52,7 +37,7 @@ export default function CompleteSignupPage() {
         const newsletterSubscribed = storage.getSignupSubscribe()
 
         if (name || referralCode || inviteToken || newsletterSubscribed !== null) {
-          // Call API to complete vote verification
+          // Call API to finish creating the account
           const response = await fetch("/api/auth/complete-signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -66,7 +51,7 @@ export default function CompleteSignupPage() {
 
           if (!response.ok) {
             const data = await response.json()
-            setError(data.error || "Failed to verify vote")
+            setError(data.error || "Failed to complete signup")
             setTimeout(() => {
               router.push("/dashboard")
             }, 2000)
@@ -81,9 +66,9 @@ export default function CompleteSignupPage() {
         // stage a pending vote on this origin. The sync call and its
         // /api/votes/sync route arrive together with the court vote routes
         // (#254) — calling it now would only ever 404 against a missing route.
-        router.push(resolveCallbackUrl(searchParams?.get("callbackUrl")))
+        router.push(resolveCallbackUrl(searchParams?.get("callbackUrl"), window.location.origin))
       } catch (error) {
-        log.error("Complete vote verification error", { error })
+        log.error("Complete signup error", { error })
         setError("An error occurred. Redirecting to dashboard...")
         setTimeout(() => {
           router.push("/dashboard")
@@ -102,8 +87,8 @@ export default function CompleteSignupPage() {
         <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-brutal-beige">
           <div className="w-full max-w-md">
             <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <h1 className="text-4xl font-black mb-2">Verifying vote...</h1>
-              <p className="text-lg">Please wait while we save your verified vote.</p>
+              <h1 className="text-4xl font-black mb-2">Finishing signup...</h1>
+              <p className="text-lg">Please wait while we finish setting up your account.</p>
             </div>
           </div>
         </div>

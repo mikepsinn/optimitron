@@ -16,7 +16,7 @@ export default function VerifyRequest() {
           <div className="border-4 border-black bg-brutal-yellow p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="font-bold mb-2">Check your inbox</p>
             <p className="text-sm">
-              Click the link in the email to verify your vote. The link will expire in 24 hours.
+              Click the link in the email to confirm your address. The link will expire in 24 hours.
             </p>
           </div>
 
@@ -29,7 +29,7 @@ export default function VerifyRequest() {
             href={ROUTES.home}
             className="inline-block mt-4 border-4 border-black bg-black px-6 py-3 font-bold text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
           >
-            Back to Vote
+            Back to the case
           </a>
         </div>
       </div>
