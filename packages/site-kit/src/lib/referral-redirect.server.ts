@@ -37,6 +37,24 @@ export function buildReferralRedirectUrl(input: {
   return `/vote?${redirectParams.toString()}`
 }
 
+/** Both fields are diagnostic only — nothing reads them for logic. */
+const MAX_USER_AGENT_LENGTH = 512
+
+/**
+ * Referer URLs can carry invite tokens or user identifiers in their query
+ * string, so only the origin + path is kept. Unparseable values are dropped
+ * rather than stored raw.
+ */
+function sanitizeRefererUrl(value: string | null): string | null {
+  if (!value) return null
+  try {
+    const url = new URL(value)
+    return `${url.origin}${url.pathname}`
+  } catch {
+    return null
+  }
+}
+
 export async function logReferralRedirectClick(input: {
   code: string
   refererUrl: string | null
@@ -50,8 +68,8 @@ export async function logReferralRedirectClick(input: {
       data: {
         code: input.code,
         referrerUserId: referrer?.id ?? null,
-        refererUrl: input.refererUrl,
-        userAgent: input.userAgent,
+        refererUrl: sanitizeRefererUrl(input.refererUrl),
+        userAgent: input.userAgent?.slice(0, MAX_USER_AGENT_LENGTH) ?? null,
         shareAttemptId: input.shareAttemptId,
       },
     })

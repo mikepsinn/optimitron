@@ -11,10 +11,18 @@ function cleanSignatureName(value: unknown): string | null {
 
 /**
  * The treaty signature box sends the signer's typed name (and optional
- * structured first/middle/last legal name) with the vote. Person owns the
- * public-profile and display-name fields used by signer lists; the vote
- * keeps its own public flag so users can hide a specific signature without
- * changing old private votes into public signatories.
+ * structured first/middle/last legal name) with the vote.
+ *
+ * `makePublic` writes `Person.isPublic`, which is profile-wide, not
+ * signature-scoped. That is deliberate and required: signer lists and
+ * leaderboards match on BOTH `vote.isPublic` AND `person.isPublic`
+ * (`referendum-vote-classification.server.ts`), and `Person.isPublic`
+ * defaults to false — so skipping this write would silently keep every new
+ * signer off the list they just asked to appear on. The signature box states
+ * the profile-wide scope next to the control.
+ *
+ * The vote keeps its own public flag as the narrower switch: clearing it
+ * hides one signature without flipping the profile back to private.
  *
  * No-ops when the payload carries no signature fields, so plain YES/NO
  * votes from the slider flow never touch the Person row.

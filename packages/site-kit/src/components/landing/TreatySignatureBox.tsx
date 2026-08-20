@@ -120,12 +120,6 @@ export function TreatySignatureBox({
     })
     storage.clearVoteStatusCache()
 
-    trackVoteSubmitted({
-      voteType: "treaty_vote",
-      answer: "YES",
-      authenticated: status === "authenticated",
-    })
-
     if (status === "authenticated" && session) {
       const synced = await syncPendingVote(session)
       if (!synced) {
@@ -142,6 +136,15 @@ export function TreatySignatureBox({
         })
       }
     }
+
+    // Reported after the vote is durably recorded, so a failed sync never
+    // counts as a submission. Signed-out signatures are staged locally by
+    // design, so they report here too.
+    trackVoteSubmitted({
+      voteType: "treaty_vote",
+      answer: "YES",
+      authenticated: status === "authenticated",
+    })
 
     confetti({
       particleCount: 120,
@@ -252,7 +255,8 @@ export function TreatySignatureBox({
         />
         <span>
           Display my name publicly on the signer list and leaderboards{" "}
-          <span className="opacity-70">(recommended)</span>.
+          <span className="opacity-70">(recommended)</span>. This makes your
+          profile public across the site.
         </span>
       </label>
       {error ? (

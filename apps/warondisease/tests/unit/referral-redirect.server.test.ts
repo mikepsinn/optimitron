@@ -91,12 +91,46 @@ describe("referral redirect helpers", () => {
       data: {
         code: "jane",
         referrerUserId: "user_jane",
-        refererUrl: "https://example.com",
+        refererUrl: "https://example.com/",
         shareAttemptId: null,
         userAgent: "vitest",
       },
     })
     expect(mocks.shareAttemptUpdateMany).not.toHaveBeenCalled()
+  })
+
+  it("drops referer query strings so invite tokens are never persisted", async () => {
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_jane" })
+
+    await logReferralRedirectClick({
+      code: "jane",
+      refererUrl: "https://example.com/vote/jane?invite=secret-token&ref=jane",
+      shareAttemptId: null,
+      userAgent: "vitest",
+    })
+
+    expect(mocks.referralClickCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          refererUrl: "https://example.com/vote/jane",
+        }),
+      }),
+    )
+  })
+
+  it("drops unparseable referers and caps oversized user agents", async () => {
+    mocks.findUserByHandleOrReferralCode.mockResolvedValue({ id: "user_jane" })
+
+    await logReferralRedirectClick({
+      code: "jane",
+      refererUrl: "not-a-url",
+      shareAttemptId: null,
+      userAgent: "u".repeat(900),
+    })
+
+    const { data } = mocks.referralClickCreate.mock.calls.at(-1)![0]
+    expect(data.refererUrl).toBeNull()
+    expect(data.userAgent).toHaveLength(512)
   })
 
   it("logs referral-code clicks and share-attempt attribution", async () => {
