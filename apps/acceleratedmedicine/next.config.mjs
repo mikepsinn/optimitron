@@ -11,7 +11,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_SITE_VARIANT: "acceleratedmedicine.org",
   },
-  transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/impact-params", "@optimitron/survey-embed", "@optimitron/site-kit"],
+  transpilePackages: ["@optimitron/neobrutalist-ui", "@optimitron/data", "@optimitron/survey-embed", "@optimitron/site-kit"],
   outputFileTracingRoot: monorepoRoot,
   webpack(config) {
     return pinAppNextAuthInstance(config, __dirname)

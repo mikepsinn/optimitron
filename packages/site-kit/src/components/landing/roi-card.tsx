@@ -10,8 +10,8 @@ import {
   DFDA_NET_SAVINGS_RD_ONLY_ANNUAL,
   TREATY_QALYS_GAINED_ANNUAL_GLOBAL,
   DRUG_DISCOVERY_TO_APPROVAL_YEARS,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter, getParameterValue } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter, getParameterValue } from "@optimitron/data/parameters/compact-format"
 import { ParameterValue } from "../shared/ParameterValue"
 
 // Derived values from parameters

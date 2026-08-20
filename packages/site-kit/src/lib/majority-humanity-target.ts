@@ -2,7 +2,7 @@ import {
   GLOBAL_COORDINATION_TARGET_PCT,
   GLOBAL_REGISTERED_VOTERS,
   type Parameter,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 export const MAJORITY_OF_HUMANS_ON_EARTH: Parameter = {
   ...GLOBAL_REGISTERED_VOTERS,

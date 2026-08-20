@@ -9,7 +9,7 @@ import {
   HOURS_PER_YEAR as HOURS_PER_YEAR_PARAMETER,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 export const VOTING_BLOC_TARGET = GLOBAL_REGISTERED_VOTERS.value
 export const REGULATORY_DELAY_YEARS = EFFICACY_LAG_YEARS.value

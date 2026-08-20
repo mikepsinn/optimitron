@@ -9,8 +9,8 @@ import {
   GLOBAL_MILITARY_SPENDING_POST_TREATY_ANNUAL_2024,
   TREATY_ANNUAL_FUNDING,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 
 // Derived values from parameters using formatParameter utility
 const remainingMilitaryBudget = formatParameter(GLOBAL_MILITARY_SPENDING_POST_TREATY_ANNUAL_2024, { precision: 3 })

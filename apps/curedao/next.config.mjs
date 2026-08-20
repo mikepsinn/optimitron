@@ -13,7 +13,7 @@ const nextConfig = {
   },
   transpilePackages: [
     "@optimitron/neobrutalist-ui",
-    "@optimitron/impact-params",
+    "@optimitron/data",
     "@optimitron/survey-embed",
     "@optimitron/site-kit",
   ],

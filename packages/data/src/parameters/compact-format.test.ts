@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatParameter, getParameterValue, formatConfidenceInterval } from './format-parameter'
+import { formatParameter, getParameterValue, formatConfidenceInterval } from './compact-format'
 import type { Parameter } from './parameters-calculations-citations'
 
 // Test helper to create a minimal Parameter object

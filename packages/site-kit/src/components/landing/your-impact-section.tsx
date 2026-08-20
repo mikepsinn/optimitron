@@ -10,7 +10,7 @@ import {
   TRIAL_CAPACITY_CUMULATIVE_YEARS_20YR,
   LIFE_EXTENSION_YEARS,
   DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_YEARS,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { ParameterValue } from "../shared/ParameterValue"
 import { IMPACT_PER_VOTE } from "../../lib/impact-ledger"
 

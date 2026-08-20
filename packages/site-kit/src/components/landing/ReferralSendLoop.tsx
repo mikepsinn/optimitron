@@ -12,7 +12,7 @@ import { sanitizeUsernameInput, validateUsername } from "../../lib/username"
 import { getBaseUrl } from "../../lib/url"
 import { createLogger } from "../../lib/logger"
 import { cn } from "@optimitron/neobrutalist-ui/cn"
-import { VOTER_LIVES_SAVED } from "@optimitron/impact-params/parameters"
+import { VOTER_LIVES_SAVED } from "@optimitron/data/parameters"
 import { ParameterValue } from "../shared/ParameterValue"
 
 const log = createLogger("referral-send-loop")

@@ -19,7 +19,7 @@ import {
   DFDA_TRIAL_CAPACITY_MULTIPLIER,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   DFDA_QUEUE_CLEARANCE_YEARS,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { ParameterValue } from "../shared/ParameterValue"
 import { trackVoteSubmitted } from "../../lib/analytics"
 import { ManualPromoCard } from "../shared/ManualPromoCard"

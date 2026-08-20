@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Latex } from "@optimitron/neobrutalist-ui/ui/latex"
-import type { Parameter } from "@optimitron/impact-params/parameters"
+import type { Parameter } from "@optimitron/data/parameters"
 import { cn } from "@optimitron/neobrutalist-ui/cn"
 
 export interface ParameterEquationProps {
