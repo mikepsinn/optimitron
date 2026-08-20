@@ -92,8 +92,15 @@ async function run(browser: Browser) {
       const location = res.headers()["location"] ?? ""
       const actual = new URL(location, BASE)
       const expected = new URL(to, BASE)
-      const actualParams = [...actual.searchParams.entries()].sort()
-      const expectedParams = [...expected.searchParams.entries()].sort()
+      // Sort by key then value: the default comparator stringifies each
+      // [key, value] tuple, so a comma inside a key or value can make two
+      // different pairs compare equal.
+      const byKeyThenValue = (a: [string, string], b: [string, string]) =>
+        a[0] === b[0] ? a[1].localeCompare(b[1]) : a[0].localeCompare(b[0])
+      const actualParams = [...actual.searchParams.entries()].sort(byKeyThenValue)
+      const expectedParams = [...expected.searchParams.entries()].sort(
+        byKeyThenValue,
+      )
       check(
         `${from} redirects with params preserved`,
         res.status() === 307 &&

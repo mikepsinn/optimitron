@@ -83,7 +83,12 @@ export function TreatySignatureBox({
     const pendingVote = storage.getPendingVote()
     if (!pendingVote) return
     void syncPendingVote(session).then((synced) => {
-      if (synced && pendingVote.answer === "YES") setSigned(true)
+      if (synced) {
+        if (pendingVote.answer === "YES") setSigned(true)
+        return
+      }
+      // The staged vote is still in localStorage, so signing again retries it.
+      setError("We couldn't save your signature. Sign again to retry.")
     })
   }, [status, session])
 
