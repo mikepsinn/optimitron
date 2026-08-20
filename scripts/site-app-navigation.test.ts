@@ -52,6 +52,7 @@ test("every internal site-app navigation route has a Next.js page", async (t) =>
     ["trialabundancesurvey", VARIANTS.SURVEY],
     ["curedao", VARIANTS.CUREDAO],
     ["acceleratedmedicine", VARIANTS.ACCELERATED_MEDICINE],
+    ["courtofhumanity", VARIANTS.COURT_OF_HUMANITY],
   ] as const;
 
   for (const [appName, siteVariant] of apps) {

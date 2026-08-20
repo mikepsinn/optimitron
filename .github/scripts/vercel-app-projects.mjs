@@ -28,6 +28,7 @@ export const VERCEL_APP_PROJECTS = Object.freeze([
     "acceleratedmedicine",
     "acceleratedmedicine.org",
   ),
+  project("courtofhumanity", "courtofhumanity", "courtofhumanity.org"),
 ]);
 
 function project(

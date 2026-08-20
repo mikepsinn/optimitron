@@ -8,6 +8,7 @@
 import type { FaqConfig } from './site-config'
 import { formatParameter } from "@optimitron/impact-params/format"
 import {
+  MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   PEACE_DIVIDEND_ANNUAL_SOCIETAL_BENEFIT,
   GLOBAL_REGISTERED_VOTERS,
@@ -194,6 +195,48 @@ export const WAR_ON_DISEASE_FAQ: FaqConfig = {
     buttons: [
       { label: 'CONTACT US', href: '/contact', variant: 'primary' },
       { label: 'VIEW RESEARCH', href: '/research', variant: 'secondary' },
+    ],
+  },
+}
+
+/**
+ * Court of Humanity FAQ (Judicial variant)
+ */
+export const COURT_OF_HUMANITY_FAQ: FaqConfig = {
+  title: 'FREQUENTLY ASKED QUESTIONS',
+  subtitle: 'What the Court of Humanity is, and how to join the case',
+  sections: [
+    {
+      category: 'THE COURT',
+      questions: [
+        {
+          q: 'What is the Court of Humanity?',
+          a: `A public court where humanity brings claims against the institutions that injure it. First on the docket: Humanity v. Government. Your governments spend $${Math.round(MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO.value)} on weapons for every $1 testing which medicines work, while two billion humans live with untreated disease. The Court counts the plaintiffs, files the evidence, and records humanity's verdict.`,
+        },
+        {
+          q: 'Is this a real court?',
+          a: 'It is a court of public record, not a government tribunal. No sheriff enforces its verdicts. Its power is the register: named plaintiffs, documented harms, and a verdict rendered by the humans every government is paid to serve. Chemical weapons, landmines, and nuclear tests were banned by treaties that started with less.',
+        },
+        {
+          q: 'How do I become a plaintiff?',
+          a: 'Sign the 1% Treaty — every YES vote registers you as a plaintiff on Humanity v. Government. You can also register someone you love who can no longer sign for themselves.',
+        },
+        {
+          q: 'Who operates the Court?',
+          a: 'The Institute for Accelerated Medicine, a 501(c)(3) nonprofit. Every case file, piece of evidence, and vote tally is public, so you can check the record instead of trusting the operator.',
+        },
+      ],
+    },
+    FAQ_SECTIONS.treaty,
+  ],
+  ctaSection: {
+    title: 'READY TO JOIN THE CASE?',
+    subtitle: 'Read the filing, then put your name on the record',
+    buttons: [
+      // These point at the case surfaces on warondisease.org until the court
+      // routes land in this app (issue #254), then they become local paths.
+      { label: 'READ THE CASE', href: 'https://warondisease.org/humanity-v-government', variant: 'primary' },
+      { label: 'CONTACT US', href: '/contact', variant: 'secondary' },
     ],
   },
 }

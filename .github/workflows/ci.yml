@@ -135,6 +135,7 @@ jobs:
               - 'apps/optimitron/**'
             site_apps_changed:
               - 'apps/acceleratedmedicine/**'
+              - 'apps/courtofhumanity/**'
               - 'apps/curedao/**'
               - 'apps/dfda/**'
               - 'apps/trialabundancesurvey/**'
@@ -380,6 +381,11 @@ jobs:
             port: 4016
             postgres_image: ""
             requires_database: false
+          - app: courtofhumanity
+            variant: courtofhumanity.org
+            port: 4017
+            postgres_image: postgres:16
+            requires_database: true
     env:
       CI: true
       DATABASE_URL: postgresql://test:test@localhost:5432/test

@@ -15,6 +15,7 @@ before `warondisease.org` moves off the temporary `apps/optimitron` host.
 | `optimitron-web`       | `apps/optimitron`           | `optimitron.com`           |
 | `warondisease`         | `apps/warondisease`         | `warondisease.org`         |
 | `acceleratedmedicine`  | `apps/acceleratedmedicine`  | `acceleratedmedicine.org`  |
+| `courtofhumanity`      | `apps/courtofhumanity`      | `courtofhumanity.org`      |
 | `trialabundancesurvey` | `apps/trialabundancesurvey` | `trialabundancesurvey.org` |
 | `dfda`                 | `apps/dfda`                 | `dfda.earth`               |
 | `wishocracy`           | `apps/wishocracy`           | `wishocracy.org`           |

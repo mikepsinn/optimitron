@@ -135,6 +135,17 @@ export const authenticatedSiteAppRoutes = Object.freeze({
       sourcePage: "apps/trialabundancesurvey/app/dashboard/page.tsx",
     },
   ],
+  courtofhumanity: [
+    {
+      authenticated: true,
+      authRole: "user",
+      covers: ["apps/courtofhumanity/app/dashboard/page.tsx"],
+      label: "Court standing — signed-in user",
+      routeName: "dashboard-authenticated",
+      routePath: "/dashboard",
+      sourcePage: "apps/courtofhumanity/app/dashboard/page.tsx",
+    },
+  ],
 });
 
 export const authenticatedSiteAppRouteExemptions = Object.freeze([

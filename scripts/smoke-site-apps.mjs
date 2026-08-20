@@ -30,6 +30,7 @@ const apps = [
   ["trialabundancesurvey", 4014, VARIANTS.SURVEY],
   ["curedao", 4015, VARIANTS.CUREDAO],
   ["acceleratedmedicine", 4016, VARIANTS.ACCELERATED_MEDICINE],
+  ["courtofhumanity", 4017, VARIANTS.COURT_OF_HUMANITY],
 ];
 
 const screenshotProjects = [
