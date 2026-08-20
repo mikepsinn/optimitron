@@ -90,9 +90,16 @@ async function run(browser: Browser) {
     for (const [from, to] of cases) {
       const res = await ctx.request.get(`${BASE}${from}`, { maxRedirects: 0 })
       const location = res.headers()["location"] ?? ""
+      const actual = new URL(location, BASE)
+      const expected = new URL(to, BASE)
+      const actualParams = [...actual.searchParams.entries()].sort()
+      const expectedParams = [...expected.searchParams.entries()].sort()
       check(
         `${from} redirects with params preserved`,
-        res.status() === 307 && location === `${BASE}${to}`,
+        res.status() === 307 &&
+          actual.origin === new URL(BASE).origin &&
+          actual.pathname === expected.pathname &&
+          JSON.stringify(actualParams) === JSON.stringify(expectedParams),
         `${res.status()} -> ${location}`,
       )
     }
