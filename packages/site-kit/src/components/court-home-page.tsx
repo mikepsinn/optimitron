@@ -4,7 +4,7 @@ import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-contain
 import {
   GLOBAL_DISEASE_DEATHS_DAILY,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { ParameterValue } from "./shared/ParameterValue"
 
 // The case surfaces still live on warondisease.org until the court routes

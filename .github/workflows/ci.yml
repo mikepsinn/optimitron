@@ -1064,8 +1064,19 @@ jobs:
                     (status.state === 'success' ||
                       (status.state === 'inactive' &&
                         (status.description || '').startsWith('Skipped')));
-                  const ready = statuses.data.find(usable);
-                  if (!ready) continue;
+                  // GitHub returns deployment statuses newest first. Take the
+                  // newest conclusive status rather than the first usable one
+                  // anywhere in the list, so a build that ended in failure can
+                  // never be masked by a success it posted earlier on the same
+                  // deployment. This also makes paging the status list moot:
+                  // the decisive entry is always among the most recent.
+                  const failed = (status) =>
+                    status.state === 'error' || status.state === 'failure';
+                  const conclusive = statuses.data.find(
+                    (status) => usable(status) || failed(status),
+                  );
+                  if (!conclusive || !usable(conclusive)) continue;
+                  const ready = conclusive;
                   const app = projectModule.getVercelAppByUrl(ready.environment_url);
                   if (!app || !targetApps.has(app.appName)) continue;
                   const affectedCommitIndex = latestAffectedCommitIndex.get(

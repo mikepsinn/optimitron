@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import { buildCompleteSignupBody } from "@/lib/complete-signup-body"
 import { resolveCallbackUrl } from "@/lib/callback-url"
 import { useSession } from "next-auth/react"
 import { Layout } from "@/components/layout"
@@ -41,12 +42,14 @@ export default function CompleteSignupPage() {
           const response = await fetch("/api/auth/complete-signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: name || null,
-              referralCode: referralCode || null,
-              inviteToken: inviteToken || null,
-              newsletterSubscribed: newsletterSubscribed ?? true,
-            }),
+            body: JSON.stringify(
+              buildCompleteSignupBody({
+                name,
+                referralCode,
+                inviteToken,
+                newsletterSubscribed,
+              }),
+            ),
           })
 
           if (!response.ok) {
