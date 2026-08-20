@@ -9,8 +9,8 @@ import {
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   RARE_DISEASES_COUNT_GLOBAL,
   TREATY_ANNUAL_FUNDING,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 
 export default function FundingImpactBreakdownSection() {
   const config = getSiteConfig()

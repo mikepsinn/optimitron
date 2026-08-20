@@ -8,8 +8,8 @@ import {
   GLOBAL_MILITARY_SPENDING_ANNUAL_2024,
   GLOBAL_GOVERNMENT_CLINICAL_TRIALS_SPENDING_ANNUAL,
   MILITARY_TO_GOVERNMENT_CLINICAL_TRIALS_SPENDING_RATIO,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter, getParameterValue } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter, getParameterValue } from "@optimitron/data/parameters/compact-format"
 
 export default function WarVsCuresChart() {
   const config = getSiteConfig()

@@ -31,8 +31,8 @@ import {
   TREATY_CAMPAIGN_BUDGET_RESERVE,
   TREATY_CAMPAIGN_TOTAL_COST,
   TREATY_CAMPAIGN_VIRAL_REFERENDUM_BASE_CASE,
-} from "@optimitron/impact-params/parameters";
-import { formatParameter } from "@optimitron/impact-params/format";
+} from "@optimitron/data/parameters";
+import { formatParameter } from "@optimitron/data/parameters/compact-format";
 import Layout from "./layout";
 import { ParameterValue } from "./shared/ParameterValue";
 import { MANUAL_URLS, withUtm } from "../lib/manual-links";

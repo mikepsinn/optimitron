@@ -22,8 +22,8 @@ import {
   HOURS_PER_YEAR,
   VOTER_LIVES_SAVED,
   VOTER_SUFFERING_HOURS_PREVENTED,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter } from "@optimitron/data/parameters/compact-format"
 
 // ============================================================================
 // FORMATTED VALUES - Use formatParameter() for consistent sig figs

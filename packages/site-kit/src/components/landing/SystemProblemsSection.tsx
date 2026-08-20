@@ -11,8 +11,8 @@ import {
   CURRENT_DISEASE_PATIENTS_GLOBAL,
   DISEASES_WITHOUT_EFFECTIVE_TREATMENT,
   RARE_DISEASES_COUNT_GLOBAL,
-} from "@optimitron/impact-params/parameters";
-import { formatParameter } from "@optimitron/impact-params/format";
+} from "@optimitron/data/parameters";
+import { formatParameter } from "@optimitron/data/parameters/compact-format";
 
 export function SystemProblemsSection() {
   const config = getSiteConfig();

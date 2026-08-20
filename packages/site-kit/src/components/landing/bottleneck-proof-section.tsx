@@ -26,8 +26,8 @@ import {
   STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
   PHARMA_SUCCESS_RATE_CURRENT_PCT,
   TREATY_ANNUAL_FUNDING,
-} from "@optimitron/impact-params/parameters"
-import { formatParameter, getParameterValue } from "@optimitron/impact-params/format"
+} from "@optimitron/data/parameters"
+import { formatParameter, getParameterValue } from "@optimitron/data/parameters/compact-format"
 import { ParameterValue } from "../shared/ParameterValue"
 
 export function BottleneckProofSection() {

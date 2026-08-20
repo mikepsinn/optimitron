@@ -18,7 +18,7 @@ import {
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   STATUS_QUO_QUEUE_CLEARANCE_YEARS,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 
 interface PragmaticTrialsDialogProps {
   children: ReactNode

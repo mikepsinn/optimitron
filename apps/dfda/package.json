@@ -23,7 +23,6 @@
     "@next/third-parties": "^15.5.15",
     "@optimitron/data": "workspace:^",
     "@optimitron/db": "workspace:^",
-    "@optimitron/impact-params": "workspace:^",
     "@optimitron/neobrutalist-ui": "workspace:^",
     "@optimitron/site-kit": "workspace:^",
     "@optimitron/tracking": "workspace:^",

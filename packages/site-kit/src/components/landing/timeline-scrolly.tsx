@@ -9,9 +9,9 @@ import {
   EVENTUALLY_AVOIDABLE_DALY_PCT,
   GLOBAL_YLD_PROPORTION_OF_DALYS,
   GLOBAL_DISEASE_DEATHS_DAILY,
-} from "@optimitron/impact-params/parameters"
+} from "@optimitron/data/parameters"
 import { HeartCrack, Skull } from "lucide-react"
-import { getParameterValue } from "@optimitron/impact-params/format"
+import { getParameterValue } from "@optimitron/data/parameters/compact-format"
 
 // Calculate years until predicted death based on user age
 function calculateYearsUntilDeath(age: number): number | null {
