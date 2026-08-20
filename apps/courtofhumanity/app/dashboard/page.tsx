@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import { VotePosition } from "@optimitron/db"
 import Layout from "../../components/layout"
 import { requireAuth } from "@/lib/auth-utils"
 import { Card } from "@/components/ui/card"
@@ -23,8 +24,10 @@ export default async function CourtDashboardPage() {
     redirect("/auth/signin?callbackUrl=/dashboard")
   }
 
-  const vote = await getUserTreatyVote(userId).catch(() => null)
-  const isPlaintiff = vote?.answer === "YES"
+  // No .catch here: a failed lookup must surface as an error, not render as
+  // "not on the plaintiff register".
+  const vote = await getUserTreatyVote(userId)
+  const isPlaintiff = vote?.answer === VotePosition.YES
 
   return (
     <Layout>

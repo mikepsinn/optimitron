@@ -51,16 +51,26 @@ export default function CompleteSignupPage() {
           if (!response.ok) {
             const data = await response.json()
             setError(data.error || "Failed to verify vote")
-          } else {
-            // Clear localStorage
-            storage.clearSignupData()
+            setTimeout(() => {
+              router.push("/dashboard")
+            }, 2000)
+            return
           }
+
+          // Clear localStorage
+          storage.clearSignupData()
         }
 
         await syncPendingVote(session)
 
-        // Redirect to callback URL or dashboard
-        const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
+        // Redirect to the callback URL, accepting only same-origin paths —
+        // anything else (absolute URLs, protocol-relative, javascript:) falls
+        // back to the dashboard.
+        const rawCallbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
+        const callbackUrl =
+          rawCallbackUrl.startsWith("/") && !rawCallbackUrl.startsWith("//")
+            ? rawCallbackUrl
+            : "/dashboard"
         router.push(callbackUrl)
       } catch (error) {
         log.error("Complete vote verification error", { error })

@@ -985,7 +985,10 @@ jobs:
             const changed = files.map((file) => file.filename);
             const targetApps = new Set(
               projectModule.VERCEL_APP_PROJECTS
-                .filter(({ appName }) =>
+                // previewPending apps have no Vercel project yet (it is created
+                // post-merge), so no preview deployment can ever appear for them.
+                .filter(({ appName, previewPending }) =>
+                  !previewPending &&
                   scopeModule.getVercelAppBuildMatches(appName, changed).length > 0
                 )
                 .map(({ appName }) => appName)

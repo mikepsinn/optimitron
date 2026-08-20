@@ -111,7 +111,7 @@ them manually. `NEXT_PUBLIC_SITE_VARIANT` is fixed in each app's Next config.
 
 ## Cutover order
 
-1. Create the six projects with their root directories.
+1. Create the seven projects with their root directories.
 2. Add Development, Preview, and Production variables for each project.
 3. Deploy `trialabundancesurvey` and verify `/embed?embed=1` before Accelerated Medicine.
 4. Deploy the remaining apps to Vercel preview URLs.

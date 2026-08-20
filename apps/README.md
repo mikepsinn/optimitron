@@ -81,7 +81,7 @@ Job **`site-apps-static-validate`** (on peer app or `packages/db` changes):
 
 1. verify public navigation and authenticated screenshot coverage
 2. migrate + `prisma generate`
-3. **`pnpm typecheck:apps`** — all six `@apps/*`
+3. **`pnpm typecheck:apps`** — all seven `@apps/*`
 4. **`pnpm smoke:warondisease-db`** — ReferendumVote path
 5. **`pnpm test:apps:unit`** — vitest unit suites (not `tests/integration/`; not Playwright)
 

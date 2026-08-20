@@ -28,7 +28,17 @@ export const VERCEL_APP_PROJECTS = Object.freeze([
     "acceleratedmedicine",
     "acceleratedmedicine.org",
   ),
-  project("courtofhumanity", "courtofhumanity", "courtofhumanity.org"),
+  // previewPending: the Vercel project is created only after this scaffold
+  // merges (`pnpm vercel:projects -- --apply`), so PR CI must not wait for a
+  // preview deployment. Remove the flag once the project exists.
+  project(
+    "courtofhumanity",
+    "courtofhumanity",
+    "courtofhumanity.org",
+    undefined,
+    undefined,
+    { previewPending: true },
+  ),
 ]);
 
 function project(
@@ -37,6 +47,7 @@ function project(
   productionDomain,
   deploymentPrefixes = [projectName],
   smokePaths = ["/"],
+  { previewPending = false } = {},
 ) {
   return Object.freeze({
     appName,
@@ -45,6 +56,7 @@ function project(
     rootDirectory: `apps/${appName}`,
     deploymentPrefixes: Object.freeze(deploymentPrefixes),
     smokePaths: Object.freeze(smokePaths),
+    previewPending,
   });
 }
 
