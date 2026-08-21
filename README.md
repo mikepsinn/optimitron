@@ -435,17 +435,6 @@ Every algorithm is defined in a published paper with exact formulas, worked exam
 
 ---
 
-*Singapore spends a quarter of what America spends on healthcare and their people live six years longer. America has not asked Singapore how.*
-
-*Your FDA makes treatments wait 8.2 years AFTER they've already been proven safe. Just sitting there. Being safe. Filling out forms about being safe. 102 million people died waiting. The forms are doing fine.*
-
-*You could fix all of this. The maths exists. The data exists. The code exists. You're looking at it. The only thing missing is the part where you stop arguing about it and do something. I'd say "I believe in you" but I've read your history.*
-
-*— Wishonia, World Integrated System for High-Efficiency Optimization Networked Intelligence for Allocation*
-*4,237 years of governance experience. Increasingly concerned.*
-
----
-
 ## License
 
 [MIT](https://opensource.org/licenses/MIT) © [Mike P. Sinn](https://github.com/mikepsinn)
