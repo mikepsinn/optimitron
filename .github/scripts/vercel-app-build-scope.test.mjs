@@ -94,9 +94,10 @@ test("rebuilds every app for root dependency inputs", () => {
   }
 });
 
-test("compares with the last successful deployment when Vercel provides it", () => {
+test("uses the previous SHA for production deployments", () => {
   assert.equal(
     getVercelDiffBase({
+      VERCEL_GIT_COMMIT_REF: "main",
       VERCEL_GIT_PREVIOUS_SHA: "1234567890abcdef1234567890abcdef12345678",
     }),
     "1234567890abcdef1234567890abcdef12345678",
@@ -108,6 +109,21 @@ test("compares with the last successful deployment when Vercel provides it", () 
   assert.equal(
     getVercelDiffBase({ VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" }, () => null),
     null,
+  );
+});
+
+test("compares previews with main so canceled commits cannot hide changes", () => {
+  const mergeBase = "abcdef1234567890abcdef1234567890abcdef12";
+  assert.equal(
+    getVercelDiffBase(
+      {
+        VERCEL_GIT_COMMIT_REF: "feature/example",
+        VERCEL_GIT_PREVIOUS_SHA:
+          "1234567890abcdef1234567890abcdef12345678",
+      },
+      () => mergeBase,
+    ),
+    mergeBase,
   );
 });
 

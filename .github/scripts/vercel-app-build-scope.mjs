@@ -83,7 +83,14 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
 export function getVercelDiffBase(
   environment = process.env,
   resolveMergeBase = resolveProductionMergeBase,
+  productionBranch = "main",
 ) {
+  const currentBranch = String(
+    environment.VERCEL_GIT_COMMIT_REF ?? "",
+  ).trim();
+  if (currentBranch && currentBranch !== productionBranch) {
+    return resolveMergeBase();
+  }
   const previousSha = String(environment.VERCEL_GIT_PREVIOUS_SHA ?? "").trim();
   if (/^[0-9a-f]{7,40}$/iu.test(previousSha)) return previousSha;
   return resolveMergeBase();
