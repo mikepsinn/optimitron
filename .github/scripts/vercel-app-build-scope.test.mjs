@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   ensureVercelDiffBase,
+  ensureVercelProductionDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
   getVercelGitFetchRemotes,
@@ -37,9 +38,7 @@ test("matches each app and its transitive workspace dependencies", () => {
     ["packages/survey-embed/src/index.ts"],
   );
   assert.deepEqual(
-    getVercelAppBuildMatches("curedao", [
-      "packages/survey-embed/src/index.ts",
-    ]),
+    getVercelAppBuildMatches("curedao", ["packages/survey-embed/src/index.ts"]),
     [],
   );
 });
@@ -51,10 +50,7 @@ test("keeps Optimitron content inputs without treating it as the default app", (
       "docs/canonical-argument-2026-05-20.md",
       "apps/warondisease/app/page.tsx",
     ]),
-    [
-      "content/legislation/example.md",
-      "docs/canonical-argument-2026-05-20.md",
-    ],
+    ["content/legislation/example.md", "docs/canonical-argument-2026-05-20.md"],
   );
 });
 
@@ -110,10 +106,7 @@ test("compares with the last successful deployment when Vercel provides it", () 
     "abcdef1234567890abcdef1234567890abcdef12",
   );
   assert.equal(
-    getVercelDiffBase(
-      { VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" },
-      () => null,
-    ),
+    getVercelDiffBase({ VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" }, () => null),
     null,
   );
 });
@@ -187,4 +180,51 @@ test("builds safely when a missing Vercel diff base cannot be fetched", () => {
     }),
     null,
   );
+});
+
+test("fetches main to scope a branch's first Vercel deployment", () => {
+  const mergeBase = "1234567890abcdef1234567890abcdef12345678";
+  let fetched = false;
+  const calls = [];
+  const execFile = (_command, args) => {
+    calls.push(args);
+    if (args[0] === "fetch") {
+      fetched = true;
+      return "";
+    }
+    if (args[0] === "merge-base" && fetched) return mergeBase;
+    throw new Error("missing production ref");
+  };
+
+  assert.equal(
+    ensureVercelProductionDiffBase({
+      root: "/repo",
+      execFile,
+      fetchRemotes: ["origin"],
+      currentBranch: "feature/example",
+    }),
+    mergeBase,
+  );
+  assert.deepEqual(calls, [
+    ["merge-base", "HEAD", "origin/main"],
+    ["merge-base", "HEAD", "main"],
+    ["fetch", "--no-tags", "--depth=100", "origin", "feature/example"],
+    ["fetch", "--no-tags", "--depth=100", "origin", "main"],
+    ["merge-base", "HEAD", "FETCH_HEAD"],
+  ]);
+});
+
+test("does not compare a production deployment with its own HEAD", () => {
+  let called = false;
+  assert.equal(
+    ensureVercelProductionDiffBase({
+      currentBranch: "main",
+      execFile: () => {
+        called = true;
+        return "";
+      },
+    }),
+    null,
+  );
+  assert.equal(called, false);
 });

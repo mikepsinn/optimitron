@@ -21,10 +21,7 @@ const globalBuildFiles = new Set([
   "tsconfig.base.json",
 ]);
 const appExtraBuildPaths = Object.freeze({
-  optimitron: [
-    "content/",
-    "docs/canonical-argument-2026-05-20.md",
-  ],
+  optimitron: ["content/", "docs/canonical-argument-2026-05-20.md"],
 });
 const appIgnoredBuildPaths = Object.freeze({
   optimitron: [
@@ -105,19 +102,72 @@ export function ensureVercelDiffBase(
 
   for (const remote of fetchRemotes) {
     try {
+      execFile("git", ["fetch", "--no-tags", "--depth=1", remote, diffBase], {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "ignore", "pipe"],
+      });
+    } catch {
+      continue;
+    }
+    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+  }
+
+  return null;
+}
+
+export function ensureVercelProductionDiffBase({
+  root = repoRoot,
+  execFile = execFileSync,
+  fetchRemotes = getVercelGitFetchRemotes(process.env, root),
+  currentBranch = String(process.env.VERCEL_GIT_COMMIT_REF ?? "").trim(),
+  productionBranch = "main",
+  fetchDepth = 100,
+} = {}) {
+  if (!currentBranch || currentBranch === productionBranch) return null;
+
+  const localMergeBase = resolveProductionMergeBase(
+    root,
+    execFile,
+    productionBranch,
+  );
+  if (localMergeBase) return localMergeBase;
+
+  for (const remote of fetchRemotes) {
+    try {
       execFile(
         "git",
-        ["fetch", "--no-tags", "--depth=1", remote, diffBase],
+        ["fetch", "--no-tags", `--depth=${fetchDepth}`, remote, currentBranch],
         {
           cwd: root,
           encoding: "utf8",
           stdio: ["ignore", "ignore", "pipe"],
         },
       );
+      execFile(
+        "git",
+        [
+          "fetch",
+          "--no-tags",
+          `--depth=${fetchDepth}`,
+          remote,
+          productionBranch,
+        ],
+        {
+          cwd: root,
+          encoding: "utf8",
+          stdio: ["ignore", "ignore", "pipe"],
+        },
+      );
+      const mergeBase = execFile("git", ["merge-base", "HEAD", "FETCH_HEAD"], {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+      if (/^[0-9a-f]{40}$/iu.test(mergeBase)) return mergeBase;
     } catch {
       continue;
     }
-    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
   }
 
   return null;
@@ -176,11 +226,15 @@ function hasGitCommit(ref, root, execFile) {
   }
 }
 
-function resolveProductionMergeBase() {
-  for (const ref of ["origin/main", "main"]) {
+function resolveProductionMergeBase(
+  root = repoRoot,
+  execFile = execFileSync,
+  productionBranch = "main",
+) {
+  for (const ref of [`origin/${productionBranch}`, productionBranch]) {
     try {
-      const sha = execFileSync("git", ["merge-base", "HEAD", ref], {
-        cwd: repoRoot,
+      const sha = execFile("git", ["merge-base", "HEAD", ref], {
+        cwd: root,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "ignore"],
       }).trim();

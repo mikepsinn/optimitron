@@ -153,6 +153,12 @@ test("repairs only deployment settings that drift", () => {
         enableAffectedProjectsDeployments: false,
         framework: "nextjs",
         nodeVersion: "20.x",
+        productionDeploymentsFastLane: false,
+        resourceConfig: {
+          buildMachineSelection: "auto",
+          buildMachineType: "turbo",
+          elasticConcurrencyEnabled: true,
+        },
         rootDirectory: desired.rootDirectory,
         sourceFilesOutsideRootDirectory: false,
       },
@@ -161,6 +167,12 @@ test("repairs only deployment settings that drift", () => {
     {
       enableAffectedProjectsDeployments: true,
       nodeVersion: "24.x",
+      productionDeploymentsFastLane: true,
+      resourceConfig: {
+        buildMachineSelection: "fixed",
+        buildMachineType: "standard",
+        elasticConcurrencyEnabled: false,
+      },
       sourceFilesOutsideRootDirectory: true,
     },
   );
@@ -172,6 +184,12 @@ test("repairs only deployment settings that drift", () => {
           enableAffectedProjectsDeployments: true,
           framework: "nextjs",
           nodeVersion: "24.x",
+          productionDeploymentsFastLane: true,
+          resourceConfig: {
+            buildMachineSelection: "fixed",
+            buildMachineType: "standard",
+            elasticConcurrencyEnabled: false,
+          },
           rootDirectory: desired.rootDirectory,
           sourceFilesOutsideRootDirectory: true,
         },
