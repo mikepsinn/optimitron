@@ -58,12 +58,12 @@ In those conversations they will realize:
 - Accepting a 121-apocalypse mass-murder capacity (down from 122) would let us eradicate disease 12 times faster.
 - Military spending was 97% lower immediately before the United States won World War II. The US then cut military spending another 87% over 2 years after winning. So drastic reductions are not hypothetical — they have already been done, by the same country, in living memory.
 - It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.
-- They will realize this is wise because the chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.
+- They will realize this is wise because the annual chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.
 
 This is in the logical self-interest of even the CEO of Lockheed Martin, because:
 
 - A 1% reduction in his bomb-selling commission is not as valuable as the continued existence of himself, his family, and the people he loves.
-- Disease is very expensive to the economy.
+- Disease is very expensive to the economy. The CEO of Lockheed Martin is not exempt from biology.
 - It is projected that if we did this reallocation and eradicated disease, Earth would be vastly more productive — everyone would be approximately 4 times richer in 15 years.
 
 Therefore even the CEO of Lockheed Martin's interest in the 1% reduction is nothing compared to the increase in the size of the total pie of resources available to humanity if we eradicate disease instead of eradicating each other.
@@ -97,7 +97,7 @@ NUMERIC CLAIMS, SOURCES, AND UNCERTAINTY
 5. Claim: It is therefore possible to cut vastly more than 1%, and doing so would speed up the rate of medical progress unimaginably.
    Parameter: TREATY_REDUCTION_PCT | Value: 1.00% | Source URL: https://manual.WarOnDisease.org/knowledge/economics/1-pct-treaty-impact.html | 95% confidence interval: not present in catalog | Source notes: 1% reduction in military spending/war costs from treaty. Catalog confidence: high. Source type: definition. Manual page: The 1% Treaty: An Incentive-Compatible Approach to Ending War and Disease. Calculation URL: https://manual.WarOnDisease.org/calculations.html#sec-treaty_reduction_pct.
 
-6. Claim: They will realize this is wise because the chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.
+6. Claim: They will realize this is wise because the annual chance of dying in a terrorist attack is about 1 in 30 million, and the chance of suffering and dying from a disease is nearly 100%. The current spending ratio is the opposite of what the actual risk distribution would justify.
    Parameter: ANNUAL_TERRORISM_DEATH_RISK_DENOMINATOR | Value: 30.0 million | Source URL: https://manual.WarOnDisease.org/knowledge/solution/1-percent-treaty.html | 95% confidence interval: not present in catalog | Source notes: Annual probability of being killed by terrorism expressed as '1 in X'. An American's annual odds of dying in a terrorist attack are approximately 1 in 30 million. Catalog confidence: high. Source type: external. Manual page: The 1% Treaty. Calculation URL: https://manual.WarOnDisease.org/calculations.html#sec-annual_terrorism_death_risk_denominator. External source URL: https://www.cato.org/policy-analysis/terrorism-immigration-risk-analysis. Citation title: Chance of dying from terrorism statistic. Citation URL: https://www.cato.org/policy-analysis/terrorism-immigration-risk-analysis. Citation note: Cato Institute: Terrorism and Immigration Risk Analysis | NBC News: Lightning vs Terrorism.
    Source note: The nearly 100% disease-risk phrase is the right plain-language lifetime-risk wording; no separate catalog parameter is attached on this page.
 

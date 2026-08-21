@@ -43,14 +43,14 @@ test("matches each app and its transitive workspace dependencies", () => {
   );
 });
 
-test("keeps Optimitron content inputs without treating it as the default app", () => {
+test("keeps Optimitron content inputs without treating docs as app inputs", () => {
   assert.deepEqual(
     getVercelAppBuildMatches("optimitron", [
       "content/legislation/example.md",
-      "docs/canonical-argument-2026-05-20.md",
+      "docs/strategy-note.md",
       "apps/warondisease/app/page.tsx",
     ]),
-    ["content/legislation/example.md", "docs/canonical-argument-2026-05-20.md"],
+    ["content/legislation/example.md"],
   );
 });
 

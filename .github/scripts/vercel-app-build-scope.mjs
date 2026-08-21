@@ -21,7 +21,7 @@ const globalBuildFiles = new Set([
   "tsconfig.base.json",
 ]);
 const appExtraBuildPaths = Object.freeze({
-  optimitron: ["content/", "docs/canonical-argument-2026-05-20.md"],
+  optimitron: ["content/"],
 });
 const appIgnoredBuildPaths = Object.freeze({
   optimitron: [

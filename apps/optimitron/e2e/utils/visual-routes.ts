@@ -320,7 +320,14 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
       "apps/optimitron/src/components/eos-retro/MachineDiagram.tsx",
     ],
   ],
-  [ROUTES.fixAi, ["apps/optimitron/src/app/fix-ai/page.tsx"]],
+  [
+    ROUTES.fixAi,
+    [
+      "apps/optimitron/src/app/fix-ai/content.ts",
+      "apps/optimitron/src/app/fix-ai/corpus.server.ts",
+      "apps/optimitron/src/app/fix-ai/page.tsx",
+    ],
+  ],
   [ROUTES.game, OPTIMITRON_GAME_LANDING_FILES],
   [
     ROUTES.methodology,
