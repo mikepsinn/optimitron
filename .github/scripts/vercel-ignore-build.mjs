@@ -8,14 +8,20 @@ import {
 
 const appName = process.argv[2] ?? "optimitron";
 const requestedDiffBase = getVercelDiffBase(process.env, () => null);
-const diffBase = requestedDiffBase
+const verifiedRequestedDiffBase = requestedDiffBase
   ? ensureVercelDiffBase(requestedDiffBase)
-  : ensureVercelProductionDiffBase();
+  : null;
+const diffBase =
+  verifiedRequestedDiffBase ?? ensureVercelProductionDiffBase();
 const comparisonLabel = diffBase ?? "the full tracked tree";
 
-if (requestedDiffBase && !diffBase) {
+if (requestedDiffBase && !verifiedRequestedDiffBase && diffBase) {
   console.warn(
-    `Could not load Vercel diff base ${requestedDiffBase}; building ${appName} to avoid an unsafe skip.`,
+    `Vercel diff base ${requestedDiffBase} is unavailable or not an ancestor of HEAD; comparing ${appName} with the production merge base.`,
+  );
+} else if (requestedDiffBase && !diffBase) {
+  console.warn(
+    `Could not load Vercel diff base ${requestedDiffBase} or the production merge base; building ${appName} to avoid an unsafe skip.`,
   );
 } else if (!requestedDiffBase && !diffBase) {
   console.warn(

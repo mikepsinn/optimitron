@@ -21,7 +21,7 @@ const globalBuildFiles = new Set([
   "tsconfig.base.json",
 ]);
 const appExtraBuildPaths = Object.freeze({
-  optimitron: ["content/", "docs/canonical-argument-2026-05-20.md"],
+  optimitron: ["content/"],
 });
 const appIgnoredBuildPaths = Object.freeze({
   optimitron: [
@@ -83,7 +83,14 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
 export function getVercelDiffBase(
   environment = process.env,
   resolveMergeBase = resolveProductionMergeBase,
+  productionBranch = "main",
 ) {
+  const currentBranch = String(
+    environment.VERCEL_GIT_COMMIT_REF ?? "",
+  ).trim();
+  if (currentBranch && currentBranch !== productionBranch) {
+    return resolveMergeBase();
+  }
   const previousSha = String(environment.VERCEL_GIT_PREVIOUS_SHA ?? "").trim();
   if (/^[0-9a-f]{7,40}$/iu.test(previousSha)) return previousSha;
   return resolveMergeBase();
@@ -98,7 +105,9 @@ export function ensureVercelDiffBase(
   } = {},
 ) {
   if (!diffBase) return null;
-  if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+  if (hasGitCommit(diffBase, root, execFile)) {
+    return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+  }
 
   for (const remote of fetchRemotes) {
     try {
@@ -110,7 +119,9 @@ export function ensureVercelDiffBase(
     } catch {
       continue;
     }
-    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+    if (hasGitCommit(diffBase, root, execFile)) {
+      return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+    }
   }
 
   return null;
@@ -216,6 +227,19 @@ export function getVercelGitFetchRemotes(
 function hasGitCommit(ref, root, execFile) {
   try {
     execFile("git", ["cat-file", "-e", `${ref}^{commit}`], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "ignore", "ignore"],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isGitAncestor(ref, root, execFile) {
+  try {
+    execFile("git", ["merge-base", "--is-ancestor", ref, "HEAD"], {
       cwd: root,
       encoding: "utf8",
       stdio: ["ignore", "ignore", "ignore"],
