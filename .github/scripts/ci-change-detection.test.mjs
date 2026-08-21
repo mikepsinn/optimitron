@@ -46,6 +46,21 @@ test("runs expensive validation only for affected surfaces", () => {
   );
 });
 
+test("keeps every real build input inside its validation scope", () => {
+  assert.equal((workflow.match(/- '\.npmrc'/gu) ?? []).length, 3);
+  assert.match(
+    workflow,
+    /web_files_changed:[\s\S]*?'content\/legislation\/\*\*'[\s\S]*?'docs\/canonical-argument-2026-05-20\.md'[\s\S]*?site_apps_changed:/u,
+  );
+});
+
+test("fails the pull-request gate when change detection fails", () => {
+  assert.match(
+    workflow,
+    /pr-validate:[\s\S]*?changes_result="\$\{\{ needs\.changes\.result \}\}"[\s\S]*?\[ "\$changes_result" != "success" \]/u,
+  );
+});
+
 test("refreshes only pull requests that opt in", () => {
   assert.match(updaterWorkflow, /gh pr list[\s\S]*?--label auto-update/u);
 });

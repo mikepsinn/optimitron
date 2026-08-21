@@ -120,6 +120,7 @@ jobs:
               - 'packages/*/package.json'
             core_files_changed:
               - '.github/workflows/ci.yml'
+              - '.npmrc'
               - 'package.json'
               - 'pnpm-lock.yaml'
               - 'pnpm-workspace.yaml'
@@ -131,6 +132,7 @@ jobs:
             web_files_changed:
               - '.github/workflows/ci.yml'
               - '.github/workflows/smoke-deploy.yml'
+              - '.npmrc'
               - 'package.json'
               - 'package-lock.json'
               - 'pnpm-lock.yaml'
@@ -159,6 +161,8 @@ jobs:
               - 'packages/db/prisma/**'
               - 'packages/db/src/managed-data/**'
               - 'apps/optimitron/**'
+              - 'content/legislation/**'
+              - 'docs/canonical-argument-2026-05-20.md'
             site_apps_changed:
               - 'apps/acceleratedmedicine/**'
               - 'apps/curedao/**'
@@ -177,6 +181,7 @@ jobs:
               - 'scripts/site-app-navigation.test.ts'
               - 'scripts/site-app-visual-routes.mjs'
               - 'scripts/smoke-site-apps.mjs'
+              - '.npmrc'
               - 'package.json'
               - 'pnpm-workspace.yaml'
               - 'pnpm-lock.yaml'
@@ -1532,6 +1537,11 @@ jobs:
       - name: Verify pull request review evidence
         shell: bash
         run: |
+          changes_result="${{ needs.changes.result }}"
+          if [ "$changes_result" != "success" ]; then
+            echo "::error::Change detection result: $changes_result"
+            exit 1
+          fi
           automation_result="${{ needs.automation-tests.result }}"
           automation_required="${{ fromJSON(needs.changes.outputs.automation || 'false') }}"
           visual_result="${{ needs.web-visual-review.result }}"
