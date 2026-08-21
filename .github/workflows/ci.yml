@@ -22,6 +22,7 @@ jobs:
     permissions:
       contents: read
     outputs:
+      core: ${{ steps.manual.outputs.core_files_changed || steps.main.outputs.core_files_changed || steps.filter.outputs.core_files_changed }}
       web: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       site_apps: ${{ steps.manual.outputs.site_apps_changed || steps.main.outputs.site_apps_changed || steps.filter.outputs.site_apps_changed }}
@@ -32,6 +33,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
         run: |
+          echo "core_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
           echo "web_deploy=true" >> "$GITHUB_OUTPUT"
@@ -41,6 +43,7 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         shell: bash
         run: |
+          echo "core_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
 
@@ -102,8 +105,19 @@ jobs:
           # Local git diff avoids REST pagination and rate limits on large moves.
           token: ""
           filters: |
+            core_files_changed:
+              - '.github/workflows/ci.yml'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'eslint.config.mjs'
+              - 'tsconfig*.json'
+              - 'vitest*.ts'
+              - 'scripts/**'
+              - 'packages/**'
             web_files_changed:
-              - '.github/workflows/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/smoke-deploy.yml'
               - '.github/scripts/**'
               - 'package.json'
               - 'package-lock.json'
@@ -176,7 +190,11 @@ jobs:
 
   core-validate:
     name: core-validate
-    if: github.event_name != 'push'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+      fromJSON(needs.changes.outputs.core || 'false') == true)
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -247,10 +265,7 @@ jobs:
     # Gates all apps/* site packages (shared @optimitron/db schema).
     # Typecheck every app; unit-test apps with vitest unit suites; WoD DB smoke.
     # apps/optimitron keeps its own e2e/deploy smoke — not replaced here.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: ${{ fromJSON(needs.changes.outputs.site_apps || 'false') == true }}
     needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -500,7 +515,8 @@ jobs:
 
   web-static-validate:
     name: web-static-validate
-    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -547,7 +563,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run GitHub automation script tests
-        run: node --test .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs scripts/app-preview-urls.test.mjs
+        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs scripts/app-preview-urls.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -571,7 +587,7 @@ jobs:
 
   web-e2e-validate:
     name: web-e2e-validate
-    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    if: ${{ fromJSON(needs.changes.outputs.web || 'false') == true }}
     needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -789,7 +805,7 @@ jobs:
 
   web-visual-review:
     name: web-visual-review
-    if: ${{ always() && github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) && needs.web-e2e-validate.result == 'success' && (fromJSON(needs.changes.outputs.site_apps || 'false') != true || needs.site-apps-build.result == 'success') }}
+    if: ${{ always() && github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) && (fromJSON(needs.changes.outputs.web || 'false') != true || needs.web-e2e-validate.result == 'success') && (fromJSON(needs.changes.outputs.site_apps || 'false') != true || needs.site-apps-build.result == 'success') }}
     needs:
       - changes
       - site-apps-build
@@ -1496,6 +1512,7 @@ jobs:
     name: web-validate
     if: always() && (github.event_name != 'push' || github.ref == 'refs/heads/main')
     needs:
+      - changes
       - web-static-validate
       - web-e2e-validate
     runs-on: ubuntu-latest
@@ -1504,8 +1521,13 @@ jobs:
       - name: Verify web validation lanes passed
         shell: bash
         run: |
+          web_required="${{ fromJSON(needs.changes.outputs.web || 'false') }}"
           static_result="${{ needs.web-static-validate.result }}"
           e2e_result="${{ needs.web-e2e-validate.result }}"
+          if [ "$web_required" != "true" ]; then
+            echo "No web-impacting changes; web validation was skipped."
+            exit 0
+          fi
           echo "web-static-validate: $static_result"
           echo "web-e2e-validate: $e2e_result"
           if [ "$static_result" != "success" ] || [ "$e2e_result" != "success" ]; then
@@ -1514,8 +1536,14 @@ jobs:
 
   sync-preview-managed-data:
     name: sync-preview-managed-data
-    if: github.event_name == 'pull_request'
-    needs: web-validate
+    if: >-
+      always() &&
+      github.event_name == 'pull_request' &&
+      (fromJSON(needs.changes.outputs.web || 'false') == true ||
+      fromJSON(needs.changes.outputs.site_apps || 'false') == true) &&
+      needs.web-validate.result == 'success' &&
+      needs.site-apps-validate.result == 'success'
+    needs: [changes, web-validate, site-apps-validate]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:

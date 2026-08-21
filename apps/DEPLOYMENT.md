@@ -37,6 +37,11 @@ which projects need a preview or production deployment. Root configuration and
 lockfile changes can still affect every project. Every app disables deployment
 from `gh-pages` because that branch contains generated visual-review files.
 
+All projects use Standard build machines with on-demand concurrency disabled.
+Builds share the included queue, prioritize production, and skip stale queued
+commits when a newer commit reaches the same branch. The project reconciler
+repairs drift from these settings.
+
 Vercel treats changes outside the pnpm workspace as global. Each app therefore
 uses the same dependency-aware ignore script to reject documentation, review
 automation, and unrelated app changes before build CPU starts. App source,
