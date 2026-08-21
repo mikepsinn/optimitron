@@ -49,9 +49,9 @@ transitive workspace dependencies, and root dependency files still build. The
 script compares against the last successful deployment, so multi-commit pushes
 cannot hide an earlier app change. App tests, browser fixtures, screenshots,
 and Optimitron's current visual-review assembler do not trigger app deployment.
-On a branch's first deployment, the script compares with `main` or treats the
-full tracked tree as changed. It can overbuild once, but it cannot skip an
-earlier unpreviewed change.
+On a branch's first deployment, the script fetches `main` and uses the merge
+base. It treats the full tracked tree as changed only when it cannot load that
+base, so a Git outage can overbuild but cannot cause an unsafe skip.
 
 GitHub Actions also builds and captures every relevant app for pull request
 visual review. This local fixture-based review is broader than the live Vercel
