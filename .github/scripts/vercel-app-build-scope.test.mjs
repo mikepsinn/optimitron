@@ -122,6 +122,7 @@ test("fetches a missing Vercel diff base in a shallow clone", () => {
       return "";
     }
     if (args[0] === "cat-file" && fetched) return "";
+    if (args[0] === "merge-base" && fetched) return "";
     throw new Error("missing commit");
   };
 
@@ -137,6 +138,7 @@ test("fetches a missing Vercel diff base in a shallow clone", () => {
     ["cat-file", "-e", `${sha}^{commit}`],
     ["fetch", "--no-tags", "--depth=1", "origin", sha],
     ["cat-file", "-e", `${sha}^{commit}`],
+    ["merge-base", "--is-ancestor", sha, "HEAD"],
   ]);
 });
 
@@ -154,6 +156,7 @@ test("falls back to the public GitHub remote when Vercel omits origin", () => {
       throw new Error("missing origin");
     }
     if (args[0] === "cat-file" && fetched.length === 2) return "";
+    if (args[0] === "merge-base" && fetched.length === 2) return "";
     throw new Error("missing commit");
   };
 
@@ -164,6 +167,29 @@ test("falls back to the public GitHub remote when Vercel omits origin", () => {
   assert.deepEqual(fetched, [
     "origin",
     "https://github.com/mikepsinn/optimitron.git",
+  ]);
+});
+
+test("rejects a previous Vercel SHA outside the current branch history", () => {
+  const sha = "1234567890abcdef1234567890abcdef12345678";
+  const calls = [];
+  const execFile = (_command, args) => {
+    calls.push(args);
+    if (args[0] === "cat-file") return "";
+    throw new Error("not an ancestor");
+  };
+
+  assert.equal(
+    ensureVercelDiffBase(sha, {
+      root: "/repo",
+      execFile,
+      fetchRemotes: ["origin"],
+    }),
+    null,
+  );
+  assert.deepEqual(calls, [
+    ["cat-file", "-e", `${sha}^{commit}`],
+    ["merge-base", "--is-ancestor", sha, "HEAD"],
   ]);
 });
 

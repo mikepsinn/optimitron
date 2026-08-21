@@ -98,7 +98,9 @@ export function ensureVercelDiffBase(
   } = {},
 ) {
   if (!diffBase) return null;
-  if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+  if (hasGitCommit(diffBase, root, execFile)) {
+    return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+  }
 
   for (const remote of fetchRemotes) {
     try {
@@ -110,7 +112,9 @@ export function ensureVercelDiffBase(
     } catch {
       continue;
     }
-    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+    if (hasGitCommit(diffBase, root, execFile)) {
+      return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+    }
   }
 
   return null;
@@ -216,6 +220,19 @@ export function getVercelGitFetchRemotes(
 function hasGitCommit(ref, root, execFile) {
   try {
     execFile("git", ["cat-file", "-e", `${ref}^{commit}`], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "ignore", "ignore"],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isGitAncestor(ref, root, execFile) {
+  try {
+    execFile("git", ["merge-base", "--is-ancestor", ref, "HEAD"], {
       cwd: root,
       encoding: "utf8",
       stdio: ["ignore", "ignore", "ignore"],
