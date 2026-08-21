@@ -99,7 +99,7 @@ const DISEASE_ERADICATION_SPEED_MULTIPLIER: Parameter = {
   description:
     "How many times faster the dFDA treatment queue clears than the status quo queue.",
   sourceType: "calculated",
-  confidence: "high",
+  confidence: "low",
   formula: "STATUS_QUO_QUEUE_CLEARANCE_YEARS / DFDA_QUEUE_CLEARANCE_YEARS",
   confidenceInterval: divideConfidenceIntervals(
     STATUS_QUO_QUEUE_CLEARANCE_YEARS,
@@ -121,7 +121,7 @@ const TREATY_VALUE_TO_SHIRT_COST_RATIO: Parameter = {
   description:
     "Projected value of the 1% Treaty divided by universal shirt distribution cost.",
   sourceType: "calculated",
-  confidence: "high",
+  confidence: "low",
   formula:
     "DFDA_TRIAL_CAPACITY_PLUS_EFFICACY_LAG_ECONOMIC_VALUE / UNIVERSAL_SHIRT_DISTRIBUTION_COST_USD",
   confidenceInterval: divideConfidenceIntervals(
