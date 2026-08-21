@@ -22,6 +22,7 @@ jobs:
     permissions:
       contents: read
     outputs:
+      automation: ${{ steps.manual.outputs.automation_files_changed || steps.main.outputs.automation_files_changed || steps.filter.outputs.automation_files_changed }}
       core: ${{ steps.manual.outputs.core_files_changed || steps.main.outputs.core_files_changed || steps.filter.outputs.core_files_changed }}
       web: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
       web_files_changed: ${{ steps.manual.outputs.web_files_changed || steps.main.outputs.web_files_changed || steps.filter.outputs.web_files_changed }}
@@ -33,6 +34,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
         run: |
+          echo "automation_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "core_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
@@ -43,6 +45,7 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         shell: bash
         run: |
+          echo "automation_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "core_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "web_files_changed=true" >> "$GITHUB_OUTPUT"
           echo "site_apps_changed=true" >> "$GITHUB_OUTPUT"
@@ -105,6 +108,16 @@ jobs:
           # Local git diff avoids REST pagination and rate limits on large moves.
           token: ""
           filters: |
+            automation_files_changed:
+              - '.github/workflows/**'
+              - '.github/scripts/**'
+              - 'scripts/app-preview-urls.mjs'
+              - 'scripts/app-preview-urls.test.mjs'
+              - 'package.json'
+              - 'pnpm-workspace.yaml'
+              - 'apps/*/package.json'
+              - 'apps/*/vercel.json'
+              - 'packages/*/package.json'
             core_files_changed:
               - '.github/workflows/ci.yml'
               - 'package.json'
@@ -118,7 +131,6 @@ jobs:
             web_files_changed:
               - '.github/workflows/ci.yml'
               - '.github/workflows/smoke-deploy.yml'
-              - '.github/scripts/**'
               - 'package.json'
               - 'package-lock.json'
               - 'pnpm-lock.yaml'
@@ -187,6 +199,27 @@ jobs:
           node-version: 22
       - name: Scan tracked files for private-information leaks
         run: node scripts/leak-scan.mjs
+
+  automation-tests:
+    name: automation-tests
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+      fromJSON(needs.changes.outputs.automation || 'false') == true)
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Test GitHub and Vercel automation
+        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs scripts/app-preview-urls.test.mjs
 
   core-validate:
     name: core-validate
@@ -561,9 +594,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Run GitHub automation script tests
-        run: node --test .github/scripts/ci-change-detection.test.mjs .github/scripts/generate-pr-preview-links.test.mjs .github/scripts/preview-managed-data-filter.test.mjs .github/scripts/preview-smoke-scope.test.mjs .github/scripts/preview-neon-branch.test.mjs .github/scripts/preview-masking-workflow-order.test.mjs .github/scripts/preview-masking-demo-user.test.mjs .github/scripts/preview-masking-managed-triggers.test.mjs .github/scripts/preview-masking-private-execution.test.mjs .github/scripts/preview-deploy-smoke.test.mjs .github/scripts/smoke-deploy-demo-login.test.mjs .github/scripts/vercel-app-build-scope.test.mjs .github/scripts/vercel-app-projects.test.mjs scripts/app-preview-urls.test.mjs
 
       - name: Apply database migrations
         run: pnpm db:deploy
@@ -1493,6 +1523,7 @@ jobs:
     name: pr-validate
     if: always() && github.event_name == 'pull_request'
     needs:
+      - automation-tests
       - changes
       - web-visual-review
     runs-on: ubuntu-latest
@@ -1501,8 +1532,14 @@ jobs:
       - name: Verify pull request review evidence
         shell: bash
         run: |
+          automation_result="${{ needs.automation-tests.result }}"
+          automation_required="${{ fromJSON(needs.changes.outputs.automation || 'false') }}"
           visual_result="${{ needs.web-visual-review.result }}"
           visual_required="${{ github.event_name == 'pull_request' && (fromJSON(needs.changes.outputs.web || 'false') == true || fromJSON(needs.changes.outputs.site_apps || 'false') == true) }}"
+          echo "automation-tests: $automation_result (required: $automation_required)"
+          if [ "$automation_required" = "true" ] && [ "$automation_result" != "success" ]; then
+            exit 1
+          fi
           echo "web-visual-review: $visual_result (required: $visual_required)"
           if [ "$visual_required" = "true" ] && [ "$visual_result" != "success" ]; then
             exit 1

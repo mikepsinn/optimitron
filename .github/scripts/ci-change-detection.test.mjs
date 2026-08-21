@@ -19,6 +19,10 @@ test("detects large pull-request changes from the local git checkout", () => {
 });
 
 test("runs expensive validation only for affected surfaces", () => {
+  assert.match(
+    workflow,
+    /automation-tests:[\s\S]*?fromJSON\(needs\.changes\.outputs\.automation/u,
+  );
   assert.match(workflow, /core: \$\{\{[\s\S]*?core_files_changed/u);
   assert.match(
     workflow,
@@ -35,6 +39,10 @@ test("runs expensive validation only for affected surfaces", () => {
   assert.match(
     workflow,
     /sync-preview-managed-data:[\s\S]*?needs: \[changes, web-validate, site-apps-validate\]/u,
+  );
+  assert.match(
+    workflow,
+    /pr-validate:[\s\S]*?- automation-tests[\s\S]*?automation_result/u,
   );
 });
 
