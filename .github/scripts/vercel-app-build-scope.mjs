@@ -23,6 +23,9 @@ const globalBuildFiles = new Set([
 const appExtraBuildPaths = Object.freeze({
   optimitron: ["content/"],
 });
+const optimitronProductionDeployPaths = Object.freeze([
+  "scripts/sync-managed-data.mjs",
+]);
 const appIgnoredBuildPaths = Object.freeze({
   optimitron: [
     "apps/optimitron/scripts/build-visual-review.mjs",
@@ -70,6 +73,22 @@ export function getVercelAppBuildMatches(
     .sort();
 }
 
+export function getOptimitronProductionDeployMatches(
+  files,
+  workspacePackages = loadWorkspacePackages(),
+) {
+  const buildMatches = getVercelAppBuildMatches(
+    "optimitron",
+    files,
+    workspacePackages,
+  );
+  const productionOperationMatches = files
+    .map((file) => file.replaceAll("\\", "/"))
+    .filter((file) => optimitronProductionDeployPaths.includes(file));
+
+  return [...new Set([...buildMatches, ...productionOperationMatches])].sort();
+}
+
 function isIgnoredBuildPath(file, appIgnoredPaths) {
   return (
     appIgnoredPaths.includes(file) ||
@@ -85,9 +104,7 @@ export function getVercelDiffBase(
   resolveMergeBase = resolveProductionMergeBase,
   productionBranch = "main",
 ) {
-  const currentBranch = String(
-    environment.VERCEL_GIT_COMMIT_REF ?? "",
-  ).trim();
+  const currentBranch = String(environment.VERCEL_GIT_COMMIT_REF ?? "").trim();
   if (currentBranch && currentBranch !== productionBranch) {
     return resolveMergeBase();
   }

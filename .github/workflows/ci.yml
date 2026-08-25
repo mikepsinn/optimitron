@@ -73,13 +73,13 @@ jobs:
           git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" > "$RUNNER_TEMP/production-changed-files.txt"
           node --input-type=module <<'NODE'
           import { appendFileSync, readFileSync } from "node:fs";
-          import { getVercelAppBuildMatches } from "./.github/scripts/vercel-app-build-scope.mjs";
+          import { getOptimitronProductionDeployMatches } from "./.github/scripts/vercel-app-build-scope.mjs";
 
           const files = readFileSync(
             `${process.env.RUNNER_TEMP}/production-changed-files.txt`,
             "utf8",
           ).split(/\r?\n/u).filter(Boolean);
-          const matches = getVercelAppBuildMatches("optimitron", files);
+          const matches = getOptimitronProductionDeployMatches(files);
           appendFileSync(
             process.env.GITHUB_OUTPUT,
             `web_deploy=${matches.length > 0 ? "true" : "false"}\n`,

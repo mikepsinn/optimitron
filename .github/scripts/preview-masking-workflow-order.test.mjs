@@ -72,7 +72,7 @@ test("deploys Optimitron production only when its build inputs change", () => {
   );
   assert.match(
     changesJob,
-    /- name: Detect Optimitron production deployment scope[\s\S]*?getVercelAppBuildMatches\("optimitron", files\)/u,
+    /- name: Detect Optimitron production deployment scope[\s\S]*?getOptimitronProductionDeployMatches\(files\)/u,
   );
   assert.match(deployJob, /needs: \[changes, web-validate\]/u);
   assert.match(
