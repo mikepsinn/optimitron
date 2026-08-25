@@ -6,6 +6,7 @@ import {
   getVercelAppBuildMatches,
   getVercelDiffBase,
   getVercelGitFetchRemotes,
+  getOptimitronProductionDeployMatches,
 } from "./vercel-app-build-scope.mjs";
 
 const apps = [
@@ -49,9 +50,23 @@ test("keeps Optimitron content inputs without treating docs as app inputs", () =
       "content/legislation/example.md",
       "docs/strategy-note.md",
       "apps/warondisease/app/page.tsx",
+      "packages/site-kit/src/lib/site-config.ts",
     ]),
     ["content/legislation/example.md"],
   );
+});
+
+test("keeps production database operation inputs in deployment scope", () => {
+  const files = [
+    "scripts/sync-managed-data.mjs",
+    "scripts/unrelated-maintenance.mjs",
+    "docs/strategy-note.md",
+  ];
+
+  assert.deepEqual(getVercelAppBuildMatches("optimitron", files), []);
+  assert.deepEqual(getOptimitronProductionDeployMatches(files), [
+    "scripts/sync-managed-data.mjs",
+  ]);
 });
 
 test("ignores app-only test and visual-review tooling", () => {
@@ -118,8 +133,7 @@ test("compares previews with main so canceled commits cannot hide changes", () =
     getVercelDiffBase(
       {
         VERCEL_GIT_COMMIT_REF: "feature/example",
-        VERCEL_GIT_PREVIOUS_SHA:
-          "1234567890abcdef1234567890abcdef12345678",
+        VERCEL_GIT_PREVIOUS_SHA: "1234567890abcdef1234567890abcdef12345678",
       },
       () => mergeBase,
     ),
