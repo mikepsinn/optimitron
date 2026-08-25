@@ -378,6 +378,7 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
+  [ROUTES.tasks, "[data-visual-task-row]"],
   [ROUTES.tasksTree, "#task-tree"],
 ]);
 
