@@ -443,8 +443,13 @@ test("links each affected app to its own pull request preview", () => {
   assert.match(resolver, /commitIndex >= affectedCommitIndex/u);
   assert.match(resolver, /const maxAttempts = 18/u);
   assert.match(resolver, /setTimeout\(resolve, 10_000\)/u);
-  assert.match(resolver, /core\.setFailed/u);
-  assert.match(resolver, /Missing successful Vercel previews for affected apps/u);
+  assert.match(resolver, /vercel-preview-comment\.mjs/u);
+  assert.match(resolver, /issues\.listComments/u);
+  assert.match(resolver, /comment\.user\?\.login === 'vercel\[bot\]'/u);
+  assert.match(resolver, /mergeVercelPreviewUrls/u);
+  assert.match(resolver, /core\.warning/u);
+  assert.match(resolver, /deployment smoke verifies readiness/u);
+  assert.doesNotMatch(resolver, /core\.setFailed/u);
   assert.match(resolver, /JSON\.stringify\(previewUrls\)/u);
   assert.match(workflow, /APP_PREVIEW_URLS_JSON/u);
   assert.match(workflow, /VISUAL_REVIEW_APP_URLS_JSON/u);

@@ -1024,6 +1024,9 @@ jobs:
             const scopeModule = await import(
               pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/vercel-app-build-scope.mjs`).href
             );
+            const previewCommentModule = await import(
+              pathToFileURL(`${process.env.GITHUB_WORKSPACE}/.github/scripts/vercel-preview-comment.mjs`).href
+            );
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner, repo, pull_number: issue_number, per_page: 100,
             });
@@ -1101,7 +1104,18 @@ jobs:
                   )
                 ) break;
               }
-              return previewUrls;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number, per_page: 100,
+              });
+              const vercelCommentBodies = comments
+                .filter((comment) => comment.user?.login === 'vercel[bot]')
+                .reverse()
+                .map((comment) => String(comment.body || ''));
+              return previewCommentModule.mergeVercelPreviewUrls(
+                previewUrls,
+                vercelCommentBodies,
+                [...targetApps],
+              );
             }
 
             let previewUrls = {};
@@ -1124,8 +1138,9 @@ jobs:
               (appName) => !previewUrls[appName]
             );
             if (missingApps.length > 0) {
-              core.setFailed(
-                `Missing successful Vercel previews for affected apps: ${missingApps.join(', ')}`
+              core.warning(
+                `Vercel preview links are still pending for affected apps: ${missingApps.join(', ')}. ` +
+                'Visual review will publish available links while deployment smoke verifies readiness.'
               );
             }
             return JSON.stringify(previewUrls);
