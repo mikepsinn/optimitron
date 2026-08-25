@@ -1,5 +1,5 @@
-import { Lightbulb } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { Lightbulb } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step6GainInsights() {
   return (
@@ -21,12 +21,20 @@ export function Step6GainInsights() {
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-center">
-                  <div className="font-medium text-sm">Cognitive Function Trend</div>
-                  <div className="text-xs text-green-500 font-medium">↑ 15%</div>
+                  <div className="font-medium text-sm">
+                    Cognitive Function Trend
+                  </div>
+                  <div className="text-xs text-green-500 font-medium">
+                    ↑ 15%
+                  </div>
                 </div>
                 <div className="h-20 mt-2 flex items-end gap-1">
                   {[20, 25, 30, 35, 40, 45, 50].map((h, i) => (
-                    <div key={i} className="bg-primary/80 rounded-sm w-full" style={{ height: `${h}%` }}></div>
+                    <div
+                      key={i}
+                      className="bg-primary/80 rounded-sm w-full"
+                      style={{ height: `${h}%` }}
+                    ></div>
                   ))}
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -37,13 +45,15 @@ export function Step6GainInsights() {
               <div className="rounded-lg border p-3 bg-card">
                 <div className="font-medium text-sm">Insight</div>
                 <div className="text-sm mt-1">
-                  Your cognitive function scores improve on days following social activities.
+                  Your cognitive function scores improve on days following
+                  social activities.
                 </div>
               </div>
               <div className="rounded-lg border p-3 bg-card">
                 <div className="font-medium text-sm">Recommendation</div>
                 <div className="text-sm mt-1">
-                  Consider taking your medication in the evening to reduce the daytime fatigue you've reported.
+                  Consider taking your medication in the evening to reduce the
+                  daytime fatigue you've reported.
                 </div>
               </div>
             </div>
@@ -52,6 +62,5 @@ export function Step6GainInsights() {
       }
       reverse={true}
     />
-  )
+  );
 }
-

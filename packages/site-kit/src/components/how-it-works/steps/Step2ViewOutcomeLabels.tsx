@@ -1,6 +1,6 @@
-import { FileText } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
-import { OutcomeLabel } from "@/components/landing/OutcomeLabel"
+import { FileText } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
+import { OutcomeLabelPreview } from "../OutcomeLabelPreview";
 
 // Convert the old data structure to the new format expected by OutcomeLabel
 const klothoGeneTherapyData = {
@@ -10,17 +10,33 @@ const klothoGeneTherapyData = {
     {
       title: "Cognitive Improvements (Example)", // Provide a category title
       items: [
-        { name: "Cognitive Function (ADAS-Cog)", value: { percentage: 28 }, isPositive: true },
+        {
+          name: "Cognitive Function (ADAS-Cog)",
+          value: { percentage: 28 },
+          isPositive: true,
+        },
         { name: "Memory Recall", value: { percentage: 35 }, isPositive: true },
-        { name: "Executive Function", value: { percentage: 22 }, isPositive: true },
-        { name: "Hippocampal Volume", value: { percentage: 15 }, isPositive: true },
+        {
+          name: "Executive Function",
+          value: { percentage: 22 },
+          isPositive: true,
+        },
+        {
+          name: "Hippocampal Volume",
+          value: { percentage: 15 },
+          isPositive: true,
+        },
       ],
     },
     {
       title: "Side Effects (Example)", // Provide a category title
       isSideEffectCategory: true,
       items: [
-        { name: "Immune Response", value: { percentage: 12 }, isPositive: false }, // Assuming side effect percentages are increases to show
+        {
+          name: "Immune Response",
+          value: { percentage: 12 },
+          isPositive: false,
+        }, // Assuming side effect percentages are increases to show
         { name: "Headache", value: { percentage: 9 }, isPositive: false },
         { name: "Fatigue", value: { percentage: 7 }, isPositive: false },
       ],
@@ -44,10 +60,9 @@ export function Step2ViewOutcomeLabels() {
       ]}
       preview={
         // Use the new data structure
-        <OutcomeLabel {...klothoGeneTherapyData} />
+        <OutcomeLabelPreview {...klothoGeneTherapyData} />
       }
       reverse={true}
     />
-  )
+  );
 }
-

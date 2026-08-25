@@ -1,58 +1,71 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Card } from "@optimitron/neobrutalist-ui/ui/card"
-import { Container } from "@optimitron/neobrutalist-ui/ui/container"
-import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
-import { useEffect, useState } from "react"
-import { getSiteConfig } from "../../lib/site-config"
-import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters"
+import { motion } from "framer-motion";
+import { Card } from "@optimitron/neobrutalist-ui/ui/card";
+import { Container } from "@optimitron/neobrutalist-ui/ui/container";
+import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
+import { useEffect, useState } from "react";
+import { getSiteConfig } from "../../lib/site-config";
+import { GLOBAL_DISEASE_DEATHS_DAILY } from "@optimitron/data/parameters";
 
-export default function DeathClock() {
-  const config = getSiteConfig()
-  const showPoliticalContent = config.showPoliticalContent
+interface DeathClockProps {
+  message?: string;
+}
 
-  const [todayDeaths, setTodayDeaths] = useState(0)
-  const [yearDeaths, setYearDeaths] = useState(0)
+export default function DeathClock({ message }: DeathClockProps) {
+  const config = getSiteConfig();
+  const showPoliticalContent = config.showPoliticalContent;
+
+  const [todayDeaths, setTodayDeaths] = useState(0);
+  const [yearDeaths, setYearDeaths] = useState(0);
 
   useEffect(() => {
     const calculateInitialCounts = () => {
-      const now = new Date()
+      const now = new Date();
 
       // Deaths per day from parameter
-      const deathsPerDay = GLOBAL_DISEASE_DEATHS_DAILY.value
-      const deathsPerSecond = deathsPerDay / 86400 // 86400 seconds in a day
+      const deathsPerDay = GLOBAL_DISEASE_DEATHS_DAILY.value;
+      const deathsPerSecond = deathsPerDay / 86400; // 86400 seconds in a day
 
       // Calculate seconds since midnight
-      const secondsSinceMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()
-      const initialTodayDeaths = secondsSinceMidnight * deathsPerSecond
+      const secondsSinceMidnight =
+        now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const initialTodayDeaths = secondsSinceMidnight * deathsPerSecond;
 
       // Deaths per year calculated from daily rate
-      const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000)
-      const secondsSinceYearStart = dayOfYear * 86400 + secondsSinceMidnight
-      const initialYearDeaths = secondsSinceYearStart * deathsPerSecond
+      const dayOfYear = Math.floor(
+        (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) /
+          86400000,
+      );
+      const secondsSinceYearStart = dayOfYear * 86400 + secondsSinceMidnight;
+      const initialYearDeaths = secondsSinceYearStart * deathsPerSecond;
 
-      setTodayDeaths(initialTodayDeaths)
-      setYearDeaths(initialYearDeaths)
-    }
+      setTodayDeaths(initialTodayDeaths);
+      setYearDeaths(initialYearDeaths);
+    };
 
-    calculateInitialCounts()
+    calculateInitialCounts();
 
     const interval = setInterval(() => {
-      const deathsPerSecond = GLOBAL_DISEASE_DEATHS_DAILY.value / 86400 // ~1.736 deaths per second
-      setTodayDeaths((prev) => prev + deathsPerSecond)
-      setYearDeaths((prev) => prev + deathsPerSecond)
-    }, 1000)
+      const deathsPerSecond = GLOBAL_DISEASE_DEATHS_DAILY.value / 86400; // ~1.736 deaths per second
+      setTodayDeaths((prev) => prev + deathsPerSecond);
+      setYearDeaths((prev) => prev + deathsPerSecond);
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const formatNumber = (num: number) => {
-    return Math.floor(num).toLocaleString()
-  }
+    return Math.floor(num).toLocaleString();
+  };
 
   return (
-    <SectionContainer bgColor="primary" borderPosition="bottom" padding="lg" className="border-background">
+    <SectionContainer
+      bgColor="primary"
+      borderPosition="bottom"
+      padding="lg"
+      className="border-background"
+    >
       <Container>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -60,7 +73,7 @@ export default function DeathClock() {
           viewport={{ once: true }}
           transition={{
             duration: 0.5,
-            ease: "easeOut"
+            ease: "easeOut",
           }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase text-center text-brutal-yellow mb-8"
         >
@@ -74,7 +87,7 @@ export default function DeathClock() {
             transition={{
               duration: 0.5,
               ease: "easeOut",
-              delay: 0.1
+              delay: 0.1,
             }}
           >
             <Card className="bg-brutal-pink border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
@@ -96,7 +109,7 @@ export default function DeathClock() {
             transition={{
               duration: 0.5,
               ease: "easeOut",
-              delay: 0.2
+              delay: 0.2,
             }}
           >
             <Card className="bg-brutal-cyan border-4 border-background p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
@@ -119,17 +132,18 @@ export default function DeathClock() {
           transition={{
             duration: 0.5,
             ease: "easeOut",
-            delay: 0.3
+            delay: 0.3,
           }}
           className="text-center mt-12"
         >
           <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase text-primary-foreground leading-tight">
-            {showPoliticalContent
-              ? "while we waste billions building nuclear bombs 💣☢️ and skynet 🤖"
-              : "while humanity allocates trillions annually to nuclear arsenals and autonomous weapons systems"}
+            {message ??
+              (showPoliticalContent
+                ? "while we waste billions building nuclear bombs 💣☢️ and skynet 🤖"
+                : "while humanity allocates trillions annually to nuclear arsenals and autonomous weapons systems")}
           </div>
         </motion.div>
       </Container>
     </SectionContainer>
-  )
+  );
 }

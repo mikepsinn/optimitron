@@ -1,133 +1,36 @@
-import { Card } from "@optimitron/neobrutalist-ui/ui/card"
-import { Container } from "@optimitron/neobrutalist-ui/ui/container"
-import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container"
-import { Search, BarChart3, ShoppingCart, Star } from "lucide-react"
+import { Container } from "@optimitron/neobrutalist-ui/ui/container";
+import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
+import { DfdaUserWorkflows } from "../how-it-works/DfdaUserWorkflows";
 
 export default function DecentralizedFDASection() {
-  const features = [
-    {
-      icon: Search,
-      title: "Search Any Treatment",
-      description: "Find drugs, supplements, diets, devices - everything ranked by real-world effectiveness",
-      color: "bg-brutal-yellow"
-    },
-    {
-      icon: BarChart3,
-      title: "See Real Outcomes",
-      description: "Not marketing claims. Actual data from millions of real patients showing what works",
-      color: "bg-brutal-cyan"
-    },
-    {
-      icon: ShoppingCart,
-      title: "Join Trials Instantly",
-      description: "One-click enrollment in pragmatic trials. Get paid to test treatments while helping humanity",
-      color: "bg-brutal-pink"
-    },
-    {
-      icon: Star,
-      title: "Consumer Reports for Drugs",
-      description: "Transparent rankings based on effectiveness, side effects, and cost-effectiveness",
-      color: "bg-brutal-yellow"
-    }
-  ]
-
-  const howItWorks = [
-    {
-      number: "1",
-      title: "YOU SEARCH",
-      description: "Enter your condition. Get a ranked list of every treatment ever tested.",
-      color: "bg-brutal-yellow"
-    },
-    {
-      number: "2",
-      title: "YOU COMPARE",
-      description: "See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.",
-      color: "bg-brutal-cyan"
-    },
-    {
-      number: "3",
-      title: "YOU DECIDE",
-      description: "Choose based on data, not marketing budgets. Your body, your choice, informed by millions of data points.",
-      color: "bg-brutal-pink"
-    }
-  ]
-
   return (
-    <SectionContainer id="decentralized-fda-section" bgColor="background" borderPosition="bottom" padding="lg" className="py-12 md:py-24 lg:py-32">
+    <SectionContainer
+      id="decentralized-fda-section"
+      bgColor="cyan"
+      borderPosition="bottom"
+      padding="lg"
+    >
       <Container>
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-black uppercase sm:text-5xl md:text-6xl lg:text-7xl mb-6">
-            A DECENTRALIZED <span className="text-brutal-pink">FRAMEWORK FOR DRUG ASSESSMENT</span>
+        <div className="mx-auto max-w-5xl text-center">
+          <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            A decentralized framework for drug assessment
           </h2>
-          <p className="text-xl sm:text-2xl md:text-3xl font-black uppercase mb-4">
-            CONSUMER REPORTS FOR DRUGS
-          </p>
-          <p className="text-lg sm:text-xl font-bold max-w-3xl mx-auto">
-           A decentralized framework for drug assessment integrated into standard healthcare could both radically improve safety and allow patients to effortlessly participate in pragmatic decentralized clinical trials.
+          <p className="mx-auto mt-6 max-w-4xl text-xl font-bold text-balance">
+            See what the platonic ideal of healthcare and clinical trials will
+            look like when dFDA frameworks are widely adopted.
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <Card
-                key={index}
-                className={`${feature.color} border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-transform`}
-              >
-                <Icon className="h-12 w-12 mb-4" strokeWidth={3} />
-                <h4 className="text-xl font-black uppercase mb-2">{feature.title}</h4>
-                <p className="font-bold">{feature.description}</p>
-              </Card>
-            )
-          })}
+        <div className="mt-12 border-4 border-primary bg-primary p-5 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-bold">
+            These are educational interface examples, not medical advice or a
+            promise that every option is available. Treatment decisions stay
+            with patients and licensed clinicians.
+          </p>
         </div>
 
-        {/* How It Works */}
-        <Card className="bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
-          <h3 className="text-2xl sm:text-3xl font-black uppercase text-center mb-8">
-            HOW IT WORKS (FOR PATIENTS)
-          </h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            {howItWorks.map((step, index) => (
-              <div key={index} className="text-center">
-                <div className={`${step.color} border-4 border-primary w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
-                  <span className="text-3xl font-black">{step.number}</span>
-                </div>
-                <h4 className="text-xl font-black uppercase mb-2">{step.title}</h4>
-                <p className="font-bold text-sm">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* The Numbers */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-brutal-yellow border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-4xl sm:text-5xl font-black mb-2">82X</div>
-            <div className="font-black uppercase text-lg mb-2">CHEAPER</div>
-            <div className="font-bold text-sm mb-3">
-              $500/patient (Oxford RECOVERY) vs $48K (traditional trials)
-            </div>
-          </Card>
-          <Card className="bg-brutal-cyan border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-4xl sm:text-5xl font-black mb-2">2 YEARS</div>
-            <div className="font-black uppercase text-lg mb-2">NOT 17</div>
-            <div className="font-bold text-sm">
-              Time to get life-saving treatments to patients who need them now
-            </div>
-          </Card>
-          <Card className="bg-brutal-pink border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <div className="text-4xl sm:text-5xl font-black mb-2 text-brutal-pink-foreground">$50B</div>
-            <div className="font-black uppercase text-lg mb-2 text-brutal-pink-foreground">SAVED</div>
-            <div className="font-bold text-sm text-brutal-pink-foreground">
-              Annual R&amp;D cost savings from decentralized pragmatic trials
-            </div>
-          </Card>
-        </div>
+        <DfdaUserWorkflows />
       </Container>
     </SectionContainer>
-  )
+  );
 }

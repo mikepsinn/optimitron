@@ -125,6 +125,7 @@ import type { Metadata } from "next";
 import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
+  ACCELERATED_MEDICINE_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
   WISHOCRACY_FAQ,
@@ -1337,21 +1338,20 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   "acceleratedmedicine.org": {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
-    description: `${MESSAGING.impact.diseasesCured.percentWithNoTreatment} of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient ${MESSAGING.impact.curesArriveXYearsSooner.years} years faster, ${MESSAGING.impact.costReduction.multiplier} cheaper.`,
+    description:
+      "Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
     email: "hello@acceleratedmedicine.org",
     defaultRoute: "/",
-    // Umbrella site: research, education, movement, donate - NO clinical content (redirects to dfda.earth)
+    // Educational nonprofit site: patient access, pragmatic trials, evidence, and donations.
     enabledFeatures: [
-      SITE_FEATURES.SURVEY,
       SITE_FEATURES.RESEARCH,
       SITE_FEATURES.EDUCATION,
-      SITE_FEATURES.MOVEMENT,
       SITE_FEATURES.DONATE,
     ],
-    showPoliticalContent: true,
+    showPoliticalContent: false,
     authEnabled: false,
     dashboardEnabled: false,
     icons: {
@@ -1388,13 +1388,13 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation system - campaign case + donation focused
-    topLevelNavItems: ["donate", "vote", "thePlan"],
+    // Navigation system - evidence and donation focused
+    topLevelNavItems: ["donate", "faq"],
     sidebarSections: [
       {
         id: "support",
         label: "SUPPORT THE MISSION",
-        items: ["donate", "thePlan", "volunteer"],
+        items: ["donate", "volunteer"],
       },
       {
         id: "evidence",
@@ -1410,7 +1410,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "support",
         label: "SUPPORT",
-        items: ["donate", "thePlan", "volunteer"],
+        items: ["donate", "volunteer"],
       },
       {
         id: "manual",
@@ -1443,12 +1443,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: `Institute for Accelerated Medicine - ${MESSAGING.impact.curesArriveXYearsSooner.years} Years Faster. ${MESSAGING.impact.timelineShift.livesSaved} Lives.`,
+      alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
     },
     legalItems: ["privacy", "terms"],
     copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
-    faq: DIH_FAQ, // Reuse DIH FAQ initially, can customize later
+    faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,

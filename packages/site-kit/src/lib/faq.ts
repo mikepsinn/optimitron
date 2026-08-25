@@ -222,6 +222,96 @@ export const DIH_FAQ: FaqConfig = {
 }
 
 /**
+ * Accelerated Medicine FAQ (Patient access and research education variant)
+ */
+export const ACCELERATED_MEDICINE_FAQ: FaqConfig = {
+  title: 'FREQUENTLY ASKED QUESTIONS',
+  subtitle: 'Patient choice, pragmatic trials, and public treatment evidence',
+  sections: [
+    {
+      category: "PATIENT CHOICE",
+      questions: [
+        {
+          q: "What does medical freedom mean here?",
+          a: "A patient with poor treatment options should be able to understand available choices, discuss benefits and risks with a clinician, and make an informed decision. The Institute provides education and research, not medical advice.",
+        },
+        {
+          q: "Does the Institute tell patients which treatment to choose?",
+          a: "No. Treatment decisions belong to patients and their licensed clinicians. We explain research methods and support clearer public evidence about benefits, harms, costs, and uncertainty.",
+        },
+        {
+          q: "How can patient access improve evidence?",
+          a: "When patients and clinicians record the same outcomes before and after treatment, pooled results can help the next patient understand what happened in people like them. Participation must be voluntary, private, and transparent.",
+        },
+      ],
+    },
+    {
+      category: "PRAGMATIC CLINICAL TRIALS",
+      questions: [
+        {
+          q: "What is a pragmatic clinical trial?",
+          a: "A pragmatic trial compares treatments in routine care. It asks whether an option helps the patients and clinicians who would use it in ordinary practice.",
+        },
+        {
+          q: "Why can pragmatic trials cost less?",
+          a: "They can use existing clinics, shorter visits, and routinely collected outcomes instead of building a separate research system for every study. Each protocol still needs suitable oversight and safeguards.",
+        },
+        {
+          q: "Do pooled outcomes prove that a treatment works?",
+          a: "Not by themselves. Observational outcomes can reveal patterns and unanswered questions. Randomized comparisons can reduce bias when they are ethical and practical. A useful evidence system shows which method produced each result.",
+        },
+        {
+          q: "Can anyone join a pragmatic trial?",
+          a: "Each study has its own eligibility rules, consent process, and clinical safeguards. A patient should review a specific study with the research team and their clinician.",
+        },
+      ],
+    },
+    {
+      category: "DECENTRALIZED DRUG ASSESSMENT",
+      questions: [
+        {
+          q: "What is a decentralized framework for drug assessment?",
+          a: "It is a proposed public evidence system that combines published research with standardized real-world outcomes. Patients and clinicians could compare options without relying on a single company, hospital, or database.",
+        },
+        {
+          q: "Is it a replacement for the FDA?",
+          a: "No. The name describes a framework for comparing treatment evidence, not a government agency. It can complement regulatory review by making comparative outcomes easier to inspect and improve.",
+        },
+        {
+          q: "What would this look like for a patient with migraine?",
+          a: "The patient could compare preventive drugs, devices, supplements, and behavior changes by monthly migraine days, side effects, cost, and evidence quality. After choosing with a clinician, the patient could record the same outcomes at follow-up.",
+        },
+      ],
+    },
+    {
+      category: "PARTICIPATE",
+      questions: [
+        {
+          q: "How can patients participate?",
+          a: "Ask clinicians about suitable studies, use standardized outcome tracking when available, and review the consent and privacy terms before sharing health data.",
+        },
+        {
+          q: "How can clinicians and researchers help?",
+          a: "Design low-burden studies, measure outcomes that matter to patients, publish complete results, and make methods and limitations easy to inspect.",
+        },
+        {
+          q: "How can I support the Institute?",
+          a: "You can donate to the Institute's education and research work or contact us to discuss clinical, research, or technical collaboration.",
+        },
+      ],
+    },
+  ],
+  ctaSection: {
+    title: 'STILL HAVE QUESTIONS?',
+    subtitle: 'Talk with us or support the research',
+    buttons: [
+      { label: 'CONTACT US', href: '/contact', variant: 'primary' },
+      { label: 'SUPPORT THE RESEARCH', href: '/donate', variant: 'secondary' },
+    ],
+  },
+}
+
+/**
  * Wishocracy FAQ (Values Research variant)
  */
 export const WISHOCRACY_FAQ: FaqConfig = {

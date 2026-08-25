@@ -8,16 +8,11 @@ import { Input } from "@/components/ui/input"
 import { getPaymentLink, type PresetAmount } from "@/lib/stripe-payment-links"
 import { trackDonationStarted } from "@/lib/analytics"
 import {
+  CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE,
   RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
   GLOBAL_DISEASE_DEATHS_DAILY,
 } from "@/lib/parameters-calculations-citations"
-import { formatParameter } from "@/lib/format-parameter"
 import { ParameterValue } from "@/components/shared/ParameterValue"
-import {
-  MAJORITY_OF_HUMANS_ON_EARTH,
-  MAJORITY_OF_HUMANS_SHARE_OF_EARTH,
-} from "@/lib/majority-humanity-target"
-import { MESSAGING } from "@/lib/messaging"
 import { getEmail } from "@/lib/site-config"
 
 // New shared components
@@ -29,11 +24,6 @@ import { ToggleButtonGroup } from "@/components/ui/toggle-button-group"
 import { AmountSelector } from "@/components/ui/amount-selector"
 import { AlertCard } from "@/components/ui/alert-card"
 import { LoadingButton } from "@/components/ui/loading-button"
-
-// Use centralized messaging for timeline shift values
-const { timelineShift } = MESSAGING.impact
-const costEffectiveness = formatParameter(RECOVERY_TRIAL_COST_REDUCTION_FACTOR)
-const dailyDeaths = formatParameter(GLOBAL_DISEASE_DEATHS_DAILY)
 
 export default function DonatePage() {
   const searchParams = useSearchParams()
@@ -98,10 +88,10 @@ export default function DonatePage() {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase mb-6">
-              FUND THE <span className="text-brutal-pink">WAR ON DISEASE</span>
+              FUND MEDICAL FREEDOM <span className="text-brutal-pink">THAT LEARNS</span>
             </h1>
             <p className="text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed">
-              Your donation funds the campaign. The campaign reaches the humans. The humans vote. The votes force the treaty. The treaty funds the trials. The trials find the cures. You did that for the price of a dinner you won&apos;t remember.
+              Help patients understand their options and turn treatment outcomes into useful evidence. Your donation supports education, pragmatic-trial research, and transparent treatment comparisons.
             </p>
           </div>
 
@@ -110,17 +100,22 @@ export default function DonatePage() {
             className="mb-16"
             stats={[
               {
-                value: timelineShift.livesSaved,
-                label: `Lives saved (${timelineShift.years}-year timeline shift)`,
+                value: (
+                  <ParameterValue
+                    param={CURRENT_CLINICAL_TRIAL_PARTICIPATION_RATE}
+                    format={{ precision: 2 }}
+                  />
+                ),
+                label: "Patients who currently participate in clinical trials",
                 color: "yellow",
               },
               {
-                value: costEffectiveness,
-                label: "More cost-effective trials",
+                value: <ParameterValue param={RECOVERY_TRIAL_COST_REDUCTION_FACTOR} />,
+                label: "Lower cost per patient in the RECOVERY trial",
                 color: "pink",
               },
               {
-                value: dailyDeaths,
+                value: <ParameterValue param={GLOBAL_DISEASE_DEATHS_DAILY} />,
                 label: "Lives lost daily to disease",
                 color: "cyan",
               },
@@ -244,25 +239,19 @@ export default function DonatePage() {
               <BrutalCard bgColor="yellow">
                 <h3 className="text-xl font-black uppercase mb-2">PUBLIC EDUCATION</h3>
                 <p className="leading-relaxed">
-                  Educational advertising and public outreach about pragmatic trials and the 1%
-                  Treaty.{" "}
-                  <strong>
-                    Goal: Reach <ParameterValue param={MAJORITY_OF_HUMANS_ON_EARTH} /> humans, about{" "}
-                    <ParameterValue param={MAJORITY_OF_HUMANS_SHARE_OF_EARTH} /> of Earth, to demonstrate public support.
-                  </strong>
+                  Explain patient choice, clinical-trial participation, pragmatic methods, and what the evidence can and cannot support.
                 </p>
               </BrutalCard>
               <BrutalCard>
                 <h3 className="text-xl font-black uppercase mb-2">RESEARCH & OPERATIONS</h3>
                 <p className="leading-relaxed">
-                  Creating treatment outcome labels, publishing treatment rankings,
-                  peer-reviewed research, and coordinating organizations working to end disease.
+                  Create transparent treatment outcome labels, compare treatments by effectiveness, side effects, and cost, and publish the methods and results.
                 </p>
               </BrutalCard>
               <BrutalCard>
                 <h3 className="text-xl font-black uppercase mb-2">INFRASTRUCTURE</h3>
                 <p className="leading-relaxed">
-                  Database and platform hosting, maintaining a decentralized framework for drug assessment to anonymize, aggregate, analyze, and publish treatment rankings.
+                  Maintain secure tools for standardized outcome collection, anonymization, aggregation, analysis, and public treatment rankings.
                 </p>
               </BrutalCard>
             </div>

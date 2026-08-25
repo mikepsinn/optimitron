@@ -1,5 +1,5 @@
-import { Calendar } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { Calendar } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step4CoordinateCare() {
   return (
@@ -23,7 +23,9 @@ export function Step4CoordinateCare() {
                 <div className="flex justify-between">
                   <div>
                     <div className="font-medium">Cognitive Assessment</div>
-                    <div className="text-sm text-muted-foreground">Neurology Center</div>
+                    <div className="text-sm text-muted-foreground">
+                      Neurology Center
+                    </div>
                   </div>
                   <div className="text-sm text-right">
                     <div>May 15, 2023</div>
@@ -35,7 +37,9 @@ export function Step4CoordinateCare() {
                 <div className="flex justify-between">
                   <div>
                     <div className="font-medium">Virtual Check-in</div>
-                    <div className="text-sm text-muted-foreground">Dr. Robert Chen, Neurologist</div>
+                    <div className="text-sm text-muted-foreground">
+                      Dr. Robert Chen, Neurologist
+                    </div>
                   </div>
                   <div className="text-sm text-right">
                     <div>May 22, 2023</div>
@@ -49,8 +53,12 @@ export function Step4CoordinateCare() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <div className="bg-primary/10 text-primary rounded px-3 py-1 text-xs">Import Health Records</div>
-                <div className="bg-primary/10 text-primary rounded px-3 py-1 text-xs">Schedule New Appointment</div>
+                <div className="bg-primary/10 text-primary rounded px-3 py-1 text-xs">
+                  Import Health Records
+                </div>
+                <div className="bg-primary/10 text-primary rounded px-3 py-1 text-xs">
+                  Schedule New Appointment
+                </div>
               </div>
             </div>
           </div>
@@ -58,6 +66,5 @@ export function Step4CoordinateCare() {
       }
       reverse={true}
     />
-  )
+  );
 }
-

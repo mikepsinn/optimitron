@@ -157,7 +157,6 @@
 - MAKING SUFFERING OPTIONAL
 #### ACT
 - [ANSWER THE QUESTION](/#vote)
-- [SOLDIERS](/soldiers)
 #### LEARN
 - [ABOUT](/about)
 - [FAQ](/faq)
@@ -171,4 +170,3 @@
 - [hello@warondisease.org](mailto:hello@warondisease.org)
 - [PRIVACY POLICY](/privacy)
 - [TERMS OF SERVICE](/terms)
-- [Vote Now](https://WarOnDisease.org?utm_source=promo_bar&utm_medium=sticky_bar&utm_campaign=cross_site&utm_content=vote) [End War & Disease](https://manual.WarOnDisease.org/knowledge/links.html?utm_source=promo_bar&utm_medium=sticky_bar&utm_campaign=cross_site&utm_content=links)
