@@ -515,7 +515,7 @@ export default function TreatyVoteSection({
 
                 <div className="text-base sm:text-lg font-bold text-center mb-4">
                   That&apos;s {militarySpendingPct}% to military and just{" "}
-                  <span className="text-brutal-pink text-xl">{clinicalTrialsSpendingPct}%</span> to pragmatic trials.
+                  <span className="text-brutal-pink text-xl">{clinicalTrialsSpendingPct}%</span> to clinical trials.
                 </div>
 
                 <div className="text-base sm:text-lg font-bold text-center mb-4 p-4 bg-brutal-yellow border-4 border-primary">
