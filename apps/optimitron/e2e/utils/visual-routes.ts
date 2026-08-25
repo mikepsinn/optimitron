@@ -213,6 +213,7 @@ const TASK_TREE_VIEW_FILE =
   "apps/optimitron/src/components/tasks/TaskTreeView.tsx";
 const TASK_LIST_CONTROLS_FILE =
   "apps/optimitron/src/components/tasks/task-list-controls.tsx";
+const TASK_ROW_FILE = "apps/optimitron/src/components/tasks/task-row.tsx";
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "apps/optimitron/src/components/tasks/task-impact-trace-disclosure.tsx";
 const OBG_CATEGORY_PAGE_FILE = "apps/optimitron/src/app/obg/[slug]/page.tsx";
@@ -348,6 +349,7 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.profile, ["apps/optimitron/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["apps/optimitron/src/app/services/page.tsx"]],
+  [ROUTES.tasks, [TASK_ROW_FILE]],
   [
     ROUTES.tasksTree,
     [
