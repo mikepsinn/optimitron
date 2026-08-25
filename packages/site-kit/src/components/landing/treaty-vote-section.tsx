@@ -510,7 +510,7 @@ export default function TreatyVoteSection({
                   <br className="hidden sm:block" />
                   for every{" "}
                   <br className="hidden sm:block" />
-                  <span className="text-brutal-pink">$1</span> on <span className="text-brutal-pink">PRAGMATIC CLINICAL TRIALS TO CURE DISEASE</span>.
+                  <span className="text-brutal-pink">$1</span> on <span className="text-brutal-pink">CLINICAL TRIALS TO CURE DISEASE</span>.
                 </p>
 
                 <div className="text-base sm:text-lg font-bold text-center mb-4">
