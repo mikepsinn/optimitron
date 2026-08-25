@@ -143,13 +143,13 @@
 ##### CONTRIBUTE TO EVIDENCE
 - When you and your clinician choose a treatment, standardized outcomes can strengthen the public evidence base
 - Transparent rankings based on effectiveness, side effects, and cost-effectiveness
-#### HOW IT WORKS (FOR PATIENTS)
+#### ONE EXAMPLE: MIGRAINE
 ##### YOU SEARCH
-- Enter your condition. Get a ranked list of every treatment ever tested.
+- Enter "migraine." See preventive drugs, devices, supplements, and behavior changes ranked by evidence.
 ##### YOU COMPARE
-- See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.
+- Compare monthly migraine days, side effects, cost, and which patients improved.
 ##### YOU DECIDE
-- Choose with your clinician using the best available evidence. Your body, your choice, with outcomes recorded for the next patient.
+- Choose with your clinician. Record the same outcomes at follow-up so the pooled evidence improves.
 ### MEDICAL FREEDOM THAT LEARNS
 #### ONE PATIENT GETS AN OPTION
 - A person with no adequate approved treatment can make an informed choice with a clinician.

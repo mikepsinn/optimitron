@@ -51,22 +51,24 @@ export default function DecentralizedFDASection({
     {
       number: "1",
       title: "YOU SEARCH",
-      description:
-        "Enter your condition. Get a ranked list of every treatment ever tested.",
+      description: medicalFreedom
+        ? 'Enter "migraine." See preventive drugs, devices, supplements, and behavior changes ranked by evidence.'
+        : "Enter your condition. Get a ranked list of every treatment ever tested.",
       color: "bg-brutal-yellow",
     },
     {
       number: "2",
       title: "YOU COMPARE",
-      description:
-        "See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.",
+      description: medicalFreedom
+        ? "Compare monthly migraine days, side effects, cost, and which patients improved."
+        : "See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.",
       color: "bg-brutal-cyan",
     },
     {
       number: "3",
       title: "YOU DECIDE",
       description: medicalFreedom
-        ? "Choose with your clinician using the best available evidence. Your body, your choice, with outcomes recorded for the next patient."
+        ? "Choose with your clinician. Record the same outcomes at follow-up so the pooled evidence improves."
         : "Choose based on data, not marketing budgets. Your body, your choice, informed by millions of data points.",
       color: "bg-brutal-pink",
     },
@@ -121,7 +123,9 @@ export default function DecentralizedFDASection({
         {/* How It Works */}
         <Card className="bg-background border-4 border-primary p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12">
           <h3 className="text-2xl sm:text-3xl font-black uppercase text-center mb-8">
-            HOW IT WORKS (FOR PATIENTS)
+            {medicalFreedom
+              ? "ONE EXAMPLE: MIGRAINE"
+              : "HOW IT WORKS (FOR PATIENTS)"}
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
             {howItWorks.map((step, index) => (
