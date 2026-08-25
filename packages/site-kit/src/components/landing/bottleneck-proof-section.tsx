@@ -117,10 +117,12 @@ export function BottleneckProofSection({
             <span className="text-brutal-pink">Clinical Trials</span>, Not Basic
             Science
           </h2>
-          <ImpactExplainer
-            className="h-9 w-9 border-primary text-primary bg-background"
-            label="Show bottleneck math"
-          />
+          {scenario === "treaty" && (
+            <ImpactExplainer
+              className="h-9 w-9 border-primary text-primary bg-background"
+              label="Show bottleneck math"
+            />
+          )}
         </div>
 
         {/* The Unexplored Frontier */}
