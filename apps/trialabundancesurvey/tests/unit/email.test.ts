@@ -1,38 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const { sendEmail } = vi.hoisted(() => ({ sendEmail: vi.fn() }));
-
-vi.mock("../../../../packages/site-kit/src/lib/email-utils", () => ({
-  getResendClient: () => ({ emails: { send: sendEmail } }),
-}));
-
-vi.mock("../../../../packages/site-kit/src/lib/env", () => ({
-  env: {
-    EMAIL_FROM_ADDRESS: "login@updates.dfda.earth",
-  },
-}));
-
-vi.mock("../../../../packages/site-kit/src/lib/site-config", () => ({
-  getSiteVariant: () => "trialabundancesurvey.org",
-  getSiteConfig: () => ({
-    emailBranding: {
-      fromName: "Survey Team",
-      primaryColor: "#000000",
-      orgName: "Global Clinical Trial Abundance Survey",
-    },
-  }),
-}));
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { sendSignupConfirmationEmail } from "../../../../packages/site-kit/src/lib/email";
 
+const sentMessages: unknown[] = [];
+const resendEndpoint = "https://api.resend.com/emails";
+
+const server = setupServer(
+  http.post(resendEndpoint, async ({ request }) => {
+    sentMessages.push(await request.json());
+    return HttpResponse.json({ id: "email_123" });
+  }),
+);
+
 describe("survey verification email", () => {
-  beforeEach(() => {
-    sendEmail.mockReset();
+  beforeAll(() => {
+    server.listen({ onUnhandledRequest: "error" });
   });
 
-  it("sends the branded survey confirmation through Resend", async () => {
-    sendEmail.mockResolvedValue({ data: { id: "email_123" }, error: null });
+  afterEach(() => {
+    sentMessages.length = 0;
+    server.resetHandlers();
+  });
 
+  afterAll(() => {
+    server.close();
+  });
+
+  it("delivers the branded survey confirmation through the Resend boundary", async () => {
     const result = await sendSignupConfirmationEmail({
       to: "patient@example.com",
       url: "https://trialabundancesurvey.org/api/auth/callback/email?token=test&email=patient%40example.com",
@@ -41,10 +37,10 @@ describe("survey verification email", () => {
     });
 
     expect(result).toEqual({ success: true, data: { id: "email_123" } });
-    expect(sendEmail).toHaveBeenCalledOnce();
-    expect(sendEmail).toHaveBeenCalledWith(
+    expect(sentMessages).toHaveLength(1);
+    expect(sentMessages[0]).toEqual(
       expect.objectContaining({
-        from: "Survey Team <login@updates.dfda.earth>",
+        from: "Survey Team <no-reply@updates.dfda.earth>",
         to: "patient@example.com",
         subject: "Confirm your survey submission",
         html: expect.stringContaining("Confirm My Submission"),
@@ -56,13 +52,18 @@ describe("survey verification email", () => {
   });
 
   it("throws when Resend rejects the message instead of reporting success", async () => {
-    sendEmail.mockResolvedValue({
-      data: null,
-      error: {
-        name: "validation_error",
-        message: "Sender domain is not verified",
-      },
-    });
+    server.use(
+      http.post(resendEndpoint, () =>
+        HttpResponse.json(
+          {
+            name: "validation_error",
+            message: "Sender domain is not verified",
+            statusCode: 422,
+          },
+          { status: 422 },
+        ),
+      ),
+    );
 
     await expect(
       sendSignupConfirmationEmail({
