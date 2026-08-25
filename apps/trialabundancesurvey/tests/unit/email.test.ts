@@ -12,6 +12,8 @@ import {
 
 const sentMessages: unknown[] = [];
 const resendEndpoint = "https://api.resend.com/emails";
+let previousEmailFromAddress: string | undefined;
+let previousResendApiKey: string | undefined;
 let previousSiteVariant: string | undefined;
 let sendSignupConfirmationEmail: typeof import("../../../../packages/site-kit/src/lib/email").sendSignupConfirmationEmail;
 
@@ -24,7 +26,11 @@ const server = setupServer(
 
 describe("survey verification email", () => {
   beforeAll(async () => {
+    previousEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
+    previousResendApiKey = process.env.RESEND_API_KEY;
     previousSiteVariant = process.env.NEXT_PUBLIC_SITE_VARIANT;
+    delete process.env.EMAIL_FROM_ADDRESS;
+    process.env.RESEND_API_KEY = "re_test_survey_email";
     process.env.NEXT_PUBLIC_SITE_VARIANT = "trialabundancesurvey.org";
     vi.resetModules();
     ({ sendSignupConfirmationEmail } = await import(
@@ -40,6 +46,16 @@ describe("survey verification email", () => {
 
   afterAll(() => {
     server.close();
+    if (previousEmailFromAddress === undefined) {
+      delete process.env.EMAIL_FROM_ADDRESS;
+    } else {
+      process.env.EMAIL_FROM_ADDRESS = previousEmailFromAddress;
+    }
+    if (previousResendApiKey === undefined) {
+      delete process.env.RESEND_API_KEY;
+    } else {
+      process.env.RESEND_API_KEY = previousResendApiKey;
+    }
     if (previousSiteVariant === undefined) {
       delete process.env.NEXT_PUBLIC_SITE_VARIANT;
     } else {
