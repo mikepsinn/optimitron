@@ -104,22 +104,59 @@
 - 👈+$27.2B INCREASE FROM 1% TREATY
 ### WHAT $27.2B COULD BUY
 ### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
-- CONSUMER REPORTS FOR DRUGS
-- A decentralized framework for drug assessment integrated into standard healthcare could both radically improve safety and allow patients to effortlessly participate in pragmatic decentralized clinical trials.
-##### SEARCH ANY TREATMENT
-- Find drugs, supplements, diets, devices - everything ranked by real-world effectiveness
-##### SEE REAL OUTCOMES
-- Not marketing claims. Actual data from millions of real patients showing what works
-##### JOIN TRIALS INSTANTLY
-- One-click enrollment in pragmatic trials. Get paid to test treatments while helping humanity
-- Transparent rankings based on effectiveness, side effects, and cost-effectiveness
-#### HOW IT WORKS (FOR PATIENTS)
-##### YOU SEARCH
-- Enter your condition. Get a ranked list of every treatment ever tested.
-##### YOU COMPARE
-- See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.
-##### YOU DECIDE
-- Choose based on data, not marketing budgets. Your body, your choice, informed by millions of data points.
+- Connect treatment access to standardized, public outcomes so every patient decision can improve the next one.
+- SEARCH ANY TREATMENT
+- SEE REAL OUTCOMES
+- CONTRIBUTE TO EVIDENCE
+- COMPARE COST-EFFECTIVENESS
+- These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
+#### HOW IT WORKS FOR PATIENTS
+- More useful choices, lighter participation, and a clearer picture of what happened.
+- 1 FIND Search approved treatments, eligible studies, and other studied options.
+- 2 COMPARE Read benefits, harms, costs, sources, and uncertainty on one outcome label.
+- 3 CHOOSE Review the evidence with a licensed clinician and consent voluntarily.
+- 4 MEASURE Track symptoms, function, side effects, and treatment use during routine care.
+- 5 LEARN See your own trend and help the next patient make a less blind decision.
+- TREATMENT EXPLORER
+- ILLUSTRATIVE INTERFACE
+- Search a condition
+- Approved treatments
+- PUBLISHED EVIDENCE
+- Recruiting pragmatic trials
+- CHECK ELIGIBILITY
+- Other studied options
+- MORE UNCERTAINTY
+- OUTCOME LABEL
+- Benefits, harms, costs, sources, and uncertainty in one readable label.
+- Benefit patients reported
+- SEE RANGE
+- Common side effects
+- SEE FREQUENCY
+- Who was represented
+- SEE POPULATION
+- Evidence certainty
+- SEE LIMITATIONS
+- ROUTINE-CARE EVIDENCE
+#### HOW IT WORKS FOR PROVIDERS
+- Decision support, not a black-box command. Every comparison should expose its sources, assumptions, and uncertainty.
+- 1 REVIEW Start with the patient's diagnosis, priorities, records, and eligibility.
+- 2 DECIDE TOGETHER Compare options, document informed consent, and coordinate routine care.
+- 3 MONITOR Follow progress and safety while standardized outcomes improve the evidence.
+- PATIENT-SPECIFIC EVIDENCE REVIEW
+- DAILY FUNCTION
+- FEWER SIDE EFFECTS
+- REMOTE VISITS
+- SHARED DECISION AND MONITORING
+#### AND THE EVIDENCE LOOP WORKS FOR RESEARCHERS
+##### DEFINE
+- Publish the protocol, outcomes, eligibility, and analysis plan.
+##### ENROLL
+- Invite eligible patients through routine care with voluntary consent.
+##### MONITOR
+- Watch safety and completeness while participation stays low burden.
+##### PUBLISH
+- Release complete results, methods, limitations, and de-identified outcomes.
+- [EXPLORE THE DFDA](https://dfda.earth)
 ### 💰 THE MATH
 #### THE RETURNS ON NOT DYING
 - When you stop making people fill out paperwork and start letting them not die, something magical happens:

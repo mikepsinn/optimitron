@@ -134,22 +134,59 @@
 - THESE ARE PROJECTIONS, NOT OBSERVED RESULTS.
 - Click any number to inspect the formula, estimated range, inputs, and source material. The savings figure covers modeled R&D costs, not all healthcare spending or guaranteed year-one savings.
 ### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
-- CONSUMER REPORTS FOR DRUGS
 - Connect treatment access to standardized, public outcomes so every patient decision can improve the next one.
-##### SEARCH ANY TREATMENT
-- Find drugs, supplements, diets, and devices ranked by evidence from real-world outcomes
-##### SEE REAL OUTCOMES
-- Not marketing claims. Pooled patient outcomes show what helped, what harmed, and for whom
-##### CONTRIBUTE TO EVIDENCE
-- When you and your clinician choose a treatment, standardized outcomes can strengthen the public evidence base
-- Transparent rankings based on effectiveness, side effects, and cost-effectiveness
-#### ONE EXAMPLE: MIGRAINE
-##### YOU SEARCH
-- Enter "migraine." See preventive drugs, devices, supplements, and behavior changes ranked by evidence.
-##### YOU COMPARE
-- Compare monthly migraine days, side effects, cost, and which patients improved.
-##### YOU DECIDE
-- Choose with your clinician. Record the same outcomes at follow-up so the pooled evidence improves.
+- SEARCH ANY TREATMENT
+- SEE REAL OUTCOMES
+- CONTRIBUTE TO EVIDENCE
+- COMPARE COST-EFFECTIVENESS
+- These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
+#### HOW IT WORKS FOR PATIENTS
+- More useful choices, lighter participation, and a clearer picture of what happened.
+- 1 FIND Search approved treatments, eligible studies, and other studied options.
+- 2 COMPARE Read benefits, harms, costs, sources, and uncertainty on one outcome label.
+- 3 CHOOSE Review the evidence with a licensed clinician and consent voluntarily.
+- 4 MEASURE Track symptoms, function, side effects, and treatment use during routine care.
+- 5 LEARN See your own trend and help the next patient make a less blind decision.
+- TREATMENT EXPLORER
+- ILLUSTRATIVE INTERFACE
+- Search a condition
+- Approved treatments
+- PUBLISHED EVIDENCE
+- Recruiting pragmatic trials
+- CHECK ELIGIBILITY
+- Other studied options
+- MORE UNCERTAINTY
+- OUTCOME LABEL
+- Benefits, harms, costs, sources, and uncertainty in one readable label.
+- Benefit patients reported
+- SEE RANGE
+- Common side effects
+- SEE FREQUENCY
+- Who was represented
+- SEE POPULATION
+- Evidence certainty
+- SEE LIMITATIONS
+- ROUTINE-CARE EVIDENCE
+#### HOW IT WORKS FOR PROVIDERS
+- Decision support, not a black-box command. Every comparison should expose its sources, assumptions, and uncertainty.
+- 1 REVIEW Start with the patient's diagnosis, priorities, records, and eligibility.
+- 2 DECIDE TOGETHER Compare options, document informed consent, and coordinate routine care.
+- 3 MONITOR Follow progress and safety while standardized outcomes improve the evidence.
+- PATIENT-SPECIFIC EVIDENCE REVIEW
+- DAILY FUNCTION
+- FEWER SIDE EFFECTS
+- REMOTE VISITS
+- SHARED DECISION AND MONITORING
+#### AND THE EVIDENCE LOOP WORKS FOR RESEARCHERS
+##### DEFINE
+- Publish the protocol, outcomes, eligibility, and analysis plan.
+##### ENROLL
+- Invite eligible patients through routine care with voluntary consent.
+##### MONITOR
+- Watch safety and completeness while participation stays low burden.
+##### PUBLISH
+- Release complete results, methods, limitations, and de-identified outcomes.
+- [EXPLORE THE DFDA](https://dfda.earth)
 ### MEDICAL FREEDOM THAT LEARNS
 #### ONE PATIENT GETS AN OPTION
 - A person with no adequate approved treatment can make an informed choice with a clinician.

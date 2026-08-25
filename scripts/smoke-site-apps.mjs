@@ -52,6 +52,7 @@ const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
 const campaignHomeSharedFiles = [
   "packages/site-kit/src/components/campaign-home-page.tsx",
+  "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
   "packages/site-kit/src/components/landing/final-cta.tsx",
   "packages/site-kit/src/components/landing/societal-benefits-concise.tsx",
   "packages/site-kit/src/lib/site-config.ts",
