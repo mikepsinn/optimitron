@@ -441,7 +441,7 @@ export default function DecentralizedFDASection() {
                 {
                   icon: ShieldCheck,
                   title: "Monitor",
-                  text: "Watch safety and completeness while participation stays low burden.",
+                  text: "Watch safety and completeness while visits and paperwork stay light.",
                 },
                 {
                   icon: FileSearch,

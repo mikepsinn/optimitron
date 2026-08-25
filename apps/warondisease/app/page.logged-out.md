@@ -156,7 +156,7 @@
 ##### ENROLL
 - Invite eligible patients through routine care with voluntary consent.
 ##### MONITOR
-- Watch safety and completeness while participation stays low burden.
+- Watch safety and completeness while visits and paperwork stay light.
 ##### PUBLISH
 - Release complete results, methods, limitations, and de-identified outcomes.
 - [EXPLORE THE DFDA](https://dfda.earth)
