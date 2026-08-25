@@ -58,6 +58,19 @@ const campaignHomeSharedFiles = [
 ];
 
 function getCampaignHomeFiles(appName) {
+  if (appName === "acceleratedmedicine") {
+    return [
+      "apps/acceleratedmedicine/app/page.tsx",
+      "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
+      "packages/site-kit/src/components/landing/problem-statement.tsx",
+      "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
+      "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
+      "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
+      "packages/site-kit/src/components/landing/death-clock.tsx",
+      "packages/site-kit/src/lib/site-config.ts",
+    ];
+  }
+
   return [`apps/${appName}/app/page.tsx`, ...campaignHomeSharedFiles];
 }
 
@@ -156,7 +169,8 @@ async function verifyWarOnDiseaseHome(baseUrl) {
 function getScreenshotRoutes(appName, siteVariant) {
   const isCampaignHome =
     siteVariant === VARIANTS.WAR_ON_DISEASE ||
-    siteVariant === VARIANTS.CUREDAO;
+    siteVariant === VARIANTS.CUREDAO ||
+    siteVariant === VARIANTS.ACCELERATED_MEDICINE;
   const campaignHomeFiles = getCampaignHomeFiles(appName);
   const routes = getInternalNavigationRoutesForVariant(siteVariant).map(
     ({ label, path: routePath }) => ({
@@ -201,6 +215,13 @@ function getScreenshotRoutes(appName, siteVariant) {
     const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
     if (planRoute) {
       planRoute.covers = [campaignPlanPageFile];
+    } else {
+      routes.push({
+        label: "Legacy campaign plan",
+        routeName: "the-plan",
+        routePath: "/the-plan",
+        covers: [campaignPlanPageFile],
+      });
     }
     routes.push({
       label: "Legacy About redirect",

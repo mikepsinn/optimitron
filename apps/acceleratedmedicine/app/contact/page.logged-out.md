@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Canonical: https://acceleratedmedicine.org
+- Meta description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
+- Canonical: http://localhost:3000
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
+- Open Graph image: http://localhost:3000/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Twitter description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 
 ## Visible Page Copy
 
@@ -20,14 +20,12 @@
 - MISSION: TOTAL DISEASE ERADICATION
 #### SUPPORT
 - [DONATE](/donate)
-- [THE PLAN](https://warondisease.org/the-plan)
 - [VOLUNTEER](/contact)
 #### GET THE MANUAL
 - [THE FIELD MANUAL](https://manual.warondisease.org)
 - [PODCAST](https://manual.warondisease.org/listen)
 - [GET THE MANUAL](https://manual.warondisease.org)
-#### ABOUT
-- [ABOUT](/about)
+#### EVIDENCE
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### CONTACT

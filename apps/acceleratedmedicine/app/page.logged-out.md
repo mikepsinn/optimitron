@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Canonical: https://acceleratedmedicine.org
+- Meta description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
+- Canonical: http://localhost:3000
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
+- Open Graph image: http://localhost:3000/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Twitter description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 
 ## Visible Page Copy
 
@@ -17,63 +17,81 @@
 ## 95% OF DISEASES HAVE
 ## ZERO
 ## TREATMENTS.
-- Is it OK if we allocate 1% of our apocalypse monies to curing them?
-- [FINE...](/#vote)
-- YOU'RE CRAZY
-### ANSWER THE QUESTION
-- Would you trade 1% of military spending for pragmatic clinical trials? Answer here without leaving the evidence.
-### THE QUESTION
-- Adjust slider to show how you'd split your country's finite resources between the weapons and military vs pragmatic clinical trials to cure diseases.
-- [OPEN THE SURVEY](https://trialabundancesurvey.org/embed?embed=1)
-### 2 BILLION PEOPLE ARE
-### SUFFERING
-### FROM CURABLE DISEASES
+- Patients are ready to try. The evidence system cannot include nearly enough of them.
+- [SHOW ME THE BENEFITS](#benefits)
+- [SHOW ME THE EVIDENCE](#evidence)
+### PATIENTS ARE READY.
+### THE TRIAL SYSTEM ISN'T.
+- 44.8%
+- Patients say yes when asked.
+- 0.06%
+- The system mostly never asks.
+- 1.9M
+- For the entire world.
+- 1.08B
+- PEOPLE WITH CHRONIC DISEASE ARE WILLING TO PARTICIPATE
+- Click any underlined number to inspect its source, assumptions, and uncertainty.
+### 2.4B PEOPLE ARE
+### LIVING
+### WITH CHRONIC DISEASE
 #### FOR 2 REASONS:
 ### REASON 1.
 ### The Current System of Clinical Research Is Slow and Terrible
 - 💰
 #### 82x Higher Costs Than Necessary
-- Everything costs 82x times more than it should. Efficiency is for other industries.
+- Current clinical trial costs are 82x times higher than pragmatic trial alternatives.
 - 👥
 #### $41K Cost Per Participant
-- It costs $41K to include one person in a study. That's more than most people make in a year.
+- Traditional clinical trials cost $41K per participant, exceeding median annual income in many countries.
 - 💸
 #### $2.6B Development Cost
-- To make one new drug costs $2.6B. Then they charge sick people to pay it back.
+- The average cost to develop a new drug is $2.6B, reflected in pharmaceutical pricing.
 - ☠️
 #### 21K-120K Preventable Deaths
-- Between 21,000 and 120,000 people die every decade because the paperwork takes too long.
+- Regulatory delays contribute to an estimated 21,000-120,000 preventable deaths per decade.
 - 🚫
 #### 86.1% of Patients Excluded
-- 86.1% of sick people can't join trials. Apparently they're not sick in the right way.
+- Current trial eligibility criteria exclude 86.1% of patients with the condition being studied.
 - 💊
 #### 95% of Diseases Untreated
-- 95% of diseases have no cure. We're really good at the other 5%, though.
+- 95% of known diseases lack FDA-approved treatments, with research concentrated on the remaining 5%.
 - 🤒
 #### 14 Years of Suffering
-- It takes 14 years from 'we found a cure!' to actually getting it. Most of us will be dead by then.
+- The average time from discovery to widespread clinical adoption is 14 years.
 - ⚛️
 #### 45.1B Untested Treatments
-- 45.1B possible cures exist. We've tested approximately none of them.
+- An estimated 45.1B potential treatment combinations remain untested with current methodologies.
 - 🌍
 #### 2.4B People Suffering
-- 2.4B people are sick right now. The system is working exactly as designed.
+- Approximately 2.4B people worldwide suffer from diseases with inadequate treatment options.
 - 🧫
 #### 44+ Years Since Last Disease Cure
-- We haven't cured a major disease in 44 years. But don't worry, we're very busy.
+- No major disease has been cured in over 44 years, highlighting the need for new research paradigms.
 ### REASON 2.
-- GOVERNMENTS SPEND
-### 604X MORE ON WAR
-- THAN CLINICAL TRIALS TO DISCOVER NEW TREATMENTS FOR DISEASES
-- $2.72T FOR MASS MURDER CAPACITY
-- $4.5B FOR CLINICAL TRIALS
-### WE CAN SOLVE BOTH OF THESE PROBLEMS SIMULTANEOUSLY
-### OXFORD RECOVERY TRIAL PROVED RESEARCH CAN BE DONE FOR
+#### Patients who try treatments cannot turn their care into shared evidence
+- There are about 7K rare diseases. Roughly 6.65K still lack an effective treatment.
+##### GET AN OPTION
+- When approved treatments have failed, informed adults can still make a choice with their clinician.
+##### TRACK EVERY RESULT
+- Standard outcomes turn ordinary treatment decisions into evidence instead of anecdotes.
+##### HELP THE NEXT HUMAN
+- Pooling and publishing results lets the next patient make a less blind decision.
+### GIVE PATIENTS AN OPTION. MAKE EVERY RESULT USEFUL.
+### OXFORD'S RECOVERY TRIAL PROVED RESEARCH CAN COST DRAMATICALLY LESS
+- $500
+- Per patient in a real pragmatic trial.
+- $929
+- The central estimate used in the pragmatic-trial model.
+- $41K
+- Median cost per participant.
+- 82x
+- 44.1x
+- 97.7%
 ### WHY THE BOTTLENECK IS CLINICAL TRIALS, NOT BASIC SCIENCE
 #### THE VAST UNEXPLORED THERAPEUTIC FRONTIER
-- 10K
-- 10M
-- 33K
+- 9.5K
+- 9.5M
+- 32.5K
 - Exploration Ratio=32.5K tested 9.5M possible=0.34%Exploration Ratio=9.5M possible 32.5K tested​=0.34%
 - TESTED (0.34%)
 - UNEXPLORED (99.7%)
@@ -81,13 +99,15 @@
 - You cannot have "diminishing returns" when you haven't even started.
 - Wait, it gets worse: The FULL therapeutic frontier
 - The 9.5M figure above only counts single drugs against diseases. Modern medicine increasingly uses combination therapies (standard in oncology, HIV, cardiology).
+- 10M
 - 45B
 - 42M
 - 45.1B
 - Note: We use the conservative 9.5M figure in our main calculations because single-drug trials are more straightforward. But the combination therapy space shows the true scale of unexplored medicine.
 #### YEARS TO UNIVERSAL TREATMENT COVERAGE
 - Clinical trials are how we discover which treatments work for which diseases. At current trial capacity, we find first effective treatments for only ~15 diseases per year.
-- Pragmatic trials cost ~44× less than traditional trials. This funding enables 12× more trials = ~180 first treatments per year.
+- The reference funding model produces 40.7K pragmatic trials per year. The model projects 185 first treatments per year.
+- 36.0
 - Addressing the "Diminishing Returns" Argument
 - Critics argue: "Just funding more trials won't proportionally increase discoveries - we've picked the low-hanging fruit."
 - This is wrong for six reasons:
@@ -98,25 +118,29 @@
 - 5.
 - 6.
 - Diminishing returns apply to repeated attempts at the same problem. We're proposing to attempt problems we've never tried.
-#### TWO POSSIBLE FUTURES
-- This timeline shows how soon we could find a first treatment for all 6,650 untreated diseases. Under the status quo (~15 new treatments/year), it takes 443 years. With increased pragmatic trial funding, we can accelerate discovery dramatically.
-- Your age:
-- years old
+#### A MODEL, NOT A PROMISE
+- 40.7K
+- Reference funding divided by the modeled pragmatic-trial cost.
+- 185
+- Applies the modeled capacity and discovery assumptions.
+- A low-confidence projection with a wide estimated range.
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
-- 1% REDUCTION 👉
-- $4.5B CURRENT
-- 👈+$27.2B INCREASE FROM 1% TREATY
-### WHAT $27.2B COULD BUY
+### WHAT PRAGMATIC TRIAL ACCESS AT SCALE COULD PRODUCE
+- 23.4M
+- 12.3x
+- $58.6B
+- THESE ARE PROJECTIONS, NOT OBSERVED RESULTS.
+- Click any number to inspect the formula, estimated range, inputs, and source material. The savings figure covers modeled R&D costs, not all healthcare spending or guaranteed year-one savings.
 ### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
 - CONSUMER REPORTS FOR DRUGS
-- A decentralized framework for drug assessment integrated into standard healthcare could both radically improve safety and allow patients to effortlessly participate in pragmatic decentralized clinical trials.
+- Connect treatment access to standardized, public outcomes so every patient decision can improve the next one.
 ##### SEARCH ANY TREATMENT
-- Find drugs, supplements, diets, devices - everything ranked by real-world effectiveness
+- Find drugs, supplements, diets, and devices ranked by evidence from real-world outcomes
 ##### SEE REAL OUTCOMES
-- Not marketing claims. Actual data from millions of real patients showing what works
-##### JOIN TRIALS INSTANTLY
-- One-click enrollment in pragmatic trials. Get paid to test treatments while helping humanity
+- Not marketing claims. Pooled patient outcomes show what helped, what harmed, and for whom
+##### CONTRIBUTE TO EVIDENCE
+- When you and your clinician choose a treatment, standardized outcomes can strengthen the public evidence base
 - Transparent rankings based on effectiveness, side effects, and cost-effectiveness
 #### HOW IT WORKS (FOR PATIENTS)
 ##### YOU SEARCH
@@ -124,46 +148,24 @@
 ##### YOU COMPARE
 - See side-by-side outcomes: LDL reduction, survival rates, quality of life - actual numbers, not promises.
 ##### YOU DECIDE
-- Choose based on data, not marketing budgets. Your body, your choice, informed by millions of data points.
-### 💰 THE MATH
-#### THE RETURNS ON NOT DYING
-- When you stop making people fill out paperwork and start letting them not die, something magical happens:
-- 637:1
-- $637 returned for every $1 invested
-- Not a typo. Not a fever dream. Actual math.
-- This beats humanity's previous greatest hits in the "not dying" genre:
-- WHERE THE VALUE COMES FROM:
-- $59B
-- 86K
-- Value comes from faster drug approvals (14 years → 2 years), better treatment matching through real-world data, and addressing neglected diseases that companies ignore.
-#### ♾️ THE MATH THAT BROKE EXCEL
-- A 84.8M:1 Return on Investment
-- A $1B campaign yields $84.8 Quadrillion in health value.
-- ROI=Health Value Created Campaign Cost=$84.8 Q u a d r i l l i o n$1 B=84.8 M: 1 ROI​=Campaign Cost Health Value Created​=$1 B$84.8 Q u a d r i l l i o n​=84.8 M: 1​
-- $1B
-- $85 Quadrillion
-- 11B
-- Math says this is the best possible use of a billion dollars.
-- Math is rarely wrong about money. People are frequently wrong about money.
-- [SEE THE FULL MATH →](/research)
-- Charts, breakdowns, and all the nerdy details
-### YOUR VOTE'S IMPACT
-- $27B/year scales trial capacity 12X, achieving 247 years of progress in 20
-- Through a 212-year average timeline shift: 12× trial capacity + eliminating 8.2-year regulatory delays
-- HIGHEST ROI ACTION IN HISTORY
-- In 30 seconds, you can save more lives than most people save in a lifetime.
+- Choose with your clinician using the best available evidence. Your body, your choice, with outcomes recorded for the next patient.
+### MEDICAL FREEDOM THAT LEARNS
+#### ONE PATIENT GETS AN OPTION
+- A person with no adequate approved treatment can make an informed choice with a clinician.
+#### THEIR OUTCOME BECOMES EVIDENCE
+- The result is measured in the same format as results from other patients.
+#### THE NEXT DECISION GETS LESS BLIND
+- Public, pooled outcomes reveal what works, what fails, and for whom.
 ### DO SOMETHING
-- [OPTION 1: LEARN DOWNLOAD THE MATH 43 studies. 82X proven. Peer-reviewed.](https://warondisease.org/research)
-- [OPTION 2: ANSWER THE MOST IMPORTANT QUESTION 30 seconds. Anonymous. Historical.](/#vote)
-- [OPTION 3: FUND DONATE (TAX-DEDUCTIBLE) 501(c)(3). Every dollar to creating a world without disease.](/donate)
+- [OPTION 1: LEARN INSPECT THE EVIDENCE See the observed trial costs, source studies, and model assumptions. CONTINUE](#evidence)
+- [OPTION 2: CHECK CHALLENGE THE MODEL Open every estimate. Check its inputs. Decide whether the benefits survive your assumptions. CONTINUE](#model)
+- [OPTION 3: SUPPORT FUND THE RESEARCH Support a 501(c)(3) working to make treatment evidence faster, cheaper, and public. CONTINUE](/donate)
 ### 💀 DEATH CLOCK
-### BOTTOM LINE
-- [DONATE NOW](/donate)
-- [ANSWER THE QUESTION](/#vote)
+- [READ THE EVIDENCE](#evidence)
+- [SUPPORT THE RESEARCH](/donate)
 - MISSION: TOTAL DISEASE ERADICATION
 #### SUPPORT
 - [DONATE](/donate)
-- [THE PLAN](/the-plan)
 - [VOLUNTEER](/contact)
 #### GET THE MANUAL
 - [THE FIELD MANUAL](https://manual.warondisease.org)
