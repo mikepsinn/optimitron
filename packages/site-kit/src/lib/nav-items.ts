@@ -131,7 +131,7 @@ export const NAV_ITEMS_MAP = {
     label: "Donate",
     path: ROUTES.donate,
     description:
-      "Fund the war on disease. Your donation accelerates cures 8 years faster and saves lives through pragmatic clinical trials.",
+      "Fund patient education, pragmatic-trial research, and public treatment evidence.",
     emoji: "💝",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [
