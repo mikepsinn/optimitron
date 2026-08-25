@@ -125,6 +125,7 @@ import type { Metadata } from "next";
 import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
+  ACCELERATED_MEDICINE_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
   WISHOCRACY_FAQ,
@@ -1447,7 +1448,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     legalItems: ["privacy", "terms"],
     copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
     footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
-    faq: DIH_FAQ, // Reuse DIH FAQ initially, can customize later
+    faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,

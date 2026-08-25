@@ -4,10 +4,10 @@
 
 - Page title: Institute for Accelerated Medicine
 - Meta description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
-- Canonical: http://localhost:3000
+- Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
 - Open Graph description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
-- Open Graph image: http://localhost:3000/assets/acceleratedmedicine/iam-og-1200x630.png
+- Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
 - Twitter description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 
