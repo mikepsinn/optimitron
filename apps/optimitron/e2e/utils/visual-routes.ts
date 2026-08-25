@@ -509,7 +509,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
   },
   {
     name: "content-search",
-    path: "/search?q=demo%20health",
+    path: "/search?q=%22Review%20the%20demo%20health%20proposal%22",
     required: true,
     authenticated: true,
     requiredText: /^Review the demo health proposal$/,

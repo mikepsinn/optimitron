@@ -88,7 +88,11 @@ export function TimelineScrolly({ userAge, onAgeChange }: TimelineScrollyProps) 
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     window.addEventListener("optimitron:visual-capture", completeVisualCapture)
-    handleScroll() // Initial call
+    if (document.documentElement.dataset.visualCaptureRequested === "true") {
+      completeVisualCapture()
+    } else {
+      handleScroll() // Initial call
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll)

@@ -837,7 +837,9 @@ export function TaskRow({
                 : "overdue"}
             </StatusBadge>
           ) : task.dueAt ? (
-            <StatusBadge>{`due ${formatDueDate(task.dueAt)}`}</StatusBadge>
+            <StatusBadge>
+              due <span data-volatile="date">{formatDueDate(task.dueAt)}</span>
+            </StatusBadge>
           ) : task.status === "VERIFIED" ? (
             <StatusBadge variant="done">verified</StatusBadge>
           ) : null}
@@ -871,7 +873,9 @@ export function TaskRow({
               : "overdue"}
           </StatusBadge>
         ) : task.dueAt ? (
-          <StatusBadge>{`due ${formatDueDate(task.dueAt)}`}</StatusBadge>
+          <StatusBadge>
+            due <span data-volatile="date">{formatDueDate(task.dueAt)}</span>
+          </StatusBadge>
         ) : task.status === "VERIFIED" ? (
           <StatusBadge variant="done">verified</StatusBadge>
         ) : null}

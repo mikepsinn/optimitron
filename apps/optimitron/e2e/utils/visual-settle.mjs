@@ -87,6 +87,7 @@ export async function prepareFullPageVisualCapture(page) {
   await retryAfterNavigation(page, async () => {
     await page.evaluate(async () => {
       document.documentElement.style.scrollBehavior = "auto";
+      document.documentElement.dataset.visualCaptureRequested = "true";
       window.scrollTo(0, 0);
       for (const element of document.querySelectorAll(
         'img[loading="lazy"], iframe[loading="lazy"]',
