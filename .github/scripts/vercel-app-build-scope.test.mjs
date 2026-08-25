@@ -49,6 +49,7 @@ test("keeps Optimitron content inputs without treating docs as app inputs", () =
       "content/legislation/example.md",
       "docs/strategy-note.md",
       "apps/warondisease/app/page.tsx",
+      "packages/site-kit/src/lib/site-config.ts",
     ]),
     ["content/legislation/example.md"],
   );

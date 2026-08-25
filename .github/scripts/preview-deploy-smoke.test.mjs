@@ -11,7 +11,7 @@ const ciWorkflow = readFileSync(
   "utf8",
 );
 
-test("deploy smoke waits for a successful deployment URL instead of skipping early deployment events", () => {
+test("deploy smoke waits for early Vercel events but ignores early GitHub production events", () => {
   const smokeJobHeader = workflow.slice(
     workflow.indexOf("  smoke:"),
     workflow.indexOf("    steps:", workflow.indexOf("  smoke:")),
@@ -21,10 +21,15 @@ test("deploy smoke waits for a successful deployment URL instead of skipping ear
     workflow.indexOf("    steps:", workflow.indexOf("  playwright-preview:")),
   );
 
-  assert.doesNotMatch(
+  assert.match(
     smokeJobHeader,
     /deployment_status\.state == 'success'/u,
-    "the HTTP smoke job should start for early Vercel deployment events and wait",
+    "GitHub-managed production smoke should start only after deployment succeeds",
+  );
+  assert.match(
+    smokeJobHeader,
+    /deployment\.creator\.login == 'vercel\[bot\]' \|\|[\s\S]*?deployment_status\.creator\.login == 'vercel\[bot\]' \|\|[\s\S]*?deployment_status\.state == 'success'/u,
+    "early Vercel events should still start while GitHub production events wait for success",
   );
   assert.doesNotMatch(
     playwrightJobHeader,
