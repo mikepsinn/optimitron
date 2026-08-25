@@ -1,10 +1,16 @@
-import { Upload, Shield, Settings, BarChart3, Package } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { ResearchPartnerStep } from "./ResearchPartnerStep"
+import { Upload, Shield, Settings, BarChart3, Package } from "lucide-react";
+import { Button } from "@optimitron/neobrutalist-ui/ui/button";
+import { Input } from "@optimitron/neobrutalist-ui/ui/input";
+import { Label } from "@optimitron/neobrutalist-ui/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@optimitron/neobrutalist-ui/ui/select";
+import { Badge } from "@optimitron/neobrutalist-ui/ui/badge";
+import { ResearchPartnerStep } from "./ResearchPartnerStep";
 
 export function ResearchPartnerSteps() {
   return (
@@ -29,7 +35,11 @@ export function ResearchPartnerSteps() {
             <div className="p-4 space-y-4">
               <div className="space-y-2">
                 <Label className="text-xs">Trial Name</Label>
-                <Input placeholder="Type 2 Diabetes Treatment Study" className="h-8 text-xs" disabled />
+                <Input
+                  placeholder="Type 2 Diabetes Treatment Study"
+                  className="h-8 text-xs"
+                  disabled
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs">Therapeutic Area</Label>
@@ -74,14 +84,20 @@ export function ResearchPartnerSteps() {
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
             {/* Mini Insurance Page Preview */}
             <div className="p-3 border-b bg-muted/30">
-              <div className="text-sm font-medium">Select Liability Insurance</div>
+              <div className="text-sm font-medium">
+                Select Liability Insurance
+              </div>
             </div>
             <div className="p-4 space-y-4">
               <div className="rounded-lg border p-3 bg-muted/20">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="text-xs font-medium">SafeTrial Liability Insurance</div>
-                    <div className="text-xs text-muted-foreground mt-1">Comprehensive coverage</div>
+                    <div className="text-xs font-medium">
+                      SafeTrial Liability Insurance
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Comprehensive coverage
+                    </div>
                   </div>
                   <Badge className="text-xs">Recommended</Badge>
                 </div>
@@ -97,7 +113,9 @@ export function ResearchPartnerSteps() {
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="text-xs font-medium">MedSecure Plus</div>
-                    <div className="text-xs text-muted-foreground mt-1">Basic coverage</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Basic coverage
+                    </div>
                   </div>
                 </div>
                 <div className="mt-2 text-xs">
@@ -198,11 +216,15 @@ export function ResearchPartnerSteps() {
                 <div className="text-xs font-medium">Inventory Status</div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">In Stock</div>
+                    <div className="text-xs text-muted-foreground">
+                      In Stock
+                    </div>
                     <div className="text-sm font-bold">1,250 units</div>
                   </div>
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">Allocated</div>
+                    <div className="text-xs text-muted-foreground">
+                      Allocated
+                    </div>
                     <div className="text-sm font-bold">840 units</div>
                   </div>
                 </div>
@@ -214,7 +236,9 @@ export function ResearchPartnerSteps() {
                   <div className="rounded-md border p-2 flex justify-between items-center">
                     <div>
                       <div className="text-xs font-medium">#ORD-2845</div>
-                      <div className="text-xs text-muted-foreground">2 units • Processing</div>
+                      <div className="text-xs text-muted-foreground">
+                        2 units • Processing
+                      </div>
                     </div>
                     <Badge variant="outline" className="text-xs">
                       New
@@ -223,7 +247,9 @@ export function ResearchPartnerSteps() {
                   <div className="rounded-md border p-2 flex justify-between items-center">
                     <div>
                       <div className="text-xs font-medium">#ORD-2844</div>
-                      <div className="text-xs text-muted-foreground">1 unit • Shipped</div>
+                      <div className="text-xs text-muted-foreground">
+                        1 unit • Shipped
+                      </div>
                     </div>
                     <div className="text-xs text-green-500">Delivered</div>
                   </div>
@@ -233,7 +259,9 @@ export function ResearchPartnerSteps() {
               <div className="space-y-2">
                 <div className="text-xs font-medium">Supply Chain Map</div>
                 <div className="h-16 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">Interactive map view</div>
+                  <div className="text-xs text-muted-foreground">
+                    Interactive map view
+                  </div>
                 </div>
               </div>
 
@@ -262,13 +290,17 @@ export function ResearchPartnerSteps() {
           <div className="w-full max-w-[320px] rounded-lg border shadow-md overflow-hidden bg-background">
             {/* Mini Analytics Dashboard Preview */}
             <div className="p-3 border-b bg-muted/30">
-              <div className="text-sm font-medium">Trial Analytics Dashboard</div>
+              <div className="text-sm font-medium">
+                Trial Analytics Dashboard
+              </div>
             </div>
             <div className="p-4 space-y-4">
               <div className="space-y-2">
                 <div className="text-xs font-medium">Trial Performance</div>
                 <div className="h-20 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <div className="text-xs text-muted-foreground">Effectiveness graph</div>
+                  <div className="text-xs text-muted-foreground">
+                    Effectiveness graph
+                  </div>
                 </div>
               </div>
 
@@ -276,11 +308,15 @@ export function ResearchPartnerSteps() {
                 <div className="text-xs font-medium">Patient Compliance</div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">Overall Rate</div>
+                    <div className="text-xs text-muted-foreground">
+                      Overall Rate
+                    </div>
                     <div className="text-sm font-bold">92%</div>
                   </div>
                   <div className="rounded-lg border p-2">
-                    <div className="text-xs text-muted-foreground">Submissions</div>
+                    <div className="text-xs text-muted-foreground">
+                      Submissions
+                    </div>
                     <div className="text-sm font-bold">4,265</div>
                   </div>
                 </div>
@@ -290,11 +326,15 @@ export function ResearchPartnerSteps() {
                 <div className="text-xs font-medium">Adverse Events</div>
                 <div className="rounded-lg border p-2">
                   <div className="flex justify-between items-center">
-                    <div className="text-xs text-muted-foreground">Total Reports</div>
+                    <div className="text-xs text-muted-foreground">
+                      Total Reports
+                    </div>
                     <div className="text-xs font-bold">12</div>
                   </div>
                   <div className="mt-1 flex justify-between items-center">
-                    <div className="text-xs text-muted-foreground">Requires Review</div>
+                    <div className="text-xs text-muted-foreground">
+                      Requires Review
+                    </div>
                     <div className="text-xs font-bold text-amber-500">3</div>
                   </div>
                 </div>
@@ -309,5 +349,5 @@ export function ResearchPartnerSteps() {
         reverse={false}
       />
     </div>
-  )
-} 
+  );
+}

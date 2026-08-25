@@ -1,7 +1,12 @@
-'use client'
+"use client";
 import { TrendingUp } from "lucide-react";
 import { HowItWorksStep } from "../HowItWorksStep";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@optimitron/neobrutalist-ui/ui/card";
 
 export function Step3MonitorProgress() {
   return (
@@ -20,7 +25,9 @@ export function Step3MonitorProgress() {
         <div className="bg-background rounded-lg border shadow-lg p-4 w-full max-w-md">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Lecanemab Trial Dashboard</CardTitle>
+              <CardTitle className="text-lg">
+                Lecanemab Trial Dashboard
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
@@ -28,31 +35,47 @@ export function Step3MonitorProgress() {
                 <span className="text-sm font-bold">42 / 100 Patients</span>
               </div>
               <div className="h-3 w-full bg-gray-200 rounded-full">
-                 <div className="h-3 bg-primary rounded-full" style={{ width: "42%" }}></div>
+                <div
+                  className="h-3 bg-primary rounded-full"
+                  style={{ width: "42%" }}
+                ></div>
               </div>
 
               <div className="border-t pt-4">
-                <div className="text-sm font-medium mb-2">Patient Group Performance (ADAS-Cog Avg. Change)</div>
+                <div className="text-sm font-medium mb-2">
+                  Patient Group Performance (ADAS-Cog Avg. Change)
+                </div>
                 <div className="flex justify-around text-center">
                   <div>
                     <div className="text-lg font-bold text-green-600">+28%</div>
-                    <div className="text-xs text-muted-foreground">Lecanemab Arm</div>
+                    <div className="text-xs text-muted-foreground">
+                      Lecanemab Arm
+                    </div>
                   </div>
                   <div>
                     <div className="text-lg font-bold text-orange-600">-5%</div>
-                     <div className="text-xs text-muted-foreground">Placebo Arm</div>
+                    <div className="text-xs text-muted-foreground">
+                      Placebo Arm
+                    </div>
                   </div>
                 </div>
               </div>
 
-               <div className="border-t pt-4">
-                 <div className="text-sm font-medium mb-2">Recent Adverse Events</div>
-                  <div className="text-xs space-y-1">
-                    <p><span className="font-semibold">P12345:</span> Mild ARIA reported</p>
-                    <p><span className="font-semibold">P67890:</span> Headache (resolved)</p>
-                  </div>
-               </div>
-
+              <div className="border-t pt-4">
+                <div className="text-sm font-medium mb-2">
+                  Recent Adverse Events
+                </div>
+                <div className="text-xs space-y-1">
+                  <p>
+                    <span className="font-semibold">P12345:</span> Mild ARIA
+                    reported
+                  </p>
+                  <p>
+                    <span className="font-semibold">P67890:</span> Headache
+                    (resolved)
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -60,4 +83,4 @@ export function Step3MonitorProgress() {
       reverse={false}
     />
   );
-} 
+}

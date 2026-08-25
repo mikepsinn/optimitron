@@ -1,5 +1,5 @@
-import { LineChart } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { LineChart } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step5TrackData() {
   return (
@@ -23,7 +23,11 @@ export function Step5TrackData() {
                 <div className="font-medium">Cognitive Function</div>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="text-sm">Today's score:</div>
-                  <input type="text" className="border rounded px-2 py-1 w-20 text-sm" placeholder="28" />
+                  <input
+                    type="text"
+                    className="border rounded px-2 py-1 w-20 text-sm"
+                    placeholder="28"
+                  />
                   <span className="text-sm text-muted-foreground">/ 30</span>
                 </div>
               </div>
@@ -61,6 +65,5 @@ export function Step5TrackData() {
       }
       reverse={false}
     />
-  )
+  );
 }
-

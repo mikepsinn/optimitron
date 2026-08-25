@@ -1,5 +1,5 @@
-import { Search } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { Search } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step1FindTrials() {
   return (
@@ -22,7 +22,9 @@ export function Step1FindTrials() {
               <span className="font-medium">Alzheimer's</span>
             </div>
 
-            <div className="text-sm font-medium mb-2">Comparative Effectiveness Rankings</div>
+            <div className="text-sm font-medium mb-2">
+              Comparative Effectiveness Rankings
+            </div>
 
             <div className="text-xs text-muted-foreground mb-2 flex items-center justify-center bg-primary/5 py-1.5 rounded-md">
               <span>Click any treatment to view available trials</span>
@@ -44,19 +46,67 @@ export function Step1FindTrials() {
 
             <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
               {[
-                { name: "Lecanemab (Leqembi)", effectiveness: 92, status: "FDA Approved" },
+                {
+                  name: "Lecanemab (Leqembi)",
+                  effectiveness: 92,
+                  status: "FDA Approved",
+                },
                 { name: "Donanemab", effectiveness: 88, status: "Phase 3" },
-                { name: "Aducanumab (Aduhelm)", effectiveness: 76, status: "FDA Approved" },
-                { name: "Experimental Tau Inhibitor", effectiveness: 72, status: "Phase 2" },
-                { name: "Memantine + Donepezil", effectiveness: 68, status: "FDA Approved" },
-                { name: "APOE4 Gene Therapy", effectiveness: 65, status: "Phase 2" },
-                { name: "Neuroinflammation Modulator", effectiveness: 61, status: "Phase 2" },
-                { name: "Donepezil (Aricept)", effectiveness: 58, status: "FDA Approved" },
-                { name: "Memantine (Namenda)", effectiveness: 52, status: "FDA Approved" },
-                { name: "Rivastigmine (Exelon)", effectiveness: 49, status: "FDA Approved" },
-                { name: "Galantamine (Razadyne)", effectiveness: 47, status: "FDA Approved" },
-                { name: "Stem Cell Therapy", effectiveness: 45, status: "Phase 1" },
-                { name: "GLP-1 Receptor Agonist", effectiveness: 42, status: "Phase 2" },
+                {
+                  name: "Aducanumab (Aduhelm)",
+                  effectiveness: 76,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "Experimental Tau Inhibitor",
+                  effectiveness: 72,
+                  status: "Phase 2",
+                },
+                {
+                  name: "Memantine + Donepezil",
+                  effectiveness: 68,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "APOE4 Gene Therapy",
+                  effectiveness: 65,
+                  status: "Phase 2",
+                },
+                {
+                  name: "Neuroinflammation Modulator",
+                  effectiveness: 61,
+                  status: "Phase 2",
+                },
+                {
+                  name: "Donepezil (Aricept)",
+                  effectiveness: 58,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "Memantine (Namenda)",
+                  effectiveness: 52,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "Rivastigmine (Exelon)",
+                  effectiveness: 49,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "Galantamine (Razadyne)",
+                  effectiveness: 47,
+                  status: "FDA Approved",
+                },
+                {
+                  name: "Stem Cell Therapy",
+                  effectiveness: 45,
+                  status: "Phase 1",
+                },
+                {
+                  name: "GLP-1 Receptor Agonist",
+                  effectiveness: 42,
+                  status: "Phase 2",
+                },
               ].map((treatment, i) => (
                 <div
                   key={i}
@@ -76,7 +126,9 @@ export function Step1FindTrials() {
                         style={{ width: `${treatment.effectiveness}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs font-medium">{treatment.effectiveness}%</span>
+                    <span className="text-xs font-medium">
+                      {treatment.effectiveness}%
+                    </span>
                   </div>
                 </div>
               ))}
@@ -86,6 +138,5 @@ export function Step1FindTrials() {
       }
       reverse={false}
     />
-  )
+  );
 }
-

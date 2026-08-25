@@ -1,5 +1,5 @@
-import { Bot, Phone, MessageSquare, Brain } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { Bot, Phone, MessageSquare, Brain } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step7FDAiAgent() {
   return (
@@ -23,7 +23,9 @@ export function Step7FDAiAgent() {
             </div>
             <div>
               <h4 className="font-medium">FDAi Agent</h4>
-              <p className="text-sm text-muted-foreground">Your personal health assistant</p>
+              <p className="text-sm text-muted-foreground">
+                Your personal health assistant
+              </p>
             </div>
           </div>
 
@@ -34,14 +36,18 @@ export function Step7FDAiAgent() {
               </div>
               <div className="bg-muted p-3 rounded-lg rounded-tl-none">
                 <p className="text-sm">
-                  Good morning, Sarah! How are you feeling today after your treatment yesterday?
+                  Good morning, Sarah! How are you feeling today after your
+                  treatment yesterday?
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 items-start justify-end">
               <div className="bg-primary/10 p-3 rounded-lg rounded-tr-none">
-                <p className="text-sm">I'm feeling better today. The headache is gone but I still feel a bit tired.</p>
+                <p className="text-sm">
+                  I'm feeling better today. The headache is gone but I still
+                  feel a bit tired.
+                </p>
               </div>
               <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 mt-1">
                 <MessageSquare className="h-4 w-4 text-secondary-foreground" />
@@ -54,8 +60,9 @@ export function Step7FDAiAgent() {
               </div>
               <div className="bg-muted p-3 rounded-lg rounded-tl-none">
                 <p className="text-sm">
-                  That's good progress! Your fatigue has decreased by 40% since last week. Would you like to see how
-                  your symptoms compare to others in your trial?
+                  That's good progress! Your fatigue has decreased by 40% since
+                  last week. Would you like to see how your symptoms compare to
+                  others in your trial?
                 </p>
               </div>
             </div>
@@ -70,13 +77,13 @@ export function Step7FDAiAgent() {
             </div>
 
             <div className="mt-2 text-xs text-center text-muted-foreground">
-              Daily check-ins help track your progress and provide personalized insights
+              Daily check-ins help track your progress and provide personalized
+              insights
             </div>
           </div>
         </div>
       }
       reverse={true}
     />
-  )
+  );
 }
-

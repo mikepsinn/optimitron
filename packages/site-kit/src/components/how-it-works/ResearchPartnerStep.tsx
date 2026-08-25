@@ -1,23 +1,33 @@
-import type { ReactNode } from "react"
-import { ArrowRight } from "lucide-react"
+import type { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
 
 interface ResearchPartnerStepProps {
-  stepNumber: number
-  title: string
-  icon: ReactNode
-  description: string
-  benefits: string[]
-  preview: ReactNode
-  reverse: boolean
+  stepNumber: number;
+  title: string;
+  icon: ReactNode;
+  description: string;
+  benefits: string[];
+  preview: ReactNode;
+  reverse: boolean;
 }
 
-export function ResearchPartnerStep({ stepNumber, title, icon, description, benefits, preview, reverse }: ResearchPartnerStepProps) {
+export function ResearchPartnerStep({
+  stepNumber,
+  title,
+  icon,
+  description,
+  benefits,
+  preview,
+  reverse,
+}: ResearchPartnerStepProps) {
   return (
     <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-center">
       <div className={`order-1 ${reverse ? "md:order-2" : "md:order-1"}`}>
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-4 mb-4">
-            <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">{icon}</div>
+            <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
+              {icon}
+            </div>
             <h4 className="text-xl font-semibold">{title}</h4>
           </div>
           <p className="text-muted-foreground mb-4">{description}</p>
@@ -31,7 +41,9 @@ export function ResearchPartnerStep({ stepNumber, title, icon, description, bene
           </ul>
         </div>
       </div>
-      <div className={`order-2 ${reverse ? "md:order-1" : "md:order-2"} flex justify-center`}>
+      <div
+        className={`order-2 ${reverse ? "md:order-1" : "md:order-2"} flex justify-center`}
+      >
         <div className="relative">
           <div
             className={`absolute ${reverse ? "-right-4" : "-left-4"} top-1/2 -translate-y-1/2 rounded-full bg-primary text-primary-foreground w-8 h-8 flex items-center justify-center font-bold text-sm z-10 hidden md:flex`}
@@ -42,5 +54,5 @@ export function ResearchPartnerStep({ stepNumber, title, icon, description, bene
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

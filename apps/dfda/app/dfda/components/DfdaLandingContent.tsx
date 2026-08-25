@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Link from "next/link"
-import { VoteOrShareButton } from "@/components/shared/VoteOrShareButton"
-import { IconCard, ChecklistCard } from "@/components/ui/icon-card"
-import { NumberedStepList } from "@/components/ui/numbered-step-card"
-import { CTASection } from "@/components/ui/cta-section"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import { VoteOrShareButton } from "@/components/shared/VoteOrShareButton";
+import { IconCard, ChecklistCard } from "@/components/ui/icon-card";
+import { NumberedStepList } from "@/components/ui/numbered-step-card";
+import { CTASection } from "@/components/ui/cta-section";
 import {
   CheckCircle2,
   XCircle,
@@ -15,15 +15,13 @@ import {
   Globe,
   Shield,
   TrendingDown,
-} from "lucide-react"
-import { PatientHowItWorks } from "@/components/how-it-works/PatientHowItWorks"
-import { ProviderHowItWorks } from "@/components/how-it-works/ProviderHowItWorks"
-import { ResearchPartnerHowItWorks } from "@/components/how-it-works/ResearchPartnerHowItWorks"
-import { UniversalSearchBox } from "./UniversalSearchBox"
-import { FeaturedConditions } from "./FeaturedConditions"
-import { FeaturedTreatments } from "./FeaturedTreatments"
-import { ExternalLinksSection } from "./ExternalLinksSection"
-import { ROUTES } from '@/lib/routes'
+} from "lucide-react";
+import { DfdaUserWorkflows } from "@optimitron/site-kit/components/how-it-works/DfdaUserWorkflows";
+import { UniversalSearchBox } from "./UniversalSearchBox";
+import { FeaturedConditions } from "./FeaturedConditions";
+import { FeaturedTreatments } from "./FeaturedTreatments";
+import { ExternalLinksSection } from "./ExternalLinksSection";
+import { ROUTES } from "@/lib/routes";
 import {
   PHARMA_DRUG_DEVELOPMENT_COST_CURRENT,
   DRUG_DISCOVERY_TO_APPROVAL_YEARS,
@@ -32,17 +30,24 @@ import {
   RECOVERY_TRIAL_TOTAL_COST,
   OXFORD_RECOVERY_TRIAL_DURATION_MONTHS,
   ADAPTABLE_TRIAL_PATIENTS,
-} from "@/lib/parameters-calculations-citations"
-import { formatParameter, getParameterValue } from "@/lib/format-parameter"
+} from "@/lib/parameters-calculations-citations";
+import { formatParameter, getParameterValue } from "@/lib/format-parameter";
 
 // Derived values from parameters using formatParameter utility
-const drugDevCostB = formatParameter(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT)
-const traditionalTimelineYears = formatParameter(DRUG_DISCOVERY_TO_APPROVAL_YEARS)
-const exclusionRatePct = formatParameter(ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE)
-const costReductionFactor = formatParameter(RECOVERY_TRIAL_COST_REDUCTION_FACTOR)
-const pragmaticTrialCostM = formatParameter(RECOVERY_TRIAL_TOTAL_COST)
-const pragmaticTrialMonths = getParameterValue(OXFORD_RECOVERY_TRIAL_DURATION_MONTHS, "round")
-const adaptableTrialPatients = formatParameter(ADAPTABLE_TRIAL_PATIENTS)
+const drugDevCostB = formatParameter(PHARMA_DRUG_DEVELOPMENT_COST_CURRENT);
+const traditionalTimelineYears = formatParameter(
+  DRUG_DISCOVERY_TO_APPROVAL_YEARS,
+);
+const exclusionRatePct = formatParameter(ANTIDEPRESSANT_TRIAL_EXCLUSION_RATE);
+const costReductionFactor = formatParameter(
+  RECOVERY_TRIAL_COST_REDUCTION_FACTOR,
+);
+const pragmaticTrialCostM = formatParameter(RECOVERY_TRIAL_TOTAL_COST);
+const pragmaticTrialMonths = getParameterValue(
+  OXFORD_RECOVERY_TRIAL_DURATION_MONTHS,
+  "round",
+);
+const adaptableTrialPatients = formatParameter(ADAPTABLE_TRIAL_PATIENTS);
 
 export function DfdaLandingContent() {
   return (
@@ -51,9 +56,14 @@ export function DfdaLandingContent() {
       <section className="bg-brutal-cyan py-20 border-b-4 border-primary">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-black text-5xl md:text-7xl mb-6 text-balance">LET'S CREATE THE FDA OF THE FUTURE</h1>
+            <h1 className="font-black text-5xl md:text-7xl mb-6 text-balance">
+              LET'S CREATE THE FDA OF THE FUTURE
+            </h1>
             <p className="text-xl md:text-2xl font-bold mb-8 text-balance">
-              A decentralized framework that makes clinical trials {costReductionFactor}x cheaper, {(DRUG_DISCOVERY_TO_APPROVAL_YEARS.value / 2).toFixed(1)} years faster, and saves millions of lives
+              A decentralized framework that makes clinical trials{" "}
+              {costReductionFactor}x cheaper,{" "}
+              {(DRUG_DISCOVERY_TO_APPROVAL_YEARS.value / 2).toFixed(1)} years
+              faster, and saves millions of lives
             </p>
 
             {/* Universal Search Box */}
@@ -109,7 +119,9 @@ export function DfdaLandingContent() {
       <section className="py-20 bg-brutal-yellow border-b-4 border-primary">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">TRADITIONAL VS PRAGMATIC TRIALS</h2>
+            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">
+              TRADITIONAL VS PRAGMATIC TRIALS
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Traditional Trials */}
@@ -122,27 +134,40 @@ export function DfdaLandingContent() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Specialized research centers only</p>
+                    <p className="font-bold">
+                      Specialized research centers only
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Strict eligibility criteria (excludes {exclusionRatePct}%+ of patients)</p>
+                    <p className="font-bold">
+                      Strict eligibility criteria (excludes {exclusionRatePct}%+
+                      of patients)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Frequent in-person visits required</p>
+                    <p className="font-bold">
+                      Frequent in-person visits required
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Manual data collection and entry</p>
+                    <p className="font-bold">
+                      Manual data collection and entry
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Extensive monitoring and documentation</p>
+                    <p className="font-bold">
+                      Extensive monitoring and documentation
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Artificial conditions (not real-world)</p>
+                    <p className="font-bold">
+                      Artificial conditions (not real-world)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
@@ -150,7 +175,9 @@ export function DfdaLandingContent() {
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Timeline: {traditionalTimelineYears} years</p>
+                    <p className="font-bold">
+                      Timeline: {traditionalTimelineYears} years
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -165,35 +192,52 @@ export function DfdaLandingContent() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Conducted in regular clinics and hospitals</p>
+                    <p className="font-bold">
+                      Conducted in regular clinics and hospitals
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Broad eligibility (includes real-world patients)</p>
+                    <p className="font-bold">
+                      Broad eligibility (includes real-world patients)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Minimal additional visits (part of routine care)</p>
+                    <p className="font-bold">
+                      Minimal additional visits (part of routine care)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Automated data from electronic health records</p>
+                    <p className="font-bold">
+                      Automated data from electronic health records
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Streamlined monitoring (focus on safety)</p>
+                    <p className="font-bold">
+                      Streamlined monitoring (focus on safety)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Real-world conditions (actual practice)</p>
+                    <p className="font-bold">
+                      Real-world conditions (actual practice)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Cost: {pragmaticTrialCostM} per drug ({costReductionFactor}x cheaper)</p>
+                    <p className="font-bold">
+                      Cost: {pragmaticTrialCostM} per drug (
+                      {costReductionFactor}x cheaper)
+                    </p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                    <p className="font-bold">Timeline: ~{pragmaticTrialMonths} months</p>
+                    <p className="font-bold">
+                      Timeline: ~{pragmaticTrialMonths} months
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -206,33 +250,40 @@ export function DfdaLandingContent() {
       <section className="py-20 border-b-4 border-primary">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">HOW PRAGMATIC TRIALS WORK</h2>
+            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">
+              HOW PRAGMATIC TRIALS WORK
+            </h2>
 
             <NumberedStepList
               steps={[
                 {
                   title: "INTEGRATE WITH ROUTINE CARE",
-                  description: "Instead of creating artificial research environments, pragmatic trials happen during normal doctor visits. Patients receive care as usual, with minimal disruption.",
+                  description:
+                    "Instead of creating artificial research environments, pragmatic trials happen during normal doctor visits. Patients receive care as usual, with minimal disruption.",
                   color: "cyan",
                 },
                 {
                   title: "USE EXISTING DATA SYSTEMS",
-                  description: "Electronic health records (EHRs) automatically capture data. No need for expensive manual data entry or separate research databases. This alone saves billions.",
+                  description:
+                    "Electronic health records (EHRs) automatically capture data. No need for expensive manual data entry or separate research databases. This alone saves billions.",
                   color: "pink",
                 },
                 {
                   title: "INCLUDE REAL-WORLD PATIENTS",
-                  description: "No strict exclusion criteria. If you have the condition, you can participate. This makes trials faster to recruit, more representative, and more ethical.",
+                  description:
+                    "No strict exclusion criteria. If you have the condition, you can participate. This makes trials faster to recruit, more representative, and more ethical.",
                   color: "yellow",
                 },
                 {
                   title: "FOCUS ON OUTCOMES THAT MATTER",
-                  description: "Instead of measuring biomarkers in a lab, pragmatic trials measure what patients care about: survival, quality of life, symptom relief, hospital admissions.",
+                  description:
+                    "Instead of measuring biomarkers in a lab, pragmatic trials measure what patients care about: survival, quality of life, symptom relief, hospital admissions.",
                   color: "green",
                 },
                 {
                   title: "STREAMLINE REGULATION",
-                  description: "Still FDA-approved and safe, but with less bureaucratic overhead. Focus on safety monitoring, not paperwork. Regulators are already embracing this approach.",
+                  description:
+                    "Still FDA-approved and safe, but with less bureaucratic overhead. Focus on safety monitoring, not paperwork. Regulators are already embracing this approach.",
                   color: "purple",
                 },
               ]}
@@ -245,11 +296,14 @@ export function DfdaLandingContent() {
       <section className="py-20 bg-brutal-purple border-b-4 border-primary">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">DECENTRALIZED CLINICAL TRIALS</h2>
+            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">
+              DECENTRALIZED CLINICAL TRIALS
+            </h2>
 
             <Card className="p-8 bg-background border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8">
               <p className="text-xl font-bold text-center mb-8">
-                Take it one step further: bring trials directly to patients, wherever they are.
+                Take it one step further: bring trials directly to patients,
+                wherever they are.
               </p>
 
               <div className="grid md:grid-cols-3 gap-6">
@@ -278,11 +332,14 @@ export function DfdaLandingContent() {
             </Card>
 
             <Card className="p-8 bg-brutal-cyan border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <h3 className="font-black text-2xl mb-4">REAL EXAMPLE: COVID-19 VACCINE TRIALS</h3>
+              <h3 className="font-black text-2xl mb-4">
+                REAL EXAMPLE: COVID-19 VACCINE TRIALS
+              </h3>
               <p className="text-lg font-bold">
-                The COVID-19 vaccine trials used pragmatic and decentralized approaches to enroll 40,000+ participants
-                in months instead of years. They proved these methods work at scale while maintaining safety and
-                scientific rigor.
+                The COVID-19 vaccine trials used pragmatic and decentralized
+                approaches to enroll 40,000+ participants in months instead of
+                years. They proved these methods work at scale while maintaining
+                safety and scientific rigor.
               </p>
             </Card>
           </div>
@@ -295,8 +352,12 @@ export function DfdaLandingContent() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <Shield className="w-20 h-20 mx-auto mb-6" />
-              <h2 className="font-black text-4xl md:text-5xl mb-6">BUT IS IT SAFE?</h2>
-              <p className="text-2xl font-bold">YES. PRAGMATIC TRIALS ARE JUST AS SAFE AS TRADITIONAL TRIALS.</p>
+              <h2 className="font-black text-4xl md:text-5xl mb-6">
+                BUT IS IT SAFE?
+              </h2>
+              <p className="text-2xl font-bold">
+                YES. PRAGMATIC TRIALS ARE JUST AS SAFE AS TRADITIONAL TRIALS.
+              </p>
             </div>
 
             <div className="space-y-6">
@@ -329,25 +390,34 @@ export function DfdaLandingContent() {
       <section className="py-20 border-b-4 border-primary">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">IT'S ALREADY WORKING</h2>
+            <h2 className="font-black text-4xl md:text-5xl mb-12 text-center">
+              IT'S ALREADY WORKING
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-8">
               <Card className="p-8 bg-brutal-cyan border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <h3 className="font-black text-2xl mb-4">ASPIRIN FOR HEART ATTACKS</h3>
+                <h3 className="font-black text-2xl mb-4">
+                  ASPIRIN FOR HEART ATTACKS
+                </h3>
                 <p className="font-bold mb-4">
-                  A pragmatic trial in the 1980s discovered that aspirin reduces heart attack deaths by 23%. Cost:
-                  $50,000. Lives saved: millions.
+                  A pragmatic trial in the 1980s discovered that aspirin reduces
+                  heart attack deaths by 23%. Cost: $50,000. Lives saved:
+                  millions.
                 </p>
                 <p className="font-bold text-brutal-green">
-                  Traditional trial would have cost $50+ million and taken years longer.
+                  Traditional trial would have cost $50+ million and taken years
+                  longer.
                 </p>
               </Card>
 
               <Card className="p-8 bg-brutal-green border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <h3 className="font-black text-2xl mb-4">RECOVERY TRIAL (COVID-19)</h3>
+                <h3 className="font-black text-2xl mb-4">
+                  RECOVERY TRIAL (COVID-19)
+                </h3>
                 <p className="font-bold mb-4">
-                  Pragmatic trial identified dexamethasone as a COVID treatment in just 3 months. Enrolled 11,000+
-                  patients across 176 hospitals.
+                  Pragmatic trial identified dexamethasone as a COVID treatment
+                  in just 3 months. Enrolled 11,000+ patients across 176
+                  hospitals.
                 </p>
                 <p className="font-bold text-brutal-green">
                   Saved an estimated 1 million lives in the first year alone.
@@ -357,22 +427,25 @@ export function DfdaLandingContent() {
               <Card className="p-8 bg-brutal-pink border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <h3 className="font-black text-2xl mb-4">SALFORD LUNG STUDY</h3>
                 <p className="font-bold mb-4">
-                  Pragmatic trial tested asthma medication in real-world GP practices. Enrolled 4,000+ patients in
-                  routine care settings.
+                  Pragmatic trial tested asthma medication in real-world GP
+                  practices. Enrolled 4,000+ patients in routine care settings.
                 </p>
                 <p className="font-bold text-brutal-green">
-                  Cost 70% less than traditional trial, results more applicable to actual patients.
+                  Cost 70% less than traditional trial, results more applicable
+                  to actual patients.
                 </p>
               </Card>
 
               <Card className="p-8 bg-brutal-yellow border-4 border-primary shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <h3 className="font-black text-2xl mb-4">ADAPTABLE TRIAL</h3>
                 <p className="font-bold mb-4">
-                  NIH-funded pragmatic trial testing aspirin for heart disease prevention. Using EHR data from {adaptableTrialPatients}+
+                  NIH-funded pragmatic trial testing aspirin for heart disease
+                  prevention. Using EHR data from {adaptableTrialPatients}+
                   patients across 40 sites.
                 </p>
                 <p className="font-bold text-brutal-green">
-                  Demonstrates that pragmatic trials work at scale in the U.S. healthcare system.
+                  Demonstrates that pragmatic trials work at scale in the U.S.
+                  healthcare system.
                 </p>
               </Card>
             </div>
@@ -391,24 +464,14 @@ export function DfdaLandingContent() {
               A Decentralized Framework for Drug Assessment
             </h2>
             <p className="text-xl font-bold text-center mb-16 text-balance">
-               See what the platonic ideal of healthcare and clinical trials
-               will look like when dFDA frameworks are widely adopted.
+              See what the platonic ideal of healthcare and clinical trials will
+              look like when dFDA frameworks are widely adopted.
             </p>
 
-            {/* Patient Workflow */}
-            <div className="mb-20">
-              <PatientHowItWorks />
-            </div>
-
-            {/* Provider Workflow */}
-            <div className="mb-20">
-              <ProviderHowItWorks />
-            </div>
-
-            {/* Research Partner Workflow */}
-            <div>
-              <ResearchPartnerHowItWorks />
-            </div>
+            <DfdaUserWorkflows
+              findTrialsHref={ROUTES.findTrials}
+              createTrialHref={ROUTES.contact}
+            />
           </div>
         </div>
       </section>
@@ -424,11 +487,7 @@ export function DfdaLandingContent() {
         className="border-t-0"
       >
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <VoteOrShareButton
-            variant="cta"
-            size="xl"
-            className="px-8 py-6"
-          />
+          <VoteOrShareButton variant="cta" size="xl" className="px-8 py-6" />
           <Link href={ROUTES.research}>
             <Button
               size="lg"
@@ -441,5 +500,5 @@ export function DfdaLandingContent() {
         </div>
       </CTASection>
     </div>
-  )
+  );
 }

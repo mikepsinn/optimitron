@@ -1,5 +1,5 @@
-import { ClipboardCheck } from "lucide-react"
-import { HowItWorksStep } from "../HowItWorksStep"
+import { ClipboardCheck } from "lucide-react";
+import { HowItWorksStep } from "../HowItWorksStep";
 
 export function Step3JoinTrial() {
   return (
@@ -20,7 +20,8 @@ export function Step3JoinTrial() {
             <div className="font-bold">Informed Consent</div>
             <div className="space-y-3">
               <div className="text-sm">
-                I understand that I am enrolling in a clinical trial for a new Alzheimer's disease treatment.
+                I understand that I am enrolling in a clinical trial for a new
+                Alzheimer's disease treatment.
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
@@ -38,7 +39,9 @@ export function Step3JoinTrial() {
                 <div className="h-4 w-4 rounded border flex items-center justify-center">
                   <div className="h-2 w-2 bg-primary rounded-sm"></div>
                 </div>
-                <div className="text-sm">I agree to share my anonymized data</div>
+                <div className="text-sm">
+                  I agree to share my anonymized data
+                </div>
               </div>
               <div className="mt-4">
                 <div className="bg-primary text-primary-foreground rounded px-3 py-2 text-sm text-center">
@@ -51,6 +54,5 @@ export function Step3JoinTrial() {
       }
       reverse={false}
     />
-  )
+  );
 }
-

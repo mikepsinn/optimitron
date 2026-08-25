@@ -50,12 +50,35 @@ const screenshotRoot = screenshotRootInput
   : undefined;
 const campaignPlanPageFile =
   "packages/site-kit/src/components/campaign-plan-page.tsx";
+const dfdaHowItWorksFiles = [
+  "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
+  "packages/site-kit/src/components/how-it-works/HowItWorksStep.tsx",
+  "packages/site-kit/src/components/how-it-works/OutcomeLabelPreview.tsx",
+  "packages/site-kit/src/components/how-it-works/PatientHowItWorks.tsx",
+  "packages/site-kit/src/components/how-it-works/PatientSteps.tsx",
+  "packages/site-kit/src/components/how-it-works/ProviderHowItWorks.tsx",
+  "packages/site-kit/src/components/how-it-works/ProviderSteps.tsx",
+  "packages/site-kit/src/components/how-it-works/ResearchPartnerHowItWorks.tsx",
+  "packages/site-kit/src/components/how-it-works/ResearchPartnerStep.tsx",
+  "packages/site-kit/src/components/how-it-works/ResearchPartnerSteps.tsx",
+  "packages/site-kit/src/components/how-it-works/provider-steps/Step1ReviewPatientMatches.tsx",
+  "packages/site-kit/src/components/how-it-works/provider-steps/Step2AssignIntervention.tsx",
+  "packages/site-kit/src/components/how-it-works/provider-steps/Step3MonitorProgress.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step1FindTrials.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step2ViewOutcomeLabels.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step3JoinTrial.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step4CoordinateCare.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step5TrackData.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step6GainInsights.tsx",
+  "packages/site-kit/src/components/how-it-works/steps/Step7FDAiAgent.tsx",
+];
 const campaignHomeSharedFiles = [
   "packages/site-kit/src/components/campaign-home-page.tsx",
   "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
   "packages/site-kit/src/components/landing/final-cta.tsx",
   "packages/site-kit/src/components/landing/societal-benefits-concise.tsx",
   "packages/site-kit/src/lib/site-config.ts",
+  ...dfdaHowItWorksFiles,
 ];
 
 function getCampaignHomeFiles(appName) {
@@ -69,6 +92,7 @@ function getCampaignHomeFiles(appName) {
       "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
       "packages/site-kit/src/components/landing/death-clock.tsx",
       "packages/site-kit/src/lib/site-config.ts",
+      ...dfdaHowItWorksFiles,
     ];
   }
 
@@ -209,6 +233,16 @@ function getScreenshotRoutes(appName, siteVariant) {
         routePath: "/the-plan",
         covers: [campaignPlanPageFile],
       });
+    }
+  }
+
+  if (siteVariant === VARIANTS.DFDA) {
+    const landingRoute = routes.find(({ routePath }) => routePath === "/");
+    if (landingRoute) {
+      landingRoute.covers = [
+        "apps/dfda/app/dfda/components/DfdaLandingContent.tsx",
+        ...dfdaHowItWorksFiles,
+      ];
     }
   }
 
