@@ -213,7 +213,6 @@ const TASK_TREE_VIEW_FILE =
   "apps/optimitron/src/components/tasks/TaskTreeView.tsx";
 const TASK_LIST_CONTROLS_FILE =
   "apps/optimitron/src/components/tasks/task-list-controls.tsx";
-const TASK_ROW_FILE = "apps/optimitron/src/components/tasks/task-row.tsx";
 const TASK_IMPACT_TRACE_DISCLOSURE_FILE =
   "apps/optimitron/src/components/tasks/task-impact-trace-disclosure.tsx";
 const OBG_CATEGORY_PAGE_FILE = "apps/optimitron/src/app/obg/[slug]/page.tsx";
@@ -349,7 +348,6 @@ const VISUAL_COVERS_BY_PATH = new Map<string, string[]>([
   [ROUTES.profile, ["apps/optimitron/src/components/Providers.tsx"]],
   [ROUTES.scoreboard, [POLITICIAN_SCORECARD_TABLE_FILE]],
   [ROUTES.services, ["apps/optimitron/src/app/services/page.tsx"]],
-  [ROUTES.tasks, [TASK_ROW_FILE]],
   [
     ROUTES.tasksTree,
     [
@@ -378,7 +376,6 @@ const REQUIRED_SELECTOR_BY_PATH = new Map<string, string>([
   [ROUTES.profile, '[data-visual-auth-state="authenticated"]'],
   [ROUTES.scoreboard, 'input[placeholder="Search name or state..."]'],
   [ROUTES.services, "h1"],
-  [ROUTES.tasks, "[data-visual-task-row]"],
   [ROUTES.tasksTree, "#task-tree"],
 ]);
 
@@ -512,7 +509,7 @@ const SEEDED_DYNAMIC_ROUTES: VisualRouteSpec[] = [
   },
   {
     name: "content-search",
-    path: "/search?q=%22Review%20the%20demo%20health%20proposal%22",
+    path: "/search?q=demo%20health",
     required: true,
     authenticated: true,
     requiredText: /^Review the demo health proposal$/,

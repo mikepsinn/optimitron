@@ -296,7 +296,7 @@ test.describe("route visual regression", () => {
 
       if (route.requiredSelector) {
         // Regression guard for route-specific content that must be visible.
-        await expect(page.locator(route.requiredSelector).first()).toBeVisible();
+        await expect(page.locator(route.requiredSelector)).toBeVisible();
       }
 
       if (route.requiredText) {

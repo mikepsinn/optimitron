@@ -774,7 +774,6 @@ export function TaskRow({
 
   return (
     <div
-      data-visual-task-row
       className={`relative flex items-center gap-3 border-l-4 px-4 py-3 transition-colors hover:bg-muted/50 ${getLeftBorderColor(task)}`}
     >
       {/* Overlay link — fills the row so clicking empty space opens the task. */}
@@ -838,9 +837,7 @@ export function TaskRow({
                 : "overdue"}
             </StatusBadge>
           ) : task.dueAt ? (
-            <StatusBadge>
-              due <span data-volatile="date">{formatDueDate(task.dueAt)}</span>
-            </StatusBadge>
+            <StatusBadge>{`due ${formatDueDate(task.dueAt)}`}</StatusBadge>
           ) : task.status === "VERIFIED" ? (
             <StatusBadge variant="done">verified</StatusBadge>
           ) : null}
@@ -874,9 +871,7 @@ export function TaskRow({
               : "overdue"}
           </StatusBadge>
         ) : task.dueAt ? (
-          <StatusBadge>
-            due <span data-volatile="date">{formatDueDate(task.dueAt)}</span>
-          </StatusBadge>
+          <StatusBadge>{`due ${formatDueDate(task.dueAt)}`}</StatusBadge>
         ) : task.status === "VERIFIED" ? (
           <StatusBadge variant="done">verified</StatusBadge>
         ) : null}
