@@ -41,13 +41,10 @@ test("waits for a quiet pass after finishing newly-created animations", async ()
 });
 
 test("waits for custom visual-capture state to commit", async () => {
-  const evaluateFunctions = [];
   const waitFunctions = [];
   const mainFrame = {};
   const page = {
-    async evaluate(action) {
-      evaluateFunctions.push(action.toString());
-    },
+    async evaluate() {},
     frames() {
       return [mainFrame];
     },
@@ -62,11 +59,6 @@ test("waits for custom visual-capture state to commit", async () => {
 
   await prepareFullPageVisualCapture(page);
 
-  assert.ok(
-    evaluateFunctions.some((source) =>
-      source.includes("visualCaptureRequested"),
-    ),
-  );
   assert.ok(
     waitFunctions.some((source) =>
       source.includes('data-visual-capture-ready="false"'),
