@@ -1,11 +1,19 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-
-import { sendSignupConfirmationEmail } from "../../../../packages/site-kit/src/lib/email";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 const sentMessages: unknown[] = [];
 const resendEndpoint = "https://api.resend.com/emails";
+let previousSiteVariant: string | undefined;
+let sendSignupConfirmationEmail: typeof import("../../../../packages/site-kit/src/lib/email").sendSignupConfirmationEmail;
 
 const server = setupServer(
   http.post(resendEndpoint, async ({ request }) => {
@@ -15,7 +23,13 @@ const server = setupServer(
 );
 
 describe("survey verification email", () => {
-  beforeAll(() => {
+  beforeAll(async () => {
+    previousSiteVariant = process.env.NEXT_PUBLIC_SITE_VARIANT;
+    process.env.NEXT_PUBLIC_SITE_VARIANT = "trialabundancesurvey.org";
+    vi.resetModules();
+    ({ sendSignupConfirmationEmail } = await import(
+      "../../../../packages/site-kit/src/lib/email"
+    ));
     server.listen({ onUnhandledRequest: "error" });
   });
 
@@ -26,6 +40,11 @@ describe("survey verification email", () => {
 
   afterAll(() => {
     server.close();
+    if (previousSiteVariant === undefined) {
+      delete process.env.NEXT_PUBLIC_SITE_VARIANT;
+    } else {
+      process.env.NEXT_PUBLIC_SITE_VARIANT = previousSiteVariant;
+    }
   });
 
   it("delivers the branded survey confirmation through the Resend boundary", async () => {
