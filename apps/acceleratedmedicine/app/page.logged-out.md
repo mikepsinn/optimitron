@@ -14,8 +14,8 @@
 ## Visible Page Copy
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
-## 95% OF DISEASES HAVE
-## ZERO
+## 6.65K DISEASES HAVE
+## ZERO EFFECTIVE
 ## TREATMENTS.
 - Patients are ready to try. The evidence system cannot include nearly enough of them.
 - [SHOW ME THE BENEFITS](#benefits)
@@ -70,6 +70,7 @@
 ### REASON 2.
 #### Patients who try treatments cannot turn their care into shared evidence
 - There are about 7K rare diseases. Roughly 6.65K still lack an effective treatment.
+- Right-to-try access can help the person choosing now. Standardized, pooled outcomes can make that choice useful to the next patient.
 ##### GET AN OPTION
 - When approved treatments have failed, informed adults can still make a choice with their clinician.
 ##### TRACK EVERY RESULT

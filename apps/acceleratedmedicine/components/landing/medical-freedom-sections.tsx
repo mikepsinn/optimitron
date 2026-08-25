@@ -94,13 +94,18 @@ export function MedicalFreedomHero() {
             variants={wordVariants}
             className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
           >
-            95% of diseases have
+            <EvidenceNumber
+              param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
+              precision={2}
+              className="text-inherit"
+            />{" "}
+            diseases have
           </motion.h1>
           <motion.h1
             variants={wordVariants}
             className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
           >
-            zero
+            zero effective
           </motion.h1>
           <motion.h1
             variants={{
@@ -286,6 +291,10 @@ export function MedicalFreedomAccessSection() {
               precision={2}
             />{" "}
             still lack an effective treatment.
+          </p>
+          <p className="max-w-3xl text-lg font-bold sm:text-xl">
+            Right-to-try access can help the person choosing now. Standardized,
+            pooled outcomes can make that choice useful to the next patient.
           </p>
         </div>
 
