@@ -32,7 +32,7 @@ export default function HomePage() {
       <PragmaticTrialEvidenceSection />
       <BottleneckProofSection scenario="medical-freedom" />
       <ModeledBenefitsSection />
-      <DecentralizedFDASection />
+      <DecentralizedFDASection showDisclaimer={false} />
       <PatientImpactSection />
       <EducationCallToAction />
       <DeathClock message="while safe treatments remain untested and willing patients remain excluded" />

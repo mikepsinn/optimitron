@@ -281,10 +281,7 @@ export function MedicalFreedomAccessSection() {
           </h3>
           <p className="max-w-3xl text-lg font-bold sm:text-xl">
             There are about{" "}
-            <EvidenceNumber
-              param={RARE_DISEASES_COUNT_GLOBAL}
-              precision={0}
-            />{" "}
+            <EvidenceNumber param={RARE_DISEASES_COUNT_GLOBAL} precision={0} />{" "}
             rare diseases. Roughly{" "}
             <EvidenceNumber
               param={DISEASES_WITHOUT_EFFECTIVE_TREATMENT}
@@ -351,11 +348,9 @@ export function PragmaticTrialEvidenceSection() {
               <EvidenceNumber param={DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT} />
             </div>
             <div className="text-lg font-black uppercase">
-              Conservative estimate
+              Pragmatic-trial cost
             </div>
-            <p className="font-bold">
-              The central estimate used in the pragmatic-trial model.
-            </p>
+            <p className="font-bold">Reference cost per participant.</p>
           </Card>
 
           <Card className="gap-3 rounded-none border-4 border-primary bg-primary p-6 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -386,7 +381,7 @@ export function PragmaticTrialEvidenceSection() {
                 precision={1}
               />
             </div>
-            <div className="font-black uppercase">Conservative model</div>
+            <div className="font-black uppercase">Reference cost ratio</div>
           </div>
           <div>
             <div className="text-4xl font-black text-brutal-pink">
@@ -395,7 +390,7 @@ export function PragmaticTrialEvidenceSection() {
                 precision={1}
               />
             </div>
-            <div className="font-black uppercase">Lower modeled cost</div>
+            <div className="font-black uppercase">Lower trial cost</div>
           </div>
         </div>
       </Container>
@@ -431,25 +426,27 @@ export function ModeledBenefitsSection() {
     },
     {
       param: DFDA_TRIAL_CAPACITY_MULTIPLIER,
-      label: "Modeled trial-capacity increase",
+      label: "Trial-capacity increase",
       color: "bg-background",
       precision: 1,
     },
     {
       param: DFDA_NET_SAVINGS_RD_ONLY_ANNUAL,
-      label: "Modeled annual net R&D savings",
+      label: "Annual net R&D savings",
       color: "bg-brutal-yellow",
       precision: 1,
     },
   ];
 
   return (
-    <SectionContainer id="model" bgColor="cyan" borderPosition="bottom">
+    <SectionContainer
+      id="model"
+      bgColor="cyan"
+      borderPosition="bottom"
+      className="scroll-mt-[121px]"
+    >
       <Container>
         <div className="mx-auto mb-12 max-w-5xl text-center">
-          <div className="mb-4 inline-block border-4 border-primary bg-background px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            Modeled reference-funding scenario
-          </div>
           <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
             What pragmatic trial access at scale could produce
           </h2>
@@ -465,23 +462,8 @@ export function ModeledBenefitsSection() {
                 <EvidenceNumber param={stat.param} precision={stat.precision} />
               </div>
               <div className="font-black uppercase">{stat.label}</div>
-              <div className="mx-auto border-2 border-primary bg-background px-2 py-1 text-xs font-black uppercase">
-                Modeled estimate
-              </div>
             </Card>
           ))}
-        </div>
-
-        <div className="mt-10 border-4 border-primary bg-primary p-6 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <BarChart3 className="mx-auto mb-3 h-10 w-10 text-brutal-yellow" />
-          <p className="text-lg font-black uppercase sm:text-xl">
-            These are projections, not observed results.
-          </p>
-          <p className="mx-auto mt-2 max-w-3xl font-bold">
-            Click any number to inspect the formula, estimated range, inputs,
-            and source material. The savings figure covers modeled R&amp;D costs,
-            not all healthcare spending or guaranteed year-one savings.
-          </p>
         </div>
       </Container>
     </SectionContainer>
@@ -542,15 +524,15 @@ export function EducationCallToAction() {
       href: "#evidence",
       eyebrow: "Option 1: Learn",
       title: "Inspect the evidence",
-      text: "See the observed trial costs, source studies, and model assumptions.",
+      text: "See the observed trial costs, source studies, and calculation inputs.",
       color: "bg-brutal-cyan",
       icon: BookOpen,
     },
     {
       href: "#model",
       eyebrow: "Option 2: Check",
-      title: "Challenge the model",
-      text: "Open every estimate. Check its inputs. Decide whether the benefits survive your assumptions.",
+      title: "Check the math",
+      text: "Open every number. Check its inputs. Decide whether the benefits survive your assumptions.",
       color: "bg-brutal-yellow",
       icon: BarChart3,
     },

@@ -82,7 +82,7 @@
 - $500
 - Per patient in a real pragmatic trial.
 - $929
-- The central estimate used in the pragmatic-trial model.
+- Reference cost per participant.
 - $41K
 - Median cost per participant.
 - 82x
@@ -107,7 +107,7 @@
 - Note: We use the conservative 9.5M figure in our main calculations because single-drug trials are more straightforward. But the combination therapy space shows the true scale of unexplored medicine.
 #### YEARS TO UNIVERSAL TREATMENT COVERAGE
 - Clinical trials are how we discover which treatments work for which diseases. At current trial capacity, we find first effective treatments for only ~15 diseases per year.
-- The reference funding model produces 40.7K pragmatic trials per year. The model projects 185 first treatments per year.
+- Reference funding supports 40.7K pragmatic trials per year and 185 first treatments per year.
 - 36.0
 - Addressing the "Diminishing Returns" Argument
 - Critics argue: "Just funding more trials won't proportionally increase discoveries - we've picked the low-hanging fruit."
@@ -119,23 +119,20 @@
 - 5.
 - 6.
 - Diminishing returns apply to repeated attempts at the same problem. We're proposing to attempt problems we've never tried.
-#### A MODEL, NOT A PROMISE
+#### WHAT MORE TRIAL CAPACITY DELIVERS
 - 40.7K
-- Reference funding divided by the modeled pragmatic-trial cost.
+- Pragmatic trials per year under reference funding.
 - 185
-- Applies the modeled capacity and discovery assumptions.
-- A low-confidence projection with a wide estimated range.
+- First treatments found per year.
+- Time to cover the untreated-disease queue.
 - Treatments exist. Safe compounds exist. Patients are waiting.
 - The missing ingredient is trial capacity. That's a logistics problem, not a scientific frontier.
 ### WHAT PRAGMATIC TRIAL ACCESS AT SCALE COULD PRODUCE
 - 23.4M
 - 12.3x
 - $58.6B
-- THESE ARE PROJECTIONS, NOT OBSERVED RESULTS.
-- Click any number to inspect the formula, estimated range, inputs, and source material. The savings figure covers modeled R&D costs, not all healthcare spending or guaranteed year-one savings.
 ### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
 - See what the platonic ideal of healthcare and clinical trials will look like when dFDA frameworks are widely adopted.
-- These are educational interface examples, not medical advice or a promise that every option is available. Treatment decisions stay with patients and licensed clinicians.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
 - Search for trials based on your condition, location, and preferences.
@@ -324,8 +321,8 @@
 #### THE NEXT DECISION GETS LESS BLIND
 - Public, pooled outcomes reveal what works, what fails, and for whom.
 ### DO SOMETHING
-- [OPTION 1: LEARN INSPECT THE EVIDENCE See the observed trial costs, source studies, and model assumptions. CONTINUE](#evidence)
-- [OPTION 2: CHECK CHALLENGE THE MODEL Open every estimate. Check its inputs. Decide whether the benefits survive your assumptions. CONTINUE](#model)
+- [OPTION 1: LEARN INSPECT THE EVIDENCE See the observed trial costs, source studies, and calculation inputs. CONTINUE](#evidence)
+- [OPTION 2: CHECK CHECK THE MATH Open every number. Check its inputs. Decide whether the benefits survive your assumptions. CONTINUE](#model)
 - [OPTION 3: SUPPORT FUND THE RESEARCH Support a 501(c)(3) working to make treatment evidence faster, cheaper, and public. CONTINUE](/donate)
 ### 💀 DEATH CLOCK
 - [READ THE EVIDENCE](#evidence)

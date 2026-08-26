@@ -424,16 +424,16 @@ export function BottleneckProofSection({
             {scenario === "medical-freedom" ? (
               <div>
                 <div className="text-lg font-black uppercase mb-4">
-                  Reference Pragmatic-Trial Capacity Model
+                  Reference Pragmatic-Trial Capacity
                 </div>
                 <p className="font-bold mb-4">
-                  The reference funding model produces{" "}
+                  Reference funding supports{" "}
                   <ParameterValue
                     param={DFDA_TRIALS_PER_YEAR_CAPACITY}
                     format={{ precision: 1 }}
                     className="text-brutal-cyan font-black"
                   />{" "}
-                  pragmatic trials per year. The model projects{" "}
+                  pragmatic trials per year and{" "}
                   <ParameterValue
                     param={DFDA_FIRST_TREATMENTS_PER_YEAR}
                     className="text-brutal-cyan font-black"
@@ -449,12 +449,12 @@ export function BottleneckProofSection({
                     Years
                   </div>
                   <div className="text-sm font-bold">
-                    Modeled time to cover the untreated-disease queue
+                    Time to cover the untreated-disease queue
                   </div>
                   <div className="text-xs text-foreground/70 mt-1">
-                    {referenceTrials.toLocaleString()} trials produce a modeled{" "}
-                    {referenceTreatments} first treatments per year; modeled
-                    queue time rounds to {referenceQueueYears} years.
+                    {referenceTrials.toLocaleString()} trials produce{" "}
+                    {referenceTreatments} first treatments per year and cover
+                    the queue in {referenceQueueYears} years.
                   </div>
                 </div>
               </div>
@@ -622,7 +622,7 @@ export function BottleneckProofSection({
         <Card className="bg-brutal-pink border-4 border-primary p-4 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h3 className="text-2xl font-black uppercase text-center mb-6 text-brutal-pink-foreground">
             {scenario === "medical-freedom"
-              ? "A Model, Not A Promise"
+              ? "What More Trial Capacity Delivers"
               : "Two Possible Futures"}
           </h3>
 
@@ -637,18 +637,16 @@ export function BottleneckProofSection({
                 </div>
                 <div className="font-black uppercase">Trials/year</div>
                 <p className="text-sm font-bold mt-2">
-                  Reference funding divided by the modeled pragmatic-trial cost.
+                  Pragmatic trials per year under reference funding.
                 </p>
               </div>
               <div className="bg-brutal-yellow border-4 border-primary p-5 text-center text-foreground">
                 <div className="text-3xl font-black mb-2">
-                  <ParameterValue
-                    param={DFDA_FIRST_TREATMENTS_PER_YEAR}
-                  />
+                  <ParameterValue param={DFDA_FIRST_TREATMENTS_PER_YEAR} />
                 </div>
                 <div className="font-black uppercase">Treatments/year</div>
                 <p className="text-sm font-bold mt-2">
-                  Applies the modeled capacity and discovery assumptions.
+                  First treatments found per year.
                 </p>
               </div>
               <div className="bg-brutal-cyan border-4 border-primary p-5 text-center text-foreground">
@@ -660,7 +658,7 @@ export function BottleneckProofSection({
                 </div>
                 <div className="font-black uppercase">Years</div>
                 <p className="text-sm font-bold mt-2">
-                  A low-confidence projection with a wide estimated range.
+                  Time to cover the untreated-disease queue.
                 </p>
               </div>
             </div>
