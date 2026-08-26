@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Meta description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Open Graph description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Twitter description: Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.
 
 ## Visible Page Copy
 
@@ -150,17 +150,12 @@
 - [90-DAY PILOT GRANT PROPOSAL A concrete pilot with its budget, deliverables, and success measures.](https://manual.warondisease.org/knowledge/grant-proposal/earth-optimization-prize-90-day-pilot.html?utm_source=the_plan&utm_medium=web&utm_campaign=cross_site)
 ### YOUR NEXT MOVE
 - Vote, then help two friends vote. That is enough to move the treaty forward.
-- [VOTE NOW](/#vote)
+- [VOTE NOW](https://warondisease.org/#vote)
 - [DONATE](/donate)
 - [BROWSE THE FIELD MANUAL](https://manual.warondisease.org?utm_source=the_plan_footer&utm_medium=web&utm_campaign=cross_site)
 - MISSION: TOTAL DISEASE ERADICATION
 #### SUPPORT
-- [THE PLAN](/the-plan)
 - [VOLUNTEER](/contact)
-#### GET THE MANUAL
-- [THE FIELD MANUAL](https://manual.warondisease.org)
-- [PODCAST](https://manual.warondisease.org/listen)
-- [GET THE MANUAL](https://manual.warondisease.org)
 #### EVIDENCE
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)

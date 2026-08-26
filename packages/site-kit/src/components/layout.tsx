@@ -197,8 +197,8 @@ export function Layout({ children }: LayoutProps) {
                   Navigation Menu
                 </SheetTitle>
                 <SheetDescription className="sr-only">
-                  Main navigation menu with links to resources, getting
-                  involved, and answering the question
+                  Main navigation menu with links to resources and ways to get
+                  involved
                 </SheetDescription>
                 <nav className="flex flex-col gap-6 mt-8">
                   {/* Top-level nav items (outside accordion) */}
@@ -247,15 +247,17 @@ export function Layout({ children }: LayoutProps) {
                     </Link>
                   )}
 
-                  <VoteOrShareButton
-                    variant="default"
-                    size="lg"
-                    className="w-full py-6"
-                    onClick={(e: React.MouseEvent) => {
-                      handleHashLinkClick(e, "/#vote");
-                      setOpen(false);
-                    }}
-                  />
+                  {siteConfig.sidebarVoteCtaEnabled !== false && (
+                    <VoteOrShareButton
+                      variant="default"
+                      size="lg"
+                      className="w-full py-6"
+                      onClick={(e: React.MouseEvent) => {
+                        handleHashLinkClick(e, "/#vote");
+                        setOpen(false);
+                      }}
+                    />
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

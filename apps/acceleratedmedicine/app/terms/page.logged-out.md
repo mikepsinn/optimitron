@@ -48,10 +48,6 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
-#### GET THE MANUAL
-- [THE FIELD MANUAL](https://manual.warondisease.org)
-- [PODCAST](https://manual.warondisease.org/listen)
-- [GET THE MANUAL](https://manual.warondisease.org)
 #### EVIDENCE
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
