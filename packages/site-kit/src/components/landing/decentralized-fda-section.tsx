@@ -2,13 +2,20 @@ import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
 import { DfdaUserWorkflows } from "../how-it-works/DfdaUserWorkflows";
 
-export default function DecentralizedFDASection() {
+interface DecentralizedFDASectionProps {
+  showDisclaimer?: boolean;
+}
+
+export default function DecentralizedFDASection({
+  showDisclaimer = true,
+}: DecentralizedFDASectionProps) {
   return (
     <SectionContainer
       id="decentralized-fda-section"
       bgColor="cyan"
       borderPosition="bottom"
       padding="lg"
+      className="scroll-mt-[121px]"
     >
       <Container>
         <div className="mx-auto max-w-5xl text-center">
@@ -21,13 +28,15 @@ export default function DecentralizedFDASection() {
           </p>
         </div>
 
-        <div className="mt-12 border-4 border-primary bg-primary p-5 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <p className="font-bold">
-            These are educational interface examples, not medical advice or a
-            promise that every option is available. Treatment decisions stay
-            with patients and licensed clinicians.
-          </p>
-        </div>
+        {showDisclaimer && (
+          <div className="mt-12 border-4 border-primary bg-primary p-5 text-center text-primary-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-bold">
+              These are educational interface examples, not medical advice or a
+              promise that every option is available. Treatment decisions stay
+              with patients and licensed clinicians.
+            </p>
+          </div>
+        )}
 
         <DfdaUserWorkflows />
       </Container>

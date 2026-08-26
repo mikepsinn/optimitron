@@ -150,6 +150,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA for the Accelerated Medicine Foundation. The Accelerated Medicine Foundation is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 
 // ===== INTERFACES =====
 
@@ -1447,7 +1448,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     legalItems: ["privacy", "terms"],
     copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
-    footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
+    footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
     faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
