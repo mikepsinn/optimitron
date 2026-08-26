@@ -418,6 +418,9 @@ export interface SiteConfig {
   /** Sidebar accordion sections */
   sidebarSections?: NavSection[];
 
+  /** Whether the sidebar includes the treaty vote/share CTA. Defaults to true. */
+  sidebarVoteCtaEnabled?: boolean;
+
   /** Footer branding (first column) */
   footerBranding?: FooterBranding;
 
@@ -1389,20 +1392,10 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation system - evidence and donation focused
-    topLevelNavItems: ["donate", "faq"],
-    sidebarSections: [
-      {
-        id: "support",
-        label: "SUPPORT THE MISSION",
-        items: ["donate", "volunteer"],
-      },
-      {
-        id: "evidence",
-        label: "THE EVIDENCE",
-        items: ["research", "faq"],
-      },
-    ],
+    // Navigation system - flat, evidence and donation focused
+    topLevelNavItems: ["donate", "research", "volunteer", "faq"],
+    sidebarSections: [],
+    sidebarVoteCtaEnabled: false,
     footerBranding: {
       title: "THE INSTITUTE FOR ACCELERATED MEDICINE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
@@ -1412,11 +1405,6 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         id: "support",
         label: "SUPPORT",
         items: ["donate", "volunteer"],
-      },
-      {
-        id: "manual",
-        label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "readOnline"],
       },
       {
         id: "evidence",
