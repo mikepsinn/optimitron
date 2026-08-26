@@ -5,16 +5,24 @@ import DecentralizedFDASection from "@/components/landing/decentralized-fda-sect
 import { SystemProblemsSection } from "@/components/landing/SystemProblemsSection";
 import { BottleneckProofSection } from "@/components/landing/bottleneck-proof-section";
 import {
-  EducationCallToAction,
   MedicalFreedomAccessSection,
   MedicalFreedomBridgeSection,
-  MedicalFreedomFinalCTA,
-  MedicalFreedomHero,
   ModeledBenefitsSection,
   ParticipationGapSection,
   PatientImpactSection,
   PragmaticTrialEvidenceSection,
 } from "@/components/landing/medical-freedom-sections";
+import {
+  MissouriCampaignSection,
+  MontanaProofSection,
+  PatientAccessFlowSection,
+  RightToTryEvolutionSection,
+  RoleActionSection,
+  StateCampaignMapSection,
+  StateSupportSection,
+  UniversalRightToTryFinalCTA,
+  UniversalRightToTryHero,
+} from "@/components/landing/right-to-try-sections";
 
 /**
  * Institute for Accelerated Medicine — patient access, shared evidence, and
@@ -23,7 +31,12 @@ import {
 export default function HomePage() {
   return (
     <Layout>
-      <MedicalFreedomHero />
+      <UniversalRightToTryHero />
+      <MontanaProofSection />
+      <RightToTryEvolutionSection />
+      <PatientAccessFlowSection />
+      <StateSupportSection />
+      <StateCampaignMapSection />
       <ParticipationGapSection />
       <ProblemStatement useExactPatientCount />
       <SystemProblemsSection />
@@ -34,9 +47,10 @@ export default function HomePage() {
       <ModeledBenefitsSection />
       <DecentralizedFDASection showDisclaimer={false} />
       <PatientImpactSection />
-      <EducationCallToAction />
+      <RoleActionSection />
+      <MissouriCampaignSection />
       <DeathClock message="while safe treatments remain untested and willing patients remain excluded" />
-      <MedicalFreedomFinalCTA />
+      <UniversalRightToTryFinalCTA />
     </Layout>
   );
 }

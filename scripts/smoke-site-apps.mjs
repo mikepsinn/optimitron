@@ -86,6 +86,9 @@ function getCampaignHomeFiles(appName) {
     return [
       "apps/acceleratedmedicine/app/page.tsx",
       "apps/acceleratedmedicine/components/landing/medical-freedom-sections.tsx",
+      "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+      "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+      "apps/acceleratedmedicine/lib/right-to-try.ts",
       "packages/site-kit/src/components/landing/problem-statement.tsx",
       "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
       "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
@@ -247,6 +250,51 @@ function getScreenshotRoutes(appName, siteVariant) {
   }
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
+    const rightToTryRouteFiles = new Map([
+      [
+        "/montana",
+        [
+          "apps/acceleratedmedicine/app/montana/page.tsx",
+          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+          "apps/acceleratedmedicine/lib/right-to-try.ts",
+        ],
+      ],
+      [
+        "/model-act",
+        [
+          "apps/acceleratedmedicine/app/model-act/page.tsx",
+          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        ],
+      ],
+      [
+        "/states/missouri",
+        [
+          "apps/acceleratedmedicine/app/states/missouri/page.tsx",
+          "apps/acceleratedmedicine/components/state-campaign-page.tsx",
+          "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+          "apps/acceleratedmedicine/lib/right-to-try.ts",
+        ],
+      ],
+    ]);
+    for (const route of routes) {
+      const covers = rightToTryRouteFiles.get(route.routePath);
+      if (covers) route.covers = covers;
+    }
+    routes.push({
+      label: "State education template",
+      routeName: "states-alabama",
+      routePath: "/states/alabama",
+      covers: [
+        "apps/acceleratedmedicine/app/states/[state]/page.tsx",
+        "apps/acceleratedmedicine/components/state-campaign-page.tsx",
+        "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
+        "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        "apps/acceleratedmedicine/lib/right-to-try.ts",
+      ],
+    });
     const planRoute = routes.find(({ routePath }) => routePath === "/the-plan");
     if (planRoute) {
       planRoute.covers = [campaignPlanPageFile];

@@ -136,7 +136,12 @@ const SITES: Site[] = [
     variant: VARIANTS.CUREDAO,
   },
   {
-    additionalSnapshotRoutes: ["/the-plan"],
+    additionalSnapshotRoutes: [
+      "/the-plan",
+      "/montana",
+      "/model-act",
+      "/states/missouri",
+    ],
     directory: "apps/acceleratedmedicine",
     host: "127.0.0.1",
     label: "@apps/acceleratedmedicine",

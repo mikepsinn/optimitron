@@ -1330,20 +1330,17 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   },
 
   // ============================================================================
-  // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE (Umbrella/Donation Site)
+  // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Central fundraising hub and umbrella organization that funds/supports other projects
-  // Audience: Donors, philanthropists, foundations, grant makers
-  // Tone: Professional, trustworthy, impact-focused
-  // Goal: Donations, partnerships, trust-building - links to specialized sites for clinical content
-  // Navigation: Donation-focused with cross-links to supported projects (dFDA, War on Disease, etc.)
-  // Messaging: Bold but professional - "Cures move at the speed of data"
+  // Purpose: Universal Right to Try education, pragmatic trials, and public evidence
+  // Audience: Patients, caregivers, clinicians, researchers, and state educators
+  // Goal: Measure support, explain the Montana precedent, and equip state campaigns
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
     description:
-      "Patients deserve options. Pragmatic clinical trials and public outcome data can turn every treatment decision into evidence for the next patient.",
+      "Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1392,8 +1389,15 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation system - flat, evidence and donation focused
-    topLevelNavItems: ["donate", "research", "volunteer", "faq"],
+    // Navigation system - state action first, evidence and support second
+    topLevelNavItems: [
+      "rightToTryMontana",
+      "rightToTryMissouri",
+      "rightToTryStates",
+      "rightToTryModelAct",
+      "research",
+      "donate",
+    ],
     sidebarSections: [],
     sidebarVoteCtaEnabled: false,
     footerBranding: {
@@ -1402,14 +1406,24 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     },
     footerSections: [
       {
-        id: "support",
-        label: "SUPPORT",
-        items: ["donate", "volunteer"],
+        id: "right-to-try",
+        label: "RIGHT TO TRY",
+        items: [
+          "rightToTryMontana",
+          "rightToTryMissouri",
+          "rightToTryStates",
+          "rightToTryModelAct",
+        ],
       },
       {
         id: "evidence",
         label: "EVIDENCE",
         items: ["research", "faq"],
+      },
+      {
+        id: "support",
+        label: "SUPPORT",
+        items: ["donate", "volunteer"],
       },
     ],
     contactInfo: {
