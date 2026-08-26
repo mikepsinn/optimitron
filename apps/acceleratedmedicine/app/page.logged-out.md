@@ -119,7 +119,7 @@
 - 5.
 - 6.
 - Diminishing returns apply to repeated attempts at the same problem. We're proposing to attempt problems we've never tried.
-#### WHAT MORE TRIAL CAPACITY DELIVERS
+#### WHAT MORE TRIAL CAPACITY COULD PRODUCE
 - 40.7K
 - Pragmatic trials per year under reference funding.
 - 185

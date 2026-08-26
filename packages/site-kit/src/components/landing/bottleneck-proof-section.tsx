@@ -622,7 +622,7 @@ export function BottleneckProofSection({
         <Card className="bg-brutal-pink border-4 border-primary p-4 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h3 className="text-2xl font-black uppercase text-center mb-6 text-brutal-pink-foreground">
             {scenario === "medical-freedom"
-              ? "What More Trial Capacity Delivers"
+              ? "What More Trial Capacity Could Produce"
               : "Two Possible Futures"}
           </h3>
 
