@@ -5,6 +5,8 @@ import { RightToTryRateLimitError } from "../../lib/right-to-try-support-store";
 
 const validResponse = {
   submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
+  intent: "state-support",
+  name: "",
   state: "Missouri",
   position: "yes",
   role: "patient-or-caregiver",
@@ -15,11 +17,14 @@ const validResponse = {
 };
 
 function makeRequest(body: unknown) {
-  return new Request("https://acceleratedmedicine.org/api/right-to-try-support", {
-    body: JSON.stringify(body),
-    headers: { "content-type": "application/json" },
-    method: "POST",
-  });
+  return new Request(
+    "https://acceleratedmedicine.org/api/right-to-try-support",
+    {
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    },
+  );
 }
 
 const clientKeyForRequest = () => "0".repeat(64);
@@ -48,7 +53,9 @@ describe("Right to Try support POST", () => {
   });
 
   it("returns 503 when durable storage fails", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     const post = createPostHandler({
       clientKeyForRequest,
       submit: async () => {

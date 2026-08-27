@@ -15,7 +15,7 @@ import { US_STATES } from "@/lib/right-to-try";
 import type { RightToTrySupportInput } from "@/lib/right-to-try-support";
 
 const FORM_SOURCE_KEY = "acceleratedmedicine:universal-right-to-try-support";
-const FORM_TITLE = "Universal Right to Try state support";
+const FORM_TITLE = "Right to Trial participation";
 const SUBMISSION_WINDOW_MS = 10 * 60 * 1000;
 const SUBMISSIONS_PER_WINDOW = 5;
 
@@ -28,6 +28,19 @@ export class RightToTryRateLimitError extends Error {
 
 const formFields = [
   {
+    key: "intent",
+    prompt: "How this person wants to participate",
+    type: FormFieldType.SINGLE_SELECT,
+    required: true,
+    optionsJson: ["state-support", "volunteer"],
+  },
+  {
+    key: "name",
+    prompt: "Your name",
+    type: FormFieldType.SHORT_TEXT,
+    required: false,
+  },
+  {
     key: "state",
     prompt: "Your state",
     type: FormFieldType.SINGLE_SELECT,
@@ -36,9 +49,9 @@ const formFields = [
   },
   {
     key: "position",
-    prompt: "Should your state consider this model?",
+    prompt: "Should every patient in your state have the Right to Trial?",
     type: FormFieldType.SINGLE_SELECT,
-    required: true,
+    required: false,
     optionsJson: ["yes", "unsure", "no"],
   },
   {
@@ -68,7 +81,7 @@ const formFields = [
   },
   {
     key: "updates",
-    prompt: "Send occasional Universal Right to Try education updates",
+    prompt: "Send occasional Right to Trial updates",
     type: FormFieldType.BOOLEAN,
     required: true,
   },
@@ -166,8 +179,10 @@ export async function storeRightToTrySupport(
   const { user } = await upsertWishoniaUser(prisma);
   const revision = await getCurrentFormRevision(user.id);
   const values: Record<string, boolean | string> = {
+    intent: input.intent,
+    name: input.name || "",
     state: input.state,
-    position: input.position,
+    position: input.position || "",
     role: input.role,
     story: input.story || "",
     email: input.email || "",

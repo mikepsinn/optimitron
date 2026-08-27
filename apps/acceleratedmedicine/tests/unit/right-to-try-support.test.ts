@@ -11,6 +11,7 @@ import {
 } from "vitest";
 
 import {
+  buildSupportConfirmation,
   buildSupportNotification,
   sendRightToTrySupport,
 } from "../../lib/right-to-try-support";
@@ -22,6 +23,8 @@ let previousResendApiKey: string | undefined;
 
 const validResponse = {
   submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
+  intent: "state-support" as const,
+  name: "",
   state: "Missouri",
   position: "yes" as const,
   role: "patient-or-caregiver" as const,
@@ -38,7 +41,7 @@ const server = setupServer(
   }),
 );
 
-describe("Universal Right to Try support submission", () => {
+describe("Right to Trial participation submission", () => {
   const store = vi.fn(async () => ({ submissionId: "submission_1" }));
   const submissionOptions = {
     clientKey: "0".repeat(64),
@@ -85,13 +88,45 @@ describe("Universal Right to Try support submission", () => {
         from: "Institute for Accelerated Medicine <no-reply@updates.dfda.earth>",
         to: "hello@acceleratedmedicine.org",
         reply_to: "patient@example.com",
-        subject: "[Right to Try] Missouri: Supports the proposal",
+        subject: "[Right to Trial] Missouri: Supports the proposal",
       }),
     );
     expect(sentMessages[1]).toEqual(
       expect.objectContaining({
         to: "patient@example.com",
-        subject: "We recorded your Missouri Right to Try response",
+        subject: "We recorded your Missouri Right to Trial response",
+      }),
+    );
+  });
+
+  it("records a volunteer offer and sends both volunteer emails", async () => {
+    await expect(
+      sendRightToTrySupport(
+        {
+          ...validResponse,
+          intent: "volunteer",
+          name: "Ada Patient",
+          position: undefined,
+          role: "researcher",
+          story: "I can help define common outcomes.",
+        },
+        submissionOptions,
+      ),
+    ).resolves.toEqual({ sentConfirmation: true });
+
+    expect(store).toHaveBeenCalledOnce();
+    expect(sentMessages).toHaveLength(2);
+    expect(sentMessages[0]).toEqual(
+      expect.objectContaining({
+        reply_to: "patient@example.com",
+        subject: "[Right to Trial volunteer] Missouri: Researcher",
+        to: "hello@acceleratedmedicine.org",
+      }),
+    );
+    expect(sentMessages[1]).toEqual(
+      expect.objectContaining({
+        subject: "You’re on the Right to Trial team",
+        to: "patient@example.com",
       }),
     );
   });
@@ -106,6 +141,21 @@ describe("Universal Right to Try support submission", () => {
       "&lt;script&gt;alert(&#039;nope&#039;)&lt;/script&gt;",
     );
     expect(notification.html).not.toContain("<script>");
+  });
+
+  it("uses the canonical Montana page in volunteer confirmations", () => {
+    const confirmation = buildSupportConfirmation({
+      ...validResponse,
+      intent: "volunteer",
+      name: "Ada Patient",
+      position: undefined,
+      state: "Montana",
+    });
+
+    expect(confirmation.text).toContain(
+      "Open your state page: https://acceleratedmedicine.org/montana",
+    );
+    expect(confirmation.text).not.toContain("/states/montana");
   });
 
   it("does not deliver honeypot submissions", async () => {
@@ -180,9 +230,27 @@ describe("Universal Right to Try support submission", () => {
     expect(store).not.toHaveBeenCalled();
   });
 
+  it("requires an email address for volunteer offers", async () => {
+    await expect(
+      sendRightToTrySupport(
+        {
+          ...validResponse,
+          email: "",
+          intent: "volunteer",
+          name: "Ada Patient",
+          position: undefined,
+        },
+        submissionOptions,
+      ),
+    ).rejects.toThrow();
+    expect(store).not.toHaveBeenCalled();
+  });
+
   it("keeps the stored response when email delivery is not configured", async () => {
     const apiKey = process.env.RESEND_API_KEY;
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     delete process.env.RESEND_API_KEY;
 
     try {

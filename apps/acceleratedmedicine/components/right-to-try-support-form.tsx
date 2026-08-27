@@ -10,6 +10,7 @@ import type { SupporterRole } from "@/lib/right-to-try";
 interface RightToTrySupportFormProps {
   initialRole?: SupporterRole;
   initialState?: string;
+  variant?: "state-support" | "volunteer";
 }
 
 type SubmissionState =
@@ -24,6 +25,7 @@ const inputClassName =
 export function RightToTrySupportForm({
   initialRole = "patient-or-caregiver",
   initialState = "",
+  variant = "state-support",
 }: RightToTrySupportFormProps) {
   const [submission, setSubmission] = useState<SubmissionState>({
     status: "idle",
@@ -44,6 +46,8 @@ export function RightToTrySupportForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           submissionKey: submissionKey.current,
+          intent: variant,
+          name: formData.get("name"),
           state: formData.get("state"),
           position: formData.get("position"),
           role: formData.get("role"),
@@ -86,12 +90,18 @@ export function RightToTrySupportForm({
       >
         <Check className="mx-auto h-14 w-14" strokeWidth={4} />
         <h3 className="mt-3 text-3xl font-black uppercase">
-          Your response is recorded.
+          {variant === "volunteer"
+            ? "You’re in."
+            : "Your response is recorded."}
         </h3>
         <p className="mx-auto mt-3 max-w-xl text-lg font-bold">
-          {submission.sentConfirmation
-            ? "Check your inbox for a copy and the Montana and model-framework links."
-            : "Thank you. Your state is now part of the Institute's education map."}
+          {variant === "volunteer"
+            ? submission.sentConfirmation
+              ? "Check your inbox for ways to start helping right now."
+              : "Thank you. We saved your offer to help bring Right to Trial to every patient."
+            : submission.sentConfirmation
+              ? "Check your inbox for a copy and the Montana and model-framework links."
+              : "Thank you. Your state is now part of the Institute's education map."}
         </p>
       </div>
     );
@@ -102,6 +112,20 @@ export function RightToTrySupportForm({
       className="border-4 border-primary bg-brutal-yellow p-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:p-8"
       onSubmit={handleSubmit}
     >
+      {variant === "volunteer" ? (
+        <label className="mb-6 block font-black uppercase">
+          <span className="mb-2 block">Your name</span>
+          <input
+            autoComplete="name"
+            className={inputClassName}
+            maxLength={120}
+            name="name"
+            placeholder="Your name"
+            required
+          />
+        </label>
+      ) : null}
+
       <div className="grid gap-6 md:grid-cols-2">
         <label className="block font-black uppercase">
           <span className="mb-2 flex items-center gap-2">
@@ -126,64 +150,82 @@ export function RightToTrySupportForm({
 
         <label className="block font-black uppercase">
           <span className="mb-2 block">Your role</span>
-          <select className={inputClassName} defaultValue={initialRole} name="role" required>
+          <select
+            className={inputClassName}
+            defaultValue={initialRole}
+            name="role"
+            required
+          >
             <option value="patient-or-caregiver">Patient or caregiver</option>
             <option value="clinician">Clinician</option>
             <option value="researcher">Researcher</option>
-            <option value="public-educator">Public educator or organizer</option>
+            <option value="public-educator">
+              Public educator or organizer
+            </option>
             <option value="other">Other</option>
           </select>
         </label>
       </div>
 
-      <fieldset className="mt-7">
-        <legend className="font-black uppercase">
-          Should your state consider this model?
-        </legend>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          {[
-            ["yes", "Yes"],
-            ["unsure", "Show me more"],
-            ["no", "No"],
-          ].map(([value, label]) => (
-            <label
-              key={value}
-              className="cursor-pointer border-4 border-primary bg-background p-4 text-center text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] has-[:checked]:-translate-x-0.5 has-[:checked]:-translate-y-0.5 has-[:checked]:bg-brutal-cyan has-[:checked]:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <input
-                className="mr-2 h-4 w-4 accent-black"
-                defaultChecked={value === "yes"}
-                name="position"
-                type="radio"
-                value={value}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      {variant === "state-support" ? (
+        <fieldset className="mt-7">
+          <legend className="font-black uppercase">
+            Should every patient in your state have the Right to Trial?
+          </legend>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            {[
+              ["yes", "Yes"],
+              ["unsure", "Show me more"],
+              ["no", "No"],
+            ].map(([value, label]) => (
+              <label
+                key={value}
+                className="cursor-pointer border-4 border-primary bg-background p-4 text-center text-lg font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] has-[:checked]:-translate-x-0.5 has-[:checked]:-translate-y-0.5 has-[:checked]:bg-brutal-cyan has-[:checked]:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <input
+                  className="mr-2 h-4 w-4 accent-black"
+                  defaultChecked={value === "yes"}
+                  name="position"
+                  type="radio"
+                  value={value}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
 
       <label className="mt-7 block font-black uppercase">
-        Why does this matter to you? <span className="normal-case">(optional)</span>
+        {variant === "volunteer"
+          ? "What would you love to help make happen?"
+          : "Why does this matter to you?"}{" "}
+        <span className="normal-case">(optional)</span>
         <textarea
           className={`${inputClassName} mt-2 min-h-32 resize-y`}
           maxLength={2000}
           name="story"
-          placeholder="A sentence is enough."
+          placeholder={
+            variant === "volunteer"
+              ? "Share a skill, a connection, or the part you want to take on."
+              : "A sentence is enough."
+          }
         />
       </label>
 
       <label className="mt-7 block font-black uppercase">
         <span className="mb-2 flex items-center gap-2">
           <Mail className="h-5 w-5" strokeWidth={3} /> Email{" "}
-          <span className="normal-case">(optional)</span>
+          {variant === "state-support" ? (
+            <span className="normal-case">(optional)</span>
+          ) : null}
         </span>
         <input
           autoComplete="email"
           className={inputClassName}
           name="email"
           placeholder="you@example.com"
-          required={wantsUpdates}
+          required={variant === "volunteer" || wantsUpdates}
           type="email"
         />
       </label>
@@ -196,8 +238,7 @@ export function RightToTrySupportForm({
           onChange={(event) => setWantsUpdates(event.target.checked)}
           type="checkbox"
         />
-        Send me occasional updates about Universal Right to Try education in my
-        state.
+        Send me occasional updates about Right to Trial in my state.
       </label>
 
       <div aria-hidden="true" className="hidden">
@@ -218,14 +259,17 @@ export function RightToTrySupportForm({
           <>
             <Loader2 className="h-6 w-6 animate-spin" /> Recording
           </>
+        ) : variant === "volunteer" ? (
+          "I want to help"
         ) : (
           "Record my state response"
         )}
       </button>
 
       <p className="mt-4 text-center text-sm font-bold">
-        If you provide an email, we will send a confirmation. We will not sell
-        or rent it.
+        {variant === "volunteer"
+          ? "We’ll use your email to reply and send the updates you request."
+          : "If you provide an email, we will send a confirmation. We will not sell or rent it."}
       </p>
 
       {submission.status === "error" ? (

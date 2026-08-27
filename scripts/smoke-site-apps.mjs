@@ -252,6 +252,13 @@ function getScreenshotRoutes(appName, siteVariant) {
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
       [
+        "/contact",
+        [
+          "apps/acceleratedmedicine/app/contact/page.tsx",
+          "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
+        ],
+      ],
+      [
         "/montana",
         [
           "apps/acceleratedmedicine/app/montana/page.tsx",

@@ -168,8 +168,7 @@ export const NAV_ITEMS_MAP = {
     id: "rightToTryMissouri",
     label: "Missouri",
     path: ROUTES.missouri,
-    description:
-      "Follow the Missouri education campaign for a Universal Right to Try law.",
+    description: "Help bring Right to Trial to every Missouri patient.",
     emoji: "⭐",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
@@ -183,8 +182,7 @@ export const NAV_ITEMS_MAP = {
     id: "rightToTryStates",
     label: "Your State",
     path: `${ROUTES.home}#state-support`,
-    description:
-      "Record support for Universal Right to Try education in your state.",
+    description: "Put your state on the Right to Trial map.",
     emoji: "🗺️",
     isHashLink: true,
     requiresScrollHandler: true,
@@ -197,12 +195,12 @@ export const NAV_ITEMS_MAP = {
     label: "Model Act",
     path: ROUTES.modelAct,
     description:
-      "Review the core parts of a responsible Universal Right to Try framework.",
+      "See how every patient can join a pragmatic trial and every result can help the next patient.",
     emoji: "📄",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
     keywords: [
-      "Universal Right to Try model act",
+      "Right to Trial model act",
       "patient access legislation",
       "experimental treatment licensing",
     ],

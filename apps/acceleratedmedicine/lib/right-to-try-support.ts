@@ -4,38 +4,48 @@ import { z } from "zod";
 import { SUPPORTER_ROLES, US_STATES } from "@/lib/right-to-try";
 import { storeRightToTrySupport } from "@/lib/right-to-try-support-store";
 
-const stateNames = US_STATES.map(([name]) => name) as [
-  string,
-  ...string[],
-];
+const stateNames = US_STATES.map(([name]) => name) as [string, ...string[]];
 
 export const supportPositionSchema = z.enum(["yes", "unsure", "no"]);
 export const supporterRoleSchema = z.enum(SUPPORTER_ROLES);
 
-export const rightToTrySupportSchema = z.object({
+const participationFields = z.object({
   submissionKey: z.string().uuid(),
   state: z.enum(stateNames),
-  position: supportPositionSchema,
   role: supporterRoleSchema,
   email: z.string().trim().email().max(320).optional().or(z.literal("")),
   story: z.string().trim().max(2000).optional().or(z.literal("")),
   updates: z.boolean().default(false),
   companyWebsite: z.string().max(500).optional().default(""),
-}).superRefine((input, context) => {
-  if (input.updates && !input.email) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Enter an email address to receive updates.",
-      path: ["email"],
-    });
-  }
 });
 
-export type RightToTrySupportInput = z.infer<
-  typeof rightToTrySupportSchema
->;
+export const rightToTrySupportSchema = z
+  .discriminatedUnion("intent", [
+    participationFields.extend({
+      intent: z.literal("state-support"),
+      name: z.string().trim().max(120).optional().or(z.literal("")),
+      position: supportPositionSchema,
+    }),
+    participationFields.extend({
+      intent: z.literal("volunteer"),
+      name: z.string().trim().min(1).max(120),
+      email: z.string().trim().email().max(320),
+      position: supportPositionSchema.optional(),
+    }),
+  ])
+  .superRefine((input, context) => {
+    if (input.updates && !input.email) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Enter an email address to receive updates.",
+        path: ["email"],
+      });
+    }
+  });
 
-const positionLabels: Record<RightToTrySupportInput["position"], string> = {
+export type RightToTrySupportInput = z.infer<typeof rightToTrySupportSchema>;
+
+const positionLabels: Record<z.infer<typeof supportPositionSchema>, string> = {
   yes: "Supports the proposal",
   unsure: "Wants more information",
   no: "Does not support the proposal",
@@ -58,10 +68,43 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#039;");
 }
 
+function statePageUrl(state: string): string {
+  if (state === "Montana") {
+    return "https://acceleratedmedicine.org/montana";
+  }
+  return `https://acceleratedmedicine.org/states/${state.toLowerCase().replaceAll(" ", "-")}`;
+}
+
 export function buildSupportNotification(input: RightToTrySupportInput) {
   const email = input.email || "Not provided";
   const story = input.story || "Not provided";
-  const subject = `[Right to Try] ${input.state}: ${positionLabels[input.position]}`;
+  if (input.intent === "volunteer") {
+    const subject = `[Right to Trial volunteer] ${input.state}: ${roleLabels[input.role]}`;
+    const text = [
+      `Name: ${input.name}`,
+      `State: ${input.state}`,
+      `Role: ${roleLabels[input.role]}`,
+      `Email: ${email}`,
+      `Requested updates: ${input.updates ? "Yes" : "No"}`,
+      "",
+      "What they want to help make happen:",
+      story,
+    ].join("\n");
+    const html = `
+      <h1>Right to Trial volunteer</h1>
+      <p><strong>Name:</strong> ${escapeHtml(input.name)}</p>
+      <p><strong>State:</strong> ${escapeHtml(input.state)}</p>
+      <p><strong>Role:</strong> ${escapeHtml(roleLabels[input.role])}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Requested updates:</strong> ${input.updates ? "Yes" : "No"}</p>
+      <h2>What they want to help make happen</h2>
+      <p>${escapeHtml(story).replaceAll("\n", "<br>")}</p>
+    `.trim();
+
+    return { html, subject, text };
+  }
+
+  const subject = `[Right to Trial] ${input.state}: ${positionLabels[input.position]}`;
   const text = [
     `State: ${input.state}`,
     `Position: ${positionLabels[input.position]}`,
@@ -73,7 +116,7 @@ export function buildSupportNotification(input: RightToTrySupportInput) {
     story,
   ].join("\n");
   const html = `
-    <h1>Universal Right to Try response</h1>
+    <h1>Right to Trial response</h1>
     <p><strong>State:</strong> ${escapeHtml(input.state)}</p>
     <p><strong>Position:</strong> ${escapeHtml(positionLabels[input.position])}</p>
     <p><strong>Role:</strong> ${escapeHtml(roleLabels[input.role])}</p>
@@ -87,12 +130,42 @@ export function buildSupportNotification(input: RightToTrySupportInput) {
 }
 
 export function buildSupportConfirmation(input: RightToTrySupportInput) {
+  if (input.intent === "volunteer") {
+    const name = escapeHtml(input.name);
+    const stateUrl = statePageUrl(input.state);
+    const subject = "You’re on the Right to Trial team";
+    const text = [
+      `Thank you, ${input.name}.`,
+      "",
+      "You offered something humanity needs: your time. Right to Trial means every patient can join a pragmatic clinical trial for the most promising treatments, and every result helps the next patient.",
+      "",
+      "See the Montana precedent: https://acceleratedmedicine.org/montana",
+      "Review the model framework: https://acceleratedmedicine.org/model-act",
+      `Open your state page: ${stateUrl}`,
+      "",
+      "Institute for Accelerated Medicine",
+      "A DBA of the Accelerated Medicine Foundation",
+    ].join("\n");
+    const html = `
+      <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
+        <h1 style="text-transform:uppercase">Thank you, ${name}.</h1>
+        <p>You offered something humanity needs: your time. Right to Trial means every patient can join a pragmatic clinical trial for the most promising treatments, and every result helps the next patient.</p>
+        <p><a href="https://acceleratedmedicine.org/montana">See the Montana precedent</a></p>
+        <p><a href="https://acceleratedmedicine.org/model-act">Review the model framework</a></p>
+        <p><a href="${stateUrl}">Open your state page</a></p>
+        <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation</p>
+      </main>
+    `.trim();
+
+    return { html, subject, text };
+  }
+
   const state = escapeHtml(input.state);
-  const subject = `We recorded your ${input.state} Right to Try response`;
+  const subject = `We recorded your ${input.state} Right to Trial response`;
   const text = [
     `Your ${input.state} response has been recorded.`,
     "",
-    "Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute decide where public education is most useful next.",
+    "Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute bring Right to Trial education to every state.",
     "",
     "See the Montana precedent: https://acceleratedmedicine.org/montana",
     "Review the model framework: https://acceleratedmedicine.org/model-act",
@@ -103,7 +176,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
   const html = `
     <main style="font-family:Arial,sans-serif;line-height:1.6;max-width:640px;margin:auto;padding:24px">
       <h1 style="text-transform:uppercase">Your ${state} response is recorded.</h1>
-      <p>Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute decide where public education is most useful next.</p>
+      <p>Montana has already shown that a broader, licensed treatment path can become law. Your response helps the Institute bring Right to Trial education to every state.</p>
       <p><a href="https://acceleratedmedicine.org/montana">See the Montana precedent</a></p>
       <p><a href="https://acceleratedmedicine.org/model-act">Review the model framework</a></p>
       <p><strong>Institute for Accelerated Medicine</strong><br>A DBA of the Accelerated Medicine Foundation</p>

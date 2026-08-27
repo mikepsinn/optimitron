@@ -20,7 +20,7 @@
 - [READ ENROLLED SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - AN ENACTED STATE PRECEDENT
 ### MONTANA ALREADY MOVED THE LINE.
-- Universal Right to Try is no longer a white-paper idea. Montana enacted a broader, regulated access framework and completed the rules needed to license experimental treatment centers.
+- Montana's Universal Right to Try law is enacted, regulated, and ready for licensed experimental treatment centers. The precedent exists. Right to Trial carries it forward.
 - 2015
 #### RIGHT TO TRY BEGINS
 - Montana creates an initial access path for eligible patients.
@@ -56,9 +56,9 @@
 - [FINAL 2026 RULES](https://dphhs.mt.gov/assets/rules/2026-427-Adp-Arm.pdf)
 - [CURRENT MONTANA CODE](https://mca.legmt.gov/bills/mca/title_0500/chapter_0120/part_0010/sections_index.html)
 - [TREATMENT CENTER LICENSING](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters)
-- BUILD THE STATE MAP FROM REAL HUMANS
-### SHOULD YOUR STATE CONSIDER UNIVERSAL RIGHT TO TRY?
-- Tell us where you live, how you see the proposal, and what role you could play. The Institute will use the responses to choose the next state education pages, clinician briefings, and public events.
+- BRING RIGHT TO TRIAL TO EVERY STATE
+### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
+- Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
 - YES
@@ -66,11 +66,11 @@
 - NO
 - WHY DOES THIS MATTER TO YOU? (optional)
 - EMAIL (optional)
-- Send me occasional updates about Universal Right to Try education in my state.
+- Send me occasional updates about Right to Trial in my state.
 - RECORD MY STATE RESPONSE
 - If you provide an email, we will send a confirmation. We will not sell or rent it.
 - MISSION: TOTAL DISEASE ERADICATION
-#### RIGHT TO TRY
+#### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)

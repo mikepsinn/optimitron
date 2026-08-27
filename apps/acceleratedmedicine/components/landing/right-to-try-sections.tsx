@@ -33,7 +33,13 @@ import type { StateCampaignStage, SupporterRole } from "@/lib/right-to-try";
 const buttonShadow =
   "rounded-none border-4 border-primary px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
 
-function SourceLink({ href, children }: { href: string; children: React.ReactNode }) {
+function SourceLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
   return (
     <a
       className="inline-flex items-center gap-1 font-black underline decoration-2 underline-offset-4 hover:text-brutal-pink"
@@ -57,27 +63,36 @@ export function UniversalRightToTryHero() {
         <div className="grid items-center gap-10 lg:grid-cols-[1.35fr_0.65fr]">
           <div>
             <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
-              Universal Right to Try
+              Right to Trial
             </p>
             <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-              The right to try should not depend on your zip code.
+              Every patient has the Right to Trial.
             </h1>
             <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-              Montana created a broader path for patients and licensed
-              clinicians to consider experimental treatments after evaluating
-              approved options. The Institute is helping every state understand
-              the model—and helping every patient&apos;s outcome become evidence
-              for the next patient.
+              Every patient should be able to join a pragmatic clinical trial
+              for the most promising treatments. Every result should help the
+              next patient. Montana opened the door. Now every state can turn
+              access into evidence.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button asChild size="lg" className={`${buttonShadow} bg-brutal-pink`}>
+              <Button
+                asChild
+                size="lg"
+                className={`${buttonShadow} bg-brutal-pink`}
+              >
                 <Link href="/montana">
-                  See what the law does <ArrowRight className="h-5 w-5" />
+                  See Montana&apos;s precedent{" "}
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" className={`${buttonShadow} bg-brutal-yellow`}>
+              <Button
+                asChild
+                size="lg"
+                className={`${buttonShadow} bg-brutal-yellow`}
+              >
                 <a href="#state-support">
-                  Bring it to my state <MapPin className="h-5 w-5" />
+                  Bring Right to Trial to my state{" "}
+                  <MapPin className="h-5 w-5" />
                 </a>
               </Button>
             </div>
@@ -87,7 +102,9 @@ export function UniversalRightToTryHero() {
             <div className="rotate-2 border-4 border-primary bg-brutal-yellow p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
               <Landmark className="h-16 w-16" strokeWidth={3} />
               <p className="mt-5 text-lg font-black uppercase">Montana</p>
-              <p className="text-6xl font-black uppercase leading-none">SB 535</p>
+              <p className="text-6xl font-black uppercase leading-none">
+                SB 535
+              </p>
               <p className="mt-4 text-lg font-bold">
                 Signed in 2025. Final rules effective in 2026. Experimental
                 treatment center applications are available now.
@@ -125,7 +142,11 @@ export function MontanaProofSection() {
   ];
 
   return (
-    <SectionContainer id="montana-proof" bgColor="yellow" borderPosition="bottom">
+    <SectionContainer
+      id="montana-proof"
+      bgColor="yellow"
+      borderPosition="bottom"
+    >
       <Container>
         <div className="mx-auto max-w-4xl text-center">
           <p className="font-black uppercase">An enacted state precedent</p>
@@ -133,9 +154,9 @@ export function MontanaProofSection() {
             Montana already moved the line.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Universal Right to Try is no longer a white-paper idea. Montana
-            enacted a broader, regulated access framework and completed the
-            rules needed to license experimental treatment centers.
+            Montana&apos;s Universal Right to Try law is enacted, regulated, and
+            ready for licensed experimental treatment centers. The precedent
+            exists. Right to Trial carries it forward.
           </p>
         </div>
 
@@ -146,7 +167,9 @@ export function MontanaProofSection() {
               className={`${index === 2 ? "bg-brutal-pink" : index === 3 ? "bg-brutal-cyan" : "bg-background"} gap-3 rounded-none border-4 border-primary p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}
             >
               <p className="text-4xl font-black">{milestone.year}</p>
-              <h3 className="text-xl font-black uppercase">{milestone.title}</h3>
+              <h3 className="text-xl font-black uppercase">
+                {milestone.title}
+              </h3>
               <p className="font-bold">{milestone.text}</p>
             </Card>
           ))}
@@ -154,9 +177,18 @@ export function MontanaProofSection() {
 
         <p className="mt-10 text-center font-bold">
           Read the official{" "}
-          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaSb535}>enrolled SB 535</SourceLink>,{" "}
-          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaRules}>final rules</SourceLink>, and{" "}
-          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaLicensing}>licensing page</SourceLink>.
+          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaSb535}>
+            enrolled SB 535
+          </SourceLink>
+          ,{" "}
+          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaRules}>
+            final rules
+          </SourceLink>
+          , and{" "}
+          <SourceLink href={RIGHT_TO_TRY_SOURCES.montanaLicensing}>
+            licensing page
+          </SourceLink>
+          .
         </p>
       </Container>
     </SectionContainer>
@@ -189,8 +221,8 @@ export function RightToTryEvolutionSection() {
     },
     {
       icon: Database,
-      label: "Institute model",
-      title: "Access that learns",
+      label: "Right to Trial",
+      title: "Every patient becomes evidence",
       bullets: [
         "Use standard outcome measures before and after treatment.",
         "Pool comparable results across patients and centers.",
@@ -208,38 +240,48 @@ export function RightToTryEvolutionSection() {
             Open the door. Then learn from every person who walks through it.
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-            The law creates access, licensing, consent, and oversight. The
-            Institute&apos;s decentralized FDA model adds standardized outcomes,
-            pooled evidence, and faster learning.
+            Montana created a licensed path to treatment. Right to Trial adds
+            pragmatic trials, standardized outcomes, and shared evidence so each
+            patient can help the next one.
           </p>
         </div>
 
         <div className="mt-12 grid gap-7 lg:grid-cols-3">
-          {columns.map(({ icon: Icon, label, title, bullets, color }, index) => (
-            <div key={label} className="relative">
-              <Card
-                className={`${color} h-full gap-4 rounded-none border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <Icon className="h-12 w-12" strokeWidth={3} />
-                  <span className="text-5xl font-black">{index + 1}</span>
-                </div>
-                <p className="font-black uppercase">{label}</p>
-                <h3 className="text-3xl font-black uppercase leading-none">{title}</h3>
-                <ul className="space-y-3 font-bold">
-                  {bullets.map((bullet) => (
-                    <li key={bullet} className="flex gap-2">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={3} />
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-              {index < columns.length - 1 ? (
-                <ArrowRight className="absolute -right-6 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 rounded-full border-4 border-primary bg-brutal-yellow p-1 lg:block" strokeWidth={3} />
-              ) : null}
-            </div>
-          ))}
+          {columns.map(
+            ({ icon: Icon, label, title, bullets, color }, index) => (
+              <div key={label} className="relative">
+                <Card
+                  className={`${color} h-full gap-4 rounded-none border-4 border-primary p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <Icon className="h-12 w-12" strokeWidth={3} />
+                    <span className="text-5xl font-black">{index + 1}</span>
+                  </div>
+                  <p className="font-black uppercase">{label}</p>
+                  <h3 className="text-3xl font-black uppercase leading-none">
+                    {title}
+                  </h3>
+                  <ul className="space-y-3 font-bold">
+                    {bullets.map((bullet) => (
+                      <li key={bullet} className="flex gap-2">
+                        <CheckCircle2
+                          className="mt-0.5 h-5 w-5 shrink-0"
+                          strokeWidth={3}
+                        />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+                {index < columns.length - 1 ? (
+                  <ArrowRight
+                    className="absolute -right-6 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 rounded-full border-4 border-primary bg-brutal-yellow p-1 lg:block"
+                    strokeWidth={3}
+                  />
+                ) : null}
+              </div>
+            ),
+          )}
         </div>
       </Container>
     </SectionContainer>
@@ -312,17 +354,22 @@ export function StateSupportSection({
     >
       <Container size="lg">
         <div className="mx-auto mb-10 max-w-4xl text-center">
-          <p className="font-black uppercase">Build the state map from real humans</p>
+          <p className="font-black uppercase">
+            Bring Right to Trial to every state
+          </p>
           <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Should your state consider Universal Right to Try?
+            Should every patient in your state have the Right to Trial?
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Tell us where you live, how you see the proposal, and what role you
-            could play. The Institute will use the responses to choose the next
-            state education pages, clinician briefings, and public events.
+            Tell us where you live and what role you can play. Your response
+            helps the Institute build the next state page, clinician briefing,
+            and public event.
           </p>
         </div>
-        <RightToTrySupportForm initialRole={initialRole} initialState={initialState} />
+        <RightToTrySupportForm
+          initialRole={initialRole}
+          initialState={initialState}
+        />
       </Container>
     </SectionContainer>
   );
@@ -343,16 +390,21 @@ export function StateCampaignMapSection() {
             Montana proved a path. Missouri is the next active state.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Pick any state to record local interest. This map tracks the
-            Institute&apos;s education work: enacted precedent, active education,
-            and where we are still listening.
+            Pick any state and put it on the map. Montana is the enacted
+            precedent. Missouri is active now. Every other state can be next.
           </p>
         </div>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3 font-black uppercase">
-          <span className="border-4 border-primary bg-brutal-green px-3 py-2">Enacted precedent</span>
-          <span className="border-4 border-primary bg-brutal-pink px-3 py-2">Active education</span>
-          <span className="border-4 border-primary bg-background px-3 py-2">Listening</span>
+          <span className="border-4 border-primary bg-brutal-green px-3 py-2">
+            Enacted precedent
+          </span>
+          <span className="border-4 border-primary bg-brutal-pink px-3 py-2">
+            Active education
+          </span>
+          <span className="border-4 border-primary bg-background px-3 py-2">
+            Listening
+          </span>
         </div>
 
         <div className="mt-8 grid grid-cols-5 gap-2 sm:grid-cols-10">
@@ -426,7 +478,9 @@ export function RoleActionSection() {
                 <p className="font-black uppercase">{role}</p>
                 <Icon className="h-12 w-12" strokeWidth={3} />
               </div>
-              <h3 className="mt-5 text-3xl font-black uppercase leading-none">{action}</h3>
+              <h3 className="mt-5 text-3xl font-black uppercase leading-none">
+                {action}
+              </h3>
               <p className="mt-4 font-bold">{text}</p>
               <span className="mt-auto flex items-center gap-2 pt-6 font-black uppercase">
                 Continue <ArrowRight className="h-5 w-5" />
@@ -445,14 +499,18 @@ export function MissouriCampaignSection() {
       <Container size="lg" className="text-center text-brutal-pink-foreground">
         <p className="font-black uppercase">Next active state: Missouri</p>
         <h2 className="mt-3 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          Help Missouri build a responsible version.
+          Help Missouri lead the next Right to Trial state.
         </h2>
         <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-          The Institute is collecting patient priorities, clinician safeguards,
-          research standards, and public questions before a Missouri proposal
-          is finalized.
+          Patients, clinicians, researchers, and public educators can build a
+          Missouri model where access creates evidence and every outcome helps
+          the next patient.
         </p>
-        <Button asChild size="lg" className={`${buttonShadow} mt-8 bg-brutal-yellow text-foreground`}>
+        <Button
+          asChild
+          size="lg"
+          className={`${buttonShadow} mt-8 bg-brutal-yellow text-foreground`}
+        >
           <Link href="/states/missouri">
             Open the Missouri page <ArrowRight className="h-5 w-5" />
           </Link>
@@ -468,10 +526,14 @@ export function UniversalRightToTryFinalCTA() {
       <Container size="lg" className="text-center">
         <Share2 className="mx-auto h-16 w-16" strokeWidth={3} />
         <h2 className="mt-5 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          One state proved it can move. Which state is next?
+          Montana opened the door. Bring Right to Trial to your state.
         </h2>
         <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-          <Button asChild size="lg" className={`${buttonShadow} bg-brutal-pink`}>
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-brutal-pink`}
+          >
             <a href="#state-support">
               Record my state <MapPin className="h-5 w-5" />
             </a>
