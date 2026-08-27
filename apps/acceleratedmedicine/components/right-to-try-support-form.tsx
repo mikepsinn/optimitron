@@ -47,14 +47,15 @@ export function RightToTrySupportForm({
         body: JSON.stringify({
           submissionKey: submissionKey.current,
           intent: variant,
-          name: formData.get("name"),
           state: formData.get("state"),
-          position: formData.get("position"),
           role: formData.get("role"),
           email: formData.get("email"),
           story: formData.get("story"),
           updates: formData.get("updates") === "on",
           companyWebsite: formData.get("companyWebsite"),
+          ...(variant === "volunteer"
+            ? { name: formData.get("name") }
+            : { position: formData.get("position") }),
         }),
       });
       const body = (await response.json()) as {
