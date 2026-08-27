@@ -363,6 +363,11 @@ function collectScreenshots(root, version) {
 }
 
 function isRedirectOnlyScreenshotRoute(routeName) {
+  const siteAppRoute = getSiteAppRoute(routeName);
+  if (siteAppRoute) {
+    return siteAppRoute.routeName.endsWith("-redirect");
+  }
+
   const manifestPath = routePaths.get(routeName);
   if (manifestPath && isRedirectOnlyRoutePath(manifestPath)) {
     return true;
