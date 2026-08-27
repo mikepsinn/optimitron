@@ -467,6 +467,22 @@ export function StateSupportSection({
   );
 }
 
+// Standard US tile-grid map positions: [row, column] on an 11-column grid.
+const STATE_TILE_POSITIONS: Record<string, [number, number]> = {
+  AK: [0, 0], ME: [0, 10],
+  WI: [1, 5], VT: [1, 9], NH: [1, 10],
+  WA: [2, 0], ID: [2, 1], MT: [2, 2], ND: [2, 3], MN: [2, 4], IL: [2, 5],
+  MI: [2, 7], NY: [2, 8], MA: [2, 9],
+  OR: [3, 0], NV: [3, 1], WY: [3, 2], SD: [3, 3], IA: [3, 4], IN: [3, 5],
+  OH: [3, 6], PA: [3, 7], NJ: [3, 8], CT: [3, 9], RI: [3, 10],
+  CA: [4, 0], UT: [4, 1], CO: [4, 2], NE: [4, 3], MO: [4, 4], KY: [4, 5],
+  WV: [4, 6], VA: [4, 7], MD: [4, 8], DE: [4, 9],
+  AZ: [5, 1], NM: [5, 2], KS: [5, 3], AR: [5, 4], TN: [5, 5], NC: [5, 6],
+  SC: [5, 7],
+  OK: [6, 3], LA: [6, 4], MS: [6, 5], AL: [6, 6], GA: [6, 7],
+  HI: [7, 0], TX: [7, 3], FL: [7, 8],
+};
+
 export function StateCampaignMapSection() {
   const stageClasses: Record<StateCampaignStage, string> = {
     "enacted-model": "bg-brutal-green",
@@ -499,18 +515,29 @@ export function StateCampaignMapSection() {
           </span>
         </div>
 
-        <div className="mt-8 grid grid-cols-5 gap-2 sm:grid-cols-10">
-          {STATE_CAMPAIGNS.map((campaign) => (
-            <Link
-              key={campaign.abbreviation}
-              aria-label={`${campaign.name}: ${campaign.stageLabel}`}
-              className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-4 border-primary text-sm font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] sm:text-base`}
-              href={stateCampaignHref(campaign)}
-              title={`${campaign.name}: ${campaign.stageLabel}`}
-            >
-              {campaign.abbreviation}
-            </Link>
-          ))}
+        <div className="mx-auto mt-8 grid max-w-3xl grid-cols-[repeat(11,minmax(0,1fr))] gap-1 sm:gap-2">
+          {STATE_CAMPAIGNS.map((campaign) => {
+            const position = STATE_TILE_POSITIONS[campaign.abbreviation];
+            return (
+              <Link
+                key={campaign.abbreviation}
+                aria-label={`${campaign.name}: ${campaign.stageLabel}`}
+                className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-2 border-primary text-[10px] font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:border-4 sm:text-base sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]`}
+                href={stateCampaignHref(campaign)}
+                style={
+                  position
+                    ? {
+                        gridColumnStart: position[1] + 1,
+                        gridRowStart: position[0] + 1,
+                      }
+                    : undefined
+                }
+                title={`${campaign.name}: ${campaign.stageLabel}`}
+              >
+                {campaign.abbreviation}
+              </Link>
+            );
+          })}
         </div>
       </Container>
     </SectionContainer>
