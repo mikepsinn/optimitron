@@ -645,7 +645,10 @@ export default async function LovePage() {
               <Link className={buttonClassName} href={ROUTES.vote}>
                 Vote now
               </Link>
-              <LoveShareButton className={secondaryButtonClassName} />
+              <LoveShareButton
+                className={secondaryButtonClassName}
+                value={referralUrl}
+              />
             </div>
           </div>
         </div>

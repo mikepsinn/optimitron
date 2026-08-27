@@ -20,7 +20,7 @@ const apocalypseCount = Math.round(
 ).toLocaleString("en-US");
 
 const CAMPAIGN_ORIGIN = "https://warondisease.org";
-const POSTER_FAVICON_SRC = "/site-assets/warondisease/warondisease-favicon.png";
+const POSTER_FAVICON_SRC = "/assets/warondisease/warondisease-favicon.png";
 const FLYER_ROUTE_PROMPT =
   "Plan a one-hour flyer route for me. Use my current location if you have it. Otherwise, ask for my neighborhood or ZIP code. Find nearby places likely to permit community flyers, such as libraries, coffee shops, community centers, campuses, laundromats, grocery stores, clinics, and public bulletin boards. Rank them by likely permission, foot traffic, opening hours, and travel time. Put them in the best order to visit. Include each address and tell me whom to ask before posting. Do not recommend posting anywhere without permission.";
 
@@ -189,6 +189,12 @@ export default async function PosterPage({
               overflow: hidden !important;
             }
 
+            /*
+             * The shared Layout nests <nav> inside a sticky <header>, so
+             * hiding nav alone leaves the campaign header printing above the
+             * page-sized sheet. Hide the header itself.
+             */
+            header,
             nav,
             footer:not(.poster-footer),
             [data-print-hidden="true"] {

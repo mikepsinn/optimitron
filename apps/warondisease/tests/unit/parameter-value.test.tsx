@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import type { Parameter } from "@optimitron/data/parameters"
-import { ParameterValue } from "../../../../packages/site-kit/src/components/shared/ParameterValue"
+import {
+  ParameterInline,
+  ParameterValue,
+} from "../../../../packages/site-kit/src/components/shared/ParameterValue"
 
 /**
  * The campaign pages migrated out of Optimitron call ParameterValue with two
@@ -74,5 +77,15 @@ describe("ParameterValue", () => {
       />,
     )
     expect(screen.queryByRole("button")).toBeNull()
+  })
+
+  it("honours valueOverride in ParameterInline too", () => {
+    // ParameterInline takes Omit<ParameterValueProps, "showPopover" | "as">, so
+    // it accepts valueOverride from the shared props. It previously ignored it
+    // and printed the formatted parameter, silently discarding the caller's
+    // number.
+    render(<ParameterInline param={bare} display="integer" valueOverride="1.2%" />)
+    expect(screen.getByText("1.2%")).toBeTruthy()
+    expect(screen.queryByText("42")).toBeNull()
   })
 })

@@ -313,10 +313,17 @@ export default function FixAiPage() {
               to one human you would not want to die of a disease.
             </li>
           </ol>
+          {/*
+            * Visually hidden by hand rather than with `sr-only`: that utility
+            * sets `white-space: nowrap`, and the copy button reads innerText,
+            * which follows rendered whitespace. Under sr-only the three
+            * numbered steps copy out as one run-on line.
+            */}
           <pre
             aria-hidden="true"
-            className="sr-only"
+            className="absolute h-px w-px overflow-hidden whitespace-pre-wrap"
             id="fix-ai-correct-answer-copy-source"
+            style={{ clip: "rect(0 0 0 0)", clipPath: "inset(50%)" }}
           >
             {FIX_AI_CORRECT_ANSWER_TEXT}
           </pre>

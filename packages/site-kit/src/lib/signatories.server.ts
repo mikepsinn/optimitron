@@ -175,8 +175,12 @@ export async function getPublicSignatoriesPage(
   options: PublicSignatoriesOptions,
 ): Promise<PublicSignatoriesPage | null> {
   const { referendumSlug } = options
-  const referendum = await prisma.referendum.findUnique({
-    where: { slug: referendumSlug },
+  // Optimitron's getReferendumSiteContext looked this up without a deletedAt
+  // filter while the signatory queries below all use one. A soft-deleted
+  // referendum should not render a signatory page, so this diverges from the
+  // original deliberately and matches the rest of the file.
+  const referendum = await prisma.referendum.findFirst({
+    where: { slug: referendumSlug, deletedAt: null },
     select: { id: true },
   })
 
@@ -223,7 +227,13 @@ export async function getPublicSignatoriesPage(
     referendumId: signatoryReferendumIdFilter,
   });
 
-  const requestedPage = Math.max(1, Math.floor(options.signersPage ?? 1));
+  // Math.floor(NaN) is NaN and Math.max(1, NaN) is NaN, which would poison the
+  // page number and the slice bounds. The /signatories caller runs the value
+  // through parsePositivePageParam first, but this function is exported.
+  const rawPage = Number(options.signersPage ?? 1);
+  const requestedPage = Number.isFinite(rawPage)
+    ? Math.max(1, Math.floor(rawPage))
+    : 1;
 
   const [
     individualCount,

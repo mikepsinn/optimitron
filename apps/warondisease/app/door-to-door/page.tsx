@@ -214,8 +214,15 @@ export default async function DoorToDoorPage({
               overflow: visible !important;
             }
 
+            /*
+             * "body > footer" never matched the shared Layout's footer, which
+             * sits inside a wrapper div, and the nav is inside the sticky
+             * header. Both chrome sections were printing around the canvass
+             * sheets. The sheet's own collector footer stays.
+             */
+            header,
             nav,
-            body > footer,
+            footer:not(.canvass-collector),
             [data-print-hidden="true"] {
               display: none !important;
             }

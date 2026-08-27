@@ -332,12 +332,14 @@ export function ParameterInline({
   display,
   figures,
   className,
+  valueOverride,
 }: Omit<ParameterValueProps, "showPopover" | "as">) {
   const resolvedFormat = resolveFormatOptions(param, format, display, figures ?? 3)
   const text =
-    display === "integer"
+    valueOverride ??
+    (display === "integer"
       ? String(Math.round(param.value))
-      : formatParameter(param, resolvedFormat)
+      : formatParameter(param, resolvedFormat))
 
   return <span className={className}>{text}</span>
 }

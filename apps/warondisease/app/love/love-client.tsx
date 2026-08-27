@@ -6,13 +6,15 @@ import { copyTextToClipboard } from "@/lib/clipboard";
 
 interface LoveShareButtonProps {
   className?: string;
+  /** URL to copy. Falls back to the current page when absent. */
+  value?: string;
 }
 
-export function LoveShareButton({ className }: LoveShareButtonProps) {
+export function LoveShareButton({ className, value }: LoveShareButtonProps) {
   const [label, setLabel] = useState("Share this page");
 
   function handleClick() {
-    void copyTextToClipboard(window.location.href)
+    void copyTextToClipboard(value ?? window.location.href)
       .then(() => {
         setLabel("Copied!");
         window.setTimeout(() => setLabel("Share this page"), 2000);
