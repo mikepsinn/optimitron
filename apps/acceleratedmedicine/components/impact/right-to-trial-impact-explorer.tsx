@@ -117,19 +117,20 @@ export function RightToTrialImpactExplorer() {
           <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div>
               <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
-                Interactive impact explorer
+                Right to Trial impact
               </p>
               <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-                How many years are trapped in the treatment queue?
+                We can find treatments {Math.round(centralImpact.yearsEarlier)}
+                {" "}years sooner.
               </h1>
               <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-                At today&apos;s pace, the average disease without an effective
-                treatment waits{" "}
+                Today, the average disease without an effective treatment waits{" "}
                 {Math.round(
                   RIGHT_TO_TRIAL_SOURCE_PARAMETERS.statusQuoAverageWait.value,
                 )}{" "}
-                years for its first one. Move one lever and watch what
-                patient-powered pragmatic trials could change.
+                years for its first one. Give patients the right to join
+                low-cost clinical trials, and the central estimate falls to{" "}
+                {centralImpact.averageWaitYears.toFixed(1)} years.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Button
@@ -138,7 +139,7 @@ export function RightToTrialImpactExplorer() {
                   size="lg"
                 >
                   <a href="#turn-the-222-year-wait-into-a-number-we-can-live-with">
-                    Move the lever <ArrowRight className="h-5 w-5" />
+                    Try the numbers <ArrowRight className="h-5 w-5" />
                   </a>
                 </Button>
                 <Button
@@ -161,15 +162,18 @@ export function RightToTrialImpactExplorer() {
               <div className="rotate-2 border-4 border-primary bg-brutal-yellow p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                 <Zap className="h-16 w-16" strokeWidth={3} />
                 <p className="mt-5 text-lg font-black uppercase">
-                  Central scenario
+                  Central estimate
                 </p>
                 <p className="text-7xl font-black uppercase leading-none">
                   {Math.round(centralImpact.yearsEarlier)}
                 </p>
                 <p className="text-2xl font-black uppercase">years earlier</p>
                 <p className="mt-4 text-lg font-bold">
-                  The average first effective treatment arrives within a human
-                  lifetime instead of several lifetimes.
+                  The average wait falls from{" "}
+                  {Math.round(
+                    RIGHT_TO_TRIAL_SOURCE_PARAMETERS.statusQuoAverageWait.value,
+                  )}{" "}
+                  years to {centralImpact.averageWaitYears.toFixed(1)} years.
                 </p>
               </div>
             </div>
@@ -186,10 +190,10 @@ export function RightToTrialImpactExplorer() {
         <Container>
           <div className="mx-auto max-w-5xl text-center">
             <p className="font-black uppercase text-brutal-pink-foreground">
-              Move the treatment-discovery rate
+              Change the discovery rate
             </p>
             <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter text-brutal-pink-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-              Turn the 222-year wait into a number we can live with.
+              See how much sooner treatments reach patients.
             </h2>
           </div>
 
@@ -272,7 +276,7 @@ export function RightToTrialImpactExplorer() {
 
             <div className="mt-7 border-4 border-primary bg-primary p-5 text-center text-primary-foreground">
               <p className="text-4xl font-black uppercase leading-none sm:text-5xl">
-                {impact.yearsEarlier.toFixed(0)} years returned to patients
+                {impact.yearsEarlier.toFixed(0)} years sooner
               </p>
             </div>
           </div>
@@ -280,42 +284,41 @@ export function RightToTrialImpactExplorer() {
           <div aria-live="polite" className="mt-10 grid gap-6 md:grid-cols-3">
             <ImpactCard
               color="bg-brutal-yellow"
-              label="Premature deaths prevented across future generations"
+              label="Future deaths prevented by faster treatments"
               value={compactNumber(impact.livesSaved, 2)}
             />
             <ImpactCard
               color="bg-brutal-cyan"
-              label="Healthy years restored"
+              label="Years of healthy life saved"
               value={compactNumber(impact.dalysAverted, 0)}
             />
             <ImpactCard
               color="bg-background"
-              label="Launch cost per healthy year restored"
+              label="Cost to save one healthy year"
               value={`$${impact.costPerDaly.toFixed(6)}`}
             />
           </div>
 
           <details className="mt-8 border-4 border-primary bg-background p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <summary className="cursor-pointer text-xl font-black uppercase">
-              See the math
+              How we calculated it
             </summary>
             <div className="mt-5 space-y-4 font-bold">
               <p>
-                The calculation moves the average treatment schedule forward by
-                multiplying today&apos;s discovery rate. It then applies those
-                recovered years to the share of disease deaths and healthy-life
-                loss that biomedical progress can eventually prevent.
+                Faster discovery moves every future treatment closer. The model
+                applies those earlier treatments to the share of disease deaths
+                and lost healthy years that medical progress can prevent.
               </p>
               <p>
-                The central launch estimate is{" "}
+                The estimated launch cost is{" "}
                 {money(RIGHT_TO_TRIAL_SOURCE_PARAMETERS.launchCost.value)}: $15
-                million for a 50-state education and adoption effort plus $50
-                million for the shared registry&apos;s first decade.
+                million to bring Right to Trial to all 50 states plus $50
+                million to operate the shared treatment registry for a decade.
               </p>
               <p>
-                The large totals span future generations. They are the
-                cumulative benefit of moving the treatment schedule forward
-                once, not a count of people alive today.
+                The death and healthy-life totals include future generations.
+                They measure the lasting benefit of finding treatments sooner,
+                not only the people alive today.
               </p>
               <p>
                 At this setting, the model moves the discovery rate from{" "}
@@ -339,12 +342,13 @@ export function RightToTrialImpactExplorer() {
           <div className="mx-auto max-w-5xl text-center">
             <Users className="mx-auto h-14 w-14" strokeWidth={3} />
             <h2 className="mt-4 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Same trial budget. Far more patients included.
+              Give more patients a place in the trial.
             </h2>
             <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-              Pragmatic trials collect useful evidence through ordinary care.
-              Move the budget and compare how many patients the same dollars can
-              include.
+              Traditional trials spend about $41,000 per participant. Pragmatic
+              trials can collect useful results through ordinary care for $929
+              per participant. Move the budget and see how many people those
+              same dollars can include.
             </p>
           </div>
 
@@ -424,11 +428,12 @@ export function RightToTrialImpactExplorer() {
           <div className="mx-auto max-w-5xl border-4 border-primary bg-brutal-pink p-7 text-center shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] sm:p-10">
             <BookOpen className="mx-auto h-14 w-14" strokeWidth={3} />
             <h2 className="mt-4 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl">
-              The arithmetic is public. The next state can be yours.
+              Help your state find treatments faster.
             </h2>
             <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-              Read the proposal, inspect every assumption, or tell us where you
-              want Right to Trial next.
+              Tell us where you live and why this matters. We will use every
+              response to show patients, clinicians, and state leaders how many
+              lives faster trials can change.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <Button
@@ -437,7 +442,8 @@ export function RightToTrialImpactExplorer() {
                 size="lg"
               >
                 <Link href="/#state-support">
-                  Put my state on the map <ArrowRight className="h-5 w-5" />
+                  Bring Right to Trial to my state{" "}
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button

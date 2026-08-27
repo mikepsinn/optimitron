@@ -3,28 +3,28 @@
 ## Metadata
 
 - Page title: Right to Trial Impact | Institute for Accelerated Medicine
-- Meta description: Explore how Right to Trial, pragmatic clinical trials, and shared evidence could accelerate first treatments and include more patients in research.
+- Meta description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Canonical: https://acceleratedmedicine.org/impact
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
-- INTERACTIVE IMPACT EXPLORER
-## HOW MANY YEARS ARE TRAPPED IN THE TREATMENT QUEUE?
-- At today's pace, the average disease without an effective treatment waits 222 years for its first one. Move one lever and watch what patient-powered pragmatic trials could change.
-- [MOVE THE LEVER](#turn-the-222-year-wait-into-a-number-we-can-live-with)
+- RIGHT TO TRIAL IMPACT
+## WE CAN FIND TREATMENTS 181 YEARS SOONER.
+- Today, the average disease without an effective treatment waits 222 years for its first one. Give patients the right to join low-cost clinical trials, and the central estimate falls to 40.5 years.
+- [TRY THE NUMBERS](#turn-the-222-year-wait-into-a-number-we-can-live-with)
 - [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
-- CENTRAL SCENARIO
+- CENTRAL ESTIMATE
 - 181
 - YEARS EARLIER
-- The average first effective treatment arrives within a human lifetime instead of several lifetimes.
-- MOVE THE TREATMENT-DISCOVERY RATE
-### TURN THE 222-YEAR WAIT INTO A NUMBER WE CAN LIVE WITH.
+- The average wait falls from 222 years to 40.5 years.
+- CHANGE THE DISCOVERY RATE
+### SEE HOW MUCH SOONER TREATMENTS REACH PATIENTS.
 - TREATMENT DISCOVERY
 - 5.48× faster
 - RESET
@@ -35,21 +35,21 @@
 - YEARS
 - WITH RIGHT TO TRIAL
 - 40.5
-- 181 YEARS RETURNED TO PATIENTS
+- 181 YEARS SOONER
 - 9.19B
-- PREMATURE DEATHS PREVENTED ACROSS FUTURE GENERATIONS
+- FUTURE DEATHS PREVENTED BY FASTER TREATMENTS
 - 483B
-- HEALTHY YEARS RESTORED
+- YEARS OF HEALTHY LIFE SAVED
 - $0.000134
-- LAUNCH COST PER HEALTHY YEAR RESTORED
-- SEE THE MATH
-- The calculation moves the average treatment schedule forward by multiplying today's discovery rate. It then applies those recovered years to the share of disease deaths and healthy-life loss that biomedical progress can eventually prevent.
-- The central launch estimate is $65M: $15 million for a 50-state education and adoption effort plus $50 million for the shared registry's first decade.
-- The large totals span future generations. They are the cumulative benefit of moving the treatment schedule forward once, not a count of people alive today.
+- COST TO SAVE ONE HEALTHY YEAR
+- HOW WE CALCULATED IT
+- Faster discovery moves every future treatment closer. The model applies those earlier treatments to the share of disease deaths and lost healthy years that medical progress can prevent.
+- The estimated launch cost is $65M: $15 million to bring Right to Trial to all 50 states plus $50 million to operate the shared treatment registry for a decade.
+- The death and healthy-life totals include future generations. They measure the lasting benefit of finding treatments sooner, not only the people alive today.
 - At this setting, the model moves the discovery rate from 15 to 82.2 first treatments per year and clears today's untreated-disease queue in 80.9 years.
 - [Open every parameter, formula, and citation](https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html)
-### SAME TRIAL BUDGET. FAR MORE PATIENTS INCLUDED.
-- Pragmatic trials collect useful evidence through ordinary care. Move the budget and compare how many patients the same dollars can include.
+### GIVE MORE PATIENTS A PLACE IN THE TRIAL.
+- Traditional trials spend about $41,000 per participant. Pragmatic trials can collect useful results through ordinary care for $929 per participant. Move the budget and see how many people those same dollars can include.
 - TRIAL BUDGET: $1M
 - $100K
 - $10M
@@ -61,11 +61,11 @@
 - 1,076
 - $929 per participant
 - 44.1× LOWER COST PER PARTICIPANT
-### THE ARITHMETIC IS PUBLIC. THE NEXT STATE CAN BE YOURS.
-- Read the proposal, inspect every assumption, or tell us where you want Right to Trial next.
-- [PUT MY STATE ON THE MAP](/#state-support)
-### A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT
-- See what the platonic ideal of healthcare and clinical trials will look like when dFDA frameworks are widely adopted.
+### HELP YOUR STATE FIND TREATMENTS FASTER.
+- Tell us where you live and why this matters. We will use every response to show patients, clinicians, and state leaders how many lives faster trials can change.
+- [BRING RIGHT TO TRIAL TO MY STATE](/#state-support)
+### HOW PATIENTS, CLINICIANS, AND RESEARCHERS FIND WHAT WORKS
+- Patients find trials. Clinicians compare options. Researchers learn from every result. Here is how a decentralized FDA makes all three easier.
 #### How it Works For Patients
 ##### Find the Most Promising Treatment for Your Condition
 - Search for trials based on your condition, location, and preferences.

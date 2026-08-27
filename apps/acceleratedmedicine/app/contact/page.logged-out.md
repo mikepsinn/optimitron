@@ -6,10 +6,10 @@
 - Meta description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Canonical: https://acceleratedmedicine.org/contact
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
@@ -47,6 +47,7 @@
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT

@@ -70,16 +70,16 @@ export function UniversalRightToTryHero() {
         <div className="grid items-center gap-10 lg:grid-cols-[1.35fr_0.65fr]">
           <div>
             <p className="mb-5 inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 text-sm font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:text-base">
-              Right to Trial
+              The Right to Trial
             </p>
             <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-              Every patient has the Right to Trial.
+              We can eradicate disease.
             </h1>
             <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-              Every patient should be able to join a pragmatic clinical trial
-              for the most promising treatments. Every result should help the
-              next patient. Montana opened the door. Now every state can turn
-              access into evidence.
+              Give every patient the right to join a clinical trial for the most
+              promising treatments—with their clinician, through ordinary care,
+              wherever they live. Every patient gets more options. Every result
+              helps us find what works.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button
@@ -88,8 +88,7 @@ export function UniversalRightToTryHero() {
                 className={`${buttonShadow} bg-brutal-pink`}
               >
                 <Link href="/montana">
-                  See Montana&apos;s precedent{" "}
-                  <ArrowRight className="h-5 w-5" />
+                  See how Montana did it <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button
@@ -98,8 +97,7 @@ export function UniversalRightToTryHero() {
                 className={`${buttonShadow} bg-brutal-yellow`}
               >
                 <a href="#state-support">
-                  Bring Right to Trial to my state{" "}
-                  <MapPin className="h-5 w-5" />
+                  Bring it to my state <MapPin className="h-5 w-5" />
                 </a>
               </Button>
             </div>
@@ -108,13 +106,17 @@ export function UniversalRightToTryHero() {
           <div className="relative mx-auto w-full max-w-sm">
             <div className="rotate-2 border-4 border-primary bg-brutal-yellow p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
               <Landmark className="h-16 w-16" strokeWidth={3} />
-              <p className="mt-5 text-lg font-black uppercase">Montana</p>
+              <p className="mt-5 text-lg font-black uppercase">
+                How Montana is accelerating clinical discovery
+              </p>
               <p className="text-6xl font-black uppercase leading-none">
                 SB 535
               </p>
               <p className="mt-4 text-lg font-bold">
-                Signed in 2025. Final rules effective in 2026. Experimental
-                treatment center applications are available now.
+                Montana removed the terminal-illness restriction, licensed
+                experimental treatment centers, and required outcome monitoring.
+                Patients and providers now have a practical path to more
+                treatment options.
               </p>
             </div>
           </div>
@@ -156,14 +158,18 @@ export function MontanaProofSection() {
     >
       <Container>
         <div className="mx-auto max-w-4xl text-center">
-          <p className="font-black uppercase">An enacted state precedent</p>
+          <p className="font-black uppercase">
+            How Montana is accelerating clinical discovery
+          </p>
           <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Montana already moved the line.
+            Patients can reach treatments. Providers can deliver them.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Montana&apos;s Universal Right to Try law is enacted, regulated, and
-            ready for licensed experimental treatment centers. The precedent
-            exists. Right to Trial carries it forward.
+            Montana removed the terminal-illness restriction in 2023. In 2025,
+            SB 535 created licensed experimental treatment centers, direct
+            provider-patient payment agreements, outcome monitoring, adverse
+            event reporting, and an access requirement funded by 2% of each
+            center&apos;s net profits.
           </p>
         </div>
 
@@ -206,34 +212,34 @@ export function RightToTryEvolutionSection() {
   const columns = [
     {
       icon: Scale,
-      label: "Before",
-      title: "A narrow exception",
+      label: "Traditional Right to Try",
+      title: "Permission without a delivery system",
       bullets: [
-        "Eligibility can depend on a narrow diagnosis or federal pathway.",
-        "No dedicated state license for an experimental treatment center.",
-        "Patients may still have nowhere lawful and supervised to go.",
+        "Federal eligibility is limited to patients with a life-threatening disease or condition.",
+        "Manufacturers and providers may still decline to participate.",
+        "Montana's earlier law did not license treatment centers or create comparable public results.",
       ],
       color: "bg-background",
     },
     {
       icon: Building2,
-      label: "Montana SB 535",
-      title: "A licensed access path",
+      label: "Montana SB 422 + SB 535",
+      title: "A practical treatment pathway",
       bullets: [
-        "Licensed centers operate under state rules and inspection.",
-        "Patients review approved options with a treating clinician.",
-        "Consent, safety, records, and professional oversight are explicit.",
+        "Montana removed the terminal-illness restriction in 2023.",
+        "Licensed centers and direct payment agreements give providers a place and a way to deliver treatment.",
+        "Centers must monitor outcomes and adverse events and devote 2% of net profits to access.",
       ],
       color: "bg-brutal-pink",
     },
     {
       icon: Database,
-      label: "Right to Trial",
-      title: "Every patient becomes evidence",
+      label: "Right to Trial proposal",
+      title: "Every patient can participate",
       bullets: [
-        "Use standard outcome measures before and after treatment.",
-        "Pool comparable results across patients and centers.",
-        "Publish useful treatment evidence for the next decision.",
+        "Let every patient join a pragmatic trial for the most promising treatments.",
+        "Give providers a clear way to be paid for treatment and trial services.",
+        "Collect and publish standardized results so everyone can see what works.",
       ],
       color: "bg-brutal-cyan",
     },
@@ -244,12 +250,13 @@ export function RightToTryEvolutionSection() {
       <Container>
         <div className="mx-auto max-w-5xl text-center">
           <h2 className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Open the door. Then learn from every person who walks through it.
+            What Montana changed. What Right to Trial adds.
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-            Montana created a licensed path to treatment. Right to Trial adds
-            pragmatic trials, standardized outcomes, and shared evidence so each
-            patient can help the next one.
+            Earlier Right to Try laws created permission for a narrow group of
+            patients, but not a delivery system or a public evidence system.
+            Montana built the delivery path. Right to Trial adds pragmatic
+            trials and published results.
           </p>
         </div>
 
@@ -299,23 +306,23 @@ export function PatientAccessFlowSection() {
   const steps = [
     {
       icon: Stethoscope,
-      title: "Review approved options",
-      text: "The patient and treating clinician review the condition, prior care, and approved choices.",
+      title: "Find promising treatments",
+      text: "See the treatments and trials most likely to help with your condition.",
     },
     {
       icon: ClipboardCheck,
-      title: "Choose with informed consent",
-      text: "The patient receives the known risks, possible benefits, costs, alternatives, and right to stop.",
+      title: "Choose with your clinician",
+      text: "Review the possible benefits, risks, costs, alternatives, and your right to stop.",
     },
     {
       icon: HeartPulse,
-      title: "Treat under licensed supervision",
-      text: "A licensed center and qualified professionals provide care, maintain records, and meet safety rules.",
+      title: "Receive supervised treatment",
+      text: "Get care from qualified professionals at a licensed treatment center.",
     },
     {
       icon: Microscope,
-      title: "Make the outcome useful",
-      text: "Standard measures turn one person's result into comparable evidence for future patients and clinicians.",
+      title: "Report what happened",
+      text: "Your result becomes part of a public comparison of treatment outcomes.",
     },
   ];
 
@@ -323,7 +330,7 @@ export function PatientAccessFlowSection() {
     <SectionContainer bgColor="pink" borderPosition="bottom">
       <Container>
         <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter text-brutal-pink-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-          One patient. One supervised choice. One more useful result.
+          Find a treatment. Join a trial. Report what happened.
         </h2>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {steps.map(({ icon: Icon, title, text }, index) => (
@@ -356,7 +363,9 @@ export function RightToTrialImpactPreviewSection() {
         <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div className="rotate-[-2deg] border-4 border-primary bg-brutal-cyan p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
             <Gauge className="h-14 w-14" strokeWidth={3} />
-            <p className="mt-5 font-black uppercase">Treatment timeline</p>
+            <p className="mt-5 font-black uppercase">
+              Average wait for a first treatment
+            </p>
             <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
               <div>
                 <p className="text-5xl font-black leading-none">
@@ -375,20 +384,20 @@ export function RightToTrialImpactPreviewSection() {
               </div>
             </div>
             <p className="mt-5 border-t-4 border-primary pt-5 text-3xl font-black uppercase leading-none">
-              {centralImpact.yearsEarlier.toFixed(1)} years returned to patients
+              {centralImpact.yearsEarlier.toFixed(1)} years sooner
             </p>
           </div>
 
           <div>
-            <p className="font-black uppercase">Explore the impact</p>
+            <p className="font-black uppercase">The world we can create</p>
             <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              What changes when every patient can help discover the next
-              treatment?
+              Discover treatments while today&apos;s patients are still alive.
             </h2>
             <p className="mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-              Move the discovery rate. Change the trial budget. See how Right to
-              Trial could compress the treatment queue, include more patients,
-              and make every result useful.
+              At today&apos;s pace, the average untreated disease waits 222
+              years for its first effective treatment. Give willing patients a
+              place in low-cost clinical trials, and the central estimate falls
+              to 41 years.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button
@@ -397,7 +406,7 @@ export function RightToTrialImpactPreviewSection() {
                 className={`${buttonShadow} bg-brutal-pink text-foreground`}
               >
                 <Link href="/impact">
-                  Explore the numbers <ArrowRight className="h-5 w-5" />
+                  See how much faster <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button
@@ -444,9 +453,9 @@ export function StateSupportSection({
             Should every patient in your state have the Right to Trial?
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Tell us where you live and what role you can play. Your response
-            helps the Institute build the next state page, clinician briefing,
-            and public event.
+            Tell us your state and why patients there need more options. Every
+            response shows where support is strongest and helps more people
+            learn what Right to Trial would change.
           </p>
         </div>
         <RightToTrySupportForm
@@ -513,32 +522,32 @@ export function RoleActionSection() {
     {
       icon: HeartPulse,
       role: "Patients and caregivers",
-      action: "Tell us what access would change",
-      text: "A short story can show why a lawful, supervised option matters when approved treatments are not enough.",
+      action: "Tell your story",
+      text: "Show what another supervised treatment option would mean when approved treatments are not enough.",
       href: "#state-support",
       color: "bg-brutal-pink",
     },
     {
       icon: Stethoscope,
       role: "Clinicians",
-      action: "Help define responsible care",
-      text: "Bring practical insight on consent, treatment review, monitoring, records, and patient safety.",
+      action: "Give patients another option",
+      text: "Help make consent, treatment review, monitoring, records, and patient safety work in real care.",
       href: "/states/missouri?role=clinician#state-support",
       color: "bg-brutal-yellow",
     },
     {
       icon: Microscope,
       role: "Researchers",
-      action: "Make every outcome comparable",
-      text: "Help define the small, standard outcome set that turns treatment access into cumulative evidence.",
+      action: "Turn care into discoveries",
+      text: "Choose the small set of outcomes that lets one patient's result improve treatment rankings for everyone.",
       href: "/research",
       color: "bg-brutal-cyan",
     },
     {
       icon: Users,
       role: "Public educators",
-      action: "Build a useful state page",
-      text: "Collect local questions, identify credible speakers, and explain the model without slogans or fog.",
+      action: "Make the case in your state",
+      text: "Share the patient story, answer local questions, and show what Montana already proved possible.",
       href: "/contact",
       color: "bg-background",
     },
@@ -548,7 +557,7 @@ export function RoleActionSection() {
     <SectionContainer bgColor="background" borderPosition="bottom">
       <Container>
         <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-          This only becomes real when the right humans show up.
+          Choose how you want to help patients get answers faster.
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {actions.map(({ icon: Icon, role, action, text, href, color }) => (
@@ -566,7 +575,7 @@ export function RoleActionSection() {
               </h3>
               <p className="mt-4 font-bold">{text}</p>
               <span className="mt-auto flex items-center gap-2 pt-6 font-black uppercase">
-                Continue <ArrowRight className="h-5 w-5" />
+                Get started <ArrowRight className="h-5 w-5" />
               </span>
             </Link>
           ))}
@@ -580,14 +589,14 @@ export function MissouriCampaignSection() {
   return (
     <SectionContainer bgColor="pink" borderPosition="bottom">
       <Container size="lg" className="text-center text-brutal-pink-foreground">
-        <p className="font-black uppercase">Next active state: Missouri</p>
+        <p className="font-black uppercase">Missouri can be next</p>
         <h2 className="mt-3 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          Help Missouri lead the next Right to Trial state.
+          Give Missouri patients the Right to Trial.
         </h2>
         <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-          Patients, clinicians, researchers, and public educators can build a
-          Missouri model where access creates evidence and every outcome helps
-          the next patient.
+          Montana showed that a state can give patients more supervised
+          treatment options. Missouri can take the next step: let every willing
+          patient join the search for treatments that work.
         </p>
         <Button
           asChild
@@ -595,7 +604,7 @@ export function MissouriCampaignSection() {
           className={`${buttonShadow} mt-8 bg-brutal-yellow text-foreground`}
         >
           <Link href="/states/missouri">
-            Open the Missouri page <ArrowRight className="h-5 w-5" />
+            Bring it to Missouri <ArrowRight className="h-5 w-5" />
           </Link>
         </Button>
       </Container>
@@ -609,7 +618,7 @@ export function UniversalRightToTryFinalCTA() {
       <Container size="lg" className="text-center">
         <Share2 className="mx-auto h-16 w-16" strokeWidth={3} />
         <h2 className="mt-5 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          Montana opened the door. Bring Right to Trial to your state.
+          Montana created a path. Bring Right to Trial to your state.
         </h2>
         <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
           <Button
@@ -618,12 +627,12 @@ export function UniversalRightToTryFinalCTA() {
             className={`${buttonShadow} bg-brutal-pink`}
           >
             <a href="#state-support">
-              Record my state <MapPin className="h-5 w-5" />
+              Bring it to my state <MapPin className="h-5 w-5" />
             </a>
           </Button>
           <Button asChild size="lg" className={`${buttonShadow} bg-background`}>
             <Link href="/model-act">
-              Read the model framework <BookOpen className="h-5 w-5" />
+              Read the proposed law <BookOpen className="h-5 w-5" />
             </Link>
           </Button>
         </div>

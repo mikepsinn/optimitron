@@ -80,14 +80,14 @@ export default function ModelActPage() {
     {
       icon: Scale,
       number: "05",
-      title: "Fair financial rules",
-      text: "Disclose every charge before treatment and prohibit misleading claims about access, results, or regulatory status.",
+      title: "Provider participation and fair costs",
+      text: "Let clinicians and treatment centers be paid for treatment and trial services. Disclose every charge before care.",
     },
     {
       icon: Database,
       number: "06",
       title: "Comparable outcomes",
-      text: "Use a small standard outcome set so each participating patient's result can strengthen the next decision.",
+      text: "Collect the same outcomes for each condition and publish de-identified results so patients, clinicians, and researchers can compare treatments.",
     },
   ];
 
@@ -105,8 +105,9 @@ export default function ModelActPage() {
           </h1>
           <p className="mx-auto mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
             Start with Montana&apos;s enacted licensing framework. Add pragmatic
-            trials and comparable outcomes. Give every patient another option
-            and make every result useful to the next patient.
+            trials, provider payment, and published outcomes. Give every patient
+            the right and practical ability to participate in a clinical trial
+            for the most promising treatments.
           </p>
         </Container>
       </SectionContainer>

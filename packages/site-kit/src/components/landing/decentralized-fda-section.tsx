@@ -20,11 +20,12 @@ export default function DecentralizedFDASection({
       <Container>
         <div className="mx-auto max-w-5xl text-center">
           <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            A decentralized framework for drug assessment
+            How patients, clinicians, and researchers find what works
           </h2>
           <p className="mx-auto mt-6 max-w-4xl text-xl font-bold text-balance">
-            See what the platonic ideal of healthcare and clinical trials will
-            look like when dFDA frameworks are widely adopted.
+            Patients find trials. Clinicians compare options. Researchers learn
+            from every result. Here is how a decentralized FDA makes all three
+            easier.
           </p>
         </div>
 

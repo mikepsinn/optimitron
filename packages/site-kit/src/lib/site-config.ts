@@ -1340,7 +1340,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
     description:
-      "Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.",
+      "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",

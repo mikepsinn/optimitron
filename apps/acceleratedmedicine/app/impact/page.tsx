@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     canonical: "/impact",
   },
   description:
-    "Explore how Right to Trial, pragmatic clinical trials, and shared evidence could accelerate first treatments and include more patients in research.",
+    "See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.",
   title: "Right to Trial Impact | Institute for Accelerated Medicine",
 };
 

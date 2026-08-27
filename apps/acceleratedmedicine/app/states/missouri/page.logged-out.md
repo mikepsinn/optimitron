@@ -6,10 +6,10 @@
 - Meta description: Help bring Right to Trial to every Missouri patient through pragmatic clinical trials and shared outcome evidence.
 - Canonical: https://acceleratedmedicine.org/states/missouri
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
@@ -30,7 +30,7 @@
 - [SEE THE RIGHT TO TRIAL FRAMEWORK](/model-act)
 - BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
-- Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
+- Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
 - YES
@@ -48,6 +48,7 @@
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT
