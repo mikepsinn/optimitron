@@ -1332,7 +1332,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // ============================================================================
   // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Universal Right to Try education, pragmatic trials, and public evidence
+  // Purpose: Right to Trial education, pragmatic trials, and public evidence
   // Audience: Patients, caregivers, clinicians, researchers, and state educators
   // Goal: Measure support, explain the Montana precedent, and equip state campaigns
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
@@ -1340,7 +1340,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
     description:
-      "Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.",
+      "Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
@@ -1407,7 +1407,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     footerSections: [
       {
         id: "right-to-try",
-        label: "RIGHT TO TRY",
+        label: "RIGHT TO TRIAL",
         items: [
           "rightToTryMontana",
           "rightToTryMissouri",

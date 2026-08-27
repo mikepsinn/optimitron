@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 
 ## Visible Page Copy
 
@@ -47,7 +47,7 @@
 #### INFRASTRUCTURE
 - Maintain secure tools for standardized outcome collection, anonymization, aggregation, analysis, and public treatment rankings.
 - MISSION: TOTAL DISEASE ERADICATION
-#### RIGHT TO TRY
+#### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)

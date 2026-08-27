@@ -3,28 +3,28 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 - Canonical: https://acceleratedmedicine.org
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: Universal Right to Try education for every state, with pragmatic clinical trials and public outcome data that help the next patient.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public outcomes that help the next patient.
 
 ## Visible Page Copy
 
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
-- UNIVERSAL RIGHT TO TRY
-## THE RIGHT TO TRY SHOULD NOT DEPEND ON YOUR ZIP CODE.
-- Montana created a broader path for patients and licensed clinicians to consider experimental treatments after evaluating approved options. The Institute is helping every state understand the model—and helping every patient's outcome become evidence for the next patient.
-- [SEE WHAT THE LAW DOES](/montana)
-- [BRING IT TO MY STATE](#state-support)
+- RIGHT TO TRIAL
+## EVERY PATIENT HAS THE RIGHT TO TRIAL.
+- Every patient should be able to join a pragmatic clinical trial for the most promising treatments. Every result should help the next patient. Montana opened the door. Now every state can turn access into evidence.
+- [SEE MONTANA'S PRECEDENT](/montana)
+- [BRING RIGHT TO TRIAL TO MY STATE](#state-support)
 - MONTANA
 - SB 535
 - Signed in 2025. Final rules effective in 2026. Experimental treatment center applications are available now.
 - AN ENACTED STATE PRECEDENT
 ### MONTANA ALREADY MOVED THE LINE.
-- Universal Right to Try is no longer a white-paper idea. Montana enacted a broader, regulated access framework and completed the rules needed to license experimental treatment centers.
+- Montana's Universal Right to Try law is enacted, regulated, and ready for licensed experimental treatment centers. The precedent exists. Right to Trial carries it forward.
 - 2015
 #### RIGHT TO TRY BEGINS
 - Montana creates an initial access path for eligible patients.
@@ -39,7 +39,7 @@
 - Final rules take effect and Montana publishes the experimental treatment center application.
 - Read the official [enrolled SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9), [final rules](https://dphhs.mt.gov/assets/rules/2026-427-Adp-Arm.pdf), and [licensing page](https://dphhs.mt.gov/oig/licensure/healthcarefacilitylicensure/lbfacilityapplications/lbexperimentaltreatmentcenters).
 ### OPEN THE DOOR. THEN LEARN FROM EVERY PERSON WHO WALKS THROUGH IT.
-- The law creates access, licensing, consent, and oversight. The Institute's decentralized FDA model adds standardized outcomes, pooled evidence, and faster learning.
+- Montana created a licensed path to treatment. Right to Trial adds pragmatic trials, standardized outcomes, and shared evidence so each patient can help the next one.
 - BEFORE
 #### A NARROW EXCEPTION
 - Eligibility can depend on a narrow diagnosis or federal pathway.
@@ -50,8 +50,7 @@
 - Licensed centers operate under state rules and inspection.
 - Patients review approved options with a treating clinician.
 - Consent, safety, records, and professional oversight are explicit.
-- INSTITUTE MODEL
-#### ACCESS THAT LEARNS
+#### EVERY PATIENT BECOMES EVIDENCE
 - Use standard outcome measures before and after treatment.
 - Pool comparable results across patients and centers.
 - Publish useful treatment evidence for the next decision.
@@ -64,9 +63,9 @@
 - A licensed center and qualified professionals provide care, maintain records, and meet safety rules.
 #### MAKE THE OUTCOME USEFUL
 - Standard measures turn one person's result into comparable evidence for future patients and clinicians.
-- BUILD THE STATE MAP FROM REAL HUMANS
-### SHOULD YOUR STATE CONSIDER UNIVERSAL RIGHT TO TRY?
-- Tell us where you live, how you see the proposal, and what role you could play. The Institute will use the responses to choose the next state education pages, clinician briefings, and public events.
+- BRING RIGHT TO TRIAL TO EVERY STATE
+### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
+- Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
 - YES
@@ -74,11 +73,11 @@
 - NO
 - WHY DOES THIS MATTER TO YOU? (optional)
 - EMAIL (optional)
-- Send me occasional updates about Universal Right to Try education in my state.
+- Send me occasional updates about Right to Trial in my state.
 - RECORD MY STATE RESPONSE
 - If you provide an email, we will send a confirmation. We will not sell or rent it.
 ### MONTANA PROVED A PATH. MISSOURI IS THE NEXT ACTIVE STATE.
-- Pick any state to record local interest. This map tracks the Institute's education work: enacted precedent, active education, and where we are still listening.
+- Pick any state and put it on the map. Montana is the enacted precedent. Missouri is active now. Every other state can be next.
 - ENACTED PRECEDENT
 - ACTIVE EDUCATION
 - LISTENING
@@ -438,15 +437,14 @@
 - [RESEARCHERS MAKE EVERY OUTCOME COMPARABLE Help define the small, standard outcome set that turns treatment access into cumulative evidence. CONTINUE](/research)
 - [PUBLIC EDUCATORS BUILD A USEFUL STATE PAGE Collect local questions, identify credible speakers, and explain the model without slogans or fog. CONTINUE](/contact)
 - NEXT ACTIVE STATE: MISSOURI
-### HELP MISSOURI BUILD A RESPONSIBLE VERSION.
-- The Institute is collecting patient priorities, clinician safeguards, research standards, and public questions before a Missouri proposal is finalized.
+### HELP MISSOURI LEAD THE NEXT RIGHT TO TRIAL STATE.
+- Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence and every outcome helps the next patient.
 - [OPEN THE MISSOURI PAGE](/states/missouri)
 ### 💀 DEATH CLOCK
-### ONE STATE PROVED IT CAN MOVE. WHICH STATE IS NEXT?
+### MONTANA OPENED THE DOOR. BRING RIGHT TO TRIAL TO YOUR STATE.
 - [RECORD MY STATE](#state-support)
 - [READ THE MODEL FRAMEWORK](/model-act)
 - MISSION: TOTAL DISEASE ERADICATION
-#### RIGHT TO TRY
 - [MONTANA MODEL](/montana)
 - [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)

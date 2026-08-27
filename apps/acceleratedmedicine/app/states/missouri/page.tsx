@@ -4,9 +4,9 @@ import { StateCampaignPage } from "@/components/state-campaign-page";
 import { getStateCampaign } from "@/lib/right-to-try";
 
 export const metadata: Metadata = {
-  title: "Missouri Universal Right to Try",
+  title: "Missouri Right to Trial",
   description:
-    "Missouri patients, clinicians, researchers, and public educators can help shape a responsible Universal Right to Try proposal.",
+    "Help bring Right to Trial to every Missouri patient through pragmatic clinical trials and shared outcome evidence.",
   alternates: {
     canonical: "https://acceleratedmedicine.org/states/missouri",
   },

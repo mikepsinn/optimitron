@@ -114,9 +114,9 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
         slug,
         stage: "active",
         stageLabel: "Active education",
-        headline: "Missouri can build the next state model.",
+        headline: "Missouri can bring Right to Trial to every patient.",
         summary:
-          "The Institute is assembling patients, clinicians, researchers, and public educators around a responsible Missouri proposal.",
+          "Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence for the next patient.",
       };
     }
 
@@ -126,9 +126,9 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
       slug,
       stage: "listening",
       stageLabel: "Listening for support",
-      headline: `Should ${name} build a Universal Right to Try path?`,
+      headline: `Should every patient in ${name} have the Right to Trial?`,
       summary:
-        "Tell the Institute which people and organizations want a state education page and a serious local conversation.",
+        "Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.",
     };
   },
 );
@@ -138,7 +138,5 @@ export function getStateCampaign(slug: string): StateCampaign | undefined {
 }
 
 export function stateCampaignHref(campaign: StateCampaign): string {
-  return campaign.name === "Montana"
-    ? "/montana"
-    : `/states/${campaign.slug}`;
+  return campaign.name === "Montana" ? "/montana" : `/states/${campaign.slug}`;
 }

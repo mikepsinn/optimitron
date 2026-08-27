@@ -16,7 +16,9 @@ export function generateStaticParams() {
   ).map((campaign) => ({ state: campaign.slug }));
 }
 
-export async function generateMetadata({ params }: StatePageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: StatePageProps): Promise<Metadata> {
   const { state } = await params;
   if (state === "montana") return {};
 
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
   if (!campaign) return {};
 
   return {
-    title: `${campaign.name} Universal Right to Try`,
+    title: `${campaign.name} Right to Trial`,
     description: campaign.summary,
     alternates: {
       canonical: `https://acceleratedmedicine.org/states/${campaign.slug}`,
