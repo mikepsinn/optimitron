@@ -178,6 +178,7 @@ jobs:
               - 'packages/site-kit/**'
               - 'packages/survey-embed/**'
               - 'packages/tracking/**'
+              - 'packages/wishonia-widget/**'
               - 'scripts/site-app-navigation.test.ts'
               - 'scripts/site-app-visual-routes.mjs'
               - 'scripts/smoke-site-apps.mjs'
