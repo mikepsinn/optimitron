@@ -2843,6 +2843,9 @@ importers:
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.9.1
+      '@radix-ui/react-avatar':
+        specifier: 1.1.2
+        version: 1.1.2(@types/react-dom@18.3.7)(@types/react@18.3.28)(react-dom@18.3.1)(react@18.3.1)
       '@sentry/nextjs':
         specifier: '*'
         version: 10.69.0(@opentelemetry/core@2.10.0)(@opentelemetry/sdk-trace-base@2.10.0)(next@15.5.15)(react@18.3.1)(webpack@5.105.4)

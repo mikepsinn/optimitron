@@ -52,6 +52,7 @@
     "@optimitron/db": "workspace:^",
     "@optimitron/neobrutalist-ui": "workspace:^",
     "@prisma/adapter-pg": "^7.8.0",
+    "@radix-ui/react-avatar": "1.1.2",
     "@t3-oss/env-nextjs": "^0.13.11",
     "bcryptjs": "3.0.3",
     "canvas-confetti": "^1.9.4",
