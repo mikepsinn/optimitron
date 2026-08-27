@@ -34,6 +34,7 @@ export const ROUTES = {
   findTrials: '/find-trials',
 
   // Research / Evidence
+  impact: '/impact',
   research: '/research',
   references: '/references',
 

@@ -205,6 +205,22 @@ export const NAV_ITEMS_MAP = {
       "experimental treatment licensing",
     ],
   },
+  rightToTrialImpact: {
+    id: "rightToTrialImpact",
+    label: "Impact",
+    path: ROUTES.impact,
+    description:
+      "Explore how patient-powered pragmatic trials could accelerate first treatments and include more people in research.",
+    emoji: "⚡",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Right to Trial impact",
+      "pragmatic clinical trials",
+      "treatment discovery",
+      "clinical trial cost",
+    ],
+  },
   volunteer: {
     id: "volunteer",
     label: "Volunteer",

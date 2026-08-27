@@ -1395,7 +1395,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       "rightToTryMissouri",
       "rightToTryStates",
       "rightToTryModelAct",
-      "research",
+      "rightToTrialImpact",
       "donate",
     ],
     sidebarSections: [],
@@ -1418,7 +1418,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "evidence",
         label: "EVIDENCE",
-        items: ["research", "faq"],
+        items: ["rightToTrialImpact", "research", "faq"],
       },
       {
         id: "support",
@@ -1432,8 +1432,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       websiteLabel: "AcceleratedMedicine.org",
     },
     impactAnalysis: {
-      url: "https://impact.warondisease.org",
-      label: "impact.warondisease.org",
+      url: "https://acceleratedmedicine.org/impact",
+      label: "acceleratedmedicine.org/impact",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {

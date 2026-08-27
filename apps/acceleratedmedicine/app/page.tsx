@@ -16,6 +16,7 @@ import {
   MissouriCampaignSection,
   MontanaProofSection,
   PatientAccessFlowSection,
+  RightToTrialImpactPreviewSection,
   RightToTryEvolutionSection,
   RoleActionSection,
   StateCampaignMapSection,
@@ -35,6 +36,7 @@ export default function HomePage() {
       <MontanaProofSection />
       <RightToTryEvolutionSection />
       <PatientAccessFlowSection />
+      <RightToTrialImpactPreviewSection />
       <StateSupportSection />
       <StateCampaignMapSection />
       <ParticipationGapSection />

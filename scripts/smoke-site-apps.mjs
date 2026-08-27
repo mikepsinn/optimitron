@@ -89,6 +89,7 @@ function getCampaignHomeFiles(appName) {
       "apps/acceleratedmedicine/components/landing/right-to-try-sections.tsx",
       "apps/acceleratedmedicine/components/right-to-try-support-form.tsx",
       "apps/acceleratedmedicine/lib/right-to-try.ts",
+      "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
       "packages/site-kit/src/components/landing/problem-statement.tsx",
       "packages/site-kit/src/components/landing/SystemProblemsSection.tsx",
       "packages/site-kit/src/components/landing/bottleneck-proof-section.tsx",
@@ -251,6 +252,16 @@ function getScreenshotRoutes(appName, siteVariant) {
 
   if (siteVariant === VARIANTS.ACCELERATED_MEDICINE) {
     const rightToTryRouteFiles = new Map([
+      [
+        "/impact",
+        [
+          "apps/acceleratedmedicine/app/impact/page.tsx",
+          "apps/acceleratedmedicine/components/impact/right-to-trial-impact-explorer.tsx",
+          "apps/acceleratedmedicine/lib/right-to-trial-impact.ts",
+          "packages/site-kit/src/components/landing/decentralized-fda-section.tsx",
+          "packages/site-kit/src/components/how-it-works/DfdaUserWorkflows.tsx",
+        ],
+      ],
       [
         "/contact",
         [

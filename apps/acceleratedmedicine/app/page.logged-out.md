@@ -63,6 +63,16 @@
 - A licensed center and qualified professionals provide care, maintain records, and meet safety rules.
 #### MAKE THE OUTCOME USEFUL
 - Standard measures turn one person's result into comparable evidence for future patients and clinicians.
+- TREATMENT TIMELINE
+- 222
+- YEARS
+- 40
+- 181 YEARS RETURNED TO PATIENTS
+- EXPLORE THE IMPACT
+### WHAT CHANGES WHEN EVERY PATIENT CAN HELP DISCOVER THE NEXT TREATMENT?
+- Move the discovery rate. Change the trial budget. See how Right to Trial could compress the treatment queue, include more patients, and make every result useful.
+- [EXPLORE THE NUMBERS](/impact)
+- [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
 - BRING RIGHT TO TRIAL TO EVERY STATE
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
 - Tell us where you live and what role you can play. Your response helps the Institute build the next state page, clinician briefing, and public event.
@@ -450,6 +460,7 @@
 - [YOUR STATE](/#state-support)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
 #### SUPPORT

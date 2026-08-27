@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Database,
   ExternalLink,
+  Gauge,
   HeartPulse,
   Landmark,
   MapPin,
@@ -29,6 +30,12 @@ import {
   stateCampaignHref,
 } from "@/lib/right-to-try";
 import type { StateCampaignStage, SupporterRole } from "@/lib/right-to-try";
+import {
+  calculateRightToTrialImpact,
+  RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT,
+  RIGHT_TO_TRIAL_IMPACT_PAPER_URL,
+  RIGHT_TO_TRIAL_SOURCE_PARAMETERS,
+} from "@/lib/right-to-trial-impact";
 
 const buttonShadow =
   "rounded-none border-4 border-primary px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]";
@@ -332,6 +339,82 @@ export function PatientAccessFlowSection() {
               <p className="font-bold">{text}</p>
             </Card>
           ))}
+        </div>
+      </Container>
+    </SectionContainer>
+  );
+}
+
+export function RightToTrialImpactPreviewSection() {
+  const centralImpact = calculateRightToTrialImpact(
+    RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT,
+  );
+
+  return (
+    <SectionContainer bgColor="yellow" borderPosition="bottom">
+      <Container>
+        <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="rotate-[-2deg] border-4 border-primary bg-brutal-cyan p-7 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+            <Gauge className="h-14 w-14" strokeWidth={3} />
+            <p className="mt-5 font-black uppercase">Treatment timeline</p>
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
+              <div>
+                <p className="text-5xl font-black leading-none">
+                  {Math.round(
+                    RIGHT_TO_TRIAL_SOURCE_PARAMETERS.statusQuoAverageWait.value,
+                  )}
+                </p>
+                <p className="font-black uppercase">years</p>
+              </div>
+              <ArrowRight className="h-10 w-10" strokeWidth={3} />
+              <div>
+                <p className="text-5xl font-black leading-none">
+                  {centralImpact.averageWaitYears.toFixed(0)}
+                </p>
+                <p className="font-black uppercase">years</p>
+              </div>
+            </div>
+            <p className="mt-5 border-t-4 border-primary pt-5 text-3xl font-black uppercase leading-none">
+              {centralImpact.yearsEarlier.toFixed(0)} years returned to patients
+            </p>
+          </div>
+
+          <div>
+            <p className="font-black uppercase">Explore the impact</p>
+            <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+              What changes when every patient can help discover the next
+              treatment?
+            </h2>
+            <p className="mt-6 max-w-3xl text-lg font-bold sm:text-xl">
+              Move the discovery rate. Change the trial budget. See how Right to
+              Trial could compress the treatment queue, include more patients,
+              and make every result useful.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <Button
+                asChild
+                size="lg"
+                className={`${buttonShadow} bg-brutal-pink text-foreground`}
+              >
+                <Link href="/impact">
+                  Explore the numbers <ArrowRight className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className={`${buttonShadow} bg-background text-foreground`}
+              >
+                <a
+                  href={RIGHT_TO_TRIAL_IMPACT_PAPER_URL}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Read the impact paper <ExternalLink className="h-5 w-5" />
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       </Container>
     </SectionContainer>
