@@ -49,7 +49,8 @@ const formFields = [
   },
   {
     key: "position",
-    prompt: "Should every patient in your state have the Right to Trial?",
+    prompt:
+      "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
     type: FormFieldType.SINGLE_SELECT,
     required: false,
     optionsJson: ["yes", "unsure", "no"],

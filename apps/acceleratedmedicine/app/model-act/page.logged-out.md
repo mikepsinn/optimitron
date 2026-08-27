@@ -39,7 +39,7 @@
 - [OPEN SB 535](https://docs.legmt.gov/download-ticket?ticketId=404bf910-6276-4d4a-b3d3-56b7cac4b5f9)
 - [READ THE MONTANA GUIDE](/montana)
 - BRING RIGHT TO TRIAL TO EVERY STATE
-### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
+### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other

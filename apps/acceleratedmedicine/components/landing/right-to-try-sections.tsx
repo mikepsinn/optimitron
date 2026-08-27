@@ -29,7 +29,11 @@ import {
   STATE_CAMPAIGNS,
   stateCampaignHref,
 } from "@/lib/right-to-try";
-import type { StateCampaignStage, SupporterRole } from "@/lib/right-to-try";
+import type {
+  StateAbbreviation,
+  StateCampaignStage,
+  SupporterRole,
+} from "@/lib/right-to-try";
 import {
   calculateRightToTrialImpact,
   RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT,
@@ -433,7 +437,7 @@ export function RightToTrialImpactPreviewSection() {
 export function StateSupportSection({
   initialRole,
   initialState,
-  heading = "Should every patient in your state have the Right to Trial?",
+  heading = "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
   body = "Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.",
   headingAs: Heading = "h2",
 }: {
@@ -472,7 +476,7 @@ export function StateSupportSection({
 }
 
 // Standard US tile-grid map positions: [row, column] on an 11-column grid.
-const STATE_TILE_POSITIONS: Record<string, [number, number]> = {
+const STATE_TILE_POSITIONS: Record<StateAbbreviation, [number, number]> = {
   AK: [0, 0], ME: [0, 10],
   WI: [1, 5], VT: [1, 9], NH: [1, 10],
   WA: [2, 0], ID: [2, 1], MT: [2, 2], ND: [2, 3], MN: [2, 4], IL: [2, 5],
@@ -516,28 +520,31 @@ export function StateCampaignMapSection() {
         </div>
 
         <div className="mx-auto mt-8 grid max-w-3xl grid-cols-[repeat(11,minmax(0,1fr))] gap-1 sm:gap-2">
-          {STATE_CAMPAIGNS.map((campaign) => {
-            const position = STATE_TILE_POSITIONS[campaign.abbreviation];
-            return (
-              <Link
-                key={campaign.abbreviation}
-                aria-label={`${campaign.name}: ${campaign.stageLabel}`}
-                className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-2 border-primary text-[10px] font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:border-4 sm:text-base sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]`}
-                href={stateCampaignHref(campaign)}
-                style={
-                  position
-                    ? {
-                        gridColumnStart: position[1] + 1,
-                        gridRowStart: position[0] + 1,
-                      }
-                    : undefined
-                }
-                title={`${campaign.name}: ${campaign.stageLabel}`}
-              >
-                {campaign.abbreviation}
-              </Link>
-            );
-          })}
+          {/* Render in tile order so keyboard focus follows the map. */}
+          {[...STATE_CAMPAIGNS]
+            .sort((a, b) => {
+              const [rowA, colA] = STATE_TILE_POSITIONS[a.abbreviation];
+              const [rowB, colB] = STATE_TILE_POSITIONS[b.abbreviation];
+              return rowA - rowB || colA - colB;
+            })
+            .map((campaign) => {
+              const [row, column] = STATE_TILE_POSITIONS[campaign.abbreviation];
+              return (
+                <Link
+                  key={campaign.abbreviation}
+                  aria-label={`${campaign.name}: ${campaign.stageLabel}`}
+                  className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-2 border-primary text-[10px] font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:border-4 sm:text-base sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]`}
+                  href={stateCampaignHref(campaign)}
+                  style={{
+                    gridColumnStart: column + 1,
+                    gridRowStart: row + 1,
+                  }}
+                  title={`${campaign.name}: ${campaign.stageLabel}`}
+                >
+                  {campaign.abbreviation}
+                </Link>
+              );
+            })}
         </div>
       </Container>
     </SectionContainer>

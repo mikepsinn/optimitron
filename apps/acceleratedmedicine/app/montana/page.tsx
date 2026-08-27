@@ -25,17 +25,17 @@ import {
 import { RIGHT_TO_TRY_SOURCES } from "@/lib/right-to-try";
 
 export const metadata: Metadata = {
-  title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+  title: "Montana Universal Right to Try | Right to Trial Initiative",
   description:
     "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
   alternates: { canonical: "https://acceleratedmedicine.org/montana" },
   openGraph: {
-    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    title: "Montana Universal Right to Try | Right to Trial Initiative",
     description:
       "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
     images: [
       {
-        alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+        alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
         height: 630,
         url: "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
         width: 1200,
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    title: "Montana Universal Right to Try | Right to Trial Initiative",
     description:
       "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
     images: [

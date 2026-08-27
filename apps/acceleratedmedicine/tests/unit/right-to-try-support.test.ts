@@ -248,6 +248,7 @@ describe("Right to Trial participation submission", () => {
 
   it("subscribes the contact to the updates audience only with consent", async () => {
     const contactRequests: unknown[] = [];
+    const previousResendAudienceId = process.env.RESEND_AUDIENCE_ID;
     process.env.RESEND_AUDIENCE_ID = "aud_test";
     server.use(
       http.post(
@@ -280,7 +281,11 @@ describe("Right to Trial participation submission", () => {
       ).resolves.toEqual({ sentConfirmation: true });
       expect(contactRequests).toHaveLength(0);
     } finally {
-      delete process.env.RESEND_AUDIENCE_ID;
+      if (previousResendAudienceId === undefined) {
+        delete process.env.RESEND_AUDIENCE_ID;
+      } else {
+        process.env.RESEND_AUDIENCE_ID = previousResendAudienceId;
+      }
     }
   });
 

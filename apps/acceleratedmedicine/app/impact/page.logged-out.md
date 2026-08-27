@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Right to Trial Impact | Institute for Accelerated Medicine
+- Page title: Right to Trial Impact | Right to Trial Initiative
 - Meta description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Canonical: https://acceleratedmedicine.org/impact
 - Open Graph title: Right to Trial Initiative

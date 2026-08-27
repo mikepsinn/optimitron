@@ -174,7 +174,8 @@ export function RightToTrySupportForm({
       {variant === "state-support" ? (
         <fieldset className="mt-7">
           <legend className="font-black uppercase">
-            Should every patient in your state have the Right to Trial?
+            Should every patient in your state have the right to join a
+            clinical trial for the most promising treatments?
           </legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             {[

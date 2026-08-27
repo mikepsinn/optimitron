@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       "An educational framework for state patient access, licensed experimental treatment centers, informed consent, oversight, and useful outcome evidence.",
     images: [
       {
-        alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+        alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
         height: 630,
         url: "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
         width: 1200,

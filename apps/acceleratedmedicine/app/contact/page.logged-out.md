@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- Page title: Volunteer for Right to Trial | Institute for Accelerated Medicine
+- Page title: Volunteer for Right to Trial | Right to Trial Initiative
 - Meta description: Help bring Right to Trial to every patient. Patients, clinicians, researchers, and public educators can volunteer in any state.
 - Canonical: https://acceleratedmedicine.org/contact
 - Open Graph title: Right to Trial Initiative

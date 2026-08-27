@@ -25,7 +25,7 @@ import {
 } from "@/components/landing/right-to-try-sections";
 
 /**
- * Institute for Accelerated Medicine — patient access, shared evidence, and
+ * Right to Trial Initiative — patient access, shared evidence, and
  * pragmatic clinical-trial education.
  */
 export default function HomePage() {

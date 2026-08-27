@@ -15,7 +15,7 @@
 
 - [RIGHT TO TRIAL INITIATIVE](/)
 - BRING RIGHT TO TRIAL TO EVERY STATE
-## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO TRIAL?
+## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Help bring pragmatic trials, shared results, and more treatment options to patients in Missouri.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
 - YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other

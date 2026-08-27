@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   },
   description:
     "See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.",
-  title: "Right to Trial Impact | Institute for Accelerated Medicine",
+  title: "Right to Trial Impact | Right to Trial Initiative",
 };
 
 export default function RightToTrialImpactPage() {
