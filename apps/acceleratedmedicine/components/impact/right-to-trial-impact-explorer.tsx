@@ -346,9 +346,9 @@ export function RightToTrialImpactExplorer() {
             </h2>
             <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
               Traditional trials spend about $41,000 per participant. Pragmatic
-              trials can collect useful results through ordinary care for $929
-              per participant. Move the budget and see how many people those
-              same dollars can include.
+              trials can collect useful results for $929 per participant. Move
+              the budget and see how many people those same dollars can
+              include.
             </p>
           </div>
 

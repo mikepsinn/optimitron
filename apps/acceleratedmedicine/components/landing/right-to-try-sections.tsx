@@ -77,9 +77,9 @@ export function UniversalRightToTryHero() {
             </h1>
             <p className="mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
               Give every patient the right to join a clinical trial for the most
-              promising treatments—with their clinician, through ordinary care,
-              wherever they live. Every patient gets more options. Every result
-              helps us find what works.
+              promising treatments—with a clinician, at a licensed treatment
+              center, wherever they live. Every patient gets more options. Every
+              result helps us find what works.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button
@@ -311,7 +311,7 @@ export function PatientAccessFlowSection() {
     },
     {
       icon: ClipboardCheck,
-      title: "Choose with your clinician",
+      title: "Choose with a clinician",
       text: "Review the possible benefits, risks, costs, alternatives, and your right to stop.",
     },
     {

@@ -16,7 +16,7 @@
 - [INSTITUTE FOR ACCELERATED MEDICINE](/)
 - THE RIGHT TO TRIAL
 ## WE CAN ERADICATE DISEASE.
-- Give every patient the right to join a clinical trial for the most promising treatments—with their clinician, through ordinary care, wherever they live. Every patient gets more options. Every result helps us find what works.
+- Give every patient the right to join a clinical trial for the most promising treatments—with a clinician, at a licensed treatment center, wherever they live. Every patient gets more options. Every result helps us find what works.
 - [SEE HOW MONTANA DID IT](/montana)
 - [BRING IT TO MY STATE](#state-support)
 - HOW MONTANA IS ACCELERATING CLINICAL DISCOVERY
@@ -57,7 +57,7 @@
 ### FIND A TREATMENT. JOIN A TRIAL. REPORT WHAT HAPPENED.
 #### FIND PROMISING TREATMENTS
 - See the treatments and trials most likely to help with your condition.
-#### CHOOSE WITH YOUR CLINICIAN
+#### CHOOSE WITH A CLINICIAN
 - Review the possible benefits, risks, costs, alternatives, and your right to stop.
 #### RECEIVE SUPERVISED TREATMENT
 - Get care from qualified professionals at a licensed treatment center.

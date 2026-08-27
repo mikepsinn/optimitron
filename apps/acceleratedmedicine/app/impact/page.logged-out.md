@@ -49,7 +49,7 @@
 - At this setting, the model moves the discovery rate from 15 to 82.2 first treatments per year and clears today's untreated-disease queue in 80.9 years.
 - [Open every parameter, formula, and citation](https://rtt-impact.acceleratedmedicine.org/knowledge/appendix/parameters-and-calculations.html)
 ### GIVE MORE PATIENTS A PLACE IN THE TRIAL.
-- Traditional trials spend about $41,000 per participant. Pragmatic trials can collect useful results through ordinary care for $929 per participant. Move the budget and see how many people those same dollars can include.
+- Traditional trials spend about $41,000 per participant. Pragmatic trials can collect useful results for $929 per participant. Move the budget and see how many people those same dollars can include.
 - TRIAL BUDGET: $1M
 - $100K
 - $10M
