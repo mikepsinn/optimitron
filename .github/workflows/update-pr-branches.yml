@@ -1,9 +1,7 @@
 name: Update PR branches
 
-# Whenever main moves (a merge landed), bring every open, behind, conflict-free
-# PR branch up to date so the next merge never waits on a manual "Update
-# branch" click. PRs with conflicts are skipped (they need a human anyway) and
-# listed in the job summary.
+# Whenever main moves, refresh only open PRs labeled `auto-update`. This avoids
+# rebuilding every active PR and every Vercel app after an unrelated merge.
 
 on:
   push:
@@ -62,6 +60,7 @@ jobs:
           # state — which is exactly the case a human ends up clicking by hand.
           repo_owner="${REPO%%/*}"
           if ! rows=$(gh pr list --repo "$REPO" --state open --base main \
+              --label auto-update \
               --json number,headRefName,isDraft,headRepositoryOwner \
               --jq '.[] | select(.isDraft | not) | "\(.number):\(.headRepositoryOwner.login):\(.headRefName)"'); then
             echo "::error::gh pr list failed; aborting instead of silently treating a discovery outage as \"no PRs to update\""

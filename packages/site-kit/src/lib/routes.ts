@@ -34,8 +34,15 @@ export const ROUTES = {
   findTrials: '/find-trials',
 
   // Research / Evidence
+  impact: '/impact',
   research: '/research',
   references: '/references',
+
+  // Universal Right to Try education
+  montana: '/montana',
+  modelAct: '/model-act',
+  states: '/states',
+  missouri: '/states/missouri',
 
   // Movement / Advocacy
   thePlan: '/the-plan',
@@ -127,6 +134,9 @@ export const buildRoute = {
 
   /** /survey/[slug] */
   survey: (slug: string) => `/survey/${slug}` as const,
+
+  /** /states/[state] */
+  state: (slug: string) => `${ROUTES.states}/${slug}` as const,
 
   /** /organizations/[slug] */
   organization: (slug: string) => `/organizations/${slug}` as const,

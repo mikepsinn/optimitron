@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { SectionContainer } from "@/components/ui/section-container"
-import { VoteOrShareButton } from "@/components/shared/VoteOrShareButton"
 import { Check, Loader2 } from "lucide-react"
 import Link from "next/link"
 import confetti from "canvas-confetti"
@@ -110,9 +109,9 @@ export default function DonateSuccessPage() {
                   DONATION <span className="text-brutal-pink">SUCCESSFUL!</span>
                 </h1>
                 <p className="text-xl font-bold mb-2">
-                  Thank you for joining the war on disease, {sessionData?.metadata?.donorName || "friend"}!
+                  Thank you for helping patients make better-informed choices, {sessionData?.metadata?.donorName || "friend"}!
                 </p>
-                <p className="text-lg">Your support brings us one step closer to ending preventable disease.</p>
+                <p className="text-lg">Your support funds education, pragmatic-trial research, and public treatment evidence.</p>
               </Card>
 
               {/* Donation Details */}
@@ -140,7 +139,7 @@ export default function DonateSuccessPage() {
                   {sessionData?.mode === "subscription" && (
                     <div className="flex justify-between items-center">
                       <span className="font-bold uppercase">Next Payment</span>
-                      <span className="font-bold">
+                      <span className="font-bold" data-volatile="date">
                         {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                       </span>
                     </div>
@@ -165,14 +164,14 @@ export default function DonateSuccessPage() {
                     <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
                     <div>
                       <div className="font-black uppercase">Impact Updates</div>
-                      <div className="text-sm">Monthly newsletter with treaty progress & research findings</div>
+                      <div className="text-sm">Updates on patient education, pragmatic trials, and treatment-outcome research</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Check className="w-6 h-6 mt-0.5 flex-shrink-0" strokeWidth={3} />
                     <div>
                       <div className="font-black uppercase">Quarterly Reports</div>
-                      <div className="text-sm">Detailed financial transparency & metrics on lives impacted</div>
+                      <div className="text-sm">Financial transparency and progress on the educational and research work you funded</div>
                     </div>
                   </div>
                 </div>
@@ -188,11 +187,12 @@ export default function DonateSuccessPage() {
                     BACK TO HOME
                   </Link>
                 </Button>
-                <VoteOrShareButton
-                  variant="default"
-                  size="lg"
-                  className="h-14 w-full"
-                />
+                <Button
+                  asChild
+                  className="h-14 text-lg font-black uppercase bg-brutal-cyan border-4 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                >
+                  <Link href={ROUTES.faq}>READ THE EVIDENCE</Link>
+                </Button>
               </div>
             </>
           )}

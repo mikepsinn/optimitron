@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   ensureVercelDiffBase,
+  ensureVercelProductionDiffBase,
   getVercelAppBuildMatches,
   getVercelDiffBase,
   getVercelGitFetchRemotes,
+  getOptimitronProductionDeployMatches,
 } from "./vercel-app-build-scope.mjs";
 
 const apps = [
@@ -37,25 +39,34 @@ test("matches each app and its transitive workspace dependencies", () => {
     ["packages/survey-embed/src/index.ts"],
   );
   assert.deepEqual(
-    getVercelAppBuildMatches("curedao", [
-      "packages/survey-embed/src/index.ts",
-    ]),
+    getVercelAppBuildMatches("curedao", ["packages/survey-embed/src/index.ts"]),
     [],
   );
 });
 
-test("keeps Optimitron content inputs without treating it as the default app", () => {
+test("keeps Optimitron content inputs without treating docs as app inputs", () => {
   assert.deepEqual(
     getVercelAppBuildMatches("optimitron", [
       "content/legislation/example.md",
-      "docs/canonical-argument-2026-05-20.md",
+      "docs/strategy-note.md",
       "apps/warondisease/app/page.tsx",
+      "packages/site-kit/src/lib/site-config.ts",
     ]),
-    [
-      "content/legislation/example.md",
-      "docs/canonical-argument-2026-05-20.md",
-    ],
+    ["content/legislation/example.md"],
   );
+});
+
+test("keeps production database operation inputs in deployment scope", () => {
+  const files = [
+    "scripts/sync-managed-data.mjs",
+    "scripts/unrelated-maintenance.mjs",
+    "docs/strategy-note.md",
+  ];
+
+  assert.deepEqual(getVercelAppBuildMatches("optimitron", files), []);
+  assert.deepEqual(getOptimitronProductionDeployMatches(files), [
+    "scripts/sync-managed-data.mjs",
+  ]);
 });
 
 test("ignores app-only test and visual-review tooling", () => {
@@ -98,9 +109,10 @@ test("rebuilds every app for root dependency inputs", () => {
   }
 });
 
-test("compares with the last successful deployment when Vercel provides it", () => {
+test("uses the previous SHA for production deployments", () => {
   assert.equal(
     getVercelDiffBase({
+      VERCEL_GIT_COMMIT_REF: "main",
       VERCEL_GIT_PREVIOUS_SHA: "1234567890abcdef1234567890abcdef12345678",
     }),
     "1234567890abcdef1234567890abcdef12345678",
@@ -110,11 +122,22 @@ test("compares with the last successful deployment when Vercel provides it", () 
     "abcdef1234567890abcdef1234567890abcdef12",
   );
   assert.equal(
-    getVercelDiffBase(
-      { VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" },
-      () => null,
-    ),
+    getVercelDiffBase({ VERCEL_GIT_PREVIOUS_SHA: "not-a-sha" }, () => null),
     null,
+  );
+});
+
+test("compares previews with main so canceled commits cannot hide changes", () => {
+  const mergeBase = "abcdef1234567890abcdef1234567890abcdef12";
+  assert.equal(
+    getVercelDiffBase(
+      {
+        VERCEL_GIT_COMMIT_REF: "feature/example",
+        VERCEL_GIT_PREVIOUS_SHA: "1234567890abcdef1234567890abcdef12345678",
+      },
+      () => mergeBase,
+    ),
+    mergeBase,
   );
 });
 
@@ -129,6 +152,7 @@ test("fetches a missing Vercel diff base in a shallow clone", () => {
       return "";
     }
     if (args[0] === "cat-file" && fetched) return "";
+    if (args[0] === "merge-base" && fetched) return "";
     throw new Error("missing commit");
   };
 
@@ -144,6 +168,7 @@ test("fetches a missing Vercel diff base in a shallow clone", () => {
     ["cat-file", "-e", `${sha}^{commit}`],
     ["fetch", "--no-tags", "--depth=1", "origin", sha],
     ["cat-file", "-e", `${sha}^{commit}`],
+    ["merge-base", "--is-ancestor", sha, "HEAD"],
   ]);
 });
 
@@ -161,6 +186,7 @@ test("falls back to the public GitHub remote when Vercel omits origin", () => {
       throw new Error("missing origin");
     }
     if (args[0] === "cat-file" && fetched.length === 2) return "";
+    if (args[0] === "merge-base" && fetched.length === 2) return "";
     throw new Error("missing commit");
   };
 
@@ -171,6 +197,29 @@ test("falls back to the public GitHub remote when Vercel omits origin", () => {
   assert.deepEqual(fetched, [
     "origin",
     "https://github.com/mikepsinn/optimitron.git",
+  ]);
+});
+
+test("rejects a previous Vercel SHA outside the current branch history", () => {
+  const sha = "1234567890abcdef1234567890abcdef12345678";
+  const calls = [];
+  const execFile = (_command, args) => {
+    calls.push(args);
+    if (args[0] === "cat-file") return "";
+    throw new Error("not an ancestor");
+  };
+
+  assert.equal(
+    ensureVercelDiffBase(sha, {
+      root: "/repo",
+      execFile,
+      fetchRemotes: ["origin"],
+    }),
+    null,
+  );
+  assert.deepEqual(calls, [
+    ["cat-file", "-e", `${sha}^{commit}`],
+    ["merge-base", "--is-ancestor", sha, "HEAD"],
   ]);
 });
 
@@ -187,4 +236,51 @@ test("builds safely when a missing Vercel diff base cannot be fetched", () => {
     }),
     null,
   );
+});
+
+test("fetches main to scope a branch's first Vercel deployment", () => {
+  const mergeBase = "1234567890abcdef1234567890abcdef12345678";
+  let fetched = false;
+  const calls = [];
+  const execFile = (_command, args) => {
+    calls.push(args);
+    if (args[0] === "fetch") {
+      fetched = true;
+      return "";
+    }
+    if (args[0] === "merge-base" && fetched) return mergeBase;
+    throw new Error("missing production ref");
+  };
+
+  assert.equal(
+    ensureVercelProductionDiffBase({
+      root: "/repo",
+      execFile,
+      fetchRemotes: ["origin"],
+      currentBranch: "feature/example",
+    }),
+    mergeBase,
+  );
+  assert.deepEqual(calls, [
+    ["merge-base", "HEAD", "origin/main"],
+    ["merge-base", "HEAD", "main"],
+    ["fetch", "--no-tags", "--depth=100", "origin", "feature/example"],
+    ["fetch", "--no-tags", "--depth=100", "origin", "main"],
+    ["merge-base", "HEAD", "FETCH_HEAD"],
+  ]);
+});
+
+test("does not compare a production deployment with its own HEAD", () => {
+  let called = false;
+  assert.equal(
+    ensureVercelProductionDiffBase({
+      currentBranch: "main",
+      execFile: () => {
+        called = true;
+        return "";
+      },
+    }),
+    null,
+  );
+  assert.equal(called, false);
 });

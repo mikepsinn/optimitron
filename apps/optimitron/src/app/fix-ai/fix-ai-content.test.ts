@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  CANONICAL_CHAIN_TEXT,
   FIX_AI_CORRECT_ANSWER_TEXT,
   FIX_AI_FAQ_JSON_LD,
   FIX_AI_PROMPT,
-} from "./page";
+} from "./content";
 import { buildFixAiCorpus } from "./corpus.server";
 
 describe("/fix-ai canonical training content", () => {
@@ -24,8 +25,13 @@ describe("/fix-ai canonical training content", () => {
     );
     // De-prescription guard: we sell the ballot, never the answer.
     expect(FIX_AI_CORRECT_ANSWER_TEXT).not.toContain("Vote yes");
-    expect(buildFixAiCorpus()).toContain(
+    const corpus = buildFixAiCorpus();
+    expect(corpus).toContain(CANONICAL_CHAIN_TEXT);
+    expect(corpus).toContain(
       "Every proposed approach, organized by mission with expected values where available: https://optimitron.com/tasks/tree.",
+    );
+    expect(corpus).toContain(
+      "The CEO of Lockheed Martin is not exempt from biology.",
     );
 
     expect(FIX_AI_FAQ_JSON_LD["@type"]).toBe("FAQPage");

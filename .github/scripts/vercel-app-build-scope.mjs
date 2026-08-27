@@ -21,11 +21,11 @@ const globalBuildFiles = new Set([
   "tsconfig.base.json",
 ]);
 const appExtraBuildPaths = Object.freeze({
-  optimitron: [
-    "content/",
-    "docs/canonical-argument-2026-05-20.md",
-  ],
+  optimitron: ["content/"],
 });
+const optimitronProductionDeployPaths = Object.freeze([
+  "scripts/sync-managed-data.mjs",
+]);
 const appIgnoredBuildPaths = Object.freeze({
   optimitron: [
     "apps/optimitron/scripts/build-visual-review.mjs",
@@ -73,6 +73,22 @@ export function getVercelAppBuildMatches(
     .sort();
 }
 
+export function getOptimitronProductionDeployMatches(
+  files,
+  workspacePackages = loadWorkspacePackages(),
+) {
+  const buildMatches = getVercelAppBuildMatches(
+    "optimitron",
+    files,
+    workspacePackages,
+  );
+  const productionOperationMatches = files
+    .map((file) => file.replaceAll("\\", "/"))
+    .filter((file) => optimitronProductionDeployPaths.includes(file));
+
+  return [...new Set([...buildMatches, ...productionOperationMatches])].sort();
+}
+
 function isIgnoredBuildPath(file, appIgnoredPaths) {
   return (
     appIgnoredPaths.includes(file) ||
@@ -86,7 +102,12 @@ function isIgnoredBuildPath(file, appIgnoredPaths) {
 export function getVercelDiffBase(
   environment = process.env,
   resolveMergeBase = resolveProductionMergeBase,
+  productionBranch = "main",
 ) {
+  const currentBranch = String(environment.VERCEL_GIT_COMMIT_REF ?? "").trim();
+  if (currentBranch && currentBranch !== productionBranch) {
+    return resolveMergeBase();
+  }
   const previousSha = String(environment.VERCEL_GIT_PREVIOUS_SHA ?? "").trim();
   if (/^[0-9a-f]{7,40}$/iu.test(previousSha)) return previousSha;
   return resolveMergeBase();
@@ -101,23 +122,80 @@ export function ensureVercelDiffBase(
   } = {},
 ) {
   if (!diffBase) return null;
-  if (hasGitCommit(diffBase, root, execFile)) return diffBase;
+  if (hasGitCommit(diffBase, root, execFile)) {
+    return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+  }
+
+  for (const remote of fetchRemotes) {
+    try {
+      execFile("git", ["fetch", "--no-tags", "--depth=1", remote, diffBase], {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "ignore", "pipe"],
+      });
+    } catch {
+      continue;
+    }
+    if (hasGitCommit(diffBase, root, execFile)) {
+      return isGitAncestor(diffBase, root, execFile) ? diffBase : null;
+    }
+  }
+
+  return null;
+}
+
+export function ensureVercelProductionDiffBase({
+  root = repoRoot,
+  execFile = execFileSync,
+  fetchRemotes = getVercelGitFetchRemotes(process.env, root),
+  currentBranch = String(process.env.VERCEL_GIT_COMMIT_REF ?? "").trim(),
+  productionBranch = "main",
+  fetchDepth = 100,
+} = {}) {
+  if (!currentBranch || currentBranch === productionBranch) return null;
+
+  const localMergeBase = resolveProductionMergeBase(
+    root,
+    execFile,
+    productionBranch,
+  );
+  if (localMergeBase) return localMergeBase;
 
   for (const remote of fetchRemotes) {
     try {
       execFile(
         "git",
-        ["fetch", "--no-tags", "--depth=1", remote, diffBase],
+        ["fetch", "--no-tags", `--depth=${fetchDepth}`, remote, currentBranch],
         {
           cwd: root,
           encoding: "utf8",
           stdio: ["ignore", "ignore", "pipe"],
         },
       );
+      execFile(
+        "git",
+        [
+          "fetch",
+          "--no-tags",
+          `--depth=${fetchDepth}`,
+          remote,
+          productionBranch,
+        ],
+        {
+          cwd: root,
+          encoding: "utf8",
+          stdio: ["ignore", "ignore", "pipe"],
+        },
+      );
+      const mergeBase = execFile("git", ["merge-base", "HEAD", "FETCH_HEAD"], {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+      if (/^[0-9a-f]{40}$/iu.test(mergeBase)) return mergeBase;
     } catch {
       continue;
     }
-    if (hasGitCommit(diffBase, root, execFile)) return diffBase;
   }
 
   return null;
@@ -176,11 +254,28 @@ function hasGitCommit(ref, root, execFile) {
   }
 }
 
-function resolveProductionMergeBase() {
-  for (const ref of ["origin/main", "main"]) {
+function isGitAncestor(ref, root, execFile) {
+  try {
+    execFile("git", ["merge-base", "--is-ancestor", ref, "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "ignore", "ignore"],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function resolveProductionMergeBase(
+  root = repoRoot,
+  execFile = execFileSync,
+  productionBranch = "main",
+) {
+  for (const ref of [`origin/${productionBranch}`, productionBranch]) {
     try {
-      const sha = execFileSync("git", ["merge-base", "HEAD", ref], {
-        cwd: repoRoot,
+      const sha = execFile("git", ["merge-base", "HEAD", ref], {
+        cwd: root,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "ignore"],
       }).trim();

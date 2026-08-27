@@ -125,6 +125,7 @@ import type { Metadata } from "next";
 import type { NavItemId, NavItem } from "./nav-items";
 import { getNavItems } from "./nav-items";
 import {
+  ACCELERATED_MEDICINE_FAQ,
   WAR_ON_DISEASE_FAQ,
   DIH_FAQ,
   WISHOCRACY_FAQ,
@@ -150,6 +151,7 @@ import {
 const logger = createLogger("site-config");
 const INSTITUTE_FOR_ACCELERATED_MEDICINE = "Institute for Accelerated Medicine";
 const IAM_501C3_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
+const ACCELERATED_MEDICINE_FOOTER_NOTICE = `${INSTITUTE_FOR_ACCELERATED_MEDICINE} is a DBA for the Accelerated Medicine Foundation. The Accelerated Medicine Foundation is a 501(c)(3) nonprofit. EIN: 41-2555651. Donations are tax-deductible.`;
 
 // ===== INTERFACES =====
 
@@ -416,6 +418,9 @@ export interface SiteConfig {
 
   /** Sidebar accordion sections */
   sidebarSections?: NavSection[];
+
+  /** Whether the sidebar includes the treaty vote/share CTA. Defaults to true. */
+  sidebarVoteCtaEnabled?: boolean;
 
   /** Footer branding (first column) */
   footerBranding?: FooterBranding;
@@ -1426,33 +1431,29 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   },
 
   // ============================================================================
-  // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE (Umbrella/Donation Site)
+  // acceleratedmedicine.org - INSTITUTE FOR ACCELERATED MEDICINE
   // ============================================================================
-  // Purpose: Central fundraising hub and umbrella organization that funds/supports other projects
-  // Audience: Donors, philanthropists, foundations, grant makers
-  // Tone: Professional, trustworthy, impact-focused
-  // Goal: Donations, partnerships, trust-building - links to specialized sites for clinical content
-  // Navigation: Donation-focused with cross-links to supported projects (dFDA, War on Disease, etc.)
-  // Messaging: Bold but professional - "Cures move at the speed of data"
+  // Purpose: Right to Trial education, pragmatic trials, and public evidence
+  // Audience: Patients, caregivers, clinicians, researchers, and state educators
+  // Goal: Measure support, explain the Montana precedent, and equip state campaigns
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
     name: "IAM",
     title: "Institute for Accelerated Medicine",
-    description: `${MESSAGING.impact.diseasesCured.percentWithNoTreatment} of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient ${MESSAGING.impact.curesArriveXYearsSooner.years} years faster, ${MESSAGING.impact.costReduction.multiplier} cheaper.`,
+    description:
+      "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
     baseUrl: "https://acceleratedmedicine.org",
     domain: "acceleratedmedicine.org",
     email: "hello@acceleratedmedicine.org",
     defaultRoute: "/",
-    // Umbrella site: research, education, movement, donate - NO clinical content (redirects to dfda.earth)
+    // Educational nonprofit site: patient access, pragmatic trials, evidence, and donations.
     enabledFeatures: [
-      SITE_FEATURES.SURVEY,
       SITE_FEATURES.RESEARCH,
       SITE_FEATURES.EDUCATION,
-      SITE_FEATURES.MOVEMENT,
       SITE_FEATURES.DONATE,
     ],
-    showPoliticalContent: true,
+    showPoliticalContent: false,
     authEnabled: false,
     dashboardEnabled: false,
     icons: {
@@ -1489,39 +1490,41 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       ],
     },
 
-    // Navigation system - campaign case + donation focused
-    topLevelNavItems: ["donate", "vote", "thePlan"],
-    sidebarSections: [
-      {
-        id: "support",
-        label: "SUPPORT THE MISSION",
-        items: ["donate", "thePlan", "volunteer"],
-      },
-      {
-        id: "evidence",
-        label: "THE EVIDENCE",
-        items: ["research", "faq"],
-      },
+    // Navigation system - state action first, evidence and support second
+    topLevelNavItems: [
+      "rightToTryMontana",
+      "rightToTryMissouri",
+      "rightToTryStates",
+      "rightToTryModelAct",
+      "rightToTrialImpact",
+      "donate",
     ],
+    sidebarSections: [],
+    sidebarVoteCtaEnabled: false,
     footerBranding: {
       title: "THE INSTITUTE FOR ACCELERATED MEDICINE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     footerSections: [
       {
-        id: "support",
-        label: "SUPPORT",
-        items: ["donate", "thePlan", "volunteer"],
-      },
-      {
-        id: "manual",
-        label: "GET THE MANUAL",
-        items: ["manual", "listenPodcast", "readOnline"],
+        id: "right-to-try",
+        label: "RIGHT TO TRIAL",
+        items: [
+          "rightToTryMontana",
+          "rightToTryMissouri",
+          "rightToTryStates",
+          "rightToTryModelAct",
+        ],
       },
       {
         id: "evidence",
         label: "EVIDENCE",
-        items: ["research", "faq"],
+        items: ["rightToTrialImpact", "research", "faq"],
+      },
+      {
+        id: "support",
+        label: "SUPPORT",
+        items: ["donate", "volunteer"],
       },
     ],
     contactInfo: {
@@ -1530,8 +1533,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       websiteLabel: "AcceleratedMedicine.org",
     },
     impactAnalysis: {
-      url: "https://impact.warondisease.org",
-      label: "impact.warondisease.org",
+      url: "https://acceleratedmedicine.org/impact",
+      label: "acceleratedmedicine.org/impact",
     },
     legalEntityName: INSTITUTE_FOR_ACCELERATED_MEDICINE,
     emailBranding: {
@@ -1544,12 +1547,12 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       image: "/assets/acceleratedmedicine/iam-og-1200x630.png",
       width: 1200,
       height: 630,
-      alt: `Institute for Accelerated Medicine - ${MESSAGING.impact.curesArriveXYearsSooner.years} Years Faster. ${MESSAGING.impact.timelineShift.livesSaved} Lives.`,
+      alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
     },
     legalItems: ["privacy", "terms"],
     copyrightText: "© 2025 Institute for Accelerated Medicine | CC BY-NC 4.0",
-    footerComplianceNotice: IAM_501C3_FOOTER_NOTICE,
-    faq: DIH_FAQ, // Reuse DIH FAQ initially, can customize later
+    footerComplianceNotice: ACCELERATED_MEDICINE_FOOTER_NOTICE,
+    faq: ACCELERATED_MEDICINE_FAQ,
 
     // Image generation prompts
     faviconPrompt: `Bold pink fast-forward symbol (two solid triangles >>), thick black outline, magenta (#FF00FF) background.`,

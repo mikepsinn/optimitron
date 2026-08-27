@@ -38,16 +38,21 @@ which projects need a preview or production deployment. Root configuration and
 lockfile changes can still affect every project. Every app disables deployment
 from `gh-pages` because that branch contains generated visual-review files.
 
+All projects use Standard build machines with on-demand concurrency disabled.
+Builds share the included queue, prioritize production, and skip stale queued
+commits when a newer commit reaches the same branch. The project reconciler
+repairs drift from these settings.
+
 Vercel treats changes outside the pnpm workspace as global. Each app therefore
 uses the same dependency-aware ignore script to reject documentation, review
 automation, and unrelated app changes before build CPU starts. App source,
-transitive workspace dependencies, and root dependency files still build. The
-script compares against the last successful deployment, so multi-commit pushes
-cannot hide an earlier app change. App tests, browser fixtures, screenshots,
-and Optimitron's current visual-review assembler do not trigger app deployment.
-On a branch's first deployment, the script compares with `main` or treats the
-full tracked tree as changed. It can overbuild once, but it cannot skip an
-earlier unpreviewed change.
+transitive workspace dependencies, and root dependency files still build.
+Preview deployments compare the whole branch with `main`'s merge base, so a
+skipped or canceled commit cannot hide an earlier app change. App tests, browser
+fixtures, screenshots, and Optimitron's current visual-review assembler do not
+trigger app deployment. The script treats the full tracked tree as changed only
+when it cannot load that base, so a Git outage can overbuild but cannot cause an
+unsafe skip. Production also rejects a previous deployment SHA outside history.
 
 GitHub Actions also builds and captures every relevant app for pull request
 visual review. This local fixture-based review is broader than the live Vercel

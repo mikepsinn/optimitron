@@ -54,12 +54,12 @@ test("ignores test-only files under runtime paths", () => {
   assert.deepEqual(getPreviewSmokeMatches(files), []);
 });
 
-test("prepares a database exactly for files in the Vercel preview build scope", () => {
+test("prepares a database when files include Vercel preview build inputs", () => {
   const files = [
     ".env.example",
     ".npmrc",
     "content/campaigns/treaty.md",
-    "docs/canonical-argument-2026-05-20.md",
+    "docs/strategy-note.md",
     "eslint.config.mjs",
     "package.json",
     "apps/optimitron/e2e/visual-review-page.spec.ts",
@@ -70,7 +70,10 @@ test("prepares a database exactly for files in the Vercel preview build scope", 
   ];
 
   assert.equal(shouldPreparePreviewDatabase(files), true);
-  assert.deepEqual(getVercelPreviewBuildMatches(files), files.sort());
+  assert.deepEqual(
+    getVercelPreviewBuildMatches(files),
+    files.filter((file) => file !== "docs/strategy-note.md").sort(),
+  );
 });
 
 test("keeps the Optimitron ignore command app-specific", () => {

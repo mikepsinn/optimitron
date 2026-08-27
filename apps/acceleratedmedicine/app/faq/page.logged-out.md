@@ -3,64 +3,49 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Canonical: https://acceleratedmedicine.org
+- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Canonical: https://acceleratedmedicine.org/faq
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
 ## FREQUENTLY ASKED QUESTIONS
-- Everything you need to know about the 1% Treaty and pragmatic clinical trials
-### THE 1% TREATY
-#### WHAT IS THE 1% TREATY?
-- The 1% Treaty is a global agreement where nations redirect just 1% of their military spending to fund pragmatic clinical trials integrated into standard healthcare. This gives everyone 1% more security (fewer nuclear weapons pointed at them) while accelerating access to life-saving treatments by years.
-#### WHY 1%? WHY NOT MORE OR LESS?
-- 1% is strategically chosen because it's small enough to be feasible (doesn't compromise national defense) but large enough to be transformative ($27.2B annually). It's also psychologically powerful: everyone gets 1% more security while gaining years of life through faster medical progress.
-#### WHAT HAPPENS TO MILITARY CAPABILITIES WITH 1% LESS FUNDING?
-- Virtually nothing. Modern militaries have massive redundancy and waste. A 1% reduction is easily absorbed through efficiency improvements, reduced procurement waste, or delayed upgrades. No country loses meaningful defensive capability, but everyone gains health security.
-#### WHICH COUNTRIES WOULD PARTICIPATE?
-- The treaty is designed for universal participation, but the top 15 military spenders (US, China, Russia, India, Saudi Arabia, UK, Germany, France, Japan, South Korea, Italy, Australia, Canada, Israel, Spain) account for 81% of global military spending. Their participation alone would fund the entire system.
-### PRAGMATIC TRIALS
-#### WHAT ARE PRAGMATIC TRIALS?
-- Pragmatic trials test treatments in real-world healthcare settings using existing medical records and routine care, rather than creating expensive artificial research environments. Patients receive normal care while data is automatically collected, making trials 82x cheaper than traditional methods.
-#### HOW ARE THEY 82X CHEAPER?
-- Traditional trials cost $20B+ in recruitment, $15B in manual data collection, $10B in dedicated research sites, and $5B in regulatory overhead. Pragmatic trials eliminate these costs by using existing healthcare infrastructure, electronic health records, and streamlined protocols. Total savings: $58.6B annually.
-#### ARE PRAGMATIC TRIALS AS SAFE AND RIGOROUS AS TRADITIONAL TRIALS?
-- Yes. They follow the same scientific principles and regulatory standards. The difference is efficiency, not rigor. Oxford's RECOVERY trial (pragmatic design) enrolled 40,000 patients in months and found effective COVID treatments while traditional trials were still recruiting. Same safety, 82x faster and cheaper.
-#### WHAT TREATMENTS COULD BE TESTED?
-- Everything: new drugs, repurposed existing medications, medical devices, surgical techniques, behavioral interventions, prevention strategies. Pragmatic trials excel at comparing real-world effectiveness of treatments, finding optimal doses, and identifying which patients benefit most.
-#### HOW LONG UNTIL WE SEE RESULTS?
-- Immediate impact. Pragmatic trials can begin enrolling patients within weeks of approval. Results for acute conditions (like COVID treatments) can come in months. Chronic disease trials take longer but still deliver answers years faster than traditional methods.
-### THE PEACE DIVIDEND
-#### WHAT IS THE PEACE DIVIDEND?
-- The peace dividend is a potential secondary benefit: if redirecting 1% of military spending to health research also reduces global conflict, this could save $114B annually. However, this benefit requires geopolitical assumptions and is NOT included in our primary ROI calculations. The core value proposition is the timeline shift - accelerating when cures arrive saves billions of lives regardless of any peace effects.
-#### HOW DOES REDIRECTING MILITARY SPENDING REDUCE CONFLICT?
-- We don't claim it definitely does. The peace dividend is a potential secondary benefit, not a guaranteed outcome. The primary value comes from the timeline shift: accelerating clinical trials and eliminating efficacy lag saves billions of lives from diseases. Any reduction in conflict would be an additional bonus, but we don't rely on it for our core ROI calculations.
-#### IS THE PEACE DIVIDEND REALISTIC?
-- The peace dividend is speculative - it depends on whether redirecting military spending actually reduces conflict. Global conflict costs are estimated at $14.4 trillion annually (Institute for Economics and Peace), so a 1% reduction would be significant if achieved. However, our primary value proposition doesn't depend on this. The timeline shift benefits (billions of lives saved from earlier cures) are based on concrete disease burden data and trial acceleration estimates.
-### FEASIBILITY & IMPLEMENTATION
-#### IS THIS REALISTIC?
-- Yes. A majority of humans on Earth, roughly 4.13B, is large enough to make refusal politically costly. We're building that coalition. Plus, the 1% Treaty offers something rare in politics: a win-win where everyone gains security and health.
-#### HOW WOULD THE DECENTRALIZED INSTITUTES OF HEALTH BE GOVERNED?
-- DIH operates as a decentralized network, not a centralized bureaucracy. Participating nations contribute 1% of military spending to a transparent fund. Research priorities are set democratically with input from patients, doctors, and scientists. Trials are conducted by existing healthcare systems. No new massive institution required.
-#### WHAT ABOUT PHARMACEUTICAL COMPANY OPPOSITION?
-- Pharma companies benefit too. Pragmatic trials reduce their R&D costs by 82x, accelerating time-to-market and expanding the range of profitable treatments. Repurposed drugs and rare disease treatments become economically viable. The current system is broken for everyone; this fixes it.
-#### HOW DO WE PREVENT CORRUPTION AND ENSURE TRANSPARENCY?
-- Blockchain-based fund tracking, open-source protocols, public trial registries, and real-time results publication. All spending is transparent. All data is public. All decisions are documented. The decentralized structure prevents any single entity from controlling the system.
-### GETTING INVOLVED
-#### HOW CAN I HELP?
-- Answer the question on our homepage, share your referral link, join our divisions registry if you represent an organization, donate to support our research, and spread the word. Every voice counts toward a majority of humans on Earth.
-#### I'M A RESEARCHER/DOCTOR. HOW CAN I PARTICIPATE?
-- Join our divisions registry, connect with allied organizations, advocate for pragmatic trial adoption in your institution, and help design protocols. We need clinical expertise to make this vision real.
-#### I'M A POLICYMAKER. WHAT DO YOU NEED FROM ME?
-- Learn about pragmatic trials and their potential to transform healthcare efficiency. Review our research on cost-effectiveness and real-world implementation. Consider how evidence-based policy could improve healthcare outcomes in your jurisdiction.
-#### WHAT IF MY COUNTRY DOESN'T PARTICIPATE?
-- You still benefit. The treaty creates global public goods: faster medical progress, reduced conflict, and shared knowledge. Even non-participating countries gain access to trial results and treatment advances. But participating countries get priority access and influence over research priorities.
+- Patient choice, pragmatic trials, and public treatment evidence
+### PATIENT CHOICE
+#### WHAT DOES MEDICAL FREEDOM MEAN HERE?
+- A patient with poor treatment options should be able to understand available choices, discuss benefits and risks with a clinician, and make an informed decision. The Institute provides education and research, not medical advice.
+#### DOES THE INSTITUTE TELL PATIENTS WHICH TREATMENT TO CHOOSE?
+- No. Treatment decisions belong to patients and their licensed clinicians. We explain research methods and support clearer public evidence about benefits, harms, costs, and uncertainty.
+#### HOW CAN PATIENT ACCESS IMPROVE EVIDENCE?
+- When patients and clinicians record the same outcomes before and after treatment, pooled results can help the next patient understand what happened in people like them. Participation must be voluntary, private, and transparent.
+### PRAGMATIC CLINICAL TRIALS
+#### WHAT IS A PRAGMATIC CLINICAL TRIAL?
+- A pragmatic trial compares treatments in routine care. It asks whether an option helps the patients and clinicians who would use it in ordinary practice.
+#### WHY CAN PRAGMATIC TRIALS COST LESS?
+- They can use existing clinics, shorter visits, and routinely collected outcomes instead of building a separate research system for every study. Each protocol still needs suitable oversight and safeguards.
+#### DO POOLED OUTCOMES PROVE THAT A TREATMENT WORKS?
+- Not by themselves. Observational outcomes can reveal patterns and unanswered questions. Randomized comparisons can reduce bias when they are ethical and practical. A useful evidence system shows which method produced each result.
+#### CAN ANYONE JOIN A PRAGMATIC TRIAL?
+- Each study has its own eligibility rules, consent process, and clinical safeguards. A patient should review a specific study with the research team and their clinician.
+### DECENTRALIZED DRUG ASSESSMENT
+#### WHAT IS A DECENTRALIZED FRAMEWORK FOR DRUG ASSESSMENT?
+- It is a proposed public evidence system that combines published research with standardized real-world outcomes. Patients and clinicians could compare options without relying on a single company, hospital, or database.
+#### IS IT A REPLACEMENT FOR THE FDA?
+- No. The name describes a framework for comparing treatment evidence, not a government agency. It can complement regulatory review by making comparative outcomes easier to inspect and improve.
+#### WHAT WOULD THIS LOOK LIKE FOR A PATIENT WITH MIGRAINE?
+- The patient could compare preventive drugs, devices, supplements, and behavior changes by monthly migraine days, side effects, cost, and evidence quality. After choosing with a clinician, the patient could record the same outcomes at follow-up.
+### PARTICIPATE
+#### HOW CAN PATIENTS PARTICIPATE?
+- Ask clinicians about suitable studies, use standardized outcome tracking when available, and review the consent and privacy terms before sharing health data.
+#### HOW CAN CLINICIANS AND RESEARCHERS HELP?
+- Design low-burden studies, measure outcomes that matter to patients, publish complete results, and make methods and limitations easy to inspect.
+#### HOW CAN I SUPPORT THE INSTITUTE?
+- You can donate to the Institute's education and research work or contact us to discuss clinical, research, or technical collaboration.
 ### STILL HAVE QUESTIONS?
-- Contact us or dive deeper into the research and evidence
+- Talk with us or support the research
 - [CONTACT US](/contact)
-- [VIEW RESEARCH](https://warondisease.org/research)
+- [SUPPORT THE RESEARCH](/donate)

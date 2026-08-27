@@ -3,13 +3,13 @@
 ## Metadata
 
 - Page title: Institute for Accelerated Medicine
-- Meta description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
-- Canonical: https://acceleratedmedicine.org
+- Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
+- Canonical: https://acceleratedmedicine.org/privacy
 - Open Graph title: Institute for Accelerated Medicine
-- Open Graph description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
 - Twitter title: Institute for Accelerated Medicine
-- Twitter description: 95% of diseases have no cure. We fix that. Pragmatic trials that move cures from lab to patient 8.2 years faster, 82× cheaper.
+- Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
@@ -20,7 +20,6 @@
 - Institute for Accelerated Medicine operates AcceleratedMedicine.org. This policy explains what information the website collects, why it uses that information, and the choices available to you.
 ### 2. INFORMATION WE COLLECT
 - Account details you provide, such as your name and email address.
-- Your survey responses and optional profile details.
 - Messages, forms, and other content you choose to submit.
 - Basic technical data, such as browser type, device information, IP address, and request logs.
 - Usage and analytics events when analytics are enabled.
@@ -56,18 +55,18 @@
 - Email: hello@acceleratedmedicine.org
 - Website: AcceleratedMedicine.org
 - MISSION: TOTAL DISEASE ERADICATION
-#### SUPPORT
-- [DONATE](/donate)
-- [THE PLAN](https://warondisease.org/the-plan)
-- [VOLUNTEER](/contact)
-#### GET THE MANUAL
-- [THE FIELD MANUAL](https://manual.warondisease.org)
-- [PODCAST](https://manual.warondisease.org/listen)
-- [GET THE MANUAL](https://manual.warondisease.org)
-#### ABOUT
-- [ABOUT](/about)
+#### RIGHT TO TRIAL
+- [MONTANA MODEL](/montana)
+- [MISSOURI](/states/missouri)
+- [YOUR STATE](/#state-support)
+- [MODEL ACT](/model-act)
+#### EVIDENCE
+- [IMPACT](/impact)
 - [RESEARCH & EVIDENCE](https://warondisease.org/research)
 - [FAQ](/faq)
+#### SUPPORT
+- [DONATE](/donate)
+- [VOLUNTEER](/contact)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

@@ -131,7 +131,7 @@ export const NAV_ITEMS_MAP = {
     label: "Donate",
     path: ROUTES.donate,
     description:
-      "Fund the war on disease. Your donation accelerates cures 8 years faster and saves lives through pragmatic clinical trials.",
+      "Fund patient education, pragmatic-trial research, and public treatment evidence.",
     emoji: "💝",
     canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
     allowedVariants: [
@@ -146,6 +146,79 @@ export const NAV_ITEMS_MAP = {
       "health charity",
       "clinical trial funding",
       "transparent giving",
+    ],
+  },
+  rightToTryMontana: {
+    id: "rightToTryMontana",
+    label: "Montana Model",
+    path: ROUTES.montana,
+    description:
+      "Read how Montana's Universal Right to Try law expands patient access while licensing experimental treatment centers.",
+    emoji: "📍",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Montana SB 535",
+      "Universal Right to Try",
+      "experimental treatment centers",
+      "patient access",
+    ],
+  },
+  rightToTryMissouri: {
+    id: "rightToTryMissouri",
+    label: "Missouri",
+    path: ROUTES.missouri,
+    description: "Help bring Right to Trial to every Missouri patient.",
+    emoji: "⭐",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Missouri Right to Try",
+      "Missouri patient access",
+      "Universal Right to Try",
+    ],
+  },
+  rightToTryStates: {
+    id: "rightToTryStates",
+    label: "Your State",
+    path: `${ROUTES.home}#state-support`,
+    description: "Put your state on the Right to Trial map.",
+    emoji: "🗺️",
+    isHashLink: true,
+    requiresScrollHandler: true,
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: ["Right to Try by state", "patient access survey"],
+  },
+  rightToTryModelAct: {
+    id: "rightToTryModelAct",
+    label: "Model Act",
+    path: ROUTES.modelAct,
+    description:
+      "See how every patient can join a pragmatic trial and providers can publish comparable results.",
+    emoji: "📄",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Right to Trial model act",
+      "patient access legislation",
+      "experimental treatment licensing",
+    ],
+  },
+  rightToTrialImpact: {
+    id: "rightToTrialImpact",
+    label: "Impact",
+    path: ROUTES.impact,
+    description:
+      "See how Right to Trial can help patients join low-cost trials and find effective treatments sooner.",
+    emoji: "⚡",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Right to Trial impact",
+      "pragmatic clinical trials",
+      "treatment discovery",
+      "clinical trial cost",
     ],
   },
   volunteer: {

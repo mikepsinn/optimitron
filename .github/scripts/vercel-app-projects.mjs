@@ -89,15 +89,32 @@ export function getProjectPatch(current, desired) {
     enableAffectedProjectsDeployments: true,
     framework: "nextjs",
     nodeVersion: "24.x",
+    productionDeploymentsFastLane: true,
     rootDirectory: desired.rootDirectory,
     sourceFilesOutsideRootDirectory: true,
   };
-  return Object.fromEntries(
+  const patch = Object.fromEntries(
     Object.entries(expected).filter(([key, value]) => {
       const currentValue = current?.[key] ?? current?.settings?.[key];
       return currentValue !== value;
     }),
   );
+  const currentResourceConfig =
+    current?.resourceConfig ?? current?.settings?.resourceConfig ?? {};
+  const expectedResourceConfig = {
+    buildMachineSelection: "fixed",
+    buildMachineType: "standard",
+    elasticConcurrencyEnabled: false,
+  };
+  const resourceConfigPatch = Object.fromEntries(
+    Object.entries(expectedResourceConfig).filter(
+      ([key, value]) => currentResourceConfig[key] !== value,
+    ),
+  );
+  if (Object.keys(resourceConfigPatch).length > 0) {
+    patch.resourceConfig = resourceConfigPatch;
+  }
+  return patch;
 }
 
 export function getGitLinkProblem(current) {

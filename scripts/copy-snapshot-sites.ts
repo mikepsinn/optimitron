@@ -51,6 +51,8 @@ const routeFilter = routeFilterArg
   .filter(Boolean);
 
 interface Site {
+  /** Extra public routes that are not linked from this site's navigation. */
+  additionalSnapshotRoutes?: string[];
   /** Stable command-line selector, when it differs from the directory name. */
   commandName?: string;
   /**
@@ -134,6 +136,13 @@ const SITES: Site[] = [
     variant: VARIANTS.CUREDAO,
   },
   {
+    additionalSnapshotRoutes: [
+      "/the-plan",
+      "/impact",
+      "/montana",
+      "/model-act",
+      "/states/missouri",
+    ],
     directory: "apps/acceleratedmedicine",
     host: "127.0.0.1",
     label: "@apps/acceleratedmedicine",
@@ -341,9 +350,14 @@ async function extractMetadata(page: any) {
 
 /** Sites in `apps/` — routes come from their site-config navigation. */
 async function snapshotNavRoutes(site: Site, baseUrl: string): Promise<void> {
-  const routes = getInternalNavigationRoutesForVariant(site.variant)
-    .map(({ path: routePath }) => routePath)
-    .filter((routePath) => !routeFilter || routeFilter.includes(routePath));
+  const routes = [
+    ...new Set([
+      ...getInternalNavigationRoutesForVariant(site.variant).map(
+        ({ path: routePath }) => routePath,
+      ),
+      ...(site.additionalSnapshotRoutes ?? []),
+    ]),
+  ].filter((routePath) => !routeFilter || routeFilter.includes(routePath));
   if (routes.length === 0) {
     console.log(`${site.label}: no routes matched --routes, skipped`);
     return;
