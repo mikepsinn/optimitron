@@ -148,6 +148,65 @@ export const NAV_ITEMS_MAP = {
       "transparent giving",
     ],
   },
+  rightToTryMontana: {
+    id: "rightToTryMontana",
+    label: "Montana Model",
+    path: ROUTES.montana,
+    description:
+      "Read how Montana's Universal Right to Try law expands patient access while licensing experimental treatment centers.",
+    emoji: "📍",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Montana SB 535",
+      "Universal Right to Try",
+      "experimental treatment centers",
+      "patient access",
+    ],
+  },
+  rightToTryMissouri: {
+    id: "rightToTryMissouri",
+    label: "Missouri",
+    path: ROUTES.missouri,
+    description:
+      "Follow the Missouri education campaign for a Universal Right to Try law.",
+    emoji: "⭐",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Missouri Right to Try",
+      "Missouri patient access",
+      "Universal Right to Try",
+    ],
+  },
+  rightToTryStates: {
+    id: "rightToTryStates",
+    label: "Your State",
+    path: `${ROUTES.home}#state-support`,
+    description:
+      "Record support for Universal Right to Try education in your state.",
+    emoji: "🗺️",
+    isHashLink: true,
+    requiresScrollHandler: true,
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: ["Right to Try by state", "patient access survey"],
+  },
+  rightToTryModelAct: {
+    id: "rightToTryModelAct",
+    label: "Model Act",
+    path: ROUTES.modelAct,
+    description:
+      "Review the core parts of a responsible Universal Right to Try framework.",
+    emoji: "📄",
+    canonicalVariant: VARIANTS.ACCELERATED_MEDICINE,
+    allowedVariants: [VARIANTS.ACCELERATED_MEDICINE],
+    keywords: [
+      "Universal Right to Try model act",
+      "patient access legislation",
+      "experimental treatment licensing",
+    ],
+  },
   volunteer: {
     id: "volunteer",
     label: "Volunteer",
