@@ -23,7 +23,7 @@
 - SB 535
 - Montana removed the terminal-illness restriction, licensed experimental treatment centers, and required outcome monitoring. Patients and providers now have a practical path to more treatment options.
 ### PATIENTS CAN REACH TREATMENTS. PROVIDERS CAN DELIVER THEM.
-- Montana removed the terminal-illness restriction in 2023. In 2025, SB 535 created licensed experimental treatment centers, direct provider-patient payment agreements, outcome monitoring, adverse event reporting, and an access requirement funded by 2% of each center's net profits.
+- Montana removed the terminal-illness restriction in 2023. In 2025, SB 535 created licensed experimental treatment centers, direct provider-patient payment agreements, outcome monitoring, adverse event reporting, and an access requirement funded by 2% of each center's net annual profits.
 - 2015
 #### RIGHT TO TRY BEGINS
 - Montana creates an initial access path for eligible patients.
@@ -48,7 +48,7 @@
 #### A PRACTICAL TREATMENT PATHWAY
 - Montana removed the terminal-illness restriction in 2023.
 - Licensed centers and direct payment agreements give providers a place and a way to deliver treatment.
-- Centers must monitor outcomes and adverse events and devote 2% of net profits to access.
+- Centers must monitor outcomes and adverse events and devote 2% of net annual profits to access.
 - RIGHT TO TRIAL PROPOSAL
 #### EVERY PATIENT CAN PARTICIPATE
 - Let every patient join a pragmatic trial for the most promising treatments.

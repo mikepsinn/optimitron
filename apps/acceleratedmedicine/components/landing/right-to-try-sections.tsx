@@ -169,7 +169,7 @@ export function MontanaProofSection() {
             SB 535 created licensed experimental treatment centers, direct
             provider-patient payment agreements, outcome monitoring, adverse
             event reporting, and an access requirement funded by 2% of each
-            center&apos;s net profits.
+            center&apos;s net annual profits.
           </p>
         </div>
 
@@ -228,7 +228,7 @@ export function RightToTryEvolutionSection() {
       bullets: [
         "Montana removed the terminal-illness restriction in 2023.",
         "Licensed centers and direct payment agreements give providers a place and a way to deliver treatment.",
-        "Centers must monitor outcomes and adverse events and devote 2% of net profits to access.",
+        "Centers must monitor outcomes and adverse events and devote 2% of net annual profits to access.",
       ],
       color: "bg-brutal-pink",
     },
