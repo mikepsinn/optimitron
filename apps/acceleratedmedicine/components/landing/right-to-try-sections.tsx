@@ -29,7 +29,11 @@ import {
   STATE_CAMPAIGNS,
   stateCampaignHref,
 } from "@/lib/right-to-try";
-import type { StateCampaignStage, SupporterRole } from "@/lib/right-to-try";
+import type {
+  StateAbbreviation,
+  StateCampaignStage,
+  SupporterRole,
+} from "@/lib/right-to-try";
 import {
   calculateRightToTrialImpact,
   RIGHT_TO_TRIAL_DISCOVERY_MULTIPLIER_DEFAULT,
@@ -94,7 +98,7 @@ export function UniversalRightToTryHero() {
               <Button
                 asChild
                 size="lg"
-                className={`${buttonShadow} bg-brutal-yellow`}
+                className={`${buttonShadow} bg-brutal-yellow text-foreground`}
               >
                 <a href="#state-support">
                   Bring it to my state <MapPin className="h-5 w-5" />
@@ -433,9 +437,15 @@ export function RightToTrialImpactPreviewSection() {
 export function StateSupportSection({
   initialRole,
   initialState,
+  heading = "Should every patient in your state have the right to join a clinical trial for the most promising treatments?",
+  body = "Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.",
+  headingAs: Heading = "h2",
 }: {
   initialRole?: SupporterRole;
   initialState?: string;
+  heading?: string;
+  body?: string;
+  headingAs?: "h1" | "h2";
 }) {
   return (
     <SectionContainer
@@ -449,13 +459,11 @@ export function StateSupportSection({
           <p className="font-black uppercase">
             Bring Right to Trial to every state
           </p>
-          <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Should every patient in your state have the Right to Trial?
-          </h2>
+          <Heading className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            {heading}
+          </Heading>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Tell us your state and why patients there need more options. Every
-            response shows where support is strongest and helps more people
-            learn what Right to Trial would change.
+            {body}
           </p>
         </div>
         <RightToTrySupportForm
@@ -467,10 +475,25 @@ export function StateSupportSection({
   );
 }
 
+// Standard US tile-grid map positions: [row, column] on an 11-column grid.
+const STATE_TILE_POSITIONS: Record<StateAbbreviation, [number, number]> = {
+  AK: [0, 0], ME: [0, 10],
+  WI: [1, 5], VT: [1, 9], NH: [1, 10],
+  WA: [2, 0], ID: [2, 1], MT: [2, 2], ND: [2, 3], MN: [2, 4], IL: [2, 5],
+  MI: [2, 7], NY: [2, 8], MA: [2, 9],
+  OR: [3, 0], NV: [3, 1], WY: [3, 2], SD: [3, 3], IA: [3, 4], IN: [3, 5],
+  OH: [3, 6], PA: [3, 7], NJ: [3, 8], CT: [3, 9], RI: [3, 10],
+  CA: [4, 0], UT: [4, 1], CO: [4, 2], NE: [4, 3], MO: [4, 4], KY: [4, 5],
+  WV: [4, 6], VA: [4, 7], MD: [4, 8], DE: [4, 9],
+  AZ: [5, 1], NM: [5, 2], KS: [5, 3], AR: [5, 4], TN: [5, 5], NC: [5, 6],
+  SC: [5, 7],
+  OK: [6, 3], LA: [6, 4], MS: [6, 5], AL: [6, 6], GA: [6, 7],
+  HI: [7, 0], TX: [7, 3], FL: [7, 8],
+};
+
 export function StateCampaignMapSection() {
   const stageClasses: Record<StateCampaignStage, string> = {
     "enacted-model": "bg-brutal-green",
-    active: "bg-brutal-pink",
     listening: "bg-background",
   };
 
@@ -479,11 +502,11 @@ export function StateCampaignMapSection() {
       <Container>
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Montana proved a path. Missouri is the next active state.
+            Montana proved it. Put your state on the map.
           </h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Pick any state and put it on the map. Montana is the enacted
-            precedent. Missouri is active now. Every other state can be next.
+            Montana is the enacted precedent. Tap your state to see what Right
+            to Trial would mean there, then add your voice.
           </p>
         </div>
 
@@ -491,26 +514,37 @@ export function StateCampaignMapSection() {
           <span className="border-4 border-primary bg-brutal-green px-3 py-2">
             Enacted precedent
           </span>
-          <span className="border-4 border-primary bg-brutal-pink px-3 py-2">
-            Active education
-          </span>
           <span className="border-4 border-primary bg-background px-3 py-2">
             Listening
           </span>
         </div>
 
-        <div className="mt-8 grid grid-cols-5 gap-2 sm:grid-cols-10">
-          {STATE_CAMPAIGNS.map((campaign) => (
-            <Link
-              key={campaign.abbreviation}
-              aria-label={`${campaign.name}: ${campaign.stageLabel}`}
-              className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-4 border-primary text-sm font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] sm:text-base`}
-              href={stateCampaignHref(campaign)}
-              title={`${campaign.name}: ${campaign.stageLabel}`}
-            >
-              {campaign.abbreviation}
-            </Link>
-          ))}
+        <div className="mx-auto mt-8 grid max-w-3xl grid-cols-[repeat(11,minmax(0,1fr))] gap-1 sm:gap-2">
+          {/* Render in tile order so keyboard focus follows the map. */}
+          {[...STATE_CAMPAIGNS]
+            .sort((a, b) => {
+              const [rowA, colA] = STATE_TILE_POSITIONS[a.abbreviation];
+              const [rowB, colB] = STATE_TILE_POSITIONS[b.abbreviation];
+              return rowA - rowB || colA - colB;
+            })
+            .map((campaign) => {
+              const [row, column] = STATE_TILE_POSITIONS[campaign.abbreviation];
+              return (
+                <Link
+                  key={campaign.abbreviation}
+                  aria-label={`${campaign.name}: ${campaign.stageLabel}`}
+                  className={`${stageClasses[campaign.stage]} flex aspect-square items-center justify-center border-2 border-primary text-[10px] font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:border-4 sm:text-base sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]`}
+                  href={stateCampaignHref(campaign)}
+                  style={{
+                    gridColumnStart: column + 1,
+                    gridRowStart: row + 1,
+                  }}
+                  title={`${campaign.name}: ${campaign.stageLabel}`}
+                >
+                  {campaign.abbreviation}
+                </Link>
+              );
+            })}
         </div>
       </Container>
     </SectionContainer>
@@ -532,7 +566,7 @@ export function RoleActionSection() {
       role: "Clinicians",
       action: "Give patients another option",
       text: "Help make consent, treatment review, monitoring, records, and patient safety work in real care.",
-      href: "/states/missouri?role=clinician#state-support",
+      href: "#state-support",
       color: "bg-brutal-yellow",
     },
     {
@@ -585,33 +619,6 @@ export function RoleActionSection() {
   );
 }
 
-export function MissouriCampaignSection() {
-  return (
-    <SectionContainer bgColor="pink" borderPosition="bottom">
-      <Container size="lg" className="text-center text-brutal-pink-foreground">
-        <p className="font-black uppercase">Missouri can be next</p>
-        <h2 className="mt-3 text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-          Give Missouri patients the Right to Trial.
-        </h2>
-        <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-          Montana showed that a state can give patients more supervised
-          treatment options. Missouri can take the next step: let every willing
-          patient join the search for treatments that work.
-        </p>
-        <Button
-          asChild
-          size="lg"
-          className={`${buttonShadow} mt-8 bg-brutal-yellow text-foreground`}
-        >
-          <Link href="/states/missouri">
-            Bring it to Missouri <ArrowRight className="h-5 w-5" />
-          </Link>
-        </Button>
-      </Container>
-    </SectionContainer>
-  );
-}
-
 export function UniversalRightToTryFinalCTA() {
   return (
     <SectionContainer bgColor="yellow" borderPosition="none">
@@ -630,7 +637,11 @@ export function UniversalRightToTryFinalCTA() {
               Bring it to my state <MapPin className="h-5 w-5" />
             </a>
           </Button>
-          <Button asChild size="lg" className={`${buttonShadow} bg-background`}>
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-background text-foreground`}
+          >
             <Link href="/model-act">
               Read the proposed law <BookOpen className="h-5 w-5" />
             </Link>

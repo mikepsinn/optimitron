@@ -25,17 +25,17 @@ import {
 import { RIGHT_TO_TRY_SOURCES } from "@/lib/right-to-try";
 
 export const metadata: Metadata = {
-  title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+  title: "Montana Universal Right to Try | Right to Trial Initiative",
   description:
     "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
   alternates: { canonical: "https://acceleratedmedicine.org/montana" },
   openGraph: {
-    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    title: "Montana Universal Right to Try | Right to Trial Initiative",
     description:
       "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
     images: [
       {
-        alt: "Institute for Accelerated Medicine — patient access, pragmatic trials, and public evidence.",
+        alt: "Right to Trial Initiative — patient access, pragmatic trials, and public evidence.",
         height: 630,
         url: "https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png",
         width: 1200,
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Montana Universal Right to Try | Institute for Accelerated Medicine",
+    title: "Montana Universal Right to Try | Right to Trial Initiative",
     description:
       "A plain-language guide to Montana SB 535, experimental treatment center licensing, patient safeguards, and the evidence opportunity.",
     images: [
@@ -105,7 +105,7 @@ export default function MontanaPage() {
             patients to consider experimental treatment after reviewing approved
             choices with a treating clinician.
           </p>
-          <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <a href={RIGHT_TO_TRY_SOURCES.montanaSb535} rel="noreferrer" target="_blank">
               Read enrolled SB 535 <ExternalLink className="h-5 w-5" />
             </a>

@@ -64,20 +64,23 @@ export const US_STATES = [
 
 export type StateName = (typeof US_STATES)[number][0];
 
+export type StateAbbreviation = (typeof US_STATES)[number][1];
+
 export const SUPPORTER_ROLES = [
   "patient-or-caregiver",
   "clinician",
   "researcher",
   "public-educator",
+  "state-legislator-or-staff",
   "other",
 ] as const;
 
 export type SupporterRole = (typeof SUPPORTER_ROLES)[number];
 
-export type StateCampaignStage = "enacted-model" | "active" | "listening";
+export type StateCampaignStage = "enacted-model" | "listening";
 
 export interface StateCampaign {
-  abbreviation: string;
+  abbreviation: StateAbbreviation;
   name: StateName;
   slug: string;
   stage: StateCampaignStage;
@@ -107,28 +110,14 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
       };
     }
 
-    if (name === "Missouri") {
-      return {
-        abbreviation,
-        name,
-        slug,
-        stage: "active",
-        stageLabel: "Active education",
-        headline: "Missouri can bring Right to Trial to every patient.",
-        summary:
-          "Patients, clinicians, researchers, and public educators can build a Missouri model where access creates evidence for the next patient.",
-      };
-    }
-
     return {
       abbreviation,
       name,
       slug,
       stage: "listening",
       stageLabel: "Listening for support",
-      headline: `Should every patient in ${name} have the Right to Trial?`,
-      summary:
-        "Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.",
+      headline: `Should every patient in ${name} have the right to join a clinical trial for the most promising treatments?`,
+      summary: `Help bring pragmatic trials, shared results, and more treatment options to patients in ${name}.`,
     };
   },
 );

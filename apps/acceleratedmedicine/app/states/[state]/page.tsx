@@ -8,11 +8,12 @@ export const dynamicParams = false;
 
 interface StatePageProps {
   params: Promise<{ state: string }>;
+  searchParams: Promise<{ role?: string }>;
 }
 
 export function generateStaticParams() {
   return STATE_CAMPAIGNS.filter(
-    (campaign) => campaign.name !== "Missouri" && campaign.name !== "Montana",
+    (campaign) => campaign.name !== "Montana",
   ).map((campaign) => ({ state: campaign.slug }));
 }
 
@@ -34,12 +35,22 @@ export async function generateMetadata({
   };
 }
 
-export default async function StatePage({ params }: StatePageProps) {
+export default async function StatePage({
+  params,
+  searchParams,
+}: StatePageProps) {
   const { state } = await params;
   if (state === "montana") permanentRedirect("/montana");
 
   const campaign = getStateCampaign(state);
   if (!campaign) notFound();
 
-  return <StateCampaignPage campaign={campaign} />;
+  const { role } = await searchParams;
+
+  return (
+    <StateCampaignPage
+      campaign={campaign}
+      initialRole={role === "clinician" ? "clinician" : undefined}
+    />
+  );
 }

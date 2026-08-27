@@ -2,18 +2,18 @@
 
 ## Metadata
 
-- Page title: Institute for Accelerated Medicine
+- Page title: Right to Trial Initiative
 - Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Canonical: https://acceleratedmedicine.org
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Right to Trial Initiative
 - Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
-- [INSTITUTE FOR ACCELERATED MEDICINE](/)
+- [RIGHT TO TRIAL INITIATIVE](/)
 - THE RIGHT TO TRIAL
 ## WE CAN ERADICATE DISEASE.
 - Give every patient the right to join a clinical trial for the most promising treatments—with a clinician, at a licensed treatment center, wherever they live. Every patient gets more options. Every result helps us find what works.
@@ -74,10 +74,10 @@
 - [SEE HOW MUCH FASTER](/impact)
 - [READ THE IMPACT PAPER](https://rtt-impact.acceleratedmedicine.org/)
 - BRING RIGHT TO TRIAL TO EVERY STATE
-### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
+### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO JOIN A CLINICAL TRIAL FOR THE MOST PROMISING TREATMENTS?
 - Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
-- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
+- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
 - YES
 - SHOW ME MORE
 - NO
@@ -86,61 +86,60 @@
 - Send me occasional updates about Right to Trial in my state.
 - RECORD MY STATE RESPONSE
 - If you provide an email, we will send a confirmation. We will not sell or rent it.
-### MONTANA PROVED A PATH. MISSOURI IS THE NEXT ACTIVE STATE.
-- Pick any state and put it on the map. Montana is the enacted precedent. Missouri is active now. Every other state can be next.
+### MONTANA PROVED IT. PUT YOUR STATE ON THE MAP.
+- Montana is the enacted precedent. Tap your state to see what Right to Trial would mean there, then add your voice.
 - ENACTED PRECEDENT
-- ACTIVE EDUCATION
 - LISTENING
-- [AL](/states/alabama)
 - [AK](/states/alaska)
-- [AZ](/states/arizona)
-- [AR](/states/arkansas)
-- [CA](/states/california)
-- [CO](/states/colorado)
+- [ME](/states/maine)
+- [WI](/states/wisconsin)
+- [VT](/states/vermont)
+- [NH](/states/new-hampshire)
+- [WA](/states/washington)
+- [ID](/states/idaho)
+- [MT](/montana)
+- [ND](/states/north-dakota)
+- [MN](/states/minnesota)
+- [IL](/states/illinois)
+- [MI](/states/michigan)
+- [NY](/states/new-york)
+- [MA](/states/massachusetts)
+- [OR](/states/oregon)
+- [NV](/states/nevada)
+- [WY](/states/wyoming)
+- [SD](/states/south-dakota)
+- [IA](/states/iowa)
+- [IN](/states/indiana)
+- [OH](/states/ohio)
+- [PA](/states/pennsylvania)
+- [NJ](/states/new-jersey)
 - [CT](/states/connecticut)
+- [RI](/states/rhode-island)
+- [CA](/states/california)
+- [UT](/states/utah)
+- [CO](/states/colorado)
+- [NE](/states/nebraska)
+- [MO](/states/missouri)
+- [KY](/states/kentucky)
+- [WV](/states/west-virginia)
+- [VA](/states/virginia)
+- [MD](/states/maryland)
 - [DE](/states/delaware)
-- [FL](/states/florida)
+- [AZ](/states/arizona)
+- [NM](/states/new-mexico)
+- [KS](/states/kansas)
+- [AR](/states/arkansas)
+- [TN](/states/tennessee)
+- [NC](/states/north-carolina)
+- [SC](/states/south-carolina)
+- [OK](/states/oklahoma)
+- [LA](/states/louisiana)
+- [MS](/states/mississippi)
+- [AL](/states/alabama)
 - [GA](/states/georgia)
 - [HI](/states/hawaii)
-- [ID](/states/idaho)
-- [IL](/states/illinois)
-- [IN](/states/indiana)
-- [IA](/states/iowa)
-- [KS](/states/kansas)
-- [KY](/states/kentucky)
-- [LA](/states/louisiana)
-- [ME](/states/maine)
-- [MD](/states/maryland)
-- [MA](/states/massachusetts)
-- [MI](/states/michigan)
-- [MN](/states/minnesota)
-- [MS](/states/mississippi)
-- [MO](/states/missouri)
-- [MT](/montana)
-- [NE](/states/nebraska)
-- [NV](/states/nevada)
-- [NH](/states/new-hampshire)
-- [NJ](/states/new-jersey)
-- [NM](/states/new-mexico)
-- [NY](/states/new-york)
-- [NC](/states/north-carolina)
-- [ND](/states/north-dakota)
-- [OH](/states/ohio)
-- [OK](/states/oklahoma)
-- [OR](/states/oregon)
-- [PA](/states/pennsylvania)
-- [RI](/states/rhode-island)
-- [SC](/states/south-carolina)
-- [SD](/states/south-dakota)
-- [TN](/states/tennessee)
 - [TX](/states/texas)
-- [UT](/states/utah)
-- [VT](/states/vermont)
-- [VA](/states/virginia)
-- [WA](/states/washington)
-- [WV](/states/west-virginia)
-- [WI](/states/wisconsin)
-- [WY](/states/wyoming)
+- [FL](/states/florida)
 ### PATIENTS ARE READY.
 ### THE TRIAL SYSTEM ISN'T.
 - 44.8%
@@ -443,21 +442,17 @@
 - De-identified results reveal what helps, what fails, and which patients respond best.
 ### CHOOSE HOW YOU WANT TO HELP PATIENTS GET ANSWERS FASTER.
 - [PATIENTS AND CAREGIVERS TELL YOUR STORY Show what another supervised treatment option would mean when approved treatments are not enough. GET STARTED](#state-support)
-- [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](/states/missouri?role=clinician#state-support)
+- [CLINICIANS GIVE PATIENTS ANOTHER OPTION Help make consent, treatment review, monitoring, records, and patient safety work in real care. GET STARTED](#state-support)
 - [RESEARCHERS TURN CARE INTO DISCOVERIES Choose the small set of outcomes that lets one patient's result improve treatment rankings for everyone. GET STARTED](/research)
 - [PUBLIC EDUCATORS MAKE THE CASE IN YOUR STATE Share the patient story, answer local questions, and show what Montana already proved possible. GET STARTED](/contact)
-- MISSOURI CAN BE NEXT
-### GIVE MISSOURI PATIENTS THE RIGHT TO TRIAL.
-- Montana showed that a state can give patients more supervised treatment options. Missouri can take the next step: let every willing patient join the search for treatments that work.
-- [BRING IT TO MISSOURI](/states/missouri)
 ### 💀 DEATH CLOCK
 ### MONTANA CREATED A PATH. BRING RIGHT TO TRIAL TO YOUR STATE.
 - [READ THE PROPOSED LAW](/model-act)
 - MISSION: TOTAL DISEASE ERADICATION
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
-- [MISSOURI](/states/missouri)
 - [YOUR STATE](/#state-support)
+- [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
@@ -466,6 +461,7 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
+- [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

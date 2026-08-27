@@ -142,6 +142,7 @@ const SITES: Site[] = [
       "/montana",
       "/model-act",
       "/states/missouri",
+      "/survey",
     ],
     directory: "apps/acceleratedmedicine",
     host: "127.0.0.1",

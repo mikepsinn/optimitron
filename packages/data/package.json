@@ -13,7 +13,6 @@
     "./campaign": "./src/campaign.ts",
     "./parameters": "./src/parameters/index.ts",
     "./parameters/compact-format": "./src/parameters/compact-format.ts",
-    "./parameters/state-right-to-trial": "./src/parameters/state-right-to-trial.ts",
     "./referendums": "./src/referendums/index.ts",
     "./fetchers": "./src/fetchers/index.ts",
     "./fetchers/congress": "./src/fetchers/congress.ts",

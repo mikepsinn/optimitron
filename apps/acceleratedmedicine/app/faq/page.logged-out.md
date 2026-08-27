@@ -2,13 +2,13 @@
 
 ## Metadata
 
-- Page title: Institute for Accelerated Medicine
+- Page title: Right to Trial Initiative
 - Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Canonical: https://acceleratedmedicine.org/faq
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Right to Trial Initiative
 - Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy

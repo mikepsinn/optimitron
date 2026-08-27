@@ -6,13 +6,11 @@ import {
   GLOBAL_ANNUAL_DALY_BURDEN,
   GLOBAL_DISEASE_DEATHS_DAILY,
   NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
+  STATE_RTT_IMPLEMENTATION_COST_TOTAL,
+  STATE_RTT_TREATMENT_DISCOVERY_MULTIPLIER,
   STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
   TRADITIONAL_PHASE3_COST_PER_PATIENT,
 } from "@optimitron/data/parameters";
-import {
-  STATE_RTT_PHILANTHROPIC_COST_TOTAL,
-  STATE_RTT_TREATMENT_DISCOVERY_MULTIPLIER,
-} from "@optimitron/data/parameters/state-right-to-trial";
 
 export const RIGHT_TO_TRIAL_IMPACT_PAPER_URL =
   "https://rtt-impact.acceleratedmedicine.org/";
@@ -73,7 +71,7 @@ export function calculateRightToTrialImpact(
 
   return {
     averageWaitYears,
-    costPerDaly: STATE_RTT_PHILANTHROPIC_COST_TOTAL.value / dalysAverted,
+    costPerDaly: STATE_RTT_IMPLEMENTATION_COST_TOTAL.value / dalysAverted,
     dalysAverted,
     firstTreatmentsPerYear,
     livesSaved,
@@ -116,7 +114,7 @@ export const RIGHT_TO_TRIAL_SOURCE_PARAMETERS = {
   eventuallyAvoidableDalyShare: EVENTUALLY_AVOIDABLE_DALY_PCT,
   eventuallyAvoidableDeathShare: EVENTUALLY_AVOIDABLE_DEATH_PCT,
   firstTreatmentsPerYear: NEW_DISEASE_FIRST_TREATMENTS_PER_YEAR,
-  launchCost: STATE_RTT_PHILANTHROPIC_COST_TOTAL,
+  launchCost: STATE_RTT_IMPLEMENTATION_COST_TOTAL,
   pragmaticCostPerPatient: DFDA_PRAGMATIC_TRIAL_COST_PER_PATIENT,
   statusQuoAverageWait: STATUS_QUO_AVG_YEARS_TO_FIRST_TREATMENT,
   traditionalCostPerPatient: TRADITIONAL_PHASE3_COST_PER_PATIENT,
