@@ -115,8 +115,7 @@ export const STATE_CAMPAIGNS: StateCampaign[] = US_STATES.map(
       stage: "listening",
       stageLabel: "Listening for support",
       headline: `Should every patient in ${name} have the Right to Trial?`,
-      summary:
-        "Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.",
+      summary: `Help bring pragmatic trials, shared results, and more treatment options to patients in ${name}.`,
     };
   },
 );

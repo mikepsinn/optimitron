@@ -433,9 +433,15 @@ export function RightToTrialImpactPreviewSection() {
 export function StateSupportSection({
   initialRole,
   initialState,
+  heading = "Should every patient in your state have the Right to Trial?",
+  body = "Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.",
+  headingAs: Heading = "h2",
 }: {
   initialRole?: SupporterRole;
   initialState?: string;
+  heading?: string;
+  body?: string;
+  headingAs?: "h1" | "h2";
 }) {
   return (
     <SectionContainer
@@ -449,13 +455,11 @@ export function StateSupportSection({
           <p className="font-black uppercase">
             Bring Right to Trial to every state
           </p>
-          <h2 className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            Should every patient in your state have the Right to Trial?
-          </h2>
+          <Heading className="mt-2 text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            {heading}
+          </Heading>
           <p className="mx-auto mt-5 max-w-3xl text-lg font-bold sm:text-xl">
-            Tell us your state and why patients there need more options. Every
-            response shows where support is strongest and helps more people
-            learn what Right to Trial would change.
+            {body}
           </p>
         </div>
         <RightToTrySupportForm

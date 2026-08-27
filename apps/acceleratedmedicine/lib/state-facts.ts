@@ -85,13 +85,75 @@ export const UNTREATED_RARE_DISEASE_SHARE_PCT = Math.round(
 
 export const RARE_DISEASES_COUNT = RARE_DISEASES_COUNT_GLOBAL.value;
 
-/** The state's population share of the ~30M Americans with a rare disease. */
-export function estimatedRareDiseasePatients(state: StateName): number {
+/** The state's population share of a national headcount. */
+export function estimateStateShare(state: StateName, usCount: number): number {
   return Math.round(
-    (STATE_POPULATIONS[state] / STATE_POPULATION_TOTAL) *
-      US_RARE_DISEASE_PATIENTS_TOTAL,
+    (STATE_POPULATIONS[state] / STATE_POPULATION_TOTAL) * usCount,
   );
 }
+
+/** The state's population share of the ~30M Americans with a rare disease. */
+export function estimatedRareDiseasePatients(state: StateName): number {
+  return estimateStateShare(state, US_RARE_DISEASE_PATIENTS_TOTAL);
+}
+
+export interface NationalConditionCount {
+  label: string;
+  usCount: number;
+  sourceUrl: string;
+  sourceLabel: string;
+}
+
+/**
+ * National headcounts for major conditions medicine manages but cannot cure.
+ * State figures are the state's population share of these counts.
+ */
+export const NATIONAL_CONDITION_COUNTS: NationalConditionCount[] = [
+  {
+    label: "Diabetes",
+    usCount: 40_000_000,
+    sourceUrl: "https://diabetes.org/about-diabetes/statistics/about-diabetes",
+    sourceLabel: "American Diabetes Association, 2023 CDC data",
+  },
+  {
+    label: "Chronic kidney disease",
+    usCount: 35_500_000,
+    sourceUrl:
+      "https://www.niddk.nih.gov/health-information/health-statistics/kidney-disease",
+    sourceLabel: "NIDDK",
+  },
+  {
+    label: "Rare diseases",
+    usCount: US_RARE_DISEASE_PATIENTS_TOTAL,
+    sourceUrl: "https://www.gao.gov/products/gao-25-106774",
+    sourceLabel: "GAO, 2025",
+  },
+  {
+    label: "Major depression (past year)",
+    usCount: 21_000_000,
+    sourceUrl: "https://www.nimh.nih.gov/health/statistics/major-depression",
+    sourceLabel: "NIMH, 2021",
+  },
+  {
+    label: "Living with or after cancer",
+    usCount: 18_100_000,
+    sourceUrl: "https://www.cancer.gov/about-cancer/understanding/statistics",
+    sourceLabel: "National Cancer Institute, 2022",
+  },
+  {
+    label: "COPD",
+    usCount: 11_700_000,
+    sourceUrl:
+      "https://www.lung.org/lung-health-diseases/lung-disease-lookup/copd/learn-about-copd",
+    sourceLabel: "American Lung Association",
+  },
+  {
+    label: "Alzheimer's disease",
+    usCount: 7_400_000,
+    sourceUrl: "https://www.alz.org/alzheimers-dementia/facts-figures",
+    sourceLabel: "Alzheimer's Association, 2026",
+  },
+];
 
 /** Round to two significant figures for honest approximate display. */
 export function formatPeopleApprox(count: number): string {

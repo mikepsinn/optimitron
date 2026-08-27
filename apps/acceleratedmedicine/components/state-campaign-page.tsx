@@ -1,13 +1,6 @@
-import {
-  ArrowRight,
-  FileText,
-  HeartPulse,
-  MapPin,
-  ShieldCheck,
-} from "lucide-react";
+import { FileText, HeartPulse, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@optimitron/neobrutalist-ui/ui/button";
 import { Card } from "@optimitron/neobrutalist-ui/ui/card";
 import { Container } from "@optimitron/neobrutalist-ui/ui/container";
 import { SectionContainer } from "@optimitron/neobrutalist-ui/ui/section-container";
@@ -17,8 +10,10 @@ import { StateSupportSection } from "@/components/landing/right-to-try-sections"
 import type { StateCampaign, SupporterRole } from "@/lib/right-to-try";
 import {
   estimatedRareDiseasePatients,
+  estimateStateShare,
   FEDERAL_RIGHT_TO_TRY_YEAR,
   formatPeopleApprox,
+  NATIONAL_CONDITION_COUNTS,
   RARE_DISEASES_COUNT,
   STATE_FACT_SOURCES,
   STATE_POPULATIONS,
@@ -64,34 +59,21 @@ export function StateCampaignPage({
     },
   ];
 
+  const conditions = NATIONAL_CONDITION_COUNTS.map((condition) => ({
+    ...condition,
+    stateCount: estimateStateShare(campaign.name, condition.usCount),
+  })).sort((a, b) => b.stateCount - a.stateCount);
+  const largestCount = conditions[0]?.stateCount ?? 1;
+
   return (
     <Layout>
-      <SectionContainer
-        bgColor="background"
-        borderPosition="bottom"
-        className="py-24 sm:py-28"
-      >
-        <Container size="lg" className="text-center">
-          <p className="mx-auto inline-block rotate-[-1deg] border-4 border-primary bg-brutal-cyan px-4 py-2 font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            {campaign.stageLabel}
-          </p>
-          <h1 className="mt-7 text-5xl font-black uppercase leading-[0.9] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">
-            {campaign.headline}
-          </h1>
-          <p className="mx-auto mt-7 max-w-4xl text-lg font-bold sm:text-xl md:text-2xl">
-            {campaign.summary}
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <a href="#state-support">
-              Add my response <MapPin className="h-5 w-5" />
-            </a>
-          </Button>
-        </Container>
-      </SectionContainer>
+      <StateSupportSection
+        body={campaign.summary}
+        heading={campaign.headline}
+        headingAs="h1"
+        initialRole={initialRole}
+        initialState={campaign.name}
+      />
 
       <SectionContainer bgColor="pink" borderPosition="bottom">
         <Container>
@@ -124,44 +106,52 @@ export function StateCampaignPage({
         </Container>
       </SectionContainer>
 
-      <SectionContainer bgColor="cyan" borderPosition="bottom">
-        <Container size="lg" className="text-center">
-          <h2 className="text-5xl font-black uppercase leading-none tracking-tighter sm:text-6xl md:text-7xl">
-            {campaign.name} can give every patient the Right to Trial.
+      <SectionContainer bgColor="yellow" borderPosition="bottom">
+        <Container>
+          <h2 className="text-center text-4xl font-black uppercase leading-none tracking-tighter sm:text-5xl md:text-6xl">
+            Who is still waiting in {campaign.name}
           </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-lg font-bold sm:text-xl">
-            Montana showed that a state can open a broader, licensed path.{" "}
-            {campaign.name} can go further by making pragmatic trials and shared
-            outcomes part of the path from day one.
+          <p className="mx-auto mt-5 max-w-3xl text-center text-lg font-bold sm:text-xl">
+            Today&apos;s medicine manages these conditions. It cures none of
+            them.
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <Link href="/model-act">
-                See the Right to Trial framework{" "}
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-none border-4 border-primary bg-background px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <Link href="/montana">
-                See how Montana did it <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
+          <div className="mx-auto mt-10 flex max-w-3xl flex-col gap-5">
+            {conditions.map((condition) => (
+              <div key={condition.label}>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <a
+                    className="font-black uppercase underline underline-offset-4"
+                    href={condition.sourceUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {condition.label}
+                  </a>
+                  <span className="font-black">
+                    ~{formatPeopleApprox(condition.stateCount)} people
+                  </span>
+                </div>
+                <div className="mt-2 h-8 border-4 border-primary bg-background">
+                  <div
+                    className="h-full bg-brutal-pink"
+                    style={{
+                      width: `${Math.max(
+                        4,
+                        (condition.stateCount / largestCount) * 100,
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
+          <p className="mx-auto mt-8 max-w-3xl text-center text-sm font-bold">
+            Estimates: national counts scaled to {campaign.name}&apos;s share of
+            the US population (Census 2025). Each condition links to its
+            national source.
+          </p>
         </Container>
       </SectionContainer>
-
-      <StateSupportSection
-        initialRole={initialRole}
-        initialState={campaign.name}
-      />
     </Layout>
   );
 }
