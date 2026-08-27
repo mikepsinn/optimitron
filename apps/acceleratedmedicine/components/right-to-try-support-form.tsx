@@ -163,6 +163,9 @@ export function RightToTrySupportForm({
             <option value="public-educator">
               Public educator or organizer
             </option>
+            <option value="state-legislator-or-staff">
+              State legislator or staff
+            </option>
             <option value="other">Other</option>
           </select>
         </label>

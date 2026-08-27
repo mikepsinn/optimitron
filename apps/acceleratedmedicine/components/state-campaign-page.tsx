@@ -84,7 +84,7 @@ export function StateCampaignPage({
           <Button
             asChild
             size="lg"
-            className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
           >
             <a href="#state-support">
               Add my response <MapPin className="h-5 w-5" />
@@ -138,7 +138,7 @@ export function StateCampaignPage({
             <Button
               asChild
               size="lg"
-              className="rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              className="rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
             >
               <Link href="/model-act">
                 See the Right to Trial framework{" "}

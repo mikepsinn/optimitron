@@ -64,6 +64,7 @@ const formFields = [
       "clinician",
       "researcher",
       "public-educator",
+      "state-legislator-or-staff",
       "other",
     ],
   },

@@ -2,24 +2,24 @@
 
 ## Metadata
 
-- Page title: Institute for Accelerated Medicine
+- Page title: Right to Trial Initiative
 - Meta description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Canonical: https://acceleratedmedicine.org/terms
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Right to Trial Initiative
 - Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
-- [INSTITUTE FOR ACCELERATED MEDICINE](/)
+- [RIGHT TO TRIAL INITIATIVE](/)
 ## TERMS OF SERVICE
 - Last updated: August 2026
 ### 1. ACCEPTANCE OF TERMS
 - By using AcceleratedMedicine.org, you agree to these terms. If you do not agree, do not use the website. Institute for Accelerated Medicine may update these terms by publishing a revised version here.
 ### 2. THE SERVICE
-- Institute for Accelerated Medicine provides the information and interactive features described on this website. Features may change as the service develops.
+- Right to Trial Initiative provides the information and interactive features described on this website. Features may change as the service develops.
 - Make voluntary donations through a payment processor.
 ### 3. ACCEPTABLE USE
 - Do not use the website to:
@@ -48,6 +48,7 @@
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/#state-support)
+- [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
@@ -56,6 +57,7 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
+- [GET EMAIL UPDATES](/survey)
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)
 - [TERMS OF SERVICE](/terms)

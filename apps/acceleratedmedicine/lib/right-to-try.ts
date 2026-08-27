@@ -69,6 +69,7 @@ export const SUPPORTER_ROLES = [
   "clinician",
   "researcher",
   "public-educator",
+  "state-legislator-or-staff",
   "other",
 ] as const;
 

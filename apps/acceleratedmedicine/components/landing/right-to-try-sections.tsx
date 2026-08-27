@@ -94,7 +94,7 @@ export function UniversalRightToTryHero() {
               <Button
                 asChild
                 size="lg"
-                className={`${buttonShadow} bg-brutal-yellow`}
+                className={`${buttonShadow} bg-brutal-yellow text-foreground`}
               >
                 <a href="#state-support">
                   Bring it to my state <MapPin className="h-5 w-5" />
@@ -626,7 +626,11 @@ export function UniversalRightToTryFinalCTA() {
               Bring it to my state <MapPin className="h-5 w-5" />
             </a>
           </Button>
-          <Button asChild size="lg" className={`${buttonShadow} bg-background`}>
+          <Button
+            asChild
+            size="lg"
+            className={`${buttonShadow} bg-background text-foreground`}
+          >
             <Link href="/model-act">
               Read the proposed law <BookOpen className="h-5 w-5" />
             </Link>

@@ -105,7 +105,7 @@ export default function MontanaPage() {
             patients to consider experimental treatment after reviewing approved
             choices with a treating clinician.
           </p>
-          <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <Button asChild size="lg" className="mt-8 rounded-none border-4 border-primary bg-brutal-yellow px-7 py-6 text-base font-black uppercase text-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <a href={RIGHT_TO_TRY_SOURCES.montanaSb535} rel="noreferrer" target="_blank">
               Read enrolled SB 535 <ExternalLink className="h-5 w-5" />
             </a>

@@ -1337,8 +1337,8 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
   // Goal: Measure support, explain the Montana precedent, and equip state campaigns
   // CANONICAL FOR: /donate (all other variants redirect here for donations)
   "acceleratedmedicine.org": {
-    name: "IAM",
-    title: "Institute for Accelerated Medicine",
+    name: "RTT",
+    title: "Right to Trial Initiative",
     description:
       "Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.",
     domains: ["acceleratedmedicine.org", "www.acceleratedmedicine.org"],
@@ -1400,7 +1400,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
     sidebarSections: [],
     sidebarVoteCtaEnabled: false,
     footerBranding: {
-      title: "THE INSTITUTE FOR ACCELERATED MEDICINE",
+      title: "RIGHT TO TRIAL INITIATIVE",
       tagline: "MISSION: TOTAL DISEASE ERADICATION",
     },
     footerSections: [
@@ -1410,6 +1410,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
         items: [
           "rightToTryMontana",
           "rightToTryStates",
+          "rightToTrySurvey",
           "rightToTryModelAct",
         ],
       },
@@ -1421,7 +1422,7 @@ const siteConfigs: Record<SiteVariant, SiteConfig> = {
       {
         id: "support",
         label: "SUPPORT",
-        items: ["donate", "volunteer"],
+        items: ["donate", "volunteer", "rightToTryEmailUpdates"],
       },
     ],
     contactInfo: {

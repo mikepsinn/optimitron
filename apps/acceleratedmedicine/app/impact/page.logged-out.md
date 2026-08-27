@@ -5,15 +5,15 @@
 - Page title: Right to Trial Impact | Institute for Accelerated Medicine
 - Meta description: See how Right to Trial can help patients join low-cost clinical trials, find effective treatments sooner, and show which treatments work.
 - Canonical: https://acceleratedmedicine.org/impact
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Right to Trial Initiative
 - Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
-- [INSTITUTE FOR ACCELERATED MEDICINE](/)
+- [RIGHT TO TRIAL INITIATIVE](/)
 - RIGHT TO TRIAL IMPACT
 ## WE CAN FIND TREATMENTS 181 YEARS SOONER.
 - Today, the average disease without an effective treatment waits 222 years for its first one. Give patients the right to join low-cost clinical trials, and the central estimate falls to 40.5 years.
@@ -250,6 +250,7 @@
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/#state-support)
+- [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
@@ -258,6 +259,7 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
+- [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)

@@ -246,6 +246,55 @@ describe("Right to Trial participation submission", () => {
     expect(store).not.toHaveBeenCalled();
   });
 
+  it("subscribes the contact to the updates audience only with consent", async () => {
+    const contactRequests: unknown[] = [];
+    process.env.RESEND_AUDIENCE_ID = "aud_test";
+    server.use(
+      http.post(
+        "https://api.resend.com/audiences/aud_test/contacts",
+        async ({ request }) => {
+          contactRequests.push(await request.json());
+          return HttpResponse.json({ object: "contact", id: "contact_1" });
+        },
+      ),
+    );
+
+    try {
+      await expect(
+        sendRightToTrySupport(validResponse, submissionOptions),
+      ).resolves.toEqual({ sentConfirmation: true });
+      expect(contactRequests).toEqual([
+        expect.objectContaining({
+          email: "patient@example.com",
+          unsubscribed: false,
+        }),
+      ]);
+
+      contactRequests.length = 0;
+      sentMessages.length = 0;
+      await expect(
+        sendRightToTrySupport(
+          { ...validResponse, updates: false },
+          submissionOptions,
+        ),
+      ).resolves.toEqual({ sentConfirmation: true });
+      expect(contactRequests).toHaveLength(0);
+    } finally {
+      delete process.env.RESEND_AUDIENCE_ID;
+    }
+  });
+
+  it("flags legislator responses in the notification subject", () => {
+    const notification = buildSupportNotification({
+      ...validResponse,
+      role: "state-legislator-or-staff",
+    });
+
+    expect(notification.subject).toBe(
+      "[Right to Trial LEGISLATOR] Missouri: Supports the proposal",
+    );
+  });
+
   it("keeps the stored response when email delivery is not configured", async () => {
     const apiKey = process.env.RESEND_API_KEY;
     const consoleError = vi

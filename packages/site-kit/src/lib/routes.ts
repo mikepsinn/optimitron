@@ -42,6 +42,7 @@ export const ROUTES = {
   montana: '/montana',
   modelAct: '/model-act',
   states: '/states',
+  survey: '/survey',
 
   // Movement / Advocacy
   thePlan: '/the-plan',

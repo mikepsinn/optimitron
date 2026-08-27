@@ -5,15 +5,15 @@
 - Page title: Missouri Right to Trial
 - Meta description: Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.
 - Canonical: https://acceleratedmedicine.org/states/missouri
-- Open Graph title: Institute for Accelerated Medicine
+- Open Graph title: Right to Trial Initiative
 - Open Graph description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 - Open Graph image: https://acceleratedmedicine.org/assets/acceleratedmedicine/iam-og-1200x630.png
-- Twitter title: Institute for Accelerated Medicine
+- Twitter title: Right to Trial Initiative
 - Twitter description: Right to Trial for every patient, with pragmatic clinical trials and public results that show which treatments work.
 
 ## Visible Page Copy
 
-- [INSTITUTE FOR ACCELERATED MEDICINE](/)
+- [RIGHT TO TRIAL INITIATIVE](/)
 - LISTENING FOR SUPPORT
 ## SHOULD EVERY PATIENT IN MISSOURI HAVE THE RIGHT TO TRIAL?
 - Put your state on the map and help bring pragmatic trials, shared outcomes, and more treatment options to every patient.
@@ -37,7 +37,7 @@
 ### SHOULD EVERY PATIENT IN YOUR STATE HAVE THE RIGHT TO TRIAL?
 - Tell us your state and why patients there need more options. Every response shows where support is strongest and helps more people learn what Right to Trial would change.
 - YOUR STATE Choose a state Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada New Hampshire New Jersey New Mexico New York North Carolina North Dakota Ohio Oklahoma Oregon Pennsylvania Rhode Island South Carolina South Dakota Tennessee Texas Utah Vermont Virginia Washington West Virginia Wisconsin Wyoming
-- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer Other
+- YOUR ROLE Patient or caregiver Clinician Researcher Public educator or organizer State legislator or staff Other
 - YES
 - SHOW ME MORE
 - NO
@@ -50,6 +50,7 @@
 #### RIGHT TO TRIAL
 - [MONTANA MODEL](/montana)
 - [YOUR STATE](/#state-support)
+- [SURVEY](/survey)
 - [MODEL ACT](/model-act)
 #### EVIDENCE
 - [IMPACT](/impact)
@@ -58,6 +59,7 @@
 #### SUPPORT
 - [DONATE](/donate)
 - [VOLUNTEER](/contact)
+- [GET EMAIL UPDATES](/survey)
 #### CONTACT
 - [hello@acceleratedmedicine.org](mailto:hello@acceleratedmedicine.org)
 - [PRIVACY POLICY](/privacy)
