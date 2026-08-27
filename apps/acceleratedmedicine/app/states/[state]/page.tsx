@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import { StateCampaignPage } from "@/components/state-campaign-page";
 import { getStateCampaign, STATE_CAMPAIGNS } from "@/lib/right-to-try";
@@ -18,6 +18,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: StatePageProps): Promise<Metadata> {
   const { state } = await params;
+  if (state === "montana") return {};
+
   const campaign = getStateCampaign(state);
   if (!campaign) return {};
 
@@ -32,6 +34,8 @@ export async function generateMetadata({ params }: StatePageProps): Promise<Meta
 
 export default async function StatePage({ params }: StatePageProps) {
   const { state } = await params;
+  if (state === "montana") permanentRedirect("/montana");
+
   const campaign = getStateCampaign(state);
   if (!campaign) notFound();
 
