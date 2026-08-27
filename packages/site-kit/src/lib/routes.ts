@@ -63,6 +63,8 @@ export const ROUTES = {
   join: '/join',
   coalition: '/coalition',
   campaign: '/campaign',
+  organizations: '/organizations',
+  tasks: '/tasks',
   feedback: '/feedback',
   search: '/search',
 
@@ -260,6 +262,14 @@ export const HASH_LINKS = {
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
+
+export const NONPROFIT_COALITION_STRATEGY_URL =
+  'https://manual.warondisease.org/knowledge/strategy/nonprofit-coalition-strategy'
+
+/** `/organizations/{slug}` — an organization's public page. */
+export function getOrganizationPath(identifier: string): string {
+  return `${ROUTES.organizations}/${identifier}`
+}
 
 /**
  * Check if a path is a hash link (contains #)

@@ -15,6 +15,7 @@ const nextConfig = {
     "@optimitron/neobrutalist-ui",
     "@optimitron/data",
     "@optimitron/site-kit",
+    "@optimitron/wishonia-widget",
   ],
   outputFileTracingRoot: monorepoRoot,
   webpack(config) {
