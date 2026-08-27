@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 
 import { US_STATES } from "@/lib/right-to-try";
+import { storeRightToTrySupport } from "@/lib/right-to-try-support-store";
 
 const stateNames = US_STATES.map(([name]) => name) as [
   string,
@@ -18,6 +19,7 @@ export const supporterRoleSchema = z.enum([
 ]);
 
 export const rightToTrySupportSchema = z.object({
+  submissionKey: z.string().uuid(),
   state: z.enum(stateNames),
   position: supportPositionSchema,
   role: supporterRoleSchema,
@@ -111,6 +113,7 @@ export function buildSupportConfirmation(input: RightToTrySupportInput) {
 
 export async function sendRightToTrySupport(
   rawInput: unknown,
+  store: typeof storeRightToTrySupport = storeRightToTrySupport,
 ): Promise<{ sentConfirmation: boolean }> {
   const input = rightToTrySupportSchema.parse(rawInput);
 
@@ -120,9 +123,12 @@ export async function sendRightToTrySupport(
     return { sentConfirmation: false };
   }
 
+  await store(input, input.submissionKey);
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    throw new Error("Right to Try email service is not configured");
+    console.error("Right to Try email service is not configured");
+    return { sentConfirmation: false };
   }
 
   const resend = new Resend(apiKey);
@@ -130,15 +136,20 @@ export async function sendRightToTrySupport(
     process.env.EMAIL_FROM_ADDRESS || "no-reply@updates.dfda.earth";
   const from = `Institute for Accelerated Medicine <${fromAddress}>`;
   const notification = buildSupportNotification(input);
-  const notificationResult = await resend.emails.send({
-    from,
-    to: "hello@acceleratedmedicine.org",
-    replyTo: input.email || undefined,
-    ...notification,
-  });
+  try {
+    const notificationResult = await resend.emails.send({
+      from,
+      to: "hello@acceleratedmedicine.org",
+      replyTo: input.email || undefined,
+      ...notification,
+    });
 
-  if (notificationResult.error || !notificationResult.data?.id) {
-    throw new Error("The support response email was not accepted");
+    if (notificationResult.error || !notificationResult.data?.id) {
+      throw new Error("The support response email was not accepted");
+    }
+  } catch (error) {
+    console.error("Right to Try notification email failed", error);
+    return { sentConfirmation: false };
   }
 
   if (!input.email) {
@@ -146,15 +157,19 @@ export async function sendRightToTrySupport(
   }
 
   const confirmation = buildSupportConfirmation(input);
-  const confirmationResult = await resend.emails.send({
-    from,
-    to: input.email,
-    ...confirmation,
-  });
-
-  if (confirmationResult.error || !confirmationResult.data?.id) {
-    throw new Error("The support confirmation email was not accepted");
+  try {
+    const confirmationResult = await resend.emails.send({
+      from,
+      to: input.email,
+      ...confirmation,
+    });
+    return {
+      sentConfirmation: Boolean(
+        !confirmationResult.error && confirmationResult.data?.id,
+      ),
+    };
+  } catch (error) {
+    console.error("Right to Try confirmation email failed", error);
+    return { sentConfirmation: false };
   }
-
-  return { sentConfirmation: true };
 }

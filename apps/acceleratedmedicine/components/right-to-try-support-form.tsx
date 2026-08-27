@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Loader2, Mail, MapPin } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 import { US_STATES } from "@/lib/right-to-try";
 
@@ -24,11 +24,13 @@ export function RightToTrySupportForm({
   const [submission, setSubmission] = useState<SubmissionState>({
     status: "idle",
   });
+  const submissionKey = useRef<string>();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
+    submissionKey.current ||= crypto.randomUUID();
     setSubmission({ status: "submitting" });
 
     try {
@@ -36,6 +38,7 @@ export function RightToTrySupportForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          submissionKey: submissionKey.current,
           state: formData.get("state"),
           position: formData.get("position"),
           role: formData.get("role"),

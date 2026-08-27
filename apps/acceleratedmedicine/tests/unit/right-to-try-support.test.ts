@@ -1,6 +1,14 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import {
   buildSupportNotification,
@@ -13,6 +21,7 @@ let previousEmailFromAddress: string | undefined;
 let previousResendApiKey: string | undefined;
 
 const validResponse = {
+  submissionKey: "f938e396-c1db-41cb-8f8c-abb33d2d67ae",
   state: "Missouri",
   position: "yes" as const,
   role: "patient-or-caregiver" as const,
@@ -29,7 +38,9 @@ const server = setupServer(
   }),
 );
 
-describe("Universal Right to Try support email", () => {
+describe("Universal Right to Try support submission", () => {
+  const store = vi.fn(async () => ({ submissionId: "submission_1" }));
+
   beforeAll(() => {
     previousEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
     previousResendApiKey = process.env.RESEND_API_KEY;
@@ -40,6 +51,7 @@ describe("Universal Right to Try support email", () => {
 
   afterEach(() => {
     sentMessages.length = 0;
+    store.mockClear();
     server.resetHandlers();
   });
 
@@ -58,10 +70,11 @@ describe("Universal Right to Try support email", () => {
   });
 
   it("records the response with the Institute and confirms it to the supporter", async () => {
-    await expect(sendRightToTrySupport(validResponse)).resolves.toEqual({
+    await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
       sentConfirmation: true,
     });
 
+    expect(store).toHaveBeenCalledOnce();
     expect(sentMessages).toHaveLength(2);
     expect(sentMessages[0]).toEqual(
       expect.objectContaining({
@@ -93,16 +106,20 @@ describe("Universal Right to Try support email", () => {
 
   it("does not deliver honeypot submissions", async () => {
     await expect(
-      sendRightToTrySupport({
-        ...validResponse,
-        companyWebsite: "https://spam.example",
-      }),
+      sendRightToTrySupport(
+        {
+          ...validResponse,
+          companyWebsite: "https://spam.example",
+        },
+        store,
+      ),
     ).resolves.toEqual({ sentConfirmation: false });
 
+    expect(store).not.toHaveBeenCalled();
     expect(sentMessages).toHaveLength(0);
   });
 
-  it("reports a provider rejection instead of claiming the response was recorded", async () => {
+  it("keeps the stored response when the email provider rejects the notification", async () => {
     server.use(
       http.post(resendEndpoint, () =>
         HttpResponse.json(
@@ -116,8 +133,26 @@ describe("Universal Right to Try support email", () => {
       ),
     );
 
-    await expect(sendRightToTrySupport(validResponse)).rejects.toThrow(
-      "The support response email was not accepted",
-    );
+    await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
+      sentConfirmation: false,
+    });
+    expect(store).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the stored response when email delivery is not configured", async () => {
+    const apiKey = process.env.RESEND_API_KEY;
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    delete process.env.RESEND_API_KEY;
+
+    try {
+      await expect(sendRightToTrySupport(validResponse, store)).resolves.toEqual({
+        sentConfirmation: false,
+      });
+      expect(store).toHaveBeenCalledOnce();
+      expect(sentMessages).toHaveLength(0);
+    } finally {
+      process.env.RESEND_API_KEY = apiKey;
+      consoleError.mockRestore();
+    }
   });
 });
