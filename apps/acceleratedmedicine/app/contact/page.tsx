@@ -70,7 +70,7 @@ export default function VolunteerPage() {
           </p>
           <a
             className="mt-9 inline-flex items-center gap-2 border-4 border-primary bg-brutal-pink px-7 py-4 text-xl font-black uppercase shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[11px_11px_0px_0px_rgba(0,0,0,1)]"
-            href="#volunteer-form"
+            href="#tell-us-where-you-want-to-help"
           >
             Find my part <ArrowDown className="h-6 w-6" strokeWidth={3} />
           </a>
@@ -98,7 +98,7 @@ export default function VolunteerPage() {
       </SectionContainer>
 
       <SectionContainer
-        id="volunteer-form"
+        id="tell-us-where-you-want-to-help"
         bgColor="cyan"
         borderPosition="bottom"
         className="scroll-mt-24"

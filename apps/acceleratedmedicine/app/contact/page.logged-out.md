@@ -17,7 +17,7 @@
 - VOLUNTEER
 ## HELP EVERY PATIENT GET THE RIGHT TO TRIAL.
 - Every patient should be able to join a pragmatic clinical trial for the most promising treatments. Every result should help the next patient. You can help make that normal.
-- [FIND MY PART](#volunteer-form)
+- [FIND MY PART](#tell-us-where-you-want-to-help)
 ### THERE IS USEFUL WORK FOR EVERY KIND OF HUMAN.
 #### PATIENTS AND CAREGIVERS
 - Tell the story only you can tell. Show what another real option could mean when approved treatments are not enough.
@@ -36,7 +36,7 @@
 - EMAIL
 - Send me occasional updates about Right to Trial in my state.
 - I WANT TO HELP
-- We’ll use your email to reply and send the updates you request.
+- We’ll use your email for your confirmation, our reply, and any updates you request.
 ### PREFER EMAIL?
 - The form is the fastest path. If your idea does not fit it, send it directly.
 - [EMAIL HELLO@ACCELERATEDMEDICINE.ORG](mailto:hello@acceleratedmedicine.org?subject=Right%20to%20Trial%20volunteer)

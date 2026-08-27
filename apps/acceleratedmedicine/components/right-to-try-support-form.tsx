@@ -269,7 +269,7 @@ export function RightToTrySupportForm({
 
       <p className="mt-4 text-center text-sm font-bold">
         {variant === "volunteer"
-          ? "We’ll use your email to reply and send the updates you request."
+          ? "We’ll use your email for your confirmation, our reply, and any updates you request."
           : "If you provide an email, we will send a confirmation. We will not sell or rent it."}
       </p>
 
